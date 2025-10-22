@@ -1,5 +1,4 @@
 import { $TSAny, $TSContext, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
-import { CloudFormation } from 'aws-sdk';
 import * as fs from 'fs-extra';
 import { S3 } from '../aws-utils/aws-s3';
 import { loadConfiguration } from '../configuration-manager';
@@ -14,6 +13,7 @@ import {
   localPrefix,
 } from './utils';
 import { handleCommonSdkError } from '../handle-common-sdk-errors';
+import { CloudFormationClient } from '@aws-sdk/client-cloudformation';
 
 let functionsDependentOnReplacedModelTables: string[] = [];
 
@@ -41,7 +41,7 @@ export const prependDeploymentStepsToDisconnectFunctionsFromReplacedModelTables 
   );
   // generate deployment steps that will remove references to the replaced tables in the dependent functions
   const { deploymentSteps: disconnectFuncsSteps, lastMetaKey } = await generateIterativeFuncDeploymentSteps(
-    new CloudFormation(await loadConfiguration(context)),
+    new CloudFormationClient(await loadConfiguration(context)),
     rootStackId,
     functionsDependentOnReplacedModelTables,
   );

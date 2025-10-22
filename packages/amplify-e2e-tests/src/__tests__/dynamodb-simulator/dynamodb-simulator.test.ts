@@ -1,3 +1,5 @@
+import { AttributeDefinition, CreateTableCommand, KeySchemaElement, ListTablesCommand } from '@aws-sdk/client-dynamodb';
+
 const path = require('path');
 const ddbSimulator = require('amplify-dynamodb-simulator');
 const fs = require('fs-extra');
@@ -17,21 +19,21 @@ describe('emulator operations', () => {
       {
         AttributeName: 'Artist',
         AttributeType: 'S',
-      },
+      } as AttributeDefinition,
       {
         AttributeName: 'SongTitle',
         AttributeType: 'S',
-      },
+      } as AttributeDefinition,
     ],
     KeySchema: [
       {
         AttributeName: 'Artist',
         KeyType: 'HASH',
-      },
+      } as KeySchemaElement,
       {
         AttributeName: 'SongTitle',
         KeyType: 'RANGE',
-      },
+      } as KeySchemaElement,
     ],
     ProvisionedThroughput: {
       ReadCapacityUnits: 5,
@@ -70,29 +72,27 @@ describe('emulator operations', () => {
     emulators.push(emu);
     const dynamo = ddbSimulator.getClient(emu);
 
-    const tables = await dynamo.listTables().promise();
-    expect(tables).toEqual({ TableNames: [] });
+    const tables = await dynamo.send(new ListTablesCommand());
+    expect(tables.TableNames).toEqual([]);
   });
 
   it('should preserve state between restarts with dbPath', async () => {
     const emuOne = await ddbSimulator.launch({ dbPath });
     emulators.push(emuOne);
     const dynamoOne = ddbSimulator.getClient(emuOne);
-    await dynamoOne
-      .createTable({
+    await dynamoOne.send(
+      new CreateTableCommand({
         TableName: 'foo',
         ...dbParams,
-      })
-      .promise();
+      }),
+    );
     await emuOne.terminate();
     emulators = [];
     const emuTwo = await ddbSimulator.launch({ dbPath });
     emulators.push(emuTwo);
     const dynamoTwo = await ddbSimulator.getClient(emuTwo);
-    const t = await dynamoTwo.listTables().promise();
-    expect(t).toEqual({
-      TableNames: ['foo'],
-    });
+    const t = await dynamoTwo.send(new ListTablesCommand());
+    expect(t.TableNames).toEqual(['foo']);
   });
 
   it('should start on specific port', async () => {

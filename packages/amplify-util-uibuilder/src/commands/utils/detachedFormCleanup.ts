@@ -1,4 +1,4 @@
-import { Form } from 'aws-sdk/clients/amplifyuibuilder';
+import { Form } from '@aws-sdk/client-amplifyuibuilder';
 import { AmplifyStudioClient } from '../../clients';
 import { printer } from '@aws-amplify/amplify-prompts';
 import asyncPool from 'tiny-async-pool';
@@ -7,7 +7,11 @@ import asyncPool from 'tiny-async-pool';
  * Does the form's reference DataStore type exist in the list of models
  */
 export const isFormDetachedFromModel = (formSchema: Form, modelNames: Set<string>): boolean => {
-  return formSchema.dataType.dataSourceType === 'DataStore' && !modelNames.has(formSchema.dataType.dataTypeName);
+  return (
+    formSchema.dataType?.dataSourceType === 'DataStore' &&
+    !!formSchema.dataType?.dataTypeName &&
+    !modelNames.has(formSchema.dataType.dataTypeName)
+  );
 };
 
 /**
@@ -24,7 +28,7 @@ export const isFormSchemaCustomized = (formSchema: Form): boolean => {
 
   // Check style
   // If not empty, at least one style must be defined
-  return Object.values(style).some((styleConfig) => styleConfig !== undefined);
+  return style ? Object.values(style).some((styleConfig) => styleConfig !== undefined) : false;
 };
 
 /**

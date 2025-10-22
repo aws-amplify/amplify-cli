@@ -4,7 +4,7 @@ import {
   UserPoolDescriptionType,
   UserPoolType,
   UserPoolClientType,
-} from 'aws-sdk/clients/cognitoidentityserviceprovider';
+} from '@aws-sdk/client-cognito-identity-provider';
 
 export interface ICognitoUserPoolService {
   listUserPools(): Promise<UserPoolDescriptionType[]>;

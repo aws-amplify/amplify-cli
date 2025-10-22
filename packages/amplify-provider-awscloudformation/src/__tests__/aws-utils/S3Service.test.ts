@@ -1,44 +1,56 @@
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { createS3Service } from '../../aws-utils/S3Service';
+import { HeadBucketCommand } from '@aws-sdk/client-s3';
 
-jest.mock('aws-sdk', () => {
-  const mockHeadBucketForUsEast1 = jest.fn().mockImplementation((params: { Bucket: string }) => {
-    return {
-      promise: jest.fn().mockImplementation(() => {
-        if (params.Bucket.includes('us-east-1')) {
-          return Promise.resolve({});
-        }
-        return Promise.reject({ code: 'BadRequest', region: 'eu-south-1' });
-      }),
-    };
+// Mock the AWS SDK v3 S3Client
+jest.mock('@aws-sdk/client-s3', () => {
+  const mockSendForUsEast1 = jest.fn().mockImplementation(async (command) => {
+    if (command instanceof HeadBucketCommand) {
+      const params = command.input;
+      if (params.Bucket!.includes('us-east-1')) {
+        return {};
+      }
+      const error = new Error('BadRequest');
+      error.name = 'BadRequest';
+      throw error;
+    }
+    return {};
   });
 
-  const mockHeadBucketForEuSouth1 = jest.fn().mockImplementation((params) => {
+  const mockSendForEuSouth1 = jest.fn().mockImplementation(async (command) => {
+    if (command instanceof HeadBucketCommand) {
+      const params = command.input;
+      if (params.Bucket!.includes('eu-south-1')) {
+        return {};
+      }
+      const error = new Error('BadRequest');
+      error.name = 'BadRequest';
+      throw error;
+    }
+    return {};
+  });
+
+  const mockS3Client = jest.fn().mockImplementation((options) => {
+    const region = options.region || 'us-east-1';
+
     return {
-      promise: jest.fn().mockImplementation(() => {
-        if (params.Bucket.includes('eu-south-1')) {
-          return Promise.resolve({});
-        }
-        return Promise.reject({ code: 'BadRequest', region: 'us-east-1' });
-      }),
+      send: region === 'eu-south-1' ? mockSendForEuSouth1 : mockSendForUsEast1,
+      config: {
+        region,
+        credentials: options.credentials,
+      },
     };
   });
 
   return {
-    S3: jest.fn((options) => {
-      const region = options.region || 'us-east-1';
-      if (region === 'eu-south-1') {
-        return {
-          headBucket: mockHeadBucketForEuSouth1,
-        };
-      }
+    S3Client: mockS3Client,
+    HeadBucketCommand: jest.fn().mockImplementation((params) => {
       return {
-        config: {
-          region,
-        },
-        headBucket: mockHeadBucketForUsEast1,
+        input: params,
       };
     }),
+    ListBucketsCommand: jest.fn(),
+    GetBucketLocationCommand: jest.fn(),
   };
 });
 

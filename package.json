@@ -73,6 +73,7 @@
     "verify-api-extract": "yarn extract-api && ./scripts/verify-extract-api.sh",
     "verify-commit": "yarn ts-node ./scripts/verify-commit.ts",
     "verify-yarn-lock": "./scripts/verify-yarn-lock.sh",
+    "view-test-artifact": "./scripts/view-test-artifacts.sh",
     "workflow-results": "yarn ts-node ./scripts/cci-workflow-results.ts"
   },
   "bugs": {
@@ -113,7 +114,7 @@
     "@types/glob": "^7.1.1",
     "@types/jest": "^29.0.0",
     "@types/js-yaml": "^4.0.0",
-    "@types/node": "^18.16.1",
+    "@types/node": "^20.9.0",
     "@types/yargs": "^17",
     "@typescript-eslint/eslint-plugin": "^5.34.0",
     "@typescript-eslint/parser": "^5.34.0",
@@ -178,6 +179,7 @@
     "word-wrap": "^1.2.4",
     "follow-redirects": "^1.15.6",
     "tar": "^6.2.1",
-    "ejs": "^3.1.10"
+    "ejs": "^3.1.10",
+    "form-data": "^4.0.4"
   }
 }

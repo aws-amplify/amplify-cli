@@ -109,7 +109,7 @@ async function getConfiguredAWSClientConfig(context, category, action) {
   action = action || ['missing'];
   const userAgentAction = `${category}:${action[0]}`;
   const config = {
-    credentials: credsConfig,
+    credentials: credsConfig.credentials || credsConfig,
     customUserAgent: formUserAgentParam(context, userAgentAction),
     httpOptions: {
       agent: proxyAgent(),

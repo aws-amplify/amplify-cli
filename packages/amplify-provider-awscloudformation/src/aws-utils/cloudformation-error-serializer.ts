@@ -1,4 +1,4 @@
-import { StackEvent } from 'aws-sdk/clients/cloudformation';
+import { StackEvent } from '@aws-sdk/client-cloudformation';
 export const getStatusToErrorMsg = (status) => {
   const MAP = {
     CREATE_FAILED: 'create',

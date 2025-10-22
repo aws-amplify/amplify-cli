@@ -1,5 +1,6 @@
 // @ts-check
-const aws = require('./aws.js');
+const { SecretsManagerClient } = require('@aws-sdk/client-secrets-manager');
+const { NodeHttpHandler } = require('@smithy/node-http-handler');
 const configurationManager = require('../configuration-manager');
 const { proxyAgent } = require('./aws-globals');
 
@@ -15,13 +16,14 @@ class SecretsManager {
       }
       this.context = context;
 
-      /** @type {AWS.SecretsManager} */
-      this.secretsManager = new aws.SecretsManager({
+      /** @type {SecretsManagerClient} */
+      this.secretsManager = new SecretsManagerClient({
         ...cred,
         ...options,
-        httpOptions: {
-          agent: proxyAgent(),
-        },
+        requestHandler: new NodeHttpHandler({
+          httpAgent: proxyAgent(),
+          httpsAgent: proxyAgent(),
+        }),
       });
 
       return this;

@@ -1,4 +1,4 @@
-import { IdentityPool, IdentityPoolShortDescription } from 'aws-sdk/clients/cognitoidentity';
+import { IdentityPool, IdentityPoolShortDescription } from '@aws-sdk/client-cognito-identity';
 
 export interface IIdentityPoolService {
   listIdentityPools(): Promise<IdentityPoolShortDescription[]>;

@@ -505,7 +505,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
       'DeploymentFault',
       {
         message: error.message,
-        code: error.code,
+        code: error.name,
         details: error.details,
       },
       error,

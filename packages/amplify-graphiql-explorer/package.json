@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-graphiql-explorer",
-  "version": "2.6.2",
+  "version": "2.6.4",
   "private": true,
   "dependencies": {
     "@babel/core": "^7.23.2",
@@ -67,14 +67,14 @@
     "util": "^0.12.4",
     "web-vitals": "^0.2.4",
     "webpack": "^5.64.4",
-    "webpack-dev-server": "^5.2.1",
+    "webpack-dev-server": "^5.2.2",
     "webpack-manifest-plugin": "^4.0.2",
     "workbox-webpack-plugin": "^7.3.0"
   },
   "devDependencies": {
     "@semantic-ui-react/css-patch": "^1.0.0",
     "@types/jest": "^29.5.1",
-    "@types/node": "^12.12.6",
+    "@types/node": "^20.9.0",
     "@types/react": "^17.0.39",
     "@types/react-dom": "^17.0.11"
   },

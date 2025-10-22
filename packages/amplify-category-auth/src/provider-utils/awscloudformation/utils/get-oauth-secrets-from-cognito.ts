@@ -1,6 +1,6 @@
 import { ICognitoUserPoolService } from '@aws-amplify/amplify-util-import';
 import { $TSContext, stateManager, JSONUtilities } from '@aws-amplify/amplify-cli-core';
-import { IdentityProviderType } from 'aws-sdk/clients/cognitoidentityserviceprovider';
+import { IdentityProviderType } from '@aws-sdk/client-cognito-identity-provider';
 import { createOAuthCredentials } from '../import';
 
 /**
