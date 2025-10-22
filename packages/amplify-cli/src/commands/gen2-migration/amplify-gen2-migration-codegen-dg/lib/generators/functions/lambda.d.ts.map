@@ -1,0 +1,1 @@
+{"version":3,"file":"lambda.d.ts","sourceRoot":"","sources":["../../../src/generators/functions/lambda.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,MAAM,YAAY,CAAC;AAC5B,MAAM,MAAM,MAAM,GAAG;IACnB,MAAM,EAAE,MAAM,CAAC;CAChB,CAAC;AAIF,eAAO,MAAM,sBAAsB,aAAc,OAAO,MAAM,EAAE,MAAM,CAAC,0BAWtE,CAAC"}
