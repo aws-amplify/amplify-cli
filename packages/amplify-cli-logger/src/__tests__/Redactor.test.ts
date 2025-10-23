@@ -47,4 +47,11 @@ describe('input-redaction', () => {
       `""ProviderName":"[***]book","client_id":"[***]ntIdTest","client_secret":"[***]SecretTest""`,
     );
   });
+
+  it('redacts values containing punctuation characters', () => {
+    const sensitive = { password: 'secret!?' };
+    const redacted = JSON.parse(Redactor(JSON.stringify(sensitive)));
+    expect(redacted.password.startsWith('[***]')).toBe(true);
+    expect(redacted.password).not.toBe(sensitive.password);
+  });
 });
