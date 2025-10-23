@@ -7,7 +7,12 @@
     "outDir": "lib",
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["src/**/*"],
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "src/commands/gen2-migration/amplify-gen2-migration-codegen-dg/**/*"
+  ],
   "references": [
     {
       "path": "../amplify-category-function"
@@ -35,6 +40,9 @@
     },
     {
       "path": "../amplify-cli-shared-interfaces"
+    },
+    {
+      "path": "src/commands/gen2-migration/amplify-gen2-migration-codegen-dg"
     }
   ]
 }

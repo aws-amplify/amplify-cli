@@ -1,4 +1,5 @@
-import ts, { ObjectLiteralElementLike, VariableDeclaration, VariableStatement } from 'typescript';
+import ts from 'typescript';
+import { ObjectLiteralElementLike, VariableDeclaration, VariableStatement } from 'typescript';
 import { EnvironmentResponse, Runtime } from '@aws-sdk/client-lambda';
 import { renderResourceTsFile } from '../../resource/resource';
 import assert from 'node:assert';
@@ -145,7 +146,7 @@ export function createFunctionDefinition(
       case Runtime.nodejs20x:
         nodeRuntime = 20;
         break;
-      case Runtime.nodejs22x:
+      case 'nodejs22x':
         nodeRuntime = 22;
         break;
       default:

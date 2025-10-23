@@ -1,0 +1,19 @@
+{
+  "extends": "../../../../../../tsconfig.base.json",
+  "compilerOptions": {
+    "strict": false,
+    "noImplicitAny": false,
+    "noImplicitReturns": false,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "composite": true,
+    "moduleResolution": "node",
+    "types": ["node"],
+    "rootDir": "src",
+    "outDir": "lib"
+  },
+  "include": [
+    "src/**/*"
+  ]
+}
