@@ -1,7 +1,7 @@
 const containsToRedact = ['key', 'id', 'password', 'name', 'arn', 'address', 'app', 'bucket', 'token', 'secret'];
 const quotes = '\\\\?"';
 const keyMatcher = `\\w*?(${containsToRedact.join('|')})\\w*?`;
-const completeMatch = `${quotes}(${keyMatcher})${quotes}:\\s?${quotes}([^!\\\\?"]+)${quotes}`;
+const completeMatch = `${quotes}(${keyMatcher})${quotes}:\\s?${quotes}([^"\\\\]+)${quotes}`;
 /**
  * Redacts json string
  * @param arg JSON string to redact
