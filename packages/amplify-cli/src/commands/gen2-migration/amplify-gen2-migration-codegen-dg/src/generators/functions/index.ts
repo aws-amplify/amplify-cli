@@ -1,6 +1,7 @@
 import ts from 'typescript';
 import { ObjectLiteralElementLike, VariableDeclaration, VariableStatement } from 'typescript';
-import { EnvironmentResponse, Runtime } from '@aws-sdk/client-lambda';
+import type { EnvironmentResponse } from '@aws-sdk/client-lambda';
+import { Runtime } from '@aws-sdk/client-lambda';
 import { renderResourceTsFile } from '../../resource/resource';
 import assert from 'node:assert';
 

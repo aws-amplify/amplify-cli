@@ -10,7 +10,7 @@ import ts, {
   VariableStatement,
 } from 'typescript';
 import { PolicyOverrides, ReferenceAuth } from '../generators/auth/index.js';
-import { BucketAccelerateStatus, BucketVersioningStatus } from '@aws-sdk/client-s3';
+import type { BucketAccelerateStatus, BucketVersioningStatus } from '@aws-sdk/client-s3';
 import { AccessPatterns, ServerSideEncryptionConfiguration } from '../generators/storage/index.js';
 import { ExplicitAuthFlowsType, OAuthFlowType, UserPoolClientType } from '@aws-sdk/client-cognito-identity-provider';
 import assert from 'assert';

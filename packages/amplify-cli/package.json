@@ -68,8 +68,6 @@
     "@aws-cdk/cloudformation-diff": "~2.68.0",
     "@aws-sdk/client-amplify": "^3.624.0",
     "@aws-sdk/client-cognito-identity-provider": "^3.624.0",
-    "@aws-sdk/client-lambda": "^3.624.0",
-    "@aws-sdk/client-s3": "^3.624.0",
     "amplify-codegen": "^4.10.3",
     "amplify-dotnet-function-runtime-provider": "2.1.6",
     "amplify-go-function-runtime-provider": "2.3.53",
@@ -109,6 +107,7 @@
   },
   "devDependencies": {
     "@aws-amplify/amplify-function-plugin-interface": "1.12.1",
+    "@aws-sdk/client-lambda": "^3.624.0",
     "@types/archiver": "^5.3.1",
     "@types/columnify": "^1.5.1",
     "@types/folder-hash": "^4.0.1",

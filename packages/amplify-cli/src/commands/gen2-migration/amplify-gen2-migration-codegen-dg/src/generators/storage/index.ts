@@ -2,7 +2,7 @@ import ts, { VariableDeclaration, VariableStatement } from 'typescript';
 import { getAccessPatterns } from './access';
 import { renderResourceTsFile } from '../../resource/resource';
 import { createTriggersProperty, Lambda } from '../functions/lambda';
-import { BucketAccelerateStatus, BucketVersioningStatus, ServerSideEncryptionByDefault } from '@aws-sdk/client-s3';
+import type { BucketAccelerateStatus, BucketVersioningStatus, ServerSideEncryptionByDefault } from '@aws-sdk/client-s3';
 const factory = ts.factory;
 
 const amplifyGen1EnvName = 'AMPLIFY_GEN_1_ENV_NAME';
