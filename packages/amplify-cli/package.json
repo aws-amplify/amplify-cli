@@ -142,6 +142,10 @@
       "/node_modules/",
       "/templates/"
     ],
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/src/commands/gen2-migration/amplify-gen2-migration-codegen-dg/"
+    ],
     "moduleFileExtensions": [
       "ts",
       "tsx",

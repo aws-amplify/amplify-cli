@@ -1,7 +1,7 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "strict": false,
+    "strict": true,
     "noImplicitAny": false,
     "rootDir": "src",
     "outDir": "lib",
@@ -9,6 +9,9 @@
   },
   "include": [
     "src/**/*"
+  ],
+  "exclude": [
+    "src/commands/gen2-migration/amplify-gen2-migration-codegen-dg/**/*"
   ],
   "references": [
     {
