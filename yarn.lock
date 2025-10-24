@@ -476,7 +476,6 @@ __metadata:
     "@aws-sdk/client-amplify": ^3.624.0
     "@aws-sdk/client-s3": ^3.624.0
     archiver: ^7.0.1
-    aws-sdk: ^2.1692.0
     chalk: ^4.1.1
     cli-table3: ^0.6.0
     execa: ^5.1.1
@@ -517,6 +516,8 @@ __metadata:
     "@aws-amplify/amplify-category-api": ^5.15.1
     "@aws-amplify/amplify-cli-core": 4.4.3
     "@aws-amplify/amplify-environment-parameters": 1.9.22
+    "@aws-sdk/client-s3": ^3.624.0
+    "@aws-sdk/lib-storage": ^3.624.0
     fs-extra: ^8.1.0
     inquirer: ^7.3.3
     mime-types: ^2.1.26
@@ -566,7 +567,6 @@ __metadata:
     amplify-headless-interface: 1.17.8
     aws-amplify: ^5.3.16
     aws-appsync: ^4.1.1
-    aws-sdk: ^2.1692.0
     chalk: ^4.1.1
     dotenv: ^8.2.0
     execa: ^5.1.1
@@ -17986,7 +17986,6 @@ __metadata:
     aws-amplify: ^5.3.16
     aws-appsync: ^4.1.1
     aws-cdk-lib: ~2.189.1
-    aws-sdk: ^2.1464.0
     axios: ^1.11.0
     constructs: ^10.0.5
     dotenv: ^8.2.0

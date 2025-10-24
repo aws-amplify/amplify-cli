@@ -47,7 +47,6 @@
     "amplify-headless-interface": "1.17.8",
     "aws-amplify": "^5.3.16",
     "aws-appsync": "^4.1.1",
-    "aws-sdk": "^2.1692.0",
     "chalk": "^4.1.1",
     "dotenv": "^8.2.0",
     "execa": "^5.1.1",
