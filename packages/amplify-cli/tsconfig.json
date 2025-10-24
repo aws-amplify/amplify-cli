@@ -1,7 +1,7 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "strict": true,
+    "strict": false,
     "noImplicitAny": false,
     "rootDir": "src",
     "outDir": "lib",
@@ -9,9 +9,6 @@
   },
   "include": [
     "src/**/*"
-  ],
-  "exclude": [
-    "src/commands/gen2-migration/amplify-gen2-migration-codegen-dg/**/*"
   ],
   "references": [
     {
@@ -40,9 +37,6 @@
     },
     {
       "path": "../amplify-cli-shared-interfaces"
-    },
-    {
-      "path": "src/commands/gen2-migration/amplify-gen2-migration-codegen-dg"
     }
   ]
 }
