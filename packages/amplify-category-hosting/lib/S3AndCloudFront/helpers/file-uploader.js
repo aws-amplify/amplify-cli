@@ -3,7 +3,7 @@ const sequential = require('promise-sequential');
 const fileScanner = require('./file-scanner');
 const constants = require('../../constants');
 const { uploadFile } = require('./upload-file');
-const S3 = require('aws-sdk/clients/s3');
+const { S3Client } = require('@aws-sdk/client-s3');
 
 const serviceName = 'S3AndCloudFront';
 const providerName = 'awscloudformation';
@@ -43,7 +43,7 @@ async function getS3Client(context, action) {
   const providerPlugins = context.amplify.getProviderPlugins(context);
   const provider = require(providerPlugins[providerName]);
   const config = await provider.getConfiguredAWSClientConfig(context, constants.CategoryName, action);
-  return new S3(config);
+  return new S3Client(config);
 }
 
 function getHostingBucketName(context) {

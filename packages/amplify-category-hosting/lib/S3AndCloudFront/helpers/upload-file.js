@@ -1,6 +1,7 @@
 const fs = require('fs-extra');
 const path = require('path');
 const mime = require('mime-types');
+const { Upload } = require('@aws-sdk/lib-storage');
 
 async function uploadFile(s3Client, hostingBucketName, distributionDirPath, filePath, hasCloudFront) {
   let relativeFilePath = path.relative(distributionDirPath, filePath);
@@ -19,7 +20,12 @@ async function uploadFile(s3Client, hostingBucketName, distributionDirPath, file
     uploadParams.ACL = 'public-read';
   }
 
-  const data = await s3Client.upload(uploadParams).promise();
+  const upload = new Upload({
+    client: s3Client,
+    params: uploadParams,
+  });
+
+  const data = await upload.done();
 
   return data;
 }
