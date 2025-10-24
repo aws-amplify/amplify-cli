@@ -1,182 +1,193 @@
 # Amplify Custom Resource Migration Tool Development Workflow State
 
-## Project Status: **ANALYSIS COMPLETE - READY FOR IMPLEMENTATION**
+## Project Status: **IMPLEMENTATION PLAN FINALIZED**
 
 ## Completed Analysis ✅
 
-### Migration Tool Testing (2024-01-XX)
-- [x] **Lambda Custom Resource Test** - FAILED (intentionally broken with error throws) - Analysis complete
-- [x] **DynamoDB Custom Resource Test** - FAILED (intentionally broken with error throws) - Analysis complete  
-- [x] **S3 Custom Resource Test** - FAILED (intentionally broken with error throws) - Analysis complete
-- [x] **GraphQL API Test** - SUCCESS (properly migrated) - Analysis complete
-- [x] **Authentication Test** - SUCCESS (properly migrated) - Analysis complete
-- [x] **Multiple Custom Resources Test** - FAILED (all broken with error throws) - Analysis complete
+### Migration Tool Testing
+- [x] **Custom CDK Resources** - Currently broken with `throw new Error()` statements
+- [x] **GraphQL API Test** - SUCCESS (properly migrated)
+- [x] **Authentication Test** - SUCCESS (properly migrated)
 
 ### Root Cause Analysis ✅
-- [x] **Tool Behavior Identified** - Intentionally breaks custom resources with `throw new Error()`
-- [x] **Architecture Gaps Documented** - Missing Gen2 target mapping for custom resources
-- [x] **Conversion Patterns Defined** - Gen1 → Gen2 mapping patterns documented
-- [x] **Success Criteria Established** - Zero manual fixes for custom resources
+- [x] **Tool Behavior Identified** - Intentionally breaks custom resources
+- [x] **Gen2 Architecture Understood** - Uses `backend.createStack()` pattern
+- [x] **Transformation Rules Defined** - Stack → Construct conversion
+- [x] **Migration Plan Created** - See custom-resource-migration-plan.md
 
 ## Implementation Plan 🚧
 
-### Phase 1: Gen2 Target Mapping (Week 1) - CRITICAL FOUNDATION
-- [ ] **Task 1.1**: Gen2TargetMapper interface implementation
-  - [ ] Subtask: Create core mapping interface
-  - [ ] Subtask: Define resource type detection logic
-  - [ ] Subtask: Implement mapping decision tree
-- [ ] **Task 1.2**: All 8 resources → `defineFunction()`/`defineCustom()` decision logic
-  - [ ] Subtask: Lambda → `defineFunction()` (simple) or `defineCustom()` (complex)
-  - [ ] Subtask: DynamoDB → `defineCustom()` (always)
-  - [ ] Subtask: S3 → `defineCustom()` (always)
-  - [ ] Subtask: SNS → `defineCustom()` (always)
-  - [ ] Subtask: API Gateway → `defineCustom()` (always)
-  - [ ] Subtask: EventBridge → `defineCustom()` (always)
-  - [ ] Subtask: SQS → `defineCustom()` (always)
-  - [ ] Subtask: CloudFront → `defineCustom()` (always)
-- [ ] **Task 1.3**: Environment variable mapping
-  - [ ] Subtask: `cdk.Fn.ref('env')` / `!Ref AWS::StackName` → `process.env.AMPLIFY_ENV`
-  - [ ] Subtask: Handle environment-specific configurations
-  - [ ] Subtask: Map project context variables
-  - [ ] Subtask: CloudFormation intrinsic function mapping (`!Sub`, `!Join`, `!GetAtt`, `!Ref`)
-- [ ] **Task 1.4**: AmplifyHelpers migration
-  - [ ] Subtask: `getProjectInfo()` → Static project context
-  - [ ] Subtask: `addResourceDependency()` → Import statements
-  - [ ] Subtask: Handle cross-resource references
-  - [ ] Subtask: CloudFormation reference migration (`!Ref`, `!GetAtt` → resource imports)
-- [ ] **Task 1.5**: CDK Output / CloudFormation Outputs → Gen2 Export mapping
-  - [ ] Subtask: Parse `cdk.CfnOutput` statements
-  - [ ] Subtask: Parse CloudFormation `Outputs` section
-  - [ ] Subtask: Generate Gen2 export statements
-  - [ ] Subtask: Preserve output descriptions and values
-- [ ] **Task 1.6**: CloudFormation template parser implementation
-  - [ ] Subtask: YAML/JSON CloudFormation template parsing
-  - [ ] Subtask: Resource extraction from CloudFormation templates
-  - [ ] Subtask: Parameter and condition handling
+### Phase 1: Parser (Week 1)
+**Goal**: Extract all information from Gen1 CDK stacks
 
-### Phase 2: Resource-Specific Migration (Week 2) - TOP 8 RESOURCES
-- [ ] **Task 2.1**: Lambda function migration
-  - [ ] Subtask: Parse CDK Lambda constructs
-  - [ ] Subtask: Extract runtime, handler, code configuration
-  - [ ] Subtask: Generate `defineFunction()` or `defineCustom()` based on complexity
-- [ ] **Task 2.2**: DynamoDB table migration
-  - [ ] Subtask: Parse table configurations (keys, GSIs, streams)
-  - [ ] Subtask: Generate `defineCustom()` with preserved settings
-  - [ ] Subtask: Handle table policies and permissions
-- [ ] **Task 2.3**: S3 bucket migration
-  - [ ] Subtask: Extract bucket policies and CORS settings
-  - [ ] Subtask: Migrate lifecycle rules and versioning
-  - [ ] Subtask: Handle bucket notifications and triggers
-- [ ] **Task 2.4**: SNS topic migration
-  - [ ] Subtask: Parse topic configurations and subscriptions
-  - [ ] Subtask: Generate `defineCustom()` with SNS constructs
-  - [ ] Subtask: Preserve access policies and delivery settings
-- [ ] **Task 2.5**: API Gateway migration
-  - [ ] Subtask: Parse REST API configurations
-  - [ ] Subtask: Handle routes, authorizers, and integrations
-  - [ ] Subtask: Generate `defineCustom()` with API Gateway constructs
-- [ ] **Task 2.6**: EventBridge rules migration
-  - [ ] Subtask: Parse event rules and targets
-  - [ ] Subtask: Generate `defineCustom()` with EventBridge constructs
-  - [ ] Subtask: Preserve rule patterns and schedules
-- [ ] **Task 2.7**: SQS queue migration
-  - [ ] Subtask: Parse queue configurations and policies
-  - [ ] Subtask: Handle dead letter queues and visibility timeouts
-  - [ ] Subtask: Generate `defineCustom()` with SQS constructs
-- [ ] **Task 2.8**: CloudFront distribution migration
-  - [ ] Subtask: Parse distribution configurations
-  - [ ] Subtask: Handle origins, behaviors, and cache policies
-  - [ ] Subtask: Generate `defineCustom()` with CloudFront constructs
+- [ ] **Task 1.1**: Custom Resource Scanner
+  - [ ] Scan `amplify/backend/custom/` for all custom resources
+  - [ ] Find `cdk-stack.ts` in each subdirectory
+  - [ ] Build list of resources to migrate
 
-### Phase 3: Universal Migration Engine (Week 3) - FALLBACK SYSTEM
-- [ ] **Task 3.1**: Smart fallback chain implementation
-  - [ ] Subtask: Pattern matching for known configurations
-  - [ ] Subtask: Generic CDK construct detection
-  - [ ] Subtask: Fallback to universal `defineCustom()` generation
-- [ ] **Task 3.2**: Universal CDK stack parser
-  - [ ] Subtask: TypeScript AST parsing for CDK constructs
-  - [ ] Subtask: Extract construct properties and configurations
-  - [ ] Subtask: Handle complex CDK patterns and inheritance
-- [ ] **Task 3.3**: Cross-resource dependency ordering
-  - [ ] Subtask: Analyze resource dependencies
-  - [ ] Subtask: Generate proper import order
-  - [ ] Subtask: Handle circular dependency detection
-- [ ] **Task 3.4**: Enhanced error recovery
-  - [ ] Subtask: Automatic retry with fixes for common failures
-  - [ ] Subtask: Detailed error messages with context
-  - [ ] Subtask: Guided manual steps generator with code snippets
+- [ ] **Task 1.2**: CDK Stack Parser
+  - [ ] Parse TypeScript files using TS Compiler API
+  - [ ] Extract class name and imports
+  - [ ] Extract constructor body
+  - [ ] Identify constructor parameters
 
-### Phase 4: Testing & Validation (Week 4) - PRODUCTION READINESS
-- [ ] **Task 4.1**: Test fixture creation
-  - [ ] Subtask: Gen1 custom resources for all 8 resource types
-  - [ ] Subtask: Complex dependencies and cross-resource references
-  - [ ] Subtask: Edge cases (AmplifyHelpers, environment variables)
-- [ ] **Task 4.2**: Automated testing pipeline
-  - [ ] Subtask: Unit tests for each parser, mapper, and migrator
-  - [ ] Subtask: Integration tests for end-to-end migration scenarios
-  - [ ] Subtask: Performance tests for large projects
-- [ ] **Task 4.3**: Validation & deployment testing
-  - [ ] Subtask: Pre-migration validation
-  - [ ] Subtask: Post-migration code validation
-  - [ ] Subtask: Actual deployment testing of migrated resources
-- [ ] **Task 4.4**: Error recovery testing
-  - [ ] Subtask: Test auto-retry mechanisms
-  - [ ] Subtask: Validate manual step generation
-  - [ ] Subtask: Test rollback capabilities
+- [ ] **Task 1.3**: Pattern Detector
+  - [ ] Detect `cdk.CfnParameter` for 'env'
+  - [ ] Detect `cdk.Fn.ref('env')` calls
+  - [ ] Detect `AmplifyHelpers.getProjectInfo()` calls
+  - [ ] Detect `AmplifyHelpers.addResourceDependency()` calls
+  - [ ] Detect `cdk.CfnOutput` declarations
+
+**Deliverables**:
+- `custom-resource-scanner.ts`
+- `cdk-stack-parser.ts`
+- `pattern-detector.ts`
+- Unit tests with real Gen1 examples
+
+### Phase 2: Transformer (Week 1-2)
+**Goal**: Transform Gen1 patterns to Gen2 patterns
+
+- [ ] **Task 2.1**: Code Transformer
+  - [ ] Convert `cdk.Stack` → `Construct`
+  - [ ] Simplify constructor signature
+  - [ ] Remove `super(scope, id, props)` props parameter
+  - [ ] Preserve constructor body
+
+- [ ] **Task 2.2**: Environment Replacer
+  - [ ] Remove `new cdk.CfnParameter(this, 'env', {...})`
+  - [ ] Replace `cdk.Fn.ref('env')` → `process.env.AMPLIFY_ENV`
+  - [ ] Replace `AmplifyHelpers.getProjectInfo().projectName` → `process.env.AMPLIFY_PROJECT_NAME`
+  - [ ] Replace `AmplifyHelpers.getProjectInfo().envName` → `process.env.AMPLIFY_ENV`
+
+- [ ] **Task 2.3**: Output Extractor
+  - [ ] Find all `cdk.CfnOutput` declarations
+  - [ ] Extract output name, value, and description
+  - [ ] Store for backend.addOutput() generation
+
+- [ ] **Task 2.4**: Dependency Handler
+  - [ ] Detect `AmplifyHelpers.addResourceDependency()` usage
+  - [ ] Generate TODO comments with manual instructions
+  - [ ] Provide example code snippets
+
+**Deliverables**:
+- `code-transformer.ts`
+- `environment-replacer.ts`
+- `output-extractor.ts`
+- Unit tests for transformation logic
+
+### Phase 3: Generator (Week 2)
+**Goal**: Generate Gen2 file structure
+
+- [ ] **Task 3.1**: Gen2 File Generator
+  - [ ] Generate `amplify/custom/<resource-name>/resource.ts`
+  - [ ] Create Construct class with proper imports
+  - [ ] Export public properties for outputs
+  - [ ] Preserve proper formatting and indentation
+
+- [ ] **Task 3.2**: Backend Updater
+  - [ ] Update `amplify/backend.ts`
+  - [ ] Add import statements for custom resources
+  - [ ] Add `backend.createStack()` calls
+  - [ ] Instantiate custom resource constructs
+
+- [ ] **Task 3.3**: Output Generator
+  - [ ] Generate `backend.addOutput()` calls
+  - [ ] Map CfnOutputs to Gen2 output format
+  - [ ] Preserve output structure and naming
+
+**Deliverables**:
+- `gen2-file-generator.ts`
+- `backend-updater.ts`
+- `output-generator.ts`
+- Integration tests
+
+### Phase 4: Testing & Edge Cases (Week 2-3)
+**Goal**: Validate migrations work correctly
+
+- [ ] **Task 4.1**: Test Fixtures
+  - [ ] Simple custom resources (SNS, SQS)
+  - [ ] Complex custom resources (Lambda + DynamoDB + S3)
+  - [ ] Multiple custom resources
+  - [ ] CfnOutputs
+  - [ ] Environment variable references
+  - [ ] AmplifyHelpers usage
+
+- [ ] **Task 4.2**: Integration Testing
+  - [ ] End-to-end migration tests
+  - [ ] Validate generated code compiles
+  - [ ] Test with real Gen1 projects
+  - [ ] Edge case handling
+
+- [ ] **Task 4.3**: Validation
+  - [ ] TypeScript compilation checks
+  - [ ] Import statement validation
+  - [ ] Output format validation
+  - [ ] Error message quality
+
+**Deliverables**:
+- Integration test suite
+- Real-world migration validation
+- Error handling and recovery
 
 ## Success Metrics
 
 ### Completion Criteria
-- [ ] **Any Custom Resource Deploys Successfully**: All migrated resources must deploy without errors
-- [ ] **95% Custom Resource Coverage**: Top 8 resource types migrate successfully
-- [ ] **Zero Manual Fixes**: No broken `throw new Error()` statements
-- [ ] **Environment Preservation**: All Gen1 environment variables work in Gen2
-- [ ] **Dependency Preservation**: Cross-resource references maintained
-- [ ] **Performance**: <30 seconds for custom resource migration
+- [ ] Migrate all custom resources from `amplify/backend/custom/`
+- [ ] Generate valid Gen2 TypeScript code
+- [ ] Convert `cdk.Stack` → `Construct`
+- [ ] Remove `cdk.CfnParameter` for 'env'
+- [ ] Replace `cdk.Fn.ref('env')` → `process.env.AMPLIFY_ENV`
+- [ ] Replace `AmplifyHelpers.getProjectInfo()` → environment variables
+- [ ] Transform `cdk.CfnOutput` → `backend.addOutput()`
+- [ ] Update `backend.ts` with custom resource calls
+- [ ] Generated code compiles without errors
+- [ ] Preserve all CDK constructs and configurations
+- [ ] Handle multiple custom resources
+- [ ] Provide guidance for `AmplifyHelpers.addResourceDependency()` (manual step)
 
 ### Test Coverage Targets
-- [ ] **Unit Tests**: 90%+ code coverage for all migration logic
-- [ ] **Integration Tests**: End-to-end custom resource migration scenarios
-- [ ] **Real-world Tests**: Production custom resource migration validation
-- [ ] **Error Rate**: <5% of migrations require manual intervention
-- [ ] **Deployment Success**: 95%+ of migrated resources deploy successfully
+- [ ] Unit tests for parser, transformer, generator
+- [ ] Integration tests with real Gen1 stacks
+- [ ] Multiple custom resources in one project
+- [ ] Environment variable references
+- [ ] CfnOutput declarations
+- [ ] AmplifyHelpers usage patterns
 
 ## Technical Implementation
 
 ### File Structure
 ```
-migration-tool/
-├── src/
-│   ├── parsers/
-│   │   ├── cdk-parser.ts               # TypeScript AST parsing
-│   │   ├── cloudformation-parser.ts    # CloudFormation YAML/JSON parsing
-│   │   └── custom-resource-parser.ts
-│   ├── mappers/
-│   │   ├── gen2-target-mapper.ts       # Critical mapping logic
-│   │   ├── environment-mapper.ts
-│   │   ├── dependency-mapper.ts
-│   │   └── cloudformation-mapper.ts    # CloudFormation → CDK mapping
-│   ├── migrators/
-│   │   ├── resource-specific/
-│   │   │   ├── lambda-migrator.ts
-│   │   │   ├── dynamodb-migrator.ts
-│   │   │   ├── s3-migrator.ts
-│   │   │   └── [other-resources].ts
-│   │   └── universal-migrator.ts
-│   └── generators/
-│       ├── custom-resource-generator.ts
-│       └── backend-generator.ts
+packages/amplify-cli/src/commands/gen2-migration/custom-resources/
+├── scanner/
+│   └── custom-resource-scanner.ts       # Find all Gen1 custom resources
+├── parser/
+│   ├── cdk-stack-parser.ts              # Parse Gen1 CDK stacks
+│   └── pattern-detector.ts              # Detect transformation patterns
+├── transformer/
+│   ├── code-transformer.ts              # Main transformation logic
+│   ├── environment-replacer.ts          # Replace env references
+│   └── output-extractor.ts              # Extract CfnOutputs
+├── generator/
+│   ├── gen2-file-generator.ts           # Generate Gen2 files
+│   ├── backend-updater.ts               # Update backend.ts
+│   └── output-generator.ts              # Generate backend.addOutput()
+└── index.ts                             # Main orchestrator
 ```
 
 ## Next Actions
-1. **Start with Phase 1 (Gen2 Target Mapping)** - Critical foundation for all custom resource migration
-2. **Focus on Lambda first** - Most common custom resource and your exact use case
-3. **Create comprehensive test fixtures** - Real Gen1 custom resources for validation
-4. **Implement incremental validation** - Ensure each phase works before moving to next
+1. **Start with Phase 1 (Parser)** - Extract information from Gen1 CDK stacks
+2. **Create test fixtures** - Real Gen1 custom resources for validation
+3. **Implement Phase 2 (Transformer)** - Apply transformation rules
+4. **Implement Phase 3 (Generator)** - Generate Gen2 files
+5. **Test end-to-end** - Validate with real projects
+
+## Timeline: 3 Weeks
+- **Week 1**: Parser + Pattern Detection
+- **Week 2**: Transformer + Generator
+- **Week 3**: Testing + Edge Cases + Documentation
 
 ## Notes
-- **Laser focus on custom resources only** - GraphQL and Auth already work
-- **Gen2 target mapping is critical** - Without it, migration is impossible
-- **Lambda gets special treatment** - Only resource with `defineFunction()` option
-- **All other resources use `defineCustom()`** - Amplify Gen2 architectural limitation
-- **Realistic success rate: 90-95%** - 5-10% edge cases will get manual guidance
+- **Focus on CDK stacks only** - CloudFormation templates excluded from initial scope
+- **Universal approach** - No resource-specific migration logic needed
+- **Simple transformation** - Stack → Construct, preserve all CDK code
+- **Manual steps for edge cases** - AmplifyHelpers.addResourceDependency() needs investigation

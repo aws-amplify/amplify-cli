@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="jest tests" tests="14" failures="0" errors="0" time="4.511">
+  <testsuite name="ASTCodeTransformer" errors="0" failures="0" skipped="0" timestamp="2025-10-24T16:09:55" time="4.454" tests="14">
+    <testcase classname="ASTCodeTransformer CDK Function Reference Variations should handle cdk.Fn.ref with single quotes" name="ASTCodeTransformer CDK Function Reference Variations should handle cdk.Fn.ref with single quotes" time="0.007">
+    </testcase>
+    <testcase classname="ASTCodeTransformer CDK Function Reference Variations should handle cdk.Fn.ref with double quotes" name="ASTCodeTransformer CDK Function Reference Variations should handle cdk.Fn.ref with double quotes" time="0.001">
+    </testcase>
+    <testcase classname="ASTCodeTransformer CDK Function Reference Variations should handle Fn.ref without cdk prefix" name="ASTCodeTransformer CDK Function Reference Variations should handle Fn.ref without cdk prefix" time="0">
+    </testcase>
+    <testcase classname="ASTCodeTransformer CDK Function Reference Variations should ignore cdk.Fn.ref in comments" name="ASTCodeTransformer CDK Function Reference Variations should ignore cdk.Fn.ref in comments" time="0">
+    </testcase>
+    <testcase classname="ASTCodeTransformer Complex AmplifyHelpers Scenarios should handle conditional AmplifyHelpers calls" name="ASTCodeTransformer Complex AmplifyHelpers Scenarios should handle conditional AmplifyHelpers calls" time="0.002">
+    </testcase>
+    <testcase classname="ASTCodeTransformer Complex AmplifyHelpers Scenarios should handle nested AmplifyHelpers.getProjectInfo calls" name="ASTCodeTransformer Complex AmplifyHelpers Scenarios should handle nested AmplifyHelpers.getProjectInfo calls" time="0.002">
+    </testcase>
+    <testcase classname="ASTCodeTransformer Complex AmplifyHelpers Scenarios should handle dynamic method calls on AmplifyHelpers" name="ASTCodeTransformer Complex AmplifyHelpers Scenarios should handle dynamic method calls on AmplifyHelpers" time="0">
+    </testcase>
+    <testcase classname="ASTCodeTransformer Complex CDK Constructs should handle multiple CfnParameter declarations" name="ASTCodeTransformer Complex CDK Constructs should handle multiple CfnParameter declarations" time="0.001">
+    </testcase>
+    <testcase classname="ASTCodeTransformer Complex CDK Constructs should handle complex expressions with CDK functions" name="ASTCodeTransformer Complex CDK Constructs should handle complex expressions with CDK functions" time="0.001">
+    </testcase>
+    <testcase classname="ASTCodeTransformer Real-World Edge Cases should handle cross-stack references" name="ASTCodeTransformer Real-World Edge Cases should handle cross-stack references" time="0.001">
+    </testcase>
+    <testcase classname="ASTCodeTransformer Real-World Edge Cases should handle conditional resource creation" name="ASTCodeTransformer Real-World Edge Cases should handle conditional resource creation" time="0.001">
+    </testcase>
+    <testcase classname="ASTCodeTransformer Real-World Edge Cases should preserve complex TypeScript syntax" name="ASTCodeTransformer Real-World Edge Cases should preserve complex TypeScript syntax" time="0.002">
+    </testcase>
+    <testcase classname="ASTCodeTransformer Error Resilience should handle malformed code gracefully" name="ASTCodeTransformer Error Resilience should handle malformed code gracefully" time="0.001">
+    </testcase>
+    <testcase classname="ASTCodeTransformer Error Resilience should handle empty constructor body" name="ASTCodeTransformer Error Resilience should handle empty constructor body" time="0">
+    </testcase>
+  </testsuite>
+</testsuites>
