@@ -12,7 +12,6 @@
     "@aws-sdk/client-amplify": "^3.624.0",
     "@aws-sdk/client-s3": "^3.624.0",
     "archiver": "^7.0.1",
-    "aws-sdk": "^2.1692.0",
     "chalk": "^4.1.1",
     "cli-table3": "^0.6.0",
     "execa": "^5.1.1",
