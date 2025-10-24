@@ -320,15 +320,31 @@ const getAWSConfig = ({ accessKeyId, secretAccessKey, sessionToken }: AWSAccount
     sessionToken,
   },
   ...(region ? { region } : {}),
-  maxRetries: 10,
+  maxRetries: 5, // Reduced from 10 to prevent excessive retries
+  retryDelayOptions: {
+    customBackoff: (retryCount: number) => Math.pow(2, retryCount) * 1000, // Exponential backoff
+  },
+  requestHandler: {
+    connectionTimeout: 30000,
+    socketTimeout: 30000,
+    maxSockets: 25, // Reduced from default 50 to prevent socket exhaustion
+  },
 });
 
 // Client cache to reuse clients and reduce memory usage
 const clientCache = new Map<string, any>();
+const MAX_CACHE_SIZE = 50; // Limit cache size to prevent memory issues
 
 const getClient = <T>(ClientClass: new (config: any) => T, account: AWSAccountInfo, region?: string): T => {
   const key = `${account.accessKeyId}-${region || 'global'}-${ClientClass.name}`;
   if (!clientCache.has(key)) {
+    // Clear cache if it gets too large
+    if (clientCache.size >= MAX_CACHE_SIZE) {
+      clientCache.clear();
+      if (global.gc) {
+        global.gc();
+      }
+    }
     clientCache.set(key, new ClientClass(getAWSConfig(account, region)));
   }
   return clientCache.get(key);
@@ -340,12 +356,16 @@ const getClient = <T>(ClientClass: new (config: any) => T, account: AWSAccountIn
 const deleteS3Bucket = async (bucket: string, providedS3Client: S3Client | undefined = undefined) => {
   const s3 = providedS3Client || new S3Client({});
   let continuationToken: string | undefined = undefined;
-  const objectKeyAndVersion: { Key: string; VersionId?: string }[] = [];
   let truncated = true;
+
   while (truncated) {
+    const objectKeyAndVersion: { Key: string; VersionId?: string }[] = [];
+
+    // Process in smaller batches to reduce memory usage
     const results = await s3.send(
       new ListObjectVersionsCommand({
         Bucket: bucket,
+        MaxKeys: 500, // Reduced from default to limit memory usage
         ...(continuationToken ? { KeyMarker: continuationToken } : {}),
       }),
     );
@@ -362,20 +382,42 @@ const deleteS3Bucket = async (bucket: string, providedS3Client: S3Client | undef
       }
     });
 
+    // Delete objects in smaller chunks with rate limiting
+    if (objectKeyAndVersion.length > 0) {
+      const chunkedResult = _.chunk(objectKeyAndVersion, 500); // Reduced chunk size
+      for (const chunk of chunkedResult) {
+        try {
+          await s3.send(
+            new DeleteObjectsCommand({
+              Bucket: bucket,
+              Delete: {
+                Objects: chunk,
+                Quiet: true,
+              },
+            }),
+          );
+          // Add small delay to prevent rate limiting
+          await sleep(100);
+        } catch (error: any) {
+          if (error.message?.includes('Please reduce your request rate')) {
+            console.log(`Rate limited while deleting objects from ${bucket}, waiting...`);
+            await sleep(5000);
+          } else {
+            throw error;
+          }
+        }
+      }
+    }
+
     continuationToken = results.NextKeyMarker;
     truncated = !!results.IsTruncated;
+
+    // Force garbage collection periodically
+    if (global.gc && Math.random() < 0.1) {
+      global.gc();
+    }
   }
-  const chunkedResult = _.chunk(objectKeyAndVersion, 1000);
-  const deleteReq = chunkedResult
-    .map((r) => ({
-      Bucket: bucket,
-      Delete: {
-        Objects: r,
-        Quiet: true,
-      },
-    }))
-    .map((delParams) => s3.send(new DeleteObjectsCommand(delParams)));
-  await Promise.all(deleteReq);
+
   await s3.send(
     new DeleteBucketCommand({
       Bucket: bucket,
@@ -848,7 +890,13 @@ const deleteIamRolePolicy = async (account: AWSAccountInfo, accountIndex: number
 };
 
 const deleteBuckets = async (account: AWSAccountInfo, accountIndex: number, buckets: S3BucketInfo[]): Promise<void> => {
-  await Promise.all(buckets.slice(0, DELETE_LIMITS.PER_BATCH.OTHER).map((bucket) => deleteBucket(account, accountIndex, bucket)));
+  // Process buckets sequentially to avoid memory issues
+  const bucketsToDelete = buckets.slice(0, DELETE_LIMITS.PER_BATCH.OTHER);
+  for (const bucket of bucketsToDelete) {
+    await deleteBucket(account, accountIndex, bucket);
+    // Small delay between bucket deletions to prevent rate limiting
+    await sleep(1000);
+  }
 };
 
 const deleteBucket = async (account: AWSAccountInfo, accountIndex: number, bucket: S3BucketInfo): Promise<void> => {
@@ -862,10 +910,17 @@ const deleteBucket = async (account: AWSAccountInfo, accountIndex: number, bucke
       const bucketRegion = locationResponse.LocationConstraint || 'us-east-1';
       const regionalS3Client = new S3Client(getAWSConfig(account, bucketRegion));
       await deleteS3Bucket(name, regionalS3Client);
-    } catch (e) {
-      console.log(`[ACCOUNT ${accountIndex}] Deleting bucket ${name} failed with error ${e.message}`);
-      if (e.name === 'ExpiredTokenException') {
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : String(e);
+      const errorName = e instanceof Error ? e.name : 'UnknownError';
+
+      console.log(`[ACCOUNT ${accountIndex}] Deleting bucket ${name} failed with error ${errorMessage}`);
+      if (errorName === 'ExpiredTokenException') {
         handleExpiredTokenException();
+      }
+      if (errorMessage.includes('Please reduce your request rate')) {
+        console.log(`Rate limited while deleting bucket ${name}, will retry later`);
+        return;
       }
     }
   }
