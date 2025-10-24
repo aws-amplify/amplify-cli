@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-category-auth",
-  "version": "3.7.24",
+  "version": "3.7.25",
   "description": "amplify-cli authentication plugin",
   "repository": {
     "type": "git",
@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "@aws-amplify/amplify-cli-core": "4.4.3",
-    "@aws-amplify/amplify-environment-parameters": "1.9.21",
+    "@aws-amplify/amplify-environment-parameters": "1.9.22",
     "@aws-amplify/amplify-function-plugin-interface": "1.12.1",
     "@aws-amplify/amplify-prompts": "2.8.7",
     "@aws-amplify/amplify-util-import": "2.8.5",
