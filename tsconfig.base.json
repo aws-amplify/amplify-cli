@@ -62,5 +62,8 @@
     "pretty": true,
     "stripInternal": true
   },
-  "exclude": ["**/__mocks__/**/*", "**/__tests__/**/*", "**/lib/**/*"]
+  "exclude": ["**/__mocks__/**/*", "**/__tests__/**/*", "**/lib/**/*"],
+  "references": [
+    { "path": "./packages/amplify-gen2-codegen" }
+  ]
 }
