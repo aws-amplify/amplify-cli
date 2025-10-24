@@ -62,23 +62,19 @@ describe('cloudfront-manager', () => {
 
   const mockcftInvalidationData = {};
 
-  const mockInvalidateMethod = jest.fn(() => {
-    return {
-      promise: () => Promise.resolve(mockcftInvalidationData),
-    };
-  });
+  const mockSendMethod = jest.fn(() => Promise.resolve(mockcftInvalidationData));
 
-  class mockCloudFront {
+  class mockCloudFrontClient {
     constructor() {
-      this.createInvalidation = mockInvalidateMethod;
+      this.send = mockSendMethod;
     }
   }
 
   test('invalidateCloudFront', async () => {
-    const mockCloudFrontClient = async (context, action) => Promise.resolve(new mockCloudFront());
-    const result = await cloudFrontManager.invalidateCloudFront(mockContext, mockCloudFrontClient);
+    const mockCloudFrontClientFactory = async (context, action) => Promise.resolve(new mockCloudFrontClient());
+    const result = await cloudFrontManager.invalidateCloudFront(mockContext, mockCloudFrontClientFactory);
     expect(result).toBe(mockContext);
-    expect(mockInvalidateMethod).toBeCalled();
+    expect(mockSendMethod).toBeCalled();
     expect(mockContext.exeInfo.cftInvalidationData).toEqual(mockcftInvalidationData);
   });
 });
