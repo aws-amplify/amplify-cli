@@ -7,7 +7,6 @@ var __importDefault =
 Object.defineProperty(exports, '__esModule', { value: true });
 exports.createFunctionDefinition = exports.renderFunctions = void 0;
 const typescript_1 = __importDefault(require('typescript'));
-// eslint-disable-next-line import/no-extraneous-dependencies
 const client_lambda_1 = require('@aws-sdk/client-lambda');
 const resource_1 = require('../../resource/resource');
 const node_assert_1 = __importDefault(require('node:assert'));
@@ -49,7 +48,9 @@ function renderFunctions(definition, appId, backendEnvironmentName) {
   );
   postImportStatements.push(amplifyGen1EnvStatement);
   return (0, resource_1.renderResourceTsFile)({
-    exportedVariableName: factory.createIdentifier(definition?.resourceName || 'sayHello'),
+    exportedVariableName: factory.createIdentifier(
+      (definition === null || definition === void 0 ? void 0 : definition.resourceName) || 'sayHello',
+    ),
     functionCallParameter: factory.createObjectLiteralExpression(defineFunctionProperty, true),
     backendFunctionConstruct: 'defineFunction',
     additionalImportedBackendIdentifiers: namedImports,
@@ -58,35 +59,39 @@ function renderFunctions(definition, appId, backendEnvironmentName) {
 }
 exports.renderFunctions = renderFunctions;
 function createFunctionDefinition(definition, postImportStatements, namedImports, appId, backendEnvironmentName) {
+  var _a;
   const defineFunctionProperties = [];
-  if (definition?.entry) {
+  if (definition === null || definition === void 0 ? void 0 : definition.entry) {
     defineFunctionProperties.push(createParameter('entry', factory.createStringLiteral('./handler.ts')));
   }
-  if (definition?.name) {
+  if (definition === null || definition === void 0 ? void 0 : definition.name) {
     const splitFuncName = definition.name.split('-');
     const funcNameWithoutBackendEnvName = splitFuncName.slice(0, -1).join('-');
     const funcNameAssignment = createTemplateLiteral(`${funcNameWithoutBackendEnvName}-`, amplifyGen1EnvName, '');
     defineFunctionProperties.push(createParameter('name', funcNameAssignment));
   }
-  if (definition?.timeoutSeconds) {
+  if (definition === null || definition === void 0 ? void 0 : definition.timeoutSeconds) {
     defineFunctionProperties.push(createParameter('timeoutSeconds', factory.createNumericLiteral(definition.timeoutSeconds)));
   }
-  if (definition?.memoryMB) {
+  if (definition === null || definition === void 0 ? void 0 : definition.memoryMB) {
     defineFunctionProperties.push(createParameter('memoryMB', factory.createNumericLiteral(definition.memoryMB)));
   }
-  if (definition?.environment?.Variables) {
+  if (
+    (_a = definition === null || definition === void 0 ? void 0 : definition.environment) === null || _a === void 0 ? void 0 : _a.Variables
+  ) {
     defineFunctionProperties.push(
       createParameter(
         'environment',
         factory.createObjectLiteralExpression(
           Object.entries(definition.environment.Variables).map(([key, value]) => {
             if (key == 'API_KEY' && value.startsWith(`/amplify/${appId}/${backendEnvironmentName}`)) {
-              postImportStatements?.push(
-                factory.createCallExpression(factory.createIdentifier('throw new Error'), undefined, [
-                  // eslint-disable-next-line spellcheck/spell-checker
-                  factory.createStringLiteral('Secrets need to be reset, use `npx ampx sandbox secret set API_KEY` to set the value'),
-                ]),
-              );
+              postImportStatements === null || postImportStatements === void 0
+                ? void 0
+                : postImportStatements.push(
+                    factory.createCallExpression(factory.createIdentifier('throw new Error'), undefined, [
+                      factory.createStringLiteral('Secrets need to be reset, use `npx ampx sandbox secret set API_KEY` to set the value'),
+                    ]),
+                  );
               if (namedImports && namedImports['@aws-amplify/backend']) {
                 namedImports['@aws-amplify/backend'].add('secret');
               } else {
@@ -107,7 +112,7 @@ function createFunctionDefinition(definition, postImportStatements, namedImports
       ),
     );
   }
-  const runtime = definition?.runtime;
+  const runtime = definition === null || definition === void 0 ? void 0 : definition.runtime;
   if (runtime && runtime.includes('nodejs')) {
     let nodeRuntime;
     switch (runtime) {
@@ -120,20 +125,22 @@ function createFunctionDefinition(definition, postImportStatements, namedImports
       case client_lambda_1.Runtime.nodejs20x:
         nodeRuntime = 20;
         break;
+      case 'nodejs22x':
+        nodeRuntime = 22;
+        break;
       default:
         throw new Error(`Unsupported nodejs runtime for function: ${runtime}`);
     }
     (0, node_assert_1.default)(nodeRuntime, 'Expected nodejs version to be set');
     defineFunctionProperties.push(createParameter('runtime', factory.createNumericLiteral(nodeRuntime)));
   }
-  if (definition?.schedule) {
+  if (definition === null || definition === void 0 ? void 0 : definition.schedule) {
     const rawScheduleExpression = definition.schedule;
     let scheduleExpression;
     const startIndex = rawScheduleExpression.indexOf('(') + 1;
     const endIndex = rawScheduleExpression.lastIndexOf(')');
     const scheduleValue = startIndex > 0 && endIndex > startIndex ? rawScheduleExpression.slice(startIndex, endIndex) : undefined;
-    if (rawScheduleExpression?.startsWith('rate(')) {
-      // Convert rate expression to a more readable format
+    if (rawScheduleExpression === null || rawScheduleExpression === void 0 ? void 0 : rawScheduleExpression.startsWith('rate(')) {
       const rateValue = scheduleValue;
       if (rateValue) {
         const [value, unit] = rateValue.split(' ');
@@ -147,8 +154,7 @@ function createFunctionDefinition(definition, postImportStatements, namedImports
         };
         scheduleExpression = `every ${value}${unitMap[unit]}`;
       }
-    } else if (rawScheduleExpression?.startsWith('cron(')) {
-      // Extract the cron expression as-is
+    } else if (rawScheduleExpression === null || rawScheduleExpression === void 0 ? void 0 : rawScheduleExpression.startsWith('cron(')) {
       scheduleExpression = scheduleValue;
     }
     if (scheduleExpression) {

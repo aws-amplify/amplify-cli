@@ -1,7 +1,6 @@
 'use strict';
 Object.defineProperty(exports, '__esModule', { value: true });
 exports.generateExportStatement = exports.generateImportStatement = void 0;
-// TypeScript code generation utilities
 const generateImportStatement = (moduleName, importPath) => {
   return `import { ${moduleName} } from '${importPath}';`;
 };

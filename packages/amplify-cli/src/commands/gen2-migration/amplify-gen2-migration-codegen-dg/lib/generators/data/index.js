@@ -28,7 +28,7 @@ const generateDataSource = (dataDefinition) => {
     );
     schemaStatements.push(schemaStatementAssignment);
   }
-  if (dataDefinition?.tableMappings) {
+  if (dataDefinition === null || dataDefinition === void 0 ? void 0 : dataDefinition.tableMappings) {
     const tableMappingEnvironments = [];
     for (const [environmentName, tableMapping] of Object.entries(dataDefinition.tableMappings)) {
       const tableMappingProperties = [];

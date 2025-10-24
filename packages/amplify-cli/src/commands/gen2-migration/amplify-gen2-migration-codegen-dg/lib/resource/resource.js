@@ -9,7 +9,6 @@ exports.renderResourceTsFilesForFunction = exports.renderResourceTsFile = void 0
 const typescript_1 = __importDefault(require('typescript'));
 const ts_factory_utils_1 = require('../ts_factory_utils');
 const factory = typescript_1.default.factory;
-// Creates ts file with imports / exports
 function renderResourceTsFile({
   additionalImportedBackendIdentifiers = {},
   backendFunctionConstruct,

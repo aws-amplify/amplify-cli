@@ -1,12 +1,13 @@
 'use strict';
 Object.defineProperty(exports, '__esModule', { value: true });
 exports.patchNpmPackageJson = void 0;
-const withDefault = (version) => version ?? '*';
+const withDefault = (version) => (version !== null && version !== void 0 ? version : '*');
 const patchNpmPackageJson = (packageJson, packageVersions = {}) => {
+  var _a, _b;
   return {
     ...packageJson,
     devDependencies: {
-      ...(packageJson.devDependencies ?? {}),
+      ...((_a = packageJson.devDependencies) !== null && _a !== void 0 ? _a : {}),
       '@aws-amplify/backend': withDefault(packageVersions['@aws-amplify/backend']),
       '@aws-amplify/backend-cli': withDefault(packageVersions['@aws-amplify/backend-cli']),
       '@aws-amplify/backend-data': withDefault(packageVersions['@aws-amplify/backend-data']),
@@ -20,7 +21,7 @@ const patchNpmPackageJson = (packageJson, packageVersions = {}) => {
       '@types/node': withDefault(packageVersions['@types/node']),
     },
     dependencies: {
-      ...(packageJson.dependencies ?? {}),
+      ...((_b = packageJson.dependencies) !== null && _b !== void 0 ? _b : {}),
       'aws-amplify': withDefault(packageVersions['aws-amplify']),
     },
   };

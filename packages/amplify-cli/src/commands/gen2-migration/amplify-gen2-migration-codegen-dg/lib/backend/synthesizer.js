@@ -245,7 +245,6 @@ class BackendSynthesizer {
             factory.createToken(typescript_1.default.SyntaxKind.EqualsGreaterThanToken),
             factory.createBlock(
               [
-                // const providerSetupPropertyValue = providerSetupResult[provider]
                 factory.createVariableStatement(
                   undefined,
                   factory.createVariableDeclarationList(
@@ -263,7 +262,6 @@ class BackendSynthesizer {
                     typescript_1.default.NodeFlags.Const,
                   ),
                 ),
-                // if condition
                 factory.createIfStatement(
                   factory.createLogicalAnd(
                     factory.createPropertyAccessExpression(
@@ -308,9 +306,7 @@ class BackendSynthesizer {
     );
   }
   createProviderSetupCode() {
-    // Create const providerSetupResult = (backend.auth.stack.node.children.find(child => child.node.id === "amplifyAuth") as any).providerSetupResult;
     const providerSetupDeclaration = this.getProviderSetupDeclaration();
-    // Create Object.keys(providerSetupResult).forEach(...)
     const forEachStatement = this.getProviderSetupForeachStatement();
     return [providerSetupDeclaration, forEachStatement];
   }
@@ -322,7 +318,6 @@ class BackendSynthesizer {
       if (mappedProperty) {
         if (typeof value == 'boolean') {
           if (key === 'AllowedOAuthFlowsUserPoolClient') {
-            // CDK equivalent is disableOAuth which is opposite of this prop
             objectLiterals.push(this.createBooleanPropertyAssignment(mappedProperty, !value));
           } else {
             objectLiterals.push(this.createBooleanPropertyAssignment(mappedProperty, value));
@@ -338,7 +333,6 @@ class BackendSynthesizer {
           }
         } else if (typeof value == 'number') {
           if (['IdTokenValidity', 'RefreshTokenValidity', 'AccessTokenValidity', 'AuthSessionValidity'].includes(key)) {
-            // convert it to Duration
             this.importDurationFlag = true;
             if (key == 'IdTokenValidity') {
               let durationUnit = 'hours';
@@ -369,7 +363,6 @@ class BackendSynthesizer {
             objectLiterals.push(this.createReadWriteAttributes(mappedProperty, value));
           } else if (key == 'SupportedIdentityProviders') {
             this.supportedIdentityProviderFlag = true;
-            // Providers are upper case in CDK
             objectLiterals.push(
               this.createEnumListPropertyAssignment(
                 mappedProperty,
@@ -409,9 +402,6 @@ class BackendSynthesizer {
         }
       }
     }
-    // We need to set generateSecret to false explicitly when not defined.
-    // If it's set as undefined and current value in CFN template is false (moved from gen1 after refactor), CFN thinks the property has changed
-    // and requests for creation of a new resource (user pool client) instead of an update.
     if (object[clientSecretKey] === undefined && gen2PropertyMap.has(clientSecretKey)) {
       const mappedClientSecretKey = gen2PropertyMap.get(clientSecretKey);
       (0, assert_1.default)(mappedClientSecretKey);
@@ -541,7 +531,6 @@ class BackendSynthesizer {
       ),
     ]);
   }
-  // id1.id2 = `templateHead-${templateSpan}templateTail`;
   createTemplateLiteralExpression(id1, id2, templateHead, templateSpan, templateTail) {
     return factory.createExpressionStatement(
       factory.createAssignment(
@@ -553,7 +542,6 @@ class BackendSynthesizer {
     );
   }
   createAmplifyEnvNameLogic() {
-    // Create: let AMPLIFY_GEN_1_ENV_NAME = process.env.AMPLIFY_GEN_1_ENV_NAME;
     const variableDeclaration = factory.createVariableStatement(
       undefined,
       factory.createVariableDeclarationList(
@@ -571,14 +559,11 @@ class BackendSynthesizer {
         typescript_1.default.NodeFlags.Let,
       ),
     );
-    // Create: if (ci.isCI && !AMPLIFY_GEN_1_ENV_NAME) { ... } else if (!ci.isCI) { ... }
     const ifStatement = factory.createIfStatement(
-      // Condition: ci.isCI && !AMPLIFY_GEN_1_ENV_NAME
       factory.createLogicalAnd(
         factory.createPropertyAccessExpression(factory.createIdentifier('ci'), factory.createIdentifier('isCI')),
         factory.createLogicalNot(factory.createIdentifier('AMPLIFY_GEN_1_ENV_NAME')),
       ),
-      // Then block: throw new Error('...')
       factory.createBlock(
         [
           factory.createThrowStatement(
@@ -589,7 +574,6 @@ class BackendSynthesizer {
         ],
         true,
       ),
-      // Else block: if (!ci.isCI && !AMPLIFY_GEN_1_ENV_NAME) { ... }
       factory.createIfStatement(
         factory.createLogicalAnd(
           factory.createLogicalNot(
@@ -597,7 +581,6 @@ class BackendSynthesizer {
           ),
           factory.createLogicalNot(factory.createIdentifier('AMPLIFY_GEN_1_ENV_NAME')),
         ),
-        // Then block: AMPLIFY_GEN_1_ENV_NAME = 'sandbox';
         factory.createBlock(
           [
             factory.createExpressionStatement(
@@ -615,6 +598,7 @@ class BackendSynthesizer {
     return [variableDeclaration, ifStatement];
   }
   render(renderArgs) {
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0, _1, _2, _3, _4, _5, _6;
     const authFunctionIdentifier = factory.createIdentifier('auth');
     const storageFunctionIdentifier = factory.createIdentifier('storage');
     const dataFunctionIdentifier = factory.createIdentifier('data');
@@ -632,7 +616,7 @@ class BackendSynthesizer {
       PasswordHistorySize: 'passwordHistorySize',
       TemporaryPasswordValidityDays: 'temporaryPasswordValidityDays',
     };
-    if (renderArgs.auth || renderArgs.storage?.hasS3Bucket || renderArgs.customResources) {
+    if (renderArgs.auth || ((_a = renderArgs.storage) === null || _a === void 0 ? void 0 : _a.hasS3Bucket) || renderArgs.customResources) {
       imports.push(
         this.createImportStatement([factory.createIdentifier('RemovalPolicy'), factory.createIdentifier('Tags')], 'aws-cdk-lib'),
       );
@@ -647,7 +631,7 @@ class BackendSynthesizer {
       const data = factory.createShorthandPropertyAssignment(dataFunctionIdentifier);
       defineBackendProperties.push(data);
     }
-    if (renderArgs.storage?.hasS3Bucket) {
+    if ((_b = renderArgs.storage) === null || _b === void 0 ? void 0 : _b.hasS3Bucket) {
       imports.push(this.createImportStatement([storageFunctionIdentifier], renderArgs.storage.importFrom));
       const storage = factory.createShorthandPropertyAssignment(storageFunctionIdentifier);
       defineBackendProperties.push(storage);
@@ -660,7 +644,7 @@ class BackendSynthesizer {
         imports.push(this.createImportStatement([factory.createIdentifier(functionName)], `./${category}/${functionName}/resource`));
       }
     }
-    if (renderArgs.storage?.dynamoDB) {
+    if ((_c = renderArgs.storage) === null || _c === void 0 ? void 0 : _c.dynamoDB) {
       nodes.push(
         factory.createThrowStatement(
           factory.createNewExpression(factory.createIdentifier('Error'), undefined, [
@@ -726,7 +710,12 @@ class BackendSynthesizer {
       [],
       factory.createVariableDeclarationList([backendVariable], typescript_1.default.NodeFlags.Const),
     );
-    if (renderArgs.auth?.userPoolOverrides && !renderArgs?.auth?.referenceAuth) {
+    if (
+      ((_d = renderArgs.auth) === null || _d === void 0 ? void 0 : _d.userPoolOverrides) &&
+      !((_e = renderArgs === null || renderArgs === void 0 ? void 0 : renderArgs.auth) === null || _e === void 0
+        ? void 0
+        : _e.referenceAuth)
+    ) {
       const cfnUserPoolVariableStatement = this.createVariableStatement(
         this.createVariableDeclaration('cfnUserPool', 'auth.resources.cfnResources.cfnUserPool'),
       );
@@ -759,12 +748,18 @@ class BackendSynthesizer {
       }
       nodes.push(this.setPropertyValue(factory.createIdentifier('cfnUserPool'), 'policies', policies));
     }
-    if (renderArgs.auth?.guestLogin === false || (renderArgs.auth?.identityPoolName && !renderArgs?.auth?.referenceAuth)) {
+    if (
+      ((_f = renderArgs.auth) === null || _f === void 0 ? void 0 : _f.guestLogin) === false ||
+      (((_g = renderArgs.auth) === null || _g === void 0 ? void 0 : _g.identityPoolName) &&
+        !((_h = renderArgs === null || renderArgs === void 0 ? void 0 : renderArgs.auth) === null || _h === void 0
+          ? void 0
+          : _h.referenceAuth))
+    ) {
       const cfnIdentityPoolVariableStatement = this.createVariableStatement(
         this.createVariableDeclaration('cfnIdentityPool', 'auth.resources.cfnResources.cfnIdentityPool'),
       );
       nodes.push(cfnIdentityPoolVariableStatement);
-      if (renderArgs.auth?.identityPoolName) {
+      if ((_j = renderArgs.auth) === null || _j === void 0 ? void 0 : _j.identityPoolName) {
         const splitIdentityPoolName = renderArgs.auth.identityPoolName.split('_');
         const identityPoolWithoutBackendEnvName = splitIdentityPoolName.slice(0, -1).join('_');
         const identityPoolAssignment = this.createTemplateLiteralExpression(
@@ -776,33 +771,61 @@ class BackendSynthesizer {
         );
         nodes.push(identityPoolAssignment);
       }
-      if (renderArgs.auth?.guestLogin === false) {
+      if (((_k = renderArgs.auth) === null || _k === void 0 ? void 0 : _k.guestLogin) === false) {
         nodes.push(this.setPropertyValue(factory.createIdentifier('cfnIdentityPool'), 'allowUnauthenticatedIdentities', false));
       }
     }
     if (
-      (renderArgs.auth?.oAuthFlows || renderArgs.auth?.readAttributes || renderArgs.auth?.writeAttributes) &&
-      !renderArgs?.auth?.referenceAuth
+      (((_l = renderArgs.auth) === null || _l === void 0 ? void 0 : _l.oAuthFlows) ||
+        ((_m = renderArgs.auth) === null || _m === void 0 ? void 0 : _m.readAttributes) ||
+        ((_o = renderArgs.auth) === null || _o === void 0 ? void 0 : _o.writeAttributes)) &&
+      !((_p = renderArgs === null || renderArgs === void 0 ? void 0 : renderArgs.auth) === null || _p === void 0
+        ? void 0
+        : _p.referenceAuth)
     ) {
       const cfnUserPoolClientVariableStatement = this.createVariableStatement(
         this.createVariableDeclaration('cfnUserPoolClient', 'auth.resources.cfnResources.cfnUserPoolClient'),
       );
       nodes.push(cfnUserPoolClientVariableStatement);
-      if (renderArgs.auth?.oAuthFlows) {
-        nodes.push(this.setPropertyValue(factory.createIdentifier('cfnUserPoolClient'), 'allowedOAuthFlows', renderArgs.auth?.oAuthFlows));
+      if ((_q = renderArgs.auth) === null || _q === void 0 ? void 0 : _q.oAuthFlows) {
+        nodes.push(
+          this.setPropertyValue(
+            factory.createIdentifier('cfnUserPoolClient'),
+            'allowedOAuthFlows',
+            (_r = renderArgs.auth) === null || _r === void 0 ? void 0 : _r.oAuthFlows,
+          ),
+        );
       }
-      if (renderArgs.auth?.readAttributes) {
-        nodes.push(this.setPropertyValue(factory.createIdentifier('cfnUserPoolClient'), 'readAttributes', renderArgs.auth?.readAttributes));
+      if ((_s = renderArgs.auth) === null || _s === void 0 ? void 0 : _s.readAttributes) {
+        nodes.push(
+          this.setPropertyValue(
+            factory.createIdentifier('cfnUserPoolClient'),
+            'readAttributes',
+            (_t = renderArgs.auth) === null || _t === void 0 ? void 0 : _t.readAttributes,
+          ),
+        );
       }
     }
-    if (renderArgs.auth?.writeAttributes && !renderArgs?.auth?.referenceAuth) {
-      nodes.push(this.setPropertyValue(factory.createIdentifier('cfnUserPoolClient'), 'writeAttributes', renderArgs.auth?.writeAttributes));
+    if (
+      ((_u = renderArgs.auth) === null || _u === void 0 ? void 0 : _u.writeAttributes) &&
+      !((_v = renderArgs === null || renderArgs === void 0 ? void 0 : renderArgs.auth) === null || _v === void 0
+        ? void 0
+        : _v.referenceAuth)
+    ) {
+      nodes.push(
+        this.setPropertyValue(
+          factory.createIdentifier('cfnUserPoolClient'),
+          'writeAttributes',
+          (_w = renderArgs.auth) === null || _w === void 0 ? void 0 : _w.writeAttributes,
+        ),
+      );
     }
-    // Since Gen2 only supports 1 user pool client by default, we need to add CDK overrides for the additional user pool client from Gen1
-    if (renderArgs.auth?.userPoolClient) {
+    if ((_x = renderArgs.auth) === null || _x === void 0 ? void 0 : _x.userPoolClient) {
       const userPoolVariableStatement = this.createVariableStatement(this.createVariableDeclaration('userPool', 'auth.resources.userPool'));
       nodes.push(userPoolVariableStatement);
-      nodes.push(this.createUserPoolClientAssignment(renderArgs.auth?.userPoolClient, imports));
+      nodes.push(
+        this.createUserPoolClientAssignment((_y = renderArgs.auth) === null || _y === void 0 ? void 0 : _y.userPoolClient, imports),
+      );
     }
     if (renderArgs.storage && renderArgs.storage.hasS3Bucket) {
       (0, assert_1.default)(renderArgs.storage.bucketName);
@@ -822,11 +845,11 @@ class BackendSynthesizer {
       nodes.push(bucketNameAssignment);
     }
     if (
-      renderArgs.storage?.accelerateConfiguration ||
-      renderArgs.storage?.versionConfiguration ||
-      renderArgs.storage?.bucketEncryptionAlgorithm
+      ((_z = renderArgs.storage) === null || _z === void 0 ? void 0 : _z.accelerateConfiguration) ||
+      ((_0 = renderArgs.storage) === null || _0 === void 0 ? void 0 : _0.versionConfiguration) ||
+      ((_1 = renderArgs.storage) === null || _1 === void 0 ? void 0 : _1.bucketEncryptionAlgorithm)
     ) {
-      if (renderArgs.storage?.accelerateConfiguration) {
+      if ((_2 = renderArgs.storage) === null || _2 === void 0 ? void 0 : _2.accelerateConfiguration) {
         const accelerateConfigAssignment = factory.createExpressionStatement(
           factory.createAssignment(
             factory.createPropertyAccessExpression(
@@ -841,7 +864,7 @@ class BackendSynthesizer {
         );
         nodes.push(accelerateConfigAssignment);
       }
-      if (renderArgs.storage?.versionConfiguration) {
+      if ((_3 = renderArgs.storage) === null || _3 === void 0 ? void 0 : _3.versionConfiguration) {
         const versionConfigAssignment = factory.createExpressionStatement(
           factory.createAssignment(
             factory.createPropertyAccessExpression(
@@ -856,7 +879,7 @@ class BackendSynthesizer {
         );
         nodes.push(versionConfigAssignment);
       }
-      if (renderArgs.storage?.bucketEncryptionAlgorithm) {
+      if ((_4 = renderArgs.storage) === null || _4 === void 0 ? void 0 : _4.bucketEncryptionAlgorithm) {
         const serverSideEncryptionByDefaultMap = new Map();
         serverSideEncryptionByDefaultMap.set('SSEAlgorithm', 'sseAlgorithm');
         serverSideEncryptionByDefaultMap.set('KMSMasterKeyID', 'kmsMasterKeyId');
@@ -890,17 +913,12 @@ class BackendSynthesizer {
       );
     }
     if (
-      renderArgs.auth?.userPoolClient &&
+      ((_5 = renderArgs.auth) === null || _5 === void 0 ? void 0 : _5.userPoolClient) &&
       renderArgs.auth.userPoolClient.SupportedIdentityProviders &&
       renderArgs.auth.userPoolClient.SupportedIdentityProviders.length > 0
     ) {
       const idpStatements = this.createProviderSetupCode();
       nodes.push(...idpStatements);
-      // Gen1 doesn't manage UserPoolDomains in CFN while Gen2 creates a default one for oauth apps.
-      // This causes an invalid domain request error when updating Gen2 post stack refactor.
-      // We are adding a commented line to remove the domain from Gen2 CDK. This will be
-      // uncommented by users post refactor (instructions will be in README.md).
-      // backend.auth.resources.userPool.node.tryRemoveChild('UserPoolDomain');
       const userPoolDomainRemovalStatementCommented = factory.createExpressionStatement(
         factory.createCallExpression(
           factory.createPropertyAccessExpression(
@@ -916,9 +934,7 @@ class BackendSynthesizer {
       );
       nodes.push(userPoolDomainRemovalStatementCommented);
     }
-    // Add a tag commented out to force a deployment post refactor
-    // Tags.of(backend.stack).add('gen1-migrated-app', 'true')
-    if (renderArgs.auth || renderArgs.storage?.hasS3Bucket || renderArgs.customResources) {
+    if (renderArgs.auth || ((_6 = renderArgs.storage) === null || _6 === void 0 ? void 0 : _6.hasS3Bucket) || renderArgs.customResources) {
       const tagAssignment = factory.createExpressionStatement(
         factory.createCallExpression(
           factory.createPropertyAccessExpression(

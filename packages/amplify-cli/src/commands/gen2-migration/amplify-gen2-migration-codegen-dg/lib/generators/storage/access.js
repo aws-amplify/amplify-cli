@@ -16,16 +16,21 @@ const createAllowPattern = (allowIdentifier, userLevel, permissions) => {
   );
 };
 const getAccessPatterns = (accessPatterns) => {
+  var _a, _b;
   const accessIdentifier = factory.createIdentifier('access');
   const allowIdentifier = factory.createIdentifier('allow');
   const publicPathAccess = [];
   const privatePathAccess = [];
   const protectedPathAccess = [];
   if (accessPatterns.guest && accessPatterns.guest.length) {
-    publicPathAccess.push(createAllowPattern(allowIdentifier, 'guest', accessPatterns.guest ?? []));
+    publicPathAccess.push(createAllowPattern(allowIdentifier, 'guest', (_a = accessPatterns.guest) !== null && _a !== void 0 ? _a : []));
   }
   if (accessPatterns.auth && accessPatterns.auth.length) {
-    const accessPattern = createAllowPattern(allowIdentifier, 'authenticated', accessPatterns.auth ?? []);
+    const accessPattern = createAllowPattern(
+      allowIdentifier,
+      'authenticated',
+      (_b = accessPatterns.auth) !== null && _b !== void 0 ? _b : [],
+    );
     publicPathAccess.push(accessPattern);
     protectedPathAccess.push(accessPattern);
     privatePathAccess.push(accessPattern);

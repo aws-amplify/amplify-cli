@@ -24,6 +24,7 @@ const createTemplateLiteral = (templateHead, templateSpan, templateTail) => {
   ]);
 };
 const renderStorage = (storageParams = {}) => {
+  var _a;
   const propertyAssignments = [];
   const namedImports = { '@aws-amplify/backend': new Set() };
   namedImports['@aws-amplify/backend'].add('defineStorage');
@@ -47,7 +48,7 @@ const renderStorage = (storageParams = {}) => {
   if (storageParams.accessPatterns) {
     propertyAssignments.push((0, access_1.getAccessPatterns)(storageParams.accessPatterns));
   }
-  if (storageParams.accessPatterns?.groups) {
+  if ((_a = storageParams.accessPatterns) === null || _a === void 0 ? void 0 : _a.groups) {
     postImportStatements.push(
       factory.createJSDocComment(
         factory.createNodeArray([

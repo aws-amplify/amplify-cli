@@ -1,17 +1,4 @@
 'use strict';
-/**
- * Amplify Gen 2 Codegen Migration Tool
- *
- * This module provides the core functionality for migrating Amplify Gen 1 projects to Gen 2 format.
- * It orchestrates the transformation of Gen 1 configurations into Gen 2 TypeScript resource definitions
- * and project structure.
- *
- * Key Components:
- * - Renderer Pattern: Uses a pipeline of renderers to generate different parts of the Gen 2 project
- * - Category Processing: Handles auth, storage, data, functions, and custom resources
- * - File Generation: Creates the necessary directory structure and configuration files
- * - Type Safety: Provides comprehensive TypeScript interfaces for migration parameters
- */
 var __importDefault =
   (this && this.__importDefault) ||
   function (mod) {
@@ -32,26 +19,7 @@ const index_js_1 = require('../generators/storage/index.js');
 const index_2 = require('../generators/data/index');
 const index_3 = require('../generators/functions/index');
 const assert_1 = __importDefault(require('assert'));
-/**
- * Creates a file writer function for the specified path
- * @param path - File path to write to
- * @returns Async function that writes content to the file
- */
 const createFileWriter = (path) => async (content) => promises_1.default.writeFile(path, content);
-/**
- * Creates a Gen 2 renderer pipeline that transforms Gen 1 Amplify configurations
- * into Gen 2 TypeScript resource definitions and project structure.
- *
- * The renderer follows these steps:
- * 1. Sets up the Gen 2 directory structure (outputDir/amplify/)
- * 2. Generates configuration files (package.json, tsconfig.json)
- * 3. Processes each category (auth, storage, data, functions) if present
- * 4. Creates the main backend.ts file that imports all resources
- * 5. Handles custom resources and unsupported categories
- *
- * @param options - Configuration options for the rendering process
- * @returns A Renderer that can be executed to perform the migration
- */
 const createGen2Renderer = ({
   outputDir,
   backendEnvironmentName,
@@ -63,15 +31,12 @@ const createGen2Renderer = ({
   unsupportedCategories,
   fileWriter = (content, path) => createFileWriter(path)(content),
 }) => {
-  // Create directory structure renderers
   const ensureOutputDir = new ensure_directory_1.EnsureDirectory(outputDir);
   const ensureAmplifyDirectory = new ensure_directory_1.EnsureDirectory(path_1.default.join(outputDir, 'amplify'));
-  // Generate amplify/package.json with ES module configuration
   const amplifyPackageJson = new package_json_1.JsonRenderer(
     async () => ({ type: 'module' }),
     (content) => fileWriter(content, path_1.default.join(outputDir, 'amplify', 'package.json')),
   );
-  // Generate root package.json with Gen 2 dependencies
   const jsonRenderer = new package_json_1.JsonRenderer(
     async () => {
       let packageJson = {
@@ -80,11 +45,7 @@ const createGen2Renderer = ({
       try {
         const packageJsonContents = await promises_1.default.readFile(`./package.json`, { encoding: 'utf-8' });
         packageJson = JSON.parse(packageJsonContents);
-      } catch (e) {
-        // File doesn't exist or is inaccessible. Ignore.
-      }
-      // Restrict dev dependencies to specific versions based on create-amplify gen2 flow:
-      // https://github.com/aws-amplify/amplify-backend/blob/2dab201cb9a222c3b8c396a46c17d661411839ab/packages/create-amplify/src/amplify_project_creator.ts#L15-L24
+      } catch (e) {}
       return (0, renderer_1.patchNpmPackageJson)(packageJson, {
         'aws-cdk': '^2',
         'aws-cdk-lib': '^2',
@@ -96,7 +57,6 @@ const createGen2Renderer = ({
     },
     (content) => fileWriter(content, path_1.default.join(outputDir, 'package.json')),
   );
-  // Generate amplify/tsconfig.json with Gen 2 TypeScript configuration
   const amplifyTsConfigJson = new package_json_1.JsonRenderer(
     async () => ({
       compilerOptions: {
@@ -104,7 +64,6 @@ const createGen2Renderer = ({
         module: 'es2022',
         moduleResolution: 'bundler',
         resolveJsonModule: true,
-        // eslint-disable-next-line spellcheck/spell-checker
         esModuleInterop: true,
         forceConsistentCasingInFileNames: true,
         strict: true,
@@ -116,16 +75,12 @@ const createGen2Renderer = ({
     }),
     (content) => fileWriter(content, path_1.default.join(outputDir, 'amplify', 'tsconfig.json')),
   );
-  // Initialize backend synthesizer and render options
   const backendSynthesizer = new synthesizer_1.BackendSynthesizer();
   const backendRenderOptions = {};
-  // Initialize renderer pipeline with base configuration files
   const renderers = [ensureOutputDir, ensureAmplifyDirectory, amplifyPackageJson, amplifyTsConfigJson, jsonRenderer];
-  // Handle categories that cannot be automatically migrated
   if (unsupportedCategories && unsupportedCategories.size >= 1) {
     backendRenderOptions.unsupportedCategories = unsupportedCategories;
   }
-  // Process Lambda functions - create resource.ts and handler.ts files
   if (functions && functions.length) {
     const functionNamesAndCategory = new Map();
     for (const func of functions) {
@@ -136,13 +91,11 @@ const createGen2Renderer = ({
         (0, assert_1.default)(funcCategory);
         functionNamesAndCategory.set(resourceName, funcCategory);
         const dirPath = path_1.default.join(outputDir, 'amplify', funcCategory, resourceName);
-        // Create function directory and resource files
         renderers.push(new ensure_directory_1.EnsureDirectory(dirPath));
         renderers.push(
           new typescript_block_node_1.TypescriptNodeArrayRenderer(
             async () => (0, index_3.renderFunctions)(func),
             (content) => {
-              // Create both resource.ts (with function definition) and empty handler.ts
               return fileWriter(content, path_1.default.join(dirPath, 'resource.ts')).then(() =>
                 fileWriter('', path_1.default.join(dirPath, 'handler.ts')),
               );
@@ -156,7 +109,6 @@ const createGen2Renderer = ({
       functionNamesAndCategories: functionNamesAndCategory,
     };
   }
-  // Process authentication configuration - create amplify/auth/resource.ts
   if (auth) {
     renderers.push(new ensure_directory_1.EnsureDirectory(path_1.default.join(outputDir, 'amplify', 'auth')));
     renderers.push(
@@ -165,20 +117,18 @@ const createGen2Renderer = ({
         (content) => fileWriter(content, path_1.default.join(outputDir, 'amplify', 'auth', 'resource.ts')),
       ),
     );
-    // Configure auth parameters for backend synthesis
     backendRenderOptions.auth = {
       importFrom: './auth/resource',
-      userPoolOverrides: auth?.userPoolOverrides,
-      guestLogin: auth?.guestLogin,
-      identityPoolName: auth?.identityPoolName,
-      oAuthFlows: auth?.oAuthFlows,
-      readAttributes: auth?.readAttributes,
-      writeAttributes: auth?.writeAttributes,
-      referenceAuth: auth?.referenceAuth,
-      userPoolClient: auth?.userPoolClient,
+      userPoolOverrides: auth === null || auth === void 0 ? void 0 : auth.userPoolOverrides,
+      guestLogin: auth === null || auth === void 0 ? void 0 : auth.guestLogin,
+      identityPoolName: auth === null || auth === void 0 ? void 0 : auth.identityPoolName,
+      oAuthFlows: auth === null || auth === void 0 ? void 0 : auth.oAuthFlows,
+      readAttributes: auth === null || auth === void 0 ? void 0 : auth.readAttributes,
+      writeAttributes: auth === null || auth === void 0 ? void 0 : auth.writeAttributes,
+      referenceAuth: auth === null || auth === void 0 ? void 0 : auth.referenceAuth,
+      userPoolClient: auth === null || auth === void 0 ? void 0 : auth.userPoolClient,
     };
   }
-  // Process data (GraphQL/DynamoDB) configuration - only if table mappings exist for the environment
   if (data && data.tableMappings && backendEnvironmentName && data.tableMappings[backendEnvironmentName] !== undefined) {
     renderers.push(new ensure_directory_1.EnsureDirectory(path_1.default.join(outputDir, 'amplify', 'data')));
     renderers.push(
@@ -191,9 +141,10 @@ const createGen2Renderer = ({
       importFrom: './data/resource',
     };
   }
-  // Process storage configuration - create amplify/storage/resource.ts if S3 bucket is needed
   if (storage) {
-    const hasS3Bucket = storage?.accessPatterns || storage?.storageIdentifier;
+    const hasS3Bucket =
+      (storage === null || storage === void 0 ? void 0 : storage.accessPatterns) ||
+      (storage === null || storage === void 0 ? void 0 : storage.storageIdentifier);
     if (hasS3Bucket) {
       renderers.push(new ensure_directory_1.EnsureDirectory(path_1.default.join(outputDir, 'amplify', 'storage')));
       renderers.push(
@@ -203,7 +154,6 @@ const createGen2Renderer = ({
         ),
       );
     }
-    // Configure storage parameters for backend synthesis (includes both S3 and DynamoDB)
     backendRenderOptions.storage = {
       importFrom: './storage/resource',
       dynamoDB: storage.dynamoDB,
@@ -214,17 +164,14 @@ const createGen2Renderer = ({
       bucketName: storage.bucketName,
     };
   }
-  // Handle custom CloudFormation resources that require manual migration
   if (customResources && customResources.size > 0) {
     backendRenderOptions.customResources = customResources;
   }
-  // Generate the main backend.ts file that imports and combines all resources
   const backendRenderer = new typescript_block_node_1.TypescriptNodeArrayRenderer(
     async () => backendSynthesizer.render(backendRenderOptions),
     (content) => fileWriter(content, path_1.default.join(outputDir, 'amplify', 'backend.ts')),
   );
   renderers.push(backendRenderer);
-  // Return a pipeline that executes all renderers in sequence
   return new render_pipeline_1.RenderPipeline(renderers);
 };
 exports.createGen2Renderer = createGen2Renderer;

@@ -40,7 +40,6 @@ var __importStar =
   };
 Object.defineProperty(exports, '__esModule', { value: true });
 exports.writeFile = exports.ensureDirectory = void 0;
-// File and directory operations utilities
 const fs = __importStar(require('fs/promises'));
 const path = __importStar(require('path'));
 const ensureDirectory = async (dirPath) => {
