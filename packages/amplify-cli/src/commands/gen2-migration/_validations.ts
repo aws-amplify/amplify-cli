@@ -1,7 +1,7 @@
 import { AmplifyDriftDetector } from '../drift';
 import { $TSContext, AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
-import { CloudFormation } from 'aws-sdk';
+import { DescribeChangeSetOutput } from '@aws-sdk/client-cloudformation';
 import { STATEFUL_RESOURCES } from './stateful-resources';
 
 export class AmplifyGen2MigrationValidations {
@@ -28,7 +28,7 @@ export class AmplifyGen2MigrationValidations {
   }
 
   // eslint-disable-next-line spellcheck/spell-checker
-  public async validateStatefulResources(changeSet: CloudFormation.DescribeChangeSetOutput): Promise<void> {
+  public async validateStatefulResources(changeSet: DescribeChangeSetOutput): Promise<void> {
     if (!changeSet.Changes) return;
 
     const statefulRemoves = changeSet.Changes.filter(
