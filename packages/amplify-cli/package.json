@@ -23,9 +23,8 @@
     "access": "public"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json && tsc -p ./src/commands/gen2-migration/amplify-gen2-migration-codegen-dg/tsconfig.json",
+    "build": "tsc",
     "test": "jest --logHeapUsage",
-    "test:gen2-migration": "jest --config src/commands/gen2-migration/amplify-gen2-migration-codegen-dg/jest.config.js",
     "postinstall": "node scripts/post-install.js",
     "watch": "tsc -w",
     "clean": "rimraf ./lib tsconfig.tsbuildinfo",
@@ -142,10 +141,6 @@
     "coveragePathIgnorePatterns": [
       "/node_modules/",
       "/templates/"
-    ],
-    "testPathIgnorePatterns": [
-      "/node_modules/",
-      "/src/commands/gen2-migration/amplify-gen2-migration-codegen-dg/"
     ],
     "moduleFileExtensions": [
       "ts",
