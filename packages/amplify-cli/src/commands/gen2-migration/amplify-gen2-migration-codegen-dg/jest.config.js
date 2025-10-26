@@ -1,7 +1,7 @@
 module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
-  testMatch: ['<rootDir>/src/commands/gen2-migration/amplify-gen2-migration-codegen-dg/**/*.test.ts'],
+  testMatch: ['**/*.test.ts'],
   transform: {
     '^.+\\.tsx?$': [
       'ts-jest',
