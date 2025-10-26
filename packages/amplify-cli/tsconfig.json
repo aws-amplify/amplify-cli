@@ -11,7 +11,7 @@
     "src/**/*"
   ],
   "exclude": [
-    "src/commands/gen2-migration/amplify-gen2-migration-codegen-dg/**/*"
+    "src/commands/gen2-migration/amplify-gen2-migration-codegen-dg"
   ],
   "references": [
     {
