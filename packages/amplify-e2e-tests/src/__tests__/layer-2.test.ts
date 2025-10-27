@@ -296,7 +296,7 @@ describe('amplify add lambda layer with changes', () => {
 
     response = await functionCloudInvoke(projRoot, { funcName: functionName, payload });
 
-    expect(JSON.parse(JSON.parse(response.Payload.toString()).body)).toEqual(helloWorldTitleCaseOutput);
+    expect(JSON.parse(JSON.parse(response.Payload.transformToString()).body)).toEqual(helloWorldTitleCaseOutput);
   });
 
   /*

@@ -436,7 +436,7 @@ function _integTestAmplifyInit {
     export FRONTEND="{\"frontend\":\"javascript\",\"framework\":\"react\",\"config\":$REACTCONFIG}"
     export AMPLIFY_INIT_CONFIG="{\"projectName\":\"unauth\",\"envName\":\"integtest\",\"defaultEditor\":\"code\"}"
     export PROVIDERS="{\"awscloudformation\":$AWSCLOUDFORMATIONCONFIG}"
-    amplify-dev init --amplify $AMPLIFY_INIT_CONFIG --frontend $FRONTEND --providers $PROVIDERS --yes --debug
+    amplify-dev init --amplify $AMPLIFY_INIT_CONFIG --frontend $FRONTEND --providers $PROVIDERS --yes
 }
 
 function _addAndPushAuth {
@@ -774,8 +774,8 @@ function _cleanUpResources {
     echo "Executing resource cleanup"
     cd packages/amplify-e2e-tests
     yarn install
-    export NODE_OPTIONS="--max-old-space-size=8192"
-    ts-node ./src/cleanup-codebuild-resources.ts
+    export NODE_OPTIONS="--max-old-space-size=8192 --expose-gc"
+    timeout 30m ts-node ./src/cleanup-codebuild-resources.ts
     _unassumeTestAccountCredentials
 }
 function _deploymentVerificationPostRelease {

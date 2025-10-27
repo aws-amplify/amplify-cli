@@ -1153,7 +1153,7 @@ const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, fil
 
 /**
  * Execute the cleanup script.
- * Cleanup will happen in parallel across all accounts within a given organization,
+ * Cleanup will happen sequentially across accounts to avoid resource exhaustion,
  * based on the requested filter parameters (i.e. for a given workflow, job, or all stale resources).
  * Logs are emitted for given account ids anywhere we've fanned out, but we use an indexing scheme instead
  * of account ids since the logs these are written to will be effectively public.
@@ -1161,15 +1161,22 @@ const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, fil
 const cleanup = async (): Promise<void> => {
   const filterPredicateStaleResources = (job: ReportEntry) => job?.cbInfo?.buildStatus !== StatusType.IN_PROGRESS || job.jobId === ORPHAN;
   const accounts = await getAccountsToCleanup();
-  for (let i = 0; i < 3; ++i) {
-    console.log('CLEANUP ROUND: ', i + 1);
-    await Promise.all(
-      accounts.map((account, i) => {
-        return cleanupAccount(account, i, filterPredicateStaleResources);
-      }),
-    );
-    await sleep(60 * 1000); // run again after 60 seconds
+
+  // Process accounts sequentially to avoid memory/timeout issues
+  for (let accountIndex = 0; accountIndex < accounts.length; accountIndex++) {
+    try {
+      console.log(`Processing account ${accountIndex + 1}/${accounts.length}`);
+      await cleanupAccount(accounts[accountIndex], accountIndex, filterPredicateStaleResources);
+
+      // Force garbage collection between accounts
+      if (global.gc) {
+        global.gc();
+      }
+    } catch (error) {
+      console.error(`Failed to cleanup account ${accountIndex}:`, error.message);
+    }
   }
+
   console.log('Done cleaning all accounts!');
 };
 
