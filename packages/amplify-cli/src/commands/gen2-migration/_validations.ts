@@ -1,13 +1,8 @@
-import { AmplifyDriftDetector } from '../drift';
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 
 export class AmplifyGen2MigrationValidations {
   constructor(private readonly context: $TSContext) {}
-
-  public async validateDrift(): Promise<void> {
-    return new AmplifyDriftDetector(this.context).detect();
-  }
 
   public async validateWorkingDirectory(): Promise<void> {
     printer.warn('Not implemented');

@@ -6,7 +6,7 @@
 import { $TSContext, stateManager, pathManager, AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { CloudFormationClient, GetTemplateCommand } from '@aws-sdk/client-cloudformation';
-import { detectStackDrift, DriftFormatter, type CloudFormationTemplate } from '@aws-amplify/amplify-provider-awscloudformation';
+import { detectStackDrift, DriftFormatter, type CloudFormationTemplate } from './drift-detection';
 
 export const name = 'drift';
 export const alias = [];

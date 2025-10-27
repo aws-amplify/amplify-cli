@@ -162,6 +162,7 @@
   },
   "packageManager": "yarn@3.5.0",
   "resolutions": {
+    "@aws-sdk/client-cloudformation": "^3.624.0",
     "aws-sdk": "^2.1464.0",
     "cross-fetch": "^2.2.6",
     "fast-xml-parser": "^4.4.1",

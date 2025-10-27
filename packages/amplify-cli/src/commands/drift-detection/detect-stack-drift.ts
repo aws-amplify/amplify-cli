@@ -12,9 +12,9 @@ import {
   type DescribeStackDriftDetectionStatusCommandOutput,
 } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
-import { fileLogger } from '../utils/aws-logger';
+import { getAmplifyLogger } from '@aws-amplify/amplify-cli-logger';
 
-const logger = fileLogger('drift-detection');
+const logger = getAmplifyLogger();
 
 /**
  * Detect drift for a CloudFormation stack and wait for the detection to complete
@@ -30,7 +30,7 @@ export async function detectStackDrift(
   print?: { info: (msg: string) => void; debug: (msg: string) => void; warning: (msg: string) => void },
 ): Promise<DescribeStackResourceDriftsCommandOutput> {
   // Start drift detection
-  logger('detectStackDrift', [stackName])();
+  logger.logInfo({ message: `detectStackDrift: ${stackName}` });
   const driftDetection = await cfn.send(
     new DetectStackDriftCommand({
       StackName: stackName,
@@ -72,7 +72,7 @@ export async function detectStackDrift(
     );
   }
 
-  logger('detectStackDrift.complete', [stackName, driftResults.StackResourceDrifts?.length])();
+  logger.logInfo({ message: `detectStackDrift.complete: ${stackName}, ${driftResults.StackResourceDrifts?.length} resources` });
   return driftResults;
 }
 
