@@ -1,5 +1,4 @@
 import { PinpointClient, GetAppCommand } from '@aws-sdk/client-pinpoint';
-import { PinpointClient, GetAppCommand } from '@aws-sdk/client-pinpoint';
 import { EOL } from 'os';
 import { getCLIPath, nspawn as spawn, singleSelect, amplifyRegions, addCircleCITags, KEY_DOWN_ARROW } from '..';
 
