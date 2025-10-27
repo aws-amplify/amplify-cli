@@ -323,17 +323,6 @@ const getAWSConfig = ({ accessKeyId, secretAccessKey, sessionToken }: AWSAccount
   maxRetries: 10,
 });
 
-// Client cache to reuse clients and reduce memory usage
-const clientCache = new Map<string, any>();
-
-const getClient = <T>(ClientClass: new (config: any) => T, account: AWSAccountInfo, region?: string): T => {
-  const key = `${account.accessKeyId}-${region || 'global'}-${ClientClass.name}`;
-  if (!clientCache.has(key)) {
-    clientCache.set(key, new ClientClass(getAWSConfig(account, region)));
-  }
-  return clientCache.get(key);
-};
-
 /**
  * delete an S3 bucket, copied from amplify-e2e-core
  */
@@ -434,7 +423,7 @@ const getAmplifyApps = async (account: AWSAccountInfo, region: string, cbClient:
   if (region === 'us-east-1' && account.parent) {
     return []; // temporarily disabled until us-east-1 is re-enabled for this account
   }
-  const amplifyClient = getClient(AmplifyClient, account, region);
+  const amplifyClient = new AmplifyClient(getAWSConfig(account, region));
   try {
     const amplifyApps = await amplifyClient.send(new ListAppsCommand({ maxResults: 25 })); // keeping it to 25 as max supported is 25
     const result: AmplifyAppInfo[] = [];
@@ -1113,34 +1102,25 @@ const getEnvVarCredentials = (): AWSAccountInfo => {
 
 const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, filterPredicate: JobFilterPredicate): Promise<void> => {
   const cbClient = new CodeBuildClient(getAWSConfig(account));
+  const appPromises = AWS_REGIONS_TO_RUN_TESTS.map((region) => getAmplifyApps(account, region, cbClient));
+  const stackPromises = AWS_REGIONS_TO_RUN_TESTS.map((region) => getStacks(account, region, cbClient));
+  const bucketPromise = getS3Buckets(account, cbClient);
+  const orphanPinpointApplicationsPromise = AWS_REGIONS_TO_RUN_TESTS_PINPOINT.map((region) =>
+    getOrphanPinpointApplications(account, region),
+  );
+  const orphanBucketPromise = getOrphanS3TestBuckets(account);
+  const orphanIamRolesPromise = getOrphanTestIamRoles(account);
+  const orphanAppSyncApisPromise = AWS_REGIONS_TO_RUN_TESTS.map((region) => getOrphanAppSyncApis(account, region));
+  const orphanUserPoolsPromise = AWS_REGIONS_TO_RUN_TESTS.map((region) => getOrphanUserPools(account, region));
 
-  // Process regions sequentially to reduce memory usage
-  const apps: AmplifyAppInfo[] = [];
-  const stacks: StackInfo[] = [];
-  const orphanPinpointApplications: PinpointAppInfo[] = [];
-  const orphanAppSyncApis: AppSyncApiInfo[] = [];
-  const orphanUserPools: UserPoolInfo[] = [];
-
-  for (const region of AWS_REGIONS_TO_RUN_TESTS) {
-    const regionApps = await getAmplifyApps(account, region, cbClient);
-    const regionStacks = await getStacks(account, region, cbClient);
-    const regionAppSyncApis = await getOrphanAppSyncApis(account, region);
-    const regionUserPools = await getOrphanUserPools(account, region);
-
-    apps.push(...regionApps);
-    stacks.push(...regionStacks);
-    orphanAppSyncApis.push(...regionAppSyncApis);
-    orphanUserPools.push(...regionUserPools);
-
-    if (AWS_REGIONS_TO_RUN_TESTS_PINPOINT.includes(region)) {
-      const regionPinpointApps = await getOrphanPinpointApplications(account, region);
-      orphanPinpointApplications.push(...regionPinpointApps);
-    }
-  }
-
-  const buckets = await getS3Buckets(account, cbClient);
-  const orphanBuckets = await getOrphanS3TestBuckets(account);
-  const orphanIamRoles = await getOrphanTestIamRoles(account);
+  const apps = (await Promise.all(appPromises)).flat();
+  const stacks = (await Promise.all(stackPromises)).flat();
+  const buckets = await bucketPromise;
+  const orphanBuckets = await orphanBucketPromise;
+  const orphanIamRoles = await orphanIamRolesPromise;
+  const orphanPinpointApplications = (await Promise.all(orphanPinpointApplicationsPromise)).flat();
+  const orphanAppSyncApis = (await Promise.all(orphanAppSyncApisPromise)).flat();
+  const orphanUserPools = (await Promise.all(orphanUserPoolsPromise)).flat();
 
   const allResources = mergeResourcesByCIJob(
     apps,
@@ -1168,13 +1148,6 @@ const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, fil
   generateReport(staleResources);
   await deleteResources(account, accountIndex, staleResources);
   await deleteOrphanedOidcProviders(account);
-
-  // Clear client cache and force garbage collection
-  clientCache.clear();
-  if (global.gc) {
-    global.gc();
-  }
-
   console.log(`[ACCOUNT ${accountIndex}] Cleanup done!`);
 };
 
@@ -1190,10 +1163,11 @@ const cleanup = async (): Promise<void> => {
   const accounts = await getAccountsToCleanup();
   for (let i = 0; i < 3; ++i) {
     console.log('CLEANUP ROUND: ', i + 1);
-    // Process accounts sequentially to reduce memory usage
-    for (let accountIndex = 0; accountIndex < accounts.length; accountIndex++) {
-      await cleanupAccount(accounts[accountIndex], accountIndex, filterPredicateStaleResources);
-    }
+    await Promise.all(
+      accounts.map((account, i) => {
+        return cleanupAccount(account, i, filterPredicateStaleResources);
+      }),
+    );
     await sleep(60 * 1000); // run again after 60 seconds
   }
   console.log('Done cleaning all accounts!');

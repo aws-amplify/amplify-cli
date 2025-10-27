@@ -1033,9 +1033,11 @@ const cleanup = async (): Promise<void> => {
   const accounts = await getAccountsToCleanup();
   for (let i = 0; i < 3; i++) {
     console.log('CLEANUP ROUND: ', i + 1);
-    for (let index = 0; index < accounts.length; index++) {
-      await cleanupAccount(accounts[index], index, filterPredicate);
-    }
+    await Promise.all(
+      accounts.map((account, i) => {
+        return cleanupAccount(account, i, filterPredicate);
+      }),
+    );
     await sleep(60 * 1000); // run again after 60 seconds
   }
   console.log('Done cleaning all accounts!');
