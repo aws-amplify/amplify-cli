@@ -69,7 +69,7 @@ export const addNotificationChannel = async (
       break;
     }
     case 'In-App Messaging': {
-      return chain.wait(`Run "amplify push" to update the channel in the cloud`).runAsync();
+      return chain.wait(`Run "amplify push" to update the channel in the cloud`).sendEof().runAsync();
     }
     default:
       break;

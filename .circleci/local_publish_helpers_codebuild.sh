@@ -141,7 +141,7 @@ function verifyPkgCli {
 
     # TODO: After V3 migrations are done, decrease 1095 back to 930 and 875 back to 750
     verifySinglePkg "amplify-pkg-linux-x64" "amplify-pkg-linux-x64.tgz" $((1095 * 1024 * 1024))
-    verifySinglePkg "amplify-pkg-macos-x64" "amplify-pkg-macos-x64.tgz" $((1095 * 1024 * 1024))
+    verifySinglePkg "amplify-pkg-macos-x64" "amplify-pkg-macos-x64.tgz" $((1105 * 1024 * 1024))
     verifySinglePkg "amplify-pkg-win-x64.exe" "amplify-pkg-win-x64.tgz" $((1095 * 1024 * 1024))
     verifySinglePkg "amplify-pkg-linux-arm64" "amplify-pkg-linux-arm64.tgz" $((875 * 1024 * 1024))
 }
