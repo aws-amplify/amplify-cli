@@ -436,7 +436,7 @@ function _integTestAmplifyInit {
     export FRONTEND="{\"frontend\":\"javascript\",\"framework\":\"react\",\"config\":$REACTCONFIG}"
     export AMPLIFY_INIT_CONFIG="{\"projectName\":\"unauth\",\"envName\":\"integtest\",\"defaultEditor\":\"code\"}"
     export PROVIDERS="{\"awscloudformation\":$AWSCLOUDFORMATIONCONFIG}"
-    amplify-dev init --amplify $AMPLIFY_INIT_CONFIG --frontend $FRONTEND --providers $PROVIDERS --yes
+    amplify-dev init --amplify $AMPLIFY_INIT_CONFIG --frontend $FRONTEND --providers $PROVIDERS --yes --debug
 }
 
 function _addAndPushAuth {
