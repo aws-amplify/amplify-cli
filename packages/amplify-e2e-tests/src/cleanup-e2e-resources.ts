@@ -311,11 +311,6 @@ const getAWSConfig = ({ accessKeyId, secretAccessKey, sessionToken }: AWSAccount
   },
   ...(region ? { region } : {}),
   maxAttempts: 10,
-  retryMode: 'adaptive',
-  requestHandler: {
-    connectionTimeout: 30000,
-    socketTimeout: 30000,
-  },
 });
 
 /**
@@ -959,62 +954,25 @@ const getAccountsToCleanup = async (): Promise<AWSAccountInfo[]> => {
 };
 
 const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, filterPredicate: JobFilterPredicate): Promise<void> => {
-  console.log(`[ACCOUNT ${accountIndex}] Starting cleanup...`);
+  const appPromises = AWS_REGIONS_TO_RUN_TESTS.map((region) => getAmplifyApps(account, region));
+  const stackPromises = AWS_REGIONS_TO_RUN_TESTS.map((region) => getStacks(account, region));
+  const bucketPromise = getS3Buckets(account);
+  const orphanPinpointApplicationsPromise = AWS_REGIONS_TO_RUN_TESTS_PINPOINT.map((region) =>
+    getOrphanPinpointApplications(account, region),
+  );
+  const orphanBucketPromise = getOrphanS3TestBuckets(account);
+  const orphanIamRolesPromise = getOrphanTestIamRoles(account);
+  const orphanAppSyncApisPromise = AWS_REGIONS_TO_RUN_TESTS.map((region) => getOrphanAppSyncApis(account, region));
+  const orphanUserPoolsPromise = AWS_REGIONS_TO_RUN_TESTS.map((region) => getOrphanUserPools(account, region));
 
-  // Process regions sequentially to avoid overwhelming the network
-  const apps: AmplifyAppInfo[] = [];
-  const stacks: StackInfo[] = [];
-  const orphanPinpointApplications: PinpointAppInfo[] = [];
-  const orphanAppSyncApis: AppSyncApiInfo[] = [];
-  const orphanUserPools: UserPoolInfo[] = [];
-
-  for (const region of AWS_REGIONS_TO_RUN_TESTS) {
-    console.log(`[ACCOUNT ${accountIndex}] Processing region ${region}...`);
-    try {
-      const [regionApps, regionStacks] = await Promise.all([getAmplifyApps(account, region), getStacks(account, region)]);
-      apps.push(...regionApps);
-      stacks.push(...regionStacks);
-
-      // Add delay between regions
-      await sleep(2000);
-    } catch (e) {
-      console.log(`[ACCOUNT ${accountIndex}] Error processing region ${region}:`, e.message);
-    }
-  }
-
-  // Process Pinpoint regions sequentially
-  for (const region of AWS_REGIONS_TO_RUN_TESTS_PINPOINT) {
-    try {
-      const [regionPinpoint, regionAppSync, regionUserPools] = await Promise.all([
-        getOrphanPinpointApplications(account, region),
-        getOrphanAppSyncApis(account, region),
-        getOrphanUserPools(account, region),
-      ]);
-      orphanPinpointApplications.push(...regionPinpoint);
-      orphanAppSyncApis.push(...regionAppSync);
-      orphanUserPools.push(...regionUserPools);
-
-      await sleep(1000);
-    } catch (e) {
-      console.log(`[ACCOUNT ${accountIndex}] Error processing Pinpoint region ${region}:`, e.message);
-    }
-  }
-
-  // Process global resources
-  const [buckets, orphanBuckets, orphanIamRoles] = await Promise.all([
-    getS3Buckets(account).catch((e) => {
-      console.log(`[ACCOUNT ${accountIndex}] Error getting S3 buckets:`, e.message);
-      return [];
-    }),
-    getOrphanS3TestBuckets(account).catch((e) => {
-      console.log(`[ACCOUNT ${accountIndex}] Error getting orphan S3 buckets:`, e.message);
-      return [];
-    }),
-    getOrphanTestIamRoles(account).catch((e) => {
-      console.log(`[ACCOUNT ${accountIndex}] Error getting IAM roles:`, e.message);
-      return [];
-    }),
-  ]);
+  const apps = (await Promise.all(appPromises)).flat();
+  const stacks = (await Promise.all(stackPromises)).flat();
+  const buckets = await bucketPromise;
+  const orphanBuckets = await orphanBucketPromise;
+  const orphanIamRoles = await orphanIamRolesPromise;
+  const orphanPinpointApplications = (await Promise.all(orphanPinpointApplicationsPromise)).flat();
+  const orphanAppSyncApis = (await Promise.all(orphanAppSyncApisPromise)).flat();
+  const orphanUserPools = (await Promise.all(orphanUserPoolsPromise)).flat();
 
   const allResources = mergeResourcesByCCIJob(
     apps,
@@ -1026,7 +984,6 @@ const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, fil
     orphanAppSyncApis,
     orphanUserPools,
   );
-
   // cleanup resources that are <unknown> but that are definitely amplify resources
   // this includes apps with names that include "test" or stacks that include both "amplify" & "test"
   const testApps = allResources['<unknown>']?.amplifyApps?.filter((a) => a.name.toLocaleLowerCase().includes('test'));
@@ -1048,8 +1005,10 @@ const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, fil
 
 /**
  * Execute the cleanup script.
- * Cleanup will happen sequentially across accounts to avoid overwhelming the network,
+ * Cleanup will happen in parallel across all accounts within a given organization,
  * based on the requested filter parameters (i.e. for a given workflow, job, or all stale resources).
+ * Logs are emitted for given account ids anywhere we've fanned out, but we use an indexing scheme instead
+ * of account ids since the logs these are written to will be effectively public.
  */
 const cleanup = async (): Promise<void> => {
   const args = yargs
@@ -1072,18 +1031,10 @@ const cleanup = async (): Promise<void> => {
 
   const filterPredicate = getFilterPredicate(args);
   const accounts = await getAccountsToCleanup();
-
   for (let i = 0; i < 3; i++) {
     console.log('CLEANUP ROUND: ', i + 1);
-    // Process accounts sequentially to avoid network overload
     for (let index = 0; index < accounts.length; index++) {
-      try {
-        await cleanupAccount(accounts[index], index, filterPredicate);
-        // Add delay between accounts
-        await sleep(5000);
-      } catch (e) {
-        console.log(`Error cleaning account ${index}:`, e.message);
-      }
+      await cleanupAccount(accounts[index], index, filterPredicate);
     }
     await sleep(60 * 1000); // run again after 60 seconds
   }
