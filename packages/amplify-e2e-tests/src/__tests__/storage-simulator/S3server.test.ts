@@ -27,7 +27,6 @@ beforeAll(async () => {
     apiVersion: '2006-03-01',
     endpoint: 'http://localhost:20005',
     forcePathStyle: true,
-    bucketEndpoint: true,
     tls: false,
   });
 
