@@ -774,7 +774,6 @@ function _cleanUpResources {
     echo "Executing resource cleanup"
     cd packages/amplify-e2e-tests
     yarn install
-    export NODE_OPTIONS="--max-old-space-size=4096"
     ts-node ./src/cleanup-codebuild-resources.ts
     _unassumeTestAccountCredentials
 }
