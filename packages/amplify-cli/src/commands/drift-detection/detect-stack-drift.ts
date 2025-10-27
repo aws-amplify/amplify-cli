@@ -1,6 +1,5 @@
 /**
  * Core drift detection logic for CloudFormation stacks
- * Based on AWS CDK CLI implementation: aws-cdk-cli/packages/@aws-cdk/toolkit-lib/lib/api/drift/drift.ts
  */
 
 import {
@@ -8,13 +7,35 @@ import {
   DetectStackDriftCommand,
   DescribeStackDriftDetectionStatusCommand,
   DescribeStackResourceDriftsCommand,
+  DescribeStackResourcesCommand,
   type DescribeStackResourceDriftsCommandOutput,
   type DescribeStackDriftDetectionStatusCommandOutput,
+  type StackResourceDrift,
 } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { getAmplifyLogger } from '@aws-amplify/amplify-cli-logger';
 
 const logger = getAmplifyLogger();
+
+/**
+ * Combined drift results including nested stacks
+ */
+export interface CombinedDriftResults {
+  /**
+   * Drift results for the root stack
+   */
+  rootStackDrifts: DescribeStackResourceDriftsCommandOutput;
+
+  /**
+   * Drift results for nested stacks, keyed by logical resource ID
+   */
+  nestedStackDrifts: Map<string, DescribeStackResourceDriftsCommandOutput>;
+
+  /**
+   * Map of logical resource IDs to physical resource IDs for nested stacks
+   */
+  nestedStackPhysicalIds: Map<string, string>;
+}
 
 /**
  * Detect drift for a CloudFormation stack and wait for the detection to complete
@@ -85,9 +106,9 @@ async function waitForDriftDetection(
   driftDetectionId: string,
   print?: { info: (msg: string) => void },
 ): Promise<DescribeStackDriftDetectionStatusCommandOutput | undefined> {
-  const maxWaitForDrift = 300_000; // 5 minutes max (CDK pattern)
-  const timeBetweenOutputs = 10_000; // User feedback every 10 seconds (CDK pattern)
-  const timeBetweenApiCalls = 2_000; // API calls every 2 seconds for rate limiting (CDK pattern)
+  const maxWaitForDrift = 300_000; // 5 minutes max
+  const timeBetweenOutputs = 10_000; // User feedback every 10 seconds
+  const timeBetweenApiCalls = 2_000; // API calls every 2 seconds for rate limiting
 
   const deadline = Date.now() + maxWaitForDrift;
   let checkIn = Date.now() + timeBetweenOutputs;
@@ -123,9 +144,113 @@ async function waitForDriftDetection(
       checkIn = Date.now() + timeBetweenOutputs;
     }
 
-    // Wait between API calls to avoid rate limiting (CDK pattern)
+    // Wait between API calls to avoid rate limiting (CDK does this too)
     await new Promise((resolve) => setTimeout(resolve, timeBetweenApiCalls));
   }
+}
+
+/**
+ * Detect drift recursively for a stack and all its nested stacks
+ *
+ * This is necessary for Amplify because category stacks (auth, storage, etc.)
+ * are deployed as nested stacks and are not separate artifacts.
+ *
+ * @param cfn - CloudFormation client
+ * @param stackName - the name of the root stack to check for drift
+ * @param print - printer for user feedback
+ * @returns combined drift results for root and all nested stacks
+ */
+export async function detectStackDriftRecursive(
+  cfn: CloudFormationClient,
+  stackName: string,
+  print?: { info: (msg: string) => void; debug: (msg: string) => void; warning: (msg: string) => void },
+): Promise<CombinedDriftResults> {
+  logger.logInfo({ message: `detectStackDriftRecursive: ${stackName}` });
+
+  // Detect drift on the root stack
+  const rootStackDrifts = await detectStackDrift(cfn, stackName, print);
+
+  // DetectStackDrift doesn't include nested stacks in drift results,
+  // so we need to query the full resource list separately
+  const stackResources = await cfn.send(
+    new DescribeStackResourcesCommand({
+      StackName: stackName,
+    }),
+  );
+
+  // Find all nested stacks from the full resource list
+  const nestedStacks = stackResources.StackResources?.filter((resource) => resource.ResourceType === 'AWS::CloudFormation::Stack') || [];
+
+  if (nestedStacks.length > 0) {
+    if (print?.info) {
+      print.info(`Found ${nestedStacks.length} nested stack(s) to check for drift`);
+    }
+  }
+
+  // Recursively check drift for each nested stack
+  const nestedStackDrifts = new Map<string, DescribeStackResourceDriftsCommandOutput>();
+  const nestedStackPhysicalIds = new Map<string, string>();
+
+  for (const nestedStack of nestedStacks) {
+    if (!nestedStack.LogicalResourceId || !nestedStack.PhysicalResourceId) {
+      continue;
+    }
+
+    // Skip if the nested stack has been deleted
+    if (nestedStack.ResourceStatus?.includes('DELETE')) {
+      if (print?.debug) {
+        print.debug(`Skipping deleted nested stack: ${nestedStack.LogicalResourceId}`);
+      }
+      continue;
+    }
+
+    try {
+      if (print?.info) {
+        print.info(`Checking drift for nested stack: ${nestedStack.LogicalResourceId}`);
+      }
+
+      // Extract stack name from PhysicalResourceId
+      // PhysicalResourceId can be either a stack name or an ARN
+      // ARN format: arn:aws:cloudformation:region:account:stack/stack-name/guid
+      let nestedStackName = nestedStack.PhysicalResourceId;
+      if (nestedStackName.startsWith('arn:')) {
+        const arnParts = nestedStackName.split('/');
+        if (arnParts.length >= 2) {
+          nestedStackName = arnParts[1]; // Extract stack name from ARN
+        }
+      }
+
+      // Store the mapping of logical ID to physical stack name
+      nestedStackPhysicalIds.set(nestedStack.LogicalResourceId, nestedStackName);
+
+      // Use the extracted stack name to detect drift
+      const nestedDrift = await detectStackDrift(cfn, nestedStackName, print);
+      nestedStackDrifts.set(nestedStack.LogicalResourceId, nestedDrift);
+
+      logger.logInfo({
+        message: `detectStackDriftRecursive.nestedStack: ${nestedStack.LogicalResourceId}, ${nestedDrift.StackResourceDrifts?.length} resources`,
+      });
+    } catch (error: any) {
+      // Log error but continue checking other nested stacks
+      if (print?.warning) {
+        print.warning(`Failed to check drift for nested stack ${nestedStack.LogicalResourceId}: ${error.message}`);
+      }
+      logger.logError({
+        message: `detectStackDriftRecursive.nestedStack.error: ${nestedStack.LogicalResourceId}`,
+        error: error,
+      });
+    }
+  }
+
+  logger.logInfo({
+    message: `detectStackDriftRecursive.complete: ${stackName}, ${nestedStackDrifts.size} nested stacks`,
+  });
+
+  return {
+    rootStackDrifts,
+    nestedStackDrifts,
+    nestedStackPhysicalIds,
+  };
 }
 
 /**

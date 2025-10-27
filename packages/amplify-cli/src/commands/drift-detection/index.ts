@@ -3,5 +3,11 @@
  * Based on AWS CDK CLI drift detection implementation
  */
 
-export { detectStackDrift } from './detect-stack-drift';
-export { DriftFormatter, type DriftFormatterProps, type DriftFormatterOutput, type CloudFormationTemplate } from './drift-formatter';
+export { detectStackDrift, detectStackDriftRecursive, type CombinedDriftResults } from './detect-stack-drift';
+export {
+  ConsolidatedDriftFormatter,
+  type ConsolidatedDriftResults,
+  type ConsolidatedDriftOutput,
+  type DriftDisplayFormat,
+  type CloudFormationTemplate,
+} from './consolidated-drift-formatter';

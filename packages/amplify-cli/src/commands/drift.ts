@@ -5,8 +5,16 @@
 
 import { $TSContext, stateManager, pathManager, AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
-import { CloudFormationClient, GetTemplateCommand } from '@aws-sdk/client-cloudformation';
-import { detectStackDrift, DriftFormatter, type CloudFormationTemplate } from './drift-detection';
+import chalk from 'chalk';
+import {
+  detectStackDriftRecursive,
+  ConsolidatedDriftFormatter,
+  type CloudFormationTemplate,
+  type ConsolidatedDriftResults,
+  type DriftDisplayFormat,
+} from './drift-detection';
+import type { CloudFormationClient } from '@aws-sdk/client-cloudformation';
+import { GetTemplateCommand } from '@aws-sdk/client-cloudformation';
 
 export const name = 'drift';
 export const alias = [];
@@ -17,7 +25,7 @@ export const alias = [];
 interface DriftOptions {
   verbose?: boolean;
   fail?: boolean;
-  format?: 'table' | 'json';
+  format?: 'tree' | 'summary' | 'json';
   'output-file'?: string;
 }
 
@@ -28,7 +36,7 @@ export const run = async (context: $TSContext): Promise<void> => {
   const options: DriftOptions = {
     verbose: context.parameters?.options?.verbose || false,
     fail: context.parameters?.options?.fail || false,
-    format: context.parameters?.options?.format || 'table',
+    format: context.parameters?.options?.format || 'summary',
     'output-file': context.parameters?.options?.['output-file'],
   };
 
@@ -42,14 +50,13 @@ export const run = async (context: $TSContext): Promise<void> => {
 
 /**
  * Amplify drift detector
- * Based on CDK's toolkit drift method
  */
 export class AmplifyDriftDetector {
   constructor(private readonly context: $TSContext) {}
 
   /**
    * Detect drift for the current Amplify project
-   * Following CDK's drift orchestration pattern
+   * Simplified implementation using only consolidated formatting
    */
   public async detect(options: DriftOptions = {}): Promise<number> {
     // 1. Validate Amplify project
@@ -57,77 +64,222 @@ export class AmplifyDriftDetector {
 
     // 2. Get stack name from team-provider-info
     const stackName = this.getRootStackName();
-    printer.info(`Checking drift for stack: ${stackName}`);
+    const projectName = this.extractProjectName(stackName);
+
+    // Display initial status
+    printer.info('');
+    printer.info(chalk.cyan.bold(`Started Drift Detection for Project: ${projectName}`));
 
     // 3. Get CloudFormation client
     const cfn = await this.getCloudFormationClient();
 
     // 4. Validate stack exists
     if (!(await this.validateStackExists(cfn, stackName))) {
+      printer.error(chalk.red('Stack not found'));
       throw new AmplifyError('StackNotFoundError', {
         message: `Stack ${stackName} does not exist.`,
         resolution: 'Has the project been deployed? Run "amplify push" to deploy your project.',
       });
     }
 
-    // 5. Detect drift (following CDK pattern)
+    // Start drift detection
+    printer.info(chalk.gray(`Checking drift for root stack: ${chalk.yellow(stackName)}`));
+
+    // 5. Detect drift recursively (including nested stacks)
+    let currentStatus = '';
     const print = {
-      info: (msg: string) => printer.info(msg),
-      debug: (msg: string) => (options.verbose ? printer.info(msg) : undefined),
-      warning: (msg: string) => printer.warn(msg),
+      info: (msg: string) => {
+        // Filter out the old-style messages and show cleaner status
+        if (msg.includes('Found') && msg.includes('nested stack')) {
+          const count = msg.match(/Found (\d+) nested stack/)?.[1] || '0';
+          currentStatus = `Analyzing stack structure... Found ${chalk.yellow(count)} nested stack(s)`;
+          printer.info(chalk.gray(currentStatus));
+        } else if (msg.includes('Checking drift for nested stack:')) {
+          const nestedStackName = msg.replace('Checking drift for nested stack:', '').trim();
+          currentStatus = `Checking drift for: ${chalk.yellow(nestedStackName)}`;
+          printer.info(chalk.gray(currentStatus));
+        } else if (!msg.includes('Checking drift for stack:')) {
+          printer.info(msg);
+        }
+      },
+      debug: (msg: string) => {
+        if (options.verbose) printer.info(msg);
+      },
+      warning: (msg: string) => {
+        printer.warn(msg);
+      },
     };
 
-    const driftResults = await detectStackDrift(cfn, stackName, print);
+    const combinedResults = await detectStackDriftRecursive(cfn, stackName, print);
+    printer.info(chalk.green('Drift detection completed'));
+    printer.info('');
 
-    // 6. Handle no results (CDK pattern)
-    if (!driftResults.StackResourceDrifts) {
+    // 6. Handle no results
+    if (!combinedResults.rootStackDrifts.StackResourceDrifts) {
       printer.warn(`${stackName}: No drift results available`);
       return 0;
     }
 
-    // 7. Get stack template for formatting
-    const template = await this.getStackTemplate(cfn, stackName);
+    // 7. Build consolidated results structure
+    const rootTemplate = await this.getStackTemplate(cfn, stackName);
+    const consolidatedResults = await this.buildConsolidatedResults(cfn, stackName, rootTemplate, combinedResults);
 
-    // 8. Format and display results (CDK pattern)
-    const formatter = new DriftFormatter({
-      stackName,
-      template,
-      resourceDrifts: driftResults.StackResourceDrifts,
-    });
+    // 8. Use consolidated formatter for all formats
+    const consolidatedFormatter = new ConsolidatedDriftFormatter(consolidatedResults);
 
-    const driftOutput = formatter.formatStackDrift();
-
-    // 9. Display output (CDK pattern)
-    printer.info(driftOutput.stackHeader);
-
-    if (driftOutput.unchanged && options.verbose) {
-      printer.info(driftOutput.unchanged);
+    // 9. Display results based on format
+    if (options.format === 'json') {
+      const simplifiedJson = this.createSimplifiedJsonOutput(consolidatedResults);
+      printer.info(JSON.stringify(simplifiedJson, null, 2));
+    } else if (options.format === 'summary') {
+      const output = consolidatedFormatter.formatDrift('summary');
+      printer.info(output.summaryDashboard);
+      if (output.categoryBreakdown) {
+        printer.info(output.categoryBreakdown);
+      }
+    } else if (options.format === 'tree') {
+      const output = consolidatedFormatter.formatDrift('tree');
+      printer.info(output.summaryDashboard);
+      if (output.treeView) {
+        printer.info(output.treeView);
+      }
+      if (output.detailedChanges) {
+        printer.info(output.detailedChanges);
+      }
+      if (options.verbose && output.categoryBreakdown) {
+        printer.info(output.categoryBreakdown);
+      }
+    } else {
+      // This shouldn't happen with TypeScript, but handle gracefully
+      printer.warn(`Unknown format: ${options.format}. Using summary format.`);
+      const output = consolidatedFormatter.formatDrift('summary');
+      printer.info(output.summaryDashboard);
+      if (output.categoryBreakdown) {
+        printer.info(output.categoryBreakdown);
+      }
     }
-    if (driftOutput.unchecked && options.verbose) {
-      printer.info(driftOutput.unchecked);
-    }
-    if (driftOutput.modified) {
-      printer.info(driftOutput.modified);
-    }
-    if (driftOutput.deleted) {
-      printer.info(driftOutput.deleted);
-    }
 
-    printer.info(driftOutput.summary);
-
-    // 10. Save JSON if requested (enhancement over CDK)
+    // 10. Save JSON if requested
     if (options['output-file']) {
-      await this.saveJsonOutput(options['output-file'], {
-        stackName,
-        numResourcesWithDrift: driftOutput.numResourcesWithDrift,
-        numResourcesUnchecked: driftOutput.numResourcesUnchecked,
-        timestamp: new Date().toISOString(),
+      const simplifiedJson = this.createSimplifiedJsonOutput(consolidatedResults);
+      await this.saveJsonOutput(options['output-file'], simplifiedJson);
+    }
+
+    // 11. Return exit code - always return 1 if drift detected, 0 if no drift
+    const hasDrift = consolidatedResults.summary.totalDrifted > 0;
+    return hasDrift ? 1 : 0;
+  }
+
+  /**
+   * Build consolidated results structure for the new formatter
+   */
+  private async buildConsolidatedResults(
+    cfn: any,
+    stackName: string,
+    rootTemplate: CloudFormationTemplate,
+    combinedResults: any,
+  ): Promise<ConsolidatedDriftResults> {
+    const nestedStacks: Array<{
+      logicalId: string;
+      physicalName: string;
+      category?: string;
+      drifts: any[];
+      template: CloudFormationTemplate;
+    }> = [];
+    let totalDrifted = 0;
+    let totalInSync = 0;
+    let totalUnchecked = 0;
+
+    // Process root stack
+    const rootDrifts = combinedResults.rootStackDrifts.StackResourceDrifts || [];
+    const rootDrifted = this.countDriftedResources(rootDrifts);
+    const rootInSync = this.countInSyncResources(rootDrifts);
+    const rootUnchecked = this.countUncheckedResources(rootDrifts, rootTemplate);
+
+    totalDrifted += rootDrifted;
+    totalInSync += rootInSync;
+    totalUnchecked += rootUnchecked;
+
+    // Process nested stacks
+    for (const [logicalId, nestedDrift] of combinedResults.nestedStackDrifts.entries()) {
+      if (!nestedDrift.StackResourceDrifts) {
+        continue;
+      }
+
+      const physicalName = combinedResults.nestedStackPhysicalIds.get(logicalId) || logicalId;
+      const nestedTemplate = await this.getStackTemplate(cfn, physicalName);
+
+      const nestedDrifted = this.countDriftedResources(nestedDrift.StackResourceDrifts);
+      const nestedInSync = this.countInSyncResources(nestedDrift.StackResourceDrifts);
+      const nestedUnchecked = this.countUncheckedResources(nestedDrift.StackResourceDrifts, nestedTemplate);
+
+      totalDrifted += nestedDrifted;
+      totalInSync += nestedInSync;
+      totalUnchecked += nestedUnchecked;
+
+      nestedStacks.push({
+        logicalId,
+        physicalName,
+        category: this.extractCategory(logicalId),
+        drifts: nestedDrift.StackResourceDrifts,
+        template: nestedTemplate,
       });
     }
 
-    // 11. Return exit code (CDK pattern)
-    const hasDrift = driftOutput.numResourcesWithDrift > 0;
-    return hasDrift && options.fail ? 1 : 0;
+    return {
+      rootStack: {
+        name: stackName,
+        drifts: rootDrifts,
+        template: rootTemplate,
+      },
+      nestedStacks,
+      summary: {
+        totalStacks: 1 + nestedStacks.length,
+        totalDrifted,
+        totalInSync,
+        totalUnchecked,
+      },
+    };
+  }
+
+  /**
+   * Helper methods for counting resources
+   */
+  private countDriftedResources(drifts: any[]): number {
+    return drifts.filter((d) => d.StackResourceDriftStatus === 'MODIFIED' || d.StackResourceDriftStatus === 'DELETED').length;
+  }
+
+  private countInSyncResources(drifts: any[]): number {
+    return drifts.filter((d) => d.StackResourceDriftStatus === 'IN_SYNC').length;
+  }
+
+  private countUncheckedResources(drifts: any[], template: CloudFormationTemplate): number {
+    const checkedResourceIds = new Set(drifts.map((d) => d.LogicalResourceId));
+    const allResourceIds = Object.keys(template.Resources || {});
+    return allResourceIds.filter((id) => !checkedResourceIds.has(id)).length;
+  }
+
+  private extractCategory(logicalId: string): string {
+    const idLower = logicalId.toLowerCase();
+    if (idLower.includes('auth')) return 'auth';
+    if (idLower.includes('storage')) return 'storage';
+    if (idLower.includes('function')) return 'function';
+    if (idLower.includes('api')) return 'api';
+    if (idLower.includes('hosting')) return 'hosting';
+    if (idLower.includes('analytics')) return 'analytics';
+    return 'other';
+  }
+
+  /**
+   * Create simplified JSON output structure
+   */
+  private createSimplifiedJsonOutput(consolidatedResults: ConsolidatedDriftResults): any {
+    return {
+      stackName: consolidatedResults.rootStack.name,
+      numResourcesWithDrift: consolidatedResults.summary.totalDrifted,
+      numResourcesUnchecked: consolidatedResults.summary.totalUnchecked,
+      timestamp: new Date().toISOString(),
+    };
   }
 
   /**
@@ -166,11 +318,12 @@ export class AmplifyDriftDetector {
    * Get CloudFormation client (SDK v3)
    * Following the pattern from other SDK v3 clients in Amplify
    */
-  private async getCloudFormationClient(): Promise<CloudFormationClient> {
+  private async getCloudFormationClient(): Promise<any> {
     // Use the provider package's loadConfiguration function
     // This is the same pattern used by the CloudFormation class in aws-cfn.js
     const { loadConfiguration } = require('@aws-amplify/amplify-provider-awscloudformation');
     const credentials = await loadConfiguration(this.context);
+    const { CloudFormationClient } = require('@aws-sdk/client-cloudformation');
 
     return new CloudFormationClient({
       ...credentials,
@@ -181,7 +334,7 @@ export class AmplifyDriftDetector {
   /**
    * Validate that stack exists in CloudFormation
    */
-  private async validateStackExists(cfn: CloudFormationClient, stackName: string): Promise<boolean> {
+  private async validateStackExists(cfn: any, stackName: string): Promise<boolean> {
     try {
       await cfn.send(
         new GetTemplateCommand({
@@ -201,7 +354,7 @@ export class AmplifyDriftDetector {
   /**
    * Get stack template from CloudFormation
    */
-  private async getStackTemplate(cfn: CloudFormationClient, stackName: string): Promise<CloudFormationTemplate> {
+  private async getStackTemplate(cfn: any, stackName: string): Promise<CloudFormationTemplate> {
     const response = await cfn.send(
       new GetTemplateCommand({
         StackName: stackName,
@@ -218,5 +371,14 @@ export class AmplifyDriftDetector {
     const fs = require('fs-extra');
     await fs.writeJson(filePath, data, { spaces: 2 });
     printer.info(`Drift results saved to: ${filePath}`);
+  }
+
+  /**
+   * Extract project name from stack name
+   */
+  private extractProjectName(stackName: string): string {
+    // Extract project name from stack name (e.g., "amplify-myproject-dev-123" -> "myproject")
+    const match = stackName.match(/^amplify-([^-]+)-/);
+    return match ? match[1] : stackName;
   }
 }
