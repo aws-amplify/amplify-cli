@@ -321,6 +321,11 @@ const getAWSConfig = ({ accessKeyId, secretAccessKey, sessionToken }: AWSAccount
   },
   ...(region ? { region } : {}),
   maxRetries: 10,
+  requestHandler: {
+    connectionTimeout: 30000,
+    socketTimeout: 30000,
+    maxSockets: 25, // Reduced from default 50
+  },
 });
 
 /**
@@ -1102,25 +1107,66 @@ const getEnvVarCredentials = (): AWSAccountInfo => {
 
 const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, filterPredicate: JobFilterPredicate): Promise<void> => {
   const cbClient = new CodeBuildClient(getAWSConfig(account));
-  const appPromises = AWS_REGIONS_TO_RUN_TESTS.map((region) => getAmplifyApps(account, region, cbClient));
-  const stackPromises = AWS_REGIONS_TO_RUN_TESTS.map((region) => getStacks(account, region, cbClient));
-  const bucketPromise = getS3Buckets(account, cbClient);
-  const orphanPinpointApplicationsPromise = AWS_REGIONS_TO_RUN_TESTS_PINPOINT.map((region) =>
-    getOrphanPinpointApplications(account, region),
-  );
-  const orphanBucketPromise = getOrphanS3TestBuckets(account);
-  const orphanIamRolesPromise = getOrphanTestIamRoles(account);
-  const orphanAppSyncApisPromise = AWS_REGIONS_TO_RUN_TESTS.map((region) => getOrphanAppSyncApis(account, region));
-  const orphanUserPoolsPromise = AWS_REGIONS_TO_RUN_TESTS.map((region) => getOrphanUserPools(account, region));
 
-  const apps = (await Promise.all(appPromises)).flat();
-  const stacks = (await Promise.all(stackPromises)).flat();
-  const buckets = await bucketPromise;
-  const orphanBuckets = await orphanBucketPromise;
-  const orphanIamRoles = await orphanIamRolesPromise;
-  const orphanPinpointApplications = (await Promise.all(orphanPinpointApplicationsPromise)).flat();
-  const orphanAppSyncApis = (await Promise.all(orphanAppSyncApisPromise)).flat();
-  const orphanUserPools = (await Promise.all(orphanUserPoolsPromise)).flat();
+  // Process regions in smaller batches to avoid memory issues
+  const REGION_BATCH_SIZE = 3;
+  const regionBatches = [];
+  for (let i = 0; i < AWS_REGIONS_TO_RUN_TESTS.length; i += REGION_BATCH_SIZE) {
+    regionBatches.push(AWS_REGIONS_TO_RUN_TESTS.slice(i, i + REGION_BATCH_SIZE));
+  }
+
+  const apps: AmplifyAppInfo[] = [];
+  const stacks: StackInfo[] = [];
+
+  // Process regions in batches
+  for (const regionBatch of regionBatches) {
+    const appPromises = regionBatch.map((region) => getAmplifyApps(account, region, cbClient));
+    const stackPromises = regionBatch.map((region) => getStacks(account, region, cbClient));
+
+    const batchApps = (await Promise.all(appPromises)).flat();
+    const batchStacks = (await Promise.all(stackPromises)).flat();
+
+    apps.push(...batchApps);
+    stacks.push(...batchStacks);
+
+    // Force cleanup between batches
+    if (global.gc) {
+      global.gc();
+    }
+  }
+
+  const buckets = await getS3Buckets(account, cbClient);
+  const orphanBuckets = await getOrphanS3TestBuckets(account);
+  const orphanIamRoles = await getOrphanTestIamRoles(account);
+
+  // Process Pinpoint regions in batches
+  const pinpointRegionBatches = [];
+  for (let i = 0; i < AWS_REGIONS_TO_RUN_TESTS_PINPOINT.length; i += REGION_BATCH_SIZE) {
+    pinpointRegionBatches.push(AWS_REGIONS_TO_RUN_TESTS_PINPOINT.slice(i, i + REGION_BATCH_SIZE));
+  }
+
+  const orphanPinpointApplications: PinpointAppInfo[] = [];
+  const orphanAppSyncApis: AppSyncApiInfo[] = [];
+  const orphanUserPools: UserPoolInfo[] = [];
+
+  for (const regionBatch of pinpointRegionBatches) {
+    const pinpointPromises = regionBatch.map((region) => getOrphanPinpointApplications(account, region));
+    const appSyncPromises = regionBatch.map((region) => getOrphanAppSyncApis(account, region));
+    const userPoolPromises = regionBatch.map((region) => getOrphanUserPools(account, region));
+
+    const batchPinpoint = (await Promise.all(pinpointPromises)).flat();
+    const batchAppSync = (await Promise.all(appSyncPromises)).flat();
+    const batchUserPools = (await Promise.all(userPoolPromises)).flat();
+
+    orphanPinpointApplications.push(...batchPinpoint);
+    orphanAppSyncApis.push(...batchAppSync);
+    orphanUserPools.push(...batchUserPools);
+
+    // Force cleanup between batches
+    if (global.gc) {
+      global.gc();
+    }
+  }
 
   const allResources = mergeResourcesByCIJob(
     apps,
@@ -1132,6 +1178,7 @@ const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, fil
     orphanAppSyncApis,
     orphanUserPools,
   );
+
   // cleanup resources that are <unknown> but that are definitely amplify resources
   // this includes apps with names that include "test" or stacks that include both "amplify" & "test"
   const testApps = allResources['<unknown>']?.amplifyApps?.filter((a) => a.name.toLocaleLowerCase().includes('test'));
@@ -1168,12 +1215,22 @@ const cleanup = async (): Promise<void> => {
       console.log(`Processing account ${accountIndex + 1}/${accounts.length}`);
       await cleanupAccount(accounts[accountIndex], accountIndex, filterPredicateStaleResources);
 
-      // Force garbage collection between accounts
+      // Force garbage collection and add delay between accounts
       if (global.gc) {
         global.gc();
       }
+
+      // Add a small delay between accounts to allow connection cleanup
+      if (accountIndex < accounts.length - 1) {
+        await sleep(500);
+      }
     } catch (error) {
       console.error(`Failed to cleanup account ${accountIndex}:`, error.message);
+
+      // Force cleanup on error
+      if (global.gc) {
+        global.gc();
+      }
     }
   }
 
