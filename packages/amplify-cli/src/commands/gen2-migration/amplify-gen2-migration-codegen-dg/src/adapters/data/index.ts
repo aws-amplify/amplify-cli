@@ -1,5 +1,12 @@
-// Data adapter - converts Gen 1 GraphQL/DynamoDB config to intermediate format
-// Logic from amplify-gen1-codegen-data-adapter
-export const adaptDataConfig = async (gen1DataConfig: any) => {
-  // Convert Gen 1 data configuration to intermediate format
+import assert from 'node:assert';
+import { DataTableMapping } from '../../core/migration-pipeline';
+import { Stack } from '@aws-sdk/client-cloudformation';
+
+export const tableMappingKey = 'DataSourceMappingOutput';
+
+export const getDataDefinition = (dataStack: Stack): DataTableMapping => {
+  const rawTableMapping = dataStack.Outputs?.find((o) => o.OutputKey === tableMappingKey)?.OutputValue;
+  assert(rawTableMapping);
+  const tableMapping = JSON.parse(rawTableMapping);
+  return tableMapping;
 };
