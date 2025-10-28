@@ -4,20 +4,12 @@ import { FeatureFlagProvider, GraphQLTransform } from 'graphql-transformer-core'
 import { deploy, launchDDBLocal, terminateDDB } from './utils/index';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import { signUpAddToGroupAndGetJwtToken } from './utils/cognito-utils';
-import AWS = require('aws-sdk');
 import gql from 'graphql-tag';
 import 'isomorphic-fetch';
 import { GraphQLClient } from './utils/graphql-client';
 
 // to deal with subscriptions in node env
 (global as any).WebSocket = require('ws');
-
-// To overcome of the way of how AmplifyJS picks up currentUserCredentials
-const anyAWS = AWS as any;
-
-if (anyAWS && anyAWS.config && anyAWS.config.credentials) {
-  delete anyAWS.config.credentials;
-}
 
 // delays
 const SUBSCRIPTION_DELAY = 2000;
