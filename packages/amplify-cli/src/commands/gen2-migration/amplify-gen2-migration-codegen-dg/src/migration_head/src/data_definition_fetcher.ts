@@ -95,15 +95,29 @@ export class DataDefinitionFetcher {
           if (!backendEnvironment?.stackName) {
             return [backendEnvironment.environmentName, undefined];
           }
+          console.log(`DEBUG - Fetching stacks for ${backendEnvironment.environmentName}, stackName: ${backendEnvironment?.stackName}`);
           const amplifyStacks = await this.amplifyStackClient.getAmplifyStacks(backendEnvironment?.stackName);
+          console.log(`DEBUG - Found stacks:`, {
+            dataStack: amplifyStacks.dataStack ? 'EXISTS' : 'MISSING',
+            outputs: amplifyStacks.dataStack?.Outputs?.length || 0,
+          });
           if (amplifyStacks.dataStack) {
-            const tableMappingText = amplifyStacks.dataStack?.Outputs?.find((o) => o.OutputKey === dataSourceMappingOutputKey)?.OutputValue;
+            const outputs = amplifyStacks.dataStack.Outputs || [];
+            console.log(
+              `DEBUG - Stack outputs:`,
+              outputs.map((o) => o.OutputKey),
+            );
+            const tableMappingText = outputs.find((o) => o.OutputKey === dataSourceMappingOutputKey)?.OutputValue;
+            console.log(`DEBUG - Table mapping for ${dataSourceMappingOutputKey}:`, tableMappingText ? 'FOUND' : 'NOT FOUND');
             if (!tableMappingText) {
               return [backendEnvironment.environmentName, undefined];
             }
             try {
-              return [backendEnvironment.environmentName, JSON.parse(tableMappingText)];
+              const parsed = JSON.parse(tableMappingText);
+              console.log(`DEBUG - Parsed mappings:`, parsed);
+              return [backendEnvironment.environmentName, parsed];
             } catch (e) {
+              console.log(`DEBUG - Parse error:`, e.message);
               return [backendEnvironment.environmentName, undefined];
             }
           }

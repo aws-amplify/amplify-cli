@@ -148,6 +148,7 @@ export function createFunctionDefinition(
         nodeRuntime = 20;
         break;
       case 'nodejs22x':
+      case Runtime.nodejs22x:
         nodeRuntime = 22;
         break;
       default:

@@ -60,7 +60,8 @@ export class ASTCodeTransformer {
               return node;
             }
           };
-          return ts.visitNode(sourceFile, visitor);
+          const result = ts.visitNode(sourceFile, visitor);
+          return result && ts.isSourceFile(result) ? result : sourceFile;
         };
       };
 

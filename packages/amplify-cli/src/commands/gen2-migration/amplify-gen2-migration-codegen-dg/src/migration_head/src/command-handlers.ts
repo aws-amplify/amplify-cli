@@ -76,13 +76,24 @@ const generateGen2Code = async ({
   functionsDefinitionFetcher,
 }: CodegenCommandParameters) => {
   const fetchingAWSResourceDetails = ora('Fetching resource details from AWS').start();
+  const auth = await authDefinitionFetcher.getDefinition();
+  const storage = await storageDefinitionFetcher.getDefinition();
+  const data = await dataDefinitionFetcher.getDefinition();
+  const functions = await functionsDefinitionFetcher.getDefinition();
+
+  console.log('Auth:', auth ? 'EXISTS' : 'UNDEFINED');
+  console.log('Storage:', storage ? 'EXISTS' : 'UNDEFINED');
+  console.log('Data:', data ? JSON.stringify(data, null, 2) : 'UNDEFINED');
+  console.log('Functions:', functions ? `${functions.length} functions` : 'UNDEFINED');
+  console.log('Backend env:', backendEnvironmentName);
+
   const gen2RenderOptions = {
     outputDir: outputDirectory,
     backendEnvironmentName: backendEnvironmentName,
-    auth: await authDefinitionFetcher.getDefinition(),
-    storage: await storageDefinitionFetcher.getDefinition(),
-    data: await dataDefinitionFetcher.getDefinition(),
-    functions: await functionsDefinitionFetcher.getDefinition(),
+    auth,
+    storage,
+    data,
+    functions,
     customResources: await getCustomResourceMap(),
     unsupportedCategories: unsupportedCategories(),
   };
@@ -95,9 +106,12 @@ const generateGen2Code = async ({
   const usageData = await getUsageDataMetric(backendEnvironmentName);
 
   try {
+    console.log('Starting pipeline render');
     await pipeline.render();
+    console.log('Pipeline render completed');
     await usageData.emitSuccess();
   } catch (e) {
+    console.log('Pipeline render failed:', e.message);
     await usageData.emitError(e);
     gen2Codegen.fail(`Failed to generate ${GEN2_COMMAND_GENERATION_MESSAGE_SUFFIX}`);
     throw e;

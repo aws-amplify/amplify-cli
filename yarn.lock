@@ -1209,7 +1209,7 @@ __metadata:
     semver: ^7.5.4
     tar-fs: ^2.1.1
     treeify: ^1.1.0
-    typescript: ^4.9.5
+    typescript: ^5.4.5
     unzipper: ^0.10.14
     update-notifier: ^5.1.0
     uuid: ^8.3.2
@@ -34877,6 +34877,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"typescript@npm:^5.4.5":
+  version: 5.9.3
+  resolution: "typescript@npm:5.9.3"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 6bd7552ce39f97e711db5aa048f6f9995b53f1c52f7d8667c1abdc1700c68a76a308f579cd309ce6b53646deb4e9a1be7c813a93baaf0a28ccd536a30270e1c5
+  languageName: node
+  linkType: hard
+
 "typescript@npm:~4.8.3, typescript@npm:~4.8.4":
   version: 4.8.4
   resolution: "typescript@npm:4.8.4"
@@ -34914,6 +34924,16 @@ __metadata:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: 10d31da0caa997927eab0167b7ddacb9ac8d3fd87e6584185b14da32b7f033e727309682fc0395021f4ac110860a3be6054e9b039a996a24d282a20bafc599f4
+  languageName: node
+  linkType: hard
+
+"typescript@patch:typescript@^5.4.5#~builtin<compat/typescript>":
+  version: 5.9.3
+  resolution: "typescript@patch:typescript@npm%3A5.9.3#~builtin<compat/typescript>::version=5.9.3&hash=85af82"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 6f7e53bf0d9702350deeb6f35e08b69cbc8b958c33e0ec77bdc0ad6a6c8e280f3959dcbfde6f5b0848bece57810696489deaaa53d75de3578ff255d168c1efbd
   languageName: node
   linkType: hard
 
