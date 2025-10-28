@@ -349,40 +349,76 @@ export class ConsolidatedDriftFormatter {
     return match ? match[1] : stackName;
   }
 
-  private getCategoryIcon(category: string): string {
-    const categoryLower = category.toLowerCase();
-    if (categoryLower.includes('auth')) return chalk.magenta('[AUTH]');
-    if (categoryLower.includes('storage')) return chalk.blue('[STORAGE]');
-    if (categoryLower.includes('function')) return chalk.yellow('[FUNCTION]');
-    if (categoryLower.includes('api')) return chalk.green('[API]');
-    if (categoryLower.includes('hosting')) return chalk.cyan('[HOSTING]');
-    if (categoryLower.includes('analytics')) return chalk.red('[ANALYTICS]');
-    if (categoryLower.includes('core') || categoryLower.includes('infrastructure')) return chalk.gray('[CORE]');
-    return chalk.white('[OTHER]');
-  }
-
-  private getCategoryName(logicalId: string): string {
-    const idLower = logicalId.toLowerCase();
+  /**
+   * Determine the category from a logical ID or category string
+   */
+  private determineCategory(identifier: string): string {
+    const idLower = identifier.toLowerCase();
     if (idLower.includes('auth')) return 'Auth';
     if (idLower.includes('storage')) return 'Storage';
     if (idLower.includes('function')) return 'Function';
     if (idLower.includes('api')) return 'API';
     if (idLower.includes('hosting')) return 'Hosting';
     if (idLower.includes('analytics')) return 'Analytics';
+    if (idLower.includes('core') || idLower.includes('infrastructure')) return 'Core Infrastructure';
     return 'Other';
   }
 
+  /**
+   * Get the icon for a category
+   */
+  private getCategoryIcon(category: string): string {
+    switch (category) {
+      case 'Auth':
+        return chalk.magenta('[AUTH]');
+      case 'Storage':
+        return chalk.blue('[STORAGE]');
+      case 'Function':
+        return chalk.yellow('[FUNCTION]');
+      case 'API':
+        return chalk.green('[API]');
+      case 'Hosting':
+        return chalk.cyan('[HOSTING]');
+      case 'Analytics':
+        return chalk.red('[ANALYTICS]');
+      case 'Core Infrastructure':
+        return chalk.gray('[CORE]');
+      default:
+        return chalk.white('[OTHER]');
+    }
+  }
+
+  /**
+   * Get the category name from a logical ID
+   */
+  private getCategoryName(logicalId: string): string {
+    return this.determineCategory(logicalId);
+  }
+
+  /**
+   * Generic method to count resources by status
+   */
+  private countResourcesByStatus(drifts: StackResourceDrift[], ...statuses: StackResourceDriftStatus[]): number {
+    return drifts.filter((d) => statuses.includes(d.StackResourceDriftStatus!)).length;
+  }
+
+  /**
+   * Count drifted resources (MODIFIED or DELETED)
+   */
   private countDriftedResources(drifts: StackResourceDrift[]): number {
-    return drifts.filter(
-      (d) =>
-        d.StackResourceDriftStatus === StackResourceDriftStatus.MODIFIED || d.StackResourceDriftStatus === StackResourceDriftStatus.DELETED,
-    ).length;
+    return this.countResourcesByStatus(drifts, StackResourceDriftStatus.MODIFIED, StackResourceDriftStatus.DELETED);
   }
 
+  /**
+   * Count resources in sync
+   */
   private countInSyncResources(drifts: StackResourceDrift[]): number {
-    return drifts.filter((d) => d.StackResourceDriftStatus === StackResourceDriftStatus.IN_SYNC).length;
+    return this.countResourcesByStatus(drifts, StackResourceDriftStatus.IN_SYNC);
   }
 
+  /**
+   * Count unchecked resources (NOT_CHECKED status + resources not in drift results)
+   */
   private countUncheckedResources(drifts: StackResourceDrift[], template: CloudFormationTemplate): number {
     // Count resources not in drift results
     const checkedResourceIds = new Set(drifts.map((d) => d.LogicalResourceId));
@@ -390,16 +426,21 @@ export class ConsolidatedDriftFormatter {
     const notInResults = allResourceIds.filter((id) => !checkedResourceIds.has(id)).length;
 
     // Count resources with NOT_CHECKED status
-    const notChecked = drifts.filter((d) => d.StackResourceDriftStatus === StackResourceDriftStatus.NOT_CHECKED).length;
+    const notChecked = this.countResourcesByStatus(drifts, StackResourceDriftStatus.NOT_CHECKED);
 
     return notInResults + notChecked;
   }
 
+  /**
+   * Count failed resources (UNKNOWN status - drift check failed)
+   */
   private countFailedResources(drifts: StackResourceDrift[]): number {
-    // Count resources with UNKNOWN status (drift check failed)
-    return drifts.filter((d) => d.StackResourceDriftStatus === StackResourceDriftStatus.UNKNOWN).length;
+    return this.countResourcesByStatus(drifts, StackResourceDriftStatus.UNKNOWN);
   }
 
+  /**
+   * Get drifted resources (MODIFIED or DELETED)
+   */
   private getDriftedResources(drifts: StackResourceDrift[]): StackResourceDrift[] {
     return drifts.filter(
       (d) =>
