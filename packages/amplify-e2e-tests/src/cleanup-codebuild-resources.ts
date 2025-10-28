@@ -8,6 +8,7 @@ import {
   ListStackResourcesCommand,
   StackStatus,
   Tag,
+  waitUntilStackDeleteComplete,
 } from '@aws-sdk/client-cloudformation';
 import { CodeBuildClient, BatchGetBuildsCommand, Build, StatusType } from '@aws-sdk/client-codebuild';
 import {
@@ -42,12 +43,12 @@ import {
   S3Client,
   ListBucketsCommand,
   DeleteBucketCommand,
-  ListObjectsV2Command,
   DeleteObjectsCommand,
   GetBucketTaggingCommand,
   ListObjectVersionsCommand,
   Bucket,
   GetBucketLocationCommand,
+  waitUntilBucketNotExists,
 } from '@aws-sdk/client-s3';
 import { STSClient, GetCallerIdentityCommand, AssumeRoleCommand } from '@aws-sdk/client-sts';
 import fs from 'fs-extra';
@@ -324,7 +325,7 @@ const getAWSConfig = ({ accessKeyId, secretAccessKey, sessionToken }: AWSAccount
   requestHandler: {
     connectionTimeout: 30000,
     socketTimeout: 30000,
-    maxSockets: 25, // Reduced from default 50
+    maxSockets: 100,
   },
 });
 
@@ -383,33 +384,15 @@ const deleteS3Bucket = async (bucket: string, providedS3Client: S3Client | undef
  */
 const bucketNotExists = async (bucket: string) => {
   const s3 = new S3Client({});
-  const maxAttempts = 10;
-  const delay = 30000; // 30 seconds
-
-  for (let attempt = 0; attempt < maxAttempts; attempt++) {
-    try {
-      await s3.send(new ListObjectsV2Command({ Bucket: bucket, MaxKeys: 1 }));
-      // If we get here, bucket still exists
-      if (attempt < maxAttempts - 1) {
-        await sleep(delay);
-        continue;
-      }
+  try {
+    await waitUntilBucketNotExists({ client: s3, maxWaitTime: 300 }, { Bucket: bucket });
+    return true;
+  } catch (error) {
+    if (error.$metadata.httpStatusCode === 200) {
       return false;
-    } catch (error: any) {
-      if (error.name === 'NoSuchBucket') {
-        return true;
-      }
-      if (error.$metadata?.httpStatusCode === 404) {
-        return true;
-      }
-      if (attempt < maxAttempts - 1) {
-        await sleep(delay);
-        continue;
-      }
-      throw error;
     }
+    throw error;
   }
-  return false;
 };
 
 /**
@@ -937,29 +920,8 @@ const deleteCfnStack = async (account: AWSAccountInfo, accountIndex: number, sta
     const cfnClient = new CloudFormationClient(getAWSConfig(account, region));
     await cfnClient.send(new DeleteStackCommand({ StackName: stackName, RetainResources: resourceToRetain }));
     // we'll only wait up to a minute before moving on
-    const maxAttempts = 2;
-    for (let attempt = 0; attempt < maxAttempts; attempt++) {
-      try {
-        const result = await cfnClient.send(new DescribeStacksCommand({ StackName: stackName }));
-        const stackStatus = result.Stacks?.[0]?.StackStatus;
-        if (stackStatus === 'DELETE_COMPLETE') {
-          break;
-        }
-        if (stackStatus === 'DELETE_FAILED') {
-          console.log(`Stack ${stackName} deletion failed`);
-          break;
-        }
-        if (attempt < maxAttempts - 1) {
-          await sleep(30000); // wait 30 seconds
-        }
-      } catch (e: any) {
-        if (e.name === 'ValidationError' && e.message?.includes('does not exist')) {
-          // Stack was deleted successfully
-          break;
-        }
-        throw e;
-      }
-    }
+
+    await waitUntilStackDeleteComplete({ client: cfnClient, maxWaitTime: 120 }, { StackName: stackName });
   } catch (e) {
     console.log(`Deleting CloudFormation stack ${stackName} failed with error ${e.message}`);
     if (e.name === 'ExpiredTokenException') {
@@ -982,67 +944,45 @@ const deleteResources = async (
   accountIndex: number,
   staleResources: Record<string, ReportEntry>,
 ): Promise<void> => {
-  const jobIds = Object.keys(staleResources);
-  const CONCURRENT_JOBS = 3; // Process 3 jobs concurrently
+  for (const jobId of Object.keys(staleResources)) {
+    const resources = staleResources[jobId];
+    if (resources.amplifyApps) {
+      console.log(`Deleting up to ${DELETE_LIMITS.PER_BATCH.OTHER} of ${resources.amplifyApps.length} apps on ACCOUNT[${accountIndex}]`);
+      await deleteAmplifyApps(account, accountIndex, Object.values(resources.amplifyApps));
+    }
 
-  for (let i = 0; i < jobIds.length; i += CONCURRENT_JOBS) {
-    const batch = jobIds.slice(i, i + CONCURRENT_JOBS);
+    if (resources.stacks) {
+      console.log(`Deleting up to ${DELETE_LIMITS.PER_BATCH.CFN_STACK} of ${resources.stacks.length} stacks on ACCOUNT[${accountIndex}]`);
+      await deleteCfnStacks(account, accountIndex, Object.values(resources.stacks));
+    }
 
-    await Promise.all(
-      batch.map(async (jobId) => {
-        const resources = staleResources[jobId];
+    if (resources.buckets) {
+      console.log(`Deleting up to ${DELETE_LIMITS.PER_BATCH.OTHER} of ${resources.buckets.length} buckets on ACCOUNT[${accountIndex}]`);
+      await deleteBuckets(account, accountIndex, Object.values(resources.buckets));
+    }
 
-        // Process resource types sequentially within each job to avoid dependency issues
-        if (resources.amplifyApps) {
-          console.log(
-            `Deleting up to ${DELETE_LIMITS.PER_BATCH.OTHER} of ${resources.amplifyApps.length} apps on ACCOUNT[${accountIndex}]`,
-          );
-          await deleteAmplifyApps(account, accountIndex, Object.values(resources.amplifyApps));
-        }
+    if (resources.roles) {
+      console.log(`Deleting up to ${DELETE_LIMITS.PER_BATCH.OTHER} of ${resources.roles.length} roles on ACCOUNT[${accountIndex}]`);
+      await deleteIamRoles(account, accountIndex, Object.values(resources.roles));
+    }
 
-        if (resources.stacks) {
-          console.log(
-            `Deleting up to ${DELETE_LIMITS.PER_BATCH.CFN_STACK} of ${resources.stacks.length} stacks on ACCOUNT[${accountIndex}]`,
-          );
-          await deleteCfnStacks(account, accountIndex, Object.values(resources.stacks));
-        }
+    if (resources.pinpointApps) {
+      console.log(
+        `Deleting up to ${DELETE_LIMITS.PER_BATCH.OTHER} of ${resources.pinpointApps.length} pinpoint apps on ACCOUNT[${accountIndex}]`,
+      );
+      await deletePinpointApps(account, accountIndex, Object.values(resources.pinpointApps));
+    }
 
-        if (resources.buckets) {
-          console.log(`Deleting up to ${DELETE_LIMITS.PER_BATCH.OTHER} of ${resources.buckets.length} buckets on ACCOUNT[${accountIndex}]`);
-          await deleteBuckets(account, accountIndex, Object.values(resources.buckets));
-        }
+    if (resources.appSyncApis) {
+      console.log(
+        `Deleting up to ${DELETE_LIMITS.PER_BATCH.OTHER} of ${resources.appSyncApis.length} appSyncApis on ACCOUNT[${accountIndex}]`,
+      );
+      await deleteAppSyncApis(account, accountIndex, Object.values(resources.appSyncApis));
+    }
 
-        if (resources.roles) {
-          console.log(`Deleting up to ${DELETE_LIMITS.PER_BATCH.OTHER} of ${resources.roles.length} roles on ACCOUNT[${accountIndex}]`);
-          await deleteIamRoles(account, accountIndex, Object.values(resources.roles));
-        }
-
-        if (resources.pinpointApps) {
-          console.log(
-            `Deleting up to ${DELETE_LIMITS.PER_BATCH.OTHER} of ${resources.pinpointApps.length} pinpoint apps on ACCOUNT[${accountIndex}]`,
-          );
-          await deletePinpointApps(account, accountIndex, Object.values(resources.pinpointApps));
-        }
-
-        if (resources.appSyncApis) {
-          console.log(
-            `Deleting up to ${DELETE_LIMITS.PER_BATCH.OTHER} of ${resources.appSyncApis.length} appSyncApis on ACCOUNT[${accountIndex}]`,
-          );
-          await deleteAppSyncApis(account, accountIndex, Object.values(resources.appSyncApis));
-        }
-
-        if (resources.userPools) {
-          console.log(
-            `Deleting up to ${DELETE_LIMITS.PER_BATCH.OTHER} of ${resources.userPools.length} userPools on ACCOUNT[${accountIndex}]`,
-          );
-          await deleteUserPools(account, accountIndex, Object.values(resources.userPools));
-        }
-      }),
-    );
-
-    // Add short delay between batches to prevent rate limiting
-    if (i + CONCURRENT_JOBS < jobIds.length) {
-      await sleep(200);
+    if (resources.userPools) {
+      console.log(`Deleting up to ${DELETE_LIMITS.PER_BATCH.OTHER} of ${resources.userPools.length} userPools on ACCOUNT[${accountIndex}]`);
+      await deleteUserPools(account, accountIndex, Object.values(resources.userPools));
     }
   }
 };
@@ -1129,66 +1069,25 @@ const getEnvVarCredentials = (): AWSAccountInfo => {
 
 const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, filterPredicate: JobFilterPredicate): Promise<void> => {
   const cbClient = new CodeBuildClient(getAWSConfig(account));
+  const appPromises = AWS_REGIONS_TO_RUN_TESTS.map((region) => getAmplifyApps(account, region, cbClient));
+  const stackPromises = AWS_REGIONS_TO_RUN_TESTS.map((region) => getStacks(account, region, cbClient));
+  const bucketPromise = getS3Buckets(account, cbClient);
+  const orphanPinpointApplicationsPromise = AWS_REGIONS_TO_RUN_TESTS_PINPOINT.map((region) =>
+    getOrphanPinpointApplications(account, region),
+  );
+  const orphanBucketPromise = getOrphanS3TestBuckets(account);
+  const orphanIamRolesPromise = getOrphanTestIamRoles(account);
+  const orphanAppSyncApisPromise = AWS_REGIONS_TO_RUN_TESTS.map((region) => getOrphanAppSyncApis(account, region));
+  const orphanUserPoolsPromise = AWS_REGIONS_TO_RUN_TESTS.map((region) => getOrphanUserPools(account, region));
 
-  // Process regions in smaller batches to avoid memory issues
-  const REGION_BATCH_SIZE = 3;
-  const regionBatches = [];
-  for (let i = 0; i < AWS_REGIONS_TO_RUN_TESTS.length; i += REGION_BATCH_SIZE) {
-    regionBatches.push(AWS_REGIONS_TO_RUN_TESTS.slice(i, i + REGION_BATCH_SIZE));
-  }
-
-  const apps: AmplifyAppInfo[] = [];
-  const stacks: StackInfo[] = [];
-
-  // Process regions in batches
-  for (const regionBatch of regionBatches) {
-    const appPromises = regionBatch.map((region) => getAmplifyApps(account, region, cbClient));
-    const stackPromises = regionBatch.map((region) => getStacks(account, region, cbClient));
-
-    const batchApps = (await Promise.all(appPromises)).flat();
-    const batchStacks = (await Promise.all(stackPromises)).flat();
-
-    apps.push(...batchApps);
-    stacks.push(...batchStacks);
-
-    // Force cleanup between batches
-    if (global.gc) {
-      global.gc();
-    }
-  }
-
-  const buckets = await getS3Buckets(account, cbClient);
-  const orphanBuckets = await getOrphanS3TestBuckets(account);
-  const orphanIamRoles = await getOrphanTestIamRoles(account);
-
-  // Process Pinpoint regions in batches
-  const pinpointRegionBatches = [];
-  for (let i = 0; i < AWS_REGIONS_TO_RUN_TESTS_PINPOINT.length; i += REGION_BATCH_SIZE) {
-    pinpointRegionBatches.push(AWS_REGIONS_TO_RUN_TESTS_PINPOINT.slice(i, i + REGION_BATCH_SIZE));
-  }
-
-  const orphanPinpointApplications: PinpointAppInfo[] = [];
-  const orphanAppSyncApis: AppSyncApiInfo[] = [];
-  const orphanUserPools: UserPoolInfo[] = [];
-
-  for (const regionBatch of pinpointRegionBatches) {
-    const pinpointPromises = regionBatch.map((region) => getOrphanPinpointApplications(account, region));
-    const appSyncPromises = regionBatch.map((region) => getOrphanAppSyncApis(account, region));
-    const userPoolPromises = regionBatch.map((region) => getOrphanUserPools(account, region));
-
-    const batchPinpoint = (await Promise.all(pinpointPromises)).flat();
-    const batchAppSync = (await Promise.all(appSyncPromises)).flat();
-    const batchUserPools = (await Promise.all(userPoolPromises)).flat();
-
-    orphanPinpointApplications.push(...batchPinpoint);
-    orphanAppSyncApis.push(...batchAppSync);
-    orphanUserPools.push(...batchUserPools);
-
-    // Force cleanup between batches
-    if (global.gc) {
-      global.gc();
-    }
-  }
+  const apps = (await Promise.all(appPromises)).flat();
+  const stacks = (await Promise.all(stackPromises)).flat();
+  const buckets = await bucketPromise;
+  const orphanBuckets = await orphanBucketPromise;
+  const orphanIamRoles = await orphanIamRolesPromise;
+  const orphanPinpointApplications = (await Promise.all(orphanPinpointApplicationsPromise)).flat();
+  const orphanAppSyncApis = (await Promise.all(orphanAppSyncApisPromise)).flat();
+  const orphanUserPools = (await Promise.all(orphanUserPoolsPromise)).flat();
 
   const allResources = mergeResourcesByCIJob(
     apps,
@@ -1231,29 +1130,17 @@ const cleanup = async (): Promise<void> => {
   const filterPredicateStaleResources = (job: ReportEntry) => job?.cbInfo?.buildStatus !== StatusType.IN_PROGRESS || job.jobId === ORPHAN;
   const accounts = await getAccountsToCleanup();
 
-  // Process accounts sequentially to avoid memory/timeout issues
-  for (let accountIndex = 0; accountIndex < accounts.length; accountIndex++) {
-    try {
-      console.log(`Processing account ${accountIndex + 1}/${accounts.length}`);
-      await cleanupAccount(accounts[accountIndex], accountIndex, filterPredicateStaleResources);
-
-      // Force garbage collection and add delay between accounts
-      if (global.gc) {
-        global.gc();
-      }
-
-      // Add a small delay between accounts to allow connection cleanup
-      if (accountIndex < accounts.length - 1) {
-        await sleep(100);
-      }
-    } catch (error) {
-      console.error(`Failed to cleanup account ${accountIndex}:`, error.message);
-
-      // Force cleanup on error
-      if (global.gc) {
-        global.gc();
-      }
+  for (let i = 0; i < 3; ++i) {
+    console.log('CLEANUP ROUND: ', i + 1);
+    await Promise.all(
+      accounts.map((account, i) => {
+        return cleanupAccount(account, i, filterPredicateStaleResources);
+      }),
+    );
+    if (global.gc) {
+      global.gc();
     }
+    await sleep(60 * 1000); // run again after 60 seconds
   }
 
   console.log('Done cleaning all accounts!');

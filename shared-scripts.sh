@@ -775,7 +775,7 @@ function _cleanUpResources {
     cd packages/amplify-e2e-tests
     yarn install
     export NODE_OPTIONS="--max-old-space-size=8192 --expose-gc"
-    timeout 30m ts-node ./src/cleanup-codebuild-resources.ts
+    ts-node ./src/cleanup-codebuild-resources.ts
     _unassumeTestAccountCredentials
 }
 function _deploymentVerificationPostRelease {

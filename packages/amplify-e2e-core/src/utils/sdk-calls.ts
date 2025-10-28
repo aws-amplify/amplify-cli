@@ -82,7 +82,7 @@ export const bucketNotExists = async (bucket: string) => {
     await waitUntilBucketNotExists({ client: s3, maxWaitTime: 300 }, { Bucket: bucket });
     return true;
   } catch (error) {
-    if (error.statusCode === 200) {
+    if (error.$metadata.httpStatusCode === 200) {
       return false;
     }
     throw error;
