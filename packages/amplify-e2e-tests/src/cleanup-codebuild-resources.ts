@@ -10,7 +10,6 @@ import {
   Tag,
   waitUntilStackDeleteComplete,
 } from '@aws-sdk/client-cloudformation';
-import { CodeBuildClient, BatchGetBuildsCommand, Build, StatusType } from '@aws-sdk/client-codebuild';
 import {
   CognitoIdentityProviderClient,
   ListUserPoolsCommand,
@@ -95,7 +94,7 @@ type StackInfo = {
   resourcesFailedToDelete?: string[];
   tags: Record<string, string>;
   region: string;
-  cbInfo?: Build;
+  buildId?: string;
 };
 
 type AmplifyAppInfo = {
@@ -107,7 +106,7 @@ type AmplifyAppInfo = {
 
 type S3BucketInfo = {
   name?: string;
-  cbInfo?: Build;
+  buildId?: string;
   createTime?: Date;
 };
 
@@ -122,13 +121,13 @@ type PinpointAppInfo = {
   name?: string;
   arn: string;
   region: string;
-  cbInfo?: Build;
+  buildId?: string;
   createTime: Date;
 };
 
 type IamRoleInfo = {
   name: string;
-  cbInfo?: Build;
+  buildId?: string;
   createTime: Date;
 };
 
@@ -136,13 +135,12 @@ type AppSyncApiInfo = {
   apiId?: string;
   name?: string;
   region: string;
-  cbInfo?: Build;
+  buildId?: string;
 };
 
 type ReportEntry = {
   jobId?: string;
   workflowId?: string;
-  cbInfo?: Build;
   amplifyApps: AmplifyAppInfo[];
   stacks: StackInfo[];
   buckets: Record<string, S3BucketInfo>;
@@ -153,13 +151,6 @@ type ReportEntry = {
 };
 
 type JobFilterPredicate = (job: ReportEntry) => boolean;
-
-type CIJobInfo = {
-  workflowId: string;
-  workflowName: string;
-  ciJobDetails: string;
-  buildStatus: string;
-};
 
 type AWSAccountInfo = {
   accessKeyId: string;
@@ -407,7 +398,7 @@ const sleep = async (milliseconds: number): Promise<void> => new Promise((resolv
  * @param region aws region to query for amplify Apps
  * @returns Promise<AmplifyAppInfo[]> a list of Amplify Apps in the region with build info
  */
-const getAmplifyApps = async (account: AWSAccountInfo, region: string, cbClient: CodeBuildClient): Promise<AmplifyAppInfo[]> => {
+const getAmplifyApps = async (account: AWSAccountInfo, region: string): Promise<AmplifyAppInfo[]> => {
   if (region === 'us-east-1' && account.parent) {
     return []; // temporarily disabled until us-east-1 is re-enabled for this account
   }
@@ -424,7 +415,7 @@ const getAmplifyApps = async (account: AWSAccountInfo, region: string, cbClient:
         const backendEnvironments = await amplifyClient.send(new ListBackendEnvironmentsCommand({ appId: app.appId, maxResults: 5 }));
         for (const backendEnv of backendEnvironments.backendEnvironments) {
           if (backendEnv.stackName) {
-            const buildInfo = await getStackDetails(backendEnv.stackName, account, region, cbClient);
+            const buildInfo = await getStackDetails(backendEnv.stackName, account, region);
             if (buildInfo) {
               backends[backendEnv.environmentName!] = buildInfo;
             }
@@ -467,12 +458,7 @@ const getJobId = (tags: Tag[] = []): string | undefined => {
  * @param region region
  * @returns stack details
  */
-const getStackDetails = async (
-  stackName: string,
-  account: AWSAccountInfo,
-  region: string,
-  cbClient: CodeBuildClient,
-): Promise<StackInfo> => {
+const getStackDetails = async (stackName: string, account: AWSAccountInfo, region: string): Promise<StackInfo> => {
   const cfnClient = new CloudFormationClient(getAWSConfig(account, region));
   const stack = await cfnClient.send(new DescribeStacksCommand({ StackName: stackName }));
   const tags = stack?.Stacks?.[0].Tags ?? [];
@@ -491,11 +477,11 @@ const getStackDetails = async (
     resourcesFailedToDelete,
     region,
     tags: tags.reduce((acc, tag) => ({ ...acc, [tag.Key!]: tag.Value }), {}),
-    cbInfo: jobId ? await getCIJobDetails(jobId, cbClient) : undefined,
+    buildId: jobId,
   };
 };
 
-const getStacks = async (account: AWSAccountInfo, region: string, cbClient: CodeBuildClient): Promise<StackInfo[]> => {
+const getStacks = async (account: AWSAccountInfo, region: string): Promise<StackInfo[]> => {
   const cfnClient = new CloudFormationClient(getAWSConfig(account, region));
   const stackStatusFilter = [
     StackStatus.CREATE_COMPLETE,
@@ -552,7 +538,7 @@ const getStacks = async (account: AWSAccountInfo, region: string, cbClient: Code
   const results: StackInfo[] = [];
   for (const stack of rootStacks) {
     try {
-      const details = await getStackDetails(stack.StackName!, account, region, cbClient);
+      const details = await getStackDetails(stack.StackName!, account, region);
       if (details) {
         results.push(details);
       }
@@ -563,14 +549,7 @@ const getStacks = async (account: AWSAccountInfo, region: string, cbClient: Code
   return results;
 };
 
-const getCIJobDetails = async (build_id: string, cbClient: CodeBuildClient): Promise<Build | undefined> => {
-  const batchBuilds = await cbClient.send(new BatchGetBuildsCommand({ ids: [build_id] }));
-  const buildInfo = batchBuilds?.builds?.[0];
-
-  return buildInfo;
-};
-
-const getS3Buckets = async (account: AWSAccountInfo, cbClient: CodeBuildClient): Promise<S3BucketInfo[]> => {
+const getS3Buckets = async (account: AWSAccountInfo): Promise<S3BucketInfo[]> => {
   const s3Client = new S3Client(getAWSConfig(account));
   const buckets = await s3Client.send(new ListBucketsCommand({}));
   if (buckets.Buckets === undefined) {
@@ -590,7 +569,7 @@ const getS3Buckets = async (account: AWSAccountInfo, cbClient: CodeBuildClient):
       if (jobId) {
         result.push({
           name: bucket.Name,
-          cbInfo: await getCIJobDetails(jobId, cbClient),
+          buildId: jobId,
           createTime: bucket.CreationDate,
         });
       }
@@ -606,16 +585,6 @@ const getS3Buckets = async (account: AWSAccountInfo, cbClient: CodeBuildClient):
   }
   return result;
 };
-
-/**
- * extract and moves CI job details
- */
-const extractCIJobInfo = (record: S3BucketInfo | StackInfo | AmplifyAppInfo): CIJobInfo => ({
-  workflowId: _.get(record, ['0', 'cbInfo', 'workflows', 'workflow_id']),
-  workflowName: _.get(record, ['0', 'cbInfo', 'workflows', 'workflow_name']),
-  buildStatus: _.get(record, ['0', 'cbInfo', 'buildStatus']),
-  ciJobDetails: _.get(record, ['0', 'cbInfo']),
-});
 
 /**
  * Merges stale resources and returns a list grouped by the CI jobId. Amplify Apps that don't have
@@ -634,16 +603,16 @@ const mergeResourcesByCIJob = (
 ): Record<string, ReportEntry> => {
   const result: Record<string, ReportEntry> = {};
 
-  const stacksByJobId = _.groupBy(cfnStacks, (stack: StackInfo) => _.get(stack, ['cbInfo', 'id'], UNKNOWN));
+  const stacksByJobId = _.groupBy(cfnStacks, (stack: StackInfo) => stack.buildId || UNKNOWN);
 
-  const bucketByJobId = _.groupBy(s3Buckets, (bucketInfo: S3BucketInfo) => _.get(bucketInfo, ['cbInfo', 'id'], UNKNOWN));
+  const bucketByJobId = _.groupBy(s3Buckets, (bucketInfo: S3BucketInfo) => bucketInfo.buildId || UNKNOWN);
 
   const amplifyAppByJobId = _.groupBy(amplifyApp, (appInfo: AmplifyAppInfo) => {
     if (Object.keys(appInfo.backends).length === 0) {
       return ORPHAN;
     }
 
-    const buildIds = _.groupBy(appInfo.backends, (backendInfo: StackInfo) => _.get(backendInfo, ['cbInfo', 'id'], UNKNOWN));
+    const buildIds = _.groupBy(appInfo.backends, (backendInfo: StackInfo) => backendInfo.buildId || UNKNOWN);
     if (Object.keys(buildIds).length === 1) {
       return Object.keys(buildIds)[0];
     }
@@ -656,7 +625,6 @@ const mergeResourcesByCIJob = (
     _.pickBy(amplifyAppByJobId, (__: unknown, key: string) => key !== MULTI_JOB_APP),
     (val: any, src: AmplifyAppInfo, key: string) => ({
       ...val,
-      ...extractCIJobInfo(src),
       jobId: key,
       amplifyApps: src,
     }),
@@ -668,7 +636,6 @@ const mergeResourcesByCIJob = (
     (__: unknown, key: string) => key !== ORPHAN,
     (val: any, src: StackInfo, key: string) => ({
       ...val,
-      ...extractCIJobInfo(src),
       jobId: key,
       stacks: src,
     }),
@@ -676,7 +643,6 @@ const mergeResourcesByCIJob = (
 
   _.mergeWith(result, bucketByJobId, (val: any, src: S3BucketInfo, key: string) => ({
     ...val,
-    ...extractCIJobInfo(src),
     jobId: key,
     buckets: src,
   }));
@@ -920,7 +886,6 @@ const deleteCfnStack = async (account: AWSAccountInfo, accountIndex: number, sta
     const cfnClient = new CloudFormationClient(getAWSConfig(account, region));
     await cfnClient.send(new DeleteStackCommand({ StackName: stackName, RetainResources: resourceToRetain }));
     // we'll only wait up to a minute before moving on
-
     await waitUntilStackDeleteComplete({ client: cfnClient, maxWaitTime: 120 }, { StackName: stackName });
   } catch (e) {
     console.log(`Deleting CloudFormation stack ${stackName} failed with error ${e.message}`);
@@ -1068,10 +1033,9 @@ const getEnvVarCredentials = (): AWSAccountInfo => {
 };
 
 const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, filterPredicate: JobFilterPredicate): Promise<void> => {
-  const cbClient = new CodeBuildClient(getAWSConfig(account));
-  const appPromises = AWS_REGIONS_TO_RUN_TESTS.map((region) => getAmplifyApps(account, region, cbClient));
-  const stackPromises = AWS_REGIONS_TO_RUN_TESTS.map((region) => getStacks(account, region, cbClient));
-  const bucketPromise = getS3Buckets(account, cbClient);
+  const appPromises = AWS_REGIONS_TO_RUN_TESTS.map((region) => getAmplifyApps(account, region));
+  const stackPromises = AWS_REGIONS_TO_RUN_TESTS.map((region) => getStacks(account, region));
+  const bucketPromise = getS3Buckets(account);
   const orphanPinpointApplicationsPromise = AWS_REGIONS_TO_RUN_TESTS_PINPOINT.map((region) =>
     getOrphanPinpointApplications(account, region),
   );
@@ -1117,6 +1081,10 @@ const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, fil
   await deleteResources(account, accountIndex, staleResources);
   await deleteOrphanedOidcProviders(account);
   console.log(`[ACCOUNT ${accountIndex}] Cleanup done!`);
+
+  if (global.gc) {
+    global.gc();
+  }
 };
 
 /**
@@ -1127,7 +1095,7 @@ const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, fil
  * of account ids since the logs these are written to will be effectively public.
  */
 const cleanup = async (): Promise<void> => {
-  const filterPredicateStaleResources = (job: ReportEntry) => job?.cbInfo?.buildStatus !== StatusType.IN_PROGRESS || job.jobId === ORPHAN;
+  const filterPredicateStaleResources = (job: ReportEntry) => job.jobId === ORPHAN || job.jobId !== UNKNOWN;
   const accounts = await getAccountsToCleanup();
 
   for (let i = 0; i < 3; ++i) {
