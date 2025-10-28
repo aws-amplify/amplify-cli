@@ -6,7 +6,7 @@ import { v4 as uuid } from 'uuid';
 
 import { createGen2Renderer } from '../../core/migration-pipeline';
 
-import { UsageData } from '@aws-amplify/cli-internal';
+import { UsageData } from '../../../../../../domain/amplify-usageData';
 import { AmplifyClient, UpdateAppCommand, GetAppCommand } from '@aws-sdk/client-amplify';
 import { CloudFormationClient } from '@aws-sdk/client-cloudformation';
 import { CognitoIdentityProviderClient, LambdaConfigType } from '@aws-sdk/client-cognito-identity-provider';

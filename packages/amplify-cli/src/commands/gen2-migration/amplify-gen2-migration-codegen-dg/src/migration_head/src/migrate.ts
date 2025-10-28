@@ -2,8 +2,7 @@
 import { generateCommandFailureHandler } from './error_handler.js';
 import { createMainParser } from './main_parser_factory.js';
 import { hideBin } from 'yargs/helpers';
-import { version } from '../../../../../../../package.json';
-
+const { version } = require('../../../../../../../package.json');
 const libraryVersion = version;
 const parser = createMainParser(libraryVersion);
 const errorHandler = generateCommandFailureHandler(parser);
