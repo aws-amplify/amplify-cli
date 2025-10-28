@@ -42,6 +42,7 @@ export interface ConsolidatedDriftResults {
     totalDrifted: number;
     totalInSync: number;
     totalUnchecked: number;
+    totalFailed: number; // Resources with UNKNOWN status (drift check failed)
   };
 }
 
@@ -128,7 +129,26 @@ export class ConsolidatedDriftFormatter {
     dashboard += chalk.cyan(
       `│ Unchecked Resources: ${chalk.gray(summary.totalUnchecked)}${' '.repeat(61 - 22 - summary.totalUnchecked.toString().length)}│\n`,
     );
+
+    // Only show failed drift checks if there are any
+    if (summary.totalFailed > 0) {
+      dashboard += chalk.cyan(
+        `│ Failed Drift Checks: ${chalk.yellow(summary.totalFailed)}${' '.repeat(61 - 22 - summary.totalFailed.toString().length)}│\n`,
+      );
+    }
+
     dashboard += chalk.cyan(`└${border}┘`);
+
+    // Add warning message if there are failed checks
+    if (summary.totalFailed > 0) {
+      dashboard +=
+        '\n' +
+        chalk.yellow(
+          `WARNING: Drift detection failed for ${summary.totalFailed} resource(s).\n` +
+            `This may be due to insufficient permissions or AWS API issues.\n` +
+            `Run with --verbose to see which resources failed.`,
+        );
+    }
 
     return dashboard;
   }
@@ -364,9 +384,20 @@ export class ConsolidatedDriftFormatter {
   }
 
   private countUncheckedResources(drifts: StackResourceDrift[], template: CloudFormationTemplate): number {
+    // Count resources not in drift results
     const checkedResourceIds = new Set(drifts.map((d) => d.LogicalResourceId));
     const allResourceIds = Object.keys(template.Resources || {});
-    return allResourceIds.filter((id) => !checkedResourceIds.has(id)).length;
+    const notInResults = allResourceIds.filter((id) => !checkedResourceIds.has(id)).length;
+
+    // Count resources with NOT_CHECKED status
+    const notChecked = drifts.filter((d) => d.StackResourceDriftStatus === StackResourceDriftStatus.NOT_CHECKED).length;
+
+    return notInResults + notChecked;
+  }
+
+  private countFailedResources(drifts: StackResourceDrift[]): number {
+    // Count resources with UNKNOWN status (drift check failed)
+    return drifts.filter((d) => d.StackResourceDriftStatus === StackResourceDriftStatus.UNKNOWN).length;
   }
 
   private getDriftedResources(drifts: StackResourceDrift[]): StackResourceDrift[] {

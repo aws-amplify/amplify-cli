@@ -83,13 +83,23 @@ export async function detectStackDrift(
     }),
   );
 
-  // Log warning for any resources with UNKNOWN status
-  const unknownResources = driftResults.StackResourceDrifts?.filter((drift) => drift.StackResourceDriftStatus === 'NOT_CHECKED');
+  // Log info for resources with NOT_CHECKED status (expected behavior)
+  const notCheckedResources = driftResults.StackResourceDrifts?.filter((drift) => drift.StackResourceDriftStatus === 'NOT_CHECKED');
+
+  if (notCheckedResources && notCheckedResources.length > 0 && print?.debug) {
+    print.debug(
+      'Some resources were not checked for drift (resource type does not support drift detection):\n' +
+        notCheckedResources.map((r) => `  - ${r.LogicalResourceId} (${r.ResourceType})`).join('\n'),
+    );
+  }
+
+  // Log warning for resources with UNKNOWN status (actual problems)
+  const unknownResources = driftResults.StackResourceDrifts?.filter((drift) => drift.StackResourceDriftStatus === 'UNKNOWN');
 
   if (unknownResources && unknownResources.length > 0 && print?.debug) {
     print.debug(
-      'Some resources have UNKNOWN drift status. This may be due to insufficient permissions or throttling:\n' +
-        unknownResources.map((r) => `  - ${r.LogicalResourceId}: ${formatReason(r.StackResourceDriftStatus)}`).join('\n'),
+      'WARNING: Drift detection failed for some resources. This may be due to insufficient permissions or throttling:\n' +
+        unknownResources.map((r) => `  - ${r.LogicalResourceId} (${r.ResourceType})`).join('\n'),
     );
   }
 

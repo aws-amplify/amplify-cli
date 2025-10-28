@@ -189,16 +189,19 @@ export class AmplifyDriftDetector {
     let totalDrifted = 0;
     let totalInSync = 0;
     let totalUnchecked = 0;
+    let totalFailed = 0;
 
     // Process root stack
     const rootDrifts = combinedResults.rootStackDrifts.StackResourceDrifts || [];
     const rootDrifted = this.countDriftedResources(rootDrifts);
     const rootInSync = this.countInSyncResources(rootDrifts);
     const rootUnchecked = this.countUncheckedResources(rootDrifts, rootTemplate);
+    const rootFailed = this.countFailedResources(rootDrifts);
 
     totalDrifted += rootDrifted;
     totalInSync += rootInSync;
     totalUnchecked += rootUnchecked;
+    totalFailed += rootFailed;
 
     // Process nested stacks
     for (const [logicalId, nestedDrift] of combinedResults.nestedStackDrifts.entries()) {
@@ -212,10 +215,12 @@ export class AmplifyDriftDetector {
       const nestedDrifted = this.countDriftedResources(nestedDrift.StackResourceDrifts);
       const nestedInSync = this.countInSyncResources(nestedDrift.StackResourceDrifts);
       const nestedUnchecked = this.countUncheckedResources(nestedDrift.StackResourceDrifts, nestedTemplate);
+      const nestedFailed = this.countFailedResources(nestedDrift.StackResourceDrifts);
 
       totalDrifted += nestedDrifted;
       totalInSync += nestedInSync;
       totalUnchecked += nestedUnchecked;
+      totalFailed += nestedFailed;
 
       nestedStacks.push({
         logicalId,
@@ -238,6 +243,7 @@ export class AmplifyDriftDetector {
         totalDrifted,
         totalInSync,
         totalUnchecked,
+        totalFailed,
       },
     };
   }
@@ -254,9 +260,20 @@ export class AmplifyDriftDetector {
   }
 
   private countUncheckedResources(drifts: any[], template: CloudFormationTemplate): number {
+    // Count resources not in drift results
     const checkedResourceIds = new Set(drifts.map((d) => d.LogicalResourceId));
     const allResourceIds = Object.keys(template.Resources || {});
-    return allResourceIds.filter((id) => !checkedResourceIds.has(id)).length;
+    const notInResults = allResourceIds.filter((id) => !checkedResourceIds.has(id)).length;
+
+    // Count resources with NOT_CHECKED status
+    const notChecked = drifts.filter((d) => d.StackResourceDriftStatus === 'NOT_CHECKED').length;
+
+    return notInResults + notChecked;
+  }
+
+  private countFailedResources(drifts: any[]): number {
+    // Count resources with UNKNOWN status (drift check failed)
+    return drifts.filter((d) => d.StackResourceDriftStatus === 'UNKNOWN').length;
   }
 
   private extractCategory(logicalId: string): string {
