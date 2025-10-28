@@ -982,45 +982,67 @@ const deleteResources = async (
   accountIndex: number,
   staleResources: Record<string, ReportEntry>,
 ): Promise<void> => {
-  for (const jobId of Object.keys(staleResources)) {
-    const resources = staleResources[jobId];
-    if (resources.amplifyApps) {
-      console.log(`Deleting up to ${DELETE_LIMITS.PER_BATCH.OTHER} of ${resources.amplifyApps.length} apps on ACCOUNT[${accountIndex}]`);
-      await deleteAmplifyApps(account, accountIndex, Object.values(resources.amplifyApps));
-    }
+  const jobIds = Object.keys(staleResources);
+  const CONCURRENT_JOBS = 3; // Process 3 jobs concurrently
 
-    if (resources.stacks) {
-      console.log(`Deleting up to ${DELETE_LIMITS.PER_BATCH.CFN_STACK} of ${resources.stacks.length} stacks on ACCOUNT[${accountIndex}]`);
-      await deleteCfnStacks(account, accountIndex, Object.values(resources.stacks));
-    }
+  for (let i = 0; i < jobIds.length; i += CONCURRENT_JOBS) {
+    const batch = jobIds.slice(i, i + CONCURRENT_JOBS);
 
-    if (resources.buckets) {
-      console.log(`Deleting up to ${DELETE_LIMITS.PER_BATCH.OTHER} of ${resources.buckets.length} buckets on ACCOUNT[${accountIndex}]`);
-      await deleteBuckets(account, accountIndex, Object.values(resources.buckets));
-    }
+    await Promise.all(
+      batch.map(async (jobId) => {
+        const resources = staleResources[jobId];
 
-    if (resources.roles) {
-      console.log(`Deleting up to ${DELETE_LIMITS.PER_BATCH.OTHER} of ${resources.roles.length} roles on ACCOUNT[${accountIndex}]`);
-      await deleteIamRoles(account, accountIndex, Object.values(resources.roles));
-    }
+        // Process resource types sequentially within each job to avoid dependency issues
+        if (resources.amplifyApps) {
+          console.log(
+            `Deleting up to ${DELETE_LIMITS.PER_BATCH.OTHER} of ${resources.amplifyApps.length} apps on ACCOUNT[${accountIndex}]`,
+          );
+          await deleteAmplifyApps(account, accountIndex, Object.values(resources.amplifyApps));
+        }
 
-    if (resources.pinpointApps) {
-      console.log(
-        `Deleting up to ${DELETE_LIMITS.PER_BATCH.OTHER} of ${resources.pinpointApps.length} pinpoint apps on ACCOUNT[${accountIndex}]`,
-      );
-      await deletePinpointApps(account, accountIndex, Object.values(resources.pinpointApps));
-    }
+        if (resources.stacks) {
+          console.log(
+            `Deleting up to ${DELETE_LIMITS.PER_BATCH.CFN_STACK} of ${resources.stacks.length} stacks on ACCOUNT[${accountIndex}]`,
+          );
+          await deleteCfnStacks(account, accountIndex, Object.values(resources.stacks));
+        }
 
-    if (resources.appSyncApis) {
-      console.log(
-        `Deleting up to ${DELETE_LIMITS.PER_BATCH.OTHER} of ${resources.appSyncApis.length} appSyncApis on ACCOUNT[${accountIndex}]`,
-      );
-      await deleteAppSyncApis(account, accountIndex, Object.values(resources.appSyncApis));
-    }
+        if (resources.buckets) {
+          console.log(`Deleting up to ${DELETE_LIMITS.PER_BATCH.OTHER} of ${resources.buckets.length} buckets on ACCOUNT[${accountIndex}]`);
+          await deleteBuckets(account, accountIndex, Object.values(resources.buckets));
+        }
 
-    if (resources.userPools) {
-      console.log(`Deleting up to ${DELETE_LIMITS.PER_BATCH.OTHER} of ${resources.userPools.length} userPools on ACCOUNT[${accountIndex}]`);
-      await deleteUserPools(account, accountIndex, Object.values(resources.userPools));
+        if (resources.roles) {
+          console.log(`Deleting up to ${DELETE_LIMITS.PER_BATCH.OTHER} of ${resources.roles.length} roles on ACCOUNT[${accountIndex}]`);
+          await deleteIamRoles(account, accountIndex, Object.values(resources.roles));
+        }
+
+        if (resources.pinpointApps) {
+          console.log(
+            `Deleting up to ${DELETE_LIMITS.PER_BATCH.OTHER} of ${resources.pinpointApps.length} pinpoint apps on ACCOUNT[${accountIndex}]`,
+          );
+          await deletePinpointApps(account, accountIndex, Object.values(resources.pinpointApps));
+        }
+
+        if (resources.appSyncApis) {
+          console.log(
+            `Deleting up to ${DELETE_LIMITS.PER_BATCH.OTHER} of ${resources.appSyncApis.length} appSyncApis on ACCOUNT[${accountIndex}]`,
+          );
+          await deleteAppSyncApis(account, accountIndex, Object.values(resources.appSyncApis));
+        }
+
+        if (resources.userPools) {
+          console.log(
+            `Deleting up to ${DELETE_LIMITS.PER_BATCH.OTHER} of ${resources.userPools.length} userPools on ACCOUNT[${accountIndex}]`,
+          );
+          await deleteUserPools(account, accountIndex, Object.values(resources.userPools));
+        }
+      }),
+    );
+
+    // Add short delay between batches to prevent rate limiting
+    if (i + CONCURRENT_JOBS < jobIds.length) {
+      await sleep(200);
     }
   }
 };
@@ -1222,7 +1244,7 @@ const cleanup = async (): Promise<void> => {
 
       // Add a small delay between accounts to allow connection cleanup
       if (accountIndex < accounts.length - 1) {
-        await sleep(500);
+        await sleep(100);
       }
     } catch (error) {
       console.error(`Failed to cleanup account ${accountIndex}:`, error.message);
