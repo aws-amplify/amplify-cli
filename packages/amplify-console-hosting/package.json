@@ -9,8 +9,8 @@
   "dependencies": {
     "@aws-amplify/amplify-cli-core": "4.4.3",
     "@aws-amplify/amplify-environment-parameters": "1.9.22",
-    "@aws-sdk/client-amplify": "^3.624.0",
-    "@aws-sdk/client-s3": "^3.624.0",
+    "@aws-sdk/client-amplify": "^3.919.0",
+    "@aws-sdk/client-s3": "^3.919.0",
     "archiver": "^7.0.1",
     "chalk": "^4.1.1",
     "cli-table3": "^0.6.0",

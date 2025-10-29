@@ -30,7 +30,7 @@
     "@aws-amplify/amplify-environment-parameters": "1.9.22",
     "@aws-amplify/amplify-function-plugin-interface": "1.12.1",
     "@aws-amplify/amplify-prompts": "2.8.7",
-    "@aws-sdk/client-ssm": "^3.624.0",
+    "@aws-sdk/client-ssm": "^3.919.0",
     "archiver": "^7.0.1",
     "chalk": "^4.1.1",
     "cloudform-types": "^4.2.0",
