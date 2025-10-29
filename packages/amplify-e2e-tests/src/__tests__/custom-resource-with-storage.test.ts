@@ -25,7 +25,6 @@ describe('adding custom resources test', () => {
   let projRoot: string;
   const envName = 'devtest';
   beforeEach(async () => {
-    process.env.AMPLIFY_ENABLE_DEBUG_OUTPUT = 'true';
     projRoot = await createNewProjectDir(projectName);
     await initJSProjectWithProfile(projRoot, { envName, disableAmplifyAppCreation: false });
     await gitInit(projRoot);
