@@ -32,7 +32,7 @@
     "@aws-amplify/amplify-function-plugin-interface": "1.12.1",
     "@aws-amplify/amplify-prompts": "2.8.7",
     "@aws-amplify/graphql-transformer-interfaces": "^3.12.1",
-    "@aws-sdk/util-arn-parser": "^3.310.0",
+    "@aws-sdk/util-arn-parser": "^3.893.0",
     "@yarnpkg/lockfile": "^1.1.0",
     "ajv": "^6.12.6",
     "aws-cdk-lib": "~2.189.1",

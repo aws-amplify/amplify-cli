@@ -33,7 +33,7 @@
     "@aws-amplify/amplify-cli-core": "4.4.3",
     "@aws-amplify/amplify-prompts": "2.8.7",
     "@aws-sdk/client-dynamodb": "^3.919.0",
-    "@aws-sdk/util-dynamodb": "^3.624.0",
+    "@aws-sdk/util-dynamodb": "^3.919.0",
     "@graphql-tools/schema": "^8.3.1",
     "@graphql-tools/utils": "^8.5.1",
     "amplify-velocity-template": "1.4.17",
