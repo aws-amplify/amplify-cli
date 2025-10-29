@@ -1081,10 +1081,6 @@ const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, fil
   await deleteResources(account, accountIndex, staleResources);
   await deleteOrphanedOidcProviders(account);
   console.log(`[ACCOUNT ${accountIndex}] Cleanup done!`);
-
-  if (global.gc) {
-    global.gc();
-  }
 };
 
 /**
@@ -1105,9 +1101,6 @@ const cleanup = async (): Promise<void> => {
         return cleanupAccount(account, i, filterPredicateStaleResources);
       }),
     );
-    if (global.gc) {
-      global.gc();
-    }
     await sleep(60 * 1000); // run again after 60 seconds
   }
 
