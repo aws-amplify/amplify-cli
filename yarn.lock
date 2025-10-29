@@ -843,7 +843,7 @@ __metadata:
     "@aws-sdk/credential-provider-node": ^3.624.0
     "@aws-sdk/credential-providers": ^3.624.0
     "@aws-sdk/lib-dynamodb": ^3.624.0
-    "@aws-sdk/lib-storage": ^3.624.0
+    "@aws-sdk/lib-storage": ^3.919.0
     "@aws-sdk/s3-request-presigner": ^3.624.0
     "@aws-sdk/types": ^3.624.0
     "@smithy/node-http-handler": ^4.1.0
@@ -6654,20 +6654,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/lib-storage@npm:^3.25.0, @aws-sdk/lib-storage@npm:^3.624.0":
-  version: 3.846.0
-  resolution: "@aws-sdk/lib-storage@npm:3.846.0"
+"@aws-sdk/lib-storage@npm:^3.25.0, @aws-sdk/lib-storage@npm:^3.919.0":
+  version: 3.919.0
+  resolution: "@aws-sdk/lib-storage@npm:3.919.0"
   dependencies:
-    "@smithy/abort-controller": ^4.0.4
-    "@smithy/middleware-endpoint": ^4.1.15
-    "@smithy/smithy-client": ^4.4.7
+    "@smithy/abort-controller": ^4.2.3
+    "@smithy/middleware-endpoint": ^4.3.5
+    "@smithy/smithy-client": ^4.9.1
     buffer: 5.6.0
     events: 3.3.0
     stream-browserify: 3.0.0
     tslib: ^2.6.2
   peerDependencies:
-    "@aws-sdk/client-s3": ^3.846.0
-  checksum: 7cda821191fea1fbc18eb3a14f73c50e4d1b1b29c7b0cf86718c1a1d9328ed6759f84c111ecc8d6eef13762bcec09754cdd8c4592ed356e7ff1c5c469f6c4373
+    "@aws-sdk/client-s3": ^3.919.0
+  checksum: b7d6892e2af6a65c78a35af3dbb6467a2852e4faa2bef5e74bf30489a494afb4505f036dbec41ef997f6ea40eb5e3542d570a05df72f9c1d8cb8ce96e8d02c5c
   languageName: node
   linkType: hard
 
@@ -13447,7 +13447,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@smithy/abort-controller@npm:^4.0.4, @smithy/abort-controller@npm:^4.2.0, @smithy/abort-controller@npm:^4.2.3":
+"@smithy/abort-controller@npm:^4.2.0, @smithy/abort-controller@npm:^4.2.3":
   version: 4.2.3
   resolution: "@smithy/abort-controller@npm:4.2.3"
   dependencies:
