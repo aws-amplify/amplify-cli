@@ -23,9 +23,9 @@
   },
   "dependencies": {
     "@aws-amplify/amplify-cli-core": "4.4.3",
-    "@aws-sdk/client-pinpoint": "^3.901.0",
-    "@aws-sdk/client-sts": "3.624.0",
-    "@aws-sdk/credential-providers": "3.624.0",
+    "@aws-sdk/client-pinpoint": "^3.919.0",
+    "@aws-sdk/client-sts": "^3.919.0",
+    "@aws-sdk/credential-providers": "^3.919.0",
     "amplify-headless-interface": "1.17.8",
     "aws-amplify": "^5.3.16",
     "aws-appsync": "^4.1.1",

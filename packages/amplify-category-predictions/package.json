@@ -32,7 +32,7 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
-    "@aws-sdk/client-rekognition": "3.624.0"
+    "@aws-sdk/client-rekognition": "^3.919.0"
   },
   "berry": {
     "plugins": [
