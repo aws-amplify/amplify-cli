@@ -109,10 +109,12 @@ const generateGen2Code = async ({
     console.log('Starting pipeline render');
     await pipeline.render();
     console.log('Pipeline render completed');
-    await usageData.emitSuccess();
+    // These are called by default in run() and execute() by amplify-cli at the end of each succesfull command
+    // Keeping these causes process to exit with 0. The old tool existed outside amplify-cli and didnt call these by default
+    //await usageData.emitSuccess();
   } catch (e) {
     console.log('Pipeline render failed:', e.message);
-    await usageData.emitError(e);
+    //await usageData.emitError(e);
     gen2Codegen.fail(`Failed to generate ${GEN2_COMMAND_GENERATION_MESSAGE_SUFFIX}`);
     throw e;
   }
