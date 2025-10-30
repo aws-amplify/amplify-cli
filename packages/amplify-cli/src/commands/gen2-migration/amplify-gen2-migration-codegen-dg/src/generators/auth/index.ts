@@ -431,7 +431,7 @@ function createOidcSamlPropertyAssignments(
  * @example
  * ```typescript
  * // Input:
- * loginOptions = { googleLogin: true, facebookLogin: true }
+ * loginOptions = { googleLogin: true, facebookLogin: true, scopes:['email', 'profile', 'openid'] }
  *
  * // Output (TypeScript code):
  * externalProviders: {
@@ -442,7 +442,8 @@ function createOidcSamlPropertyAssignments(
  *   facebook: {
  *     clientId: secret('FACEBOOK_CLIENT_ID'),
  *     clientSecret: secret('FACEBOOK_CLIENT_SECRET')
- *   }
+ *   },
+ *   scopes: ['email', 'profile', 'openid']
  * }
  * ```
  *
@@ -557,6 +558,7 @@ function createExternalProvidersPropertyAssignment(
     secretErrors?.push(...createSecretErrorStatements([oidcClientID, oidcClientSecret]));
   }
 
+  // configure OAuth scope
   if (loginOptions.scopes) {
     providerAssignments.push(
       factory.createPropertyAssignment(
@@ -566,6 +568,7 @@ function createExternalProvidersPropertyAssignment(
     );
   }
 
+  // supports callback urls and logout urls
   const properties = [
     ...providerAssignments,
     factory.createPropertyAssignment(
@@ -783,7 +786,7 @@ export function renderAuthNode(definition: AuthDefinition): ts.NodeArray<ts.Node
     const referenceAuthProperties: Array<PropertyAssignment> = [];
     namedImports['@aws-amplify/backend'].add('referenceAuth');
 
-    // Handle string properties
+    // Handle string propertiesx
     const stringProps: (keyof ReferenceAuth)[] = ['userPoolId', 'identityPoolId', 'authRoleArn', 'unauthRoleArn', 'userPoolClientId'];
     for (const prop of stringProps) {
       const value = refAuth[prop];
@@ -809,7 +812,7 @@ export function renderAuthNode(definition: AuthDefinition): ts.NodeArray<ts.Node
       );
     }
 
-    // Generates ts file
+    // Generates ts node array
     return renderResourceTsFile({
       exportedVariableName: factory.createIdentifier('auth'),
       functionCallParameter: factory.createObjectLiteralExpression(referenceAuthProperties, true),
