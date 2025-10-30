@@ -1,4 +1,4 @@
-import oauthValuesRetriever from './oauth-values-retriever';
+import oauthValuesRetriever from '../../../../commands/gen2-migration/refactor/oauth-values-retriever';
 import { SSMClient } from '@aws-sdk/client-ssm';
 import { CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-provider';
 

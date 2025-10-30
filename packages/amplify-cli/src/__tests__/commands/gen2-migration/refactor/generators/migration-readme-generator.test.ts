@@ -1,4 +1,5 @@
-import MigrationReadMeGenerator from './migration-readme-generator';
+import MigrationReadMeGenerator from '../../../../../commands/gen2-migration/refactor/generators/migration-readme-generator';
+
 import fs from 'node:fs/promises';
 
 jest.mock('node:fs/promises');

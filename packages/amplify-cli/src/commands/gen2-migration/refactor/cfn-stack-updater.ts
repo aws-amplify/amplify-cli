@@ -35,7 +35,7 @@ export async function tryUpdateStack(
     );
     return pollStackForCompletionState(cfnClient, stackName, attempts);
   } catch (e) {
-    if (!e.message.includes(NO_UPDATES_MESSAGE)) {
+    if (!(e && typeof e === 'object' && 'message' in e && typeof e.message === 'string' && e.message.includes(NO_UPDATES_MESSAGE))) {
       throw e;
     }
     return UPDATE_COMPLETE;

@@ -1,5 +1,5 @@
-import CategoryTemplateGenerator from './category-template-generator';
-import { CFN_AUTH_TYPE, CFN_PSEUDO_PARAMETERS_REF, CFN_S3_TYPE, CFNTemplate } from '../types';
+import CategoryTemplateGenerator from '../../../../../commands/gen2-migration/refactor/generators/category-template-generator';
+import { CFN_AUTH_TYPE, CFN_PSEUDO_PARAMETERS_REF, CFN_S3_TYPE, CFNTemplate } from '../../../../../commands/gen2-migration/refactor/types';
 import {
   CloudFormationClient,
   DescribeStacksCommand,

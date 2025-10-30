@@ -533,7 +533,7 @@ class TemplateGenerator {
           destinationTemplateForRefactor = destinationTemplate;
           logicalIdMappingForRefactor = logicalIdMapping;
         } catch (e) {
-          if (typeof e === 'object' && 'message' in e && e.message.includes(NO_RESOURCES_TO_MOVE_ERROR)) {
+          if (this.isNoResourcesError(e)) {
             continue;
           }
           throw e;

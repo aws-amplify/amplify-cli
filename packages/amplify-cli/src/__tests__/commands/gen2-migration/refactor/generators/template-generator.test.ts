@@ -1,5 +1,5 @@
-import { TemplateGenerator } from './template-generator';
-import CategoryTemplateGenerator from './category-template-generator';
+import { TemplateGenerator } from '../../../../../commands/gen2-migration/refactor/generators/template-generator';
+import CategoryTemplateGenerator from '../../../../../commands/gen2-migration/refactor/generators/category-template-generator';
 import {
   CloudFormationClient,
   CreateStackRefactorCommand,
@@ -17,7 +17,8 @@ import {
 import fs from 'node:fs/promises';
 import { SSMClient } from '@aws-sdk/client-ssm';
 import { CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-provider';
-import { CATEGORY, CFN_AUTH_TYPE, CFN_S3_TYPE, CFN_IAM_TYPE, CFNTemplate } from '../types';
+import { CATEGORY, CFN_AUTH_TYPE, CFN_S3_TYPE, CFN_IAM_TYPE, CFNTemplate } from '../../../../../commands/gen2-migration/refactor/types';
+
 import assert from 'node:assert';
 
 jest.useFakeTimers();

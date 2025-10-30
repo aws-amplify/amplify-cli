@@ -1,5 +1,5 @@
-import CfnOutputResolver from './cfn-output-resolver';
-import { CFNTemplate } from '../types';
+import CfnOutputResolver from '../../../../../commands/gen2-migration/refactor/resolvers/cfn-output-resolver';
+import { CFNTemplate } from '../../../../../commands/gen2-migration/refactor/types';
 
 describe('CFNOutputResolver', () => {
   const template: CFNTemplate = {

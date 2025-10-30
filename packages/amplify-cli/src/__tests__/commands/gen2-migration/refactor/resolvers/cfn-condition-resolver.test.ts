@@ -1,5 +1,5 @@
-import CFNConditionResolver from './cfn-condition-resolver';
-import { CFNTemplate } from '../types';
+import CFNConditionResolver from '../../../../../commands/gen2-migration/refactor/resolvers/cfn-condition-resolver';
+import { CFNTemplate } from '../../../../../commands/gen2-migration/refactor/types';
 
 describe('CFNConditionResolver', () => {
   const template: CFNTemplate = {
