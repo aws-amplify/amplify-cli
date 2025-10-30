@@ -31,6 +31,9 @@ const MIGRATION_DIR = '.amplify/migration';
 const AMPLIFY_DIR = 'amplify';
 
 export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
+  readonly command = 'refactor';
+  readonly describe = 'Refactor code for Gen2 compatibility';
+
   private fromStack?: string;
   private toStack?: string;
   private resourceMappings?: string;
