@@ -1,5 +1,5 @@
 import assert from 'node:assert';
-import { AuthDefinition } from '../../core/migration-pipeline';
+import { AuthDefinition } from '../core/migration-pipeline';
 export type AuthTriggerConnectionsFetcher = () => Promise<Partial<Record<keyof LambdaConfigType, string>> | undefined>;
 import { AmplifyStackParser } from './amplify_stack_parser';
 import { BackendEnvironmentResolver } from './backend_environment_selector';
@@ -15,7 +15,7 @@ import {
   GetUserPoolMfaConfigCommand,
 } from '@aws-sdk/client-cognito-identity-provider';
 import { CognitoIdentityClient, DescribeIdentityPoolCommand, GetIdentityPoolRolesCommand } from '@aws-sdk/client-cognito-identity';
-import { getAuthDefinition } from '../../adapters/auth/index';
+import { getAuthDefinition } from '../adapters/auth/index';
 import { fileOrDirectoryExists } from './directory_exists';
 import { BackendDownloader } from './backend_downloader.js';
 import path from 'node:path';
