@@ -1,7 +1,7 @@
 import { AmplifyDriftDetector } from '../drift';
 import { $TSContext, AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
-import { DescribeChangeSetOutput } from '@aws-sdk/client-cloudformation';
+import { CloudFormationClient, DescribeChangeSetOutput, DescribeStackResourcesCommand } from '@aws-sdk/client-cloudformation';
 import { STATEFUL_RESOURCES } from './stateful-resources';
 
 export class AmplifyGen2MigrationValidations {
@@ -31,20 +31,27 @@ export class AmplifyGen2MigrationValidations {
   public async validateStatefulResources(changeSet: DescribeChangeSetOutput): Promise<void> {
     if (!changeSet.Changes) return;
 
-    const statefulRemoves = changeSet.Changes.filter(
-      (change) =>
-        change.Type === 'Resource' &&
-        change.ResourceChange?.Action === 'Remove' &&
-        change.ResourceChange?.ResourceType &&
-        STATEFUL_RESOURCES.has(change.ResourceChange.ResourceType),
-    );
+    const statefulRemoves: string[] = [];
+    for (const change of changeSet.Changes) {
+      if (change.Type === 'Resource' && change.ResourceChange?.Action === 'Remove' && change.ResourceChange?.ResourceType) {
+        if (change.ResourceChange.ResourceType === 'AWS::CloudFormation::Stack' && change.ResourceChange.PhysicalResourceId) {
+          const nestedResources = await this.getStatefulResources(change.ResourceChange.PhysicalResourceId);
+          if (nestedResources.length > 0) {
+            statefulRemoves.push(
+              `${change.ResourceChange.LogicalResourceId} (${change.ResourceChange.ResourceType}) containing: ${nestedResources.join(
+                ', ',
+              )}`,
+            );
+          }
+        } else if (STATEFUL_RESOURCES.has(change.ResourceChange.ResourceType)) {
+          statefulRemoves.push(`${change.ResourceChange.LogicalResourceId} (${change.ResourceChange.ResourceType})`);
+        }
+      }
+    }
 
     if (statefulRemoves.length > 0) {
-      const resources = statefulRemoves
-        .map((c) => `${c.ResourceChange?.LogicalResourceId ?? 'Unknown'} (${c.ResourceChange?.ResourceType})`)
-        .join(', ');
       throw new AmplifyError('DestructiveMigrationError', {
-        message: `Stateful resources scheduled for deletion: ${resources}.`,
+        message: `Stateful resources scheduled for deletion: ${statefulRemoves.join(', ')}.`,
         resolution: 'Review the migration plan and ensure data is backed up before proceeding.',
       });
     }
@@ -52,5 +59,21 @@ export class AmplifyGen2MigrationValidations {
 
   public async validateIngressTraffic(): Promise<void> {
     printer.warn('Not implemented');
+  }
+
+  private async getStatefulResources(stackName: string): Promise<string[]> {
+    const statefulResources: string[] = [];
+    const cfn = new CloudFormationClient({});
+    const { StackResources } = await cfn.send(new DescribeStackResourcesCommand({ StackName: stackName }));
+
+    for (const resource of StackResources ?? []) {
+      if (resource.ResourceType === 'AWS::CloudFormation::Stack' && resource.PhysicalResourceId) {
+        const nested = await this.getStatefulResources(resource.PhysicalResourceId);
+        statefulResources.push(...nested);
+      } else if (resource.ResourceType && STATEFUL_RESOURCES.has(resource.ResourceType)) {
+        statefulResources.push(`${resource.LogicalResourceId} (${resource.ResourceType})`);
+      }
+    }
+    return statefulResources;
   }
 }
