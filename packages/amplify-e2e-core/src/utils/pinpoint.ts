@@ -39,7 +39,7 @@ export async function pinpointAppExist(pinpointProjectId: string, region: string
       ApplicationId: pinpointProjectId,
     });
     const response = await pinpointClient.send(command);
-    if (response.ApplicationResponse.Id === pinpointProjectId) {
+    if (response.ApplicationResponse?.Id === pinpointProjectId) {
       result = true;
     }
   } catch (err) {

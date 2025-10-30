@@ -29,6 +29,8 @@
     "@aws-amplify/amplify-category-api": "^5.15.1",
     "@aws-amplify/amplify-cli-core": "4.4.3",
     "@aws-amplify/amplify-environment-parameters": "1.9.22",
+    "@aws-sdk/client-s3": "^3.919.0",
+    "@aws-sdk/lib-storage": "^3.919.0",
     "fs-extra": "^8.1.0",
     "inquirer": "^7.3.3",
     "mime-types": "^2.1.26",
