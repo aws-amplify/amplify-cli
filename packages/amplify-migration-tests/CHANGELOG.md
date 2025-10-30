@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.5.8-rc.b169eb97f328163.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.5.7...@aws-amplify/amplify-migration-tests@6.5.8-rc.b169eb97f328163.0) (2025-10-30)
+
+
+### Bug Fixes
+
+* upgrade `@aws-sdk/*` to latest ([#14306](https://github.com/aws-amplify/amplify-cli/issues/14306)) ([faca740](https://github.com/aws-amplify/amplify-cli/commit/faca7400e65374536e28f58119bb6a66c48aa4d7))
+
+
+
+
+
 ## [6.5.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.5.6...@aws-amplify/amplify-migration-tests@6.5.7) (2025-10-08)
 
 **Note:** Version bump only for package @aws-amplify/amplify-migration-tests

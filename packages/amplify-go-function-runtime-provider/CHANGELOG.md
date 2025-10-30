@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.54-rc.b169eb97f328163.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-go-function-runtime-provider@2.3.53...amplify-go-function-runtime-provider@2.3.54-rc.b169eb97f328163.0) (2025-10-30)
+
+
+### Reverts
+
+* Revert "refactor: amplify-category-notifications aws sdk v3 migration (#14271)" (#14285) ([510560d](https://github.com/aws-amplify/amplify-cli/commit/510560decb0735a0e8633aadfa6c23fae376dfe1)), closes [#14271](https://github.com/aws-amplify/amplify-cli/issues/14271) [#14285](https://github.com/aws-amplify/amplify-cli/issues/14285)
+
+
+
+
+
 ## [2.3.53](https://github.com/aws-amplify/amplify-cli/compare/amplify-go-function-runtime-provider@2.3.52...amplify-go-function-runtime-provider@2.3.53) (2025-10-08)
 
 **Note:** Version bump only for package amplify-go-function-runtime-provider
