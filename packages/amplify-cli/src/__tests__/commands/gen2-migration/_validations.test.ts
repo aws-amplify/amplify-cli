@@ -361,7 +361,8 @@ describe('AmplifyGen2MigrationValidations', () => {
 
       await expect(validations.validateStatefulResources(changeSet)).rejects.toMatchObject({
         name: 'DestructiveMigrationError',
-        message: 'Stateful resources scheduled for deletion: AuthStack (AWS::CloudFormation::Stack).',
+        message:
+          'Stateful resources scheduled for deletion: AuthStack (AWS::CloudFormation::Stack) containing: Table (AWS::DynamoDB::Table).',
       });
     });
 
