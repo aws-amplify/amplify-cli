@@ -73,6 +73,7 @@
     "@aws-sdk/client-cognito-identity-provider": "^3.624.0",
     "@aws-sdk/client-lambda": "^3.624.0",
     "@aws-sdk/client-s3": "^3.624.0",
+    "@aws-sdk/client-ssm": "^3.624.0",
     "@aws-sdk/client-sts": "^3.624.0",
     "amplify-codegen": "^4.10.3",
     "amplify-dotnet-function-runtime-provider": "2.1.6",
@@ -120,6 +121,7 @@
     "@aws-sdk/client-cognito-identity-provider": "^3.624.0",
     "@aws-sdk/client-lambda": "^3.624.0",
     "@aws-sdk/client-s3": "^3.624.0",
+    "@jest/globals": "^29.7.0",
     "@types/archiver": "^5.3.1",
     "@types/columnify": "^1.5.1",
     "@types/folder-hash": "^4.0.1",
@@ -160,7 +162,10 @@
       "json",
       "node"
     ],
-    "collectCoverage": true
+    "collectCoverage": true,
+    "setupFilesAfterEnv": [
+      "<rootDir>/src/__tests__/commands/gen2-migration/refactor/generators/setup-jest.ts"
+    ]
   },
   "amplify": {
     "officialPlugins": {
