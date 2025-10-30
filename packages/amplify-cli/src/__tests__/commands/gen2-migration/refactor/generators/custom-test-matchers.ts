@@ -50,3 +50,13 @@ declare global {
     }
   }
 }
+
+it('should pass', () => {
+  expect(
+    toBeACloudFormationCommand(
+      [new DescribeStackResourcesCommand({ StackName: 'stackName' })],
+      { StackName: 'stackName' },
+      DescribeStackResourcesCommand,
+    ),
+  ).toBeTruthy();
+});

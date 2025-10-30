@@ -234,7 +234,7 @@ jest.mock('@aws-sdk/client-cloudformation', () => {
 });
 
 jest.mock('node:fs/promises');
-jest.mock('./migration-readme-generator', () => {
+jest.mock('../../../../../commands/gen2-migration/refactor/generators/migration-readme-generator', () => {
   return function () {
     return {
       initialize: mockReadMeInitialize,
@@ -367,7 +367,7 @@ const stubCategoryTemplateGenerator = {
     ],
   }),
 };
-jest.mock('./category-template-generator', () => {
+jest.mock('../../../../../commands/gen2-migration/refactor/generators/category-template-generator', () => {
   return jest.fn().mockImplementation(() => {
     return stubCategoryTemplateGenerator;
   });
