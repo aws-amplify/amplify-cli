@@ -38,7 +38,13 @@ export class AmplifyMigrationDecommissionStep extends AmplifyMigrationStep {
       new CreateChangeSetCommand({
         StackName: stackName,
         ChangeSetName: changeSetName,
-        TemplateBody: JSON.stringify({ Resources: {} }),
+        TemplateBody: JSON.stringify({
+          Resources: {
+            DummyResource: {
+              Type: 'AWS::CloudFormation::WaitConditionHandle',
+            },
+          },
+        }),
       }),
     );
 
