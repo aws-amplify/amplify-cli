@@ -3,7 +3,7 @@ import fs from 'node:fs/promises';
 import glob from 'glob';
 import assert from 'node:assert';
 
-import { DataDefinition } from '../../core/migration-pipeline';
+import { DataDefinition } from '../core/migration-pipeline';
 import { AmplifyStackParser } from './amplify_stack_parser.js';
 import { BackendEnvironmentResolver } from './backend_environment_selector.js';
 import { BackendDownloader } from './backend_downloader.js';
