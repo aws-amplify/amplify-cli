@@ -1183,6 +1183,7 @@ __metadata:
     amplify-nodejs-function-runtime-provider: 2.5.31
     amplify-python-function-runtime-provider: 2.4.53
     aws-cdk-lib: ~2.189.1
+    cdk-from-cfn: 0.258.0
     chalk: ^4.1.1
     ci-info: ^3.8.0
     cli-table3: ^0.6.0
@@ -18954,6 +18955,13 @@ __metadata:
   version: 0.12.0
   resolution: "caseless@npm:0.12.0"
   checksum: ccf64bcb6c0232cdc5b7bd91ddd06e23a4b541f138336d4725233ac538041fb2f29c2e86c3c4a7a61ef990b665348db23a047060b9414c3a6603e9fa61ad4626
+  languageName: node
+  linkType: hard
+
+"cdk-from-cfn@npm:0.258.0":
+  version: 0.258.0
+  resolution: "cdk-from-cfn@npm:0.258.0"
+  checksum: 20f61c4518ccedd7a651b9564b57ab527fb15851218367ae71d96492367540e9de858ef7e71a6bcee62ea392292085109579174b390b624af1983a407838aee1
   languageName: node
   linkType: hard
 
