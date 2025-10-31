@@ -1,6 +1,6 @@
 import { AmplifyGen2MigrationValidations } from '../../../commands/gen2-migration/_validations';
-import { $TSContext } from '@aws-amplify/amplify-cli-core';
-import { DescribeChangeSetOutput } from '@aws-sdk/client-cloudformation';
+import { $TSContext, stateManager } from '@aws-amplify/amplify-cli-core';
+import { DescribeChangeSetOutput, CloudFormationClient } from '@aws-sdk/client-cloudformation';
 
 describe('AmplifyGen2MigrationValidations', () => {
   let mockContext: $TSContext;
@@ -314,6 +314,121 @@ describe('AmplifyGen2MigrationValidations', () => {
       await expect(validations.validateStatefulResources(changeSet)).rejects.toMatchObject({
         name: 'DestructiveMigrationError',
         message: 'Stateful resources scheduled for deletion: DeletedBucket (AWS::S3::Bucket).',
+      });
+    });
+  });
+
+  describe('validateDeploymentStatus', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should throw StackNotFoundError when stackName is missing', async () => {
+      jest.spyOn(stateManager, 'getMeta').mockReturnValue({
+        providers: {
+          awscloudformation: {},
+        },
+      });
+
+      await expect(validations.validateDeploymentStatus()).rejects.toMatchObject({
+        name: 'StackNotFoundError',
+        message: 'Root stack not found',
+        resolution: 'Ensure the project is initialized and deployed.',
+      });
+    });
+
+    it('should throw StackNotFoundError when stack not found in CloudFormation', async () => {
+      jest.spyOn(stateManager, 'getMeta').mockReturnValue({
+        providers: {
+          awscloudformation: {
+            StackName: 'test-stack',
+          },
+        },
+      });
+
+      const mockSend = jest.fn().mockResolvedValue({ Stacks: [] });
+      jest.spyOn(CloudFormationClient.prototype, 'send').mockImplementation(mockSend);
+
+      await expect(validations.validateDeploymentStatus()).rejects.toMatchObject({
+        name: 'StackNotFoundError',
+        message: 'Stack test-stack not found in CloudFormation',
+        resolution: 'Ensure the project is deployed.',
+      });
+    });
+
+    it('should pass when stack status is UPDATE_COMPLETE', async () => {
+      jest.spyOn(stateManager, 'getMeta').mockReturnValue({
+        providers: {
+          awscloudformation: {
+            StackName: 'test-stack',
+          },
+        },
+      });
+
+      const mockSend = jest.fn().mockResolvedValue({
+        Stacks: [{ StackStatus: 'UPDATE_COMPLETE' }],
+      });
+      jest.spyOn(CloudFormationClient.prototype, 'send').mockImplementation(mockSend);
+
+      await expect(validations.validateDeploymentStatus()).resolves.not.toThrow();
+    });
+
+    it('should pass when stack status is CREATE_COMPLETE', async () => {
+      jest.spyOn(stateManager, 'getMeta').mockReturnValue({
+        providers: {
+          awscloudformation: {
+            StackName: 'test-stack',
+          },
+        },
+      });
+
+      const mockSend = jest.fn().mockResolvedValue({
+        Stacks: [{ StackStatus: 'CREATE_COMPLETE' }],
+      });
+      jest.spyOn(CloudFormationClient.prototype, 'send').mockImplementation(mockSend);
+
+      await expect(validations.validateDeploymentStatus()).resolves.not.toThrow();
+    });
+
+    it('should throw StackStateError when status is UPDATE_IN_PROGRESS', async () => {
+      jest.spyOn(stateManager, 'getMeta').mockReturnValue({
+        providers: {
+          awscloudformation: {
+            StackName: 'test-stack',
+          },
+        },
+      });
+
+      const mockSend = jest.fn().mockResolvedValue({
+        Stacks: [{ StackStatus: 'UPDATE_IN_PROGRESS' }],
+      });
+      jest.spyOn(CloudFormationClient.prototype, 'send').mockImplementation(mockSend);
+
+      await expect(validations.validateDeploymentStatus()).rejects.toMatchObject({
+        name: 'StackStateError',
+        message: 'Root stack status is UPDATE_IN_PROGRESS, expected UPDATE_COMPLETE or CREATE_COMPLETE',
+        resolution: 'Complete the deployment before proceeding.',
+      });
+    });
+
+    it('should throw StackStateError when status is ROLLBACK_COMPLETE', async () => {
+      jest.spyOn(stateManager, 'getMeta').mockReturnValue({
+        providers: {
+          awscloudformation: {
+            StackName: 'test-stack',
+          },
+        },
+      });
+
+      const mockSend = jest.fn().mockResolvedValue({
+        Stacks: [{ StackStatus: 'ROLLBACK_COMPLETE' }],
+      });
+      jest.spyOn(CloudFormationClient.prototype, 'send').mockImplementation(mockSend);
+
+      await expect(validations.validateDeploymentStatus()).rejects.toMatchObject({
+        name: 'StackStateError',
+        message: 'Root stack status is ROLLBACK_COMPLETE, expected UPDATE_COMPLETE or CREATE_COMPLETE',
+        resolution: 'Complete the deployment before proceeding.',
       });
     });
   });
