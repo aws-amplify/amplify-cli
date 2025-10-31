@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.5.25](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-predictions@5.5.24...@aws-amplify/amplify-category-predictions@5.5.25) (2025-10-31)
+
+
+### Bug Fixes
+
+* upgrade `@aws-sdk/*` to latest ([#14306](https://github.com/aws-amplify/amplify-cli/issues/14306)) ([faca740](https://github.com/aws-amplify/amplify-cli/commit/faca7400e65374536e28f58119bb6a66c48aa4d7))
+
+
+### Reverts
+
+* Revert "refactor: amplify-category-notifications aws sdk v3 migration (#14271)" (#14285) ([510560d](https://github.com/aws-amplify/amplify-cli/commit/510560decb0735a0e8633aadfa6c23fae376dfe1)), closes [#14271](https://github.com/aws-amplify/amplify-cli/issues/14271) [#14285](https://github.com/aws-amplify/amplify-cli/issues/14285)
+
+
+
+
+
 ## [5.5.24](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-predictions@5.5.23...@aws-amplify/amplify-category-predictions@5.5.24) (2025-10-08)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-predictions

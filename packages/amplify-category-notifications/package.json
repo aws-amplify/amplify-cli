@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-category-notifications",
-  "version": "2.26.38",
+  "version": "2.26.39",
   "description": "amplify-cli notifications plugin",
   "repository": {
     "type": "git",
@@ -26,10 +26,10 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/amplify-cli-core": "4.4.3",
-    "@aws-amplify/amplify-environment-parameters": "1.9.22",
+    "@aws-amplify/amplify-cli-core": "4.4.4",
+    "@aws-amplify/amplify-environment-parameters": "1.9.23",
     "@aws-amplify/amplify-prompts": "2.8.7",
-    "@aws-amplify/amplify-provider-awscloudformation": "8.11.14",
+    "@aws-amplify/amplify-provider-awscloudformation": "8.11.15",
     "@aws-sdk/client-iam": "^3.919.0",
     "@aws-sdk/client-pinpoint": "3.901.0",
     "@smithy/node-http-handler": "^4.4.3",
