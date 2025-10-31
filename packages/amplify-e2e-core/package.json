@@ -42,7 +42,7 @@
     "@aws-sdk/client-s3": "^3.919.0",
     "@aws-sdk/client-ssm": "^3.919.0",
     "@aws-sdk/client-sts": "^3.919.0",
-    "@aws-sdk/credential-providers": "^3.919.0",
+    "@aws-sdk/credential-providers": "3.721.0",
     "@aws-sdk/lib-dynamodb": "^3.919.0",
     "amplify-headless-interface": "1.17.8",
     "aws-amplify": "^5.3.16",
