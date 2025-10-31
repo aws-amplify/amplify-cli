@@ -7,6 +7,7 @@ import { format } from 'util';
 import type { StackResourceDrift } from '@aws-sdk/client-cloudformation';
 import { StackResourceDriftStatus } from '@aws-sdk/client-cloudformation';
 import chalk from 'chalk';
+import { ResourceCounter } from './services/resource-counter';
 
 // CloudFormation template type definition
 export interface CloudFormationTemplate {
@@ -177,29 +178,104 @@ export class ConsolidatedDriftFormatter {
       tree += `├── ${chalk.gray('UNCHECKED:')} ${rootUnchecked} resource${rootUnchecked === 1 ? '' : 's'}\n`;
     }
 
-    // Nested stacks
-    this.results.nestedStacks.forEach((nestedStack, index) => {
-      const isLast = index === this.results.nestedStacks.length - 1;
-      const prefix = isLast ? '└──' : '├──';
+    // Build a hierarchical structure from the flat nested stacks list
+    const stackHierarchy = this.buildStackHierarchy();
 
-      const nestedDrifted = this.countDriftedResources(nestedStack.drifts);
-      const nestedInSync = this.countInSyncResources(nestedStack.drifts);
-      const nestedUnchecked = this.countUncheckedResources(nestedStack.drifts, nestedStack.template);
+    // Render the hierarchy
+    tree = this.renderStackHierarchy(stackHierarchy, tree, '', false);
 
-      const categoryName = this.getCategoryName(nestedStack.category || nestedStack.logicalId);
+    return tree;
+  }
 
-      tree += `${prefix} ${chalk.blue(nestedStack.logicalId)} ${chalk.gray(`(${categoryName})`)}\n`;
+  /**
+   * Build a hierarchical structure from the flat nested stacks list
+   */
+  private buildStackHierarchy(): Map<string, any> {
+    const hierarchy = new Map<string, any>();
 
-      const nestedPrefix = isLast ? '    ' : '│   ';
-      if (nestedDrifted > 0) {
-        tree += `${nestedPrefix}├── ${chalk.red('DRIFTED:')} ${nestedDrifted} resource${nestedDrifted === 1 ? '' : 's'}\n`;
+    this.results.nestedStacks.forEach((nestedStack) => {
+      const parts = nestedStack.logicalId.split('/');
+
+      if (parts.length === 1) {
+        // Top-level nested stack
+        if (!hierarchy.has(parts[0])) {
+          hierarchy.set(parts[0], {
+            stack: nestedStack,
+            children: new Map<string, any>(),
+          });
+        }
+      } else {
+        // Nested within another nested stack
+        const topLevel = parts[0];
+        const childName = parts.slice(1).join('/');
+
+        if (!hierarchy.has(topLevel)) {
+          // Create placeholder for parent if it doesn't exist
+          hierarchy.set(topLevel, {
+            stack: null,
+            children: new Map<string, any>(),
+          });
+        }
+
+        hierarchy.get(topLevel).children.set(childName, {
+          stack: nestedStack,
+          children: new Map<string, any>(),
+        });
       }
-      if (nestedInSync > 0) {
-        tree += `${nestedPrefix}├── ${chalk.green('IN SYNC:')} ${nestedInSync} resource${nestedInSync === 1 ? '' : 's'}\n`;
+    });
+
+    return hierarchy;
+  }
+
+  /**
+   * Render the stack hierarchy recursively
+   */
+  private renderStackHierarchy(hierarchy: Map<string, any>, tree: string, prefix: string, isLast: boolean): string {
+    let index = 0;
+    const entries = Array.from(hierarchy.entries());
+
+    entries.forEach(([name, node]) => {
+      const isLastItem = index === entries.length - 1;
+      const nodePrefix = isLastItem ? '└──' : '├──';
+      const childPrefix = isLastItem ? '    ' : '│   ';
+
+      if (node.stack) {
+        const nestedDrifted = this.countDriftedResources(node.stack.drifts);
+        const nestedInSync = this.countInSyncResources(node.stack.drifts);
+        const nestedUnchecked = this.countUncheckedResources(node.stack.drifts, node.stack.template);
+        const categoryName = this.getCategoryName(node.stack.category || node.stack.logicalId);
+
+        // Display the stack name (use the last part if it's a nested path)
+        const displayName = name.includes('/') ? name.split('/').pop() : name;
+
+        tree += `${prefix}${nodePrefix} ${chalk.blue(displayName)} ${chalk.gray(`(${categoryName})`)}\n`;
+
+        // Add resource counts
+        const resourcePrefix = prefix + childPrefix;
+        let hasMoreResources = false;
+
+        if (nestedDrifted > 0) {
+          tree += `${resourcePrefix}├── ${chalk.red('DRIFTED:')} ${nestedDrifted} resource${nestedDrifted === 1 ? '' : 's'}\n`;
+          hasMoreResources = true;
+        }
+        if (nestedInSync > 0) {
+          const resourceNodePrefix = hasMoreResources || nestedUnchecked > 0 ? '├──' : '└──';
+          tree += `${resourcePrefix}${resourceNodePrefix} ${chalk.green('IN SYNC:')} ${nestedInSync} resource${
+            nestedInSync === 1 ? '' : 's'
+          }\n`;
+          hasMoreResources = true;
+        }
+        if (nestedUnchecked > 0) {
+          tree += `${resourcePrefix}└── ${chalk.gray('UNCHECKED:')} ${nestedUnchecked} resource${nestedUnchecked === 1 ? '' : 's'}\n`;
+        }
+
+        // Render children if any
+        if (node.children && node.children.size > 0) {
+          tree = this.renderStackHierarchy(node.children, tree, prefix + childPrefix, isLastItem);
+        }
       }
-      if (nestedUnchecked > 0) {
-        tree += `${nestedPrefix}└── ${chalk.gray('UNCHECKED:')} ${nestedUnchecked} resource${nestedUnchecked === 1 ? '' : 's'}\n`;
-      }
+
+      index++;
     });
 
     return tree;
@@ -396,55 +472,37 @@ export class ConsolidatedDriftFormatter {
   }
 
   /**
-   * Generic method to count resources by status
-   */
-  private countResourcesByStatus(drifts: StackResourceDrift[], ...statuses: StackResourceDriftStatus[]): number {
-    return drifts.filter((d) => statuses.includes(d.StackResourceDriftStatus!)).length;
-  }
-
-  /**
    * Count drifted resources (MODIFIED or DELETED)
    */
   private countDriftedResources(drifts: StackResourceDrift[]): number {
-    return this.countResourcesByStatus(drifts, StackResourceDriftStatus.MODIFIED, StackResourceDriftStatus.DELETED);
+    return ResourceCounter.countDriftedResources(drifts);
   }
 
   /**
    * Count resources in sync
    */
   private countInSyncResources(drifts: StackResourceDrift[]): number {
-    return this.countResourcesByStatus(drifts, StackResourceDriftStatus.IN_SYNC);
+    return ResourceCounter.countInSyncResources(drifts);
   }
 
   /**
    * Count unchecked resources (NOT_CHECKED status + resources not in drift results)
    */
   private countUncheckedResources(drifts: StackResourceDrift[], template: CloudFormationTemplate): number {
-    // Count resources not in drift results
-    const checkedResourceIds = new Set(drifts.map((d) => d.LogicalResourceId));
-    const allResourceIds = Object.keys(template.Resources || {});
-    const notInResults = allResourceIds.filter((id) => !checkedResourceIds.has(id)).length;
-
-    // Count resources with NOT_CHECKED status
-    const notChecked = this.countResourcesByStatus(drifts, StackResourceDriftStatus.NOT_CHECKED);
-
-    return notInResults + notChecked;
+    return ResourceCounter.countUncheckedResources(drifts, template);
   }
 
   /**
    * Count failed resources (UNKNOWN status - drift check failed)
    */
   private countFailedResources(drifts: StackResourceDrift[]): number {
-    return this.countResourcesByStatus(drifts, StackResourceDriftStatus.UNKNOWN);
+    return ResourceCounter.countFailedResources(drifts);
   }
 
   /**
    * Get drifted resources (MODIFIED or DELETED)
    */
   private getDriftedResources(drifts: StackResourceDrift[]): StackResourceDrift[] {
-    return drifts.filter(
-      (d) =>
-        d.StackResourceDriftStatus === StackResourceDriftStatus.MODIFIED || d.StackResourceDriftStatus === StackResourceDriftStatus.DELETED,
-    );
+    return ResourceCounter.getDriftedResources(drifts);
   }
 }

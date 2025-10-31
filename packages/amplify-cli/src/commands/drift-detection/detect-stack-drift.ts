@@ -168,39 +168,44 @@ async function waitForDriftDetection(
  * @param cfn - CloudFormation client
  * @param stackName - the name of the root stack to check for drift
  * @param print - printer for user feedback
+ * @param level - current nesting level (for tracking)
+ * @param parentPrefix - prefix for nested stack names (for display)
  * @returns combined drift results for root and all nested stacks
  */
 export async function detectStackDriftRecursive(
   cfn: CloudFormationClient,
   stackName: string,
   print?: { info: (msg: string) => void; debug: (msg: string) => void; warning: (msg: string) => void },
+  level = 0,
+  parentPrefix = '',
 ): Promise<CombinedDriftResults> {
-  logger.logInfo({ message: `detectStackDriftRecursive: ${stackName}` });
+  const indent = '  '.repeat(level);
+  logger.logInfo({ message: `detectStackDriftRecursive: ${stackName} (level ${level})` });
 
-  // Detect drift on the root stack
-  const rootStackDrifts = await detectStackDrift(cfn, stackName, print);
+  // Detect drift on the current stack (skip message for root)
+  // Messages for nested stacks are handled by the parent
 
-  // DetectStackDrift doesn't include nested stacks in drift results,
-  // so we need to query the full resource list separately
+  const currentStackDrifts = await detectStackDrift(cfn, stackName, print);
+
+  // Get all resources in the current stack to find nested stacks
   const stackResources = await cfn.send(
     new DescribeStackResourcesCommand({
       StackName: stackName,
     }),
   );
 
-  // Find all nested stacks from the full resource list
+  // Find all nested stacks in the current stack
   const nestedStacks = stackResources.StackResources?.filter((resource) => resource.ResourceType === 'AWS::CloudFormation::Stack') || [];
 
-  if (nestedStacks.length > 0) {
-    if (print?.info) {
-      print.info(`Found ${nestedStacks.length} nested stack(s) to check for drift`);
-    }
+  if (nestedStacks.length > 0 && print?.info) {
+    print.info(`Found ${nestedStacks.length} nested stack(s) at level ${level + 1}`);
   }
 
-  // Recursively check drift for each nested stack
+  // Initialize results
   const nestedStackDrifts = new Map<string, DescribeStackResourceDriftsCommandOutput>();
   const nestedStackPhysicalIds = new Map<string, string>();
 
+  // Process each nested stack recursively
   for (const nestedStack of nestedStacks) {
     if (!nestedStack.LogicalResourceId || !nestedStack.PhysicalResourceId) {
       continue;
@@ -215,30 +220,44 @@ export async function detectStackDriftRecursive(
     }
 
     try {
+      // Show message for this nested stack (no indentation in the message itself)
       if (print?.info) {
         print.info(`Checking drift for nested stack: ${nestedStack.LogicalResourceId}`);
       }
 
       // Extract stack name from PhysicalResourceId
-      // PhysicalResourceId can be either a stack name or an ARN
-      // ARN format: arn:aws:cloudformation:region:account:stack/stack-name/guid
       let nestedStackName = nestedStack.PhysicalResourceId;
       if (nestedStackName.startsWith('arn:')) {
         const arnParts = nestedStackName.split('/');
         if (arnParts.length >= 2) {
-          nestedStackName = arnParts[1]; // Extract stack name from ARN
+          nestedStackName = arnParts[1];
         }
       }
 
-      // Store the mapping of logical ID to physical stack name
+      // Store the mapping
       nestedStackPhysicalIds.set(nestedStack.LogicalResourceId, nestedStackName);
 
-      // Use the extracted stack name to detect drift
-      const nestedDrift = await detectStackDrift(cfn, nestedStackName, print);
-      nestedStackDrifts.set(nestedStack.LogicalResourceId, nestedDrift);
+      // Recursively detect drift for this nested stack and all its children
+      const nestedResults = await detectStackDriftRecursive(cfn, nestedStackName, print, level + 1, nestedStack.LogicalResourceId);
+
+      // Store the direct drift results for this nested stack
+      nestedStackDrifts.set(nestedStack.LogicalResourceId, nestedResults.rootStackDrifts);
+
+      // Merge the nested stack's nested results into our results
+      nestedResults.nestedStackDrifts.forEach((value, key) => {
+        // Prefix the key with the parent stack's logical ID for clarity
+        const fullKey = `${nestedStack.LogicalResourceId}/${key}`;
+        nestedStackDrifts.set(fullKey, value);
+      });
+
+      // Also merge the physical IDs
+      nestedResults.nestedStackPhysicalIds.forEach((value, key) => {
+        const fullKey = `${nestedStack.LogicalResourceId}/${key}`;
+        nestedStackPhysicalIds.set(fullKey, value);
+      });
 
       logger.logInfo({
-        message: `detectStackDriftRecursive.nestedStack: ${nestedStack.LogicalResourceId}, ${nestedDrift.StackResourceDrifts?.length} resources`,
+        message: `detectStackDriftRecursive.nestedStack: ${nestedStack.LogicalResourceId}, ${nestedResults.rootStackDrifts.StackResourceDrifts?.length} direct resources, ${nestedResults.nestedStackDrifts.size} sub-stacks`,
       });
     } catch (error: any) {
       // Log error but continue checking other nested stacks
@@ -253,11 +272,11 @@ export async function detectStackDriftRecursive(
   }
 
   logger.logInfo({
-    message: `detectStackDriftRecursive.complete: ${stackName}, ${nestedStackDrifts.size} nested stacks`,
+    message: `detectStackDriftRecursive.complete: ${stackName} (level ${level}), ${nestedStackDrifts.size} total nested stacks`,
   });
 
   return {
-    rootStackDrifts,
+    rootStackDrifts: currentStackDrifts,
     nestedStackDrifts,
     nestedStackPhysicalIds,
   };
