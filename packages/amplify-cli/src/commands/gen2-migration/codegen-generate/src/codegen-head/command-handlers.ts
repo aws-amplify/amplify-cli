@@ -31,6 +31,7 @@ import { AppFunctionsDefinitionFetcher } from './app_functions_definition_fetche
 import { printer } from './printer';
 import { format } from './format';
 import ora from 'ora';
+import { AppAnalyticsDefinitionFetcher } from './app_analytics_definition_fetcher';
 
 interface CodegenCommandParameters {
   analytics: Analytics;
@@ -41,6 +42,7 @@ interface CodegenCommandParameters {
   authDefinitionFetcher: AppAuthDefinitionFetcher;
   storageDefinitionFetcher: AppStorageDefinitionFetcher;
   functionsDefinitionFetcher: AppFunctionsDefinitionFetcher;
+  analyticsDefinitionFetcher: AppAnalyticsDefinitionFetcher;
 }
 
 const TEMP_GEN_2_OUTPUT_DIR = 'amplify-gen2';
@@ -74,18 +76,21 @@ const generateGen2Code = async ({
   dataDefinitionFetcher,
   storageDefinitionFetcher,
   functionsDefinitionFetcher,
+  analyticsDefinitionFetcher,
 }: CodegenCommandParameters) => {
   const fetchingAWSResourceDetails = ora('Fetching resource details from AWS').start();
   const auth = await authDefinitionFetcher.getDefinition();
   const storage = await storageDefinitionFetcher.getDefinition();
   const data = await dataDefinitionFetcher.getDefinition();
   const functions = await functionsDefinitionFetcher.getDefinition();
+  const analytics = await analyticsDefinitionFetcher.getDefinition();
 
   console.log('Auth:', auth ? 'EXISTS' : 'UNDEFINED');
   console.log('Storage:', storage ? 'EXISTS' : 'UNDEFINED');
   console.log('Data:', data ? JSON.stringify(data, null, 2) : 'UNDEFINED');
   console.log('Functions:', functions ? `${functions.length} functions` : 'UNDEFINED');
   console.log('Backend env:', backendEnvironmentName);
+  console.log('Analytics', analytics ? JSON.stringify(analytics, null, 2) : 'UNDEFINED');
 
   const gen2RenderOptions = {
     outputDir: outputDirectory,
@@ -94,6 +99,7 @@ const generateGen2Code = async ({
     storage,
     data,
     functions,
+    analytics,
     customResources: await getCustomResourceMap(),
     unsupportedCategories: unsupportedCategories(),
   };
@@ -216,6 +222,7 @@ const unsupportedCategories = (): Map<string, string> => {
   const unsupportedCategories = new Map<string, string>();
   const urlPrefix = 'https://docs.amplify.aws/react/build-a-backend/add-aws-services';
   const restAPIKey = 'rest api';
+  const analyticsKey = 'analytics';
 
   unsupportedCategories.set('geo', `${urlPrefix}/geo/`);
   unsupportedCategories.set('analytics', `${urlPrefix}/analytics/`);
@@ -242,6 +249,16 @@ const unsupportedCategories = (): Map<string, string> => {
           }
         });
       }
+    } else if (category === 'analytics') {
+      const analytics = meta?.analytics ?? {};
+      Object.keys(analytics).forEach((analytic) => {
+        const analyticObj = analytics[analytic];
+        if (analyticObj.service === 'Pinpoint') {
+          const analyticsDocLink = unsupportedCategories.get(analyticsKey);
+          assert(analyticsDocLink);
+          unsupportedCategoriesList.set(`Pinpoint ${analyticsKey}`, analyticsDocLink);
+        }
+      });
     } else {
       if (unsupportedCategories.has(category) && Object.entries(meta[category]).length > 0) {
         const unsupportedCategoryDocLink = unsupportedCategories.get(category);
@@ -527,6 +544,7 @@ export async function prepare() {
       backendEnvironmentResolver,
       stateManager,
     ),
+    analyticsDefinitionFetcher: new AppAnalyticsDefinitionFetcher(backendEnvironmentResolver, stateManager),
     analytics: new AppAnalytics(appId),
     logger: new AppContextLogger(appId),
     backendEnvironmentName: backendEnvironment?.environmentName,

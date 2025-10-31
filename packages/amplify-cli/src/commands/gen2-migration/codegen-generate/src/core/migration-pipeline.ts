@@ -90,6 +90,8 @@ export interface Gen2RenderingOptions {
   /** Lambda function definitions */
   functions?: FunctionDefinition[];
 
+  analytics?: any;
+
   /** Custom CloudFormation resources that need manual migration */
   customResources?: Map<string, string>;
 
@@ -127,6 +129,7 @@ export const createGen2Renderer = ({
   storage,
   data,
   functions,
+  analytics,
   customResources,
   unsupportedCategories,
   fileWriter = (content, path) => createFileWriter(path)(content),
@@ -194,6 +197,21 @@ export const createGen2Renderer = ({
   // Handle categories that cannot be automatically migrated
   if (unsupportedCategories && unsupportedCategories.size >= 1) {
     backendRenderOptions.unsupportedCategories = unsupportedCategories;
+  }
+
+  if (analytics) {
+    console.log('analytics found');
+    Object.keys(analytics).forEach((analytic) => {
+      console.log('a', JSON.stringify(analytic));
+      const analyticObj = analytics[analytic];
+      if (analyticObj.service === 'Kinesis') {
+        console.log('KINESIS');
+        // TODO: cdk-from-cfn here
+      } else {
+        console.log('PINPOINT');
+      }
+    });
+    backendRenderOptions.analytics = analytics;
   }
 
   // Process Lambda functions - create resource.ts and handler.ts files
