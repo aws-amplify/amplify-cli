@@ -56,6 +56,7 @@ import { deleteEnvironmentParametersFromService } from './utils/ssm-utils/delete
 export { deleteEnvironmentParametersFromService } from './utils/ssm-utils/delete-ssm-parameters';
 import { getEnvParametersUploadHandler, getEnvParametersDownloadHandler } from './utils/ssm-utils/env-parameter-ssm-helpers';
 import { proxyAgent } from './aws-utils/aws-globals';
+import { consolidateApiGatewayPolicies } from './utils/consolidate-apigw-policies';
 export {
   getEnvParametersUploadHandler,
   getEnvParametersDownloadHandler,
@@ -107,6 +108,9 @@ async function getConfiguredAWSClientConfig(context, category, action) {
   category = category || 'missing';
   action = action || ['missing'];
   const userAgentAction = `${category}:${action[0]}`;
+  if (credsConfig.credentials && credsConfig.credentials.expiration && typeof credsConfig.credentials.expiration === 'string') {
+    credsConfig.credentials.expiration = new Date(credsConfig.credentials.expiration);
+  }
   const config = {
     credentials: credsConfig.credentials || credsConfig,
     customUserAgent: formUserAgentParam(context, userAgentAction),
