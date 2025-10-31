@@ -107,6 +107,9 @@ async function getConfiguredAWSClientConfig(context, category, action) {
   category = category || 'missing';
   action = action || ['missing'];
   const userAgentAction = `${category}:${action[0]}`;
+  if (credsConfig.credentials && credsConfig.credentials.expiration && typeof credsConfig.credentials.expiration === 'string') {
+    credsConfig.credentials.expiration = new Date(credsConfig.credentials.expiration);
+  }
   const config = {
     credentials: credsConfig.credentials || credsConfig,
     customUserAgent: formUserAgentParam(context, userAgentAction),
