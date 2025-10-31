@@ -4,9 +4,9 @@ import fs from 'node:fs/promises';
 import assert from 'node:assert';
 import { v4 as uuid } from 'uuid';
 
-import { createGen2Renderer } from '../../core/migration-pipeline';
+import { createGen2Renderer } from '../core/migration-pipeline';
 
-import { UsageData } from '../../../../../../domain/amplify-usageData';
+import { UsageData } from '../../../../../domain/amplify-usageData';
 import { AmplifyClient, UpdateAppCommand, GetAppCommand } from '@aws-sdk/client-amplify';
 import { CloudFormationClient } from '@aws-sdk/client-cloudformation';
 import { CognitoIdentityProviderClient, LambdaConfigType } from '@aws-sdk/client-cognito-identity-provider';
@@ -23,7 +23,7 @@ import { Analytics, AppAnalytics } from './analytics';
 import { AppAuthDefinitionFetcher } from './app_auth_definition_fetcher';
 import { AppStorageDefinitionFetcher } from './app_storage_definition_fetcher';
 import { AmplifyCategories, IUsageData, stateManager, pathManager } from '@aws-amplify/amplify-cli-core';
-import { AuthTriggerConnection } from '../../adapters/auth/index';
+import { AuthTriggerConnection } from '../adapters/auth/index';
 import { DataDefinitionFetcher } from './data_definition_fetcher';
 import { AmplifyStackParser } from './amplify_stack_parser';
 import { AppFunctionsDefinitionFetcher } from './app_functions_definition_fetcher';

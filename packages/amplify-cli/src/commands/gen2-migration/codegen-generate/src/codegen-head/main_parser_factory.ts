@@ -1,4 +1,4 @@
-import { createGen2Command } from '../../../gen2_command_factory';
+import { createGen2Command } from '../../gen2_command_factory';
 import yargs, { Argv } from 'yargs';
 
 // Set CLI_ENV to production to always stream usage data metrics to production

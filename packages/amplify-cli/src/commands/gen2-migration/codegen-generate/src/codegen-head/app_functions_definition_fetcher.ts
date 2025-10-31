@@ -1,6 +1,6 @@
 import assert from 'node:assert';
-import { FunctionDefinition } from '../../core/migration-pipeline';
-import { getFunctionDefinition } from '../../adapters/functions/index';
+import { FunctionDefinition } from '../core/migration-pipeline';
+import { getFunctionDefinition } from '../adapters/functions/index';
 import { BackendEnvironmentResolver } from './backend_environment_selector';
 import { GetFunctionCommand, GetPolicyCommand, LambdaClient } from '@aws-sdk/client-lambda';
 import { DescribeRuleCommand, CloudWatchEventsClient } from '@aws-sdk/client-cloudwatch-events';
