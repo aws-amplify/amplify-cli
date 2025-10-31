@@ -5,7 +5,7 @@
 
 import { CloudFormationClient, GetTemplateCommand } from '@aws-sdk/client-cloudformation';
 import type { $TSContext } from '@aws-amplify/amplify-cli-core';
-import type { CloudFormationTemplate } from '../consolidated-drift-formatter';
+import type { CloudFormationTemplate } from './drift-formatter';
 
 /**
  * Service for CloudFormation operations

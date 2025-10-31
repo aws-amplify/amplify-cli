@@ -8,3 +8,10 @@ export { AmplifyConfigService } from './amplify-config-service';
 export { DriftResultProcessor } from './drift-result-processor';
 export { FileService } from './file-service';
 export { ResourceCounter } from './resource-counter';
+export {
+  DriftFormatter,
+  type DriftResults,
+  type DriftOutput,
+  type DriftDisplayFormat,
+  type CloudFormationTemplate,
+} from './drift-formatter';

@@ -1,13 +1,12 @@
 /**
- * Consolidated drift formatter for improved output display
- * Addresses the sequential output issue by collecting all results first
+ * Drift formatter for output display
+ * Formats drift detection results for various output formats
  */
 
-import { format } from 'util';
 import type { StackResourceDrift } from '@aws-sdk/client-cloudformation';
 import { StackResourceDriftStatus } from '@aws-sdk/client-cloudformation';
 import chalk from 'chalk';
-import { ResourceCounter } from './services/resource-counter';
+import { ResourceCounter } from './resource-counter';
 
 // CloudFormation template type definition
 export interface CloudFormationTemplate {
@@ -23,9 +22,9 @@ export interface CloudFormationTemplate {
 }
 
 /**
- * Consolidated drift results for all stacks
+ * Drift results for all stacks
  */
-export interface ConsolidatedDriftResults {
+export interface DriftResults {
   rootStack: {
     name: string;
     drifts: StackResourceDrift[];
@@ -53,9 +52,9 @@ export interface ConsolidatedDriftResults {
 export type DriftDisplayFormat = 'tree' | 'summary' | 'json';
 
 /**
- * Consolidated drift formatter output
+ * Drift formatter output
  */
-export interface ConsolidatedDriftOutput {
+export interface DriftOutput {
   summaryDashboard: string;
   treeView?: string;
   detailedChanges?: string;
@@ -64,15 +63,15 @@ export interface ConsolidatedDriftOutput {
 }
 
 /**
- * Enhanced drift formatter that provides unified output for all stacks
+ * Drift formatter that provides unified output for all stacks
  */
-export class ConsolidatedDriftFormatter {
-  constructor(private readonly results: ConsolidatedDriftResults) {}
+export class DriftFormatter {
+  constructor(private readonly results: DriftResults) {}
 
   /**
    * Format drift results based on the specified display format
    */
-  public formatDrift(format: DriftDisplayFormat = 'tree'): ConsolidatedDriftOutput {
+  public formatDrift(format: DriftDisplayFormat = 'tree'): DriftOutput {
     const summaryDashboard = this.createSummaryDashboard();
 
     let treeView: string | undefined;

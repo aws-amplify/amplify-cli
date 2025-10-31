@@ -4,7 +4,7 @@
  */
 
 import type { CloudFormationClient } from '@aws-sdk/client-cloudformation';
-import type { CloudFormationTemplate, ConsolidatedDriftResults } from '../consolidated-drift-formatter';
+import type { CloudFormationTemplate, DriftResults } from './drift-formatter';
 import { ResourceCounter } from './resource-counter';
 import { CloudFormationService } from './cloudformation-service';
 import { AmplifyConfigService } from './amplify-config-service';
@@ -23,7 +23,7 @@ export class DriftResultProcessor {
     stackName: string,
     rootTemplate: CloudFormationTemplate,
     combinedResults: any,
-  ): Promise<ConsolidatedDriftResults> {
+  ): Promise<DriftResults> {
     const nestedStacks: Array<{
       logicalId: string;
       physicalName: string;
@@ -96,11 +96,11 @@ export class DriftResultProcessor {
   /**
    * Create simplified JSON output structure
    */
-  public createSimplifiedJsonOutput(consolidatedResults: ConsolidatedDriftResults): any {
+  public createSimplifiedJsonOutput(driftResults: DriftResults): any {
     return {
-      stackName: consolidatedResults.rootStack.name,
-      numResourcesWithDrift: consolidatedResults.summary.totalDrifted,
-      numResourcesUnchecked: consolidatedResults.summary.totalUnchecked,
+      stackName: driftResults.rootStack.name,
+      numResourcesWithDrift: driftResults.summary.totalDrifted,
+      numResourcesUnchecked: driftResults.summary.totalUnchecked,
       timestamp: new Date().toISOString(),
     };
   }

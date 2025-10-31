@@ -5,7 +5,7 @@
 
 import { StackResourceDriftStatus } from '@aws-sdk/client-cloudformation';
 import type { StackResourceDrift } from '@aws-sdk/client-cloudformation';
-import type { CloudFormationTemplate } from '../consolidated-drift-formatter';
+import type { CloudFormationTemplate } from './drift-formatter';
 
 /**
  * Utility class for counting resources by status

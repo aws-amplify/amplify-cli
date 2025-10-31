@@ -179,12 +179,9 @@ export async function detectStackDriftRecursive(
   level = 0,
   parentPrefix = '',
 ): Promise<CombinedDriftResults> {
-  const indent = '  '.repeat(level);
   logger.logInfo({ message: `detectStackDriftRecursive: ${stackName} (level ${level})` });
 
-  // Detect drift on the current stack (skip message for root)
-  // Messages for nested stacks are handled by the parent
-
+  // Detect drift on the current stack
   const currentStackDrifts = await detectStackDrift(cfn, stackName, print);
 
   // Get all resources in the current stack to find nested stacks
@@ -198,7 +195,7 @@ export async function detectStackDriftRecursive(
   const nestedStacks = stackResources.StackResources?.filter((resource) => resource.ResourceType === 'AWS::CloudFormation::Stack') || [];
 
   if (nestedStacks.length > 0 && print?.info) {
-    print.info(`Found ${nestedStacks.length} nested stack(s) at level ${level + 1}`);
+    print.info(`Found ${nestedStacks.length} nested stack(s)`);
   }
 
   // Initialize results
@@ -226,12 +223,38 @@ export async function detectStackDriftRecursive(
       }
 
       // Extract stack name from PhysicalResourceId
+      // Handle both ARN format and direct stack names
       let nestedStackName = nestedStack.PhysicalResourceId;
-      if (nestedStackName.startsWith('arn:')) {
-        const arnParts = nestedStackName.split('/');
-        if (arnParts.length >= 2) {
-          nestedStackName = arnParts[1];
+
+      // ARN format: arn:aws:cloudformation:region:account:stack/stack-name/id
+      if (nestedStackName.startsWith('arn:aws:cloudformation:')) {
+        try {
+          // Split by colon first to get the resource part
+          const arnComponents = nestedStackName.split(':');
+          if (arnComponents.length >= 6) {
+            // The 6th component contains stack/stack-name/id
+            const resourcePart = arnComponents[5];
+            if (resourcePart && resourcePart.startsWith('stack/')) {
+              // Extract stack name from stack/stack-name/id
+              const stackParts = resourcePart.split('/');
+              if (stackParts.length >= 2) {
+                nestedStackName = stackParts[1];
+              }
+            }
+          }
+        } catch (e) {
+          // If parsing fails, log and use the original value
+          logger.logInfo({
+            message: `Failed to parse ARN for nested stack ${nestedStack.LogicalResourceId}: ${nestedStackName}. Using original value.`,
+          });
         }
+      }
+
+      // Validate the extracted name
+      if (!nestedStackName || nestedStackName === nestedStack.PhysicalResourceId) {
+        logger.logInfo({
+          message: `Could not extract stack name from PhysicalResourceId: ${nestedStack.PhysicalResourceId}`,
+        });
       }
 
       // Store the mapping

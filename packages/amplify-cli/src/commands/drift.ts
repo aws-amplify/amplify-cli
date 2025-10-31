@@ -6,12 +6,7 @@
 import { $TSContext, AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import chalk from 'chalk';
-import {
-  detectStackDriftRecursive,
-  ConsolidatedDriftFormatter,
-  type ConsolidatedDriftResults,
-  type DriftDisplayFormat,
-} from './drift-detection';
+import { detectStackDriftRecursive, DriftFormatter, type DriftResults, type DriftDisplayFormat } from './drift-detection';
 import { CloudFormationService, AmplifyConfigService, DriftResultProcessor, FileService } from './drift-detection/services';
 import type { CloudFormationClient } from '@aws-sdk/client-cloudformation';
 
@@ -23,7 +18,6 @@ export const alias = [];
  */
 interface DriftOptions {
   verbose?: boolean;
-  fail?: boolean;
   format?: 'tree' | 'summary' | 'json';
   'output-file'?: string;
 }
@@ -34,7 +28,6 @@ interface DriftOptions {
 export const run = async (context: $TSContext): Promise<void> => {
   const options: DriftOptions = {
     verbose: context.parameters?.options?.verbose || false,
-    fail: context.parameters?.options?.fail || false,
     format: context.parameters?.options?.format || 'summary',
     'output-file': context.parameters?.options?.['output-file'],
   };
@@ -111,19 +104,19 @@ export class AmplifyDriftDetector {
 
     // 7. Build consolidated results structure
     const rootTemplate = await this.cfnService.getStackTemplate(cfn, stackName);
-    const consolidatedResults = await this.resultProcessor.buildConsolidatedResults(cfn, stackName, rootTemplate, combinedResults);
+    const driftResults = await this.resultProcessor.buildConsolidatedResults(cfn, stackName, rootTemplate, combinedResults);
 
     // 8. Display results
-    this.displayResults(consolidatedResults, options);
+    this.displayResults(driftResults, options);
 
     // 9. Save JSON if requested
     if (options['output-file']) {
-      const simplifiedJson = this.resultProcessor.createSimplifiedJsonOutput(consolidatedResults);
+      const simplifiedJson = this.resultProcessor.createSimplifiedJsonOutput(driftResults);
       await this.fileService.saveJsonOutput(options['output-file'], simplifiedJson);
     }
 
     // 10. Return exit code - always return 1 if drift detected, 0 if no drift
-    const hasDrift = consolidatedResults.summary.totalDrifted > 0;
+    const hasDrift = driftResults.summary.totalDrifted > 0;
     return hasDrift ? 1 : 0;
   }
 
@@ -162,20 +155,20 @@ export class AmplifyDriftDetector {
   /**
    * Display results based on format option
    */
-  private displayResults(consolidatedResults: ConsolidatedDriftResults, options: DriftOptions): void {
-    const consolidatedFormatter = new ConsolidatedDriftFormatter(consolidatedResults);
+  private displayResults(driftResults: DriftResults, options: DriftOptions): void {
+    const formatter = new DriftFormatter(driftResults);
 
     if (options.format === 'json') {
-      const simplifiedJson = this.resultProcessor.createSimplifiedJsonOutput(consolidatedResults);
+      const simplifiedJson = this.resultProcessor.createSimplifiedJsonOutput(driftResults);
       printer.info(JSON.stringify(simplifiedJson, null, 2));
     } else if (options.format === 'summary') {
-      const output = consolidatedFormatter.formatDrift('summary');
+      const output = formatter.formatDrift('summary');
       printer.info(output.summaryDashboard);
       if (output.categoryBreakdown) {
         printer.info(output.categoryBreakdown);
       }
     } else if (options.format === 'tree') {
-      const output = consolidatedFormatter.formatDrift('tree');
+      const output = formatter.formatDrift('tree');
       printer.info(output.summaryDashboard);
       if (output.treeView) {
         printer.info(output.treeView);
@@ -189,7 +182,7 @@ export class AmplifyDriftDetector {
     } else {
       // This shouldn't happen with TypeScript, but handle gracefully
       printer.warn(`Unknown format: ${options.format}. Using summary format.`);
-      const output = consolidatedFormatter.formatDrift('summary');
+      const output = formatter.formatDrift('summary');
       printer.info(output.summaryDashboard);
       if (output.categoryBreakdown) {
         printer.info(output.categoryBreakdown);

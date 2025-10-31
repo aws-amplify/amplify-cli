@@ -5,9 +5,9 @@
 
 export { detectStackDrift, detectStackDriftRecursive, type CombinedDriftResults } from './detect-stack-drift';
 export {
-  ConsolidatedDriftFormatter,
-  type ConsolidatedDriftResults,
-  type ConsolidatedDriftOutput,
+  DriftFormatter,
+  type DriftResults,
+  type DriftOutput,
   type DriftDisplayFormat,
   type CloudFormationTemplate,
-} from './consolidated-drift-formatter';
+} from './services/drift-formatter';
