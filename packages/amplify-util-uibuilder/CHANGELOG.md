@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.14.23](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.14.22...@aws-amplify/amplify-util-uibuilder@1.14.23) (2025-10-31)
+
+
+### Bug Fixes
+
+* upgrade `@aws-sdk/*` to latest ([#14306](https://github.com/aws-amplify/amplify-cli/issues/14306)) ([faca740](https://github.com/aws-amplify/amplify-cli/commit/faca7400e65374536e28f58119bb6a66c48aa4d7))
+
+
+
+
+
 ## [1.14.22](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.14.21...@aws-amplify/amplify-util-uibuilder@1.14.22) (2025-10-22)
 
 

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.11.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.11.10...amplify-e2e-tests@4.11.11) (2025-10-31)
+
+
+### Bug Fixes
+
+* upgrade `@aws-sdk/*` to latest ([#14306](https://github.com/aws-amplify/amplify-cli/issues/14306)) ([faca740](https://github.com/aws-amplify/amplify-cli/commit/faca7400e65374536e28f58119bb6a66c48aa4d7))
+
+
+
+
+
 ## [4.11.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.11.9...amplify-e2e-tests@4.11.10) (2025-10-22)
 
 **Note:** Version bump only for package amplify-e2e-tests

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.16.17](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-appsync-simulator@2.16.16...@aws-amplify/amplify-appsync-simulator@2.16.17) (2025-10-31)
+
+
+### Bug Fixes
+
+* upgrade `@aws-sdk/*` to latest ([#14306](https://github.com/aws-amplify/amplify-cli/issues/14306)) ([faca740](https://github.com/aws-amplify/amplify-cli/commit/faca7400e65374536e28f58119bb6a66c48aa4d7))
+
+
+
+
+
 ## [2.16.16](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-appsync-simulator@2.16.15...@aws-amplify/amplify-appsync-simulator@2.16.16) (2025-10-22)
 
 
