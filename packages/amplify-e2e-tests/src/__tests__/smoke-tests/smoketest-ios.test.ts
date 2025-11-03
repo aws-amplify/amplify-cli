@@ -55,7 +55,7 @@ function buildAndTestExampleIosApp(cwd: string) {
       'fastlane',
       'scan',
       '--destination',
-      'platform=iOS Simulator,name=iPhone 16 Pro Max,OS=18.5',
+      'platform=iOS Simulator,name=iPhone 16 Pro Max,OS=18.4',
       '--deployment_target_version',
       '16.4',
     ],
