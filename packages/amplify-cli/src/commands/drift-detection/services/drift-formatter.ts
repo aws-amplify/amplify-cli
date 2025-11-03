@@ -1,12 +1,15 @@
 /**
  * Drift formatter for output display
- * Formats drift detection results for various output formats
+ * Processes and formats drift detection results for CloudFormation stacks
  */
 
+import type { CloudFormationClient } from '@aws-sdk/client-cloudformation';
 import type { StackResourceDrift } from '@aws-sdk/client-cloudformation';
 import { StackResourceDriftStatus } from '@aws-sdk/client-cloudformation';
 import chalk from 'chalk';
-import { ResourceCounter } from './resource-counter';
+import type { CombinedDriftResults } from '../detect-stack-drift';
+import { CloudFormationService } from './cloudformation-service';
+import { AmplifyConfigService } from './amplify-config-service';
 
 // CloudFormation template type definition
 export interface CloudFormationTemplate {
@@ -22,56 +25,170 @@ export interface CloudFormationTemplate {
 }
 
 /**
- * Drift results for all stacks
- */
-export interface DriftResults {
-  rootStack: {
-    name: string;
-    drifts: StackResourceDrift[];
-    template: CloudFormationTemplate;
-  };
-  nestedStacks: Array<{
-    logicalId: string;
-    physicalName: string;
-    category?: string;
-    drifts: StackResourceDrift[];
-    template: CloudFormationTemplate;
-  }>;
-  summary: {
-    totalStacks: number;
-    totalDrifted: number;
-    totalInSync: number;
-    totalUnchecked: number;
-    totalFailed: number; // Resources with UNKNOWN status (drift check failed)
-  };
-}
-
-/**
  * Output format options
  */
 export type DriftDisplayFormat = 'tree' | 'summary' | 'json';
 
 /**
- * Drift formatter output
+ * Resource count structure
  */
-export interface DriftOutput {
-  summaryDashboard: string;
-  treeView?: string;
-  detailedChanges?: string;
-  categoryBreakdown?: string;
-  totalDrifted: number;
+interface ResourceCounts {
+  drifted: number;
+  inSync: number;
+  unchecked: number;
+  failed: number;
 }
 
 /**
- * Drift formatter that provides unified output for all stacks
+ * Extended drift resource with context
+ */
+interface ExtendedDriftResource extends StackResourceDrift {
+  stackContext: string;
+  stackName: string;
+  category: string;
+}
+
+/**
+ * Simplified JSON output structure
+ */
+interface SimplifiedJsonOutput {
+  stackName: string;
+  numResourcesWithDrift: number;
+  numResourcesUnchecked: number;
+  timestamp: string;
+}
+
+/**
+ * Stack hierarchy node structure
+ */
+interface StackHierarchyNode {
+  stack: {
+    logicalId: string;
+    physicalName: string;
+    category: string;
+    drifts: StackResourceDrift[];
+    template: CloudFormationTemplate;
+  } | null;
+  children: Map<string, StackHierarchyNode>;
+}
+
+// Display constants
+const DISPLAY_CONSTANTS = {
+  BORDER_WIDTH: 61,
+  TITLE_PADDING: 19,
+  LABEL_PROJECT: 10,
+  LABEL_STACKS_CHECKED: 23,
+  LABEL_RESOURCES_DRIFT: 23,
+  LABEL_RESOURCES_SYNC: 20,
+  LABEL_UNCHECKED: 22,
+  LABEL_FAILED: 22,
+} as const;
+
+// Tree display constants
+const TREE_SYMBOLS = {
+  BRANCH: '├──',
+  LAST_BRANCH: '└──',
+  VERTICAL: '│   ',
+  EMPTY: '    ',
+} as const;
+
+/**
+ * Drift formatter that processes and formats drift detection results
  */
 export class DriftFormatter {
-  constructor(private readonly results: DriftResults) {}
+  private readonly cfnService: CloudFormationService;
+  private readonly configService: AmplifyConfigService;
+
+  // Data stored after processing
+  private rootStackName = '';
+  private rootTemplate: CloudFormationTemplate = {};
+  private rootDrifts: StackResourceDrift[] = [];
+  private nestedStacks: Array<{
+    logicalId: string;
+    physicalName: string;
+    category: string;
+    drifts: StackResourceDrift[];
+    template: CloudFormationTemplate;
+  }> = [];
+  private summary = {
+    totalStacks: 0,
+    totalDrifted: 0,
+    totalInSync: 0,
+    totalUnchecked: 0,
+    totalFailed: 0,
+  };
+
+  constructor() {
+    this.cfnService = new CloudFormationService();
+    this.configService = new AmplifyConfigService();
+  }
+
+  /**
+   * Process raw drift results and prepare for formatting
+   */
+  public async processResults(
+    cfn: CloudFormationClient,
+    stackName: string,
+    rootTemplate: CloudFormationTemplate,
+    combinedResults: CombinedDriftResults,
+  ): Promise<void> {
+    this.rootStackName = stackName;
+    this.rootTemplate = rootTemplate;
+    this.rootDrifts = combinedResults.rootStackDrifts.StackResourceDrifts || [];
+
+    // Reset counters
+    this.summary = {
+      totalStacks: 1,
+      totalDrifted: 0,
+      totalInSync: 0,
+      totalUnchecked: 0,
+      totalFailed: 0,
+    };
+
+    // Count root stack resources for summary
+    this.summary.totalDrifted += this.countDrifted(this.rootDrifts);
+    this.summary.totalInSync += this.countInSync(this.rootDrifts);
+    this.summary.totalUnchecked += this.countUnchecked(this.rootDrifts, this.rootTemplate);
+    this.summary.totalFailed += this.countFailed(this.rootDrifts);
+
+    // Process nested stacks
+    this.nestedStacks = [];
+    for (const [logicalId, nestedDrift] of combinedResults.nestedStackDrifts.entries()) {
+      if (!nestedDrift.StackResourceDrifts) {
+        continue;
+      }
+
+      const physicalName = combinedResults.nestedStackPhysicalIds.get(logicalId) || logicalId;
+      const nestedTemplate = await this.cfnService.getStackTemplate(cfn, physicalName);
+      const nestedDrifts = nestedDrift.StackResourceDrifts;
+
+      // Count nested stack resources for summary
+      this.summary.totalDrifted += this.countDrifted(nestedDrifts);
+      this.summary.totalInSync += this.countInSync(nestedDrifts);
+      this.summary.totalUnchecked += this.countUnchecked(nestedDrifts, nestedTemplate);
+      this.summary.totalFailed += this.countFailed(nestedDrifts);
+      this.summary.totalStacks++;
+
+      this.nestedStacks.push({
+        logicalId,
+        physicalName,
+        category: this.configService.extractCategory(logicalId),
+        drifts: nestedDrifts,
+        template: nestedTemplate,
+      });
+    }
+  }
 
   /**
    * Format drift results based on the specified display format
    */
-  public formatDrift(format: DriftDisplayFormat = 'tree'): DriftOutput {
+  public formatDrift(format: DriftDisplayFormat = 'tree'): {
+    summaryDashboard: string;
+    treeView?: string;
+    detailedChanges?: string;
+    categoryBreakdown?: string;
+    totalDrifted: number;
+  } {
     const summaryDashboard = this.createSummaryDashboard();
 
     let treeView: string | undefined;
@@ -97,7 +214,19 @@ export class DriftFormatter {
       treeView,
       detailedChanges,
       categoryBreakdown,
-      totalDrifted: this.results.summary.totalDrifted,
+      totalDrifted: this.summary.totalDrifted,
+    };
+  }
+
+  /**
+   * Create simplified JSON output
+   */
+  public createSimplifiedJsonOutput(): SimplifiedJsonOutput {
+    return {
+      stackName: this.rootStackName,
+      numResourcesWithDrift: this.summary.totalDrifted,
+      numResourcesUnchecked: this.summary.totalUnchecked,
+      timestamp: new Date().toISOString(),
     };
   }
 
@@ -105,52 +234,88 @@ export class DriftFormatter {
    * Create a summary dashboard with overall statistics
    */
   private createSummaryDashboard(): string {
-    const { summary, rootStack } = this.results;
-    const projectName = this.extractProjectName(rootStack.name);
+    const projectName = this.extractProjectName(this.rootStackName);
 
-    const border = '─'.repeat(61);
+    const border = '─'.repeat(DISPLAY_CONSTANTS.BORDER_WIDTH);
     let dashboard = '';
 
     dashboard += chalk.cyan(`┌${border}┐\n`);
-    dashboard += chalk.cyan(`│${' '.repeat(19)}DRIFT DETECTION SUMMARY${' '.repeat(19)}│\n`);
+    dashboard += chalk.cyan(
+      `│${' '.repeat(DISPLAY_CONSTANTS.TITLE_PADDING)}DRIFT DETECTION SUMMARY${' '.repeat(DISPLAY_CONSTANTS.TITLE_PADDING)}│\n`,
+    );
     dashboard += chalk.cyan(`├${border}┤\n`);
-    dashboard += chalk.cyan(`│ Project: ${chalk.bold(projectName)}${' '.repeat(61 - 10 - projectName.length)}│\n`);
-    dashboard += chalk.cyan(
-      `│ Total Stacks Checked: ${chalk.bold(summary.totalStacks)}${' '.repeat(61 - 23 - summary.totalStacks.toString().length)}│\n`,
+
+    // Project name
+    dashboard += this.formatDashboardLine('Project', chalk.bold(projectName), DISPLAY_CONSTANTS.LABEL_PROJECT);
+
+    // Total stacks
+    dashboard += this.formatDashboardLine(
+      'Total Stacks Checked',
+      chalk.bold(this.summary.totalStacks),
+      DISPLAY_CONSTANTS.LABEL_STACKS_CHECKED,
     );
 
-    const driftedColor = summary.totalDrifted > 0 ? chalk.red : chalk.green;
-    dashboard += chalk.cyan(
-      `│ Resources with Drift: ${driftedColor(summary.totalDrifted)}${' '.repeat(61 - 23 - summary.totalDrifted.toString().length)}│\n`,
-    );
-    dashboard += chalk.cyan(
-      `│ Resources in Sync: ${chalk.green(summary.totalInSync)}${' '.repeat(61 - 20 - summary.totalInSync.toString().length)}│\n`,
-    );
-    dashboard += chalk.cyan(
-      `│ Unchecked Resources: ${chalk.gray(summary.totalUnchecked)}${' '.repeat(61 - 22 - summary.totalUnchecked.toString().length)}│\n`,
+    // Resources with drift
+    const driftedColor = this.summary.totalDrifted > 0 ? chalk.red : chalk.green;
+    dashboard += this.formatDashboardLine(
+      'Resources with Drift',
+      driftedColor(this.summary.totalDrifted),
+      DISPLAY_CONSTANTS.LABEL_RESOURCES_DRIFT,
     );
 
-    // Only show failed drift checks if there are any
-    if (summary.totalFailed > 0) {
-      dashboard += chalk.cyan(
-        `│ Failed Drift Checks: ${chalk.yellow(summary.totalFailed)}${' '.repeat(61 - 22 - summary.totalFailed.toString().length)}│\n`,
-      );
+    // Resources in sync
+    dashboard += this.formatDashboardLine(
+      'Resources in Sync',
+      chalk.green(this.summary.totalInSync),
+      DISPLAY_CONSTANTS.LABEL_RESOURCES_SYNC,
+    );
+
+    // Unchecked resources
+    dashboard += this.formatDashboardLine(
+      'Unchecked Resources',
+      chalk.gray(this.summary.totalUnchecked),
+      DISPLAY_CONSTANTS.LABEL_UNCHECKED,
+    );
+
+    // Failed checks (if any)
+    if (this.summary.totalFailed > 0) {
+      dashboard += this.formatDashboardLine('Failed Drift Checks', chalk.yellow(this.summary.totalFailed), DISPLAY_CONSTANTS.LABEL_FAILED);
     }
 
     dashboard += chalk.cyan(`└${border}┘`);
 
-    // Add warning message if there are failed checks
-    if (summary.totalFailed > 0) {
+    // Warning message for failed checks
+    if (this.summary.totalFailed > 0) {
       dashboard +=
         '\n' +
         chalk.yellow(
-          `WARNING: Drift detection failed for ${summary.totalFailed} resource(s).\n` +
+          `WARNING: Drift detection failed for ${this.summary.totalFailed} resource(s).\n` +
             `This may be due to insufficient permissions or AWS API issues.\n` +
             `Run with --verbose to see which resources failed.`,
         );
     }
 
     return dashboard;
+  }
+
+  /**
+   * Format a line for the dashboard display
+   */
+  private formatDashboardLine(label: string, value: any, labelWidth: number): string {
+    // Strip ANSI codes to get actual text length
+    const stripAnsi = (str: string): string => {
+      // eslint-disable-next-line no-control-regex
+      return str.replace(/\u001b\[[0-9;]*m/g, '');
+    };
+
+    const valueStr = value.toString();
+    const actualValueLength = stripAnsi(valueStr).length;
+
+    // Calculate padding: border width - "│ " (2) - label - ": " (2) - value length - "│" (1)
+    const usedLength = 2 + label.length + 2 + actualValueLength + 1;
+    const padding = DISPLAY_CONSTANTS.BORDER_WIDTH + 2 - usedLength;
+
+    return chalk.cyan(`│ ${label}: ${value}${' '.repeat(Math.max(0, padding))}│\n`);
   }
 
   /**
@@ -161,38 +326,69 @@ export class DriftFormatter {
 
     tree += chalk.bold('\nSTACK HIERARCHY:\n');
 
-    // Root stack
-    const rootDrifted = this.countDriftedResources(this.results.rootStack.drifts);
-    const rootInSync = this.countInSyncResources(this.results.rootStack.drifts);
-    const rootUnchecked = this.countUncheckedResources(this.results.rootStack.drifts, this.results.rootStack.template);
+    // Root stack with counts
+    tree += `${chalk.blue(this.rootStackName)} ${chalk.gray('(ROOT)')}\n`;
 
-    tree += `${chalk.blue(this.results.rootStack.name)} ${chalk.gray('(ROOT)')}\n`;
-    if (rootDrifted > 0) {
-      tree += `├── ${chalk.red('DRIFTED:')} ${rootDrifted} resource${rootDrifted === 1 ? '' : 's'}\n`;
-    }
-    if (rootInSync > 0) {
-      tree += `├── ${chalk.green('IN SYNC:')} ${rootInSync} resource${rootInSync === 1 ? '' : 's'}\n`;
-    }
-    if (rootUnchecked > 0) {
-      tree += `├── ${chalk.gray('UNCHECKED:')} ${rootUnchecked} resource${rootUnchecked === 1 ? '' : 's'}\n`;
-    }
+    // Calculate and cache root counts for this view
+    const rootCounts = this.getResourceCounts(this.rootDrifts, this.rootTemplate);
+    tree += this.formatResourceCountsAsTree(rootCounts, '');
 
-    // Build a hierarchical structure from the flat nested stacks list
+    // Build and render nested stack hierarchy
     const stackHierarchy = this.buildStackHierarchy();
-
-    // Render the hierarchy
-    tree = this.renderStackHierarchy(stackHierarchy, tree, '', false);
+    tree = this.renderStackHierarchy(stackHierarchy, tree, '');
 
     return tree;
   }
 
   /**
+   * Get resource counts for a stack
+   */
+  private getResourceCounts(drifts: StackResourceDrift[], template: CloudFormationTemplate): ResourceCounts {
+    return {
+      drifted: this.countDrifted(drifts),
+      inSync: this.countInSync(drifts),
+      unchecked: this.countUnchecked(drifts, template),
+      failed: this.countFailed(drifts),
+    };
+  }
+
+  /**
+   * Format resource counts as tree branches
+   */
+  private formatResourceCountsAsTree(counts: ResourceCounts, prefix: string): string {
+    let result = '';
+    const items: Array<{ label: string; count: number; color: (text: any) => string }> = [];
+
+    if (counts.drifted > 0) {
+      items.push({ label: 'DRIFTED', count: counts.drifted, color: chalk.red });
+    }
+    if (counts.inSync > 0) {
+      items.push({ label: 'IN SYNC', count: counts.inSync, color: chalk.green });
+    }
+    if (counts.unchecked > 0) {
+      items.push({ label: 'UNCHECKED', count: counts.unchecked, color: chalk.gray });
+    }
+    if (counts.failed > 0) {
+      items.push({ label: 'FAILED', count: counts.failed, color: chalk.yellow });
+    }
+
+    items.forEach((item, index) => {
+      const isLast = index === items.length - 1;
+      const symbol = isLast ? TREE_SYMBOLS.LAST_BRANCH : TREE_SYMBOLS.BRANCH;
+      const plural = item.count === 1 ? '' : 's';
+      result += `${prefix}${symbol} ${item.color(`${item.label}:`)} ${item.count} resource${plural}\n`;
+    });
+
+    return result;
+  }
+
+  /**
    * Build a hierarchical structure from the flat nested stacks list
    */
-  private buildStackHierarchy(): Map<string, any> {
-    const hierarchy = new Map<string, any>();
+  private buildStackHierarchy(): Map<string, StackHierarchyNode> {
+    const hierarchy = new Map<string, StackHierarchyNode>();
 
-    this.results.nestedStacks.forEach((nestedStack) => {
+    this.nestedStacks.forEach((nestedStack) => {
       const parts = nestedStack.logicalId.split('/');
 
       if (parts.length === 1) {
@@ -200,7 +396,7 @@ export class DriftFormatter {
         if (!hierarchy.has(parts[0])) {
           hierarchy.set(parts[0], {
             stack: nestedStack,
-            children: new Map<string, any>(),
+            children: new Map<string, StackHierarchyNode>(),
           });
         }
       } else {
@@ -212,13 +408,14 @@ export class DriftFormatter {
           // Create placeholder for parent if it doesn't exist
           hierarchy.set(topLevel, {
             stack: null,
-            children: new Map<string, any>(),
+            children: new Map<string, StackHierarchyNode>(),
           });
         }
 
-        hierarchy.get(topLevel).children.set(childName, {
+        const parent = hierarchy.get(topLevel)!;
+        parent.children.set(childName, {
           stack: nestedStack,
-          children: new Map<string, any>(),
+          children: new Map<string, StackHierarchyNode>(),
         });
       }
     });
@@ -229,175 +426,142 @@ export class DriftFormatter {
   /**
    * Render the stack hierarchy recursively
    */
-  private renderStackHierarchy(hierarchy: Map<string, any>, tree: string, prefix: string, isLast: boolean): string {
-    let index = 0;
+  private renderStackHierarchy(hierarchy: Map<string, StackHierarchyNode>, tree: string, prefix: string): string {
     const entries = Array.from(hierarchy.entries());
 
-    entries.forEach(([name, node]) => {
+    entries.forEach(([name, node], index) => {
       const isLastItem = index === entries.length - 1;
-      const nodePrefix = isLastItem ? '└──' : '├──';
-      const childPrefix = isLastItem ? '    ' : '│   ';
+      const nodePrefix = isLastItem ? TREE_SYMBOLS.LAST_BRANCH : TREE_SYMBOLS.BRANCH;
+      const childPrefix = isLastItem ? TREE_SYMBOLS.EMPTY : TREE_SYMBOLS.VERTICAL;
 
       if (node.stack) {
-        const nestedDrifted = this.countDriftedResources(node.stack.drifts);
-        const nestedInSync = this.countInSyncResources(node.stack.drifts);
-        const nestedUnchecked = this.countUncheckedResources(node.stack.drifts, node.stack.template);
-        const categoryName = this.getCategoryName(node.stack.category || node.stack.logicalId);
+        // Calculate counts for this nested stack
+        const counts = this.getResourceCounts(node.stack.drifts, node.stack.template);
+        const categoryName = this.determineCategory(node.stack.category || node.stack.logicalId);
 
-        // Display the stack name (use the last part if it's a nested path)
         const displayName = name.includes('/') ? name.split('/').pop() : name;
 
         tree += `${prefix}${nodePrefix} ${chalk.blue(displayName)} ${chalk.gray(`(${categoryName})`)}\n`;
 
-        // Add resource counts
+        // Format resource counts for this stack
         const resourcePrefix = prefix + childPrefix;
-        let hasMoreResources = false;
-
-        if (nestedDrifted > 0) {
-          tree += `${resourcePrefix}├── ${chalk.red('DRIFTED:')} ${nestedDrifted} resource${nestedDrifted === 1 ? '' : 's'}\n`;
-          hasMoreResources = true;
-        }
-        if (nestedInSync > 0) {
-          const resourceNodePrefix = hasMoreResources || nestedUnchecked > 0 ? '├──' : '└──';
-          tree += `${resourcePrefix}${resourceNodePrefix} ${chalk.green('IN SYNC:')} ${nestedInSync} resource${
-            nestedInSync === 1 ? '' : 's'
-          }\n`;
-          hasMoreResources = true;
-        }
-        if (nestedUnchecked > 0) {
-          tree += `${resourcePrefix}└── ${chalk.gray('UNCHECKED:')} ${nestedUnchecked} resource${nestedUnchecked === 1 ? '' : 's'}\n`;
-        }
+        tree += this.formatResourceCountsAsTree(counts, resourcePrefix);
 
         // Render children if any
         if (node.children && node.children.size > 0) {
-          tree = this.renderStackHierarchy(node.children, tree, prefix + childPrefix, isLastItem);
+          tree = this.renderStackHierarchy(node.children, tree, prefix + childPrefix);
         }
       }
-
-      index++;
     });
 
     return tree;
   }
 
   /**
-   * Create detailed changes section showing specific property modifications with parent context
+   * Create detailed changes section showing specific property modifications
    */
   private createDetailedChanges(): string {
-    let details = '';
-
-    const allDriftedResources = [
-      ...this.getDriftedResources(this.results.rootStack.drifts).map((drift) => ({
-        ...drift,
-        stackContext: 'ROOT',
-        stackName: this.results.rootStack.name,
-        category: 'Core Infrastructure',
-      })),
-      ...this.results.nestedStacks.flatMap((stack) =>
-        this.getDriftedResources(stack.drifts).map((drift) => ({
-          ...drift,
-          stackContext: stack.logicalId,
-          stackName: stack.physicalName,
-          category: this.getCategoryName(stack.category || stack.logicalId),
-        })),
-      ),
-    ];
+    const allDriftedResources = this.getAllDriftedResources();
 
     if (allDriftedResources.length === 0) {
       return '';
     }
 
-    details += chalk.bold('\nDETAILED CHANGES:\n');
+    let details = chalk.bold('\nDETAILED CHANGES:\n');
 
     allDriftedResources.forEach((drift, index) => {
       const isLast = index === allDriftedResources.length - 1;
-      const prefix = isLast ? '└──' : '├──';
-
-      const extendedDrift = drift as any;
-      const parentContext =
-        extendedDrift.stackContext === 'ROOT'
-          ? chalk.gray(` → ${chalk.bold('Root Stack')}`)
-          : chalk.gray(` → ${chalk.bold(extendedDrift.category)} → ${extendedDrift.stackContext}`);
-
-      details += `${prefix} ${chalk.red('DRIFTED:')} ${chalk.cyan(drift.ResourceType)} ${chalk.bold(
-        drift.LogicalResourceId,
-      )}${parentContext}\n`;
-
-      if (drift.PropertyDifferences && drift.PropertyDifferences.length > 0) {
-        const detailPrefix = isLast ? '    ' : '│   ';
-        drift.PropertyDifferences.forEach((propDiff, propIndex) => {
-          const isLastProp = propIndex === drift.PropertyDifferences!.length - 1;
-          const propPrefix = isLastProp ? '└──' : '├──';
-
-          details += `${detailPrefix}${propPrefix} ${chalk.yellow('PROPERTY:')} ${propDiff.PropertyPath}\n`;
-
-          const valuePrefix = isLastProp ? '    ' : '│   ';
-          details += `${detailPrefix}${valuePrefix}├── ${chalk.red('[-]')} ${chalk.red(propDiff.ExpectedValue)}\n`;
-          details += `${detailPrefix}${valuePrefix}└── ${chalk.green('[+]')} ${chalk.green(propDiff.ActualValue)}\n`;
-        });
-      }
+      details += this.formatDriftedResource(drift, isLast);
     });
 
     return details;
   }
 
   /**
+   * Get all drifted resources with context
+   */
+  private getAllDriftedResources(): ExtendedDriftResource[] {
+    const rootDrifted = this.getDriftedResources(this.rootDrifts).map(
+      (drift): ExtendedDriftResource => ({
+        ...drift,
+        stackContext: 'ROOT',
+        stackName: this.rootStackName,
+        category: 'Core Infrastructure',
+      }),
+    );
+
+    const nestedDrifted = this.nestedStacks.flatMap((stack) =>
+      this.getDriftedResources(stack.drifts).map(
+        (drift): ExtendedDriftResource => ({
+          ...drift,
+          stackContext: stack.logicalId,
+          stackName: stack.physicalName,
+          category: this.determineCategory(stack.category || stack.logicalId),
+        }),
+      ),
+    );
+
+    return [...rootDrifted, ...nestedDrifted];
+  }
+
+  /**
+   * Format a single drifted resource
+   */
+  private formatDriftedResource(drift: ExtendedDriftResource, isLast: boolean): string {
+    const prefix = isLast ? TREE_SYMBOLS.LAST_BRANCH : TREE_SYMBOLS.BRANCH;
+
+    const parentContext =
+      drift.stackContext === 'ROOT'
+        ? chalk.gray(` → ${chalk.bold('Root Stack')}`)
+        : chalk.gray(` → ${chalk.bold(drift.category)} → ${drift.stackContext}`);
+
+    let result = `${prefix} ${chalk.red('DRIFTED:')} ${chalk.cyan(drift.ResourceType)} ${chalk.bold(
+      drift.LogicalResourceId,
+    )}${parentContext}\n`;
+
+    // Add property differences if any
+    if (drift.PropertyDifferences && drift.PropertyDifferences.length > 0) {
+      const detailPrefix = isLast ? TREE_SYMBOLS.EMPTY : TREE_SYMBOLS.VERTICAL;
+      result += this.formatPropertyDifferences(drift.PropertyDifferences, detailPrefix);
+    }
+
+    return result;
+  }
+
+  /**
+   * Format property differences
+   */
+  private formatPropertyDifferences(differences: any[], prefix: string): string {
+    let result = '';
+
+    differences.forEach((propDiff, propIndex) => {
+      const isLastProp = propIndex === differences.length - 1;
+      const propPrefix = isLastProp ? TREE_SYMBOLS.LAST_BRANCH : TREE_SYMBOLS.BRANCH;
+
+      result += `${prefix}${propPrefix} ${chalk.yellow('PROPERTY:')} ${propDiff.PropertyPath}\n`;
+
+      const valuePrefix = isLastProp ? TREE_SYMBOLS.EMPTY : TREE_SYMBOLS.VERTICAL;
+      result += `${prefix}${valuePrefix}├── ${chalk.red('[-]')} ${chalk.red(propDiff.ExpectedValue)}\n`;
+      result += `${prefix}${valuePrefix}└── ${chalk.green('[+]')} ${chalk.green(propDiff.ActualValue)}\n`;
+    });
+
+    return result;
+  }
+
+  /**
    * Create category breakdown showing Amplify-specific grouping
    */
   private createCategoryBreakdown(): string {
-    let breakdown = '';
+    let breakdown = chalk.bold('\nAMPLIFY CATEGORIES:\n');
 
-    breakdown += chalk.bold('\nAMPLIFY CATEGORIES:\n');
-
-    // Group stacks by category
-    const categories = new Map<
-      string,
-      Array<{
-        name: string;
-        drifted: number;
-        inSync: number;
-        unchecked: number;
-        isRoot?: boolean;
-      }>
-    >();
-
-    // Add root stack as "Core Infrastructure"
-    const rootDrifted = this.countDriftedResources(this.results.rootStack.drifts);
-    const rootInSync = this.countInSyncResources(this.results.rootStack.drifts);
-    const rootUnchecked = this.countUncheckedResources(this.results.rootStack.drifts, this.results.rootStack.template);
-
-    categories.set('Core Infrastructure', [
-      {
-        name: 'Root Stack',
-        drifted: rootDrifted,
-        inSync: rootInSync,
-        unchecked: rootUnchecked,
-        isRoot: true,
-      },
-    ]);
-
-    // Add nested stacks
-    this.results.nestedStacks.forEach((stack) => {
-      const categoryName = this.getCategoryName(stack.category || stack.logicalId);
-      const drifted = this.countDriftedResources(stack.drifts);
-      const inSync = this.countInSyncResources(stack.drifts);
-      const unchecked = this.countUncheckedResources(stack.drifts, stack.template);
-
-      if (!categories.has(categoryName)) {
-        categories.set(categoryName, []);
-      }
-      categories.get(categoryName)!.push({
-        name: stack.logicalId,
-        drifted,
-        inSync,
-        unchecked,
-      });
-    });
+    // Group stacks by category with cached counts
+    const categories = this.groupStacksByCategory();
 
     // Display categories
-    Array.from(categories.entries()).forEach(([categoryName, stacks], categoryIndex) => {
-      const isLastCategory = categoryIndex === categories.size - 1;
-      const categoryPrefix = isLastCategory ? '└──' : '├──';
+    const categoryEntries = Array.from(categories.entries());
+    categoryEntries.forEach(([categoryName, stacks], categoryIndex) => {
+      const isLastCategory = categoryIndex === categoryEntries.length - 1;
+      const categoryPrefix = isLastCategory ? TREE_SYMBOLS.LAST_BRANCH : TREE_SYMBOLS.BRANCH;
 
       const categoryIcon = this.getCategoryIcon(categoryName);
       const totalDrifted = stacks.reduce((sum, stack) => sum + stack.drifted, 0);
@@ -408,7 +572,7 @@ export class DriftFormatter {
 
       breakdown += `${categoryPrefix} ${categoryIcon} ${chalk.bold(categoryName)}\n`;
 
-      const stackPrefix = isLastCategory ? '    ' : '│   ';
+      const stackPrefix = isLastCategory ? TREE_SYMBOLS.EMPTY : TREE_SYMBOLS.VERTICAL;
       breakdown += `${stackPrefix}└── Status: ${statusText}\n`;
     });
 
@@ -416,16 +580,92 @@ export class DriftFormatter {
   }
 
   /**
-   * Helper methods
+   * Group stacks by category with their resource counts
+   */
+  private groupStacksByCategory(): Map<string, Array<{ name: string } & ResourceCounts>> {
+    const categories = new Map<string, Array<{ name: string } & ResourceCounts>>();
+
+    // Add root stack as "Core Infrastructure"
+    const rootCounts = this.getResourceCounts(this.rootDrifts, this.rootTemplate);
+    categories.set('Core Infrastructure', [
+      {
+        name: 'Root Stack',
+        ...rootCounts,
+      },
+    ]);
+
+    // Add nested stacks
+    this.nestedStacks.forEach((stack) => {
+      const categoryName = this.determineCategory(stack.category || stack.logicalId);
+      const counts = this.getResourceCounts(stack.drifts, stack.template);
+
+      if (!categories.has(categoryName)) {
+        categories.set(categoryName, []);
+      }
+      categories.get(categoryName)!.push({
+        name: stack.logicalId,
+        ...counts,
+      });
+    });
+
+    return categories;
+  }
+
+  /**
+   * Count drifted resources (MODIFIED or DELETED)
+   */
+  private countDrifted(drifts: StackResourceDrift[]): number {
+    return drifts.filter(
+      (d) =>
+        d.StackResourceDriftStatus === StackResourceDriftStatus.MODIFIED || d.StackResourceDriftStatus === StackResourceDriftStatus.DELETED,
+    ).length;
+  }
+
+  /**
+   * Count resources in sync
+   */
+  private countInSync(drifts: StackResourceDrift[]): number {
+    return drifts.filter((d) => d.StackResourceDriftStatus === StackResourceDriftStatus.IN_SYNC).length;
+  }
+
+  /**
+   * Count unchecked resources (NOT_CHECKED or not in results)
+   */
+  private countUnchecked(drifts: StackResourceDrift[], template: CloudFormationTemplate): number {
+    const checkedResourceIds = new Set(drifts.map((d) => d.LogicalResourceId));
+    const allResourceIds = Object.keys(template.Resources || {});
+    const notInResults = allResourceIds.filter((id) => !checkedResourceIds.has(id)).length;
+    const notChecked = drifts.filter((d) => d.StackResourceDriftStatus === StackResourceDriftStatus.NOT_CHECKED).length;
+    return notInResults + notChecked;
+  }
+
+  /**
+   * Count failed drift checks (UNKNOWN status)
+   */
+  private countFailed(drifts: StackResourceDrift[]): number {
+    return drifts.filter((d) => d.StackResourceDriftStatus === StackResourceDriftStatus.UNKNOWN).length;
+  }
+
+  /**
+   * Get only drifted resources (MODIFIED or DELETED)
+   */
+  private getDriftedResources(drifts: StackResourceDrift[]): StackResourceDrift[] {
+    return drifts.filter(
+      (d) =>
+        d.StackResourceDriftStatus === StackResourceDriftStatus.MODIFIED || d.StackResourceDriftStatus === StackResourceDriftStatus.DELETED,
+    );
+  }
+
+  /**
+   * Extract project name from Amplify stack name
    */
   private extractProjectName(stackName: string): string {
-    // Extract project name from stack name (e.g., "amplify-myproject-dev-123" -> "myproject")
     const match = stackName.match(/^amplify-([^-]+)-/);
     return match ? match[1] : stackName;
   }
 
   /**
-   * Determine the category from a logical ID or category string
+   * Determine Amplify category from identifier
    */
   private determineCategory(identifier: string): string {
     const idLower = identifier.toLowerCase();
@@ -440,7 +680,7 @@ export class DriftFormatter {
   }
 
   /**
-   * Get the icon for a category
+   * Get icon for Amplify category
    */
   private getCategoryIcon(category: string): string {
     switch (category) {
@@ -461,47 +701,5 @@ export class DriftFormatter {
       default:
         return chalk.white('[OTHER]');
     }
-  }
-
-  /**
-   * Get the category name from a logical ID
-   */
-  private getCategoryName(logicalId: string): string {
-    return this.determineCategory(logicalId);
-  }
-
-  /**
-   * Count drifted resources (MODIFIED or DELETED)
-   */
-  private countDriftedResources(drifts: StackResourceDrift[]): number {
-    return ResourceCounter.countDriftedResources(drifts);
-  }
-
-  /**
-   * Count resources in sync
-   */
-  private countInSyncResources(drifts: StackResourceDrift[]): number {
-    return ResourceCounter.countInSyncResources(drifts);
-  }
-
-  /**
-   * Count unchecked resources (NOT_CHECKED status + resources not in drift results)
-   */
-  private countUncheckedResources(drifts: StackResourceDrift[], template: CloudFormationTemplate): number {
-    return ResourceCounter.countUncheckedResources(drifts, template);
-  }
-
-  /**
-   * Count failed resources (UNKNOWN status - drift check failed)
-   */
-  private countFailedResources(drifts: StackResourceDrift[]): number {
-    return ResourceCounter.countFailedResources(drifts);
-  }
-
-  /**
-   * Get drifted resources (MODIFIED or DELETED)
-   */
-  private getDriftedResources(drifts: StackResourceDrift[]): StackResourceDrift[] {
-    return ResourceCounter.getDriftedResources(drifts);
   }
 }

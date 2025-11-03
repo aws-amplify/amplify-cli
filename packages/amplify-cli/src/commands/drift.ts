@@ -6,8 +6,8 @@
 import { $TSContext, AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import chalk from 'chalk';
-import { detectStackDriftRecursive, DriftFormatter, type DriftResults, type DriftDisplayFormat } from './drift-detection';
-import { CloudFormationService, AmplifyConfigService, DriftResultProcessor, FileService } from './drift-detection/services';
+import { detectStackDriftRecursive, type DriftDisplayFormat } from './drift-detection';
+import { CloudFormationService, AmplifyConfigService, FileService, DriftFormatter } from './drift-detection/services';
 import type { CloudFormationClient } from '@aws-sdk/client-cloudformation';
 
 export const name = 'drift';
@@ -47,15 +47,15 @@ export const run = async (context: $TSContext): Promise<void> => {
 export class AmplifyDriftDetector {
   private readonly cfnService: CloudFormationService;
   private readonly configService: AmplifyConfigService;
-  private readonly resultProcessor: DriftResultProcessor;
   private readonly fileService: FileService;
+  private readonly formatter: DriftFormatter;
 
   constructor(private readonly context: $TSContext) {
     // Initialize services
     this.cfnService = new CloudFormationService();
     this.configService = new AmplifyConfigService();
     this.fileService = new FileService();
-    this.resultProcessor = new DriftResultProcessor(this.cfnService, this.configService);
+    this.formatter = new DriftFormatter();
   }
 
   /**
@@ -102,21 +102,22 @@ export class AmplifyDriftDetector {
       return 0;
     }
 
-    // 7. Build consolidated results structure
+    // 7. Process results with the simplified formatter
     const rootTemplate = await this.cfnService.getStackTemplate(cfn, stackName);
-    const driftResults = await this.resultProcessor.buildConsolidatedResults(cfn, stackName, rootTemplate, combinedResults);
+    await this.formatter.processResults(cfn, stackName, rootTemplate, combinedResults);
 
     // 8. Display results
-    this.displayResults(driftResults, options);
+    this.displayResults(options);
 
     // 9. Save JSON if requested
     if (options['output-file']) {
-      const simplifiedJson = this.resultProcessor.createSimplifiedJsonOutput(driftResults);
+      const simplifiedJson = this.formatter.createSimplifiedJsonOutput();
       await this.fileService.saveJsonOutput(options['output-file'], simplifiedJson);
     }
 
     // 10. Return exit code - always return 1 if drift detected, 0 if no drift
-    const hasDrift = driftResults.summary.totalDrifted > 0;
+    const output = this.formatter.formatDrift('summary');
+    const hasDrift = output.totalDrifted > 0;
     return hasDrift ? 1 : 0;
   }
 
@@ -155,20 +156,18 @@ export class AmplifyDriftDetector {
   /**
    * Display results based on format option
    */
-  private displayResults(driftResults: DriftResults, options: DriftOptions): void {
-    const formatter = new DriftFormatter(driftResults);
-
+  private displayResults(options: DriftOptions): void {
     if (options.format === 'json') {
-      const simplifiedJson = this.resultProcessor.createSimplifiedJsonOutput(driftResults);
+      const simplifiedJson = this.formatter.createSimplifiedJsonOutput();
       printer.info(JSON.stringify(simplifiedJson, null, 2));
     } else if (options.format === 'summary') {
-      const output = formatter.formatDrift('summary');
+      const output = this.formatter.formatDrift('summary');
       printer.info(output.summaryDashboard);
       if (output.categoryBreakdown) {
         printer.info(output.categoryBreakdown);
       }
     } else if (options.format === 'tree') {
-      const output = formatter.formatDrift('tree');
+      const output = this.formatter.formatDrift('tree');
       printer.info(output.summaryDashboard);
       if (output.treeView) {
         printer.info(output.treeView);
@@ -182,7 +181,7 @@ export class AmplifyDriftDetector {
     } else {
       // This shouldn't happen with TypeScript, but handle gracefully
       printer.warn(`Unknown format: ${options.format}. Using summary format.`);
-      const output = formatter.formatDrift('summary');
+      const output = this.formatter.formatDrift('summary');
       printer.info(output.summaryDashboard);
       if (output.categoryBreakdown) {
         printer.info(output.categoryBreakdown);

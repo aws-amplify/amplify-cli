@@ -4,10 +4,4 @@
  */
 
 export { detectStackDrift, detectStackDriftRecursive, type CombinedDriftResults } from './detect-stack-drift';
-export {
-  DriftFormatter,
-  type DriftResults,
-  type DriftOutput,
-  type DriftDisplayFormat,
-  type CloudFormationTemplate,
-} from './services/drift-formatter';
+export { DriftFormatter, type DriftDisplayFormat } from './services/drift-formatter';
