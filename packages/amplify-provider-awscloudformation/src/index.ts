@@ -65,8 +65,6 @@ export {
 } from './utils/ssm-utils/env-parameter-ssm-helpers';
 export { AwsSdkConfig } from './utils/auth-types';
 
-// Drift detection exports have been moved to amplify-cli package
-
 function init(context) {
   return initializer.run(context);
 }
