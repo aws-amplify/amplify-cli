@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.11.12-rc.85839aa7c70db2f.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.11.11...amplify-e2e-tests@4.11.12-rc.85839aa7c70db2f.0) (2025-11-03)
+
+
+### Bug Fixes
+
+* mac Smoke tests ([#14316](https://github.com/aws-amplify/amplify-cli/issues/14316)) ([85839aa](https://github.com/aws-amplify/amplify-cli/commit/85839aa7c70db2f865cbe41c88810ea53dae3f51))
+* role assumption through profiles not working properly in certain situations ([#14315](https://github.com/aws-amplify/amplify-cli/issues/14315)) ([04f7bcf](https://github.com/aws-amplify/amplify-cli/commit/04f7bcfc2467b84e111b7a2b687bd34d3a23d16e))
+
+
+
+
+
 ## [4.11.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.11.10...amplify-e2e-tests@4.11.11) (2025-10-31)
 
 
