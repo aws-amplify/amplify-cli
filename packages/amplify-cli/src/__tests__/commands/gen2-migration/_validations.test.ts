@@ -1,6 +1,8 @@
 import { AmplifyGen2MigrationValidations } from '../../../commands/gen2-migration/_validations';
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
-import { DescribeChangeSetOutput } from '@aws-sdk/client-cloudformation';
+import { CloudFormationClient, DescribeChangeSetOutput } from '@aws-sdk/client-cloudformation';
+
+jest.mock('@aws-sdk/client-cloudformation');
 
 describe('AmplifyGen2MigrationValidations', () => {
   let mockContext: $TSContext;
@@ -314,6 +316,178 @@ describe('AmplifyGen2MigrationValidations', () => {
       await expect(validations.validateStatefulResources(changeSet)).rejects.toMatchObject({
         name: 'DestructiveMigrationError',
         message: 'Stateful resources scheduled for deletion: DeletedBucket (AWS::S3::Bucket).',
+      });
+    });
+  });
+
+  describe('validateStatefulResources - nested stacks', () => {
+    let mockSend: jest.Mock;
+
+    beforeEach(() => {
+      mockSend = jest.fn();
+      (CloudFormationClient as jest.Mock).mockImplementation(() => ({
+        send: mockSend,
+      }));
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should throw when nested stack contains stateful resources', async () => {
+      mockSend.mockResolvedValueOnce({
+        StackResources: [
+          {
+            ResourceType: 'AWS::DynamoDB::Table',
+            PhysicalResourceId: 'MyTable',
+            LogicalResourceId: 'Table',
+          },
+        ],
+      });
+
+      const changeSet: DescribeChangeSetOutput = {
+        Changes: [
+          {
+            Type: 'Resource',
+            ResourceChange: {
+              Action: 'Remove',
+              ResourceType: 'AWS::CloudFormation::Stack',
+              LogicalResourceId: 'AuthStack',
+              PhysicalResourceId: 'auth-stack',
+            },
+          },
+        ],
+      };
+
+      await expect(validations.validateStatefulResources(changeSet)).rejects.toMatchObject({
+        name: 'DestructiveMigrationError',
+        message:
+          'Stateful resources scheduled for deletion: AuthStack (AWS::CloudFormation::Stack) containing: Table (AWS::DynamoDB::Table).',
+      });
+    });
+
+    it('should pass when nested stack contains only stateless resources', async () => {
+      mockSend.mockResolvedValueOnce({
+        StackResources: [
+          {
+            ResourceType: 'AWS::Lambda::Function',
+            PhysicalResourceId: 'MyFunction',
+            LogicalResourceId: 'Function',
+          },
+        ],
+      });
+
+      const changeSet: DescribeChangeSetOutput = {
+        Changes: [
+          {
+            Type: 'Resource',
+            ResourceChange: {
+              Action: 'Remove',
+              ResourceType: 'AWS::CloudFormation::Stack',
+              LogicalResourceId: 'LambdaStack',
+              PhysicalResourceId: 'lambda-stack',
+            },
+          },
+        ],
+      };
+
+      await expect(validations.validateStatefulResources(changeSet)).resolves.not.toThrow();
+    });
+
+    it('should handle multiple levels of nested stacks', async () => {
+      mockSend.mockResolvedValueOnce({
+        StackResources: [
+          {
+            ResourceType: 'AWS::CloudFormation::Stack',
+            PhysicalResourceId: 'storage-nested-stack',
+            LogicalResourceId: 'StorageNestedStack',
+          },
+        ],
+      });
+
+      mockSend.mockResolvedValueOnce({
+        StackResources: [
+          {
+            ResourceType: 'AWS::S3::Bucket',
+            PhysicalResourceId: 'my-bucket',
+            LogicalResourceId: 'Bucket',
+          },
+        ],
+      });
+
+      const changeSet: DescribeChangeSetOutput = {
+        Changes: [
+          {
+            Type: 'Resource',
+            ResourceChange: {
+              Action: 'Remove',
+              ResourceType: 'AWS::CloudFormation::Stack',
+              LogicalResourceId: 'StorageStack',
+              PhysicalResourceId: 'storage-stack',
+            },
+          },
+        ],
+      };
+
+      await expect(validations.validateStatefulResources(changeSet)).rejects.toMatchObject({
+        name: 'DestructiveMigrationError',
+      });
+    });
+
+    it('should pass when nested stack is missing PhysicalResourceId', async () => {
+      const changeSet: DescribeChangeSetOutput = {
+        Changes: [
+          {
+            Type: 'Resource',
+            ResourceChange: {
+              Action: 'Remove',
+              ResourceType: 'AWS::CloudFormation::Stack',
+              LogicalResourceId: 'IncompleteStack',
+              PhysicalResourceId: undefined,
+            },
+          },
+        ],
+      };
+
+      await expect(validations.validateStatefulResources(changeSet)).resolves.not.toThrow();
+    });
+
+    it('should handle mixed direct and nested stateful resources', async () => {
+      mockSend.mockResolvedValueOnce({
+        StackResources: [
+          {
+            ResourceType: 'AWS::Cognito::UserPool',
+            PhysicalResourceId: 'user-pool',
+            LogicalResourceId: 'UserPool',
+          },
+        ],
+      });
+
+      const changeSet: DescribeChangeSetOutput = {
+        Changes: [
+          {
+            Type: 'Resource',
+            ResourceChange: {
+              Action: 'Remove',
+              ResourceType: 'AWS::DynamoDB::Table',
+              LogicalResourceId: 'DirectTable',
+            },
+          },
+          {
+            Type: 'Resource',
+            ResourceChange: {
+              Action: 'Remove',
+              ResourceType: 'AWS::CloudFormation::Stack',
+              LogicalResourceId: 'AuthStack',
+              PhysicalResourceId: 'auth-stack',
+            },
+          },
+        ],
+      };
+
+      await expect(validations.validateStatefulResources(changeSet)).rejects.toMatchObject({
+        name: 'DestructiveMigrationError',
+        message: expect.stringContaining('DirectTable'),
       });
     });
   });
