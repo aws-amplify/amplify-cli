@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.11.16](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.11.15...@aws-amplify/amplify-provider-awscloudformation@8.11.16) (2025-11-03)
+
+
+### Bug Fixes
+
+* role assumption through profiles not working properly in certain situations ([#14315](https://github.com/aws-amplify/amplify-cli/issues/14315)) ([04f7bcf](https://github.com/aws-amplify/amplify-cli/commit/04f7bcfc2467b84e111b7a2b687bd34d3a23d16e))
+
+
+
+
+
 ## [8.11.15](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.11.14...@aws-amplify/amplify-provider-awscloudformation@8.11.15) (2025-10-31)
 
 
