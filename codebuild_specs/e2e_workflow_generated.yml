@@ -168,214 +168,221 @@ batch:
           TEST_SUITE: src/__tests__/analytics-pinpoint-flutter.test.ts|src/__tests__/analytics-kinesis.test.ts|src/__tests__/notifications-analytics-compatibility-sms-2.test.ts
       depend-on:
         - upb
-    - identifier: l_notifications_analytics_compatibility_in_app_1_studio_modelgen_plugin
+    - identifier: l_notifications_analytics_compatibility_in_app_1_studio_modelgen
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/notifications-analytics-compatibility-in-app-1.test.ts|src/__tests__/studio-modelgen.test.ts|src/__tests__/plugin.test.ts
+          TEST_SUITE: src/__tests__/notifications-analytics-compatibility-in-app-1.test.ts|src/__tests__/studio-modelgen.test.ts
       depend-on:
         - upb
-    - identifier: l_notifications_analytics_compatibility_sms_1_hooks_b_global_sandbox_c
+    - identifier: l_plugin_notifications_analytics_compatibility_sms_1_hooks_b
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/notifications-analytics-compatibility-sms-1.test.ts|src/__tests__/hooks-b.test.ts|src/__tests__/global_sandbox-c.test.ts
+          TEST_SUITE: src/__tests__/plugin.test.ts|src/__tests__/notifications-analytics-compatibility-sms-1.test.ts|src/__tests__/hooks-b.test.ts
       depend-on:
         - upb
-    - identifier: l_analytics_2_pull_notifications_sms_pull
+    - identifier: l_global_sandbox_c_analytics_2_pull
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/analytics-2.test.ts|src/__tests__/pull.test.ts|src/__tests__/notifications-sms-pull.test.ts
+          TEST_SUITE: src/__tests__/global_sandbox-c.test.ts|src/__tests__/analytics-2.test.ts|src/__tests__/pull.test.ts
       depend-on:
         - upb
-    - identifier: l_notifications_in_app_messaging_env_1_custom_transformers_with_babel_config
+    - identifier: l_notifications_sms_pull_notifications_in_app_messaging_env_1_custom_transformers
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/notifications-in-app-messaging-env-1.test.ts|src/__tests__/graphql-v2/custom-transformers.test.ts|src/__tests__/with-babel-config.test.ts
+          TEST_SUITE: src/__tests__/notifications-sms-pull.test.ts|src/__tests__/notifications-in-app-messaging-env-1.test.ts|src/__tests__/graphql-v2/custom-transformers.test.ts
       depend-on:
         - upb
-    - identifier: l_notifications_in_app_messaging_env_2_notifications_fcm_notifications_apns
+    - identifier: l_with_babel_config_notifications_in_app_messaging_env_2_notifications_fcm
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/notifications-in-app-messaging-env-2.test.ts|src/__tests__/notifications-fcm.test.ts|src/__tests__/notifications-apns.test.ts
+          TEST_SUITE: src/__tests__/with-babel-config.test.ts|src/__tests__/notifications-in-app-messaging-env-2.test.ts|src/__tests__/notifications-fcm.test.ts
       depend-on:
         - upb
-    - identifier: l_init_b_container_hosting_auth_10
+    - identifier: l_notifications_apns_init_b_container_hosting
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/init_b.test.ts|src/__tests__/container-hosting.test.ts|src/__tests__/auth_10.test.ts
+          TEST_SUITE: src/__tests__/notifications-apns.test.ts|src/__tests__/init_b.test.ts|src/__tests__/container-hosting.test.ts
       depend-on:
         - upb
-    - identifier: l_init_f_init_d_env_2
+    - identifier: l_auth_10_init_f_init_d
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/init_f.test.ts|src/__tests__/init_d.test.ts|src/__tests__/env-2.test.ts
+          TEST_SUITE: src/__tests__/auth_10.test.ts|src/__tests__/init_f.test.ts|src/__tests__/init_d.test.ts
       depend-on:
         - upb
-    - identifier: l_amplify_configure_layer_4_init_c
+    - identifier: l_env_2_amplify_configure_layer_4
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/amplify-configure.test.ts|src/__tests__/layer-4.test.ts|src/__tests__/init_c.test.ts
+          TEST_SUITE: src/__tests__/env-2.test.ts|src/__tests__/amplify-configure.test.ts|src/__tests__/layer-4.test.ts
       depend-on:
         - upb
-    - identifier: l_git_clone_attach_configure_project_auth_5d
+    - identifier: l_init_c_git_clone_attach_configure_project
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/git-clone-attach.test.ts|src/__tests__/configure-project.test.ts|src/__tests__/auth_5d.test.ts
+          TEST_SUITE: src/__tests__/init_c.test.ts|src/__tests__/git-clone-attach.test.ts|src/__tests__/configure-project.test.ts
       depend-on:
         - upb
-    - identifier: l_tags_schema_model_a_function_4
+    - identifier: l_auth_5d_tags_schema_model_a
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/tags.test.ts|src/__tests__/schema-model-a.test.ts|src/__tests__/function_4.test.ts
+          TEST_SUITE: src/__tests__/auth_5d.test.ts|src/__tests__/tags.test.ts|src/__tests__/schema-model-a.test.ts
       depend-on:
         - upb
-    - identifier: l_function_3b_function_2c_storage_2
+    - identifier: l_function_4_function_3b_function_2c
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/function_3b.test.ts|src/__tests__/function_2c.test.ts|src/__tests__/storage-2.test.ts
+          TEST_SUITE: src/__tests__/function_4.test.ts|src/__tests__/function_3b.test.ts|src/__tests__/function_2c.test.ts
       depend-on:
         - upb
-    - identifier: l_function_6_custom_policies_function_auth_1a
+    - identifier: l_storage_2_function_6_custom_policies_function
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/function_6.test.ts|src/__tests__/custom_policies_function.test.ts|src/__tests__/auth_1a.test.ts
+          TEST_SUITE: src/__tests__/storage-2.test.ts|src/__tests__/function_6.test.ts|src/__tests__/custom_policies_function.test.ts
       depend-on:
         - upb
-    - identifier: l_auth_trigger_schema_versioned_schema_model_e
+    - identifier: l_auth_1a_auth_trigger_schema_versioned
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/auth-trigger.test.ts|src/__tests__/schema-versioned.test.ts|src/__tests__/schema-model-e.test.ts
+          TEST_SUITE: src/__tests__/auth_1a.test.ts|src/__tests__/auth-trigger.test.ts|src/__tests__/schema-versioned.test.ts
       depend-on:
         - upb
-    - identifier: l_schema_auth_4b_notifications_sms_iam_permissions_boundary
+    - identifier: l_schema_model_e_schema_auth_4b_notifications_sms
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/schema-auth-4b.test.ts|src/__tests__/notifications-sms.test.ts|src/__tests__/iam-permissions-boundary.test.ts
+          TEST_SUITE: src/__tests__/schema-model-e.test.ts|src/__tests__/schema-auth-4b.test.ts|src/__tests__/notifications-sms.test.ts
       depend-on:
         - upb
-    - identifier: l_export_node_function_schema_model_d
+    - identifier: l_iam_permissions_boundary_export_node_function
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/export.test.ts|src/__tests__/migration/node.function.test.ts|src/__tests__/schema-model-d.test.ts
+          TEST_SUITE: src/__tests__/iam-permissions-boundary.test.ts|src/__tests__/export.test.ts|src/__tests__/migration/node.function.test.ts
       depend-on:
         - upb
-    - identifier: l_schema_model_b_schema_auth_4a_s3_sse
+    - identifier: l_schema_model_d_schema_model_b_schema_auth_4a
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/schema-model-b.test.ts|src/__tests__/schema-auth-4a.test.ts|src/__tests__/s3-sse.test.ts
+          TEST_SUITE: src/__tests__/schema-model-d.test.ts|src/__tests__/schema-model-b.test.ts|src/__tests__/schema-auth-4a.test.ts
       depend-on:
         - upb
-    - identifier: l_geo_add_b_auth_8b_auth_5e
+    - identifier: l_s3_sse_geo_add_b_auth_8b
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/geo-add-b.test.ts|src/__tests__/auth_8b.test.ts|src/__tests__/auth_5e.test.ts
+          TEST_SUITE: src/__tests__/s3-sse.test.ts|src/__tests__/geo-add-b.test.ts|src/__tests__/auth_8b.test.ts
       depend-on:
         - upb
-    - identifier: l_auth_1c_schema_predictions_schema_model_c
+    - identifier: l_auth_5e_auth_1c_schema_predictions
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/auth_1c.test.ts|src/__tests__/schema-predictions.test.ts|src/__tests__/schema-model-c.test.ts
+          TEST_SUITE: src/__tests__/auth_5e.test.ts|src/__tests__/auth_1c.test.ts|src/__tests__/schema-predictions.test.ts
       depend-on:
         - upb
-    - identifier: l_schema_data_access_patterns_schema_auth_6a_schema_auth_4d
+    - identifier: l_schema_model_c_schema_data_access_patterns_schema_auth_6a
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/schema-data-access-patterns.test.ts|src/__tests__/schema-auth-6a.test.ts|src/__tests__/schema-auth-4d.test.ts
+          TEST_SUITE: src/__tests__/schema-model-c.test.ts|src/__tests__/schema-data-access-patterns.test.ts|src/__tests__/schema-auth-6a.test.ts
       depend-on:
         - upb
-    - identifier: l_frontend_config_drift_env_4_auth_5f
+    - identifier: l_schema_auth_4d_frontend_config_drift_env_4
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/frontend_config_drift.test.ts|src/__tests__/env-4.test.ts|src/__tests__/auth_5f.test.ts
+          TEST_SUITE: src/__tests__/schema-auth-4d.test.ts|src/__tests__/frontend_config_drift.test.ts|src/__tests__/env-4.test.ts
       depend-on:
         - upb
-    - identifier: l_model_migration_schema_auth_5c_schema_auth_4c
+    - identifier: l_auth_5f_model_migration_schema_auth_5c
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/transformer-migrations/model-migration.test.ts|src/__tests__/schema-auth-5c.test.ts|src/__tests__/schema-auth-4c.test.ts
+          TEST_SUITE: src/__tests__/auth_5f.test.ts|src/__tests__/transformer-migrations/model-migration.test.ts|src/__tests__/schema-auth-5c.test.ts
       depend-on:
         - upb
-    - identifier: l_init_a_geo_add_a_env_1
+    - identifier: l_schema_auth_4c_init_a_geo_add_a
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/init_a.test.ts|src/__tests__/geo-add-a.test.ts|src/__tests__/env-1.test.ts
+          TEST_SUITE: src/__tests__/schema-auth-4c.test.ts|src/__tests__/init_a.test.ts|src/__tests__/geo-add-a.test.ts
       depend-on:
         - upb
-    - identifier: l_auth_5c_auth_5a_auth_4c
+    - identifier: l_env_1_auth_5c_auth_5a
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/auth_5c.test.ts|src/__tests__/auth_5a.test.ts|src/__tests__/auth_4c.test.ts
+          TEST_SUITE: src/__tests__/env-1.test.ts|src/__tests__/auth_5c.test.ts|src/__tests__/auth_5a.test.ts
       depend-on:
         - upb
-    - identifier: l_auth_3c_schema_auth_8c_schema_auth_6b
+    - identifier: l_auth_4c_auth_3c_schema_auth_8c
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/auth_3c.test.ts|src/__tests__/schema-auth-8c.test.ts|src/__tests__/schema-auth-6b.test.ts
+          TEST_SUITE: src/__tests__/auth_4c.test.ts|src/__tests__/auth_3c.test.ts|src/__tests__/schema-auth-8c.test.ts
       depend-on:
         - upb
-    - identifier: l_schema_auth_5d_global_sandbox_b_geo_import_2
+    - identifier: l_schema_auth_6b_schema_auth_5d_global_sandbox_b
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/schema-auth-5d.test.ts|src/__tests__/global_sandbox-b.test.ts|src/__tests__/geo-import-2.test.ts
+          TEST_SUITE: src/__tests__/schema-auth-6b.test.ts|src/__tests__/schema-auth-5d.test.ts|src/__tests__/global_sandbox-b.test.ts
       depend-on:
         - upb
-    - identifier: l_geo_import_1a_function_9c_function_10
+    - identifier: l_geo_import_2_geo_import_1a_function_9c
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/geo-import-1a.test.ts|src/__tests__/function_9c.test.ts|src/__tests__/function_10.test.ts
+          TEST_SUITE: src/__tests__/geo-import-2.test.ts|src/__tests__/geo-import-1a.test.ts|src/__tests__/function_9c.test.ts
       depend-on:
         - upb
-    - identifier: l_function_permissions_env_5_custom_resources
+    - identifier: l_function_10_function_permissions_env_5
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/function-permissions.test.ts|src/__tests__/env-5.test.ts|src/__tests__/custom_resources.test.ts
+          TEST_SUITE: src/__tests__/function_10.test.ts|src/__tests__/function-permissions.test.ts|src/__tests__/env-5.test.ts
       depend-on:
         - upb
-    - identifier: l_auth_9_auth_5b_schema_auth_8a
+    - identifier: l_custom_resources_auth_9
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/auth_9.test.ts|src/__tests__/auth_5b.test.ts|src/__tests__/schema-auth-8a.test.ts
+          TEST_SUITE: src/__tests__/custom_resources.test.ts|src/__tests__/auth_9.test.ts
       depend-on:
         - upb
-    - identifier: l_schema_auth_7c_schema_auth_6d_schema_auth_6c
+    - identifier: l_auth_5b_schema_auth_8a_schema_auth_7c
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/schema-auth-7c.test.ts|src/__tests__/schema-auth-6d.test.ts|src/__tests__/schema-auth-6c.test.ts
+          TEST_SUITE: src/__tests__/auth_5b.test.ts|src/__tests__/schema-auth-8a.test.ts|src/__tests__/schema-auth-7c.test.ts
       depend-on:
         - upb
-    - identifier: l_schema_auth_2b_schema_auth_11_c_notifications_analytics_compatibility_in_app_2
+    - identifier: l_schema_auth_6d_schema_auth_6c_schema_auth_2b
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/schema-auth-2b.test.ts|src/__tests__/schema-auth-11-c.test.ts|src/__tests__/notifications-analytics-compatibility-in-app-2.test.ts
+          TEST_SUITE: src/__tests__/schema-auth-6d.test.ts|src/__tests__/schema-auth-6c.test.ts|src/__tests__/schema-auth-2b.test.ts
+      depend-on:
+        - upb
+    - identifier: l_schema_auth_11_c_notifications_analytics_compatibility_in_app_2
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        variables:
+          TEST_SUITE: src/__tests__/schema-auth-11-c.test.ts|src/__tests__/notifications-analytics-compatibility-in-app-2.test.ts
       depend-on:
         - upb
     - identifier: l_init_e_global_sandbox_a_geo_import_1b
@@ -420,39 +427,46 @@ batch:
           TEST_SUITE: src/__tests__/schema-auth-1a.test.ts|src/__tests__/geo-headless.test.ts|src/__tests__/function_9a.test.ts
       depend-on:
         - upb
-    - identifier: l_export_pull_a_api_7_api_10
+    - identifier: l_export_pull_a_api_7
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/export-pull-a.test.ts|src/__tests__/api_7.test.ts|src/__tests__/api_10.test.ts
+          TEST_SUITE: src/__tests__/export-pull-a.test.ts|src/__tests__/api_7.test.ts
       depend-on:
         - upb
-    - identifier: l_api_key_migration5_schema_iterative_rollback_1_schema_auth_9_b
+    - identifier: l_api_10_api_key_migration5_schema_iterative_rollback_1
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/migration/api.key.migration5.test.ts|src/__tests__/schema-iterative-rollback-1.test.ts|src/__tests__/schema-auth-9-b.test.ts
+          TEST_SUITE: src/__tests__/api_10.test.ts|src/__tests__/migration/api.key.migration5.test.ts|src/__tests__/schema-iterative-rollback-1.test.ts
       depend-on:
         - upb
-    - identifier: l_schema_auth_7b_schema_auth_7a_schema_auth_2a
+    - identifier: l_schema_auth_9_b_schema_auth_7b_schema_auth_7a
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/schema-auth-7b.test.ts|src/__tests__/schema-auth-7a.test.ts|src/__tests__/schema-auth-2a.test.ts
+          TEST_SUITE: src/__tests__/schema-auth-9-b.test.ts|src/__tests__/schema-auth-7b.test.ts|src/__tests__/schema-auth-7a.test.ts
       depend-on:
         - upb
-    - identifier: l_schema_auth_1b_schema_auth_11_b_predictions
+    - identifier: l_schema_auth_2a_schema_auth_1b_schema_auth_11_b
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/schema-auth-1b.test.ts|src/__tests__/schema-auth-11-b.test.ts|src/__tests__/predictions.test.ts
+          TEST_SUITE: src/__tests__/schema-auth-2a.test.ts|src/__tests__/schema-auth-1b.test.ts|src/__tests__/schema-auth-11-b.test.ts
       depend-on:
         - upb
-    - identifier: l_layer_3_hosting_geo_import_3
+    - identifier: l_predictions_layer_3
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/layer-3.test.ts|src/__tests__/hosting.test.ts|src/__tests__/geo-import-3.test.ts
+          TEST_SUITE: src/__tests__/predictions.test.ts|src/__tests__/layer-3.test.ts
+      depend-on:
+        - upb
+    - identifier: l_hosting_geo_import_3
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        variables:
+          TEST_SUITE: src/__tests__/hosting.test.ts|src/__tests__/geo-import-3.test.ts
       depend-on:
         - upb
     - identifier: l_geo_add_d_geo_add_c_delete
@@ -553,33 +567,40 @@ batch:
           TEST_SUITE: src/__tests__/function_15.test.ts|src/__tests__/function_14.test.ts|src/__tests__/function_13.test.ts
       depend-on:
         - upb
-    - identifier: l_function_12_export_pull_c_custom_resource_with_storage
+    - identifier: l_function_12_export_pull_c
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/function_12.test.ts|src/__tests__/export-pull-c.test.ts|src/__tests__/custom-resource-with-storage.test.ts
+          TEST_SUITE: src/__tests__/function_12.test.ts|src/__tests__/export-pull-c.test.ts
+      depend-on:
+        - upb
+    - identifier: l_custom_resource_with_storage_build_function_build_function_yarn_modern
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        variables:
+          TEST_SUITE: src/__tests__/custom-resource-with-storage.test.ts|src/__tests__/build-function.test.ts|src/__tests__/build-function-yarn-modern.test.ts
           CLI_REGION: us-west-2
       depend-on:
         - upb
-    - identifier: l_build_function_build_function_yarn_modern_auth_5g
+    - identifier: l_auth_5g_auth_2h_auth_2g
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/build-function.test.ts|src/__tests__/build-function-yarn-modern.test.ts|src/__tests__/auth_5g.test.ts
+          TEST_SUITE: src/__tests__/auth_5g.test.ts|src/__tests__/auth_2h.test.ts|src/__tests__/auth_2g.test.ts
       depend-on:
         - upb
-    - identifier: l_auth_2h_auth_2g_auth_12
+    - identifier: l_auth_12_api_9a
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/auth_2h.test.ts|src/__tests__/auth_2g.test.ts|src/__tests__/auth_12.test.ts
+          TEST_SUITE: src/__tests__/auth_12.test.ts|src/__tests__/api_9a.test.ts
       depend-on:
         - upb
-    - identifier: l_api_9a_api_6c_api_2b
+    - identifier: l_api_6c_api_2b
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/api_9a.test.ts|src/__tests__/api_6c.test.ts|src/__tests__/api_2b.test.ts
+          TEST_SUITE: src/__tests__/api_6c.test.ts|src/__tests__/api_2b.test.ts
       depend-on:
         - upb
     - identifier: l_api_2a_amplify_remove_S3server
@@ -694,39 +715,46 @@ batch:
           TEST_SUITE: src/__tests__/schema-auth-10.test.ts|src/__tests__/schema-key.test.ts|src/__tests__/resolvers.test.ts
       depend-on:
         - upb
-    - identifier: l_geo_multi_env_searchable_datastore_schema_searchable
+    - identifier: l_geo_multi_env_searchable_datastore
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/geo-multi-env.test.ts|src/__tests__/graphql-v2/searchable-datastore.test.ts|src/__tests__/schema-searchable.test.ts
+          TEST_SUITE: src/__tests__/geo-multi-env.test.ts|src/__tests__/graphql-v2/searchable-datastore.test.ts
       depend-on:
         - upb
-    - identifier: l_apigw_api_5_api_key_migration2
+    - identifier: l_schema_searchable_apigw
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/apigw.test.ts|src/__tests__/api_5.test.ts|src/__tests__/migration/api.key.migration2.test.ts
+          TEST_SUITE: src/__tests__/schema-searchable.test.ts|src/__tests__/apigw.test.ts
       depend-on:
         - upb
-    - identifier: l_api_lambda_auth_1_schema_auth_14_api_key_migration1
+    - identifier: l_api_5_api_key_migration2_api_lambda_auth_1
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/graphql-v2/api_lambda_auth_1.test.ts|src/__tests__/schema-auth-14.test.ts|src/__tests__/migration/api.key.migration1.test.ts
+          TEST_SUITE: src/__tests__/api_5.test.ts|src/__tests__/migration/api.key.migration2.test.ts|src/__tests__/graphql-v2/api_lambda_auth_1.test.ts
       depend-on:
         - upb
-    - identifier: l_api_6b_api_3_layer_1
+    - identifier: l_schema_auth_14_api_key_migration1_api_6b
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/api_6b.test.ts|src/__tests__/api_3.test.ts|src/__tests__/layer-1.test.ts
+          TEST_SUITE: src/__tests__/schema-auth-14.test.ts|src/__tests__/migration/api.key.migration1.test.ts|src/__tests__/api_6b.test.ts
       depend-on:
         - upb
-    - identifier: l_api_1_api_key_migration4_schema_iterative_update_4
+    - identifier: l_api_3_layer_1_api_1
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/api_1.test.ts|src/__tests__/migration/api.key.migration4.test.ts|src/__tests__/schema-iterative-update-4.test.ts
+          TEST_SUITE: src/__tests__/api_3.test.ts|src/__tests__/layer-1.test.ts|src/__tests__/api_1.test.ts
+      depend-on:
+        - upb
+    - identifier: l_api_key_migration4_schema_iterative_update_4
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        variables:
+          TEST_SUITE: src/__tests__/migration/api.key.migration4.test.ts|src/__tests__/schema-iterative-update-4.test.ts
       depend-on:
         - upb
     - identifier: l_function_1_storage_5

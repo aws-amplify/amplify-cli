@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="jest tests" tests="2" failures="1" errors="0" time="5.773">
+  <testsuite name="CustomResourceMigrator - End to End" errors="0" failures="1" skipped="1" timestamp="2025-10-24T19:46:36" time="5.733" tests="2">
+    <testcase classname="CustomResourceMigrator - End to End should migrate SNS topic custom resource" name="CustomResourceMigrator - End to End should migrate SNS topic custom resource" time="0.017">
+      <failure>Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: true
+Received: false
+    at Object.&lt;anonymous&gt; (/Users/sanjrkmr/amplify-cli/packages/amplify-cli/src/__tests__/commands/gen2-migration/codegen-custom-resources/integration/end-to-end.test.ts:68:42)</failure>
+    </testcase>
+    <testcase classname="CustomResourceMigrator - End to End should migrate multiple custom resources" name="CustomResourceMigrator - End to End should migrate multiple custom resources" time="0">
+      <skipped/>
+    </testcase>
+  </testsuite>
+</testsuites>

@@ -8,6 +8,7 @@ const clientFactory = require('../../utils/client-factory');
 const pathManager = require('../../utils/path-manager');
 const ValidationError = require('../../error/validation-error').default;
 const statusMod = require('../index');
+const { ListBranchesCommand } = require('@aws-sdk/client-amplify');
 
 /**
  * Entry point to enable CI/CD hosting
@@ -41,11 +42,11 @@ async function enable(context) {
 
 async function validateCICDApp(context, appId) {
   const amplifyClient = await clientFactory.getAmplifyClient(context);
-  const result = await amplifyClient
-    .listBranches({
+  const result = await amplifyClient.send(
+    new ListBranchesCommand({
       appId,
-    })
-    .promise();
+    }),
+  );
   if (result.branches.length === 0) {
     throw new ValidationError("No hosting URL found. Run 'amplify add hosting' again to set up hosting with Amplify Console.");
   }

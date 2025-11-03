@@ -51,7 +51,8 @@ function playTestArtifact {
 
   
   local subfolders=("$temp_dir"/*/)
-  if [ ${#subfolders[@]} -eq 1 ]; then
+  # Check if glob expansion actually found directories
+  if [ ${#subfolders[@]} -eq 1 ] && [ -d "${subfolders[0]}" ]; then
     cd "${subfolders[0]}" || exit 1
   else
     cd "$temp_dir" || exit 1

@@ -1,3 +1,4 @@
+import { ResourceStatus } from '@aws-sdk/client-cloudformation';
 import {
   deserializeErrorMessages,
   CFNErrorMessages,
@@ -11,7 +12,7 @@ const eventsWithFailure = [
     PhysicalResourceId: 'testStackId1',
     LogicalResourceId: 'testLogicalResourceId1',
     ResourceType: 'AWS::IAM::Role',
-    ResourceStatus: 'CREATE_FAILED',
+    ResourceStatus: ResourceStatus.CREATE_FAILED,
     ResourceStatusReason: 'Some valid reason 1',
     // below properties are useless since we don't use them in the code
     StackId: 'testStackId1',
@@ -23,7 +24,7 @@ const eventsWithFailure = [
     PhysicalResourceId: 'testStackId2',
     LogicalResourceId: 'testLogicalResourceId2',
     ResourceType: 'AWS::CloudFormation::Stack',
-    ResourceStatus: 'UPDATE_FAILED',
+    ResourceStatus: ResourceStatus.UPDATE_FAILED,
     ResourceStatusReason: 'Some valid reason 2',
     // below properties are useless since we don't use them in the code
     StackId: 'testStackId2',

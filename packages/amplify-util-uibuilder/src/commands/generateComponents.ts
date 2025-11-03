@@ -17,7 +17,7 @@ import {
   getStartCodegenJobDependencies,
 } from './utils';
 import { getUiBuilderComponentsPath } from './utils/getUiBuilderComponentsPath';
-import { AmplifyUIBuilder } from 'aws-sdk';
+import type { ApiConfiguration, StartCodegenJobData, ReactStartCodegenJobData } from '@aws-sdk/client-amplifyuibuilder';
 import { getApiConfiguration, hasDataStoreConfiguration, hasGraphQLConfiguration } from './utils/getApiConfiguration';
 
 /**
@@ -39,9 +39,7 @@ export const run = async (context: $TSContext, eventType: 'PostPush' | 'PostPull
 
     const canGenerateDataComponents = dataSchema && studioClient.isGraphQLSupported;
 
-    const apiConfiguration: AmplifyUIBuilder.ApiConfiguration = canGenerateDataComponents
-      ? getApiConfiguration(studioClient, context)
-      : { noApiConfig: {} };
+    const apiConfiguration: ApiConfiguration = canGenerateDataComponents ? getApiConfiguration(studioClient, context) : { noApiConfig: {} };
     const hasDataAPI = hasDataStoreConfiguration(apiConfiguration) || hasGraphQLConfiguration(apiConfiguration);
     const willAutogenerateItems = canGenerateDataComponents && studioClient.metadata.autoGenerateForms && hasDataAPI;
 
@@ -58,7 +56,7 @@ export const run = async (context: $TSContext, eventType: 'PostPush' | 'PostPull
     if (packageJsonFile) {
       startCodegenJobDependencies = getStartCodegenJobDependencies(packageJsonFile);
     }
-    const job: AmplifyUIBuilder.StartCodegenJobData = {
+    const job: StartCodegenJobData = {
       renderConfig: {
         react: {
           module: 'es2020',
@@ -67,7 +65,7 @@ export const run = async (context: $TSContext, eventType: 'PostPush' | 'PostPull
           renderTypeDeclarations: true,
           apiConfiguration,
           dependencies: startCodegenJobDependencies,
-        } as AmplifyUIBuilder.ReactStartCodegenJobData,
+        } as ReactStartCodegenJobData,
       },
       autoGenerateForms: studioClient.metadata.autoGenerateForms && studioClient.isGraphQLSupported && hasDataAPI,
       features: studioClient.metadata.formFeatureFlags,
@@ -92,7 +90,10 @@ export const run = async (context: $TSContext, eventType: 'PostPush' | 'PostPull
 
     if (dataSchema && eventType === 'PostPush') {
       formSchemas.entities.forEach((formSchema) => {
-        isFormDetachedFromModel(formSchema, modelNames) && detachedForms.push({ id: formSchema.id, name: formSchema.name });
+        isFormDetachedFromModel(formSchema, modelNames) &&
+          formSchema.id &&
+          formSchema.name &&
+          detachedForms.push({ id: formSchema.id, name: formSchema.name });
       });
     }
 

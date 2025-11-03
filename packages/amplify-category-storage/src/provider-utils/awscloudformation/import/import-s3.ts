@@ -10,7 +10,7 @@ import {
 } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { IS3Service } from '@aws-amplify/amplify-util-import';
-import { Bucket } from 'aws-sdk/clients/s3';
+import { Bucket } from '@aws-sdk/client-s3';
 import Enquirer from 'enquirer';
 import _ from 'lodash';
 import { v4 as uuid } from 'uuid';
@@ -115,7 +115,7 @@ const importServiceWalkthrough = async (
   const bucketList = await s3.listBuckets();
 
   // Return if no User Pools found in the project's region
-  if (_.isEmpty(bucketList)) {
+  if (bucketList.length == 0) {
     printer.info(importMessages.NoS3BucketsToImport);
     return undefined;
   }
