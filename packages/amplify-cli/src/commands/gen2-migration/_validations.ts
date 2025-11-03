@@ -1,7 +1,12 @@
 import { AmplifyDriftDetector } from '../drift';
-import { $TSContext, AmplifyError } from '@aws-amplify/amplify-cli-core';
+import { $TSContext, AmplifyError, stateManager } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
-import { CloudFormationClient, DescribeChangeSetOutput, DescribeStackResourcesCommand } from '@aws-sdk/client-cloudformation';
+import {
+  DescribeChangeSetOutput,
+  CloudFormationClient,
+  DescribeStacksCommand,
+  DescribeStackResourcesCommand,
+} from '@aws-sdk/client-cloudformation';
 import { STATEFUL_RESOURCES } from './stateful-resources';
 
 export class AmplifyGen2MigrationValidations {
@@ -16,7 +21,35 @@ export class AmplifyGen2MigrationValidations {
   }
 
   public async validateDeploymentStatus(): Promise<void> {
-    printer.warn('Not implemented');
+    const amplifyMeta = stateManager.getMeta();
+    const stackName = amplifyMeta?.providers?.awscloudformation?.StackName;
+
+    if (!stackName) {
+      throw new AmplifyError('StackNotFoundError', {
+        message: 'Root stack not found',
+        resolution: 'Ensure the project is initialized and deployed.',
+      });
+    }
+
+    const cfnClient = new CloudFormationClient({});
+    const response = await cfnClient.send(new DescribeStacksCommand({ StackName: stackName }));
+
+    if (!response.Stacks || response.Stacks.length === 0) {
+      throw new AmplifyError('StackNotFoundError', {
+        message: `Stack ${stackName} not found in CloudFormation`,
+        resolution: 'Ensure the project is deployed.',
+      });
+    }
+
+    const stackStatus = response.Stacks[0].StackStatus;
+    const validStatuses = ['UPDATE_COMPLETE', 'CREATE_COMPLETE'];
+
+    if (!validStatuses.includes(stackStatus)) {
+      throw new AmplifyError('StackStateError', {
+        message: `Root stack status is ${stackStatus}, expected ${validStatuses.join(' or ')}`,
+        resolution: 'Complete the deployment before proceeding.',
+      });
+    }
   }
 
   public async validateDeploymentVersion(): Promise<void> {
