@@ -74,10 +74,12 @@ export class DataDefinitionFetcher {
   };
 
   getDefinition = async (): Promise<DataDefinition | undefined> => {
-    const backendEnvironments = await this.backendEnvironmentResolver.getAllBackendEnvironments();
+    // Removed since we only need the current env mapping
+    // const backendEnvironments = await this.backendEnvironmentResolver.getAllBackendEnvironments();
 
     const backendEnvironment = await this.backendEnvironmentResolver.selectBackendEnvironment();
-    if (!backendEnvironment?.deploymentArtifacts) return undefined;
+    // Added stack name validation
+    if (!backendEnvironment?.deploymentArtifacts || !backendEnvironment?.stackName) return undefined;
 
     const currentCloudBackendDirectory = await this.ccbFetcher.getCurrentCloudBackend(backendEnvironment.deploymentArtifacts);
 
@@ -90,45 +92,36 @@ export class DataDefinitionFetcher {
     const amplifyMeta = (await this.readJsonFile(amplifyMetaPath)) ?? {};
 
     if ('api' in amplifyMeta && Object.keys(amplifyMeta.api).length > 0) {
-      const tableMappings = await Promise.all(
-        backendEnvironments.map(async (backendEnvironment) => {
-          if (!backendEnvironment?.stackName) {
-            return [backendEnvironment.environmentName, undefined];
+      // CHANGE: Process only the current environment instead of all environments
+      // Removed Promise.all() and backendEnvironments.map() to simplify and fix undefined variable
+      console.log(`DEBUG - Fetching stacks for ${backendEnvironment.environmentName}, stackName: ${backendEnvironment.stackName}`);
+      const amplifyStacks = await this.amplifyStackClient.getAmplifyStacks(backendEnvironment.stackName);
+
+      let tableMappings = undefined;
+      if (amplifyStacks.dataStack) {
+        const outputs = amplifyStacks.dataStack.Outputs || [];
+        console.log(
+          `DEBUG - Stack outputs:`,
+          outputs.map((o) => o.OutputKey),
+        );
+
+        const tableMappingText = outputs.find((o) => o.OutputKey === dataSourceMappingOutputKey)?.OutputValue;
+        console.log(`DEBUG - Table mapping for ${dataSourceMappingOutputKey}:`, tableMappingText ? 'FOUND' : 'NOT FOUND');
+
+        if (tableMappingText) {
+          try {
+            tableMappings = JSON.parse(tableMappingText);
+            console.log(`DEBUG - Parsed mappings:`, tableMappings);
+          } catch (e) {
+            console.log(`DEBUG - Parse error:`, e.message);
           }
-          console.log(`DEBUG - Fetching stacks for ${backendEnvironment.environmentName}, stackName: ${backendEnvironment?.stackName}`);
-          const amplifyStacks = await this.amplifyStackClient.getAmplifyStacks(backendEnvironment?.stackName);
-          console.log(`DEBUG - Found stacks:`, {
-            dataStack: amplifyStacks.dataStack ? 'EXISTS' : 'MISSING',
-            outputs: amplifyStacks.dataStack?.Outputs?.length || 0,
-          });
-          if (amplifyStacks.dataStack) {
-            const outputs = amplifyStacks.dataStack.Outputs || [];
-            console.log(
-              `DEBUG - Stack outputs:`,
-              outputs.map((o) => o.OutputKey),
-            );
-            const tableMappingText = outputs.find((o) => o.OutputKey === dataSourceMappingOutputKey)?.OutputValue;
-            console.log(`DEBUG - Table mapping for ${dataSourceMappingOutputKey}:`, tableMappingText ? 'FOUND' : 'NOT FOUND');
-            if (!tableMappingText) {
-              return [backendEnvironment.environmentName, undefined];
-            }
-            try {
-              const parsed = JSON.parse(tableMappingText);
-              console.log(`DEBUG - Parsed mappings:`, parsed);
-              return [backendEnvironment.environmentName, parsed];
-            } catch (e) {
-              console.log(`DEBUG - Parse error:`, e.message);
-              return [backendEnvironment.environmentName, undefined];
-            }
-          }
-          return [backendEnvironment.environmentName, undefined];
-        }),
-      );
+        }
+      }
 
       const schema = await this.getSchema(amplifyMeta.api);
 
       return {
-        tableMappings: Object.fromEntries(tableMappings),
+        tableMappings, // CHANGE: Now returns direct object instead of environment map
         schema,
       };
     }

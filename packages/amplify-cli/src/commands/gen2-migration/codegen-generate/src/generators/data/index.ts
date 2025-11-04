@@ -9,13 +9,86 @@ const factory = ts.factory;
 export type DataTableMapping = Record<string, string>;
 
 /**
+ * Creates dynamic table mappings when CloudFormation outputs are not available
+ */
+const createDataSourceMapping = (schema: string, apiId: string, envName: string): Record<string, string> => {
+  const models = extractModelsFromSchema(schema);
+  const mapping: Record<string, string> = {};
+
+  models.forEach((modelName) => {
+    // Use the same naming convention as Amplify's table resolver
+    mapping[modelName] = [modelName, apiId, envName].join('-');
+  });
+
+  return mapping;
+};
+
+const extractModelsFromSchema = (schema: string): string[] => {
+  const modelRegex = /type\s+(\w+)\s+@model/g;
+  const models: string[] = [];
+  let match;
+
+  while ((match = modelRegex.exec(schema)) !== null) {
+    models.push(match[1]);
+  }
+
+  return models;
+};
+
+const getCurrentEnvironment = (): string => {
+  try {
+    const fs = require('fs');
+    const path = require('path');
+    const { pathManager } = require('@aws-amplify/amplify-cli-core');
+
+    const projectRoot = pathManager.findProjectRoot();
+    if (!projectRoot) return 'main';
+
+    const localEnvInfoPath = path.join(projectRoot, 'amplify', '.config', 'local-env-info.json');
+    if (fs.existsSync(localEnvInfoPath)) {
+      const localEnvInfo = JSON.parse(fs.readFileSync(localEnvInfoPath, 'utf8'));
+      return localEnvInfo.envName || 'main';
+    }
+
+    return 'main';
+  } catch {
+    return 'main'; // Fallback to 'main' if detection fails
+  }
+};
+
+const getApiId = (): string | undefined => {
+  try {
+    const fs = require('fs');
+    const path = require('path');
+    const { pathManager } = require('@aws-amplify/amplify-cli-core');
+
+    const projectRoot = pathManager.findProjectRoot();
+    if (!projectRoot) return undefined;
+
+    const currentEnv = getCurrentEnvironment();
+    const teamProviderInfoPath = path.join(projectRoot, 'amplify', 'team-provider-info.json');
+
+    if (fs.existsSync(teamProviderInfoPath)) {
+      const teamProviderInfo = JSON.parse(fs.readFileSync(teamProviderInfoPath, 'utf8'));
+      return teamProviderInfo[currentEnv]?.categories?.api?.GraphQLAPIIdOutput;
+    }
+
+    return undefined;
+  } catch {
+    return undefined;
+  }
+};
+
+/**
  * Configuration for generating Amplify Gen 2 data resources from Gen 1 projects.
  */
 export type DataDefinition = {
-  /** Environment-specific table mappings for preserving existing DynamoDB tables */
-  tableMappings: Record<string, DataTableMapping | undefined>;
+  /** Table mappings for the current environment */
+  tableMappings: DataTableMapping | undefined;
   /** GraphQL schema definition as a string */
   schema: string;
+  /** API ID for generating table names */
+  apiId?: string;
 };
 
 /** Key name for the migrated table mappings property in the generated data resource */
@@ -69,54 +142,43 @@ export const generateDataSource = (dataDefinition?: DataDefinition): ts.NodeArra
   }
 
   // Generate table mappings for preserving existing DynamoDB tables during migration
-  if (dataDefinition?.tableMappings) {
-    const tableMappingEnvironments: ObjectLiteralExpression[] = [];
+  let tableMappings = dataDefinition?.tableMappings;
 
-    // Process each environment's table mappings
-    for (const [environmentName, tableMapping] of Object.entries(dataDefinition.tableMappings)) {
-      const tableMappingProperties: ObjectLiteralElementLike[] = [];
+  // Generate table mappings if not provided but schema is available
+  if (!tableMappings && dataDefinition?.schema) {
+    const apiId = dataDefinition?.apiId || getApiId();
+    if (apiId) {
+      const currentEnv = getCurrentEnvironment();
+      tableMappings = createDataSourceMapping(dataDefinition.schema, apiId, currentEnv);
+    }
+  }
 
-      // Create model-to-table mappings for this environment
-      if (tableMapping) {
-        for (const [tableName, tableId] of Object.entries(tableMapping)) {
-          tableMappingProperties.push(
-            factory.createPropertyAssignment(factory.createIdentifier(tableName), factory.createStringLiteral(tableId)),
-          );
-        }
-      }
+  if (tableMappings) {
+    const tableMappingProperties: ObjectLiteralElementLike[] = [];
 
-      const branchNameExpression = ts.addSyntheticLeadingComment(
-        factory.createPropertyAssignment('branchName', factory.createStringLiteral(environmentName)),
-        ts.SyntaxKind.SingleLineCommentTrivia,
-        ` Replace the environment name (${environmentName}) with the corresponding branch name. Use "sandbox" for your sandbox environment.`,
-        true,
+    // Create model-to-table mappings for current environment
+    for (const [tableName, tableId] of Object.entries(tableMappings)) {
+      tableMappingProperties.push(
+        factory.createPropertyAssignment(factory.createIdentifier(tableName), factory.createStringLiteral(tableId)),
       );
-      let tableMappingExpression = factory.createPropertyAssignment(
-        'modelNameToTableNameMapping',
-        factory.createObjectLiteralExpression(tableMappingProperties),
-      );
-      if (tableMappingProperties.length === 0) {
-        tableMappingExpression = ts.addSyntheticLeadingComment(
-          tableMappingExpression,
-          ts.SyntaxKind.MultiLineCommentTrivia,
-          '*\n' +
-            '* Unable to find the table mapping for this environment.\n' +
-            '* This may indicate the environment was deployed with an older Amplify CLI version.\n' +
-            '* Try redeploying with "amplify push" to generate the table mappings.\n' +
-            '* If you are not planning to migrate this environment, you can remove this entry.\n',
-          true,
-        );
-      }
-      // Combine branch name and table mappings for this environment
-      const tableMappingForEnvironment = factory.createObjectLiteralExpression([branchNameExpression, tableMappingExpression], true);
-      tableMappingEnvironments.push(tableMappingForEnvironment);
     }
 
-    // Add the complete table mappings array to the data configuration
+    const currentEnv = getCurrentEnvironment();
+    const branchNameExpression = factory.createPropertyAssignment('branchName', factory.createStringLiteral(currentEnv));
+
+    const tableMappingExpression = factory.createPropertyAssignment(
+      'modelNameToTableNameMapping',
+      factory.createObjectLiteralExpression(tableMappingProperties),
+    );
+
+    // Create single environment mapping
+    const tableMappingForEnvironment = factory.createObjectLiteralExpression([branchNameExpression, tableMappingExpression], true);
+
+    // Add the table mappings array with single environment to the data configuration
     dataRenderProperties.push(
       factory.createPropertyAssignment(
         migratedAmplifyGen1DynamoDbTableMappingsKeyName,
-        factory.createArrayLiteralExpression(tableMappingEnvironments),
+        factory.createArrayLiteralExpression([tableMappingForEnvironment]),
       ),
     );
   }
