@@ -51,9 +51,10 @@ export const run = async (context: $TSContext) => {
 
   const implementation: AmplifyMigrationStep = new step.class(context);
 
+  printer.info('Validating');
+  await implementation.validate();
+
   try {
-    printer.info('Validating');
-    await implementation.validate();
     printer.info('Executing');
     await implementation.execute();
   } catch (error: unknown) {
