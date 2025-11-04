@@ -14,7 +14,6 @@
 
 import path from 'path';
 import fs from 'node:fs/promises';
-import * as cdk_from_cfn from 'cdk-from-cfn';
 import { PackageJson, patchNpmPackageJson } from '../npm_package/renderer';
 import { RenderPipeline, Renderer } from '../render_pipeline';
 import { JsonRenderer } from '../renderers/package_json';
@@ -62,7 +61,7 @@ import { DataDefinition, DataTableMapping, generateDataSource } from '../generat
 
 import { FunctionDefinition, renderFunctions } from '../generators/functions/index';
 import assert from 'assert';
-import { getS3ObjectContent } from '../unsupported/util';
+import { CdkFromCfn } from '../unsupported/cdk-fron-cfn';
 
 /**
  * Configuration options for Gen 2 rendering pipeline
@@ -202,23 +201,18 @@ export const createGen2Renderer = ({
   }
 
   if (analytics) {
-    console.log('analytics found');
+    console.log('There are Analytics found in the Gen1 App');
+    // TODO: this should be instantiated earlier when more unsupported categories are added
+    const cdkFromCfn = new CdkFromCfn(outputDir, fileWriter);
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     Object.keys(analytics).forEach(async (analytic) => {
-      console.log('a', JSON.stringify(analytic));
       const analyticObj = analytics[analytic];
+      analyticObj.name = analytic;
       if (analyticObj.service === 'Kinesis') {
-        console.log('KINESIS');
-        const filePath = path.join(outputDir, 'amplify', 'analytics', `${analytic}Stack.ts`);
-        const templateS3Url = analyticObj.providerMetadata.s3TemplateURL;
-        const template = await getS3ObjectContent(templateS3Url);
-        const stackName = analyticObj.providerMetadata.logicalId;
-
-        const ts_file = cdk_from_cfn.transmute(template, 'typescript', stackName);
-        await fs.mkdir(path.dirname(filePath), { recursive: true });
-        await fileWriter(ts_file, filePath);
+        console.log('Analytics backed by Kinesis found, generating L1 Code');
+        await cdkFromCfn.generateKinesisAnalyticsL1Code(analyticObj);
       } else {
-        console.log('PINPOINT');
+        console.log('Analytics backed by Pinpoint found, still unsupported');
       }
     });
     backendRenderOptions.analytics = analytics;
