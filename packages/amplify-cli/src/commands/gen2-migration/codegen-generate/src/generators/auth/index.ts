@@ -772,7 +772,7 @@ function createSecretErrorStatements(secretVariables: string[]): ts.Node[] {
     factory.createCallExpression(factory.createIdentifier('throw new Error'), undefined, [
       // eslint-disable-next-line spellcheck/spell-checker
       factory.createStringLiteral(
-        `Secrets need to be reset, use \`npx ampx sandbox secret set ${secret}\` to set the value. Do not deply unless this is done`,
+        `Secrets need to be reset, use \`npx ampx sandbox secret set ${secret}\` to set the value. Do not deploy unless this is done`,
       ),
     ]),
   );
