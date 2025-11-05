@@ -251,7 +251,7 @@ export const createGen2Renderer = ({
   }
 
   // Process data (GraphQL/DynamoDB) configuration - only if table mappings exist for the environment
-  if (data && data.tableMappings && backendEnvironmentName && data.tableMappings[backendEnvironmentName] !== undefined) {
+  if (data) {
     renderers.push(new EnsureDirectory(path.join(outputDir, 'amplify', 'data')));
     renderers.push(
       new TypescriptNodeArrayRenderer(

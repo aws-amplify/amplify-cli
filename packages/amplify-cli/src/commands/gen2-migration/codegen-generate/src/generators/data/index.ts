@@ -37,26 +37,14 @@ const extractModelsFromSchema = (schema: string): string[] => {
 
 const getCurrentEnvironment = (): string => {
   try {
-    const fs = require('fs');
-    const path = require('path');
-    const { pathManager } = require('@aws-amplify/amplify-cli-core');
-
-    const projectRoot = pathManager.findProjectRoot();
-    if (!projectRoot) return 'main';
-
-    const localEnvInfoPath = path.join(projectRoot, 'amplify', '.config', 'local-env-info.json');
-    if (fs.existsSync(localEnvInfoPath)) {
-      const localEnvInfo = JSON.parse(fs.readFileSync(localEnvInfoPath, 'utf8'));
-      return localEnvInfo.envName || 'main';
-    }
-
-    return 'main';
+    const { stateManager } = require('@aws-amplify/amplify-cli-core');
+    return stateManager.getCurrentEnvName() || 'main';
   } catch {
-    return 'main'; // Fallback to 'main' if detection fails
+    return 'main';
   }
 };
 
-const getApiId = (): string | undefined => {
+const getProjectName = (): string | undefined => {
   try {
     const fs = require('fs');
     const path = require('path');
@@ -65,16 +53,38 @@ const getApiId = (): string | undefined => {
     const projectRoot = pathManager.findProjectRoot();
     if (!projectRoot) return undefined;
 
-    const currentEnv = getCurrentEnvironment();
-    const teamProviderInfoPath = path.join(projectRoot, 'amplify', 'team-provider-info.json');
-
-    if (fs.existsSync(teamProviderInfoPath)) {
-      const teamProviderInfo = JSON.parse(fs.readFileSync(teamProviderInfoPath, 'utf8'));
-      return teamProviderInfo[currentEnv]?.categories?.api?.GraphQLAPIIdOutput;
+    const projectConfigPath = path.join(projectRoot, 'amplify', '.config', 'project-config.json');
+    if (fs.existsSync(projectConfigPath)) {
+      const projectConfig = JSON.parse(fs.readFileSync(projectConfigPath, 'utf8'));
+      return projectConfig.projectName;
     }
 
     return undefined;
   } catch {
+    return undefined;
+  }
+};
+
+const getApiId = async (): Promise<string | undefined> => {
+  try {
+    const { AppSyncClient, ListGraphqlApisCommand } = require('@aws-sdk/client-appsync');
+    const client = new AppSyncClient({});
+
+    const response = await client.send(new ListGraphqlApisCommand({}));
+    const currentEnv = getCurrentEnvironment();
+
+    // Match with tags equalling env and project name
+    const projectName = getProjectName();
+    const api = response.graphqlApis?.find((api) => {
+      const matchesEnv = api.tags?.['user:Stack'] === currentEnv;
+      const matchesProject = projectName ? api.tags?.['user:Application'] === projectName : true;
+
+      return matchesEnv && matchesProject;
+    });
+
+    return api?.apiId;
+  } catch (error) {
+    console.warn('Failed to fetch API ID from AWS:', error.message);
     return undefined;
   }
 };
@@ -115,7 +125,7 @@ const migratedAmplifyGen1DynamoDbTableMappingsKeyName = 'migratedAmplifyGen1Dyna
  * const nodes = generateDataSource(dataDefinition);
  * ```
  */
-export const generateDataSource = (dataDefinition?: DataDefinition): ts.NodeArray<ts.Node> => {
+export const generateDataSource = async (dataDefinition?: DataDefinition): Promise<ts.NodeArray<ts.Node>> => {
   // Properties for the defineData() function call
   const dataRenderProperties: ObjectLiteralElementLike[] = [];
 
@@ -146,7 +156,7 @@ export const generateDataSource = (dataDefinition?: DataDefinition): ts.NodeArra
 
   // Generate table mappings if not provided but schema is available
   if (!tableMappings && dataDefinition?.schema) {
-    const apiId = dataDefinition?.apiId || getApiId();
+    const apiId = dataDefinition?.apiId || (await getApiId());
     if (apiId) {
       const currentEnv = getCurrentEnvironment();
       tableMappings = createDataSourceMapping(dataDefinition.schema, apiId, currentEnv);

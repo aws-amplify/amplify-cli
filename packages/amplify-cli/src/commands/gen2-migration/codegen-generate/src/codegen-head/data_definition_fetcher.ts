@@ -4,20 +4,13 @@ import glob from 'glob';
 import assert from 'node:assert';
 
 import { DataDefinition } from '../core/migration-pipeline';
-import { AmplifyStackParser } from './amplify_stack_parser.js';
 import { BackendEnvironmentResolver } from './backend_environment_selector.js';
 import { BackendDownloader } from './backend_downloader.js';
 import { pathManager } from '@aws-amplify/amplify-cli-core';
 import { fileOrDirectoryExists } from './directory_exists';
 
-const dataSourceMappingOutputKey = 'DataSourceMappingOutput';
-
 export class DataDefinitionFetcher {
-  constructor(
-    private backendEnvironmentResolver: BackendEnvironmentResolver,
-    private ccbFetcher: BackendDownloader,
-    private amplifyStackClient: AmplifyStackParser,
-  ) {}
+  constructor(private backendEnvironmentResolver: BackendEnvironmentResolver, private ccbFetcher: BackendDownloader) {}
 
   private readJsonFile = async (filePath: string) => {
     const contents = await fs.readFile(filePath, { encoding: 'utf8' });
@@ -74,12 +67,8 @@ export class DataDefinitionFetcher {
   };
 
   getDefinition = async (): Promise<DataDefinition | undefined> => {
-    // Removed since we only need the current env mapping
-    // const backendEnvironments = await this.backendEnvironmentResolver.getAllBackendEnvironments();
-
     const backendEnvironment = await this.backendEnvironmentResolver.selectBackendEnvironment();
-    // Added stack name validation
-    if (!backendEnvironment?.deploymentArtifacts || !backendEnvironment?.stackName) return undefined;
+    if (!backendEnvironment?.deploymentArtifacts) return undefined;
 
     const currentCloudBackendDirectory = await this.ccbFetcher.getCurrentCloudBackend(backendEnvironment.deploymentArtifacts);
 
@@ -92,36 +81,10 @@ export class DataDefinitionFetcher {
     const amplifyMeta = (await this.readJsonFile(amplifyMetaPath)) ?? {};
 
     if ('api' in amplifyMeta && Object.keys(amplifyMeta.api).length > 0) {
-      // CHANGE: Process only the current environment instead of all environments
-      // Removed Promise.all() and backendEnvironments.map() to simplify and fix undefined variable
-      console.log(`DEBUG - Fetching stacks for ${backendEnvironment.environmentName}, stackName: ${backendEnvironment.stackName}`);
-      const amplifyStacks = await this.amplifyStackClient.getAmplifyStacks(backendEnvironment.stackName);
-
-      let tableMappings = undefined;
-      if (amplifyStacks.dataStack) {
-        const outputs = amplifyStacks.dataStack.Outputs || [];
-        console.log(
-          `DEBUG - Stack outputs:`,
-          outputs.map((o) => o.OutputKey),
-        );
-
-        const tableMappingText = outputs.find((o) => o.OutputKey === dataSourceMappingOutputKey)?.OutputValue;
-        console.log(`DEBUG - Table mapping for ${dataSourceMappingOutputKey}:`, tableMappingText ? 'FOUND' : 'NOT FOUND');
-
-        if (tableMappingText) {
-          try {
-            tableMappings = JSON.parse(tableMappingText);
-            console.log(`DEBUG - Parsed mappings:`, tableMappings);
-          } catch (e) {
-            console.log(`DEBUG - Parse error:`, e.message);
-          }
-        }
-      }
-
       const schema = await this.getSchema(amplifyMeta.api);
 
       return {
-        tableMappings, // CHANGE: Now returns direct object instead of environment map
+        tableMappings: undefined, // Will be generated from schema
         schema,
       };
     }
