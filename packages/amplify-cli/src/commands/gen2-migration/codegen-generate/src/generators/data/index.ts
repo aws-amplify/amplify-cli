@@ -94,7 +94,7 @@ const getApiId = async (): Promise<string | undefined> => {
  */
 export type DataDefinition = {
   /** Table mappings for the current environment */
-  tableMappings: DataTableMapping | undefined;
+  tableMappings?: DataTableMapping | undefined;
   /** GraphQL schema definition as a string */
   schema: string;
   /** API ID for generating table names */
