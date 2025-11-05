@@ -7,7 +7,7 @@ import { renderResourceTsFile } from '../../resource/resource';
 import { createTriggersProperty, Lambda } from '../functions/lambda';
 
 /** OAuth 2.0 scopes supported by Cognito User Pools */
-export type Scope = 'PHONE' | 'EMAIL' | 'OPENID' | 'PROFILE' | 'COGNITO_ADMIN';
+export type Scope = 'phone' | 'email' | 'openid' | 'profile' | 'aws.cognito.signin.user.admin';
 
 /** Configuration for standard Cognito user attributes */
 export type StandardAttribute = {
@@ -746,12 +746,14 @@ const createUserAttributeAssignments = (
   return factory.createPropertyAssignment(userAttributeIdentifier, factory.createObjectLiteralExpression(userAttributeProperties, true));
 };
 
+// eslint-disable-next-line spellcheck/spell-checker
 /**
  * Creates error statements for missing secrets
  *
  * Generates throw statements that provide helpful error messages
  * with CLI commands to set missing secrets.
  *
+ // eslint-disable-next-line spellcheck/spell-checker
  * @example
  * ```typescript
  * // Input:
@@ -768,7 +770,10 @@ const createUserAttributeAssignments = (
 function createSecretErrorStatements(secretVariables: string[]): ts.Node[] {
   return secretVariables.map((secret) =>
     factory.createCallExpression(factory.createIdentifier('throw new Error'), undefined, [
-      factory.createStringLiteral(`Secrets need to be reset, use \`npx ampx sandbox secret set ${secret}\` to set the value`),
+      // eslint-disable-next-line spellcheck/spell-checker
+      factory.createStringLiteral(
+        `Secrets need to be reset, use \`npx ampx sandbox secret set ${secret}\` to set the value. Do not deply unless this is done`,
+      ),
     ]),
   );
 }
