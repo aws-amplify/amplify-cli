@@ -1,6 +1,6 @@
 const chalk = require('chalk');
 const constants = require('../../constants');
-const CloudFront = require('aws-sdk/clients/cloudfront');
+const { CloudFrontClient, CreateInvalidationCommand } = require('@aws-sdk/client-cloudfront');
 
 const providerName = 'awscloudformation';
 
@@ -28,7 +28,8 @@ async function invalidate(context, cloudFrontClient = getCloudFrontClient) {
     };
 
     try {
-      const data = await cloudFront.createInvalidation(invalidateParams).promise();
+      const command = new CreateInvalidationCommand(invalidateParams);
+      const data = await cloudFront.send(command);
       context.print.info('CloudFront invalidation request sent successfuly.');
       context.print.info(chalk.green(CloudFrontSecureURL));
       context.exeInfo.cftInvalidationData = data;
@@ -45,7 +46,7 @@ async function getCloudFrontClient(context, action) {
   const providerPlugins = context.amplify.getProviderPlugins(context);
   const provider = require(providerPlugins[providerName]);
   const config = await provider.getConfiguredAWSClientConfig(context, constants.CategoryName, action);
-  return new CloudFront(config);
+  return new CloudFrontClient(config);
 }
 
 module.exports = {

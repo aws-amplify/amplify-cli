@@ -1,14 +1,5 @@
-/**
- * Auth Source Builder for Amplify Gen1 to Gen2 Migration
- *
- * This module generates TypeScript AST nodes for Amplify Gen 2 auth resources
- * from Gen 1 auth configurations. It handles the complete transformation of
- * authentication settings including login providers, MFA, user attributes,
- * Lambda triggers, and security configurations.
- *
- * @file Core auth code generation for Gen1→Gen2 migration tool
- */
-
+// Auth generator - creates Gen 2 auth TypeScript files
+// Logic from amplify-gen2-codegen auth module
 import ts, { PropertyAssignment } from 'typescript';
 import assert from 'node:assert';
 import { PasswordPolicyType, UserPoolClientType } from '@aws-sdk/client-cognito-identity-provider';
@@ -225,7 +216,7 @@ export type ReferenceAuth = {
  * This interface represents the full auth configuration that will be
  * transformed into Gen 2 TypeScript code. It encompasses all possible
  * auth features including login methods, MFA, user attributes, Lambda
- * triggers, and external provider integrations.
+ * triggers, and external provider integration.
  */
 export interface AuthDefinition {
   /** Login method configurations */
@@ -314,6 +305,7 @@ const oidcClientSecret = 'OIDC_CLIENT_SECRET';
  * @param attributeMapping - Optional mapping of provider attributes to Cognito attributes
  * @returns Array of TypeScript property assignments
  */
+
 function createProviderConfig(config: Record<string, string>, attributeMapping: AttributeMappingRule | undefined) {
   const properties: ts.ObjectLiteralElementLike[] = [];
 
@@ -430,33 +422,6 @@ function createOidcSamlPropertyAssignments(
 }
 
 /**
- * Creates error statements for missing secrets
- *
- * Generates throw statements that provide helpful error messages
- * with CLI commands to set missing secrets.
- *
- * @example
- * ```typescript
- * // Input:
- * createSecretErrorStatements(['GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET'])
- *
- * // Output (TypeScript code):
- * throw new Error('Secrets need to be reset, use `npx ampx sandbox secret set GOOGLE_CLIENT_ID` to set the value');
- * throw new Error('Secrets need to be reset, use `npx ampx sandbox secret set GOOGLE_CLIENT_SECRET` to set the value');
- * ```
- *
- * @param secretVariables - Array of secret variable names
- * @returns Array of TypeScript throw statement nodes
- */
-function createSecretErrorStatements(secretVariables: string[]): ts.Node[] {
-  return secretVariables.map((secret) =>
-    factory.createCallExpression(factory.createIdentifier('throw new Error'), undefined, [
-      factory.createStringLiteral(`Secrets need to be reset, use \`npx ampx sandbox secret set ${secret}\` to set the value`),
-    ]),
-  );
-}
-
-/**
  * Creates the externalProviders configuration for social login
  *
  * This is the main function that orchestrates the creation of all
@@ -466,7 +431,7 @@ function createSecretErrorStatements(secretVariables: string[]): ts.Node[] {
  * @example
  * ```typescript
  * // Input:
- * loginOptions = { googleLogin: true, facebookLogin: true }
+ * loginOptions = { googleLogin: true, facebookLogin: true, scopes:['email', 'profile', 'openid'] }
  *
  * // Output (TypeScript code):
  * externalProviders: {
@@ -477,7 +442,8 @@ function createSecretErrorStatements(secretVariables: string[]): ts.Node[] {
  *   facebook: {
  *     clientId: secret('FACEBOOK_CLIENT_ID'),
  *     clientSecret: secret('FACEBOOK_CLIENT_SECRET')
- *   }
+ *   },
+ *   scopes: ['email', 'profile', 'openid']
  * }
  * ```
  *
@@ -592,6 +558,7 @@ function createExternalProvidersPropertyAssignment(
     secretErrors?.push(...createSecretErrorStatements([oidcClientID, oidcClientSecret]));
   }
 
+  // configure OAuth scope
   if (loginOptions.scopes) {
     providerAssignments.push(
       factory.createPropertyAssignment(
@@ -601,6 +568,7 @@ function createExternalProvidersPropertyAssignment(
     );
   }
 
+  // supports callback urls and logout urls
   const properties = [
     ...providerAssignments,
     factory.createPropertyAssignment(
@@ -630,10 +598,36 @@ function createExternalProvidersPropertyAssignment(
 function createLogInWithPropertyAssignment(logInDefinition: LoginOptions = {}, secretErrors: ts.Node[]) {
   const logInWith = factory.createIdentifier('loginWith');
   const assignments: ts.ObjectLiteralElementLike[] = [];
-  // BUG #1
-  // SOLVED IN NEW TOOL
-  // DOES NOT ACCOUNT FOR THE CASE WHERE EMAIL IS TRUE AND LOGIN OPTIONS IS ALSO TRUE
-  if (logInDefinition.email === true) {
+  if (logInDefinition.email === true && typeof logInDefinition.emailOptions === 'object') {
+    // Handle both email: true AND emailOptions
+    const emailDefinitionAssignments: ts.ObjectLiteralElementLike[] = [];
+
+    if (logInDefinition.emailOptions?.emailVerificationSubject) {
+      emailDefinitionAssignments.push(
+        factory.createPropertyAssignment(
+          'verificationEmailSubject',
+          factory.createStringLiteral(logInDefinition.emailOptions.emailVerificationSubject),
+        ),
+      );
+    }
+    if (logInDefinition.emailOptions?.emailVerificationBody) {
+      emailDefinitionAssignments.push(
+        factory.createPropertyAssignment(
+          'verificationEmailBody',
+          factory.createArrowFunction(
+            undefined,
+            undefined,
+            [],
+            undefined,
+            undefined,
+            factory.createStringLiteral(logInDefinition.emailOptions.emailVerificationBody),
+          ),
+        ),
+      );
+    }
+    const emailDefinitionObject = factory.createObjectLiteralExpression(emailDefinitionAssignments, true);
+    assignments.push(factory.createPropertyAssignment(factory.createIdentifier('email'), emailDefinitionObject));
+  } else if (logInDefinition.email === true) {
     assignments.push(factory.createPropertyAssignment(factory.createIdentifier('email'), factory.createTrue()));
   }
   // Custom email messages to send to the user on verification
@@ -753,61 +747,72 @@ const createUserAttributeAssignments = (
 };
 
 /**
- * Main function that converts AuthDefinition to TypeScript AST nodes
+ * Creates error statements for missing secrets
  *
- * This is the primary entry point for auth code generation. It orchestrates
- * the entire process of converting a Gen 1 auth configuration into Gen 2
- * TypeScript code by:
- *
- * 1. Handling reference auth (existing resources)
- * 2. Processing login options (email, phone, social providers)
- * 3. Setting up user attributes (standard and custom)
- * 4. Configuring user groups
- * 5. Integrating Lambda triggers
- * 6. Setting up MFA configuration
- * 7. Managing imports and secret dependencies
- * 8. Generating the final TypeScript node array list
- *
- * @param definition - Complete auth configuration to transform
- * @returns TypeScript AST nodes representing the auth resource file
+ * Generates throw statements that provide helpful error messages
+ * with CLI commands to set missing secrets.
  *
  * @example
  * ```typescript
- * const authDef: AuthDefinition = {
- *   loginOptions: { email: true, googleLogin: true },
- *   mfa: { mode: 'OPTIONAL', totp: true }
- * };
- * const nodes = renderAuthNode(authDef);
- * // Generates: export const auth = defineAuth({ ... });
+ * // Input:
+ * createSecretErrorStatements(['GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET'])
+ *
+ * // Output (TypeScript code):
+ * throw new Error('Secrets need to be reset, use `npx ampx sandbox secret set GOOGLE_CLIENT_ID` to set the value');
+ * throw new Error('Secrets need to be reset, use `npx ampx sandbox secret set GOOGLE_CLIENT_SECRET` to set the value');
  * ```
+ *
+ * @param secretVariables - Array of secret variable names
+ * @returns Array of TypeScript throw statement nodes
  */
+function createSecretErrorStatements(secretVariables: string[]): ts.Node[] {
+  return secretVariables.map((secret) =>
+    factory.createCallExpression(factory.createIdentifier('throw new Error'), undefined, [
+      factory.createStringLiteral(`Secrets need to be reset, use \`npx ampx sandbox secret set ${secret}\` to set the value`),
+    ]),
+  );
+}
+
 export function renderAuthNode(definition: AuthDefinition): ts.NodeArray<ts.Node> {
   // Track required imports from various packages
+  //  Creates the data structure to track imports. Extracts reference auth config
   const namedImports: { [importedPackageName: string]: Set<string> } = { '@aws-amplify/backend': new Set() };
   const refAuth = definition.referenceAuth;
 
-  // Handle reference auth (importing existing auth resources)
+  // The case where resources already exist and we want to import them
+  // Converts refAuth object to TypeScript property assignments
+  // Early return - skips all other blocks
   if (refAuth) {
     const referenceAuthProperties: Array<PropertyAssignment> = [];
     namedImports['@aws-amplify/backend'].add('referenceAuth');
-    for (const [key, value] of Object.entries(refAuth)) {
+
+    // Handle string propertiesx
+    const stringProps: (keyof ReferenceAuth)[] = ['userPoolId', 'identityPoolId', 'authRoleArn', 'unauthRoleArn', 'userPoolClientId'];
+    for (const prop of stringProps) {
+      const value = refAuth[prop];
       if (value) {
         referenceAuthProperties.push(
-          factory.createPropertyAssignment(
-            factory.createIdentifier(key),
-            typeof value === 'object'
-              ? factory.createObjectLiteralExpression(
-                  Object.entries(value).map(([_key, _value]) =>
-                    factory.createPropertyAssignment(factory.createStringLiteral(_key), factory.createStringLiteral(_value)),
-                  ),
-                  true,
-                )
-              : factory.createStringLiteral(value),
-          ),
+          factory.createPropertyAssignment(factory.createIdentifier(prop), factory.createStringLiteral(value as string)),
         );
       }
     }
-    // Generates ts file
+
+    // Handle groups object property
+    if (refAuth.groups) {
+      referenceAuthProperties.push(
+        factory.createPropertyAssignment(
+          factory.createIdentifier('groups'),
+          factory.createObjectLiteralExpression(
+            Object.entries(refAuth.groups).map(([key, value]) =>
+              factory.createPropertyAssignment(factory.createStringLiteral(key), factory.createStringLiteral(value)),
+            ),
+            true,
+          ),
+        ),
+      );
+    }
+
+    // Generates ts node array
     return renderResourceTsFile({
       exportedVariableName: factory.createIdentifier('auth'),
       functionCallParameter: factory.createObjectLiteralExpression(referenceAuthProperties, true),
@@ -822,29 +827,8 @@ export function renderAuthNode(definition: AuthDefinition): ts.NodeArray<ts.Node
   const defineAuthProperties: Array<PropertyAssignment> = [];
   const secretErrors: ts.Node[] = []; // Collect secret-related error statements
 
-  // Process login configuration (email, phone, social providers)
-  const logInWithPropertyAssignment = createLogInWithPropertyAssignment(definition.loginOptions, secretErrors);
-  defineAuthProperties.push(logInWithPropertyAssignment);
-
-  // Add user attributes configuration if present
-  if (definition.customUserAttributes || definition.standardUserAttributes) {
-    defineAuthProperties.push(createUserAttributeAssignments(definition.standardUserAttributes, definition.customUserAttributes));
-  }
-
-  // Add user groups configuration
-  if (definition.groups?.length) {
-    defineAuthProperties.push(
-      factory.createPropertyAssignment(
-        factory.createIdentifier('groups'),
-        factory.createArrayLiteralExpression(definition.groups.map((g) => factory.createStringLiteral(g))),
-      ),
-    );
-  }
-  // Check for Lambda triggers and external providers
-  const hasFunctions = definition.lambdaTriggers && Object.keys(definition.lambdaTriggers).length > 0;
-  const { loginOptions } = definition;
-
   // Add secret import if external providers are configured
+  const { loginOptions } = definition;
   if (
     loginOptions?.appleLogin ||
     loginOptions?.amazonLogin ||
@@ -855,20 +839,53 @@ export function renderAuthNode(definition: AuthDefinition): ts.NodeArray<ts.Node
   ) {
     namedImports['@aws-amplify/backend'].add('secret');
   }
+
+  // Process login configuration (email, phone, social providers)
+  const logInWithPropertyAssignment = createLogInWithPropertyAssignment(definition.loginOptions, secretErrors);
+  defineAuthProperties.push(logInWithPropertyAssignment);
+
+  // Add user attributes configuration if present
+  // User attributes are basically data fields with each user (email, name, phone, or custom fields like department, id, etc)
+  if (definition.customUserAttributes || definition.standardUserAttributes) {
+    defineAuthProperties.push(createUserAttributeAssignments(definition.standardUserAttributes, definition.customUserAttributes));
+  }
+
+  // Add user groups configuration
+  // Groups are a subset of user pools
+  // Input: definition.groups = ['admin', 'user']
+  // Output: groups: ['admin', 'user']
+  if (definition.groups?.length) {
+    defineAuthProperties.push(
+      factory.createPropertyAssignment(
+        factory.createIdentifier('groups'),
+        factory.createArrayLiteralExpression(definition.groups.map((g) => factory.createStringLiteral(g))),
+      ),
+    );
+  }
+
+  // Check for Lambda triggers and external providers
+  const hasFunctions = definition.lambdaTriggers && Object.keys(definition.lambdaTriggers).length > 0;
+
   // Process Lambda triggers if present
   if (hasFunctions) {
     assert(definition.lambdaTriggers);
     defineAuthProperties.push(createTriggersProperty(definition.lambdaTriggers));
 
     // Add imports for each Lambda function
+    // The lambda code needs to follow the expected format: amplify/backend/function/functionName/...`
     for (const value of Object.values(definition.lambdaTriggers)) {
-      const functionName = value.source.split('/')[3];
+      const pathSegments = value.source.split('/');
+      if (pathSegments.length < 4) {
+        throw new Error(`Invalid Lambda source path format: ${value.source}. Expected format: amplify/backend/function/functionName/...`);
+      }
+      const functionName = pathSegments[3];
       if (!namedImports[`./${functionName}/resource`]) {
         namedImports[`./${functionName}/resource`] = new Set();
       }
       namedImports[`./${functionName}/resource`].add(functionName);
     }
   }
+
   // Add MFA configuration if present
   if (definition.mfa) {
     const multifactorProperties = [

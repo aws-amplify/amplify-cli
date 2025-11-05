@@ -1,7 +1,12 @@
 import { AmplifyDriftDetector } from '../drift';
-import { $TSContext, AmplifyError } from '@aws-amplify/amplify-cli-core';
+import { $TSContext, AmplifyError, stateManager } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
-import { DescribeChangeSetOutput } from '@aws-sdk/client-cloudformation';
+import {
+  DescribeChangeSetOutput,
+  CloudFormationClient,
+  DescribeStacksCommand,
+  DescribeStackResourcesCommand,
+} from '@aws-sdk/client-cloudformation';
 import { STATEFUL_RESOURCES } from './stateful-resources';
 
 export class AmplifyGen2MigrationValidations {
@@ -16,7 +21,35 @@ export class AmplifyGen2MigrationValidations {
   }
 
   public async validateDeploymentStatus(): Promise<void> {
-    printer.warn('Not implemented');
+    const amplifyMeta = stateManager.getMeta();
+    const stackName = amplifyMeta?.providers?.awscloudformation?.StackName;
+
+    if (!stackName) {
+      throw new AmplifyError('StackNotFoundError', {
+        message: 'Root stack not found',
+        resolution: 'Ensure the project is initialized and deployed.',
+      });
+    }
+
+    const cfnClient = new CloudFormationClient({});
+    const response = await cfnClient.send(new DescribeStacksCommand({ StackName: stackName }));
+
+    if (!response.Stacks || response.Stacks.length === 0) {
+      throw new AmplifyError('StackNotFoundError', {
+        message: `Stack ${stackName} not found in CloudFormation`,
+        resolution: 'Ensure the project is deployed.',
+      });
+    }
+
+    const stackStatus = response.Stacks[0].StackStatus;
+    const validStatuses = ['UPDATE_COMPLETE', 'CREATE_COMPLETE'];
+
+    if (!validStatuses.includes(stackStatus)) {
+      throw new AmplifyError('StackStateError', {
+        message: `Root stack status is ${stackStatus}, expected ${validStatuses.join(' or ')}`,
+        resolution: 'Complete the deployment before proceeding.',
+      });
+    }
   }
 
   public async validateDeploymentVersion(): Promise<void> {
@@ -31,20 +64,27 @@ export class AmplifyGen2MigrationValidations {
   public async validateStatefulResources(changeSet: DescribeChangeSetOutput): Promise<void> {
     if (!changeSet.Changes) return;
 
-    const statefulRemoves = changeSet.Changes.filter(
-      (change) =>
-        change.Type === 'Resource' &&
-        change.ResourceChange?.Action === 'Remove' &&
-        change.ResourceChange?.ResourceType &&
-        STATEFUL_RESOURCES.has(change.ResourceChange.ResourceType),
-    );
+    const statefulRemoves: string[] = [];
+    for (const change of changeSet.Changes) {
+      if (change.Type === 'Resource' && change.ResourceChange?.Action === 'Remove' && change.ResourceChange?.ResourceType) {
+        if (change.ResourceChange.ResourceType === 'AWS::CloudFormation::Stack' && change.ResourceChange.PhysicalResourceId) {
+          const nestedResources = await this.getStatefulResources(change.ResourceChange.PhysicalResourceId);
+          if (nestedResources.length > 0) {
+            statefulRemoves.push(
+              `${change.ResourceChange.LogicalResourceId} (${change.ResourceChange.ResourceType}) containing: ${nestedResources.join(
+                ', ',
+              )}`,
+            );
+          }
+        } else if (STATEFUL_RESOURCES.has(change.ResourceChange.ResourceType)) {
+          statefulRemoves.push(`${change.ResourceChange.LogicalResourceId} (${change.ResourceChange.ResourceType})`);
+        }
+      }
+    }
 
     if (statefulRemoves.length > 0) {
-      const resources = statefulRemoves
-        .map((c) => `${c.ResourceChange?.LogicalResourceId ?? 'Unknown'} (${c.ResourceChange?.ResourceType})`)
-        .join(', ');
       throw new AmplifyError('DestructiveMigrationError', {
-        message: `Stateful resources scheduled for deletion: ${resources}.`,
+        message: `Stateful resources scheduled for deletion: ${statefulRemoves.join(', ')}.`,
         resolution: 'Review the migration plan and ensure data is backed up before proceeding.',
       });
     }
@@ -52,5 +92,21 @@ export class AmplifyGen2MigrationValidations {
 
   public async validateIngressTraffic(): Promise<void> {
     printer.warn('Not implemented');
+  }
+
+  private async getStatefulResources(stackName: string): Promise<string[]> {
+    const statefulResources: string[] = [];
+    const cfn = new CloudFormationClient({});
+    const { StackResources } = await cfn.send(new DescribeStackResourcesCommand({ StackName: stackName }));
+
+    for (const resource of StackResources ?? []) {
+      if (resource.ResourceType === 'AWS::CloudFormation::Stack' && resource.PhysicalResourceId) {
+        const nested = await this.getStatefulResources(resource.PhysicalResourceId);
+        statefulResources.push(...nested);
+      } else if (resource.ResourceType && STATEFUL_RESOURCES.has(resource.ResourceType)) {
+        statefulResources.push(`${resource.LogicalResourceId} (${resource.ResourceType})`);
+      }
+    }
+    return statefulResources;
   }
 }

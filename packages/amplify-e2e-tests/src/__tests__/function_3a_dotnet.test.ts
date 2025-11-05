@@ -53,6 +53,6 @@ describe('dotnet function tests', () => {
     const payload = '{"key1":"value1","key2":"value2","key3":"value3"}';
     await amplifyPushAuth(projRoot);
     const response = await functionCloudInvoke(projRoot, { funcName, payload });
-    expect(JSON.parse(response.Payload.toString())).toEqual(helloWorldSuccessObj);
+    expect(JSON.parse(response.Payload.transformToString())).toEqual(helloWorldSuccessObj);
   });
 });
