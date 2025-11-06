@@ -1,7 +1,15 @@
 import assert from 'node:assert';
 import { printNodeArray } from '../../test_utils/ts_node_printer';
 import { generateDataSource } from './index';
+
 describe('Data Category code generation', () => {
+  beforeEach(() => {
+    jest.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
   it('generates the correct import', async () => {
     const source = printNodeArray(await generateDataSource());
     assert.match(source, /import\s?\{\s?defineData\s?\}\s?from\s?"\@aws-amplify\/backend"/);
