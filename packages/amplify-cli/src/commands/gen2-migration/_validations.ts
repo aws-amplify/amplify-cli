@@ -42,7 +42,7 @@ export class AmplifyGen2MigrationValidations {
     }
 
     const stackStatus = response.Stacks[0].StackStatus;
-    const validStatuses = ['UPDATE_COMPLETE', 'CREATE_COMPLETE'];
+    const validStatuses = ['UPDATE_COMPLETE', 'CREATE_COMPLETE', 'UPDATE_ROLLBACK_COMPLETE'];
 
     if (!validStatuses.includes(stackStatus)) {
       throw new AmplifyError('StackStateError', {
