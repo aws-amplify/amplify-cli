@@ -543,7 +543,7 @@ export async function prepare() {
       () => getAuthTriggersConnections(),
       ccbFetcher,
     ),
-    dataDefinitionFetcher: new DataDefinitionFetcher(backendEnvironmentResolver, new BackendDownloader(s3Client), amplifyStackParser),
+    dataDefinitionFetcher: new DataDefinitionFetcher(backendEnvironmentResolver, new BackendDownloader(s3Client)),
     functionsDefinitionFetcher: new AppFunctionsDefinitionFetcher(
       lambdaClient,
       cloudWatchEventsClient,
