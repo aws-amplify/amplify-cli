@@ -50,6 +50,8 @@ export class AmplifyGen2MigrationValidations {
         resolution: 'Complete the deployment before proceeding.',
       });
     }
+
+    printer.success(`Deployment status validated: ${stackStatus}`);
   }
 
   public async validateDeploymentVersion(): Promise<void> {
