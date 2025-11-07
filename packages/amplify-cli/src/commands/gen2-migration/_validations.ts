@@ -12,9 +12,9 @@ import { STATEFUL_RESOURCES } from './stateful-resources';
 export class AmplifyGen2MigrationValidations {
   constructor(private readonly context: $TSContext) {}
 
-  public async validateDrift(): Promise<void> {
-    return new AmplifyDriftDetector(this.context).detect();
-  }
+  // public async validateDrift(): Promise<void> {
+  //   return new AmplifyDriftDetector(this.context).detect();
+  // }
 
   public async validateWorkingDirectory(): Promise<void> {
     printer.warn('Not implemented');
