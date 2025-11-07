@@ -39,8 +39,11 @@ export class CodeTransformer {
     // Remove CfnParameter for 'env'
     transformed = transformed.replace(/new\s+cdk\.CfnParameter\s*\(\s*this\s*,\s*['"]env['"]\s*,\s*\{[^}]+\}\s*\)\s*;?\s*/gi, '');
 
-    // Replace cdk.Fn.ref('env') with process.env.AMPLIFY_ENV
-    transformed = transformed.replace(/cdk\.Fn\.ref\s*\(\s*['"]env['"]\s*\)/gi, 'process.env.AMPLIFY_ENV');
+    // Replace cdk.Fn.ref('env') with branchName - multiple patterns
+    transformed = transformed.replace(/cdk\.Fn\.ref\s*\(\s*['"]\s*env\s*['"]\s*\)/gi, 'branchName');
+    transformed = transformed.replace(/cdk\.Fn\.ref\s*\(\s*['"]env['"]\s*\)/gi, 'branchName');
+    transformed = transformed.replace(/cdk\.Fn\.ref\("env"\)/gi, 'branchName');
+    transformed = transformed.replace(/cdk\.Fn\.ref\('env'\)/gi, 'branchName');
 
     // Replace AmplifyHelpers.getProjectInfo().projectName
     transformed = transformed.replace(
@@ -49,7 +52,7 @@ export class CodeTransformer {
     );
 
     // Replace AmplifyHelpers.getProjectInfo().envName
-    transformed = transformed.replace(/AmplifyHelpers\.getProjectInfo\s*\(\s*\)\.envName/gi, 'process.env.AMPLIFY_ENV');
+    transformed = transformed.replace(/AmplifyHelpers\.getProjectInfo\s*\(\s*\)\.envName/gi, 'branchName');
 
     // Remove CfnOutput declarations (will be handled separately)
     transformed = transformed.replace(/new\s+cdk\.CfnOutput\s*\([^)]+\)\s*;?\s*/gi, '');
