@@ -3,6 +3,22 @@ import { $TSContext, stateManager } from '@aws-amplify/amplify-cli-core';
 import { CloudFormationClient, DescribeChangeSetOutput } from '@aws-sdk/client-cloudformation';
 
 jest.mock('@aws-sdk/client-cloudformation');
+jest.mock('bottleneck', () => {
+  return jest.fn().mockImplementation(() => ({
+    schedule: jest.fn((fn) => fn()),
+  }));
+});
+jest.mock('@aws-amplify/amplify-prompts', () => ({
+  printer: {
+    error: jest.fn(),
+    info: jest.fn(),
+    warn: jest.fn(),
+  },
+  AmplifySpinner: jest.fn().mockImplementation(() => ({
+    start: jest.fn(),
+    stop: jest.fn(),
+  })),
+}));
 jest.mock('@aws-amplify/amplify-cli-core', () => ({
   ...jest.requireActual('@aws-amplify/amplify-cli-core'),
   stateManager: {
@@ -20,6 +36,19 @@ describe('AmplifyGen2MigrationValidations', () => {
   });
 
   describe('validateStatefulResources', () => {
+    let mockSend: jest.Mock;
+
+    beforeEach(() => {
+      mockSend = jest.fn();
+      (CloudFormationClient as jest.Mock).mockImplementation(() => ({
+        send: mockSend,
+      }));
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
     it('should pass when no changes exist', async () => {
       const changeSet: DescribeChangeSetOutput = {};
       await expect(validations.validateStatefulResources(changeSet)).resolves.not.toThrow();
@@ -56,8 +85,8 @@ describe('AmplifyGen2MigrationValidations', () => {
       };
       await expect(validations.validateStatefulResources(changeSet)).rejects.toMatchObject({
         name: 'DestructiveMigrationError',
-        message: 'Stateful resources scheduled for deletion: MyTable (AWS::DynamoDB::Table).',
-        resolution: 'Review the migration plan and ensure data is backed up before proceeding.',
+        message: 'Decommission will delete stateful resources.',
+        resolution: 'Review the resources above and ensure data is backed up before proceeding.',
       });
     });
 
@@ -84,8 +113,8 @@ describe('AmplifyGen2MigrationValidations', () => {
       };
       await expect(validations.validateStatefulResources(changeSet)).rejects.toMatchObject({
         name: 'DestructiveMigrationError',
-        message: 'Stateful resources scheduled for deletion: Bucket1 (AWS::S3::Bucket), UserPool1 (AWS::Cognito::UserPool).',
-        resolution: 'Review the migration plan and ensure data is backed up before proceeding.',
+        message: 'Decommission will delete stateful resources.',
+        resolution: 'Review the resources above and ensure data is backed up before proceeding.',
       });
     });
 
@@ -176,8 +205,8 @@ describe('AmplifyGen2MigrationValidations', () => {
       };
       await expect(validations.validateStatefulResources(changeSet)).rejects.toMatchObject({
         name: 'DestructiveMigrationError',
-        message: 'Stateful resources scheduled for deletion: MyEBSVolume (AWS::EC2::Volume).',
-        resolution: 'Review the migration plan and ensure data is backed up before proceeding.',
+        message: 'Decommission will delete stateful resources.',
+        resolution: 'Review the resources above and ensure data is backed up before proceeding.',
       });
     });
 
@@ -212,9 +241,8 @@ describe('AmplifyGen2MigrationValidations', () => {
       };
       await expect(validations.validateStatefulResources(changeSet)).rejects.toMatchObject({
         name: 'DestructiveMigrationError',
-        message:
-          'Stateful resources scheduled for deletion: Database (AWS::RDS::DBInstance), UsersTable (AWS::DynamoDB::Table), EventStream (AWS::Kinesis::Stream).',
-        resolution: 'Review the migration plan and ensure data is backed up before proceeding.',
+        message: 'Decommission will delete stateful resources.',
+        resolution: 'Review the resources above and ensure data is backed up before proceeding.',
       });
     });
 
@@ -321,34 +349,20 @@ describe('AmplifyGen2MigrationValidations', () => {
       };
       await expect(validations.validateStatefulResources(changeSet)).rejects.toMatchObject({
         name: 'DestructiveMigrationError',
-        message: 'Stateful resources scheduled for deletion: DeletedBucket (AWS::S3::Bucket).',
+        message: 'Decommission will delete stateful resources.',
       });
-    });
-  });
-
-  describe('validateStatefulResources - nested stacks', () => {
-    let mockSend: jest.Mock;
-
-    beforeEach(() => {
-      mockSend = jest.fn();
-      (CloudFormationClient as jest.Mock).mockImplementation(() => ({
-        send: mockSend,
-      }));
-    });
-
-    afterEach(() => {
-      jest.clearAllMocks();
     });
 
     it('should throw when nested stack contains stateful resources', async () => {
       mockSend.mockResolvedValueOnce({
-        StackResources: [
+        StackResourceSummaries: [
           {
             ResourceType: 'AWS::DynamoDB::Table',
             PhysicalResourceId: 'MyTable',
             LogicalResourceId: 'Table',
           },
         ],
+        NextToken: undefined,
       });
 
       const changeSet: DescribeChangeSetOutput = {
@@ -367,20 +381,20 @@ describe('AmplifyGen2MigrationValidations', () => {
 
       await expect(validations.validateStatefulResources(changeSet)).rejects.toMatchObject({
         name: 'DestructiveMigrationError',
-        message:
-          'Stateful resources scheduled for deletion: AuthStack (AWS::CloudFormation::Stack) containing: Table (AWS::DynamoDB::Table).',
+        message: 'Decommission will delete stateful resources.',
       });
     });
 
     it('should pass when nested stack contains only stateless resources', async () => {
       mockSend.mockResolvedValueOnce({
-        StackResources: [
+        StackResourceSummaries: [
           {
             ResourceType: 'AWS::Lambda::Function',
             PhysicalResourceId: 'MyFunction',
             LogicalResourceId: 'Function',
           },
         ],
+        NextToken: undefined,
       });
 
       const changeSet: DescribeChangeSetOutput = {
@@ -402,23 +416,25 @@ describe('AmplifyGen2MigrationValidations', () => {
 
     it('should handle multiple levels of nested stacks', async () => {
       mockSend.mockResolvedValueOnce({
-        StackResources: [
+        StackResourceSummaries: [
           {
             ResourceType: 'AWS::CloudFormation::Stack',
             PhysicalResourceId: 'storage-nested-stack',
             LogicalResourceId: 'StorageNestedStack',
           },
         ],
+        NextToken: undefined,
       });
 
       mockSend.mockResolvedValueOnce({
-        StackResources: [
+        StackResourceSummaries: [
           {
             ResourceType: 'AWS::S3::Bucket',
             PhysicalResourceId: 'my-bucket',
             LogicalResourceId: 'Bucket',
           },
         ],
+        NextToken: undefined,
       });
 
       const changeSet: DescribeChangeSetOutput = {
@@ -460,13 +476,14 @@ describe('AmplifyGen2MigrationValidations', () => {
 
     it('should handle mixed direct and nested stateful resources', async () => {
       mockSend.mockResolvedValueOnce({
-        StackResources: [
+        StackResourceSummaries: [
           {
             ResourceType: 'AWS::Cognito::UserPool',
             PhysicalResourceId: 'user-pool',
             LogicalResourceId: 'UserPool',
           },
         ],
+        NextToken: undefined,
       });
 
       const changeSet: DescribeChangeSetOutput = {
@@ -493,7 +510,7 @@ describe('AmplifyGen2MigrationValidations', () => {
 
       await expect(validations.validateStatefulResources(changeSet)).rejects.toMatchObject({
         name: 'DestructiveMigrationError',
-        message: expect.stringContaining('DirectTable'),
+        message: 'Decommission will delete stateful resources.',
       });
     });
   });
