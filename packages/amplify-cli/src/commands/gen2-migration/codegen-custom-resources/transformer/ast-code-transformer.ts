@@ -56,7 +56,8 @@ export class ASTCodeTransformer {
               // Always visit children to catch nested patterns
               return ts.visitEachChild(node, visitor, context);
             } catch (error) {
-              // If transformation fails, return original node
+              // If transformation fails, return originenecccftrddkniirggdtuecucgubtlhihlkkkneflhei
+              // al node
               return node;
             }
           };

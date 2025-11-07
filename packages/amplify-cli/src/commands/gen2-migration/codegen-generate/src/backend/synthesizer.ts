@@ -50,7 +50,7 @@ export interface BackendRenderParameters {
   unsupportedCategories?: Map<string, string>;
 }
 
-const amplifyGen1EnvName = 'AMPLIFY_GEN_1_ENV_NAME';
+const amplifyGen1EnvName = 'branchName';
 
 export class BackendSynthesizer {
   private importDurationFlag = false;
@@ -619,18 +619,18 @@ export class BackendSynthesizer {
   }
 
   private createAmplifyEnvNameLogic() {
-    // Create: let AMPLIFY_GEN_1_ENV_NAME = process.env.AMPLIFY_GEN_1_ENV_NAME;
+    // Create: let branchName = process.env.AWS_BRANCH;
     const variableDeclaration = factory.createVariableStatement(
       undefined,
       factory.createVariableDeclarationList(
         [
           factory.createVariableDeclaration(
-            factory.createIdentifier('AMPLIFY_GEN_1_ENV_NAME'),
+            factory.createIdentifier('branchName'),
             undefined,
             undefined,
             factory.createPropertyAccessExpression(
               factory.createPropertyAccessExpression(factory.createIdentifier('process'), factory.createIdentifier('env')),
-              factory.createIdentifier('AMPLIFY_GEN_1_ENV_NAME'),
+              factory.createIdentifier('AWS_BRANCH'),
             ),
           ),
         ],
@@ -638,38 +638,38 @@ export class BackendSynthesizer {
       ),
     );
 
-    // Create: if (ci.isCI && !AMPLIFY_GEN_1_ENV_NAME) { ... } else if (!ci.isCI) { ... }
+    // Create: if (ci.isCI && !branchName) { ... } else if (!ci.isCI) { ... }
     const ifStatement = factory.createIfStatement(
-      // Condition: ci.isCI && !AMPLIFY_GEN_1_ENV_NAME
+      // Condition: ci.isCI && !branchName
       factory.createLogicalAnd(
         factory.createPropertyAccessExpression(factory.createIdentifier('ci'), factory.createIdentifier('isCI')),
-        factory.createLogicalNot(factory.createIdentifier('AMPLIFY_GEN_1_ENV_NAME')),
+        factory.createLogicalNot(factory.createIdentifier('branchName')),
       ),
       // Then block: throw new Error('...')
       factory.createBlock(
         [
           factory.createThrowStatement(
             factory.createNewExpression(factory.createIdentifier('Error'), undefined, [
-              factory.createStringLiteral('AMPLIFY_GEN_1_ENV_NAME is required in CI environment'),
+              factory.createStringLiteral('AWS_BRANCH is required in CI environment'),
             ]),
           ),
         ],
         true,
       ),
-      // Else block: if (!ci.isCI && !AMPLIFY_GEN_1_ENV_NAME) { ... }
+      // Else block: if (!ci.isCI && !branchName) { ... }
       factory.createIfStatement(
         factory.createLogicalAnd(
           factory.createLogicalNot(
             factory.createPropertyAccessExpression(factory.createIdentifier('ci'), factory.createIdentifier('isCI')),
           ),
-          factory.createLogicalNot(factory.createIdentifier('AMPLIFY_GEN_1_ENV_NAME')),
+          factory.createLogicalNot(factory.createIdentifier('branchName')),
         ),
-        // Then block: AMPLIFY_GEN_1_ENV_NAME = 'sandbox';
+        // Then block: branchName = 'sandbox';
         factory.createBlock(
           [
             factory.createExpressionStatement(
               factory.createBinaryExpression(
-                factory.createIdentifier('AMPLIFY_GEN_1_ENV_NAME'),
+                factory.createIdentifier('branchName'),
                 factory.createToken(ts.SyntaxKind.EqualsToken),
                 factory.createStringLiteral('sandbox'),
               ),

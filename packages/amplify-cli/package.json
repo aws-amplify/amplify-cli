@@ -68,7 +68,6 @@
     "@aws-cdk/cloudformation-diff": "~2.68.0",
     "@aws-sdk/client-amplify": "^3.624.0",
     "@aws-sdk/client-cloudformation": "^3.624.0",
-    "@aws-sdk/client-cloudwatch-events": "^3.624.0",
     "@aws-sdk/client-cognito-identity": "^3.624.0",
     "@aws-sdk/client-cognito-identity-provider": "^3.624.0",
     "@aws-sdk/client-lambda": "^3.624.0",
@@ -117,7 +116,7 @@
   },
   "devDependencies": {
     "@aws-amplify/amplify-function-plugin-interface": "1.12.1",
-    "@aws-sdk/client-cloudwatch-events": "^3.624.0",
+    "@aws-sdk/client-cloudwatch-events": "^3.921.0",
     "@aws-sdk/client-cognito-identity-provider": "^3.624.0",
     "@aws-sdk/client-lambda": "^3.624.0",
     "@aws-sdk/client-s3": "^3.624.0",

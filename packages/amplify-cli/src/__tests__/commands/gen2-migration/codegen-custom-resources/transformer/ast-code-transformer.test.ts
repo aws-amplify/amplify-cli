@@ -20,7 +20,7 @@ describe('ASTCodeTransformer', () => {
       };
 
       const result = transformer.transform(parsed, 'notifications');
-      expect(result.constructorBody).toContain('process.env.AMPLIFY_ENV');
+      expect(result.constructorBody).toContain('process.env.AWS_BRANCH');
     });
 
     it('should handle cdk.Fn.ref with double quotes', () => {
@@ -34,7 +34,7 @@ describe('ASTCodeTransformer', () => {
       };
 
       const result = transformer.transform(parsed, 'notifications');
-      expect(result.constructorBody).toContain('process.env.AMPLIFY_ENV');
+      expect(result.constructorBody).toContain('process.env.AWS_BRANCH');
     });
 
     it('should handle Fn.ref without cdk prefix', () => {
@@ -48,7 +48,7 @@ describe('ASTCodeTransformer', () => {
       };
 
       const result = transformer.transform(parsed, 'notifications');
-      expect(result.constructorBody).toContain('process.env.AMPLIFY_ENV');
+      expect(result.constructorBody).toContain('process.env.AWS_BRANCH');
     });
 
     it('should ignore cdk.Fn.ref in comments', () => {
@@ -65,7 +65,7 @@ describe('ASTCodeTransformer', () => {
       };
 
       const result = transformer.transform(parsed, 'notifications');
-      expect(result.constructorBody).not.toContain('process.env.AMPLIFY_ENV');
+      expect(result.constructorBody).not.toContain('process.env.AWS_BRANCH');
       expect(result.constructorBody).toContain('static-name');
     });
   });
@@ -168,7 +168,7 @@ describe('ASTCodeTransformer', () => {
 
       const result = transformer.transform(parsed, 'notifications');
       expect(result.constructorBody).toContain('process.env.AMPLIFY_PROJECT_NAME');
-      expect(result.constructorBody).toContain('process.env.AMPLIFY_ENV');
+      expect(result.constructorBody).toContain('process.env.AWS_BRANCH');
     });
   });
 
@@ -214,7 +214,7 @@ describe('ASTCodeTransformer', () => {
       };
 
       const result = transformer.transform(parsed, 'notifications');
-      expect(result.constructorBody).toContain('process.env.AMPLIFY_ENV');
+      expect(result.constructorBody).toContain('process.env.AWS_BRANCH');
     });
 
     it('should preserve complex TypeScript syntax', () => {
@@ -244,7 +244,7 @@ describe('ASTCodeTransformer', () => {
       const result = transformer.transform(parsed, 'notifications');
       expect(result.constructorBody).toContain('interface Config');
       expect(result.constructorBody).toContain('process.env.AMPLIFY_PROJECT_NAME');
-      expect(result.constructorBody).toContain('process.env.AMPLIFY_ENV');
+      expect(result.constructorBody).toContain('process.env.AWS_BRANCH');
     });
   });
 

@@ -1,15 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="2" failures="1" errors="0" time="5.773">
-  <testsuite name="CustomResourceMigrator - End to End" errors="0" failures="1" skipped="1" timestamp="2025-10-24T19:46:36" time="5.733" tests="2">
-    <testcase classname="CustomResourceMigrator - End to End should migrate SNS topic custom resource" name="CustomResourceMigrator - End to End should migrate SNS topic custom resource" time="0.017">
-      <failure>Error: expect(received).toBe(expected) // Object.is equality
-
-Expected: true
-Received: false
-    at Object.&lt;anonymous&gt; (/Users/sanjrkmr/amplify-cli/packages/amplify-cli/src/__tests__/commands/gen2-migration/codegen-custom-resources/integration/end-to-end.test.ts:68:42)</failure>
+<testsuites name="jest tests" tests="8" failures="0" errors="0" time="6.617">
+  <testsuite name="undefined" errors="0" failures="0" skipped="0" timestamp="2025-11-05T19:52:16" time="6.57" tests="8">
+    <testcase classname=" should pass" name=" should pass" time="0.001">
     </testcase>
-    <testcase classname="CustomResourceMigrator - End to End should migrate multiple custom resources" name="CustomResourceMigrator - End to End should migrate multiple custom resources" time="0">
-      <skipped/>
+    <testcase classname=" sets up toBeACloudFormationCommand" name=" sets up toBeACloudFormationCommand" time="0">
+    </testcase>
+    <testcase classname="CodeTransformer should generate proper class name from resource name" name="CodeTransformer should generate proper class name from resource name" time="0.001">
+    </testcase>
+    <testcase classname="CodeTransformer should remove AmplifyHelpers imports" name="CodeTransformer should remove AmplifyHelpers imports" time="0">
+    </testcase>
+    <testcase classname="CodeTransformer should replace cdk.Fn.ref with process.env.AWS_BRANCH" name="CodeTransformer should replace cdk.Fn.ref with process.env.AWS_BRANCH" time="0">
+    </testcase>
+    <testcase classname="CodeTransformer should replace AmplifyHelpers.getProjectInfo().projectName" name="CodeTransformer should replace AmplifyHelpers.getProjectInfo().projectName" time="0">
+    </testcase>
+    <testcase classname="CodeTransformer should remove CfnParameter declarations" name="CodeTransformer should remove CfnParameter declarations" time="0">
+    </testcase>
+    <testcase classname="CodeTransformer should add TODO for AmplifyHelpers.addResourceDependency" name="CodeTransformer should add TODO for AmplifyHelpers.addResourceDependency" time="0">
     </testcase>
   </testsuite>
 </testsuites>
