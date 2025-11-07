@@ -47,7 +47,7 @@ describe('CodeTransformer', () => {
     };
 
     const result = transformer.transform(parsed, 'notifications');
-    expect(result.constructorBody).toContain('process.env.AMPLIFY_ENV');
+    expect(result.constructorBody).toContain('branchName');
     expect(result.constructorBody).not.toContain("cdk.Fn.ref('env')");
   });
 
