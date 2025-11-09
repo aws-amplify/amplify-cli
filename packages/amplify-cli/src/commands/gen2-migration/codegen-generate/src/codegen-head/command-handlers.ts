@@ -388,8 +388,6 @@ export async function updateCustomResources() {
 }
 
 export async function updateCdkStackFile(customResources: string[], destinationCustomResourcePath: string, rootDir: string) {
-  const projectInfo = await getProjectInfo(rootDir);
-
   for (const resource of customResources) {
     const cdkStackFilePath = path.join(destinationCustomResourcePath, resource, 'cdk-stack.ts');
 
@@ -406,10 +404,7 @@ export async function updateCdkStackFile(customResources: string[], destinationC
         );
       }
 
-      cdkStackContent = cdkStackContent.replace(
-        /export class/,
-        `const AMPLIFY_GEN_1_ENV_NAME = process.env.AMPLIFY_GEN_1_ENV_NAME ?? "sandbox";\n\nexport class`,
-      );
+      cdkStackContent = cdkStackContent.replace(/export class/, `const branchName = process.env.AWS_BRANCH ?? "sandbox";\n\nexport class`);
 
       cdkStackContent = cdkStackContent.replace(/extends cdk.Stack/, `extends cdk.NestedStack`);
 
@@ -419,12 +414,9 @@ export async function updateCdkStackFile(customResources: string[], destinationC
         `new cdk.CfnParameter(this, "env", {
                 type: "String",
                 description: "Current Amplify CLI env name",
-                default: \`\${AMPLIFY_GEN_1_ENV_NAME}\`
+                default: \`\${branchName}\`
               });`,
       );
-
-      // Replace AmplifyHelpers.getProjectInfo() with {envName: 'envName', projectName: 'projectName'}
-      cdkStackContent = cdkStackContent.replace(/AmplifyHelpers\.getProjectInfo\(\)/g, projectInfo);
 
       // Replace AmplifyHelpers.AmplifyResourceProps with {category: 'custom', resourceName: resource}
       cdkStackContent = cdkStackContent.replace(
@@ -464,19 +456,6 @@ const hasUncommentedDependency = (fileContent: string, matchString: string) => {
 
   return false;
 };
-
-export async function getProjectInfo(rootDir: string) {
-  const configDir = path.join(rootDir, AMPLIFY_DIR, '.config');
-  const projectConfigFilePath = path.join(configDir, 'project-config.json');
-  const projectConfig = await fs.readFile(projectConfigFilePath, { encoding: 'utf-8' });
-
-  const projectConfigJson = JSON.parse(projectConfig);
-  if (!projectConfigJson.projectName) {
-    throw new Error('Project name not found in project-config.json');
-  }
-
-  return `{envName: \`\${AMPLIFY_GEN_1_ENV_NAME}\`, projectName: '${projectConfigJson.projectName}'}`;
-}
 
 export async function prepare() {
   const appId = resolveAppId();
