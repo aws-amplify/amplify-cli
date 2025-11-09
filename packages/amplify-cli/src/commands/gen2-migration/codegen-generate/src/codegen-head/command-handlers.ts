@@ -404,8 +404,6 @@ export async function updateCdkStackFile(customResources: string[], destinationC
         );
       }
 
-      cdkStackContent = cdkStackContent.replace(/export class/, `const branchName = process.env.AWS_BRANCH ?? "sandbox";\n\nexport class`);
-
       cdkStackContent = cdkStackContent.replace(/extends cdk.Stack/, `extends cdk.NestedStack`);
 
       // Replace the cdk.CfnParameter definition to include the default property
