@@ -359,32 +359,6 @@ const getCustomResourceMap = async (): Promise<Map<string, string>> => {
 export async function updateCustomResources() {
   const customResources = getCustomResources();
   if (customResources.length > 0) {
-    // First, run the custom resource migration to transform AmplifyHelper calls
-    const migratingCustomResources = ora('Migrating custom resource AmplifyHelper calls').start();
-    try {
-      const { CustomResourceMigrator } = await import('../../../../gen2-migration/codegen-custom-resources/custom-resource-migrator');
-      const rootDir = pathManager.findProjectRoot();
-      assert(rootDir);
-
-      const migrationResult = await CustomResourceMigrator.migrateProject(rootDir);
-
-      if (!migrationResult.success) {
-        migratingCustomResources.fail('Failed to migrate custom resource AmplifyHelper calls');
-        console.error('Migration errors:', migrationResult.errors);
-        throw new Error('Custom resource migration failed');
-      }
-
-      if (migrationResult.transformedFiles.length > 0) {
-        migratingCustomResources.succeed(`Migrated AmplifyHelper calls in ${migrationResult.transformedFiles.length} files`);
-      } else {
-        migratingCustomResources.succeed('No AmplifyHelper calls found to migrate');
-      }
-    } catch (error) {
-      migratingCustomResources.fail('Failed to migrate custom resource AmplifyHelper calls');
-      console.error('Migration error:', error.message);
-      // Continue with the rest of the process even if migration fails
-    }
-
     const movingGen1CustomResources = ora(`Moving ${GEN1_CUSTOM_RESOURCES_SUFFIX}`).start();
     const rootDir = pathManager.findProjectRoot();
     assert(rootDir);
@@ -414,8 +388,6 @@ export async function updateCustomResources() {
 }
 
 export async function updateCdkStackFile(customResources: string[], destinationCustomResourcePath: string, rootDir: string) {
-  const projectInfo = await getProjectInfo(rootDir);
-
   for (const resource of customResources) {
     const cdkStackFilePath = path.join(destinationCustomResourcePath, resource, 'cdk-stack.ts');
 
@@ -445,9 +417,6 @@ export async function updateCdkStackFile(customResources: string[], destinationC
                 default: \`\${branchName}\`
               });`,
       );
-
-      // Replace AmplifyHelpers.getProjectInfo() with {envName: 'envName', projectName: 'projectName'}
-      cdkStackContent = cdkStackContent.replace(/AmplifyHelpers\.getProjectInfo\(\)/g, projectInfo);
 
       // Replace AmplifyHelpers.AmplifyResourceProps with {category: 'custom', resourceName: resource}
       cdkStackContent = cdkStackContent.replace(
@@ -487,19 +456,6 @@ const hasUncommentedDependency = (fileContent: string, matchString: string) => {
 
   return false;
 };
-
-export async function getProjectInfo(rootDir: string) {
-  const configDir = path.join(rootDir, AMPLIFY_DIR, '.config');
-  const projectConfigFilePath = path.join(configDir, 'project-config.json');
-  const projectConfig = await fs.readFile(projectConfigFilePath, { encoding: 'utf-8' });
-
-  const projectConfigJson = JSON.parse(projectConfig);
-  if (!projectConfigJson.projectName) {
-    throw new Error('Project name not found in project-config.json');
-  }
-
-  return `{envName: \`\${branchName}\`, projectName: '${projectConfigJson.projectName}'}`;
-}
 
 export async function prepare() {
   const appId = resolveAppId();
