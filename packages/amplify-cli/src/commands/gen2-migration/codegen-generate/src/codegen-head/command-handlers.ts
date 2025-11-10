@@ -33,6 +33,9 @@ import { format } from './format';
 import ora from 'ora';
 import * as ts from 'typescript';
 import { AmplifyHelperTransformer } from '../../../codegen-custom-resources/transformer/amplify-helper-transformer';
+import { DependencyMerger } from '../../../codegen-custom-resources/generator/dependency-merger';
+import { FileConverter } from '../../../codegen-custom-resources/generator/file-converter';
+import { BackendUpdater } from '../../../codegen-custom-resources/generator/backend-updater';
 
 interface CodegenCommandParameters {
   analytics: Analytics;
@@ -385,6 +388,25 @@ export async function updateCustomResources() {
     await fs.cp(sourceTypesPath, destinationTypesPath, { recursive: true });
 
     await updateCdkStackFile(customResources, destinationCustomResourcePath, rootDir);
+
+    // Merge dependencies from custom resources into Gen2 package.json
+    const gen2PackageJsonPath = path.join(amplifyGen2Dir, '..', 'package.json');
+    const dependencyMerger = new DependencyMerger();
+    await dependencyMerger.mergeDependencies(sourceCustomResourcePath, gen2PackageJsonPath);
+
+    // Convert cdk-stack.ts to resource.ts
+    const fileConverter = new FileConverter();
+    await fileConverter.convertCdkStackToResource(destinationCustomResourcePath);
+
+    // Remove build artifacts
+    await fileConverter.removeBuildArtifacts(destinationCustomResourcePath);
+
+    // Update backend.ts to register custom resources
+    const backendFilePath = path.join(amplifyGen2Dir, 'backend.ts');
+    const customResourceMap = await getCustomResourceMap();
+    const backendUpdater = new BackendUpdater();
+    await backendUpdater.updateBackendFile(backendFilePath, customResourceMap);
+
     movingGen1CustomResources.succeed(`Moved ${GEN1_CUSTOM_RESOURCES_SUFFIX}`);
   }
 }
