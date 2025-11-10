@@ -31,6 +31,8 @@ import { AppFunctionsDefinitionFetcher } from './app_functions_definition_fetche
 import { printer } from './printer';
 import { format } from './format';
 import ora from 'ora';
+import * as ts from 'typescript';
+import { AmplifyHelperTransformer } from '../../../codegen-custom-resources/transformer/amplify-helper-transformer';
 
 interface CodegenCommandParameters {
   analytics: Analytics;
@@ -388,6 +390,16 @@ export async function updateCustomResources() {
 }
 
 export async function updateCdkStackFile(customResources: string[], destinationCustomResourcePath: string, rootDir: string) {
+  // Read project name from project-config.json
+  let projectName: string | undefined;
+  try {
+    const projectConfigPath = path.join(rootDir, AMPLIFY_DIR, '.config', 'project-config.json');
+    const projectConfig = JSON.parse(await fs.readFile(projectConfigPath, { encoding: 'utf-8' }));
+    projectName = projectConfig.projectName;
+  } catch (e) {
+    // If we can't read project name, continue without it
+  }
+
   for (const resource of customResources) {
     const cdkStackFilePath = path.join(destinationCustomResourcePath, resource, 'cdk-stack.ts');
 
@@ -403,8 +415,6 @@ export async function updateCdkStackFile(customResources: string[], destinationC
           `throw new Error('Follow https://docs.amplify.aws/react/start/migrate-to-gen2/ to update the resource dependency');\n\nexport class`,
         );
       }
-
-      cdkStackContent = cdkStackContent.replace(/export class/, `const branchName = process.env.AWS_BRANCH ?? "sandbox";\n\nexport class`);
 
       cdkStackContent = cdkStackContent.replace(/extends cdk.Stack/, `extends cdk.NestedStack`);
 
@@ -426,6 +436,13 @@ export async function updateCdkStackFile(customResources: string[], destinationC
 
       // Remove the import statement for AmplifyHelpers
       cdkStackContent = cdkStackContent.replace(amplifyHelpersImport, '');
+
+      // Apply AmplifyHelperTransformer for AST-based transformations
+      const sourceFile = ts.createSourceFile(cdkStackFilePath, cdkStackContent, ts.ScriptTarget.Latest, true);
+      const transformedFile = AmplifyHelperTransformer.transform(sourceFile, projectName);
+      const transformedWithImports = AmplifyHelperTransformer.addRequiredImports(transformedFile, projectName);
+      const tsPrinter = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
+      cdkStackContent = tsPrinter.printFile(transformedWithImports);
 
       await fs.writeFile(cdkStackFilePath, cdkStackContent, { encoding: 'utf-8' });
     } catch (error) {
