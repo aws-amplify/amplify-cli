@@ -2,11 +2,9 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import assert from 'node:assert';
-import { v4 as uuid } from 'uuid';
 
 import { createGen2Renderer } from '../core/migration-pipeline';
 
-import { UsageData } from '../../../../../domain/amplify-usageData';
 import { AmplifyClient, UpdateAppCommand, GetAppCommand } from '@aws-sdk/client-amplify';
 import { CloudFormationClient } from '@aws-sdk/client-cloudformation';
 import { CognitoIdentityProviderClient, LambdaConfigType } from '@aws-sdk/client-cognito-identity-provider';
@@ -15,22 +13,21 @@ import { S3Client } from '@aws-sdk/client-s3';
 import { LambdaClient } from '@aws-sdk/client-lambda';
 import { CloudWatchEventsClient } from '@aws-sdk/client-cloudwatch-events';
 //import { SSMClient } from '@aws-sdk/client-ssm';
-import { GetCallerIdentityCommand, STSClient } from '@aws-sdk/client-sts';
 import { BackendDownloader } from './backend_downloader';
 import { AppContextLogger } from './logger';
 import { BackendEnvironmentResolver } from './backend_environment_selector';
 import { Analytics, AppAnalytics } from './analytics';
 import { AppAuthDefinitionFetcher } from './app_auth_definition_fetcher';
 import { AppStorageDefinitionFetcher } from './app_storage_definition_fetcher';
-import { AmplifyCategories, IUsageData, stateManager, pathManager } from '@aws-amplify/amplify-cli-core';
+import { AmplifyCategories, stateManager, pathManager } from '@aws-amplify/amplify-cli-core';
 import { AuthTriggerConnection } from '../adapters/auth/index';
 import { DataDefinitionFetcher } from './data_definition_fetcher';
 import { AmplifyStackParser } from './amplify_stack_parser';
 import { AppFunctionsDefinitionFetcher } from './app_functions_definition_fetcher';
 // import { TemplateGenerator, ResourceMapping } from '@aws-amplify/migrate-template-gen'; // Package not available
-import { printer } from './printer';
 import { format } from './format';
 import ora from 'ora';
+import { getUsageDataMetric } from '../../../../helpers/telemetry';
 
 interface CodegenCommandParameters {
   analytics: Analytics;
@@ -139,34 +136,6 @@ type AmplifyMeta = {
 
 const getFunctionPath = (functionName: string) => {
   return path.join(AMPLIFY_DIR, BACKEND_DIR, 'function', functionName, 'src');
-};
-
-const getUsageDataMetric = async (envName: string): Promise<IUsageData> => {
-  const usageData = UsageData.Instance;
-  const accountId = await getAccountId();
-  assert(accountId);
-
-  usageData.init(
-    uuid(),
-    '',
-    {
-      command: 'to-gen-2',
-      argv: process.argv,
-    },
-    accountId,
-    {
-      envName,
-    },
-    Date.now(),
-  );
-
-  return usageData;
-};
-
-const getAccountId = async (): Promise<string | undefined> => {
-  const stsClient = new STSClient();
-  const callerIdentityResult = await stsClient.send(new GetCallerIdentityCommand());
-  return callerIdentityResult.Account;
 };
 
 export const getAuthTriggersConnections = async (): Promise<Partial<Record<keyof LambdaConfigType, string>>> => {

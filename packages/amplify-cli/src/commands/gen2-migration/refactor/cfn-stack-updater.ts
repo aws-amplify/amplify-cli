@@ -2,8 +2,8 @@ import { CloudFormationClient, DescribeStacksCommand, Parameter, UpdateStackComm
 import { CFNTemplate } from './types';
 import assert from 'node:assert';
 
-const POLL_ATTEMPTS = 60;
-const POLL_INTERVAL_MS = 1500;
+const POLL_ATTEMPTS = 120;
+const POLL_INTERVAL_MS = 5000;
 const NO_UPDATES_MESSAGE = 'No updates are to be performed';
 const CFN_IAM_CAPABILIY = 'CAPABILITY_NAMED_IAM';
 const COMPLETION_STATE = '_COMPLETE';

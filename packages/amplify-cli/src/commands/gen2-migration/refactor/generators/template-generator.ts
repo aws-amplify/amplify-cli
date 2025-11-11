@@ -29,6 +29,7 @@ import CfnOutputResolver from '../resolvers/cfn-output-resolver';
 import CfnDependencyResolver from '../resolvers/cfn-dependency-resolver';
 import CfnParameterResolver from '../resolvers/cfn-parameter-resolver';
 import ora from 'ora';
+import { printer } from '@aws-amplify/amplify-prompts';
 
 const CFN_RESOURCE_STACK_TYPE = 'AWS::CloudFormation::Stack';
 const GEN2_AMPLIFY_AUTH_LOGICAL_ID_PREFIX = 'amplifyAuth';
@@ -534,6 +535,7 @@ class TemplateGenerator {
           logicalIdMappingForRefactor = logicalIdMapping;
         } catch (e) {
           if (this.isNoResourcesError(e)) {
+            printer.warn(`Revert: No resources found to move in Gen 1 ${this.getStackCategoryName(category)} stack. Skipping update.`);
             continue;
           }
           throw e;
