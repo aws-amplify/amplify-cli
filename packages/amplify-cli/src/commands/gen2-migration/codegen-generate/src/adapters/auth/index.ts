@@ -170,14 +170,7 @@ const getGroups = (identityGroups?: GroupType[]): string[] => {
 };
 
 const getScopes = (scopes: string[]): Scope[] => {
-  const mappedScopes: Record<string, string> = {
-    email: 'EMAIL',
-    openid: 'OPENID',
-    phone: 'PHONE',
-    profile: 'PROFILE',
-    'aws.cognito.signin.user.admin': 'COGNITO_ADMIN',
-  };
-  return scopes.map((scope) => mappedScopes[scope] as Scope);
+  return scopes.filter((scope): scope is Scope => ['phone', 'email', 'openid', 'profile', 'aws.cognito.signin.user.admin'].includes(scope));
 };
 
 /**
