@@ -79,12 +79,6 @@ const getPasswordPolicyOverrides = (passwordPolicy: Partial<PasswordPolicyType>)
 const getUserPoolOverrides = (userPool: UserPoolType): Partial<PolicyOverrides> => {
   const userPoolOverrides: Partial<PolicyOverrides> = {};
   Object.assign(userPoolOverrides, getPasswordPolicyOverrides(userPool.Policies?.PasswordPolicy ?? {}));
-  if (userPool.Name) {
-    const userNamePolicy: Partial<PolicyOverrides> = {
-      userPoolName: userPool.Name,
-    };
-    Object.assign(userPoolOverrides, userNamePolicy);
-  }
   if (userPool.UsernameAttributes === undefined || userPool.UsernameAttributes.length === 0) {
     userPoolOverrides.usernameAttributes = undefined;
   } else {
