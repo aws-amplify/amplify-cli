@@ -7,6 +7,7 @@ import { $TSContext, AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import chalk from 'chalk';
 import { detectStackDriftRecursive, type DriftDisplayFormat } from './drift-detection';
+import { detectLocalDrift } from './drift-detection/detect-local-drift';
 import { CloudFormationService, AmplifyConfigService, FileService, DriftFormatter } from './drift-detection/services';
 import type { CloudFormationClient } from '@aws-sdk/client-cloudformation';
 
@@ -93,32 +94,40 @@ export class AmplifyDriftDetector {
     const print = this.createPrintObject(options);
     const combinedResults = await detectStackDriftRecursive(cfn, stackName, print);
 
+    // 6. Phase 3: Detect local vs S3 drift
+    printer.info(chalk.gray('Fetching current backend state from S3...'));
+    printer.info(chalk.gray('Checking local files vs cloud backend...'));
+    // Fix #5: Pass context to detectLocalDrift
+    const phase3Results = await detectLocalDrift(this.context);
+
     printer.info(chalk.green('Drift detection completed'));
     printer.info('');
 
-    // 6. Handle no results
+    // 7. Handle no results
     if (!combinedResults.rootStackDrifts.StackResourceDrifts) {
       printer.warn(`${stackName}: No drift results available`);
       return 0;
     }
 
-    // 7. Process results with the simplified formatter
+    // 8. Process results with the simplified formatter
     const rootTemplate = await this.cfnService.getStackTemplate(cfn, stackName);
     await this.formatter.processResults(cfn, stackName, rootTemplate, combinedResults);
 
-    // 8. Display results
+    // Add Phase 3 results to formatter
+    this.formatter.addPhase3Results(phase3Results);
+
+    // 9. Display results
     this.displayResults(options);
 
-    // 9. Save JSON if requested
+    // 10. Save JSON if requested
     if (options['output-file']) {
       const simplifiedJson = this.formatter.createSimplifiedJsonOutput();
       await this.fileService.saveJsonOutput(options['output-file'], simplifiedJson);
     }
 
-    // 10. Return exit code - always return 1 if drift detected, 0 if no drift
-    const output = this.formatter.formatDrift('summary');
-    const hasDrift = output.totalDrifted > 0;
-    return hasDrift ? 1 : 0;
+    // 11. Return exit code - return 1 if any drift detected (Phase 1 or Phase 3), 0 if no drift
+    const totalDriftCount = this.formatter.getTotalDriftCount();
+    return totalDriftCount > 0 ? 1 : 0;
   }
 
   /**
@@ -126,30 +135,11 @@ export class AmplifyDriftDetector {
    */
   private createPrintObject(options: DriftOptions) {
     return {
-      info: (msg: string) => {
-        // Parse and format messages based on their content
-        if (msg.includes('Found') && msg.includes('nested')) {
-          // Extract indentation, count, and type
-          const indent = msg.match(/^(\s*)/)?.[1] || '';
-          const count = msg.match(/Found (\d+)/)?.[1] || '0';
-          const level = msg.match(/level (\d+)/)?.[1];
-
-          // Always show "Found X nested stack(s)" without indentation
-          printer.info(chalk.gray(`Found ${chalk.yellow(count)} nested stack(s)`));
-        } else if (msg.includes('Checking drift for nested stack:')) {
-          // Show nested stack checking without indentation
-          const nestedStackName = msg.replace('Checking drift for nested stack:', '').trim();
-          printer.info(chalk.gray(`Checking drift for nested stack: ${chalk.yellow(nestedStackName)}`));
-        } else if (!msg.includes('Checking drift for stack:')) {
-          printer.info(msg);
-        }
-      },
+      info: (msg: string) => printer.info(msg),
       debug: (msg: string) => {
         if (options.verbose) printer.info(msg);
       },
-      warning: (msg: string) => {
-        printer.warn(msg);
-      },
+      warning: (msg: string) => printer.warn(msg),
     };
   }
 
@@ -166,6 +156,11 @@ export class AmplifyDriftDetector {
       if (output.categoryBreakdown) {
         printer.info(output.categoryBreakdown);
       }
+      // Display Phase 3 results
+      const phase3Output = this.formatter.formatPhase3Results();
+      if (phase3Output) {
+        printer.info(phase3Output);
+      }
     } else if (options.format === 'tree') {
       const output = this.formatter.formatDrift('tree');
       printer.info(output.summaryDashboard);
@@ -178,6 +173,11 @@ export class AmplifyDriftDetector {
       if (options.verbose && output.categoryBreakdown) {
         printer.info(output.categoryBreakdown);
       }
+      // Display Phase 3 results
+      const phase3Output = this.formatter.formatPhase3Results();
+      if (phase3Output) {
+        printer.info(phase3Output);
+      }
     } else {
       // This shouldn't happen with TypeScript, but handle gracefully
       printer.warn(`Unknown format: ${options.format}. Using summary format.`);
@@ -185,6 +185,11 @@ export class AmplifyDriftDetector {
       printer.info(output.summaryDashboard);
       if (output.categoryBreakdown) {
         printer.info(output.categoryBreakdown);
+      }
+      // Display Phase 3 results
+      const phase3Output = this.formatter.formatPhase3Results();
+      if (phase3Output) {
+        printer.info(phase3Output);
       }
     }
   }

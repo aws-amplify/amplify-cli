@@ -10,6 +10,7 @@ import chalk from 'chalk';
 import type { CombinedDriftResults } from '../detect-stack-drift';
 import { CloudFormationService } from './cloudformation-service';
 import { AmplifyConfigService } from './amplify-config-service';
+import type { Phase3Results } from '../detect-local-drift';
 
 // CloudFormation template type definition
 export interface CloudFormationTemplate {
@@ -117,6 +118,9 @@ export class DriftFormatter {
     totalUnchecked: 0,
     totalFailed: 0,
   };
+
+  // Phase 3 results storage
+  private phase3Results: Phase3Results | null = null;
 
   constructor() {
     this.cfnService = new CloudFormationService();
@@ -701,5 +705,143 @@ export class DriftFormatter {
       default:
         return chalk.white('[OTHER]');
     }
+  }
+
+  /**
+   * Add Phase 3 results for formatting
+   */
+  public addPhase3Results(results: Phase3Results): void {
+    this.phase3Results = results;
+  }
+
+  /**
+   * Format Phase 3 drift results (local vs cloud backend)
+   */
+  public formatPhase3Results(): string {
+    if (!this.phase3Results) {
+      return '';
+    }
+
+    let output = '';
+
+    // Add phase header matching Phase 1 style
+    output += chalk.bold('\nLOCAL CHANGES:\n');
+
+    // Handle skipped case
+    if (this.phase3Results.skipped) {
+      output += `└── Status: ${chalk.gray(this.phase3Results.skipReason)}\n`;
+      return output;
+    }
+
+    // Group resources by category for structured display (including no-drift categories)
+    const categoryGroups = this.groupPhase3ResourcesByCategory();
+    const allCategories = this.getAllCategoriesForPhase3(categoryGroups);
+    const categoryEntries = Array.from(allCategories.entries());
+
+    // Check if we have config-level updates
+    const hasConfigUpdates = this.phase3Results.tagsUpdated || this.phase3Results.rootStackUpdated;
+
+    categoryEntries.forEach(([categoryName, resources], categoryIndex) => {
+      const isLastCategory = categoryIndex === categoryEntries.length - 1;
+      const categoryPrefix = isLastCategory ? TREE_SYMBOLS.LAST_BRANCH : TREE_SYMBOLS.BRANCH;
+
+      const categoryIcon = this.getCategoryIcon(categoryName);
+
+      // For Core Infrastructure, include config updates in the count
+      let statusText: string;
+      if (categoryName === 'Core Infrastructure') {
+        const resourceCount = resources.length;
+        const configCount = hasConfigUpdates ? 1 : 0;
+        const totalCount = resourceCount + configCount;
+
+        if (totalCount > 0) {
+          const items: string[] = [];
+          if (resourceCount > 0) items.push(`${resourceCount} resource${resourceCount === 1 ? '' : 's'}`);
+          if (this.phase3Results.tagsUpdated) items.push('tags');
+          if (this.phase3Results.rootStackUpdated) items.push('root stack');
+          statusText = chalk.red(`DRIFT DETECTED: ${items.join(', ')}`);
+        } else {
+          statusText = chalk.green('NO DRIFT DETECTED');
+        }
+      } else {
+        statusText =
+          resources.length > 0
+            ? chalk.red(`DRIFT DETECTED: ${resources.length} resource${resources.length === 1 ? '' : 's'}`)
+            : chalk.green('NO DRIFT DETECTED');
+      }
+
+      output += `${categoryPrefix} ${categoryIcon} ${chalk.bold(categoryName)}\n`;
+
+      const stackPrefix = isLastCategory ? TREE_SYMBOLS.EMPTY : TREE_SYMBOLS.VERTICAL;
+      output += `${stackPrefix}└── Status: ${statusText}\n`;
+    });
+
+    return output;
+  }
+
+  /**
+   * Group Phase 3 resources by category
+   */
+  private groupPhase3ResourcesByCategory(): Map<string, any[]> {
+    const categories = new Map<string, any[]>();
+
+    if (!this.phase3Results) return categories;
+
+    const allResources = [
+      ...(this.phase3Results.resourcesToBeCreated || []),
+      ...(this.phase3Results.resourcesToBeUpdated || []),
+      ...(this.phase3Results.resourcesToBeDeleted || []),
+    ];
+
+    allResources.forEach((resource) => {
+      const categoryName = this.determineCategory(resource.category || resource.service || 'Other');
+
+      if (!categories.has(categoryName)) {
+        categories.set(categoryName, []);
+      }
+      categories.get(categoryName)!.push(resource);
+    });
+
+    return categories;
+  }
+
+  /**
+   * Get all categories for Phase 3, including those with no drift (matching CFN style)
+   */
+  private getAllCategoriesForPhase3(driftedCategories: Map<string, any[]>): Map<string, any[]> {
+    const allCategories = new Map<string, any[]>();
+
+    // Start with Core Infrastructure (always present)
+    allCategories.set('Core Infrastructure', driftedCategories.get('Core Infrastructure') || []);
+
+    // Add all nested stack categories from Phase 1 (CFN drift)
+    this.nestedStacks.forEach((stack) => {
+      const categoryName = this.determineCategory(stack.category || stack.logicalId);
+      if (!allCategories.has(categoryName)) {
+        allCategories.set(categoryName, driftedCategories.get(categoryName) || []);
+      }
+    });
+
+    // Add any additional categories from Phase 3 that weren't in Phase 1
+    driftedCategories.forEach((resources, categoryName) => {
+      if (!allCategories.has(categoryName)) {
+        allCategories.set(categoryName, resources);
+      }
+    });
+
+    return allCategories;
+  }
+
+  /**
+   * Get total drift count including Phase 3 if available
+   */
+  public getTotalDriftCount(): number {
+    let total = this.summary.totalDrifted;
+
+    if (this.phase3Results && !this.phase3Results.skipped && this.phase3Results.totalDrifted) {
+      total += this.phase3Results.totalDrifted;
+    }
+
+    return total;
   }
 }
