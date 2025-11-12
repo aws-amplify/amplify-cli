@@ -14,6 +14,7 @@ import {
 } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { getAmplifyLogger } from '@aws-amplify/amplify-cli-logger';
+import chalk from 'chalk';
 
 export interface Print {
   info: (msg: string) => void;
@@ -200,7 +201,7 @@ export async function detectStackDriftRecursive(
   const nestedStacks = stackResources.StackResources?.filter((resource) => resource.ResourceType === 'AWS::CloudFormation::Stack') || [];
 
   if (nestedStacks.length > 0 && print?.info) {
-    print.info(`Found ${nestedStacks.length} nested stack(s)`);
+    print.info(chalk.gray(`Found ${chalk.yellow(nestedStacks.length)} nested stack(s)`));
   }
 
   // Initialize results
@@ -222,9 +223,8 @@ export async function detectStackDriftRecursive(
     }
 
     try {
-      // Show message for this nested stack (no indentation in the message itself)
       if (print?.info) {
-        print.info(`Checking drift for nested stack: ${nestedStack.LogicalResourceId}`);
+        print.info(chalk.gray(`Checking drift for nested stack: ${chalk.yellow(nestedStack.LogicalResourceId)}`));
       }
 
       // Extract stack name from PhysicalResourceId
