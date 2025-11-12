@@ -35,7 +35,9 @@ export class BackendUpdater {
       ts.factory.createImportClause(
         false,
         undefined,
-        ts.factory.createNamedImports([ts.factory.createImportSpecifier(false, undefined, ts.factory.createIdentifier(className))]),
+        ts.factory.createNamedImports([
+          ts.factory.createImportSpecifier(false, ts.factory.createIdentifier(className), ts.factory.createIdentifier(resourceName)),
+        ]),
       ),
       ts.factory.createStringLiteral(`./custom/${resourceName}/resource`),
     );
@@ -43,7 +45,7 @@ export class BackendUpdater {
 
   private createInstantiation(resourceName: string, className: string): ts.ExpressionStatement {
     return ts.factory.createExpressionStatement(
-      ts.factory.createNewExpression(ts.factory.createIdentifier(className), undefined, [
+      ts.factory.createNewExpression(ts.factory.createIdentifier(resourceName), undefined, [
         ts.factory.createCallExpression(
           ts.factory.createPropertyAccessExpression(ts.factory.createIdentifier('backend'), 'createStack'),
           undefined,

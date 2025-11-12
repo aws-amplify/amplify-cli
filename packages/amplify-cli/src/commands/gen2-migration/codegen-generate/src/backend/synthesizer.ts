@@ -785,39 +785,9 @@ export class BackendSynthesizer {
       }
     }
 
-    if (renderArgs.customResources) {
-      for (const [resourceName, className] of renderArgs.customResources) {
-        const importStatement = factory.createImportDeclaration(
-          undefined,
-          factory.createImportClause(
-            false,
-            undefined,
-            factory.createNamedImports([
-              factory.createImportSpecifier(false, factory.createIdentifier(`${className}`), factory.createIdentifier(`${resourceName}`)),
-            ]),
-          ),
-          factory.createStringLiteral(`./custom/${resourceName}/cdk-stack`),
-          undefined,
-        );
-
-        imports.push(importStatement);
-
-        const customResourceExpression = factory.createNewExpression(factory.createIdentifier(`${resourceName}`), undefined, [
-          factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier('stack')),
-          factory.createStringLiteral(`${resourceName}`),
-          factory.createIdentifier('undefined'),
-          factory.createObjectLiteralExpression(
-            [
-              factory.createPropertyAssignment(factory.createIdentifier('category'), factory.createStringLiteral('custom')),
-              factory.createPropertyAssignment(factory.createIdentifier('resourceName'), factory.createStringLiteral(`${resourceName}`)),
-            ],
-            true,
-          ),
-        ]);
-
-        nodes.push(factory.createExpressionStatement(customResourceExpression));
-      }
-    }
+    // Custom resources are now handled by BackendUpdater.updateBackendFile() in command-handlers.ts
+    // which is called after the initial backend.ts is generated. This ensures the correct Gen2 pattern
+    // is used (importing from ./custom/${resourceName}/resource and using backend.createStack())
 
     // Adds CI detection: import ci from 'ci-info';
 
