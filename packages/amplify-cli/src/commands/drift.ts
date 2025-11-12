@@ -8,6 +8,7 @@ import { printer } from '@aws-amplify/amplify-prompts';
 import chalk from 'chalk';
 import { detectStackDriftRecursive, type DriftDisplayFormat } from './drift-detection';
 import { detectLocalDrift } from './drift-detection/detect-local-drift';
+import { TemplateDriftDetector } from './drift-detection/detect-template-drift';
 import { CloudFormationService, AmplifyConfigService, FileService, DriftFormatter } from './drift-detection/services';
 import type { CloudFormationClient } from '@aws-sdk/client-cloudformation';
 
@@ -50,6 +51,7 @@ export class AmplifyDriftDetector {
   private readonly configService: AmplifyConfigService;
   private readonly fileService: FileService;
   private readonly formatter: DriftFormatter;
+  private phase2Results: any = null;
 
   constructor(private readonly context: $TSContext) {
     // Initialize services
@@ -90,14 +92,18 @@ export class AmplifyDriftDetector {
     // Start drift detection
     printer.info(chalk.gray(`Checking drift for root stack: ${chalk.yellow(stackName)}`));
 
-    // 5. Detect drift recursively (including nested stacks)
+    // 5. Phase 1: Detect CloudFormation drift recursively (including nested stacks)
     const print = this.createPrintObject(options);
     const combinedResults = await detectStackDriftRecursive(cfn, stackName, print);
 
-    // 6. Phase 3: Detect local vs S3 drift
+    // 6. Phase 2: Detect template drift using changesets
+    printer.info(chalk.gray('Checking for template drift using changesets...'));
+    const templateDriftDetector = new TemplateDriftDetector(this.context);
+    this.phase2Results = await templateDriftDetector.detect();
+
+    // 7. Phase 3: Detect local vs S3 drift
     printer.info(chalk.gray('Fetching current backend state from S3...'));
     printer.info(chalk.gray('Checking local files vs cloud backend...'));
-    // Fix #5: Pass context to detectLocalDrift
     const phase3Results = await detectLocalDrift(this.context);
 
     printer.info(chalk.green('Drift detection completed'));
@@ -113,7 +119,8 @@ export class AmplifyDriftDetector {
     const rootTemplate = await this.cfnService.getStackTemplate(cfn, stackName);
     await this.formatter.processResults(cfn, stackName, rootTemplate, combinedResults);
 
-    // Add Phase 3 results to formatter
+    // Add Phase 2 and Phase 3 results to formatter
+    this.formatter.addPhase2Results(this.phase2Results);
     this.formatter.addPhase3Results(phase3Results);
 
     // 9. Display results
@@ -156,6 +163,13 @@ export class AmplifyDriftDetector {
       if (output.categoryBreakdown) {
         printer.info(output.categoryBreakdown);
       }
+
+      // Display Phase 2 results (between AMPLIFY CATEGORIES and LOCAL CHANGES)
+      const phase2Output = this.formatter.formatPhase2Results();
+      if (phase2Output) {
+        printer.info(phase2Output);
+      }
+
       // Display Phase 3 results
       const phase3Output = this.formatter.formatPhase3Results();
       if (phase3Output) {
@@ -173,6 +187,13 @@ export class AmplifyDriftDetector {
       if (options.verbose && output.categoryBreakdown) {
         printer.info(output.categoryBreakdown);
       }
+
+      // Display Phase 2 results (between AMPLIFY CATEGORIES and LOCAL CHANGES)
+      const phase2Output = this.formatter.formatPhase2Results();
+      if (phase2Output) {
+        printer.info(phase2Output);
+      }
+
       // Display Phase 3 results
       const phase3Output = this.formatter.formatPhase3Results();
       if (phase3Output) {
@@ -186,6 +207,13 @@ export class AmplifyDriftDetector {
       if (output.categoryBreakdown) {
         printer.info(output.categoryBreakdown);
       }
+
+      // Display Phase 2 results (between AMPLIFY CATEGORIES and LOCAL CHANGES)
+      const phase2Output = this.formatter.formatPhase2Results();
+      if (phase2Output) {
+        printer.info(phase2Output);
+      }
+
       // Display Phase 3 results
       const phase3Output = this.formatter.formatPhase3Results();
       if (phase3Output) {
