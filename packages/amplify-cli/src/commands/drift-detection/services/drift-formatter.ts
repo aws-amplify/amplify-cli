@@ -119,7 +119,8 @@ export class DriftFormatter {
     totalFailed: 0,
   };
 
-  // Phase 3 results storage
+  // Phase 2 and Phase 3 results storage
+  private phase2Results: any = null;
   private phase3Results: Phase3Results | null = null;
 
   constructor() {
@@ -708,10 +709,75 @@ export class DriftFormatter {
   }
 
   /**
+   * Add Phase 2 results for formatting
+   */
+  public addPhase2Results(results: any): void {
+    this.phase2Results = results;
+  }
+
+  /**
    * Add Phase 3 results for formatting
    */
   public addPhase3Results(results: Phase3Results): void {
     this.phase3Results = results;
+  }
+
+  /**
+   * Format Phase 2 template drift results
+   */
+  public formatPhase2Results(): string | null {
+    if (!this.phase2Results) return null;
+
+    if (this.phase2Results.skipped || this.phase2Results.error) {
+      return null;
+    }
+
+    const realChanges = this.phase2Results.changes?.filter((c: any) => c.isRealChange) || [];
+
+    if (realChanges.length === 0 && this.phase2Results.nestedStackQuirks?.length === 0) {
+      return '\nTEMPLATE CHANGES:\n└── Status: NO DRIFT DETECTED';
+    }
+
+    let output = '\nTEMPLATE CHANGES:';
+
+    if (realChanges.length > 0) {
+      output += '\n├── Status: ' + chalk.yellow('DRIFT DETECTED');
+      realChanges.forEach((change: any, index: number) => {
+        const isLast = index === realChanges.length - 1;
+        const prefix = isLast ? '└──' : '├──';
+        const action = change.action || 'Unknown';
+        const resourceId = change.logicalResourceId || 'Unknown';
+        const resourceType = change.resourceType || 'Unknown';
+
+        let actionColor = chalk.yellow;
+        if (action === 'Add') actionColor = chalk.green;
+        else if (action === 'Remove') actionColor = chalk.red;
+        else if (change.replacement) actionColor = chalk.red;
+
+        output += `\n${prefix} ${actionColor(action)}: ${resourceId} (${resourceType})`;
+
+        if (change.replacement) {
+          output += chalk.red(' [REPLACEMENT]');
+        }
+
+        // Add property details if available
+        if (change.details && change.details.length > 0) {
+          const propDetails = change.details.filter((d: any) => d.name && d.changeSource !== 'Automatic');
+          if (propDetails.length > 0) {
+            const detailPrefix = isLast ? '    ' : '│   ';
+            propDetails.forEach((detail: any, detailIndex: number) => {
+              const isLastDetail = detailIndex === propDetails.length - 1;
+              const detailSymbol = isLastDetail ? '└──' : '├──';
+              output += `\n${detailPrefix}${detailSymbol} ${detail.name}`;
+            });
+          }
+        }
+      });
+    } else {
+      output += '\n└── Status: NO DRIFT DETECTED';
+    }
+
+    return output;
   }
 
   /**
