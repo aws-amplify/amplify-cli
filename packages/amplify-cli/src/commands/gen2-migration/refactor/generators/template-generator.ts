@@ -221,12 +221,14 @@ class TemplateGenerator {
     assert(sourceCategoryStacks && sourceCategoryStacks?.length > 0, 'No source category stack found');
     assert(destinationCategoryStacks && destinationCategoryStacks?.length > 0, 'No destination category stack found');
     for (const { LogicalResourceId: sourceLogicalResourceId, PhysicalResourceId: sourcePhysicalResourceId } of sourceCategoryStacks) {
+      // find the valid, migrate-able categories in Gen1 stack
       const category = CATEGORIES.find((category) => sourceLogicalResourceId?.startsWith(category));
       if (!category) continue;
       assert(sourcePhysicalResourceId);
       let destinationPhysicalResourceId: string | undefined;
       let userPoolGroupDestinationPhysicalResourceId: string | undefined;
 
+      // find the corresponding category stack in Gen2 stack
       const correspondingCategoryStackInDestination = destinationCategoryStacks.find(
         ({ LogicalResourceId: destinationLogicalResourceId }) => destinationLogicalResourceId?.startsWith(category),
       );

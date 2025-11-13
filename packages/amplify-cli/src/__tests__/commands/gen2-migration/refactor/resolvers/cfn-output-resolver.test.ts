@@ -65,6 +65,12 @@ describe('CFNOutputResolver', () => {
           Ref: 'snstopic',
         },
       },
+      KinesisStreamArn: {
+        Description: 'Kinesis Stream Arn',
+        Value: {
+          'Fn::GetAtt': ['MyKinesisStream', 'Arn'],
+        },
+      },
     },
     Resources: {
       MyS3Bucket: {
@@ -221,6 +227,29 @@ describe('CFNOutputResolver', () => {
           },
         },
       },
+      MyKinesisStream: {
+        Type: 'AWS::Kinesis::Stream',
+        Properties: {
+          Name: 'MyKinesisStream',
+          ShardCount: 1,
+        },
+      },
+      KinesisStreamPolicy: {
+        Type: 'AWS::IAM::Policy',
+        Properties: {
+          PolicyName: 'KinesisStreamPolicy',
+          PolicyDocument: {
+            Statement: [
+              {
+                Effect: 'Allow',
+                Action: 'kinesis:PutRecord',
+                Resource: { 'Fn::GetAtt': ['MyKinesisStream', 'Arn'] },
+              },
+            ],
+          },
+          Roles: [{ Ref: 'AuthenticatedRole' }],
+        },
+      },
     },
   };
   const expectedTemplate: CFNTemplate = {
@@ -263,6 +292,10 @@ describe('CFNOutputResolver', () => {
       snsTopicArn: {
         Description: 'SnsTopicArn',
         Value: 'arn:aws:sns:us-east-1:12345:snsTopic',
+      },
+      KinesisStreamArn: {
+        Description: 'Kinesis Stream Arn',
+        Value: 'arn:aws:kinesis:us-east-1:12345:stream/MyKinesisStream',
       },
     },
     Resources: {
@@ -412,6 +445,29 @@ describe('CFNOutputResolver', () => {
           BucketName: 'test-bucket',
         },
       },
+      MyKinesisStream: {
+        Type: 'AWS::Kinesis::Stream',
+        Properties: {
+          Name: 'MyKinesisStream',
+          ShardCount: 1,
+        },
+      },
+      KinesisStreamPolicy: {
+        Type: 'AWS::IAM::Policy',
+        Properties: {
+          PolicyName: 'KinesisStreamPolicy',
+          PolicyDocument: {
+            Statement: [
+              {
+                Effect: 'Allow',
+                Action: 'kinesis:PutRecord',
+                Resource: 'arn:aws:kinesis:us-east-1:12345:stream/MyKinesisStream',
+              },
+            ],
+          },
+          Roles: [{ Ref: 'AuthenticatedRole' }],
+        },
+      },
     },
   };
 
@@ -451,6 +507,10 @@ describe('CFNOutputResolver', () => {
           {
             OutputKey: 'snsTopicArn',
             OutputValue: 'arn:aws:sns:us-east-1:12345:snsTopic',
+          },
+          {
+            OutputKey: 'KinesisStreamArn',
+            OutputValue: 'arn:aws:kinesis:us-east-1:12345:stream/MyKinesisStream',
           },
         ],
         [

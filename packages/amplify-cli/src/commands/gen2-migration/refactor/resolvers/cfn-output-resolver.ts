@@ -161,6 +161,11 @@ class CfnOutputResolver {
             return {
               Arn: `arn:aws:lambda:${this.region}:${this.accountId}:function:${resourceIdentifier}`,
             };
+          case 'AWS::Kinesis::Stream':
+            return {
+              // output is already in ARN format
+              Arn: resourceIdentifier,
+            };
           default:
             return undefined;
         }

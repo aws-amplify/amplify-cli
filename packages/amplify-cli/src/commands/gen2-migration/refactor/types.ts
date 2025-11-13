@@ -70,6 +70,7 @@ export enum NON_CUSTOM_RESOURCE_CATEGORY {
   AUTH = 'auth',
   STORAGE = 'storage',
   AUTH_USER_POOL_GROUP = 'auth-user-pool-group',
+  ANALYTICS = 'analytics',
 }
 
 export type CATEGORY =
