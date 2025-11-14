@@ -19,7 +19,7 @@ export interface FunctionDefinition {
 
 const factory = ts.factory;
 
-const amplifyGen1EnvName = 'AMPLIFY_GEN_1_ENV_NAME';
+const amplifyGen1EnvName = 'branchName';
 
 const createParameter = (
   name: string,
@@ -58,7 +58,7 @@ export function renderFunctions(definition: FunctionDefinition, appId?: string, 
       amplifyGen1EnvName,
       undefined,
       undefined,
-      factory.createIdentifier('process.env.AMPLIFY_GEN_1_ENV_NAME ?? "sandbox"'),
+      factory.createIdentifier('process.env.AWS_BRANCH ?? "sandbox"'),
     ),
   );
   postImportStatements.push(amplifyGen1EnvStatement);
