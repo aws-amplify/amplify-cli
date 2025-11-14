@@ -5,9 +5,6 @@ import { CloudFormationClient, SetStackPolicyCommand } from '@aws-sdk/client-clo
 import { AmplifyGen2MigrationValidations } from './_validations';
 
 export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
-  readonly command = 'lock';
-  readonly describe = 'Lock environment';
-
   public async validate(): Promise<void> {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const validations = new AmplifyGen2MigrationValidations({} as any);

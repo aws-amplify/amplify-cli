@@ -12,9 +12,6 @@ import {
 import { stateManager } from '@aws-amplify/amplify-cli-core';
 
 export class AmplifyMigrationDecommissionStep extends AmplifyMigrationStep {
-  readonly command = 'decommission';
-  readonly describe = 'Decommission Gen1 resources after migration';
-
   public async validate(): Promise<void> {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const validations = new AmplifyGen2MigrationValidations({} as any);

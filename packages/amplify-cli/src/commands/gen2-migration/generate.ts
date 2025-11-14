@@ -2,9 +2,6 @@ import { AmplifyMigrationStep } from './_step';
 import { prepare } from './codegen-generate/src/codegen-head/command-handlers';
 
 export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
-  readonly command = 'generate';
-  readonly describe = 'Generate Gen2 backend code';
-
   public async validate(): Promise<void> {
     // Validation logic can be added here if needed
   }
