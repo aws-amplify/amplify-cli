@@ -64,13 +64,6 @@ export const renderStorage = (storageParams: StorageRenderParameters = {}) => {
   );
   postImportStatements.push(amplifyGen1EnvStatement);
 
-  if (storageParams.storageIdentifier) {
-    const splitStorageIdentifier = storageParams.storageIdentifier.split('-');
-    const storageNameWithoutBackendEnvName = splitStorageIdentifier.slice(0, -1).join('-');
-
-    const storageNameAssignment = createTemplateLiteral(`${storageNameWithoutBackendEnvName}-`, amplifyGen1EnvName, '');
-    propertyAssignments.push(factory.createPropertyAssignment(factory.createIdentifier('name'), storageNameAssignment));
-  }
   if (storageParams.accessPatterns) {
     propertyAssignments.push(getAccessPatterns(storageParams.accessPatterns));
   }
