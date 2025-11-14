@@ -79,12 +79,6 @@ const getPasswordPolicyOverrides = (passwordPolicy: Partial<PasswordPolicyType>)
 const getUserPoolOverrides = (userPool: UserPoolType): Partial<PolicyOverrides> => {
   const userPoolOverrides: Partial<PolicyOverrides> = {};
   Object.assign(userPoolOverrides, getPasswordPolicyOverrides(userPool.Policies?.PasswordPolicy ?? {}));
-  if (userPool.Name) {
-    const userNamePolicy: Partial<PolicyOverrides> = {
-      userPoolName: userPool.Name,
-    };
-    Object.assign(userPoolOverrides, userNamePolicy);
-  }
   if (userPool.UsernameAttributes === undefined || userPool.UsernameAttributes.length === 0) {
     userPoolOverrides.usernameAttributes = undefined;
   } else {
@@ -176,14 +170,7 @@ const getGroups = (identityGroups?: GroupType[]): string[] => {
 };
 
 const getScopes = (scopes: string[]): Scope[] => {
-  const mappedScopes: Record<string, string> = {
-    email: 'EMAIL',
-    openid: 'OPENID',
-    phone: 'PHONE',
-    profile: 'PROFILE',
-    'aws.cognito.signin.user.admin': 'COGNITO_ADMIN',
-  };
-  return scopes.map((scope) => mappedScopes[scope] as Scope);
+  return scopes.filter((scope): scope is Scope => ['phone', 'email', 'openid', 'profile', 'aws.cognito.signin.user.admin'].includes(scope));
 };
 
 /**
