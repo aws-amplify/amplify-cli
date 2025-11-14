@@ -114,6 +114,7 @@ export class TemplateDriftDetector {
           Parameters: parameters,
           Capabilities: ['CAPABILITY_NAMED_IAM', 'CAPABILITY_AUTO_EXPAND'],
           ChangeSetType: 'UPDATE',
+          IncludeNestedStacks: true, // Include nested stack changes
         }),
       );
 
@@ -145,6 +146,53 @@ export class TemplateDriftDetector {
             ChangeSetName: changeSetName,
           }),
         );
+      }
+
+      // Debug: Print full changeset in verbose mode
+      if (this.context.parameters?.options?.verbose) {
+        this.context.print.info('');
+        this.context.print.info('═══════════════════════════════════════════════════════════════════');
+        this.context.print.info('CLOUDFORMATION CHANGESET DETAILS (Template Drift Detection)');
+        this.context.print.info('═══════════════════════════════════════════════════════════════════');
+        this.context.print.info(`Stack: ${stackName}`);
+        this.context.print.info(`Status: ${changeSet.Status}`);
+        this.context.print.info(`IncludeNestedStacks: ${changeSet.IncludeNestedStacks}`);
+
+        if (changeSet.Changes && changeSet.Changes.length > 0) {
+          this.context.print.info(`\nChanges Detected (${changeSet.Changes.length}):`);
+          for (const change of changeSet.Changes) {
+            if (change.ResourceChange) {
+              const rc = change.ResourceChange;
+              this.context.print.info(`\n  • ${rc.LogicalResourceId} (${rc.ResourceType})`);
+              this.context.print.info(`    Action: ${rc.Action}`);
+              if (rc.Details && rc.Details.length > 0) {
+                this.context.print.info(`    Details:`);
+                for (const detail of rc.Details) {
+                  const target = detail.Target;
+                  if (target?.Name) {
+                    this.context.print.info(`      - Property: ${target.Name}`);
+                  } else if (target?.Attribute) {
+                    this.context.print.info(`      - Attribute: ${target.Attribute}`);
+                  }
+                  if (detail.ChangeSource) {
+                    this.context.print.info(`        ChangeSource: ${detail.ChangeSource}`);
+                  }
+                  if (detail.Evaluation) {
+                    this.context.print.info(`        Evaluation: ${detail.Evaluation}`);
+                  }
+                }
+              }
+            }
+          }
+        } else {
+          this.context.print.info('\nNo changes detected in templates.');
+        }
+
+        if (changeSet.StatusReason) {
+          this.context.print.info(`\nStatus Reason: ${changeSet.StatusReason}`);
+        }
+
+        this.context.print.info('═══════════════════════════════════════════════════════════════════\n');
       }
 
       // 7. Analyze changeset (using CDK-inspired logic)
@@ -240,13 +288,9 @@ export class TemplateDriftDetector {
         }
       }
 
-      // Check if this is a nested stack false positive (CDK-inspired logic)
-      if (this.isNestedStackFalsePositive(rc)) {
-        changeInfo.isRealChange = false;
-        result.nestedStackQuirks.push(rc.LogicalResourceId);
-      } else {
-        result.hasRealDrift = true;
-      }
+      // With IncludeNestedStacks: true, we don't get false positives
+      // All changes are real changes
+      result.hasRealDrift = true;
 
       result.changes.push(changeInfo);
     }
@@ -254,46 +298,5 @@ export class TemplateDriftDetector {
     return result;
   }
 
-  /**
-   * Determine if a change is a nested stack false positive
-   * Based on CDK's approach in TemplateAndChangeSetDiffMerger
-   */
-  private isNestedStackFalsePositive(resourceChange: any): boolean {
-    // Not a nested stack? It's a real change
-    if (resourceChange.ResourceType !== 'AWS::CloudFormation::Stack') {
-      return false;
-    }
-
-    // If it's not a modify action, it's a real change
-    if (resourceChange.Action !== 'Modify') {
-      return false;
-    }
-
-    // Check if all details are automatic with no specific property names
-    // This is the key insight from CDK's implementation
-    if (resourceChange.Details && resourceChange.Details.length > 0) {
-      const hasSpecificPropertyChange = resourceChange.Details.some((detail: any) => {
-        return detail.Target?.Attribute === 'Properties' && detail.Target?.Name !== undefined; // Has specific property name
-      });
-
-      const hasNonAutomaticChange = resourceChange.Details.some((detail: any) => {
-        return detail.ChangeSource !== 'Automatic';
-      });
-
-      // If there are specific property changes or non-automatic changes, it's real
-      if (hasSpecificPropertyChange || hasNonAutomaticChange) {
-        return false;
-      }
-
-      // All changes are automatic with no specific properties - it's a false positive
-      const allAutomatic = resourceChange.Details.every((detail: any) => {
-        return detail.ChangeSource === 'Automatic' && detail.Target?.Attribute === 'Properties' && !detail.Target?.Name;
-      });
-
-      return allAutomatic;
-    }
-
-    // No details means it's likely a false positive
-    return true;
-  }
+  // No longer needed - IncludeNestedStacks: true prevents false positives
 }

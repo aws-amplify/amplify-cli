@@ -750,26 +750,71 @@ export class DriftFormatter {
         const resourceType = change.resourceType || 'Unknown';
 
         let actionColor = chalk.yellow;
-        if (action === 'Add') actionColor = chalk.green;
-        else if (action === 'Remove') actionColor = chalk.red;
-        else if (change.replacement) actionColor = chalk.red;
+        let actionSymbol = '~';
+        if (action === 'Add') {
+          actionColor = chalk.green;
+          actionSymbol = '+';
+        } else if (action === 'Remove') {
+          actionColor = chalk.red;
+          actionSymbol = '-';
+        } else if (action === 'Modify') {
+          actionColor = chalk.yellow;
+          actionSymbol = '~';
+        }
 
-        output += `\n${prefix} ${actionColor(action)}: ${resourceId} (${resourceType})`;
+        output += `\n${prefix} ${actionColor(`${actionSymbol} ${action}`)}: ${chalk.bold(resourceId)} (${chalk.gray(resourceType)})`;
 
         if (change.replacement) {
-          output += chalk.red(' [REPLACEMENT]');
+          output += chalk.red(' [REQUIRES REPLACEMENT]');
         }
 
         // Add property details if available
         if (change.details && change.details.length > 0) {
-          const propDetails = change.details.filter((d: any) => d.name && d.changeSource !== 'Automatic');
-          if (propDetails.length > 0) {
-            const detailPrefix = isLast ? '    ' : '│   ';
-            propDetails.forEach((detail: any, detailIndex: number) => {
-              const isLastDetail = detailIndex === propDetails.length - 1;
-              const detailSymbol = isLastDetail ? '└──' : '├──';
-              output += `\n${detailPrefix}${detailSymbol} ${detail.name}`;
-            });
+          const detailPrefix = isLast ? '    ' : '│   ';
+
+          // Check if this is a nested stack with automatic changes
+          const isNestedStack = resourceType === 'AWS::CloudFormation::Stack';
+          const hasOnlyAutomaticChanges = change.details.every((d: any) => d.changeSource === 'Automatic' && !d.name);
+
+          if (isNestedStack && hasOnlyAutomaticChanges) {
+            // Special handling for nested stack template changes
+            output += `\n${detailPrefix}└── ${chalk.cyan('Template changed in nested stack')}`;
+            output += `\n${detailPrefix}    ${chalk.gray('(The nested stack template or its resources have been modified)')}`;
+          } else {
+            // Regular property changes
+            const propDetails = change.details.filter((d: any) => d.name);
+            if (propDetails.length > 0) {
+              propDetails.forEach((detail: any, detailIndex: number) => {
+                const isLastDetail = detailIndex === propDetails.length - 1;
+                const detailSymbol = isLastDetail ? '└──' : '├──';
+
+                let changeType = 'Modified';
+                let changeColor = chalk.yellow;
+                if (detail.changeSource === 'DirectModification') {
+                  changeType = 'Direct Change';
+                  changeColor = chalk.cyan;
+                } else if (detail.changeSource === 'Automatic') {
+                  changeType = 'Automatic';
+                  changeColor = chalk.gray;
+                }
+
+                output += `\n${detailPrefix}${detailSymbol} ${chalk.bold('Property')}: ${detail.name}`;
+
+                if (detail.requiresRecreation) {
+                  const recreationPrefix = isLastDetail ? '        ' : '│       ';
+                  const recreationType =
+                    detail.requiresRecreation === 'Always'
+                      ? chalk.red('Always requires replacement')
+                      : detail.requiresRecreation === 'Never'
+                      ? chalk.green('No replacement needed')
+                      : chalk.yellow('May require replacement');
+                  output += `\n${detailPrefix}${recreationPrefix}└── Impact: ${recreationType}`;
+                }
+              });
+            } else if (change.details.length > 0) {
+              // Has details but no specific property names
+              output += `\n${detailPrefix}└── ${chalk.gray('Template or configuration change detected')}`;
+            }
           }
         }
       });
