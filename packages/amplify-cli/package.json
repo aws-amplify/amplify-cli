@@ -73,6 +73,7 @@
     "@aws-sdk/client-cognito-identity": "^3.919.0",
     "@aws-sdk/client-cognito-identity-provider": "^3.919.0",
     "@aws-sdk/client-lambda": "^3.624.0",
+    "@aws-sdk/client-pinpoint": "^3.931.0",
     "@aws-sdk/client-s3": "^3.919.0",
     "@aws-sdk/client-ssm": "^3.919.0",
     "@aws-sdk/client-sts": "^3.919.0",
