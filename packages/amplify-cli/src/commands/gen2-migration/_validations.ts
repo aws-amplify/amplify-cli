@@ -8,6 +8,7 @@ import {
   DescribeStackResourcesCommand,
 } from '@aws-sdk/client-cloudformation';
 import { STATEFUL_RESOURCES } from './stateful-resources';
+import execa from 'execa';
 
 export class AmplifyGen2MigrationValidations {
   constructor(private readonly context: $TSContext) {}
@@ -17,7 +18,28 @@ export class AmplifyGen2MigrationValidations {
   // }
 
   public async validateWorkingDirectory(): Promise<void> {
-    printer.warn('Not implemented');
+    const { stdout: statusOutput } = await execa('git', ['status', '--porcelain']);
+    if (statusOutput.trim()) {
+      throw new AmplifyError('MigrationError', {
+        message: 'Working directory has uncommitted changes',
+        resolution: 'Commit or stash your changes before proceeding with migration.',
+      });
+    }
+
+    try {
+      const { stdout: unpushedOutput } = await execa('git', ['log', '@{u}..', '--oneline']);
+      if (unpushedOutput.trim()) {
+        throw new AmplifyError('MigrationError', {
+          message: 'Local branch has unpushed commits',
+          resolution: 'Push your commits before proceeding with migration.',
+        });
+      }
+    } catch (err: any) {
+      if (err instanceof AmplifyError) throw err;
+      if (!err.message?.includes('no upstream') && !err.stderr?.includes('no upstream')) {
+        throw err;
+      }
+    }
   }
 
   public async validateDeploymentStatus(): Promise<void> {
