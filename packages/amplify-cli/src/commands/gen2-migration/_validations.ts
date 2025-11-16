@@ -72,14 +72,17 @@ export class AmplifyGen2MigrationValidations {
     }
 
     const stackStatus = response.Stacks[0].StackStatus;
-    const validStatuses = ['UPDATE_COMPLETE', 'CREATE_COMPLETE'];
+    // Note: UPDATE_ROLLBACK_COMPLETE isn't an expected state - only being added in the edge case of resuming migration from a failed state
+    const validStatuses = ['UPDATE_COMPLETE', 'CREATE_COMPLETE', 'UPDATE_ROLLBACK_COMPLETE'];
 
     if (!validStatuses.includes(stackStatus)) {
       throw new AmplifyError('StackStateError', {
-        message: `Root stack status is ${stackStatus}, expected ${validStatuses.join(' or ')}`,
+        message: `Root stack status is ${stackStatus}, expected UPDATE_COMPLETE or CREATE_COMPLETE`,
         resolution: 'Complete the deployment before proceeding.',
       });
     }
+
+    printer.success(`Deployment status validated: ${stackStatus}`);
   }
 
   public async validateDeploymentVersion(): Promise<void> {
