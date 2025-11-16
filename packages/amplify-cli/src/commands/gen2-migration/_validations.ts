@@ -1,16 +1,24 @@
 import { AmplifyDriftDetector } from '../drift';
 import { $TSContext, AmplifyError, stateManager } from '@aws-amplify/amplify-cli-core';
-import { printer } from '@aws-amplify/amplify-prompts';
+import { printer, AmplifySpinner } from '@aws-amplify/amplify-prompts';
 import {
   DescribeChangeSetOutput,
   CloudFormationClient,
   DescribeStacksCommand,
-  DescribeStackResourcesCommand,
+  ListStackResourcesCommand,
 } from '@aws-sdk/client-cloudformation';
 import { STATEFUL_RESOURCES } from './stateful-resources';
+import CLITable from 'cli-table3';
+import Bottleneck from 'bottleneck';
 import execa from 'execa';
 
 export class AmplifyGen2MigrationValidations {
+  private spinner?: AmplifySpinner;
+  private limiter = new Bottleneck({
+    maxConcurrent: 3,
+    minTime: 50,
+  });
+
   constructor(private readonly context: $TSContext) {}
 
   // public async validateDrift(): Promise<void> {
@@ -86,28 +94,52 @@ export class AmplifyGen2MigrationValidations {
   public async validateStatefulResources(changeSet: DescribeChangeSetOutput): Promise<void> {
     if (!changeSet.Changes) return;
 
-    const statefulRemoves: string[] = [];
+    this.spinner = new AmplifySpinner();
+    this.spinner.start('Scanning for stateful resources...');
+
+    const statefulRemoves: Array<{ category: string; resourceType: string; physicalId: string }> = [];
     for (const change of changeSet.Changes) {
       if (change.Type === 'Resource' && change.ResourceChange?.Action === 'Remove' && change.ResourceChange?.ResourceType) {
         if (change.ResourceChange.ResourceType === 'AWS::CloudFormation::Stack' && change.ResourceChange.PhysicalResourceId) {
-          const nestedResources = await this.getStatefulResources(change.ResourceChange.PhysicalResourceId);
-          if (nestedResources.length > 0) {
-            statefulRemoves.push(
-              `${change.ResourceChange.LogicalResourceId} (${change.ResourceChange.ResourceType}) containing: ${nestedResources.join(
-                ', ',
-              )}`,
-            );
-          }
+          const category = this.extractCategory(change.ResourceChange.LogicalResourceId || '');
+          this.spinner.start(`Scanning '${category}'...`);
+          const nestedResources = await this.getStatefulResources(
+            change.ResourceChange.PhysicalResourceId,
+            change.ResourceChange.LogicalResourceId,
+          );
+          statefulRemoves.push(...nestedResources);
         } else if (STATEFUL_RESOURCES.has(change.ResourceChange.ResourceType)) {
-          statefulRemoves.push(`${change.ResourceChange.LogicalResourceId} (${change.ResourceChange.ResourceType})`);
+          const category = this.extractCategory(change.ResourceChange.LogicalResourceId || '');
+          const physicalId = change.ResourceChange.PhysicalResourceId || 'N/A';
+          this.spinner.start(`Scanning '${category}' category: found stateful resource "${physicalId}"`);
+          statefulRemoves.push({
+            category,
+            resourceType: change.ResourceChange.ResourceType,
+            physicalId,
+          });
         }
       }
     }
 
+    this.spinner.stop();
+    this.spinner = undefined;
+
     if (statefulRemoves.length > 0) {
+      const table = new CLITable({
+        head: ['Category', 'Resource Type', 'Physical ID'],
+        style: { head: ['red'] },
+      });
+
+      statefulRemoves.forEach((resource) => {
+        table.push([resource.category, resource.resourceType, resource.physicalId]);
+      });
+
+      printer.error('\nStateful resources scheduled for deletion:\n');
+      printer.info(table.toString());
+
       throw new AmplifyError('DestructiveMigrationError', {
-        message: `Stateful resources scheduled for deletion: ${statefulRemoves.join(', ')}.`,
-        resolution: 'Review the migration plan and ensure data is backed up before proceeding.',
+        message: 'Decommission will delete stateful resources.',
+        resolution: 'Review the resources above and ensure data is backed up before proceeding.',
       });
     }
   }
@@ -116,19 +148,72 @@ export class AmplifyGen2MigrationValidations {
     printer.warn('Not implemented');
   }
 
-  private async getStatefulResources(stackName: string): Promise<string[]> {
-    const statefulResources: string[] = [];
-    const cfn = new CloudFormationClient({});
-    const { StackResources } = await cfn.send(new DescribeStackResourcesCommand({ StackName: stackName }));
+  private async getStatefulResources(
+    stackName: string,
+    parentLogicalId?: string,
+  ): Promise<Array<{ category: string; resourceType: string; physicalId: string }>> {
+    const statefulResources: Array<{ category: string; resourceType: string; physicalId: string }> = [];
+    const cfn = new CloudFormationClient({
+      maxAttempts: 5,
+      retryMode: 'adaptive',
+    });
+    const parentCategory = parentLogicalId ? this.extractCategory(parentLogicalId) : undefined;
 
-    for (const resource of StackResources ?? []) {
-      if (resource.ResourceType === 'AWS::CloudFormation::Stack' && resource.PhysicalResourceId) {
-        const nested = await this.getStatefulResources(resource.PhysicalResourceId);
-        statefulResources.push(...nested);
-      } else if (resource.ResourceType && STATEFUL_RESOURCES.has(resource.ResourceType)) {
-        statefulResources.push(`${resource.LogicalResourceId} (${resource.ResourceType})`);
+    let nextToken: string | undefined;
+    const nestedStackTasks: Array<{ physicalId: string; logicalId: string | undefined }> = [];
+
+    do {
+      const response = await cfn.send(new ListStackResourcesCommand({ StackName: stackName, NextToken: nextToken }));
+      nextToken = response.NextToken;
+
+      for (const resource of response.StackResourceSummaries ?? []) {
+        if (resource.ResourceType === 'AWS::CloudFormation::Stack' && resource.PhysicalResourceId) {
+          nestedStackTasks.push({
+            physicalId: resource.PhysicalResourceId,
+            logicalId: resource.LogicalResourceId,
+          });
+        } else if (resource.ResourceType && STATEFUL_RESOURCES.has(resource.ResourceType)) {
+          const category = parentCategory || this.extractCategory(resource.LogicalResourceId || '');
+          const physicalId = resource.PhysicalResourceId || 'N/A';
+          if (this.spinner) {
+            this.spinner.start(`Scanning '${category}' category: found stateful resource "${physicalId}"`);
+          }
+          statefulResources.push({
+            category,
+            resourceType: resource.ResourceType,
+            physicalId,
+          });
+        }
       }
-    }
+    } while (nextToken);
+
+    const nestedResults = await Promise.all(
+      nestedStackTasks.map((task) =>
+        this.limiter.schedule(() => {
+          const category = this.extractCategory(task.logicalId || '');
+          return this.getStatefulResources(task.physicalId, category !== 'other' ? task.logicalId : parentLogicalId);
+        }),
+      ),
+    );
+
+    nestedResults.forEach((nested) => statefulResources.push(...nested));
     return statefulResources;
+  }
+
+  private extractCategory(logicalId: string): string {
+    const idLower = logicalId.toLowerCase();
+    if (idLower.includes('auth')) return 'Auth';
+    if (idLower.includes('storage')) return 'Storage';
+    if (idLower.includes('function')) return 'Function';
+    if (idLower.includes('api')) return 'Api';
+    if (idLower.includes('analytics')) return 'Analytics';
+    if (idLower.includes('hosting')) return 'Hosting';
+    if (idLower.includes('notifications')) return 'Notifications';
+    if (idLower.includes('interactions')) return 'Interactions';
+    if (idLower.includes('predictions')) return 'Predictions';
+    if (idLower.includes('deployment') || idLower.includes('infrastructure')) return 'Core Infrastructure';
+    if (idLower.includes('geo')) return 'Geo';
+    if (idLower.includes('custom')) return 'Custom';
+    return 'other';
   }
 }

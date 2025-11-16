@@ -1208,6 +1208,7 @@ __metadata:
     amplify-nodejs-function-runtime-provider: 2.5.32
     amplify-python-function-runtime-provider: 2.4.54
     aws-cdk-lib: ~2.189.1
+    bottleneck: 2.19.5
     chalk: ^4.1.1
     ci-info: ^3.8.0
     cli-table3: ^0.6.0
