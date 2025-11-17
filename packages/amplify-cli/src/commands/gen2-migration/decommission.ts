@@ -8,9 +8,11 @@ import {
   DeleteStackCommand,
   DescribeStacksCommand,
   DescribeStackResourcesCommand,
+  waitUntilStackDeleteComplete,
 } from '@aws-sdk/client-cloudformation';
 import { S3Client, DeleteBucketCommand, DeleteObjectCommand, ListObjectsV2Command } from '@aws-sdk/client-s3';
 import { PinpointClient, DeleteAppCommand } from '@aws-sdk/client-pinpoint';
+import { SSMClient, DeleteParametersCommand, GetParametersByPathCommand } from '@aws-sdk/client-ssm';
 import { prompt } from 'inquirer';
 
 export class AmplifyMigrationDecommissionStep extends AmplifyMigrationStep {
@@ -21,6 +23,13 @@ export class AmplifyMigrationDecommissionStep extends AmplifyMigrationStep {
     printer.warn('Not implemented');
   }
 
+  /**
+   * NOTE: This implementation was a trial run to see if we could implement a way to remove env for decommissioning step
+   * in the gen2-migration workflow without relying on amplify apps' gen1 local files. The current implementation has a bug
+   * in correctly identifying the env using listAllApps and listAllEnvs commands. A possible workaround is to give users
+   * the control to use the command as decommission --app-id --env-name, but giving users that control could be risky.
+   * For now, we are relying on the implementation by reusing the amplify env remove command.
+   */
   public async execute(): Promise<void> {
     const context = this.getContext();
     const envName = context.parameters.first;
@@ -42,6 +51,7 @@ export class AmplifyMigrationDecommissionStep extends AmplifyMigrationStep {
     ]);
 
     if (!confirm) {
+      printer.info('Decommission cancelled.');
       return;
     }
 
@@ -110,28 +120,18 @@ export class AmplifyMigrationDecommissionStep extends AmplifyMigrationStep {
       }
 
       // Step 2: Delete CloudFormation stack
-      await cfnClient.send(new DeleteStackCommand({ StackName: stackName }));
-
-      const maxWaitTime = 10 * 60 * 1000;
-      const startTime = Date.now();
-      let stackDeleted = false;
-
-      while (!stackDeleted) {
-        if (Date.now() - startTime > maxWaitTime) {
-          throw new AmplifyFault('TimeoutFault', {
-            message: 'Stack deletion timed out after 10 minutes.',
-            resolution: 'Check CloudFormation console for stack status.',
-          });
-        }
-
-        await new Promise((resolve) => setTimeout(resolve, 5000));
-        try {
-          await cfnClient.send(new DescribeStacksCommand({ StackName: stackName }));
-        } catch (ex) {
-          if (ex.name === 'ValidationError') {
-            stackDeleted = true;
-          }
-        }
+      try {
+        await cfnClient.send(new DeleteStackCommand({ StackName: stackName }));
+        await waitUntilStackDeleteComplete({ client: cfnClient, maxWaitTime: 600 }, { StackName: stackName });
+      } catch (ex) {
+        throw new AmplifyFault(
+          'BackendDeleteFault',
+          {
+            message: `Failed to delete CloudFormation stack: ${stackName}`,
+            resolution: 'Check CloudFormation console for stack status and error details.',
+          },
+          ex,
+        );
       }
 
       // Step 3: Delete from Amplify service
@@ -141,6 +141,31 @@ export class AmplifyMigrationDecommissionStep extends AmplifyMigrationStep {
           environmentName: envName,
         }),
       );
+
+      try {
+        const ssmClient = new SSMClient({ region });
+        const parameterPath = `/amplify/${amplifyAppId}/${envName}/`;
+        const parametersResponse = await ssmClient.send(
+          new GetParametersByPathCommand({
+            Path: parameterPath,
+            Recursive: true,
+          }),
+        );
+
+        if (parametersResponse.Parameters && parametersResponse.Parameters.length > 0) {
+          const parameterNames = parametersResponse.Parameters.map((p) => p.Name).filter((name): name is string => !!name);
+
+          if (parameterNames.length > 0) {
+            await ssmClient.send(
+              new DeleteParametersCommand({
+                Names: parameterNames,
+              }),
+            );
+          }
+        }
+      } catch (ex) {
+        printer.warn(`Failed to delete SSM parameters: ${ex.message}`);
+      }
 
       // Step 4: Delete deployment bucket
       if (deploymentBucket) {
