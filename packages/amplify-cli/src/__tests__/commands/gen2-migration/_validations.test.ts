@@ -13,6 +13,7 @@ jest.mock('@aws-amplify/amplify-prompts', () => ({
     error: jest.fn(),
     info: jest.fn(),
     warn: jest.fn(),
+    success: jest.fn(),
   },
   AmplifySpinner: jest.fn().mockImplementation(() => ({
     start: jest.fn(),

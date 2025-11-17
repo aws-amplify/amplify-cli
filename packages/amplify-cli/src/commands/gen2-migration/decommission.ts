@@ -72,9 +72,9 @@ export class AmplifyMigrationDecommissionStep extends AmplifyMigrationStep {
   }
 
   private getContext(): $TSContext {
-    return (this is any).context;
+    return (this as any).context;
   }
-    
+
   private async createChangeSet(): Promise<DescribeChangeSetOutput> {
     const meta = stateManager.getMeta();
     const stackName = meta.providers.awscloudformation.StackName;
