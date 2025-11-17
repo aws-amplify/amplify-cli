@@ -26,6 +26,7 @@ interface ChangeSetChange {
   replacement: boolean;
   isRealChange: boolean;
   details?: ChangeDetail[];
+  nestedChanges?: ChangeSetChange[]; // Add nested changes support
 }
 
 interface ChangeDetail {
@@ -195,8 +196,19 @@ export class TemplateDriftDetector {
         this.context.print.info('═══════════════════════════════════════════════════════════════════\n');
       }
 
-      // 7. Analyze changeset (using CDK-inspired logic)
-      const result = this.analyzeChangeSet(changeSet);
+      // 7. Analyze changeset (using CDK-inspired logic with nested changeset support)
+      // Debug: Log the changeset structure
+      if (this.context.parameters?.options?.verbose && changeSet.Changes && changeSet.Changes.length > 0) {
+        const firstChange = changeSet.Changes[0];
+        if (firstChange.ResourceChange) {
+          this.context.print.info(`\nDEBUG: First change has ChangeSetId: ${firstChange.ResourceChange.ChangeSetId ? 'YES' : 'NO'}`);
+          if (firstChange.ResourceChange.ChangeSetId) {
+            this.context.print.info(`DEBUG: ChangeSetId = ${firstChange.ResourceChange.ChangeSetId}`);
+          }
+        }
+      }
+
+      const result = await this.analyzeChangeSet(changeSet);
 
       // 8. Cleanup
       try {
@@ -240,7 +252,7 @@ export class TemplateDriftDetector {
     return parameters;
   }
 
-  private analyzeChangeSet(changeSet: any): TemplateDriftResult {
+  private async analyzeChangeSet(changeSet: any): Promise<TemplateDriftResult> {
     const result: TemplateDriftResult = {
       hasTemplateDrift: false,
       hasRealDrift: false,
@@ -273,6 +285,7 @@ export class TemplateDriftDetector {
         replacement: rc.Replacement === 'True',
         isRealChange: true,
         details: [],
+        nestedChanges: [], // Add nested changes array
       };
 
       // Extract details
@@ -285,6 +298,86 @@ export class TemplateDriftDetector {
             evaluation: detail.Evaluation,
             requiresRecreation: detail.Target?.RequiresRecreation,
           });
+        }
+      }
+
+      // Check if this is a nested stack with its own changeset
+      if (rc.ResourceType === 'AWS::CloudFormation::Stack' && rc.ChangeSetId) {
+        try {
+          // Extract stack name from physical resource ID
+          const stackArn = rc.PhysicalResourceId;
+          const stackName = stackArn.split('/')[1]; // Extract stack name from ARN
+
+          // Extract changeset name from changeset ID
+          const changeSetArn = rc.ChangeSetId;
+          const changeSetName = changeSetArn.split('/')[1]; // Extract changeset name from ARN
+
+          if (this.context.parameters?.options?.verbose) {
+            this.context.print.info(`\n  📦 Fetching nested changeset for stack: ${stackName}`);
+            this.context.print.info(`     ChangeSet: ${changeSetName}`);
+          }
+
+          // Describe the nested changeset
+          const nestedChangeSet = await this.cfn.send(
+            new DescribeChangeSetCommand({
+              StackName: stackName,
+              ChangeSetName: changeSetName,
+            }),
+          );
+
+          // Print nested changeset details in verbose mode
+          if (this.context.parameters?.options?.verbose && nestedChangeSet.Changes && nestedChangeSet.Changes.length > 0) {
+            this.context.print.info(`\n  ═══ NESTED STACK CHANGES (${stackName}) ═══`);
+            this.context.print.info(`  Stack Type: ${rc.ResourceType}`);
+            this.context.print.info(`  Nested Changes: ${nestedChangeSet.Changes.length}`);
+
+            for (const nestedChange of nestedChangeSet.Changes) {
+              if (nestedChange.ResourceChange) {
+                const nrc = nestedChange.ResourceChange;
+                this.context.print.info(`\n    • ${nrc.LogicalResourceId} (${nrc.ResourceType})`);
+                this.context.print.info(`      Action: ${nrc.Action}`);
+
+                if (nrc.Details && nrc.Details.length > 0) {
+                  this.context.print.info(`      Details:`);
+                  for (const detail of nrc.Details) {
+                    const target = detail.Target;
+                    if (target?.Name) {
+                      this.context.print.info(`        - Property: ${target.Name}`);
+                    } else if (target?.Attribute) {
+                      this.context.print.info(`        - Attribute: ${target.Attribute}`);
+                    }
+                    if (detail.ChangeSource) {
+                      this.context.print.info(`          ChangeSource: ${detail.ChangeSource}`);
+                    }
+                  }
+                }
+
+                // Check for deeper nested stacks
+                if (nrc.ResourceType === 'AWS::CloudFormation::Stack' && nrc.ChangeSetId) {
+                  this.context.print.info(`      🔄 Has nested changeset (3rd level or deeper)`);
+                }
+              }
+            }
+            this.context.print.info(`  ═══════════════════════════════════════════`);
+          }
+
+          // Recursively analyze nested changeset
+          const nestedResult = await this.analyzeChangeSet(nestedChangeSet);
+
+          // Add nested changes to the current change
+          if (nestedResult.changes && nestedResult.changes.length > 0) {
+            changeInfo.nestedChanges = nestedResult.changes;
+            if (this.context.parameters?.options?.verbose) {
+              this.context.print.info(`  ✓ Processed ${nestedResult.changes.length} nested changes`);
+            }
+          }
+        } catch (error: any) {
+          // Log error but continue processing
+          if (this.context.parameters?.options?.verbose) {
+            this.context.print.warning(`  ⚠️ Could not fetch nested changeset: ${error.message}`);
+            this.context.print.warning(`     Stack ARN: ${rc.PhysicalResourceId}`);
+            this.context.print.warning(`     ChangeSet ID: ${rc.ChangeSetId}`);
+          }
         }
       }
 
