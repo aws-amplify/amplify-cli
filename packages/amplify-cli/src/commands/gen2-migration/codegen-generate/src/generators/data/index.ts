@@ -93,12 +93,16 @@ const getApiId = async (): Promise<string | undefined> => {
 // Access DynamoDB sdks to set deletionProtection: true for all tables
 const client = new DynamoDBClient({});
 const enableDeletionProtection = async (tableName: string) => {
-  await client.send(
-    new UpdateTableCommand({
-      TableName: tableName,
-      DeletionProtectionEnabled: true,
-    }),
-  );
+  try {
+    await client.send(
+      new UpdateTableCommand({
+        TableName: tableName,
+        DeletionProtectionEnabled: true,
+      }),
+    );
+  } catch (error) {
+    console.warn(`Failed to enable deletion protection for table ${tableName}:`, error.message);
+  }
 };
 
 /**
@@ -177,9 +181,10 @@ export const generateDataSource = async (dataDefinition?: DataDefinition): Promi
 
   if (tableMappings) {
     const tableNames = Object.values(tableMappings);
-    for (const tableName of tableNames) {
-      await enableDeletionProtection(tableName);
-    }
+    // Note: Deletion protection will be enabled post-migration
+    // for (const tableName of tableNames) {
+    //   await enableDeletionProtection(tableName);
+    // }
 
     const tableMappingProperties: ObjectLiteralElementLike[] = [];
 
