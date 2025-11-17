@@ -6,6 +6,7 @@ import {
   CloudFormationClient,
   DescribeStacksCommand,
   ListStackResourcesCommand,
+  GetStackPolicyCommand,
 } from '@aws-sdk/client-cloudformation';
 import { STATEFUL_RESOURCES } from './stateful-resources';
 import CLITable from 'cli-table3';
@@ -149,6 +150,50 @@ export class AmplifyGen2MigrationValidations {
 
   public async validateIngressTraffic(): Promise<void> {
     printer.warn('Not implemented');
+  }
+
+  public async validateLockStatus(): Promise<void> {
+    //logic: getstackpolicycommand, check if policcy is same as set by lock.ts, if not throw error
+    const amplifyMeta = stateManager.getMeta();
+    const stackName = amplifyMeta?.providers?.awscloudformation?.StackName;
+
+    if (!stackName) {
+      throw new AmplifyError('StackNotFoundError', {
+        message: 'Root stack not found',
+        resolution: 'Ensure the project is initialized and deployed.',
+      });
+    }
+
+    const cfnClient = new CloudFormationClient({});
+    const { StackPolicyBody } = await cfnClient.send(new GetStackPolicyCommand({ StackName: stackName }));
+
+    if (!StackPolicyBody) {
+      throw new AmplifyError('MigrationError', {
+        message: 'Stack is not locked',
+        resolution: 'Run the lock command before proceeding with migration.',
+      });
+    }
+
+    const currentPolicy = JSON.parse(StackPolicyBody);
+    const expectedPolicy = {
+      Statement: [
+        {
+          Effect: 'Deny',
+          Action: 'Update:*',
+          Principal: '*',
+          Resource: '*',
+        },
+      ],
+    };
+
+    if (JSON.stringify(currentPolicy) !== JSON.stringify(expectedPolicy)) {
+      throw new AmplifyError('MigrationError', {
+        message: 'Stack policy does not match expected lock policy',
+        resolution: 'Run the lock command to set the correct stack policy.',
+      });
+    }
+
+    printer.success('Stack lock status validated');
   }
 
   private async getStatefulResources(
