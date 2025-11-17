@@ -13,6 +13,7 @@ jest.mock('@aws-amplify/amplify-prompts', () => ({
     error: jest.fn(),
     info: jest.fn(),
     warn: jest.fn(),
+    success: jest.fn(),
   },
   AmplifySpinner: jest.fn().mockImplementation(() => ({
     start: jest.fn(),
@@ -630,6 +631,142 @@ describe('AmplifyGen2MigrationValidations', () => {
         name: 'StackStateError',
         message: 'Root stack status is ROLLBACK_COMPLETE, expected UPDATE_COMPLETE or CREATE_COMPLETE',
         resolution: 'Complete the deployment before proceeding.',
+      });
+    });
+  });
+
+  describe('validateLockStatus', () => {
+    let mockSend: jest.Mock;
+
+    beforeEach(() => {
+      mockSend = jest.fn();
+      (CloudFormationClient as jest.Mock).mockImplementation(() => ({
+        send: mockSend,
+      }));
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should throw StackNotFoundError when stackName is missing', async () => {
+      jest.spyOn(stateManager, 'getMeta').mockReturnValue({
+        providers: {
+          awscloudformation: {},
+        },
+      });
+
+      await expect(validations.validateLockStatus()).rejects.toMatchObject({
+        name: 'StackNotFoundError',
+        message: 'Root stack not found',
+        resolution: 'Ensure the project is initialized and deployed.',
+      });
+    });
+
+    it('should throw MigrationError when stack is not locked', async () => {
+      jest.spyOn(stateManager, 'getMeta').mockReturnValue({
+        providers: {
+          awscloudformation: {
+            StackName: 'test-stack',
+          },
+        },
+      });
+
+      mockSend.mockResolvedValue({ StackPolicyBody: undefined });
+
+      await expect(validations.validateLockStatus()).rejects.toMatchObject({
+        name: 'MigrationError',
+        message: 'Stack is not locked',
+        resolution: 'Run the lock command before proceeding with migration.',
+      });
+    });
+
+    it('should pass when stack has correct lock policy', async () => {
+      jest.spyOn(stateManager, 'getMeta').mockReturnValue({
+        providers: {
+          awscloudformation: {
+            StackName: 'test-stack',
+          },
+        },
+      });
+
+      const expectedPolicy = {
+        Statement: [
+          {
+            Effect: 'Deny',
+            Action: 'Update:*',
+            Principal: '*',
+            Resource: '*',
+          },
+        ],
+      };
+
+      mockSend.mockResolvedValue({
+        StackPolicyBody: JSON.stringify(expectedPolicy),
+      });
+
+      await expect(validations.validateLockStatus()).resolves.not.toThrow();
+    });
+
+    it('should throw MigrationError when stack policy has wrong effect', async () => {
+      jest.spyOn(stateManager, 'getMeta').mockReturnValue({
+        providers: {
+          awscloudformation: {
+            StackName: 'test-stack',
+          },
+        },
+      });
+
+      const wrongPolicy = {
+        Statement: [
+          {
+            Effect: 'Allow',
+            Action: 'Update:*',
+            Principal: '*',
+            Resource: '*',
+          },
+        ],
+      };
+
+      mockSend.mockResolvedValue({
+        StackPolicyBody: JSON.stringify(wrongPolicy),
+      });
+
+      await expect(validations.validateLockStatus()).rejects.toMatchObject({
+        name: 'MigrationError',
+        message: 'Stack policy does not match expected lock policy',
+        resolution: 'Run the lock command to set the correct stack policy.',
+      });
+    });
+
+    it('should throw MigrationError when stack policy has different action', async () => {
+      jest.spyOn(stateManager, 'getMeta').mockReturnValue({
+        providers: {
+          awscloudformation: {
+            StackName: 'test-stack',
+          },
+        },
+      });
+
+      const wrongPolicy = {
+        Statement: [
+          {
+            Effect: 'Deny',
+            Action: 'Update:Delete',
+            Principal: '*',
+            Resource: '*',
+          },
+        ],
+      };
+
+      mockSend.mockResolvedValue({
+        StackPolicyBody: JSON.stringify(wrongPolicy),
+      });
+
+      await expect(validations.validateLockStatus()).rejects.toMatchObject({
+        name: 'MigrationError',
+        message: 'Stack policy does not match expected lock policy',
+        resolution: 'Run the lock command to set the correct stack policy.',
       });
     });
   });
