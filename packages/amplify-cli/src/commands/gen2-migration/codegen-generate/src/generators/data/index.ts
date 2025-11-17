@@ -1,4 +1,5 @@
 import ts, { ObjectLiteralElementLike, ObjectLiteralExpression } from 'typescript';
+import { DynamoDBClient, UpdateTableCommand } from '@aws-sdk/client-dynamodb';
 import { renderResourceTsFile } from '../../resource/resource';
 const factory = ts.factory;
 
@@ -89,6 +90,17 @@ const getApiId = async (): Promise<string | undefined> => {
   }
 };
 
+// Access DynamoDB sdks to set deletionProtection: true for all tables
+const client = new DynamoDBClient({});
+const enableDeletionProtection = async (tableName: string) => {
+  await client.send(
+    new UpdateTableCommand({
+      TableName: tableName,
+      DeletionProtectionEnabled: true,
+    }),
+  );
+};
+
 /**
  * Configuration for generating Amplify Gen 2 data resources from Gen 1 projects.
  */
@@ -164,6 +176,11 @@ export const generateDataSource = async (dataDefinition?: DataDefinition): Promi
   }
 
   if (tableMappings) {
+    const tableNames = Object.values(tableMappings);
+    for (const tableName of tableNames) {
+      await enableDeletionProtection(tableName);
+    }
+
     const tableMappingProperties: ObjectLiteralElementLike[] = [];
 
     // Create model-to-table mappings for current environment
@@ -200,7 +217,6 @@ export const generateDataSource = async (dataDefinition?: DataDefinition): Promi
 
   // Add schema reference to the data configuration
   dataRenderProperties.push(factory.createShorthandPropertyAssignment(factory.createIdentifier('schema')));
-
   // Generate the complete TypeScript file with imports, schema, and data export
   return renderResourceTsFile({
     exportedVariableName: factory.createIdentifier('data'),

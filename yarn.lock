@@ -1181,6 +1181,7 @@ __metadata:
     "@aws-sdk/client-cloudwatch-events": ^3.624.0
     "@aws-sdk/client-cognito-identity": ^3.919.0
     "@aws-sdk/client-cognito-identity-provider": ^3.624.0
+    "@aws-sdk/client-dynamodb": ^3.919.0
     "@aws-sdk/client-lambda": ^3.624.0
     "@aws-sdk/client-s3": ^3.624.0
     "@aws-sdk/client-ssm": ^3.919.0
