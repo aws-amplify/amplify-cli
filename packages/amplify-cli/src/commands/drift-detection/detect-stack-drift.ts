@@ -77,31 +77,105 @@ export async function detectStackDrift(
     }
   }
 
-  // Get the drift results, including resources with UNKNOWN status
+  // Get the drift results, including ALL statuses (IN_SYNC, MODIFIED, DELETED, NOT_CHECKED)
   const driftResults = await cfn.send(
     new DescribeStackResourceDriftsCommand({
+      StackName: stackName,
+      StackResourceDriftStatusFilters: ['IN_SYNC', 'MODIFIED', 'DELETED', 'NOT_CHECKED'],
+    }),
+  );
+
+  // Get ALL resources in the stack to find NOT_CHECKED ones
+  const allResources = await cfn.send(
+    new DescribeStackResourcesCommand({
       StackName: stackName,
     }),
   );
 
-  // Log info for resources with NOT_CHECKED status (expected behavior)
-  const notCheckedResources = driftResults.StackResourceDrifts?.filter((drift) => drift.StackResourceDriftStatus === 'NOT_CHECKED');
-
-  if (notCheckedResources && notCheckedResources.length > 0 && print?.debug) {
-    print.debug(
-      'Some resources were not checked for drift (resource type does not support drift detection):\n' +
-        notCheckedResources.map((r) => `  - ${r.LogicalResourceId} (${r.ResourceType})`).join('\n'),
-    );
+  // Create a map of drift results by logical resource ID
+  const driftMap = new Map<string, StackResourceDrift>();
+  for (const drift of driftResults.StackResourceDrifts || []) {
+    if (drift.LogicalResourceId) {
+      driftMap.set(drift.LogicalResourceId, drift);
+    }
   }
 
-  // Log warning for resources with UNKNOWN status (actual problems)
-  const unknownResources = driftResults.StackResourceDrifts?.filter((drift) => drift.StackResourceDriftStatus === 'UNKNOWN');
+  // Build complete resource list with drift status
+  const completeResourceList: Array<{
+    logicalId: string;
+    resourceType: string;
+    driftStatus: string;
+    drift?: StackResourceDrift;
+  }> = [];
 
-  if (unknownResources && unknownResources.length > 0 && print?.debug) {
-    print.debug(
-      'WARNING: Drift detection failed for some resources. This may be due to insufficient permissions or throttling:\n' +
-        unknownResources.map((r) => `  - ${r.LogicalResourceId} (${r.ResourceType})`).join('\n'),
-    );
+  for (const resource of allResources.StackResources || []) {
+    if (!resource.LogicalResourceId) continue;
+
+    const drift = driftMap.get(resource.LogicalResourceId);
+    completeResourceList.push({
+      logicalId: resource.LogicalResourceId,
+      resourceType: resource.ResourceType || 'Unknown',
+      driftStatus: drift?.StackResourceDriftStatus || 'NOT_CHECKED',
+      drift,
+    });
+  }
+
+  // Print detailed resource table in verbose mode
+  if (print?.debug && completeResourceList.length > 0) {
+    // Count resources by status
+    const statusCounts = {
+      IN_SYNC: 0,
+      MODIFIED: 0,
+      DELETED: 0,
+      NOT_CHECKED: 0,
+      UNKNOWN: 0,
+    };
+
+    for (const resource of completeResourceList) {
+      const status = resource.driftStatus;
+      if (status in statusCounts) {
+        statusCounts[status as keyof typeof statusCounts]++;
+      }
+    }
+
+    print.debug('');
+
+    for (const resource of completeResourceList) {
+      const status = resource.driftStatus;
+      const logicalId = resource.logicalId.substring(0, 50).padEnd(50);
+      const resourceType = resource.resourceType.substring(0, 30).padEnd(30);
+
+      let statusDisplay = '';
+      switch (status) {
+        case 'IN_SYNC':
+          statusDisplay = '✓ IN_SYNC  ';
+          break;
+        case 'MODIFIED':
+          statusDisplay = '✗ MODIFIED ';
+          break;
+        case 'DELETED':
+          statusDisplay = '✗ DELETED  ';
+          break;
+        case 'NOT_CHECKED':
+          statusDisplay = '○ UNCHECKED';
+          break;
+        default:
+          statusDisplay = '? UNKNOWN  ';
+      }
+
+      print.debug(`  ${statusDisplay}  ${logicalId}  ${resourceType}`);
+
+      // Show property differences for MODIFIED resources
+      if (status === 'MODIFIED' && resource.drift?.PropertyDifferences && resource.drift.PropertyDifferences.length > 0) {
+        for (const propDiff of resource.drift.PropertyDifferences) {
+          const propPath = (propDiff.PropertyPath || '').substring(0, 60);
+          const diffType = propDiff.DifferenceType || 'UNKNOWN';
+          print.debug(`      → ${propPath.padEnd(60)}  ${diffType}`);
+        }
+      }
+    }
+
+    print.debug('');
   }
 
   logger.logInfo({ message: `detectStackDrift.complete: ${stackName}, ${driftResults.StackResourceDrifts?.length} resources` });
