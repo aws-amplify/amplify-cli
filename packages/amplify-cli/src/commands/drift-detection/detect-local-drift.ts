@@ -119,9 +119,11 @@ async function refreshCloudBackendFromS3(context: $TSContext): Promise<void> {
   }
 
   const unzippedDir = await extractZip(tempDir, currentCloudBackendZip);
+  const newDir = `${currentCloudBackendDir}.new`;
 
+  fs.copySync(unzippedDir, newDir);
   fs.removeSync(currentCloudBackendDir);
-  fs.copySync(unzippedDir, currentCloudBackendDir);
+  fs.moveSync(newDir, currentCloudBackendDir);
 
   fs.removeSync(tempDir);
 }
