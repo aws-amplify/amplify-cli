@@ -1,17 +1,26 @@
 import ora from 'ora';
 import { AmplifyMigrationStep } from './_step';
-import { printer } from '@aws-amplify/amplify-prompts';
+import { printer, AmplifySpinner } from '@aws-amplify/amplify-prompts';
+import { AmplifyGen2MigrationValidations } from './_validations';
+import {
+  CloudFormationClient,
+  CreateChangeSetCommand,
+  DescribeChangeSetCommand,
+  DeleteChangeSetCommand,
+  DescribeChangeSetOutput,
+  waitUntilChangeSetCreateComplete,
+} from '@aws-sdk/client-cloudformation';
+import { stateManager, $TSContext, AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { removeEnvFromCloud } from '../../extensions/amplify-helpers/remove-env-from-cloud';
-import { invokeDeleteEnvParamsFromService } from '../../extensions/amplify-helpers/invoke-delete-env-params';
-import { $TSContext, AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { getConfirmation } from '../../extensions/amplify-helpers/delete-project';
+import { invokeDeleteEnvParamsFromService } from '../../extensions/amplify-helpers/invoke-delete-env-params';
 
 export class AmplifyMigrationDecommissionStep extends AmplifyMigrationStep {
-  readonly command = 'decommission';
-  readonly describe = 'Decommission Gen1 resources';
-
   public async validate(): Promise<void> {
-    printer.warn('Not implemented');
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const validations = new AmplifyGen2MigrationValidations({} as any);
+    // eslint-disable-next-line spellcheck/spell-checker
+    await validations.validateStatefulResources(await this.createChangeSet());
   }
 
   public async execute(): Promise<void> {
@@ -63,6 +72,59 @@ export class AmplifyMigrationDecommissionStep extends AmplifyMigrationStep {
   }
 
   private getContext(): $TSContext {
-    return (this as any).context;
+    return (this is any).context;
+  }
+    
+  private async createChangeSet(): Promise<DescribeChangeSetOutput> {
+    const meta = stateManager.getMeta();
+    const stackName = meta.providers.awscloudformation.StackName;
+
+    const cfn = new CloudFormationClient({});
+    const changeSetName = `decommission-${Date.now()}`;
+    const spinner = new AmplifySpinner();
+
+    await cfn.send(
+      new CreateChangeSetCommand({
+        StackName: stackName,
+        ChangeSetName: changeSetName,
+        TemplateBody: JSON.stringify({
+          Resources: {
+            DummyResource: {
+              Type: 'AWS::CloudFormation::WaitConditionHandle',
+            },
+          },
+        }),
+      }),
+    );
+
+    spinner.start('Analyzing environment resources...');
+    await waitUntilChangeSetCreateComplete({ client: cfn, maxWaitTime: 120 }, { StackName: stackName, ChangeSetName: changeSetName });
+
+    const allChanges = [];
+    let nextToken: string | undefined;
+    let changeSet!: DescribeChangeSetOutput;
+    do {
+      changeSet = await cfn.send(
+        new DescribeChangeSetCommand({
+          StackName: stackName,
+          ChangeSetName: changeSetName,
+          NextToken: nextToken,
+        }),
+      );
+      allChanges.push(...(changeSet.Changes ?? []));
+      nextToken = changeSet.NextToken;
+    } while (nextToken);
+
+    changeSet.Changes = allChanges;
+
+    await cfn.send(
+      new DeleteChangeSetCommand({
+        StackName: stackName,
+        ChangeSetName: changeSetName,
+      }),
+    );
+
+    spinner.stop(`Reviewing environment resources`);
+    return changeSet;
   }
 }

@@ -2,9 +2,6 @@ import { AmplifyMigrationStep } from './_step';
 import { printer } from '@aws-amplify/amplify-prompts';
 
 export class AmplifyMigrationCleanupStep extends AmplifyMigrationStep {
-  readonly command = 'cleanup';
-  readonly describe = 'Clean up migration artifacts';
-
   public async validate(): Promise<void> {
     printer.warn('Not implemented');
   }

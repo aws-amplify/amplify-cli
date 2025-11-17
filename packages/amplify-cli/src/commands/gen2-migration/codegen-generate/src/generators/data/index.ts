@@ -174,7 +174,12 @@ export const generateDataSource = async (dataDefinition?: DataDefinition): Promi
     }
 
     const currentEnv = getCurrentEnvironment();
-    const branchNameExpression = factory.createPropertyAssignment('branchName', factory.createStringLiteral(currentEnv));
+    const branchNameExpression = ts.addSyntheticLeadingComment(
+      factory.createPropertyAssignment('branchName', factory.createStringLiteral(currentEnv)),
+      ts.SyntaxKind.SingleLineCommentTrivia,
+      'The "branchname" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables',
+      true,
+    );
 
     const tableMappingExpression = factory.createPropertyAssignment(
       'modelNameToTableNameMapping',
