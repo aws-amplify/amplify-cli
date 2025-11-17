@@ -153,7 +153,6 @@ export class AmplifyGen2MigrationValidations {
   }
 
   public async validateLockStatus(): Promise<void> {
-    //logic: getstackpolicycommand, check if policcy is same as set by lock.ts, if not throw error
     const amplifyMeta = stateManager.getMeta();
     const stackName = amplifyMeta?.providers?.awscloudformation?.StackName;
 
