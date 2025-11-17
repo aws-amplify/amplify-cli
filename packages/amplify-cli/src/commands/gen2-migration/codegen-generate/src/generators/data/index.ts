@@ -182,9 +182,9 @@ export const generateDataSource = async (dataDefinition?: DataDefinition): Promi
   if (tableMappings) {
     const tableNames = Object.values(tableMappings);
     // Note: Deletion protection will be enabled post-migration
-    // for (const tableName of tableNames) {
-    //   await enableDeletionProtection(tableName);
-    // }
+    for (const tableName of tableNames) {
+      await enableDeletionProtection(tableName);
+    }
 
     const tableMappingProperties: ObjectLiteralElementLike[] = [];
 
