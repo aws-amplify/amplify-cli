@@ -723,7 +723,60 @@ export class DriftFormatter {
   }
 
   /**
-   * Format Phase 2 template drift results
+   * Recursively format nested changes at any depth level
+   */
+  private formatNestedChanges(nestedChanges: any[], prefix: string, level: number): string {
+    let output = '';
+
+    nestedChanges.forEach((change: any, index: number) => {
+      const isLast = index === nestedChanges.length - 1;
+      const changePrefix = isLast ? '└──' : '├──';
+      const action = change.action || 'Unknown';
+      const resourceId = change.logicalResourceId || 'Unknown';
+      const resourceType = change.resourceType || 'Unknown';
+
+      let actionColor = chalk.yellow;
+      let actionSymbol = '~';
+      if (action === 'Add') {
+        actionColor = chalk.green;
+        actionSymbol = '+';
+      } else if (action === 'Remove') {
+        actionColor = chalk.red;
+        actionSymbol = '-';
+      } else if (action === 'Modify') {
+        actionColor = chalk.yellow;
+        actionSymbol = '~';
+      }
+
+      output += `\n${prefix}${changePrefix} ${actionColor(`${actionSymbol} ${action}`)}: ${chalk.bold(resourceId)} (${chalk.gray(
+        resourceType,
+      )})`;
+
+      // Show details if available
+      if (change.details && change.details.length > 0) {
+        const detailPrefix = isLast ? '    ' : '│   ';
+        change.details.forEach((detail: any) => {
+          if (detail.name) {
+            output += `\n${prefix}${detailPrefix}└── Property: ${detail.name}`;
+            if (detail.changeSource) {
+              output += chalk.gray(` (${detail.changeSource})`);
+            }
+          }
+        });
+      }
+
+      // Recursively show even deeper nested changes
+      if (change.nestedChanges && change.nestedChanges.length > 0) {
+        const childPrefix = isLast ? '    ' : '│   ';
+        output += this.formatNestedChanges(change.nestedChanges, prefix + childPrefix, level + 1);
+      }
+    });
+
+    return output;
+  }
+
+  /**
+   * Format Phase 2 template drift results with nested changeset details
    */
   public formatPhase2Results(): string | null {
     if (!this.phase2Results) return null;
@@ -777,9 +830,56 @@ export class DriftFormatter {
           const hasOnlyAutomaticChanges = change.details.every((d: any) => d.changeSource === 'Automatic' && !d.name);
 
           if (isNestedStack && hasOnlyAutomaticChanges) {
-            // Special handling for nested stack template changes
-            output += `\n${detailPrefix}└── ${chalk.cyan('Template changed in nested stack')}`;
-            output += `\n${detailPrefix}    ${chalk.gray('(The nested stack template or its resources have been modified)')}`;
+            // Check for nested changes to provide more detail
+            if (change.nestedChanges && change.nestedChanges.length > 0) {
+              output += `\n${detailPrefix}└── ${chalk.cyan('Nested stack changes detected:')}`;
+
+              // Format nested changes
+              change.nestedChanges.forEach((nestedChange: any, nestedIndex: number) => {
+                const isLastNested = nestedIndex === change.nestedChanges.length - 1;
+                const nestedPrefix = isLastNested ? '    └──' : '    ├──';
+                const nestedAction = nestedChange.action || 'Unknown';
+                const nestedResourceId = nestedChange.logicalResourceId || 'Unknown';
+                const nestedResourceType = nestedChange.resourceType || 'Unknown';
+
+                let nestedActionColor = chalk.yellow;
+                let nestedActionSymbol = '~';
+                if (nestedAction === 'Add') {
+                  nestedActionColor = chalk.green;
+                  nestedActionSymbol = '+';
+                } else if (nestedAction === 'Remove') {
+                  nestedActionColor = chalk.red;
+                  nestedActionSymbol = '-';
+                } else if (nestedAction === 'Modify') {
+                  nestedActionColor = chalk.yellow;
+                  nestedActionSymbol = '~';
+                }
+
+                output += `\n${detailPrefix}${nestedPrefix} ${nestedActionColor(`${nestedActionSymbol} ${nestedAction}`)}: ${chalk.bold(
+                  nestedResourceId,
+                )} (${chalk.gray(nestedResourceType)})`;
+
+                // Show nested resource details if available
+                if (nestedChange.details && nestedChange.details.length > 0) {
+                  const nestedDetailPrefix = isLastNested ? '            ' : '    │       ';
+                  nestedChange.details.forEach((detail: any) => {
+                    if (detail.name) {
+                      output += `\n${detailPrefix}${nestedDetailPrefix}└── Property: ${detail.name}`;
+                    }
+                  });
+                }
+
+                // Recursively show deeper nested changes if they exist
+                if (nestedChange.nestedChanges && nestedChange.nestedChanges.length > 0) {
+                  // Recursively format deeper nested changes (3rd level and beyond)
+                  output += this.formatNestedChanges(nestedChange.nestedChanges, detailPrefix + '        ', 3);
+                }
+              });
+            } else {
+              // No nested changeset details available, show generic message
+              output += `\n${detailPrefix}└── ${chalk.cyan('Template changed in nested stack')}`;
+              output += `\n${detailPrefix}    ${chalk.gray('(The nested stack template or its resources have been modified)')}`;
+            }
           } else {
             // Regular property changes
             const propDetails = change.details.filter((d: any) => d.name);

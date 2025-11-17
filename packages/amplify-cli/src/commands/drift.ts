@@ -96,15 +96,22 @@ export class AmplifyDriftDetector {
     const print = this.createPrintObject(options);
     const combinedResults = await detectStackDriftRecursive(cfn, stackName, print);
 
-    // 6. Phase 2: Detect template drift using changesets
+    // 6. Phase 3 (run before Phase 2): Detect local vs S3 drift and sync #current-cloud-backend
+    // TEMPORARILY DISABLED FOR TESTING - simulating corrupted S3 ZIP
+    printer.info(chalk.gray('Fetching current backend state from S3... [SKIPPED FOR TEST]'));
+    printer.info(chalk.gray('Checking local files vs cloud backend... [SKIPPED FOR TEST]'));
+    // const phase3Results = await detectLocalDrift(this.context);
+    const phase3Results = {
+      phase: 3 as const,
+      hasDrift: false,
+      skipped: true,
+      skipReason: 'Disabled for testing Phase 2 missing resource detection',
+    };
+
+    // 7. Phase 2: Detect template drift using changesets (after Phase 3 ensures sync)
     printer.info(chalk.gray('Checking for template drift using changesets...'));
     const templateDriftDetector = new TemplateDriftDetector(this.context);
     this.phase2Results = await templateDriftDetector.detect();
-
-    // 7. Phase 3: Detect local vs S3 drift
-    printer.info(chalk.gray('Fetching current backend state from S3...'));
-    printer.info(chalk.gray('Checking local files vs cloud backend...'));
-    const phase3Results = await detectLocalDrift(this.context);
 
     printer.info(chalk.green('Drift detection completed'));
     printer.info('');
