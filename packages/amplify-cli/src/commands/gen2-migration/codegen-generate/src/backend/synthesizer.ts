@@ -685,6 +685,11 @@ export class BackendSynthesizer {
   }
 
   private createDynamoDBEscapeHatch(): ts.Statement[] {
+    // changing cloudformation template to match deletionprotection: false setting in dynamoDB tables
+    const comment = factory.createExpressionStatement(
+      factory.createIdentifier('// changing cloudformation template to match deletionprotection: false setting in dynamoDB tables'),
+    );
+
     // const cfnResources = backend.data.node.findAll().filter(c => CfnResource.isCfnResource(c));
     const cfnResourcesDeclaration = factory.createVariableStatement(
       undefined,
@@ -768,7 +773,7 @@ export class BackendSynthesizer {
       ),
     );
 
-    return [cfnResourcesDeclaration, forOfStatement];
+    return [comment, cfnResourcesDeclaration, forOfStatement];
   }
 
   render(renderArgs: BackendRenderParameters): NodeArray<Node> {
@@ -805,6 +810,7 @@ export class BackendSynthesizer {
 
     // Add CfnResource import for DynamoDB escape hatch
     if (renderArgs.data) {
+      console.log('DEBUG: Adding CfnResource import');
       imports.push(this.createImportStatement([factory.createIdentifier('CfnResource')], 'aws-cdk-lib'));
     }
 
