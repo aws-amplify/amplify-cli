@@ -38,13 +38,20 @@ export class AmplifyMigrationDecommissionStep extends AmplifyMigrationStep {
       return;
     }
 
-    const spinner = ora('Deleting Gen1 resources from the cloud. This will take a few minutes.');
+    printer.info(`Starting decommission of environment: ${envName}`);
+
+    const spinner = ora('Preparing to delete Gen1 resources...');
     spinner.start();
 
     try {
+      spinner.text = 'Deleting Gen1 resources from the cloud. This will take a few minutes.';
       await removeEnvFromCloud(context, envName, true);
+
+      spinner.text = 'Cleaning up SSM parameters...';
       await invokeDeleteEnvParamsFromService(context, envName);
+
       spinner.succeed('Successfully decommissioned Gen1 environment from the cloud');
+      printer.success(`Environment '${envName}' has been completely removed from AWS`);
     } catch (ex) {
       spinner.fail(`Decommission failed: ${ex.message}`);
       throw ex;
