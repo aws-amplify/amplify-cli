@@ -22,7 +22,7 @@ export class AmplifyMigrationDecommissionStep extends AmplifyMigrationStep {
 
   public async validate(): Promise<void> {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const validations = new AmplifyGen2MigrationValidations({} as any);
+    const validations = new AmplifyGen2MigrationValidations(this.logger, this.context);
     // eslint-disable-next-line spellcheck/spell-checker
     await validations.validateStatefulResources(await this.createChangeSet());
   }

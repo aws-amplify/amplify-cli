@@ -331,7 +331,7 @@ class TemplateGenerator {
   ): Promise<[CFNTemplate, Parameter[]] | undefined> {
     let updatingGen1CategoryStack;
     try {
-      const { newTemplate, parameters: gen1StackParameters } = await categoryTemplateGenerator.generateGen1PreProcessTemplate(this.logger);
+      const { newTemplate, parameters: gen1StackParameters } = await categoryTemplateGenerator.generateGen1PreProcessTemplate();
       assert(gen1StackParameters);
       updatingGen1CategoryStack = ora(`Updating Gen 1 ${this.getStackCategoryName(category)} stack...`).start();
 
@@ -415,6 +415,7 @@ class TemplateGenerator {
   ): CategoryTemplateGenerator<CFN_CATEGORY_TYPE> {
     assert(this.region);
     return new CategoryTemplateGenerator(
+      this.logger,
       sourceStackId,
       destinationStackId,
       this.region,
