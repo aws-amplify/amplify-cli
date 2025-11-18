@@ -2,6 +2,10 @@ import { AmplifyMigrationStep } from './_step';
 import { printer } from '@aws-amplify/amplify-prompts';
 
 export class AmplifyMigrationCloneStep extends AmplifyMigrationStep {
+  public implications(): string[] {
+    throw new Error('Method not implemented.');
+  }
+
   public async validate(): Promise<void> {
     printer.warn('Not implemented');
   }

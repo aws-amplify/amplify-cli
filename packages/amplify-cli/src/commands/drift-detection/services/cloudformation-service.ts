@@ -16,11 +16,11 @@ export class CloudFormationService {
    * Creates a new client each time to ensure fresh credentials
    */
   public async getClient(context: $TSContext): Promise<CloudFormationClient> {
-    const { loadConfiguration } = require('@aws-amplify/amplify-provider-awscloudformation');
-    const credentials = await loadConfiguration(context);
+    // const { loadConfiguration } = require('@aws-amplify/amplify-provider-awscloudformation');
+    // const credentials = await loadConfiguration(context);
 
     return new CloudFormationClient({
-      ...credentials,
+      // ...credentials,
       maxAttempts: 10,
     });
   }

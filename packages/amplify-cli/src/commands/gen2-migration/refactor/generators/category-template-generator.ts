@@ -24,6 +24,7 @@ import CfnDependencyResolver from '../resolvers/cfn-dependency-resolver';
 import extractStackNameFromId from '../utils';
 import retrieveOAuthValues from '../oauth-values-retriever';
 import { CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-provider';
+import { Logger } from '../../../gen2-migration';
 
 export const HOSTED_PROVIDER_META_PARAMETER_NAME = 'hostedUIProviderMeta';
 const HOSTED_PROVIDER_CREDENTIALS_PARAMETER_NAME = 'hostedUIProviderCreds';

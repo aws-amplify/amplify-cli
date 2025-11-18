@@ -16,6 +16,10 @@ import { getConfirmation } from '../../extensions/amplify-helpers/delete-project
 import { invokeDeleteEnvParamsFromService } from '../../extensions/amplify-helpers/invoke-delete-env-params';
 
 export class AmplifyMigrationDecommissionStep extends AmplifyMigrationStep {
+  public implications(): string[] {
+    throw new Error('Method not implemented.');
+  }
+
   public async validate(): Promise<void> {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const validations = new AmplifyGen2MigrationValidations({} as any);

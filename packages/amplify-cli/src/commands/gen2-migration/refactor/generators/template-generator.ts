@@ -29,6 +29,7 @@ import CfnOutputResolver from '../resolvers/cfn-output-resolver';
 import CfnDependencyResolver from '../resolvers/cfn-dependency-resolver';
 import CfnParameterResolver from '../resolvers/cfn-parameter-resolver';
 import ora from 'ora';
+import { Logger } from '../../../gen2-migration';
 
 const CFN_RESOURCE_STACK_TYPE = 'AWS::CloudFormation::Stack';
 const GEN2_AMPLIFY_AUTH_LOGICAL_ID_PREFIX = 'amplifyAuth';
@@ -93,6 +94,7 @@ class TemplateGenerator {
     private readonly cognitoIdpClient: CognitoIdentityProviderClient,
     private readonly appId: string,
     private readonly environmentName: string,
+    private readonly logger: Logger,
   ) {
     this._categoryStackMap = new Map<CATEGORY, [string, string]>();
     this.categoryTemplateGenerators = [];
@@ -329,7 +331,7 @@ class TemplateGenerator {
   ): Promise<[CFNTemplate, Parameter[]] | undefined> {
     let updatingGen1CategoryStack;
     try {
-      const { newTemplate, parameters: gen1StackParameters } = await categoryTemplateGenerator.generateGen1PreProcessTemplate();
+      const { newTemplate, parameters: gen1StackParameters } = await categoryTemplateGenerator.generateGen1PreProcessTemplate(this.logger);
       assert(gen1StackParameters);
       updatingGen1CategoryStack = ora(`Updating Gen 1 ${this.getStackCategoryName(category)} stack...`).start();
 
