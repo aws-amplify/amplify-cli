@@ -15,7 +15,12 @@ import {
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { getAmplifyLogger } from '@aws-amplify/amplify-cli-logger';
 
-const logger = getAmplifyLogger();
+export interface Print {
+  info: (msg: string) => void;
+  debug: (msg: string) => void;
+  warn: (msg: string) => void;
+  warning: (msg: string) => void;
+}
 
 /**
  * Combined drift results including nested stacks
@@ -48,10 +53,10 @@ export interface CombinedDriftResults {
 export async function detectStackDrift(
   cfn: CloudFormationClient,
   stackName: string,
-  print?: { info: (msg: string) => void; debug: (msg: string) => void; warning: (msg: string) => void },
+  print?: Print,
 ): Promise<DescribeStackResourceDriftsCommandOutput> {
   // Start drift detection
-  logger.logInfo({ message: `detectStackDrift: ${stackName}` });
+  print.info(`detectStackDrift: ${stackName}`);
   const driftDetection = await cfn.send(
     new DetectStackDriftCommand({
       StackName: stackName,
@@ -103,7 +108,7 @@ export async function detectStackDrift(
     );
   }
 
-  logger.logInfo({ message: `detectStackDrift.complete: ${stackName}, ${driftResults.StackResourceDrifts?.length} resources` });
+  print.info(`detectStackDrift.complete: ${stackName}, ${driftResults.StackResourceDrifts?.length} resources`);
   return driftResults;
 }
 
@@ -114,7 +119,7 @@ export async function detectStackDrift(
 async function waitForDriftDetection(
   cfn: CloudFormationClient,
   driftDetectionId: string,
-  print?: { info: (msg: string) => void },
+  print?: Print,
 ): Promise<DescribeStackDriftDetectionStatusCommandOutput | undefined> {
   const maxWaitForDrift = 300_000; // 5 minutes max
   const timeBetweenOutputs = 10_000; // User feedback every 10 seconds
@@ -175,11 +180,11 @@ async function waitForDriftDetection(
 export async function detectStackDriftRecursive(
   cfn: CloudFormationClient,
   stackName: string,
-  print?: { info: (msg: string) => void; debug: (msg: string) => void; warning: (msg: string) => void },
+  print?: Print,
   level = 0,
   parentPrefix = '',
 ): Promise<CombinedDriftResults> {
-  logger.logInfo({ message: `detectStackDriftRecursive: ${stackName} (level ${level})` });
+  print.info(`detectStackDriftRecursive: ${stackName} (level ${level})`);
 
   // Detect drift on the current stack
   const currentStackDrifts = await detectStackDrift(cfn, stackName, print);
@@ -244,17 +249,13 @@ export async function detectStackDriftRecursive(
           }
         } catch (e) {
           // If parsing fails, log and use the original value
-          logger.logInfo({
-            message: `Failed to parse ARN for nested stack ${nestedStack.LogicalResourceId}: ${nestedStackName}. Using original value.`,
-          });
+          print.info(`Failed to parse ARN for nested stack ${nestedStack.LogicalResourceId}: ${nestedStackName}. Using original value.`);
         }
       }
 
       // Validate the extracted name
       if (!nestedStackName || nestedStackName === nestedStack.PhysicalResourceId) {
-        logger.logInfo({
-          message: `Could not extract stack name from PhysicalResourceId: ${nestedStack.PhysicalResourceId}`,
-        });
+        print.info(`Could not extract stack name from PhysicalResourceId: ${nestedStack.PhysicalResourceId}`);
       }
 
       // Store the mapping
@@ -279,24 +280,18 @@ export async function detectStackDriftRecursive(
         nestedStackPhysicalIds.set(fullKey, value);
       });
 
-      logger.logInfo({
-        message: `detectStackDriftRecursive.nestedStack: ${nestedStack.LogicalResourceId}, ${nestedResults.rootStackDrifts.StackResourceDrifts?.length} direct resources, ${nestedResults.nestedStackDrifts.size} sub-stacks`,
-      });
+      print.info(
+        `detectStackDriftRecursive.nestedStack: ${nestedStack.LogicalResourceId}, ${nestedResults.rootStackDrifts.StackResourceDrifts?.length} direct resources, ${nestedResults.nestedStackDrifts.size} sub-stacks`,
+      );
     } catch (error: any) {
       // Log error but continue checking other nested stacks
       if (print?.warning) {
         print.warning(`Failed to check drift for nested stack ${nestedStack.LogicalResourceId}: ${error.message}`);
       }
-      logger.logError({
-        message: `detectStackDriftRecursive.nestedStack.error: ${nestedStack.LogicalResourceId}`,
-        error: error,
-      });
     }
   }
 
-  logger.logInfo({
-    message: `detectStackDriftRecursive.complete: ${stackName} (level ${level}), ${nestedStackDrifts.size} total nested stacks`,
-  });
+  print.info(`detectStackDriftRecursive.complete: ${stackName} (level ${level}), ${nestedStackDrifts.size} total nested stacks`);
 
   return {
     rootStackDrifts: currentStackDrifts,

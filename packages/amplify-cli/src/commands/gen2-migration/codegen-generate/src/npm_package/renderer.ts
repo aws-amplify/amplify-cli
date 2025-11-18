@@ -42,12 +42,10 @@ export const patchNpmPackageJson = (packageJson: PackageJson, packageVersions: P
       constructs: withDefault(packageVersions.constructs),
       esbuild: withDefault(packageVersions.esbuild),
       tsx: withDefault(packageVersions.tsx),
-      typescript: withDefault(packageVersions.typescript),
       '@types/node': withDefault(packageVersions['@types/node']),
     },
     dependencies: {
       ...(packageJson.dependencies ?? {}),
-      'aws-amplify': withDefault(packageVersions['aws-amplify']),
     },
   };
 };
