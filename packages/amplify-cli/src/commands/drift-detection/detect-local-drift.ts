@@ -107,15 +107,22 @@ async function refreshCloudBackendFromS3(context: $TSContext): Promise<void> {
   let currentCloudBackendZip: string;
   try {
     currentCloudBackendZip = await downloadZip(s3, tempDir, S3BackendZipFileName, undefined);
-  } catch (err) {
+  } catch (err: any) {
     if (err?.name === 'NoSuchBucket') {
       throw new AmplifyError('EnvironmentNotInitializedError', {
         message: `Could not find a deployment bucket for the specified backend environment. This environment may have been deleted.`,
         resolution: 'Make sure the environment has been initialized with "amplify init" or "amplify env add".',
       });
     }
-    // if there was some other error, rethrow it
-    throw err;
+    // if there was some other error, wrap it in AmplifyError
+    throw new AmplifyError(
+      'S3DownloadError',
+      {
+        message: `Failed to download backend state from S3: ${err.message}`,
+        resolution: 'Check your AWS credentials and network connection.',
+      },
+      err,
+    );
   }
 
   const unzippedDir = await extractZip(tempDir, currentCloudBackendZip);
