@@ -15,6 +15,7 @@ import {
   DescribeIdentityProviderCommand,
   DescribeIdentityProviderResponse,
 } from '@aws-sdk/client-cognito-identity-provider';
+import { Logger } from '../../../../../commands/gen2-migration';
 
 // We use 'stub' to indicate fake implementation. If we are asserting a fake, it becomes a 'mock'.
 // Ref: https://learn.microsoft.com/en-us/dotnet/core/testing/unit-testing-best-practices#lets-speak-the-same-language
@@ -716,6 +717,7 @@ jest.mock('@aws-sdk/client-ssm', () => {
 
 describe('CategoryTemplateGenerator', () => {
   const s3TemplateGenerator = new CategoryTemplateGenerator(
+    new Logger('mock', 'mock', 'mock'),
     GEN1_CATEGORY_STACK_ID,
     GEN2_CATEGORY_STACK_ID,
     'us-east-1',
@@ -729,6 +731,7 @@ describe('CategoryTemplateGenerator', () => {
   );
 
   const s3TemplateGeneratorWithPredicate = new CategoryTemplateGenerator(
+    new Logger('mock', 'mock', 'mock'),
     GEN1_CATEGORY_STACK_ID,
     GEN2_CATEGORY_STACK_ID,
     'us-east-1',
@@ -744,6 +747,7 @@ describe('CategoryTemplateGenerator', () => {
   );
 
   const noGen1ResourcesToMoveS3TemplateGenerator = new CategoryTemplateGenerator(
+    new Logger('mock', 'mock', 'mock'),
     GEN1_CATEGORY_STACK_ID,
     GEN2_CATEGORY_STACK_ID,
     'us-east-1',
@@ -757,6 +761,7 @@ describe('CategoryTemplateGenerator', () => {
   );
 
   const authTemplateGenerator = new CategoryTemplateGenerator(
+    new Logger('mock', 'mock', 'mock'),
     GEN1_AUTH_CATEGORY_STACK_ID,
     GEN2_AUTH_CATEGORY_STACK_ID,
     'us-east-1',
