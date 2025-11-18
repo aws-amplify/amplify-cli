@@ -151,60 +151,22 @@ export class TemplateDriftDetector {
 
       // Debug: Print full changeset in verbose mode
       if (this.context.parameters?.options?.verbose) {
-        this.context.print.info('');
-        this.context.print.info('═══════════════════════════════════════════════════════════════════');
-        this.context.print.info('CLOUDFORMATION CHANGESET DETAILS (Template Drift Detection)');
-        this.context.print.info('═══════════════════════════════════════════════════════════════════');
-        this.context.print.info(`Stack: ${stackName}`);
+        this.context.print.info(`CloudFormation ChangeSet: ${stackName}`);
         this.context.print.info(`Status: ${changeSet.Status}`);
         this.context.print.info(`IncludeNestedStacks: ${changeSet.IncludeNestedStacks}`);
-
+        if (changeSet.StatusReason) {
+          this.context.print.info(`StatusReason: ${changeSet.StatusReason}`);
+        }
         if (changeSet.Changes && changeSet.Changes.length > 0) {
-          this.context.print.info(`\nChanges Detected (${changeSet.Changes.length}):`);
+          this.context.print.info(`Changes: ${changeSet.Changes.length}`);
           for (const change of changeSet.Changes) {
             if (change.ResourceChange) {
               const rc = change.ResourceChange;
-              this.context.print.info(`\n  • ${rc.LogicalResourceId} (${rc.ResourceType})`);
-              this.context.print.info(`    Action: ${rc.Action}`);
-              if (rc.Details && rc.Details.length > 0) {
-                this.context.print.info(`    Details:`);
-                for (const detail of rc.Details) {
-                  const target = detail.Target;
-                  if (target?.Name) {
-                    this.context.print.info(`      - Property: ${target.Name}`);
-                  } else if (target?.Attribute) {
-                    this.context.print.info(`      - Attribute: ${target.Attribute}`);
-                  }
-                  if (detail.ChangeSource) {
-                    this.context.print.info(`        ChangeSource: ${detail.ChangeSource}`);
-                  }
-                  if (detail.Evaluation) {
-                    this.context.print.info(`        Evaluation: ${detail.Evaluation}`);
-                  }
-                }
-              }
+              this.context.print.info(`  ${rc.LogicalResourceId} (${rc.ResourceType}) - ${rc.Action}`);
             }
           }
         } else {
-          this.context.print.info('\nNo changes detected in templates.');
-        }
-
-        if (changeSet.StatusReason) {
-          this.context.print.info(`\nStatus Reason: ${changeSet.StatusReason}`);
-        }
-
-        this.context.print.info('═══════════════════════════════════════════════════════════════════\n');
-      }
-
-      // 7. Analyze changeset (using CDK-inspired logic with nested changeset support)
-      // Debug: Log the changeset structure
-      if (this.context.parameters?.options?.verbose && changeSet.Changes && changeSet.Changes.length > 0) {
-        const firstChange = changeSet.Changes[0];
-        if (firstChange.ResourceChange) {
-          this.context.print.info(`\nDEBUG: First change has ChangeSetId: ${firstChange.ResourceChange.ChangeSetId ? 'YES' : 'NO'}`);
-          if (firstChange.ResourceChange.ChangeSetId) {
-            this.context.print.info(`DEBUG: ChangeSetId = ${firstChange.ResourceChange.ChangeSetId}`);
-          }
+          this.context.print.info('Changes: 0');
         }
       }
 
@@ -313,8 +275,8 @@ export class TemplateDriftDetector {
           const changeSetName = changeSetArn.split('/')[1]; // Extract changeset name from ARN
 
           if (this.context.parameters?.options?.verbose) {
-            this.context.print.info(`\n  📦 Fetching nested changeset for stack: ${stackName}`);
-            this.context.print.info(`     ChangeSet: ${changeSetName}`);
+            this.context.print.info(`Fetching nested changeset: ${stackName}`);
+            this.context.print.info(`ChangeSet: ${changeSetName}`);
           }
 
           // Describe the nested changeset
@@ -327,38 +289,17 @@ export class TemplateDriftDetector {
 
           // Print nested changeset details in verbose mode
           if (this.context.parameters?.options?.verbose && nestedChangeSet.Changes && nestedChangeSet.Changes.length > 0) {
-            this.context.print.info(`\n  ═══ NESTED STACK CHANGES (${stackName}) ═══`);
-            this.context.print.info(`  Stack Type: ${rc.ResourceType}`);
-            this.context.print.info(`  Nested Changes: ${nestedChangeSet.Changes.length}`);
-
+            this.context.print.info(`Nested Stack: ${stackName}`);
+            this.context.print.info(`Nested Changes: ${nestedChangeSet.Changes.length}`);
             for (const nestedChange of nestedChangeSet.Changes) {
               if (nestedChange.ResourceChange) {
                 const nrc = nestedChange.ResourceChange;
-                this.context.print.info(`\n    • ${nrc.LogicalResourceId} (${nrc.ResourceType})`);
-                this.context.print.info(`      Action: ${nrc.Action}`);
-
-                if (nrc.Details && nrc.Details.length > 0) {
-                  this.context.print.info(`      Details:`);
-                  for (const detail of nrc.Details) {
-                    const target = detail.Target;
-                    if (target?.Name) {
-                      this.context.print.info(`        - Property: ${target.Name}`);
-                    } else if (target?.Attribute) {
-                      this.context.print.info(`        - Attribute: ${target.Attribute}`);
-                    }
-                    if (detail.ChangeSource) {
-                      this.context.print.info(`          ChangeSource: ${detail.ChangeSource}`);
-                    }
-                  }
-                }
-
-                // Check for deeper nested stacks
+                this.context.print.info(`  ${nrc.LogicalResourceId} (${nrc.ResourceType}) - ${nrc.Action}`);
                 if (nrc.ResourceType === 'AWS::CloudFormation::Stack' && nrc.ChangeSetId) {
-                  this.context.print.info(`      🔄 Has nested changeset (3rd level or deeper)`);
+                  this.context.print.info(`    Has nested changeset (3rd level or deeper)`);
                 }
               }
             }
-            this.context.print.info(`  ═══════════════════════════════════════════`);
           }
 
           // Recursively analyze nested changeset
@@ -368,15 +309,15 @@ export class TemplateDriftDetector {
           if (nestedResult.changes && nestedResult.changes.length > 0) {
             changeInfo.nestedChanges = nestedResult.changes;
             if (this.context.parameters?.options?.verbose) {
-              this.context.print.info(`  ✓ Processed ${nestedResult.changes.length} nested changes`);
+              this.context.print.info(`Processed ${nestedResult.changes.length} nested changes`);
             }
           }
         } catch (error: any) {
           // Log error but continue processing
           if (this.context.parameters?.options?.verbose) {
-            this.context.print.warning(`  ⚠️ Could not fetch nested changeset: ${error.message}`);
-            this.context.print.warning(`     Stack ARN: ${rc.PhysicalResourceId}`);
-            this.context.print.warning(`     ChangeSet ID: ${rc.ChangeSetId}`);
+            this.context.print.warning(`Could not fetch nested changeset: ${error.message}`);
+            this.context.print.warning(`Stack ARN: ${rc.PhysicalResourceId}`);
+            this.context.print.warning(`ChangeSet ID: ${rc.ChangeSetId}`);
           }
         }
       }
