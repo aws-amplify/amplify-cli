@@ -44,7 +44,7 @@ export class CloudFormationService {
         return false;
       }
       throw new AmplifyError(
-        'CloudFormationError',
+        'StackNotFoundError',
         {
           message: `Failed to validate stack existence: ${error.message}`,
           resolution: 'Check your AWS credentials and permissions.',

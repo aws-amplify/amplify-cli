@@ -225,6 +225,11 @@ export class AmplifyDriftDetector {
         this.printer.info(output.treeView);
       }
 
+      // Display detailed changes for drifted resources
+      if (output.detailedChanges) {
+        printer.info(output.detailedChanges);
+      }
+
       if ((options.verbose || options.debug) && output.categoryBreakdown) {
         this.printer.info(output.categoryBreakdown);
       }
