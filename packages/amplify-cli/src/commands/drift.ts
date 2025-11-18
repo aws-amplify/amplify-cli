@@ -6,9 +6,10 @@
 import { $TSContext, AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import chalk from 'chalk';
-import { detectStackDriftRecursive } from './drift-detection';
+import { detectStackDriftRecursive, type DriftDisplayFormat } from './drift-detection';
 import { CloudFormationService, AmplifyConfigService, FileService, DriftFormatter } from './drift-detection/services';
-import { Logger } from './gen2-migration';
+import type { CloudFormationClient } from '@aws-sdk/client-cloudformation';
+import { Print } from './drift-detection/detect-stack-drift';
 
 export const name = 'drift';
 export const alias = [];
@@ -32,7 +33,7 @@ export const run = async (context: $TSContext): Promise<void> => {
     'output-file': context.parameters?.options?.['output-file'],
   };
 
-  const detector = new AmplifyDriftDetector({} as any, context);
+  const detector = new AmplifyDriftDetector(context);
   const exitCode = await detector.detect(options);
 
   if (exitCode !== 0) {
@@ -49,13 +50,15 @@ export class AmplifyDriftDetector {
   private readonly configService: AmplifyConfigService;
   private readonly fileService: FileService;
   private readonly formatter: DriftFormatter;
+  private readonly printer: Print;
 
-  constructor(private readonly logger: Logger, private readonly context: $TSContext) {
+  constructor(private readonly context: $TSContext, print?: Print) {
     // Initialize services
     this.cfnService = new CloudFormationService();
     this.configService = new AmplifyConfigService();
     this.fileService = new FileService();
     this.formatter = new DriftFormatter();
+    this.printer = print ?? printer;
   }
 
   /**
@@ -68,13 +71,17 @@ export class AmplifyDriftDetector {
 
     // 2. Get stack name and project info
     const stackName = this.configService.getRootStackName();
+    const projectName = this.configService.extractProjectName(stackName);
+
+    // Display initial status
+    this.printer.info('');
+    this.printer.info(chalk.cyan.bold(`Started Drift Detection for Project: ${projectName}`));
 
     // 3. Get CloudFormation client
     const cfn = await this.cfnService.getClient(this.context);
 
     // 4. Validate stack exists
     if (!(await this.cfnService.validateStackExists(cfn, stackName))) {
-      printer.error(chalk.red('Stack not found'));
       throw new AmplifyError('StackNotFoundError', {
         message: `Stack ${stackName} does not exist.`,
         resolution: 'Has the project been deployed? Run "amplify push" to deploy your project.',
@@ -82,16 +89,18 @@ export class AmplifyDriftDetector {
     }
 
     // Start drift detection
-    this.logger.info(`Detecting drift for stack: '${stackName}'`);
+    this.printer.info(chalk.gray(`Checking drift for root stack: ${chalk.yellow(stackName)}`));
 
     // 5. Detect drift recursively (including nested stacks)
-    const combinedResults = await detectStackDriftRecursive(cfn, stackName, this.logger);
+    const print = this.createPrintObject(options);
+    const combinedResults = await detectStackDriftRecursive(cfn, stackName, print);
 
-    this.logger.info('Drift detection completed');
+    this.printer.info(chalk.green('Drift detection completed'));
+    this.printer.info('');
 
     // 6. Handle no results
     if (!combinedResults.rootStackDrifts.StackResourceDrifts) {
-      printer.warn(`${stackName}: No drift results available`);
+      this.printer.warning(`${stackName}: No drift results available`);
       return 0;
     }
 
@@ -99,15 +108,8 @@ export class AmplifyDriftDetector {
     const rootTemplate = await this.cfnService.getStackTemplate(cfn, stackName);
     await this.formatter.processResults(cfn, stackName, rootTemplate, combinedResults);
 
-    // 10. Return exit code - always return 1 if drift detected, 0 if no drift
-    const output = this.formatter.formatDrift('summary');
-    const hasDrift = output.totalDrifted > 0;
-
-    if (hasDrift) {
-      // 8. Display results
-      printer.blankLine();
-      this.displayResults(options);
-    }
+    // 8. Display results
+    this.displayResults(options);
 
     // 9. Save JSON if requested
     if (options['output-file']) {
@@ -116,6 +118,8 @@ export class AmplifyDriftDetector {
     }
 
     // 10. Return exit code - always return 1 if drift detected, 0 if no drift
+    const output = this.formatter.formatDrift('summary');
+    const hasDrift = output.totalDrifted > 0;
     return hasDrift ? 1 : 0;
   }
 
@@ -128,23 +132,25 @@ export class AmplifyDriftDetector {
         // Parse and format messages based on their content
         if (msg.includes('Found') && msg.includes('nested')) {
           // Extract indentation, count, and type
+          const indent = msg.match(/^(\s*)/)?.[1] || '';
           const count = msg.match(/Found (\d+)/)?.[1] || '0';
+          const level = msg.match(/level (\d+)/)?.[1];
 
           // Always show "Found X nested stack(s)" without indentation
-          printer.info(chalk.gray(`Found ${chalk.yellow(count)} nested stack(s)`));
+          this.printer.info(chalk.gray(`Found ${chalk.yellow(count)} nested stack(s)`));
         } else if (msg.includes('Checking drift for nested stack:')) {
           // Show nested stack checking without indentation
           const nestedStackName = msg.replace('Checking drift for nested stack:', '').trim();
-          printer.info(chalk.gray(`Checking drift for nested stack: ${chalk.yellow(nestedStackName)}`));
+          this.printer.info(chalk.gray(`Checking drift for nested stack: ${chalk.yellow(nestedStackName)}`));
         } else if (!msg.includes('Checking drift for stack:')) {
-          printer.info(msg);
+          this.printer.info(msg);
         }
       },
       debug: (msg: string) => {
-        if (options.verbose) printer.info(msg);
+        if (options.verbose) this.printer.info(msg);
       },
       warning: (msg: string) => {
-        printer.warn(msg);
+        this.printer.warning(msg);
       },
     };
   }
@@ -155,31 +161,32 @@ export class AmplifyDriftDetector {
   private displayResults(options: DriftOptions): void {
     if (options.format === 'json') {
       const simplifiedJson = this.formatter.createSimplifiedJsonOutput();
-      printer.info(JSON.stringify(simplifiedJson, null, 2));
+      this.printer.info(JSON.stringify(simplifiedJson, null, 2));
     } else if (options.format === 'summary') {
       const output = this.formatter.formatDrift('summary');
-      printer.info(output.summaryDashboard);
+      this.printer.info(output.summaryDashboard);
       if (output.categoryBreakdown) {
-        printer.info(output.categoryBreakdown);
+        this.printer.info(output.categoryBreakdown);
       }
     } else if (options.format === 'tree') {
       const output = this.formatter.formatDrift('tree');
-      printer.info(output.summaryDashboard);
+      this.printer.info(output.summaryDashboard);
       if (output.treeView) {
-        printer.info(output.treeView);
+        this.printer.info(output.treeView);
       }
       if (output.detailedChanges) {
-        printer.info(output.detailedChanges);
+        this.printer.info(output.detailedChanges);
       }
       if (options.verbose && output.categoryBreakdown) {
-        printer.info(output.categoryBreakdown);
+        this.printer.info(output.categoryBreakdown);
       }
     } else {
       // This shouldn't happen with TypeScript, but handle gracefully
+      this.printer.warning(`Unknown format: ${options.format}. Using summary format.`);
       const output = this.formatter.formatDrift('summary');
-      printer.info(output.summaryDashboard);
+      this.printer.info(output.summaryDashboard);
       if (output.categoryBreakdown) {
-        printer.info(output.categoryBreakdown);
+        this.printer.info(output.categoryBreakdown);
       }
     }
   }
