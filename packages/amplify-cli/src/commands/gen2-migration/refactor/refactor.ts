@@ -9,6 +9,7 @@ import { CloudFormationClient } from '@aws-sdk/client-cloudformation';
 import { SSMClient } from '@aws-sdk/client-ssm';
 import { CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-provider';
 import { GetCallerIdentityCommand, STSClient } from '@aws-sdk/client-sts';
+import { AmplifyGen2MigrationValidations } from '../_validations';
 
 import { DescribeStacksCommand } from '@aws-sdk/client-cloudformation';
 import { TemplateGenerator } from './generators/template-generator';
@@ -48,6 +49,10 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
 
       // Check prerequisites
       await this.checkPrerequisites();
+
+      // Validate lock status
+      const validations = new AmplifyGen2MigrationValidations(this.getContext());
+      await validations.validateLockStatus();
 
       // Process resource mappings if provided
       if (this.resourceMappings) {
