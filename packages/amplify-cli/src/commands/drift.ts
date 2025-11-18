@@ -9,7 +9,6 @@ import chalk from 'chalk';
 import { detectStackDriftRecursive, type DriftDisplayFormat } from './drift-detection';
 import { detectLocalDrift } from './drift-detection/detect-local-drift';
 import { TemplateDriftDetector } from './drift-detection/detect-template-drift';
-import { detectOutOfTemplateDrift } from './drift-detection/detect-resource-drift';
 import { CloudFormationService, AmplifyConfigService, FileService, DriftFormatter } from './drift-detection/services';
 import type { CloudFormationClient } from '@aws-sdk/client-cloudformation';
 import { Print } from './drift-detection/detect-stack-drift';
@@ -114,60 +113,6 @@ export class AmplifyDriftDetector {
       Object.values(combinedResults.nestedStackDrifts).reduce((sum, nested) => sum + (nested.StackResourceDrifts?.length || 0), 0);
     printer.debug(`Phase 1 complete: ${totalDrifts} total drifts detected`);
 
-    // Verbose: Show individual drifted resources
-    if (options.verbose || options.debug) {
-      if (totalDrifts > 0) {
-        printer.info(chalk.gray('\nDrifted resources:'));
-        combinedResults.rootStackDrifts.StackResourceDrifts?.forEach((drift) => {
-          printer.info(chalk.gray(`  ${drift.LogicalResourceId} (${drift.ResourceType}) - ${drift.StackResourceDriftStatus}`));
-        });
-        Object.entries(combinedResults.nestedStackDrifts).forEach(([stackName, drifts]) => {
-          drifts.StackResourceDrifts?.forEach((drift) => {
-            printer.info(chalk.gray(`  ${drift.LogicalResourceId} (${drift.ResourceType}) - ${drift.StackResourceDriftStatus}`));
-          });
-        });
-      }
-    }
-
-    // 5b. Phase 1b: Detect out-of-template drift (properties not in CFN templates)
-    printer.debug('Starting Phase 1b: Out-of-template drift detection');
-    printer.info(chalk.gray('Detecting out-of-template property changes...'));
-    const region = this.configService.getRegion();
-    printer.debug(`Region: ${region}`);
-
-    // Collect all resources from root and nested stacks
-    const allResources = [
-      ...(combinedResults.rootStackDrifts.StackResourceDrifts || []),
-      ...Object.values(combinedResults.nestedStackDrifts).flatMap((nested) => nested.StackResourceDrifts || []),
-    ];
-
-    const outOfTemplateDrifts = await detectOutOfTemplateDrift(region, allResources, stackName);
-    printer.debug(`Phase 1b complete: ${outOfTemplateDrifts.length} out-of-template drifts`);
-
-    if (options.verbose || options.debug) {
-      if (outOfTemplateDrifts.length > 0) {
-        printer.info(chalk.gray('\nOut-of-template property changes detected:'));
-        printer.info(chalk.gray('These properties were added manually and will persist through "amplify push --force"\n'));
-
-        for (const drift of outOfTemplateDrifts) {
-          printer.info(chalk.gray(`  ${drift.logicalResourceId} (${drift.resourceType})`));
-          for (const prop of drift.propertyDifferences) {
-            printer.info(chalk.gray(`    → ${prop.propertyPath}`));
-            printer.info(chalk.gray(`      Current: ${JSON.stringify(prop.actualValue)}`));
-          }
-        }
-
-        printer.info(chalk.gray(`\nDetected ${outOfTemplateDrifts.length} resources with out-of-template drift`));
-
-        printer.info(chalk.gray('\nIMPORTANT: These drifts cannot be fixed with "amplify push --force"'));
-        printer.info(chalk.gray('You must either:'));
-        printer.info(chalk.gray('  1. Add these properties to your CloudFormation templates, OR'));
-        printer.info(chalk.gray('  2. Manually remove them via AWS Console\n'));
-      } else {
-        printer.info(chalk.gray('No out-of-template drift detected'));
-      }
-    }
-
     // 6. Phase 3 (run before Phase 2): Detect local vs S3 drift and sync #current-cloud-backend
     this.printer.debug('Starting Phase 3: Local drift detection');
     this.printer.info(chalk.gray('Fetching current backend state from S3...'));
@@ -210,10 +155,24 @@ export class AmplifyDriftDetector {
       await this.fileService.saveJsonOutput(options['output-file'], simplifiedJson);
     }
 
-    // 11. Return exit code - return 1 if any drift detected (Phase 1 or Phase 3), 0 if no drift
+    // 11. Check for errors during detection
+    const hasErrors = phase3Results.skipped || this.phase2Results?.skipped;
+    if (hasErrors) {
+      printer.warn('');
+      printer.warn(chalk.yellow('⚠ Drift detection encountered errors:'));
+      if (phase3Results.skipped) {
+        printer.warn(chalk.yellow(`  • Local changes check: ${phase3Results.skipReason}`));
+      }
+      if (this.phase2Results?.skipped) {
+        printer.warn(chalk.yellow(`  • Template changes check: ${this.phase2Results.skipReason}`));
+      }
+      printer.warn('');
+    }
+
+    // 12. Return exit code - return 1 if any drift detected or if errors occurred
     const totalDriftCount = this.formatter.getTotalDriftCount();
-    printer.debug(`Total drift count: ${totalDriftCount}`);
-    return totalDriftCount > 0 ? 1 : 0;
+    printer.debug(`Total drift count: ${totalDriftCount}, Has errors: ${hasErrors}`);
+    return totalDriftCount > 0 || hasErrors ? 1 : 0;
   }
 
   /**
