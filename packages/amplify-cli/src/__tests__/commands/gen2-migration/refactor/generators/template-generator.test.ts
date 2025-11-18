@@ -847,6 +847,7 @@ describe('TemplateGenerator', () => {
     expect(CategoryTemplateGenerator).toBeCalledTimes(3);
     expect(CategoryTemplateGenerator).toHaveBeenNthCalledWith(
       1,
+      new Logger('mock', 'mock', 'mock'),
       GEN1_AUTH_STACK_ID,
       GEN2_AUTH_STACK_ID,
       REGION,
@@ -867,6 +868,7 @@ describe('TemplateGenerator', () => {
     );
     expect(CategoryTemplateGenerator).toHaveBeenNthCalledWith(
       2,
+      new Logger('mock', 'mock', 'mock'),
       GEN1_AUTH_USER_POOL_GROUP_STACK_ID,
       GEN2_AUTH_STACK_ID,
       REGION,
@@ -881,6 +883,7 @@ describe('TemplateGenerator', () => {
     );
     expect(CategoryTemplateGenerator).toHaveBeenNthCalledWith(
       3,
+      new Logger('mock', 'mock', 'mock'),
       GEN1_STORAGE_STACK_ID,
       GEN2_STORAGE_STACK_ID,
       REGION,
@@ -905,6 +908,7 @@ describe('TemplateGenerator', () => {
     expect(CategoryTemplateGenerator).toBeCalledTimes(NUM_CATEGORIES_TO_REFACTOR);
     expect(CategoryTemplateGenerator).toHaveBeenNthCalledWith(
       1,
+      new Logger('mock', 'mock', 'mock'),
       GEN2_AUTH_STACK_ID,
       GEN1_AUTH_STACK_ID,
       REGION,
@@ -925,6 +929,7 @@ describe('TemplateGenerator', () => {
     );
     expect(CategoryTemplateGenerator).toHaveBeenNthCalledWith(
       2,
+      new Logger('mock', 'mock', 'mock'),
       GEN2_AUTH_STACK_ID,
       GEN1_AUTH_USER_POOL_GROUP_STACK_ID,
       REGION,
@@ -939,6 +944,7 @@ describe('TemplateGenerator', () => {
     );
     expect(CategoryTemplateGenerator).toHaveBeenNthCalledWith(
       3,
+      new Logger('mock', 'mock', 'mock'),
       GEN2_STORAGE_STACK_ID,
       GEN1_STORAGE_STACK_ID,
       REGION,
@@ -963,6 +969,7 @@ describe('TemplateGenerator', () => {
     expect(CategoryTemplateGenerator).toBeCalledTimes(4);
     expect(CategoryTemplateGenerator).toHaveBeenNthCalledWith(
       1,
+      new Logger('mock', 'mock', 'mock'),
       GEN1_AUTH_STACK_ID,
       GEN2_AUTH_STACK_ID,
       REGION,
@@ -983,6 +990,7 @@ describe('TemplateGenerator', () => {
     );
     expect(CategoryTemplateGenerator).toHaveBeenNthCalledWith(
       2,
+      new Logger('mock', 'mock', 'mock'),
       GEN1_AUTH_USER_POOL_GROUP_STACK_ID,
       GEN2_AUTH_STACK_ID,
       REGION,
@@ -997,6 +1005,7 @@ describe('TemplateGenerator', () => {
     );
     expect(CategoryTemplateGenerator).toHaveBeenNthCalledWith(
       3,
+      new Logger('mock', 'mock', 'mock'),
       GEN1_STORAGE_STACK_ID,
       GEN2_STORAGE_STACK_ID,
       REGION,
@@ -1012,6 +1021,7 @@ describe('TemplateGenerator', () => {
     // custom resource category
     expect(CategoryTemplateGenerator).toHaveBeenNthCalledWith(
       4,
+      new Logger('mock', 'mock', 'mock'),
       GEN1_ROOT_STACK_NAME,
       GEN2_ROOT_STACK_NAME,
       REGION,
