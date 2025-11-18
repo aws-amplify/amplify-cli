@@ -55,7 +55,7 @@ import {
   S3TriggerDefinition,
   StorageTriggerEvent,
   ServerSideEncryptionConfiguration,
-} from '../generators/storage/index.js';
+} from '../generators/storage';
 
 import { DataDefinition, DataTableMapping, generateDataSource } from '../generators/data/index';
 
