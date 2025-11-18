@@ -14,7 +14,7 @@ import type { BucketAccelerateStatus, BucketVersioningStatus } from '@aws-sdk/cl
 import { AccessPatterns, ServerSideEncryptionConfiguration } from '../generators/storage/index.js';
 import { ExplicitAuthFlowsType, OAuthFlowType, UserPoolClientType } from '@aws-sdk/client-cognito-identity-provider';
 import assert from 'assert';
-import { newLineIdentifier } from '../ts_factory_utils.js';
+import { newLineIdentifier } from '../ts_factory_utils';
 
 const factory = ts.factory;
 export interface BackendRenderParameters {
