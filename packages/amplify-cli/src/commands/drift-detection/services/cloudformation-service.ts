@@ -5,6 +5,7 @@
 
 import { CloudFormationClient, GetTemplateCommand } from '@aws-sdk/client-cloudformation';
 import type { $TSContext } from '@aws-amplify/amplify-cli-core';
+import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import type { CloudFormationTemplate } from './drift-formatter';
 
 // Import the CloudFormation class from the provider
@@ -42,7 +43,14 @@ export class CloudFormationService {
       if (error.name === 'ValidationError' || error.message?.includes('does not exist')) {
         return false;
       }
-      throw error;
+      throw new AmplifyError(
+        'CloudFormationError',
+        {
+          message: `Failed to validate stack existence: ${error.message}`,
+          resolution: 'Check your AWS credentials and permissions.',
+        },
+        error,
+      );
     }
   }
 

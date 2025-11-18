@@ -13,12 +13,8 @@ export class AmplifyConfigService {
    * Validate this is an Amplify project
    */
   public validateAmplifyProject(): void {
-    try {
-      const projectPath = pathManager.findProjectRoot();
-      if (!projectPath) {
-        throw new Error('Not an Amplify project');
-      }
-    } catch (error) {
+    const projectPath = pathManager.findProjectRoot();
+    if (!projectPath) {
       throw new AmplifyError('ProjectNotFoundError', {
         message: 'Not an Amplify project.',
         resolution: 'Run this command from an Amplify project directory.',
