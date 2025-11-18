@@ -49,11 +49,6 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
     // Extract parameters from context
     this.extractParameters();
 
-    printer.info('🔄 Starting Amplify Gen2 migration refactor execution...');
-    printer.debug('we are in DEBUG mode');
-    printer.info(`Moving resources from Gen1 stack: ${this.fromStack}`);
-    printer.info(`To Gen2 stack: ${this.toStack}`);
-
     // Process resource mappings if provided
     if (this.resourceMappings) {
       await this.processResourceMappings();
