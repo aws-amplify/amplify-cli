@@ -1,5 +1,5 @@
 import ts, { CallExpression, Identifier } from 'typescript';
-import { AccessPatterns, Permission } from './index.js';
+import { AccessPatterns, Permission } from '.';
 const factory = ts.factory;
 
 /**
