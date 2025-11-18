@@ -546,8 +546,10 @@ export class DriftFormatter {
       result += `${prefix}${propPrefix} ${chalk.yellow('PROPERTY:')} ${propDiff.PropertyPath}\n`;
 
       const valuePrefix = isLastProp ? TREE_SYMBOLS.EMPTY : TREE_SYMBOLS.VERTICAL;
-      result += `${prefix}${valuePrefix}├── ${chalk.red('[-]')} ${chalk.red(propDiff.ExpectedValue)}\n`;
-      result += `${prefix}${valuePrefix}└── ${chalk.green('[+]')} ${chalk.green(propDiff.ActualValue)}\n`;
+      // ActualValue (current/remote state) is shown first with + (green)
+      result += `${prefix}${valuePrefix}├── ${chalk.green('[+]')} ${chalk.green(propDiff.ActualValue)}\n`;
+      // ExpectedValue (template/local state) is  shown second with - (red)
+      result += `${prefix}${valuePrefix}└── ${chalk.red('[-]')} ${chalk.red(propDiff.ExpectedValue)}\n`;
     });
 
     return result;
