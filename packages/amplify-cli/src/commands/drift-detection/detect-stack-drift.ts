@@ -20,7 +20,8 @@ const logger = getAmplifyLogger();
 export interface Print {
   info: (msg: string) => void;
   debug: (msg: string) => void;
-  warning?: (msg: string) => void;
+  warn: (msg: string) => void;
+  warning: (msg: string) => void;
 }
 
 /**

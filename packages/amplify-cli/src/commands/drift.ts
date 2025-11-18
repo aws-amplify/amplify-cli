@@ -58,7 +58,12 @@ export class AmplifyDriftDetector {
     this.configService = new AmplifyConfigService();
     this.fileService = new FileService();
     this.formatter = new DriftFormatter();
-    this.printer = print ?? printer;
+    this.printer = print ?? {
+      info: (message: string) => printer.info(message),
+      warning: (message: string) => printer.warn(message),
+      warn: (message: string) => printer.warn(message),
+      debug: (message: string) => printer.debug(message),
+    };
   }
 
   /**
@@ -100,7 +105,7 @@ export class AmplifyDriftDetector {
 
     // 6. Handle no results
     if (!combinedResults.rootStackDrifts.StackResourceDrifts) {
-      this.printer.warning(`${stackName}: No drift results available`);
+      this.printer.warn(`${stackName}: No drift results available`);
       return 0;
     }
 
@@ -149,8 +154,11 @@ export class AmplifyDriftDetector {
       debug: (msg: string) => {
         if (options.verbose) this.printer.info(msg);
       },
+      warn: (msg: string) => {
+        this.printer.warn(msg);
+      },
       warning: (msg: string) => {
-        this.printer.warning(msg);
+        this.printer.warn(msg);
       },
     };
   }
@@ -182,7 +190,7 @@ export class AmplifyDriftDetector {
       }
     } else {
       // This shouldn't happen with TypeScript, but handle gracefully
-      this.printer.warning(`Unknown format: ${options.format}. Using summary format.`);
+      this.printer.warn(`Unknown format: ${options.format}. Using summary format.`);
       const output = this.formatter.formatDrift('summary');
       this.printer.info(output.summaryDashboard);
       if (output.categoryBreakdown) {

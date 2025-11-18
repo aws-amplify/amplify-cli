@@ -57,6 +57,14 @@ export class Logger {
     printer.debug(this._message(message, '·'));
   }
 
+  public warn(message: string): void {
+    printer.warn(this._message(message, '·'));
+  }
+
+  public warning(message: string): void {
+    printer.warn(this._message(message, '·'));
+  }
+
   private _message(message: string, prefix: string) {
     return `[${new Date().toISOString()}] [${chalk.bold(this.stepName)}] [${chalk.blue(
       `${this.appId}/${this.envName}`,
