@@ -9,6 +9,7 @@ import chalk from 'chalk';
 import { detectStackDriftRecursive, type DriftDisplayFormat } from './drift-detection';
 import { detectLocalDrift } from './drift-detection/detect-local-drift';
 import { TemplateDriftDetector } from './drift-detection/detect-template-drift';
+import { detectOutOfTemplateDrift } from './drift-detection/detect-resource-drift';
 import { CloudFormationService, AmplifyConfigService, FileService, DriftFormatter } from './drift-detection/services';
 import type { CloudFormationClient } from '@aws-sdk/client-cloudformation';
 
@@ -95,6 +96,42 @@ export class AmplifyDriftDetector {
     // 5. Phase 1: Detect CloudFormation drift recursively (including nested stacks)
     const print = this.createPrintObject(options);
     const combinedResults = await detectStackDriftRecursive(cfn, stackName, print);
+
+    // 5b. Phase 1b: Detect out-of-template drift (properties not in CFN templates)
+    printer.info(chalk.gray('Detecting out-of-template property changes...'));
+    const region = this.configService.getRegion();
+
+    // Collect all resources from root and nested stacks
+    const allResources = [
+      ...(combinedResults.rootStackDrifts.StackResourceDrifts || []),
+      ...Object.values(combinedResults.nestedStackDrifts).flatMap((nested) => nested.StackResourceDrifts || []),
+    ];
+
+    const outOfTemplateDrifts = await detectOutOfTemplateDrift(region, allResources, stackName);
+
+    if (options.verbose) {
+      if (outOfTemplateDrifts.length > 0) {
+        printer.info(chalk.yellow('\nDetected changes in properties NOT managed by CloudFormation templates:'));
+        printer.info(chalk.yellow('These properties were added manually and will persist through "amplify push --force"\n'));
+
+        for (const drift of outOfTemplateDrifts) {
+          printer.info(chalk.white(`  ${drift.logicalResourceId} (${drift.resourceType})`));
+          for (const prop of drift.propertyDifferences) {
+            printer.info(chalk.gray(`    → ${prop.propertyPath}`));
+            printer.info(chalk.gray(`      Current: ${JSON.stringify(prop.actualValue)}`));
+          }
+        }
+
+        printer.info(chalk.cyan(`\nDetected ${outOfTemplateDrifts.length} resources with out-of-template drift`));
+
+        printer.info(chalk.yellow('\nIMPORTANT: These drifts cannot be fixed with "amplify push --force"'));
+        printer.info(chalk.yellow('You must either:'));
+        printer.info(chalk.yellow('  1. Add these properties to your CloudFormation templates, OR'));
+        printer.info(chalk.yellow('  2. Manually remove them via AWS Console\n'));
+      } else {
+        printer.info(chalk.green('No out-of-template drift detected'));
+      }
+    }
 
     // 6. Phase 3 (run before Phase 2): Detect local vs S3 drift and sync #current-cloud-backend
     // TEMPORARILY DISABLED FOR TESTING - simulating corrupted S3 ZIP
