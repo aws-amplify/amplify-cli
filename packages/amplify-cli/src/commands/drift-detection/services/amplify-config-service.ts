@@ -66,4 +66,30 @@ export class AmplifyConfigService {
     if (idLower.includes('analytics')) return 'analytics';
     return 'other';
   }
+
+  /**
+   * Get the AWS region from Amplify configuration
+   */
+  public getRegion(): string {
+    const projectPath = pathManager.findProjectRoot();
+    const meta = stateManager.getMeta(projectPath);
+
+    const region = meta?.providers?.awscloudformation?.Region;
+    if (!region) {
+      // Try to get from team provider info
+      const teamProviderInfo = stateManager.getTeamProviderInfo(projectPath);
+      const envName = stateManager.getLocalEnvInfo(projectPath)?.envName;
+
+      if (envName && teamProviderInfo?.[envName]?.awscloudformation?.Region) {
+        return teamProviderInfo[envName].awscloudformation.Region;
+      }
+
+      throw new AmplifyError('ConfigurationError', {
+        message: 'AWS region not found in project configuration.',
+        resolution: 'Ensure your project has been initialized with "amplify init".',
+      });
+    }
+
+    return region;
+  }
 }
