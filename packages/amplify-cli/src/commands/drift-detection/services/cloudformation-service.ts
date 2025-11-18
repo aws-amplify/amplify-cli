@@ -7,22 +7,23 @@ import { CloudFormationClient, GetTemplateCommand } from '@aws-sdk/client-cloudf
 import type { $TSContext } from '@aws-amplify/amplify-cli-core';
 import type { CloudFormationTemplate } from './drift-formatter';
 
+// Import the CloudFormation class from the provider
+const CloudFormation = require('@aws-amplify/amplify-provider-awscloudformation/lib/aws-utils/aws-cfn');
+
 /**
  * Service for CloudFormation operations
  */
 export class CloudFormationService {
   /**
    * Get CloudFormation client
-   * Creates a new client each time to ensure fresh credentials
+   * Uses the standard Amplify CloudFormation class for proper configuration
    */
   public async getClient(context: $TSContext): Promise<CloudFormationClient> {
-    const { loadConfiguration } = require('@aws-amplify/amplify-provider-awscloudformation');
-    const credentials = await loadConfiguration(context);
+    // Use the standard Amplify CloudFormation class
+    const cfn = await new CloudFormation(context, 'drift:detect');
 
-    return new CloudFormationClient({
-      ...credentials,
-      maxAttempts: 10,
-    });
+    // Return the internal CloudFormationClient
+    return cfn.cfn;
   }
 
   /**
