@@ -1,4 +1,5 @@
 import { $TSContext, stateManager, pathManager } from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 import {
   CloudFormationClient,
   CreateChangeSetCommand,
@@ -8,6 +9,7 @@ import {
 } from '@aws-sdk/client-cloudformation';
 import fs from 'fs-extra';
 import * as path from 'path';
+import { CloudFormationService } from './services/cloudformation-service';
 
 export interface TemplateDriftResult {
   hasTemplateDrift: boolean;
@@ -44,17 +46,22 @@ interface ChangeDetail {
 export class TemplateDriftDetector {
   private cfn: CloudFormationClient;
   private context: $TSContext;
+  private cfnService: CloudFormationService;
 
   constructor(context: $TSContext) {
     this.context = context;
-    const region = stateManager.getMeta()?.providers?.awscloudformation?.Region || 'us-east-1';
-    this.cfn = new CloudFormationClient({ region });
+    this.cfnService = new CloudFormationService();
+    // Will be initialized in detect() method since it's async
   }
 
   async detect(): Promise<TemplateDriftResult> {
     try {
+      // Initialize CloudFormation client using the standard Amplify pattern
+      this.cfn = await this.cfnService.getClient(this.context);
+
       // 1. Check prerequisites
       const currentCloudBackendPath = pathManager.getCurrentCloudBackendDirPath();
+      printer.debug(`Checking for #current-cloud-backend at: ${currentCloudBackendPath}`);
       if (!fs.existsSync(currentCloudBackendPath)) {
         return {
           hasTemplateDrift: false,
@@ -84,9 +91,11 @@ export class TemplateDriftDetector {
 
       const stackInfo = teamProviderInfo[envName].awscloudformation;
       const stackName = stackInfo.StackName;
+      printer.debug(`Environment: ${envName}, Stack: ${stackName}`);
 
       // 3. Read cached template
       const templatePath = path.join(currentCloudBackendPath, 'awscloudformation', 'build', 'root-cloudformation-stack.json');
+      printer.debug(`Reading cached template from: ${templatePath}`);
 
       if (!fs.existsSync(templatePath)) {
         return {
@@ -103,9 +112,11 @@ export class TemplateDriftDetector {
 
       // 4. Prepare parameters
       const parameters = this.extractParameters(stackInfo, template);
+      printer.debug(`Extracted ${parameters.length} parameters from template`);
 
       // 5. Create changeset
       const changeSetName = `amplify-drift-detection-${Date.now()}`;
+      printer.debug(`Creating changeset: ${changeSetName}`);
 
       await this.cfn.send(
         new CreateChangeSetCommand({
@@ -149,31 +160,30 @@ export class TemplateDriftDetector {
         );
       }
 
-      // Debug: Print full changeset in verbose mode
-      if (this.context.parameters?.options?.verbose) {
-        this.context.print.info(`CloudFormation ChangeSet: ${stackName}`);
-        this.context.print.info(`Status: ${changeSet.Status}`);
-        this.context.print.info(`IncludeNestedStacks: ${changeSet.IncludeNestedStacks}`);
-        if (changeSet.StatusReason) {
-          this.context.print.info(`StatusReason: ${changeSet.StatusReason}`);
-        }
-        if (changeSet.Changes && changeSet.Changes.length > 0) {
-          this.context.print.info(`Changes: ${changeSet.Changes.length}`);
-          for (const change of changeSet.Changes) {
-            if (change.ResourceChange) {
-              const rc = change.ResourceChange;
-              this.context.print.info(`  ${rc.LogicalResourceId} (${rc.ResourceType}) - ${rc.Action}`);
-            }
+      // Debug: Print full changeset
+      printer.debug(`CloudFormation ChangeSet: ${stackName}`);
+      printer.debug(`Status: ${changeSet.Status}`);
+      printer.debug(`IncludeNestedStacks: ${changeSet.IncludeNestedStacks}`);
+      if (changeSet.StatusReason) {
+        printer.debug(`StatusReason: ${changeSet.StatusReason}`);
+      }
+      if (changeSet.Changes && changeSet.Changes.length > 0) {
+        printer.debug(`Changes: ${changeSet.Changes.length}`);
+        for (const change of changeSet.Changes) {
+          if (change.ResourceChange) {
+            const rc = change.ResourceChange;
+            printer.debug(`  ${rc.LogicalResourceId} (${rc.ResourceType}) - ${rc.Action}`);
           }
-        } else {
-          this.context.print.info('Changes: 0');
         }
+      } else {
+        printer.debug('Changes: 0');
       }
 
       const result = await this.analyzeChangeSet(changeSet);
 
       // 8. Cleanup
       try {
+        printer.debug(`Deleting changeset: ${changeSetName}`);
         await this.cfn.send(
           new DeleteChangeSetCommand({
             StackName: stackName,
@@ -224,14 +234,17 @@ export class TemplateDriftDetector {
 
     // Handle "No updates" case
     if (changeSet.Status === 'FAILED' && changeSet.StatusReason?.includes('No updates')) {
+      printer.debug('ChangeSet status: No updates detected');
       return result;
     }
 
     if (!changeSet.Changes || changeSet.Changes.length === 0) {
+      printer.debug('ChangeSet has no changes');
       return result;
     }
 
     result.hasTemplateDrift = true;
+    printer.debug(`Analyzing ${changeSet.Changes.length} changes from changeset`);
 
     // Analyze each change (CDK-inspired approach)
     for (const change of changeSet.Changes) {
@@ -274,10 +287,8 @@ export class TemplateDriftDetector {
           const changeSetArn = rc.ChangeSetId;
           const changeSetName = changeSetArn.split('/')[1]; // Extract changeset name from ARN
 
-          if (this.context.parameters?.options?.verbose) {
-            this.context.print.info(`Fetching nested changeset: ${stackName}`);
-            this.context.print.info(`ChangeSet: ${changeSetName}`);
-          }
+          printer.debug(`Fetching nested changeset: ${stackName}`);
+          printer.debug(`ChangeSet: ${changeSetName}`);
 
           // Describe the nested changeset
           const nestedChangeSet = await this.cfn.send(
@@ -287,16 +298,16 @@ export class TemplateDriftDetector {
             }),
           );
 
-          // Print nested changeset details in verbose mode
-          if (this.context.parameters?.options?.verbose && nestedChangeSet.Changes && nestedChangeSet.Changes.length > 0) {
-            this.context.print.info(`Nested Stack: ${stackName}`);
-            this.context.print.info(`Nested Changes: ${nestedChangeSet.Changes.length}`);
+          // Print nested changeset details
+          if (nestedChangeSet.Changes && nestedChangeSet.Changes.length > 0) {
+            printer.debug(`Nested Stack: ${stackName}`);
+            printer.debug(`Nested Changes: ${nestedChangeSet.Changes.length}`);
             for (const nestedChange of nestedChangeSet.Changes) {
               if (nestedChange.ResourceChange) {
                 const nrc = nestedChange.ResourceChange;
-                this.context.print.info(`  ${nrc.LogicalResourceId} (${nrc.ResourceType}) - ${nrc.Action}`);
+                printer.debug(`  ${nrc.LogicalResourceId} (${nrc.ResourceType}) - ${nrc.Action}`);
                 if (nrc.ResourceType === 'AWS::CloudFormation::Stack' && nrc.ChangeSetId) {
-                  this.context.print.info(`    Has nested changeset (3rd level or deeper)`);
+                  printer.debug(`    Has nested changeset (3rd level or deeper)`);
                 }
               }
             }
@@ -308,17 +319,13 @@ export class TemplateDriftDetector {
           // Add nested changes to the current change
           if (nestedResult.changes && nestedResult.changes.length > 0) {
             changeInfo.nestedChanges = nestedResult.changes;
-            if (this.context.parameters?.options?.verbose) {
-              this.context.print.info(`Processed ${nestedResult.changes.length} nested changes`);
-            }
+            printer.debug(`Processed ${nestedResult.changes.length} nested changes`);
           }
         } catch (error: any) {
           // Log error but continue processing
-          if (this.context.parameters?.options?.verbose) {
-            this.context.print.warning(`Could not fetch nested changeset: ${error.message}`);
-            this.context.print.warning(`Stack ARN: ${rc.PhysicalResourceId}`);
-            this.context.print.warning(`ChangeSet ID: ${rc.ChangeSetId}`);
-          }
+          printer.debug(`Could not fetch nested changeset: ${error.message}`);
+          printer.debug(`Stack ARN: ${rc.PhysicalResourceId}`);
+          printer.debug(`ChangeSet ID: ${rc.ChangeSetId}`);
         }
       }
 

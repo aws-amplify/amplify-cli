@@ -138,7 +138,7 @@ export async function detectStackDrift(
       }
     }
 
-    print.debug('');
+    print.debug('Resource drift status:');
 
     for (const resource of completeResourceList) {
       const status = resource.driftStatus;
@@ -174,8 +174,6 @@ export async function detectStackDrift(
         }
       }
     }
-
-    print.debug('');
   }
 
   logger.logInfo({ message: `detectStackDrift.complete: ${stackName}, ${driftResults.StackResourceDrifts?.length} resources` });
