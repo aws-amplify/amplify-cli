@@ -1,14 +1,9 @@
 /**
  * Detect local drift (Phase 3) - Local files vs S3 backend
- * Fetches fresh state from S3 before comparison
+ * Note: S3 sync is handled separately before all phases run
  */
 
-import { $TSContext, AmplifyError, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
-import * as fs from 'fs-extra';
-import * as path from 'path';
-import { downloadZip, extractZip } from '@aws-amplify/amplify-provider-awscloudformation/lib/zip-util';
-import { S3 } from '@aws-amplify/amplify-provider-awscloudformation/lib/aws-utils/aws-s3';
-const { S3BackendZipFileName } = require('@aws-amplify/amplify-provider-awscloudformation/lib/constants');
+import { $TSContext, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
 
 /**
  * Phase 3 drift detection results
@@ -40,8 +35,13 @@ export interface ResourceInfo {
 
 /**
  * Detect drift between local files and S3 backend state
- * This is Phase 3 of drift detection - compares against LIVE S3 state
- * Fix #2: Accept context as parameter for proper S3 initialization
+ * This is Phase 3 of drift detection - compares local against cloud backend
+ *
+ * IMPORTANT: This function now assumes the #current-cloud-backend directory
+ * has already been synced from S3. The sync is handled separately in
+ * syncCloudBackendFromS3() which is called before all phases run.
+ *
+ * @param context - Amplify context (kept for consistency, not used after refactor)
  */
 export async function detectLocalDrift(context: $TSContext): Promise<Phase3Results> {
   try {
@@ -55,10 +55,19 @@ export async function detectLocalDrift(context: $TSContext): Promise<Phase3Resul
       };
     }
 
-    // Refresh the cloud backend cache from S3 to get current state
-    await refreshCloudBackendFromS3(context);
+    // Check if we have a cloud backend to compare against
+    const currentCloudBackendDir = pathManager.getCurrentCloudBackendDirPath();
+    if (!currentCloudBackendDir || !require('fs-extra').existsSync(currentCloudBackendDir)) {
+      return {
+        phase: 3,
+        hasDrift: false,
+        skipped: true,
+        skipReason: 'No cloud backend found - project may not be deployed yet',
+      };
+    }
 
-    // Now use existing status logic with fresh data from S3
+    // Use existing status logic to compare local vs cloud backend
+    // Note: The cloud backend has already been synced from S3
     const { getResourceStatus } = require('../../extensions/amplify-helpers/resource-status-data');
 
     const statusResults = await getResourceStatus();
@@ -91,46 +100,4 @@ export async function detectLocalDrift(context: $TSContext): Promise<Phase3Resul
       skipReason: error.message || 'Unable to detect local drift',
     };
   }
-}
-
-/**
- * Refresh the #current-cloud-backend directory with fresh data from S3
- * This ensures we're comparing against the actual deployed state, not stale cache
- * Uses the same ZIP-based approach as the existing Amplify code for consistency
- */
-async function refreshCloudBackendFromS3(context: $TSContext): Promise<void> {
-  const amplifyDir = pathManager.getAmplifyDirPath();
-  const tempDir = path.join(amplifyDir, '.temp');
-  const currentCloudBackendDir = pathManager.getCurrentCloudBackendDirPath();
-
-  const s3 = await S3.getInstance(context);
-  let currentCloudBackendZip: string;
-  try {
-    currentCloudBackendZip = await downloadZip(s3, tempDir, S3BackendZipFileName, undefined);
-  } catch (err: any) {
-    if (err?.name === 'NoSuchBucket') {
-      throw new AmplifyError('EnvironmentNotInitializedError', {
-        message: `Could not find a deployment bucket for the specified backend environment. This environment may have been deleted.`,
-        resolution: 'Make sure the environment has been initialized with "amplify init" or "amplify env add".',
-      });
-    }
-    // if there was some other error, wrap it in AmplifyError
-    throw new AmplifyError(
-      'DeploymentError',
-      {
-        message: `Failed to download backend state from S3: ${err.message}`,
-        resolution: 'Check your AWS credentials and network connection.',
-      },
-      err,
-    );
-  }
-
-  const unzippedDir = await extractZip(tempDir, currentCloudBackendZip);
-  const newDir = `${currentCloudBackendDir}.new`;
-
-  fs.copySync(unzippedDir, newDir);
-  fs.removeSync(currentCloudBackendDir);
-  fs.moveSync(newDir, currentCloudBackendDir);
-
-  fs.removeSync(tempDir);
 }
