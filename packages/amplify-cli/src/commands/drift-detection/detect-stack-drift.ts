@@ -176,8 +176,82 @@ export async function detectStackDrift(
     }
   }
 
+  // Filter out known Amplify Auth IdP Deny→Allow changes from property differences
+  if (driftResults.StackResourceDrifts) {
+    driftResults.StackResourceDrifts = driftResults.StackResourceDrifts.map((drift) => {
+      // For modified resources, filter out Auth IdP Deny→Allow property changes
+      if (drift.StackResourceDriftStatus === 'MODIFIED' && drift.PropertyDifferences && drift.PropertyDifferences.length > 0) {
+        // Filter out Auth IdP changes from property differences
+        drift.PropertyDifferences = drift.PropertyDifferences.filter((propDiff) => {
+          return !isAmplifyAuthRoleDenyToAllowChange(propDiff);
+        });
+
+        // If all property differences were filtered out, change status to IN_SYNC
+        if (drift.PropertyDifferences.length === 0) {
+          drift.StackResourceDriftStatus = 'IN_SYNC';
+        }
+      }
+
+      return drift;
+    });
+  }
+
   logger.logInfo({ message: `detectStackDrift.complete: ${stackName}, ${driftResults.StackResourceDrifts?.length} resources` });
   return driftResults;
+}
+
+/**
+ * Check if a property difference is an Amplify auth role Deny→Allow change (intended drift)
+ */
+function isAmplifyAuthRoleDenyToAllowChange(propDiff: any): boolean {
+  // Check if this is an AssumeRolePolicyDocument change
+  if (!propDiff.PropertyPath || !propDiff.PropertyPath.includes('AssumeRolePolicyDocument')) {
+    return false;
+  }
+
+  // Check if this involves Effect changing from Deny to Allow
+  const expectedValue = propDiff.ExpectedValue;
+  const actualValue = propDiff.ActualValue;
+
+  if (typeof expectedValue === 'string' && typeof actualValue === 'string') {
+    try {
+      // Parse JSON values to check for Effect change
+      const expectedJson = JSON.parse(expectedValue);
+      const actualJson = JSON.parse(actualValue);
+
+      // Check if this is a Statement array change with Effect Deny→Allow
+      if (expectedJson.Statement && actualJson.Statement && Array.isArray(expectedJson.Statement) && Array.isArray(actualJson.Statement)) {
+        // Look for Deny→Allow change in any statement
+        for (let i = 0; i < Math.max(expectedJson.Statement.length, actualJson.Statement.length); i++) {
+          const expectedStmt = expectedJson.Statement[i];
+          const actualStmt = actualJson.Statement[i];
+
+          if (
+            expectedStmt &&
+            actualStmt &&
+            expectedStmt.Effect === 'Deny' &&
+            actualStmt.Effect === 'Allow' &&
+            expectedStmt.Principal?.Federated === 'cognito-identity.amazonaws.com' &&
+            actualStmt.Principal?.Federated === 'cognito-identity.amazonaws.com'
+          ) {
+            return true;
+          }
+        }
+      }
+    } catch (e) {
+      // If JSON parsing fails, fall back to string comparison
+      if (
+        expectedValue.includes('"Effect": "Deny"') &&
+        actualValue.includes('"Effect": "Allow"') &&
+        expectedValue.includes('cognito-identity.amazonaws.com') &&
+        actualValue.includes('cognito-identity.amazonaws.com')
+      ) {
+        return true;
+      }
+    }
+  }
+
+  return false;
 }
 
 /**

@@ -116,7 +116,7 @@ async function refreshCloudBackendFromS3(context: $TSContext): Promise<void> {
     }
     // if there was some other error, wrap it in AmplifyError
     throw new AmplifyError(
-      'S3DownloadError',
+      'DeploymentError',
       {
         message: `Failed to download backend state from S3: ${err.message}`,
         resolution: 'Check your AWS credentials and network connection.',
