@@ -21,10 +21,12 @@ export class AmplifyMigrationDecommissionStep extends AmplifyMigrationStep {
   }
 
   public async validate(): Promise<void> {
+    const changeSet = await this.createChangeSet();
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const validations = new AmplifyGen2MigrationValidations(this.logger, this.context);
     // eslint-disable-next-line spellcheck/spell-checker
-    await validations.validateStatefulResources(await this.createChangeSet());
+    await validations.validateStatefulResources(changeSet, true);
   }
 
   public async execute(): Promise<void> {

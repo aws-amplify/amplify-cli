@@ -515,6 +515,60 @@ describe('AmplifyGen2MigrationValidations', () => {
         message: 'Decommission will delete stateful resources.',
       });
     });
+
+    it('should pass when deployment bucket is removed with excludeDeploymentBucket=true', async () => {
+      jest.spyOn(stateManager, 'getMeta').mockReturnValue({
+        providers: {
+          awscloudformation: {
+            DeploymentBucketName: 'amplify-deployment-bucket-12345',
+          },
+        },
+      });
+
+      const changeSet: DescribeChangeSetOutput = {
+        Changes: [
+          {
+            Type: 'Resource',
+            ResourceChange: {
+              Action: 'Remove',
+              ResourceType: 'AWS::S3::Bucket',
+              PhysicalResourceId: 'amplify-deployment-bucket-12345',
+            },
+          },
+        ],
+      };
+
+      await expect(validations.validateStatefulResources(changeSet, true)).resolves.not.toThrow();
+    });
+
+    it('should throw when non-deployment S3 bucket is removed even with excludeDeploymentBucket=true', async () => {
+      jest.spyOn(stateManager, 'getMeta').mockReturnValue({
+        providers: {
+          awscloudformation: {
+            DeploymentBucketName: 'amplify-deployment-bucket-12345',
+          },
+        },
+      });
+
+      const changeSet: DescribeChangeSetOutput = {
+        Changes: [
+          {
+            Type: 'Resource',
+            ResourceChange: {
+              Action: 'Remove',
+              ResourceType: 'AWS::S3::Bucket',
+              PhysicalResourceId: 'user-data-bucket',
+            },
+          },
+        ],
+      };
+
+      await expect(validations.validateStatefulResources(changeSet, true)).rejects.toMatchObject({
+        name: 'DestructiveMigrationError',
+        message: 'Decommission will delete stateful resources.',
+        resolution: 'Review the resources above and ensure data is backed up before proceeding.',
+      });
+    });
   });
 
   describe('validateDeploymentStatus', () => {
