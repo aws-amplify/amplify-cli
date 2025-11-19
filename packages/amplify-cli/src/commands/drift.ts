@@ -66,7 +66,6 @@ export class AmplifyDriftDetector {
   private readonly formatter: DriftFormatter;
   private readonly printer: Print;
   private readonly options: DriftOptions;
-  private phase2Results: any = null;
 
   constructor(private readonly context: $TSContext, print?: Print) {
     // Initialize services
@@ -186,9 +185,6 @@ export class AmplifyDriftDetector {
       this.printer.debug(`Phase 3 complete: hasDrift=${phase3Results.hasDrift}`);
     }
 
-    // Store Phase 2 results for later use
-    this.phase2Results = phase2Results;
-
     // 6. Phase 1: Detect CloudFormation drift recursively (always runs, doesn't depend on S3 sync)
     this.printer.debug('Starting Phase 1: CloudFormation drift detection');
     this.printer.info(`Checking drift for root stack: ${chalk.yellow(stackName)}`);
@@ -213,7 +209,7 @@ export class AmplifyDriftDetector {
     await this.formatter.processResults(cfn, stackName, rootTemplate, combinedResults);
 
     // Add Phase 2 and Phase 3 results to formatter
-    this.formatter.addPhase2Results(this.phase2Results);
+    this.formatter.addPhase2Results(phase2Results);
     this.formatter.addPhase3Results(phase3Results);
 
     // 11. Display results
@@ -227,15 +223,15 @@ export class AmplifyDriftDetector {
     }
 
     // 13. Check for errors during detection
-    const hasErrors = Boolean(phase3Results.skipped || this.phase2Results?.skipped);
+    const hasErrors = Boolean(phase3Results.skipped || phase2Results?.skipped);
     if (hasErrors) {
       this.printer.warn('');
       this.printer.warn(chalk.yellow('Drift detection encountered errors:'));
       if (phase3Results.skipped) {
         this.printer.warn(chalk.yellow(`  • Local changes check: ${phase3Results.skipReason}`));
       }
-      if (this.phase2Results?.skipped) {
-        this.printer.warn(chalk.yellow(`  • Template changes check: ${this.phase2Results.skipReason}`));
+      if (phase2Results?.skipped) {
+        this.printer.warn(chalk.yellow(`  • Template changes check: ${phase2Results.skipReason}`));
       }
       this.printer.warn('');
     }
