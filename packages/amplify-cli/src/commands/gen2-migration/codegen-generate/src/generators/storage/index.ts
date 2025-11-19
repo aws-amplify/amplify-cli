@@ -5,8 +5,6 @@ import { createTriggersProperty, Lambda } from '../functions/lambda';
 import type { BucketAccelerateStatus, BucketVersioningStatus, ServerSideEncryptionByDefault } from '@aws-sdk/client-s3';
 const factory = ts.factory;
 
-const amplifyGen1EnvName = 'AMPLIFY_GEN_1_ENV_NAME';
-
 export type S3TriggerDefinition = Record<string, never>;
 export type Permission = 'read' | 'write' | 'create' | 'delete';
 export type GroupPermissions<G extends readonly string[]> = {
@@ -54,15 +52,6 @@ export const renderStorage = (storageParams: StorageRenderParameters = {}) => {
   const triggers = storageParams.triggers || {};
 
   const postImportStatements = [];
-  const amplifyGen1EnvStatement = createVariableStatement(
-    factory.createVariableDeclaration(
-      amplifyGen1EnvName,
-      undefined,
-      undefined,
-      factory.createIdentifier('process.env.AMPLIFY_GEN_1_ENV_NAME ?? "sandbox"'),
-    ),
-  );
-  postImportStatements.push(amplifyGen1EnvStatement);
 
   if (storageParams.accessPatterns) {
     propertyAssignments.push(getAccessPatterns(storageParams.accessPatterns));
