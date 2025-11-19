@@ -314,7 +314,7 @@ class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
           foundUserPoolGroupPair ||
           foundIamRolePair
         ) {
-          console.log(`[DEBUG] Mapping found: ${gen1ResourceLogicalId} -> ${gen2ResourceLogicalId}`);
+          this.logger.debug(`Mapping found: ${gen1ResourceLogicalId} -> ${gen2ResourceLogicalId}`);
           gen1ToGen2ResourceLogicalIdMapping.set(gen1ResourceLogicalId, gen2ResourceLogicalId);
           clonedGen1ResourceMap.delete(gen1ResourceLogicalId);
           clonedGen2ResourceMap.delete(gen2ResourceLogicalId);

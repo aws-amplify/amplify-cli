@@ -810,7 +810,6 @@ export class BackendSynthesizer {
 
     // Add CfnResource import for DynamoDB escape hatch
     if (renderArgs.data) {
-      console.log('DEBUG: Adding CfnResource import');
       imports.push(this.createImportStatement([factory.createIdentifier('CfnResource')], 'aws-cdk-lib'));
     }
 

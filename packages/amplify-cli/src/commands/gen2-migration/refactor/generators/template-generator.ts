@@ -329,23 +329,20 @@ class TemplateGenerator {
     categoryTemplateGenerator: CategoryTemplateGenerator<CFN_CATEGORY_TYPE>,
     sourceCategoryStackId: string,
   ): Promise<[CFNTemplate, Parameter[]] | undefined> {
-    let updatingGen1CategoryStack;
     try {
       const { newTemplate, parameters: gen1StackParameters } = await categoryTemplateGenerator.generateGen1PreProcessTemplate();
       assert(gen1StackParameters);
-      updatingGen1CategoryStack = ora(`Updating Gen 1 ${this.getStackCategoryName(category)} stack...`).start();
+      this.logger.info(`Updating Gen 1 ${this.getStackCategoryName(category)} stack...`);
 
       const gen1StackUpdateStatus = await tryUpdateStack(this.cfnClient, sourceCategoryStackId, gen1StackParameters, newTemplate);
 
       assert(gen1StackUpdateStatus === CFNStackStatus.UPDATE_COMPLETE, `Gen 1 stack is in an invalid state: ${gen1StackUpdateStatus}`);
-      updatingGen1CategoryStack.succeed(`Updated Gen 1 ${this.getStackCategoryName(category)} stack successfully`);
+      this.logger.info(`Updated Gen 1 ${this.getStackCategoryName(category)} stack successfully`);
 
       return [newTemplate, gen1StackParameters];
     } catch (e) {
       if (this.isNoResourcesError(e)) {
-        updatingGen1CategoryStack?.succeed(
-          `No resources found to move in Gen 1 ${this.getStackCategoryName(category)} stack. Skipping update.`,
-        );
+        this.logger.info(`No resources found to move in Gen 1 ${this.getStackCategoryName(category)} stack. Skipping update.`);
         return undefined;
       }
       throw e;
