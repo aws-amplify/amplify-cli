@@ -551,6 +551,7 @@ export class BackendSynthesizer {
     scopeMap.set('email', 'EMAIL');
     scopeMap.set('openid', 'OPENID');
     scopeMap.set('profile', 'PROFILE');
+    scopeMap.set('aws.cognito.signin.user.admin', 'COGNITO_ADMIN');
 
     const scopesList: string[] = [];
     scopes.forEach((scope) => {

@@ -1,5 +1,5 @@
 import { AmplifyMigrationCloneStep } from './gen2-migration/clone';
-import { $TSContext } from '@aws-amplify/amplify-cli-core';
+import { $TSContext, AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { AmplifyMigrationStep } from './gen2-migration/_step';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { AmplifyMigrationCleanupStep } from './gen2-migration/cleanup';
@@ -49,19 +49,42 @@ export const run = async (context: $TSContext) => {
 
   shiftParams(context);
 
+  const skipValidations = (context.input.options ?? {})['skip-validations'] ?? false;
+  const validationsOnly = (context.input.options ?? {})['validations-only'] ?? false;
+  const skipRollback = (context.input.options ?? {})['skip-rollback'] ?? false;
+
+  if (skipValidations && validationsOnly) {
+    throw new AmplifyError('InputValidationError', {
+      message: 'Cannot specify both --skip-validations and --validation-only',
+    });
+  }
+
   const implementation: AmplifyMigrationStep = new step.class(context);
 
-  printer.info('Validating');
-  await implementation.validate();
-
-  try {
-    printer.info('Executing');
-    await implementation.execute();
-  } catch (error: unknown) {
-    printer.warn(`${error}. Rolling back.`);
-    await implementation.rollback();
-    throw error;
+  if (!skipValidations) {
+    printer.info('» validating');
+    printer.blankLine();
+    await implementation.validate();
   }
+
+  if (!validationsOnly) {
+    try {
+      printer.info('» executing');
+      printer.blankLine();
+      await implementation.execute();
+    } catch (error: unknown) {
+      if (!skipRollback) {
+        printer.error(`Execution failed: ${error}`);
+        printer.blankLine();
+        printer.info('» rolling back');
+        printer.blankLine();
+        await implementation.rollback();
+      }
+      throw error;
+    }
+  }
+
+  printer.success('Done');
 };
 
 function shiftParams(context) {

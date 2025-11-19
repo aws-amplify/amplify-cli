@@ -106,7 +106,7 @@ export class AmplifyHelperTransformer {
     return result.transformed[0] as ts.SourceFile;
   }
 
-  static addRequiredImports(sourceFile: ts.SourceFile, projectName?: string): ts.SourceFile {
+  static addBranchNameVariable(sourceFile: ts.SourceFile, projectName?: string): ts.SourceFile {
     // Check if branchName declaration already exists
     const hasBranchName = sourceFile.statements.some(
       (stmt) =>
