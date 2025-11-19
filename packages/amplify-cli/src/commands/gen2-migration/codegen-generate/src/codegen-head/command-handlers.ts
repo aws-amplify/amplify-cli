@@ -433,8 +433,8 @@ export async function updateCdkStackFile(customResources: string[], destinationC
 
       // Apply AmplifyHelperTransformer for AST-based transformations
       const sourceFile = ts.createSourceFile(cdkStackFilePath, cdkStackContent, ts.ScriptTarget.Latest, true);
-      const transformedFile = AmplifyHelperTransformer.transform(sourceFile);
-      const transformedWithBranchName = AmplifyHelperTransformer.addBranchNameVariable(transformedFile);
+      const transformedFile = AmplifyHelperTransformer.transform(sourceFile, projectName);
+      const transformedWithBranchName = AmplifyHelperTransformer.addBranchNameVariable(transformedFile, projectName);
       const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
       cdkStackContent = printer.printFile(transformedWithBranchName);
 
