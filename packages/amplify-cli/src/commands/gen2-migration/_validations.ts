@@ -12,21 +12,32 @@ import { STATEFUL_RESOURCES } from './stateful-resources';
 import CLITable from 'cli-table3';
 import Bottleneck from 'bottleneck';
 import execa from 'execa';
+import { Logger } from '../gen2-migration';
+import chalk from 'chalk';
 
 export class AmplifyGen2MigrationValidations {
-  private spinner?: AmplifySpinner;
   private limiter = new Bottleneck({
     maxConcurrent: 3,
     minTime: 50,
   });
 
-  constructor(private readonly context: $TSContext) {}
+  constructor(private readonly logger: Logger, private readonly context: $TSContext) {}
 
-  // public async validateDrift(): Promise<void> {
-  //   return new AmplifyDriftDetector(this.context).detect();
-  // }
+  public async validateDrift(): Promise<void> {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const code = await new AmplifyDriftDetector(this.context, this.logger).detect({ format: 'tree', verbose: true });
+    if (code !== 0) {
+      throw new AmplifyError('MigrationError', {
+        message: 'Drift detected',
+        resolution: 'Inspect the output above and resolve the drift',
+      });
+    }
+    this.logger.info(chalk.green('No drift detected ✔ '));
+  }
 
   public async validateWorkingDirectory(): Promise<void> {
+    this.logger.info('Inspecting local directory state for uncommitted changes');
+
     const { stdout: statusOutput } = await execa('git', ['status', '--porcelain']);
     if (statusOutput.trim()) {
       throw new AmplifyError('MigrationError', {
@@ -35,20 +46,7 @@ export class AmplifyGen2MigrationValidations {
       });
     }
 
-    try {
-      const { stdout: unpushedOutput } = await execa('git', ['log', '@{u}..', '--oneline']);
-      if (unpushedOutput.trim()) {
-        throw new AmplifyError('MigrationError', {
-          message: 'Local branch has unpushed commits',
-          resolution: 'Push your commits before proceeding with migration.',
-        });
-      }
-    } catch (err: any) {
-      if (err instanceof AmplifyError) throw err;
-      if (!err.message?.includes('no upstream') && !err.stderr?.includes('no upstream')) {
-        throw err;
-      }
-    }
+    this.logger.info(chalk.green('Local working directory is clean ✔'));
   }
 
   public async validateDeploymentStatus(): Promise<void> {
@@ -62,6 +60,7 @@ export class AmplifyGen2MigrationValidations {
       });
     }
 
+    this.logger.info(`Inspecting root stack '${stackName}' status`);
     const cfnClient = new CloudFormationClient({});
     const response = await cfnClient.send(new DescribeStacksCommand({ StackName: stackName }));
 
@@ -83,7 +82,7 @@ export class AmplifyGen2MigrationValidations {
       });
     }
 
-    printer.success(`Deployment status validated: ${stackStatus}`);
+    this.logger.info(chalk.green(`Root stack '${stackName}' status is ${stackStatus} ✔`));
   }
 
   public async validateDeploymentVersion(): Promise<void> {
@@ -101,8 +100,7 @@ export class AmplifyGen2MigrationValidations {
     const meta = stateManager.getMeta();
     const deploymentBucketName = excludeDeploymentBucket ? meta.providers.awscloudformation.DeploymentBucketName : undefined;
 
-    this.spinner = new AmplifySpinner();
-    this.spinner.start('Scanning for stateful resources...');
+    this.logger.info('Scanning for stateful resources...');
 
     const statefulRemoves: Array<{ category: string; resourceType: string; physicalId: string }> = [];
     for (const change of changeSet.Changes) {
@@ -118,7 +116,7 @@ export class AmplifyGen2MigrationValidations {
 
         if (change.ResourceChange.ResourceType === 'AWS::CloudFormation::Stack' && change.ResourceChange.PhysicalResourceId) {
           const category = this.extractCategory(change.ResourceChange.LogicalResourceId || '');
-          this.spinner.start(`Scanning '${category}'...`);
+          this.logger.info(`Scanning '${category}'...`);
           const nestedResources = await this.getStatefulResources(
             change.ResourceChange.PhysicalResourceId,
             change.ResourceChange.LogicalResourceId,
@@ -127,7 +125,7 @@ export class AmplifyGen2MigrationValidations {
         } else if (STATEFUL_RESOURCES.has(change.ResourceChange.ResourceType)) {
           const category = this.extractCategory(change.ResourceChange.LogicalResourceId || '');
           const physicalId = change.ResourceChange.PhysicalResourceId || 'N/A';
-          this.spinner.start(`Scanning '${category}' category: found stateful resource "${physicalId}"`);
+          this.logger.info(`Scanning '${category}' category: found stateful resource "${physicalId}"`);
           statefulRemoves.push({
             category,
             resourceType: change.ResourceChange.ResourceType,
@@ -136,9 +134,6 @@ export class AmplifyGen2MigrationValidations {
         }
       }
     }
-
-    this.spinner.stop();
-    this.spinner = undefined;
 
     if (statefulRemoves.length > 0) {
       const table = new CLITable({
@@ -234,9 +229,7 @@ export class AmplifyGen2MigrationValidations {
         } else if (resource.ResourceType && STATEFUL_RESOURCES.has(resource.ResourceType)) {
           const category = parentCategory || this.extractCategory(resource.LogicalResourceId || '');
           const physicalId = resource.PhysicalResourceId || 'N/A';
-          if (this.spinner) {
-            this.spinner.start(`Scanning '${category}' category: found stateful resource "${physicalId}"`);
-          }
+          this.logger.info(`Scanning '${category}' category: found stateful resource "${physicalId}"`);
           statefulResources.push({
             category,
             resourceType: resource.ResourceType,

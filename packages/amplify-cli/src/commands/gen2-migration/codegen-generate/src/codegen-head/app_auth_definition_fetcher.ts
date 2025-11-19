@@ -17,7 +17,7 @@ import {
 import { CognitoIdentityClient, DescribeIdentityPoolCommand, GetIdentityPoolRolesCommand } from '@aws-sdk/client-cognito-identity';
 import { getAuthDefinition } from '../adapters/auth/index';
 import { fileOrDirectoryExists } from './directory_exists';
-import { BackendDownloader } from './backend_downloader.js';
+import { BackendDownloader } from './backend_downloader';
 import path from 'node:path';
 import fs from 'node:fs/promises';
 
