@@ -16,8 +16,7 @@ All the defaults on amplify push
 
 amplify add api
 
-
-<img width="746" height="541" alt="Screenshot 2025-11-19 at 4 48 32 PM" src="https://github.com/user-attachments/assets/2a3c0559-f341-4524-9885-c6c53c00459d" />
+<img width="1022" height="487" alt="Screenshot 2025-11-19 at 5 18 48 PM" src="https://github.com/user-attachments/assets/143b12cb-64b0-49a7-a2d6-2d18662769b4" />
 
 All the defaults on amplify push
 
