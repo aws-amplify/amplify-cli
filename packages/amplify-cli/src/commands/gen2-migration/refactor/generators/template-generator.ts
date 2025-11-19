@@ -29,6 +29,7 @@ import CfnOutputResolver from '../resolvers/cfn-output-resolver';
 import CfnDependencyResolver from '../resolvers/cfn-dependency-resolver';
 import CfnParameterResolver from '../resolvers/cfn-parameter-resolver';
 import ora from 'ora';
+import { Logger } from '../../../gen2-migration';
 
 const CFN_RESOURCE_STACK_TYPE = 'AWS::CloudFormation::Stack';
 const GEN2_AMPLIFY_AUTH_LOGICAL_ID_PREFIX = 'amplifyAuth';
@@ -93,6 +94,7 @@ class TemplateGenerator {
     private readonly cognitoIdpClient: CognitoIdentityProviderClient,
     private readonly appId: string,
     private readonly environmentName: string,
+    private readonly logger: Logger,
   ) {
     this._categoryStackMap = new Map<CATEGORY, [string, string]>();
     this.categoryTemplateGenerators = [];
@@ -413,6 +415,7 @@ class TemplateGenerator {
   ): CategoryTemplateGenerator<CFN_CATEGORY_TYPE> {
     assert(this.region);
     return new CategoryTemplateGenerator(
+      this.logger,
       sourceStackId,
       destinationStackId,
       this.region,

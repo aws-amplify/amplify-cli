@@ -5,10 +5,17 @@ import { CloudFormationClient, SetStackPolicyCommand } from '@aws-sdk/client-clo
 import { AmplifyGen2MigrationValidations } from './_validations';
 
 export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
+  public implications(): string[] {
+    const amplifyMeta = stateManager.getMeta();
+    const stackName = amplifyMeta?.providers?.awscloudformation?.StackName;
+
+    return [`You will not be able to deploy any changes to stack '${stackName}'`];
+  }
+
   public async validate(): Promise<void> {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const validations = new AmplifyGen2MigrationValidations({} as any);
+    const validations = new AmplifyGen2MigrationValidations(this.logger, this.context);
     await validations.validateDeploymentStatus();
+    await validations.validateDrift();
   }
 
   public async execute(): Promise<void> {
@@ -34,7 +41,7 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
       }),
     );
 
-    printer.success(`Stack ${stackName} has been locked`);
+    this.logger.info(`Root stack '${stackName}' has been locked`);
   }
 
   public async rollback(): Promise<void> {
