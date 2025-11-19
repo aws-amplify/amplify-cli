@@ -95,8 +95,11 @@ export class AmplifyGen2MigrationValidations {
   }
 
   // eslint-disable-next-line spellcheck/spell-checker
-  public async validateStatefulResources(changeSet: DescribeChangeSetOutput): Promise<void> {
+  public async validateStatefulResources(changeSet: DescribeChangeSetOutput, excludeDeploymentBucket = false): Promise<void> {
     if (!changeSet.Changes) return;
+
+    const meta = stateManager.getMeta();
+    const deploymentBucketName = excludeDeploymentBucket ? meta.providers.awscloudformation.DeploymentBucketName : undefined;
 
     this.spinner = new AmplifySpinner();
     this.spinner.start('Scanning for stateful resources...');
@@ -104,6 +107,15 @@ export class AmplifyGen2MigrationValidations {
     const statefulRemoves: Array<{ category: string; resourceType: string; physicalId: string }> = [];
     for (const change of changeSet.Changes) {
       if (change.Type === 'Resource' && change.ResourceChange?.Action === 'Remove' && change.ResourceChange?.ResourceType) {
+        // Skip deployment bucket only when explicitly requested (e.g., during decommission)
+        if (
+          deploymentBucketName &&
+          change.ResourceChange.ResourceType === 'AWS::S3::Bucket' &&
+          change.ResourceChange.PhysicalResourceId === deploymentBucketName
+        ) {
+          continue;
+        }
+
         if (change.ResourceChange.ResourceType === 'AWS::CloudFormation::Stack' && change.ResourceChange.PhysicalResourceId) {
           const category = this.extractCategory(change.ResourceChange.LogicalResourceId || '');
           this.spinner.start(`Scanning '${category}'...`);

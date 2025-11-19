@@ -17,28 +17,12 @@ import { invokeDeleteEnvParamsFromService } from '../../extensions/amplify-helpe
 
 export class AmplifyMigrationDecommissionStep extends AmplifyMigrationStep {
   public async validate(): Promise<void> {
-    const meta = stateManager.getMeta();
-    const deploymentBucketName = meta.providers?.awscloudformation?.DeploymentBucketName;
     const changeSet = await this.createChangeSet();
-
-    // Filter out deployment bucket from changes
-    if (changeSet.Changes) {
-      changeSet.Changes = changeSet.Changes.filter((change) => {
-        if (
-          change.Type === 'Resource' &&
-          change.ResourceChange?.ResourceType === 'AWS::S3::Bucket' &&
-          change.ResourceChange?.PhysicalResourceId === deploymentBucketName
-        ) {
-          return false;
-        }
-        return true;
-      });
-    }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const validations = new AmplifyGen2MigrationValidations({} as any);
     // eslint-disable-next-line spellcheck/spell-checker
-    await validations.validateStatefulResources(changeSet);
+    await validations.validateStatefulResources(changeSet, true);
   }
 
   public async execute(): Promise<void> {
