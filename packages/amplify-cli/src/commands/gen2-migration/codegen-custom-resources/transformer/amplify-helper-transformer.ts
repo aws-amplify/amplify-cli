@@ -5,20 +5,16 @@ export class AmplifyHelperTransformer {
     const transformer = <T extends ts.Node>(context: ts.TransformationContext) => {
       return (node: T) => {
         function visit(node: ts.Node): ts.Node {
-          // Remove AmplifyHelpers import statements
           if (ts.isImportDeclaration(node)) {
             const moduleSpecifier = node.moduleSpecifier;
             if (ts.isStringLiteral(moduleSpecifier) && moduleSpecifier.text === '@aws-amplify/cli-extensibility-helper') {
-              // Return undefined to remove this import
               return undefined;
             }
           }
 
-          // Transform cdk.Fn.ref('env') and Fn.ref('env') calls
           if (ts.isCallExpression(node)) {
             const expression = node.expression;
             if (ts.isPropertyAccessExpression(expression) && ts.isIdentifier(expression.name) && expression.name.text === 'ref') {
-              // Check if it's cdk.Fn.ref or Fn.ref
               const isCdkFnRef =
                 ts.isPropertyAccessExpression(expression.expression) &&
                 ts.isIdentifier(expression.expression.expression) &&
@@ -39,7 +35,6 @@ export class AmplifyHelperTransformer {
             }
           }
 
-          // Transform property access to AmplifyHelpers.getProjectInfo().envName
           if (ts.isPropertyAccessExpression(node)) {
             const expression = node.expression;
             if (
@@ -67,7 +62,7 @@ export class AmplifyHelperTransformer {
     return result.transformed[0] as ts.SourceFile;
   }
 
-  static addRequiredImports(sourceFile: ts.SourceFile): ts.SourceFile {
+  static addBranchNameVariable(sourceFile: ts.SourceFile): ts.SourceFile {
     // Check if branchName declaration already exists
     const hasBranchName = sourceFile.statements.some(
       (stmt) =>
@@ -98,27 +93,22 @@ export class AmplifyHelperTransformer {
       ),
     );
 
-    const filteredStatements = sourceFile.statements.filter(
-      (stmt) =>
-        !(
-          ts.isImportDeclaration(stmt) &&
-          ts.isStringLiteral(stmt.moduleSpecifier) &&
-          stmt.moduleSpecifier.text === '@aws-amplify/cli-extensibility-helper'
-        ),
-    );
-
     const newStatements = [];
+    let importsAdded = false;
 
-    // Add imports
-    newStatements.push(...filteredStatements.filter((stmt) => ts.isImportDeclaration(stmt)));
-
-    // Add branchName declaration if needed
-    if (!hasBranchName) {
-      newStatements.push(branchNameDeclaration);
+    for (const stmt of sourceFile.statements) {
+      if (ts.isImportDeclaration(stmt)) {
+        newStatements.push(stmt);
+      } else {
+        if (!importsAdded) {
+          if (!hasBranchName) {
+            newStatements.push(branchNameDeclaration);
+          }
+          importsAdded = true;
+        }
+        newStatements.push(stmt);
+      }
     }
-
-    // Add remaining statements (classes, etc.)
-    newStatements.push(...filteredStatements.filter((stmt) => !ts.isImportDeclaration(stmt)));
 
     return ts.factory.updateSourceFile(sourceFile, newStatements);
   }
