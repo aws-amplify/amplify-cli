@@ -8,7 +8,7 @@ import { printer } from '@aws-amplify/amplify-prompts';
 import chalk from 'chalk';
 import { detectStackDriftRecursive, type DriftDisplayFormat } from './drift-detection';
 import { detectLocalDrift } from './drift-detection/detect-local-drift';
-import { TemplateDriftDetector } from './drift-detection/detect-template-drift';
+import { detectTemplateDrift } from './drift-detection/detect-template-drift';
 import { CloudFormationService, AmplifyConfigService, FileService, DriftFormatter } from './drift-detection/services';
 import type { CloudFormationClient } from '@aws-sdk/client-cloudformation';
 import { Print } from './drift-detection/detect-stack-drift';
@@ -132,8 +132,7 @@ export class AmplifyDriftDetector {
       // 7. Phase 2: Detect template drift using changesets (only if sync succeeded)
       printer.debug('Starting Phase 2: Template drift detection');
       printer.info(chalk.gray('Checking for template drift using changesets...'));
-      const templateDriftDetector = new TemplateDriftDetector(this.context);
-      phase2Results = await templateDriftDetector.detect();
+      phase2Results = await detectTemplateDrift(this.context);
       printer.debug(`Phase 2 complete: hasTemplateDrift=${phase2Results.hasTemplateDrift}`);
 
       // 8. Phase 3: Detect local vs cloud backend drift (only if sync succeeded)
