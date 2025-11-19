@@ -15,7 +15,9 @@ Follow it up by adding social provider config secrets. For reference - https://d
 
 amplify add api
 
-<img width="1032" height="287" alt="Screenshot 2025-11-19 at 4 44 06 PM" src="https://github.com/user-attachments/assets/8eb11bb2-700a-428f-bea4-2bc1823aecf9" />
+
+<img width="1039" height="368" alt="Screenshot 2025-11-19 at 4 45 39 PM" src="https://github.com/user-attachments/assets/7c250a4e-a487-4165-9c4b-74da4a656996" />
+
 
 
 
