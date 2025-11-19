@@ -10,7 +10,6 @@ import {
   DescribeStackResourcesCommand,
   type DescribeStackResourceDriftsCommandOutput,
   type DescribeStackDriftDetectionStatusCommandOutput,
-  type StackResourceDrift,
 } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import chalk from 'chalk';
@@ -79,43 +78,8 @@ export async function detectStackDrift(
     }),
   );
 
-  // Get ALL resources in the stack to find NOT_CHECKED ones
-  const allResources = await cfn.send(
-    new DescribeStackResourcesCommand({
-      StackName: stackName,
-    }),
-  );
-
-  // Create a map of drift results by logical resource ID
-  const driftMap = new Map<string, StackResourceDrift>();
-  for (const drift of driftResults.StackResourceDrifts || []) {
-    if (drift.LogicalResourceId) {
-      driftMap.set(drift.LogicalResourceId, drift);
-    }
-  }
-
-  // Build complete resource list with drift status
-  const completeResourceList: Array<{
-    logicalId: string;
-    resourceType: string;
-    driftStatus: string;
-    drift?: StackResourceDrift;
-  }> = [];
-
-  for (const resource of allResources.StackResources || []) {
-    if (!resource.LogicalResourceId) continue;
-
-    const drift = driftMap.get(resource.LogicalResourceId);
-    completeResourceList.push({
-      logicalId: resource.LogicalResourceId,
-      resourceType: resource.ResourceType || 'Unknown',
-      driftStatus: drift?.StackResourceDriftStatus || 'NOT_CHECKED',
-      drift,
-    });
-  }
-
   // Print detailed resource table in verbose mode
-  if (completeResourceList.length > 0) {
+  if (driftResults.StackResourceDrifts && driftResults.StackResourceDrifts.length > 0) {
     // Count resources by status
     const statusCounts = {
       IN_SYNC: 0,
@@ -125,8 +89,8 @@ export async function detectStackDrift(
       UNKNOWN: 0,
     };
 
-    for (const resource of completeResourceList) {
-      const status = resource.driftStatus;
+    for (const drift of driftResults.StackResourceDrifts) {
+      const status = drift.StackResourceDriftStatus || 'UNKNOWN';
       if (status in statusCounts) {
         statusCounts[status as keyof typeof statusCounts]++;
       }
@@ -134,37 +98,38 @@ export async function detectStackDrift(
 
     print.verbose('Resource drift status:');
 
-    for (const resource of completeResourceList) {
-      const status = resource.driftStatus;
-      const logicalId = resource.logicalId.substring(0, 50).padEnd(50);
-      const resourceType = resource.resourceType.substring(0, 30).padEnd(30);
+    for (const drift of driftResults.StackResourceDrifts) {
+      const status = drift.StackResourceDriftStatus || 'UNKNOWN';
+      const logicalId = drift.LogicalResourceId || 'Unknown';
+      const resourceType = drift.ResourceType || 'Unknown';
 
       let statusDisplay = '';
       switch (status) {
         case 'IN_SYNC':
-          statusDisplay = '✓ IN_SYNC  ';
+          statusDisplay = '✓ IN_SYNC';
           break;
         case 'MODIFIED':
-          statusDisplay = '✗ MODIFIED ';
+          statusDisplay = '✗ MODIFIED';
           break;
         case 'DELETED':
-          statusDisplay = '✗ DELETED  ';
+          statusDisplay = '✗ DELETED';
           break;
         case 'NOT_CHECKED':
           statusDisplay = '○ UNCHECKED';
           break;
         default:
-          statusDisplay = '? UNKNOWN  ';
+          statusDisplay = '? UNKNOWN';
       }
 
-      print.verbose(`  ${statusDisplay}  ${logicalId}  ${resourceType}`);
+      // Format: Status | LogicalId (ResourceType)
+      print.verbose(`  ${statusDisplay.padEnd(12)} | ${logicalId} (${resourceType})`);
 
       // Show property differences for MODIFIED resources
-      if (status === 'MODIFIED' && resource.drift?.PropertyDifferences && resource.drift.PropertyDifferences.length > 0) {
-        for (const propDiff of resource.drift.PropertyDifferences) {
-          const propPath = (propDiff.PropertyPath || '').substring(0, 60);
+      if (status === 'MODIFIED' && drift.PropertyDifferences && drift.PropertyDifferences.length > 0) {
+        for (const propDiff of drift.PropertyDifferences) {
+          const propPath = propDiff.PropertyPath || 'Unknown';
           const diffType = propDiff.DifferenceType || 'UNKNOWN';
-          print.verbose(`      → ${propPath.padEnd(60)}  ${diffType}`);
+          print.verbose(`                 → ${propPath}: ${diffType}`);
         }
       }
     }
