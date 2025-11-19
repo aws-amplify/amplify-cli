@@ -155,19 +155,10 @@ export class AmplifyHelperTransformer {
         )
       : undefined;
 
-    const filteredStatements = sourceFile.statements.filter(
-      (stmt) =>
-        !(
-          ts.isImportDeclaration(stmt) &&
-          ts.isStringLiteral(stmt.moduleSpecifier) &&
-          stmt.moduleSpecifier.text === '@aws-amplify/cli-extensibility-helper'
-        ),
-    );
-
     const newStatements = [];
 
     // Add imports
-    newStatements.push(...filteredStatements.filter((stmt) => ts.isImportDeclaration(stmt)));
+    newStatements.push(...sourceFile.statements.filter((stmt) => ts.isImportDeclaration(stmt)));
 
     // Add branchName declaration if needed
     if (!hasBranchName) {
@@ -180,7 +171,7 @@ export class AmplifyHelperTransformer {
     }
 
     // Add remaining statements (classes, etc.)
-    newStatements.push(...filteredStatements.filter((stmt) => !ts.isImportDeclaration(stmt)));
+    newStatements.push(...sourceFile.statements.filter((stmt) => !ts.isImportDeclaration(stmt)));
 
     return ts.factory.updateSourceFile(sourceFile, newStatements);
   }

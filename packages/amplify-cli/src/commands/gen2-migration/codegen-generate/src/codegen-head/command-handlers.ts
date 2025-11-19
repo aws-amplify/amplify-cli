@@ -425,8 +425,6 @@ export async function updateCdkStackFile(customResources: string[], destinationC
   for (const resource of customResources) {
     const cdkStackFilePath = path.join(destinationCustomResourcePath, resource, 'cdk-stack.ts');
 
-    const amplifyHelpersImport = /import\s+\*\s+as\s+AmplifyHelpers\s+from\s+['"]@aws-amplify\/cli-extensibility-helper['"];\n?/;
-
     try {
       let cdkStackContent = await fs.readFile(cdkStackFilePath, { encoding: 'utf-8' });
 
@@ -473,7 +471,6 @@ export async function updateCdkStackFile(customResources: string[], destinationC
       );
 
       // Remove the import statement for AmplifyHelpers
-      cdkStackContent = cdkStackContent.replace(amplifyHelpersImport, '');
 
       // Apply AmplifyHelperTransformer for AST-based transformations
       const sourceFile = ts.createSourceFile(cdkStackFilePath, cdkStackContent, ts.ScriptTarget.Latest, true);
