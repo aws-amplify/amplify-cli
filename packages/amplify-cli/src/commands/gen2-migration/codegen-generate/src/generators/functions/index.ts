@@ -19,7 +19,7 @@ export interface FunctionDefinition {
 
 const factory = ts.factory;
 
-const amplifyGen1EnvName = 'branchName';
+const gen2BranchNameVariableName = 'branchName';
 
 const createParameter = (
   name: string,
@@ -55,7 +55,7 @@ export function renderFunctions(definition: FunctionDefinition, appId?: string, 
 
   const amplifyGen1EnvStatement = createVariableStatement(
     factory.createVariableDeclaration(
-      amplifyGen1EnvName,
+      gen2BranchNameVariableName,
       undefined,
       undefined,
       factory.createIdentifier('process.env.AWS_BRANCH ?? "sandbox"'),
@@ -88,7 +88,7 @@ export function createFunctionDefinition(
     const splitFuncName = definition.name.split('-');
     const funcNameWithoutBackendEnvName = splitFuncName.slice(0, -1).join('-');
 
-    const funcNameAssignment = createTemplateLiteral(`${funcNameWithoutBackendEnvName}-`, amplifyGen1EnvName, '');
+    const funcNameAssignment = createTemplateLiteral(`${funcNameWithoutBackendEnvName}-`, gen2BranchNameVariableName, '');
 
     defineFunctionProperties.push(createParameter('name', funcNameAssignment));
   }
@@ -123,7 +123,7 @@ export function createFunctionDefinition(
                 factory.createCallExpression(factory.createIdentifier('secret'), undefined, [factory.createStringLiteral('API_KEY')]),
               );
             } else if (key == 'ENV') {
-              const envNameAssignment = createTemplateLiteral('', amplifyGen1EnvName, '');
+              const envNameAssignment = createTemplateLiteral('', gen2BranchNameVariableName, '');
               return createParameter(key, envNameAssignment);
             }
 
