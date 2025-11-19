@@ -1,5 +1,4 @@
 import { $TSContext, stateManager, pathManager } from '@aws-amplify/amplify-cli-core';
-import { printer } from '@aws-amplify/amplify-prompts';
 import {
   CloudFormationClient,
   CreateChangeSetCommand,
@@ -10,6 +9,7 @@ import {
 import fs from 'fs-extra';
 import * as path from 'path';
 import { CloudFormationService } from './services/cloudformation-service';
+import type { Print } from '../drift';
 
 export interface TemplateDriftResult {
   hasTemplateDrift: boolean;
@@ -43,7 +43,7 @@ interface ChangeDetail {
  * Phase 2: Detect template drift using CloudFormation change sets
  * Inspired by CDK's cloudformation-diff implementation
  */
-export async function detectTemplateDrift(context: $TSContext): Promise<TemplateDriftResult> {
+export async function detectTemplateDrift(context: $TSContext, print: Print): Promise<TemplateDriftResult> {
   const cfnService = new CloudFormationService();
   let cfn: CloudFormationClient;
 
@@ -53,7 +53,7 @@ export async function detectTemplateDrift(context: $TSContext): Promise<Template
 
     // 1. Check prerequisites
     const currentCloudBackendPath = pathManager.getCurrentCloudBackendDirPath();
-    printer.debug(`Checking for #current-cloud-backend at: ${currentCloudBackendPath}`);
+    print.debug(`Checking for #current-cloud-backend at: ${currentCloudBackendPath}`);
     if (!fs.existsSync(currentCloudBackendPath)) {
       return {
         hasTemplateDrift: false,
@@ -83,11 +83,11 @@ export async function detectTemplateDrift(context: $TSContext): Promise<Template
 
     const stackInfo = teamProviderInfo[envName].awscloudformation;
     const stackName = stackInfo.StackName;
-    printer.debug(`Environment: ${envName}, Stack: ${stackName}`);
+    print.debug(`Environment: ${envName}, Stack: ${stackName}`);
 
     // 3. Read cached template
     const templatePath = path.join(currentCloudBackendPath, 'awscloudformation', 'build', 'root-cloudformation-stack.json');
-    printer.debug(`Reading cached template from: ${templatePath}`);
+    print.debug(`Reading cached template from: ${templatePath}`);
 
     if (!fs.existsSync(templatePath)) {
       return {
@@ -104,11 +104,11 @@ export async function detectTemplateDrift(context: $TSContext): Promise<Template
 
     // 4. Prepare parameters
     const parameters = extractParameters(stackInfo, template);
-    printer.debug(`Extracted ${parameters.length} parameters from template`);
+    print.debug(`Extracted ${parameters.length} parameters from template`);
 
     // 5. Create changeset
     const changeSetName = `amplify-drift-detection-${Date.now()}`;
-    printer.debug(`Creating changeset: ${changeSetName}`);
+    print.debug(`Creating changeset: ${changeSetName}`);
 
     await cfn.send(
       new CreateChangeSetCommand({
@@ -153,29 +153,29 @@ export async function detectTemplateDrift(context: $TSContext): Promise<Template
     }
 
     // Debug: Print full changeset
-    printer.debug(`CloudFormation ChangeSet: ${stackName}`);
-    printer.debug(`Status: ${changeSet.Status}`);
-    printer.debug(`IncludeNestedStacks: ${changeSet.IncludeNestedStacks}`);
+    print.debug(`CloudFormation ChangeSet: ${stackName}`);
+    print.debug(`Status: ${changeSet.Status}`);
+    print.debug(`IncludeNestedStacks: ${changeSet.IncludeNestedStacks}`);
     if (changeSet.StatusReason) {
-      printer.debug(`StatusReason: ${changeSet.StatusReason}`);
+      print.debug(`StatusReason: ${changeSet.StatusReason}`);
     }
     if (changeSet.Changes && changeSet.Changes.length > 0) {
-      printer.debug(`Changes: ${changeSet.Changes.length}`);
+      print.debug(`Changes: ${changeSet.Changes.length}`);
       for (const change of changeSet.Changes) {
         if (change.ResourceChange) {
           const rc = change.ResourceChange;
-          printer.debug(`  ${rc.LogicalResourceId} (${rc.ResourceType}) - ${rc.Action}`);
+          print.debug(`  ${rc.LogicalResourceId} (${rc.ResourceType}) - ${rc.Action}`);
         }
       }
     } else {
-      printer.debug('Changes: 0');
+      print.debug('Changes: 0');
     }
 
-    const result = await analyzeChangeSet(cfn, changeSet);
+    const result = await analyzeChangeSet(cfn, changeSet, print);
 
     // 8. Cleanup
     try {
-      printer.debug(`Deleting changeset: ${changeSetName}`);
+      print.debug(`Deleting changeset: ${changeSetName}`);
       await cfn.send(
         new DeleteChangeSetCommand({
           StackName: stackName,
@@ -216,7 +216,7 @@ function extractParameters(stackInfo: any, template: any): any[] {
   return parameters;
 }
 
-async function analyzeChangeSet(cfn: CloudFormationClient, changeSet: any): Promise<TemplateDriftResult> {
+async function analyzeChangeSet(cfn: CloudFormationClient, changeSet: any, print: Print): Promise<TemplateDriftResult> {
   const result: TemplateDriftResult = {
     hasTemplateDrift: false,
     hasRealDrift: false,
@@ -226,17 +226,17 @@ async function analyzeChangeSet(cfn: CloudFormationClient, changeSet: any): Prom
 
   // Handle "No updates" case
   if (changeSet.Status === 'FAILED' && changeSet.StatusReason?.includes('No updates')) {
-    printer.debug('ChangeSet status: No updates detected');
+    print.debug('ChangeSet status: No updates detected');
     return result;
   }
 
   if (!changeSet.Changes || changeSet.Changes.length === 0) {
-    printer.debug('ChangeSet has no changes');
+    print.debug('ChangeSet has no changes');
     return result;
   }
 
   result.hasTemplateDrift = true;
-  printer.debug(`Analyzing ${changeSet.Changes.length} changes from changeset`);
+  print.debug(`Analyzing ${changeSet.Changes.length} changes from changeset`);
 
   // Analyze each change (CDK-inspired approach)
   for (const change of changeSet.Changes) {
@@ -279,8 +279,8 @@ async function analyzeChangeSet(cfn: CloudFormationClient, changeSet: any): Prom
         const changeSetArn = rc.ChangeSetId;
         const changeSetName = changeSetArn.split('/')[1]; // Extract changeset name from ARN
 
-        printer.debug(`Fetching nested changeset: ${stackName}`);
-        printer.debug(`ChangeSet: ${changeSetName}`);
+        print.debug(`Fetching nested changeset: ${stackName}`);
+        print.debug(`ChangeSet: ${changeSetName}`);
 
         // Describe the nested changeset
         const nestedChangeSet = await cfn.send(
@@ -292,32 +292,32 @@ async function analyzeChangeSet(cfn: CloudFormationClient, changeSet: any): Prom
 
         // Print nested changeset details
         if (nestedChangeSet.Changes && nestedChangeSet.Changes.length > 0) {
-          printer.debug(`Nested Stack: ${stackName}`);
-          printer.debug(`Nested Changes: ${nestedChangeSet.Changes.length}`);
+          print.debug(`Nested Stack: ${stackName}`);
+          print.debug(`Nested Changes: ${nestedChangeSet.Changes.length}`);
           for (const nestedChange of nestedChangeSet.Changes) {
             if (nestedChange.ResourceChange) {
               const nrc = nestedChange.ResourceChange;
-              printer.debug(`  ${nrc.LogicalResourceId} (${nrc.ResourceType}) - ${nrc.Action}`);
+              print.debug(`  ${nrc.LogicalResourceId} (${nrc.ResourceType}) - ${nrc.Action}`);
               if (nrc.ResourceType === 'AWS::CloudFormation::Stack' && nrc.ChangeSetId) {
-                printer.debug(`    Has nested changeset (3rd level or deeper)`);
+                print.debug(`    Has nested changeset (3rd level or deeper)`);
               }
             }
           }
         }
 
         // Recursively analyze nested changeset
-        const nestedResult = await analyzeChangeSet(cfn, nestedChangeSet);
+        const nestedResult = await analyzeChangeSet(cfn, nestedChangeSet, print);
 
         // Add nested changes to the current change
         if (nestedResult.changes && nestedResult.changes.length > 0) {
           changeInfo.nestedChanges = nestedResult.changes;
-          printer.debug(`Processed ${nestedResult.changes.length} nested changes`);
+          print.debug(`Processed ${nestedResult.changes.length} nested changes`);
         }
       } catch (error: any) {
         // Log error but continue processing
-        printer.debug(`Could not fetch nested changeset: ${error.message}`);
-        printer.debug(`Stack ARN: ${rc.PhysicalResourceId}`);
-        printer.debug(`ChangeSet ID: ${rc.ChangeSetId}`);
+        print.debug(`Could not fetch nested changeset: ${error.message}`);
+        print.debug(`Stack ARN: ${rc.PhysicalResourceId}`);
+        print.debug(`ChangeSet ID: ${rc.ChangeSetId}`);
       }
     }
 
