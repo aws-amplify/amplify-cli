@@ -31,6 +31,8 @@ import { AppFunctionsDefinitionFetcher } from './app_functions_definition_fetche
 import { printer } from './printer';
 import { format } from './format';
 import ora from 'ora';
+import execa from 'execa';
+import { Logger } from '../../../../gen2-migration';
 import * as ts from 'typescript';
 import { AmplifyHelperTransformer } from '../../../codegen-custom-resources/transformer/amplify-helper-transformer';
 
@@ -444,8 +446,7 @@ const hasUncommentedDependency = (fileContent: string, matchString: string) => {
 
   return false;
 };
-
-export async function prepare() {
+export async function prepare(logger: Logger) {
   const appId = resolveAppId();
   const amplifyClient = new AmplifyClient();
   const backendEnvironmentResolver = new BackendEnvironmentResolver(appId, amplifyClient);
