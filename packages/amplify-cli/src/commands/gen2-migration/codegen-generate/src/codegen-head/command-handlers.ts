@@ -450,21 +450,15 @@ export async function updateCdkStackFile(customResources: string[], destinationC
               });`,
       );
 
-      // Replace AmplifyHelpers.AmplifyResourceProps with {category: 'custom', resourceName: resource}
-      cdkStackContent = cdkStackContent.replace(
-        /AmplifyHelpers\.AmplifyResourceProps/g,
-        `{category: 'custom', resourceName: '${resource}' }`,
-      );
-
       // Remove the import statement for AmplifyHelpers
       cdkStackContent = cdkStackContent.replace(amplifyHelpersImport, '');
 
       // Apply AmplifyHelperTransformer for AST-based transformations
       const sourceFile = ts.createSourceFile(cdkStackFilePath, cdkStackContent, ts.ScriptTarget.Latest, true);
       const transformedFile = AmplifyHelperTransformer.transform(sourceFile, projectName);
-      const transformedWithImports = AmplifyHelperTransformer.addRequiredImports(transformedFile, projectName);
-      const tsPrinter = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
-      cdkStackContent = tsPrinter.printFile(transformedWithImports);
+      const transformedWithBranchName = AmplifyHelperTransformer.addBranchNameVariable(transformedFile, projectName);
+      const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
+      cdkStackContent = printer.printFile(transformedWithBranchName);
 
       await fs.writeFile(cdkStackFilePath, cdkStackContent, { encoding: 'utf-8' });
     } catch (error) {

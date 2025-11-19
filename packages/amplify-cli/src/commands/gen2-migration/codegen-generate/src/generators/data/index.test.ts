@@ -20,7 +20,7 @@ describe('Data Category code generation', () => {
       const source = printNodeArray(await generateDataSource({ tableMappings, schema: 'schema' }));
       assert.match(
         source,
-        /migratedAmplifyGen1DynamoDbTableMappings: \[\{\n\s+branchName: ['"]\w+['"],\n\s+modelNameToTableNameMapping: { Todo: ['"]my-todo-mapping['"] }\n\s+}]/,
+        /migratedAmplifyGen1DynamoDbTableMappings: \[\{\n\s+\/\/.*\n\s+branchName: ['"]\w+['"],\n\s+modelNameToTableNameMapping: { Todo: ['"]my-todo-mapping['"] }\n\s+}]/,
       );
     });
     it('includes multiple models in table mappings', async () => {
@@ -40,7 +40,7 @@ describe('Data Category code generation', () => {
       const source = printNodeArray(await generateDataSource({ tableMappings, schema: 'schema' }));
       assert.match(
         source,
-        /const schema = `schema`;\n\nexport const data = defineData\(\{\n\s+migratedAmplifyGen1DynamoDbTableMappings: \[\{\n\s+branchName: ['"]\w+['"],\n\s+modelNameToTableNameMapping: { Todo: ['"]my-todo-mapping['"] }\n\s+}],\n\s+schema\n\}\)/,
+        /const schema = `schema`;\n\nexport const data = defineData\(\{\n\s+migratedAmplifyGen1DynamoDbTableMappings: \[\{\n\s+\/\/.*\n\s+branchName: ['"]\w+['"],\n\s+modelNameToTableNameMapping: { Todo: ['"]my-todo-mapping['"] }\n\s+}],\n\s+schema\n\}\)/,
       );
     });
   });
