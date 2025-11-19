@@ -31,6 +31,8 @@ import { AppFunctionsDefinitionFetcher } from './app_functions_definition_fetche
 import { printer } from './printer';
 import { format } from './format';
 import ora from 'ora';
+import * as ts from 'typescript';
+import { AmplifyHelperTransformer } from '../../../codegen-custom-resources/transformer/amplify-helper-transformer';
 
 interface CodegenCommandParameters {
   analytics: Analytics;
@@ -416,14 +418,14 @@ export async function updateCdkStackFile(customResources: string[], destinationC
               });`,
       );
 
-      // Replace AmplifyHelpers.AmplifyResourceProps with {category: 'custom', resourceName: resource}
-      cdkStackContent = cdkStackContent.replace(
-        /AmplifyHelpers\.AmplifyResourceProps/g,
-        `{category: 'custom', resourceName: '${resource}' }`,
-      );
-
       // Remove the import statement for AmplifyHelpers
       cdkStackContent = cdkStackContent.replace(amplifyHelpersImport, '');
+
+      const sourceFile = ts.createSourceFile(cdkStackFilePath, cdkStackContent, ts.ScriptTarget.Latest, true);
+      const transformedFile = AmplifyHelperTransformer.transform(sourceFile);
+      const transformedWithBranchName = AmplifyHelperTransformer.addBranchNameVariable(transformedFile);
+      const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
+      cdkStackContent = printer.printFile(transformedWithBranchName);
 
       await fs.writeFile(cdkStackFilePath, cdkStackContent, { encoding: 'utf-8' });
     } catch (error) {
