@@ -38,8 +38,6 @@ import { FileConverter } from '../../../codegen-custom-resources/generator/file-
 import { BackendUpdater } from '../../../codegen-custom-resources/generator/backend-updater';
 import execa from 'execa';
 import { Logger } from '../../../../gen2-migration';
-import * as ts from 'typescript';
-import { AmplifyHelperTransformer } from '../../../codegen-custom-resources/transformer/amplify-helper-transformer';
 
 interface CodegenCommandParameters {
   analytics: Analytics;
@@ -461,8 +459,6 @@ export async function updateCdkStackFile(customResources: string[], destinationC
                 default: \`\${branchName}\`
               });`,
       );
-
-     
 
       // Apply AmplifyHelperTransformer for AST-based transformations
       const sourceFile = ts.createSourceFile(cdkStackFilePath, cdkStackContent, ts.ScriptTarget.Latest, true);
