@@ -1,0 +1,32 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-personalmediavault-dev-05fd8-authRole",
+      "UnauthRoleArn": "arn:aws:iam::615368094448:role/amplify-personalmediavault-dev-05fd8-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::615368094448:role/amplify-personalmediavault-dev-05fd8-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-personalmediavault-dev-05fd8-deployment",
+      "UnauthRoleName": "amplify-personalmediavault-dev-05fd8-unauthRole",
+      "StackName": "amplify-personalmediavault-dev-05fd8",
+      "StackId": "arn:aws:cloudformation:us-east-1:615368094448:stack/amplify-personalmediavault-dev-05fd8/0f08d040-c629-11f0-8f22-0afff0465d3d",
+      "AmplifyAppId": "d2q0s500uwnike"
+    },
+    "categories": {
+      "auth": {
+        "personalmediavaultf4856ae1": {}
+      },
+      "api": {
+        "personalmediavault": {}
+      },
+      "storage": {
+        "s3mediavault": {}
+      },
+      "function": {
+        "thumbnailgen": {
+          "deploymentBucketName": "amplify-personalmediavault-dev-05fd8-deployment",
+          "s3Key": "amplify-builds/thumbnailgen-6a3557556b385a754359-build.zip"
+        }
+      }
+    }
+  }
+}
