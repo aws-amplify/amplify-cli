@@ -38,3 +38,5 @@ All the defaults on amplify push
 
 
 `amplify add functions`
+
+<img width="995" height="602" alt="Screenshot 2025-11-20 at 4 13 45 PM" src="https://github.com/user-attachments/assets/1655fbb7-11ac-48fa-997f-77687f582641" />
