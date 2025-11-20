@@ -34,9 +34,12 @@ All the defaults on amplify push
 
 `amplify add storage`
 
-<img width="1016" height="375" alt="Screenshot 2025-11-20 at 1 48 54 PM" src="https://github.com/user-attachments/assets/b19b33c1-ca74-4f48-b26c-12c2c9481238" />
+<img width="970" height="233" alt="Screenshot 2025-11-20 at 4 54 28 PM" src="https://github.com/user-attachments/assets/6bb57493-fd2a-45e3-9947-d6ea49eb845a" />
+
 
 
 `amplify add functions`
 
 <img width="995" height="602" alt="Screenshot 2025-11-20 at 4 13 45 PM" src="https://github.com/user-attachments/assets/1655fbb7-11ac-48fa-997f-77687f582641" />
+
+Add this to a s3 trigger with dependencies & permissions and push
