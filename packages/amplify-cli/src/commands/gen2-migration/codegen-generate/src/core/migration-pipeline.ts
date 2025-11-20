@@ -55,7 +55,7 @@ import {
   S3TriggerDefinition,
   StorageTriggerEvent,
   ServerSideEncryptionConfiguration,
-} from '../generators/storage/index.js';
+} from '../generators/storage';
 
 import { DataDefinition, DataTableMapping, generateDataSource } from '../generators/data/index';
 
@@ -156,10 +156,14 @@ export const createGen2Renderer = ({
       return patchNpmPackageJson(packageJson, {
         'aws-cdk': '^2',
         'aws-cdk-lib': '^2',
-        'ci-info': '^3.8.0',
+        'ci-info': '^4.3.1',
         constructs: '^10.0.0',
-        typescript: '^5.0.0',
         '@types/node': '*',
+        '@aws-amplify/backend': '^1.18.0',
+        '@aws-amplify/backend-cli': '^1.8.0',
+        '@aws-amplify/backend-data': '^1.6.2',
+        tsx: '^4.20.6',
+        esbuild: '^0.27.0',
       });
     },
     (content) => fileWriter(content, path.join(outputDir, 'package.json')),

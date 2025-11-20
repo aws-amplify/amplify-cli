@@ -20,6 +20,7 @@ import { CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-
 import { CATEGORY, CFN_AUTH_TYPE, CFN_S3_TYPE, CFN_IAM_TYPE, CFNTemplate } from '../../../../../commands/gen2-migration/refactor/types';
 
 import assert from 'node:assert';
+import { Logger } from '../../../../../commands/gen2-migration';
 
 jest.useFakeTimers();
 
@@ -465,6 +466,7 @@ describe('TemplateGenerator', () => {
       STUB_COGNITO_IDP_CLIENT,
       APP_ID,
       ENV_NAME,
+      new Logger('mock', 'mock', 'mock'),
     );
     await generator.generate();
 
@@ -487,6 +489,7 @@ describe('TemplateGenerator', () => {
       STUB_COGNITO_IDP_CLIENT,
       APP_ID,
       ENV_NAME,
+      new Logger('mock', 'mock', 'mock'),
     );
     await generator.generate();
 
@@ -513,6 +516,7 @@ describe('TemplateGenerator', () => {
       STUB_COGNITO_IDP_CLIENT,
       APP_ID,
       ENV_NAME,
+      new Logger('mock', 'mock', 'mock'),
     );
     await generator.generate(customResourceMap);
 
@@ -531,6 +535,7 @@ describe('TemplateGenerator', () => {
       STUB_COGNITO_IDP_CLIENT,
       APP_ID,
       ENV_NAME,
+      new Logger('mock', 'mock', 'mock'),
     );
     const failureSendMock = (command: any) => {
       if (command instanceof DescribeStackResourcesCommand) {
@@ -572,6 +577,7 @@ describe('TemplateGenerator', () => {
       STUB_COGNITO_IDP_CLIENT,
       APP_ID,
       ENV_NAME,
+      new Logger('mock', 'mock', 'mock'),
     );
     await expect(generator.generate()).rejects.toThrow(errorMessage);
   });
@@ -608,6 +614,7 @@ describe('TemplateGenerator', () => {
       STUB_COGNITO_IDP_CLIENT,
       APP_ID,
       ENV_NAME,
+      new Logger('mock', 'mock', 'mock'),
     );
     await generator.generate();
 
@@ -639,6 +646,7 @@ describe('TemplateGenerator', () => {
       STUB_COGNITO_IDP_CLIENT,
       APP_ID,
       ENV_NAME,
+      new Logger('mock', 'mock', 'mock'),
     );
     expect.assertions(1);
     // Intentionally not awaiting the below call to be able to advance timers and micro task queue in waitForPromisesAndFakeTimers
@@ -683,6 +691,7 @@ describe('TemplateGenerator', () => {
       STUB_COGNITO_IDP_CLIENT,
       APP_ID,
       ENV_NAME,
+      new Logger('mock', 'mock', 'mock'),
     );
     await generator.generate();
     const numCFNOperationsBeforeGen2StackUpdate = 5;
@@ -722,6 +731,7 @@ describe('TemplateGenerator', () => {
       STUB_COGNITO_IDP_CLIENT,
       APP_ID,
       ENV_NAME,
+      new Logger('mock', 'mock', 'mock'),
     );
     await generator.generate();
     const numCFNOperationsBeforeGen2StackUpdate = 5;
@@ -760,6 +770,7 @@ describe('TemplateGenerator', () => {
       STUB_COGNITO_IDP_CLIENT,
       APP_ID,
       ENV_NAME,
+      new Logger('mock', 'mock', 'mock'),
     );
     expect.assertions(2);
     // Intentionally not awaiting the below call to be able to advance timers and micro task queue in waitForPromisesAndFakeTimers
@@ -783,6 +794,7 @@ describe('TemplateGenerator', () => {
       STUB_COGNITO_IDP_CLIENT,
       APP_ID,
       ENV_NAME,
+      new Logger('mock', 'mock', 'mock'),
     );
     await generator.revert();
 
@@ -812,6 +824,7 @@ describe('TemplateGenerator', () => {
       STUB_COGNITO_IDP_CLIENT,
       APP_ID,
       ENV_NAME,
+      new Logger('mock', 'mock', 'mock'),
     );
     await generator.revert();
 
@@ -834,6 +847,7 @@ describe('TemplateGenerator', () => {
     expect(CategoryTemplateGenerator).toBeCalledTimes(3);
     expect(CategoryTemplateGenerator).toHaveBeenNthCalledWith(
       1,
+      new Logger('mock', 'mock', 'mock'),
       GEN1_AUTH_STACK_ID,
       GEN2_AUTH_STACK_ID,
       REGION,
@@ -854,6 +868,7 @@ describe('TemplateGenerator', () => {
     );
     expect(CategoryTemplateGenerator).toHaveBeenNthCalledWith(
       2,
+      new Logger('mock', 'mock', 'mock'),
       GEN1_AUTH_USER_POOL_GROUP_STACK_ID,
       GEN2_AUTH_STACK_ID,
       REGION,
@@ -868,6 +883,7 @@ describe('TemplateGenerator', () => {
     );
     expect(CategoryTemplateGenerator).toHaveBeenNthCalledWith(
       3,
+      new Logger('mock', 'mock', 'mock'),
       GEN1_STORAGE_STACK_ID,
       GEN2_STORAGE_STACK_ID,
       REGION,
@@ -892,6 +908,7 @@ describe('TemplateGenerator', () => {
     expect(CategoryTemplateGenerator).toBeCalledTimes(NUM_CATEGORIES_TO_REFACTOR);
     expect(CategoryTemplateGenerator).toHaveBeenNthCalledWith(
       1,
+      new Logger('mock', 'mock', 'mock'),
       GEN2_AUTH_STACK_ID,
       GEN1_AUTH_STACK_ID,
       REGION,
@@ -912,6 +929,7 @@ describe('TemplateGenerator', () => {
     );
     expect(CategoryTemplateGenerator).toHaveBeenNthCalledWith(
       2,
+      new Logger('mock', 'mock', 'mock'),
       GEN2_AUTH_STACK_ID,
       GEN1_AUTH_USER_POOL_GROUP_STACK_ID,
       REGION,
@@ -926,6 +944,7 @@ describe('TemplateGenerator', () => {
     );
     expect(CategoryTemplateGenerator).toHaveBeenNthCalledWith(
       3,
+      new Logger('mock', 'mock', 'mock'),
       GEN2_STORAGE_STACK_ID,
       GEN1_STORAGE_STACK_ID,
       REGION,
@@ -950,6 +969,7 @@ describe('TemplateGenerator', () => {
     expect(CategoryTemplateGenerator).toBeCalledTimes(4);
     expect(CategoryTemplateGenerator).toHaveBeenNthCalledWith(
       1,
+      new Logger('mock', 'mock', 'mock'),
       GEN1_AUTH_STACK_ID,
       GEN2_AUTH_STACK_ID,
       REGION,
@@ -970,6 +990,7 @@ describe('TemplateGenerator', () => {
     );
     expect(CategoryTemplateGenerator).toHaveBeenNthCalledWith(
       2,
+      new Logger('mock', 'mock', 'mock'),
       GEN1_AUTH_USER_POOL_GROUP_STACK_ID,
       GEN2_AUTH_STACK_ID,
       REGION,
@@ -984,6 +1005,7 @@ describe('TemplateGenerator', () => {
     );
     expect(CategoryTemplateGenerator).toHaveBeenNthCalledWith(
       3,
+      new Logger('mock', 'mock', 'mock'),
       GEN1_STORAGE_STACK_ID,
       GEN2_STORAGE_STACK_ID,
       REGION,
@@ -999,6 +1021,7 @@ describe('TemplateGenerator', () => {
     // custom resource category
     expect(CategoryTemplateGenerator).toHaveBeenNthCalledWith(
       4,
+      new Logger('mock', 'mock', 'mock'),
       GEN1_ROOT_STACK_NAME,
       GEN2_ROOT_STACK_NAME,
       REGION,
