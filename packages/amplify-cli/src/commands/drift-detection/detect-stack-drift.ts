@@ -33,6 +33,11 @@ export interface CombinedDriftResults {
    * Map of logical resource IDs to physical resource IDs for nested stacks
    */
   nestedStackPhysicalIds: Map<string, string>;
+
+  /**
+   * List of nested stacks that were skipped due to errors
+   */
+  skippedNestedStacks?: string[];
 }
 
 /**
@@ -56,7 +61,7 @@ export async function detectStackDrift(
     }),
   );
 
-  print.verbose(`Detecting drift with ID ${driftDetection.StackDriftDetectionId} for stack ${stackName}...`);
+  print.info(`Detecting drift with ID ${driftDetection.StackDriftDetectionId} for stack ${stackName}...`);
 
   // Wait for drift detection to complete
   const driftStatus = await waitForDriftDetection(cfn, driftDetection.StackDriftDetectionId!, print);
@@ -78,7 +83,7 @@ export async function detectStackDrift(
     }),
   );
 
-  // Print detailed resource table in verbose mode
+  // Print detailed resource table
   if (driftResults.StackResourceDrifts && driftResults.StackResourceDrifts.length > 0) {
     // Count resources by status
     const statusCounts = {
@@ -96,7 +101,7 @@ export async function detectStackDrift(
       }
     }
 
-    print.verbose('Resource drift status:');
+    print.info('Resource drift status:');
 
     for (const drift of driftResults.StackResourceDrifts) {
       const status = drift.StackResourceDriftStatus || 'UNKNOWN';
@@ -122,14 +127,14 @@ export async function detectStackDrift(
       }
 
       // Format: Status | LogicalId (ResourceType)
-      print.verbose(`  ${statusDisplay.padEnd(12)} | ${logicalId} (${resourceType})`);
+      print.info(`  ${statusDisplay.padEnd(12)} | ${logicalId} (${resourceType})`);
 
       // Show property differences for MODIFIED resources
       if (status === 'MODIFIED' && drift.PropertyDifferences && drift.PropertyDifferences.length > 0) {
         for (const propDiff of drift.PropertyDifferences) {
           const propPath = propDiff.PropertyPath || 'Unknown';
           const diffType = propDiff.DifferenceType || 'UNKNOWN';
-          print.verbose(`                 → ${propPath}: ${diffType}`);
+          print.info(`                 → ${propPath}: ${diffType}`);
         }
       }
     }
@@ -142,7 +147,7 @@ export async function detectStackDrift(
       if (drift.StackResourceDriftStatus === 'MODIFIED' && drift.PropertyDifferences && drift.PropertyDifferences.length > 0) {
         // Filter out Auth IdP changes from property differences
         drift.PropertyDifferences = drift.PropertyDifferences.filter((propDiff) => {
-          return !isAmplifyAuthRoleDenyToAllowChange(propDiff);
+          return !isAmplifyAuthRoleDenyToAllowChange(propDiff, print);
         });
 
         // If all property differences were filtered out, change status to IN_SYNC
@@ -162,7 +167,7 @@ export async function detectStackDrift(
 /**
  * Check if a property difference is an Amplify auth role Deny→Allow change (intended drift)
  */
-function isAmplifyAuthRoleDenyToAllowChange(propDiff: any): boolean {
+function isAmplifyAuthRoleDenyToAllowChange(propDiff: any, print: Print): boolean {
   // Check if this is an AssumeRolePolicyDocument change
   if (!propDiff.PropertyPath || !propDiff.PropertyPath.includes('AssumeRolePolicyDocument')) {
     return false;
@@ -197,10 +202,11 @@ function isAmplifyAuthRoleDenyToAllowChange(propDiff: any): boolean {
           }
         }
       }
-    } catch (e) {
+    } catch (e: any) {
       // If JSON parsing fails, we have a malformed AssumeRolePolicyDocument
-      // This should not happen in normal circumstances - log and return false
-      console.error('Failed to parse AssumeRolePolicyDocument JSON:', e);
+      // This is expected for some policy formats, so we log at debug level
+      print.debug(`Failed to parse AssumeRolePolicyDocument JSON: ${e.message || 'Unknown error'}`);
+      P;
       return false;
     }
   }
@@ -251,7 +257,7 @@ async function waitForDriftDetection(
     }
 
     if (Date.now() > checkIn) {
-      print.verbose('Waiting for drift detection to complete...');
+      print.info('Waiting for drift detection to complete...');
       checkIn = Date.now() + timeBetweenOutputs;
     }
 
@@ -302,6 +308,7 @@ export async function detectStackDriftRecursive(
   // Initialize results
   const nestedStackDrifts = new Map<string, DescribeStackResourceDriftsCommandOutput>();
   const nestedStackPhysicalIds = new Map<string, string>();
+  const skippedNestedStacks: string[] = [];
 
   // Process each nested stack recursively
   for (const nestedStack of nestedStacks) {
@@ -377,6 +384,8 @@ export async function detectStackDriftRecursive(
     } catch (error: any) {
       // Log error but continue checking other nested stacks
       print.warning(`Failed to check drift for nested stack ${nestedStack.LogicalResourceId}: ${error.message}`);
+      // Track this as a skipped stack
+      skippedNestedStacks.push(nestedStack.LogicalResourceId);
     }
   }
 
@@ -386,6 +395,7 @@ export async function detectStackDriftRecursive(
     rootStackDrifts: currentStackDrifts,
     nestedStackDrifts,
     nestedStackPhysicalIds,
+    skippedNestedStacks: skippedNestedStacks.length > 0 ? skippedNestedStacks : undefined,
   };
 }
 

@@ -296,7 +296,7 @@ export class DriftFormatter {
         chalk.yellow(
           `WARNING: Drift detection failed for ${this.summary.totalFailed} resource(s).\n` +
             `This may be due to insufficient permissions or AWS API issues.\n` +
-            `Run with --verbose to see which resources failed.`,
+            `Run with --debug to see which resources failed.`,
         );
     }
 
