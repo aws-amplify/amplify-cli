@@ -61,7 +61,7 @@ export async function detectStackDrift(
     }),
   );
 
-  print.info(`Detecting drift with ID ${driftDetection.StackDriftDetectionId} for stack ${stackName}...`);
+  print.debug(`Detecting drift with ID ${driftDetection.StackDriftDetectionId} for stack ${stackName}...`);
 
   // Wait for drift detection to complete
   const driftStatus = await waitForDriftDetection(cfn, driftDetection.StackDriftDetectionId!, print);
@@ -127,7 +127,7 @@ export async function detectStackDrift(
       }
 
       // Format: Status | LogicalId (ResourceType)
-      print.info(`  ${statusDisplay.padEnd(12)} | ${logicalId} (${resourceType})`);
+      print.info(`${statusDisplay.padEnd(6)} ${logicalId} (${resourceType})`);
 
       // Show property differences for MODIFIED resources
       if (status === 'MODIFIED' && drift.PropertyDifferences && drift.PropertyDifferences.length > 0) {
@@ -206,7 +206,6 @@ function isAmplifyAuthRoleDenyToAllowChange(propDiff: any, print: Print): boolea
       // If JSON parsing fails, we have a malformed AssumeRolePolicyDocument
       // This is expected for some policy formats, so we log at debug level
       print.debug(`Failed to parse AssumeRolePolicyDocument JSON: ${e.message || 'Unknown error'}`);
-      P;
       return false;
     }
   }

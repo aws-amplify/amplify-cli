@@ -41,7 +41,7 @@ interface ChangeDetail {
  * Inspired by CDK's cloudformation-diff implementation
  */
 export async function detectTemplateDrift(context: $TSContext, print: Print): Promise<TemplateDriftResult> {
-  const cfnService = new CloudFormationService();
+  const cfnService = new CloudFormationService(print);
   let cfn: CloudFormationClient;
 
   try {

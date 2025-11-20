@@ -97,7 +97,6 @@ const TREE_SYMBOLS = {
  * Drift formatter that processes and formats drift detection results
  */
 export class DriftFormatter {
-  private readonly cfnService: CloudFormationService;
   private readonly configService: AmplifyConfigService;
 
   // Data stored after processing
@@ -124,7 +123,6 @@ export class DriftFormatter {
   private phase3Results: Phase3Results | null = null;
 
   constructor() {
-    this.cfnService = new CloudFormationService();
     this.configService = new AmplifyConfigService();
   }
 
@@ -164,7 +162,22 @@ export class DriftFormatter {
       }
 
       const physicalName = combinedResults.nestedStackPhysicalIds.get(logicalId) || logicalId;
-      const nestedTemplate = await this.cfnService.getStackTemplate(cfn, physicalName);
+      // Create a temporary CloudFormationService instance to get the template
+      const cfnService = new CloudFormationService({
+        info: () => {
+          // No-op for template fetching
+        },
+        debug: () => {
+          // No-op for template fetching
+        },
+        warn: () => {
+          // No-op for template fetching
+        },
+        warning: () => {
+          // No-op for template fetching
+        },
+      });
+      const nestedTemplate = await cfnService.getStackTemplate(cfn, physicalName);
       const nestedDrifts = nestedDrift.StackResourceDrifts;
 
       // Count nested stack resources for summary
