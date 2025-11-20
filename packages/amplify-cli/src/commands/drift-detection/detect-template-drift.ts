@@ -12,10 +12,8 @@ import { CloudFormationService } from './services/cloudformation-service';
 import type { Print } from '../drift';
 
 export interface TemplateDriftResult {
-  hasTemplateDrift: boolean;
-  hasRealDrift: boolean; // Excludes nested stack false positives
+  hasDrift: boolean;
   changes: ChangeSetChange[];
-  nestedStackQuirks: string[]; // List of nested stacks with false positives
   error?: string;
   skipped?: boolean;
   skipReason?: string;
@@ -26,7 +24,6 @@ interface ChangeSetChange {
   resourceType: string;
   action: string;
   replacement: boolean;
-  isRealChange: boolean;
   details?: ChangeDetail[];
   nestedChanges?: ChangeSetChange[]; // Add nested changes support
 }
@@ -44,7 +41,7 @@ interface ChangeDetail {
  * Inspired by CDK's cloudformation-diff implementation
  */
 export async function detectTemplateDrift(context: $TSContext, print: Print): Promise<TemplateDriftResult> {
-  const cfnService = new CloudFormationService();
+  const cfnService = new CloudFormationService(print);
   let cfn: CloudFormationClient;
 
   try {
@@ -56,10 +53,8 @@ export async function detectTemplateDrift(context: $TSContext, print: Print): Pr
     print.debug(`Checking for #current-cloud-backend at: ${currentCloudBackendPath}`);
     if (!fs.existsSync(currentCloudBackendPath)) {
       return {
-        hasTemplateDrift: false,
-        hasRealDrift: false,
+        hasDrift: false,
         changes: [],
-        nestedStackQuirks: [],
         skipped: true,
         skipReason: 'No #current-cloud-backend found. Run "amplify pull" first.',
       };
@@ -72,10 +67,8 @@ export async function detectTemplateDrift(context: $TSContext, print: Print): Pr
 
     if (!teamProviderInfo[envName]) {
       return {
-        hasTemplateDrift: false,
-        hasRealDrift: false,
+        hasDrift: false,
         changes: [],
-        nestedStackQuirks: [],
         skipped: true,
         skipReason: `Environment "${envName}" not found in team-provider-info.json`,
       };
@@ -91,10 +84,8 @@ export async function detectTemplateDrift(context: $TSContext, print: Print): Pr
 
     if (!fs.existsSync(templatePath)) {
       return {
-        hasTemplateDrift: false,
-        hasRealDrift: false,
+        hasDrift: false,
         changes: [],
-        nestedStackQuirks: [],
         skipped: true,
         skipReason: 'No cached CloudFormation template found',
       };
@@ -123,7 +114,6 @@ export async function detectTemplateDrift(context: $TSContext, print: Print): Pr
     );
 
     // 6. Wait for changeset to complete
-    let changeSet;
     try {
       await waitUntilChangeSetCreateComplete(
         {
@@ -135,22 +125,19 @@ export async function detectTemplateDrift(context: $TSContext, print: Print): Pr
           ChangeSetName: changeSetName,
         },
       );
-
-      changeSet = await cfn.send(
-        new DescribeChangeSetCommand({
-          StackName: stackName,
-          ChangeSetName: changeSetName,
-        }),
-      );
     } catch (waitError: any) {
-      // If waiting fails, still try to get the changeset
-      changeSet = await cfn.send(
-        new DescribeChangeSetCommand({
-          StackName: stackName,
-          ChangeSetName: changeSetName,
-        }),
-      );
+      // Re-throw the error - the waiter already handles retries internally
+      // No need for an additional describe attempt as the changeset likely doesn't exist or is in a bad state
+      throw new Error(`Failed to create changeset: ${waitError.message || 'Unknown error'}`);
     }
+
+    // 7. Describe the completed changeset
+    const changeSet = await cfn.send(
+      new DescribeChangeSetCommand({
+        StackName: stackName,
+        ChangeSetName: changeSetName,
+      }),
+    );
 
     // Debug: Print full changeset
     print.debug(`CloudFormation ChangeSet: ${stackName}`);
@@ -182,17 +169,17 @@ export async function detectTemplateDrift(context: $TSContext, print: Print): Pr
           ChangeSetName: changeSetName,
         }),
       );
-    } catch (deleteError) {
-      // Ignore cleanup errors
+    } catch (deleteError: any) {
+      // Log cleanup errors but don't fail the operation
+      print.warn(`Failed to delete changeset ${changeSetName}: ${deleteError.message}`);
+      print.warn('You may want to manually delete it from the AWS CloudFormation Console');
     }
 
     return result;
   } catch (error: any) {
     return {
-      hasTemplateDrift: false,
-      hasRealDrift: false,
+      hasDrift: false,
       changes: [],
-      nestedStackQuirks: [],
       error: error.message,
     };
   }
@@ -218,10 +205,8 @@ function extractParameters(stackInfo: any, template: any): any[] {
 
 async function analyzeChangeSet(cfn: CloudFormationClient, changeSet: any, print: Print): Promise<TemplateDriftResult> {
   const result: TemplateDriftResult = {
-    hasTemplateDrift: false,
-    hasRealDrift: false,
+    hasDrift: false,
     changes: [],
-    nestedStackQuirks: [],
   };
 
   // Handle "No updates" case
@@ -235,7 +220,7 @@ async function analyzeChangeSet(cfn: CloudFormationClient, changeSet: any, print
     return result;
   }
 
-  result.hasTemplateDrift = true;
+  result.hasDrift = true;
   print.debug(`Analyzing ${changeSet.Changes.length} changes from changeset`);
 
   // Analyze each change (CDK-inspired approach)
@@ -250,7 +235,6 @@ async function analyzeChangeSet(cfn: CloudFormationClient, changeSet: any, print
       resourceType: rc.ResourceType,
       action: rc.Action,
       replacement: rc.Replacement === 'True',
-      isRealChange: true,
       details: [],
       nestedChanges: [], // Add nested changes array
     };
@@ -320,10 +304,6 @@ async function analyzeChangeSet(cfn: CloudFormationClient, changeSet: any, print
         print.debug(`ChangeSet ID: ${rc.ChangeSetId}`);
       }
     }
-
-    // With IncludeNestedStacks: true, we don't get false positives
-    // All changes are real changes
-    result.hasRealDrift = true;
 
     result.changes.push(changeInfo);
   }

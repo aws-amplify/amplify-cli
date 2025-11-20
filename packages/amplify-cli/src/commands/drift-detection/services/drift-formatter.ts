@@ -97,8 +97,8 @@ const TREE_SYMBOLS = {
  * Drift formatter that processes and formats drift detection results
  */
 export class DriftFormatter {
-  private readonly cfnService: CloudFormationService;
   private readonly configService: AmplifyConfigService;
+  private readonly cfnService: CloudFormationService;
 
   // Data stored after processing
   private rootStackName = '';
@@ -123,9 +123,9 @@ export class DriftFormatter {
   private phase2Results: any = null;
   private phase3Results: Phase3Results | null = null;
 
-  constructor() {
-    this.cfnService = new CloudFormationService();
+  constructor(cfnService: CloudFormationService) {
     this.configService = new AmplifyConfigService();
+    this.cfnService = cfnService;
   }
 
   /**
@@ -296,7 +296,7 @@ export class DriftFormatter {
         chalk.yellow(
           `WARNING: Drift detection failed for ${this.summary.totalFailed} resource(s).\n` +
             `This may be due to insufficient permissions or AWS API issues.\n` +
-            `Run with --verbose to see which resources failed.`,
+            `Run with --debug to see which resources failed.`,
         );
     }
 
@@ -787,18 +787,18 @@ export class DriftFormatter {
       return null;
     }
 
-    const realChanges = this.phase2Results.changes?.filter((c: any) => c.isRealChange) || [];
+    const changes = this.phase2Results.changes || [];
 
-    if (realChanges.length === 0 && this.phase2Results.nestedStackQuirks?.length === 0) {
+    if (changes.length === 0) {
       return '\nTEMPLATE CHANGES:\n└── Status: NO DRIFT DETECTED';
     }
 
     let output = '\nTEMPLATE CHANGES:';
 
-    if (realChanges.length > 0) {
+    if (changes.length > 0) {
       output += '\n├── Status: ' + chalk.yellow('DRIFT DETECTED');
-      realChanges.forEach((change: any, index: number) => {
-        const isLast = index === realChanges.length - 1;
+      changes.forEach((change: any, index: number) => {
+        const isLast = index === changes.length - 1;
         const prefix = isLast ? '└──' : '├──';
         const action = change.action || 'Unknown';
         const resourceId = change.logicalResourceId || 'Unknown';

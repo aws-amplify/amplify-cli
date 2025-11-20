@@ -10,7 +10,6 @@ import {
   DescribeStackResourcesCommand,
   type DescribeStackResourceDriftsCommandOutput,
   type DescribeStackDriftDetectionStatusCommandOutput,
-  type StackResourceDrift,
 } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import chalk from 'chalk';
@@ -34,6 +33,11 @@ export interface CombinedDriftResults {
    * Map of logical resource IDs to physical resource IDs for nested stacks
    */
   nestedStackPhysicalIds: Map<string, string>;
+
+  /**
+   * List of nested stacks that were skipped due to errors
+   */
+  skippedNestedStacks?: string[];
 }
 
 /**
@@ -57,7 +61,7 @@ export async function detectStackDrift(
     }),
   );
 
-  print.verbose(`Detecting drift with ID ${driftDetection.StackDriftDetectionId} for stack ${stackName}...`);
+  print.debug(`Detecting drift with ID ${driftDetection.StackDriftDetectionId} for stack ${stackName}...`);
 
   // Wait for drift detection to complete
   const driftStatus = await waitForDriftDetection(cfn, driftDetection.StackDriftDetectionId!, print);
@@ -79,43 +83,8 @@ export async function detectStackDrift(
     }),
   );
 
-  // Get ALL resources in the stack to find NOT_CHECKED ones
-  const allResources = await cfn.send(
-    new DescribeStackResourcesCommand({
-      StackName: stackName,
-    }),
-  );
-
-  // Create a map of drift results by logical resource ID
-  const driftMap = new Map<string, StackResourceDrift>();
-  for (const drift of driftResults.StackResourceDrifts || []) {
-    if (drift.LogicalResourceId) {
-      driftMap.set(drift.LogicalResourceId, drift);
-    }
-  }
-
-  // Build complete resource list with drift status
-  const completeResourceList: Array<{
-    logicalId: string;
-    resourceType: string;
-    driftStatus: string;
-    drift?: StackResourceDrift;
-  }> = [];
-
-  for (const resource of allResources.StackResources || []) {
-    if (!resource.LogicalResourceId) continue;
-
-    const drift = driftMap.get(resource.LogicalResourceId);
-    completeResourceList.push({
-      logicalId: resource.LogicalResourceId,
-      resourceType: resource.ResourceType || 'Unknown',
-      driftStatus: drift?.StackResourceDriftStatus || 'NOT_CHECKED',
-      drift,
-    });
-  }
-
-  // Print detailed resource table in verbose mode
-  if (completeResourceList.length > 0) {
+  // Print detailed resource table
+  if (driftResults.StackResourceDrifts && driftResults.StackResourceDrifts.length > 0) {
     // Count resources by status
     const statusCounts = {
       IN_SYNC: 0,
@@ -125,46 +94,48 @@ export async function detectStackDrift(
       UNKNOWN: 0,
     };
 
-    for (const resource of completeResourceList) {
-      const status = resource.driftStatus;
+    for (const drift of driftResults.StackResourceDrifts) {
+      const status = drift.StackResourceDriftStatus || 'UNKNOWN';
       if (status in statusCounts) {
         statusCounts[status as keyof typeof statusCounts]++;
       }
     }
 
-    print.verbose('Resource drift status:');
+    print.info('Resource drift status:');
 
-    for (const resource of completeResourceList) {
-      const status = resource.driftStatus;
-      const logicalId = resource.logicalId.substring(0, 50).padEnd(50);
-      const resourceType = resource.resourceType.substring(0, 30).padEnd(30);
+    for (const drift of driftResults.StackResourceDrifts) {
+      const status = drift.StackResourceDriftStatus || 'UNKNOWN';
+      const logicalId = drift.LogicalResourceId || 'Unknown';
+      const physicalId = drift.PhysicalResourceId || 'N/A';
+      const resourceType = drift.ResourceType || 'Unknown';
 
       let statusDisplay = '';
       switch (status) {
         case 'IN_SYNC':
-          statusDisplay = '✓ IN_SYNC  ';
+          statusDisplay = '✓ IN_SYNC';
           break;
         case 'MODIFIED':
-          statusDisplay = '✗ MODIFIED ';
+          statusDisplay = '✗ MODIFIED';
           break;
         case 'DELETED':
-          statusDisplay = '✗ DELETED  ';
+          statusDisplay = '✗ DELETED';
           break;
         case 'NOT_CHECKED':
           statusDisplay = '○ UNCHECKED';
           break;
         default:
-          statusDisplay = '? UNKNOWN  ';
+          statusDisplay = '? UNKNOWN';
       }
 
-      print.verbose(`  ${statusDisplay}  ${logicalId}  ${resourceType}`);
+      // Format: Status | LogicalId | PhysicalId (ResourceType)
+      print.info(`${statusDisplay.padEnd(5)} ${logicalId} | ${physicalId} (${resourceType})`);
 
       // Show property differences for MODIFIED resources
-      if (status === 'MODIFIED' && resource.drift?.PropertyDifferences && resource.drift.PropertyDifferences.length > 0) {
-        for (const propDiff of resource.drift.PropertyDifferences) {
-          const propPath = (propDiff.PropertyPath || '').substring(0, 60);
+      if (status === 'MODIFIED' && drift.PropertyDifferences && drift.PropertyDifferences.length > 0) {
+        for (const propDiff of drift.PropertyDifferences) {
+          const propPath = propDiff.PropertyPath || 'Unknown';
           const diffType = propDiff.DifferenceType || 'UNKNOWN';
-          print.verbose(`      → ${propPath.padEnd(60)}  ${diffType}`);
+          print.info(`  → ${propPath}: ${diffType}`);
         }
       }
     }
@@ -177,7 +148,7 @@ export async function detectStackDrift(
       if (drift.StackResourceDriftStatus === 'MODIFIED' && drift.PropertyDifferences && drift.PropertyDifferences.length > 0) {
         // Filter out Auth IdP changes from property differences
         drift.PropertyDifferences = drift.PropertyDifferences.filter((propDiff) => {
-          return !isAmplifyAuthRoleDenyToAllowChange(propDiff);
+          return !isAmplifyAuthRoleDenyToAllowChange(propDiff, print);
         });
 
         // If all property differences were filtered out, change status to IN_SYNC
@@ -197,7 +168,7 @@ export async function detectStackDrift(
 /**
  * Check if a property difference is an Amplify auth role Deny→Allow change (intended drift)
  */
-function isAmplifyAuthRoleDenyToAllowChange(propDiff: any): boolean {
+function isAmplifyAuthRoleDenyToAllowChange(propDiff: any, print: Print): boolean {
   // Check if this is an AssumeRolePolicyDocument change
   if (!propDiff.PropertyPath || !propDiff.PropertyPath.includes('AssumeRolePolicyDocument')) {
     return false;
@@ -232,16 +203,11 @@ function isAmplifyAuthRoleDenyToAllowChange(propDiff: any): boolean {
           }
         }
       }
-    } catch (e) {
-      // If JSON parsing fails, fall back to string comparison
-      if (
-        expectedValue.includes('"Effect": "Deny"') &&
-        actualValue.includes('"Effect": "Allow"') &&
-        expectedValue.includes('cognito-identity.amazonaws.com') &&
-        actualValue.includes('cognito-identity.amazonaws.com')
-      ) {
-        return true;
-      }
+    } catch (e: any) {
+      // If JSON parsing fails, we have a malformed AssumeRolePolicyDocument
+      // This is expected for some policy formats, so we log at debug level
+      print.debug(`Failed to parse AssumeRolePolicyDocument JSON: ${e.message || 'Unknown error'}`);
+      return false;
     }
   }
 
@@ -291,7 +257,7 @@ async function waitForDriftDetection(
     }
 
     if (Date.now() > checkIn) {
-      print.verbose('Waiting for drift detection to complete...');
+      print.info('Waiting for drift detection to complete...');
       checkIn = Date.now() + timeBetweenOutputs;
     }
 
@@ -342,6 +308,7 @@ export async function detectStackDriftRecursive(
   // Initialize results
   const nestedStackDrifts = new Map<string, DescribeStackResourceDriftsCommandOutput>();
   const nestedStackPhysicalIds = new Map<string, string>();
+  const skippedNestedStacks: string[] = [];
 
   // Process each nested stack recursively
   for (const nestedStack of nestedStacks) {
@@ -417,6 +384,8 @@ export async function detectStackDriftRecursive(
     } catch (error: any) {
       // Log error but continue checking other nested stacks
       print.warning(`Failed to check drift for nested stack ${nestedStack.LogicalResourceId}: ${error.message}`);
+      // Track this as a skipped stack
+      skippedNestedStacks.push(nestedStack.LogicalResourceId);
     }
   }
 
@@ -426,6 +395,7 @@ export async function detectStackDriftRecursive(
     rootStackDrifts: currentStackDrifts,
     nestedStackDrifts,
     nestedStackPhysicalIds,
+    skippedNestedStacks: skippedNestedStacks.length > 0 ? skippedNestedStacks : undefined,
   };
 }
 
