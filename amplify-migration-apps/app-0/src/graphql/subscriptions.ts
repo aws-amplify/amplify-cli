@@ -8,6 +8,72 @@ type GeneratedSubscription<InputType, OutputType> = string & {
   __generatedSubscriptionOutput: OutputType;
 };
 
+export const onCreateProject = /* GraphQL */ `subscription OnCreateProject(
+  $filter: ModelSubscriptionProjectFilterInput
+  $owner: String
+) {
+  onCreateProject(filter: $filter, owner: $owner) {
+    id
+    title
+    description
+    status
+    deadline
+    color
+    todos {
+      nextToken
+      __typename
+    }
+    createdAt
+    updatedAt
+    owner
+    __typename
+  }
+}
+` as GeneratedSubscription<APITypes.OnCreateProjectSubscriptionVariables, APITypes.OnCreateProjectSubscription>;
+export const onUpdateProject = /* GraphQL */ `subscription OnUpdateProject(
+  $filter: ModelSubscriptionProjectFilterInput
+  $owner: String
+) {
+  onUpdateProject(filter: $filter, owner: $owner) {
+    id
+    title
+    description
+    status
+    deadline
+    color
+    todos {
+      nextToken
+      __typename
+    }
+    createdAt
+    updatedAt
+    owner
+    __typename
+  }
+}
+` as GeneratedSubscription<APITypes.OnUpdateProjectSubscriptionVariables, APITypes.OnUpdateProjectSubscription>;
+export const onDeleteProject = /* GraphQL */ `subscription OnDeleteProject(
+  $filter: ModelSubscriptionProjectFilterInput
+  $owner: String
+) {
+  onDeleteProject(filter: $filter, owner: $owner) {
+    id
+    title
+    description
+    status
+    deadline
+    color
+    todos {
+      nextToken
+      __typename
+    }
+    createdAt
+    updatedAt
+    owner
+    __typename
+  }
+}
+` as GeneratedSubscription<APITypes.OnDeleteProjectSubscriptionVariables, APITypes.OnDeleteProjectSubscription>;
 export const onCreateTodo = /* GraphQL */ `subscription OnCreateTodo(
   $filter: ModelSubscriptionTodoFilterInput
   $owner: String
@@ -17,8 +83,22 @@ export const onCreateTodo = /* GraphQL */ `subscription OnCreateTodo(
     name
     description
     images
+    projectID
+    project {
+      id
+      title
+      description
+      status
+      deadline
+      color
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
     createdAt
     updatedAt
+    projectTodosId
     owner
     __typename
   }
@@ -33,8 +113,22 @@ export const onUpdateTodo = /* GraphQL */ `subscription OnUpdateTodo(
     name
     description
     images
+    projectID
+    project {
+      id
+      title
+      description
+      status
+      deadline
+      color
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
     createdAt
     updatedAt
+    projectTodosId
     owner
     __typename
   }
@@ -49,8 +143,22 @@ export const onDeleteTodo = /* GraphQL */ `subscription OnDeleteTodo(
     name
     description
     images
+    projectID
+    project {
+      id
+      title
+      description
+      status
+      deadline
+      color
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
     createdAt
     updatedAt
+    projectTodosId
     owner
     __typename
   }

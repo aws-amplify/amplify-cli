@@ -8,14 +8,70 @@ type GeneratedQuery<InputType, OutputType> = string & {
   __generatedQueryOutput: OutputType;
 };
 
+export const getProject = /* GraphQL */ `query GetProject($id: ID!) {
+  getProject(id: $id) {
+    id
+    title
+    description
+    status
+    deadline
+    color
+    todos {
+      nextToken
+      __typename
+    }
+    createdAt
+    updatedAt
+    owner
+    __typename
+  }
+}
+` as GeneratedQuery<APITypes.GetProjectQueryVariables, APITypes.GetProjectQuery>;
+export const listProjects = /* GraphQL */ `query ListProjects(
+  $filter: ModelProjectFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listProjects(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      id
+      title
+      description
+      status
+      deadline
+      color
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+` as GeneratedQuery<APITypes.ListProjectsQueryVariables, APITypes.ListProjectsQuery>;
 export const getTodo = /* GraphQL */ `query GetTodo($id: ID!) {
   getTodo(id: $id) {
     id
     name
     description
     images
+    projectID
+    project {
+      id
+      title
+      description
+      status
+      deadline
+      color
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
     createdAt
     updatedAt
+    projectTodosId
     owner
     __typename
   }
@@ -32,8 +88,10 @@ export const listTodos = /* GraphQL */ `query ListTodos(
       name
       description
       images
+      projectID
       createdAt
       updatedAt
+      projectTodosId
       owner
       __typename
     }

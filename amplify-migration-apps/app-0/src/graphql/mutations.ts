@@ -8,6 +8,72 @@ type GeneratedMutation<InputType, OutputType> = string & {
   __generatedMutationOutput: OutputType;
 };
 
+export const createProject = /* GraphQL */ `mutation CreateProject(
+  $input: CreateProjectInput!
+  $condition: ModelProjectConditionInput
+) {
+  createProject(input: $input, condition: $condition) {
+    id
+    title
+    description
+    status
+    deadline
+    color
+    todos {
+      nextToken
+      __typename
+    }
+    createdAt
+    updatedAt
+    owner
+    __typename
+  }
+}
+` as GeneratedMutation<APITypes.CreateProjectMutationVariables, APITypes.CreateProjectMutation>;
+export const updateProject = /* GraphQL */ `mutation UpdateProject(
+  $input: UpdateProjectInput!
+  $condition: ModelProjectConditionInput
+) {
+  updateProject(input: $input, condition: $condition) {
+    id
+    title
+    description
+    status
+    deadline
+    color
+    todos {
+      nextToken
+      __typename
+    }
+    createdAt
+    updatedAt
+    owner
+    __typename
+  }
+}
+` as GeneratedMutation<APITypes.UpdateProjectMutationVariables, APITypes.UpdateProjectMutation>;
+export const deleteProject = /* GraphQL */ `mutation DeleteProject(
+  $input: DeleteProjectInput!
+  $condition: ModelProjectConditionInput
+) {
+  deleteProject(input: $input, condition: $condition) {
+    id
+    title
+    description
+    status
+    deadline
+    color
+    todos {
+      nextToken
+      __typename
+    }
+    createdAt
+    updatedAt
+    owner
+    __typename
+  }
+}
+` as GeneratedMutation<APITypes.DeleteProjectMutationVariables, APITypes.DeleteProjectMutation>;
 export const createTodo = /* GraphQL */ `mutation CreateTodo(
   $input: CreateTodoInput!
   $condition: ModelTodoConditionInput
@@ -17,8 +83,22 @@ export const createTodo = /* GraphQL */ `mutation CreateTodo(
     name
     description
     images
+    projectID
+    project {
+      id
+      title
+      description
+      status
+      deadline
+      color
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
     createdAt
     updatedAt
+    projectTodosId
     owner
     __typename
   }
@@ -33,8 +113,22 @@ export const updateTodo = /* GraphQL */ `mutation UpdateTodo(
     name
     description
     images
+    projectID
+    project {
+      id
+      title
+      description
+      status
+      deadline
+      color
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
     createdAt
     updatedAt
+    projectTodosId
     owner
     __typename
   }
@@ -49,8 +143,22 @@ export const deleteTodo = /* GraphQL */ `mutation DeleteTodo(
     name
     description
     images
+    projectID
+    project {
+      id
+      title
+      description
+      status
+      deadline
+      color
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
     createdAt
     updatedAt
+    projectTodosId
     owner
     __typename
   }

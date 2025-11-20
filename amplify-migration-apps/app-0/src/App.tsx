@@ -12,9 +12,18 @@ import { type AuthUser } from 'aws-amplify/auth';
 import { type UseAuthenticator } from '@aws-amplify/ui-react-core';
 import { getCurrentUser, signOut as amplifySignOut } from 'aws-amplify/auth';
 
-import { createTodo, updateTodo, deleteTodo } from './graphql/mutations';
-import { listTodos } from './graphql/queries';
-import { type CreateTodoInput, type Todo, type UpdateTodoInput } from './API';
+import { deleteProject } from './graphql/mutations';
+import { createTodoCustom, updateTodoCustom, createProjectCustom, updateProjectCustom, deleteTodoCustom } from './graphql/customMutations';
+import { listTodos, listProjects } from './graphql/queries';
+import {
+  type CreateTodoInput,
+  type Todo,
+  type UpdateTodoInput,
+  type CreateProjectInput,
+  type Project,
+  type UpdateProjectInput,
+  type ProjectStatus,
+} from './API';
 
 const initialState: CreateTodoInput = { name: '', description: '', images: [] };
 // Client for authenticated users (owner-based operations)
@@ -92,9 +101,8 @@ const getThemedStyles = (theme: Theme) => {
       marginBottom: 30,
       padding: 20,
       backgroundColor: isDark ? '#2d3748' : 'white',
-      borderRadius: 12,
-      boxShadow: isDark ? '0 2px 10px rgba(0,0,0,0.3)' : '0 2px 10px rgba(0,0,0,0.1)',
-      maxWidth: 1200,
+      borderRadius: 8,
+      width: 'fit-content',
       margin: '0 auto 30px auto',
       color: isDark ? '#e1e8ed' : '#2c3e50',
     },
@@ -121,12 +129,15 @@ const getThemedStyles = (theme: Theme) => {
     },
     todo: {
       backgroundColor: isDark ? '#2d3748' : 'white',
-      padding: 20,
-      borderRadius: 12,
-      boxShadow: isDark ? '0 2px 8px rgba(0,0,0,0.3)' : '0 2px 8px rgba(0,0,0,0.08)',
+      padding: 12,
+      borderRadius: 6,
+      boxShadow: isDark ? '0 1px 4px rgba(0,0,0,0.2)' : '0 1px 4px rgba(0,0,0,0.06)',
       border: isDark ? '1px solid #4a5568' : '1px solid #e1e8ed',
       transition: 'transform 0.2s ease, box-shadow 0.2s ease',
       height: 'fit-content',
+      width: 'fit-content',
+      minWidth: '300px',
+      maxWidth: '600px',
     },
     input: {
       border: isDark ? '2px solid #4a5568' : '2px solid #e1e8ed',
@@ -189,7 +200,7 @@ const getThemedStyles = (theme: Theme) => {
       justifyContent: 'flex-end',
     },
     editButton: {
-      backgroundColor: '#17a2b8',
+      backgroundColor: '#e09d00ff',
       color: 'white',
       border: 'none',
       padding: '8px 16px',
@@ -565,23 +576,367 @@ const ReadOnlyApp: React.FC = () => {
   );
 };
 
+// Project Board component
+const ProjectBoard: React.FC<{
+  project: Project;
+  todos: Todo[];
+  onTodoUpdate: (todo: Todo) => void;
+  onTodoDelete: (todoId: string) => void;
+  onProjectUpdate: (project: Project) => void;
+  onProjectDelete: (projectId: string) => void;
+  user?: AuthUser;
+}> = ({ project, todos, onTodoUpdate, onTodoDelete, onProjectUpdate, onProjectDelete, user }) => {
+  const { theme } = useTheme();
+  const themedStyles = getThemedStyles(theme);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editForm, setEditForm] = useState({
+    title: project.title,
+    description: project.description || '',
+    status: project.status,
+    color: project.color || '#007bff',
+  });
+
+  const projectTodos = todos.filter((todo) => todo.projectID === project.id);
+
+  const statusColors: Record<ProjectStatus, string> = {
+    ACTIVE: '#28a745',
+    COMPLETED: '#6c757d',
+    ON_HOLD: '#ffc107',
+    ARCHIVED: '#6f42c1',
+  };
+
+  const statusEmojis: Record<ProjectStatus, string> = {
+    ACTIVE: '🚀',
+    COMPLETED: '✅',
+    ON_HOLD: '⏸️',
+    ARCHIVED: '📦',
+  };
+
+  async function handleUpdateProject() {
+    try {
+      const result = await authenticatedClient.graphql({
+        query: updateProjectCustom,
+        variables: {
+          input: {
+            id: project.id,
+            title: editForm.title,
+            description: editForm.description,
+            status: editForm.status,
+            color: editForm.color,
+          },
+        },
+      });
+      if (result.data?.updateProject) {
+        onProjectUpdate(result.data.updateProject as Project);
+        setIsEditing(false);
+      }
+    } catch (err) {
+      console.log('Error updating project:', err);
+    }
+  }
+
+  const projectStyle = {
+    ...themedStyles.todo,
+    borderLeft: `4px solid ${project.color || statusColors[project.status]}`,
+    marginBottom: 24,
+  };
+
+  return (
+    <div style={projectStyle}>
+      {isEditing ? (
+        <div>
+          <input
+            value={editForm.title}
+            onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
+            style={themedStyles.input}
+            placeholder="Project title"
+          />
+          <input
+            value={editForm.description}
+            onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+            style={themedStyles.input}
+            placeholder="Project description"
+          />
+          <select
+            value={editForm.status}
+            onChange={(e) => setEditForm({ ...editForm, status: e.target.value as ProjectStatus })}
+            style={themedStyles.input}
+          >
+            <option value="ACTIVE">🚀 Active</option>
+            <option value="COMPLETED">✅ Completed</option>
+            <option value="ON_HOLD">⏸️ On Hold</option>
+            <option value="ARCHIVED">📦 Archived</option>
+          </select>
+          <input
+            type="color"
+            value={editForm.color}
+            onChange={(e) => setEditForm({ ...editForm, color: e.target.value })}
+            style={{ ...themedStyles.input, height: 50 }}
+          />
+          <div style={themedStyles.buttonGroup}>
+            <button style={themedStyles.saveButton} onClick={handleUpdateProject}>
+              ✅ Save Project
+            </button>
+            <button style={themedStyles.cancelButton} onClick={() => setIsEditing(false)}>
+              ❌ Cancel
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+            <div>
+              <h3 style={{ ...themedStyles.todoName, margin: 0 }}>
+                {statusEmojis[project.status]} {project.title}
+              </h3>
+              <p style={{ ...themedStyles.todoDescription, margin: '4px 0' }}>{project.description}</p>
+              <span
+                style={{
+                  fontSize: 12,
+                  padding: '4px 8px',
+                  borderRadius: 4,
+                  backgroundColor: statusColors[project.status],
+                  color: 'white',
+                  fontWeight: '600',
+                }}
+              >
+                {project.status}
+              </span>
+            </div>
+            {project.owner === user?.username && (
+              <div style={themedStyles.buttonGroup}>
+                <button style={themedStyles.editButton} onClick={() => setIsEditing(true)}>
+                  ✏️ Edit
+                </button>
+                <button style={themedStyles.deleteButton} onClick={() => onProjectDelete(project.id)}>
+                  ✘ Delete
+                </button>
+              </div>
+            )}
+          </div>
+
+          <div style={{ fontSize: 14, color: themedStyles.todoDescription.color, marginBottom: 12 }}>
+            📋 {projectTodos.length} todo{projectTodos.length !== 1 ? 's' : ''}
+          </div>
+
+          {projectTodos.length > 0 && (
+            <div style={{ display: 'grid', gap: 12 }}>
+              {projectTodos.map((todo) => (
+                <TodoCard key={todo.id} todo={todo} onUpdate={onTodoUpdate} onDelete={onTodoDelete} user={user} projects={[]} />
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Todo Card Component
+const TodoCard: React.FC<{
+  todo: Todo;
+  onUpdate: (todo: Todo) => void;
+  onDelete: (todoId: string) => void;
+  user?: AuthUser;
+  projects?: Project[];
+}> = ({ todo, onUpdate, onDelete, user, projects = [] }) => {
+  const { theme } = useTheme();
+  const themedStyles = getThemedStyles(theme);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editFormState, setEditFormState] = useState<UpdateTodoInput>({
+    id: todo.id,
+    name: todo.name,
+    description: todo.description || '',
+    images: todo.images || [],
+    projectID: todo.projectID,
+  });
+  const [editSelectedFiles, setEditSelectedFiles] = useState<File[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const editFileInputRef = useRef<HTMLInputElement>(null);
+
+  async function handleUpdateTodo() {
+    try {
+      setUploading(true);
+      const result = await authenticatedClient.graphql({
+        query: updateTodoCustom,
+        variables: {
+          input: {
+            id: editFormState.id,
+            name: editFormState.name,
+            description: editFormState.description,
+            images: editFormState.images,
+            projectID: editFormState.projectID || null,
+          },
+        },
+      });
+      if ((result as any).data?.updateTodo) {
+        onUpdate((result as any).data.updateTodo as Todo);
+        setIsEditing(false);
+      }
+    } catch (err) {
+      console.log('Error updating todo:', err);
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  async function handleProjectChange(newProjectId: string) {
+    try {
+      setUploading(true);
+      const result = await authenticatedClient.graphql({
+        query: updateTodoCustom,
+        variables: {
+          input: {
+            id: todo.id,
+            name: todo.name,
+            description: todo.description,
+            images: todo.images,
+            projectID: newProjectId || null,
+          },
+        },
+      });
+      if ((result as any).data?.updateTodo) {
+        onUpdate((result as any).data.updateTodo as Todo);
+      }
+    } catch (err) {
+      console.log('Error updating todo project:', err);
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  const cardStyle = {
+    padding: 12,
+    backgroundColor: theme === 'dark' ? '#374151' : '#f8f9fa',
+    borderRadius: 8,
+    border: theme === 'dark' ? '1px solid #4b5563' : '1px solid #e5e7eb',
+  };
+
+  if (isEditing) {
+    return (
+      <div style={cardStyle}>
+        <input
+          value={editFormState.name || ''}
+          onChange={(e) => setEditFormState({ ...editFormState, name: e.target.value })}
+          style={themedStyles.input}
+          placeholder="Todo name"
+        />
+        <input
+          value={editFormState.description || ''}
+          onChange={(e) => setEditFormState({ ...editFormState, description: e.target.value })}
+          style={themedStyles.input}
+          placeholder="Description"
+        />
+        <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+          <button style={themedStyles.saveButton} onClick={handleUpdateTodo} disabled={uploading}>
+            {uploading ? '⏳' : '✅'} Save
+          </button>
+          <button style={themedStyles.cancelButton} onClick={() => setIsEditing(false)}>
+            ❌ Cancel
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div style={cardStyle}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <div style={{ flex: 1 }}>
+          <p style={{ margin: '0 0 4px 0', fontWeight: '600', fontSize: 14 }}>{todo.name}</p>
+          <p style={{ margin: '0', fontSize: 12, color: themedStyles.todoDescription.color }}>{todo.description}</p>
+        </div>
+        {todo.owner === user?.username && (
+          <div style={{ display: 'flex', gap: 4, marginLeft: 8 }}>
+            <button style={{ ...themedStyles.editButton, padding: '4px 8px', fontSize: 12 }} onClick={() => setIsEditing(true)}>
+              ✏️
+            </button>
+            <button style={{ ...themedStyles.deleteButton, padding: '4px 8px', fontSize: 12 }} onClick={() => onDelete(todo.id)}>
+              ✘
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Project Selector */}
+      {todo.owner === user?.username && projects.length > 0 && (
+        <div style={{ marginTop: 8 }}>
+          <select
+            value={todo.projectID || ''}
+            onChange={(e) => handleProjectChange(e.target.value)}
+            style={{
+              ...themedStyles.input,
+              marginBottom: 0,
+              fontSize: 12,
+              padding: 8,
+              height: 'auto',
+            }}
+            disabled={uploading}
+          >
+            <option value="">📝 Unassigned</option>
+            {projects.map((project) => (
+              <option key={project.id} value={project.id}>
+                📋 {project.title}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+
+      {todo.images && todo.images.length > 0 && (
+        <div style={{ marginTop: 8 }}>
+          <MultiImageDisplay imagePaths={todo.images.filter((img): img is string => img !== null)} />
+        </div>
+      )}
+    </div>
+  );
+};
+
 // Authenticated App Component
 const AuthenticatedApp: React.FC<AppProps> = ({ signOut, user }) => {
-  const [formState, setFormState] = useState<CreateTodoInput>(initialState);
+  const [projects, setProjects] = useState<Project[]>([]);
   const [todos, setTodos] = useState<Todo[]>([]);
+  const [unassignedTodos, setUnassignedTodos] = useState<Todo[]>([]);
+  const [showProjectForm, setShowProjectForm] = useState(false);
+  const [showTodoForm, setShowTodoForm] = useState(false);
+  const [selectedProject, setSelectedProject] = useState<string>('');
+
+  // Project form state
+  const [projectForm, setProjectForm] = useState<CreateProjectInput>({
+    title: '',
+    description: '',
+    status: 'ACTIVE' as ProjectStatus,
+    color: '#007bff',
+  });
+
+  // Todo form state
+  const [todoForm, setTodoForm] = useState<CreateTodoInput>({
+    name: '',
+    description: '',
+    images: [],
+  });
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [editFormState, setEditFormState] = useState<UpdateTodoInput>({ id: '', name: '', description: '', images: [] });
-  const [editSelectedFiles, setEditSelectedFiles] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const editFileInputRef = useRef<HTMLInputElement>(null);
+
   const { theme, toggleTheme } = useTheme();
   const themedStyles = getThemedStyles(theme);
 
   useEffect(() => {
+    fetchProjects();
     fetchTodos();
   }, []);
+
+  async function fetchProjects() {
+    try {
+      const projectData = await publicClient.graphql({
+        query: listProjects,
+      });
+      setProjects((projectData.data.listProjects?.items?.filter(Boolean) as Project[]) || []);
+    } catch (err) {
+      console.log('Error fetching projects:', err);
+    }
+  }
 
   async function fetchTodos() {
     try {
@@ -602,9 +957,38 @@ const AuthenticatedApp: React.FC<AppProps> = ({ signOut, user }) => {
     }
   }
 
-  async function addTodo() {
+  async function createNewProject() {
     try {
-      if (!formState.name || !formState.description) return;
+      if (!projectForm.title) return;
+
+      setUploading(true);
+      const result = await authenticatedClient.graphql({
+        query: createProjectCustom,
+        variables: {
+          input: projectForm,
+        },
+      });
+
+      if (result.data?.createProject) {
+        setProjects([...projects, result.data.createProject as Project]);
+        setProjectForm({
+          title: '',
+          description: '',
+          status: 'ACTIVE' as ProjectStatus,
+          color: '#007bff',
+        });
+        setShowProjectForm(false);
+      }
+    } catch (err) {
+      console.log('Error creating project:', err);
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  async function createNewTodo() {
+    try {
+      if (!todoForm.name) return;
 
       setUploading(true);
       const imageKeys: string[] = [];
@@ -633,148 +1017,93 @@ const AuthenticatedApp: React.FC<AppProps> = ({ signOut, user }) => {
         }
       }
 
-      const todoInput = { ...formState, images: imageKeys };
+      const todoInput = {
+        ...todoForm,
+        images: imageKeys,
+        projectID: selectedProject || undefined,
+      };
 
       const result = await authenticatedClient.graphql({
-        query: createTodo,
+        query: createTodoCustom,
         variables: {
           input: todoInput,
         },
       });
 
-      if (result.data?.createTodo) {
-        setTodos([...todos, result.data.createTodo]);
+      if ((result as any).data?.createTodo) {
+        setTodos([...todos, (result as any).data.createTodo as Todo]);
+        setTodoForm({ name: '', description: '', images: [] });
+        setSelectedFiles([]);
+        setSelectedProject('');
+        setShowTodoForm(false);
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
       }
-
-      setFormState(initialState);
-      setSelectedFiles([]);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
-      }
-      setUploading(false);
     } catch (err) {
-      console.log('error creating todo:', err);
+      console.log('Error creating todo:', err);
+    } finally {
       setUploading(false);
     }
   }
 
-  function startEdit(todo: Todo) {
-    setEditingId(todo.id);
-    setEditFormState({
-      id: todo.id,
-      name: todo.name,
-      description: todo.description || '',
-      images: todo.images || [],
-    });
+  function handleTodoUpdate(updatedTodo: Todo) {
+    setTodos(todos.map((todo) => (todo.id === updatedTodo.id ? updatedTodo : todo)));
   }
 
-  function handleEditFileSelect(event: React.ChangeEvent<HTMLInputElement>) {
-    const files = Array.from(event.target.files || []);
-    if (files.length > 0) {
-      setEditSelectedFiles(files);
-    }
-  }
-
-  async function addImagesToEdit() {
-    if (editSelectedFiles.length === 0) return;
-
-    setUploading(true);
-    const newImageKeys: string[] = [];
-
-    for (const file of editSelectedFiles) {
-      const fileExtension = file.name.split('.').pop();
-      const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExtension}`;
-
-      try {
-        const result = await uploadData({
-          path: `public/images/${fileName}`,
-          data: file,
-          options: {
-            contentType: file.type,
-          },
-        }).result;
-
-        newImageKeys.push(result.path);
-      } catch (uploadError) {
-        console.log('Error uploading file:', uploadError);
-        setUploading(false);
-        return;
-      }
-    }
-
-    // Add new images to existing ones
-    const updatedImages = [...(editFormState.images || []), ...newImageKeys];
-    setEditFormState({ ...editFormState, images: updatedImages });
-    setEditSelectedFiles([]);
-    if (editFileInputRef.current) {
-      editFileInputRef.current.value = '';
-    }
-    setUploading(false);
-  }
-
-  function removeImageFromEdit(imageIndex: number) {
-    const updatedImages = editFormState.images?.filter((_, index) => index !== imageIndex) || [];
-    setEditFormState({ ...editFormState, images: updatedImages });
-  }
-
-  function cancelEdit() {
-    setEditingId(null);
-    setEditFormState({ id: '', name: '', description: '', images: [] });
-    setEditSelectedFiles([]);
-  }
-
-  async function saveEdit() {
-    try {
-      if (!editFormState.name || !editFormState.description) return;
-
-      setUploading(true);
-
-      await authenticatedClient.graphql({
-        query: updateTodo,
-        variables: {
-          input: {
-            id: editFormState.id,
-            name: editFormState.name,
-            description: editFormState.description,
-            images: editFormState.images,
-          },
-        },
-      });
-
-      setTodos(todos.map((todo) => (todo.id === editFormState.id ? ({ ...todo, ...editFormState } as Todo) : todo)));
-
-      setEditingId(null);
-      setEditFormState({ id: '', name: '', description: '', images: [] });
-      setEditSelectedFiles([]);
-      setUploading(false);
-    } catch (err) {
-      console.log('error updating todo:', err);
-      setUploading(false);
-    }
-  }
-
-  async function removeTodo(id: string) {
+  async function handleTodoDelete(todoId: string) {
     try {
       await authenticatedClient.graphql({
-        query: deleteTodo,
+        query: deleteTodoCustom,
         variables: {
-          input: { id },
+          input: { id: todoId },
         },
       });
-
-      setTodos(todos.filter((todo) => todo.id !== id));
+      setTodos(todos.filter((todo) => todo.id !== todoId));
     } catch (err) {
-      console.log('error deleting todo:', err);
+      console.log('Error deleting todo:', err);
     }
   }
+
+  function handleProjectUpdate(updatedProject: Project) {
+    setProjects(projects.map((project) => (project.id === updatedProject.id ? updatedProject : project)));
+  }
+
+  async function handleProjectDelete(projectId: string) {
+    try {
+      await authenticatedClient.graphql({
+        query: deleteProject,
+        variables: {
+          input: { id: projectId },
+        },
+      });
+      setProjects(projects.filter((project) => project.id !== projectId));
+    } catch (err) {
+      console.log('Error deleting project:', err);
+    }
+  }
+
+  // Update unassigned todos when todos or projects change
+  useEffect(() => {
+    const projectIds = new Set(projects.map((p) => p.id));
+    setUnassignedTodos(todos.filter((todo) => !todo.projectID || !projectIds.has(todo.projectID)));
+  }, [todos, projects]);
 
   return (
     <div style={themedStyles.container}>
       <div style={themedStyles.header}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Heading level={1} style={themedStyles.header}>
-            Hello {user?.username}
-          </Heading>
+          <div style={{ flex: 1 }}>
+            <Heading level={1} style={themedStyles.header}>
+              📋 Project Boards
+            </Heading>
+            <Heading
+              level={3}
+              style={{ ...themedStyles.header, fontSize: 18, marginTop: 8, color: themedStyles.todoDescription.color, textAlign: 'center' }}
+            >
+              {user?.signInDetails?.loginId || user?.username}
+            </Heading>
+          </div>
           <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
             <button style={themedStyles.themeToggle} onClick={toggleTheme}>
               {theme === 'light' ? '🌙' : '☀️'}
@@ -787,126 +1116,185 @@ const AuthenticatedApp: React.FC<AppProps> = ({ signOut, user }) => {
       </div>
 
       <div style={themedStyles.mainContent}>
+        {/* Sidebar with forms */}
         <div style={themedStyles.formCard}>
-          <h2 style={themedStyles.formTitle}>Create New Todo</h2>
-          <input
-            onChange={(event) => setFormState({ ...formState, name: event.target.value })}
-            style={themedStyles.input}
-            value={formState.name}
-            placeholder="Todo name"
-          />
-          <input
-            onChange={(event) => setFormState({ ...formState, description: event.target.value })}
-            style={themedStyles.input}
-            value={formState.description as string}
-            placeholder="Description"
-          />
-          <input ref={fileInputRef} type="file" accept="image/*" multiple onChange={handleFileSelect} style={themedStyles.input} />
-          {selectedFiles.length > 0 && (
-            <p style={themedStyles.fileSelected}>
-              📎 Selected: {selectedFiles.length} file{selectedFiles.length > 1 ? 's' : ''}
-            </p>
+          {/* Project Form */}
+          {showProjectForm ? (
+            <div>
+              <h2 style={themedStyles.formTitle}>Create Project Board</h2>
+              <input
+                value={projectForm.title}
+                onChange={(e) => setProjectForm({ ...projectForm, title: e.target.value })}
+                style={themedStyles.input}
+                placeholder="Project title"
+              />
+              <input
+                value={projectForm.description || ''}
+                onChange={(e) => setProjectForm({ ...projectForm, description: e.target.value })}
+                style={themedStyles.input}
+                placeholder="Project description"
+              />
+              <select
+                value={projectForm.status}
+                onChange={(e) => setProjectForm({ ...projectForm, status: e.target.value as ProjectStatus })}
+                style={themedStyles.input}
+              >
+                <option value="ACTIVE">🚀 Active</option>
+                <option value="COMPLETED">✅ Completed</option>
+                <option value="ON_HOLD">⏸️ On Hold</option>
+                <option value="ARCHIVED">📦 Archived</option>
+              </select>
+              <input
+                type="color"
+                value={projectForm.color || '#007bff'}
+                onChange={(e) => setProjectForm({ ...projectForm, color: e.target.value })}
+                style={{ ...themedStyles.input, height: 50 }}
+              />
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button style={themedStyles.saveButton} onClick={createNewProject} disabled={uploading}>
+                  {uploading ? '⏳' : '✅'} Create Project
+                </button>
+                <button style={themedStyles.cancelButton} onClick={() => setShowProjectForm(false)}>
+                  ❌ Cancel
+                </button>
+              </div>
+            </div>
+          ) : showTodoForm ? (
+            <div>
+              <h2 style={themedStyles.formTitle}>Create Todo</h2>
+              <input
+                value={todoForm.name}
+                onChange={(e) => setTodoForm({ ...todoForm, name: e.target.value })}
+                style={themedStyles.input}
+                placeholder="Todo name"
+              />
+              <input
+                value={todoForm.description || ''}
+                onChange={(e) => setTodoForm({ ...todoForm, description: e.target.value })}
+                style={themedStyles.input}
+                placeholder="Description"
+              />
+              <select value={selectedProject} onChange={(e) => setSelectedProject(e.target.value)} style={themedStyles.input}>
+                <option value="">Select Project (Optional)</option>
+                {projects.map((project) => (
+                  <option key={project.id} value={project.id}>
+                    {project.title}
+                  </option>
+                ))}
+              </select>
+              <input ref={fileInputRef} type="file" accept="image/*" multiple onChange={handleFileSelect} style={themedStyles.input} />
+              {selectedFiles.length > 0 && (
+                <p style={themedStyles.fileSelected}>
+                  📎 Selected: {selectedFiles.length} file{selectedFiles.length > 1 ? 's' : ''}
+                </p>
+              )}
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button style={themedStyles.saveButton} onClick={createNewTodo} disabled={uploading}>
+                  {uploading ? '⏳' : '✅'} Create Todo
+                </button>
+                <button style={themedStyles.cancelButton} onClick={() => setShowTodoForm(false)}>
+                  ❌ Cancel
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div>
+              <h2 style={themedStyles.formTitle}>Quick Actions</h2>
+              <button style={{ ...themedStyles.button, marginBottom: 16 }} onClick={() => setShowProjectForm(true)}>
+                🚀 New Project Board
+              </button>
+              <button style={themedStyles.button} onClick={() => setShowTodoForm(true)}>
+                ➕ New Todo
+              </button>
+
+              <div style={{ marginTop: 24, padding: 16, backgroundColor: theme === 'dark' ? '#374151' : '#f8f9fa', borderRadius: 8 }}>
+                <h3 style={{ ...themedStyles.formTitle, fontSize: 18, marginBottom: 12 }}>📊 Overview</h3>
+                <p style={{ margin: '4px 0', fontSize: 14 }}>
+                  📋 {projects.length} Project{projects.length !== 1 ? 's' : ''}
+                </p>
+                <p style={{ margin: '4px 0', fontSize: 14 }}>
+                  ✅ {todos.length} Total Todo{todos.length !== 1 ? 's' : ''}
+                </p>
+                <p style={{ margin: '4px 0', fontSize: 14 }}>📝 {unassignedTodos.length} Unassigned</p>
+              </div>
+            </div>
           )}
-          <button style={themedStyles.button} onClick={addTodo} disabled={uploading}>
-            {uploading ? '⏳ Creating...' : '➕ Create Todo'}
-          </button>
         </div>
 
-        <div style={themedStyles.todoListContainer}>
-          {todos.length === 0 ? (
-            <p style={themedStyles.emptyMessage}>No todos yet. Create your first one!</p>
-          ) : (
-            todos.map((todo, index) => (
-              <div key={todo.id ? todo.id : index} style={themedStyles.todo}>
-                {editingId === todo.id ? (
-                  <div>
-                    <input
-                      onChange={(event) => setEditFormState({ ...editFormState, name: event.target.value })}
-                      style={themedStyles.input}
-                      value={editFormState.name || ''}
-                      placeholder="Todo name"
-                    />
-                    <input
-                      onChange={(event) => setEditFormState({ ...editFormState, description: event.target.value })}
-                      style={themedStyles.input}
-                      value={editFormState.description || ''}
-                      placeholder="Description"
-                    />
+        {/* Main content area with project boards */}
+        <div>
+          {/* Project Boards */}
+          {projects.length > 0 && (
+            <div>
+              {projects.map((project) => (
+                <ProjectBoard
+                  key={project.id}
+                  project={project}
+                  todos={todos}
+                  onTodoUpdate={handleTodoUpdate}
+                  onTodoDelete={handleTodoDelete}
+                  onProjectUpdate={handleProjectUpdate}
+                  onProjectDelete={handleProjectDelete}
+                  user={user}
+                />
+              ))}
+            </div>
+          )}
 
-                    {/* Current Images Management */}
-                    {editFormState.images && editFormState.images.length > 0 && (
-                      <div style={themedStyles.editImageSection}>
-                        <p style={themedStyles.editSectionLabel}>📷 Current Images:</p>
-                        <div style={themedStyles.editImageList}>
-                          {editFormState.images
-                            .filter((img): img is string => img !== null)
-                            .map((imagePath, index) => (
-                              <div key={imagePath} style={themedStyles.editImageItem}>
-                                <span style={themedStyles.editImageName}>{imagePath.split('/').pop()}</span>
-                                <button style={themedStyles.removeImageButton} onClick={() => removeImageFromEdit(index)} type="button">
-                                  🗑️
-                                </button>
-                              </div>
-                            ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Add New Images */}
-                    <div style={themedStyles.editImageSection}>
-                      <p style={themedStyles.editSectionLabel}>➕ Add Images:</p>
-                      <input
-                        ref={editFileInputRef}
-                        type="file"
-                        accept="image/*"
-                        multiple
-                        onChange={handleEditFileSelect}
-                        style={themedStyles.input}
-                      />
-                      {editSelectedFiles.length > 0 && (
-                        <div>
-                          <p style={themedStyles.fileSelected}>
-                            📎 Selected: {editSelectedFiles.length} file{editSelectedFiles.length > 1 ? 's' : ''}
-                          </p>
-                          <button style={themedStyles.addImagesButton} onClick={addImagesToEdit} disabled={uploading} type="button">
-                            {uploading ? '⏳ Adding...' : '📤 Add Images'}
-                          </button>
-                        </div>
-                      )}
-                    </div>
-
-                    <div style={themedStyles.buttonGroup}>
-                      <button style={themedStyles.saveButton} onClick={saveEdit} disabled={uploading}>
-                        {uploading ? '⏳ Saving...' : '✅ Save'}
-                      </button>
-                      <button style={themedStyles.cancelButton} onClick={cancelEdit}>
-                        ❌ Cancel
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <div>
-                    <p style={themedStyles.todoName}>{todo.name}</p>
-                    <p style={themedStyles.todoDescription}>{todo.description}</p>
-                    {todo.images && todo.images.length > 0 && (
-                      <div style={themedStyles.imageFrame}>
-                        <MultiImageDisplay imagePaths={todo.images.filter((img): img is string => img !== null)} />
-                      </div>
-                    )}
-                    {todo.id && todo.owner === user?.username && (
-                      <div style={themedStyles.buttonGroup}>
-                        <button style={themedStyles.editButton} onClick={() => startEdit(todo as Todo)}>
-                          ✏️ Edit
-                        </button>
-                        <button style={themedStyles.deleteButton} onClick={() => removeTodo(todo.id!)}>
-                          🗑️ Delete
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                )}
+          {/* Default Project Board for Unassigned Todos */}
+          {unassignedTodos.length > 0 && (
+            <div
+              style={{
+                ...themedStyles.todo,
+                borderLeft: `4px solid #6c757d`,
+                marginBottom: 24,
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+                <div>
+                  <h3 style={{ ...themedStyles.todoName, margin: 0 }}>📝 Unassigned Todos</h3>
+                  <p style={{ ...themedStyles.todoDescription, margin: '4px 0' }}>Todos that haven't been assigned to any project</p>
+                  <span
+                    style={{
+                      fontSize: 12,
+                      padding: '4px 8px',
+                      borderRadius: 4,
+                      backgroundColor: '#6c757d',
+                      color: 'white',
+                      fontWeight: '600',
+                    }}
+                  >
+                    DEFAULT
+                  </span>
+                </div>
+                <div style={{ fontSize: 12, color: themedStyles.todoDescription.color }}>Cannot be deleted</div>
               </div>
-            ))
+
+              <div style={{ fontSize: 14, color: themedStyles.todoDescription.color, marginBottom: 12 }}>
+                📋 {unassignedTodos.length} todo{unassignedTodos.length !== 1 ? 's' : ''}
+              </div>
+
+              <div style={{ display: 'grid', gap: 12 }}>
+                {unassignedTodos.map((todo) => (
+                  <TodoCard
+                    key={todo.id}
+                    todo={todo}
+                    onUpdate={handleTodoUpdate}
+                    onDelete={handleTodoDelete}
+                    user={user}
+                    projects={projects}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Empty state */}
+          {projects.length === 0 && todos.length === 0 && (
+            <div style={themedStyles.emptyMessage}>
+              <h3>🚀 Welcome to Project Boards!</h3>
+              <p>Create your first project board to organize your todos</p>
+            </div>
           )}
         </div>
       </div>
