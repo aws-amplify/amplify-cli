@@ -12,6 +12,11 @@ amplify add auth
 
 Follow it up by adding social provider config secrets. For reference - https://docs.amplify.aws/gen1/react/build-a-backend/auth/add-social-provider/
 
+Change this line in backend/auth/cli-inputs.json to 
+"hostedUIProviderMeta": "[{\"ProviderName\":\"Facebook\",\"authorize_scopes\":\"public_profile\",\"AttributeMapping\":{\"email\":\"email\",\"username\":\"id\"}},{\"ProviderName\":\"Google\",\"authorize_scopes\":\"openid email profile\",\"AttributeMapping\":{\"email\":\"email\",\"username\":\"sub\"}}]",
+
+This will change the facebook scope to something acceptable
+
 All the defaults on amplify push
 
 amplify add api
