@@ -1,5 +1,5 @@
 import ts from 'typescript';
-import { Renderer } from '../render_pipeline.js';
+import { Renderer } from '../render_pipeline';
 export class TypescriptNodeArrayRenderer implements Renderer {
   private printer: ts.Printer;
   private sourceFile: ts.SourceFile;

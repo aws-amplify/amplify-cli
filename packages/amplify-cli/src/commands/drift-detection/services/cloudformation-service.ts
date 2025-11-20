@@ -1,11 +1,22 @@
 /**
  * CloudFormation service for AWS operations
- * Handles all CloudFormation API interactions
+ * Handles all CloudFormation API interactions and S3 backend sync
  */
 
 import { CloudFormationClient, GetTemplateCommand } from '@aws-sdk/client-cloudformation';
 import type { $TSContext } from '@aws-amplify/amplify-cli-core';
+import { AmplifyError, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
+import * as fs from 'fs-extra';
+import * as path from 'path';
 import type { CloudFormationTemplate } from './drift-formatter';
+
+// Import the CloudFormation class from the provider
+const CloudFormation = require('@aws-amplify/amplify-provider-awscloudformation/lib/aws-utils/aws-cfn');
+
+// Import S3 utilities for backend sync
+import { downloadZip, extractZip } from '@aws-amplify/amplify-provider-awscloudformation/lib/zip-util';
+import { S3 } from '@aws-amplify/amplify-provider-awscloudformation/lib/aws-utils/aws-s3';
+const { S3BackendZipFileName } = require('@aws-amplify/amplify-provider-awscloudformation/lib/constants');
 
 /**
  * Service for CloudFormation operations
@@ -13,16 +24,14 @@ import type { CloudFormationTemplate } from './drift-formatter';
 export class CloudFormationService {
   /**
    * Get CloudFormation client
-   * Creates a new client each time to ensure fresh credentials
+   * Uses the standard Amplify CloudFormation class for proper configuration
    */
   public async getClient(context: $TSContext): Promise<CloudFormationClient> {
-    const { loadConfiguration } = require('@aws-amplify/amplify-provider-awscloudformation');
-    const credentials = await loadConfiguration(context);
+    // Use the standard Amplify CloudFormation class
+    const cfn = await new CloudFormation(context, 'drift:detect');
 
-    return new CloudFormationClient({
-      ...credentials,
-      maxAttempts: 10,
-    });
+    // Return the internal CloudFormationClient
+    return cfn.cfn;
   }
 
   /**
@@ -41,7 +50,14 @@ export class CloudFormationService {
       if (error.name === 'ValidationError' || error.message?.includes('does not exist')) {
         return false;
       }
-      throw error;
+      throw new AmplifyError(
+        'StackNotFoundError',
+        {
+          message: `Failed to validate stack existence: ${error.message}`,
+          resolution: 'Check your AWS credentials and permissions.',
+        },
+        error,
+      );
     }
   }
 
@@ -56,5 +72,66 @@ export class CloudFormationService {
       }),
     );
     return JSON.parse(response.TemplateBody!);
+  }
+
+  /**
+   * Sync the #current-cloud-backend directory with fresh data from S3
+   * This ensures all drift detection phases work with the actual deployed state
+   *
+   * @param context - Amplify context for AWS operations
+   * @returns Promise<boolean> - true if sync succeeded, false if skipped/failed
+   */
+  public async syncCloudBackendFromS3(context: $TSContext): Promise<boolean> {
+    try {
+      // Check if project is initialized
+      if (!stateManager.metaFileExists()) {
+        console.log('Skipping S3 sync: Project not initialized');
+        return false;
+      }
+
+      const amplifyDir = pathManager.getAmplifyDirPath();
+      const tempDir = path.join(amplifyDir, '.temp');
+      const currentCloudBackendDir = pathManager.getCurrentCloudBackendDirPath();
+
+      // Check if we have a cloud backend to sync
+      if (!fs.existsSync(currentCloudBackendDir)) {
+        console.log('Skipping S3 sync: No cloud backend directory found');
+        return false;
+      }
+
+      const s3 = await S3.getInstance(context);
+      let currentCloudBackendZip: string;
+
+      try {
+        // Download the latest backend state from S3
+        currentCloudBackendZip = await downloadZip(s3, tempDir, S3BackendZipFileName, undefined);
+      } catch (err: any) {
+        if (err?.name === 'NoSuchBucket') {
+          // Environment not deployed yet, nothing to sync
+          console.log('Skipping S3 sync: No deployment bucket found');
+          return false;
+        }
+        // Log other errors but don't fail the entire drift detection
+        console.warn(`Warning: Could not sync from S3: ${err.message}`);
+        return false;
+      }
+
+      // Extract and replace the current cloud backend
+      const unzippedDir = await extractZip(tempDir, currentCloudBackendZip);
+      const newDir = `${currentCloudBackendDir}.new`;
+
+      fs.copySync(unzippedDir, newDir);
+      fs.removeSync(currentCloudBackendDir);
+      fs.moveSync(newDir, currentCloudBackendDir);
+
+      // Clean up temp files
+      fs.removeSync(tempDir);
+
+      return true;
+    } catch (error: any) {
+      // Log but don't fail - phases can still run with existing cache
+      console.warn(`Warning: S3 sync failed: ${error.message}`);
+      return false;
+    }
   }
 }
