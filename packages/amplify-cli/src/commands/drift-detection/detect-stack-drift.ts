@@ -198,15 +198,10 @@ function isAmplifyAuthRoleDenyToAllowChange(propDiff: any): boolean {
         }
       }
     } catch (e) {
-      // If JSON parsing fails, fall back to string comparison
-      if (
-        expectedValue.includes('"Effect": "Deny"') &&
-        actualValue.includes('"Effect": "Allow"') &&
-        expectedValue.includes('cognito-identity.amazonaws.com') &&
-        actualValue.includes('cognito-identity.amazonaws.com')
-      ) {
-        return true;
-      }
+      // If JSON parsing fails, we have a malformed AssumeRolePolicyDocument
+      // This should not happen in normal circumstances - log and return false
+      console.error('Failed to parse AssumeRolePolicyDocument JSON:', e);
+      return false;
     }
   }
 

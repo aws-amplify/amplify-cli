@@ -114,7 +114,6 @@ export async function detectTemplateDrift(context: $TSContext, print: Print): Pr
     );
 
     // 6. Wait for changeset to complete
-    let changeSet;
     try {
       await waitUntilChangeSetCreateComplete(
         {
@@ -126,22 +125,19 @@ export async function detectTemplateDrift(context: $TSContext, print: Print): Pr
           ChangeSetName: changeSetName,
         },
       );
-
-      changeSet = await cfn.send(
-        new DescribeChangeSetCommand({
-          StackName: stackName,
-          ChangeSetName: changeSetName,
-        }),
-      );
     } catch (waitError: any) {
-      // If waiting fails, still try to get the changeset
-      changeSet = await cfn.send(
-        new DescribeChangeSetCommand({
-          StackName: stackName,
-          ChangeSetName: changeSetName,
-        }),
-      );
+      // Re-throw the error - the waiter already handles retries internally
+      // No need for an additional describe attempt as the changeset likely doesn't exist or is in a bad state
+      throw new Error(`Failed to create changeset: ${waitError.message || 'Unknown error'}`);
     }
+
+    // 7. Describe the completed changeset
+    const changeSet = await cfn.send(
+      new DescribeChangeSetCommand({
+        StackName: stackName,
+        ChangeSetName: changeSetName,
+      }),
+    );
 
     // Debug: Print full changeset
     print.debug(`CloudFormation ChangeSet: ${stackName}`);
