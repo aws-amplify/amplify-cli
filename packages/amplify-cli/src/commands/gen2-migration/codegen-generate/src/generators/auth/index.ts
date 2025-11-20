@@ -472,7 +472,7 @@ function createExternalProvidersPropertyAssignment(
         loginOptions.googleAttributes,
       ),
     );
-    secretErrors?.push(...createSecretErrorStatements([googleClientID, googleClientSecret]));
+    // secretErrors?.push(...createSecretErrorStatements([googleClientID, googleClientSecret]));
   }
 
   if (loginOptions.appleLogin) {
@@ -488,7 +488,7 @@ function createExternalProvidersPropertyAssignment(
         loginOptions.appleAttributes,
       ),
     );
-    secretErrors?.push(...createSecretErrorStatements([appleClientID, appleKeyId, applePrivateKey, appleTeamID]));
+    // secretErrors?.push(...createSecretErrorStatements([appleClientID, appleKeyId, applePrivateKey, appleTeamID]));
   }
 
   if (loginOptions.amazonLogin) {
@@ -502,7 +502,7 @@ function createExternalProvidersPropertyAssignment(
         loginOptions.amazonAttributes,
       ),
     );
-    secretErrors?.push(...createSecretErrorStatements([amazonClientID, amazonClientSecret]));
+    // secretErrors?.push(...createSecretErrorStatements([amazonClientID, amazonClientSecret]));
   }
 
   if (loginOptions.facebookLogin) {
@@ -516,7 +516,7 @@ function createExternalProvidersPropertyAssignment(
         loginOptions.facebookAttributes,
       ),
     );
-    secretErrors?.push(...createSecretErrorStatements([facebookClientID, facebookClientSecret]));
+    // secretErrors?.push(...createSecretErrorStatements([facebookClientID, facebookClientSecret]));
   }
 
   if (loginOptions.samlLogin) {
@@ -555,7 +555,7 @@ function createExternalProvidersPropertyAssignment(
         ),
       ),
     );
-    secretErrors?.push(...createSecretErrorStatements([oidcClientID, oidcClientSecret]));
+    // secretErrors?.push(...createSecretErrorStatements([oidcClientID, oidcClientSecret]));
   }
 
   // configure OAuth scope

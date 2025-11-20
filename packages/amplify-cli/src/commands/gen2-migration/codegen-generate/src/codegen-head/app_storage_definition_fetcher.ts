@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { getStorageDefinition } from '../adapters/storage/index';
-import { BackendDownloader } from './backend_downloader.js';
+import { BackendDownloader } from './backend_downloader';
 import { StorageRenderParameters, StorageTriggerEvent, Lambda, ServerSideEncryptionConfiguration } from '../core/migration-pipeline';
 import {
   GetBucketNotificationConfigurationCommand,

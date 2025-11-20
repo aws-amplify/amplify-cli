@@ -1,13 +1,15 @@
 import { AmplifyMigrationCloneStep } from './gen2-migration/clone';
 import { $TSContext, AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { AmplifyMigrationStep } from './gen2-migration/_step';
-import { printer } from '@aws-amplify/amplify-prompts';
+import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import { AmplifyMigrationCleanupStep } from './gen2-migration/cleanup';
 import { AmplifyMigrationDecommissionStep } from './gen2-migration/decommission';
 import { AmplifyMigrationGenerateStep } from './gen2-migration/generate';
 import { AmplifyMigrationLockStep } from './gen2-migration/lock';
 import { AmplifyMigrationRefactorStep } from './gen2-migration/refactor';
 import { AmplifyMigrationShiftStep } from './gen2-migration/shift';
+import { stateManager } from '@aws-amplify/amplify-cli-core';
+import chalk from 'chalk';
 
 const STEPS = {
   cleanup: {
@@ -40,8 +42,39 @@ const STEPS = {
   },
 };
 
+export class Logger {
+  constructor(private readonly stepName: string, private readonly appId: string, private readonly envName: string) {}
+
+  public envelope(message: string) {
+    printer.info(chalk.cyan(this._message(message, '→')));
+  }
+
+  public info(message: string): void {
+    printer.info(this._message(message, '•'));
+  }
+
+  public debug(message: string): void {
+    printer.debug(this._message(message, '·'));
+  }
+
+  public warn(message: string): void {
+    printer.warn(this._message(message, '·'));
+  }
+
+  public warning(message: string): void {
+    printer.warn(this._message(message, '·'));
+  }
+
+  private _message(message: string, prefix: string) {
+    return `[${new Date().toISOString()}] [${chalk.bold(this.stepName)}] [${chalk.blue(
+      `${this.appId}/${this.envName}`,
+    )}] ${prefix} ${message}`;
+  }
+}
+
 export const run = async (context: $TSContext) => {
-  const step = STEPS[(context.input.subCommands ?? [])[0]];
+  const stepName = (context.input.subCommands ?? [])[0];
+  const step = STEPS[stepName];
   if (!step) {
     displayHelp(context);
     return;
@@ -59,31 +92,56 @@ export const run = async (context: $TSContext) => {
     });
   }
 
-  const implementation: AmplifyMigrationStep = new step.class(context);
+  const projectName = stateManager.getProjectName();
+  const currentEnvName = stateManager.getCurrentEnvName();
+
+  if (!currentEnvName) {
+    throw new AmplifyError('EnvironmentNotInitializedError', {
+      message: `No environment configured for project '${projectName}'`,
+      resolution: 'Run "amplify pull" to configure an environment.',
+    });
+  }
+
+  const logger = new Logger(stepName, projectName, currentEnvName);
+  const implementation: AmplifyMigrationStep = new step.class(logger, projectName, currentEnvName, context);
 
   if (!skipValidations) {
-    printer.info('» validating');
     printer.blankLine();
+    logger.envelope('Performing validations');
     await implementation.validate();
+    logger.envelope('Validations complete');
   }
 
   if (!validationsOnly) {
     try {
-      printer.info('» executing');
       printer.blankLine();
-      await implementation.execute();
+      printer.info(
+        chalk.gray(`You are about to execute '${stepName}' on environment '${projectName}/${currentEnvName}'. Following this operation:`),
+      );
+      printer.blankLine();
+      for (const implication of implementation.implications()) {
+        printer.info(chalk.bold(`- ${implication}`));
+      }
+      printer.blankLine();
+      if (await prompter.confirmContinue()) {
+        printer.blankLine();
+        logger.envelope('Executing');
+        await implementation.execute();
+        logger.envelope('Execution complete');
+      }
     } catch (error: unknown) {
       if (!skipRollback) {
         printer.error(`Execution failed: ${error}`);
         printer.blankLine();
-        printer.info('» rolling back');
-        printer.blankLine();
+        logger.envelope('Rolling back');
         await implementation.rollback();
+        logger.envelope('Rollback complete');
       }
       throw error;
     }
   }
 
+  printer.blankLine();
   printer.success('Done');
 };
 

@@ -4,7 +4,7 @@
  */
 
 import * as fs from 'fs-extra';
-import { printer } from '@aws-amplify/amplify-prompts';
+import type { Print } from '../../drift';
 
 /**
  * Service for file operations
@@ -13,9 +13,11 @@ export class FileService {
   /**
    * Save JSON data to a file
    */
-  public async saveJsonOutput(filePath: string, data: any): Promise<void> {
+  public async saveJsonOutput(filePath: string, data: any, print?: Print): Promise<void> {
     await fs.writeJson(filePath, data, { spaces: 2 });
-    printer.info(`Drift results saved to: ${filePath}`);
+    if (print) {
+      print.info(`Drift results saved to: ${filePath}`);
+    }
   }
 
   /**
