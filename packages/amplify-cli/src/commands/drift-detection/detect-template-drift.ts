@@ -169,8 +169,10 @@ export async function detectTemplateDrift(context: $TSContext, print: Print): Pr
           ChangeSetName: changeSetName,
         }),
       );
-    } catch (deleteError) {
-      // Ignore cleanup errors
+    } catch (deleteError: any) {
+      // Log cleanup errors but don't fail the operation
+      print.warn(`Failed to delete changeset ${changeSetName}: ${deleteError.message}`);
+      print.warn('You may want to manually delete it from the AWS CloudFormation Console');
     }
 
     return result;
