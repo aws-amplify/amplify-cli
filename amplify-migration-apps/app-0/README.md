@@ -1,7 +1,10 @@
+<img width="1951" height="1225" alt="Screenshot 2025-11-20 at 17 24 01" src="https://github.com/user-attachments/assets/e858ce6f-397d-4107-9dd9-dc2b95576912" />
 
-<img width="1786" height="920" alt="Screenshot 2025-11-05 at 12 20 29" src="https://github.com/user-attachments/assets/4dcaabc8-5ca1-48f4-b956-14e256ce6b57" />
-<img width="1786" height="920" alt="Screenshot 2025-11-05 at 12 20 10" src="https://github.com/user-attachments/assets/fc3aff80-3280-4820-86f3-81467e5ede23" />
+_Unauthenticated view_
 
+<img width="1957" height="1228" alt="Screenshot 2025-11-20 at 17 23 48" src="https://github.com/user-attachments/assets/400dae37-971e-43ef-8702-8f2b2a32ba54" />
+
+_Authenticated view for Amplify project_
 # Set up the Amplify app
 
 ## Description
