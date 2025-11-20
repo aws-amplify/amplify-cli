@@ -25,6 +25,9 @@ v25.2.1
 
 ## Setup
 ```bash
+# in app-0
+npm install
+
 amplify init
 ```
 - Select all default options except for "Distribution Directory Path", which will be `dist` (not `build`)
