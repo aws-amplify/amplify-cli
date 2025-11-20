@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-util-mock",
-  "version": "5.10.24",
+  "version": "5.10.25-rc.8d3294f407cf53a.0",
   "description": "amplify cli plugin providing local testing",
   "repository": {
     "type": "git",
@@ -32,12 +32,12 @@
   },
   "dependencies": {
     "@aws-amplify/amplify-appsync-simulator": "2.16.17",
-    "@aws-amplify/amplify-category-function": "5.7.18",
+    "@aws-amplify/amplify-category-function": "5.7.19-rc.8d3294f407cf53a.0",
     "@aws-amplify/amplify-cli-core": "4.4.4",
     "@aws-amplify/amplify-environment-parameters": "1.9.23",
     "@aws-amplify/amplify-opensearch-simulator": "1.7.23",
     "@aws-amplify/amplify-prompts": "2.8.7",
-    "@aws-amplify/amplify-provider-awscloudformation": "8.11.16",
+    "@aws-amplify/amplify-provider-awscloudformation": "8.11.17-rc.8d3294f407cf53a.0",
     "@aws-sdk/client-dynamodb": "^3.919.0",
     "@aws-sdk/client-dynamodb-streams": "^3.919.0",
     "@hapi/topo": "^5.0.0",

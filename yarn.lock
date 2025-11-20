@@ -265,7 +265,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-category-function@5.7.18, @aws-amplify/amplify-category-function@workspace:packages/amplify-category-function":
+"@aws-amplify/amplify-category-function@5.7.19-rc.8d3294f407cf53a.0, @aws-amplify/amplify-category-function@workspace:packages/amplify-category-function":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-category-function@workspace:packages/amplify-category-function"
   dependencies:
@@ -342,14 +342,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-category-notifications@2.26.40, @aws-amplify/amplify-category-notifications@workspace:packages/amplify-category-notifications":
+"@aws-amplify/amplify-category-notifications@2.26.41-rc.8d3294f407cf53a.0, @aws-amplify/amplify-category-notifications@workspace:packages/amplify-category-notifications":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-category-notifications@workspace:packages/amplify-category-notifications"
   dependencies:
     "@aws-amplify/amplify-cli-core": 4.4.4
     "@aws-amplify/amplify-environment-parameters": 1.9.23
     "@aws-amplify/amplify-prompts": 2.8.7
-    "@aws-amplify/amplify-provider-awscloudformation": 8.11.16
+    "@aws-amplify/amplify-provider-awscloudformation": 8.11.17-rc.8d3294f407cf53a.0
     "@aws-sdk/client-iam": ^3.919.0
     "@aws-sdk/client-pinpoint": 3.901.0
     "@smithy/node-http-handler": ^4.4.3
@@ -499,7 +499,7 @@ __metadata:
   resolution: "@aws-amplify/amplify-console-integration-tests@workspace:packages/amplify-console-integration-tests"
   dependencies:
     "@aws-amplify/amplify-cli-core": 4.4.4
-    "@aws-amplify/amplify-e2e-core": 5.7.8
+    "@aws-amplify/amplify-e2e-core": 5.7.9-rc.8d3294f407cf53a.0
     "@aws-sdk/client-amplify": ^3.919.0
     "@aws-sdk/client-cloudformation": ^3.919.0
     "@types/ini": ^1.3.30
@@ -515,7 +515,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-container-hosting@2.8.22, @aws-amplify/amplify-container-hosting@workspace:packages/amplify-container-hosting":
+"@aws-amplify/amplify-container-hosting@2.8.23-rc.8d3294f407cf53a.0, @aws-amplify/amplify-container-hosting@workspace:packages/amplify-container-hosting":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-container-hosting@workspace:packages/amplify-container-hosting"
   dependencies:
@@ -531,7 +531,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-dotnet-function-template-provider@2.7.7, @aws-amplify/amplify-dotnet-function-template-provider@workspace:packages/amplify-dotnet-function-template-provider":
+"@aws-amplify/amplify-dotnet-function-template-provider@2.7.8-rc.8d3294f407cf53a.0, @aws-amplify/amplify-dotnet-function-template-provider@workspace:packages/amplify-dotnet-function-template-provider":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-dotnet-function-template-provider@workspace:packages/amplify-dotnet-function-template-provider"
   dependencies:
@@ -544,7 +544,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-e2e-core@5.7.8, @aws-amplify/amplify-e2e-core@workspace:packages/amplify-e2e-core":
+"@aws-amplify/amplify-e2e-core@5.7.9-rc.8d3294f407cf53a.0, @aws-amplify/amplify-e2e-core@workspace:packages/amplify-e2e-core":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-e2e-core@workspace:packages/amplify-e2e-core"
   dependencies:
@@ -762,7 +762,7 @@ __metadata:
   resolution: "@aws-amplify/amplify-migration-tests@workspace:packages/amplify-migration-tests"
   dependencies:
     "@aws-amplify/amplify-cli-core": 4.4.4
-    "@aws-amplify/amplify-e2e-core": 5.7.8
+    "@aws-amplify/amplify-e2e-core": 5.7.9-rc.8d3294f407cf53a.0
     "@aws-cdk/cloudformation-diff": ~2.68.0
     "@aws-sdk/client-s3": ^3.919.0
     amplify-headless-interface: 1.17.8
@@ -780,7 +780,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-nodejs-function-template-provider@2.10.17, @aws-amplify/amplify-nodejs-function-template-provider@workspace:packages/amplify-nodejs-function-template-provider":
+"@aws-amplify/amplify-nodejs-function-template-provider@2.10.18-rc.8d3294f407cf53a.0, @aws-amplify/amplify-nodejs-function-template-provider@workspace:packages/amplify-nodejs-function-template-provider":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-nodejs-function-template-provider@workspace:packages/amplify-nodejs-function-template-provider"
   dependencies:
@@ -828,7 +828,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-provider-awscloudformation@8.11.16, @aws-amplify/amplify-provider-awscloudformation@workspace:packages/amplify-provider-awscloudformation":
+"@aws-amplify/amplify-provider-awscloudformation@8.11.17-rc.8d3294f407cf53a.0, @aws-amplify/amplify-provider-awscloudformation@workspace:packages/amplify-provider-awscloudformation":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-provider-awscloudformation@workspace:packages/amplify-provider-awscloudformation"
   dependencies:
@@ -933,18 +933,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-util-mock@5.10.24, @aws-amplify/amplify-util-mock@workspace:packages/amplify-util-mock":
+"@aws-amplify/amplify-util-mock@5.10.25-rc.8d3294f407cf53a.0, @aws-amplify/amplify-util-mock@workspace:packages/amplify-util-mock":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-util-mock@workspace:packages/amplify-util-mock"
   dependencies:
     "@aws-amplify/amplify-appsync-simulator": 2.16.17
-    "@aws-amplify/amplify-category-function": 5.7.18
+    "@aws-amplify/amplify-category-function": 5.7.19-rc.8d3294f407cf53a.0
     "@aws-amplify/amplify-cli-core": 4.4.4
     "@aws-amplify/amplify-environment-parameters": 1.9.23
     "@aws-amplify/amplify-function-plugin-interface": 1.12.1
     "@aws-amplify/amplify-opensearch-simulator": 1.7.23
     "@aws-amplify/amplify-prompts": 2.8.7
-    "@aws-amplify/amplify-provider-awscloudformation": 8.11.16
+    "@aws-amplify/amplify-provider-awscloudformation": 8.11.17-rc.8d3294f407cf53a.0
     "@aws-amplify/graphql-auth-transformer": ^3.6.14
     "@aws-amplify/graphql-default-value-transformer": ^2.3.22
     "@aws-amplify/graphql-function-transformer": ^2.1.34
@@ -1005,7 +1005,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-util-uibuilder@1.14.23, @aws-amplify/amplify-util-uibuilder@workspace:packages/amplify-util-uibuilder":
+"@aws-amplify/amplify-util-uibuilder@1.14.24-rc.8d3294f407cf53a.0, @aws-amplify/amplify-util-uibuilder@workspace:packages/amplify-util-uibuilder":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-util-uibuilder@workspace:packages/amplify-util-uibuilder"
   dependencies:
@@ -1140,7 +1140,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/cli-internal@14.2.2, @aws-amplify/cli-internal@workspace:packages/amplify-cli":
+"@aws-amplify/cli-internal@14.2.3-rc.8d3294f407cf53a.0, @aws-amplify/cli-internal@workspace:packages/amplify-cli":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/cli-internal@workspace:packages/amplify-cli"
   dependencies:
@@ -1149,19 +1149,19 @@ __metadata:
     "@aws-amplify/amplify-category-api": ^5.15.2
     "@aws-amplify/amplify-category-auth": 3.7.26
     "@aws-amplify/amplify-category-custom": 3.1.31
-    "@aws-amplify/amplify-category-function": 5.7.18
+    "@aws-amplify/amplify-category-function": 5.7.19-rc.8d3294f407cf53a.0
     "@aws-amplify/amplify-category-geo": 3.5.25
     "@aws-amplify/amplify-category-hosting": 3.5.44
     "@aws-amplify/amplify-category-interactions": 5.1.37
-    "@aws-amplify/amplify-category-notifications": 2.26.40
+    "@aws-amplify/amplify-category-notifications": 2.26.41-rc.8d3294f407cf53a.0
     "@aws-amplify/amplify-category-predictions": 5.5.25
     "@aws-amplify/amplify-category-storage": 5.5.25
     "@aws-amplify/amplify-cli-core": 4.4.4
     "@aws-amplify/amplify-cli-logger": 1.3.8
     "@aws-amplify/amplify-cli-shared-interfaces": 1.2.6
     "@aws-amplify/amplify-console-hosting": 2.5.42
-    "@aws-amplify/amplify-container-hosting": 2.8.22
-    "@aws-amplify/amplify-dotnet-function-template-provider": 2.7.7
+    "@aws-amplify/amplify-container-hosting": 2.8.23-rc.8d3294f407cf53a.0
+    "@aws-amplify/amplify-dotnet-function-template-provider": 2.7.8-rc.8d3294f407cf53a.0
     "@aws-amplify/amplify-environment-parameters": 1.9.23
     "@aws-amplify/amplify-frontend-android": 3.5.8
     "@aws-amplify/amplify-frontend-flutter": 1.4.7
@@ -1169,13 +1169,13 @@ __metadata:
     "@aws-amplify/amplify-frontend-javascript": 3.10.25
     "@aws-amplify/amplify-function-plugin-interface": 1.12.1
     "@aws-amplify/amplify-go-function-template-provider": 1.4.9
-    "@aws-amplify/amplify-nodejs-function-template-provider": 2.10.17
+    "@aws-amplify/amplify-nodejs-function-template-provider": 2.10.18-rc.8d3294f407cf53a.0
     "@aws-amplify/amplify-prompts": 2.8.7
-    "@aws-amplify/amplify-provider-awscloudformation": 8.11.16
+    "@aws-amplify/amplify-provider-awscloudformation": 8.11.17-rc.8d3294f407cf53a.0
     "@aws-amplify/amplify-python-function-template-provider": 1.4.8
     "@aws-amplify/amplify-util-import": 2.8.6
-    "@aws-amplify/amplify-util-mock": 5.10.24
-    "@aws-amplify/amplify-util-uibuilder": 1.14.23
+    "@aws-amplify/amplify-util-mock": 5.10.25-rc.8d3294f407cf53a.0
+    "@aws-amplify/amplify-util-uibuilder": 1.14.24-rc.8d3294f407cf53a.0
     "@aws-cdk/cloudformation-diff": ~2.68.0
     "@aws-sdk/client-amplify": ^3.919.0
     "@aws-sdk/client-cognito-identity-provider": ^3.919.0
@@ -1241,7 +1241,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@aws-amplify/cli@workspace:packages/amplify-cli-npm"
   dependencies:
-    "@aws-amplify/cli-internal": 14.2.2
+    "@aws-amplify/cli-internal": 14.2.3-rc.8d3294f407cf53a.0
     "@types/tar": ^6.1.1
     axios: ^1.11.0
     rimraf: ^6.0.1
@@ -15532,7 +15532,7 @@ __metadata:
   dependencies:
     "@aws-amplify/amplify-category-auth": 3.7.26
     "@aws-amplify/amplify-cli-core": 4.4.4
-    "@aws-amplify/amplify-e2e-core": 5.7.8
+    "@aws-amplify/amplify-e2e-core": 5.7.9-rc.8d3294f407cf53a.0
     "@aws-amplify/amplify-opensearch-simulator": 1.7.23
     "@aws-amplify/graphql-transformer-core": ^2.11.3
     "@aws-sdk/client-amplify": ^3.919.0
