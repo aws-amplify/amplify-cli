@@ -467,6 +467,7 @@ export async function updateCdkStackFile(customResources: string[], destinationC
       const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
       cdkStackContent = printer.printFile(transformedWithBranchName);
 
+
       await fs.writeFile(cdkStackFilePath, cdkStackContent, { encoding: 'utf-8' });
     } catch (error) {
       throw error(`Error updating the custom resource ${resource}`);
