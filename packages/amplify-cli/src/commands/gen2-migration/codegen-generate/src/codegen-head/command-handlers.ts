@@ -404,7 +404,29 @@ export async function updateCdkStackFile(customResources: string[], destinationC
         );
       }
 
-      cdkStackContent = cdkStackContent.replace(/extends cdk.Stack/, `extends cdk.NestedStack`);
+      // Add Construct import after other imports if not present
+      if (!cdkStackContent.includes("from 'constructs'")) {
+        const importRegex = /(import.*from.*['"]; ?\s*\n)/g;
+        let lastImportMatch;
+        let match;
+
+        while ((match = importRegex.exec(cdkStackContent)) !== null) {
+          lastImportMatch = match;
+        }
+
+        if (lastImportMatch) {
+          const insertIndex = lastImportMatch.index + lastImportMatch[0].length;
+          cdkStackContent =
+            cdkStackContent.slice(0, insertIndex) + "import { Construct } from 'constructs';\n" + cdkStackContent.slice(insertIndex);
+        } else {
+          // No imports found, add at the beginning
+          cdkStackContent = "import { Construct } from 'constructs';\n" + cdkStackContent;
+        }
+      }
+
+      // Change Stack to Construct (Gen2 pattern)
+      cdkStackContent = cdkStackContent.replace(/extends cdk\.Stack/, 'extends Construct');
+      cdkStackContent = cdkStackContent.replace(/extends cdk\.NestedStack/, 'extends Construct');
 
       // Replace the cdk.CfnParameter definition to include the default property
       cdkStackContent = cdkStackContent.replace(
@@ -415,6 +437,8 @@ export async function updateCdkStackFile(customResources: string[], destinationC
                 default: \`\${branchName}\`
               });`,
       );
+
+     
 
       // Apply AmplifyHelperTransformer for AST-based transformations
       const sourceFile = ts.createSourceFile(cdkStackFilePath, cdkStackContent, ts.ScriptTarget.Latest, true);
