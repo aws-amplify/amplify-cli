@@ -12,7 +12,6 @@ export class AmplifyHelperTransformer {
           if (ts.isImportDeclaration(node)) {
             const moduleSpecifier = node.moduleSpecifier;
             if (ts.isStringLiteral(moduleSpecifier) && moduleSpecifier.text === '@aws-amplify/cli-extensibility-helper') {
-              // Return undefined to remove this import
               return undefined;
             }
           }
@@ -94,9 +93,35 @@ export class AmplifyHelperTransformer {
                 return ts.factory.createIdentifier('projectName');
               }
             }
+
+            // Handle amplifyResourceProps transformations
+            if (ts.isIdentifier(expression) && expression.text === 'amplifyResourceProps') {
+              const propertyName = node.name.text;
+              if (propertyName === 'resourceName') {
+                return ts.factory.createIdentifier('id');
+              }
+              if (propertyName === 'category') {
+                return ts.factory.createStringLiteral('custom');
+              }
+            }
           }
 
-          return ts.visitEachChild(node, visit, context);
+          // Visit children first
+          const visitedNode = ts.visitEachChild(node, visit, context);
+
+          // Transform constructor: remove props and amplifyResourceProps parameters
+          if (ts.isConstructorDeclaration(visitedNode)) {
+            const newParams = visitedNode.parameters.slice(0, 2);
+            return ts.factory.updateConstructorDeclaration(visitedNode, visitedNode.modifiers, newParams, visitedNode.body);
+          }
+
+          // Transform super() call: remove props argument
+          if (ts.isCallExpression(visitedNode) && visitedNode.expression.kind === ts.SyntaxKind.SuperKeyword) {
+            const newArgs = visitedNode.arguments.slice(0, 2);
+            return ts.factory.updateCallExpression(visitedNode, visitedNode.expression, visitedNode.typeArguments, newArgs);
+          }
+
+          return visitedNode;
         }
         return ts.visitNode(node, visit);
       };

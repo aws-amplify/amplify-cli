@@ -51,7 +51,7 @@ export class BackendUpdater {
           undefined,
           [ts.factory.createStringLiteral(resourceName)],
         ),
-        ts.factory.createStringLiteral(className),
+        ts.factory.createStringLiteral(resourceName),
       ]),
     );
   }
