@@ -1,5 +1,7 @@
 import ts, { ObjectLiteralElementLike, ObjectLiteralExpression } from 'typescript';
 import { renderResourceTsFile } from '../../resource/resource';
+import type { ConstructFactory, AmplifyFunction } from '@aws-amplify/plugin-types';
+import type { AuthorizationModes, DataLoggingOptions } from '@aws-amplify/backend-data';
 const factory = ts.factory;
 
 /**
@@ -97,8 +99,12 @@ export type DataDefinition = {
   tableMappings?: DataTableMapping | undefined;
   /** GraphQL schema definition as a string */
   schema: string;
-  /** API ID for generating table names */
-  apiId?: string;
+  /* Override authorization config, which will apply on top of defaults based on availability of auth, etc. */
+  authorizationModes?: AuthorizationModes;
+  /* Functions invokable by the API. The specific input type of the function is subject to change or removal. */
+  functions?: Record<string, ConstructFactory<AmplifyFunction>>;
+  /* Logging config for api */
+  logging?: DataLoggingOptions;
 };
 
 /** Key name for the migrated table mappings property in the generated data resource */
@@ -156,7 +162,7 @@ export const generateDataSource = async (dataDefinition?: DataDefinition): Promi
 
   // Generate table mappings if not provided but schema is available
   if (!tableMappings && dataDefinition?.schema) {
-    const apiId = dataDefinition?.apiId || (await getApiId());
+    const apiId = await getApiId();
     if (apiId) {
       const currentEnv = getCurrentEnvironment();
       tableMappings = createDataSourceMapping(dataDefinition.schema, apiId, currentEnv);
@@ -196,6 +202,150 @@ export const generateDataSource = async (dataDefinition?: DataDefinition): Promi
         factory.createArrayLiteralExpression([tableMappingForEnvironment]),
       ),
     );
+  }
+
+  // Add authorization modes if available
+  if (dataDefinition?.authorizationModes) {
+    const gen1AuthModes = dataDefinition.authorizationModes as any;
+    const authModeProperties: ObjectLiteralElementLike[] = [];
+
+    const authModeMap: Record<string, string> = {
+      AWS_IAM: 'iam',
+      AMAZON_COGNITO_USER_POOLS: 'userPool',
+      API_KEY: 'apiKey',
+      AWS_LAMBDA: 'lambda',
+      OPENID_CONNECT: 'oidc',
+    };
+
+    // Add default authorization mode from Gen1 config
+    if (gen1AuthModes.defaultAuthentication?.authenticationType) {
+      const gen2AuthMode = authModeMap[gen1AuthModes.defaultAuthentication.authenticationType] || 'userPool';
+      authModeProperties.push(factory.createPropertyAssignment('defaultAuthorizationMode', factory.createStringLiteral(gen2AuthMode)));
+
+      // Add auth mode config based on default authentication type
+      switch (gen1AuthModes.defaultAuthentication.authenticationType) {
+        case 'API_KEY':
+          if (gen1AuthModes.defaultAuthentication.apiKeyConfig?.apiKeyExpirationDays) {
+            authModeProperties.push(
+              factory.createPropertyAssignment(
+                'apiKeyAuthorizationMode',
+                factory.createObjectLiteralExpression([
+                  factory.createPropertyAssignment(
+                    'expiresInDays',
+                    factory.createNumericLiteral(gen1AuthModes.defaultAuthentication.apiKeyConfig.apiKeyExpirationDays.toString()),
+                  ),
+                ]),
+              ),
+            );
+          }
+          break;
+        case 'AWS_LAMBDA':
+          if (gen1AuthModes.defaultAuthentication.lambdaAuthorizerConfig?.ttlSeconds) {
+            authModeProperties.push(
+              factory.createPropertyAssignment(
+                'lambdaAuthorizationMode',
+                factory.createObjectLiteralExpression([
+                  factory.createPropertyAssignment(
+                    'timeToLiveInSeconds',
+                    factory.createNumericLiteral(gen1AuthModes.defaultAuthentication.lambdaAuthorizerConfig.ttlSeconds.toString()),
+                  ),
+                ]),
+              ),
+            );
+          }
+          break;
+        case 'OPENID_CONNECT':
+          if (gen1AuthModes.defaultAuthentication.openIDConnectConfig) {
+            const oidcProps = [];
+            if (gen1AuthModes.defaultAuthentication.openIDConnectConfig.issuer) {
+              oidcProps.push(
+                factory.createPropertyAssignment(
+                  'oidcIssuerUrl',
+                  factory.createStringLiteral(gen1AuthModes.defaultAuthentication.openIDConnectConfig.issuer),
+                ),
+              );
+            }
+            if (gen1AuthModes.defaultAuthentication.openIDConnectConfig.clientId) {
+              oidcProps.push(
+                factory.createPropertyAssignment(
+                  'clientId',
+                  factory.createStringLiteral(gen1AuthModes.defaultAuthentication.openIDConnectConfig.clientId),
+                ),
+              );
+            }
+            if (oidcProps.length > 0) {
+              authModeProperties.push(
+                factory.createPropertyAssignment('oidcAuthorizationMode', factory.createObjectLiteralExpression(oidcProps)),
+              );
+            }
+          }
+          break;
+      }
+    }
+
+    // Add additional authorization modes from Gen1 config
+    if (gen1AuthModes.additionalAuthenticationProviders) {
+      gen1AuthModes.additionalAuthenticationProviders.forEach((provider: any) => {
+        switch (provider.authenticationType) {
+          case 'API_KEY':
+            if (provider.apiKeyConfig?.apiKeyExpirationDays) {
+              authModeProperties.push(
+                factory.createPropertyAssignment(
+                  'apiKeyAuthorizationMode',
+                  factory.createObjectLiteralExpression([
+                    factory.createPropertyAssignment(
+                      'expiresInDays',
+                      factory.createNumericLiteral(provider.apiKeyConfig.apiKeyExpirationDays.toString()),
+                    ),
+                  ]),
+                ),
+              );
+            }
+            break;
+          case 'AWS_LAMBDA':
+            if (provider.lambdaAuthorizerConfig?.ttlSeconds) {
+              authModeProperties.push(
+                factory.createPropertyAssignment(
+                  'lambdaAuthorizationMode',
+                  factory.createObjectLiteralExpression([
+                    factory.createPropertyAssignment(
+                      'timeToLiveInSeconds',
+                      factory.createNumericLiteral(provider.lambdaAuthorizerConfig.ttlSeconds.toString()),
+                    ),
+                  ]),
+                ),
+              );
+            }
+            break;
+          case 'OPENID_CONNECT':
+            if (provider.openIDConnectConfig) {
+              const oidcProps = [];
+              if (provider.openIDConnectConfig.issuer) {
+                oidcProps.push(
+                  factory.createPropertyAssignment('oidcIssuerUrl', factory.createStringLiteral(provider.openIDConnectConfig.issuer)),
+                );
+              }
+              if (provider.openIDConnectConfig.clientId) {
+                oidcProps.push(
+                  factory.createPropertyAssignment('clientId', factory.createStringLiteral(provider.openIDConnectConfig.clientId)),
+                );
+              }
+              if (oidcProps.length > 0) {
+                authModeProperties.push(
+                  factory.createPropertyAssignment('oidcAuthorizationMode', factory.createObjectLiteralExpression(oidcProps)),
+                );
+              }
+            }
+            break;
+        }
+      });
+    }
+
+    if (authModeProperties.length > 0) {
+      dataRenderProperties.push(
+        factory.createPropertyAssignment('authorizationModes', factory.createObjectLiteralExpression(authModeProperties, true)),
+      );
+    }
   }
 
   // Add schema reference to the data configuration
