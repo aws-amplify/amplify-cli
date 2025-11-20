@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { useEffect, useState, useRef, createContext, useContext } from 'react';
@@ -15,17 +16,8 @@ import { getCurrentUser, signOut as amplifySignOut } from 'aws-amplify/auth';
 import { deleteProject } from './graphql/mutations';
 import { createTodoCustom, updateTodoCustom, createProjectCustom, updateProjectCustom, deleteTodoCustom } from './graphql/customMutations';
 import { listTodos, listProjects } from './graphql/queries';
-import {
-  type CreateTodoInput,
-  type Todo,
-  type UpdateTodoInput,
-  type CreateProjectInput,
-  type Project,
-  type UpdateProjectInput,
-  type ProjectStatus,
-} from './API';
+import { type CreateTodoInput, type Todo, type UpdateTodoInput, type CreateProjectInput, type Project, type ProjectStatus } from './API';
 
-const initialState: CreateTodoInput = { name: '', description: '', images: [] };
 // Client for authenticated users (owner-based operations)
 const authenticatedClient = generateClient({
   authMode: 'userPool',
@@ -626,8 +618,8 @@ const ProjectBoard: React.FC<{
           },
         },
       });
-      if (result.data?.updateProject) {
-        onProjectUpdate(result.data.updateProject as Project);
+      if ((result as any).data?.updateProject) {
+        onProjectUpdate((result as any).data.updateProject as Project);
         setIsEditing(false);
       }
     } catch (err) {
@@ -750,9 +742,7 @@ const TodoCard: React.FC<{
     images: todo.images || [],
     projectID: todo.projectID,
   });
-  const [editSelectedFiles, setEditSelectedFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
-  const editFileInputRef = useRef<HTMLInputElement>(null);
 
   async function handleUpdateTodo() {
     try {
@@ -969,8 +959,8 @@ const AuthenticatedApp: React.FC<AppProps> = ({ signOut, user }) => {
         },
       });
 
-      if (result.data?.createProject) {
-        setProjects([...projects, result.data.createProject as Project]);
+      if ((result as any).data?.createProject) {
+        setProjects([...projects, (result as any).data.createProject as Project]);
         setProjectForm({
           title: '',
           description: '',
