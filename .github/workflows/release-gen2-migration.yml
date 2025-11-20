@@ -1,0 +1,10 @@
+name: Release Gen2 Migration
+on:
+  workflow_dispatch: {}
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - run: echo hello
