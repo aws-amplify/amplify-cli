@@ -9,6 +9,7 @@ import { AmplifyError, pathManager, stateManager } from '@aws-amplify/amplify-cl
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import type { CloudFormationTemplate } from './drift-formatter';
+import type { Print } from '../../drift';
 
 // Import the CloudFormation class from the provider
 const CloudFormation = require('@aws-amplify/amplify-provider-awscloudformation/lib/aws-utils/aws-cfn');
@@ -22,6 +23,7 @@ const { S3BackendZipFileName } = require('@aws-amplify/amplify-provider-awscloud
  * Service for CloudFormation operations
  */
 export class CloudFormationService {
+  constructor(private readonly print: Print) {}
   /**
    * Get CloudFormation client
    * Uses the standard Amplify CloudFormation class for proper configuration
@@ -85,7 +87,7 @@ export class CloudFormationService {
     try {
       // Check if project is initialized
       if (!stateManager.metaFileExists()) {
-        console.log('Skipping S3 sync: Project not initialized');
+        this.print.debug('Skipping S3 sync: Project not initialized');
         return false;
       }
 
@@ -95,7 +97,7 @@ export class CloudFormationService {
 
       // Check if we have a cloud backend to sync
       if (!fs.existsSync(currentCloudBackendDir)) {
-        console.log('Skipping S3 sync: No cloud backend directory found');
+        this.print.debug('Skipping S3 sync: No cloud backend directory found');
         return false;
       }
 
@@ -108,11 +110,11 @@ export class CloudFormationService {
       } catch (err: any) {
         if (err?.name === 'NoSuchBucket') {
           // Environment not deployed yet, nothing to sync
-          console.log('Skipping S3 sync: No deployment bucket found');
+          this.print.debug('Skipping S3 sync: No deployment bucket found');
           return false;
         }
         // Log other errors but don't fail the entire drift detection
-        console.warn(`Warning: Could not sync from S3: ${err.message}`);
+        this.print.warn(`Warning: Could not sync from S3: ${err.message}`);
         return false;
       }
 
@@ -130,7 +132,7 @@ export class CloudFormationService {
       return true;
     } catch (error: any) {
       // Log but don't fail - phases can still run with existing cache
-      console.warn(`Warning: S3 sync failed: ${error.message}`);
+      this.print.warn(`Warning: S3 sync failed: ${error.message}`);
       return false;
     }
   }
