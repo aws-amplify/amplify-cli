@@ -14,7 +14,14 @@ Authenticated users can create Todos and modify/delete their own.
 The images on each Todo use amplify S3 Storage. The Todos themselves use DynamoDB, and CRUD operations are via GraphQL with amplify Api. Auth is managed through Cognito.
 
 ## Prerequisites
-[Amplify Gen1 Getting Started](https://docs.amplify.aws/gen1/react/start/getting-started/installation/)
+Install Node 25 (stable at time of writing)
+
+```bash
+$ node -v
+v25.2.1
+```
+
+[Amplify Gen1 Getting Started](https://docs.amplify.aws/gen1/react/start/getting-started/installation/) 
 
 ## Setup
 ```bash
@@ -61,6 +68,26 @@ Edit the schema:
 # all models in this schema. Learn more about authorization rules here: https://docs.amplify.aws/cli/graphql/authorization-rules
 input AMPLIFY { globalAuthRule: AuthRule = { allow: public } } # FOR TESTING ONLY!
 
+enum ProjectStatus {
+  ACTIVE
+  COMPLETED
+  ON_HOLD
+  ARCHIVED
+}
+
+type Project @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  title: String!
+  description: String
+  status: ProjectStatus!
+  deadline: AWSDateTime
+  color: String
+  todos: [Todo] @hasMany
+}
+
 type Todo @model @auth(rules: [
   { allow: public, operations: [read] },
   { allow: owner, operations: [create, read, update, delete] }
@@ -69,6 +96,8 @@ type Todo @model @auth(rules: [
   name: String!
   description: String
   images: [String]
+  projectID: ID
+  project: Project @belongsTo
 }
 
 ```
@@ -98,4 +127,9 @@ amplify add storage
 
 ```bash
 amplify push # select Y for all prompts
+```
+
+```bash
+amplify add hosting # use the Amplify Console option
+amplify publish
 ```
