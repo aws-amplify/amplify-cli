@@ -787,18 +787,18 @@ export class DriftFormatter {
       return null;
     }
 
-    const realChanges = this.phase2Results.changes?.filter((c: any) => c.isRealChange) || [];
+    const changes = this.phase2Results.changes || [];
 
-    if (realChanges.length === 0 && this.phase2Results.nestedStackQuirks?.length === 0) {
+    if (changes.length === 0) {
       return '\nTEMPLATE CHANGES:\n└── Status: NO DRIFT DETECTED';
     }
 
     let output = '\nTEMPLATE CHANGES:';
 
-    if (realChanges.length > 0) {
+    if (changes.length > 0) {
       output += '\n├── Status: ' + chalk.yellow('DRIFT DETECTED');
-      realChanges.forEach((change: any, index: number) => {
-        const isLast = index === realChanges.length - 1;
+      changes.forEach((change: any, index: number) => {
+        const isLast = index === changes.length - 1;
         const prefix = isLast ? '└──' : '├──';
         const action = change.action || 'Unknown';
         const resourceId = change.logicalResourceId || 'Unknown';

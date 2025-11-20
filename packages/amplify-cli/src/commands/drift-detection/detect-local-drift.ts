@@ -9,7 +9,6 @@ import { $TSContext, pathManager, stateManager } from '@aws-amplify/amplify-cli-
  * Phase 3 drift detection results
  */
 export interface Phase3Results {
-  phase: 3;
   hasDrift: boolean;
   totalDrifted?: number;
   resourcesToBeCreated?: Array<ResourceInfo>;
@@ -48,7 +47,6 @@ export async function detectLocalDrift(context: $TSContext): Promise<Phase3Resul
     // Check if project is initialized first
     if (!stateManager.metaFileExists()) {
       return {
-        phase: 3,
         hasDrift: false,
         skipped: true,
         skipReason: 'Project not initialized',
@@ -59,7 +57,6 @@ export async function detectLocalDrift(context: $TSContext): Promise<Phase3Resul
     const currentCloudBackendDir = pathManager.getCurrentCloudBackendDirPath();
     if (!currentCloudBackendDir || !require('fs-extra').existsSync(currentCloudBackendDir)) {
       return {
-        phase: 3,
         hasDrift: false,
         skipped: true,
         skipReason: 'No cloud backend found - project may not be deployed yet',
@@ -81,7 +78,6 @@ export async function detectLocalDrift(context: $TSContext): Promise<Phase3Resul
     const hasDrift = totalDrifted > 0 || tagsUpdated || rootStackUpdated;
 
     return {
-      phase: 3,
       hasDrift,
       totalDrifted,
       resourcesToBeCreated,
@@ -94,7 +90,6 @@ export async function detectLocalDrift(context: $TSContext): Promise<Phase3Resul
   } catch (error: any) {
     // Handle errors gracefully
     return {
-      phase: 3,
       hasDrift: false,
       skipped: true,
       skipReason: error.message || 'Unable to detect local drift',

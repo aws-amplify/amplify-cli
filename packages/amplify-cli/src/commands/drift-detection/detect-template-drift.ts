@@ -12,10 +12,8 @@ import { CloudFormationService } from './services/cloudformation-service';
 import type { Print } from '../drift';
 
 export interface TemplateDriftResult {
-  hasTemplateDrift: boolean;
-  hasRealDrift: boolean; // Excludes nested stack false positives
+  hasDrift: boolean;
   changes: ChangeSetChange[];
-  nestedStackQuirks: string[]; // List of nested stacks with false positives
   error?: string;
   skipped?: boolean;
   skipReason?: string;
@@ -26,7 +24,6 @@ interface ChangeSetChange {
   resourceType: string;
   action: string;
   replacement: boolean;
-  isRealChange: boolean;
   details?: ChangeDetail[];
   nestedChanges?: ChangeSetChange[]; // Add nested changes support
 }
@@ -56,10 +53,8 @@ export async function detectTemplateDrift(context: $TSContext, print: Print): Pr
     print.debug(`Checking for #current-cloud-backend at: ${currentCloudBackendPath}`);
     if (!fs.existsSync(currentCloudBackendPath)) {
       return {
-        hasTemplateDrift: false,
-        hasRealDrift: false,
+        hasDrift: false,
         changes: [],
-        nestedStackQuirks: [],
         skipped: true,
         skipReason: 'No #current-cloud-backend found. Run "amplify pull" first.',
       };
@@ -72,10 +67,8 @@ export async function detectTemplateDrift(context: $TSContext, print: Print): Pr
 
     if (!teamProviderInfo[envName]) {
       return {
-        hasTemplateDrift: false,
-        hasRealDrift: false,
+        hasDrift: false,
         changes: [],
-        nestedStackQuirks: [],
         skipped: true,
         skipReason: `Environment "${envName}" not found in team-provider-info.json`,
       };
@@ -91,10 +84,8 @@ export async function detectTemplateDrift(context: $TSContext, print: Print): Pr
 
     if (!fs.existsSync(templatePath)) {
       return {
-        hasTemplateDrift: false,
-        hasRealDrift: false,
+        hasDrift: false,
         changes: [],
-        nestedStackQuirks: [],
         skipped: true,
         skipReason: 'No cached CloudFormation template found',
       };
@@ -189,10 +180,8 @@ export async function detectTemplateDrift(context: $TSContext, print: Print): Pr
     return result;
   } catch (error: any) {
     return {
-      hasTemplateDrift: false,
-      hasRealDrift: false,
+      hasDrift: false,
       changes: [],
-      nestedStackQuirks: [],
       error: error.message,
     };
   }
@@ -218,10 +207,8 @@ function extractParameters(stackInfo: any, template: any): any[] {
 
 async function analyzeChangeSet(cfn: CloudFormationClient, changeSet: any, print: Print): Promise<TemplateDriftResult> {
   const result: TemplateDriftResult = {
-    hasTemplateDrift: false,
-    hasRealDrift: false,
+    hasDrift: false,
     changes: [],
-    nestedStackQuirks: [],
   };
 
   // Handle "No updates" case
@@ -235,7 +222,7 @@ async function analyzeChangeSet(cfn: CloudFormationClient, changeSet: any, print
     return result;
   }
 
-  result.hasTemplateDrift = true;
+  result.hasDrift = true;
   print.debug(`Analyzing ${changeSet.Changes.length} changes from changeset`);
 
   // Analyze each change (CDK-inspired approach)
@@ -250,7 +237,6 @@ async function analyzeChangeSet(cfn: CloudFormationClient, changeSet: any, print
       resourceType: rc.ResourceType,
       action: rc.Action,
       replacement: rc.Replacement === 'True',
-      isRealChange: true,
       details: [],
       nestedChanges: [], // Add nested changes array
     };
@@ -320,10 +306,6 @@ async function analyzeChangeSet(cfn: CloudFormationClient, changeSet: any, print
         print.debug(`ChangeSet ID: ${rc.ChangeSetId}`);
       }
     }
-
-    // With IncludeNestedStacks: true, we don't get false positives
-    // All changes are real changes
-    result.hasRealDrift = true;
 
     result.changes.push(changeInfo);
   }

@@ -157,10 +157,9 @@ export class AmplifyDriftDetector {
     let phase2Results: any = {
       skipped: true,
       skipReason: 'S3 backend sync failed - cannot compare templates',
-      hasTemplateDrift: false,
+      hasDrift: false,
     };
     let phase3Results: any = {
-      phase: 3,
       hasDrift: false,
       skipped: true,
       skipReason: 'S3 backend sync failed - cannot compare local vs cloud',
@@ -176,7 +175,7 @@ export class AmplifyDriftDetector {
       this.printer.debug('Starting Phase 2: Template drift detection');
       this.printer.info('Checking for template drift using changesets...');
       phase2Results = await detectTemplateDrift(this.context, this.printer);
-      this.printer.debug(`Phase 2 complete: hasTemplateDrift=${phase2Results.hasTemplateDrift}`);
+      this.printer.debug(`Phase 2 complete: hasDrift=${phase2Results.hasDrift}`);
 
       // 8. Phase 3: Detect local vs cloud backend drift (only if sync succeeded)
       this.printer.debug('Starting Phase 3: Local drift detection');
