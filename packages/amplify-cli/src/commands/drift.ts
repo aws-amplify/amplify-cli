@@ -93,7 +93,7 @@ export class AmplifyDriftDetector {
     this.cfnService = new CloudFormationService(this.printer);
     this.configService = new AmplifyConfigService();
     this.fileService = new FileService();
-    this.formatter = new DriftFormatter();
+    this.formatter = new DriftFormatter(this.cfnService);
   }
 
   /**

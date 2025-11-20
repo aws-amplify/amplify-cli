@@ -106,6 +106,7 @@ export async function detectStackDrift(
     for (const drift of driftResults.StackResourceDrifts) {
       const status = drift.StackResourceDriftStatus || 'UNKNOWN';
       const logicalId = drift.LogicalResourceId || 'Unknown';
+      const physicalId = drift.PhysicalResourceId || 'N/A';
       const resourceType = drift.ResourceType || 'Unknown';
 
       let statusDisplay = '';
@@ -126,15 +127,15 @@ export async function detectStackDrift(
           statusDisplay = '? UNKNOWN';
       }
 
-      // Format: Status | LogicalId (ResourceType)
-      print.info(`${statusDisplay.padEnd(6)} ${logicalId} (${resourceType})`);
+      // Format: Status | LogicalId | PhysicalId (ResourceType)
+      print.info(`${statusDisplay.padEnd(5)} ${logicalId} | ${physicalId} (${resourceType})`);
 
       // Show property differences for MODIFIED resources
       if (status === 'MODIFIED' && drift.PropertyDifferences && drift.PropertyDifferences.length > 0) {
         for (const propDiff of drift.PropertyDifferences) {
           const propPath = propDiff.PropertyPath || 'Unknown';
           const diffType = propDiff.DifferenceType || 'UNKNOWN';
-          print.info(`                 → ${propPath}: ${diffType}`);
+          print.info(`  → ${propPath}: ${diffType}`);
         }
       }
     }
