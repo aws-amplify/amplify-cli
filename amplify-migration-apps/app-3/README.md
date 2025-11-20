@@ -34,4 +34,7 @@ All the defaults on amplify push
 
 `amplify add storage`
 
+<img width="1016" height="375" alt="Screenshot 2025-11-20 at 1 48 54 PM" src="https://github.com/user-attachments/assets/b19b33c1-ca74-4f48-b26c-12c2c9481238" />
+
+
 `amplify add functions`
