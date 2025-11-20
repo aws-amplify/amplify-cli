@@ -586,7 +586,7 @@ const ReadOnlyApp: React.FC = () => {
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 24, marginBottom: 24, alignItems: 'flex-start' }}>
             {projects.map((project) => {
               const projectTodos = todos.filter((todo) => todo.projectID === project.id);
-              
+
               return (
                 <div
                   key={project.id}
@@ -602,18 +602,25 @@ const ReadOnlyApp: React.FC = () => {
                     <p style={{ ...themedStyles.todoDescription, margin: '4px 0', wordBreak: 'break-word', overflowWrap: 'break-word' }}>
                       {project.description}
                     </p>
-                    <span
-                      style={{
-                        fontSize: 12,
-                        padding: '4px 8px',
-                        borderRadius: 4,
-                        backgroundColor: statusColors[project.status],
-                        color: 'white',
-                        fontWeight: '600',
-                      }}
-                    >
-                      {project.status}
-                    </span>
+                    <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginTop: 8 }}>
+                      <span
+                        style={{
+                          fontSize: 12,
+                          padding: '4px 8px',
+                          borderRadius: 4,
+                          backgroundColor: statusColors[project.status],
+                          color: 'white',
+                          fontWeight: '600',
+                        }}
+                      >
+                        {project.status}
+                      </span>
+                      {project.owner && (
+                        <span style={{ fontSize: 11, color: themedStyles.todoDescription.color, fontStyle: 'italic' }}>
+                          👤 Owner: {project.owner}
+                        </span>
+                      )}
+                    </div>
                   </div>
 
                   <div style={{ fontSize: 14, color: themedStyles.todoDescription.color, marginBottom: 12 }}>
@@ -633,7 +640,14 @@ const ReadOnlyApp: React.FC = () => {
                           }}
                         >
                           <p style={{ margin: '0 0 4px 0', fontWeight: '600', fontSize: 14 }}>{todo.name}</p>
-                          <p style={{ margin: '0', fontSize: 12, color: themedStyles.todoDescription.color }}>{todo.description}</p>
+                          <p style={{ margin: '0 0 4px 0', fontSize: 12, color: themedStyles.todoDescription.color }}>{todo.description}</p>
+                          {todo.owner && (
+                            <p
+                              style={{ margin: '0 0 8px 0', fontSize: 10, color: themedStyles.todoDescription.color, fontStyle: 'italic' }}
+                            >
+                              👤 Owner: {todo.owner}
+                            </p>
+                          )}
                           {todo.images && todo.images.length > 0 && (
                             <div style={{ marginTop: 8 }}>
                               <MultiImageDisplay imagePaths={todo.images.filter((img): img is string => img !== null)} />
@@ -831,18 +845,25 @@ const ProjectBoard: React.FC<{
               <p style={{ ...themedStyles.todoDescription, margin: '4px 0', wordBreak: 'break-word', overflowWrap: 'break-word' }}>
                 {project.description}
               </p>
-              <span
-                style={{
-                  fontSize: 12,
-                  padding: '4px 8px',
-                  borderRadius: 4,
-                  backgroundColor: statusColors[project.status],
-                  color: 'white',
-                  fontWeight: '600',
-                }}
-              >
-                {project.status}
-              </span>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginTop: 4 }}>
+                <span
+                  style={{
+                    fontSize: 12,
+                    padding: '4px 8px',
+                    borderRadius: 4,
+                    backgroundColor: statusColors[project.status],
+                    color: 'white',
+                    fontWeight: '600',
+                  }}
+                >
+                  {project.status}
+                </span>
+                {project.owner && (
+                  <span style={{ fontSize: 11, color: themedStyles.todoDescription.color, fontStyle: 'italic' }}>
+                    👤 {project.owner === user?.username ? 'You' : `Owner: ${project.owner}`}
+                  </span>
+                )}
+              </div>
             </div>
             {project.owner === user?.username && (
               <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
@@ -983,7 +1004,12 @@ const TodoCard: React.FC<{
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <div style={{ flex: 1 }}>
           <p style={{ margin: '0 0 4px 0', fontWeight: '600', fontSize: 14 }}>{todo.name}</p>
-          <p style={{ margin: '0', fontSize: 12, color: themedStyles.todoDescription.color }}>{todo.description}</p>
+          <p style={{ margin: '0 0 4px 0', fontSize: 12, color: themedStyles.todoDescription.color }}>{todo.description}</p>
+          {todo.owner && (
+            <p style={{ margin: 0, fontSize: 10, color: themedStyles.todoDescription.color, fontStyle: 'italic' }}>
+              👤 {todo.owner === user?.username ? 'You' : `Owner: ${todo.owner}`}
+            </p>
+          )}
         </div>
         {todo.owner === user?.username && (
           <div style={{ display: 'flex', gap: 4, marginLeft: 8 }}>
