@@ -7,4 +7,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-      - run: echo hello
+        with:
+          ref: gen2-migration
+      - run: git status
