@@ -84,18 +84,6 @@ export const onCreateTodo = /* GraphQL */ `subscription OnCreateTodo(
     description
     images
     projectID
-    project {
-      id
-      title
-      description
-      status
-      deadline
-      color
-      createdAt
-      updatedAt
-      owner
-      __typename
-    }
     createdAt
     updatedAt
     projectTodosId
@@ -114,18 +102,6 @@ export const onUpdateTodo = /* GraphQL */ `subscription OnUpdateTodo(
     description
     images
     projectID
-    project {
-      id
-      title
-      description
-      status
-      deadline
-      color
-      createdAt
-      updatedAt
-      owner
-      __typename
-    }
     createdAt
     updatedAt
     projectTodosId
@@ -144,18 +120,6 @@ export const onDeleteTodo = /* GraphQL */ `subscription OnDeleteTodo(
     description
     images
     projectID
-    project {
-      id
-      title
-      description
-      status
-      deadline
-      color
-      createdAt
-      updatedAt
-      owner
-      __typename
-    }
     createdAt
     updatedAt
     projectTodosId

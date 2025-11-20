@@ -13,8 +13,7 @@ import { type AuthUser } from 'aws-amplify/auth';
 import { type UseAuthenticator } from '@aws-amplify/ui-react-core';
 import { getCurrentUser, signOut as amplifySignOut } from 'aws-amplify/auth';
 
-import { deleteProject } from './graphql/mutations';
-import { createTodoCustom, updateTodoCustom, createProjectCustom, updateProjectCustom, deleteTodoCustom } from './graphql/customMutations';
+import { deleteProject, createTodo, updateTodo, createProject, updateProject, deleteTodo } from './graphql/mutations';
 import { listTodos, listProjects } from './graphql/queries';
 import { type CreateTodoInput, type Todo, type UpdateTodoInput, type CreateProjectInput, type Project, type ProjectStatus } from './API';
 
@@ -99,7 +98,6 @@ const getThemedStyles = (theme: Theme) => {
       color: isDark ? '#e1e8ed' : '#2c3e50',
     },
     mainContent: {
-      maxWidth: 1200,
       margin: '0 auto',
       display: 'grid',
       gridTemplateColumns: '400px 1fr',
@@ -504,13 +502,42 @@ const MultiImageDisplay: React.FC<{ imagePaths: string[] }> = ({ imagePaths }) =
 // Read-only App Component for unauthenticated users
 const ReadOnlyApp: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [unassignedTodos, setUnassignedTodos] = useState<Todo[]>([]);
   const [showLogin, setShowLogin] = useState(false);
   const { theme, toggleTheme } = useTheme();
   const themedStyles = getThemedStyles(theme);
 
+  const statusColors: Record<ProjectStatus, string> = {
+    ACTIVE: '#28a745',
+    COMPLETED: '#6c757d',
+    ON_HOLD: '#ffc107',
+    ARCHIVED: '#6f42c1',
+  };
+
+  const statusEmojis: Record<ProjectStatus, string> = {
+    ACTIVE: '🚀',
+    COMPLETED: '✅',
+    ON_HOLD: '⏸️',
+    ARCHIVED: '📦',
+  };
+
   useEffect(() => {
+    fetchProjects();
     fetchTodos();
   }, []);
+
+  async function fetchProjects() {
+    try {
+      const projectData = await publicClient.graphql({
+        query: listProjects,
+      });
+      const fetchedProjects = (projectData.data.listProjects?.items?.filter(Boolean) as Project[]) || [];
+      setProjects(fetchedProjects);
+    } catch (err) {
+      console.log('Error fetching projects:', err);
+    }
+  }
 
   async function fetchTodos() {
     try {
@@ -524,6 +551,12 @@ const ReadOnlyApp: React.FC = () => {
     }
   }
 
+  // Update unassigned todos when todos or projects change
+  useEffect(() => {
+    const projectIds = new Set(projects.map((p) => p.id));
+    setUnassignedTodos(todos.filter((todo) => !todo.projectID || !projectIds.has(todo.projectID)));
+  }, [todos, projects]);
+
   if (showLogin) {
     return <Authenticator>{({ signOut, user }) => <AuthenticatedApp signOut={signOut} user={user} />}</Authenticator>;
   }
@@ -533,7 +566,7 @@ const ReadOnlyApp: React.FC = () => {
       <div style={themedStyles.header}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Heading level={1} style={themedStyles.header}>
-            Amplify Todos
+            📋 Project Boards
           </Heading>
           <button style={themedStyles.themeToggle} onClick={toggleTheme}>
             {theme === 'light' ? '🌙' : '☀️'}
@@ -547,21 +580,135 @@ const ReadOnlyApp: React.FC = () => {
         </p>
       </div>
 
-      <div style={themedStyles.todoList}>
-        {todos.length === 0 ? (
-          <p style={themedStyles.emptyMessage}>No todos yet. Sign in to create some!</p>
-        ) : (
-          todos.map((todo, index) => (
-            <div key={todo.id ? todo.id : index} style={themedStyles.todo}>
-              <p style={themedStyles.todoName}>{todo.name}</p>
-              <p style={themedStyles.todoDescription}>{todo.description}</p>
-              {todo.images && todo.images.length > 0 && (
-                <div style={themedStyles.imageFrame}>
-                  <MultiImageDisplay imagePaths={todo.images.filter((img): img is string => img !== null)} />
+      <div style={{ maxWidth: 1600, margin: '0 auto' }}>
+        {/* Project Boards */}
+        {projects.length > 0 ? (
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 24, marginBottom: 24, alignItems: 'flex-start' }}>
+            {projects.map((project) => {
+              const projectTodos = todos.filter((todo) => todo.projectID === project.id);
+              
+              return (
+                <div
+                  key={project.id}
+                  style={{
+                    ...themedStyles.todo,
+                    borderLeft: `4px solid ${project.color || statusColors[project.status]}`,
+                  }}
+                >
+                  <div style={{ marginBottom: 16 }}>
+                    <h3 style={{ ...themedStyles.todoName, margin: 0, wordBreak: 'break-word' }}>
+                      {statusEmojis[project.status]} {project.title}
+                    </h3>
+                    <p style={{ ...themedStyles.todoDescription, margin: '4px 0', wordBreak: 'break-word', overflowWrap: 'break-word' }}>
+                      {project.description}
+                    </p>
+                    <span
+                      style={{
+                        fontSize: 12,
+                        padding: '4px 8px',
+                        borderRadius: 4,
+                        backgroundColor: statusColors[project.status],
+                        color: 'white',
+                        fontWeight: '600',
+                      }}
+                    >
+                      {project.status}
+                    </span>
+                  </div>
+
+                  <div style={{ fontSize: 14, color: themedStyles.todoDescription.color, marginBottom: 12 }}>
+                    📋 {projectTodos.length} todo{projectTodos.length !== 1 ? 's' : ''}
+                  </div>
+
+                  {projectTodos.length > 0 && (
+                    <div style={{ display: 'grid', gap: 12 }}>
+                      {projectTodos.map((todo) => (
+                        <div
+                          key={todo.id}
+                          style={{
+                            padding: 12,
+                            backgroundColor: theme === 'dark' ? '#374151' : '#f8f9fa',
+                            borderRadius: 8,
+                            border: theme === 'dark' ? '1px solid #4b5563' : '1px solid #e5e7eb',
+                          }}
+                        >
+                          <p style={{ margin: '0 0 4px 0', fontWeight: '600', fontSize: 14 }}>{todo.name}</p>
+                          <p style={{ margin: '0', fontSize: 12, color: themedStyles.todoDescription.color }}>{todo.description}</p>
+                          {todo.images && todo.images.length > 0 && (
+                            <div style={{ marginTop: 8 }}>
+                              <MultiImageDisplay imagePaths={todo.images.filter((img): img is string => img !== null)} />
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
-              )}
+              );
+            })}
+          </div>
+        ) : null}
+
+        {/* Unassigned Todos */}
+        {unassignedTodos.length > 0 && (
+          <div
+            style={{
+              ...themedStyles.todo,
+              borderLeft: `4px solid #6c757d`,
+              marginBottom: 24,
+            }}
+          >
+            <div style={{ marginBottom: 16 }}>
+              <h3 style={{ ...themedStyles.todoName, margin: 0 }}>📝 Unassigned Todos</h3>
+              <p style={{ ...themedStyles.todoDescription, margin: '4px 0' }}>Todos that haven't been assigned to any project</p>
+              <span
+                style={{
+                  fontSize: 12,
+                  padding: '4px 8px',
+                  borderRadius: 4,
+                  backgroundColor: '#6c757d',
+                  color: 'white',
+                  fontWeight: '600',
+                }}
+              >
+                DEFAULT
+              </span>
             </div>
-          ))
+
+            <div style={{ fontSize: 14, color: themedStyles.todoDescription.color, marginBottom: 12 }}>
+              📋 {unassignedTodos.length} todo{unassignedTodos.length !== 1 ? 's' : ''}
+            </div>
+
+            <div style={{ display: 'grid', gap: 12 }}>
+              {unassignedTodos.map((todo) => (
+                <div
+                  key={todo.id}
+                  style={{
+                    padding: 12,
+                    backgroundColor: theme === 'dark' ? '#374151' : '#f8f9fa',
+                    borderRadius: 8,
+                    border: theme === 'dark' ? '1px solid #4b5563' : '1px solid #e5e7eb',
+                  }}
+                >
+                  <p style={{ margin: '0 0 4px 0', fontWeight: '600', fontSize: 14 }}>{todo.name}</p>
+                  <p style={{ margin: '0', fontSize: 12, color: themedStyles.todoDescription.color }}>{todo.description}</p>
+                  {todo.images && todo.images.length > 0 && (
+                    <div style={{ marginTop: 8 }}>
+                      <MultiImageDisplay imagePaths={todo.images.filter((img): img is string => img !== null)} />
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Empty state */}
+        {projects.length === 0 && todos.length === 0 && (
+          <div style={themedStyles.emptyMessage}>
+            <h3>🚀 Welcome to Project Boards!</h3>
+            <p>No projects or todos yet. Sign in to create some!</p>
+          </div>
         )}
       </div>
     </div>
@@ -572,12 +719,13 @@ const ReadOnlyApp: React.FC = () => {
 const ProjectBoard: React.FC<{
   project: Project;
   todos: Todo[];
+  projects: Project[];
   onTodoUpdate: (todo: Todo) => void;
   onTodoDelete: (todoId: string) => void;
   onProjectUpdate: (project: Project) => void;
   onProjectDelete: (projectId: string) => void;
   user?: AuthUser;
-}> = ({ project, todos, onTodoUpdate, onTodoDelete, onProjectUpdate, onProjectDelete, user }) => {
+}> = ({ project, todos, projects, onTodoUpdate, onTodoDelete, onProjectUpdate, onProjectDelete, user }) => {
   const { theme } = useTheme();
   const themedStyles = getThemedStyles(theme);
   const [isEditing, setIsEditing] = useState(false);
@@ -607,7 +755,7 @@ const ProjectBoard: React.FC<{
   async function handleUpdateProject() {
     try {
       const result = await authenticatedClient.graphql({
-        query: updateProjectCustom,
+        query: updateProject,
         variables: {
           input: {
             id: project.id,
@@ -630,7 +778,6 @@ const ProjectBoard: React.FC<{
   const projectStyle = {
     ...themedStyles.todo,
     borderLeft: `4px solid ${project.color || statusColors[project.status]}`,
-    marginBottom: 24,
   };
 
   return (
@@ -676,12 +823,14 @@ const ProjectBoard: React.FC<{
         </div>
       ) : (
         <div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-            <div>
-              <h3 style={{ ...themedStyles.todoName, margin: 0 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
+            <div style={{ flex: 1, marginRight: 16, minWidth: 0 }}>
+              <h3 style={{ ...themedStyles.todoName, margin: 0, wordBreak: 'break-word' }}>
                 {statusEmojis[project.status]} {project.title}
               </h3>
-              <p style={{ ...themedStyles.todoDescription, margin: '4px 0' }}>{project.description}</p>
+              <p style={{ ...themedStyles.todoDescription, margin: '4px 0', wordBreak: 'break-word', overflowWrap: 'break-word' }}>
+                {project.description}
+              </p>
               <span
                 style={{
                   fontSize: 12,
@@ -696,7 +845,7 @@ const ProjectBoard: React.FC<{
               </span>
             </div>
             {project.owner === user?.username && (
-              <div style={themedStyles.buttonGroup}>
+              <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
                 <button style={themedStyles.editButton} onClick={() => setIsEditing(true)}>
                   ✏️ Edit
                 </button>
@@ -714,7 +863,7 @@ const ProjectBoard: React.FC<{
           {projectTodos.length > 0 && (
             <div style={{ display: 'grid', gap: 12 }}>
               {projectTodos.map((todo) => (
-                <TodoCard key={todo.id} todo={todo} onUpdate={onTodoUpdate} onDelete={onTodoDelete} user={user} projects={[]} />
+                <TodoCard key={todo.id} todo={todo} onUpdate={onTodoUpdate} onDelete={onTodoDelete} user={user} projects={projects} />
               ))}
             </div>
           )}
@@ -748,7 +897,7 @@ const TodoCard: React.FC<{
     try {
       setUploading(true);
       const result = await authenticatedClient.graphql({
-        query: updateTodoCustom,
+        query: updateTodo,
         variables: {
           input: {
             id: editFormState.id,
@@ -774,7 +923,7 @@ const TodoCard: React.FC<{
     try {
       setUploading(true);
       const result = await authenticatedClient.graphql({
-        query: updateTodoCustom,
+        query: updateTodo,
         variables: {
           input: {
             id: todo.id,
@@ -953,7 +1102,7 @@ const AuthenticatedApp: React.FC<AppProps> = ({ signOut, user }) => {
 
       setUploading(true);
       const result = await authenticatedClient.graphql({
-        query: createProjectCustom,
+        query: createProject,
         variables: {
           input: projectForm,
         },
@@ -1014,7 +1163,7 @@ const AuthenticatedApp: React.FC<AppProps> = ({ signOut, user }) => {
       };
 
       const result = await authenticatedClient.graphql({
-        query: createTodoCustom,
+        query: createTodo,
         variables: {
           input: todoInput,
         },
@@ -1044,7 +1193,7 @@ const AuthenticatedApp: React.FC<AppProps> = ({ signOut, user }) => {
   async function handleTodoDelete(todoId: string) {
     try {
       await authenticatedClient.graphql({
-        query: deleteTodoCustom,
+        query: deleteTodo,
         variables: {
           input: { id: todoId },
         },
@@ -1215,12 +1364,13 @@ const AuthenticatedApp: React.FC<AppProps> = ({ signOut, user }) => {
         <div>
           {/* Project Boards */}
           {projects.length > 0 && (
-            <div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 24, marginBottom: 24, alignItems: 'flex-start' }}>
               {projects.map((project) => (
                 <ProjectBoard
                   key={project.id}
                   project={project}
                   todos={todos}
+                  projects={projects}
                   onTodoUpdate={handleTodoUpdate}
                   onTodoDelete={handleTodoDelete}
                   onProjectUpdate={handleProjectUpdate}

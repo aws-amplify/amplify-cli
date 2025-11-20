@@ -103,7 +103,6 @@ export type Todo = {
   description?: string | null;
   images?: Array<string | null> | null;
   projectID?: string | null;
-  project?: Project | null;
   createdAt: string;
   updatedAt: string;
   projectTodosId?: string | null;
@@ -354,18 +353,6 @@ export type CreateTodoMutation = {
     description?: string | null;
     images?: Array<string | null> | null;
     projectID?: string | null;
-    project?: {
-      __typename: 'Project';
-      id: string;
-      title: string;
-      description?: string | null;
-      status: ProjectStatus;
-      deadline?: string | null;
-      color?: string | null;
-      createdAt: string;
-      updatedAt: string;
-      owner?: string | null;
-    } | null;
     createdAt: string;
     updatedAt: string;
     projectTodosId?: string | null;
@@ -386,18 +373,6 @@ export type UpdateTodoMutation = {
     description?: string | null;
     images?: Array<string | null> | null;
     projectID?: string | null;
-    project?: {
-      __typename: 'Project';
-      id: string;
-      title: string;
-      description?: string | null;
-      status: ProjectStatus;
-      deadline?: string | null;
-      color?: string | null;
-      createdAt: string;
-      updatedAt: string;
-      owner?: string | null;
-    } | null;
     createdAt: string;
     updatedAt: string;
     projectTodosId?: string | null;
@@ -418,18 +393,6 @@ export type DeleteTodoMutation = {
     description?: string | null;
     images?: Array<string | null> | null;
     projectID?: string | null;
-    project?: {
-      __typename: 'Project';
-      id: string;
-      title: string;
-      description?: string | null;
-      status: ProjectStatus;
-      deadline?: string | null;
-      color?: string | null;
-      createdAt: string;
-      updatedAt: string;
-      owner?: string | null;
-    } | null;
     createdAt: string;
     updatedAt: string;
     projectTodosId?: string | null;
@@ -497,18 +460,6 @@ export type GetTodoQuery = {
     description?: string | null;
     images?: Array<string | null> | null;
     projectID?: string | null;
-    project?: {
-      __typename: 'Project';
-      id: string;
-      title: string;
-      description?: string | null;
-      status: ProjectStatus;
-      deadline?: string | null;
-      color?: string | null;
-      createdAt: string;
-      updatedAt: string;
-      owner?: string | null;
-    } | null;
     createdAt: string;
     updatedAt: string;
     projectTodosId?: string | null;
@@ -626,18 +577,6 @@ export type OnCreateTodoSubscription = {
     description?: string | null;
     images?: Array<string | null> | null;
     projectID?: string | null;
-    project?: {
-      __typename: 'Project';
-      id: string;
-      title: string;
-      description?: string | null;
-      status: ProjectStatus;
-      deadline?: string | null;
-      color?: string | null;
-      createdAt: string;
-      updatedAt: string;
-      owner?: string | null;
-    } | null;
     createdAt: string;
     updatedAt: string;
     projectTodosId?: string | null;
@@ -658,18 +597,6 @@ export type OnUpdateTodoSubscription = {
     description?: string | null;
     images?: Array<string | null> | null;
     projectID?: string | null;
-    project?: {
-      __typename: 'Project';
-      id: string;
-      title: string;
-      description?: string | null;
-      status: ProjectStatus;
-      deadline?: string | null;
-      color?: string | null;
-      createdAt: string;
-      updatedAt: string;
-      owner?: string | null;
-    } | null;
     createdAt: string;
     updatedAt: string;
     projectTodosId?: string | null;
@@ -690,18 +617,6 @@ export type OnDeleteTodoSubscription = {
     description?: string | null;
     images?: Array<string | null> | null;
     projectID?: string | null;
-    project?: {
-      __typename: 'Project';
-      id: string;
-      title: string;
-      description?: string | null;
-      status: ProjectStatus;
-      deadline?: string | null;
-      color?: string | null;
-      createdAt: string;
-      updatedAt: string;
-      owner?: string | null;
-    } | null;
     createdAt: string;
     updatedAt: string;
     projectTodosId?: string | null;

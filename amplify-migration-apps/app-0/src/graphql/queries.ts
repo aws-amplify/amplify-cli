@@ -57,18 +57,6 @@ export const getTodo = /* GraphQL */ `query GetTodo($id: ID!) {
     description
     images
     projectID
-    project {
-      id
-      title
-      description
-      status
-      deadline
-      color
-      createdAt
-      updatedAt
-      owner
-      __typename
-    }
     createdAt
     updatedAt
     projectTodosId

@@ -5,13 +5,13 @@
 # Set up the Amplify app
 
 ## Description
-This is a Todo app that supports authentication. Each Todo has a title, description, and optionally, images.
+This is a project board app that supports authentication. Each Project board can hold multiple Todo items, each of which has a title, description, and optionally, images. Todos do not need to be in a Project and can exist unassigned.
 
-Unauthenticated users can only view Todos.
+Unauthenticated users can only view Projects and Todos, and cannot modify or delete them.
 
-Authenticated users can create Todos and modify/delete their own.
+Authenticated users can create Projects and Todos, and modify/delete their own. They may add Todos to Projects that are not their own, but cannot change the Project settings.
 
-The images on each Todo use amplify S3 Storage. The Todos themselves use DynamoDB, and CRUD operations are via GraphQL with amplify Api. Auth is managed through Cognito.
+The images on each Todo use amplify S3 Storage. The Todos themselves use DynamoDB, and CRUD operations are via GraphQL with Amplify Api. Auth is managed through Cognito. Hosting is managed through Amplify console.
 
 ## Prerequisites
 Install Node 25 (stable at time of writing)
@@ -97,7 +97,6 @@ type Todo @model @auth(rules: [
   description: String
   images: [String]
   projectID: ID
-  project: Project @belongsTo
 }
 
 ```

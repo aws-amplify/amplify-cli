@@ -84,18 +84,6 @@ export const createTodo = /* GraphQL */ `mutation CreateTodo(
     description
     images
     projectID
-    project {
-      id
-      title
-      description
-      status
-      deadline
-      color
-      createdAt
-      updatedAt
-      owner
-      __typename
-    }
     createdAt
     updatedAt
     projectTodosId
@@ -114,18 +102,6 @@ export const updateTodo = /* GraphQL */ `mutation UpdateTodo(
     description
     images
     projectID
-    project {
-      id
-      title
-      description
-      status
-      deadline
-      color
-      createdAt
-      updatedAt
-      owner
-      __typename
-    }
     createdAt
     updatedAt
     projectTodosId
@@ -144,18 +120,6 @@ export const deleteTodo = /* GraphQL */ `mutation DeleteTodo(
     description
     images
     projectID
-    project {
-      id
-      title
-      description
-      status
-      deadline
-      color
-      createdAt
-      updatedAt
-      owner
-      __typename
-    }
     createdAt
     updatedAt
     projectTodosId
