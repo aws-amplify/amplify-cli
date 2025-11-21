@@ -46,4 +46,4 @@ amplifytools.xcconfig
 #amplify-do-not-edit-end
 
 # Exclude entire backend configuration
-amplify/backend/
+amplify/
