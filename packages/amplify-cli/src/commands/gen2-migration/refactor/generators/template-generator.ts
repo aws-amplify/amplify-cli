@@ -19,6 +19,7 @@ import {
   CFNStackStatus,
   CFNTemplate,
   ResourceMapping,
+  CFN_ANALYTICS_TYPE,
 } from '../types';
 import MigrationReadmeGenerator from './migration-readme-generator';
 import { pollStackForCompletionState, tryUpdateStack } from '../cfn-stack-updater';
@@ -34,7 +35,7 @@ import { Logger } from '../../../gen2-migration';
 const CFN_RESOURCE_STACK_TYPE = 'AWS::CloudFormation::Stack';
 const GEN2_AMPLIFY_AUTH_LOGICAL_ID_PREFIX = 'amplifyAuth';
 
-const CATEGORIES: CATEGORY[] = ['auth', 'storage'];
+const CATEGORIES: CATEGORY[] = ['auth', 'storage', 'analytics'];
 const TEMPLATES_DIR = '.amplify/migration/templates';
 const SEPARATOR = ' to ';
 
@@ -49,6 +50,7 @@ const AUTH_RESOURCES_TO_REFACTOR = [
 ];
 const AUTH_USER_POOL_GROUP_RESOURCES_TO_REFACTOR = [CFN_AUTH_TYPE.UserPoolGroup];
 const STORAGE_RESOURCES_TO_REFACTOR = [CFN_S3_TYPE.Bucket];
+const ANALYTICS_RESOURCES_TO_REFACTOR = [CFN_ANALYTICS_TYPE.Stream];
 const GEN1_RESOURCE_TYPE_TO_LOGICAL_RESOURCE_IDS_MAP = new Map<string, string>([
   [CFN_AUTH_TYPE.UserPool.valueOf(), 'UserPool'],
   [CFN_AUTH_TYPE.UserPoolClient.valueOf(), 'UserPoolClientWeb'],
@@ -56,11 +58,13 @@ const GEN1_RESOURCE_TYPE_TO_LOGICAL_RESOURCE_IDS_MAP = new Map<string, string>([
   [CFN_AUTH_TYPE.IdentityPoolRoleAttachment.valueOf(), 'IdentityPoolRoleMap'],
   [CFN_AUTH_TYPE.UserPoolDomain.valueOf(), 'UserPoolDomain'],
   [CFN_S3_TYPE.Bucket.valueOf(), 'S3Bucket'],
+  [CFN_ANALYTICS_TYPE.Stream.valueOf(), 'KinesisStream'],
 ]);
 const LOGICAL_IDS_TO_REMOVE_FOR_REVERT_MAP = new Map<CATEGORY, CFN_RESOURCE_TYPES[]>([
   ['auth', AUTH_RESOURCES_TO_REFACTOR],
   ['auth-user-pool-group', AUTH_USER_POOL_GROUP_RESOURCES_TO_REFACTOR],
   ['storage', [CFN_S3_TYPE.Bucket]],
+  ['analytics', ANALYTICS_RESOURCES_TO_REFACTOR],
 ]);
 const GEN2_NATIVE_APP_CLIENT = 'UserPoolNativeAppClient';
 const GEN1_USER_POOL_GROUPS_STACK_TYPE_DESCRIPTION = 'auth-Cognito-UserPool-Groups';
@@ -82,6 +86,9 @@ class TemplateGenerator {
     },
     storage: {
       resourcesToRefactor: STORAGE_RESOURCES_TO_REFACTOR,
+    },
+    analytics: {
+      resourcesToRefactor: ANALYTICS_RESOURCES_TO_REFACTOR,
     },
   } as const;
 
@@ -216,12 +223,14 @@ class TemplateGenerator {
     assert(sourceCategoryStacks && sourceCategoryStacks?.length > 0, 'No source category stack found');
     assert(destinationCategoryStacks && destinationCategoryStacks?.length > 0, 'No destination category stack found');
     for (const { LogicalResourceId: sourceLogicalResourceId, PhysicalResourceId: sourcePhysicalResourceId } of sourceCategoryStacks) {
+      // find the valid, migrate-able categories in Gen1 stack
       const category = CATEGORIES.find((category) => sourceLogicalResourceId?.startsWith(category));
       if (!category) continue;
       assert(sourcePhysicalResourceId);
       let destinationPhysicalResourceId: string | undefined;
       let userPoolGroupDestinationPhysicalResourceId: string | undefined;
 
+      // find the corresponding category stack in Gen2 stack
       const correspondingCategoryStackInDestination = destinationCategoryStacks.find(
         ({ LogicalResourceId: destinationLogicalResourceId }) => destinationLogicalResourceId?.startsWith(category),
       );

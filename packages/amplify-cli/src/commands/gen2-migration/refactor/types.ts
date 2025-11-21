@@ -70,6 +70,7 @@ export enum NON_CUSTOM_RESOURCE_CATEGORY {
   AUTH = 'auth',
   STORAGE = 'storage',
   AUTH_USER_POOL_GROUP = 'auth-user-pool-group',
+  ANALYTICS = 'analytics',
 }
 
 export type CATEGORY =
@@ -101,6 +102,10 @@ export enum CFN_S3_TYPE {
   Bucket = 'AWS::S3::Bucket',
 }
 
+export enum CFN_ANALYTICS_TYPE {
+  Stream = 'AWS::Kinesis::Stream',
+}
+
 export enum CFN_IAM_TYPE {
   Role = 'AWS::IAM::Role',
 }
@@ -113,7 +118,7 @@ export enum CFN_LAMBDA_TYPE {
   Function = 'AWS::Lambda::Function',
 }
 
-export type CFN_RESOURCE_TYPES = CFN_AUTH_TYPE | CFN_S3_TYPE | CFN_IAM_TYPE | CFN_SQS_TYPE | CFN_LAMBDA_TYPE;
+export type CFN_RESOURCE_TYPES = CFN_AUTH_TYPE | CFN_S3_TYPE | CFN_ANALYTICS_TYPE | CFN_IAM_TYPE | CFN_SQS_TYPE | CFN_LAMBDA_TYPE;
 
 export type AWS_RESOURCE_ATTRIBUTES = 'Arn';
 
