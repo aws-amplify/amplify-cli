@@ -13,7 +13,8 @@
     },
     "categories": {
       "auth": {
-        "personalmediavaultf4856ae1": {}
+        "personalmediavaultf4856ae1": {},
+        "userPoolGroups": {}
       },
       "api": {
         "personalmediavault": {}

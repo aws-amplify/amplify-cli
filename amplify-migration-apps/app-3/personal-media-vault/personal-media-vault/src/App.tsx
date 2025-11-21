@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Authenticator } from '@aws-amplify/ui-react';
 import { generateClient } from 'aws-amplify/api';
 import { uploadData, list, remove, getUrl } from 'aws-amplify/storage';
-import { fetchUserAttributes } from 'aws-amplify/auth';
+import { fetchUserAttributes, fetchAuthSession } from 'aws-amplify/auth';
 import { listNotes } from './graphql/queries';
 import { createNote, deleteNote } from './graphql/mutations';
 import '@aws-amplify/ui-react/styles.css';
@@ -203,17 +203,31 @@ function AuthenticatedApp({
   thumbnails,
 }: AuthenticatedAppProps) {
   const [displayName, setDisplayName] = useState<string>('User');
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(async () => {
       fetchNotes();
       listFiles();
 
-      // Fetch user attributes to get real name
+      // Fetch user attributes to get real name and groups
       try {
         const attributes = await fetchUserAttributes();
         const name = attributes.name || attributes.given_name || attributes.email || 'User';
         setDisplayName(name);
+
+        // Check if user is admin using JWT token
+        console.log('All user attributes:', attributes);
+
+        const session = await fetchAuthSession();
+        console.log('Auth session:', session);
+
+        const idToken = session.tokens?.idToken;
+        const groups = idToken?.payload['cognito:groups'] || [];
+        console.log('User groups from token:', groups);
+        const isGroupsArray = Array.isArray(groups);
+        console.log('Is admin?', isGroupsArray && groups.includes('Admin'));
+        setIsAdmin(isGroupsArray && groups.includes('Admin'));
       } catch (error) {
         console.log('Could not fetch user attributes:', error);
       }
@@ -309,7 +323,25 @@ function AuthenticatedApp({
     <div style={styles.container}>
       <div style={styles.header}>
         <h1 style={{ margin: '0 0 8px 0', fontSize: '2.5rem' }}>📁 Personal Media Vault</h1>
-        <p style={{ margin: 0, opacity: 0.9 }}>Welcome back, {displayName}! 👋</p>
+        <p style={{ margin: 0, opacity: 0.9 }}>
+          Welcome back, {displayName}! 👋
+          {isAdmin && (
+            <span
+              style={{
+                marginLeft: '10px',
+                background: '#fbbf24',
+                color: '#92400e',
+                padding: '4px 8px',
+                borderRadius: '12px',
+                fontSize: '12px',
+                fontWeight: 'bold',
+              }}
+            >
+              🔑 ADMIN
+            </span>
+          )}
+        </p>
+        {isAdmin && <p style={{ margin: '8px 0 0 0', opacity: 0.8, fontSize: '14px' }}>You have administrative access to all content</p>}
       </div>
 
       <div style={styles.grid}>
