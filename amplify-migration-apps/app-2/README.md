@@ -4,6 +4,34 @@ Sai
 
 ...work in progress...
 
+## Architecture Flow
+
+```mermaid
+graph LR
+    User[👤 User] --> App[📱 Vite App]
+    App <--> Cognito[🔐 Cognito Auth]
+    Cognito --> IdentityPool[🎫 Identity Pool]
+    IdentityPool --> AuthRole[👮 IAM Role]
+    
+    App <--> AppSync[⚡ AppSync GraphQL]
+    AppSync <--> GraphQLTables[(📊 GraphQL Tables)]
+    
+    App <--> CustomDDB[(🗄️ Custom DynamoDB)]
+    
+    AppSync --> Lambda[⚙️ Lambda Function]
+    Lambda <--> CustomDDB
+    
+    AuthRole --> AppSync
+    AuthRole --> CustomDDB
+    
+    style Cognito fill:#FF9900
+    style AppSync fill:#FF9900
+    style Lambda fill:#FF9900
+    style CustomDDB fill:#527FFF
+    style GraphQLTables fill:#527FFF
+    style App fill:#646CFF
+```
+
 # SETUP
 
 #### STEP 0. RUN: npm create vite@latest
