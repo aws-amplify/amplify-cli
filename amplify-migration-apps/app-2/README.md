@@ -6,7 +6,7 @@ Sai
 
 # SETUP
 
-### STEP 0. RUN: npm create vite@latest
+#### STEP 0. RUN: npm create vite@latest
 
 Prompts:
 ```
@@ -21,7 +21,7 @@ cd discus-project
 npm install
 ``` 
 
-### STEP 1. RUN: amplify init  
+#### STEP 1. RUN: amplify init  
 
 Prompts:  
 ```
@@ -46,7 +46,10 @@ Using default provider awscloudformation
 ? Select the authentication method you want to use: AWS profile  
 ```
 
-### STEP 2. RUN: amplify add auth
+#### STEP 2. RUN: amplify add auth
+
+NOTE: Important for DynamoDB -  Select the authentication/authorization services that you want to use:   
+User Sign-Up, Sign-In, connected with AWS IAM controls (Enables per-user Storage features for images or other content, Analytics, and more)
 
 Prompts:
 ```
@@ -77,10 +80,8 @@ Warning: you will not be able to edit these selections.
 -Do you want to use an OAuth flow? No  
 ? Do you want to configure Lambda Triggers for Cognito? No  
 ```
-NOTE: Important for DynamoDB -  Select the authentication/authorization services that you want to use:   
-User Sign-Up, Sign-In, connected with AWS IAM controls (Enables per-user Storage features for images or other content, Analytics, and more)
 
-### STEP 3. RUN: amplify add api
+#### STEP 3. RUN: amplify add api
 
 Prompts:
 ```
@@ -90,7 +91,7 @@ Prompts:
 
 Do you want to edit the schema now? (Y/n) › n  
 ```
-### STEP 4. RUN: amplify add storage  
+#### STEP 4. RUN: amplify add storage  
 ```
 
 ? Select from one of the below mentioned services: NoSQL Database  
@@ -128,7 +129,9 @@ You can ....blabla.... primary key.
 ✔ Do you want to add more global secondary indexes to your table? (Y/n) · no  
 ✔ Do you want to add a Lambda Trigger for your Table? (y/N) · no  
 ```
-### STEP 5. RUN: amplify add function
+#### STEP 5. RUN: amplify add function
+
+NOTE: FUNCTION NAME SHOULD STRICTLY BE postViewCounter (hardcoded for ease of setup)
 ```
 Select: Lambda function (serverless function)  
 Function name: postViewCounter (MUST MATCH THIS)  
@@ -146,9 +149,8 @@ Secret values: No
 Package manager: NPM  
 Edit now: No  
 ```
-NOTE: FUNCTION NAME SHOULD STRICTLY BE postViewCounter (hardcoded for ease of setup)
 
-### STEP 6. Edit lambda code:  
+#### STEP 6. Edit lambda code:  
 
 Edit: amplify/backend/function/postViewCounter/src/index.js  
 
@@ -192,7 +194,7 @@ Important: Do not add more than one DynamoDB table to your project.
 
 This file is also provided separately (find it here)
 
-### STEP 7. Update GraphQL schema:
+#### STEP 7. Update GraphQL schema:
 
 Add to amplify/backend/api/YOUR_API_NAME/schema.graphql:
 ```graphql
@@ -228,7 +230,7 @@ type ViewCount {
 }
 ```
 This file is also provided separately (find it here)
-### STEP 8. RUN: amplify push
+#### STEP 8. RUN: amplify push
 ```
 ✔ Are you sure you want to continue? (Y/n) · yes  
 
@@ -241,18 +243,18 @@ This file is also provided separately (find it here)
 ? Enter maximum statement depth [increase from default if your schema is deeply nested] 2  
 ? Enter the file name for the generated code src/API.ts  
 ```
-### STEP 9. Install Dependencies
+#### STEP 9. Install Dependencies
 
 RUN: npm install aws-amplify @aws-sdk/client-dynamodb @aws-sdk/lib-dynamodb  
 
-### STEP 10. Add IAM Permissions (AWS Console):  
+#### STEP 10. Add IAM Permissions (AWS Console):  
 
 Go to IAM → Roles  
 Find: amplify-discus-xxxxx-authRole  
 Click Add permissions → Attach policies  
 Search and attach: AmazonDynamoDBFullAccess  
 
-### STEP 11. Add Application Files:  
+#### STEP 11. Add Application Files:  
 
 Download or copy the provided application files:  
 - index.html → Place in project root directory (same level as package.json)  
@@ -260,9 +262,9 @@ Download or copy the provided application files:
 
 These files are provided separately (find them here) and work without modification.  
 
-### STEP 12. RUN: npm run dev 
+#### STEP 12. RUN: npm run dev 
 
-### STEP 13. In App: First Time User Setup
+#### STEP 13. In App: First Time User Setup
 
 1. Sign Up in App:  
 Phone number format: +1234567890 (include country code)  
