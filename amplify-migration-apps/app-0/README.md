@@ -7,6 +7,18 @@ _Unauthenticated view_
 _Authenticated view for Amplify project_
 # Set up the Amplify app
 
+## Categories
+### api
+GraphQL API with schema containing `Todo` and `Project` models.
+### auth
+Cognito-based auth using email.
+### storage
+S3-based storage for images in Todos.
+### function
+Node.js lambda function that generates inspirational quotes.
+### hosting
+Amplify console-managed hosting.
+
 ## Description
 This is a project board app that supports authentication. Each Project board can hold multiple Todo items, each of which has a title, description, and optionally, images. Todos do not need to be in a Project and can exist unassigned.
 
@@ -29,9 +41,9 @@ v25.2.1
 ## Setup
 ```bash
 # in app-0
-npm install
+$ npm install
 
-amplify init
+$ amplify init
 ```
 - Select all default options except for "Distribution Directory Path", which will be `dist` (not `build`)
 - In this step, we are assuming that you have set up the `default` AWS profile with the relevant permissions for Amplify on your AWS account
@@ -57,7 +69,7 @@ https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html
 ```
 
 ```bash
-amplify add api
+$ amplify add api
 ```
 Default settings:
 - ❯ GraphQL
@@ -73,6 +85,18 @@ Edit the schema:
 # This "input" configures a global authorization rule to enable public access to
 # all models in this schema. Learn more about authorization rules here: https://docs.amplify.aws/cli/graphql/authorization-rules
 input AMPLIFY { globalAuthRule: AuthRule = { allow: public } } # FOR TESTING ONLY!
+
+type QuoteResponse {
+  message: String!
+  quote: String!
+  author: String!
+  timestamp: String!
+  totalQuotes: Int!
+}
+
+type Query {
+  getRandomQuote: QuoteResponse @function(name: "quote-generator-dev") 
+}
 
 enum ProjectStatus {
   ACTIVE
@@ -104,11 +128,10 @@ type Todo @model @auth(rules: [
   images: [String]
   projectID: ID
 }
-
 ```
 
 ```bash
-amplify add auth
+$ amplify add auth
 ```
 ```
  Do you want to use the default authentication and security configuration? Default configuration
@@ -118,7 +141,7 @@ amplify add auth
 ```
 
 ```bash
-amplify add storage
+$ amplify add storage
 ```
 ```
 ? Select from one of the below mentioned services: Content (Images, audio, video, etc.)
@@ -128,6 +151,82 @@ amplify add storage
 ✔ What kind of access do you want for Authenticated users? · create/update, read, delete
 ✔ What kind of access do you want for Guest users? · create/update, read, delete
 ✔ Do you want to add a Lambda Trigger for your S3 Bucket? (y/N) · no
+```
+
+```bash
+$ amplify-dev add function
+? Select which capability you want to add: Lambda function (serverless function)
+? Provide an AWS Lambda function name: quote-generator # make sure this name matches the name under `Query` in the GraphQL schema (without -dev)!
+? Choose the runtime that you want to use: NodeJS
+? Choose the function template that you want to use: Hello World
+
+✅ Available advanced settings:
+- Resource access permissions
+- Scheduled recurring invocation
+- Lambda layers configuration
+- Environment variables configuration
+- Secret values configuration
+
+? Do you want to configure advanced settings? Yes
+? Do you want to access other resources in this project from your Lambda function? No
+? Do you want to invoke this function on a recurring schedule? No
+? Do you want to enable Lambda layers for this function? No
+? Do you want to configure environment variables for this function? No
+? Do you want to configure secret values this function can access? No
+✔ Choose the package manager that you want to use: · NPM
+? Do you want to edit the local lambda function now? Yes
+Edit the file in your editor: /Users/ianhou/workplace/amplify-cli/amplify-migration-apps/app-0/amplify/backend/function/quote-generator/src/index.js
+```
+
+Overwrite the Hello World code in `index.js` with the following:
+```js
+/**
+ * AppSync Lambda function handler
+ * When using @function directive, return data directly (not API Gateway proxy format)
+ */
+exports.handler = async (event) => {
+    console.log(`EVENT: ${JSON.stringify(event)}`);
+    
+    // Array of motivational quotes
+    const quotes = [
+        { text: "The only way to do great work is to love what you do.", author: "Steve Jobs" },
+        { text: "Innovation distinguishes between a leader and a follower.", author: "Steve Jobs" },
+        { text: "Stay hungry, stay foolish.", author: "Steve Jobs" },
+        { text: "Code is like humor. When you have to explain it, it's bad.", author: "Cory House" },
+        { text: "First, solve the problem. Then, write the code.", author: "John Johnson" },
+        { text: "Experience is the name everyone gives to their mistakes.", author: "Oscar Wilde" },
+        { text: "In order to be irreplaceable, one must always be different.", author: "Coco Chanel" },
+        { text: "Java is to JavaScript what car is to Carpet.", author: "Chris Heilmann" },
+        { text: "Knowledge is power.", author: "Francis Bacon" },
+        { text: "Sometimes it pays to stay in bed on Monday, rather than spending the rest of the week debugging Monday's code.", author: "Dan Salomon" },
+        { text: "Perfection is achieved not when there is nothing more to add, but rather when there is nothing more to take away.", author: "Antoine de Saint-Exupery" },
+        { text: "Programming isn't about what you know; it's about what you can figure out.", author: "Chris Pine" },
+        { text: "The best error message is the one that never shows up.", author: "Thomas Fuchs" },
+        { text: "Simplicity is the soul of efficiency.", author: "Austin Freeman" }
+    ];
+    
+    // Get a random quote
+    const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+    
+    // Add timestamp for uniqueness
+    const timestamp = new Date().toISOString();
+    
+    // For AppSync @function directive, return the data object directly
+    return {
+        message: 'Quote generated successfully! 🎯',
+        quote: randomQuote.text,
+        author: randomQuote.author,
+        timestamp: timestamp,
+        totalQuotes: quotes.length
+    };
+};
+
+```
+
+
+```bash
+? Press enter to continue 
+✅ Successfully added resource quote-generator locally.
 ```
 
 ```bash

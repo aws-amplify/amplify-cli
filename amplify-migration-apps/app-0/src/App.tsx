@@ -17,6 +17,27 @@ import { deleteProject, createTodo, updateTodo, createProject, updateProject, de
 import { listTodos, listProjects } from './graphql/queries';
 import { type CreateTodoInput, type Todo, type UpdateTodoInput, type CreateProjectInput, type Project, type ProjectStatus } from './API';
 
+// GraphQL query for getting random quote
+const getRandomQuote = /* GraphQL */ `
+  query GetRandomQuote {
+    getRandomQuote {
+      message
+      quote
+      author
+      timestamp
+      totalQuotes
+    }
+  }
+`;
+
+type QuoteData = {
+  message: string;
+  quote: string;
+  author: string;
+  timestamp: string;
+  totalQuotes: number;
+};
+
 // Client for authenticated users (owner-based operations)
 const authenticatedClient = generateClient({
   authMode: 'userPool',
@@ -1084,6 +1105,10 @@ const AuthenticatedApp: React.FC<AppProps> = ({ signOut, user }) => {
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Quote state
+  const [quote, setQuote] = useState<QuoteData | null>(null);
+  const [loadingQuote, setLoadingQuote] = useState(false);
+
   const { theme, toggleTheme } = useTheme();
   const themedStyles = getThemedStyles(theme);
 
@@ -1254,6 +1279,22 @@ const AuthenticatedApp: React.FC<AppProps> = ({ signOut, user }) => {
     setUnassignedTodos(todos.filter((todo) => !todo.projectID || !projectIds.has(todo.projectID)));
   }, [todos, projects]);
 
+  async function fetchRandomQuote() {
+    try {
+      setLoadingQuote(true);
+      const result = await publicClient.graphql({
+        query: getRandomQuote,
+      });
+      if ((result as any).data?.getRandomQuote) {
+        setQuote((result as any).data.getRandomQuote as QuoteData);
+      }
+    } catch (err) {
+      console.log('Error fetching quote:', err);
+    } finally {
+      setLoadingQuote(false);
+    }
+  }
+
   return (
     <div style={themedStyles.container}>
       <div style={themedStyles.header}>
@@ -1381,6 +1422,54 @@ const AuthenticatedApp: React.FC<AppProps> = ({ signOut, user }) => {
                   ✅ {todos.length} Total Todo{todos.length !== 1 ? 's' : ''}
                 </p>
                 <p style={{ margin: '4px 0', fontSize: 14 }}>📝 {unassignedTodos.length} Unassigned</p>
+              </div>
+
+              <div style={{ marginTop: 24, padding: 16, backgroundColor: theme === 'dark' ? '#374151' : '#f8f9fa', borderRadius: 8 }}>
+                <h3 style={{ ...themedStyles.formTitle, fontSize: 18, marginBottom: 12 }}>💡 Get Inspiration</h3>
+                <button style={{ ...themedStyles.button, marginBottom: quote ? 16 : 0 }} onClick={fetchRandomQuote} disabled={loadingQuote}>
+                  {loadingQuote ? '⏳ Loading...' : '🎯 Get Random Quote'}
+                </button>
+                {quote && (
+                  <div
+                    style={{
+                      padding: 16,
+                      backgroundColor: theme === 'dark' ? '#2d3748' : 'white',
+                      borderRadius: 8,
+                      borderLeft: '4px solid #007bff',
+                    }}
+                  >
+                    <p
+                      style={{
+                        margin: '0 0 8px 0',
+                        fontSize: 15,
+                        fontStyle: 'italic',
+                        color: theme === 'dark' ? '#e1e8ed' : '#2c3e50',
+                        lineHeight: 1.6,
+                      }}
+                    >
+                      "{quote.quote}"
+                    </p>
+                    <p
+                      style={{
+                        margin: 0,
+                        fontSize: 13,
+                        fontWeight: '600',
+                        color: theme === 'dark' ? '#a0aec0' : '#5a6c7d',
+                      }}
+                    >
+                      — {quote.author}
+                    </p>
+                    <p
+                      style={{
+                        margin: '8px 0 0 0',
+                        fontSize: 11,
+                        color: theme === 'dark' ? '#718096' : '#6c757d',
+                      }}
+                    >
+                      {quote.totalQuotes} quotes available
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           )}
