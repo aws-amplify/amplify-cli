@@ -19,9 +19,13 @@ Change these lines in backend/auth/cli-inputs.json to
     
 Furthermore, go to console -> cognito -> user pool -> authentication -> social provider -> facebook -> change authorized scopes from email, public profile to just public profile. 
 
+
+<img width="998" height="431" alt="Screenshot 2025-11-21 at 10 30 34 AM" src="https://github.com/user-attachments/assets/460c3236-b26e-4b43-bf56-b64ccc109c9e" />
+
+
 All the defaults on amplify push
 
-
+Note: Facebook login will not currently work since it does not accept email and user pools have email as a required attribute (which cannot be changed). We need to request specific email permissiom from facebook to make it work (which I currently have not done). The facebook link currently redirects onto the login page.
 
 
 
