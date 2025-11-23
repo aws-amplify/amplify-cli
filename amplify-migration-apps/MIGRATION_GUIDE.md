@@ -28,7 +28,7 @@ For the purpose of this guide, we assume:
 First obtain a fresh and up-to-date local copy of your Amplify Gen1 environment and run the following:
 
 ```bash
-npm install @aws-amplify/cli-internal-gen2-migration-alpha
+npm install --no-save @aws-amplify/cli-internal-gen2-migration-alpha
 ```
 
 This will install a flavor of the amplify Gen1 CLI that includes migration support.
@@ -39,7 +39,43 @@ This will install a flavor of the amplify Gen1 CLI that includes migration suppo
 
 ### 1. Lock
 
+During the migration period your Gen1 environment should not undergo any changes; otherwise we run 
+the risk of code-generating an incomplete application and possibly encountering unexpected migration failures.
+
+To ensure this, run the following:
+
+```bash
+npx amplify gen2-migration lock
+```
+
+This command will first perform a few validations to ensure your Gen1 environment is in a 
+healthy state and proceed to lock your Gen1 environment by attaching a restrictive stack policy on the root stack. 
+
+> [!TIP]
+> It is also advisable to disable any automatic pipelines that deploy to your Gen1 environment.
+
 ### 2. Generate
+
+Next, generate your Gen2 definition files by running the following:
+
+```bash
+git checkout -b gen2-main
+npx amplify gen2-migration generate
+```
+
+This command will override your local `./amplify` directory with Gen2 definition files. 
+
+```diff
+- import amplifyconfig from './amplifyconfiguration.json';
++ import amplifyconfig from '../amplify_outputs.json';
+```
+
+
+
+```diff
+- branchName: "<gen1-env-name>"
++ branchName: "migrate"
+```
 
 ### 3. Deploy
 
