@@ -66,25 +66,23 @@ npx amplify gen2-migration generate
 This command will override your local `./amplify` directory with Gen2 definition files. Once successfull, 
 perform the following manual edits:
 
-In `./src/main.tsx` (or equivalent):
+**In `./src/main.tsx` (or equivalent):**
 
 ```diff
 - import amplifyconfig from './amplifyconfiguration.json';
 + import amplifyconfig from '../amplify_outputs.json';
 ```
 
-> [!NOTE]
-> Required because in Gen2 amplify generates an `amplify_outputs.json` file instead of the `amplifyconfiguration.json` file. Note that client side libraries support both files so no additional change is needed.
+This is required because in Gen2 amplify generates an `amplify_outputs.json` file instead of the `amplifyconfiguration.json` file. Note that client side libraries support both files so no additional change is needed.
 
-In `./amplify/data/resource.ts`:
+**In `./amplify/data/resource.ts`:**
 
 ```diff
 - branchName: "<gen1-env-name>"
 + branchName: "migrate"
 ```
 
-> [!NOTE]
-> Required in order to instruct the hosting service that DynamoDB tables should be reused (imported) instead of recreated.
+This is required in order to instruct the hosting service that DynamoDB tables should be reused (imported) instead of recreated.
 
 
 ### 3. Deploy
