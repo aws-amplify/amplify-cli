@@ -110,7 +110,7 @@ export const run = async (context: $TSContext) => {
     });
   }
 
-  if (localEnvName && migratingEnvName !== localEnvName) {
+  if (migratingEnvName && localEnvName && migratingEnvName !== localEnvName) {
     throw new AmplifyError('MigrationError', { message: 'TODO' });
   }
 
