@@ -73,22 +73,84 @@ perform the following manual edits:
 + import amplifyconfig from '../amplify_outputs.json';
 ```
 
-This is required because in Gen2 amplify generates an `amplify_outputs.json` file instead of the `amplifyconfiguration.json` file. Note that client side libraries support both files so no additional change is needed.
+This is required because in Gen2 amplify generates an `amplify_outputs.json` file instead of the `amplifyconfiguration.json` file. 
+Note that client side libraries support both files so no additional change is needed.
 
 **In `./amplify/data/resource.ts`:**
 
 ```diff
 - branchName: "<gen1-env-name>"
-+ branchName: "migrate"
++ branchName: "gen2-main"
 ```
 
-This is required in order to instruct the hosting service that DynamoDB tables should be reused (imported) instead of recreated.
+This is required in order to instruct the hosting service that DynamoDB tables 
+should be reused (imported) instead of recreated.
 
 
 ### 3. Deploy
 
+To deploy the generated Gen2 application first push the code:
+
+```bash
+git add .
+git commit -m "feat: migrate to gen2"
+git push origin gen2-main
+```
+
+Next, login to the AWS Amplify console and connect your new branch to the existing application:
+
+**App Settings → Branch Settings → Add Branch**
+
+![](./migration-guide-images/add-branch.png)
+
+Once added the hosting service will start deploying this branch. Wait for it to complete.
+
+![](./migration-guide-images/deploying-branch.png)
+
+Once completed you can login to your app via the newly dedicated amplify domain. At this point, 
+the application has access only to the DynamoDB data from your Gen1 environment. **It does not 
+however reuse other stateful resources such as user pools.** To grant it access to all 
+stateful resources, a `refactor` is required.
+
 ### 4. Refactor
 
+Refactoring is the process of updating the underlying CloudFormation stacks of both your Gen1 and 
+Gen2 applications such that all stateful resources are reused across both apps. In order to refactor, 
+we first need to find the name of the Gen2 root CloudFormation stack:
+
+1. Login to the AWS CloudFormation console.
+2. Find a root stack that has the following name pattern: `amplify-<appId>-gen2main-branch-<suffix>`
+
+![](./migration-guide-images/find-stack.png)
+
+Then, run the following:
+
+```bash
+git checkout main
+npx amplify gen2-migration refactor --to <gen2-root-stack-name>
+```
+
+Once the command succeeds, login to the AWS Amplify console and redeploy the Gen2 branch:
+
+![](./migration-guide-images/redeploy.png)
+
+This is required in order to regenerate the `amplify_outputs.json` file that corresponds to the stack 
+architecture that was updated during `refactor`.
+
 ### 5. Decommission
+
+The final step of the migration is the decommissioning of your Gen1 environment. This can be done at your own pace and only after:
+
+1. You've validated the Gen2 application works as expected.
+2. You've validated the Gen1 application no longer accepts external traffic. If you have a webapp this can be achieved be performing 
+a domain shift. If you have a mobile app you'll need to wait until all customers upgrade to the new version of your 
+app (the one shipped with the new `amplify_outputs.json` configuration file)
+
+
+```bash
+git checkout main
+npx gen2-migration decommission
+```
+
 
 

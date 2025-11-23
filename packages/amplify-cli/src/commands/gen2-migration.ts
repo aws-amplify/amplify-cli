@@ -124,7 +124,15 @@ export const run = async (context: $TSContext) => {
   if (!skipValidations) {
     printer.blankLine();
     logger.envelope('Performing validations');
-    await implementation.validate();
+    try {
+      await implementation.validate();
+    } catch (e) {
+      const skipValidationsCommand = `amplify ${context.input.argv.join(' ').trim()} --skip-validations`;
+      throw new AmplifyError('MigrationError', {
+        message: `Validations failed: ${e.message}`,
+        resolution: `Resolve the validation errors or skip them by running '${skipValidationsCommand}'`,
+      });
+    }
     logger.envelope('Validations complete');
   }
 
