@@ -33,10 +33,6 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
   private resourceMappings?: string;
   private parsedResourceMappings?: ResourceMapping[];
 
-  public details(): string[] {
-    return [];
-  }
-
   public implications(): string[] {
     return ['Move stateful resources from your Gen1 app to be managed by your Gen2 app'];
   }

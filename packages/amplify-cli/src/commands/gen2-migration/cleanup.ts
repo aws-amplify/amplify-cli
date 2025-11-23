@@ -2,10 +2,6 @@ import { AmplifyMigrationStep } from './_step';
 import { printer } from '@aws-amplify/amplify-prompts';
 
 export class AmplifyMigrationCleanupStep extends AmplifyMigrationStep {
-  public details(): string[] {
-    return [];
-  }
-
   public implications(): string[] {
     throw new Error('Method not implemented.');
   }
