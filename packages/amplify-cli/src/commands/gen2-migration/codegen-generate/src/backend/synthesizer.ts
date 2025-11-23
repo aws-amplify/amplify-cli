@@ -684,98 +684,6 @@ export class BackendSynthesizer {
     return [variableDeclaration, ifStatement];
   }
 
-  private createDynamoDBEscapeHatch(): ts.Statement[] {
-    // changing cloudformation template to match deletionprotection: false setting in dynamoDB tables
-    const comment = factory.createExpressionStatement(
-      factory.createIdentifier('// changing cloudformation template to match deletionprotection: false setting in dynamoDB tables'),
-    );
-
-    // const cfnResources = backend.data.node.findAll().filter(c => CfnResource.isCfnResource(c));
-    const cfnResourcesDeclaration = factory.createVariableStatement(
-      undefined,
-      factory.createVariableDeclarationList(
-        [
-          factory.createVariableDeclaration(
-            factory.createIdentifier('cfnResources'),
-            undefined,
-            undefined,
-            factory.createCallExpression(
-              factory.createPropertyAccessExpression(
-                factory.createCallExpression(
-                  factory.createPropertyAccessExpression(
-                    factory.createPropertyAccessExpression(
-                      factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier('data')),
-                      factory.createIdentifier('node'),
-                    ),
-                    factory.createIdentifier('findAll'),
-                  ),
-                  undefined,
-                  [],
-                ),
-                factory.createIdentifier('filter'),
-              ),
-              undefined,
-              [
-                factory.createArrowFunction(
-                  undefined,
-                  undefined,
-                  [factory.createParameterDeclaration(undefined, undefined, factory.createIdentifier('c'))],
-                  undefined,
-                  factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
-                  factory.createCallExpression(
-                    factory.createPropertyAccessExpression(
-                      factory.createIdentifier('CfnResource'),
-                      factory.createIdentifier('isCfnResource'),
-                    ),
-                    undefined,
-                    [factory.createIdentifier('c')],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-        ts.NodeFlags.Const,
-      ),
-    );
-
-    // for (const resource of cfnResources) { ... }
-    const forOfStatement = factory.createForOfStatement(
-      undefined,
-      factory.createVariableDeclarationList([factory.createVariableDeclaration(factory.createIdentifier('resource'))], ts.NodeFlags.Const),
-      factory.createIdentifier('cfnResources'),
-      factory.createBlock(
-        [
-          factory.createIfStatement(
-            factory.createBinaryExpression(
-              factory.createPropertyAccessExpression(factory.createIdentifier('resource'), factory.createIdentifier('cfnResourceType')),
-              factory.createToken(ts.SyntaxKind.EqualsEqualsEqualsToken),
-              factory.createStringLiteral('Custom::ImportedAmplifyDynamoDBTable'),
-            ),
-            factory.createBlock(
-              [
-                factory.createExpressionStatement(
-                  factory.createCallExpression(
-                    factory.createPropertyAccessExpression(
-                      factory.createIdentifier('resource'),
-                      factory.createIdentifier('addPropertyOverride'),
-                    ),
-                    undefined,
-                    [factory.createStringLiteral('deletionProtectionEnabled'), factory.createFalse()],
-                  ),
-                ),
-              ],
-              true,
-            ),
-          ),
-        ],
-        true,
-      ),
-    );
-
-    return [comment, cfnResourcesDeclaration, forOfStatement];
-  }
-
   render(renderArgs: BackendRenderParameters): NodeArray<Node> {
     const authFunctionIdentifier = factory.createIdentifier('auth');
     const storageFunctionIdentifier = factory.createIdentifier('storage');
@@ -806,11 +714,6 @@ export class BackendSynthesizer {
       imports.push(
         this.createImportStatement([factory.createIdentifier('RemovalPolicy'), factory.createIdentifier('Tags')], 'aws-cdk-lib'),
       );
-    }
-
-    // Add CfnResource import for DynamoDB escape hatch
-    if (renderArgs.data) {
-      imports.push(this.createImportStatement([factory.createIdentifier('CfnResource')], 'aws-cdk-lib'));
     }
 
     // What it does: If you have auth configured:
@@ -1118,28 +1021,6 @@ export class BackendSynthesizer {
         ),
       );
       nodes.push(userPoolDomainRemovalStatementCommented);
-    }
-
-    // Add DynamoDB escape hatch for deletion protection
-    if (renderArgs.data) {
-      const dynamoDBEscapeHatch = this.createDynamoDBEscapeHatch();
-      nodes.push(...dynamoDBEscapeHatch);
-    }
-
-    // Add a tag commented out to force a deployment post refactor
-    // Tags.of(backend.stack).add('gen1-migrated-app', 'true')
-    if (renderArgs.auth || renderArgs.storage?.hasS3Bucket || renderArgs.customResources) {
-      const tagAssignment = factory.createExpressionStatement(
-        factory.createCallExpression(
-          factory.createPropertyAccessExpression(
-            factory.createCallExpression(factory.createIdentifier('// Tags.of'), undefined, [factory.createIdentifier('backend.stack')]),
-            factory.createIdentifier('add'),
-          ),
-          undefined,
-          [factory.createStringLiteral('gen1-migrated-app'), factory.createStringLiteral('true')],
-        ),
-      );
-      nodes.push(tagAssignment);
     }
 
     // returns backend.ts file

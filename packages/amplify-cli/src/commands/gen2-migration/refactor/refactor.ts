@@ -4,13 +4,12 @@ import { AmplifyMigrationStep } from '../_step';
 import { prompter } from '@aws-amplify/amplify-prompts';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import fs from 'fs-extra';
-import path from 'path';
 import { CloudFormationClient } from '@aws-sdk/client-cloudformation';
 import { SSMClient } from '@aws-sdk/client-ssm';
 import { CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-provider';
 import { GetCallerIdentityCommand, STSClient } from '@aws-sdk/client-sts';
 import { AmplifyGen2MigrationValidations } from '../_validations';
-
+import { stateManager } from '@aws-amplify/amplify-cli-core';
 import { DescribeStacksCommand } from '@aws-sdk/client-cloudformation';
 import { TemplateGenerator } from './generators/template-generator';
 
@@ -28,19 +27,22 @@ interface ResourceMapping {
 
 // Constants
 const FILE_PROTOCOL_PREFIX = 'file://';
-const AMPLIFY_DIR = 'amplify';
 
 export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
   private toStack?: string;
   private resourceMappings?: string;
   private parsedResourceMappings?: ResourceMapping[];
 
+  public details(): string[] {
+    return [];
+  }
+
   public implications(): string[] {
-    return ['Your Gen1 and Gen2 applications will share all stateful resources'];
+    return ['Move stateful resources from your Gen1 app to be managed by your Gen2 app'];
   }
 
   public async validate(): Promise<void> {
-    const validations = new AmplifyGen2MigrationValidations(this.logger, this.context);
+    const validations = new AmplifyGen2MigrationValidations(this.logger, this.rootStackName, this.currentEnvName, this.context);
     await validations.validateLockStatus();
     return;
   }
@@ -306,16 +308,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
       throw new Error('Unable to determine AWS account ID');
     }
 
-    // Read Gen1 metadata
-    const metadataPath = path.join(process.cwd(), AMPLIFY_DIR, 'backend', 'amplify-meta.json');
-    const gen1MetaContent = await fs.readFile(metadataPath, 'utf-8');
-    const gen1Meta = JSON.parse(gen1MetaContent);
-
-    const { AmplifyAppId: appId, StackName: stackName } = gen1Meta.providers?.awscloudformation || {};
-
-    if (!appId || !stackName) {
-      throw new Error('Invalid Gen1 metadata: missing AmplifyAppId or StackName');
-    }
+    const stackName = stateManager.getTeamProviderInfo()[this.currentEnvName].awscloudformation.StackName;
 
     // Extract backend environment name from stack name
     const backendEnvironmentName = stackName.split('-')?.[2];
@@ -338,7 +331,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
       cfnClient,
       ssmClient,
       cognitoIdpClient,
-      appId,
+      this.appId,
       backendEnvironmentName,
       this.logger,
     );

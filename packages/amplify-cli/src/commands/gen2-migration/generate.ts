@@ -4,15 +4,12 @@ import { AmplifyGen2MigrationValidations } from './_validations';
 
 export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
   public implications(): string[] {
-    return [
-      `Your local 'amplify' folder will be overwritten with Gen2 configuration files`,
-      `Your local 'package.json' file will be updated with Gen2 dependencies`,
-    ];
+    return [`Override your local 'amplify' folder with Gen2 definition files`, `Update you local 'package.json' with Gen2 dependencies`];
   }
 
   public async validate(): Promise<void> {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const validations = new AmplifyGen2MigrationValidations(this.logger, this.context);
+    const validations = new AmplifyGen2MigrationValidations(this.logger, this.rootStackName, this.currentEnvName, this.context);
     await validations.validateLockStatus();
     await validations.validateWorkingDirectory();
   }

@@ -9,6 +9,7 @@ import { AmplifyMigrationLockStep } from './gen2-migration/lock';
 import { AmplifyMigrationRefactorStep } from './gen2-migration/refactor';
 import { AmplifyMigrationShiftStep } from './gen2-migration/shift';
 import { stateManager } from '@aws-amplify/amplify-cli-core';
+import { AmplifyClient, GetAppCommand } from '@aws-sdk/client-amplify';
 import chalk from 'chalk';
 
 const STEPS = {
@@ -43,7 +44,7 @@ const STEPS = {
 };
 
 export class Logger {
-  constructor(private readonly stepName: string, private readonly appId: string, private readonly envName: string) {}
+  constructor(private readonly stepName: string, private readonly appName: string, private readonly envName: string) {}
 
   public envelope(message: string) {
     printer.info(chalk.cyan(this._message(message, '→')));
@@ -67,7 +68,7 @@ export class Logger {
 
   private _message(message: string, prefix: string) {
     return `[${new Date().toISOString()}] [${chalk.bold(this.stepName)}] [${chalk.blue(
-      `${this.appId}/${this.envName}`,
+      `${this.appName}/${this.envName}`,
     )}] ${prefix} ${message}`;
   }
 }
@@ -92,18 +93,33 @@ export const run = async (context: $TSContext) => {
     });
   }
 
-  const projectName = stateManager.getProjectName();
-  const currentEnvName = stateManager.getCurrentEnvName();
+  // assuming all environment are deployed within the same app - can it be different?
+  const appId = (Object.values(stateManager.getTeamProviderInfo())[0] as any).awscloudformation.AmplifyAppId;
 
-  if (!currentEnvName) {
+  const amplifyClient = new AmplifyClient();
+  const app = await amplifyClient.send(new GetAppCommand({ appId }));
+  const appName = app.app.name;
+
+  const migratingEnvName = (app.app.environmentVariables ?? {})['GEN2_MIGRATION_ENVIRONMENT_NAME'];
+  const localEnvName = stateManager.getCurrentEnvName();
+
+  if (!localEnvName && !migratingEnvName) {
     throw new AmplifyError('EnvironmentNotInitializedError', {
-      message: `No environment configured for project '${projectName}'`,
+      message: `No environment configured for app '${appName}'`,
       resolution: 'Run "amplify pull" to configure an environment.',
     });
   }
 
-  const logger = new Logger(stepName, projectName, currentEnvName);
-  const implementation: AmplifyMigrationStep = new step.class(logger, projectName, currentEnvName, context);
+  if (localEnvName && migratingEnvName !== localEnvName) {
+    throw new AmplifyError('MigrationError', { message: 'TODO' });
+  }
+
+  const envName = localEnvName ?? migratingEnvName;
+
+  const stackName = stateManager.getTeamProviderInfo()[envName].awscloudformation.StackName;
+
+  const logger = new Logger(stepName, appName, envName);
+  const implementation: AmplifyMigrationStep = new step.class(logger, envName, appName, appId, stackName, context);
 
   if (!skipValidations) {
     printer.blankLine();
@@ -115,12 +131,10 @@ export const run = async (context: $TSContext) => {
   if (!validationsOnly) {
     try {
       printer.blankLine();
-      printer.info(
-        chalk.gray(`You are about to execute '${stepName}' on environment '${projectName}/${currentEnvName}'. Following this operation:`),
-      );
+      printer.info(chalk.yellow(`You are about to execute '${stepName}' on environment '${appId}/${envName}'. This operation will:`));
       printer.blankLine();
       for (const implication of implementation.implications()) {
-        printer.info(chalk.bold(`- ${implication}`));
+        printer.info(`- ${implication}`);
       }
       printer.blankLine();
       if (await prompter.confirmContinue()) {
