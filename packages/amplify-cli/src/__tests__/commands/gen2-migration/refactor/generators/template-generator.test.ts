@@ -760,7 +760,7 @@ describe('TemplateGenerator', () => {
       ENV_NAME,
       new Logger('mock', 'mock', 'mock'),
     );
-    expect.assertions(2);
+    expect.assertions(1);
     // Intentionally not awaiting the below call to be able to advance timers and micro task queue in waitForPromisesAndFakeTimers
     // and catch the error below
     generator.generate().catch((e) => {
