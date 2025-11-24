@@ -217,8 +217,18 @@ export const createGen2Renderer = ({
           new TypescriptNodeArrayRenderer(
             async () => renderFunctions(func),
             (content) => {
-              // Create both resource.ts (with function definition) and empty handler.ts
-              return fileWriter(content, path.join(dirPath, 'resource.ts')).then(() => fileWriter('', path.join(dirPath, 'handler.ts')));
+              // Create both resource.ts (with function definition) and copy handler from Gen 1
+              return fileWriter(content, path.join(dirPath, 'resource.ts')).then(async () => {
+                // Try to copy the original handler file from Gen 1
+                try {
+                  const gen1HandlerPath = path.join('amplify', 'backend', 'function', resourceName, 'src', 'index.js');
+                  const handlerContent = await fs.readFile(gen1HandlerPath, 'utf-8');
+                  return fileWriter(handlerContent, path.join(dirPath, 'handler.ts'));
+                } catch {
+                  // If Gen 1 handler doesn't exist, create empty handler
+                  return fileWriter('', path.join(dirPath, 'handler.ts'));
+                }
+              });
             },
           ),
         );
