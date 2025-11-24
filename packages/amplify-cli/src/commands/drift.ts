@@ -113,7 +113,7 @@ export class AmplifyDriftDetector {
     this.printer.debug(`Stack: ${stackName}, Project: ${projectName}`);
     this.printer.info('');
     this.printer.info(chalk.cyan.bold(`Started Drift Detection for Project: ${projectName}`));
-    this.printer.debug('Phase 1: CloudFormation drift\n Phase 2: Template changes\n Phase 3: Local vs cloud files\n');
+    this.printer.debug('Phase 1: CloudFormation drift \nPhase 2: Template changes \nPhase 3: Local vs cloud files\n');
 
     // 4. Get CloudFormation client (now with proper context)
     const cfn = await this.cfnService.getClient(this.context);

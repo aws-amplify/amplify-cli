@@ -90,7 +90,7 @@ export async function detectStackDrift(
       if (drift.StackResourceDriftStatus === 'MODIFIED' && drift.PropertyDifferences && drift.PropertyDifferences.length > 0) {
         // Filter out Auth IdP changes from property differences
         drift.PropertyDifferences = drift.PropertyDifferences.filter((propDiff) => {
-          return !isAmplifyAuthRoleDenyToAllowChange(propDiff);
+          return !isAmplifyAuthRoleDenyToAllowChange(propDiff, print);
         });
 
         // If all property differences were filtered out, change status to IN_SYNC
@@ -149,7 +149,7 @@ export async function detectStackDrift(
           statusDisplay = '? UNKNOWN';
       }
 
-      print.debug(`  ${statusDisplay} | ${logicalId} | ${physicalId} | ${resourceType}`);
+      print.info(`${statusDisplay} | ${logicalId} | ${physicalId} | ${resourceType}`);
 
       // Show property differences for MODIFIED resources
       if (status === 'MODIFIED' && drift.PropertyDifferences && drift.PropertyDifferences.length > 0) {
@@ -169,7 +169,7 @@ export async function detectStackDrift(
 /**
  * Check if a property difference is an Amplify auth role Deny→Allow change (intended drift)
  */
-function isAmplifyAuthRoleDenyToAllowChange(propDiff: any): boolean {
+function isAmplifyAuthRoleDenyToAllowChange(propDiff: any, print: Print): boolean {
   // Check if this is an AssumeRolePolicyDocument change
   if (!propDiff.PropertyPath || !propDiff.PropertyPath.includes('AssumeRolePolicyDocument')) {
     return false;
@@ -206,6 +206,8 @@ function isAmplifyAuthRoleDenyToAllowChange(propDiff: any): boolean {
       }
     } catch (e: any) {
       // If JSON parsing fails, it's not the specific change we're looking for
+      // This is expected for some policy formats, so we log at debug level
+      print.debug(`Failed to parse AssumeRolePolicyDocument JSON: ${e.message || 'Unknown error'}`);
       return false;
     }
   }
@@ -275,7 +277,6 @@ async function waitForDriftDetection(
  * @param stackName - the name of the root stack to check for drift
  * @param print - printer for user feedback
  * @param level - current nesting level (for tracking)
- * @param parentPrefix - prefix for nested stack names (for display)
  * @returns combined drift results for root and all nested stacks
  */
 export async function detectStackDriftRecursive(
@@ -283,7 +284,6 @@ export async function detectStackDriftRecursive(
   stackName: string,
   print: Print,
   level = 0,
-  parentPrefix = '',
 ): Promise<CombinedDriftResults> {
   print.debug(`detectStackDriftRecursive: ${stackName} (level ${level})`);
 
@@ -359,7 +359,7 @@ export async function detectStackDriftRecursive(
       nestedStackPhysicalIds.set(nestedStack.LogicalResourceId, nestedStackName);
 
       // Recursively detect drift for this nested stack and all its children
-      const nestedResults = await detectStackDriftRecursive(cfn, nestedStackName, print, level + 1, nestedStack.LogicalResourceId);
+      const nestedResults = await detectStackDriftRecursive(cfn, nestedStackName, print, level + 1);
 
       // Store the direct drift results for this nested stack
       nestedStackDrifts.set(nestedStack.LogicalResourceId, nestedResults.rootStackDrifts);
