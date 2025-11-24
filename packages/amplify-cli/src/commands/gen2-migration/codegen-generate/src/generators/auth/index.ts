@@ -931,6 +931,6 @@ export function renderAuthNode(definition: AuthDefinition): ts.NodeArray<ts.Node
     functionCallParameter: factory.createObjectLiteralExpression(defineAuthProperties, true),
     additionalImportedBackendIdentifiers: namedImports,
     backendFunctionConstruct: 'defineAuth',
-    postImportStatements: secretErrors, // Include secret error handling
+    // postImportStatements: secretErrors, // Include secret error handling
   });
 }

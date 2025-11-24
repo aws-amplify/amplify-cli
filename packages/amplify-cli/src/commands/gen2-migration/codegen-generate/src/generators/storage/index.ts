@@ -54,23 +54,8 @@ export const renderStorage = (storageParams: StorageRenderParameters = {}) => {
   const triggers = storageParams.triggers || {};
 
   const postImportStatements = [];
-  const amplifyGen1EnvStatement = createVariableStatement(
-    factory.createVariableDeclaration(
-      gen2BranchNameVariableName,
-      undefined,
-      undefined,
-      factory.createIdentifier('process.env.AWS_BRANCH ?? "sandbox"'),
-    ),
-  );
-  postImportStatements.push(amplifyGen1EnvStatement);
 
-  if (storageParams.storageIdentifier) {
-    const splitStorageIdentifier = storageParams.storageIdentifier.split('-');
-    const storageNameWithoutBackendEnvName = splitStorageIdentifier.slice(0, -1).join('-');
-
-    const storageNameAssignment = createTemplateLiteral(`${storageNameWithoutBackendEnvName}-`, gen2BranchNameVariableName, '');
-    propertyAssignments.push(factory.createPropertyAssignment(factory.createIdentifier('name'), storageNameAssignment));
-  }
+  // Remove name parameter - let Gen 2 auto-generate storage names
   if (storageParams.accessPatterns) {
     propertyAssignments.push(getAccessPatterns(storageParams.accessPatterns));
   }
