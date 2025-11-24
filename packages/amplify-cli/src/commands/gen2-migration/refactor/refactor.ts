@@ -304,13 +304,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
       throw new Error('Unable to determine AWS account ID');
     }
 
-    const stackName = stateManager.getTeamProviderInfo()[this.currentEnvName].awscloudformation.StackName;
-
-    // Extract backend environment name from stack name
-    const backendEnvironmentName = stackName.split('-')?.[2];
-    if (!backendEnvironmentName) {
-      throw new Error(`Unable to extract environment name from stack: ${stackName}`);
-    }
+    const backendEnvironmentName = this.currentEnvName;
 
     // Create AWS service clients
     const cfnClient = new CloudFormationClient({});
@@ -320,7 +314,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
     // Create template generator using the real TemplateGenerator implementation
     const templateGenerator = new TemplateGenerator(
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      stackName,
+      this.rootStackName,
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       this.toStack!,
       accountId,

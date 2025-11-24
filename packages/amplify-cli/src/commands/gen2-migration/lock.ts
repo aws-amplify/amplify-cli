@@ -47,8 +47,6 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
       }
     }
 
-    const stackName = stateManager.getTeamProviderInfo()[this.currentEnvName].awscloudformation.StackName;
-
     const stackPolicy = {
       Statement: [
         {
@@ -63,12 +61,12 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
     const cfnClient = new CloudFormationClient({});
     await cfnClient.send(
       new SetStackPolicyCommand({
-        StackName: stackName,
+        StackName: this.rootStackName,
         StackPolicyBody: JSON.stringify(stackPolicy),
       }),
     );
 
-    this.logger.info(`Root stack '${stackName}' has been locked`);
+    this.logger.info(`Root stack '${this.rootStackName}' has been locked`);
   }
 
   public async rollback(): Promise<void> {
