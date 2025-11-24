@@ -111,7 +111,10 @@ export const run = async (context: $TSContext) => {
   }
 
   if (migratingEnvName && localEnvName && migratingEnvName !== localEnvName) {
-    throw new AmplifyError('MigrationError', { message: 'TODO' });
+    throw new AmplifyError('MigrationError', {
+      message: `Environment mismatch: Your local env (${localEnvName}) does 
+      not match the environment you marked for migration (${migratingEnvName})`,
+    });
   }
 
   const envName = localEnvName ?? migratingEnvName;
