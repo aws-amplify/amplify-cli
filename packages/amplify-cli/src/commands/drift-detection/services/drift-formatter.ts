@@ -239,7 +239,7 @@ export class DriftFormatter {
    * Create a summary dashboard with overall statistics
    */
   private createSummaryDashboard(): string {
-    const projectName = this.extractProjectName(this.rootStackName);
+    const projectName = this.configService.getProjectName();
 
     const border = '─'.repeat(DISPLAY_CONSTANTS.BORDER_WIDTH);
     let dashboard = '';
@@ -664,14 +664,6 @@ export class DriftFormatter {
   }
 
   /**
-   * Extract project name from Amplify stack name
-   */
-  private extractProjectName(stackName: string): string {
-    const match = stackName.match(/^amplify-([^-]+)-/);
-    return match ? match[1] : stackName;
-  }
-
-  /**
    * Determine Amplify category from identifier
    */
   private determineCategory(identifier: string): string {
@@ -951,8 +943,8 @@ export class DriftFormatter {
     const allCategories = this.getAllCategoriesForPhase3(categoryGroups);
     const categoryEntries = Array.from(allCategories.entries());
 
-    // Check if we have config-level updates
-    const hasConfigUpdates = this.phase3Results.tagsUpdated || this.phase3Results.rootStackUpdated;
+    // Check if we have config-level updates (only available when not skipped)
+    const hasConfigUpdates = !this.phase3Results.skipped && (this.phase3Results.tagsUpdated || this.phase3Results.rootStackUpdated);
 
     categoryEntries.forEach(([categoryName, resources], categoryIndex) => {
       const isLastCategory = categoryIndex === categoryEntries.length - 1;
@@ -970,8 +962,8 @@ export class DriftFormatter {
         if (totalCount > 0) {
           const items: string[] = [];
           if (resourceCount > 0) items.push(`${resourceCount} resource${resourceCount === 1 ? '' : 's'}`);
-          if (this.phase3Results.tagsUpdated) items.push('tags');
-          if (this.phase3Results.rootStackUpdated) items.push('root stack');
+          if (!this.phase3Results.skipped && this.phase3Results.tagsUpdated) items.push('tags');
+          if (!this.phase3Results.skipped && this.phase3Results.rootStackUpdated) items.push('root stack');
           statusText = chalk.red(`DRIFT DETECTED: ${items.join(', ')}`);
         } else {
           statusText = chalk.green('NO DRIFT DETECTED');
@@ -998,7 +990,7 @@ export class DriftFormatter {
   private groupPhase3ResourcesByCategory(): Map<string, any[]> {
     const categories = new Map<string, any[]>();
 
-    if (!this.phase3Results) return categories;
+    if (!this.phase3Results || this.phase3Results.skipped) return categories;
 
     const allResources = [
       ...(this.phase3Results.resourcesToBeCreated || []),
