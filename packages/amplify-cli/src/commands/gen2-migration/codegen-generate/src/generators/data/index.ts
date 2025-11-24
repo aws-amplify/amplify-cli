@@ -283,64 +283,6 @@ export const generateDataSource = async (dataDefinition?: DataDefinition): Promi
       }
     }
 
-    // Add additional authorization modes from Gen1 config
-    if (gen1AuthModes.additionalAuthenticationProviders) {
-      gen1AuthModes.additionalAuthenticationProviders.forEach((provider: any) => {
-        switch (provider.authenticationType) {
-          case 'API_KEY':
-            if (provider.apiKeyConfig?.apiKeyExpirationDays) {
-              authModeProperties.push(
-                factory.createPropertyAssignment(
-                  'apiKeyAuthorizationMode',
-                  factory.createObjectLiteralExpression([
-                    factory.createPropertyAssignment(
-                      'expiresInDays',
-                      factory.createNumericLiteral(provider.apiKeyConfig.apiKeyExpirationDays.toString()),
-                    ),
-                  ]),
-                ),
-              );
-            }
-            break;
-          case 'AWS_LAMBDA':
-            if (provider.lambdaAuthorizerConfig?.ttlSeconds) {
-              authModeProperties.push(
-                factory.createPropertyAssignment(
-                  'lambdaAuthorizationMode',
-                  factory.createObjectLiteralExpression([
-                    factory.createPropertyAssignment(
-                      'timeToLiveInSeconds',
-                      factory.createNumericLiteral(provider.lambdaAuthorizerConfig.ttlSeconds.toString()),
-                    ),
-                  ]),
-                ),
-              );
-            }
-            break;
-          case 'OPENID_CONNECT':
-            if (provider.openIDConnectConfig) {
-              const oidcProps = [];
-              if (provider.openIDConnectConfig.issuer) {
-                oidcProps.push(
-                  factory.createPropertyAssignment('oidcIssuerUrl', factory.createStringLiteral(provider.openIDConnectConfig.issuer)),
-                );
-              }
-              if (provider.openIDConnectConfig.clientId) {
-                oidcProps.push(
-                  factory.createPropertyAssignment('clientId', factory.createStringLiteral(provider.openIDConnectConfig.clientId)),
-                );
-              }
-              if (oidcProps.length > 0) {
-                authModeProperties.push(
-                  factory.createPropertyAssignment('oidcAuthorizationMode', factory.createObjectLiteralExpression(oidcProps)),
-                );
-              }
-            }
-            break;
-        }
-      });
-    }
-
     if (authModeProperties.length > 0) {
       dataRenderProperties.push(
         factory.createPropertyAssignment('authorizationModes', factory.createObjectLiteralExpression(authModeProperties, true)),
