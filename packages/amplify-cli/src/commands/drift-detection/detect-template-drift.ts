@@ -15,7 +15,7 @@ export interface TemplateDriftResult {
   hasDrift: boolean;
   changes: ChangeSetChange[];
   error?: string;
-  skipped?: boolean;
+  skipped: boolean;
   skipReason?: string;
 }
 
@@ -181,6 +181,8 @@ export async function detectTemplateDrift(context: $TSContext, print: Print): Pr
       hasDrift: false,
       changes: [],
       error: error.message,
+      skipped: true,
+      skipReason: `Error during template drift detection: ${error.message}`,
     };
   }
 }
@@ -207,6 +209,7 @@ async function analyzeChangeSet(cfn: CloudFormationClient, changeSet: any, print
   const result: TemplateDriftResult = {
     hasDrift: false,
     changes: [],
+    skipped: false,
   };
 
   // Handle "No updates" case

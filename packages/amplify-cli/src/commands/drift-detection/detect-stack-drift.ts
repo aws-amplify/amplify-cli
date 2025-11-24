@@ -83,7 +83,27 @@ export async function detectStackDrift(
     }),
   );
 
-  // Print detailed resource table
+  // Filter out known Amplify Auth IdP Deny→Allow changes from property differences BEFORE printing
+  if (driftResults.StackResourceDrifts) {
+    driftResults.StackResourceDrifts = driftResults.StackResourceDrifts.map((drift) => {
+      // For modified resources, filter out Auth IdP Deny→Allow property changes
+      if (drift.StackResourceDriftStatus === 'MODIFIED' && drift.PropertyDifferences && drift.PropertyDifferences.length > 0) {
+        // Filter out Auth IdP changes from property differences
+        drift.PropertyDifferences = drift.PropertyDifferences.filter((propDiff) => {
+          return !isAmplifyAuthRoleDenyToAllowChange(propDiff);
+        });
+
+        // If all property differences were filtered out, change status to IN_SYNC
+        if (drift.PropertyDifferences.length === 0) {
+          drift.StackResourceDriftStatus = 'IN_SYNC';
+        }
+      }
+
+      return drift;
+    });
+  }
+
+  // Print detailed resource table in verbose mode (AFTER filtering)
   if (driftResults.StackResourceDrifts && driftResults.StackResourceDrifts.length > 0) {
     // Count resources by status
     const statusCounts = {
@@ -94,15 +114,17 @@ export async function detectStackDrift(
       UNKNOWN: 0,
     };
 
+    // Count the filtered statuses
     for (const drift of driftResults.StackResourceDrifts) {
-      const status = drift.StackResourceDriftStatus || 'UNKNOWN';
-      if (status in statusCounts) {
+      const status = drift.StackResourceDriftStatus;
+      if (status && status in statusCounts) {
         statusCounts[status as keyof typeof statusCounts]++;
       }
     }
 
-    print.info('Resource drift status:');
+    print.debug('Resource drift status:');
 
+    // Display each resource with its filtered status
     for (const drift of driftResults.StackResourceDrifts) {
       const status = drift.StackResourceDriftStatus || 'UNKNOWN';
       const logicalId = drift.LogicalResourceId || 'Unknown';
@@ -127,38 +149,17 @@ export async function detectStackDrift(
           statusDisplay = '? UNKNOWN';
       }
 
-      // Format: Status | LogicalId | PhysicalId (ResourceType)
-      print.info(`${statusDisplay.padEnd(5)} ${logicalId} | ${physicalId} (${resourceType})`);
+      print.debug(`  ${statusDisplay} | ${logicalId} | ${physicalId} | ${resourceType}`);
 
       // Show property differences for MODIFIED resources
       if (status === 'MODIFIED' && drift.PropertyDifferences && drift.PropertyDifferences.length > 0) {
         for (const propDiff of drift.PropertyDifferences) {
           const propPath = propDiff.PropertyPath || 'Unknown';
           const diffType = propDiff.DifferenceType || 'UNKNOWN';
-          print.info(`  → ${propPath}: ${diffType}`);
+          print.debug(`      → ${propPath}: ${diffType}`);
         }
       }
     }
-  }
-
-  // Filter out known Amplify Auth IdP Deny→Allow changes from property differences
-  if (driftResults.StackResourceDrifts) {
-    driftResults.StackResourceDrifts = driftResults.StackResourceDrifts.map((drift) => {
-      // For modified resources, filter out Auth IdP Deny→Allow property changes
-      if (drift.StackResourceDriftStatus === 'MODIFIED' && drift.PropertyDifferences && drift.PropertyDifferences.length > 0) {
-        // Filter out Auth IdP changes from property differences
-        drift.PropertyDifferences = drift.PropertyDifferences.filter((propDiff) => {
-          return !isAmplifyAuthRoleDenyToAllowChange(propDiff, print);
-        });
-
-        // If all property differences were filtered out, change status to IN_SYNC
-        if (drift.PropertyDifferences.length === 0) {
-          drift.StackResourceDriftStatus = 'IN_SYNC';
-        }
-      }
-
-      return drift;
-    });
   }
 
   print.debug(`detectStackDrift.complete: ${stackName}, ${driftResults.StackResourceDrifts?.length} resources`);
@@ -168,7 +169,7 @@ export async function detectStackDrift(
 /**
  * Check if a property difference is an Amplify auth role Deny→Allow change (intended drift)
  */
-function isAmplifyAuthRoleDenyToAllowChange(propDiff: any, print: Print): boolean {
+function isAmplifyAuthRoleDenyToAllowChange(propDiff: any): boolean {
   // Check if this is an AssumeRolePolicyDocument change
   if (!propDiff.PropertyPath || !propDiff.PropertyPath.includes('AssumeRolePolicyDocument')) {
     return false;
@@ -204,9 +205,7 @@ function isAmplifyAuthRoleDenyToAllowChange(propDiff: any, print: Print): boolea
         }
       }
     } catch (e: any) {
-      // If JSON parsing fails, we have a malformed AssumeRolePolicyDocument
-      // This is expected for some policy formats, so we log at debug level
-      print.debug(`Failed to parse AssumeRolePolicyDocument JSON: ${e.message || 'Unknown error'}`);
+      // If JSON parsing fails, it's not the specific change we're looking for
       return false;
     }
   }
