@@ -41,12 +41,10 @@ export class AmplifyConfigService {
   }
 
   /**
-   * Extract project name from stack name
+   * Get project name from Amplify configuration
    */
-  public extractProjectName(stackName: string): string {
-    // Extract project name from stack name (e.g., "amplify-my-project-dev-123" -> "my-project")
-    const match = stackName.match(/^amplify-([^-]+)-/);
-    return match ? match[1] : stackName;
+  public getProjectName(): string {
+    return stateManager.getProjectName();
   }
 
   /**

@@ -17,7 +17,7 @@ export interface Phase3Results {
   resourcesToBeSynced?: Array<ResourceInfo>;
   tagsUpdated?: boolean;
   rootStackUpdated?: boolean;
-  skipped?: boolean;
+  skipped: boolean;
   skipReason?: string;
 }
 
@@ -86,6 +86,7 @@ export async function detectLocalDrift(context: $TSContext): Promise<Phase3Resul
       resourcesToBeSynced,
       tagsUpdated,
       rootStackUpdated,
+      skipped: false,
     };
   } catch (error: any) {
     // Handle errors gracefully
