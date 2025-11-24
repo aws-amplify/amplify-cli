@@ -235,14 +235,6 @@ jest.mock('@aws-sdk/client-cloudformation', () => {
 });
 
 jest.mock('node:fs/promises');
-jest.mock('../../../../../commands/gen2-migration/refactor/generators/migration-readme-generator', () => {
-  return function () {
-    return {
-      initialize: mockReadMeInitialize,
-      renderStep1: mockReadMeRenderStep1,
-    };
-  };
-});
 const stubReadTemplate: CFNTemplate = {
   AWSTemplateFormatVersion: 'AWSTemplateFormatVersion',
   Description: 'Gen2 template',

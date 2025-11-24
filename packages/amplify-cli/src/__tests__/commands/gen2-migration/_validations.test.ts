@@ -34,7 +34,7 @@ describe('AmplifyGen2MigrationValidations', () => {
 
   beforeEach(() => {
     mockContext = {} as $TSContext;
-    validations = new AmplifyGen2MigrationValidations(new Logger('mock', 'mock', 'mock'), mockContext);
+    validations = new AmplifyGen2MigrationValidations(new Logger('mock', 'mock', 'mock'), 'mock', 'mock', mockContext);
   });
 
   describe('validateStatefulResources', () => {
