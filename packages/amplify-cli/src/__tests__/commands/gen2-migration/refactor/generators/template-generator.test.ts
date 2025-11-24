@@ -31,8 +31,6 @@ const mockGenerateStackRefactorTemplates = jest.fn();
 const mockGenerateRefactorTemplates = jest.fn();
 const mockReadTemplate = jest.fn();
 const mockDescribeStack = jest.fn();
-const mockReadMeInitialize = jest.fn();
-const mockReadMeRenderStep1 = jest.fn();
 const REGION = 'us-east-1';
 const getStackId = (stackName: string, category: CATEGORY) => {
   // In Gen1, user pool group and auth are their own stacks. In Gen2, they are combined into 1.
@@ -688,7 +686,6 @@ describe('TemplateGenerator', () => {
     await generator.generate();
     const numCFNOperationsBeforeGen2StackUpdate = 5;
     assertRollbackRefactor('auth', numCFNOperationsBeforeGen2StackUpdate + 1, true);
-    expect(mockReadMeRenderStep1).not.toHaveBeenCalled();
   });
 
   it('should rollback gen2 stack when execute stack refactor fails', async () => {
@@ -728,7 +725,6 @@ describe('TemplateGenerator', () => {
     await generator.generate();
     const numCFNOperationsBeforeGen2StackUpdate = 5;
     assertRollbackRefactor('auth', numCFNOperationsBeforeGen2StackUpdate + 1, false, true);
-    expect(mockReadMeRenderStep1).not.toHaveBeenCalled();
   });
 
   it('should fail after all poll attempts have exhausted during create stack refactor', async () => {
@@ -769,7 +765,6 @@ describe('TemplateGenerator', () => {
     // and catch the error below
     generator.generate().catch((e) => {
       expect(e.message).toBe(`Stack refactor 12345 did not reach a completion state within the given time period.`);
-      expect(mockReadMeRenderStep1).not.toHaveBeenCalled();
     });
     await waitForPromisesAndFakeTimers();
     return;
@@ -834,8 +829,6 @@ describe('TemplateGenerator', () => {
     expect(mockGenerateGen1PreProcessTemplate).toBeCalledTimes(NUM_CATEGORIES_TO_REFACTOR);
     expect(mockGenerateGen2ResourceRemovalTemplate).toBeCalledTimes(NUM_CATEGORIES_TO_REFACTOR - numCategoriesToSkipUpdate);
     expect(mockGenerateStackRefactorTemplates).toBeCalledTimes(NUM_CATEGORIES_TO_REFACTOR - numCategoriesToSkipUpdate);
-    expect(mockReadMeInitialize).toBeCalledTimes(1);
-    expect(mockReadMeRenderStep1).toBeCalledTimes(1);
     expect(CategoryTemplateGenerator).toBeCalledTimes(3);
     expect(CategoryTemplateGenerator).toHaveBeenNthCalledWith(
       1,
@@ -895,8 +888,6 @@ describe('TemplateGenerator', () => {
     expect(mockGenerateGen1PreProcessTemplate).not.toBeCalled();
     expect(mockGenerateGen2ResourceRemovalTemplate).not.toBeCalled();
     expect(mockGenerateRefactorTemplates).toBeCalledTimes(NUM_CATEGORIES_TO_REFACTOR - numCategoriesToSkipUpdate);
-    expect(mockReadMeInitialize).not.toBeCalled();
-    expect(mockReadMeRenderStep1).not.toBeCalled();
     expect(CategoryTemplateGenerator).toBeCalledTimes(NUM_CATEGORIES_TO_REFACTOR);
     expect(CategoryTemplateGenerator).toHaveBeenNthCalledWith(
       1,
@@ -956,8 +947,6 @@ describe('TemplateGenerator', () => {
     expect(mockGenerateGen1PreProcessTemplate).toBeCalledTimes(4);
     expect(mockGenerateGen2ResourceRemovalTemplate).toBeCalledTimes(4);
     expect(mockGenerateStackRefactorTemplates).toBeCalledTimes(3);
-    expect(mockReadMeInitialize).toBeCalledTimes(1);
-    expect(mockReadMeRenderStep1).toBeCalledTimes(1);
     expect(CategoryTemplateGenerator).toBeCalledTimes(4);
     expect(CategoryTemplateGenerator).toHaveBeenNthCalledWith(
       1,
