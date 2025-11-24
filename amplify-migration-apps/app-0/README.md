@@ -95,7 +95,7 @@ type QuoteResponse {
 }
 
 type Query {
-  getRandomQuote: QuoteResponse @function(name: "quote-generator-dev") 
+  getRandomQuote: QuoteResponse @function(name: "quotegenerator-dev") 
 }
 
 enum ProjectStatus {
@@ -154,9 +154,9 @@ $ amplify add storage
 ```
 
 ```bash
-$ amplify-dev add function
+$ amplify add function
 ? Select which capability you want to add: Lambda function (serverless function)
-? Provide an AWS Lambda function name: quote-generator # make sure this name matches the name under `Query` in the GraphQL schema (without -dev)!
+? Provide an AWS Lambda function name: quotegenerator # make sure this name matches the name under `Query` in the GraphQL schema (without -dev)!
 ? Choose the runtime that you want to use: NodeJS
 ? Choose the function template that you want to use: Hello World
 
@@ -175,7 +175,7 @@ $ amplify-dev add function
 ? Do you want to configure secret values this function can access? No
 ✔ Choose the package manager that you want to use: · NPM
 ? Do you want to edit the local lambda function now? Yes
-Edit the file in your editor: /Users/ianhou/workplace/amplify-cli/amplify-migration-apps/app-0/amplify/backend/function/quote-generator/src/index.js
+Edit the file in your editor: /Users/ianhou/workplace/amplify-cli/amplify-migration-apps/app-0/amplify/backend/function/quotegenerator/src/index.js
 ```
 
 Overwrite the Hello World code in `index.js` with the following:
@@ -226,7 +226,7 @@ exports.handler = async (event) => {
 
 ```bash
 ? Press enter to continue 
-✅ Successfully added resource quote-generator locally.
+✅ Successfully added resource quotegenerator locally.
 ```
 
 ```bash
