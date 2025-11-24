@@ -55,23 +55,13 @@ export class AmplifyGen2MigrationValidations {
   }
 
   public async validateDeploymentStatus(): Promise<void> {
-    const amplifyMeta = stateManager.getMeta();
-    const stackName = amplifyMeta?.providers?.awscloudformation?.StackName;
-
-    if (!stackName) {
-      throw new AmplifyError('StackNotFoundError', {
-        message: 'Root stack not found',
-        resolution: 'Ensure the project is initialized and deployed.',
-      });
-    }
-
-    this.logger.info(`Inspecting root stack '${stackName}' status`);
+    this.logger.info(`Inspecting root stack '${this.rootStackName}' status`);
     const cfnClient = new CloudFormationClient({});
-    const response = await cfnClient.send(new DescribeStacksCommand({ StackName: stackName }));
+    const response = await cfnClient.send(new DescribeStacksCommand({ StackName: this.rootStackName }));
 
     if (!response.Stacks || response.Stacks.length === 0) {
       throw new AmplifyError('StackNotFoundError', {
-        message: `Stack ${stackName} not found in CloudFormation`,
+        message: `Stack ${this.rootStackName} not found in CloudFormation`,
         resolution: 'Ensure the project is deployed.',
       });
     }
@@ -87,7 +77,7 @@ export class AmplifyGen2MigrationValidations {
       });
     }
 
-    this.logger.info(chalk.green(`Root stack '${stackName}' status is ${stackStatus} ✔`));
+    this.logger.info(chalk.green(`Root stack '${this.rootStackName}' status is ${stackStatus} ✔`));
   }
 
   public async validateDeploymentVersion(): Promise<void> {

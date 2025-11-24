@@ -9,18 +9,6 @@ jest.mock('bottleneck', () => {
     schedule: jest.fn((fn) => fn()),
   }));
 });
-jest.mock('@aws-amplify/amplify-prompts', () => ({
-  printer: {
-    error: jest.fn(),
-    info: jest.fn(),
-    warn: jest.fn(),
-    success: jest.fn(),
-  },
-  AmplifySpinner: jest.fn().mockImplementation(() => ({
-    start: jest.fn(),
-    stop: jest.fn(),
-  })),
-}));
 jest.mock('@aws-amplify/amplify-cli-core', () => ({
   ...jest.requireActual('@aws-amplify/amplify-cli-core'),
   stateManager: {
@@ -585,20 +573,6 @@ describe('AmplifyGen2MigrationValidations', () => {
       jest.clearAllMocks();
     });
 
-    it('should throw StackNotFoundError when stackName is missing', async () => {
-      jest.spyOn(stateManager, 'getTeamProviderInfo').mockReturnValue({
-        mock: {
-          awscloudformation: {},
-        },
-      });
-
-      await expect(validations.validateDeploymentStatus()).rejects.toMatchObject({
-        name: 'StackNotFoundError',
-        message: 'Root stack not found',
-        resolution: 'Ensure the project is initialized and deployed.',
-      });
-    });
-
     it('should throw StackNotFoundError when stack not found in CloudFormation', async () => {
       jest.spyOn(stateManager, 'getTeamProviderInfo').mockReturnValue({
         mock: {
@@ -702,20 +676,6 @@ describe('AmplifyGen2MigrationValidations', () => {
 
     afterEach(() => {
       jest.clearAllMocks();
-    });
-
-    it('should throw StackNotFoundError when stackName is missing', async () => {
-      jest.spyOn(stateManager, 'getTeamProviderInfo').mockReturnValue({
-        mock: {
-          awscloudformation: {},
-        },
-      });
-
-      await expect(validations.validateLockStatus()).rejects.toMatchObject({
-        name: 'StackNotFoundError',
-        message: 'Root stack not found',
-        resolution: 'Ensure the project is initialized and deployed.',
-      });
     });
 
     it('should throw MigrationError when stack is not locked', async () => {
