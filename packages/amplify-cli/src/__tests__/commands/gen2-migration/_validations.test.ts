@@ -574,19 +574,11 @@ describe('AmplifyGen2MigrationValidations', () => {
     });
 
     it('should throw StackNotFoundError when stack not found in CloudFormation', async () => {
-      jest.spyOn(stateManager, 'getTeamProviderInfo').mockReturnValue({
-        mock: {
-          awscloudformation: {
-            StackName: 'test-stack',
-          },
-        },
-      });
-
       mockSend.mockResolvedValue({ Stacks: [] });
 
       await expect(validations.validateDeploymentStatus()).rejects.toMatchObject({
         name: 'StackNotFoundError',
-        message: 'Stack test-stack not found in CloudFormation',
+        message: 'Stack mock not found in CloudFormation',
         resolution: 'Ensure the project is deployed.',
       });
     });
