@@ -1,6 +1,4 @@
-import ora from 'ora';
 import { AmplifyMigrationStep } from './_step';
-import { printer, AmplifySpinner } from '@aws-amplify/amplify-prompts';
 import { AmplifyGen2MigrationValidations } from './_validations';
 import {
   CloudFormationClient,
@@ -10,88 +8,49 @@ import {
   DescribeChangeSetOutput,
   waitUntilChangeSetCreateComplete,
 } from '@aws-sdk/client-cloudformation';
-import { stateManager, $TSContext, AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { removeEnvFromCloud } from '../../extensions/amplify-helpers/remove-env-from-cloud';
-import { getConfirmation } from '../../extensions/amplify-helpers/delete-project';
 import { invokeDeleteEnvParamsFromService } from '../../extensions/amplify-helpers/invoke-delete-env-params';
 
 export class AmplifyMigrationDecommissionStep extends AmplifyMigrationStep {
   public implications(): string[] {
-    throw new Error('Method not implemented.');
+    return ['Delete the Gen1 environment'];
   }
 
   public async validate(): Promise<void> {
     const changeSet = await this.createChangeSet();
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const validations = new AmplifyGen2MigrationValidations(this.logger, this.context);
+    const validations = new AmplifyGen2MigrationValidations(this.logger, this.rootStackName, this.currentEnvName, this.context);
     // eslint-disable-next-line spellcheck/spell-checker
     await validations.validateStatefulResources(changeSet, true);
   }
 
   public async execute(): Promise<void> {
-    const context = this.getContext();
-    const envName = context.parameters.first;
-    const allEnvs = context.amplify.getEnvDetails();
+    this.logger.info(`Starting decommission of environment: ${this.currentEnvName}`);
 
-    if (!envName) {
-      throw new AmplifyError('EnvironmentNameError', {
-        message: 'Environment name was not specified.',
-        resolution: 'Pass in the name of the environment.',
-      });
-    }
+    this.logger.info('Preparing to delete Gen1 resources...');
 
-    if (!allEnvs[envName]) {
-      throw new AmplifyError('EnvironmentNameError', {
-        message: 'Environment name is invalid.',
-        resolution: 'Run amplify env list to get a list of valid environments.',
-      });
-    }
+    this.logger.info('Deleting Gen1 resources from the cloud. This will take a few minutes.');
+    await removeEnvFromCloud(this.context, this.currentEnvName, true);
 
-    const confirmation = await getConfirmation(context, envName);
-    if (!confirmation.proceed) {
-      return;
-    }
+    this.logger.info('Cleaning up SSM parameters...');
+    await invokeDeleteEnvParamsFromService(this.context, this.currentEnvName);
 
-    printer.info(`Starting decommission of environment: ${envName}`);
-
-    const spinner = ora('Preparing to delete Gen1 resources...');
-    spinner.start();
-
-    try {
-      spinner.text = 'Deleting Gen1 resources from the cloud. This will take a few minutes.';
-      await removeEnvFromCloud(context, envName, true);
-
-      spinner.text = 'Cleaning up SSM parameters...';
-      await invokeDeleteEnvParamsFromService(context, envName);
-
-      spinner.succeed('Successfully decommissioned Gen1 environment from the cloud');
-      printer.success(`Environment '${envName}' has been completely removed from AWS`);
-    } catch (ex) {
-      spinner.fail(`Decommission failed: ${ex.message}`);
-      throw ex;
-    }
+    this.logger.info('Successfully decommissioned Gen1 environment from the cloud');
+    this.logger.info(`Environment '${this.currentEnvName}' has been completely removed from AWS`);
   }
 
   public async rollback(): Promise<void> {
-    printer.warn('Not implemented');
-  }
-
-  private getContext(): $TSContext {
-    return (this as any).context;
+    this.logger.warn('Not implemented');
   }
 
   private async createChangeSet(): Promise<DescribeChangeSetOutput> {
-    const meta = stateManager.getMeta();
-    const stackName = meta.providers.awscloudformation.StackName;
-
     const cfn = new CloudFormationClient({});
     const changeSetName = `decommission-${Date.now()}`;
-    const spinner = new AmplifySpinner();
 
     await cfn.send(
       new CreateChangeSetCommand({
-        StackName: stackName,
+        StackName: this.rootStackName,
         ChangeSetName: changeSetName,
         TemplateBody: JSON.stringify({
           Resources: {
@@ -103,8 +62,11 @@ export class AmplifyMigrationDecommissionStep extends AmplifyMigrationStep {
       }),
     );
 
-    spinner.start('Analyzing environment resources...');
-    await waitUntilChangeSetCreateComplete({ client: cfn, maxWaitTime: 120 }, { StackName: stackName, ChangeSetName: changeSetName });
+    this.logger.info('Analyzing environment resources...');
+    await waitUntilChangeSetCreateComplete(
+      { client: cfn, maxWaitTime: 120 },
+      { StackName: this.rootStackName, ChangeSetName: changeSetName },
+    );
 
     const allChanges = [];
     let nextToken: string | undefined;
@@ -112,7 +74,7 @@ export class AmplifyMigrationDecommissionStep extends AmplifyMigrationStep {
     do {
       changeSet = await cfn.send(
         new DescribeChangeSetCommand({
-          StackName: stackName,
+          StackName: this.rootStackName,
           ChangeSetName: changeSetName,
           NextToken: nextToken,
         }),
@@ -125,12 +87,12 @@ export class AmplifyMigrationDecommissionStep extends AmplifyMigrationStep {
 
     await cfn.send(
       new DeleteChangeSetCommand({
-        StackName: stackName,
+        StackName: this.rootStackName,
         ChangeSetName: changeSetName,
       }),
     );
 
-    spinner.stop(`Reviewing environment resources`);
+    this.logger.info(`Reviewing environment resources`);
     return changeSet;
   }
 }

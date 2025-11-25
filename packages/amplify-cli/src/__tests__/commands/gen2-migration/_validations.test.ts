@@ -9,22 +9,10 @@ jest.mock('bottleneck', () => {
     schedule: jest.fn((fn) => fn()),
   }));
 });
-jest.mock('@aws-amplify/amplify-prompts', () => ({
-  printer: {
-    error: jest.fn(),
-    info: jest.fn(),
-    warn: jest.fn(),
-    success: jest.fn(),
-  },
-  AmplifySpinner: jest.fn().mockImplementation(() => ({
-    start: jest.fn(),
-    stop: jest.fn(),
-  })),
-}));
 jest.mock('@aws-amplify/amplify-cli-core', () => ({
   ...jest.requireActual('@aws-amplify/amplify-cli-core'),
   stateManager: {
-    getMeta: jest.fn(),
+    getTeamProviderInfo: jest.fn(),
   },
 }));
 
@@ -34,7 +22,7 @@ describe('AmplifyGen2MigrationValidations', () => {
 
   beforeEach(() => {
     mockContext = {} as $TSContext;
-    validations = new AmplifyGen2MigrationValidations(new Logger('mock', 'mock', 'mock'), mockContext);
+    validations = new AmplifyGen2MigrationValidations(new Logger('mock', 'mock', 'mock'), 'mock', 'mock', mockContext);
   });
 
   describe('validateStatefulResources', () => {
@@ -517,8 +505,8 @@ describe('AmplifyGen2MigrationValidations', () => {
     });
 
     it('should pass when deployment bucket is removed with excludeDeploymentBucket=true', async () => {
-      jest.spyOn(stateManager, 'getMeta').mockReturnValue({
-        providers: {
+      jest.spyOn(stateManager, 'getTeamProviderInfo').mockReturnValue({
+        mock: {
           awscloudformation: {
             DeploymentBucketName: 'amplify-deployment-bucket-12345',
           },
@@ -542,8 +530,8 @@ describe('AmplifyGen2MigrationValidations', () => {
     });
 
     it('should throw when non-deployment S3 bucket is removed even with excludeDeploymentBucket=true', async () => {
-      jest.spyOn(stateManager, 'getMeta').mockReturnValue({
-        providers: {
+      jest.spyOn(stateManager, 'getTeamProviderInfo').mockReturnValue({
+        mock: {
           awscloudformation: {
             DeploymentBucketName: 'amplify-deployment-bucket-12345',
           },
@@ -585,41 +573,19 @@ describe('AmplifyGen2MigrationValidations', () => {
       jest.clearAllMocks();
     });
 
-    it('should throw StackNotFoundError when stackName is missing', async () => {
-      jest.spyOn(stateManager, 'getMeta').mockReturnValue({
-        providers: {
-          awscloudformation: {},
-        },
-      });
-
-      await expect(validations.validateDeploymentStatus()).rejects.toMatchObject({
-        name: 'StackNotFoundError',
-        message: 'Root stack not found',
-        resolution: 'Ensure the project is initialized and deployed.',
-      });
-    });
-
     it('should throw StackNotFoundError when stack not found in CloudFormation', async () => {
-      jest.spyOn(stateManager, 'getMeta').mockReturnValue({
-        providers: {
-          awscloudformation: {
-            StackName: 'test-stack',
-          },
-        },
-      });
-
       mockSend.mockResolvedValue({ Stacks: [] });
 
       await expect(validations.validateDeploymentStatus()).rejects.toMatchObject({
         name: 'StackNotFoundError',
-        message: 'Stack test-stack not found in CloudFormation',
+        message: 'Stack mock not found in CloudFormation',
         resolution: 'Ensure the project is deployed.',
       });
     });
 
     it('should pass when stack status is UPDATE_COMPLETE', async () => {
-      jest.spyOn(stateManager, 'getMeta').mockReturnValue({
-        providers: {
+      jest.spyOn(stateManager, 'getTeamProviderInfo').mockReturnValue({
+        mock: {
           awscloudformation: {
             StackName: 'test-stack',
           },
@@ -634,8 +600,8 @@ describe('AmplifyGen2MigrationValidations', () => {
     });
 
     it('should pass when stack status is CREATE_COMPLETE', async () => {
-      jest.spyOn(stateManager, 'getMeta').mockReturnValue({
-        providers: {
+      jest.spyOn(stateManager, 'getTeamProviderInfo').mockReturnValue({
+        mock: {
           awscloudformation: {
             StackName: 'test-stack',
           },
@@ -650,8 +616,8 @@ describe('AmplifyGen2MigrationValidations', () => {
     });
 
     it('should throw StackStateError when status is UPDATE_IN_PROGRESS', async () => {
-      jest.spyOn(stateManager, 'getMeta').mockReturnValue({
-        providers: {
+      jest.spyOn(stateManager, 'getTeamProviderInfo').mockReturnValue({
+        mock: {
           awscloudformation: {
             StackName: 'test-stack',
           },
@@ -670,8 +636,8 @@ describe('AmplifyGen2MigrationValidations', () => {
     });
 
     it('should throw StackStateError when status is ROLLBACK_COMPLETE', async () => {
-      jest.spyOn(stateManager, 'getMeta').mockReturnValue({
-        providers: {
+      jest.spyOn(stateManager, 'getTeamProviderInfo').mockReturnValue({
+        mock: {
           awscloudformation: {
             StackName: 'test-stack',
           },
@@ -704,23 +670,9 @@ describe('AmplifyGen2MigrationValidations', () => {
       jest.clearAllMocks();
     });
 
-    it('should throw StackNotFoundError when stackName is missing', async () => {
-      jest.spyOn(stateManager, 'getMeta').mockReturnValue({
-        providers: {
-          awscloudformation: {},
-        },
-      });
-
-      await expect(validations.validateLockStatus()).rejects.toMatchObject({
-        name: 'StackNotFoundError',
-        message: 'Root stack not found',
-        resolution: 'Ensure the project is initialized and deployed.',
-      });
-    });
-
     it('should throw MigrationError when stack is not locked', async () => {
-      jest.spyOn(stateManager, 'getMeta').mockReturnValue({
-        providers: {
+      jest.spyOn(stateManager, 'getTeamProviderInfo').mockReturnValue({
+        mock: {
           awscloudformation: {
             StackName: 'test-stack',
           },
@@ -737,8 +689,8 @@ describe('AmplifyGen2MigrationValidations', () => {
     });
 
     it('should pass when stack has correct lock policy', async () => {
-      jest.spyOn(stateManager, 'getMeta').mockReturnValue({
-        providers: {
+      jest.spyOn(stateManager, 'getTeamProviderInfo').mockReturnValue({
+        mock: {
           awscloudformation: {
             StackName: 'test-stack',
           },
@@ -764,8 +716,8 @@ describe('AmplifyGen2MigrationValidations', () => {
     });
 
     it('should throw MigrationError when stack policy has wrong effect', async () => {
-      jest.spyOn(stateManager, 'getMeta').mockReturnValue({
-        providers: {
+      jest.spyOn(stateManager, 'getTeamProviderInfo').mockReturnValue({
+        mock: {
           awscloudformation: {
             StackName: 'test-stack',
           },
@@ -795,8 +747,8 @@ describe('AmplifyGen2MigrationValidations', () => {
     });
 
     it('should throw MigrationError when stack policy has different action', async () => {
-      jest.spyOn(stateManager, 'getMeta').mockReturnValue({
-        providers: {
+      jest.spyOn(stateManager, 'getTeamProviderInfo').mockReturnValue({
+        mock: {
           awscloudformation: {
             StackName: 'test-stack',
           },

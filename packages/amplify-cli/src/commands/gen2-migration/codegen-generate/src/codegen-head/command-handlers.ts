@@ -87,7 +87,7 @@ const generateGen2Code = async ({
   logger.info('Fetching definitions from AWS for category: Storage');
   const storage = await storageDefinitionFetcher.getDefinition();
 
-  logger.info('Fetching definitions from AWS for category: Data');
+  logger.info('Fetching definitions from AWS for category: Api');
   const data = await dataDefinitionFetcher.getDefinition();
 
   logger.info('Fetching definitions from AWS for category: Functions');
@@ -460,7 +460,6 @@ export async function updateCdkStackFile(customResources: string[], destinationC
               });`,
       );
 
-      
       // Apply AmplifyHelperTransformer for AST-based transformations
       const sourceFile = ts.createSourceFile(cdkStackFilePath, cdkStackContent, ts.ScriptTarget.Latest, true);
       const transformedFile = AmplifyHelperTransformer.transform(sourceFile, projectName);

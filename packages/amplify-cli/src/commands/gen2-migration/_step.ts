@@ -4,8 +4,10 @@ import { Logger } from '../gen2-migration';
 export abstract class AmplifyMigrationStep {
   constructor(
     protected readonly logger: Logger,
-    protected readonly projectName: string,
     protected readonly currentEnvName: string,
+    protected readonly appName: string,
+    protected readonly appId: string,
+    protected readonly rootStackName: string,
     protected readonly context: $TSContext,
   ) {}
 

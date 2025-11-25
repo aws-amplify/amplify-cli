@@ -1,6 +1,5 @@
 import { AmplifyDriftDetector } from '../drift';
 import { $TSContext, AmplifyError, stateManager } from '@aws-amplify/amplify-cli-core';
-import { printer, AmplifySpinner } from '@aws-amplify/amplify-prompts';
 import {
   DescribeChangeSetOutput,
   CloudFormationClient,
@@ -14,6 +13,7 @@ import Bottleneck from 'bottleneck';
 import execa from 'execa';
 import { Logger } from '../gen2-migration';
 import chalk from 'chalk';
+import { printer } from '@aws-amplify/amplify-prompts';
 
 export class AmplifyGen2MigrationValidations {
   private limiter = new Bottleneck({
@@ -21,7 +21,12 @@ export class AmplifyGen2MigrationValidations {
     minTime: 50,
   });
 
-  constructor(private readonly logger: Logger, private readonly context: $TSContext) {}
+  constructor(
+    private readonly logger: Logger,
+    private readonly rootStackName: string,
+    private readonly envName,
+    private readonly context: $TSContext,
+  ) {}
 
   public async validateDrift(): Promise<void> {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -50,23 +55,13 @@ export class AmplifyGen2MigrationValidations {
   }
 
   public async validateDeploymentStatus(): Promise<void> {
-    const amplifyMeta = stateManager.getMeta();
-    const stackName = amplifyMeta?.providers?.awscloudformation?.StackName;
-
-    if (!stackName) {
-      throw new AmplifyError('StackNotFoundError', {
-        message: 'Root stack not found',
-        resolution: 'Ensure the project is initialized and deployed.',
-      });
-    }
-
-    this.logger.info(`Inspecting root stack '${stackName}' status`);
+    this.logger.info(`Inspecting root stack '${this.rootStackName}' status`);
     const cfnClient = new CloudFormationClient({});
-    const response = await cfnClient.send(new DescribeStacksCommand({ StackName: stackName }));
+    const response = await cfnClient.send(new DescribeStacksCommand({ StackName: this.rootStackName }));
 
     if (!response.Stacks || response.Stacks.length === 0) {
       throw new AmplifyError('StackNotFoundError', {
-        message: `Stack ${stackName} not found in CloudFormation`,
+        message: `Stack ${this.rootStackName} not found in CloudFormation`,
         resolution: 'Ensure the project is deployed.',
       });
     }
@@ -82,23 +77,24 @@ export class AmplifyGen2MigrationValidations {
       });
     }
 
-    this.logger.info(chalk.green(`Root stack '${stackName}' status is ${stackStatus} ✔`));
+    this.logger.info(chalk.green(`Root stack '${this.rootStackName}' status is ${stackStatus} ✔`));
   }
 
   public async validateDeploymentVersion(): Promise<void> {
-    printer.warn('Not implemented');
+    this.logger.warn('Not implemented');
   }
 
   public async validateIsolatedEnvironment(): Promise<void> {
-    printer.warn('Not implemented');
+    this.logger.warn('Not implemented');
   }
 
   // eslint-disable-next-line spellcheck/spell-checker
   public async validateStatefulResources(changeSet: DescribeChangeSetOutput, excludeDeploymentBucket = false): Promise<void> {
     if (!changeSet.Changes) return;
 
-    const meta = stateManager.getMeta();
-    const deploymentBucketName = excludeDeploymentBucket ? meta.providers.awscloudformation.DeploymentBucketName : undefined;
+    const deploymentBucketName = excludeDeploymentBucket
+      ? stateManager.getTeamProviderInfo()[this.envName].awscloudformation.DeploymentBucketName
+      : undefined;
 
     this.logger.info('Scanning for stateful resources...');
 
@@ -145,8 +141,10 @@ export class AmplifyGen2MigrationValidations {
         table.push([resource.category, resource.resourceType, resource.physicalId]);
       });
 
-      printer.error('\nStateful resources scheduled for deletion:\n');
+      this.logger.info('Stateful resources scheduled for deletion');
+      printer.blankLine();
       printer.info(table.toString());
+      printer.blankLine();
 
       throw new AmplifyError('DestructiveMigrationError', {
         message: 'Decommission will delete stateful resources.',
@@ -156,22 +154,13 @@ export class AmplifyGen2MigrationValidations {
   }
 
   public async validateIngressTraffic(): Promise<void> {
-    printer.warn('Not implemented');
+    this.logger.warn('Not implemented');
   }
 
   public async validateLockStatus(): Promise<void> {
-    const amplifyMeta = stateManager.getMeta();
-    const stackName = amplifyMeta?.providers?.awscloudformation?.StackName;
-
-    if (!stackName) {
-      throw new AmplifyError('StackNotFoundError', {
-        message: 'Root stack not found',
-        resolution: 'Ensure the project is initialized and deployed.',
-      });
-    }
-
     const cfnClient = new CloudFormationClient({});
-    const { StackPolicyBody } = await cfnClient.send(new GetStackPolicyCommand({ StackName: stackName }));
+    this.logger.info(`Inspecting stack policy for ${this.rootStackName}`);
+    const { StackPolicyBody } = await cfnClient.send(new GetStackPolicyCommand({ StackName: this.rootStackName }));
 
     if (!StackPolicyBody) {
       throw new AmplifyError('MigrationError', {
@@ -199,7 +188,7 @@ export class AmplifyGen2MigrationValidations {
       });
     }
 
-    printer.success('Stack lock status validated');
+    this.logger.info(chalk.green(`Stack ${this.rootStackName} is locked ✔`));
   }
 
   private async getStatefulResources(
