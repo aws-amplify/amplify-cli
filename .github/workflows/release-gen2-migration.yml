@@ -1,0 +1,22 @@
+name: Release Gen2 Migration
+on:
+  workflow_dispatch: {}
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          ref: gen2-migration
+      - run: |
+          yarn install
+          yarn build
+          cd packages/amplify-cli
+          package_name="@aws-amplify/cli-internal-gen2-migration-alpha"
+          latest_version=$(npm view ${package_name} version 2>/dev/null || echo "0.0.0")
+          new_version=$(npx semver --increment minor ${latest_version})
+          npm version ${new_version} --no-workspace-update --no-commit-hooks --no-git-tag-version --no-workspaces
+          npm pkg set name=${package_name}
+          npm pack
+          NPM_TRUSTED_PUBLISHER=true npm publish --dry-run

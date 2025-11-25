@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-util-uibuilder",
-  "version": "1.14.23",
+  "version": "1.14.24",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
@@ -14,7 +14,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@aws-amplify/amplify-category-api": "^5.15.1",
+    "@aws-amplify/amplify-category-api": "^5.15.2",
     "@aws-amplify/amplify-cli-core": "4.4.4",
     "@aws-amplify/amplify-prompts": "2.8.7",
     "@aws-amplify/codegen-ui": "2.14.2",
