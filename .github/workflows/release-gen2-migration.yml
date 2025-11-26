@@ -13,7 +13,7 @@ jobs:
           yarn install
           yarn build
           cd packages/amplify-cli
-          package_name="@aws-amplify/cli-internal-gen2-migration-alpha"
+          package_name="@aws-amplify/cli-internal-gen2-migration-experimental-alpha"
           latest_version=$(npm view ${package_name} version 2>/dev/null || echo "0.0.0")
           new_version=$(npx semver --increment minor ${latest_version})
           npm version ${new_version} --no-workspace-update --no-commit-hooks --no-git-tag-version --no-workspaces
