@@ -70,7 +70,18 @@ export const renderStorage = (storageParams: StorageRenderParameters = {}) => {
     const storageNameWithoutBackendEnvName = splitStorageIdentifier.slice(0, -1).join('-');
 
     const storageNameAssignment = createTemplateLiteral(`${storageNameWithoutBackendEnvName}-`, gen2BranchNameVariableName, '');
-    propertyAssignments.push(factory.createPropertyAssignment(factory.createIdentifier('name'), storageNameAssignment));
+    const nameProperty = factory.createPropertyAssignment(factory.createIdentifier('name'), storageNameAssignment);
+
+    // Add comments as leading trivia
+    ts.addSyntheticLeadingComment(nameProperty, ts.SyntaxKind.SingleLineCommentTrivia, ` Use this bucket name post refactor`, true);
+    ts.addSyntheticLeadingComment(
+      nameProperty,
+      ts.SyntaxKind.SingleLineCommentTrivia,
+      ` name: '${storageParams.storageIdentifier}',`,
+      true,
+    );
+
+    propertyAssignments.push(nameProperty);
   }
   if (storageParams.accessPatterns) {
     propertyAssignments.push(getAccessPatterns(storageParams.accessPatterns));
