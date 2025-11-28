@@ -524,7 +524,7 @@ export const getAuthDefinition = ({
                 })
                 .filter((scope) => ['phone', 'email', 'openid', 'profile', 'aws.cognito.signin.user.admin'].includes(scope));
 
-              (loginWith as any)[scopeProperty] = mappedScopes;
+              loginWith[scopeProperty] = mappedScopes;
             }
           }
         }
