@@ -162,8 +162,16 @@ export type LoginOptions = {
   callbackURLs?: string[];
   /** OAuth logout URLs */
   logoutURLs?: string[];
-  /** OAuth scopes to request */
+  /** OAuth scopes to request (DEPRECATED: use provider-specific scopes) */
   scopes?: Scope[];
+  /** Google-specific OAuth scopes */
+  googleScopes?: string[];
+  /** Facebook-specific OAuth scopes */
+  facebookScopes?: string[];
+  /** Amazon-specific OAuth scopes */
+  amazonScopes?: string[];
+  /** Apple-specific OAuth scopes */
+  appleScopes?: string[];
   /** Index signature for extensibility */
   [key: string]: boolean | Partial<EmailOptions> | string[] | Scope[] | OidcOptions[] | SamlOptions | AttributeMappingRule | undefined;
 };
@@ -309,14 +317,26 @@ const oidcClientSecret = 'OIDC_CLIENT_SECRET';
 function createProviderConfig(config: Record<string, string>, attributeMapping: AttributeMappingRule | undefined) {
   const properties: ts.ObjectLiteralElementLike[] = [];
 
-  Object.entries(config).map(([key, value]) =>
-    properties.push(
-      factory.createPropertyAssignment(
-        factory.createIdentifier(key),
-        factory.createCallExpression(secretIdentifier, undefined, [factory.createStringLiteral(value)]),
-      ),
-    ),
-  );
+  Object.entries(config).map(([key, value]) => {
+    if (key === 'scopes') {
+      // Handle scopes as an array of strings, not a secret
+      const scopeArray = value.split(' ').filter((scope) => scope.length > 0);
+      properties.push(
+        factory.createPropertyAssignment(
+          factory.createIdentifier('scopes'),
+          factory.createArrayLiteralExpression(scopeArray.map((scope) => factory.createStringLiteral(scope))),
+        ),
+      );
+    } else {
+      // Handle other config values as secrets
+      properties.push(
+        factory.createPropertyAssignment(
+          factory.createIdentifier(key),
+          factory.createCallExpression(secretIdentifier, undefined, [factory.createStringLiteral(value)]),
+        ),
+      );
+    }
+  });
 
   if (attributeMapping) {
     const mappingProperties: ts.ObjectLiteralElementLike[] = [];
@@ -462,60 +482,64 @@ function createExternalProvidersPropertyAssignment(
   const providerAssignments: PropertyAssignment[] = [];
 
   if (loginOptions.googleLogin) {
-    providerAssignments.push(
-      createProviderPropertyAssignment(
-        'google',
-        {
-          clientId: googleClientID,
-          clientSecret: googleClientSecret,
-        },
-        loginOptions.googleAttributes,
-      ),
-    );
+    const googleConfig: Record<string, string> = {
+      clientId: googleClientID,
+      clientSecret: googleClientSecret,
+    };
+
+    // Add provider-specific scopes if available
+    if (loginOptions.googleScopes && loginOptions.googleScopes.length > 0) {
+      googleConfig.scopes = loginOptions.googleScopes.join(' ');
+    }
+
+    providerAssignments.push(createProviderPropertyAssignment('google', googleConfig, loginOptions.googleAttributes));
     // secretErrors?.push(...createSecretErrorStatements([googleClientID, googleClientSecret]));
   }
 
   if (loginOptions.appleLogin) {
-    providerAssignments.push(
-      createProviderPropertyAssignment(
-        'signInWithApple',
-        {
-          clientId: appleClientID,
-          keyId: appleKeyId,
-          privateKey: applePrivateKey,
-          teamId: appleTeamID,
-        },
-        loginOptions.appleAttributes,
-      ),
-    );
+    const appleConfig: Record<string, string> = {
+      clientId: appleClientID,
+      keyId: appleKeyId,
+      privateKey: applePrivateKey,
+      teamId: appleTeamID,
+    };
+
+    // Add provider-specific scopes if available
+    if (loginOptions.appleScopes && loginOptions.appleScopes.length > 0) {
+      appleConfig.scopes = loginOptions.appleScopes.join(' ');
+    }
+
+    providerAssignments.push(createProviderPropertyAssignment('signInWithApple', appleConfig, loginOptions.appleAttributes));
     // secretErrors?.push(...createSecretErrorStatements([appleClientID, appleKeyId, applePrivateKey, appleTeamID]));
   }
 
   if (loginOptions.amazonLogin) {
-    providerAssignments.push(
-      createProviderPropertyAssignment(
-        'loginWithAmazon',
-        {
-          clientId: amazonClientID,
-          clientSecret: amazonClientSecret,
-        },
-        loginOptions.amazonAttributes,
-      ),
-    );
+    const amazonConfig: Record<string, string> = {
+      clientId: amazonClientID,
+      clientSecret: amazonClientSecret,
+    };
+
+    // Add provider-specific scopes if available
+    if (loginOptions.amazonScopes && loginOptions.amazonScopes.length > 0) {
+      amazonConfig.scopes = loginOptions.amazonScopes.join(' ');
+    }
+
+    providerAssignments.push(createProviderPropertyAssignment('loginWithAmazon', amazonConfig, loginOptions.amazonAttributes));
     // secretErrors?.push(...createSecretErrorStatements([amazonClientID, amazonClientSecret]));
   }
 
   if (loginOptions.facebookLogin) {
-    providerAssignments.push(
-      createProviderPropertyAssignment(
-        'facebook',
-        {
-          clientId: facebookClientID,
-          clientSecret: facebookClientSecret,
-        },
-        loginOptions.facebookAttributes,
-      ),
-    );
+    const facebookConfig: Record<string, string> = {
+      clientId: facebookClientID,
+      clientSecret: facebookClientSecret,
+    };
+
+    // Add provider-specific scopes if available
+    if (loginOptions.facebookScopes && loginOptions.facebookScopes.length > 0) {
+      facebookConfig.scopes = loginOptions.facebookScopes.join(' ');
+    }
+
+    providerAssignments.push(createProviderPropertyAssignment('facebook', facebookConfig, loginOptions.facebookAttributes));
     // secretErrors?.push(...createSecretErrorStatements([facebookClientID, facebookClientSecret]));
   }
 
@@ -558,15 +582,7 @@ function createExternalProvidersPropertyAssignment(
     // secretErrors?.push(...createSecretErrorStatements([oidcClientID, oidcClientSecret]));
   }
 
-  // configure OAuth scope
-  if (loginOptions.scopes) {
-    providerAssignments.push(
-      factory.createPropertyAssignment(
-        factory.createIdentifier('scopes'),
-        factory.createArrayLiteralExpression(loginOptions.scopes.map((scope) => factory.createStringLiteral(scope))),
-      ),
-    );
-  }
+  // REMOVED: Global scopes are no longer used - provider-specific scopes are now embedded in each provider config
 
   // supports callback urls and logout urls
   const properties = [
