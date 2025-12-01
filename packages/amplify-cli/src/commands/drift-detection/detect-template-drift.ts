@@ -3,6 +3,7 @@ import {
   CloudFormationClient,
   CreateChangeSetCommand,
   DescribeChangeSetCommand,
+  DescribeChangeSetCommandOutput,
   DeleteChangeSetCommand,
   DescribeStacksCommand,
   waitUntilChangeSetCreateComplete,
@@ -221,7 +222,11 @@ export async function detectTemplateDrift(stackName: string, print: Print, cfn: 
   }
 }
 
-async function analyzeChangeSet(cfn: CloudFormationClient, changeSet: any, print: Print): Promise<TemplateDriftResult> {
+async function analyzeChangeSet(
+  cfn: CloudFormationClient,
+  changeSet: DescribeChangeSetCommandOutput,
+  print: Print,
+): Promise<TemplateDriftResult> {
   const result: TemplateDriftResult = {
     hasDrift: false,
     changes: [],
