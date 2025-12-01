@@ -1,4 +1,4 @@
-import { pathManager } from '@aws-amplify/amplify-cli-core';
+import { pathManager, parseArn } from '@aws-amplify/amplify-cli-core';
 import {
   CloudFormationClient,
   CreateChangeSetCommand,
@@ -34,6 +34,28 @@ interface ChangeDetail {
   changeSource?: string;
   evaluation?: string;
   requiresRecreation?: string;
+}
+
+/**
+ * Extract stack name from CloudFormation stack ARN
+ * @param stackArn - Stack ARN in format: arn:aws:cloudformation:region:account:stack/stackName/guid
+ * @returns Stack name extracted from the ARN resource portion
+ */
+function extractStackNameFromArn(stackArn: string): string {
+  // Stack ARN resource format: "stack/stackName/guid"
+  const resource = parseArn(stackArn).resource;
+  return resource.split('/')[1];
+}
+
+/**
+ * Extract changeset name from CloudFormation changeset ARN
+ * @param changeSetArn - ChangeSet ARN in format: arn:aws:cloudformation:region:account:changeSet/changeSetName/id
+ * @returns ChangeSet name extracted from the ARN resource portion
+ */
+function extractChangeSetNameFromArn(changeSetArn: string): string {
+  // ChangeSet ARN resource format: "changeSet/changeSetName/id"
+  const resource = parseArn(changeSetArn).resource;
+  return resource.split('/')[1];
 }
 
 /**
@@ -199,24 +221,6 @@ export async function detectTemplateDrift(stackName: string, print: Print, cfn: 
   }
 }
 
-function extractParameters(stackInfo: any, template: any): any[] {
-  const parameters: any[] = [];
-
-  // Extract parameters from template and match with team-provider-info values
-  if (template.Parameters) {
-    for (const paramName of Object.keys(template.Parameters)) {
-      if (stackInfo[paramName]) {
-        parameters.push({
-          ParameterKey: paramName,
-          ParameterValue: stackInfo[paramName],
-        });
-      }
-    }
-  }
-
-  return parameters;
-}
-
 async function analyzeChangeSet(cfn: CloudFormationClient, changeSet: any, print: Print): Promise<TemplateDriftResult> {
   const result: TemplateDriftResult = {
     hasDrift: false,
@@ -283,13 +287,9 @@ async function analyzeChangeSet(cfn: CloudFormationClient, changeSet: any, print
     // Check if this is a nested stack with its own changeset
     if (rc.ResourceType === 'AWS::CloudFormation::Stack' && rc.ChangeSetId) {
       try {
-        // Extract stack name from physical resource ID
-        const stackArn = rc.PhysicalResourceId;
-        const stackName = stackArn.split('/')[1]; // Extract stack name from ARN
-
-        // Extract changeset name from changeset ID
-        const changeSetArn = rc.ChangeSetId;
-        const changeSetName = changeSetArn.split('/')[1]; // Extract changeset name from ARN
+        // Extract stack name and changeset name from ARNs using parseArn utility
+        const stackName = extractStackNameFromArn(rc.PhysicalResourceId);
+        const changeSetName = extractChangeSetNameFromArn(rc.ChangeSetId);
 
         print.debug(`Fetching nested changeset: ${stackName}`);
         print.debug(`ChangeSet: ${changeSetName}`);
