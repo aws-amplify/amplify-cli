@@ -1,14 +1,14 @@
-import { $TSContext, stateManager, pathManager } from '@aws-amplify/amplify-cli-core';
+import { pathManager } from '@aws-amplify/amplify-cli-core';
 import {
   CloudFormationClient,
   CreateChangeSetCommand,
   DescribeChangeSetCommand,
   DeleteChangeSetCommand,
+  DescribeStacksCommand,
   waitUntilChangeSetCreateComplete,
 } from '@aws-sdk/client-cloudformation';
 import fs from 'fs-extra';
 import * as path from 'path';
-import { CloudFormationService } from './services/cloudformation-service';
 import type { Print } from '../drift';
 
 export interface TemplateDriftResult {
@@ -39,15 +39,13 @@ interface ChangeDetail {
 /**
  * Phase 2: Detect template drift using CloudFormation change sets
  * Inspired by CDK's cloudformation-diff implementation
+ *
+ * @param stackName - The CloudFormation stack name to check
+ * @param print - Logging interface
+ * @param cfn - CloudFormation client
  */
-export async function detectTemplateDrift(context: $TSContext, print: Print): Promise<TemplateDriftResult> {
-  const cfnService = new CloudFormationService(print);
-  let cfn: CloudFormationClient;
-
+export async function detectTemplateDrift(stackName: string, print: Print, cfn: CloudFormationClient): Promise<TemplateDriftResult> {
   try {
-    // Initialize CloudFormation client
-    cfn = await cfnService.getClient(context);
-
     // Check prerequisites
     const currentCloudBackendPath = pathManager.getCurrentCloudBackendDirPath();
     print.debug(`Checking for #current-cloud-backend at: ${currentCloudBackendPath}`);
@@ -59,24 +57,6 @@ export async function detectTemplateDrift(context: $TSContext, print: Print): Pr
         skipReason: 'No #current-cloud-backend found. Run "amplify pull" first.',
       };
     }
-
-    // Read configuration
-    const teamProviderInfo = stateManager.getTeamProviderInfo();
-    const localEnvInfo = stateManager.getLocalEnvInfo();
-    const envName = localEnvInfo.envName;
-
-    if (!teamProviderInfo[envName]) {
-      return {
-        hasDrift: false,
-        changes: [],
-        skipped: true,
-        skipReason: `Environment "${envName}" not found in team-provider-info.json`,
-      };
-    }
-
-    const stackInfo = teamProviderInfo[envName].awscloudformation;
-    const stackName = stackInfo.StackName;
-    print.debug(`Environment: ${envName}, Stack: ${stackName}`);
 
     // Read cached template
     const templatePath = path.join(currentCloudBackendPath, 'awscloudformation', 'build', 'root-cloudformation-stack.json');
@@ -93,9 +73,26 @@ export async function detectTemplateDrift(context: $TSContext, print: Print): Pr
 
     const template = await fs.readJson(templatePath);
 
-    // Prepare parameters
-    const parameters = extractParameters(stackInfo, template);
-    print.debug(`Extracted ${parameters.length} parameters from template`);
+    // Get current stack parameters from CloudFormation (source of truth)
+    print.debug(`Fetching stack parameters from CloudFormation for: ${stackName}`);
+    const stackDescription = await cfn.send(
+      new DescribeStacksCommand({
+        StackName: stackName,
+      }),
+    );
+
+    if (!stackDescription.Stacks || stackDescription.Stacks.length === 0) {
+      return {
+        hasDrift: false,
+        changes: [],
+        skipped: true,
+        skipReason: `Stack ${stackName} not found in CloudFormation`,
+      };
+    }
+
+    // Use parameters from the deployed stack
+    const parameters = stackDescription.Stacks[0].Parameters || [];
+    print.debug(`Using ${parameters.length} parameters from deployed stack`);
 
     // Create changeset
     const changeSetName = `amplify-drift-detection-${Date.now()}`;
