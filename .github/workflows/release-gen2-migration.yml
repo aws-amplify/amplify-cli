@@ -4,6 +4,7 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
+    environment: release-gen2-migration
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -19,4 +20,4 @@ jobs:
           npm version ${new_version} --no-workspace-update --no-commit-hooks --no-git-tag-version --no-workspaces
           npm pkg set name=${package_name}
           npm pack
-          NPM_TRUSTED_PUBLISHER=true npm publish --dry-run
+          NPM_TRUSTED_PUBLISHER=true npm publish
