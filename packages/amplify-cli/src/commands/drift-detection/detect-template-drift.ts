@@ -233,6 +233,9 @@ async function analyzeChangeSet(
     skipped: false,
   };
 
+  // Track if any nested stack analysis was skipped
+  let hasNestedSkipped = false;
+
   // Handle FAILED status - distinguish between "no changes" vs actual errors
   if (changeSet.Status === 'FAILED') {
     // "No changes" is success for drift detection
@@ -325,20 +328,37 @@ async function analyzeChangeSet(
         // Recursively analyze nested changeset
         const nestedResult = await analyzeChangeSet(cfn, nestedChangeSet, print);
 
+        // Check if nested analysis was skipped
+        if (nestedResult.skipped) {
+          print.warn(`⚠ Nested stack ${stackName} analysis was skipped: ${nestedResult.skipReason}`);
+          hasNestedSkipped = true;
+        }
+
         // Add nested changes to the current change
         if (nestedResult.changes && nestedResult.changes.length > 0) {
           changeInfo.nestedChanges = nestedResult.changes;
           print.debug(`Processed ${nestedResult.changes.length} nested changes`);
         }
       } catch (error: any) {
-        // Log error but continue processing
-        print.debug(`Could not fetch nested changeset: ${error.message}`);
+        // Log error and mark as skipped
+        print.warn(`⚠ Could not fetch nested changeset for ${rc.LogicalResourceId}: ${error.message}`);
         print.debug(`Stack ARN: ${rc.PhysicalResourceId}`);
         print.debug(`ChangeSet ID: ${rc.ChangeSetId}`);
+        hasNestedSkipped = true;
       }
     }
 
     result.changes.push(changeInfo);
+  }
+
+  // If any nested stack analysis was skipped, mark entire result as skipped
+  if (hasNestedSkipped) {
+    return {
+      hasDrift: false,
+      changes: [],
+      skipped: true,
+      skipReason: 'One or more nested stacks could not be analyzed',
+    };
   }
 
   return result;
