@@ -53,7 +53,7 @@ export const run = async (context: $TSContext): Promise<void> => {
 };
 
 /**
- * Amplify drift detector - Orchestrator class
+ * Amplify drift detector - Coordinator class
  * Coordinates services to perform drift detection
  */
 export class AmplifyDriftDetector {
@@ -151,10 +151,10 @@ export class AmplifyDriftDetector {
     } else {
       this.printer.debug('S3 sync completed successfully');
 
-      // Phase 2: Detect template drift using changesets (only if sync succeeded)
+      // Phase 2: Detect template drift using changeset (only if sync succeeded)
       this.printer.debug('Starting Phase 2: Template drift detection');
       this.printer.info('Checking for template drift using changesets...');
-      phase2Results = await detectTemplateDrift(this.context, this.printer);
+      phase2Results = await detectTemplateDrift(stackName, this.printer, cfn);
       this.printer.debug(`Phase 2 complete: hasDrift=${phase2Results.hasDrift}`);
 
       // Phase 3: Detect local vs cloud backend drift (only if sync succeeded)
