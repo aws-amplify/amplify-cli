@@ -47,7 +47,3 @@ All the defaults on amplify push
 <img width="995" height="602" alt="Screenshot 2025-11-20 at 4 13 45 PM" src="https://github.com/user-attachments/assets/1655fbb7-11ac-48fa-997f-77687f582641" />
 
 Add this to a s3 trigger with dependencies & permissions and push
-
-
-
-PLEASE NOTE: AT THE END OF THE STEPS, FOLLOW THIS FOR MANUAL CHANGES - https://quip-amazon.com/IPQaA3GG70t5/MANUAL-UPDATES
