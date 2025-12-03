@@ -943,35 +943,16 @@ export class DriftFormatter {
     const allCategories = this.getAllCategoriesForPhase3(categoryGroups);
     const categoryEntries = Array.from(allCategories.entries());
 
-    // Check if we have config-level updates (only available when not skipped)
-    const hasConfigUpdates = !this.phase3Results.skipped;
-
     categoryEntries.forEach(([categoryName, resources], categoryIndex) => {
       const isLastCategory = categoryIndex === categoryEntries.length - 1;
       const categoryPrefix = isLastCategory ? TREE_SYMBOLS.LAST_BRANCH : TREE_SYMBOLS.BRANCH;
 
       const categoryIcon = this.getCategoryIcon(categoryName);
 
-      // For Core Infrastructure, include config updates in the count
-      let statusText: string;
-      if (categoryName === 'Core Infrastructure') {
-        const resourceCount = resources.length;
-        const configCount = hasConfigUpdates ? 1 : 0;
-        const totalCount = resourceCount + configCount;
-
-        if (totalCount > 0) {
-          const items: string[] = [];
-          if (resourceCount > 0) items.push(`${resourceCount} resource${resourceCount === 1 ? '' : 's'}`);
-          statusText = chalk.red(`DRIFT DETECTED: ${items.join(', ')}`);
-        } else {
-          statusText = chalk.green('NO DRIFT DETECTED');
-        }
-      } else {
-        statusText =
-          resources.length > 0
-            ? chalk.red(`DRIFT DETECTED: ${resources.length} resource${resources.length === 1 ? '' : 's'}`)
-            : chalk.green('NO DRIFT DETECTED');
-      }
+      const statusText =
+        resources.length > 0
+          ? chalk.red(`DRIFT DETECTED: ${resources.length} resource${resources.length === 1 ? '' : 's'}`)
+          : chalk.green('NO DRIFT DETECTED');
 
       output += `${categoryPrefix} ${categoryIcon} ${chalk.bold(categoryName)}\n`;
 
