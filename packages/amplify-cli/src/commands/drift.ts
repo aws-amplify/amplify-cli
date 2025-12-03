@@ -140,7 +140,7 @@ export class AmplifyDriftDetector {
       hasDrift: false,
     };
     let phase3Results: any = {
-      hasDrift: false,
+      totalDrifted: 0,
       skipped: true,
       skipReason: 'S3 backend sync failed - cannot compare local vs cloud',
     };
@@ -161,7 +161,7 @@ export class AmplifyDriftDetector {
       this.printer.debug('Starting Phase 3: Local drift detection');
       this.printer.info('Checking local files vs cloud backend...');
       phase3Results = await detectLocalDrift(this.context);
-      this.printer.debug(`Phase 3 complete: hasDrift=${phase3Results.hasDrift}`);
+      this.printer.debug(`Phase 3 complete: totalDrifted=${phase3Results.totalDrifted}`);
     }
 
     // Phase 1: Detect CloudFormation drift recursively (always runs, doesn't depend on S3 sync)
