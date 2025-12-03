@@ -44,7 +44,7 @@ All the defaults on amplify push
 
 Now, manually replace the following files in your backend:
 
-schema.graphql
+*schema.graphql*
 ```graphql
 # User Profile
 type UserProfile @model @auth(rules: [
@@ -155,119 +155,7 @@ enum SharePermission {
 ```
 
 Function
-
-GraphQL Schema
-```graphql
-# User Profile
-type UserProfile @model @auth(rules: [
-  { allow: owner },
-  { allow: groups, groups: ["Admin"] }
-]) {
-  id: ID!
-  username: String!
-  email: String
-  displayName: String
-  avatar: String
-  
-  # Relationships (Gen 2 ready)
-  mediaItems: [MediaItem] @hasMany(indexName: "byOwner", fields: ["id"])
-  collections: [Collection] @hasMany(indexName: "byOwner", fields: ["id"])
-}
-
-# Media Items (photos, videos, documents)
-type MediaItem @model @auth(rules: [
-  { allow: owner },
-  { allow: groups, groups: ["Admin"] }
-]) {
-  id: ID!
-  title: String!
-  description: String
-  fileUrl: String!
-  thumbnailUrl: String
-  fileType: MediaType!
-  fileSize: Int
-  mimeType: String
-  tags: [String]
-  isPrivate: Boolean!
-  uploadedAt: AWSDateTime!
-  
-  # Foreign keys (Gen 2 ready)
-  userProfileId: ID! @index(name: "byOwner")
-  collectionId: ID @index(name: "byCollection")
-  
-  # Relationships
-  owner: UserProfile @belongsTo(fields: ["userProfileId"])
-  collection: Collection @belongsTo(fields: ["collectionId"])
-  sharedItems: [SharedItem] @hasMany(indexName: "byMediaItem", fields: ["id"])
-}
-
-# Collections/Albums
-type Collection @model @auth(rules: [
-  { allow: owner },
-  { allow: groups, groups: ["Admin"] }
-]) {
-  id: ID!
-  name: String!
-  description: String
-  coverImage: String
-  isPrivate: Boolean!
-  
-  # Foreign keys (Gen 2 ready)
-  userProfileId: ID! @index(name: "byOwner")
-  
-  # Relationships
-  owner: UserProfile @belongsTo(fields: ["userProfileId"])
-  mediaItems: [MediaItem] @hasMany(indexName: "byCollection", fields: ["id"])
-}
-
-# Sharing functionality
-type SharedItem @model @auth(rules: [
-  { allow: owner },
-  { allow: private, operations: [read] }
-]) {
-  id: ID!
-  permissions: SharePermission!
-  expiresAt: AWSDateTime
-  sharedWithEmail: String!
-  sharedAt: AWSDateTime!
-  
-  # Foreign keys (Gen 2 ready)
-  mediaItemId: ID! @index(name: "byMediaItem")
-  
-  # Relationships
-  mediaItem: MediaItem @belongsTo(fields: ["mediaItemId"])
-}
-
-# Quick Notes
-type Note @model @auth(rules: [
-  { allow: owner },
-  { allow: groups, groups: ["Admin"] }
-]) {
-  id: ID!
-  title: String!
-  content: String
-  tags: [String]
-  isPinned: Boolean
-}
-
-# Enums
-enum MediaType {
-  IMAGE
-  VIDEO
-  AUDIO
-  DOCUMENT
-  OTHER
-}
-
-enum SharePermission {
-  VIEW
-  DOWNLOAD
-  EDIT
-}```
-
-
-Function
-amplify-migration-apps/app-3/personal-media-vault/personal-media-vault/amplify/backend/function/thumbnailgen/src/index.js
+*amplify-migration-apps/app-3/personal-media-vault/personal-media-vault/amplify/backend/function/thumbnailgen/src/index.js*
 
 ```javascript
 const { S3Client, GetObjectCommand, PutObjectCommand } = require('@aws-sdk/client-s3');
@@ -326,7 +214,7 @@ exports.handler = async (event) => {
 };
 ```
 
-amplify-migration-apps/app-3/personal-media-vault/personal-media-vault/amplify/backend/function/thumbnailgen/src/package.json
+*amplify-migration-apps/app-3/personal-media-vault/personal-media-vault/amplify/backend/function/thumbnailgen/src/package.json*
 ```javascript
 {
   "name": "thumbnailgen",
@@ -343,7 +231,7 @@ amplify-migration-apps/app-3/personal-media-vault/personal-media-vault/amplify/b
 }
 ```
 
-In amplify-migration-apps/app-3/personal-media-vault/personal-media-vault/amplify/backend/function/thumbnailgen/thumbnailgen-cloudformation-template.json, add:
+In *amplify-migration-apps/app-3/personal-media-vault/personal-media-vault/amplify/backend/function/thumbnailgen/thumbnailgen-cloudformation-template.json*, add:
 
 ```javascript
 {
