@@ -342,3 +342,16 @@ amplify-migration-apps/app-3/personal-media-vault/personal-media-vault/amplify/b
   }
 }
 ```
+
+In amplify-migration-apps/app-3/personal-media-vault/personal-media-vault/amplify/backend/function/thumbnailgen/thumbnailgen-cloudformation-template.json, add:
+
+```javascript
+{
+  "Effect": "Allow",
+  "Action": [
+    "s3:GetObject",
+    "s3:PutObject"
+  ],
+  "Resource": "arn:aws:s3:::*/*"
+}
+```
