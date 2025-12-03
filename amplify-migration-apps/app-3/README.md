@@ -44,6 +44,6 @@ All the defaults on amplify push
 
 `amplify add functions`
 
-<img width="995" height="602" alt="Screenshot 2025-11-20 at 4 13 45 PM" src="https://github.com/user-attachments/assets/1655fbb7-11ac-48fa-997f-77687f582641" />
+<img width="806" height="450" alt="Screenshot 2025-12-03 at 1 04 07 PM" src="https://github.com/user-attachments/assets/9e796d8e-6c21-4b0c-8cf4-17f197a9ee4b" />
 
-Add this to a s3 trigger with dependencies & permissions and push
+
