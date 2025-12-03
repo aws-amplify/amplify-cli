@@ -944,7 +944,7 @@ export class DriftFormatter {
     const categoryEntries = Array.from(allCategories.entries());
 
     // Check if we have config-level updates (only available when not skipped)
-    const hasConfigUpdates = !this.phase3Results.skipped && (this.phase3Results.tagsUpdated || this.phase3Results.rootStackUpdated);
+    const hasConfigUpdates = !this.phase3Results.skipped;
 
     categoryEntries.forEach(([categoryName, resources], categoryIndex) => {
       const isLastCategory = categoryIndex === categoryEntries.length - 1;
@@ -962,8 +962,6 @@ export class DriftFormatter {
         if (totalCount > 0) {
           const items: string[] = [];
           if (resourceCount > 0) items.push(`${resourceCount} resource${resourceCount === 1 ? '' : 's'}`);
-          if (!this.phase3Results.skipped && this.phase3Results.tagsUpdated) items.push('tags');
-          if (!this.phase3Results.skipped && this.phase3Results.rootStackUpdated) items.push('root stack');
           statusText = chalk.red(`DRIFT DETECTED: ${items.join(', ')}`);
         } else {
           statusText = chalk.green('NO DRIFT DETECTED');
@@ -1015,9 +1013,6 @@ export class DriftFormatter {
    */
   private getAllCategoriesForPhase3(driftedCategories: Map<string, any[]>): Map<string, any[]> {
     const allCategories = new Map<string, any[]>();
-
-    // Start with Core Infrastructure (always present)
-    allCategories.set('Core Infrastructure', driftedCategories.get('Core Infrastructure') || []);
 
     // Add all nested stack categories from Phase 1 (CFN drift)
     this.nestedStacks.forEach((stack) => {

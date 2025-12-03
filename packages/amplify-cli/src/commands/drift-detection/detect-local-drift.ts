@@ -15,8 +15,6 @@ export interface Phase3Results {
   resourcesToBeUpdated?: Array<ResourceInfo>;
   resourcesToBeDeleted?: Array<ResourceInfo>;
   resourcesToBeSynced?: Array<ResourceInfo>;
-  tagsUpdated?: boolean;
-  rootStackUpdated?: boolean;
   skipped: boolean;
   skipReason?: string;
 }
@@ -69,13 +67,12 @@ export async function detectLocalDrift(context: $TSContext): Promise<Phase3Resul
 
     const statusResults = await getResourceStatus();
 
-    const { resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeDeleted, resourcesToBeSynced, tagsUpdated, rootStackUpdated } =
-      statusResults;
+    const { resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeDeleted, resourcesToBeSynced } = statusResults;
 
     // Calculate total drift
     const totalDrifted = resourcesToBeCreated.length + resourcesToBeUpdated.length + resourcesToBeDeleted.length;
 
-    const hasDrift = totalDrifted > 0 || tagsUpdated || rootStackUpdated;
+    const hasDrift = totalDrifted > 0;
 
     return {
       hasDrift,
@@ -84,8 +81,6 @@ export async function detectLocalDrift(context: $TSContext): Promise<Phase3Resul
       resourcesToBeUpdated,
       resourcesToBeDeleted,
       resourcesToBeSynced,
-      tagsUpdated,
-      rootStackUpdated,
       skipped: false,
     };
   } catch (error: any) {
