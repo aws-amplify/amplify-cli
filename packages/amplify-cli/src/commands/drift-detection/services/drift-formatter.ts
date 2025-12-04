@@ -7,10 +7,10 @@ import type { CloudFormationClient } from '@aws-sdk/client-cloudformation';
 import type { StackResourceDrift } from '@aws-sdk/client-cloudformation';
 import { StackResourceDriftStatus } from '@aws-sdk/client-cloudformation';
 import chalk from 'chalk';
-import type { CombinedDriftResults } from '../detect-stack-drift';
+import type { CloudFormationDriftResults } from '../detect-stack-drift';
 import { CloudFormationService } from './cloudformation-service';
 import { AmplifyConfigService } from './amplify-config-service';
-import type { Phase3Results } from '../detect-local-drift';
+import type { LocalDriftResults } from '../detect-local-drift';
 
 // CloudFormation template type definition
 export interface CloudFormationTemplate {
@@ -121,7 +121,7 @@ export class DriftFormatter {
 
   // Phase 2 and Phase 3 results storage
   private phase2Results: any = null;
-  private phase3Results: Phase3Results | null = null;
+  private phase3Results: LocalDriftResults | null = null;
 
   constructor(cfnService: CloudFormationService) {
     this.configService = new AmplifyConfigService();
@@ -135,23 +135,22 @@ export class DriftFormatter {
     cfn: CloudFormationClient,
     stackName: string,
     rootTemplate: CloudFormationTemplate,
-    combinedResults: CombinedDriftResults,
+    combinedResults: CloudFormationDriftResults,
   ): Promise<void> {
     this.rootStackName = stackName;
     this.rootTemplate = rootTemplate;
     this.rootDrifts = combinedResults.rootStackDrifts.StackResourceDrifts || [];
 
-    // Reset counters
+    // Reset counters (display purposes only)
     this.summary = {
       totalStacks: 1,
-      totalDrifted: 0,
+      totalDrifted: combinedResults.totalDrifted, // Use Phase 1 count from detector
       totalInSync: 0,
       totalUnchecked: 0,
       totalFailed: 0,
     };
 
-    // Count root stack resources for summary
-    this.summary.totalDrifted += this.countDrifted(this.rootDrifts);
+    // Count root stack resources for display summary only
     this.summary.totalInSync += this.countInSync(this.rootDrifts);
     this.summary.totalUnchecked += this.countUnchecked(this.rootDrifts, this.rootTemplate);
     this.summary.totalFailed += this.countFailed(this.rootDrifts);
@@ -167,8 +166,7 @@ export class DriftFormatter {
       const nestedTemplate = await this.cfnService.getStackTemplate(cfn, physicalName);
       const nestedDrifts = nestedDrift.StackResourceDrifts;
 
-      // Count nested stack resources for summary
-      this.summary.totalDrifted += this.countDrifted(nestedDrifts);
+      // Count nested stack resources for display summary only
       this.summary.totalInSync += this.countInSync(nestedDrifts);
       this.summary.totalUnchecked += this.countUnchecked(nestedDrifts, nestedTemplate);
       this.summary.totalFailed += this.countFailed(nestedDrifts);
@@ -712,7 +710,7 @@ export class DriftFormatter {
   /**
    * Add Phase 3 results for formatting
    */
-  public addPhase3Results(results: Phase3Results): void {
+  public addPhase3Results(results: LocalDriftResults): void {
     this.phase3Results = results;
   }
 
@@ -775,7 +773,7 @@ export class DriftFormatter {
   public formatPhase2Results(): string | null {
     if (!this.phase2Results) return null;
 
-    if (this.phase2Results.skipped || this.phase2Results.error) {
+    if (this.phase2Results.skipped) {
       return null;
     }
 
@@ -1011,18 +1009,5 @@ export class DriftFormatter {
     });
 
     return allCategories;
-  }
-
-  /**
-   * Get total drift count including Phase 3 if available
-   */
-  public getTotalDriftCount(): number {
-    let total = this.summary.totalDrifted;
-
-    if (this.phase3Results && !this.phase3Results.skipped && this.phase3Results.totalDrifted) {
-      total += this.phase3Results.totalDrifted;
-    }
-
-    return total;
   }
 }

@@ -6,9 +6,9 @@
 import { $TSContext, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
 
 /**
- * Phase 3 drift detection results
+ * Local drift detection results (Phase 3)
  */
-export interface Phase3Results {
+export interface LocalDriftResults {
   totalDrifted: number;
   resourcesToBeCreated?: Array<ResourceInfo>;
   resourcesToBeUpdated?: Array<ResourceInfo>;
@@ -39,7 +39,7 @@ export interface ResourceInfo {
  *
  * @param context - Amplify context (kept for consistency, not used after refactor)
  */
-export async function detectLocalDrift(context: $TSContext): Promise<Phase3Results> {
+export async function detectLocalDrift(context: $TSContext): Promise<LocalDriftResults> {
   try {
     // Check if project is initialized first
     if (!stateManager.metaFileExists()) {

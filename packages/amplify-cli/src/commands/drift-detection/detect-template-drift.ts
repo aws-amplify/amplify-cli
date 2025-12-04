@@ -12,10 +12,9 @@ import fs from 'fs-extra';
 import * as path from 'path';
 import type { Print } from '../drift';
 
-export interface TemplateDriftResult {
-  hasDrift: boolean;
+export interface TemplateDriftResults {
+  totalDrifted: number;
   changes: ChangeSetChange[];
-  error?: string;
   skipped: boolean;
   skipReason?: string;
 }
@@ -67,14 +66,14 @@ function extractChangeSetNameFromArn(changeSetArn: string): string {
  * @param print - Logging interface
  * @param cfn - CloudFormation client
  */
-export async function detectTemplateDrift(stackName: string, print: Print, cfn: CloudFormationClient): Promise<TemplateDriftResult> {
+export async function detectTemplateDrift(stackName: string, print: Print, cfn: CloudFormationClient): Promise<TemplateDriftResults> {
   try {
     // Check prerequisites
     const currentCloudBackendPath = pathManager.getCurrentCloudBackendDirPath();
     print.debug(`Checking for #current-cloud-backend at: ${currentCloudBackendPath}`);
     if (!fs.existsSync(currentCloudBackendPath)) {
       return {
-        hasDrift: false,
+        totalDrifted: 0,
         changes: [],
         skipped: true,
         skipReason: 'No #current-cloud-backend found. Run "amplify pull" first.',
@@ -87,7 +86,7 @@ export async function detectTemplateDrift(stackName: string, print: Print, cfn: 
 
     if (!fs.existsSync(templatePath)) {
       return {
-        hasDrift: false,
+        totalDrifted: 0,
         changes: [],
         skipped: true,
         skipReason: 'No cached CloudFormation template found',
@@ -106,7 +105,7 @@ export async function detectTemplateDrift(stackName: string, print: Print, cfn: 
 
     if (!stackDescription.Stacks || stackDescription.Stacks.length === 0) {
       return {
-        hasDrift: false,
+        totalDrifted: 0,
         changes: [],
         skipped: true,
         skipReason: `Stack ${stackName} not found in CloudFormation`,
@@ -161,7 +160,7 @@ export async function detectTemplateDrift(stackName: string, print: Print, cfn: 
       if (changeSet.Status === 'FAILED' && changeSet.StatusReason?.includes("didn't contain changes")) {
         print.debug('✓ Changeset status: No changes detected (no drift)');
         return {
-          hasDrift: false,
+          totalDrifted: 0,
           changes: [],
           skipped: false,
         };
@@ -213,9 +212,8 @@ export async function detectTemplateDrift(stackName: string, print: Print, cfn: 
     }
   } catch (error: any) {
     return {
-      hasDrift: false,
+      totalDrifted: 0,
       changes: [],
-      error: error.message,
       skipped: true,
       skipReason: `Error during template drift detection: ${error.message}`,
     };
@@ -226,9 +224,9 @@ async function analyzeChangeSet(
   cfn: CloudFormationClient,
   changeSet: DescribeChangeSetCommandOutput,
   print: Print,
-): Promise<TemplateDriftResult> {
-  const result: TemplateDriftResult = {
-    hasDrift: false,
+): Promise<TemplateDriftResults> {
+  const result: TemplateDriftResults = {
+    totalDrifted: 0,
     changes: [],
     skipped: false,
   };
@@ -247,7 +245,7 @@ async function analyzeChangeSet(
     // Other FAILED reasons are actual errors - mark as skipped
     print.warn(`ChangeSet failed with unexpected reason: ${changeSet.StatusReason || 'No reason provided'}`);
     return {
-      hasDrift: false,
+      totalDrifted: 0,
       changes: [],
       skipped: true,
       skipReason: `Changeset failed: ${changeSet.StatusReason || 'Unknown reason'}`,
@@ -260,7 +258,6 @@ async function analyzeChangeSet(
     return result;
   }
 
-  result.hasDrift = true;
   print.debug(`Analyzing ${changeSet.Changes.length} changes from changeset`);
 
   // Analyze each change (CDK-inspired approach)
@@ -354,12 +351,14 @@ async function analyzeChangeSet(
   // If any nested stack analysis was skipped, mark entire result as skipped
   if (hasNestedSkipped) {
     return {
-      hasDrift: false,
+      totalDrifted: 0,
       changes: [],
       skipped: true,
       skipReason: 'One or more nested stacks could not be analyzed',
     };
   }
 
+  // Set totalDrifted to the count of changes
+  result.totalDrifted = result.changes.length;
   return result;
 }
