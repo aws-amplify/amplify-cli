@@ -9,14 +9,11 @@ import { $TSContext, pathManager, stateManager } from '@aws-amplify/amplify-cli-
  * Phase 3 drift detection results
  */
 export interface Phase3Results {
-  hasDrift: boolean;
-  totalDrifted?: number;
+  totalDrifted: number;
   resourcesToBeCreated?: Array<ResourceInfo>;
   resourcesToBeUpdated?: Array<ResourceInfo>;
   resourcesToBeDeleted?: Array<ResourceInfo>;
   resourcesToBeSynced?: Array<ResourceInfo>;
-  tagsUpdated?: boolean;
-  rootStackUpdated?: boolean;
   skipped: boolean;
   skipReason?: string;
 }
@@ -47,7 +44,7 @@ export async function detectLocalDrift(context: $TSContext): Promise<Phase3Resul
     // Check if project is initialized first
     if (!stateManager.metaFileExists()) {
       return {
-        hasDrift: false,
+        totalDrifted: 0,
         skipped: true,
         skipReason: 'Project not initialized',
       };
@@ -57,7 +54,7 @@ export async function detectLocalDrift(context: $TSContext): Promise<Phase3Resul
     const currentCloudBackendDir = pathManager.getCurrentCloudBackendDirPath();
     if (!currentCloudBackendDir || !require('fs-extra').existsSync(currentCloudBackendDir)) {
       return {
-        hasDrift: false,
+        totalDrifted: 0,
         skipped: true,
         skipReason: 'No cloud backend found - project may not be deployed yet',
       };
@@ -69,29 +66,23 @@ export async function detectLocalDrift(context: $TSContext): Promise<Phase3Resul
 
     const statusResults = await getResourceStatus();
 
-    const { resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeDeleted, resourcesToBeSynced, tagsUpdated, rootStackUpdated } =
-      statusResults;
+    const { resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeDeleted, resourcesToBeSynced } = statusResults;
 
     // Calculate total drift
     const totalDrifted = resourcesToBeCreated.length + resourcesToBeUpdated.length + resourcesToBeDeleted.length;
 
-    const hasDrift = totalDrifted > 0 || tagsUpdated || rootStackUpdated;
-
     return {
-      hasDrift,
       totalDrifted,
       resourcesToBeCreated,
       resourcesToBeUpdated,
       resourcesToBeDeleted,
       resourcesToBeSynced,
-      tagsUpdated,
-      rootStackUpdated,
       skipped: false,
     };
   } catch (error: any) {
     // Handle errors gracefully
     return {
-      hasDrift: false,
+      totalDrifted: 0,
       skipped: true,
       skipReason: error.message || 'Unable to detect local drift',
     };
