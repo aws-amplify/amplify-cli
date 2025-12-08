@@ -1,6 +1,6 @@
 # Fitness Goal Tracker
 
-A comprehensive fitness tracking application built with AWS Amplify Gen1, React, and TypeScript. Track your workout programs, exercises, and progress with photos while staying motivated with daily fitness quotes.
+A fitness tracking application built with AWS Amplify Gen1, React, and TypeScript. Track your workout programs, exercises, and progress with photos while staying motivated with daily fitness quotes.
 
 ![Fitness Goal Tracker](https://img.shields.io/badge/Fitness-Goal%20Tracker-e85d04)
 ![AWS Amplify](https://img.shields.io/badge/AWS-Amplify-orange)
@@ -27,14 +27,9 @@ A comprehensive fitness tracking application built with AWS Amplify Gen1, React,
 - Download photos for your records
 - Track visual progress over time
 
-### Daily Motivation
-- Get inspired with motivation quotes
-- Lambda-powered quote generator
-
 ### Login Activity Tracking
 - Automatic login logging via Cognito trigger
-- View recent login history
-- Stored securely in S3
+- View recent login history in CloudWatch logs
 
 ### Dark Mode
 - Comfortable viewing in any lighting
@@ -51,8 +46,8 @@ A comprehensive fitness tracking application built with AWS Amplify Gen1, React,
 ### Backend (AWS Amplify Gen1)
 - **GraphQL API**: AppSync with DynamoDB
 - **Authentication**: Amazon Cognito with Post Authentication trigger
-- **Storage**: Amazon S3 for progress photos and login logs
-- **Serverless Functions**: AWS Lambda for quote generation and auth logging
+- **Storage**: Amazon S3 for progress photos
+- **Serverless Functions**: AWS Lambda for auth logging (Logs can be checked in CloudWatch)
 - **Hosting**: Amplify Console
 
 ### Frontend
@@ -121,14 +116,63 @@ Settings:
 - Authorization: **API key** (default, 7 days expiration)
 - Conflict detection: **Disabled**
 - Template: **Single object with fields**
-Edit the graphql schema now: 
-copy the /schema.graphql-copy to schema.graphql
+Edit the graphql schema now:   
+copy the following piece of code to schema.graphql:
+
+```graphql
+# This "input" configures a global authorization rule to enable public access to
+# all models in this schema. Learn more about authorization rules here: https://docs.amplify.aws/cli/graphql/authorization-rules
+input AMPLIFY { globalAuthRule: AuthRule = { allow: public } } # FOR TESTING ONLY!
+
+type QuoteResponse {
+  message: String!
+  quote: String!
+  author: String!
+  timestamp: String!
+  totalQuotes: Int!
+}
+
+type Query {
+  getRandomQuote: QuoteResponse @function(name: "quotegenerator") 
+}
+
+enum ProjectStatus {
+  ACTIVE
+  COMPLETED
+  ON_HOLD
+  ARCHIVED
+}
+
+type Project @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  title: String!
+  description: String
+  status: ProjectStatus!
+  deadline: AWSDateTime
+  color: String
+  todos: [Todo] @hasMany
+}
+
+type Todo @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  description: String
+  images: [String]
+  projectID: ID
+}
+```
 
 The GraphQL schema defines:
 - **Project** model: Workout programs with status tracking
 - **Todo** model: Individual exercises with image support
-- **QuoteResponse**: Motivational quotes from Lambda
 
+  
 ### 4. Add Authentication
 
 ```bash
@@ -178,70 +222,8 @@ amplify add storage
 ? Do you want to add a Lambda Trigger? No
 ```
 
-### 6. Add Lambda Function
 
-```bash
-amplify add function
-```
-
-```
-? Select which capability you want to add: Lambda function
-? Provide an AWS Lambda function name: quotegenerator
-? Choose the runtime: NodeJS
-? Choose the function template: Hello World
-? Do you want to configure advanced settings? Yes
-? Do you want to access other resources? No
-? Do you want to invoke this function on a recurring schedule? No
-? Do you want to enable Lambda layers? No
-? Do you want to configure environment variables? No
-? Do you want to configure secret values? No
-? Choose the package manager: NPM
-? Do you want to edit the local lambda function now? Yes
-```
-
-Edit `amplify/backend/function/quotegenerator/src/index.js`:
-
-```javascript
-exports.handler = async (event) => {
-    console.log(`EVENT: ${JSON.stringify(event)}`);
-    
-    const quotes = [
-        { text: "The body achieves what the mind believes.", author: "Napoleon Hill" },
-        { text: "Strength doesn't come from what you can do. It comes from overcoming the things you once thought you couldn't.", author: "Rikki Rogers" },
-        { text: "The only bad workout is the one that didn't happen.", author: "Unknown" },
-        { text: "Your body can stand almost anything. It's your mind you have to convince.", author: "Unknown" },
-        { text: "Don't limit your challenges. Challenge your limits.", author: "Unknown" },
-        { text: "The pain you feel today will be the strength you feel tomorrow.", author: "Unknown" },
-        { text: "Success starts with self-discipline.", author: "Unknown" },
-        { text: "The difference between try and triumph is a little umph.", author: "Unknown" },
-        { text: "Sweat is fat crying.", author: "Unknown" },
-        { text: "You don't have to be extreme, just consistent.", author: "Unknown" },
-        { text: "A one hour workout is 4% of your day. No excuses.", author: "Unknown" },
-        { text: "The only way to finish is to start.", author: "Unknown" },
-        { text: "Fitness is not about being better than someone else. It's about being better than you used to be.", author: "Unknown" },
-        { text: "Take care of your body. It's the only place you have to live.", author: "Jim Rohn" },
-        { text: "If it doesn't challenge you, it won't change you.", author: "Fred DeVito" },
-        { text: "The hardest lift of all is lifting your butt off the couch.", author: "Unknown" },
-        { text: "Sore today, strong tomorrow.", author: "Unknown" },
-        { text: "You're only one workout away from a good mood.", author: "Unknown" },
-        { text: "Excuses don't burn calories.", author: "Unknown" },
-        { text: "The only person you should try to be better than is the person you were yesterday.", author: "Unknown" }
-    ];
-    
-    const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
-    const timestamp = new Date().toISOString();
-    
-    return {
-        message: 'Quote generated successfully! 🎯',
-        quote: randomQuote.text,
-        author: randomQuote.author,
-        timestamp: timestamp,
-        totalQuotes: quotes.length
-    };
-};
-```
-
-### 7. Update Auth Function to Access Storage
+### 6. Update Auth Function to Access Storage
 
 ```bash
 amplify update function
@@ -256,34 +238,21 @@ amplify update function
 ? Do you want to edit the local lambda function now? Yes
 ```
 
-Edit `amplify/backend/function/<resourcename>PostAuthentication/src/custom.js`:
+Edit `amplify/backend/function/<resourcename>PostAuthentication/src/index.js`:  
+
+The `index.js` file is auto-generated and loads `custom.js` via the `MODULES` environment variable. Delete the `custom.js` file and replace `index.js` with the following code :  
+
 
 ```javascript
-const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
-const s3 = new S3Client();
-
 exports.handler = async (event) => {
-  const timestamp = new Date().toISOString();
-  const log = {
-    username: event.userName,
-    timestamp
-  };
-  
-  await s3.send(new PutObjectCommand({
-    Bucket: process.env.STORAGE_STRESSTESTSTORAGE_BUCKETNAME,
-    Key: `public/auth-logs/${Date.now()}-${event.userName}.json`,
-    Body: JSON.stringify(log),
-    ContentType: 'application/json'
-  }));
-  
-  console.log(`${event.userName} logged in at ${timestamp}`);
+  const message = `Welcome ${event.userName}! You logged in at ${new Date().toISOString()}`;
+  console.log(message);
   return event;
 };
 ```
 
-The `index.js` file is auto-generated and loads `custom.js` via the `MODULES` environment variable. This grants the Post Authentication trigger permission to write login logs to S3 at `public/auth-logs/`.
 
-### 8. Deploy Backend
+### 7. Deploy Backend
 
 ```bash
 amplify push
@@ -291,7 +260,7 @@ amplify push
 
 Select **Y** for all prompts to deploy your backend infrastructure.
 
-### 9. Add Hosting (Optional)
+### 8. Add Hosting (Optional)
 
 ```bash
 amplify add hosting  # Choose Amplify Console
@@ -359,22 +328,22 @@ type Todo {
 - Email-based sign-in
 - Owner-based access control
 
-## Features by User Type
+## Summary of changes required during Gen1 to Gen2 migration:
 
-### Unauthenticated Users
-- ✅ View all workout programs
-- ✅ View all exercises
-- ✅ View progress photos
-- ❌ Cannot create, edit, or delete
+Post `amplify gen2-migration generate` :
 
-### Authenticated Users
-- ✅ Everything unauthenticated users can do
-- ✅ Create workout programs
-- ✅ Add exercises to any program
-- ✅ Upload progress photos
-- ✅ Edit/delete own programs and exercises
-- ✅ Get daily motivation quotes
-- ✅ View login activity logs
+1. in `data/resource.ts`:   
+before:  `branchName: "main"`  
+after:  `branchName: "gen2-main"` 
 
+2.  in `main.tsx`:     
+before: `import amplifyconfig from './amplifyconfiguration.json';`   
+after: `import amplifyconfig from '../amplify_outputs.json';`
 
+3.  in `auth/<functionname>/resource.ts`:  
+before: `environment: { MODULES: "custom", ENV: `${branchName}`, REGION: "us-east-1" }`,  
+after: DELETE THIS ENTIRE LINE ~`environment: { MODULES: "custom", ENV: `${branchName}`, REGION: "us-east-1" }`~
 
+4. in : `auth/<functionname>/handler.ts` (TS error and ES6 module format)  
+before: `exports.handler = async (event)`  
+after: `export const handler = async (event: any)`   
