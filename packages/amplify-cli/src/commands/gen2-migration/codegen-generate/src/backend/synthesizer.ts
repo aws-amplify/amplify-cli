@@ -925,7 +925,7 @@ export class BackendSynthesizer {
       ts.addSyntheticLeadingComment(
         bucketNameComment2,
         ts.SyntaxKind.SingleLineCommentTrivia,
-        ` name: '${renderArgs.storage.bucketName}',`,
+        ` s3Bucket.bucketName = '${renderArgs.storage.bucketName}';`,
         true,
       );
       nodes.push(bucketNameComment1, bucketNameComment2);
