@@ -72,14 +72,7 @@ export const renderStorage = (storageParams: StorageRenderParameters = {}) => {
     const storageNameAssignment = createTemplateLiteral(`${storageNameWithoutBackendEnvName}-`, gen2BranchNameVariableName, '');
     const nameProperty = factory.createPropertyAssignment(factory.createIdentifier('name'), storageNameAssignment);
 
-    // Add comments as leading trivia
-    ts.addSyntheticLeadingComment(nameProperty, ts.SyntaxKind.SingleLineCommentTrivia, ` Use this bucket name post refactor`, true);
-    ts.addSyntheticLeadingComment(
-      nameProperty,
-      ts.SyntaxKind.SingleLineCommentTrivia,
-      ` name: '${storageParams.storageIdentifier}',`,
-      true,
-    );
+    // s3Bucket.bucketName = '<gen1-bucket-name>'
 
     propertyAssignments.push(nameProperty);
   }
