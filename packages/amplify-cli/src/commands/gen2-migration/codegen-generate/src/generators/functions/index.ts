@@ -169,9 +169,7 @@ export function createFunctionDefinition(
     defineFunctionProperties.push(createParameter('entry', factory.createStringLiteral('./handler.ts')));
   }
   if (definition?.name) {
-    const splitFuncName = definition.name.split('-');
-    const funcNameWithoutBackendEnvName = splitFuncName.slice(0, -1).join('-');
-    const funcNameAssignment = createTemplateLiteral(`${funcNameWithoutBackendEnvName}-`, gen2BranchNameVariableName, '');
+    const funcNameAssignment = createTemplateLiteral(`${definition.resourceName}-`, gen2BranchNameVariableName, '');
     defineFunctionProperties.push(createParameter('name', funcNameAssignment));
   }
 
