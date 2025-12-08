@@ -117,7 +117,15 @@ export function renderFunctions(definition: FunctionDefinition, appId?: string, 
   // Generate the defineFunction() configuration object
   const defineFunctionProperty = createFunctionDefinition(definition, postImportStatements, namedImports, appId, backendEnvironmentName);
 
-  // Remove environment variable declaration
+  const amplifyGen1EnvStatement = createVariableStatement(
+    factory.createVariableDeclaration(
+      gen2BranchNameVariableName,
+      undefined,
+      undefined,
+      factory.createIdentifier('process.env.AWS_BRANCH ?? "sandbox"'),
+    ),
+  );
+  postImportStatements.push(amplifyGen1EnvStatement);
 
   // Render the complete TypeScript file using the resource template
   return renderResourceTsFile({
@@ -157,10 +165,15 @@ export function createFunctionDefinition(
 ) {
   const defineFunctionProperties: ObjectLiteralElementLike[] = [];
 
-  // Set the entry point to the standard Gen 2 handler file
-  defineFunctionProperties.push(createParameter('entry', factory.createStringLiteral('./handler.ts')));
-
-  // Remove name parameter - should not be included
+  if (definition?.entry) {
+    defineFunctionProperties.push(createParameter('entry', factory.createStringLiteral('./handler.ts')));
+  }
+  if (definition?.name) {
+    const splitFuncName = definition.name.split('-');
+    const funcNameWithoutBackendEnvName = splitFuncName.slice(0, -1).join('-');
+    const funcNameAssignment = createTemplateLiteral(`${funcNameWithoutBackendEnvName}-`, gen2BranchNameVariableName, '');
+    defineFunctionProperties.push(createParameter('name', funcNameAssignment));
+  }
 
   // Copy timeout configuration directly from Gen 1
   if (definition?.timeoutSeconds) {
