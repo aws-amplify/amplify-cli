@@ -167,7 +167,7 @@ export class BackendSynthesizer {
 
   private createUserPoolClientAssignment(userPoolClient: UserPoolClientType, imports: ts.ImportDeclaration[]) {
     const userPoolClientAttributesMap = new Map<string, string>();
-    userPoolClientAttributesMap.set('ClientName', 'userPoolClientName');
+
     userPoolClientAttributesMap.set('ClientSecret', 'generateSecret');
     userPoolClientAttributesMap.set('ReadAttributes', 'readAttributes');
     userPoolClientAttributesMap.set('WriteAttributes', 'writeAttributes');
@@ -707,15 +707,6 @@ export class BackendSynthesizer {
       TemporaryPasswordValidityDays: 'temporaryPasswordValidityDays',
     };
 
-    // What it does: If you have auth, storage, or custom resources, adds:
-    // import { RemovalPolicy, Tags } from 'aws-cdk-lib';
-
-    if (renderArgs.auth || renderArgs.storage?.hasS3Bucket || renderArgs.customResources) {
-      imports.push(
-        this.createImportStatement([factory.createIdentifier('RemovalPolicy'), factory.createIdentifier('Tags')], 'aws-cdk-lib'),
-      );
-    }
-
     // What it does: If you have auth configured:
     // Adds import: import { auth } from './auth/resource';
     // Adds auth to the backend definition
@@ -790,17 +781,6 @@ export class BackendSynthesizer {
     // which is called after the initial backend.ts is generated. This ensures the correct Gen2 pattern
     // is used (importing from ./custom/${resourceName}/resource and using backend.createStack())
 
-    // Adds CI detection: import ci from 'ci-info';
-
-    const ciInfoImportStatement = factory.createImportDeclaration(
-      undefined,
-      factory.createImportClause(false, factory.createIdentifier('ci'), undefined),
-      factory.createStringLiteral('ci-info'),
-    );
-
-    // Creates environment name logic (sandbox vs production)
-
-    imports.push(ciInfoImportStatement);
     //const envNameStatements = this.createAmplifyEnvNameLogic();
     //errors.push(...envNameStatements);
 
@@ -983,14 +963,6 @@ export class BackendSynthesizer {
         );
         nodes.push(bucketEncryptionAssignment);
       }
-
-      imports.push(
-        factory.createImportDeclaration(
-          undefined,
-          factory.createImportClause(false, undefined, factory.createNamespaceImport(factory.createIdentifier('s3'))),
-          factory.createStringLiteral('aws-cdk-lib/aws-s3'),
-        ),
-      );
     }
 
     // I DONT UNDERSTAND THIS PART YET
