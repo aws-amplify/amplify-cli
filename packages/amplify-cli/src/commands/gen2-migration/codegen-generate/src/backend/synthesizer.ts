@@ -897,6 +897,18 @@ export class BackendSynthesizer {
         this.createVariableDeclaration('s3Bucket', 'storage.resources.cfnResources.cfnBucket'),
       );
       nodes.push(cfnStorageVariableStatement);
+
+      // Add comments as synthetic leading comments
+      const bucketNameComment1 = factory.createEmptyStatement();
+      ts.addSyntheticLeadingComment(bucketNameComment1, ts.SyntaxKind.SingleLineCommentTrivia, ` Use this bucket name post refactor`, true);
+      const bucketNameComment2 = factory.createEmptyStatement();
+      ts.addSyntheticLeadingComment(
+        bucketNameComment2,
+        ts.SyntaxKind.SingleLineCommentTrivia,
+        ` s3Bucket.bucketName = '${renderArgs.storage.bucketName}';`,
+        true,
+      );
+      nodes.push(bucketNameComment1, bucketNameComment2);
     }
 
     // Features that Gen1 just doesn't support for storage
