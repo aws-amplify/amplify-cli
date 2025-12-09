@@ -16,9 +16,14 @@ import chalk from 'chalk';
 import type { Print } from '../drift';
 
 /**
- * Combined drift results including nested stacks
+ * CloudFormation drift results including nested stacks
  */
-export interface CombinedDriftResults {
+export interface CloudFormationDriftResults {
+  /**
+   * Total count of drifted resources (MODIFIED or DELETED)
+   */
+  totalDrifted: number;
+
   /**
    * Drift results for the root stack
    */
@@ -38,6 +43,19 @@ export interface CombinedDriftResults {
    * List of nested stacks that were skipped due to errors
    */
   skippedNestedStacks?: string[];
+}
+
+/**
+ * Count drifted resources (MODIFIED or DELETED status only)
+ */
+function countDriftedResources(driftOutput: DescribeStackResourceDriftsCommandOutput): number {
+  if (!driftOutput.StackResourceDrifts) {
+    return 0;
+  }
+
+  return driftOutput.StackResourceDrifts.filter(
+    (drift) => drift.StackResourceDriftStatus === 'MODIFIED' || drift.StackResourceDriftStatus === 'DELETED',
+  ).length;
 }
 
 /**
@@ -284,7 +302,7 @@ export async function detectStackDriftRecursive(
   stackName: string,
   print: Print,
   level = 0,
-): Promise<CombinedDriftResults> {
+): Promise<CloudFormationDriftResults> {
   print.debug(`detectStackDriftRecursive: ${stackName} (level ${level})`);
 
   // Detect drift on the current stack
@@ -390,7 +408,16 @@ export async function detectStackDriftRecursive(
 
   print.debug(`detectStackDriftRecursive.complete: ${stackName} (level ${level}), ${nestedStackDrifts.size} total nested stacks`);
 
+  // Calculate total drifted count (root + all nested stacks)
+  let totalDrifted = countDriftedResources(currentStackDrifts);
+  for (const nestedDrift of nestedStackDrifts.values()) {
+    totalDrifted += countDriftedResources(nestedDrift);
+  }
+
+  print.debug(`Total drifted resources: ${totalDrifted}`);
+
   return {
+    totalDrifted,
     rootStackDrifts: currentStackDrifts,
     nestedStackDrifts,
     nestedStackPhysicalIds,
