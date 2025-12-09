@@ -189,8 +189,8 @@ export class AmplifyDriftDetector {
     // Debug: Print final error state variables
     this.printer.debug('Error states:');
     this.printer.debug(`Phase 1 errors: ${hasPhase1Errors}`);
-    this.printer.debug(`Phase 2 errors: ${phase2Results.skipped})`);
-    this.printer.debug(`Phase 3 errors: ${phase3Results.skipped})`);
+    this.printer.debug(`Phase 2 errors: ${phase2Results.skipped}`);
+    this.printer.debug(`Phase 3 errors: ${phase3Results.skipped}`);
 
     if (hasAnyErrors) {
       this.printer.warn(chalk.yellow('Drift detection encountered errors:'));

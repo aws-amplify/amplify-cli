@@ -705,6 +705,10 @@ export class DriftFormatter {
    */
   public addPhase2Results(results: any): void {
     this.phase2Results = results;
+    // Update drift count in summary
+    if (results && !results.skipped) {
+      this.summary.totalDrifted += results.totalDrifted || 0;
+    }
   }
 
   /**
@@ -712,6 +716,10 @@ export class DriftFormatter {
    */
   public addPhase3Results(results: LocalDriftResults): void {
     this.phase3Results = results;
+    // Update drift count in summary
+    if (results && !results.skipped) {
+      this.summary.totalDrifted += results.totalDrifted || 0;
+    }
   }
 
   /**
