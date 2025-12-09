@@ -204,7 +204,7 @@ export const createGen2Renderer = ({
   if (functions && functions.length) {
     const functionNamesAndCategory = new Map<string, string>();
     for (const func of functions) {
-      if (func.name) {
+      if (func.name && func.runtime?.startsWith('nodejs')) {
         const resourceName = func.resourceName;
         assert(resourceName);
         const funcCategory = func.category;
