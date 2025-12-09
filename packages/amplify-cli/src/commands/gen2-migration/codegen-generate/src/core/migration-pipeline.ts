@@ -204,7 +204,12 @@ export const createGen2Renderer = ({
   if (functions && functions.length) {
     const functionNamesAndCategory = new Map<string, string>();
     for (const func of functions) {
-      if (func.name && func.runtime?.startsWith('nodejs')) {
+      if (func.name) {
+        if (!func.runtime?.startsWith('nodejs')) {
+          throw new Error(
+            `Function '${func.name}' uses unsupported runtime '${func.runtime}'. Gen 2 migration only supports Node.js functions.`,
+          );
+        }
         const resourceName = func.resourceName;
         assert(resourceName);
         const funcCategory = func.category;
