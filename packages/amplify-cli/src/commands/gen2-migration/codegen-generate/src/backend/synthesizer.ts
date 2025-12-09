@@ -1023,6 +1023,52 @@ export class BackendSynthesizer {
       nodes.push(userPoolDomainRemovalStatementCommented);
     }
 
+    // Function name escape hatch - set function names with branch suffix
+    if (renderArgs.function) {
+      const branchNameStatement = factory.createVariableStatement(
+        [],
+        factory.createVariableDeclarationList(
+          [
+            factory.createVariableDeclaration(
+              'branchName',
+              undefined,
+              undefined,
+              factory.createIdentifier('process.env.AWS_BRANCH ?? "sandbox"'),
+            ),
+          ],
+          ts.NodeFlags.Const,
+        ),
+      );
+      nodes.push(branchNameStatement);
+
+      const functionNameCategories = renderArgs.function.functionNamesAndCategories;
+      for (const [functionName] of functionNameCategories) {
+        nodes.push(
+          factory.createExpressionStatement(
+            factory.createBinaryExpression(
+              factory.createPropertyAccessExpression(
+                factory.createPropertyAccessExpression(
+                  factory.createPropertyAccessExpression(
+                    factory.createPropertyAccessExpression(
+                      factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier(functionName)),
+                      factory.createIdentifier('resources'),
+                    ),
+                    factory.createIdentifier('cfnResources'),
+                  ),
+                  factory.createIdentifier('cfnFunction'),
+                ),
+                factory.createIdentifier('functionName'),
+              ),
+              factory.createToken(ts.SyntaxKind.EqualsToken),
+              factory.createTemplateExpression(factory.createTemplateHead(`${functionName}-`), [
+                factory.createTemplateSpan(factory.createIdentifier('branchName'), factory.createTemplateTail('')),
+              ]),
+            ),
+          ),
+        );
+      }
+    }
+
     // returns backend.ts file
     return factory.createNodeArray([...imports, newLineIdentifier, ...errors, newLineIdentifier, backendStatement, ...nodes], true);
   }
