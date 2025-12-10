@@ -29,24 +29,6 @@ User activity is stored in a separate DynamoDB table (countsTable) and accessed 
 
 ---
 
-### Step 0: Create Vite Project
-
-```bash
-npm create vite@latest
-```
-
-**Prompts:**
-```
-Project Name: discusapp
-Framework: javascript
-Use rolldown-vite (Experimental)?: No
-Install with npm and start now? No
-```
-
-```bash
-cd discus-project
-npm install
-```
 
 ### Step 1: Initialize Amplify
 
