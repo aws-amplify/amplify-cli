@@ -121,9 +121,11 @@ Settings:
 - Name: `fitnessappapi`
 - Authorization: **API key** (default, 7 days expiration)
 - Conflict detection: **Disabled**
-- Template: **Single object with fields**
-Edit the graphql schema now: 
-copy the following code to schema.graphql:
+- Template: **Single object with fields**.  
+
+When prompted to edit the schema:     
+- For stress testing: Copy the contents of stress-test-schema.graphql-copy to `schema.graphql`    
+- For normal use: Copy the following code to schema.graphql:  
 
 ```graphql
 
@@ -308,7 +310,7 @@ amplify update function
 ? Do you want to edit the local lambda function now? Yes
 ```
 
-Edit `amplify/backend/function/<resourcename>PostAuthentication/src/custom.js`:
+Edit `amplify/backend/function/<resourcename>PostAuthentication/src/index.js`:
 
 ```javascript
 const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
@@ -322,7 +324,7 @@ exports.handler = async (event) => {
   };
   
   await s3.send(new PutObjectCommand({
-    Bucket: process.env.STORAGE_STRESSTESTSTORAGE_BUCKETNAME,
+    Bucket: process.env.STORAGE_FITNESSAPPSTORAGE_BUCKETNAME,
     Key: `public/auth-logs/${Date.now()}-${event.userName}.json`,
     Body: JSON.stringify(log),
     ContentType: 'application/json'
@@ -332,8 +334,6 @@ exports.handler = async (event) => {
   return event;
 };
 ```
-
-The `index.js` file is auto-generated and loads `custom.js` via the `MODULES` environment variable. This grants the Post Authentication trigger permission to write login logs to S3 at `public/auth-logs/`.
 
 ### 8. Deploy Backend
 
@@ -442,15 +442,15 @@ after: `branchName: "gen2-migrate"`
 
 3. cut `<appnameXXXXXX>PostAuthentication` subfolder from storage and paste in auth folder.    
 
-4. In `function/<appname>quotegenerator/resource.ts`   
+4. In `function/<appnameXXXXXX>quotegenerator/resource.ts`   
 before: `environment: { ENV: ${branchName}  ...`  
-after: `environment: { ENV: :gen2-main“ ...`  
+after: `environment: { ENV: "gen2-main“ ...`  
 
-5. In `function/<appname>quotegenerator/handler.ts`   
+5. In `function/<appnameXXXXXX>quotegenerator/handler.ts`   
 before: `exports.handler = async (event)`    
 after: `export const handler = async (event: any)`    
 
-6. In `auth/<appname>PostAuthentication/resource.ts`    
+6. In `auth/<appnameXXXXXX>PostAuthentication/resource.ts`    
 before:  `environment: ... , ENV: ${branchName} ...`    
 after: `environment: ... , ENV: “gen2-main” ... `   
 
@@ -459,13 +459,13 @@ after: `environment: ... , ENV: “gen2-main” ... `
 `resourceGroupName: "auth"`.  // Fixes CloudFormation circular dependency error.  
 
 
-7. In `auth/<appname>PostAuthentication/handler.ts`    
+7. In `auth/<appnameXXXXXX>PostAuthentication/handler.ts`    
 before: `exports.handler = async (event)`    
 after: `export const handler = async (event: any)`   
 
 8. In `backend.ts`:  
-before: `import { fitnesstestauths3533f143b533f143bPostAuthentication } from "./storage/fitnesstestauths3533f143b533f143bPostAuthentication/resource";`   
-after: `import { fitnesstestauths3533f143b533f143bPostAuthentication } from "./auth/fitnesstestauths3533f143b533f143bPostAuthentication/resource";`    
+before: `import { <appnameXXXXXX>PostAuthentication } from "./storage/<appnameXXXXXX>PostAuthentication/resource";`   
+after: `import { <appnameXXXXXX>PostAuthentication } from "./auth/<appnameXXXXXX>PostAuthentication/resource";`    
 
     add the following import to the imports section followed by the code in `backend.ts`:  
 Replace `YOUR-BUCKET-NAME` with your S3 bucket name (found in AWS S3 console):  
@@ -476,9 +476,9 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 // ... other imports
 
 // Grant S3 permissions to auth trigger
-backend.fitnesstestauths3533f143b533f143bPostAuthentication.resources.lambda.addToRolePolicy(
+backend.<appnameXXXXXX>PostAuthentication.resources.lambda.addToRolePolicy(
     new iam.PolicyStatement({
-        actions: ['s3:'],
+        actions: ['s3:*'],
         resources: [
             'arn:aws:s3:::YOUR-BUCKET-NAME',
             'arn:aws:s3:::YOUR-BUCKET-NAME/*'
