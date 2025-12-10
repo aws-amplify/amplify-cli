@@ -274,13 +274,13 @@ Replace `amplify/backend/api/YOUR_API_NAME/schema.graphql` with:
 # all models in this schema. Learn more about authorization rules here: https://docs.amplify.aws/cli/graphql/authorization-rules
 input AMPLIFY { globalAuthRule: AuthRule = { allow: public } } # FOR TESTING ONLY!
 
-type Blog @model {
+type Blog @model @auth(rules: [{ allow: public }]){
   id: ID!
   name: String!
   posts: [Post] @hasMany
 }
 
-type Post @model {
+type Post @model @auth(rules: [{ allow: public }]){
   id: ID!
   title: String!
   content: String
@@ -288,25 +288,25 @@ type Post @model {
   comments: [Comment] @hasMany
 }
 
-type Comment @model {
+type Comment @model @auth(rules: [{ allow: public }]){
   id: ID!
   post: Post @belongsTo
   content: String!
 }
 
 type Query {
-  getUserActivity(userId: ID!): [ActivityLog] @function(name: "activityLogger-${env}")
+  getUserActivity(userId: ID!): [ActivityLog] @function(name: "activityLogger-${env}") @auth(rules: [{ allow: public }])
 }
 
 type Mutation {
-  logActivity(userId: ID!, activityType: String!, metadata: String): ActivityLog @function(name: "activityLogger-${env}")
+  logActivity(userId: ID!, activityType: String!, metadata: String): ActivityLog @function(name: "activityLogger-${env}") @auth(rules: [{ allow: public }])
 }
 
 type ActivityLog {
-  userId: ID!
-  timestamp: String!
-  activityType: String!
-  metadata: String
+  userId: ID! @auth(rules: [{ allow: public }])
+  timestamp: String! @auth(rules: [{ allow: public }])
+  activityType: String! @auth(rules: [{ allow: public }])
+  metadata: String @auth(rules: [{ allow: public }])
 }
 ```
 
@@ -439,3 +439,67 @@ graph TB
     E <--> F
     G --> A
 ```
+
+## Summary of changes required during Gen1 to Gen2 migration:
+
+Post `amplify gen2-migration generate` :  
+
+1. in `data/resource.ts`:
+
+before: `branchName: "main"`   
+after: `branchName: "gen2-main"`   
+
+
+2. in `src/main.js`:   
+
+before: `import awsconfig from './aws-exports';`   
+after: `import awsconfig from '../amplify_outputs.json';`   
+
+
+3. in `storage/activityLogger/resource.ts`:   
+
+before: `ENV: \${branchName}`  
+after: `ENV: "gen2-demo"`   
+
+
+4. in `storage/activityLogger/handler.ts`:   
+
+//imports   
+before: `const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');    
+const { DynamoDBDocumentClient, PutCommand, QueryCommand } = require('@aws-sdk/lib-dynamodb');`  
+
+after: `import { DynamoDBClient } from '@aws-sdk/client-dynamodb';    
+import { DynamoDBDocumentClient, PutCommand, QueryCommand } from '@aws-sdk/lib-dynamodb';`  
+
+before: `const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');`  
+after: `import { DynamoDBClient } from '@aws-sdk/client-dynamodb';`  
+
+before: `return (result.Items || []).map(item => ({`   
+after: `return (result.Items || []).map((item: any) => ({`  
+
+
+5. In `backend.ts`:  
+
+
+before: `throw new Error("DynamoDB table \countsTable` is referenced in your Gen 1 backend and will need to be manually migrated to reference with CDK.");`   
+
+after:  
+```typescript
+backend.activityLogger.resources.lambda.addToRolePolicy(   
+  new PolicyStatement({   
+    actions: ["dynamodb:PutItem", "dynamodb:GetItem", "dynamodb:Query", "dynamodb:UpdateItem", "dynamodb:DeleteItem"],   
+    resources: [   
+      "arn:aws:dynamodb:*:*:table/countsTable-demo",   
+      "arn:aws:dynamodb:*:*:table/countsTable-demo/index/*"   
+    ]   
+  })   
+);   
+```
+Post Deploy:   
+
+
+6. in `data/resource.ts`:   
+
+before: `@function(name: "activityLogger-\${env}")`   
+after: `@function(name: "amplify-<appId>-gen2<branchName>-handlerlambda<hash>-<suffix>")`   
+(Find actual Lambda name in CloudFormation → Stack Resources → search "handlerlambda") 
