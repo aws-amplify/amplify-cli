@@ -486,3 +486,12 @@ backend.<appnameXXXXXX>PostAuthentication.resources.lambda.addToRolePolicy(
     })
 );
 ```
+
+Post Deploy:  
+
+1. in in `data/resource.ts`:
+
+before: `@function(name: "quotegenerator")`  
+after: `@function(name: "amplify-<appId>-gen2<branchName>-handlerlambda<hash>-<suffix>")`  
+(Find actual Lambda name in CloudFormation → Stack Resources → search "handlerlambda")
+
