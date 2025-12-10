@@ -4,6 +4,8 @@ export class AmplifyHelperTransformer {
   static transform(sourceFile: ts.SourceFile, projectName?: string): ts.SourceFile {
     // Track variable names that hold AmplifyHelpers.getProjectInfo() result
     const projectInfoVariables = new Set<string>();
+    // Track parameter names with AmplifyResourceProps type
+    const amplifyResourcePropsParams = new Set<string>();
 
     const transformer = <T extends ts.Node>(context: ts.TransformationContext) => {
       return (node: T) => {
@@ -16,15 +18,13 @@ export class AmplifyHelperTransformer {
             }
           }
 
-          // Transform cdk.Fn.ref('env') and Fn.ref('env') calls
+          // Transform *.Fn.ref('env') and Fn.ref('env') calls
           if (ts.isCallExpression(node)) {
             const expression = node.expression;
             if (ts.isPropertyAccessExpression(expression) && ts.isIdentifier(expression.name) && expression.name.text === 'ref') {
-              // Check if it's cdk.Fn.ref or Fn.ref
+              // Check if it's *.Fn.ref or Fn.ref
               const isCdkFnRef =
                 ts.isPropertyAccessExpression(expression.expression) &&
-                ts.isIdentifier(expression.expression.expression) &&
-                expression.expression.expression.text === 'cdk' &&
                 ts.isIdentifier(expression.expression.name) &&
                 expression.expression.name.text === 'Fn';
 
@@ -95,7 +95,7 @@ export class AmplifyHelperTransformer {
             }
 
             // Handle amplifyResourceProps transformations
-            if (ts.isIdentifier(expression) && expression.text === 'amplifyResourceProps') {
+            if (ts.isIdentifier(expression) && amplifyResourcePropsParams.has(expression.text)) {
               const propertyName = node.name.text;
               if (propertyName === 'resourceName') {
                 return ts.factory.createIdentifier('id');
@@ -106,8 +106,42 @@ export class AmplifyHelperTransformer {
             }
           }
 
+          // Track constructor parameters with AmplifyResourceProps type
+          if (ts.isConstructorDeclaration(node)) {
+            node.parameters.forEach((param) => {
+              if (param.type && ts.isTypeReferenceNode(param.type) && ts.isIdentifier(param.name)) {
+                const typeText = param.type.getText();
+                if (typeText.includes('AmplifyResourceProps')) {
+                  amplifyResourcePropsParams.add(param.name.text);
+                }
+              }
+            });
+          }
+
           // Visit children first
           const visitedNode = ts.visitEachChild(node, visit, context);
+
+          // Transform class declarations: change Stack/NestedStack extends to Construct
+          if (ts.isClassDeclaration(visitedNode) && visitedNode.heritageClauses) {
+            const newHeritageClauses = visitedNode.heritageClauses.map((clause) => {
+              const newTypes = clause.types.map((type) => {
+                const typeText = type.expression.getText();
+                if (typeText.endsWith('.Stack') || typeText.endsWith('.NestedStack')) {
+                  return ts.factory.createExpressionWithTypeArguments(ts.factory.createIdentifier('Construct'), type.typeArguments);
+                }
+                return type;
+              });
+              return ts.factory.updateHeritageClause(clause, newTypes);
+            });
+            return ts.factory.updateClassDeclaration(
+              visitedNode,
+              visitedNode.modifiers,
+              visitedNode.name,
+              visitedNode.typeParameters,
+              newHeritageClauses,
+              visitedNode.members,
+            );
+          }
 
           // Transform constructor: remove props and amplifyResourceProps parameters
           if (ts.isConstructorDeclaration(visitedNode)) {

@@ -446,10 +446,6 @@ export async function updateCdkStackFile(customResources: string[], destinationC
         }
       }
 
-      // Change Stack to Construct (Gen2 pattern)
-      cdkStackContent = cdkStackContent.replace(/extends cdk\.Stack/, 'extends Construct');
-      cdkStackContent = cdkStackContent.replace(/extends cdk\.NestedStack/, 'extends Construct');
-
       // Replace the cdk.CfnParameter definition to include the default property
       cdkStackContent = cdkStackContent.replace(
         /new cdk\.CfnParameter\(this, ['"]env['"], {[\s\S]*?}\);/,
