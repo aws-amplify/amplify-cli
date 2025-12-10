@@ -609,8 +609,81 @@ export class BackendSynthesizer {
     ]);
   }
 
-  private createAdditionalAuthProvidersArray(providers: AdditionalAuthProvider[]): AdditionalAuthProvider[] {
-    return providers;
+  private createAdditionalAuthProvidersArray(providers: AdditionalAuthProvider[]): Expression {
+    const providerElements = providers.map((provider) => {
+      const properties: ts.ObjectLiteralElementLike[] = [];
+
+      // Add authenticationType
+      properties.push(
+        factory.createPropertyAssignment(
+          factory.createIdentifier('authenticationType'),
+          factory.createStringLiteral(provider.authenticationType),
+        ),
+      );
+
+      // Add userPoolConfig with backend.auth reference for userPoolId
+      if (provider.userPoolConfig) {
+        const userPoolConfigProps: ts.ObjectLiteralElementLike[] = [];
+
+        if (provider.userPoolConfig.appIdClientRegex) {
+          userPoolConfigProps.push(
+            factory.createPropertyAssignment(
+              factory.createIdentifier('appIdClientRegex'),
+              factory.createStringLiteral(provider.userPoolConfig.appIdClientRegex),
+            ),
+          );
+        }
+
+        if (provider.userPoolConfig.awsRegion) {
+          userPoolConfigProps.push(
+            factory.createPropertyAssignment(
+              factory.createIdentifier('awsRegion'),
+              factory.createStringLiteral(provider.userPoolConfig.awsRegion),
+            ),
+          );
+        }
+
+        // Replace hardcoded userPoolId with backend.auth reference
+        if (provider.userPoolConfig.userPoolId) {
+          userPoolConfigProps.push(
+            factory.createPropertyAssignment(
+              factory.createIdentifier('userPoolId'),
+              this.createPropertyAccessExpression(factory.createIdentifier('backend'), 'auth.resources.userPool.userPoolId'),
+            ),
+          );
+        }
+
+        properties.push(
+          factory.createPropertyAssignment(
+            factory.createIdentifier('userPoolConfig'),
+            factory.createObjectLiteralExpression(userPoolConfigProps, true),
+          ),
+        );
+      }
+
+      // Add other configs if present
+      if (provider.lambdaAuthorizerConfig) {
+        properties.push(
+          factory.createPropertyAssignment(
+            factory.createIdentifier('lambdaAuthorizerConfig'),
+            this.getOverrideValue(provider.lambdaAuthorizerConfig),
+          ),
+        );
+      }
+
+      if (provider.openIdConnectConfig) {
+        properties.push(
+          factory.createPropertyAssignment(
+            factory.createIdentifier('openIdConnectConfig'),
+            this.getOverrideValue(provider.openIdConnectConfig),
+          ),
+        );
+      }
+
+      return factory.createObjectLiteralExpression(properties, true);
+    });
+
+    return factory.createArrayLiteralExpression(providerElements, true);
   }
 
   // id1.id2 = `templateHead-${templateSpan}templateTail`;
@@ -1022,7 +1095,15 @@ export class BackendSynthesizer {
 
       const additionalAuthProviders = this.createAdditionalAuthProvidersArray(renderArgs.data.additionalAuthProviders);
       nodes.push(
-        this.setPropertyValue(factory.createIdentifier('cfnGraphQLApi'), 'additionalAuthenticationProviders', additionalAuthProviders),
+        factory.createExpressionStatement(
+          factory.createAssignment(
+            factory.createPropertyAccessExpression(
+              factory.createIdentifier('cfnGraphQLApi'),
+              factory.createIdentifier('additionalAuthenticationProviders'),
+            ),
+            additionalAuthProviders,
+          ),
+        ),
       );
     }
 

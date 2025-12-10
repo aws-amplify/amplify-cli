@@ -18,7 +18,7 @@ export interface AdditionalAuthProvider {
   userPoolConfig?: {
     appIdClientRegex?: string;
     awsRegion?: string;
-    userPoolId: string;
+    userPoolId?: string;
   };
 }
 
