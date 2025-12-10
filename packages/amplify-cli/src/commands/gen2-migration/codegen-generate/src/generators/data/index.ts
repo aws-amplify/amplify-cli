@@ -2,6 +2,7 @@ import ts, { ObjectLiteralElementLike, ObjectLiteralExpression } from 'typescrip
 import { renderResourceTsFile } from '../../resource/resource';
 import type { ConstructFactory, AmplifyFunction } from '@aws-amplify/plugin-types';
 import type { AuthorizationModes, DataLoggingOptions } from '@aws-amplify/backend-data';
+import { Lambda } from '../functions/lambda';
 export interface AdditionalAuthProvider {
   authenticationType: 'API_KEY' | 'AWS_IAM' | 'OPENID_CONNECT' | 'AMAZON_COGNITO_USER_POOLS' | 'AWS_LAMBDA';
   lambdaAuthorizerConfig?: {
@@ -124,7 +125,7 @@ export type DataDefinition = {
   /* Additional authentication providers for AppSync API */
   additionalAuthProviders?: AdditionalAuthProvider[];
   /* Functions invokable by the API. The specific input type of the function is subject to change or removal. */
-  functions?: Record<string, ConstructFactory<AmplifyFunction>>;
+  functions?: Record<string, Lambda>;
   /* Logging config for api */
   logging?: DataLoggingOptions;
 };
@@ -310,6 +311,32 @@ export const generateDataSource = async (dataDefinition?: DataDefinition): Promi
         factory.createPropertyAssignment('authorizationModes', factory.createObjectLiteralExpression(authModeProperties, true)),
       );
     }
+  }
+
+  // Add functions configuration if available
+  if (dataDefinition?.functions && Object.keys(dataDefinition.functions).length > 0) {
+    const functionProperties: ObjectLiteralElementLike[] = [];
+
+    for (const [functionName, functionConfig] of Object.entries(dataDefinition.functions)) {
+      const pathSegments = functionConfig.source.split('/');
+      const importName = pathSegments[3];
+
+      functionProperties.push(
+        factory.createPropertyAssignment(factory.createIdentifier(functionName), factory.createIdentifier(importName)),
+      );
+
+      if (!namedImports[`./${importName}/resource`]) {
+        namedImports[`./${importName}/resource`] = new Set();
+      }
+      namedImports[`./${importName}/resource`].add(importName);
+    }
+
+    dataRenderProperties.push(
+      factory.createPropertyAssignment(
+        factory.createIdentifier('functions'),
+        factory.createObjectLiteralExpression(functionProperties, true),
+      ),
+    );
   }
 
   // Add schema reference to the data configuration

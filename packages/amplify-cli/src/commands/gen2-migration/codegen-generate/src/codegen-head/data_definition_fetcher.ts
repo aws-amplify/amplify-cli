@@ -108,6 +108,30 @@ export class DataDefinitionFetcher {
   };
 
   /**
+   * Extracts Lambda function resolvers from GraphQL schema and amplify-meta.
+   */
+  private extractFunctions = async (schema: string, amplifyMeta: any): Promise<Record<string, { source: string }> | undefined> => {
+    const functions: Record<string, { source: string }> = {};
+
+    // Look for @function directives in schema (flexible spacing)
+    const functionDirectiveRegex = /@function\(\s*name\s*:\s*["']([^"']+)["']\s*\)/g;
+    let match;
+
+    while ((match = functionDirectiveRegex.exec(schema)) !== null) {
+      const functionName = match[1];
+
+      // Check if function exists in amplify-meta
+      if (amplifyMeta.function && amplifyMeta.function[functionName]) {
+        functions[functionName] = {
+          source: `amplify/backend/function/${functionName}`,
+        };
+      }
+    }
+
+    return Object.keys(functions).length > 0 ? functions : undefined;
+  };
+
+  /**
    * Fetches additional authentication providers from AWS AppSync API.
    */
   private getAdditionalAuthProvidersFromConsole = async (apiId: string): Promise<AdditionalAuthProvider[]> => {
@@ -170,11 +194,15 @@ export class DataDefinitionFetcher {
       const apiId = appSyncApi?.output?.GraphQLAPIIdOutput;
       const additionalAuthProviders = apiId ? await this.getAdditionalAuthProvidersFromConsole(apiId) : [];
 
+      // Extract function resolvers from schema
+      const functions = await this.extractFunctions(schema, amplifyMeta);
+
       return {
         tableMappings: undefined, // Will be generated from schema during migration
         schema,
         authorizationModes,
         additionalAuthProviders: additionalAuthProviders.length > 0 ? additionalAuthProviders : undefined,
+        functions: functions && Object.keys(functions).length > 0 ? functions : undefined,
       };
     }
 
