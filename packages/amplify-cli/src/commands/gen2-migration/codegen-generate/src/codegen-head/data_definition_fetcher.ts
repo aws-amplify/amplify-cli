@@ -56,7 +56,7 @@ export class DataDefinitionFetcher {
    * @returns Combined GraphQL schema as a string
    * @throws Error if no AppSync API found or schema files missing
    */
-  getSchema = async (apis: any): Promise<string> => {
+  public getSchema = async (apis: any): Promise<string> => {
     try {
       let apiName;
 

@@ -1,10 +1,14 @@
 import assert from 'node:assert';
+import path from 'node:path';
+import fs from 'node:fs/promises';
+import glob from 'glob';
 import { FunctionDefinition } from '../core/migration-pipeline';
 import { getFunctionDefinition } from '../adapters/functions/index';
 import { BackendEnvironmentResolver } from './backend_environment_selector';
+import { DataDefinitionFetcher } from './data_definition_fetcher';
 import { GetFunctionCommand, GetPolicyCommand, LambdaClient } from '@aws-sdk/client-lambda';
 import { DescribeRuleCommand, CloudWatchEventsClient } from '@aws-sdk/client-cloudwatch-events';
-import { StateManager } from '@aws-amplify/amplify-cli-core';
+import { StateManager, pathManager } from '@aws-amplify/amplify-cli-core';
 
 /**
  * Configuration interface for Amplify Auth category resources.
@@ -63,6 +67,7 @@ export class AppFunctionsDefinitionFetcher {
     private cloudWatchEventsClient: CloudWatchEventsClient,
     private backendEnvironmentResolver: BackendEnvironmentResolver,
     private stateManager: StateManager,
+    private dataDefinitionFetcher: DataDefinitionFetcher,
   ) {}
 
   /**
@@ -92,6 +97,9 @@ export class AppFunctionsDefinitionFetcher {
 
     // Map to track which category triggers each function (auth, storage, etc.)
     const functionCategoryMap = new Map<string, string>();
+
+    // Detect GraphQL resolver functions from schema
+    await this.detectResolverFunctions(meta, functionCategoryMap);
 
     // Find Cognito auth configuration to identify auth-triggered functions
     const authValues: AuthConfig | undefined = Object.values(auth).find(
@@ -202,5 +210,33 @@ export class AppFunctionsDefinitionFetcher {
     // - Trigger category mappings (auth, storage, etc.)
     // - Original Amplify project metadata
     return getFunctionDefinition(functionConfigurations, functionSchedules, functionCategoryMap, meta);
+  };
+
+  /**
+   * Detects GraphQL resolver functions from the schema and adds them to the function category map.
+   */
+  private detectResolverFunctions = async (meta: any, functionCategoryMap: Map<string, string>): Promise<void> => {
+    try {
+      const apis = meta?.api ?? {};
+      if (!apis || Object.keys(apis).length === 0) return;
+
+      // Reuse DataDefinitionFetcher's getSchema method
+      const schema = await this.dataDefinitionFetcher.getSchema(apis);
+
+      // Extract @function directives from schema (same regex as DataDefinitionFetcher)
+      const functionDirectiveRegex = /@function\(\s*name\s*:\s*["']([^"']+)["']\s*\)/g;
+      let match;
+
+      while ((match = functionDirectiveRegex.exec(schema)) !== null) {
+        const functionName = match[1];
+
+        // Check if function exists in amplify-meta
+        if (meta.function && meta.function[functionName]) {
+          functionCategoryMap.set(functionName, 'api');
+        }
+      }
+    } catch (error) {
+      // Silently ignore errors in resolver detection
+    }
   };
 }
