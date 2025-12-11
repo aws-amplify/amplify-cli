@@ -15,11 +15,13 @@ import { AccessPatterns, ServerSideEncryptionConfiguration } from '../generators
 import { ExplicitAuthFlowsType, OAuthFlowType, UserPoolClientType } from '@aws-sdk/client-cognito-identity-provider';
 import assert from 'assert';
 import { newLineIdentifier } from '../ts_factory_utils';
+import type { AdditionalAuthProvider } from '../generators/data';
 
 const factory = ts.factory;
 export interface BackendRenderParameters {
   data?: {
     importFrom: string;
+    additionalAuthProviders?: AdditionalAuthProvider[];
   };
   auth?: {
     importFrom: string;
@@ -607,6 +609,83 @@ export class BackendSynthesizer {
     ]);
   }
 
+  private createAdditionalAuthProvidersArray(providers: AdditionalAuthProvider[]): Expression {
+    const providerElements = providers.map((provider) => {
+      const properties: ts.ObjectLiteralElementLike[] = [];
+
+      // Add authenticationType
+      properties.push(
+        factory.createPropertyAssignment(
+          factory.createIdentifier('authenticationType'),
+          factory.createStringLiteral(provider.authenticationType),
+        ),
+      );
+
+      // Add userPoolConfig with backend.auth reference for userPoolId
+      if (provider.userPoolConfig) {
+        const userPoolConfigProps: ts.ObjectLiteralElementLike[] = [];
+
+        if (provider.userPoolConfig.appIdClientRegex) {
+          userPoolConfigProps.push(
+            factory.createPropertyAssignment(
+              factory.createIdentifier('appIdClientRegex'),
+              factory.createStringLiteral(provider.userPoolConfig.appIdClientRegex),
+            ),
+          );
+        }
+
+        if (provider.userPoolConfig.awsRegion) {
+          userPoolConfigProps.push(
+            factory.createPropertyAssignment(
+              factory.createIdentifier('awsRegion'),
+              factory.createStringLiteral(provider.userPoolConfig.awsRegion),
+            ),
+          );
+        }
+
+        // Replace hardcoded userPoolId with backend.auth reference
+        if (provider.userPoolConfig.userPoolId) {
+          userPoolConfigProps.push(
+            factory.createPropertyAssignment(
+              factory.createIdentifier('userPoolId'),
+              this.createPropertyAccessExpression(factory.createIdentifier('backend'), 'auth.resources.userPool.userPoolId'),
+            ),
+          );
+        }
+
+        properties.push(
+          factory.createPropertyAssignment(
+            factory.createIdentifier('userPoolConfig'),
+            factory.createObjectLiteralExpression(userPoolConfigProps, true),
+          ),
+        );
+      }
+
+      // Add other configs if present
+      if (provider.lambdaAuthorizerConfig) {
+        properties.push(
+          factory.createPropertyAssignment(
+            factory.createIdentifier('lambdaAuthorizerConfig'),
+            this.getOverrideValue(provider.lambdaAuthorizerConfig),
+          ),
+        );
+      }
+
+      if (provider.openIdConnectConfig) {
+        properties.push(
+          factory.createPropertyAssignment(
+            factory.createIdentifier('openIdConnectConfig'),
+            this.getOverrideValue(provider.openIdConnectConfig),
+          ),
+        );
+      }
+
+      return factory.createObjectLiteralExpression(properties, true);
+    });
+
+    return factory.createArrayLiteralExpression(providerElements, true);
+  }
+
   // id1.id2 = `templateHead-${templateSpan}templateTail`;
   private createTemplateLiteralExpression(id1: string, id2: string, templateHead: string, templateSpan: string, templateTail: string) {
     return factory.createExpressionStatement(
@@ -1005,6 +1084,27 @@ export class BackendSynthesizer {
         ),
       );
       nodes.push(userPoolDomainRemovalStatementCommented);
+    }
+
+    // Additional auth providers for GraphQL API
+    if (renderArgs.data?.additionalAuthProviders && renderArgs.auth) {
+      const cfnGraphQLApiVariableStatement = this.createVariableStatement(
+        this.createVariableDeclaration('cfnGraphQLApi', 'data.resources.cfnResources.cfnGraphQLApi'),
+      );
+      nodes.push(cfnGraphQLApiVariableStatement);
+
+      const additionalAuthProviders = this.createAdditionalAuthProvidersArray(renderArgs.data.additionalAuthProviders);
+      nodes.push(
+        factory.createExpressionStatement(
+          factory.createAssignment(
+            factory.createPropertyAccessExpression(
+              factory.createIdentifier('cfnGraphQLApi'),
+              factory.createIdentifier('additionalAuthenticationProviders'),
+            ),
+            additionalAuthProviders,
+          ),
+        ),
+      );
     }
 
     // Function name escape hatch - set function names with branch suffix

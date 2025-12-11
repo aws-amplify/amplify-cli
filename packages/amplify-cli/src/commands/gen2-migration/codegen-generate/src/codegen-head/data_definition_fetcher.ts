@@ -4,10 +4,13 @@ import glob from 'glob';
 import assert from 'node:assert';
 
 import { DataDefinition } from '../core/migration-pipeline';
+import { AdditionalAuthProvider } from '../generators/data';
+
 import { BackendEnvironmentResolver } from './backend_environment_selector';
 import { BackendDownloader } from './backend_downloader';
 import { pathManager } from '@aws-amplify/amplify-cli-core';
 import { fileOrDirectoryExists } from './directory_exists';
+import { AppSyncClient, GetGraphqlApiCommand } from '@aws-sdk/client-appsync';
 
 /**
  * Fetches and processes data definitions from Amplify Gen1 projects for migration to Gen2.
@@ -106,6 +109,27 @@ export class DataDefinitionFetcher {
   };
 
   /**
+   * Fetches additional authentication providers from AWS AppSync API.
+   */
+  private getAdditionalAuthProvidersFromConsole = async (apiId: string): Promise<AdditionalAuthProvider[]> => {
+    try {
+      const client = new AppSyncClient({});
+      const response = await client.send(new GetGraphqlApiCommand({ apiId }));
+
+      return (
+        response.graphqlApi?.additionalAuthenticationProviders?.map((provider: any) => ({
+          authenticationType: provider.authenticationType,
+          ...(provider.lambdaAuthorizerConfig && { lambdaAuthorizerConfig: provider.lambdaAuthorizerConfig }),
+          ...(provider.openIDConnectConfig && { openIdConnectConfig: provider.openIDConnectConfig }),
+          ...(provider.userPoolConfig && { userPoolConfig: provider.userPoolConfig }),
+        })) || []
+      );
+    } catch (error) {
+      throw new Error(`Failed to fetch additional auth providers from AWS: ${error.message}`);
+    }
+  };
+
+  /**
    * Retrieves the complete data definition for migration.
    *
    * This method orchestrates the extraction of data definitions from a Gen1 project:
@@ -113,6 +137,7 @@ export class DataDefinitionFetcher {
    * 2. Downloads current cloud backend artifacts
    * 3. Reads amplify-meta.json for API configuration
    * 4. Extracts GraphQL schema if APIs exist
+   * 5. Extracts additional auth providers for AppSync
    *
    * @returns DataDefinition object containing schema and table mappings, or undefined if no APIs found
    * @throws Error if amplify-meta.json is missing or schema extraction fails
@@ -141,11 +166,14 @@ export class DataDefinitionFetcher {
       // Extract auth config from the AppSync API output
       const appSyncApi = Object.values(amplifyMeta.api).find((api: any) => api.service === 'AppSync') as any;
       const authorizationModes = appSyncApi?.output?.authConfig;
+      const apiId = appSyncApi?.output?.GraphQLAPIIdOutput;
+      const additionalAuthProviders = apiId ? await this.getAdditionalAuthProvidersFromConsole(apiId) : [];
 
       return {
         tableMappings: undefined, // Will be generated from schema during migration
         schema,
         authorizationModes,
+        additionalAuthProviders: additionalAuthProviders.length > 0 ? additionalAuthProviders : undefined,
       };
     }
 

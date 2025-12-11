@@ -2,6 +2,26 @@ import ts, { ObjectLiteralElementLike, ObjectLiteralExpression } from 'typescrip
 import { renderResourceTsFile } from '../../resource/resource';
 import type { ConstructFactory, AmplifyFunction } from '@aws-amplify/plugin-types';
 import type { AuthorizationModes, DataLoggingOptions } from '@aws-amplify/backend-data';
+export interface AdditionalAuthProvider {
+  authenticationType: 'API_KEY' | 'AWS_IAM' | 'OPENID_CONNECT' | 'AMAZON_COGNITO_USER_POOLS' | 'AWS_LAMBDA';
+  lambdaAuthorizerConfig?: {
+    authorizerResultTtlInSeconds?: number;
+    authorizerUri: string;
+    identityValidationExpression?: string;
+  };
+  openIdConnectConfig?: {
+    authTtl?: number;
+    clientId?: string;
+    iatTtl?: number;
+    issuer: string;
+  };
+  userPoolConfig?: {
+    appIdClientRegex?: string;
+    awsRegion?: string;
+    userPoolId?: string;
+  };
+}
+
 const factory = ts.factory;
 
 /**
@@ -101,6 +121,8 @@ export type DataDefinition = {
   schema: string;
   /* Override authorization config, which will apply on top of defaults based on availability of auth, etc. */
   authorizationModes?: AuthorizationModes;
+  /* Additional authentication providers for AppSync API */
+  additionalAuthProviders?: AdditionalAuthProvider[];
   /* Functions invokable by the API. The specific input type of the function is subject to change or removal. */
   functions?: Record<string, ConstructFactory<AmplifyFunction>>;
   /* Logging config for api */
