@@ -130,9 +130,13 @@ const copyGen1FunctionFiles = async (
         const skipFiles = ['package.json', 'package-lock.json', 'yarn.lock', 'pnpm-lock.yaml'];
 
         if (!skipFiles.includes(fileName)) {
-          const content = await fs.readFile(srcPath, 'utf-8');
-          const destFile = file.startsWith('index.') ? `handler${path.extname(file)}` : file;
-          await fileWriter(content, path.join(destDir, destFile));
+          try {
+            const content = await fs.readFile(srcPath, 'utf-8');
+            const destFile = file.startsWith('index.') ? `handler${path.extname(file)}` : file;
+            await fileWriter(content, path.join(destDir, destFile));
+          } catch (error) {
+            throw new Error(`Failed to copy file '${file}': ${error instanceof Error ? error.message : 'Unknown error'}`);
+          }
         }
       }
     }
