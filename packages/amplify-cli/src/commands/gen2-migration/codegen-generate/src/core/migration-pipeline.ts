@@ -119,24 +119,23 @@ const copyGen1FunctionFiles = async (
 ): Promise<void> => {
   try {
     const gen1SrcDir = path.join('amplify', 'backend', 'function', resourceName, 'src');
-    const srcFiles = await fs.readdir(gen1SrcDir, { recursive: true });
+    const srcEntries = await fs.readdir(gen1SrcDir, { recursive: true, withFileTypes: true });
 
-    for (const file of srcFiles) {
-      const srcPath = path.join(gen1SrcDir, file);
-      const stat = await fs.stat(srcPath);
-
-      if (stat.isFile()) {
+    for (const entry of srcEntries) {
+      if (entry.isFile()) {
+        const file = path.relative(gen1SrcDir, path.join(entry.parentPath || entry.path, entry.name));
         const fileName = path.basename(file);
         const skipFiles = ['package.json', 'package-lock.json', 'yarn.lock', 'pnpm-lock.yaml'];
 
         if (!skipFiles.includes(fileName)) {
-          try {
-            const content = await fs.readFile(srcPath, 'utf-8');
-            const destFile = file.startsWith('index.') ? `handler${path.extname(file)}` : file;
-            await fileWriter(content, path.join(destDir, destFile));
-          } catch (error) {
-            throw new Error(`Failed to copy file '${file}': ${error instanceof Error ? error.message : 'Unknown error'}`);
-          }
+          const srcPath = path.join(gen1SrcDir, file);
+          const content = await fs.readFile(srcPath, 'utf-8');
+          const destFile = file.startsWith('index.') ? `handler${path.extname(file)}` : file;
+          const destPath = path.join(destDir, destFile);
+
+          // Ensure destination directory exists
+          await fs.mkdir(path.dirname(destPath), { recursive: true });
+          await fileWriter(content, destPath);
         }
       }
     }
