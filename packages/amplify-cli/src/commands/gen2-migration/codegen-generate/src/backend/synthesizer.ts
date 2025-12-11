@@ -1087,7 +1087,7 @@ export class BackendSynthesizer {
     }
 
     // Additional auth providers for GraphQL API
-    if (renderArgs.data?.additionalAuthProviders) {
+    if (renderArgs.data?.additionalAuthProviders && renderArgs.auth) {
       const cfnGraphQLApiVariableStatement = this.createVariableStatement(
         this.createVariableDeclaration('cfnGraphQLApi', 'data.resources.cfnResources.cfnGraphQLApi'),
       );
