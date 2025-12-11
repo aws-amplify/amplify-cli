@@ -1,0 +1,1293 @@
+# This "input" configures a global authorization rule to enable public access to
+# all models in this schema. Learn more about authorization rules here: https://docs.amplify.aws/cli/graphql/authorization-rules
+input AMPLIFY { globalAuthRule: AuthRule = { allow: public } } # FOR TESTING ONLY!
+
+type QuoteResponse {
+  message: String!
+  quote: String!
+  author: String!
+  timestamp: String!
+  totalQuotes: Int!
+}
+
+type Query {
+  getRandomQuote: QuoteResponse @function(name: "quotegenerator") 
+}
+
+enum ProjectStatus {
+  ACTIVE
+  COMPLETED
+  ON_HOLD
+  ARCHIVED
+}
+
+type Project @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  title: String!
+  description: String
+  status: ProjectStatus!
+  deadline: AWSDateTime
+  color: String
+  todos: [Todo] @hasMany
+}
+
+type Todo @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  description: String
+  images: [String]
+  projectID: ID
+}
+
+# Stress Test Models (1-80): Standalone models
+type StressTest1 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest2 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest3 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest4 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest5 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest6 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest7 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest8 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest9 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest10 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest11 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest12 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest13 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest14 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest15 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest16 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest17 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest18 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest19 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest20 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest21 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest22 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest23 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest24 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest25 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest26 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest27 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest28 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest29 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest30 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest31 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest32 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest33 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest34 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest35 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest36 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest37 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest38 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest39 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest40 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest41 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest42 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest43 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest44 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest45 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest46 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest47 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest48 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest49 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest50 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest51 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest52 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest53 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest54 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest55 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest56 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest57 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest58 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest59 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest60 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest61 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest62 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest63 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest64 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest65 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest66 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest67 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest68 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest69 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest70 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest71 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest72 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest73 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest74 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest75 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest76 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest77 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest78 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest79 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+type StressTest80 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+}
+
+# Stress Test Models (81-90): Models with relationships
+type StressTest81 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+  relatedItems: [StressTest82] @hasMany
+}
+
+type StressTest82 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+  stressTest81ID: ID
+}
+
+type StressTest83 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+  relatedItems: [StressTest84] @hasMany
+}
+
+type StressTest84 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+  stressTest83ID: ID
+}
+
+type StressTest85 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+  relatedItems: [StressTest86] @hasMany
+}
+
+type StressTest86 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+  stressTest85ID: ID
+}
+
+type StressTest87 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+  relatedItems: [StressTest88] @hasMany
+}
+
+type StressTest88 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+  stressTest87ID: ID
+}
+
+type StressTest89 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+  relatedItems: [StressTest90] @hasMany
+}
+
+type StressTest90 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+  stressTest89ID: ID
+}
+
+# Stress Test Models (91-100): Models with enums and additional complexity
+enum StressTestStatus {
+  PENDING
+  ACTIVE
+  COMPLETED
+  FAILED
+}
+
+enum StressTestPriority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+type StressTest91 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+  status: StressTestStatus
+  priority: StressTestPriority
+}
+
+type StressTest92 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+  status: StressTestStatus
+  priority: StressTestPriority
+}
+
+type StressTest93 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+  status: StressTestStatus
+  priority: StressTestPriority
+}
+
+type StressTest94 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+  status: StressTestStatus
+  priority: StressTestPriority
+}
+
+type StressTest95 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+  status: StressTestStatus
+  priority: StressTestPriority
+}
+
+type StressTest96 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+  status: StressTestStatus
+  priority: StressTestPriority
+}
+
+type StressTest97 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+  status: StressTestStatus
+  priority: StressTestPriority
+}
+
+type StressTest98 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+  status: StressTestStatus
+  priority: StressTestPriority
+}
+
+type StressTest99 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+  status: StressTestStatus
+  priority: StressTestPriority
+}
+
+type StressTest100 @model @auth(rules: [
+  { allow: public, operations: [read] },
+  { allow: owner, operations: [create, read, update, delete] }
+]) {
+  id: ID!
+  name: String!
+  data: String
+  value: Int
+  active: Boolean
+  timestamp: AWSDateTime
+  status: StressTestStatus
+  priority: StressTestPriority
+}
