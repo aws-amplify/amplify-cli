@@ -10,6 +10,7 @@ import { BackendEnvironmentResolver } from './backend_environment_selector';
 import { BackendDownloader } from './backend_downloader';
 import { pathManager } from '@aws-amplify/amplify-cli-core';
 import { fileOrDirectoryExists } from './directory_exists';
+import { AppSyncClient, GetGraphqlApiCommand } from '@aws-sdk/client-appsync';
 
 /**
  * Fetches and processes data definitions from Amplify Gen1 projects for migration to Gen2.
@@ -112,7 +113,6 @@ export class DataDefinitionFetcher {
    */
   private getAdditionalAuthProvidersFromConsole = async (apiId: string): Promise<AdditionalAuthProvider[]> => {
     try {
-      const { AppSyncClient, GetGraphqlApiCommand } = require('@aws-sdk/client-appsync');
       const client = new AppSyncClient({});
       const response = await client.send(new GetGraphqlApiCommand({ apiId }));
 
@@ -125,8 +125,7 @@ export class DataDefinitionFetcher {
         })) || []
       );
     } catch (error) {
-      console.warn('Failed to fetch additional auth providers from AWS:', error.message);
-      return [];
+      throw new Error(`Failed to fetch additional auth providers from AWS: ${error.message}`);
     }
   };
 
