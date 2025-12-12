@@ -129,7 +129,7 @@ const extractGen1FunctionDependencies = async (
 };
 
 /**
- * Merges dependencies from all Gen 1 functions
+ * Merges dependencies from all Gen 1 functions, selecting highest version for conflicts
  * @param functions - Array of function definitions
  * @returns Combined dependencies and devDependencies
  */
@@ -139,11 +139,19 @@ const mergeAllFunctionDependencies = async (
   const functionDeps: Record<string, string> = {};
   const functionDevDeps: Record<string, string> = {};
 
+  const mergeWithHighestVersion = (target: Record<string, string>, source: Record<string, string>) => {
+    for (const [pkg, version] of Object.entries(source)) {
+      if (!target[pkg] || version > target[pkg]) {
+        target[pkg] = version;
+      }
+    }
+  };
+
   for (const func of functions) {
     if (func.resourceName) {
       const deps = await extractGen1FunctionDependencies(func.resourceName);
-      Object.assign(functionDeps, deps.dependencies || {});
-      Object.assign(functionDevDeps, deps.devDependencies || {});
+      mergeWithHighestVersion(functionDeps, deps.dependencies || {});
+      mergeWithHighestVersion(functionDevDeps, deps.devDependencies || {});
     }
   }
 
