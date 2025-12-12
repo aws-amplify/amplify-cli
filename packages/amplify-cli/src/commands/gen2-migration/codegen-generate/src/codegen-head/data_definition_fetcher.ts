@@ -147,8 +147,7 @@ export class DataDefinitionFetcher {
       }
       return undefined;
     } catch (error) {
-      console.warn('Failed to fetch logging config from AWS:', error.message);
-      return undefined;
+      throw new Error(`Failed to fetch logging config from AWS: ${error.message}`);
     }
   };
 
