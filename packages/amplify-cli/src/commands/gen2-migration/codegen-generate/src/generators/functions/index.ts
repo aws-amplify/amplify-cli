@@ -165,7 +165,7 @@ export function createFunctionDefinition(
 ) {
   const defineFunctionProperties: ObjectLiteralElementLike[] = [];
 
-  // Always set entry point - Lambda functions require one
+  // Fallback to index.js if there is no entry
   const entryPoint = definition?.entry || './index.js';
   defineFunctionProperties.push(createParameter('entry', factory.createStringLiteral(entryPoint)));
   if (definition?.name) {
