@@ -134,7 +134,6 @@ export class DataDefinitionFetcher {
    */
   private getLoggingConfigFromConsole = async (apiId: string) => {
     try {
-      const { AppSyncClient, GetGraphqlApiCommand } = require('@aws-sdk/client-appsync');
       const client = new AppSyncClient({});
       const response = await client.send(new GetGraphqlApiCommand({ apiId }));
 
