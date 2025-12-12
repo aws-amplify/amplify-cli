@@ -315,10 +315,8 @@ export const generateDataSource = async (dataDefinition?: DataDefinition): Promi
   // Add logging configuration if available
   if (dataDefinition?.logging) {
     if (dataDefinition.logging === true) {
-      // Simple boolean logging configuration
       dataRenderProperties.push(factory.createPropertyAssignment('logging', factory.createTrue()));
     } else if (typeof dataDefinition.logging === 'object') {
-      // DataLogConfig object
       const loggingConfig = dataDefinition.logging;
       const loggingProperties: ObjectLiteralElementLike[] = [];
 
