@@ -123,8 +123,31 @@ const extractGen1FunctionDependencies = async (
       devDependencies: packageJson.devDependencies,
     };
   } catch {
+    // Safely return an empty dictionary if no package.json is found
     return {};
   }
+};
+
+/**
+ * Merges dependencies from all Gen 1 functions
+ * @param functions - Array of function definitions
+ * @returns Combined dependencies and devDependencies
+ */
+const mergeAllFunctionDependencies = async (
+  functions: FunctionDefinition[],
+): Promise<{ dependencies: Record<string, string>; devDependencies: Record<string, string> }> => {
+  const functionDeps: Record<string, string> = {};
+  const functionDevDeps: Record<string, string> = {};
+
+  for (const func of functions) {
+    if (func.resourceName) {
+      const deps = await extractGen1FunctionDependencies(func.resourceName);
+      Object.assign(functionDeps, deps.dependencies || {});
+      Object.assign(functionDevDeps, deps.devDependencies || {});
+    }
+  }
+
+  return { dependencies: functionDeps, devDependencies: functionDevDeps };
 };
 
 /**
@@ -213,18 +236,9 @@ export const createGen2Renderer = ({
         // File doesn't exist or is inaccessible. Ignore.
       }
       // Merge dependencies from all Gen 1 functions
-      const functionDeps: Record<string, string> = {};
-      const functionDevDeps: Record<string, string> = {};
-
-      if (functions && functions.length) {
-        for (const func of functions) {
-          if (func.resourceName) {
-            const deps = await extractGen1FunctionDependencies(func.resourceName);
-            Object.assign(functionDeps, deps.dependencies || {});
-            Object.assign(functionDevDeps, deps.devDependencies || {});
-          }
-        }
-      }
+      const { dependencies: functionDeps, devDependencies: functionDevDeps } = functions?.length
+        ? await mergeAllFunctionDependencies(functions)
+        : { dependencies: {}, devDependencies: {} };
 
       // Merge function dependencies into the package.json
       const updatedPackageJson = {
