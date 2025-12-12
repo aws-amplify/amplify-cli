@@ -140,8 +140,10 @@ export class DataDefinitionFetcher {
 
       const logConfig = response.graphqlApi?.logConfig;
       if (logConfig?.fieldLogLevel && logConfig.fieldLogLevel !== 'NONE') {
+        // Map AWS AppSync log levels to Gen2 DataLogLevel enum values
+        const fieldLogLevel = logConfig.fieldLogLevel.toLowerCase() as 'none' | 'all' | 'info' | 'debug' | 'error';
         return {
-          fieldLogLevel: logConfig.fieldLogLevel.toLowerCase(),
+          fieldLogLevel,
           ...(logConfig.excludeVerboseContent !== undefined && { excludeVerboseContent: logConfig.excludeVerboseContent }),
         };
       }
