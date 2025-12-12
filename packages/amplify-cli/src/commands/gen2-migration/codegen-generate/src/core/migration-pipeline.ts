@@ -123,14 +123,14 @@ const copyGen1FunctionFiles = async (
 
     for (const entry of srcEntries) {
       if (entry.isFile()) {
-        const file = path.relative(gen1SrcDir, path.join(entry.parentPath || entry.path, entry.name));
+        const file = path.relative(gen1SrcDir, path.join(entry.parentPath, entry.name));
         const fileName = path.basename(file);
         const skipFiles = ['package.json', 'package-lock.json', 'yarn.lock', 'pnpm-lock.yaml'];
 
         if (!skipFiles.includes(fileName)) {
           const srcPath = path.join(gen1SrcDir, file);
           const content = await fs.readFile(srcPath, 'utf-8');
-          const destFile = file.startsWith('index.') ? `handler${path.extname(file)}` : file;
+          const destFile = file;
           const destPath = path.join(destDir, destFile);
 
           // Ensure destination directory exists

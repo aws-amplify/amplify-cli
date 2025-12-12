@@ -165,9 +165,9 @@ export function createFunctionDefinition(
 ) {
   const defineFunctionProperties: ObjectLiteralElementLike[] = [];
 
-  if (definition?.entry) {
-    defineFunctionProperties.push(createParameter('entry', factory.createStringLiteral('./handler.ts')));
-  }
+  // Always set entry point - Lambda functions require one
+  const entryPoint = definition?.entry || './index.js';
+  defineFunctionProperties.push(createParameter('entry', factory.createStringLiteral(entryPoint)));
   if (definition?.name) {
     const funcNameAssignment = createTemplateLiteral(`${definition.resourceName}-`, gen2BranchNameVariableName, '');
     defineFunctionProperties.push(createParameter('name', funcNameAssignment));
