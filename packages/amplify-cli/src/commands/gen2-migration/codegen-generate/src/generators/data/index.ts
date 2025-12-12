@@ -312,6 +312,33 @@ export const generateDataSource = async (dataDefinition?: DataDefinition): Promi
     }
   }
 
+  // Add logging configuration if available
+  if (dataDefinition?.logging && typeof dataDefinition.logging === 'object') {
+    const loggingConfig = dataDefinition.logging;
+    const loggingProperties: ObjectLiteralElementLike[] = [];
+
+    if ('fieldLogLevel' in loggingConfig && loggingConfig.fieldLogLevel !== undefined) {
+      loggingProperties.push(factory.createPropertyAssignment('fieldLogLevel', factory.createStringLiteral(loggingConfig.fieldLogLevel)));
+    }
+
+    if ('excludeVerboseContent' in loggingConfig && loggingConfig.excludeVerboseContent !== undefined) {
+      loggingProperties.push(
+        factory.createPropertyAssignment(
+          'excludeVerboseContent',
+          loggingConfig.excludeVerboseContent ? factory.createTrue() : factory.createFalse(),
+        ),
+      );
+    }
+
+    if ('retention' in loggingConfig && loggingConfig.retention !== undefined) {
+      loggingProperties.push(factory.createPropertyAssignment('retention', factory.createStringLiteral(loggingConfig.retention)));
+    }
+
+    if (loggingProperties.length > 0) {
+      dataRenderProperties.push(factory.createPropertyAssignment('logging', factory.createObjectLiteralExpression(loggingProperties)));
+    }
+  }
+
   // Add schema reference to the data configuration
   dataRenderProperties.push(factory.createShorthandPropertyAssignment(factory.createIdentifier('schema')));
 
