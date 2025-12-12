@@ -107,6 +107,46 @@ export interface Gen2RenderingOptions {
 const createFileWriter = (path: string) => async (content: string) => fs.writeFile(path, content);
 
 /**
+ * Copies all files from Gen 1 function src directory to Gen 2 function directory
+ * @param resourceName - Name of the function resource
+ * @param destDir - Destination directory for Gen 2 function
+ * @param fileWriter - Function to write files
+ */
+const copyGen1FunctionFiles = async (
+  resourceName: string,
+  destDir: string,
+  fileWriter: (content: string, path: string) => Promise<void>,
+): Promise<void> => {
+  try {
+    const gen1SrcDir = path.join('amplify', 'backend', 'function', resourceName, 'src');
+    const srcEntries = await fs.readdir(gen1SrcDir, { recursive: true, withFileTypes: true });
+
+    for (const entry of srcEntries) {
+      if (entry.isFile()) {
+        const file = path.relative(gen1SrcDir, path.join(entry.parentPath, entry.name));
+        const fileName = path.basename(file);
+        const skipFiles = ['package.json', 'package-lock.json', 'yarn.lock', 'pnpm-lock.yaml'];
+
+        if (!skipFiles.includes(fileName)) {
+          const srcPath = path.join(gen1SrcDir, file);
+          const content = await fs.readFile(srcPath, 'utf-8');
+          const destFile = file;
+          const destPath = path.join(destDir, destFile);
+
+          // Ensure destination directory exists
+          await fs.mkdir(path.dirname(destPath), { recursive: true });
+          await fileWriter(content, destPath);
+        }
+      }
+    }
+  } catch (error) {
+    throw new Error(
+      `Failed to copy Gen 1 function files for '${resourceName}': ${error instanceof Error ? error.message : 'Unknown error'}`,
+    );
+  }
+};
+
+/**
  * Creates a Gen 2 renderer pipeline that transforms Gen 1 Amplify configurations
  * into Gen 2 TypeScript resource definitions and project structure.
  *
@@ -223,17 +263,9 @@ export const createGen2Renderer = ({
             async () => renderFunctions(func),
             (content) => {
               // Create both resource.ts (with function definition) and copy handler from Gen 1
-              return fileWriter(content, path.join(dirPath, 'resource.ts')).then(async () => {
-                // Try to copy the original handler file from Gen 1
-                try {
-                  const gen1HandlerPath = path.join('amplify', 'backend', 'function', resourceName, 'src', 'index.js');
-                  const handlerContent = await fs.readFile(gen1HandlerPath, 'utf-8');
-                  return fileWriter(handlerContent, path.join(dirPath, 'handler.ts'));
-                } catch {
-                  // If Gen 1 handler doesn't exist, create empty handler
-                  return fileWriter('', path.join(dirPath, 'handler.ts'));
-                }
-              });
+              return fileWriter(content, path.join(dirPath, 'resource.ts')).then(() =>
+                copyGen1FunctionFiles(resourceName, dirPath, fileWriter),
+              );
             },
           ),
         );
