@@ -349,12 +349,12 @@ describe('render auth node', () => {
         const authDefinition: AuthDefinition = {
           loginOptions: {
             googleLogin: true,
-            scopes: ['email', 'openid'],
+            googleScopes: ['email', 'openid'],
           },
         };
         const node = renderAuthNode(authDefinition);
         const source = printNodeArray(node);
-        assert.match(source, /defineAuth\(\{[\s\S]*scopes:\s\["email",\s"openid"\]/);
+        assert.match(source, /google:\s*\{[\s\S]*scopes:\s*\["email",\s*"openid"\]/);
       });
       it('renders no oauth scopes if not passed', () => {
         const authDefinition: AuthDefinition = {
