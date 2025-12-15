@@ -107,6 +107,58 @@ export interface Gen2RenderingOptions {
 const createFileWriter = (path: string) => async (content: string) => fs.writeFile(path, content);
 
 /**
+ * Extracts dependencies from Gen 1 function package.json
+ * @param resourceName - Name of the function resource
+ * @returns Object with dependencies and devDependencies
+ */
+const extractGen1FunctionDependencies = async (
+  resourceName: string,
+): Promise<{ dependencies?: Record<string, string>; devDependencies?: Record<string, string> }> => {
+  try {
+    const packageJsonPath = path.join('amplify', 'backend', 'function', resourceName, 'src', 'package.json');
+    const packageContent = await fs.readFile(packageJsonPath, 'utf-8');
+    const packageJson = JSON.parse(packageContent);
+    return {
+      dependencies: packageJson.dependencies,
+      devDependencies: packageJson.devDependencies,
+    };
+  } catch {
+    // Safely return an empty dictionary if no package.json is found
+    return {};
+  }
+};
+
+/**
+ * Merges dependencies from all Gen 1 functions, selecting highest version for conflicts
+ * @param functions - Array of function definitions
+ * @returns Combined dependencies and devDependencies
+ */
+const mergeAllFunctionDependencies = async (
+  functions: FunctionDefinition[],
+): Promise<{ dependencies: Record<string, string>; devDependencies: Record<string, string> }> => {
+  const functionDeps: Record<string, string> = {};
+  const functionDevDeps: Record<string, string> = {};
+
+  const mergeWithHighestVersion = (target: Record<string, string>, source: Record<string, string>) => {
+    for (const [pkg, version] of Object.entries(source)) {
+      if (!target[pkg] || version > target[pkg]) {
+        target[pkg] = version;
+      }
+    }
+  };
+
+  for (const func of functions) {
+    if (func.resourceName) {
+      const deps = await extractGen1FunctionDependencies(func.resourceName);
+      mergeWithHighestVersion(functionDeps, deps.dependencies || {});
+      mergeWithHighestVersion(functionDevDeps, deps.devDependencies || {});
+    }
+  }
+
+  return { dependencies: functionDeps, devDependencies: functionDevDeps };
+};
+
+/**
  * Copies all files from Gen 1 function src directory to Gen 2 function directory
  * @param resourceName - Name of the function resource
  * @param destDir - Destination directory for Gen 2 function
@@ -191,9 +243,27 @@ export const createGen2Renderer = ({
       } catch (e) {
         // File doesn't exist or is inaccessible. Ignore.
       }
+      // Merge dependencies from all Gen 1 functions
+      const { dependencies: functionDeps, devDependencies: functionDevDeps } = functions?.length
+        ? await mergeAllFunctionDependencies(functions)
+        : { dependencies: {}, devDependencies: {} };
+
+      // Merge function dependencies into the package.json
+      const updatedPackageJson = {
+        ...packageJson,
+        dependencies: {
+          ...(packageJson.dependencies || {}),
+          ...functionDeps,
+        },
+        devDependencies: {
+          ...(packageJson.devDependencies || {}),
+          ...functionDevDeps,
+        },
+      };
+
       // Restrict dev dependencies to specific versions based on create-amplify gen2 flow:
       // https://github.com/aws-amplify/amplify-backend/blob/2dab201cb9a222c3b8c396a46c17d661411839ab/packages/create-amplify/src/amplify_project_creator.ts#L15-L24
-      return patchNpmPackageJson(packageJson, {
+      return patchNpmPackageJson(updatedPackageJson, {
         'aws-cdk': '^2',
         'aws-cdk-lib': '^2',
         'ci-info': '^4.3.1',
