@@ -944,6 +944,12 @@ export class DriftFormatter {
       return output;
     }
 
+    // Check if there are any local changes
+    if (this.phase3Results.totalDrifted === 0) {
+      output += `└── Status: ${chalk.green('NO DRIFT DETECTED')}\n`;
+      return output;
+    }
+
     // Group resources by category for structured display (including no-drift categories)
     const categoryGroups = this.groupPhase3ResourcesByCategory();
     const allCategories = this.getAllCategoriesForPhase3(categoryGroups);
