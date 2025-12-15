@@ -130,6 +130,29 @@ export class DataDefinitionFetcher {
   };
 
   /**
+   * Fetches logging configuration from AWS AppSync API.
+   */
+  private getLoggingConfigFromConsole = async (apiId: string) => {
+    try {
+      const client = new AppSyncClient({});
+      const response = await client.send(new GetGraphqlApiCommand({ apiId }));
+
+      const logConfig = response.graphqlApi?.logConfig;
+      if (logConfig?.fieldLogLevel && logConfig.fieldLogLevel !== 'NONE') {
+        // Map AWS AppSync log levels to Gen2 DataLogLevel enum values
+        const fieldLogLevel = logConfig.fieldLogLevel.toLowerCase() as 'none' | 'all' | 'info' | 'debug' | 'error';
+        return {
+          fieldLogLevel,
+          ...(logConfig.excludeVerboseContent !== undefined && { excludeVerboseContent: logConfig.excludeVerboseContent }),
+        };
+      }
+      return undefined;
+    } catch (error) {
+      throw new Error(`Failed to fetch logging config from AWS: ${error.message}`);
+    }
+  };
+
+  /**
    * Retrieves the complete data definition for migration.
    *
    * This method orchestrates the extraction of data definitions from a Gen1 project:
@@ -169,11 +192,13 @@ export class DataDefinitionFetcher {
       const apiId = appSyncApi?.output?.GraphQLAPIIdOutput;
       const additionalAuthProviders = apiId ? await this.getAdditionalAuthProvidersFromConsole(apiId) : [];
 
+      const logging = apiId ? await this.getLoggingConfigFromConsole(apiId) : undefined;
       return {
         tableMappings: undefined, // Will be generated from schema during migration
         schema,
         authorizationModes,
         additionalAuthProviders: additionalAuthProviders.length > 0 ? additionalAuthProviders : undefined,
+        logging,
       };
     }
 
