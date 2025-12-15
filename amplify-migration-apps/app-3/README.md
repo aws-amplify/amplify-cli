@@ -67,7 +67,7 @@ Do you want to use the default authentication and security configuration? Defaul
 Warning: you will not be able to edit these selections.
 How do you want users to be able to sign in? Email or Phone Number
 Do you want to configure advanced settings? No, I am done.
-What domain name prefix do you want to use? personalmediavault0e94a9d2-0e94a9d2
+What domain name prefix do you want to use? personalmediavaultXXXXX
 Enter your redirect signin URI: http://localhost:3000/
 ? Do you want to add another redirect signin URI No
 Enter your redirect signout URI: http://localhost:3000/
@@ -111,9 +111,6 @@ Enter your Facebook App Secret for your OAuth flow: XXXXX
 2. Click on create OAuth client
    - Application type: Web application
    - Name: amplify client
-   - Get domain name prefix and region from the earlier steps and replace in the next steps
-   - Authorized JavaScript origins: `https://<domain-name-prefix>-<env>.auth.<region>.amazoncognito.com`
-   - Authorized redirect URIs: `https://<domain-name-prefix>-<env>.auth.<region>.amazoncognito.com/oauth2/idpresponse`
    - Click create
    - Copy client id and client secret
 ```
@@ -122,9 +119,6 @@ You've opted to allow users to authenticate via Google. If you haven't already, 
 
 Enter your Google Web Client ID for your OAuth flow: XXXXX
 Enter your Google Web Client Secret for your OAuth flow: XXXXX
-```
-
-```
 ```
 
 ### Step 3: Add User Groups
@@ -160,7 +154,7 @@ API key configuration
 
 ✔ Do you want to edit the schema now? (Y/n) · yes
 
-Edit the file in your editor: /amplify/backend/api/<api-name>/schema.graphql
+Edit the file in your editor: /amplify/backend/api/<apiName>/schema.graphql
 ```
 
 ```graphql
@@ -367,8 +361,58 @@ In `amplify/backend/function/thumbnailgen/thumbnailgen-cloudformation-template.j
 amplify push
 ```
 ```
-npm install
+npm install && npm run dev
 ```
+
+After deploying on amplify console copy your domain and continue:
+```
+amplify update auth
+```
+```
+Using service: Cognito, provided by: awscloudformation
+ What do you want to do? Add/Edit signin and signout redirect URIs
+ Which redirect signin URIs do you want to edit? 
+ Do you want to add redirect signin URIs? Yes
+ Enter your new redirect signin URI: https://main.<appId>.amplifyapp.com/
+? Do you want to add another redirect signin URI No
+ Which redirect signout URIs do you want to edit? 
+ Do you want to add redirect signout URIs? Yes
+ Enter your new redirect signout URI: https://main.<appId>.amplifyapp.com/
+? Do you want to add another redirect signout URI No
+```
+
+**Before deploying the Gen2 branch**, you must add OAuth provider secrets:
+
+1. Go to Amplify Console → `<your-app-name>` → Hosting → Secrets  
+   - Add the following secrets (use the same values from your Gen1 setup):   
+       FACEBOOK_CLIENT_ID = (your Facebook App ID)  
+       FACEBOOK_CLIENT_SECRET = (your Facebook App Secret)   
+       GOOGLE_CLIENT_ID = (your Google Web Client ID)   
+       GOOGLE_CLIENT_SECRET = (your Google Web Client Secret)   
+   - Save and redeploy the `gen2-main` branch   
+
+1. Go to https://developers.facebook.com:   
+   - Get cognito domain from cognito -> userpool -> `<userpoolname>` -> domain and replace in the next steps     
+   - In Settings -> Basic -> App Domains paste:   
+       your app's URI: `https://main.<appId>.amplifyapp.com`   
+       cognito domain: `https://personalmediavaultXXXXX-<env>.auth.<region>.amazoncognito.com`      
+   - In Use Cases -> Customize Facebook Login -> Setting -> valid OAuth Redirect URIs paste:        
+       your app's OAuth URI: `https://main.<appId>.amplifyapp.com/oauth2/idpresponse/`    
+       cognito domain: `https:/personalmediavaultXXXXX-<env>.auth.<region>.amazoncognito.com`         
+   - Click Save changes    
+
+2. Go to https://console.developers.google.com/   
+   - On the left navigation bar, look for credentials under APIs and Services under Pinned   
+   - Click on the project which we created during setup (amplify test)    
+   - Click on the earlier created OAuth 2.0 client ID   
+   - In Authorized JavaScript origins paste   
+       your app's URI: `https://main.<appId>.amplifyapp.com`   
+       cognito domain: `https://personalmediavaultXXXXX-<env>.auth.<region>.amazoncognito.com`    
+
+   - In Authorized redirect URI paste:   
+       your app's OAuth URI: `https://main.<appId>.amplifyapp.com/oauth2/idpresponse/`   
+       cognito OAuth domain: `https://personalmediavaultXXXXX-<env>.auth.<region>.amazoncognito.com/oauth2/idpresponse`    
+   - Click save   
 
 ## Architecture
 
@@ -392,4 +436,70 @@ npm install
 - Drag & drop file upload with progress tracking
 - Real-time thumbnail processing status
 - Collection-based media organization
-- Role-based access (Admin/Basic groups)
+- Role-based access (Admin/Basic groups) 
+
+## Summary of changes required during Gen1 to Gen2 migration:
+
+1. In `amplify/backend.ts`:
+   
+Line 80:  
+before: `const cfnGraphQLApi = backend.data.resources.cfnResources.cfnGraphQLApi;`    
+after: `const cfnGraphqlApi = backend.data.resources.cfnResources.cfnGraphqlApi;`  
+  
+Line 51 (remove this line entirely):    
+after: (delete this line)    
+
+3. In `src/main.tsx`:
+      
+before: `import amplifyconfig from './amplifyconfiguration.json';`    
+after: `import amplifyconfig from '../amplify_outputs.json';`   
+
+4. In `amplify/function/thumbnailgen/resource.ts`:
+   
+before: `entry: "index.handler",`     
+after: `entry: "index.js",`   
+
+5. In `amplify/data/resource.ts`:
+
+after: Add `apiKeyAuthorizationMode: { expiresInDays: 100 }` to authorizationModes. 
+ 
+After deployment suceeds: 
+  
+1. Go to https://developers.facebook.com:     
+   - Get cognito domain from cognito -> userpool -> `<userpoolname>` -> domain and replace in the next steps     
+   - In Settings -> Basic -> App Domains paste:   
+       your app's URI: `https://gen2-main.<appId>.amplifyapp.com`   
+       cognito domain: `https://<XXXXX>.auth.<region>.amazoncognito.com`      
+   - In Use Cases -> Customize Facebook Login -> Setting -> valid OAuth Redirect URIs paste:        
+       your app's OAuth URI: https://gen2main.<appId>.amplifyapp.com/oauth2/idpresponse/   
+       cognito domain: `https://<XXXXX>.auth.<region>.amazoncognito.com`        
+  
+
+2. Go to https://console.developers.google.com:   
+   - On the left navigation bar, look for credentials under APIs and Services under Pinned   
+   - Click on the project which we created during setup (amplify test)   
+   - Click on the earlier created OAuth 2.0 client ID   
+   - In Authorized JavaScript origins paste:     
+       your app's URI: `https://gen2-main.<appId>.amplifyapp.com`   
+       cognito domain: `https://<XXXXX>.auth.<region>.amazoncognito.com`    
+
+   - In Authorized redirect URI paste:  
+       your app's OAuth URI: `https://gen2main.<appId>.amplifyapp.com/oauth2/idpresponse/`  
+       cognito OAuth domain: `https://<XXXXX>.auth.<region>.amazoncognito.com/oauth2/idpresponse`    
+   - Click on Save  
+
+4. In `amplify/auth/resource.ts`:  
+
+Line 25:    
+after: Add `"https://gen2-main.<appId>.amplifyapp.com/"` to callbackUrls array  
+
+Line 26:    
+after: Add `"https://gen2-main.<appId>.amplifyapp.com/"` to logoutUrls array   
+
+5. In `amplify/backend.ts`   
+
+Line 40:     
+after: Add `"https://gen2-main.<appId>.amplifyapp.com/"` to callbackUrls array  
+      
+Line 41:     
+after: Add `"https://gen2-main.<appId>.amplifyapp.com/"` to logoutUrls array   
