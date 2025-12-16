@@ -6,6 +6,8 @@ export class AmplifyHelperTransformer {
     const projectInfoVariables = new Set<string>();
     // Track parameter names with AmplifyResourceProps type
     const amplifyResourcePropsParams = new Set<string>();
+    // Track dependencies from addResourceDependency calls
+    const resourceDependencies = new Set<string>();
 
     const transformer = <T extends ts.Node>(context: ts.TransformationContext) => {
       return (node: T) => {
@@ -58,6 +60,39 @@ export class AmplifyHelperTransformer {
               // Remove this entire variable statement
               return undefined;
             }
+
+            // Remove AmplifyHelpers.addResourceDependency variable statements
+            if (
+              declaration &&
+              declaration.initializer &&
+              ts.isCallExpression(declaration.initializer) &&
+              ts.isPropertyAccessExpression(declaration.initializer.expression) &&
+              ts.isIdentifier(declaration.initializer.expression.expression) &&
+              declaration.initializer.expression.expression.text === 'AmplifyHelpers' &&
+              declaration.initializer.expression.name.text === 'addResourceDependency' &&
+              ts.isIdentifier(declaration.name)
+            ) {
+              // Extract dependencies from the call
+              const args = declaration.initializer.arguments;
+              if (args.length >= 4 && ts.isArrayLiteralExpression(args[3])) {
+                args[3].elements.forEach((element) => {
+                  if (ts.isObjectLiteralExpression(element)) {
+                    element.properties.forEach((prop) => {
+                      if (
+                        ts.isPropertyAssignment(prop) &&
+                        ts.isIdentifier(prop.name) &&
+                        prop.name.text === 'category' &&
+                        ts.isStringLiteral(prop.initializer)
+                      ) {
+                        resourceDependencies.add(prop.initializer.text);
+                      }
+                    });
+                  }
+                });
+              }
+              // Remove this entire variable statement
+              return undefined;
+            }
           }
 
           // Transform property access to AmplifyHelpers.getProjectInfo().envName or .projectName
@@ -104,6 +139,21 @@ export class AmplifyHelperTransformer {
                 return ts.factory.createStringLiteral('custom');
               }
             }
+
+            // Transform property access like amplifyResources.storage.bucket.bucketName
+            if (ts.isIdentifier(expression) && expression.text.includes('amplifyResources')) {
+              const fullAccess = AmplifyHelperTransformer.getPropertyAccessChain(node);
+
+              // Match pattern: amplifyResources.category.resourceName.property
+              const parts = fullAccess.split('.');
+              if (parts.length >= 4 && parts[0].includes('amplifyResources')) {
+                const category = parts[1];
+                const property = parts.slice(3).join('.');
+
+                // Transform to: category.resources.property
+                return AmplifyHelperTransformer.createPropertyAccessFromString(`${category}.resources.${property}`);
+              }
+            }
           }
 
           // Track constructor parameters with AmplifyResourceProps type
@@ -143,9 +193,23 @@ export class AmplifyHelperTransformer {
             );
           }
 
-          // Transform constructor: remove props and amplifyResourceProps parameters
+          // Transform constructor: add resource dependencies as parameters
           if (ts.isConstructorDeclaration(visitedNode)) {
-            const newParams = visitedNode.parameters.slice(0, 2);
+            const baseParams = visitedNode.parameters.slice(0, 2); // scope, id
+
+            // Add resource dependency parameters
+            const resourceParams = Array.from(resourceDependencies).map((category) =>
+              ts.factory.createParameterDeclaration(
+                undefined,
+                undefined,
+                category,
+                undefined,
+                ts.factory.createTypeReferenceNode('any'),
+                undefined,
+              ),
+            );
+
+            const newParams = [...baseParams, ...resourceParams];
             return ts.factory.updateConstructorDeclaration(visitedNode, visitedNode.modifiers, newParams, visitedNode.body);
           }
 
@@ -233,5 +297,32 @@ export class AmplifyHelperTransformer {
     newStatements.push(...sourceFile.statements.filter((stmt) => !ts.isImportDeclaration(stmt)));
 
     return ts.factory.updateSourceFile(sourceFile, newStatements);
+  }
+
+  private static getPropertyAccessChain(node: ts.PropertyAccessExpression): string {
+    const parts: string[] = [];
+    let current: ts.Node = node;
+
+    while (ts.isPropertyAccessExpression(current)) {
+      parts.unshift(current.name.text);
+      current = current.expression;
+    }
+
+    if (ts.isIdentifier(current)) {
+      parts.unshift(current.text);
+    }
+
+    return parts.join('.');
+  }
+
+  private static createPropertyAccessFromString(accessPath: string): ts.Expression {
+    const parts = accessPath.split('.');
+    let expression: ts.Expression = ts.factory.createIdentifier(parts[0]);
+
+    for (let i = 1; i < parts.length; i++) {
+      expression = ts.factory.createPropertyAccessExpression(expression, parts[i]);
+    }
+
+    return expression;
   }
 }

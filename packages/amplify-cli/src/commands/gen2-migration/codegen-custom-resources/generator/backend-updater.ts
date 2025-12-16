@@ -5,7 +5,11 @@ export class BackendUpdater {
   /**
    * Updates backend.ts to register custom resources
    */
-  async updateBackendFile(backendFilePath: string, customResources: Map<string, string>): Promise<void> {
+  async updateBackendFile(
+    backendFilePath: string,
+    customResources: Map<string, string>,
+    resourceDependencies?: Map<string, string[]>,
+  ): Promise<void> {
     if (customResources.size === 0) {
       return;
     }
@@ -18,8 +22,9 @@ export class BackendUpdater {
     const entries = Array.from(customResources.entries());
     for (let i = 0; i < entries.length; i++) {
       const [resourceName, className] = entries[i];
+      const deps = resourceDependencies?.get(resourceName) || [];
       imports.push(this.createImport(resourceName, className));
-      instantiations.push(this.createInstantiation(resourceName, className));
+      instantiations.push(this.createInstantiation(resourceName, className, deps));
     }
 
     const updatedFile = this.injectIntoBackend(sourceFile, imports, instantiations);
@@ -43,17 +48,26 @@ export class BackendUpdater {
     );
   }
 
-  private createInstantiation(resourceName: string, className: string): ts.ExpressionStatement {
-    return ts.factory.createExpressionStatement(
-      ts.factory.createNewExpression(ts.factory.createIdentifier(resourceName), undefined, [
-        ts.factory.createCallExpression(
-          ts.factory.createPropertyAccessExpression(ts.factory.createIdentifier('backend'), 'createStack'),
-          undefined,
-          [ts.factory.createStringLiteral(resourceName)],
-        ),
-        ts.factory.createStringLiteral(resourceName),
-      ]),
-    );
+  private createInstantiation(resourceName: string, className: string, dependencies?: string[]): ts.ExpressionStatement {
+    const args: ts.Expression[] = [
+      ts.factory.createCallExpression(
+        ts.factory.createPropertyAccessExpression(ts.factory.createIdentifier('backend'), 'createStack'),
+        undefined,
+        [ts.factory.createStringLiteral(resourceName)],
+      ),
+      ts.factory.createStringLiteral(resourceName),
+    ];
+
+    // Add dependencies as third parameter if they exist
+    if (dependencies && dependencies.length > 0) {
+      const dependencyObject = ts.factory.createObjectLiteralExpression(
+        dependencies.map((dep) => ts.factory.createShorthandPropertyAssignment(ts.factory.createIdentifier(dep))),
+        true,
+      );
+      args.push(dependencyObject);
+    }
+
+    return ts.factory.createExpressionStatement(ts.factory.createNewExpression(ts.factory.createIdentifier(resourceName), undefined, args));
   }
 
   private injectIntoBackend(

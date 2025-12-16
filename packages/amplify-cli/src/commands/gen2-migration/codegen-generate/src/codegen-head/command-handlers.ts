@@ -394,8 +394,9 @@ export async function updateCustomResources() {
     // Update backend.ts to register custom resources
     const backendFilePath = path.join(amplifyGen2Dir, 'backend.ts');
     const customResourceMap = await getCustomResourceMap();
+    const resourceDependencies = await extractResourceDependencies(customResources, destinationCustomResourcePath);
     const backendUpdater = new BackendUpdater();
-    await backendUpdater.updateBackendFile(backendFilePath, customResourceMap);
+    await backendUpdater.updateBackendFile(backendFilePath, customResourceMap, resourceDependencies);
 
     movingGen1CustomResources.succeed(`Moved ${GEN1_CUSTOM_RESOURCES_SUFFIX}`);
   }
@@ -418,13 +419,7 @@ export async function updateCdkStackFile(customResources: string[], destinationC
     try {
       let cdkStackContent = await fs.readFile(cdkStackFilePath, { encoding: 'utf-8' });
 
-      // Check for existence of AmplifyHelpers.addResourceDependency and throw an error if found
-      if (hasUncommentedDependency(cdkStackContent, 'AmplifyHelpers.addResourceDependency')) {
-        cdkStackContent = cdkStackContent.replace(
-          /export class/,
-          `throw new Error('Follow https://docs.amplify.aws/react/start/migrate-to-gen2/ to update the resource dependency');\n\nexport class`,
-        );
-      }
+      // AmplifyHelpers.addResourceDependency is now supported by the transformer
 
       // Add Construct import after other imports if not present
       if (!cdkStackContent.includes("from 'constructs'")) {
@@ -491,6 +486,50 @@ const hasUncommentedDependency = (fileContent: string, matchString: string) => {
   }
 
   return false;
+};
+
+const extractResourceDependencies = async (
+  customResources: string[],
+  destinationCustomResourcePath: string,
+): Promise<Map<string, string[]>> => {
+  const resourceDependencies = new Map<string, string[]>();
+
+  for (const resource of customResources) {
+    const cdkStackFilePath = path.join(destinationCustomResourcePath, resource, 'cdk-stack.ts');
+
+    try {
+      const cdkStackContent = await fs.readFile(cdkStackFilePath, { encoding: 'utf-8' });
+      const dependencies: string[] = [];
+
+      // Parse for AmplifyHelpers.addResourceDependency calls
+      const dependencyRegex = /AmplifyHelpers\.addResourceDependency\s*\([^,]+,[^,]+,[^,]+,\s*\[([^\]]+)\]/g;
+      let match;
+
+      while ((match = dependencyRegex.exec(cdkStackContent)) !== null) {
+        const dependenciesArray = match[1];
+
+        // Extract category values from dependency objects
+        const categoryRegex = /category:\s*['"]([^'"]+)['"]/g;
+        let categoryMatch;
+
+        while ((categoryMatch = categoryRegex.exec(dependenciesArray)) !== null) {
+          const category = categoryMatch[1];
+          if (!dependencies.includes(category)) {
+            dependencies.push(category);
+          }
+        }
+      }
+
+      if (dependencies.length > 0) {
+        resourceDependencies.set(resource, dependencies);
+      }
+    } catch (error) {
+      // If we can't read the file, skip dependency extraction for this resource
+      console.warn(`Could not extract dependencies for resource ${resource}:`, error);
+    }
+  }
+
+  return resourceDependencies;
 };
 export async function prepare(logger: Logger) {
   const appId = resolveAppId();
