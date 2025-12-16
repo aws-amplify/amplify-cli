@@ -2,13 +2,13 @@
 
 The codegen-generate module is the code generation pipeline for transforming AWS Amplify Gen1 project configurations into Gen2 TypeScript resource definitions. It fetches live AWS resource configurations from deployed Gen1 backends—including Cognito User Pools, S3 buckets, Lambda functions, and AppSync APIs—and generates idiomatic Gen2 TypeScript code using the `@aws-amplify/backend` SDK patterns.
 
-This module solves the critical challenge of automating Gen1 to Gen2 migrations. Without this automation, developers would need to manually recreate all backend resources in Gen2 format, risking configuration drift and data loss. The module ensures DynamoDB table mappings are preserved via `migratedAmplifyGen1DynamoDbTableMappings` to prevent data migration issues. It produces a complete `amplify/` directory structure with `resource.ts` files for auth, data, storage, and functions categories.
+This module solves the critical challenge of automating Gen1 to Gen2 migrations. Without this automation, developers would need to manually recreate all backend resources in Gen2 format, risking configuration drift and data loss. The module ensures DynamoDB table mappings are preserved via `modelNameToTableNameMapping` to prevent data migration issues. It produces a complete `amplify/` directory structure with `resource.ts` files for auth, data, storage, and functions categories. It also copies over the function index files, along with other helper files. `generate` also creates the folder structure, dependency file, as well as other config files for the migrated Gen2 app.
 
-Primary consumers include the `AmplifyMigrationGenerateStep` in gen2-migration-core, Amplify CLI users running the generate migration step, and CI/CD pipelines automating Gen1 to Gen2 migrations.
+Primary consumers include Amplify CLI users running the `amplify gen2-migration generate` command and CI/CD pipelines automating Gen1 to Gen2 migrations.
 
 ## Key Responsibilities
 
-- Fetch live AWS resource configurations from deployed Gen1 backends using AWS SDK clients (Cognito, S3, Lambda, AppSync, CloudWatch Events)
+- Fetch live AWS resource configurations from deployed Gen1 backends using AWS SDK clients (Cognito, S3, AppSync, CloudWatch Events) as well as configurations from the local Gen1 app backend files (Lambda)
 - Transform Gen1 resource configurations into Gen2 TypeScript AST nodes using the TypeScript compiler API
 - Generate complete `amplify/` directory structure with `resource.ts` files for each category (auth, data, storage, functions)
 - Preserve DynamoDB table mappings via `migratedAmplifyGen1DynamoDbTableMappings` to prevent data loss during migration
@@ -29,10 +29,14 @@ flowchart TD
         DataFetcher["DataDefinitionFetcher"]
         StorageFetcher["AppStorageDefinitionFetcher"]
         FunctionsFetcher["AppFunctionsDefinitionFetcher"]
+        OtherFetchers["..."]
     end
     
     subgraph "Adapters"
         AuthAdapter["getAuthDefinition()"]
+        DataAdapter["getDataDefinition()"]
+        StorageAdapter["getStorageDefinition()"]
+        FunctionsAdapter["getFunctionsDefinition()"]
     end
     
     subgraph "Generators"
@@ -49,18 +53,18 @@ flowchart TD
         Backend["BackendSynthesizer"]
     end
     
-    prepare --> AuthFetcher & DataFetcher & StorageFetcher & FunctionsFetcher
+    prepare --> AuthFetcher & DataFetcher & StorageFetcher & FunctionsFetcher & OtherFetchers
     AuthFetcher --> AuthAdapter --> AuthGen
-    DataFetcher --> DataGen
-    StorageFetcher --> StorageGen
-    FunctionsFetcher --> FunctionsGen
+    DataFetcher --> DataAdapter --> DataGen
+    StorageFetcher --> StorageAdapter --> StorageGen
+    FunctionsFetcher --> FunctionsAdapter --> FunctionsGen
     AuthGen & DataGen & StorageGen & FunctionsGen --> Pipeline
     Pipeline --> TSRenderer --> ResourceTS
     Pipeline --> Backend
 ```
 
 | Component | File | Purpose |
-|-----------|------|---------|
+|-----------|---------|---------|
 | `prepare` | `src/codegen-head/command-handlers.ts` | Main entry point that initializes AWS clients, fetches all definitions, runs the render pipeline, and handles post-generation tasks |
 | `createGen2Renderer` | `src/core/migration-pipeline.ts` | Factory function that assembles the render pipeline with directory creation, JSON config files, and TypeScript resource files |
 | `BackendSynthesizer` | `src/backend/synthesizer.ts` | Generates the main `backend.ts` file with imports, user pool client configuration, OAuth flows, and environment variable setup |
@@ -136,7 +140,7 @@ interface DataDefinition {
 
 **Internal:**
 - `codegen-custom-resources` — AmplifyHelperTransformer, DependencyMerger, FileConverter, BackendUpdater for migrating custom CDK resources
-- `gen2-migration-core` — Logger class for structured logging output
+- `gen2-migration` — Logger class for structured logging output
 
 **External:**
 | Package | Purpose |
@@ -150,7 +154,7 @@ interface DataDefinition {
 | `@aws-sdk/client-cloudwatch-events` | DescribeRule for extracting CloudWatch Events schedule expressions |
 | `@aws-sdk/client-sts` | GetCallerIdentity for AWS account ID |
 | `typescript` | TypeScript compiler API (ts.factory) for programmatic AST generation |
-| `@aws-amplify/amplify-cli-core` | stateManager for reading amplify-meta.json, pathManager for project paths |
+| `@aws-amplify/amplify-cli-core` | Amplify CLI core utilities for project management and state | stateManager for reading amplify-meta.json, pathManager for project paths |
 | `glob` | Finding multiple .graphql schema files in schema folder |
 | `ora` | Spinner for progress indication during custom resource migration |
 | `execa` | Running npm install after code generation |
@@ -250,7 +254,7 @@ switch (runtime) {
 
 **Common pitfalls:**
 - Don't assume all categories exist—each definition fetcher returns `undefined` if the category is not present in the Gen1 project
-- Social provider secrets (`GOOGLE_CLIENT_ID`, etc.) are placeholders—users must set actual values via `npx ampx sandbox secret set` before deployment
+- Social provider secrets (`GOOGLE_CLIENT_ID`, etc.) must be set by the users via `npx ampx sandbox secret set` before deployment. If not, deployment would fail
 - The `referenceAuth` path (for imported Cognito resources) skips most auth generation—ensure this early return is preserved
 - Schema folder support (multiple `.graphql` files) uses glob—ensure glob patterns work correctly on all platforms
 - CloudWatch schedule expressions are converted from `rate(5 minutes)` to `every 5m` format—verify conversion logic for edge cases
