@@ -333,7 +333,7 @@ git push origin main
 ### Step 12: Set Up Amplify Console Hosting
 
 1. Go to [AWS Amplify Console](https://console.aws.amazon.com/amplify/)
-2. Click **"New app"** → **"Host web app"**
+2. Click **"discusproject"** → **"Connect your frontend"**
 3. Select **"GitHub"** as repository service
 4. Authorize AWS Amplify to access your GitHub account
 5. Select repository: `your-username/discus-project`
