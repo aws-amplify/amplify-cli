@@ -59,6 +59,7 @@ export class AppStorageDefinitionFetcher {
     return triggers;
   };
 
+  // Check the properties
   private parseDynamoDBTable = async (storageName: string, currentCloudBackendDirectory: string): Promise<DynamoDBTableDefinition> => {
     const cliInputsPath = path.join(currentCloudBackendDirectory, 'storage', storageName, 'cli-inputs.json');
     const cliInputs = await this.readJsonFile(cliInputsPath);
@@ -79,22 +80,24 @@ export class AppStorageDefinitionFetcher {
 
     const gsis: DynamoDBGSI[] = [];
     if (cliInputs.gsi) {
-      cliInputs.gsi.forEach((gsi: any) => {
-        const gsiDef: DynamoDBGSI = {
-          indexName: gsi.name,
-          partitionKey: {
-            name: gsi.partitionKey.name,
-            type: this.mapAttributeType(gsi.partitionKey.type),
-          },
-        };
-        if (gsi.sortKey) {
-          gsiDef.sortKey = {
-            name: gsi.sortKey.name,
-            type: this.mapAttributeType(gsi.sortKey.type),
+      cliInputs.gsi.forEach(
+        (gsi: { name: string; partitionKey: { name: string; type: string }; sortKey?: { name: string; type: string } }) => {
+          const gsiDef: DynamoDBGSI = {
+            indexName: gsi.name,
+            partitionKey: {
+              name: gsi.partitionKey.name,
+              type: this.mapAttributeType(gsi.partitionKey.type),
+            },
           };
-        }
-        gsis.push(gsiDef);
-      });
+          if (gsi.sortKey) {
+            gsiDef.sortKey = {
+              name: gsi.sortKey.name,
+              type: this.mapAttributeType(gsi.sortKey.type),
+            };
+          }
+          gsis.push(gsiDef);
+        },
+      );
     }
 
     const lambdaPermissions = this.findLambdaPermissions(tableName);
@@ -121,26 +124,23 @@ export class AppStorageDefinitionFetcher {
     }
   };
 
+  // Understand how this works
   private findLambdaPermissions = (tableName: string) => {
     const permissions: { functionName: string; envVarName: string }[] = [];
     const meta = stateManager.getMeta();
 
     if (meta.function) {
-      Object.entries(meta.function).forEach(([functionName, functionConfig]: [string, any]) => {
-        try {
-          const functionInputs = stateManager.getResourceInputsJson(undefined, 'function', functionName);
-          if (functionInputs?.environmentVariables) {
-            Object.entries(functionInputs.environmentVariables).forEach(([envVar, value]: [string, any]) => {
-              if (typeof value === 'string' && value.includes(tableName)) {
-                permissions.push({
-                  functionName,
-                  envVarName: envVar,
-                });
-              }
-            });
-          }
-        } catch (e) {
-          // Ignore errors reading function inputs
+      Object.entries(meta.function).forEach(([functionName]: [string, unknown]) => {
+        const functionInputs = stateManager.getResourceInputsJson(undefined, 'function', functionName);
+        if (functionInputs?.environmentVariables) {
+          Object.entries(functionInputs.environmentVariables).forEach(([envVar, value]: [string, unknown]) => {
+            if (typeof value === 'string' && value.includes(tableName)) {
+              permissions.push({
+                functionName,
+                envVarName: envVar,
+              });
+            }
+          });
         }
       });
     }
