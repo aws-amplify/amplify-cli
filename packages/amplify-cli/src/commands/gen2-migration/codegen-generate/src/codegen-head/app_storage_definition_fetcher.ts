@@ -67,89 +67,74 @@ export class AppStorageDefinitionFetcher {
     currentCloudBackendDirectory: string,
     storageOutput: StorageOutput,
   ): Promise<DynamoDBTableDefinition> => {
-    const cliInputsPath = path.join(currentCloudBackendDirectory, 'storage', storageName, 'cli-inputs.json');
-    const cliInputs = await this.readJsonFile(cliInputsPath);
+    const actualTableName = storageOutput.output?.Name || storageName;
+    const describeResult = await this.dynamoClient.send(new DescribeTableCommand({ TableName: actualTableName }));
+    const table = describeResult.Table!;
 
-    const tableName = cliInputs.tableName || storageName;
+    // Extract schema from live table
     const partitionKey: DynamoDBAttribute = {
-      name: cliInputs.partitionKey?.name || 'id',
-      type: this.mapAttributeType(cliInputs.partitionKey?.type || 'S'),
+      name: table.KeySchema!.find((k) => k.KeyType === 'HASH')!.AttributeName!,
+      type: this.mapAttributeType(
+        table.AttributeDefinitions!.find((a) => a.AttributeName === table.KeySchema!.find((k) => k.KeyType === 'HASH')!.AttributeName)!
+          .AttributeType!,
+      ),
     };
 
     let sortKey: DynamoDBAttribute | undefined;
-    if (cliInputs.sortKey) {
+    const sortKeySchema = table.KeySchema!.find((k) => k.KeyType === 'RANGE');
+    if (sortKeySchema) {
       sortKey = {
-        name: cliInputs.sortKey.name,
-        type: this.mapAttributeType(cliInputs.sortKey.type),
+        name: sortKeySchema.AttributeName!,
+        type: this.mapAttributeType(
+          table.AttributeDefinitions!.find((a) => a.AttributeName === sortKeySchema.AttributeName)!.AttributeType!,
+        ),
       };
     }
 
     const gsis: DynamoDBGSI[] = [];
-    if (cliInputs.gsi) {
-      cliInputs.gsi.forEach(
-        (gsi: { name: string; partitionKey: { name: string; type: string }; sortKey?: { name: string; type: string } }) => {
-          const gsiDef: DynamoDBGSI = {
-            indexName: gsi.name,
-            partitionKey: {
-              name: gsi.partitionKey.name,
-              type: this.mapAttributeType(gsi.partitionKey.type),
-            },
+    if (table.GlobalSecondaryIndexes) {
+      table.GlobalSecondaryIndexes.forEach((gsi) => {
+        const gsiDef: DynamoDBGSI = {
+          indexName: gsi.IndexName!,
+          partitionKey: {
+            name: gsi.KeySchema!.find((k) => k.KeyType === 'HASH')!.AttributeName!,
+            type: this.mapAttributeType(
+              table.AttributeDefinitions!.find((a) => a.AttributeName === gsi.KeySchema!.find((k) => k.KeyType === 'HASH')!.AttributeName)!
+                .AttributeType!,
+            ),
+          },
+        };
+        const gsiSortKey = gsi.KeySchema!.find((k) => k.KeyType === 'RANGE');
+        if (gsiSortKey) {
+          gsiDef.sortKey = {
+            name: gsiSortKey.AttributeName!,
+            type: this.mapAttributeType(
+              table.AttributeDefinitions!.find((a) => a.AttributeName === gsiSortKey.AttributeName)!.AttributeType!,
+            ),
           };
-          if (gsi.sortKey) {
-            gsiDef.sortKey = {
-              name: gsi.sortKey.name,
-              type: this.mapAttributeType(gsi.sortKey.type),
-            };
-          }
-          gsis.push(gsiDef);
-        },
-      );
+        }
+        gsis.push(gsiDef);
+      });
     }
 
-    const lambdaPermissions = this.findLambdaPermissions(tableName);
-
-    // Fetch current table configuration from AWS
-    const currentConfig: {
-      billingMode: 'PROVISIONED' | 'PAY_PER_REQUEST';
-      readCapacity: number;
-      writeCapacity: number;
-      streamEnabled: boolean;
-      streamViewType: string | undefined;
-    } = {
-      billingMode: 'PROVISIONED',
-      readCapacity: 5,
-      writeCapacity: 5,
-      streamEnabled: false,
-      streamViewType: undefined,
-    };
-
-    try {
-      const actualTableName = storageOutput.output?.Name || tableName;
-      const describeResult = await this.dynamoClient.send(new DescribeTableCommand({ TableName: actualTableName }));
-      const table = describeResult.Table;
-
-      if (table) {
-        currentConfig.billingMode = table.BillingModeSummary?.BillingMode === 'PAY_PER_REQUEST' ? 'PAY_PER_REQUEST' : 'PROVISIONED';
-        currentConfig.readCapacity = table.ProvisionedThroughput?.ReadCapacityUnits || 5;
-        currentConfig.writeCapacity = table.ProvisionedThroughput?.WriteCapacityUnits || 5;
-        currentConfig.streamEnabled = !!table.StreamSpecification?.StreamEnabled;
-        currentConfig.streamViewType = table.StreamSpecification?.StreamViewType;
-      }
-    } catch (e) {
-      // Use defaults if table doesn't exist or can't be accessed
-    }
+    const lambdaPermissions = this.findLambdaPermissions(actualTableName);
 
     return {
-      tableName,
+      tableName: actualTableName,
       partitionKey,
       sortKey,
       gsis: gsis.length > 0 ? gsis : undefined,
       lambdaPermissions: lambdaPermissions.length > 0 ? lambdaPermissions : undefined,
-      billingMode: currentConfig.billingMode,
-      readCapacity: currentConfig.readCapacity,
-      writeCapacity: currentConfig.writeCapacity,
-      streamEnabled: currentConfig.streamEnabled,
-      streamViewType: currentConfig.streamViewType as 'KEYS_ONLY' | 'NEW_IMAGE' | 'OLD_IMAGE' | 'NEW_AND_OLD_IMAGES' | undefined,
+      billingMode: table.BillingModeSummary?.BillingMode === 'PAY_PER_REQUEST' ? 'PAY_PER_REQUEST' : 'PROVISIONED',
+      readCapacity: table.ProvisionedThroughput?.ReadCapacityUnits || 5,
+      writeCapacity: table.ProvisionedThroughput?.WriteCapacityUnits || 5,
+      streamEnabled: !!table.StreamSpecification?.StreamEnabled,
+      streamViewType: table.StreamSpecification?.StreamViewType as
+        | 'KEYS_ONLY'
+        | 'NEW_IMAGE'
+        | 'OLD_IMAGE'
+        | 'NEW_AND_OLD_IMAGES'
+        | undefined,
     };
   };
 
