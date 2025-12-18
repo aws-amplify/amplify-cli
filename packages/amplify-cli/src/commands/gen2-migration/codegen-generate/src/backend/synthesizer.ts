@@ -9,17 +9,19 @@ import ts, {
   VariableDeclaration,
   VariableStatement,
 } from 'typescript';
-import { PolicyOverrides, ReferenceAuth } from '../generators/auth/index.js';
+import { PolicyOverrides, ReferenceAuth } from '../generators/auth';
 import type { BucketAccelerateStatus, BucketVersioningStatus } from '@aws-sdk/client-s3';
-import { AccessPatterns, ServerSideEncryptionConfiguration } from '../generators/storage/index.js';
+import { AccessPatterns, ServerSideEncryptionConfiguration } from '../generators/storage';
 import { ExplicitAuthFlowsType, OAuthFlowType, UserPoolClientType } from '@aws-sdk/client-cognito-identity-provider';
 import assert from 'assert';
-import { newLineIdentifier } from '../ts_factory_utils.js';
+import { newLineIdentifier } from '../ts_factory_utils';
+import type { AdditionalAuthProvider } from '../generators/data';
 
 const factory = ts.factory;
 export interface BackendRenderParameters {
   data?: {
     importFrom: string;
+    additionalAuthProviders?: AdditionalAuthProvider[];
   };
   auth?: {
     importFrom: string;
@@ -51,7 +53,7 @@ export interface BackendRenderParameters {
   unsupportedCategories?: Map<string, string>;
 }
 
-const amplifyGen1EnvName = 'AMPLIFY_GEN_1_ENV_NAME';
+// const amplifyGen1EnvName = 'AMPLIFY_GEN_1_ENV_NAME';
 
 export class BackendSynthesizer {
   private importDurationFlag = false;
@@ -168,7 +170,7 @@ export class BackendSynthesizer {
 
   private createUserPoolClientAssignment(userPoolClient: UserPoolClientType, imports: ts.ImportDeclaration[]) {
     const userPoolClientAttributesMap = new Map<string, string>();
-    userPoolClientAttributesMap.set('ClientName', 'userPoolClientName');
+
     userPoolClientAttributesMap.set('ClientSecret', 'generateSecret');
     userPoolClientAttributesMap.set('ReadAttributes', 'readAttributes');
     userPoolClientAttributesMap.set('WriteAttributes', 'writeAttributes');
@@ -552,6 +554,7 @@ export class BackendSynthesizer {
     scopeMap.set('email', 'EMAIL');
     scopeMap.set('openid', 'OPENID');
     scopeMap.set('profile', 'PROFILE');
+    scopeMap.set('aws.cognito.signin.user.admin', 'COGNITO_ADMIN');
 
     const scopesList: string[] = [];
     scopes.forEach((scope) => {
@@ -605,6 +608,83 @@ export class BackendSynthesizer {
       this.createBooleanPropertyAssignment('userPassword', value.includes(ExplicitAuthFlowsType.ALLOW_USER_PASSWORD_AUTH)),
       this.createBooleanPropertyAssignment('userSrp', value.includes(ExplicitAuthFlowsType.ALLOW_USER_SRP_AUTH)),
     ]);
+  }
+
+  private createAdditionalAuthProvidersArray(providers: AdditionalAuthProvider[]): Expression {
+    const providerElements = providers.map((provider) => {
+      const properties: ts.ObjectLiteralElementLike[] = [];
+
+      // Add authenticationType
+      properties.push(
+        factory.createPropertyAssignment(
+          factory.createIdentifier('authenticationType'),
+          factory.createStringLiteral(provider.authenticationType),
+        ),
+      );
+
+      // Add userPoolConfig with backend.auth reference for userPoolId
+      if (provider.userPoolConfig) {
+        const userPoolConfigProps: ts.ObjectLiteralElementLike[] = [];
+
+        if (provider.userPoolConfig.appIdClientRegex) {
+          userPoolConfigProps.push(
+            factory.createPropertyAssignment(
+              factory.createIdentifier('appIdClientRegex'),
+              factory.createStringLiteral(provider.userPoolConfig.appIdClientRegex),
+            ),
+          );
+        }
+
+        if (provider.userPoolConfig.awsRegion) {
+          userPoolConfigProps.push(
+            factory.createPropertyAssignment(
+              factory.createIdentifier('awsRegion'),
+              factory.createStringLiteral(provider.userPoolConfig.awsRegion),
+            ),
+          );
+        }
+
+        // Replace hardcoded userPoolId with backend.auth reference
+        if (provider.userPoolConfig.userPoolId) {
+          userPoolConfigProps.push(
+            factory.createPropertyAssignment(
+              factory.createIdentifier('userPoolId'),
+              this.createPropertyAccessExpression(factory.createIdentifier('backend'), 'auth.resources.userPool.userPoolId'),
+            ),
+          );
+        }
+
+        properties.push(
+          factory.createPropertyAssignment(
+            factory.createIdentifier('userPoolConfig'),
+            factory.createObjectLiteralExpression(userPoolConfigProps, true),
+          ),
+        );
+      }
+
+      // Add other configs if present
+      if (provider.lambdaAuthorizerConfig) {
+        properties.push(
+          factory.createPropertyAssignment(
+            factory.createIdentifier('lambdaAuthorizerConfig'),
+            this.getOverrideValue(provider.lambdaAuthorizerConfig),
+          ),
+        );
+      }
+
+      if (provider.openIdConnectConfig) {
+        properties.push(
+          factory.createPropertyAssignment(
+            factory.createIdentifier('openIdConnectConfig'),
+            this.getOverrideValue(provider.openIdConnectConfig),
+          ),
+        );
+      }
+
+      return factory.createObjectLiteralExpression(properties, true);
+    });
+
+    return factory.createArrayLiteralExpression(providerElements, true);
   }
 
   // id1.id2 = `templateHead-${templateSpan}templateTail`;
@@ -695,6 +775,8 @@ export class BackendSynthesizer {
     const defineBackendProperties = [];
     const nodes = [];
 
+    // Gen 2 requires different names / casing for password rules
+
     const mappedPolicyType: Record<string, string> = {
       MinimumLength: 'minimumLength',
       RequireUppercase: 'requireUppercase',
@@ -705,11 +787,9 @@ export class BackendSynthesizer {
       TemporaryPasswordValidityDays: 'temporaryPasswordValidityDays',
     };
 
-    if (renderArgs.auth || renderArgs.storage?.hasS3Bucket || renderArgs.customResources) {
-      imports.push(
-        this.createImportStatement([factory.createIdentifier('RemovalPolicy'), factory.createIdentifier('Tags')], 'aws-cdk-lib'),
-      );
-    }
+    // What it does: If you have auth configured:
+    // Adds import: import { auth } from './auth/resource';
+    // Adds auth to the backend definition
 
     if (renderArgs.auth) {
       imports.push(this.createImportStatement([authFunctionIdentifier], renderArgs.auth.importFrom));
@@ -717,17 +797,26 @@ export class BackendSynthesizer {
       defineBackendProperties.push(auth);
     }
 
+    // Same as auth
+
     if (renderArgs.data) {
       imports.push(this.createImportStatement([dataFunctionIdentifier], renderArgs.data.importFrom));
       const data = factory.createShorthandPropertyAssignment(dataFunctionIdentifier);
       defineBackendProperties.push(data);
     }
 
+    // Same as auth
+
     if (renderArgs.storage?.hasS3Bucket) {
       imports.push(this.createImportStatement([storageFunctionIdentifier], renderArgs.storage.importFrom));
       const storage = factory.createShorthandPropertyAssignment(storageFunctionIdentifier);
       defineBackendProperties.push(storage);
     }
+
+    // Context: Gen 1 might have multiple Lambda functions
+    // What it does: For each function (e.g., myFunction):
+    // Adds import: import { myFunction } from './function/myFunction/resource';
+    // Adds function to backend: defineBackend({ auth, myFunction, ... })
 
     if (renderArgs.function) {
       const functionNameCategories = renderArgs.function.functionNamesAndCategories;
@@ -737,6 +826,8 @@ export class BackendSynthesizer {
         imports.push(this.createImportStatement([factory.createIdentifier(functionName)], `./${category}/${functionName}/resource`));
       }
     }
+
+    // Dynamo table cannot be migrated
 
     if (renderArgs.storage?.dynamoDB) {
       nodes.push(
@@ -749,6 +840,8 @@ export class BackendSynthesizer {
         ),
       );
     }
+
+    // Adds core import: import { defineBackend } from '@aws-amplify/backend';
 
     imports.push(this.createImportStatement([backendFunctionIdentifier], '@aws-amplify/backend'));
 
@@ -767,49 +860,14 @@ export class BackendSynthesizer {
       }
     }
 
-    if (renderArgs.customResources) {
-      for (const [resourceName, className] of renderArgs.customResources) {
-        const importStatement = factory.createImportDeclaration(
-          undefined,
-          factory.createImportClause(
-            false,
-            undefined,
-            factory.createNamedImports([
-              factory.createImportSpecifier(false, factory.createIdentifier(`${className}`), factory.createIdentifier(`${resourceName}`)),
-            ]),
-          ),
-          factory.createStringLiteral(`./custom/${resourceName}/cdk-stack`),
-          undefined,
-        );
+    // Custom resources are now handled by BackendUpdater.updateBackendFile() in command-handlers.ts
+    // which is called after the initial backend.ts is generated. This ensures the correct Gen2 pattern
+    // is used (importing from ./custom/${resourceName}/resource and using backend.createStack())
 
-        imports.push(importStatement);
+    //const envNameStatements = this.createAmplifyEnvNameLogic();
+    //errors.push(...envNameStatements);
 
-        const customResourceExpression = factory.createNewExpression(factory.createIdentifier(`${resourceName}`), undefined, [
-          factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier('stack')),
-          factory.createStringLiteral(`${resourceName}`),
-          factory.createIdentifier('undefined'),
-          factory.createObjectLiteralExpression(
-            [
-              factory.createPropertyAssignment(factory.createIdentifier('category'), factory.createStringLiteral('custom')),
-              factory.createPropertyAssignment(factory.createIdentifier('resourceName'), factory.createStringLiteral(`${resourceName}`)),
-            ],
-            true,
-          ),
-        ]);
-
-        nodes.push(factory.createExpressionStatement(customResourceExpression));
-      }
-    }
-
-    const ciInfoImportStatement = factory.createImportDeclaration(
-      undefined,
-      factory.createImportClause(false, factory.createIdentifier('ci'), undefined),
-      factory.createStringLiteral('ci-info'),
-    );
-
-    imports.push(ciInfoImportStatement);
-    const envNameStatements = this.createAmplifyEnvNameLogic();
-    errors.push(...envNameStatements);
+    // Creates the main line: const backend = defineBackend({ auth, data, storage })
 
     const callBackendFn = this.defineBackendCall(backendFunctionIdentifier, defineBackendProperties);
     const backendVariable = factory.createVariableDeclaration('backend', undefined, undefined, callBackendFn);
@@ -818,7 +876,10 @@ export class BackendSynthesizer {
       factory.createVariableDeclarationList([backendVariable], ts.NodeFlags.Const),
     );
 
+    // CDK OVERRIDES
+    // When you have advanced user pool settings AND you're creating new auth (not importing existing)
     if (renderArgs.auth?.userPoolOverrides && !renderArgs?.auth?.referenceAuth) {
+      // Generates const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
       const cfnUserPoolVariableStatement = this.createVariableStatement(
         this.createVariableDeclaration('cfnUserPool', 'auth.resources.cfnResources.cfnUserPool'),
       );
@@ -827,30 +888,20 @@ export class BackendSynthesizer {
         passwordPolicy: {},
       };
       for (const [overridePath, value] of Object.entries(renderArgs.auth.userPoolOverrides)) {
-        if (overridePath.includes('userPoolName')) {
-          assert(value);
-          assert(typeof value === 'string');
-          const splitUserPoolName = value.split('-');
-          const userPoolWithoutBackendEnvName = splitUserPoolName.slice(0, -1).join('-');
-
-          const userPoolAssignment = this.createTemplateLiteralExpression(
-            'cfnUserPool',
-            'userPoolName',
-            `${userPoolWithoutBackendEnvName}-`,
-            amplifyGen1EnvName,
-            '',
-          );
-
-          nodes.push(userPoolAssignment);
-        } else if (overridePath.includes('PasswordPolicy')) {
+        if (overridePath.includes('PasswordPolicy')) {
           const policyKey = overridePath.split('.')[2];
           if (value !== undefined && policyKey in mappedPolicyType) {
             policies.passwordPolicy[mappedPolicyType[policyKey] as string] = value;
           }
         } else {
+          // Handle everything else
+          // This is where username attributes get handled!
+          // Input: usernameAttributes: ['username']
+          // Generates: cfnUserPool.usernameAttributes = ['username'];
           nodes.push(this.setPropertyValue(factory.createIdentifier('cfnUserPool'), overridePath, value));
         }
       }
+      // Generates: cfnUserPool.policies = { passwordPolicy: { minimumLength: 8 } };
       nodes.push(
         this.setPropertyValue(
           factory.createIdentifier('cfnUserPool'),
@@ -860,30 +911,18 @@ export class BackendSynthesizer {
       );
     }
 
+    // Identity pool overrides
     if (renderArgs.auth?.guestLogin === false || (renderArgs.auth?.identityPoolName && !renderArgs?.auth?.referenceAuth)) {
       const cfnIdentityPoolVariableStatement = this.createVariableStatement(
         this.createVariableDeclaration('cfnIdentityPool', 'auth.resources.cfnResources.cfnIdentityPool'),
       );
       nodes.push(cfnIdentityPoolVariableStatement);
-      if (renderArgs.auth?.identityPoolName) {
-        const splitIdentityPoolName = renderArgs.auth.identityPoolName.split('_');
-        const identityPoolWithoutBackendEnvName = splitIdentityPoolName.slice(0, -1).join('_');
-
-        const identityPoolAssignment = this.createTemplateLiteralExpression(
-          'cfnIdentityPool',
-          'identityPoolName',
-          `${identityPoolWithoutBackendEnvName}_`,
-          amplifyGen1EnvName,
-          '',
-        );
-
-        nodes.push(identityPoolAssignment);
-      }
       if (renderArgs.auth?.guestLogin === false) {
         nodes.push(this.setPropertyValue(factory.createIdentifier('cfnIdentityPool'), 'allowUnauthenticatedIdentities', false));
       }
     }
 
+    // User pool client overrides
     if (
       (renderArgs.auth?.oAuthFlows || renderArgs.auth?.readAttributes || renderArgs.auth?.writeAttributes) &&
       !renderArgs?.auth?.referenceAuth
@@ -924,11 +963,16 @@ export class BackendSynthesizer {
     }
 
     // Since Gen2 only supports 1 user pool client by default, we need to add CDK overrides for the additional user pool client from Gen1
+    // If Gen 1 had separate mobile and web clients, Gen 2 needs to recreate that setup.
     if (renderArgs.auth?.userPoolClient) {
       const userPoolVariableStatement = this.createVariableStatement(this.createVariableDeclaration('userPool', 'auth.resources.userPool'));
       nodes.push(userPoolVariableStatement);
       nodes.push(this.createUserPoolClientAssignment(renderArgs.auth?.userPoolClient, imports));
     }
+
+    // Stores basic S3 bucket info
+    // const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
+    // s3Bucket.bucketName = `myapp-storage-${AMPLIFY_GEN_1_ENV_NAME}`;
 
     if (renderArgs.storage && renderArgs.storage.hasS3Bucket) {
       assert(renderArgs.storage.bucketName);
@@ -937,19 +981,20 @@ export class BackendSynthesizer {
       );
       nodes.push(cfnStorageVariableStatement);
 
-      const splitBucketName = renderArgs.storage.bucketName.split('-');
-      const bucketNameWithoutBackendEnvName = splitBucketName.slice(0, -1).join('-');
-
-      const bucketNameAssignment = this.createTemplateLiteralExpression(
-        '// s3Bucket',
-        'bucketName',
-        `${bucketNameWithoutBackendEnvName}-`,
-        amplifyGen1EnvName,
-        '',
+      // Add comments as synthetic leading comments
+      const bucketNameComment1 = factory.createEmptyStatement();
+      ts.addSyntheticLeadingComment(bucketNameComment1, ts.SyntaxKind.SingleLineCommentTrivia, ` Use this bucket name post refactor`, true);
+      const bucketNameComment2 = factory.createEmptyStatement();
+      ts.addSyntheticLeadingComment(
+        bucketNameComment2,
+        ts.SyntaxKind.SingleLineCommentTrivia,
+        ` s3Bucket.bucketName = '${renderArgs.storage.bucketName}';`,
+        true,
       );
-      nodes.push(bucketNameAssignment);
+      nodes.push(bucketNameComment1, bucketNameComment2);
     }
 
+    // Features that Gen1 just doesn't support for storage
     if (
       renderArgs.storage?.accelerateConfiguration ||
       renderArgs.storage?.versionConfiguration ||
@@ -1013,16 +1058,9 @@ export class BackendSynthesizer {
         );
         nodes.push(bucketEncryptionAssignment);
       }
-
-      imports.push(
-        factory.createImportDeclaration(
-          undefined,
-          factory.createImportClause(false, undefined, factory.createNamespaceImport(factory.createIdentifier('s3'))),
-          factory.createStringLiteral('aws-cdk-lib/aws-s3'),
-        ),
-      );
     }
 
+    // I DONT UNDERSTAND THIS PART YET
     if (
       renderArgs.auth?.userPoolClient &&
       renderArgs.auth.userPoolClient.SupportedIdentityProviders &&
@@ -1052,22 +1090,74 @@ export class BackendSynthesizer {
       nodes.push(userPoolDomainRemovalStatementCommented);
     }
 
-    // Add a tag commented out to force a deployment post refactor
-    // Tags.of(backend.stack).add('gen1-migrated-app', 'true')
-    if (renderArgs.auth || renderArgs.storage?.hasS3Bucket || renderArgs.customResources) {
-      const tagAssignment = factory.createExpressionStatement(
-        factory.createCallExpression(
-          factory.createPropertyAccessExpression(
-            factory.createCallExpression(factory.createIdentifier('// Tags.of'), undefined, [factory.createIdentifier('backend.stack')]),
-            factory.createIdentifier('add'),
+    // Additional auth providers for GraphQL API
+    if (renderArgs.data?.additionalAuthProviders && renderArgs.auth) {
+      const cfnGraphQLApiVariableStatement = this.createVariableStatement(
+        this.createVariableDeclaration('cfnGraphQLApi', 'data.resources.cfnResources.cfnGraphQLApi'),
+      );
+      nodes.push(cfnGraphQLApiVariableStatement);
+
+      const additionalAuthProviders = this.createAdditionalAuthProvidersArray(renderArgs.data.additionalAuthProviders);
+      nodes.push(
+        factory.createExpressionStatement(
+          factory.createAssignment(
+            factory.createPropertyAccessExpression(
+              factory.createIdentifier('cfnGraphQLApi'),
+              factory.createIdentifier('additionalAuthenticationProviders'),
+            ),
+            additionalAuthProviders,
           ),
-          undefined,
-          [factory.createStringLiteral('gen1-migrated-app'), factory.createStringLiteral('true')],
         ),
       );
-      nodes.push(tagAssignment);
     }
 
+    // Function name escape hatch - set function names with branch suffix
+    if (renderArgs.function) {
+      const branchNameStatement = factory.createVariableStatement(
+        [],
+        factory.createVariableDeclarationList(
+          [
+            factory.createVariableDeclaration(
+              'branchName',
+              undefined,
+              undefined,
+              factory.createIdentifier('process.env.AWS_BRANCH ?? "sandbox"'),
+            ),
+          ],
+          ts.NodeFlags.Const,
+        ),
+      );
+      nodes.push(branchNameStatement);
+
+      const functionNameCategories = renderArgs.function.functionNamesAndCategories;
+      for (const [functionName] of functionNameCategories) {
+        nodes.push(
+          factory.createExpressionStatement(
+            factory.createBinaryExpression(
+              factory.createPropertyAccessExpression(
+                factory.createPropertyAccessExpression(
+                  factory.createPropertyAccessExpression(
+                    factory.createPropertyAccessExpression(
+                      factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier(functionName)),
+                      factory.createIdentifier('resources'),
+                    ),
+                    factory.createIdentifier('cfnResources'),
+                  ),
+                  factory.createIdentifier('cfnFunction'),
+                ),
+                factory.createIdentifier('functionName'),
+              ),
+              factory.createToken(ts.SyntaxKind.EqualsToken),
+              factory.createTemplateExpression(factory.createTemplateHead(`${functionName}-`), [
+                factory.createTemplateSpan(factory.createIdentifier('branchName'), factory.createTemplateTail('')),
+              ]),
+            ),
+          ),
+        );
+      }
+    }
+
+    // returns backend.ts file
     return factory.createNodeArray([...imports, newLineIdentifier, ...errors, newLineIdentifier, backendStatement, ...nodes], true);
   }
 }

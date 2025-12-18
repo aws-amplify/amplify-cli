@@ -93,7 +93,6 @@ export const getProfiledAwsConfig = async (
         ...roleCredentials,
       };
     } else if (profileConfig.credential_process) {
-      // TO DO: need to revisit this
       // need to force AWS_SDK_LOAD_CONFIG to a truthy value to force credential process to prefer the credential process in ~/.aws/config instead of ~/.aws/credentials
       const sdkLoadConfigOriginal = process.env.AWS_SDK_LOAD_CONFIG;
       process.env.AWS_SDK_LOAD_CONFIG = '1';
@@ -175,10 +174,12 @@ const getRoleCredentials = async (context: $TSContext, profileName: string, prof
 
       if (roleData.Credentials) {
         roleCredentials = {
-          accessKeyId: roleData.Credentials.AccessKeyId,
-          secretAccessKey: roleData.Credentials.SecretAccessKey,
-          sessionToken: roleData.Credentials.SessionToken,
-          expiration: roleData.Credentials.Expiration,
+          credentials: {
+            accessKeyId: roleData.Credentials.AccessKeyId,
+            secretAccessKey: roleData.Credentials.SecretAccessKey,
+            sessionToken: roleData.Credentials.SessionToken,
+            expiration: roleData.Credentials.Expiration,
+          },
         };
       }
     } catch (ex) {
@@ -244,7 +245,11 @@ const getCachedRoleCredentials = (roleArn: string, sessionName: string): $TSAny 
       return undefined;
     }
   }
-  return roleCredentials;
+  return {
+    credentials: {
+      ...roleCredentials,
+    },
+  };
 };
 
 const validateCachedCredentials = (roleCredentials: $TSAny): boolean => {

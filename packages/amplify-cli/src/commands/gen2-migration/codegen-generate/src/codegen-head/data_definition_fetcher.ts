@@ -4,30 +4,64 @@ import glob from 'glob';
 import assert from 'node:assert';
 
 import { DataDefinition } from '../core/migration-pipeline';
-import { AmplifyStackParser } from './amplify_stack_parser.js';
-import { BackendEnvironmentResolver } from './backend_environment_selector.js';
-import { BackendDownloader } from './backend_downloader.js';
+import { AdditionalAuthProvider } from '../generators/data';
+
+import { BackendEnvironmentResolver } from './backend_environment_selector';
+import { BackendDownloader } from './backend_downloader';
 import { pathManager } from '@aws-amplify/amplify-cli-core';
 import { fileOrDirectoryExists } from './directory_exists';
+import { AppSyncClient, GetGraphqlApiCommand } from '@aws-sdk/client-appsync';
 
-const dataSourceMappingOutputKey = 'DataSourceMappingOutput';
-
+/**
+ * Fetches and processes data definitions from Amplify Gen1 projects for migration to Gen2.
+ *
+ * This class is responsible for extracting GraphQL schemas and API configurations from
+ * existing Gen1 Amplify projects to facilitate the migration process. It handles both
+ * local schema files and deployed backend configurations.
+ *
+ * Key responsibilities:
+ * - Locates and reads GraphQL schema files from Gen1 project structure
+ * - Extracts API configurations from amplify-meta.json
+ * - Merges multiple schema files when using schema folder structure
+ * - Provides data definitions for the migration pipeline
+ */
 export class DataDefinitionFetcher {
-  constructor(
-    private backendEnvironmentResolver: BackendEnvironmentResolver,
-    private ccbFetcher: BackendDownloader,
-    private amplifyStackClient: AmplifyStackParser,
-  ) {}
+  /**
+   * Creates a new DataDefinitionFetcher instance.
+   *
+   * @param backendEnvironmentResolver - Resolves backend environment for migration
+   * @param ccbFetcher - Downloads current cloud backend artifacts
+   */
+  constructor(private backendEnvironmentResolver: BackendEnvironmentResolver, private ccbFetcher: BackendDownloader) {}
 
+  /**
+   * Reads and parses a JSON file.
+   *
+   * @param filePath - Path to the JSON file to read
+   * @returns Parsed JSON object
+   * @throws Error if file cannot be read or parsed
+   */
   private readJsonFile = async (filePath: string) => {
     const contents = await fs.readFile(filePath, { encoding: 'utf8' });
     return JSON.parse(contents);
   };
 
+  /**
+   * Extracts GraphQL schema from Gen1 API configuration.
+   *
+   * Supports two schema organization patterns:
+   * 1. Single schema.graphql file in the API directory
+   * 2. Multiple .graphql files in a schema/ subdirectory
+   *
+   * @param apis - API configuration object from amplify-meta.json
+   * @returns Combined GraphQL schema as a string
+   * @throws Error if no AppSync API found or schema files missing
+   */
   getSchema = async (apis: any): Promise<string> => {
     try {
       let apiName;
 
+      // Find the AppSync API from the available APIs
       Object.keys(apis).forEach((api) => {
         const apiObj = apis[api];
         if (apiObj.service === 'AppSync') {
@@ -37,16 +71,17 @@ export class DataDefinitionFetcher {
 
       assert(apiName);
 
+      // Locate the API directory in the Gen1 project structure
       const rootDir = pathManager.findProjectRoot();
       assert(rootDir);
       const apiPath = path.join(rootDir, 'amplify', 'backend', 'api', apiName);
 
-      // Check for schema folder first
+      // Check for schema folder first (multi-file schema pattern)
       const schemaFolderPath = path.join(apiPath, 'schema');
       try {
         const stats = await fs.stat(schemaFolderPath);
         if (stats.isDirectory()) {
-          // Read all .graphql files from schema folder
+          // Read and merge all .graphql files from schema folder
           const graphqlFiles = glob.sync(path.join(schemaFolderPath, '*.graphql'));
           if (graphqlFiles.length > 0) {
             let mergedSchema = '';
@@ -61,7 +96,7 @@ export class DataDefinitionFetcher {
         // Directory doesn't exist or other error, continue to check for schema.graphql
       }
 
-      // If schema folder doesn't exist or is empty, check for schema.graphql file
+      // Fallback to single schema.graphql file (single-file schema pattern)
       const schemaFilePath = path.join(apiPath, 'schema.graphql');
       try {
         return await fs.readFile(schemaFilePath, 'utf8');
@@ -73,14 +108,72 @@ export class DataDefinitionFetcher {
     }
   };
 
-  getDefinition = async (): Promise<DataDefinition | undefined> => {
-    const backendEnvironments = await this.backendEnvironmentResolver.getAllBackendEnvironments();
+  /**
+   * Fetches additional authentication providers from AWS AppSync API.
+   */
+  private getAdditionalAuthProvidersFromConsole = async (apiId: string): Promise<AdditionalAuthProvider[]> => {
+    try {
+      const client = new AppSyncClient({});
+      const response = await client.send(new GetGraphqlApiCommand({ apiId }));
 
+      return (
+        response.graphqlApi?.additionalAuthenticationProviders?.map((provider: any) => ({
+          authenticationType: provider.authenticationType,
+          ...(provider.lambdaAuthorizerConfig && { lambdaAuthorizerConfig: provider.lambdaAuthorizerConfig }),
+          ...(provider.openIDConnectConfig && { openIdConnectConfig: provider.openIDConnectConfig }),
+          ...(provider.userPoolConfig && { userPoolConfig: provider.userPoolConfig }),
+        })) || []
+      );
+    } catch (error) {
+      throw new Error(`Failed to fetch additional auth providers from AWS: ${error.message}`);
+    }
+  };
+
+  /**
+   * Fetches logging configuration from AWS AppSync API.
+   */
+  private getLoggingConfigFromConsole = async (apiId: string) => {
+    try {
+      const client = new AppSyncClient({});
+      const response = await client.send(new GetGraphqlApiCommand({ apiId }));
+
+      const logConfig = response.graphqlApi?.logConfig;
+      if (logConfig?.fieldLogLevel && logConfig.fieldLogLevel !== 'NONE') {
+        // Map AWS AppSync log levels to Gen2 DataLogLevel enum values
+        const fieldLogLevel = logConfig.fieldLogLevel.toLowerCase() as 'none' | 'all' | 'info' | 'debug' | 'error';
+        return {
+          fieldLogLevel,
+          ...(logConfig.excludeVerboseContent !== undefined && { excludeVerboseContent: logConfig.excludeVerboseContent }),
+        };
+      }
+      return undefined;
+    } catch (error) {
+      throw new Error(`Failed to fetch logging config from AWS: ${error.message}`);
+    }
+  };
+
+  /**
+   * Retrieves the complete data definition for migration.
+   *
+   * This method orchestrates the extraction of data definitions from a Gen1 project:
+   * 1. Selects the appropriate backend environment
+   * 2. Downloads current cloud backend artifacts
+   * 3. Reads amplify-meta.json for API configuration
+   * 4. Extracts GraphQL schema if APIs exist
+   * 5. Extracts additional auth providers for AppSync
+   *
+   * @returns DataDefinition object containing schema and table mappings, or undefined if no APIs found
+   * @throws Error if amplify-meta.json is missing or schema extraction fails
+   */
+  getDefinition = async (): Promise<DataDefinition | undefined> => {
+    // Select the backend environment to migrate from
     const backendEnvironment = await this.backendEnvironmentResolver.selectBackendEnvironment();
     if (!backendEnvironment?.deploymentArtifacts) return undefined;
 
+    // Download the current cloud backend configuration
     const currentCloudBackendDirectory = await this.ccbFetcher.getCurrentCloudBackend(backendEnvironment.deploymentArtifacts);
 
+    // Load the amplify-meta.json file containing backend configuration
     const amplifyMetaPath = path.join(currentCloudBackendDirectory, 'amplify-meta.json');
 
     if (!(await fileOrDirectoryExists(amplifyMetaPath))) {
@@ -89,50 +182,27 @@ export class DataDefinitionFetcher {
 
     const amplifyMeta = (await this.readJsonFile(amplifyMetaPath)) ?? {};
 
+    // Extract API configuration and schema if APIs exist
     if ('api' in amplifyMeta && Object.keys(amplifyMeta.api).length > 0) {
-      const tableMappings = await Promise.all(
-        backendEnvironments.map(async (backendEnvironment) => {
-          if (!backendEnvironment?.stackName) {
-            return [backendEnvironment.environmentName, undefined];
-          }
-          console.log(`DEBUG - Fetching stacks for ${backendEnvironment.environmentName}, stackName: ${backendEnvironment?.stackName}`);
-          const amplifyStacks = await this.amplifyStackClient.getAmplifyStacks(backendEnvironment?.stackName);
-          console.log(`DEBUG - Found stacks:`, {
-            dataStack: amplifyStacks.dataStack ? 'EXISTS' : 'MISSING',
-            outputs: amplifyStacks.dataStack?.Outputs?.length || 0,
-          });
-          if (amplifyStacks.dataStack) {
-            const outputs = amplifyStacks.dataStack.Outputs || [];
-            console.log(
-              `DEBUG - Stack outputs:`,
-              outputs.map((o) => o.OutputKey),
-            );
-            const tableMappingText = outputs.find((o) => o.OutputKey === dataSourceMappingOutputKey)?.OutputValue;
-            console.log(`DEBUG - Table mapping for ${dataSourceMappingOutputKey}:`, tableMappingText ? 'FOUND' : 'NOT FOUND');
-            if (!tableMappingText) {
-              return [backendEnvironment.environmentName, undefined];
-            }
-            try {
-              const parsed = JSON.parse(tableMappingText);
-              console.log(`DEBUG - Parsed mappings:`, parsed);
-              return [backendEnvironment.environmentName, parsed];
-            } catch (e) {
-              console.log(`DEBUG - Parse error:`, e.message);
-              return [backendEnvironment.environmentName, undefined];
-            }
-          }
-          return [backendEnvironment.environmentName, undefined];
-        }),
-      );
-
       const schema = await this.getSchema(amplifyMeta.api);
 
+      // Extract auth config from the AppSync API output
+      const appSyncApi = Object.values(amplifyMeta.api).find((api: any) => api.service === 'AppSync') as any;
+      const authorizationModes = appSyncApi?.output?.authConfig;
+      const apiId = appSyncApi?.output?.GraphQLAPIIdOutput;
+      const additionalAuthProviders = apiId ? await this.getAdditionalAuthProvidersFromConsole(apiId) : [];
+
+      const logging = apiId ? await this.getLoggingConfigFromConsole(apiId) : undefined;
       return {
-        tableMappings: Object.fromEntries(tableMappings),
+        tableMappings: undefined, // Will be generated from schema during migration
         schema,
+        authorizationModes,
+        additionalAuthProviders: additionalAuthProviders.length > 0 ? additionalAuthProviders : undefined,
+        logging,
       };
     }
 
+    // No APIs found in the project
     return undefined;
   };
 }

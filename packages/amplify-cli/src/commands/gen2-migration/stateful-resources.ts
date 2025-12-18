@@ -5,7 +5,7 @@
 
 export const STATEFUL_RESOURCES = new Set([
   'AWS::Backup::BackupVault',
-  'AWS::CloudFormation::Stack',
+  // 'AWS::CloudFormation::Stack',
   'AWS::Cognito::UserPool',
   'AWS::DocDB::DBCluster',
   'AWS::DocDB::DBInstance',

@@ -20,7 +20,6 @@ import {
   CFNTemplate,
   ResourceMapping,
 } from '../types';
-import MigrationReadmeGenerator from './migration-readme-generator';
 import { pollStackForCompletionState, tryUpdateStack } from '../cfn-stack-updater';
 import { SSMClient } from '@aws-sdk/client-ssm';
 import { CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-provider';
@@ -28,7 +27,7 @@ import { tryRefactorStack } from '../cfn-stack-refactor-updater';
 import CfnOutputResolver from '../resolvers/cfn-output-resolver';
 import CfnDependencyResolver from '../resolvers/cfn-dependency-resolver';
 import CfnParameterResolver from '../resolvers/cfn-parameter-resolver';
-import ora from 'ora';
+import { Logger } from '../../../gen2-migration';
 
 const CFN_RESOURCE_STACK_TYPE = 'AWS::CloudFormation::Stack';
 const GEN2_AMPLIFY_AUTH_LOGICAL_ID_PREFIX = 'amplifyAuth';
@@ -93,6 +92,7 @@ class TemplateGenerator {
     private readonly cognitoIdpClient: CognitoIdentityProviderClient,
     private readonly appId: string,
     private readonly environmentName: string,
+    private readonly logger: Logger,
   ) {
     this._categoryStackMap = new Map<CATEGORY, [string, string]>();
     this.categoryTemplateGenerators = [];
@@ -327,23 +327,20 @@ class TemplateGenerator {
     categoryTemplateGenerator: CategoryTemplateGenerator<CFN_CATEGORY_TYPE>,
     sourceCategoryStackId: string,
   ): Promise<[CFNTemplate, Parameter[]] | undefined> {
-    let updatingGen1CategoryStack;
     try {
       const { newTemplate, parameters: gen1StackParameters } = await categoryTemplateGenerator.generateGen1PreProcessTemplate();
       assert(gen1StackParameters);
-      updatingGen1CategoryStack = ora(`Updating Gen 1 ${this.getStackCategoryName(category)} stack...`).start();
+      this.logger.info(`Updating Gen 1 ${this.getStackCategoryName(category)} stack...`);
 
       const gen1StackUpdateStatus = await tryUpdateStack(this.cfnClient, sourceCategoryStackId, gen1StackParameters, newTemplate);
 
       assert(gen1StackUpdateStatus === CFNStackStatus.UPDATE_COMPLETE, `Gen 1 stack is in an invalid state: ${gen1StackUpdateStatus}`);
-      updatingGen1CategoryStack.succeed(`Updated Gen 1 ${this.getStackCategoryName(category)} stack successfully`);
+      this.logger.info(`Updated Gen 1 ${this.getStackCategoryName(category)} stack successfully`);
 
       return [newTemplate, gen1StackParameters];
     } catch (e) {
       if (this.isNoResourcesError(e)) {
-        updatingGen1CategoryStack?.succeed(
-          `No resources found to move in Gen 1 ${this.getStackCategoryName(category)} stack. Skipping update.`,
-        );
+        this.logger.info(`No resources found to move in Gen 1 ${this.getStackCategoryName(category)} stack. Skipping update.`);
         return undefined;
       }
       throw e;
@@ -362,12 +359,12 @@ class TemplateGenerator {
     try {
       const { newTemplate, oldTemplate, parameters } = await categoryTemplateGenerator.generateGen2ResourceRemovalTemplate();
 
-      const updatingGen2CategoryStack = ora(`Updating Gen 2 ${this.getStackCategoryName(category)} stack...`).start();
+      this.logger.info(`Updating Gen 2 ${this.getStackCategoryName(category)} stack...`);
 
       const gen2StackUpdateStatus = await tryUpdateStack(this.cfnClient, destinationCategoryStackId, parameters ?? [], newTemplate);
 
       assert(gen2StackUpdateStatus === CFNStackStatus.UPDATE_COMPLETE, `Gen 2 stack is in an invalid state: ${gen2StackUpdateStatus}`);
-      updatingGen2CategoryStack.succeed(`Updated Gen 2 ${this.getStackCategoryName(category)} stack successfully`);
+      this.logger.info(`Updated Gen 2 ${this.getStackCategoryName(category)} stack successfully`);
 
       return { newTemplate, oldTemplate, parameters };
     } catch (e) {
@@ -413,6 +410,7 @@ class TemplateGenerator {
   ): CategoryTemplateGenerator<CFN_CATEGORY_TYPE> {
     assert(this.region);
     return new CategoryTemplateGenerator(
+      this.logger,
       sourceStackId,
       destinationStackId,
       this.region,
@@ -540,9 +538,9 @@ class TemplateGenerator {
         }
       }
 
-      const refactorResources = ora(
+      this.logger.info(
         `Moving ${this.getStackCategoryName(category)} resources from ${this.getSourceToDestinationMessage(isRevert)} stack...`,
-      ).start();
+      );
       const { success, failedRefactorMetadata } = await this.refactorResources(
         logicalIdMappingForRefactor,
         sourceCategoryStackId,
@@ -553,7 +551,7 @@ class TemplateGenerator {
         destinationTemplateForRefactor,
       );
       if (!success) {
-        refactorResources.fail(
+        this.logger.info(
           `Moving ${this.getStackCategoryName(category)} resources from ${this.getSourceToDestinationMessage(
             isRevert,
           )} stack failed. Reason: ${failedRefactorMetadata?.reason}. Status: ${failedRefactorMetadata?.status}. RefactorId: ${
@@ -566,19 +564,10 @@ class TemplateGenerator {
         }
         return false;
       } else {
-        refactorResources.succeed(
+        this.logger.info(
           `Moved ${this.getStackCategoryName(category)} resources from ${this.getSourceToDestinationMessage(isRevert)} stack successfully`,
         );
       }
-    }
-    if (!isRevert) {
-      const migrationReadMeGenerator = new MigrationReadmeGenerator({
-        path: `${TEMPLATES_DIR}`,
-        categories: [...this.categoryStackMap.keys()],
-        hasOAuthEnabled,
-      });
-      await migrationReadMeGenerator.initialize();
-      await migrationReadMeGenerator.renderStep1();
     }
     return true;
   }
@@ -627,10 +616,10 @@ class TemplateGenerator {
     gen2StackParameters: Parameter[] | undefined,
     oldGen2Template: CFNTemplate,
   ) {
-    const rollingBackGen2Stack = ora(`Rolling back Gen 2 ${this.getStackCategoryName(category)} stack...`).start();
+    this.logger.info(`Rolling back Gen 2 ${this.getStackCategoryName(category)} stack...`);
     const gen2StackUpdateStatus = await tryUpdateStack(this.cfnClient, gen2CategoryStackId, gen2StackParameters ?? [], oldGen2Template);
     assert(gen2StackUpdateStatus === CFNStackStatus.UPDATE_COMPLETE, `Gen 2 Stack is in a failed state: ${gen2StackUpdateStatus}.`);
-    rollingBackGen2Stack.succeed(`Rolled back Gen 2 ${this.getStackCategoryName(category)} stack successfully`);
+    this.logger.info(`Rolled back Gen 2 ${this.getStackCategoryName(category)} stack successfully`);
   }
 
   private async generateRefactorTemplatesForRevert(

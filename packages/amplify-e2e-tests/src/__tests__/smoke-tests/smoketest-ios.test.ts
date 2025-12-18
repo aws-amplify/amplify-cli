@@ -48,9 +48,13 @@ function rubyBundleInstall(cwd: string) {
 }
 
 function buildAndTestExampleIosApp(cwd: string) {
-  return spawn('bundle', ['exec', 'fastlane', 'scan', '--device', 'iPhone 16 Pro Max', '--deployment_target_version', '16.4'], {
-    cwd,
-  })
+  return spawn(
+    'bundle',
+    ['exec', 'fastlane', 'scan', '--destination', 'platform=iOS Simulator,name=iPhone 16,OS=18.4', '--deployment_target_version', '16.4'],
+    {
+      cwd,
+    },
+  )
     .wait(/Test.*Succeeded/)
     .runAsync();
 }

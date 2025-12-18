@@ -58,12 +58,12 @@ describe('amplify add api (GraphQL)', () => {
     expect(graphqlApi).toBeDefined();
     expect(graphqlApi.apiId).toEqual(GraphQLAPIIdOutput);
     const tableName = `AmplifyDataStore-${graphqlApi.apiId}-${envName}`;
-    const error = { message: null };
+    let error: Error;
     try {
       const table = await getDDBTable(tableName, region);
-      expect(table).toBeUndefined();
+      expect(table.Table).toBeUndefined();
     } catch (ex) {
-      Object.assign(error, ex);
+      error = ex;
     }
     expect(error).toBeDefined();
     expect(error.message).toContain(`${tableName} not found`);
@@ -117,12 +117,12 @@ describe('amplify add api (GraphQL)', () => {
     expect(graphqlApi).toBeDefined();
     expect(graphqlApi.apiId).toEqual(GraphQLAPIIdOutput);
     const tableName = `AmplifyDataStore-${graphqlApi.apiId}-${envName}`;
-    const error = { message: null };
+    let error: Error;
     try {
       const table = await getDDBTable(tableName, region);
-      expect(table).toBeUndefined();
+      expect(table.Table).toBeUndefined();
     } catch (ex) {
-      Object.assign(error, ex);
+      error = ex;
     }
     expect(error).toBeDefined();
     expect(error.message).toContain(`${tableName} not found`);

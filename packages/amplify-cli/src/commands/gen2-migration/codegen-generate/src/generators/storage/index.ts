@@ -5,7 +5,7 @@ import { createTriggersProperty, Lambda } from '../functions/lambda';
 import type { BucketAccelerateStatus, BucketVersioningStatus, ServerSideEncryptionByDefault } from '@aws-sdk/client-s3';
 const factory = ts.factory;
 
-const amplifyGen1EnvName = 'AMPLIFY_GEN_1_ENV_NAME';
+const gen2BranchNameVariableName = 'branchName';
 
 export type S3TriggerDefinition = Record<string, never>;
 export type Permission = 'read' | 'write' | 'create' | 'delete';
@@ -54,12 +54,13 @@ export const renderStorage = (storageParams: StorageRenderParameters = {}) => {
   const triggers = storageParams.triggers || {};
 
   const postImportStatements = [];
+
   const amplifyGen1EnvStatement = createVariableStatement(
     factory.createVariableDeclaration(
-      amplifyGen1EnvName,
+      gen2BranchNameVariableName,
       undefined,
       undefined,
-      factory.createIdentifier('process.env.AMPLIFY_GEN_1_ENV_NAME ?? "sandbox"'),
+      factory.createIdentifier('process.env.AWS_BRANCH ?? "sandbox"'),
     ),
   );
   postImportStatements.push(amplifyGen1EnvStatement);
@@ -68,8 +69,12 @@ export const renderStorage = (storageParams: StorageRenderParameters = {}) => {
     const splitStorageIdentifier = storageParams.storageIdentifier.split('-');
     const storageNameWithoutBackendEnvName = splitStorageIdentifier.slice(0, -1).join('-');
 
-    const storageNameAssignment = createTemplateLiteral(`${storageNameWithoutBackendEnvName}-`, amplifyGen1EnvName, '');
-    propertyAssignments.push(factory.createPropertyAssignment(factory.createIdentifier('name'), storageNameAssignment));
+    const storageNameAssignment = createTemplateLiteral(`${storageNameWithoutBackendEnvName}-`, gen2BranchNameVariableName, '');
+    const nameProperty = factory.createPropertyAssignment(factory.createIdentifier('name'), storageNameAssignment);
+
+    // s3Bucket.bucketName = '<gen1-bucket-name>'
+
+    propertyAssignments.push(nameProperty);
   }
   if (storageParams.accessPatterns) {
     propertyAssignments.push(getAccessPatterns(storageParams.accessPatterns));

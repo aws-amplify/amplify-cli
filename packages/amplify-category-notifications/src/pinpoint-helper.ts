@@ -26,7 +26,8 @@ import { PinpointName } from './pinpoint-name';
 import { isChannelDeploymentDeferred } from './notifications-backend-cfg-channel-api';
 import { constructResourceMeta, addPartialNotificationsAppMeta } from './notifications-amplify-meta-api';
 import { addPartialNotificationsBackendConfig } from './notifications-backend-cfg-api';
-import Pinpoint from 'aws-sdk/clients/pinpoint';
+import { PinpointClient, DeleteAppCommand } from '@aws-sdk/client-pinpoint';
+import { NodeHttpHandler } from '@smithy/node-http-handler';
 import {
   formUserAgentParam,
   loadConfiguration,
@@ -476,24 +477,28 @@ const deleteApp = async (context: $TSContext, pinpointAppId: string): Promise<$T
   const envName: string = stateManager.getCurrentEnvName() as string; // throws exception if env is not configured
   const pinpointClient = await getPinpointClient(context, AmplifyCategories.NOTIFICATIONS, 'delete', envName);
   spinner.start('Deleting Pinpoint app.');
-  return new Promise((resolve, reject) => {
-    pinpointClient.deleteApp(params, (err: $TSAny, data: $TSAny) => {
-      if (err && err.code === 'NotFoundException') {
-        spinner.succeed(`Project with ID '${params.ApplicationId}' was already deleted from the cloud.`);
-        resolve({
-          Id: params.ApplicationId,
-        });
-      } else if (err) {
-        spinner.fail('Pinpoint project deletion error');
-        reject(err);
-      } else {
-        spinner.succeed(`Successfully deleted Pinpoint project: ${data.ApplicationResponse.Name}`);
-        // eslint-disable-next-line no-param-reassign
-        data.ApplicationResponse.Region = pinpointClient.config.region;
-        resolve(data.ApplicationResponse);
-      }
-    });
-  });
+  try {
+    const data = await pinpointClient.send(new DeleteAppCommand(params));
+    spinner.succeed(`Successfully deleted Pinpoint project: ${data.ApplicationResponse?.Name || params.ApplicationId}`);
+    if (data.ApplicationResponse) {
+      return {
+        ...data.ApplicationResponse,
+        Region: pinpointClient.config.region as any,
+      };
+    }
+    return { Id: params.ApplicationId };
+    // Keep region assignment as any due to changes in SDK v3 ApplicationResponse interface
+  } catch (err: any) {
+    if (err.name === 'NotFoundException') {
+      spinner.succeed(`Project with ID '${params.ApplicationId}' was already deleted from the cloud.`);
+      return {
+        Id: params.ApplicationId,
+      };
+    } else {
+      spinner.fail('Pinpoint project deletion error');
+      throw err;
+    }
+  }
 };
 
 /**
@@ -524,7 +529,12 @@ const getConfiguredCredentials = async (context: $TSContext, envName?: string): 
   }
 };
 
-export const getPinpointClient = async (context: $TSContext, category: string, action?: string, envName?: string): Promise<Pinpoint> => {
+export const getPinpointClient = async (
+  context: $TSContext,
+  category: string,
+  action?: string,
+  envName?: string,
+): Promise<PinpointClient> => {
   const httpProxy = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;
   const cred = await getConfiguredCredentials(context, envName);
 
@@ -545,7 +555,14 @@ export const getPinpointClient = async (context: $TSContext, category: string, a
     httpAgent = new ProxyAgent();
   }
 
-  return new Pinpoint({ ...cred, ...defaultOptions, httpOptions: { agent: httpAgent } });
+  return new PinpointClient({
+    ...cred,
+    ...defaultOptions,
+    requestHandler: new NodeHttpHandler({
+      httpAgent: httpAgent,
+      httpsAgent: httpAgent,
+    }),
+  });
 };
 
 export const mapServiceRegion = async (context: $TSContext, region: string): Promise<string> => {

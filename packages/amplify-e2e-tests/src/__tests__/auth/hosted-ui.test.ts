@@ -135,7 +135,9 @@ describe('hosted ui tests', () => {
         const updatedDomainRes = await getUserPoolDomain(hostedUIDomain, region);
         expect(updatedDomainRes).toBeDefined();
         const originalDomainRes = await getUserPoolDomain(originalHostedUIDomain, region);
-        expect(originalDomainRes).toEqual({ DomainDescription: {} });
+        // originalDomainRes has 2 properties $metadata and DomainDescription, we expect DomainDescription to be an empty object
+        // $metadata property is common in SDK V3 objects
+        expect(originalDomainRes.DomainDescription).toEqual({});
 
         const deleteOriginalDomainRes = await deleteUserPoolDomain(originalHostedUIDomain, userPoolId, region);
         // undefined response as it throws InvalidParameterException: No such domain or user pool exists.

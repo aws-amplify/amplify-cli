@@ -65,6 +65,13 @@ const defaultAWSConfig: AwsConfig = {
 };
 
 export async function init(context: $TSContext) {
+  const credentialsFilePath = pathManager.getAWSCredentialsFilePath();
+  const configFilePath = pathManager.getAWSConfigFilePath();
+
+  if (fs.existsSync(credentialsFilePath) && fs.existsSync(configFilePath)) {
+    process.env.AWS_SDK_LOAD_CONFIG = 'true';
+  }
+
   if (context.exeInfo.existingLocalEnvInfo?.noUpdateBackend || (!context.exeInfo.isNewProject && doesAwsConfigExists(context))) {
     return context;
   }

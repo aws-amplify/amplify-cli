@@ -116,7 +116,7 @@ describe('Lambda AppSync nodejs:', () => {
     expect(fnResponse.StatusCode).toBe(200);
     expect(fnResponse.Payload).toBeDefined();
 
-    const gqlResponse = JSON.parse(fnResponse.Payload as string);
+    const gqlResponse = JSON.parse(fnResponse.Payload.transformToString());
 
     expect(gqlResponse.body).toBeDefined();
   });
@@ -167,7 +167,7 @@ describe('Lambda AppSync nodejs:', () => {
     expect(fnResponse.StatusCode).toBe(200);
     expect(fnResponse.Payload).toBeDefined();
 
-    const gqlResponse = JSON.parse(fnResponse.Payload as string);
+    const gqlResponse = JSON.parse(fnResponse.Payload.transformToString());
 
     expect(gqlResponse.body).toBeDefined();
   });

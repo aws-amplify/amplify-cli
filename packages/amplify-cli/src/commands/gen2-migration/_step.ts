@@ -1,11 +1,15 @@
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
-import { Argv, CommandModule } from 'yargs';
+import { Logger } from '../gen2-migration';
 
-export abstract class AmplifyMigrationStep implements CommandModule {
-  abstract readonly command: string;
-  abstract readonly describe: string;
-
-  constructor(private readonly context: $TSContext) {}
+export abstract class AmplifyMigrationStep {
+  constructor(
+    protected readonly logger: Logger,
+    protected readonly currentEnvName: string,
+    protected readonly appName: string,
+    protected readonly appId: string,
+    protected readonly rootStackName: string,
+    protected readonly context: $TSContext,
+  ) {}
 
   public abstract validate(): Promise<void>;
 
@@ -13,12 +17,5 @@ export abstract class AmplifyMigrationStep implements CommandModule {
 
   public abstract rollback(): Promise<void>;
 
-  builder = (yargs: Argv): Argv => {
-    return yargs.version(false);
-  };
-
-  handler = async (): Promise<void> => {
-    await this.validate();
-    await this.execute();
-  };
+  public abstract implications(): string[];
 }

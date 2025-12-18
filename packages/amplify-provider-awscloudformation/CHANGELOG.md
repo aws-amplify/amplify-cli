@@ -3,6 +3,47 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.11.17](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.11.16...@aws-amplify/amplify-provider-awscloudformation@8.11.17) (2025-11-20)
+
+**Note:** Version bump only for package @aws-amplify/amplify-provider-awscloudformation
+
+
+
+
+
+## [8.11.16](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.11.15...@aws-amplify/amplify-provider-awscloudformation@8.11.16) (2025-11-03)
+
+
+### Bug Fixes
+
+* role assumption through profiles not working properly in certain situations ([#14315](https://github.com/aws-amplify/amplify-cli/issues/14315)) ([04f7bcf](https://github.com/aws-amplify/amplify-cli/commit/04f7bcfc2467b84e111b7a2b687bd34d3a23d16e))
+
+
+
+
+
+## [8.11.15](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.11.14...@aws-amplify/amplify-provider-awscloudformation@8.11.15) (2025-10-31)
+
+
+### Bug Fixes
+
+* upgrade `@aws-sdk/*` to latest ([#14306](https://github.com/aws-amplify/amplify-cli/issues/14306)) ([faca740](https://github.com/aws-amplify/amplify-cli/commit/faca7400e65374536e28f58119bb6a66c48aa4d7))
+
+
+
+
+
+## [8.11.14](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.11.13...@aws-amplify/amplify-provider-awscloudformation@8.11.14) (2025-10-22)
+
+
+### Reverts
+
+* Revert "refactor: amplify-category-notifications aws sdk v3 migration (#14271)" (#14285) ([510560d](https://github.com/aws-amplify/amplify-cli/commit/510560decb0735a0e8633aadfa6c23fae376dfe1)), closes [#14271](https://github.com/aws-amplify/amplify-cli/issues/14271) [#14285](https://github.com/aws-amplify/amplify-cli/issues/14285)
+
+
+
+
+
 ## [8.11.13](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.11.12...@aws-amplify/amplify-provider-awscloudformation@8.11.13) (2025-10-16)
 
 
