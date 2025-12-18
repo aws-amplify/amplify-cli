@@ -2726,7 +2726,6 @@ __metadata:
     "@smithy/util-retry": ^4
     "@smithy/util-waiter": ^4
     archiver: ^7.0.1
-    cdk-from-cfn: ^0.236.0
     chalk: ^4
     chokidar: ^3
     fs-extra: ^9
@@ -21261,13 +21260,6 @@ __metadata:
   version: 0.258.0
   resolution: "cdk-from-cfn@npm:0.258.0"
   checksum: 20f61c4518ccedd7a651b9564b57ab527fb15851218367ae71d96492367540e9de858ef7e71a6bcee62ea392292085109579174b390b624af1983a407838aee1
-  languageName: node
-  linkType: hard
-
-"cdk-from-cfn@npm:^0.236.0":
-  version: 0.236.0
-  resolution: "cdk-from-cfn@npm:0.236.0"
-  checksum: 5603d74e4ac1dcb217d93d9860a50a519a32502bc180f6a6b0023220578f52236cdfe4fe85da6d0950de7df7bf2f6f811e50ad386b38fe901ff1a3dadf977a99
   languageName: node
   linkType: hard
 

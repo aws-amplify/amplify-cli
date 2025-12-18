@@ -95,6 +95,8 @@ const generateGen2Code = async ({
 
   logger.info('Fetching definitions from AWS for category: Functions');
   const functions = await functionsDefinitionFetcher.getDefinition();
+
+  logger.info('Fetching definitions from AWS for category: Analytics');
   const analytics = await analyticsDefinitionFetcher.getDefinition();
 
   logger.debug(`Auth: ${auth ? 'EXISTS' : 'UNDEFINED'}`);
@@ -102,7 +104,7 @@ const generateGen2Code = async ({
   logger.debug(`Data: ${data ? JSON.stringify(data, null, 2) : 'UNDEFINED'}`);
   logger.debug(`Functions: ${functions ? `${functions.length} functions` : 'UNDEFINED'}`);
   logger.debug(`Backend env: ${backendEnvironmentName}`);
-  logger.debug('Analytics', analytics ? JSON.stringify(analytics, null, 2) : 'UNDEFINED');
+  logger.debug(`Analytics: ${analytics ? JSON.stringify(analytics, null, 2) : 'UNDEFINED'}`);
 
   const gen2RenderOptions = {
     outputDir: outputDirectory,
