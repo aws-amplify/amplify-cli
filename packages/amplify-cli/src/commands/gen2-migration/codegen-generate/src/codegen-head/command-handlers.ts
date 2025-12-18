@@ -377,6 +377,9 @@ export async function updateCustomResources() {
     await fs.mkdir(destinationTypesPath, { recursive: true });
     await fs.cp(sourceTypesPath, destinationTypesPath, { recursive: true });
 
+    // Extract dependencies BEFORE transformation (from source files)
+    const resourceDependencies = await extractResourceDependencies(customResources, sourceCustomResourcePath);
+
     await updateCdkStackFile(customResources, destinationCustomResourcePath, rootDir);
 
     // Merge dependencies from custom resources into Gen2 package.json
@@ -394,7 +397,6 @@ export async function updateCustomResources() {
     // Update backend.ts to register custom resources
     const backendFilePath = path.join(amplifyGen2Dir, 'backend.ts');
     const customResourceMap = await getCustomResourceMap();
-    const resourceDependencies = await extractResourceDependencies(customResources, destinationCustomResourcePath);
     const backendUpdater = new BackendUpdater();
     await backendUpdater.updateBackendFile(backendFilePath, customResourceMap, resourceDependencies);
 

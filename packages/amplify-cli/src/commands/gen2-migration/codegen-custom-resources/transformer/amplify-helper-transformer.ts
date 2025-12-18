@@ -1,6 +1,14 @@
 import * as ts from 'typescript';
 
 export class AmplifyHelperTransformer {
+  // Map Gen1 category names to Gen2 backend property names
+  private static readonly CATEGORY_MAP: Record<string, string> = {
+    function: 'functions',
+    api: 'data',
+    storage: 'storage',
+    auth: 'auth',
+  };
+
   static transform(sourceFile: ts.SourceFile, projectName?: string): ts.SourceFile {
     // Track variable names that hold AmplifyHelpers.getProjectInfo() result
     const projectInfoVariables = new Set<string>();
@@ -62,36 +70,33 @@ export class AmplifyHelperTransformer {
             }
 
             // Remove AmplifyHelpers.addResourceDependency variable statements
-            if (
-              declaration &&
-              declaration.initializer &&
-              ts.isCallExpression(declaration.initializer) &&
-              ts.isPropertyAccessExpression(declaration.initializer.expression) &&
-              ts.isIdentifier(declaration.initializer.expression.expression) &&
-              declaration.initializer.expression.expression.text === 'AmplifyHelpers' &&
-              declaration.initializer.expression.name.text === 'addResourceDependency' &&
-              ts.isIdentifier(declaration.name)
-            ) {
-              // Extract dependencies from the call
-              const args = declaration.initializer.arguments;
-              if (args.length >= 4 && ts.isArrayLiteralExpression(args[3])) {
-                args[3].elements.forEach((element) => {
-                  if (ts.isObjectLiteralExpression(element)) {
-                    element.properties.forEach((prop) => {
-                      if (
-                        ts.isPropertyAssignment(prop) &&
-                        ts.isIdentifier(prop.name) &&
-                        prop.name.text === 'category' &&
-                        ts.isStringLiteral(prop.initializer)
-                      ) {
-                        resourceDependencies.add(prop.initializer.text);
-                      }
-                    });
-                  }
-                });
+            if (declaration && declaration.initializer && ts.isCallExpression(declaration.initializer)) {
+              const callExpr = declaration.initializer;
+              const isAddResourceDependency =
+                ts.isPropertyAccessExpression(callExpr.expression) && callExpr.expression.name.text === 'addResourceDependency';
+
+              if (isAddResourceDependency) {
+                // Extract dependencies from the call
+                const args = callExpr.arguments;
+                if (args.length >= 4 && ts.isArrayLiteralExpression(args[3])) {
+                  args[3].elements.forEach((element) => {
+                    if (ts.isObjectLiteralExpression(element)) {
+                      element.properties.forEach((prop) => {
+                        if (
+                          ts.isPropertyAssignment(prop) &&
+                          ts.isIdentifier(prop.name) &&
+                          prop.name.text === 'category' &&
+                          ts.isStringLiteral(prop.initializer)
+                        ) {
+                          resourceDependencies.add(prop.initializer.text);
+                        }
+                      });
+                    }
+                  });
+                }
+                // Remove this entire variable statement
+                return undefined;
               }
-              // Remove this entire variable statement
-              return undefined;
             }
           }
 
@@ -141,17 +146,17 @@ export class AmplifyHelperTransformer {
             }
 
             // Transform property access like amplifyResources.storage.bucket.bucketName
-            if (ts.isIdentifier(expression) && expression.text.includes('amplifyResources')) {
+            // Only transform the outermost property access (when this node is not part of a larger chain)
+            if (!ts.isPropertyAccessExpression(node.parent)) {
               const fullAccess = AmplifyHelperTransformer.getPropertyAccessChain(node);
-
-              // Match pattern: amplifyResources.category.resourceName.property
               const parts = fullAccess.split('.');
+              // Match pattern: amplifyResources.category.resourceName.property (4+ parts)
               if (parts.length >= 4 && parts[0].includes('amplifyResources')) {
-                const category = parts[1];
+                const gen1Category = parts[1];
+                const gen2Category = AmplifyHelperTransformer.CATEGORY_MAP[gen1Category] || gen1Category;
                 const property = parts.slice(3).join('.');
-
-                // Transform to: category.resources.property
-                return AmplifyHelperTransformer.createPropertyAccessFromString(`${category}.resources.${property}`);
+                // Transform to: gen2Category.resources.property
+                return AmplifyHelperTransformer.createPropertyAccessFromString(`${gen2Category}.resources.${property}`);
               }
             }
           }

@@ -48,6 +48,14 @@ export class BackendUpdater {
     );
   }
 
+  // Map Gen1 category names to Gen2 backend property names
+  private static readonly CATEGORY_MAP: Record<string, string> = {
+    function: 'functions',
+    api: 'data',
+    storage: 'storage',
+    auth: 'auth',
+  };
+
   private createInstantiation(resourceName: string, className: string, dependencies?: string[]): ts.ExpressionStatement {
     const args: ts.Expression[] = [
       ts.factory.createCallExpression(
@@ -61,7 +69,13 @@ export class BackendUpdater {
     // Add dependencies as third parameter if they exist
     if (dependencies && dependencies.length > 0) {
       const dependencyObject = ts.factory.createObjectLiteralExpression(
-        dependencies.map((dep) => ts.factory.createShorthandPropertyAssignment(ts.factory.createIdentifier(dep))),
+        dependencies.map((dep) => {
+          const gen2Name = BackendUpdater.CATEGORY_MAP[dep] || dep;
+          return ts.factory.createPropertyAssignment(
+            gen2Name,
+            ts.factory.createPropertyAccessExpression(ts.factory.createIdentifier('backend'), gen2Name),
+          );
+        }),
         true,
       );
       args.push(dependencyObject);
