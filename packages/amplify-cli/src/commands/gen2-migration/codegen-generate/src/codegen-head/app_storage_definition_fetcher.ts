@@ -14,6 +14,7 @@ import {
 import { BackendEnvironmentResolver } from './backend_environment_selector';
 import { fileOrDirectoryExists } from './directory_exists';
 import { stateManager } from '@aws-amplify/amplify-cli-core';
+import { DynamoDBClient, DescribeTableCommand } from '@aws-sdk/client-dynamodb';
 
 export interface AppStorageDefinitionFetcher {
   getDefinition(): Promise<ReturnType<typeof getStorageDefinition> | undefined>;
@@ -32,6 +33,7 @@ export class AppStorageDefinitionFetcher {
     private backendEnvironmentResolver: BackendEnvironmentResolver,
     private ccbFetcher: BackendDownloader,
     private s3Client: S3Client,
+    private dynamoClient: DynamoDBClient = new DynamoDBClient({}),
   ) {}
   private readJsonFile = async (filePath: string) => {
     const contents = await fs.readFile(filePath, { encoding: 'utf8' });
@@ -60,7 +62,11 @@ export class AppStorageDefinitionFetcher {
   };
 
   // Check the properties
-  private parseDynamoDBTable = async (storageName: string, currentCloudBackendDirectory: string): Promise<DynamoDBTableDefinition> => {
+  private parseDynamoDBTable = async (
+    storageName: string,
+    currentCloudBackendDirectory: string,
+    storageOutput: StorageOutput,
+  ): Promise<DynamoDBTableDefinition> => {
     const cliInputsPath = path.join(currentCloudBackendDirectory, 'storage', storageName, 'cli-inputs.json');
     const cliInputs = await this.readJsonFile(cliInputsPath);
 
@@ -102,12 +108,48 @@ export class AppStorageDefinitionFetcher {
 
     const lambdaPermissions = this.findLambdaPermissions(tableName);
 
+    // Fetch current table configuration from AWS
+    const currentConfig: {
+      billingMode: 'PROVISIONED' | 'PAY_PER_REQUEST';
+      readCapacity: number;
+      writeCapacity: number;
+      streamEnabled: boolean;
+      streamViewType: string | undefined;
+    } = {
+      billingMode: 'PROVISIONED',
+      readCapacity: 5,
+      writeCapacity: 5,
+      streamEnabled: false,
+      streamViewType: undefined,
+    };
+
+    try {
+      const actualTableName = storageOutput.output?.Name || tableName;
+      const describeResult = await this.dynamoClient.send(new DescribeTableCommand({ TableName: actualTableName }));
+      const table = describeResult.Table;
+
+      if (table) {
+        currentConfig.billingMode = table.BillingModeSummary?.BillingMode === 'PAY_PER_REQUEST' ? 'PAY_PER_REQUEST' : 'PROVISIONED';
+        currentConfig.readCapacity = table.ProvisionedThroughput?.ReadCapacityUnits || 5;
+        currentConfig.writeCapacity = table.ProvisionedThroughput?.WriteCapacityUnits || 5;
+        currentConfig.streamEnabled = !!table.StreamSpecification?.StreamEnabled;
+        currentConfig.streamViewType = table.StreamSpecification?.StreamViewType;
+      }
+    } catch (e) {
+      // Use defaults if table doesn't exist or can't be accessed
+    }
+
     return {
       tableName,
       partitionKey,
       sortKey,
       gsis: gsis.length > 0 ? gsis : undefined,
       lambdaPermissions: lambdaPermissions.length > 0 ? lambdaPermissions : undefined,
+      billingMode: currentConfig.billingMode,
+      readCapacity: currentConfig.readCapacity,
+      writeCapacity: currentConfig.writeCapacity,
+      streamEnabled: currentConfig.streamEnabled,
+      streamViewType: currentConfig.streamViewType as 'KEYS_ONLY' | 'NEW_IMAGE' | 'OLD_IMAGE' | 'NEW_AND_OLD_IMAGES' | undefined,
     };
   };
 
@@ -213,7 +255,7 @@ export class AppStorageDefinitionFetcher {
             storageOptions.bucketEncryptionAlgorithm = serverSideEncryptionConf;
           }
         } else if (storageOutput.service === 'DynamoDB') {
-          const tableDefinition = await this.parseDynamoDBTable(storageName, currentCloudBackendDirectory);
+          const tableDefinition = await this.parseDynamoDBTable(storageName, currentCloudBackendDirectory, storageOutput);
           dynamoTables.push(tableDefinition);
         }
       }

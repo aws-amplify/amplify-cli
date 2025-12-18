@@ -21,6 +21,11 @@ export type DynamoDBTableDefinition = {
     functionName: string;
     envVarName: string;
   }[];
+  billingMode?: 'PROVISIONED' | 'PAY_PER_REQUEST';
+  readCapacity?: number;
+  writeCapacity?: number;
+  streamEnabled?: boolean;
+  streamViewType?: 'KEYS_ONLY' | 'NEW_IMAGE' | 'OLD_IMAGE' | 'NEW_AND_OLD_IMAGES';
 };
 
 export type StorageInputs = {

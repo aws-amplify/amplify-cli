@@ -11,7 +11,8 @@ import ts, {
 } from 'typescript';
 import { PolicyOverrides, ReferenceAuth } from '../generators/auth';
 import type { BucketAccelerateStatus, BucketVersioningStatus } from '@aws-sdk/client-s3';
-import { AccessPatterns, ServerSideEncryptionConfiguration, DynamoDBTableDefinition } from '../generators/storage';
+import { AccessPatterns, ServerSideEncryptionConfiguration } from '../generators/storage';
+import { DynamoDBTableDefinition } from '../adapters/storage';
 import { ExplicitAuthFlowsType, OAuthFlowType, UserPoolClientType } from '@aws-sdk/client-cognito-identity-provider';
 import assert from 'assert';
 import { newLineIdentifier } from '../ts_factory_utils';
@@ -853,7 +854,12 @@ export class BackendSynthesizer {
       // Add CDK imports
       imports.push(
         this.createImportStatement(
-          [factory.createIdentifier('Table'), factory.createIdentifier('AttributeType')],
+          [
+            factory.createIdentifier('Table'),
+            factory.createIdentifier('AttributeType'),
+            factory.createIdentifier('BillingMode'),
+            factory.createIdentifier('StreamViewType'),
+          ],
           'aws-cdk-lib/aws-dynamodb',
         ),
       );
@@ -900,7 +906,35 @@ export class BackendSynthesizer {
               ),
             ]),
           ),
+          factory.createPropertyAssignment(
+            'billingMode',
+            factory.createPropertyAccessExpression(
+              factory.createIdentifier('BillingMode'),
+              factory.createIdentifier(table.billingMode || 'PROVISIONED'),
+            ),
+          ),
         ];
+
+        // Add throughput only for provisioned billing
+        if (table.billingMode !== 'PAY_PER_REQUEST') {
+          tableProps.push(factory.createPropertyAssignment('readCapacity', factory.createNumericLiteral(String(table.readCapacity || 5))));
+          tableProps.push(
+            factory.createPropertyAssignment('writeCapacity', factory.createNumericLiteral(String(table.writeCapacity || 5))),
+          );
+        }
+
+        // Add stream configuration if enabled
+        if (table.streamEnabled && table.streamViewType) {
+          tableProps.push(
+            factory.createPropertyAssignment(
+              'stream',
+              factory.createPropertyAccessExpression(
+                factory.createIdentifier('StreamViewType'),
+                factory.createIdentifier(table.streamViewType),
+              ),
+            ),
+          );
+        }
 
         if (table.sortKey) {
           tableProps.push(
@@ -976,6 +1010,9 @@ export class BackendSynthesizer {
               ),
             );
           }
+
+          gsiProps.push(factory.createPropertyAssignment('readCapacity', factory.createNumericLiteral('5')));
+          gsiProps.push(factory.createPropertyAssignment('writeCapacity', factory.createNumericLiteral('5')));
 
           const gsiCall = factory.createExpressionStatement(
             factory.createCallExpression(

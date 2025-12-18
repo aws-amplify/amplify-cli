@@ -56,6 +56,7 @@ import {
   StorageTriggerEvent,
   ServerSideEncryptionConfiguration,
 } from '../generators/storage';
+import { DynamoDBTableDefinition } from '../adapters/storage';
 
 import { DataDefinition, DataTableMapping, generateDataSource } from '../generators/data/index';
 
