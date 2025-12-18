@@ -61,6 +61,7 @@ import { DataDefinition, DataTableMapping, generateDataSource } from '../generat
 
 import { FunctionDefinition, renderFunctions } from '../generators/functions/index';
 import assert from 'assert';
+import { CdkFromCfn } from '../../unsupported/cdk-from-cfn';
 
 /**
  * Configuration options for Gen 2 rendering pipeline
@@ -90,6 +91,9 @@ export interface Gen2RenderingOptions {
   /** Lambda function definitions */
   functions?: FunctionDefinition[];
 
+  /** Analytics function definitions */
+  analytics?: any;
+
   /** Custom CloudFormation resources that need manual migration */
   customResources?: Map<string, string>;
 
@@ -115,7 +119,7 @@ const extractGen1FunctionDependencies = async (
   resourceName: string,
 ): Promise<{ dependencies?: Record<string, string>; devDependencies?: Record<string, string> }> => {
   try {
-    const packageJsonPath = path.join('amplify', 'backend', 'function', resourceName, 'src', 'package.json');
+    const packageJsonPath = path.join('amplify', 'backend', 'function', 'analytics', resourceName, 'src', 'package.json');
     const packageContent = await fs.readFile(packageJsonPath, 'utf-8');
     const packageJson = JSON.parse(packageContent);
     return {
@@ -219,6 +223,7 @@ export const createGen2Renderer = ({
   storage,
   data,
   functions,
+  analytics,
   customResources,
   unsupportedCategories,
   fileWriter = (content, path) => createFileWriter(path)(content),
@@ -308,6 +313,25 @@ export const createGen2Renderer = ({
   // Handle categories that cannot be automatically migrated
   if (unsupportedCategories && unsupportedCategories.size >= 1) {
     backendRenderOptions.unsupportedCategories = unsupportedCategories;
+  }
+
+  // Kaizen
+  if (analytics) {
+    console.log('There are Analytics found in the Gen1 App');
+    // TODO: this should be instantiated earlier when more unsupported categories are added
+    const cdkFromCfn = new CdkFromCfn(outputDir, fileWriter);
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    Object.keys(analytics).forEach(async (analytic) => {
+      const analyticObj = analytics[analytic];
+      analyticObj.name = analytic;
+      if (analyticObj.service === 'Kinesis') {
+        console.log('Analytics backed by Kinesis found, generating L1 Code');
+        await cdkFromCfn.generateKinesisAnalyticsL1Code(analyticObj);
+      } else {
+        console.log('Analytics backed by Pinpoint found, still unsupported');
+      }
+    });
+    backendRenderOptions.analytics = analytics;
   }
 
   // Process Lambda functions - create resource.ts and handler.ts files

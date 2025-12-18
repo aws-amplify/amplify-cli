@@ -38,6 +38,7 @@ import { FileConverter } from '../../../codegen-custom-resources/generator/file-
 import { BackendUpdater } from '../../../codegen-custom-resources/generator/backend-updater';
 import execa from 'execa';
 import { Logger } from '../../../../gen2-migration';
+import { AppAnalyticsDefinitionFetcher } from './app_analytics_definition_fetcher';
 
 interface CodegenCommandParameters {
   analytics: Analytics;
@@ -48,6 +49,7 @@ interface CodegenCommandParameters {
   authDefinitionFetcher: AppAuthDefinitionFetcher;
   storageDefinitionFetcher: AppStorageDefinitionFetcher;
   functionsDefinitionFetcher: AppFunctionsDefinitionFetcher;
+  analyticsDefinitionFetcher: AppAnalyticsDefinitionFetcher;
 }
 
 const TEMP_GEN_2_OUTPUT_DIR = 'amplify-gen2';
@@ -79,6 +81,7 @@ const generateGen2Code = async ({
   dataDefinitionFetcher,
   storageDefinitionFetcher,
   functionsDefinitionFetcher,
+  analyticsDefinitionFetcher,
   logger,
 }: CodegenCommandParameters) => {
   logger.info('Fetching definitions from AWS for category: Auth');
@@ -93,10 +96,14 @@ const generateGen2Code = async ({
   logger.info('Fetching definitions from AWS for category: Functions');
   const functions = await functionsDefinitionFetcher.getDefinition();
 
+  logger.info('Fetching definitions from AWS for category: Analytics');
+  const analytics = await analyticsDefinitionFetcher.getDefinition();
+
   logger.debug(`Auth: ${auth ? 'EXISTS' : 'UNDEFINED'}`);
   logger.debug(`Storage: ${storage ? 'EXISTS' : 'UNDEFINED'}`);
   logger.debug(`Data: ${data ? JSON.stringify(data, null, 2) : 'UNDEFINED'}`);
   logger.debug(`Functions: ${functions ? `${functions.length} functions` : 'UNDEFINED'}`);
+  logger.debug(`Analytics: ${analytics ? JSON.stringify(analytics, null, 2) : 'UNDEFINED'}`); //Need to confirm
   logger.debug(`Backend env: ${backendEnvironmentName}`);
 
   const gen2RenderOptions = {
@@ -106,6 +113,7 @@ const generateGen2Code = async ({
     storage,
     data,
     functions,
+    analytics,
     customResources: await getCustomResourceMap(),
     unsupportedCategories: unsupportedCategories(),
   };
@@ -213,6 +221,7 @@ const unsupportedCategories = (): Map<string, string> => {
   const unsupportedCategories = new Map<string, string>();
   const urlPrefix = 'https://docs.amplify.aws/react/build-a-backend/add-aws-services';
   const restAPIKey = 'rest api';
+  const analyticsKey = 'analytics';
 
   unsupportedCategories.set('geo', `${urlPrefix}/geo/`);
   unsupportedCategories.set('analytics', `${urlPrefix}/analytics/`);
@@ -239,6 +248,16 @@ const unsupportedCategories = (): Map<string, string> => {
           }
         });
       }
+    } else if (category === 'analytics') {
+      const analytics = meta?.analytics ?? {};
+      Object.keys(analytics).forEach((analytic) => {
+        const analyticObj = analytics[analytic];
+        if (analyticObj.service === 'Pinpoint') {
+          const analyticsDocLink = unsupportedCategories.get(analyticsKey);
+          assert(analyticsDocLink);
+          unsupportedCategoriesList.set(`Pinpoint ${analyticsKey}`, analyticsDocLink);
+        }
+      });
     } else {
       if (unsupportedCategories.has(category) && Object.entries(meta[category]).length > 0) {
         const unsupportedCategoryDocLink = unsupportedCategories.get(category);
@@ -530,6 +549,7 @@ export async function prepare(logger: Logger) {
       backendEnvironmentResolver,
       stateManager,
     ),
+    analyticsDefinitionFetcher: new AppAnalyticsDefinitionFetcher(backendEnvironmentResolver, stateManager),
     analytics: new AppAnalytics(appId),
     logger: logger,
     backendEnvironmentName: backendEnvironment?.environmentName,
