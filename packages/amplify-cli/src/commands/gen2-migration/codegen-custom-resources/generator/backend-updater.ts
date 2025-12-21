@@ -66,19 +66,12 @@ export class BackendUpdater {
       ts.factory.createStringLiteral(resourceName),
     ];
 
-    // Add dependencies as third parameter if they exist
+    // Add dependencies as positional arguments
     if (dependencies && dependencies.length > 0) {
-      const dependencyObject = ts.factory.createObjectLiteralExpression(
-        dependencies.map((dep) => {
-          const gen2Name = BackendUpdater.CATEGORY_MAP[dep] || dep;
-          return ts.factory.createPropertyAssignment(
-            gen2Name,
-            ts.factory.createPropertyAccessExpression(ts.factory.createIdentifier('backend'), gen2Name),
-          );
-        }),
-        true,
-      );
-      args.push(dependencyObject);
+      dependencies.forEach((dep) => {
+        const gen2Name = BackendUpdater.CATEGORY_MAP[dep] || dep;
+        args.push(ts.factory.createPropertyAccessExpression(ts.factory.createIdentifier('backend'), gen2Name));
+      });
     }
 
     return ts.factory.createExpressionStatement(ts.factory.createNewExpression(ts.factory.createIdentifier(resourceName), undefined, args));

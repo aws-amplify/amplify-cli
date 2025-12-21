@@ -9,6 +9,30 @@ export class AmplifyHelperTransformer {
     auth: 'auth',
   };
 
+  // Map Gen1 output attributes to Gen2 resource property paths
+  private static readonly ATTRIBUTE_MAP: Record<string, Record<string, string>> = {
+    auth: {
+      UserPoolId: 'userPool.userPoolId',
+      UserPoolArn: 'userPool.userPoolArn',
+      IdentityPoolId: 'identityPool.identityPoolId',
+      AppClientID: 'userPoolClient.userPoolClientId',
+      AppClientIDWeb: 'userPoolClient.userPoolClientId',
+    },
+    api: {
+      GraphQLAPIIdOutput: 'cfnResources.cfnGraphqlApi.attrApiId',
+      GraphQLAPIEndpointOutput: 'cfnResources.cfnGraphqlApi.attrGraphQlUrl',
+      GraphQLAPIKeyOutput: 'cfnResources.cfnGraphqlApi.attrApiKey',
+    },
+    storage: {
+      BucketName: 'bucket.bucketName',
+    },
+    function: {
+      Name: 'lambda.functionName',
+      Arn: 'lambda.functionArn',
+      LambdaExecutionRole: 'lambda.role',
+    },
+  };
+
   static transform(sourceFile: ts.SourceFile, projectName?: string): ts.SourceFile {
     // Track variable names that hold AmplifyHelpers.getProjectInfo() result
     const projectInfoVariables = new Set<string>();
@@ -154,9 +178,20 @@ export class AmplifyHelperTransformer {
               if (parts.length >= 4 && parts[0].includes('amplifyResources')) {
                 const gen1Category = parts[1];
                 const gen2Category = AmplifyHelperTransformer.CATEGORY_MAP[gen1Category] || gen1Category;
-                const property = parts.slice(3).join('.');
-                // Transform to: gen2Category.resources.property
-                return AmplifyHelperTransformer.createPropertyAccessFromString(`${gen2Category}.resources.${property}`);
+                const resourceName = parts[2];
+                const gen1Attribute = parts[3];
+                const mappedAttribute = AmplifyHelperTransformer.ATTRIBUTE_MAP[gen1Category]?.[gen1Attribute];
+                const gen2Property = mappedAttribute || parts.slice(3).join('.');
+
+                // Functions need resource name preserved: functions.myFunc.resources.lambda.functionArn
+                if (gen1Category === 'function') {
+                  return AmplifyHelperTransformer.createPropertyAccessFromString(
+                    `${gen2Category}.${resourceName}.resources.${gen2Property}`,
+                  );
+                }
+
+                // Other categories: auth.resources.userPool.userPoolId
+                return AmplifyHelperTransformer.createPropertyAccessFromString(`${gen2Category}.resources.${gen2Property}`);
               }
             }
           }
@@ -202,17 +237,18 @@ export class AmplifyHelperTransformer {
           if (ts.isConstructorDeclaration(visitedNode)) {
             const baseParams = visitedNode.parameters.slice(0, 2); // scope, id
 
-            // Add resource dependency parameters
-            const resourceParams = Array.from(resourceDependencies).map((category) =>
-              ts.factory.createParameterDeclaration(
+            // Add resource dependency parameters with Gen2 naming
+            const resourceParams = Array.from(resourceDependencies).map((gen1Category) => {
+              const gen2Category = AmplifyHelperTransformer.CATEGORY_MAP[gen1Category] || gen1Category;
+              return ts.factory.createParameterDeclaration(
                 undefined,
                 undefined,
-                category,
+                gen2Category,
                 undefined,
                 ts.factory.createTypeReferenceNode('any'),
                 undefined,
-              ),
-            );
+              );
+            });
 
             const newParams = [...baseParams, ...resourceParams];
             return ts.factory.updateConstructorDeclaration(visitedNode, visitedNode.modifiers, newParams, visitedNode.body);
