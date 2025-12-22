@@ -387,6 +387,16 @@ export async function updateCustomResources() {
       },
     });
 
+    // For CloudFormation resources, rename template to template.json
+    const resourcesWithType = getCustomResourcesWithType();
+    for (const [resource, serviceType] of resourcesWithType) {
+      if (serviceType === 'customCloudformation') {
+        const srcTemplatePath = path.join(destinationCustomResourcePath, resource, `${resource}-cloudformation-template.json`);
+        const destTemplatePath = path.join(destinationCustomResourcePath, resource, 'template.json');
+        await fs.rename(srcTemplatePath, destTemplatePath);
+      }
+    }
+
     const sourceTypesPath = path.join(amplifyGen1BackendDir, TYPES_DIR);
     const destinationTypesPath = path.join(amplifyGen2Dir, TYPES_DIR);
     await fs.mkdir(destinationTypesPath, { recursive: true });
