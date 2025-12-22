@@ -48,7 +48,9 @@ export interface BackendRenderParameters {
     importFrom: string;
     functionNamesAndCategories: Map<string, string>;
   };
-  analytics?: any[];
+  analytics?: {
+    importFrom: string;
+  };
   customResources?: Map<string, string>;
   unsupportedCategories?: Map<string, string>;
 }
@@ -845,9 +847,12 @@ export class BackendSynthesizer {
 
     imports.push(this.createImportStatement([backendFunctionIdentifier], '@aws-amplify/backend'));
 
-    // if (renderArgs.analytics) {
-    //   imports.push('// analytics tbd');
-    // }
+    // Analytics: import { analytics } from './analytics/resource';
+    if (renderArgs.analytics) {
+      const analyticsFunctionIdentifier = factory.createIdentifier('analytics');
+      imports.push(this.createImportStatement([analyticsFunctionIdentifier], renderArgs.analytics.importFrom));
+    }
+
     if (renderArgs.unsupportedCategories) {
       const categories = renderArgs.unsupportedCategories;
 
@@ -875,6 +880,14 @@ export class BackendSynthesizer {
       [],
       factory.createVariableDeclarationList([backendVariable], ts.NodeFlags.Const),
     );
+
+    // Analytics: call analytics(backend) after defineBackend to create the nested stack
+    if (renderArgs.analytics) {
+      const analyticsCall = factory.createExpressionStatement(
+        factory.createCallExpression(factory.createIdentifier('analytics'), undefined, [factory.createIdentifier('backend')]),
+      );
+      nodes.push(analyticsCall);
+    }
 
     // CDK OVERRIDES
     // When you have advanced user pool settings AND you're creating new auth (not importing existing)

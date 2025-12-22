@@ -61,7 +61,8 @@ import { DataDefinition, DataTableMapping, generateDataSource } from '../generat
 
 import { FunctionDefinition, renderFunctions } from '../generators/functions/index';
 import assert from 'assert';
-import { CdkFromCfn } from '../unsupported/cdk-fron-cfn';
+import { CdkFromCfn, KinesisAnalyticsDefinition, AnalyticsCodegenResult } from '../unsupported/cdk-fron-cfn';
+import { renderAnalytics, AnalyticsRenderParameters } from '../generators/analytics/index';
 
 /**
  * Configuration options for Gen 2 rendering pipeline
@@ -91,7 +92,8 @@ export interface Gen2RenderingOptions {
   /** Lambda function definitions */
   functions?: FunctionDefinition[];
 
-  analytics?: any;
+  /** Analytics (Kinesis) definitions from Gen 1 project */
+  analytics?: Record<string, KinesisAnalyticsDefinition>;
 
   /** Custom CloudFormation resources that need manual migration */
   customResources?: Map<string, string>;
@@ -316,20 +318,43 @@ export const createGen2Renderer = ({
 
   if (analytics) {
     console.log('There are Analytics found in the Gen1 App');
-    // TODO: this should be instantiated earlier when more unsupported categories are added
     const cdkFromCfn = new CdkFromCfn(outputDir, fileWriter);
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    Object.keys(analytics).forEach(async (analytic) => {
-      const analyticObj = analytics[analytic];
-      analyticObj.name = analytic;
+    const analyticsDir = path.join(outputDir, 'amplify', 'analytics');
+    renderers.push(new EnsureDirectory(analyticsDir));
+
+    // Process each analytics resource
+    for (const analyticName of Object.keys(analytics)) {
+      const analyticObj = analytics[analyticName];
+      analyticObj.name = analyticName;
+
       if (analyticObj.service === 'Kinesis') {
         console.log('Analytics backed by Kinesis found, generating L1 Code');
-        await cdkFromCfn.generateKinesisAnalyticsL1Code(analyticObj);
+
+        // Create a renderer that generates both the stack file and resource.ts
+        renderers.push(
+          new TypescriptNodeArrayRenderer(
+            async () => {
+              // Generate the stack file (e.g., todoprojectKinesis-stack.ts)
+              const codegenResult: AnalyticsCodegenResult = await cdkFromCfn.generateKinesisAnalyticsL1Code(analyticObj);
+
+              // Generate resource.ts using the analytics generator
+              const analyticsParams: AnalyticsRenderParameters = {
+                stackClassName: codegenResult.stackClassName,
+                stackFileName: codegenResult.stackFileName,
+                resourceName: codegenResult.resourceName,
+              };
+
+              return renderAnalytics(analyticsParams);
+            },
+            (content) => fileWriter(content, path.join(analyticsDir, 'resource.ts')),
+          ),
+        );
+
+        backendRenderOptions.analytics = { importFrom: './analytics/resource' };
       } else {
         console.log('Analytics backed by Pinpoint found, still unsupported');
       }
-    });
-    backendRenderOptions.analytics = analytics;
+    }
   }
 
   // Process Lambda functions - create resource.ts and handler.ts files
