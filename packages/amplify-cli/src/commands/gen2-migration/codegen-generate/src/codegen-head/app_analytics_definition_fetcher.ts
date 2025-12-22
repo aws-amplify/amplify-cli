@@ -1,7 +1,7 @@
 import assert from 'node:assert';
 import { BackendEnvironmentResolver } from './backend_environment_selector';
 import { StateManager } from '@aws-amplify/amplify-cli-core';
-import { KinesisAnalyticsDefinition } from '../unsupported/cdk-fron-cfn';
+import { KinesisAnalyticsDefinition } from '../unsupported/cdk-from-cfn';
 
 export interface AppAnalyticsDefinitionFetcher {
   getDefinition(): Promise<Record<string, KinesisAnalyticsDefinition> | undefined>;
