@@ -108,6 +108,26 @@ export interface Gen2RenderingOptions {
 const createFileWriter = (path: string) => async (content: string) => fs.writeFile(path, content);
 
 /**
+ * Transforms handler file content from CommonJS to ES modules
+ * @param content - Original handler file content
+ * @returns Transformed content with ES module syntax
+ */
+const transformHandlerToESModule = (content: string): string => {
+  let transformed = content;
+
+  // Transform require statements to import statements
+  transformed = transformed.replace(/const\s+{\s*([^}]+)\s*}\s*=\s*require\(['"]([@\w/-]+)['"];?/g, "import { $1 } from '$2';");
+
+  // Transform exports.handler to export const handler
+  transformed = transformed.replace(/exports\.handler\s*=\s*async\s*\(([^)]+)\)\s*=>/g, 'export const handler = async ($1: any) =>');
+
+  // Add type annotations to map functions
+  transformed = transformed.replace(/\.map\(\s*([^=]+)\s*=>/g, '.map(($1: any) =>');
+
+  return transformed;
+};
+
+/**
  * Extracts dependencies from Gen 1 function package.json
  * @param resourceName - Name of the function resource
  * @returns Object with dependencies and devDependencies
@@ -182,7 +202,13 @@ const copyGen1FunctionFiles = async (
 
         if (!skipFiles.includes(fileName)) {
           const srcPath = path.join(gen1SrcDir, file);
-          const content = await fs.readFile(srcPath, 'utf-8');
+          let content = await fs.readFile(srcPath, 'utf-8');
+
+          // Transform handler files from CommonJS to ES modules
+          if (fileName === 'index.js' || fileName.endsWith('handler.js')) {
+            content = transformHandlerToESModule(content);
+          }
+
           const destFile = file;
           const destPath = path.join(destDir, destFile);
 

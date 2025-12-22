@@ -881,7 +881,7 @@ export class BackendSynthesizer {
                 : factory.createCallExpression(
                     factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier('createStack')),
                     undefined,
-                    [factory.createStringLiteral('storage-stack')],
+                    [factory.createStringLiteral('storage')],
                   ),
             ),
           ],
