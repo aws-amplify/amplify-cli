@@ -548,6 +548,23 @@ const extractResourceDependencies = async (
 
   return resourceDependencies;
 };
+
+export const extractCfnDependencies = async (templatePath: string): Promise<string[]> => {
+  const template = JSON.parse(await fs.readFile(templatePath, { encoding: 'utf-8' }));
+  const params = Object.keys(template.Parameters || {});
+  const categoryPattern = /^(auth|storage|api|function)/;
+  const categories = new Set<string>();
+
+  params
+    .filter((p) => p !== 'env')
+    .forEach((param) => {
+      const match = param.match(categoryPattern);
+      if (match) categories.add(match[1]);
+    });
+
+  return Array.from(categories);
+};
+
 export async function prepare(logger: Logger) {
   const appId = resolveAppId();
   const amplifyClient = new AmplifyClient();
