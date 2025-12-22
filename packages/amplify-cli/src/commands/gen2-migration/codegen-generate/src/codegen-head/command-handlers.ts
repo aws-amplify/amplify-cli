@@ -322,6 +322,21 @@ export async function updateGitIgnoreForGen2() {
   await fs.writeFile(`${cwd}/.gitignore`, newGitIgnore, { encoding: 'utf-8' });
 }
 
+type CustomResourceServiceType = 'customCDK' | 'customCloudformation';
+
+const getCustomResourcesWithType = (): Map<string, CustomResourceServiceType> => {
+  const meta = stateManager.getMeta();
+  const customCategory = meta?.custom;
+  const resourceMap = new Map<string, CustomResourceServiceType>();
+
+  if (customCategory) {
+    Object.entries(customCategory).forEach(([name, config]: [string, { service: CustomResourceServiceType }]) => {
+      resourceMap.set(name, config.service);
+    });
+  }
+  return resourceMap;
+};
+
 const getCustomResources = (): string[] => {
   const meta = stateManager.getMeta();
   const customCategory = meta?.custom;
