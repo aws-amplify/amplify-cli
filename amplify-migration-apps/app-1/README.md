@@ -314,6 +314,631 @@ amplify push
 ```
 npm install
 ```
+### Step 4: Add Lambda function to display low stock alerts
+
+```
+amplify add custom
+```
+```
+✔ How do you want to define this custom resource? · AWS CDK
+✔ Provide a name for your custom resource · customProdInventory
+✅ Created skeleton CDK stack in amplify/backend/custom/customProdInventory directory
+✔ Do you want to edit the CDK stack now? (Y/n) · yes
+Edit the file in your editor: amplify/backend/custom/customProdInventory/cdk-stack.ts
+? Press enter to continue
+```
+In the custom/customProdInventory/cdk-stack.ts file, replace existing code with the following code.
+
+```
+import * as cdk from 'aws-cdk-lib';
+import * as AmplifyHelpers from '@aws-amplify/cli-extensibility-helper';
+import { AmplifyDependentResourcesAttributes } from '../../types/amplify-dependent-resources-ref';
+import { Construct } from 'constructs';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as sns from 'aws-cdk-lib/aws-sns';
+import * as subs from 'aws-cdk-lib/aws-sns-subscriptions';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as events from 'aws-cdk-lib/aws-events';
+import * as targets from 'aws-cdk-lib/aws-events-targets';
+
+export class cdkStack extends cdk.Stack {
+constructor(scope: Construct, id: string, props?: cdk.StackProps, amplifyResourceProps?: AmplifyHelpers.AmplifyResourceProps) {
+super(scope, id, props);
+
+new cdk.CfnParameter(this, 'env', {
+type: 'String',
+description: 'Current Amplify CLI env name',
+});
+
+const amplifyProjectInfo = AmplifyHelpers.getProjectInfo();
+
+const amplifyResources: AmplifyDependentResourcesAttributes = AmplifyHelpers.addResourceDependency(
+this as any,
+amplifyResourceProps!.category,
+amplifyResourceProps!.resourceName,
+      [
+        { category: 'auth', resourceName: 'productcatalog6e145452' },
+        { category: 'api', resourceName: 'productcatalog' },
+        { category: 'function', resourceName: 'lowstockproductcatalog' }
+      ]
+);
+
+    // Resource references
+    const userPoolId = amplifyResources.auth.productcatalog6e145452.UserPoolId;
+    const graphqlApiId = amplifyResources.api.productcatalog.GraphQLAPIIdOutput;
+    const graphqlEndpoint = amplifyResources.api.productcatalog.GraphQLAPIEndpointOutput;
+    const graphqlApiKey = amplifyResources.api.productcatalog.GraphQLAPIKeyOutput;
+    const functionArn = amplifyResources.function.lowstockproductcatalog.Arn;
+
+const topic = new sns.Topic(this, 'InventoryAlertTopic');
+
+const inventoryChecker = new lambda.Function(this, 'InventoryChecker', {
+functionName: `inventory-checker-${amplifyProjectInfo.projectName}-${cdk.Fn.ref('env')}`,
+runtime: lambda.Runtime.NODEJS_18_X,
+handler: 'index.handler',
+timeout: cdk.Duration.seconds(30),
+code: lambda.Code.fromInline(`
+const { PublishCommand, SNSClient } = require('@aws-sdk/client-sns');
+const https = require('https');
+const snsClient = new SNSClient({ region: process.env.AWS_REGION });
+
+exports.handler = async () => {
+ const products = await fetchProducts();
+ const lowStock = products.filter(p => p.stock !== null && p.stock < 5);
+ 
+ if (lowStock.length > 0) {
+   const message = \`Low Stock Alert: \${lowStock.length} products need restocking\`;
+   
+   await snsClient.send(new PublishCommand({
+     TopicArn: process.env.SNS_TOPIC_ARN,
+     Subject: 'Inventory Alert',
+     Message: message
+   }));
+ }
+ 
+ return { statusCode: 200, lowStockCount: lowStock.length };
+};
+
+async function fetchProducts() {
+ return new Promise((resolve, reject) => {
+   const query = 'query ListProducts { listProducts { items { id engword stock } } }';
+   const postData = JSON.stringify({ query });
+   const url = new URL(process.env.GRAPHQL_ENDPOINT);
+   
+   const req = https.request({
+     hostname: url.hostname,
+     port: 443,
+     path: url.pathname,
+     method: 'POST',
+     headers: {
+       'content-type': 'application/json',
+       'x-api-key': process.env.GRAPHQL_API_KEY,
+       'Content-Length': Buffer.byteLength(postData)
+     }
+   }, (res) => {
+     let data = '';
+     res.on('data', (chunk) => data += chunk);
+     res.on('end', () => {
+       const response = JSON.parse(data);
+       resolve(response.data?.listProducts?.items || []);
+     });
+   });
+   
+   req.on('error', reject);
+   req.write(postData);
+   req.end();
+ });
+}
+     `),
+environment: {
+SNS_TOPIC_ARN: topic.topicArn,
+        GRAPHQL_ENDPOINT: graphqlEndpoint,
+        GRAPHQL_API_KEY: graphqlApiKey,
+        USER_POOL_ID: userPoolId,
+        FUNCTION_ARN: functionArn
+}
+});
+
+const emailNotifier = new lambda.Function(this, 'EmailNotifier', {
+functionName: `email-notifier-${amplifyProjectInfo.projectName}-${cdk.Fn.ref('env')}`,
+runtime: lambda.Runtime.NODEJS_18_X,
+handler: 'index.handler',
+code: lambda.Code.fromInline(`
+const { SESClient, SendEmailCommand } = require('@aws-sdk/client-ses');
+const sesClient = new SESClient({ region: process.env.AWS_REGION });
+
+exports.handler = async (event) => {
+ for (const record of event.Records) {
+   const { Subject, Message } = record.Sns;
+   
+   await sesClient.send(new SendEmailCommand({
+     Source: process.env.SOURCE_EMAIL,
+     Destination: { ToAddresses: [process.env.ADMIN_EMAIL] },
+     Message: {
+       Subject: { Data: Subject },
+       Body: { Text: { Data: Message } }
+     }
+   }));
+ }
+};
+     `),
+environment: {
+SOURCE_EMAIL: 'noreply@example.com',
+ADMIN_EMAIL: 'admin@example.com'
+}
+});
+
+topic.addSubscription(new subs.LambdaSubscription(emailNotifier));
+
+const rule = new events.Rule(this, 'DailyInventoryCheck', {
+schedule: events.Schedule.cron({ minute: '0', hour: '9' })
+});
+rule.addTarget(new targets.LambdaFunction(inventoryChecker));
+
+topic.grantPublish(inventoryChecker);
+emailNotifier.addToRolePolicy(new iam.PolicyStatement({
+actions: ['ses:SendEmail', 'ses:SendRawEmail'],
+resources: ['*']
+}));
+
+new cdk.CfnOutput(this, 'InventoryAlertTopicArn', {
+value: topic.topicArn,
+description: 'SNS Topic ARN for inventory alerts'
+});
+
+new cdk.CfnOutput(this, 'InventoryCheckerFunctionName', {
+value: inventoryChecker.functionName,
+description: 'Lambda function that checks inventory levels'
+});
+
+    new cdk.CfnOutput(this, 'UserPoolIdRef', {
+      value: userPoolId,
+      description: 'Cognito User Pool ID'
+    });
+
+    new cdk.CfnOutput(this, 'GraphQLApiIdRef', {
+      value: graphqlApiId,
+      description: 'AppSync GraphQL API ID'
+    });
+
+    new cdk.CfnOutput(this, 'LowStockFunctionRef', {
+      value: functionArn,
+      description: 'Low Stock Lambda Function ARN'
+    });
+}
+}
+```
+```
+amplify push
+```
+The storage dependency can be added now. Copy paste the following code into the cdk-stack.ts file.
+
+```
+import * as cdk from 'aws-cdk-lib';
+import * as AmplifyHelpers from '@aws-amplify/cli-extensibility-helper';
+import { AmplifyDependentResourcesAttributes } from '../../types/amplify-dependent-resources-ref';
+import { Construct } from 'constructs';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as sns from 'aws-cdk-lib/aws-sns';
+import * as subs from 'aws-cdk-lib/aws-sns-subscriptions';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as events from 'aws-cdk-lib/aws-events';
+import * as targets from 'aws-cdk-lib/aws-events-targets';
+
+export class cdkStack extends cdk.Stack {
+constructor(scope: Construct, id: string, props?: cdk.StackProps, amplifyResourceProps?: AmplifyHelpers.AmplifyResourceProps) {
+super(scope, id, props);
+
+new cdk.CfnParameter(this, 'env', {
+type: 'String',
+description: 'Current Amplify CLI env name',
+});
+
+const amplifyProjectInfo = AmplifyHelpers.getProjectInfo();
+
+const amplifyResources: AmplifyDependentResourcesAttributes = AmplifyHelpers.addResourceDependency(
+this as any,
+amplifyResourceProps!.category,
+amplifyResourceProps!.resourceName,
+      [
+        { category: 'auth', resourceName: 'productcatalog6e145452' },
+        { category: 'api', resourceName: 'productcatalog' },
+        { category: 'storage', resourceName: 'productimages3' },
+        { category: 'function', resourceName: 'lowstockproductcatalog' }
+      ]
+);
+
+    // Resource references
+    const userPoolId = amplifyResources.auth.productcatalog6e145452.UserPoolId;
+    const graphqlApiId = amplifyResources.api.productcatalog.GraphQLAPIIdOutput;
+    const graphqlEndpoint = amplifyResources.api.productcatalog.GraphQLAPIEndpointOutput;
+    const graphqlApiKey = amplifyResources.api.productcatalog.GraphQLAPIKeyOutput;
+    const bucketName = amplifyResources.storage.productimages3.BucketName;
+    const functionArn = amplifyResources.function.lowstockproductcatalog.Arn;
+
+const topic = new sns.Topic(this, 'InventoryAlertTopic');
+
+const inventoryChecker = new lambda.Function(this, 'InventoryChecker', {
+functionName: `inventory-checker-${amplifyProjectInfo.projectName}-${cdk.Fn.ref('env')}`,
+runtime: lambda.Runtime.NODEJS_18_X,
+handler: 'index.handler',
+timeout: cdk.Duration.seconds(30),
+code: lambda.Code.fromInline(`
+const { PublishCommand, SNSClient } = require('@aws-sdk/client-sns');
+const https = require('https');
+const snsClient = new SNSClient({ region: process.env.AWS_REGION });
+
+exports.handler = async () => {
+ const products = await fetchProducts();
+ const lowStock = products.filter(p => p.stock !== null && p.stock < 5);
+ 
+ if (lowStock.length > 0) {
+   const message = \`Low Stock Alert: \${lowStock.length} products need restocking\`;
+   
+   await snsClient.send(new PublishCommand({
+     TopicArn: process.env.SNS_TOPIC_ARN,
+     Subject: 'Inventory Alert',
+     Message: message
+   }));
+ }
+ 
+ return { statusCode: 200, lowStockCount: lowStock.length };
+};
+
+async function fetchProducts() {
+ return new Promise((resolve, reject) => {
+   const query = 'query ListProducts { listProducts { items { id engword stock } } }';
+   const postData = JSON.stringify({ query });
+   const url = new URL(process.env.GRAPHQL_ENDPOINT);
+   
+   const req = https.request({
+     hostname: url.hostname,
+     port: 443,
+     path: url.pathname,
+     method: 'POST',
+     headers: {
+       'content-type': 'application/json',
+       'x-api-key': process.env.GRAPHQL_API_KEY,
+       'Content-Length': Buffer.byteLength(postData)
+     }
+   }, (res) => {
+     let data = '';
+     res.on('data', (chunk) => data += chunk);
+     res.on('end', () => {
+       const response = JSON.parse(data);
+       resolve(response.data?.listProducts?.items || []);
+     });
+   });
+   
+   req.on('error', reject);
+   req.write(postData);
+   req.end();
+ });
+}
+     `),
+environment: {
+SNS_TOPIC_ARN: topic.topicArn,
+        GRAPHQL_ENDPOINT: graphqlEndpoint,
+        GRAPHQL_API_KEY: graphqlApiKey,
+        USER_POOL_ID: userPoolId,
+        BUCKET_NAME: bucketName,
+        FUNCTION_ARN: functionArn
+}
+});
+
+const emailNotifier = new lambda.Function(this, 'EmailNotifier', {
+functionName: `email-notifier-${amplifyProjectInfo.projectName}-${cdk.Fn.ref('env')}`,
+runtime: lambda.Runtime.NODEJS_18_X,
+handler: 'index.handler',
+code: lambda.Code.fromInline(`
+const { SESClient, SendEmailCommand } = require('@aws-sdk/client-ses');
+const sesClient = new SESClient({ region: process.env.AWS_REGION });
+
+exports.handler = async (event) => {
+ for (const record of event.Records) {
+   const { Subject, Message } = record.Sns;
+   
+   await sesClient.send(new SendEmailCommand({
+     Source: process.env.SOURCE_EMAIL,
+     Destination: { ToAddresses: [process.env.ADMIN_EMAIL] },
+     Message: {
+       Subject: { Data: Subject },
+       Body: { Text: { Data: Message } }
+     }
+   }));
+ }
+};
+     `),
+environment: {
+SOURCE_EMAIL: 'noreply@example.com',
+ADMIN_EMAIL: 'admin@example.com'
+}
+});
+
+topic.addSubscription(new subs.LambdaSubscription(emailNotifier));
+
+const rule = new events.Rule(this, 'DailyInventoryCheck', {
+schedule: events.Schedule.cron({ minute: '0', hour: '9' })
+});
+rule.addTarget(new targets.LambdaFunction(inventoryChecker));
+
+topic.grantPublish(inventoryChecker);
+emailNotifier.addToRolePolicy(new iam.PolicyStatement({
+actions: ['ses:SendEmail', 'ses:SendRawEmail'],
+resources: ['*']
+}));
+
+new cdk.CfnOutput(this, 'InventoryAlertTopicArn', {
+value: topic.topicArn,
+description: 'SNS Topic ARN for inventory alerts'
+});
+
+new cdk.CfnOutput(this, 'InventoryCheckerFunctionName', {
+value: inventoryChecker.functionName,
+description: 'Lambda function that checks inventory levels'
+});
+
+    new cdk.CfnOutput(this, 'UserPoolIdRef', {
+      value: userPoolId,
+      description: 'Cognito User Pool ID'
+    });
+
+    new cdk.CfnOutput(this, 'GraphQLApiIdRef', {
+      value: graphqlApiId,
+      description: 'AppSync GraphQL API ID'
+    });
+
+    new cdk.CfnOutput(this, 'StorageBucketRef', {
+      value: bucketName,
+      description: 'S3 Storage Bucket Name'
+    });
+
+    new cdk.CfnOutput(this, 'LowStockFunctionRef', {
+      value: functionArn,
+      description: 'Low Stock Lambda Function ARN'
+    });
+}
+}
+```
+To add cloudformation custom resources:
+
+```
+amplify add custom
+```
+```
+✔ How do you want to define this custom resource? · AWS CloudFormation
+✔ Provide a name for your custom resource · cfncustom
+✔ Do you want to access Amplify generated resources in your custom CloudFormation file? (y/N) · yes
+
+✔ Select the categories you want this custom resource to have access to. · api, auth, custom, function, storage
+
+✔ Custom has 2 resources in this project. Select the one you would like your custom resource to access · customProdInventory
+
+✅ Created skeleton CloudFormation stack in amplify/backend/custom/cfncustom directory
+✔ Do you want to edit the CloudFormation stack now? (Y/n) · yes
+Edit the file in your editor: amplify/backend/custom/cfncustom/cfncustom-cloudformation-template.json
+? Press enter to continue 
+```
+Copy paste the following code into amplify/backend/custom/cfncustom/cfncustom-cloudformation-template.json:
+
+```
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Parameters": {
+    "env": {
+      "Type": "String"
+    },
+    "apiproductcatalogGraphQLAPIKeyOutput": {
+      "Type": "String",
+      "Description": "Input parameter describing GraphQLAPIKeyOutput attribute for api/productcatalog resource"
+    },
+    "apiproductcatalogGraphQLAPIIdOutput": {
+      "Type": "String",
+      "Description": "Input parameter describing GraphQLAPIIdOutput attribute for api/productcatalog resource"
+    },
+    "apiproductcatalogGraphQLAPIEndpointOutput": {
+      "Type": "String",
+      "Description": "Input parameter describing GraphQLAPIEndpointOutput attribute for api/productcatalog resource"
+    },
+    "authproductcatalog6e145452IdentityPoolId": {
+      "Type": "String",
+      "Description": "Input parameter describing IdentityPoolId attribute for auth/productcatalog6e145452 resource"
+    },
+    "authproductcatalog6e145452IdentityPoolName": {
+      "Type": "String",
+      "Description": "Input parameter describing IdentityPoolName attribute for auth/productcatalog6e145452 resource"
+    },
+    "authproductcatalog6e145452UserPoolId": {
+      "Type": "String",
+      "Description": "Input parameter describing UserPoolId attribute for auth/productcatalog6e145452 resource"
+    },
+    "authproductcatalog6e145452UserPoolArn": {
+      "Type": "String",
+      "Description": "Input parameter describing UserPoolArn attribute for auth/productcatalog6e145452 resource"
+    },
+    "authproductcatalog6e145452UserPoolName": {
+      "Type": "String",
+      "Description": "Input parameter describing UserPoolName attribute for auth/productcatalog6e145452 resource"
+    },
+    "authproductcatalog6e145452AppClientIDWeb": {
+      "Type": "String",
+      "Description": "Input parameter describing AppClientIDWeb attribute for auth/productcatalog6e145452 resource"
+    },
+    "authproductcatalog6e145452AppClientID": {
+      "Type": "String",
+      "Description": "Input parameter describing AppClientID attribute for auth/productcatalog6e145452 resource"
+    },
+    "customcustomProdInventoryInventoryAlertTopicArn": {
+      "Type": "String",
+      "Description": "Input parameter describing InventoryAlertTopicArn attribute for custom/customProdInventory resource"
+    },
+    "customcustomProdInventoryInventoryCheckerFunctionName": {
+      "Type": "String",
+      "Description": "Input parameter describing InventoryCheckerFunctionName attribute for custom/customProdInventory resource"
+    },
+    "customcustomProdInventoryUserPoolIdRef": {
+      "Type": "String",
+      "Description": "Input parameter describing UserPoolIdRef attribute for custom/customProdInventory resource"
+    },
+    "customcustomProdInventoryGraphQLApiIdRef": {
+      "Type": "String",
+      "Description": "Input parameter describing GraphQLApiIdRef attribute for custom/customProdInventory resource"
+    },
+    "customcustomProdInventoryStorageBucketRef": {
+      "Type": "String",
+      "Description": "Input parameter describing StorageBucketRef attribute for custom/customProdInventory resource"
+    },
+    "customcustomProdInventoryLowStockFunctionRef": {
+      "Type": "String",
+      "Description": "Input parameter describing LowStockFunctionRef attribute for custom/customProdInventory resource"
+    },
+    "functionlowstockproductcatalogName": {
+      "Type": "String",
+      "Description": "Input parameter describing Name attribute for function/lowstockproductcatalog resource"
+    },
+    "functionlowstockproductcatalogArn": {
+      "Type": "String",
+      "Description": "Input parameter describing Arn attribute for function/lowstockproductcatalog resource"
+    },
+    "functionlowstockproductcatalogRegion": {
+      "Type": "String",
+      "Description": "Input parameter describing Region attribute for function/lowstockproductcatalog resource"
+    },
+    "functionlowstockproductcatalogLambdaExecutionRole": {
+      "Type": "String",
+      "Description": "Input parameter describing LambdaExecutionRole attribute for function/lowstockproductcatalog resource"
+    },
+    "functionlowstockproductcatalogLambdaExecutionRoleArn": {
+      "Type": "String",
+      "Description": "Input parameter describing LambdaExecutionRoleArn attribute for function/lowstockproductcatalog resource"
+    },
+    "storageproductimages3BucketName": {
+      "Type": "String",
+      "Description": "Input parameter describing BucketName attribute for storage/productimages3 resource"
+    },
+    "storageproductimages3Region": {
+      "Type": "String",
+      "Description": "Input parameter describing Region attribute for storage/productimages3 resource"
+    }
+  },
+  "Resources": {
+    "ProductQueue": {
+      "Type": "AWS::SQS::Queue",
+      "Properties": {
+        "QueueName": {
+          "Fn::Sub": "product-catalog-queue-${env}"
+        },
+        "VisibilityTimeout": 300
+      }
+    },
+    "ProductTable": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "TableName": {
+          "Fn::Sub": "product-catalog-table-${env}"
+        },
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "id",
+            "AttributeType": "S"
+          }
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "id",
+            "KeyType": "HASH"
+          }
+        ],
+        "BillingMode": "PAY_PER_REQUEST"
+      }
+    },
+    "LowStockAlertTopic": {
+      "Type": "AWS::SNS::Topic",
+      "Properties": {
+        "TopicName": {
+          "Fn::Sub": "product-catalog-low-stock-${env}"
+        },
+        "DisplayName": "Product Catalog Low Stock Alerts"
+      },
+      "DependsOn": [
+        "ProductQueue",
+        "ProductTable"
+      ]
+    },
+    "InventoryCheckRule": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "Name": {
+          "Fn::Sub": "inventory-check-${env}"
+        },
+        "Description": "Trigger inventory check daily",
+        "ScheduleExpression": "rate(24 hours)",
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Ref": "functionlowstockproductcatalogArn"
+            },
+            "Id": "LowStockTarget"
+          }
+        ]
+      }
+    },
+    "LambdaInvokePermission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "functionlowstockproductcatalogName"
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "events.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "InventoryCheckRule",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "LowStockAlertTopic"
+      ]
+    }
+  },
+  "Outputs": {
+    "ProductQueueUrl": {
+      "Value": {
+        "Ref": "ProductQueue"
+      },
+      "Description": "URL of the Product Queue"
+    },
+    "ProductTableName": {
+      "Value": {
+        "Ref": "ProductTable"
+      },
+      "Description": "Name of the Product DynamoDB Table"
+    },
+    "LowStockTopicArn": {
+      "Value": {
+        "Ref": "LowStockAlertTopic"
+      },
+      "Description": "ARN of the Low Stock Alert SNS Topic"
+    },
+    "InventoryCheckRuleArn": {
+      "Value": {
+        "Fn::GetAtt": [
+          "InventoryCheckRule",
+          "Arn"
+        ]
+      },
+      "Description": "ARN of the Inventory Check EventBridge Rule"
+    }
+  },
+  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"Amplify\",\"createdWith\":\"12.15.0-next-3.0\",\"stackType\":\"custom-customCloudformation\",\"metadata\":{\"whyContinueWithGen1\":\"\"}}"
+}
+```
+```
+amplify push
+```
 
 ## Architecture
 
