@@ -36,6 +36,7 @@ import { AmplifyHelperTransformer } from '../../../codegen-custom-resources/tran
 import { DependencyMerger } from '../../../codegen-custom-resources/generator/dependency-merger';
 import { FileConverter } from '../../../codegen-custom-resources/generator/file-converter';
 import { BackendUpdater } from '../../../codegen-custom-resources/generator/backend-updater';
+import { CfnIncludeGenerator } from '../../../codegen-custom-resources/generator/cfn-include-generator';
 import execa from 'execa';
 import { Logger } from '../../../../gen2-migration';
 
@@ -345,8 +346,12 @@ const getCustomResources = (): string[] => {
   return customCategory ? Object.keys(customCategory) : [];
 };
 
+const toPascalCase = (str: string): string => {
+  return str.replace(/[-_](.)/g, (_, c) => c.toUpperCase()).replace(/^(.)/, (_, c) => c.toUpperCase());
+};
+
 const getCustomResourceMap = async (): Promise<Map<string, string>> => {
-  const customResources = getCustomResources();
+  const resourcesWithType = getCustomResourcesWithType();
   const customResourceMap = new Map<string, string>();
 
   const rootDir = pathManager.findProjectRoot();
@@ -354,12 +359,17 @@ const getCustomResourceMap = async (): Promise<Map<string, string>> => {
   const amplifyGen1BackendDir = path.join(rootDir, AMPLIFY_DIR, BACKEND_DIR);
   const sourceCustomResourcePath = path.join(amplifyGen1BackendDir, CUSTOM_DIR);
 
-  for (const resource of customResources) {
-    const cdkStackFilePath = path.join(sourceCustomResourcePath, resource, 'cdk-stack.ts');
-    const cdkStackContent = await fs.readFile(cdkStackFilePath, { encoding: 'utf-8' });
-    const className = cdkStackContent.match(/export class (\w+)/)?.[1];
-    if (className) {
-      customResourceMap.set(resource, className);
+  for (const [resource, serviceType] of resourcesWithType) {
+    if (serviceType === 'customCDK') {
+      const cdkStackFilePath = path.join(sourceCustomResourcePath, resource, 'cdk-stack.ts');
+      const cdkStackContent = await fs.readFile(cdkStackFilePath, { encoding: 'utf-8' });
+      const className = cdkStackContent.match(/export class (\w+)/)?.[1];
+      if (className) {
+        customResourceMap.set(resource, className);
+      }
+    } else {
+      // For CFN resources, generate class name
+      customResourceMap.set(resource, toPascalCase(resource) + 'CustomResource');
     }
   }
 
@@ -367,8 +377,8 @@ const getCustomResourceMap = async (): Promise<Map<string, string>> => {
 };
 
 export async function updateCustomResources() {
-  const customResources = getCustomResources();
-  if (customResources.length > 0) {
+  const resourcesWithType = getCustomResourcesWithType();
+  if (resourcesWithType.size > 0) {
     const movingGen1CustomResources = ora(`Moving ${GEN1_CUSTOM_RESOURCES_SUFFIX}`).start();
     const rootDir = pathManager.findProjectRoot();
     assert(rootDir);
@@ -378,6 +388,18 @@ export async function updateCustomResources() {
     const destinationCustomResourcePath = path.join(amplifyGen2Dir, CUSTOM_DIR);
     const filterFiles = ['package.json', 'yarn.lock'];
     await fs.mkdir(destinationCustomResourcePath, { recursive: true });
+
+    // Split resources by type
+    const cdkResources: string[] = [];
+    const cfnResources: string[] = [];
+    for (const [resource, serviceType] of resourcesWithType) {
+      if (serviceType === 'customCDK') {
+        cdkResources.push(resource);
+      } else {
+        cfnResources.push(resource);
+      }
+    }
+
     // Copy the custom resources, excluding package.json and yarn.lock files
     await fs.cp(sourceCustomResourcePath, destinationCustomResourcePath, {
       recursive: true,
@@ -388,13 +410,10 @@ export async function updateCustomResources() {
     });
 
     // For CloudFormation resources, rename template to template.json
-    const resourcesWithType = getCustomResourcesWithType();
-    for (const [resource, serviceType] of resourcesWithType) {
-      if (serviceType === 'customCloudformation') {
-        const srcTemplatePath = path.join(destinationCustomResourcePath, resource, `${resource}-cloudformation-template.json`);
-        const destTemplatePath = path.join(destinationCustomResourcePath, resource, 'template.json');
-        await fs.rename(srcTemplatePath, destTemplatePath);
-      }
+    for (const resource of cfnResources) {
+      const srcTemplatePath = path.join(destinationCustomResourcePath, resource, `${resource}-cloudformation-template.json`);
+      const destTemplatePath = path.join(destinationCustomResourcePath, resource, 'template.json');
+      await fs.rename(srcTemplatePath, destTemplatePath);
     }
 
     const sourceTypesPath = path.join(amplifyGen1BackendDir, TYPES_DIR);
@@ -403,21 +422,34 @@ export async function updateCustomResources() {
     await fs.cp(sourceTypesPath, destinationTypesPath, { recursive: true });
 
     // Extract dependencies BEFORE transformation (from source files)
-    const resourceDependencies = await extractResourceDependencies(customResources, sourceCustomResourcePath);
+    const resourceDependencies = await extractResourceDependencies(resourcesWithType, sourceCustomResourcePath);
 
-    await updateCdkStackFile(customResources, destinationCustomResourcePath, rootDir);
+    // Process CDK resources
+    if (cdkResources.length > 0) {
+      await updateCdkStackFile(cdkResources, destinationCustomResourcePath, rootDir);
 
-    // Merge dependencies from custom resources into Gen2 package.json
-    const gen2PackageJsonPath = path.join(amplifyGen2Dir, '..', 'package.json');
-    const dependencyMerger = new DependencyMerger();
-    await dependencyMerger.mergeDependencies(sourceCustomResourcePath, gen2PackageJsonPath);
+      // Merge dependencies from custom resources into Gen2 package.json
+      const gen2PackageJsonPath = path.join(amplifyGen2Dir, '..', 'package.json');
+      const dependencyMerger = new DependencyMerger();
+      await dependencyMerger.mergeDependencies(sourceCustomResourcePath, gen2PackageJsonPath);
 
-    // Convert cdk-stack.ts to resource.ts
-    const fileConverter = new FileConverter();
-    await fileConverter.convertCdkStackToResource(destinationCustomResourcePath);
+      // Convert cdk-stack.ts to resource.ts for CDK resources only
+      const fileConverter = new FileConverter();
+      await fileConverter.convertCdkStackToResource(destinationCustomResourcePath, cdkResources);
 
-    // Remove build artifacts
-    await fileConverter.removeBuildArtifacts(destinationCustomResourcePath);
+      // Remove build artifacts
+      await fileConverter.removeBuildArtifacts(destinationCustomResourcePath);
+    }
+
+    // Process CFN resources - generate CfnInclude wrappers
+    if (cfnResources.length > 0) {
+      const cfnGenerator = new CfnIncludeGenerator();
+      for (const resource of cfnResources) {
+        const templatePath = path.join(destinationCustomResourcePath, resource, 'template.json');
+        const outputDir = path.join(destinationCustomResourcePath, resource);
+        await cfnGenerator.generateWrapper(resource, templatePath, outputDir);
+      }
+    }
 
     // Update backend.ts to register custom resources
     const backendFilePath = path.join(amplifyGen2Dir, 'backend.ts');
@@ -516,42 +548,45 @@ const hasUncommentedDependency = (fileContent: string, matchString: string) => {
 };
 
 const extractResourceDependencies = async (
-  customResources: string[],
-  destinationCustomResourcePath: string,
+  resourcesWithType: Map<string, CustomResourceServiceType>,
+  sourceCustomResourcePath: string,
 ): Promise<Map<string, string[]>> => {
   const resourceDependencies = new Map<string, string[]>();
 
-  for (const resource of customResources) {
-    const cdkStackFilePath = path.join(destinationCustomResourcePath, resource, 'cdk-stack.ts');
-
+  for (const [resource, serviceType] of resourcesWithType) {
     try {
-      const cdkStackContent = await fs.readFile(cdkStackFilePath, { encoding: 'utf-8' });
-      const dependencies: string[] = [];
+      let dependencies: string[] = [];
 
-      // Parse for AmplifyHelpers.addResourceDependency calls
-      const dependencyRegex = /AmplifyHelpers\.addResourceDependency\s*\([^,]+,[^,]+,[^,]+,\s*\[([^\]]+)\]/g;
-      let match;
+      if (serviceType === 'customCDK') {
+        const cdkStackFilePath = path.join(sourceCustomResourcePath, resource, 'cdk-stack.ts');
+        const cdkStackContent = await fs.readFile(cdkStackFilePath, { encoding: 'utf-8' });
 
-      while ((match = dependencyRegex.exec(cdkStackContent)) !== null) {
-        const dependenciesArray = match[1];
+        // Parse for AmplifyHelpers.addResourceDependency calls
+        const dependencyRegex = /AmplifyHelpers\.addResourceDependency\s*\([^,]+,[^,]+,[^,]+,\s*\[([^\]]+)\]/g;
+        let match;
 
-        // Extract category values from dependency objects
-        const categoryRegex = /category:\s*['"]([^'"]+)['"]/g;
-        let categoryMatch;
+        while ((match = dependencyRegex.exec(cdkStackContent)) !== null) {
+          const dependenciesArray = match[1];
+          const categoryRegex = /category:\s*['"]([^'"]+)['"]/g;
+          let categoryMatch;
 
-        while ((categoryMatch = categoryRegex.exec(dependenciesArray)) !== null) {
-          const category = categoryMatch[1];
-          if (!dependencies.includes(category)) {
-            dependencies.push(category);
+          while ((categoryMatch = categoryRegex.exec(dependenciesArray)) !== null) {
+            const category = categoryMatch[1];
+            if (!dependencies.includes(category)) {
+              dependencies.push(category);
+            }
           }
         }
+      } else {
+        // For CFN resources, extract dependencies from template parameters
+        const templatePath = path.join(sourceCustomResourcePath, resource, `${resource}-cloudformation-template.json`);
+        dependencies = await extractCfnDependencies(templatePath);
       }
 
       if (dependencies.length > 0) {
         resourceDependencies.set(resource, dependencies);
       }
     } catch (error) {
-      // If we can't read the file, skip dependency extraction for this resource
       console.warn(`Could not extract dependencies for resource ${resource}:`, error);
     }
   }

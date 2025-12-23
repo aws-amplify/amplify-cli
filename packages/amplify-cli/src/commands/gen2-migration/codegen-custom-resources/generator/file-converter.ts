@@ -4,13 +4,21 @@ import * as path from 'path';
 export class FileConverter {
   /**
    * Converts cdk-stack.ts files to resource.ts in custom resources
+   * @param customResourcesPath - Path to custom resources directory
+   * @param resourceFilter - Optional list of resource names to process (processes all if not provided)
    */
-  async convertCdkStackToResource(customResourcesPath: string): Promise<void> {
+  async convertCdkStackToResource(customResourcesPath: string, resourceFilter?: string[]): Promise<void> {
     try {
       const resources = await fs.readdir(customResourcesPath);
 
       for (let i = 0; i < resources.length; i++) {
         const resource = resources[i];
+
+        // Skip if filter provided and resource not in filter
+        if (resourceFilter && !resourceFilter.includes(resource)) {
+          continue;
+        }
+
         const resourceDir = path.join(customResourcesPath, resource);
         const stat = await fs.stat(resourceDir);
 
