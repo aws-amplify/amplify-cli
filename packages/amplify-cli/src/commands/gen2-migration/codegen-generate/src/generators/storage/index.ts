@@ -33,7 +33,6 @@ export interface StorageRenderParameters {
   lambdas?: S3TriggerDefinition[];
   bucketEncryptionAlgorithm?: ServerSideEncryptionConfiguration;
   dynamoDB?: string;
-  dynamoTables?: import('../../adapters/storage').DynamoDBTableDefinition[];
   accelerateConfiguration?: BucketAccelerateStatus;
   versioningConfiguration?: BucketVersioningStatus;
 }
