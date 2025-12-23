@@ -23,7 +23,7 @@ export interface AnalyticsRenderParameters {
  * import { stackClassName } from './stackFileName';
  * import { Backend } from '@aws-amplify/backend';
  *
- * export const analytics = (backend: Backend<Record<string, never>>) => {
+ * export const analytics = (backend: Backend<any>) => {
  *   const analyticsStack = backend.createStack('analytics');
  *   new stackClassName(analyticsStack, 'resourceName', {
  *     kinesisStreamName: 'resourceName',
@@ -145,7 +145,8 @@ export const renderAnalytics = (params: AnalyticsRenderParameters): ts.NodeArray
     ]),
   );
 
-  // Create the arrow function: export const analytics = (backend: Backend<Record<string, never>>) => { ... }
+  // Create the arrow function: export const analytics = (backend: Backend<any>) => { ... }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Using 'any' for generated code to avoid complex type inference
   const arrowFunction = factory.createArrowFunction(
     undefined,
     undefined,
@@ -155,12 +156,7 @@ export const renderAnalytics = (params: AnalyticsRenderParameters): ts.NodeArray
         undefined,
         factory.createIdentifier('backend'),
         undefined,
-        factory.createTypeReferenceNode(factory.createIdentifier('Backend'), [
-          factory.createTypeReferenceNode(factory.createIdentifier('Record'), [
-            factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword),
-            factory.createKeywordTypeNode(ts.SyntaxKind.NeverKeyword),
-          ]),
-        ]),
+        factory.createTypeReferenceNode(factory.createIdentifier('Backend'), [factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword)]),
       ),
     ],
     undefined,
