@@ -1118,18 +1118,6 @@ export class BackendSynthesizer {
       });
     }
 
-    // DynamoDB table escape hatch - print table names for manual migration
-    if (renderArgs.storage?.dynamoDB) {
-      const tableComment = factory.createEmptyStatement();
-      ts.addSyntheticLeadingComment(
-        tableComment,
-        ts.SyntaxKind.SingleLineCommentTrivia,
-        ` TODO: Migrate DynamoDB table '${renderArgs.storage.dynamoDB}' manually using CDK constructs`,
-        true,
-      );
-      nodes.push(tableComment);
-    }
-
     // Adds core import: import { defineBackend } from '@aws-amplify/backend';
 
     imports.push(this.createImportStatement([backendFunctionIdentifier], '@aws-amplify/backend'));
