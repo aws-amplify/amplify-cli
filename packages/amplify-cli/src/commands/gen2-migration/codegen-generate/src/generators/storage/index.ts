@@ -33,6 +33,7 @@ export interface StorageRenderParameters {
   lambdas?: S3TriggerDefinition[];
   bucketEncryptionAlgorithm?: ServerSideEncryptionConfiguration;
   dynamoDB?: string;
+  // Dynamic import since it can cause a circular dependency otherwise. Needed since the interface contains this property
   dynamoTables?: import('../../adapters/storage').DynamoDBTableDefinition[];
   accelerateConfiguration?: BucketAccelerateStatus;
   versioningConfiguration?: BucketVersioningStatus;
