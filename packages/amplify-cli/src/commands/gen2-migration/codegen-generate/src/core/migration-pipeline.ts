@@ -63,6 +63,7 @@ import { FunctionDefinition, renderFunctions } from '../generators/functions/ind
 import assert from 'assert';
 import { CdkFromCfn, KinesisAnalyticsDefinition, AnalyticsCodegenResult } from '../unsupported/cdk-from-cfn';
 import { renderAnalytics, AnalyticsRenderParameters } from '../generators/analytics/index';
+import { CloudFormationClient } from '@aws-sdk/client-cloudformation';
 
 /**
  * Configuration options for Gen 2 rendering pipeline
@@ -79,6 +80,12 @@ export interface Gen2RenderingOptions {
 
   /** Backend environment name used for data table mapping resolution */
   backendEnvironmentName?: string | undefined;
+
+  /** Root CloudFormation stack name for the Gen1 backend */
+  rootStackName?: string;
+
+  /** CloudFormation client for resolving stack parameters */
+  cfnClient?: CloudFormationClient;
 
   /** Authentication configuration from Gen 1 project */
   auth?: AuthDefinition;
@@ -220,6 +227,8 @@ const copyGen1FunctionFiles = async (
 export const createGen2Renderer = ({
   outputDir,
   backendEnvironmentName,
+  rootStackName,
+  cfnClient,
   auth,
   storage,
   data,
@@ -318,7 +327,7 @@ export const createGen2Renderer = ({
 
   if (analytics) {
     console.log('There are Analytics found in the Gen1 App');
-    const cdkFromCfn = new CdkFromCfn(outputDir, fileWriter);
+    const cdkFromCfn = new CdkFromCfn(outputDir, fileWriter, cfnClient, rootStackName);
     const analyticsDir = path.join(outputDir, 'amplify', 'analytics');
     renderers.push(new EnsureDirectory(analyticsDir));
 

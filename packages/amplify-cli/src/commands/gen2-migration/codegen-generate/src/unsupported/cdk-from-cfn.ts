@@ -3,6 +3,8 @@ import * as fs from 'fs/promises';
 import * as cdk_from_cfn from 'cdk-from-cfn';
 import { CFNTemplate } from '../../../refactor/types';
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { CloudFormationClient, DescribeStackResourcesCommand, DescribeStacksCommand, Parameter } from '@aws-sdk/client-cloudformation';
+import CFNConditionResolver from '../../../refactor/resolvers/cfn-condition-resolver';
 
 /**
  * Definition for Kinesis Analytics resource from Gen1 amplify-meta.json
@@ -32,7 +34,50 @@ export interface AnalyticsCodegenResult {
 }
 
 export class CdkFromCfn {
-  public constructor(private readonly dir: string, private readonly fileWriter: (content: string, filePath: string) => Promise<void>) {}
+  public constructor(
+    private readonly dir: string,
+    private readonly fileWriter: (content: string, filePath: string) => Promise<void>,
+    private readonly cfnClient?: CloudFormationClient,
+    private readonly rootStackName?: string,
+  ) {}
+
+  /**
+   * Gets the parameters for a nested analytics stack by looking up its physical resource ID
+   * from the root stack and then describing that stack.
+   */
+  private async getAnalyticsStackParameters(logicalId: string): Promise<Parameter[]> {
+    if (!this.cfnClient || !this.rootStackName) {
+      return [];
+    }
+
+    try {
+      // Get the physical resource ID (actual stack name) from the root stack
+      const describeResourcesResponse = await this.cfnClient.send(
+        new DescribeStackResourcesCommand({
+          StackName: this.rootStackName,
+          LogicalResourceId: logicalId,
+        }),
+      );
+
+      const stackResource = describeResourcesResponse.StackResources?.[0];
+      if (!stackResource?.PhysicalResourceId) {
+        console.log(`Could not find physical resource ID for analytics stack: ${logicalId}`);
+        return [];
+      }
+
+      // Describe the nested stack to get its parameters
+      const describeStacksResponse = await this.cfnClient.send(
+        new DescribeStacksCommand({
+          StackName: stackResource.PhysicalResourceId,
+        }),
+      );
+
+      return describeStacksResponse.Stacks?.[0]?.Parameters ?? [];
+    } catch (error) {
+      console.log(`Error getting analytics stack parameters: ${error}`);
+      return [];
+    }
+  }
 
   public async generateKinesisAnalyticsL1Code(definition: KinesisAnalyticsDefinition): Promise<AnalyticsCodegenResult> {
     const resourceName = definition.name ?? 'kinesis';
@@ -42,7 +87,7 @@ export class CdkFromCfn {
     const template = await getS3ObjectContent(templateS3Url);
     const stackName = definition.providerMetadata.logicalId;
 
-    const finalTemplate = this.preTransmute(template);
+    const finalTemplate = await this.preTransmute(template, stackName);
     const tsFile = cdk_from_cfn.transmute(JSON.stringify(finalTemplate), 'typescript', stackName);
     await fs.mkdir(path.dirname(filePath), { recursive: true });
     await this.fileWriter(tsFile, filePath);
@@ -58,7 +103,7 @@ export class CdkFromCfn {
     };
   }
 
-  private preTransmute(template: CFNTemplate): CFNTemplate {
+  private async preTransmute(template: CFNTemplate, logicalId: string): Promise<CFNTemplate> {
     // Rename "env" parameter to "amplify-env"
     if (template.Parameters?.env) {
       template.Parameters['amplify-env'] = template.Parameters.env;
@@ -78,8 +123,17 @@ export class CdkFromCfn {
 
     updateRefs(template.Resources);
 
-    // Resolve CFN conditions first
-    // new CFNConditionResolver(template).resolve(template.Parameters);
+    // Resolve CFN conditions using deployed stack parameters
+    // This is critical because cdk-from-cfn generates broken TypeScript for CFN conditions
+    // (e.g., `const shouldNotCreateEnvResources = props.env! === 'NONE';` which is invalid syntax)
+    const parameters = await this.getAnalyticsStackParameters(logicalId);
+    if (parameters.length > 0) {
+      const resolved = new CFNConditionResolver(template).resolve(parameters);
+      // Delete the Conditions block after resolution - cdk-from-cfn generates broken code for conditions
+      // All Fn::If references have been resolved, and resources with unmet conditions have been removed
+      delete resolved.Conditions;
+      return resolved;
+    }
 
     return template;
   }
@@ -90,7 +144,6 @@ async function getS3ObjectContent(s3Url: string): Promise<CFNTemplate> {
   const splitPath = url.pathname.split('/');
   const bucket = splitPath[1];
   const key = splitPath.slice(2).join('/');
-  console.log('bucket', bucket, 'key', key);
 
   const s3Client = new S3Client({});
   const response = await s3Client.send(new GetObjectCommand({ Bucket: bucket, Key: key }));

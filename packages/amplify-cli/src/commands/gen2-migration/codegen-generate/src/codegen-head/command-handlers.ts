@@ -45,6 +45,8 @@ interface CodegenCommandParameters {
   logger: Logger;
   outputDirectory: string;
   backendEnvironmentName: string | undefined;
+  rootStackName: string | undefined;
+  cloudFormationClient: CloudFormationClient;
   dataDefinitionFetcher: DataDefinitionFetcher;
   authDefinitionFetcher: AppAuthDefinitionFetcher;
   storageDefinitionFetcher: AppStorageDefinitionFetcher;
@@ -77,6 +79,8 @@ enum GEN2_AMPLIFY_GITIGNORE_FILES_OR_DIRS {
 const generateGen2Code = async ({
   outputDirectory,
   backendEnvironmentName,
+  rootStackName,
+  cloudFormationClient,
   authDefinitionFetcher,
   dataDefinitionFetcher,
   storageDefinitionFetcher,
@@ -109,6 +113,8 @@ const generateGen2Code = async ({
   const gen2RenderOptions = {
     outputDir: outputDirectory,
     backendEnvironmentName: backendEnvironmentName,
+    rootStackName: rootStackName,
+    cfnClient: cloudFormationClient,
     auth,
     storage,
     data,
@@ -553,6 +559,8 @@ export async function prepare(logger: Logger) {
     analytics: new AppAnalytics(appId),
     logger: logger,
     backendEnvironmentName: backendEnvironment?.environmentName,
+    rootStackName: backendEnvironment?.stackName,
+    cloudFormationClient: cloudFormationClient,
   });
 
   logger.info(`Creating 'amplify.yml' file for amplify hosting deployments`);
