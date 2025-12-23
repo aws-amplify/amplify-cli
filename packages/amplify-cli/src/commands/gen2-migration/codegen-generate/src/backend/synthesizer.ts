@@ -763,6 +763,10 @@ export class BackendSynthesizer {
     return [variableDeclaration, ifStatement];
   }
 
+  private sanitizeVariableName(name: string): string {
+    return name.replace(/-/g, '_');
+  }
+
   render(renderArgs: BackendRenderParameters): NodeArray<Node> {
     const authFunctionIdentifier = factory.createIdentifier('auth');
     const storageFunctionIdentifier = factory.createIdentifier('storage');
@@ -892,6 +896,7 @@ export class BackendSynthesizer {
 
       // Generate tables
       renderArgs.storage.dynamoTables.forEach((table: DynamoDBTableDefinition) => {
+        const sanitizedTableName = this.sanitizeVariableName(table.tableName);
         const tableProps: ts.PropertyAssignment[] = [
           factory.createPropertyAssignment(
             'partitionKey',
@@ -959,12 +964,12 @@ export class BackendSynthesizer {
           factory.createVariableDeclarationList(
             [
               factory.createVariableDeclaration(
-                table.tableName,
+                sanitizedTableName,
                 undefined,
                 undefined,
                 factory.createNewExpression(factory.createIdentifier('Table'), undefined, [
                   factory.createIdentifier('storageStack'),
-                  factory.createStringLiteral(table.tableName),
+                  factory.createStringLiteral(sanitizedTableName),
                   factory.createObjectLiteralExpression(tableProps),
                 ]),
               ),
@@ -1017,7 +1022,7 @@ export class BackendSynthesizer {
           const gsiCall = factory.createExpressionStatement(
             factory.createCallExpression(
               factory.createPropertyAccessExpression(
-                factory.createIdentifier(table.tableName),
+                factory.createIdentifier(sanitizedTableName),
                 factory.createIdentifier('addGlobalSecondaryIndex'),
               ),
               undefined,
@@ -1032,7 +1037,7 @@ export class BackendSynthesizer {
           const grantCall = factory.createExpressionStatement(
             factory.createCallExpression(
               factory.createPropertyAccessExpression(
-                factory.createIdentifier(table.tableName),
+                factory.createIdentifier(sanitizedTableName),
                 factory.createIdentifier('grantReadWriteData'),
               ),
               undefined,
@@ -1061,7 +1066,7 @@ export class BackendSynthesizer {
               undefined,
               [
                 factory.createStringLiteral(perm.envVarName),
-                factory.createPropertyAccessExpression(factory.createIdentifier(table.tableName), factory.createIdentifier('tableName')),
+                factory.createPropertyAccessExpression(factory.createIdentifier(sanitizedTableName), factory.createIdentifier('tableName')),
               ],
             ),
           );
@@ -1074,7 +1079,7 @@ export class BackendSynthesizer {
           const streamGrantCall = factory.createExpressionStatement(
             factory.createCallExpression(
               factory.createPropertyAccessExpression(
-                factory.createIdentifier(table.tableName),
+                factory.createIdentifier(sanitizedTableName),
                 factory.createIdentifier('grantStreamRead'),
               ),
               undefined,
@@ -1102,7 +1107,7 @@ export class BackendSynthesizer {
               [
                 factory.createStringLiteral(`${table.tableName.toUpperCase()}_STREAM_ARN`),
                 factory.createPropertyAccessExpression(
-                  factory.createIdentifier(table.tableName),
+                  factory.createIdentifier(sanitizedTableName),
                   factory.createIdentifier('tableStreamArn'),
                 ),
               ],

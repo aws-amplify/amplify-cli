@@ -157,7 +157,7 @@ export class AppStorageDefinitionFetcher {
     }
   };
 
-  // Understand how this works
+  // Finding lambda permissions that exist
   private findLambdaPermissions = (tableName: string) => {
     const permissions: { functionName: string; envVarName: string }[] = [];
     const meta = stateManager.getMeta();
