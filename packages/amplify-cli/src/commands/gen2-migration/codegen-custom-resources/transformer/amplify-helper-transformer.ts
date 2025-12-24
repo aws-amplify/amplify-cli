@@ -21,7 +21,8 @@ export class AmplifyHelperTransformer {
     api: {
       GraphQLAPIIdOutput: 'cfnResources.cfnGraphqlApi.attrApiId',
       GraphQLAPIEndpointOutput: 'cfnResources.cfnGraphqlApi.attrGraphQlUrl',
-      GraphQLAPIKeyOutput: 'cfnResources.cfnGraphqlApi.attrApiKey',
+      // Note: API key is on CfnApiKey construct, not CfnGraphQLApi
+      GraphQLAPIKeyOutput: 'cfnResources.cfnApiKey.Default.attrApiKey',
     },
     storage: {
       BucketName: 'bucket.bucketName',
