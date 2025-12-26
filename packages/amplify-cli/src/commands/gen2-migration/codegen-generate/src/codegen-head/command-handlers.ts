@@ -436,8 +436,6 @@ export async function updateCdkStackFile(customResources: string[], destinationC
     try {
       let cdkStackContent = await fs.readFile(cdkStackFilePath, { encoding: 'utf-8' });
 
-      // AmplifyHelpers.addResourceDependency is now supported by the transformer
-
       // Add Construct import after other imports if not present
       if (!cdkStackContent.includes("from 'constructs'")) {
         const importRegex = /(import.*from.*['"]; ?\s*\n)/g;
