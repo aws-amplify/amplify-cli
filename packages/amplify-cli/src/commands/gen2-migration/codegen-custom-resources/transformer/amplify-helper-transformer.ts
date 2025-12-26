@@ -183,15 +183,23 @@ export class AmplifyHelperTransformer {
                 const mappedAttribute = AmplifyHelperTransformer.ATTRIBUTE_MAP[gen1Category]?.[gen1Attribute];
                 const gen2Property = mappedAttribute || parts.slice(3).join('.');
 
-                // Functions need resource name preserved: functions.myFunc.resources.lambda.functionArn
+                // Functions need resource name preserved: functions?.myFunc?.resources.lambda.functionArn ?? ''
                 if (gen1Category === 'function') {
-                  return AmplifyHelperTransformer.createPropertyAccessFromString(
-                    `${gen2Category}.${resourceName}.resources.${gen2Property}`,
+                  const baseAccess = `${gen2Category}?.${resourceName}?.resources.${gen2Property}`;
+                  return ts.factory.createBinaryExpression(
+                    AmplifyHelperTransformer.createPropertyAccessFromString(baseAccess),
+                    ts.SyntaxKind.QuestionQuestionToken,
+                    ts.factory.createStringLiteral('')
                   );
                 }
 
-                // Other categories: auth.resources.userPool.userPoolId
-                return AmplifyHelperTransformer.createPropertyAccessFromString(`${gen2Category}.resources.${gen2Property}`);
+                // Other categories: auth?.resources.userPool.userPoolId ?? ''
+                const baseAccess = `${gen2Category}?.resources.${gen2Property}`;
+                return ts.factory.createBinaryExpression(
+                  AmplifyHelperTransformer.createPropertyAccessFromString(baseAccess),
+                  ts.SyntaxKind.QuestionQuestionToken,
+                  ts.factory.createStringLiteral('')
+                );
               }
             }
           }
@@ -237,8 +245,12 @@ export class AmplifyHelperTransformer {
           if (ts.isConstructorDeclaration(visitedNode)) {
             const baseParams = visitedNode.parameters.slice(0, 2); // scope, id
 
-            // Add resource dependency parameters with Gen2 naming
-            const resourceParams = Array.from(resourceDependencies).map((gen1Category) => {
+            // Separate function dependencies from other categories
+            const functionDeps = Array.from(resourceDependencies).filter(dep => dep === 'function');
+            const otherDeps = Array.from(resourceDependencies).filter(dep => dep !== 'function');
+            
+            // Add non-function resource dependency parameters with Gen2 naming
+            const otherResourceParams = otherDeps.map((gen1Category) => {
               const gen2Category = AmplifyHelperTransformer.CATEGORY_MAP[gen1Category] || gen1Category;
               return ts.factory.createParameterDeclaration(
                 undefined,
@@ -249,8 +261,20 @@ export class AmplifyHelperTransformer {
                 undefined,
               );
             });
+            
+            // Add functions parameter if there are function dependencies
+            const functionParams = functionDeps.length > 0 ? [
+              ts.factory.createParameterDeclaration(
+                undefined,
+                undefined,
+                'functions',
+                ts.factory.createToken(ts.SyntaxKind.QuestionToken),
+                ts.factory.createTypeReferenceNode('any'),
+                undefined,
+              )
+            ] : [];
 
-            const newParams = [...baseParams, ...resourceParams];
+            const newParams = [...baseParams, ...otherResourceParams, ...functionParams];
             return ts.factory.updateConstructorDeclaration(visitedNode, visitedNode.modifiers, newParams, visitedNode.body);
           }
 
@@ -361,7 +385,18 @@ export class AmplifyHelperTransformer {
     let expression: ts.Expression = ts.factory.createIdentifier(parts[0]);
 
     for (let i = 1; i < parts.length; i++) {
-      expression = ts.factory.createPropertyAccessExpression(expression, parts[i]);
+      const part = parts[i];
+      // Handle optional chaining
+      if (part.startsWith('?')) {
+        const propertyName = part.substring(1);
+        expression = ts.factory.createPropertyAccessChain(
+          expression,
+          ts.factory.createToken(ts.SyntaxKind.QuestionDotToken),
+          propertyName
+        );
+      } else {
+        expression = ts.factory.createPropertyAccessExpression(expression, part);
+      }
     }
 
     return expression;

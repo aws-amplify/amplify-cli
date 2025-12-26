@@ -9,6 +9,7 @@ export class BackendUpdater {
     backendFilePath: string,
     customResources: Map<string, string>,
     resourceDependencies?: Map<string, string[]>,
+    functionNames?: string[],
   ): Promise<void> {
     if (customResources.size === 0) {
       return;
@@ -24,7 +25,7 @@ export class BackendUpdater {
       const [resourceName, className] = entries[i];
       const deps = resourceDependencies?.get(resourceName) || [];
       imports.push(this.createImport(resourceName, className));
-      instantiations.push(this.createInstantiation(resourceName, className, deps));
+      instantiations.push(this.createInstantiation(resourceName, className, deps, functionNames));
     }
 
     const updatedFile = this.injectIntoBackend(sourceFile, imports, instantiations);
@@ -56,7 +57,7 @@ export class BackendUpdater {
     auth: 'auth',
   };
 
-  private createInstantiation(resourceName: string, className: string, dependencies?: string[]): ts.ExpressionStatement {
+  private createInstantiation(resourceName: string, className: string, dependencies?: string[], functionNames?: string[]): ts.ExpressionStatement {
     const args: ts.Expression[] = [
       ts.factory.createCallExpression(
         ts.factory.createPropertyAccessExpression(ts.factory.createIdentifier('backend'), 'createStack'),
@@ -68,10 +69,36 @@ export class BackendUpdater {
 
     // Add dependencies as positional arguments
     if (dependencies && dependencies.length > 0) {
+      const functionDeps: string[] = [];
+      const otherDeps: string[] = [];
+      
+      // Separate function dependencies from other categories
       dependencies.forEach((dep) => {
+        if (dep === 'function') {
+          functionDeps.push(dep);
+        } else {
+          otherDeps.push(dep);
+        }
+      });
+      
+      // Add non-function dependencies as direct backend properties
+      otherDeps.forEach((dep) => {
         const gen2Name = BackendUpdater.CATEGORY_MAP[dep] || dep;
         args.push(ts.factory.createPropertyAccessExpression(ts.factory.createIdentifier('backend'), gen2Name));
       });
+      
+      // Add function dependencies as object literal
+      if (functionDeps.length > 0 && functionNames && functionNames.length > 0) {
+        const functionProperties: ts.PropertyAssignment[] = functionNames.map(funcName => 
+          ts.factory.createPropertyAssignment(
+            funcName,
+            ts.factory.createPropertyAccessExpression(ts.factory.createIdentifier('backend'), funcName)
+          )
+        );
+        
+        const functionObject = ts.factory.createObjectLiteralExpression(functionProperties);
+        args.push(functionObject);
+      }
     }
 
     return ts.factory.createExpressionStatement(ts.factory.createNewExpression(ts.factory.createIdentifier(resourceName), undefined, args));

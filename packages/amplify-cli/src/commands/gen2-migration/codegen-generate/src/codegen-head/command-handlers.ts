@@ -337,6 +337,14 @@ const getCustomResourcesWithType = (): Map<string, CustomResourceServiceType> =>
   return resourceMap;
 };
 
+const getFunctionNames = (): string[] => {
+  const meta = stateManager.getMeta();
+  const functionCategory = meta?.function;
+  
+  // If the function category exists, return its resource names; otherwise, return an empty array
+  return functionCategory ? Object.keys(functionCategory) : [];
+};
+
 const getCustomResources = (): string[] => {
   const meta = stateManager.getMeta();
   const customCategory = meta?.custom;
@@ -412,8 +420,9 @@ export async function updateCustomResources() {
     // Update backend.ts to register custom resources
     const backendFilePath = path.join(amplifyGen2Dir, 'backend.ts');
     const customResourceMap = await getCustomResourceMap();
+    const functionNames = getFunctionNames();
     const backendUpdater = new BackendUpdater();
-    await backendUpdater.updateBackendFile(backendFilePath, customResourceMap, resourceDependencies);
+    await backendUpdater.updateBackendFile(backendFilePath, customResourceMap, resourceDependencies, functionNames);
 
     movingGen1CustomResources.succeed(`Moved ${GEN1_CUSTOM_RESOURCES_SUFFIX}`);
   }
