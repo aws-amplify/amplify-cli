@@ -710,9 +710,7 @@ amplify add custom
 ✔ Provide a name for your custom resource · cfncustom
 ✔ Do you want to access Amplify generated resources in your custom CloudFormation file? (y/N) · yes
 
-✔ Select the categories you want this custom resource to have access to. · api, auth, custom, function, storage
-
-✔ Custom has 2 resources in this project. Select the one you would like your custom resource to access · customProdInventory
+✔ Select the categories you want this custom resource to have access to. · api, auth, function, storage
 
 ✅ Created skeleton CloudFormation stack in amplify/backend/custom/cfncustom directory
 ✔ Do you want to edit the CloudFormation stack now? (Y/n) · yes
@@ -767,30 +765,6 @@ Copy paste the following code into amplify/backend/custom/cfncustom/cfncustom-cl
     "authproductcatalog6e145452AppClientID": {
       "Type": "String",
       "Description": "Input parameter describing AppClientID attribute for auth/productcatalog6e145452 resource"
-    },
-    "customcustomProdInventoryInventoryAlertTopicArn": {
-      "Type": "String",
-      "Description": "Input parameter describing InventoryAlertTopicArn attribute for custom/customProdInventory resource"
-    },
-    "customcustomProdInventoryInventoryCheckerFunctionName": {
-      "Type": "String",
-      "Description": "Input parameter describing InventoryCheckerFunctionName attribute for custom/customProdInventory resource"
-    },
-    "customcustomProdInventoryUserPoolIdRef": {
-      "Type": "String",
-      "Description": "Input parameter describing UserPoolIdRef attribute for custom/customProdInventory resource"
-    },
-    "customcustomProdInventoryGraphQLApiIdRef": {
-      "Type": "String",
-      "Description": "Input parameter describing GraphQLApiIdRef attribute for custom/customProdInventory resource"
-    },
-    "customcustomProdInventoryStorageBucketRef": {
-      "Type": "String",
-      "Description": "Input parameter describing StorageBucketRef attribute for custom/customProdInventory resource"
-    },
-    "customcustomProdInventoryLowStockFunctionRef": {
-      "Type": "String",
-      "Description": "Input parameter describing LowStockFunctionRef attribute for custom/customProdInventory resource"
     },
     "functionlowstockproductcatalogName": {
       "Type": "String",
