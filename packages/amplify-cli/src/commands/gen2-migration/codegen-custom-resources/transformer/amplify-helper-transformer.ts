@@ -45,11 +45,16 @@ export class AmplifyHelperTransformer {
     const transformer = <T extends ts.Node>(context: ts.TransformationContext) => {
       return (node: T) => {
         function visit(node: ts.Node): ts.Node {
-          // Remove AmplifyHelpers import statements
+          // Remove AmplifyHelpers import statements and AmplifyDependentResourcesAttributes import
           if (ts.isImportDeclaration(node)) {
             const moduleSpecifier = node.moduleSpecifier;
-            if (ts.isStringLiteral(moduleSpecifier) && moduleSpecifier.text === '@aws-amplify/cli-extensibility-helper') {
-              return undefined;
+            if (ts.isStringLiteral(moduleSpecifier)) {
+              if (
+                moduleSpecifier.text === '@aws-amplify/cli-extensibility-helper' ||
+                moduleSpecifier.text.includes('amplify-dependent-resources-ref')
+              ) {
+                return undefined;
+              }
             }
           }
 
