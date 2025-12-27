@@ -152,5 +152,20 @@ git checkout main
 npx amplify gen2-migration decommission
 ```
 
+# Supported Features
 
+## Auth
 
+`amplify add auth`
+
+  - [ ] Default Configuration
+    - [ ] Username
+    - [ ] Email
+    - [ ] Phone Number
+    - [ ] Email or Phone Number
+
+## Api
+
+`amplify add api`
+
+  - [ ] 
