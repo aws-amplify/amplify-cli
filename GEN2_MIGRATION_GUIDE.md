@@ -149,7 +149,7 @@ app (the one shipped with the new `amplify_outputs.json` configuration file)
 
 ```bash
 git checkout main
-npx gen2-migration decommission
+npx amplify gen2-migration decommission
 ```
 
 

@@ -242,71 +242,71 @@ export class AmplifyDriftDetector {
 
     if (options.format === 'json') {
       const simplifiedJson = this.formatter.createSimplifiedJsonOutput();
-      this.printer.info(JSON.stringify(simplifiedJson, null, 2));
+      printer.info(JSON.stringify(simplifiedJson, null, 2));
     } else if (options.format === 'summary') {
       const output = this.formatter.formatDrift('summary');
-      this.printer.info(output.summaryDashboard);
+      printer.info(output.summaryDashboard);
       if (output.categoryBreakdown) {
-        this.printer.info(output.categoryBreakdown);
+        printer.info(output.categoryBreakdown);
       }
 
       // Display Phase 2 results (between AMPLIFY CATEGORIES and LOCAL CHANGES)
       const phase2Output = this.formatter.formatPhase2Results();
       if (phase2Output) {
-        this.printer.info(phase2Output);
+        printer.info(phase2Output);
       }
 
       // Display Phase 3 results
       const phase3Output = this.formatter.formatPhase3Results();
       if (phase3Output) {
-        this.printer.info(phase3Output);
+        printer.info(phase3Output);
       }
     } else if (options.format === 'tree') {
       const output = this.formatter.formatDrift('tree');
-      this.printer.info(output.summaryDashboard);
+      printer.info(output.summaryDashboard);
       if (output.treeView) {
-        this.printer.info(output.treeView);
+        printer.info(output.treeView);
       }
 
       // Display detailed changes for drifted resources
       if (output.detailedChanges) {
-        this.printer.info(output.detailedChanges);
+        printer.info(output.detailedChanges);
       }
 
       if (options.debug && output.categoryBreakdown) {
-        this.printer.info(output.categoryBreakdown);
+        printer.info(output.categoryBreakdown);
       }
 
       // Display Phase 2 results (between AMPLIFY CATEGORIES and LOCAL CHANGES)
       const phase2Output = this.formatter.formatPhase2Results();
       if (phase2Output) {
-        this.printer.info(phase2Output);
+        printer.info(phase2Output);
       }
 
       // Display Phase 3 results
       const phase3Output = this.formatter.formatPhase3Results();
       if (phase3Output) {
-        this.printer.info(phase3Output);
+        printer.info(phase3Output);
       }
     } else {
       // This shouldn't happen with TypeScript, but handle gracefully
       this.printer.warn(`Unknown format: ${options.format}. Using summary format.`);
       const output = this.formatter.formatDrift('summary');
-      this.printer.info(output.summaryDashboard);
+      printer.info(output.summaryDashboard);
       if (output.categoryBreakdown) {
-        this.printer.info(output.categoryBreakdown);
+        printer.info(output.categoryBreakdown);
       }
 
       // Display Phase 2 results (between AMPLIFY CATEGORIES and LOCAL CHANGES)
       const phase2Output = this.formatter.formatPhase2Results();
       if (phase2Output) {
-        this.printer.info(phase2Output);
+        printer.info(phase2Output);
       }
 
       // Display Phase 3 results
       const phase3Output = this.formatter.formatPhase3Results();
       if (phase3Output) {
-        this.printer.info(phase3Output);
+        printer.info(phase3Output);
       }
     }
   }
