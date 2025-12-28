@@ -24,6 +24,15 @@ export interface AdditionalAuthProvider {
 
 const factory = ts.factory;
 
+const gen2BranchNameVariableName = 'branchName';
+
+/**
+ * Helper function to create a variable statement with const declaration
+ */
+const createVariableStatement = (variableDeclaration: ts.VariableDeclaration): ts.VariableStatement => {
+  return factory.createVariableStatement([], factory.createVariableDeclarationList([variableDeclaration], ts.NodeFlags.Const));
+};
+
 /**
  * Maps model names to their corresponding DynamoDB table names for a specific environment.
  * Key: GraphQL model name, Value: DynamoDB table name/ID
@@ -164,6 +173,17 @@ export const generateDataSource = async (dataDefinition?: DataDefinition): Promi
   // Additional statements to include before the data export
   const schemaStatements: ts.Node[] = [];
 
+  // Add branchName constant declaration
+  const branchNameStatement = createVariableStatement(
+    factory.createVariableDeclaration(
+      gen2BranchNameVariableName,
+      undefined,
+      undefined,
+      factory.createIdentifier('process.env.AWS_BRANCH ?? "sandbox"'),
+    ),
+  );
+  schemaStatements.push(branchNameStatement);
+
   // Generate schema variable declaration if schema is provided
   if (dataDefinition && dataDefinition.schema) {
     const schemaVariableDeclaration = factory.createVariableDeclaration(
@@ -203,7 +223,7 @@ export const generateDataSource = async (dataDefinition?: DataDefinition): Promi
 
     const currentEnv = getCurrentEnvironment();
     const branchNameExpression = ts.addSyntheticLeadingComment(
-      factory.createPropertyAssignment('branchName', factory.createStringLiteral(currentEnv)),
+      factory.createPropertyAssignment('branchName', factory.createIdentifier(gen2BranchNameVariableName)),
       ts.SyntaxKind.SingleLineCommentTrivia,
       'The "branchname" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables',
       true,

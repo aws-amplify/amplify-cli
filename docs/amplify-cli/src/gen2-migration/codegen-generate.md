@@ -242,6 +242,26 @@ switch (runtime) {
 }
 ```
 
+### Handler to Entry Path Conversion
+
+Converts AWS Lambda handler strings (e.g., `index.handler`, `src/handler.myFunction`) to Gen2 file paths (e.g., `./index.js`, `./src/handler.js`) for the `defineFunction()` entry parameter. The conversion extracts the file path portion before the last dot and adds the `.js` extension.
+
+```typescript
+const extractFilePathFromHandler = (handler: string | undefined): string => {
+  if (!handler) {
+    return './index.js';
+  }
+  
+  const lastDotIndex = handler.lastIndexOf('.');
+  if (lastDotIndex === -1) {
+    return `./${handler}.js`;
+  }
+  
+  const filePath = handler.substring(0, lastDotIndex);
+  return `./${filePath}.js`;
+};
+```
+
 ## AI Development Notes
 
 **Important considerations:**

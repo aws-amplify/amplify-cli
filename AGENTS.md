@@ -12,17 +12,24 @@ This is a TypeScript monorepo (Yarn 3 + Lerna) for AWS Amplify CLI Gen1.
    - For example `packages/amplify-cli/src/commands/drift.ts`: `docs/amplify-cli/drift.md`
 
 
-2. **Always** update the appropriate README or design document when you make a change that impacts the contents of these documents.
+2. **CRITICAL: NO 'any' types allowed.** TypeScript strict mode is enforced throughout the project.
 
-3. Do not create additional markdown files in the repository unless you are instructed explicitly to.
+3. Use absolute imports for cross-package dependencies (`@aws-amplify/...`) and relative imports within the same package.
 
-4. Always run `yarn build` before testing your changes. (Only ever build with yarn install && yarn build).
+4. If you added a new dependency, run `yarn install` to obtain and use it.
 
-5. Commit your changes in git using a well-formed commit message consisting of a single sentence summary and no more than a few paragraphs explaining the change and your testing. After this explanation, place the prompt the user used to trigger this work prefixed with a "Prompt: " after a single line consisting of '---'. Make sure there are no empty lines before or after this line. Word wrap all paragraphs at 72 columns including the prompt. For the author of the commit, use the configured username in git with ' (AI)' appended and the user email. For example, `git commit --author="John Doe (AI) <john@bigco.com>"`
+5. Don't run any validation commands or commit anything to git unless explicitly asked.
 
-6. **CRITICAL: NO 'any' types allowed.** TypeScript strict mode is enforced throughout the project.
+6. When you are asked to validation your changes:
 
-7. Use absolute imports for cross-package dependencies (`@aws-amplify/...`) and relative imports within the same package.
+   - Run `yarn build` and nothing else.
+
+7. When you are asked to commit your changes:
+
+   - Follow the semantic commits standard and craft a well-formed commit message consisting of a single sentence.
+   - Also update the appropriate README or design document based on the changes you made.
+
+8. Do not create additional markdown files in the repository unless you are instructed explicitly to.
 
 
 **ALWAYS FOLLOW THESE RULES WHEN YOU WORK IN THIS PROJECT**

@@ -4,7 +4,7 @@ import fs from 'node:fs/promises';
 import assert from 'node:assert';
 import { v4 as uuid } from 'uuid';
 
-import { createGen2Renderer } from '../core/migration-pipeline';
+import { createGen2Renderer, Gen2RenderingOptions } from '../core/migration-pipeline';
 
 import { UsageData } from '../../../../../domain/amplify-usageData';
 import { AmplifyClient, UpdateAppCommand, GetAppCommand, BackendEnvironment } from '@aws-sdk/client-amplify';
@@ -43,7 +43,6 @@ interface CodegenCommandParameters {
   analytics: Analytics;
   logger: Logger;
   outputDirectory: string;
-  backendEnvironmentName: string | undefined;
   ccbFetcher: BackendDownloader;
   backendEnvironment: BackendEnvironment;
   dataDefinitionFetcher: DataDefinitionFetcher;
@@ -76,7 +75,6 @@ enum GEN2_AMPLIFY_GITIGNORE_FILES_OR_DIRS {
 
 const generateGen2Code = async ({
   outputDirectory,
-  backendEnvironmentName,
   authDefinitionFetcher,
   dataDefinitionFetcher,
   storageDefinitionFetcher,
@@ -101,11 +99,9 @@ const generateGen2Code = async ({
   logger.debug(`Storage: ${storage ? 'EXISTS' : 'UNDEFINED'}`);
   logger.debug(`Data: ${data ? JSON.stringify(data, null, 2) : 'UNDEFINED'}`);
   logger.debug(`Functions: ${functions ? `${functions.length} functions` : 'UNDEFINED'}`);
-  logger.debug(`Backend env: ${backendEnvironmentName}`);
 
-  const gen2RenderOptions = {
+  const gen2RenderOptions: Gen2RenderingOptions = {
     outputDir: outputDirectory,
-    backendEnvironmentName: backendEnvironmentName,
     auth,
     storage,
     data,
@@ -114,10 +110,7 @@ const generateGen2Code = async ({
     unsupportedCategories: await unsupportedCategories(ccbFetcher, backendEnvironment),
   };
 
-  assert(gen2RenderOptions);
   const pipeline = createGen2Renderer(gen2RenderOptions);
-  assert(backendEnvironmentName);
-
   logger.info(`Generating ${GEN2_COMMAND_GENERATION_MESSAGE_SUFFIX}`);
   await pipeline.render();
 };
@@ -544,7 +537,6 @@ export async function prepare(logger: Logger, appId: string, envName: string, re
     ),
     analytics: new AppAnalytics(appId),
     logger: logger,
-    backendEnvironmentName: backendEnvironment?.environmentName,
     ccbFetcher,
     backendEnvironment,
   });

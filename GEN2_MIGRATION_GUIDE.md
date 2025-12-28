@@ -152,13 +152,13 @@ git checkout main
 npx amplify gen2-migration decommission
 ```
 
-# Support Overview
+# Feature Coverage
 
 Following provides an overview of the supported (and unsupported) features for migration.
 
 ## CLI Inputs
 
-### Auth | `amplify add auth`
+### `amplify add auth`
 
 - [ ] **Default Configuration**
 
@@ -167,24 +167,31 @@ Following provides an overview of the supported (and unsupported) features for m
   - [ ] Phone Number
   - [ ] Email or Phone Number
 
-### Api | `amplify add api`
+### `amplify add api`
 
 - [ ] **GraphQL**
 
-  - **Authorization Mode**
+  - **Default Authorization Type**
 
     - [ ] API Key
-    - [ ] Cognito
+    - [ ] Amazon Cognito User Pool
+    - [ ] IAM
+    - [ ] OpenID Connect
+    - [ ] Lambda
 
-- **Authorization Mode**
+  - **Additional Authorication Type**
 
-### Functions | `amplify add function`
+- [ ] **REST**
+
+### `amplify add function`
 
 - [ ] **Lambda function (serverless function)**
 
   - [ ] Runtime
 
     - [ ] NodeJS
+
+### `amplify add storage`
 
 ## GraphQL Schema
 

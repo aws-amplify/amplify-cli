@@ -75,9 +75,6 @@ export interface Gen2RenderingOptions {
   /** Optional Amplify app ID for project identification */
   appId?: string;
 
-  /** Backend environment name used for data table mapping resolution */
-  backendEnvironmentName?: string | undefined;
-
   /** Authentication configuration from Gen 1 project */
   auth?: AuthDefinition;
 
@@ -214,7 +211,6 @@ const copyGen1FunctionFiles = async (
  */
 export const createGen2Renderer = ({
   outputDir,
-  backendEnvironmentName,
   auth,
   storage,
   data,
