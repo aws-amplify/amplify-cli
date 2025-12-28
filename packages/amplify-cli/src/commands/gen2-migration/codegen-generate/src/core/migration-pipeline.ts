@@ -72,6 +72,8 @@ export interface Gen2RenderingOptions {
   /** Target directory where Gen 2 files will be generated */
   outputDir: string;
 
+  gen1Env: string;
+
   /** Optional Amplify app ID for project identification */
   appId?: string;
 
@@ -217,6 +219,7 @@ export const createGen2Renderer = ({
   functions,
   customResources,
   unsupportedCategories,
+  gen1Env,
   fileWriter = (content, path) => createFileWriter(path)(content),
 }: Readonly<Gen2RenderingOptions>): Renderer => {
   // Create directory structure renderers
@@ -372,7 +375,7 @@ export const createGen2Renderer = ({
     renderers.push(new EnsureDirectory(path.join(outputDir, 'amplify', 'data')));
     renderers.push(
       new TypescriptNodeArrayRenderer(
-        async () => generateDataSource(data),
+        async () => generateDataSource(gen1Env, data),
         (content) => fileWriter(content, path.join(outputDir, 'amplify', 'data', 'resource.ts')),
       ),
     );

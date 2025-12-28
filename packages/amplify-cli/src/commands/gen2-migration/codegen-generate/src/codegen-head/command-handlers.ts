@@ -106,6 +106,7 @@ const generateGen2Code = async ({
     storage,
     data,
     functions,
+    gen1Env: backendEnvironment.environmentName,
     customResources: await getCustomResourceMap(ccbFetcher, backendEnvironment),
     unsupportedCategories: await unsupportedCategories(ccbFetcher, backendEnvironment),
   };

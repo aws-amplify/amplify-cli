@@ -18,18 +18,20 @@ This is a TypeScript monorepo (Yarn 3 + Lerna) for AWS Amplify CLI Gen1.
 
 4. If you added a new dependency, run `yarn install` to obtain and use it.
 
-5. Don't run any validation commands or commit anything to git unless explicitly asked.
+5. Do not update any test files or execute them.
 
-6. When you are asked to validation your changes:
+6. Do not run any validation commands or commit anything to git unless explicitly asked.
+
+7. When you are asked to validation your changes:
 
    - Run `yarn build` and nothing else.
 
-7. When you are asked to commit your changes:
+8. When you are asked to commit your changes:
 
    - Follow the semantic commits standard and craft a well-formed commit message consisting of a single sentence.
    - Also update the appropriate README or design document based on the changes you made.
 
-8. Do not create additional markdown files in the repository unless you are instructed explicitly to.
+9. Do not create additional markdown files in the repository unless you are instructed explicitly to.
 
 
 **ALWAYS FOLLOW THESE RULES WHEN YOU WORK IN THIS PROJECT**
