@@ -42,6 +42,11 @@ what code will be necessary in such cases.
 
 > Why? Because the absence of `@auth` invokes default default auth providers, which differ between Gen1 and Gen2.
 
+**NodeJS Lambda function code must use ESM syntax only**
+
+> Why? Because Gen2 adds shims that conflict with CommonJS syntax. Otherwise, you will 
+see the following error when invoking the function: _"Cannot determine intended module format because both require() and top-level await are present"_
+
 ## Step By Step
 
 First obtain a fresh and up-to-date local copy of your Amplify Gen1 environment and run the following:
@@ -201,20 +206,20 @@ Following provides an overview of the supported (and unsupported) features for m
 
 ### `amplify add auth`
 
-- [ ] **Default Configuration**
+- ✅ **Default Configuration**
 
-  - [X] Username
-  - [X] Email
+  - ✅ Username
+  - ✅ Email
   - [ ] Phone Number
   - [ ] Email or Phone Number
 
 ### `amplify add api`
 
-- [ ] **GraphQL**
+- ✅ **GraphQL**
 
   - **Default Authorization Type**
 
-    - [ ] API Key
+    - [X] API Key
     - [ ] Amazon Cognito User Pool
     - [ ] IAM
     - [ ] OpenID Connect
@@ -222,17 +227,42 @@ Following provides an overview of the supported (and unsupported) features for m
 
   - **Additional Authorication Type**
 
-- [ ] **REST**
+- ❌ **REST**
 
 ### `amplify add function`
 
-- [ ] **Lambda function (serverless function)**
+- ✅ **Lambda function (serverless function)**
 
-  - [ ] Runtime
+  - ✅ Runtime
 
-    - [ ] NodeJS
+    - ❌ .NET 8
+    - ❌ Go
+    - ❌ Java
+    - ✅ NodeJS
+    - ❌ Python
+
+- ❌ **Lambda layer (shared code & resource used across functions)**
 
 ### `amplify add storage`
+
+- ✅ **Content (Images, audio, video, etc.)**
+
+  - ✅ **Who should have access**
+
+    - ✅ Auth and guest users
+
+      - **What kind of access do you want for Authenticated users?**
+
+        - ✅ create/update
+        - ✅ read
+        - ✅ delete
+
+      - **What kind of access do you want for Guest users?**
+
+        - [ ] create/update
+        - ✅ read
+        - [ ] delete
+
 
 ## GraphQL Schema
 
