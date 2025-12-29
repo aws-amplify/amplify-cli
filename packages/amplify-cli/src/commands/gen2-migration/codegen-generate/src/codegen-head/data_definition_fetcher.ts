@@ -19,6 +19,7 @@ export interface RestApiPath {
   path: string;
   methods: string[];
   authType?: string;
+  lambdaFunction?: string;
 }
 
 export interface CorsConfiguration {
@@ -80,55 +81,81 @@ export class DataDefinitionFetcher {
     for (const apiName of Object.keys(apis)) {
       const apiObj = apis[apiName];
       if (apiObj.service === 'API Gateway') {
-        const functionName = apiObj.dependsOn?.find((dep: any) => dep.category === 'function')?.resourceName;
+        // Read CLI inputs for detailed configuration
+        const cliInputsPath = path.join(rootDir, 'amplify', 'backend', 'api', apiName, 'cli-inputs.json');
+        let paths: RestApiPath[] = [{ path: '/{proxy+}', methods: ['ANY'] }];
+        let authType = 'NONE';
+        let corsConfiguration;
 
-        if (functionName) {
-          // Read CLI inputs for detailed configuration
-          const cliInputsPath = path.join(rootDir, 'amplify', 'backend', 'api', apiName, 'cli-inputs.json');
-          let paths: RestApiPath[] = [{ path: '/{proxy+}', methods: ['ANY'] }];
-          let authType = 'NONE';
-          let corsConfiguration;
+        try {
+          const cliInputs = JSON.parse(await fs.readFile(cliInputsPath, 'utf8'));
 
-          try {
-            const cliInputs = JSON.parse(await fs.readFile(cliInputsPath, 'utf8'));
+          // Extract paths and methods with correct function mapping
+          if (cliInputs.paths) {
+            paths = Object.entries(cliInputs.paths).map(([pathName, pathConfig]: [string, any]) => {
+              // Parse permission setting correctly: private/protected/open
+              let pathAuthType;
+              if (pathConfig.permissions?.setting === 'private') {
+                pathAuthType = 'private';
+              } else if (pathConfig.permissions?.setting === 'protected') {
+                pathAuthType = 'protected';
+              } else {
+                pathAuthType = 'open';
+              }
 
-            // Extract paths and methods
-            if (cliInputs.paths) {
-              paths = Object.entries(cliInputs.paths).map(([pathName, pathConfig]: [string, any]) => ({
+              return {
                 path: pathName,
                 methods: this.extractMethodsFromPath(pathConfig),
-                authType: pathConfig.permissions?.setting === 'private' ? 'AWS_IAM' : undefined,
-              }));
-            }
-
-            // Extract CORS configuration
-            if (cliInputs.corsConfiguration) {
-              corsConfiguration = {
-                allowCredentials: cliInputs.corsConfiguration.allowCredentials,
-                allowHeaders: cliInputs.corsConfiguration.allowHeaders,
-                allowMethods: cliInputs.corsConfiguration.allowMethods,
-                allowOrigins: cliInputs.corsConfiguration.allowOrigins,
-                exposeHeaders: cliInputs.corsConfiguration.exposeHeaders,
-                maxAge: cliInputs.corsConfiguration.maxAge,
+                authType: pathAuthType,
+                // Extract the actual Lambda function name for this specific path
+                lambdaFunction: pathConfig.lambdaFunction,
               };
-            }
-
-            // Extract global auth type
-            if (cliInputs.restrictAccess) {
-              authType = cliInputs.authType || 'AWS_IAM';
-            }
-          } catch (error) {
-            // Fall back to basic configuration if cli-inputs.json not found
+            });
           }
 
+          // Extract CORS configuration
+          if (cliInputs.corsConfiguration) {
+            corsConfiguration = {
+              allowCredentials: cliInputs.corsConfiguration.allowCredentials,
+              allowHeaders: cliInputs.corsConfiguration.allowHeaders,
+              allowMethods: cliInputs.corsConfiguration.allowMethods,
+              allowOrigins: cliInputs.corsConfiguration.allowOrigins,
+              exposeHeaders: cliInputs.corsConfiguration.exposeHeaders,
+              maxAge: cliInputs.corsConfiguration.maxAge,
+            };
+          }
+
+          // Extract global auth type
+          if (cliInputs.restrictAccess) {
+            authType = cliInputs.authType || 'AWS_IAM';
+          }
+        } catch (error) {
+          // Fall back to basic configuration if cli-inputs.json not found
+        }
+
+        // Group paths by their Lambda function to create separate REST APIs
+        const pathsByFunction = new Map<string, RestApiPath[]>();
+
+        paths.forEach((path) => {
+          const functionName = path.lambdaFunction || apiObj.dependsOn?.find((dep: any) => dep.category === 'function')?.resourceName;
+          if (functionName) {
+            if (!pathsByFunction.has(functionName)) {
+              pathsByFunction.set(functionName, []);
+            }
+            pathsByFunction.get(functionName)!.push(path);
+          }
+        });
+
+        // Create a REST API definition for each function
+        pathsByFunction.forEach((functionPaths, functionName) => {
           restApis.push({
             apiName,
             functionName,
-            paths,
+            paths: functionPaths,
             authType: authType !== 'NONE' ? authType : undefined,
             corsConfiguration,
           });
-        }
+        });
       }
     }
 

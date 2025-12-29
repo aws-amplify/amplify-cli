@@ -1305,6 +1305,14 @@ export class BackendSynthesizer {
           // Generate routes for this specific REST API's paths
           // Each path maps to the correct Lambda function with proper authorization
           restApi.paths.forEach((pathConfig) => {
+            // Use the path-specific Lambda function, not the API-level function
+            const pathFunctionName = pathConfig.lambdaFunction || restApi.functionName;
+
+            // Skip if the function doesn't exist in the migration
+            if (!functionNameCategories.has(pathFunctionName)) {
+              return;
+            }
+
             const routeConfig: ts.ObjectLiteralElementLike[] = [
               factory.createPropertyAssignment(factory.createIdentifier('path'), factory.createStringLiteral(pathConfig.path)),
               // Only include HTTP methods that the Gen1 function actually supports
@@ -1323,9 +1331,9 @@ export class BackendSynthesizer {
               factory.createPropertyAssignment(
                 factory.createIdentifier('integration'),
                 factory.createNewExpression(factory.createIdentifier('HttpLambdaIntegration'), undefined, [
-                  factory.createStringLiteral(`${restApi.functionName}Integration`),
+                  factory.createStringLiteral(`${pathFunctionName}Integration`),
                   factory.createPropertyAccessExpression(
-                    factory.createIdentifier(`backend.${restApi.functionName}.resources`),
+                    factory.createIdentifier(`backend.${pathFunctionName}.resources`),
                     factory.createIdentifier('lambda'),
                   ),
                 ]),
@@ -1334,11 +1342,11 @@ export class BackendSynthesizer {
 
             // Map Gen1 permission settings to Gen2 authorizers:
             // 'private' -> iamAuthorizer, 'protected' -> userPoolAuthorizer, 'open' -> undefined
-            if (pathConfig.authType === 'private' || pathConfig.authType === 'AWS_IAM') {
+            if (pathConfig.authType === 'private') {
               routeConfig.push(
                 factory.createPropertyAssignment(factory.createIdentifier('authorizer'), factory.createIdentifier('iamAuthorizer')),
               );
-            } else if (pathConfig.authType === 'protected' || pathConfig.authType === 'AMAZON_COGNITO_USER_POOLS') {
+            } else if (pathConfig.authType === 'protected') {
               routeConfig.push(
                 factory.createPropertyAssignment(factory.createIdentifier('authorizer'), factory.createIdentifier('userPoolAuthorizer')),
               );
