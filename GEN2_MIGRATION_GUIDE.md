@@ -219,11 +219,11 @@ Following provides an overview of the supported (and unsupported) features for m
 
   - **Default Authorization Type**
 
-    - [X] API Key
-    - [ ] Amazon Cognito User Pool
-    - [ ] IAM
-    - [ ] OpenID Connect
-    - [ ] Lambda
+    - ✅ API Key
+    - ❌ Amazon Cognito User Pool
+    - ❌ IAM
+    - ❌ OpenID Connect
+    - ❌ Lambda
 
   - **Additional Authorication Type**
 
@@ -259,9 +259,9 @@ Following provides an overview of the supported (and unsupported) features for m
 
       - **What kind of access do you want for Guest users?**
 
-        - [ ] create/update
+        - ❌ create/update
         - ✅ read
-        - [ ] delete
+        - ❌ delete
 
   - ❌ **Do you want to add a Lambda Trigger for your S3 Bucket?**
 
