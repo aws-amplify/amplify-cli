@@ -17,6 +17,27 @@ export type AmplifyMetaWithFunction = {
   function: Record<string, AmplifyMetaFunction>;
 };
 
+/**
+ * Extracts the file path from an AWS Lambda handler string.
+ * Converts handler strings like "index.handler" or "src/handler.myFunction"
+ * to file paths like "./index.js" or "./src/handler.js".
+ *
+ * @param handler - The AWS Lambda handler string (e.g., "index.handler", "src/handler.myFunction")
+ * @returns The file path with .js extension (e.g., "./index.js", "./src/handler.js")
+ */
+const extractFilePathFromHandler = (handler: string): string => {
+  // Split on the last dot to separate file path from function name
+  const lastDotIndex = handler.lastIndexOf('.');
+  if (lastDotIndex === -1) {
+    // No dot found, treat the whole string as the file path
+    return `./${handler}.js`;
+  }
+
+  // Extract the file path part (everything before the last dot)
+  const filePath = handler.substring(0, lastDotIndex);
+  return `./${filePath}.js`;
+};
+
 export const getFunctionDefinition = (
   functionConfigurations: FunctionConfiguration[],
   functionSchedules: FunctionSchedule[],
@@ -27,7 +48,7 @@ export const getFunctionDefinition = (
 
   for (const configuration of functionConfigurations) {
     const funcDef: FunctionDefinition = {};
-    funcDef.entry = configuration?.Handler;
+    funcDef.entry = extractFilePathFromHandler(configuration?.Handler ?? 'index.js');
     funcDef.name = configuration?.FunctionName;
     funcDef.timeoutSeconds = configuration?.Timeout;
     funcDef.memoryMB = configuration?.MemorySize;
