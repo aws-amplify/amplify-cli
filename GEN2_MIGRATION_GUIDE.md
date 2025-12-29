@@ -208,10 +208,10 @@ Following provides an overview of the supported (and unsupported) features for m
 
 - ✅ **Default Configuration**
 
-  - ✅ Username
+  - ❌ Username
   - ✅ Email
-  - [ ] Phone Number
-  - [ ] Email or Phone Number
+  - ❌ Phone Number
+  - ❌ Email or Phone Number
 
 ### `amplify add api`
 
