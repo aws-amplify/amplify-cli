@@ -842,6 +842,37 @@ export class BackendSynthesizer {
 
     imports.push(this.createImportStatement([backendFunctionIdentifier], '@aws-amplify/backend'));
 
+    // Add CDK imports for REST API if needed
+    if (renderArgs.data?.restApis && renderArgs.function) {
+      const functionNameCategories = renderArgs.function.functionNamesAndCategories;
+      const hasRestApis = renderArgs.data.restApis.some((restApi) => functionNameCategories.has(restApi.functionName));
+
+      if (hasRestApis) {
+        imports.push(
+          this.createImportStatement(
+            [factory.createIdentifier('HttpApi'), factory.createIdentifier('HttpMethod')],
+            'aws-cdk-lib/aws-apigatewayv2',
+          ),
+        );
+        imports.push(
+          this.createImportStatement([factory.createIdentifier('HttpLambdaIntegration')], 'aws-cdk-lib/aws-apigatewayv2-integrations'),
+        );
+        imports.push(
+          this.createImportStatement(
+            [factory.createIdentifier('HttpIamAuthorizer'), factory.createIdentifier('HttpUserPoolAuthorizer')],
+            'aws-cdk-lib/aws-apigatewayv2-authorizers',
+          ),
+        );
+        imports.push(
+          this.createImportStatement(
+            [factory.createIdentifier('Policy'), factory.createIdentifier('PolicyStatement')],
+            'aws-cdk-lib/aws-iam',
+          ),
+        );
+        imports.push(this.createImportStatement([factory.createIdentifier('Stack')], 'aws-cdk-lib'));
+      }
+    }
+
     if (renderArgs.unsupportedCategories) {
       const categories = renderArgs.unsupportedCategories;
 
@@ -1158,105 +1189,307 @@ export class BackendSynthesizer {
       }
     }
 
-    // Add HTTP API routes for REST APIs
+    // Generate REST API infrastructure using CDK constructs
+    // This replaces Gen1's declarative API Gateway config with Gen2's imperative CDK code
     if (renderArgs.data?.restApis && renderArgs.function) {
       const functionNameCategories = renderArgs.function.functionNamesAndCategories;
+      const hasRestApis = renderArgs.data.restApis.some((restApi) => functionNameCategories.has(restApi.functionName));
 
-      renderArgs.data.restApis.forEach((restApi: RestApiDefinition) => {
-        if (functionNameCategories.has(restApi.functionName)) {
-          restApi.paths.forEach((pathConfig) => {
-            const httpApiConfig: ts.ObjectLiteralElementLike[] = [
-              factory.createPropertyAssignment(factory.createIdentifier('path'), factory.createStringLiteral(pathConfig.path)),
-              factory.createPropertyAssignment(
-                factory.createIdentifier('methods'),
-                factory.createArrayLiteralExpression(pathConfig.methods.map((method: string) => factory.createStringLiteral(method))),
+      if (hasRestApis) {
+        // Create dedicated CDK stack for API resources
+        const apiStackStatement = factory.createVariableStatement(
+          [],
+          factory.createVariableDeclarationList(
+            [
+              factory.createVariableDeclaration(
+                'apiStack',
+                undefined,
+                undefined,
+                factory.createCallExpression(
+                  factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier('createStack')),
+                  undefined,
+                  [factory.createStringLiteral('api-stack')],
+                ),
               ),
-            ];
+            ],
+            ts.NodeFlags.Const,
+          ),
+        );
+        nodes.push(apiStackStatement);
 
-            // Add authentication if specified
-            if (pathConfig.authType || restApi.authType) {
-              const authType = pathConfig.authType || restApi.authType;
-              if (authType === 'AWS_IAM') {
-                httpApiConfig.push(
-                  factory.createPropertyAssignment(factory.createIdentifier('authorizationType'), factory.createStringLiteral('AWS_IAM')),
+        // Create IAM authorizer for private endpoints (Gen1 'private' permission)
+        const iamAuthorizerStatement = factory.createVariableStatement(
+          [],
+          factory.createVariableDeclarationList(
+            [
+              factory.createVariableDeclaration(
+                'iamAuthorizer',
+                undefined,
+                undefined,
+                factory.createNewExpression(factory.createIdentifier('HttpIamAuthorizer'), undefined, []),
+              ),
+            ],
+            ts.NodeFlags.Const,
+          ),
+        );
+        nodes.push(iamAuthorizerStatement);
+
+        // Create Cognito User Pool authorizer for protected endpoints (Gen1 'protected' permission)
+        if (renderArgs.auth) {
+          const userPoolAuthorizerStatement = factory.createVariableStatement(
+            [],
+            factory.createVariableDeclarationList(
+              [
+                factory.createVariableDeclaration(
+                  'userPoolAuthorizer',
+                  undefined,
+                  undefined,
+                  factory.createNewExpression(factory.createIdentifier('HttpUserPoolAuthorizer'), undefined, [
+                    factory.createStringLiteral('userPoolAuth'),
+                    factory.createPropertyAccessExpression(
+                      factory.createIdentifier('backend.auth.resources'),
+                      factory.createIdentifier('userPool'),
+                    ),
+                    factory.createObjectLiteralExpression([
+                      factory.createPropertyAssignment(
+                        factory.createIdentifier('userPoolClients'),
+                        factory.createArrayLiteralExpression([
+                          factory.createPropertyAccessExpression(
+                            factory.createIdentifier('backend.auth.resources'),
+                            factory.createIdentifier('userPoolClient'),
+                          ),
+                        ]),
+                      ),
+                    ]),
+                  ]),
+                ),
+              ],
+              ts.NodeFlags.Const,
+            ),
+          );
+          nodes.push(userPoolAuthorizerStatement);
+        }
+
+        // Create single HttpApi instance to handle all REST API routes
+        const firstRestApi = renderArgs.data.restApis[0];
+        const httpApiStatement = factory.createVariableStatement(
+          [],
+          factory.createVariableDeclarationList(
+            [
+              factory.createVariableDeclaration(
+                'httpApi',
+                undefined,
+                undefined,
+                factory.createNewExpression(factory.createIdentifier('HttpApi'), undefined, [
+                  factory.createIdentifier('apiStack'),
+                  factory.createStringLiteral('HttpApi'),
+                  factory.createObjectLiteralExpression([
+                    factory.createPropertyAssignment(
+                      factory.createIdentifier('apiName'),
+                      factory.createStringLiteral(`${firstRestApi.apiName}-api`),
+                    ),
+                    factory.createPropertyAssignment(factory.createIdentifier('createDefaultStage'), factory.createTrue()),
+                  ]),
+                ]),
+              ),
+            ],
+            ts.NodeFlags.Const,
+          ),
+        );
+        nodes.push(httpApiStatement);
+
+        // Generate routes for all REST APIs and their paths
+        // Maps Gen1 cli-inputs.json configurations to Gen2 HttpApi routes
+        renderArgs.data.restApis.forEach((restApi: RestApiDefinition) => {
+          if (functionNameCategories.has(restApi.functionName)) {
+            restApi.paths.forEach((pathConfig) => {
+              const routeConfig: ts.ObjectLiteralElementLike[] = [
+                factory.createPropertyAssignment(factory.createIdentifier('path'), factory.createStringLiteral(pathConfig.path)),
+                factory.createPropertyAssignment(
+                  factory.createIdentifier('methods'),
+                  factory.createArrayLiteralExpression(
+                    pathConfig.methods.map((method: string) =>
+                      factory.createPropertyAccessExpression(factory.createIdentifier('HttpMethod'), factory.createIdentifier(method)),
+                    ),
+                  ),
+                ),
+                factory.createPropertyAssignment(
+                  factory.createIdentifier('integration'),
+                  factory.createNewExpression(factory.createIdentifier('HttpLambdaIntegration'), undefined, [
+                    factory.createStringLiteral(`${restApi.functionName}Integration`),
+                    factory.createPropertyAccessExpression(
+                      factory.createIdentifier(`backend.${restApi.functionName}.resources`),
+                      factory.createIdentifier('lambda'),
+                    ),
+                  ]),
+                ),
+              ];
+
+              // Map Gen1 permission settings to Gen2 authorizers:
+              // 'private' -> IAM authorizer, 'protected' -> Cognito authorizer, 'open' -> no authorizer
+              if (pathConfig.authType === 'AWS_IAM') {
+                routeConfig.push(
+                  factory.createPropertyAssignment(factory.createIdentifier('authorizer'), factory.createIdentifier('iamAuthorizer')),
+                );
+              } else if (pathConfig.authType === 'AMAZON_COGNITO_USER_POOLS') {
+                routeConfig.push(
+                  factory.createPropertyAssignment(factory.createIdentifier('authorizer'), factory.createIdentifier('userPoolAuthorizer')),
                 );
               }
-            }
+              // Note: Open access (no authType) requires no authorizer property
 
-            nodes.push(
-              factory.createExpressionStatement(
+              const addRoutesStatement = factory.createExpressionStatement(
                 factory.createCallExpression(
-                  factory.createPropertyAccessExpression(
-                    factory.createPropertyAccessExpression(
-                      factory.createIdentifier('backend'),
-                      factory.createIdentifier(restApi.functionName),
-                    ),
-                    factory.createIdentifier('addHttpApi'),
-                  ),
+                  factory.createPropertyAccessExpression(factory.createIdentifier('httpApi'), factory.createIdentifier('addRoutes')),
                   undefined,
-                  [factory.createObjectLiteralExpression(httpApiConfig)],
-                ),
-              ),
-            );
-          });
-
-          // Add CORS configuration if present
-          if (restApi.corsConfiguration) {
-            const corsConfig: ts.ObjectLiteralElementLike[] = [];
-
-            if (restApi.corsConfiguration.allowOrigins) {
-              corsConfig.push(
-                factory.createPropertyAssignment(
-                  factory.createIdentifier('allowOrigins'),
-                  factory.createArrayLiteralExpression(
-                    restApi.corsConfiguration.allowOrigins.map((origin) => factory.createStringLiteral(origin)),
-                  ),
+                  [factory.createObjectLiteralExpression(routeConfig)],
                 ),
               );
-            }
-
-            if (restApi.corsConfiguration.allowMethods) {
-              corsConfig.push(
-                factory.createPropertyAssignment(
-                  factory.createIdentifier('allowMethods'),
-                  factory.createArrayLiteralExpression(
-                    restApi.corsConfiguration.allowMethods.map((method) => factory.createStringLiteral(method)),
-                  ),
-                ),
-              );
-            }
-
-            if (restApi.corsConfiguration.allowHeaders) {
-              corsConfig.push(
-                factory.createPropertyAssignment(
-                  factory.createIdentifier('allowHeaders'),
-                  factory.createArrayLiteralExpression(
-                    restApi.corsConfiguration.allowHeaders.map((header) => factory.createStringLiteral(header)),
-                  ),
-                ),
-              );
-            }
-
-            if (corsConfig.length > 0) {
-              nodes.push(
-                factory.createExpressionStatement(
-                  factory.createCallExpression(
-                    factory.createPropertyAccessExpression(
-                      factory.createPropertyAccessExpression(
-                        factory.createIdentifier('backend'),
-                        factory.createIdentifier(restApi.functionName),
-                      ),
-                      factory.createIdentifier('addCors'),
-                    ),
-                    undefined,
-                    [factory.createObjectLiteralExpression(corsConfig)],
-                  ),
-                ),
-              );
-            }
+              nodes.push(addRoutesStatement);
+            });
           }
+        });
+
+        // Create IAM policy for API access permissions (required for Cognito Identity Pool)
+        // This allows authenticated/unauthenticated users to invoke API Gateway endpoints
+        if (renderArgs.auth) {
+          const apiPolicyStatement = factory.createVariableStatement(
+            [],
+            factory.createVariableDeclarationList(
+              [
+                factory.createVariableDeclaration(
+                  'apiPolicy',
+                  undefined,
+                  undefined,
+                  factory.createNewExpression(factory.createIdentifier('Policy'), undefined, [
+                    factory.createIdentifier('apiStack'),
+                    factory.createStringLiteral('ApiPolicy'),
+                    factory.createObjectLiteralExpression([
+                      factory.createPropertyAssignment(
+                        factory.createIdentifier('statements'),
+                        factory.createArrayLiteralExpression([
+                          factory.createNewExpression(factory.createIdentifier('PolicyStatement'), undefined, [
+                            factory.createObjectLiteralExpression([
+                              factory.createPropertyAssignment(
+                                factory.createIdentifier('actions'),
+                                factory.createArrayLiteralExpression([factory.createStringLiteral('execute-api:Invoke')]),
+                              ),
+                              factory.createPropertyAssignment(
+                                factory.createIdentifier('resources'),
+                                factory.createArrayLiteralExpression([
+                                  factory.createTemplateExpression(factory.createTemplateHead(''), [
+                                    factory.createTemplateSpan(
+                                      factory.createCallExpression(
+                                        factory.createPropertyAccessExpression(
+                                          factory.createIdentifier('httpApi'),
+                                          factory.createIdentifier('arnForExecuteApi'),
+                                        ),
+                                        undefined,
+                                        [factory.createStringLiteral('*'), factory.createStringLiteral('/*')],
+                                      ),
+                                      factory.createTemplateTail(''),
+                                    ),
+                                  ]),
+                                ]),
+                              ),
+                            ]),
+                          ]),
+                        ]),
+                      ),
+                    ]),
+                  ]),
+                ),
+              ],
+              ts.NodeFlags.Const,
+            ),
+          );
+          nodes.push(apiPolicyStatement);
+
+          // Attach API access policy to both authenticated and unauthenticated IAM roles
+          // This enables Cognito Identity Pool users to call the API endpoints
+          const attachAuthenticatedPolicyStatement = factory.createExpressionStatement(
+            factory.createCallExpression(
+              factory.createPropertyAccessExpression(
+                factory.createIdentifier('backend.auth.resources.authenticatedUserIamRole'),
+                factory.createIdentifier('attachInlinePolicy'),
+              ),
+              undefined,
+              [factory.createIdentifier('apiPolicy')],
+            ),
+          );
+          nodes.push(attachAuthenticatedPolicyStatement);
+
+          const attachUnauthenticatedPolicyStatement = factory.createExpressionStatement(
+            factory.createCallExpression(
+              factory.createPropertyAccessExpression(
+                factory.createIdentifier('backend.auth.resources.unauthenticatedUserIamRole'),
+                factory.createIdentifier('attachInlinePolicy'),
+              ),
+              undefined,
+              [factory.createIdentifier('apiPolicy')],
+            ),
+          );
+          nodes.push(attachUnauthenticatedPolicyStatement);
         }
-      });
+
+        // Generate backend output for client-side API configuration
+        // This creates the amplify_outputs.json structure that client apps use to connect to the API
+        const addOutputStatement = factory.createExpressionStatement(
+          factory.createCallExpression(
+            factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier('addOutput')),
+            undefined,
+            [
+              factory.createObjectLiteralExpression([
+                factory.createPropertyAssignment(
+                  factory.createIdentifier('custom'),
+                  factory.createObjectLiteralExpression([
+                    factory.createPropertyAssignment(
+                      factory.createIdentifier('API'),
+                      factory.createObjectLiteralExpression([
+                        factory.createPropertyAssignment(
+                          factory.createComputedPropertyName(
+                            factory.createNonNullExpression(
+                              factory.createPropertyAccessExpression(
+                                factory.createIdentifier('httpApi'),
+                                factory.createIdentifier('httpApiName'),
+                              ),
+                            ),
+                          ),
+                          factory.createObjectLiteralExpression([
+                            factory.createPropertyAssignment(
+                              factory.createIdentifier('endpoint'),
+                              factory.createPropertyAccessExpression(factory.createIdentifier('httpApi'), factory.createIdentifier('url')),
+                            ),
+                            factory.createPropertyAssignment(
+                              factory.createIdentifier('region'),
+                              factory.createPropertyAccessExpression(
+                                factory.createCallExpression(
+                                  factory.createPropertyAccessExpression(factory.createIdentifier('Stack'), factory.createIdentifier('of')),
+                                  undefined,
+                                  [factory.createIdentifier('httpApi')],
+                                ),
+                                factory.createIdentifier('region'),
+                              ),
+                            ),
+                            factory.createPropertyAssignment(
+                              factory.createIdentifier('apiName'),
+                              factory.createPropertyAccessExpression(
+                                factory.createIdentifier('httpApi'),
+                                factory.createIdentifier('httpApiName'),
+                              ),
+                            ),
+                          ]),
+                        ),
+                      ]),
+                    ),
+                  ]),
+                ),
+              ]),
+            ],
+          ),
+        );
+        nodes.push(addOutputStatement);
+      }
     }
 
     // returns backend.ts file
