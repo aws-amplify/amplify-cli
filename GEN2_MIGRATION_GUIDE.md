@@ -110,6 +110,17 @@ Note that client side libraries support both files so no additional change is ne
 This is required in order to instruct the hosting service that DynamoDB tables 
 should be reused (imported) instead of recreated.
 
+#### 2.1 Post Generate | NodeJS Function
+
+If you have a NodeJS Lambda function in your app, you need to port your code 
+to ESM instead of CommonsJS. For example:
+
+```diff
+- exports.handler = async (event) => {
++ export async function handler(event) {
+```
+
+> See [ESM/CJS Interoperability](https://www.typescriptlang.org/docs/handbook/modules/appendices/esm-cjs-interop.html)
 
 ### 3. Deploy
 
