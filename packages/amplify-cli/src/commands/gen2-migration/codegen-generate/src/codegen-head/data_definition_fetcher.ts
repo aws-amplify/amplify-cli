@@ -11,6 +11,7 @@ interface Gen1PathConfig {
   methods?: string[];
   permissions?: {
     setting?: 'private' | 'protected' | 'open';
+    auth?: string[];
   };
   lambdaFunction?: string;
 }
@@ -160,12 +161,35 @@ export class DataDefinitionFetcher {
   };
 
   private extractMethodsFromPath(pathConfig: Gen1PathConfig): string[] {
-    // Extract methods from path configuration
-    if (pathConfig.methods) {
+    // Use explicitly configured methods if available
+    if (pathConfig.methods && pathConfig.methods.length > 0) {
       return pathConfig.methods;
     }
-    // Default to common REST methods if not specified
-    return ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'];
+
+    // Map auth permissions to HTTP methods if no explicit methods
+    if (pathConfig.permissions?.auth && pathConfig.permissions.auth.length > 0) {
+      const methods: string[] = [];
+      pathConfig.permissions.auth.forEach((permission) => {
+        switch (permission) {
+          case 'read':
+            methods.push('GET');
+            break;
+          case 'create':
+            methods.push('POST');
+            break;
+          case 'update':
+            methods.push('PUT');
+            break;
+          case 'delete':
+            methods.push('DELETE');
+            break;
+        }
+      });
+      return methods.length > 0 ? methods : ['GET'];
+    }
+
+    // Default to GET only if no configuration found
+    return ['GET'];
   }
 
   /**

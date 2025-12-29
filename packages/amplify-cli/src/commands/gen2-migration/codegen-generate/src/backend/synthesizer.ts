@@ -850,7 +850,7 @@ export class BackendSynthesizer {
       if (hasRestApis) {
         imports.push(
           this.createImportStatement(
-            [factory.createIdentifier('HttpApi'), factory.createIdentifier('HttpMethod')],
+            [factory.createIdentifier('HttpApi'), factory.createIdentifier('HttpMethod'), factory.createIdentifier('CorsHttpMethod')],
             'aws-cdk-lib/aws-apigatewayv2',
           ),
         );
@@ -1293,6 +1293,29 @@ export class BackendSynthesizer {
                         factory.createStringLiteral(`${restApi.apiName}-api`),
                       ),
                       factory.createPropertyAssignment(factory.createIdentifier('createDefaultStage'), factory.createTrue()),
+                      // Add CORS configuration for all HttpApis to enable browser access
+                      factory.createPropertyAssignment(
+                        factory.createIdentifier('corsPreflight'),
+                        factory.createObjectLiteralExpression([
+                          factory.createPropertyAssignment(
+                            factory.createIdentifier('allowMethods'),
+                            factory.createArrayLiteralExpression([
+                              factory.createPropertyAccessExpression(
+                                factory.createIdentifier('CorsHttpMethod'),
+                                factory.createIdentifier('ANY'),
+                              ),
+                            ]),
+                          ),
+                          factory.createPropertyAssignment(
+                            factory.createIdentifier('allowOrigins'),
+                            factory.createArrayLiteralExpression([factory.createStringLiteral('*')]),
+                          ),
+                          factory.createPropertyAssignment(
+                            factory.createIdentifier('allowHeaders'),
+                            factory.createArrayLiteralExpression([factory.createStringLiteral('*')]),
+                          ),
+                        ]),
+                      ),
                     ]),
                   ]),
                 ),
