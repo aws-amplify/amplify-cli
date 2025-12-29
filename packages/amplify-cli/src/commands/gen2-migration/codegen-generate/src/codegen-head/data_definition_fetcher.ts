@@ -7,6 +7,29 @@ import { DataDefinition } from '../core/migration-pipeline';
 import { AdditionalAuthProvider } from '../generators/data';
 import { pathManager } from '@aws-amplify/amplify-cli-core';
 
+interface Gen1PathConfig {
+  methods?: string[];
+  permissions?: {
+    setting?: 'private' | 'protected' | 'open';
+  };
+  lambdaFunction?: string;
+}
+
+interface Gen1CliInputs {
+  paths?: Record<string, Gen1PathConfig>;
+  corsConfiguration?: CorsConfiguration;
+  restrictAccess?: boolean;
+  authType?: string;
+}
+
+interface Gen1ApiObject {
+  service: string;
+  dependsOn?: Array<{
+    category: string;
+    resourceName: string;
+  }>;
+}
+
 export interface RestApiDefinition {
   apiName: string;
   functionName: string;
@@ -73,7 +96,7 @@ export class DataDefinitionFetcher {
   /**
    * Extracts REST API configurations from Gen1 API configuration.
    */
-  getRestApis = async (apis: any): Promise<RestApiDefinition[]> => {
+  getRestApis = async (apis: Record<string, Gen1ApiObject>): Promise<RestApiDefinition[]> => {
     const restApis: RestApiDefinition[] = [];
     const rootDir = pathManager.findProjectRoot();
     assert(rootDir);
@@ -88,20 +111,13 @@ export class DataDefinitionFetcher {
         let corsConfiguration;
 
         try {
-          const cliInputs = JSON.parse(await fs.readFile(cliInputsPath, 'utf8'));
+          const cliInputs: Gen1CliInputs = JSON.parse(await fs.readFile(cliInputsPath, 'utf8'));
 
           // Extract paths and methods with correct function mapping
           if (cliInputs.paths) {
-            paths = Object.entries(cliInputs.paths).map(([pathName, pathConfig]: [string, any]) => {
+            paths = Object.entries(cliInputs.paths).map(([pathName, pathConfig]) => {
               // Parse permission setting correctly: private/protected/open
-              let pathAuthType;
-              if (pathConfig.permissions?.setting === 'private') {
-                pathAuthType = 'private';
-              } else if (pathConfig.permissions?.setting === 'protected') {
-                pathAuthType = 'protected';
-              } else {
-                pathAuthType = 'open';
-              }
+              const pathAuthType = pathConfig.permissions?.setting || 'open';
 
               return {
                 path: pathName,
@@ -115,14 +131,7 @@ export class DataDefinitionFetcher {
 
           // Extract CORS configuration
           if (cliInputs.corsConfiguration) {
-            corsConfiguration = {
-              allowCredentials: cliInputs.corsConfiguration.allowCredentials,
-              allowHeaders: cliInputs.corsConfiguration.allowHeaders,
-              allowMethods: cliInputs.corsConfiguration.allowMethods,
-              allowOrigins: cliInputs.corsConfiguration.allowOrigins,
-              exposeHeaders: cliInputs.corsConfiguration.exposeHeaders,
-              maxAge: cliInputs.corsConfiguration.maxAge,
-            };
+            corsConfiguration = cliInputs.corsConfiguration;
           }
 
           // Extract global auth type
@@ -133,28 +142,16 @@ export class DataDefinitionFetcher {
           // Fall back to basic configuration if cli-inputs.json not found
         }
 
-        // Group paths by their Lambda function to create separate REST APIs
-        const pathsByFunction = new Map<string, RestApiPath[]>();
+        // Keep all paths together in a single REST API definition
+        // The synthesizer will handle routing to different Lambda functions
+        const defaultFunctionName = apiObj.dependsOn?.find((dep) => dep.category === 'function')?.resourceName;
 
-        paths.forEach((path) => {
-          const functionName = path.lambdaFunction || apiObj.dependsOn?.find((dep: any) => dep.category === 'function')?.resourceName;
-          if (functionName) {
-            if (!pathsByFunction.has(functionName)) {
-              pathsByFunction.set(functionName, []);
-            }
-            pathsByFunction.get(functionName)!.push(path);
-          }
-        });
-
-        // Create a REST API definition for each function
-        pathsByFunction.forEach((functionPaths, functionName) => {
-          restApis.push({
-            apiName,
-            functionName,
-            paths: functionPaths,
-            authType: authType !== 'NONE' ? authType : undefined,
-            corsConfiguration,
-          });
+        restApis.push({
+          apiName,
+          functionName: defaultFunctionName || 'defaultFunction',
+          paths,
+          authType: authType !== 'NONE' ? authType : undefined,
+          corsConfiguration,
         });
       }
     }
@@ -162,7 +159,7 @@ export class DataDefinitionFetcher {
     return restApis;
   };
 
-  private extractMethodsFromPath(pathConfig: any): string[] {
+  private extractMethodsFromPath(pathConfig: Gen1PathConfig): string[] {
     // Extract methods from path configuration
     if (pathConfig.methods) {
       return pathConfig.methods;
