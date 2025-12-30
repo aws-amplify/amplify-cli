@@ -276,6 +276,13 @@ amplify add api
 ✔ Restrict API access? (Y/n) · yes
 ✔ Who should have access? · Authenticated users only
 ✔ What permissions do you want to grant to Authenticated users? · create, read, update, delete
+✔ Do you want to add another path? (y/N) · yes
+✔ Provide a path (e.g., /book/{isbn}): · /nutrition/{food}
+✔ Choose a Lambda source · Use a Lambda function already added in the current Amplify project
+✔ Choose the Lambda function to invoke by this path · nutritionHandler
+✔ Restrict API access? (Y/n) · yes
+✔ Who should have access? · Authenticated users only
+✔ What permissions do you want to grant to Authenticated users? · create, read, update, delete
 ✔ Do you want to add another path? (y/N) · no
 ```
 
