@@ -295,14 +295,17 @@ Replace the boilerplate code with analytics API endpoints:
 // Enable CORS for all methods
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*")
-  res.header("Access-Control-Allow-Headers", "*")
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control")
   res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+  res.header("Access-Control-Allow-Credentials", "false")
+  
   if (req.method === 'OPTIONS') {
-    res.sendStatus(200);
-  } else {
-    next();
+    res.status(200).end();  // ✅ Properly ends the response
+    return;                 // ✅ Prevents further processing
   }
+  next();
 });
+
 
 // Food database for search
 const foodDatabase = [
