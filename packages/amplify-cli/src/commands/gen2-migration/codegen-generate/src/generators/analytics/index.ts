@@ -13,6 +13,8 @@ export interface AnalyticsRenderParameters {
   stackFileName: string;
   /** The resource name used for stack ID and props (e.g., 'todoprojectKinesis') */
   resourceName: string;
+  /** The number of shards for the Kinesis stream */
+  shardCount: number;
 }
 
 /**
@@ -27,7 +29,7 @@ export interface AnalyticsRenderParameters {
  *   const analyticsStack = backend.createStack('analytics');
  *   new stackClassName(analyticsStack, 'resourceName', {
  *     kinesisStreamName: 'resourceName',
- *     kinesisStreamShardCount: 1,
+ *     kinesisStreamShardCount: shardCount,
  *     authPolicyName: 'resourceName-auth-policy',
  *     unauthPolicyName: 'resourceName-unauth-policy',
  *     authRoleName: backend.auth.resources.authenticatedUserIamRole.roleName,
@@ -38,7 +40,7 @@ export interface AnalyticsRenderParameters {
  * ```
  */
 export const renderAnalytics = (params: AnalyticsRenderParameters): ts.NodeArray<ts.Node> => {
-  const { stackClassName, stackFileName, resourceName } = params;
+  const { stackClassName, stackFileName, resourceName, shardCount } = params;
 
   // Import statement: import { stackClassName } from './stackFileName';
   const stackImport = factory.createImportDeclaration(
@@ -127,7 +129,7 @@ export const renderAnalytics = (params: AnalyticsRenderParameters): ts.NodeArray
       factory.createObjectLiteralExpression(
         [
           factory.createPropertyAssignment(factory.createIdentifier('kinesisStreamName'), factory.createStringLiteral(resourceName)),
-          factory.createPropertyAssignment(factory.createIdentifier('kinesisStreamShardCount'), factory.createNumericLiteral(1)),
+          factory.createPropertyAssignment(factory.createIdentifier('kinesisStreamShardCount'), factory.createNumericLiteral(shardCount)),
           factory.createPropertyAssignment(
             factory.createIdentifier('authPolicyName'),
             factory.createStringLiteral(`${resourceName}-auth-policy`),

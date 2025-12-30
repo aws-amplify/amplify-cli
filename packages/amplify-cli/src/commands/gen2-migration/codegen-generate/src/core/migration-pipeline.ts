@@ -351,6 +351,7 @@ export const createGen2Renderer = ({
                 stackClassName: codegenResult.stackClassName,
                 stackFileName: codegenResult.stackFileName,
                 resourceName: codegenResult.resourceName,
+                shardCount: codegenResult.shardCount,
               };
 
               return renderAnalytics(analyticsParams);
