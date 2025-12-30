@@ -988,7 +988,6 @@ export class BackendSynthesizer {
         ` s3Bucket.bucketName = '${renderArgs.storage.bucketName}';`,
         true,
       );
-
       nodes.push(bucketNameComment1, bucketNameComment2);
     }
 
