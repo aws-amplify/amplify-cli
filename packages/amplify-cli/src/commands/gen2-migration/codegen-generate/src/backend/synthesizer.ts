@@ -978,15 +978,17 @@ export class BackendSynthesizer {
       nodes.push(cfnStorageVariableStatement);
 
       // Add comments as synthetic leading comments
-      const bucketNameComment1 = factory.createEmptyStatement();
+      const bucketNameComment1 = factory.createNotEmittedStatement(factory.createStringLiteral(''));
       ts.addSyntheticLeadingComment(bucketNameComment1, ts.SyntaxKind.SingleLineCommentTrivia, ` Use this bucket name post refactor`, true);
-      const bucketNameComment2 = factory.createEmptyStatement();
+
+      const bucketNameComment2 = factory.createNotEmittedStatement(factory.createStringLiteral(''));
       ts.addSyntheticLeadingComment(
         bucketNameComment2,
         ts.SyntaxKind.SingleLineCommentTrivia,
         ` s3Bucket.bucketName = '${renderArgs.storage.bucketName}';`,
         true,
       );
+
       nodes.push(bucketNameComment1, bucketNameComment2);
     }
 
