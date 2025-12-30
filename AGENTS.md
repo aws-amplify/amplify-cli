@@ -33,7 +33,7 @@ __Commit Stage__
 
 7. Do not create additional markdown files in the repository unless you are instructed explicitly to.
 
-8. Commit your changes in git using a well-formed commit message consisting of a single sentence summary and no more than a few paragraphs explaining the change and your testing. After this explanation, place the prompt the user used to trigger this work prefixed with a "Prompt: " after a single line consisting of '---'. Make sure there are no empty lines before or after this line. Word wrap all paragraphs at 72 columns including the prompt. For the author of the commit, use the configured username in git with ' (AI)' appended and the user email. For example, `git commit --author="John Doe (AI) <john@bigco.com>"`
+8. Commit your changes in git using a well-formed commit message following the Conventional Commits format. The message must start with a type prefix (e.g., `feat:`, `fix:`, `docs:`, `refactor:`, `test:`, `chore:`) followed by a single sentence summary and no more than a few paragraphs explaining the change and your testing. After this explanation, place the prompt the user used to trigger this work prefixed with a "Prompt: " after a single line consisting of '---'. Make sure there are no empty lines before or after this line. Word wrap all paragraphs at 72 columns including the prompt. For the author of the commit, use the configured username in git with ' (AI)' appended and the user email. For example, `git commit --author="John Doe (AI) <john@bigco.com>" -m "docs: update configuration guide"`
 
 
 **ALWAYS FOLLOW THESE RULES WHEN YOU WORK IN THIS PROJECT**
