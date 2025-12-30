@@ -141,9 +141,22 @@ export class CdkFromCfn {
 
 async function getCfnTemplateFromS3(s3Url: string): Promise<CFNTemplate> {
   const url = new URL(s3Url);
-  const splitPath = url.pathname.split('/');
-  const bucket = splitPath[1];
-  const key = splitPath.slice(2).join('/');
+  let bucket: string;
+  let key: string;
+
+  // Check if virtual-hosted style (bucket in hostname)
+  // e.g., https://my-bucket.s3.us-east-1.amazonaws.com/key/path
+  const virtualHostMatch = url.hostname.match(/^(.+)\.s3[.-].*\.amazonaws\.com$/);
+
+  if (virtualHostMatch) {
+    bucket = virtualHostMatch[1];
+    key = url.pathname.slice(1); // remove leading '/'
+  } else {
+    // Path-style: https://s3.region.amazonaws.com/bucket/key/path
+    const splitPath = url.pathname.split('/');
+    bucket = splitPath[1];
+    key = splitPath.slice(2).join('/');
+  }
 
   const s3Client = new S3Client({});
   const response = await s3Client.send(new GetObjectCommand({ Bucket: bucket, Key: key }));
