@@ -251,8 +251,121 @@ exports.handler = async (event) => {
 };
 ```
 
+### 8. Add Nutrition REST API
 
-### 7. Deploy Backend
+```bash
+amplify add api
+
+? Select from one of the below mentioned services: REST
+✔ Provide a friendly name for your resource to be used as a label for this category in the project: · nutritionapi
+✔ Provide a path (e.g., /book/{isbn}): · /nutrition/log
+✔ Choose a Lambda source · Create a new Lambda function
+? Provide an AWS Lambda function name: nutritionHandler
+? Choose the runtime that you want to use: NodeJS
+? Choose the function template that you want to use: Serverless ExpressJS function (Integration with API Gateway)
+? Do you want to configure advanced settings? No
+? Do you want edit the local lambda function now? Yes
+? Press enter to continue
+✔ Restrict API access? (Y/n) · yes
+✔ Who should have access? · Authenticated users only
+✔ What permissions do you want to grant to Authenticated users? · create, read, update, delete
+✔ Do you want to add another path? (y/N) · yes
+✔ Provide a path (e.g., /book/{isbn}): · /nutrition/daily
+✔ Choose a Lambda source · Use a Lambda function already added in the current Amplify project
+✔ Choose the Lambda function to invoke by this path · nutritionHandler
+✔ Restrict API access? (Y/n) · yes
+✔ Who should have access? · Authenticated users only
+✔ What permissions do you want to grant to Authenticated users? · create, read, update, delete
+✔ Do you want to add another path? (y/N) · no
+```
+
+Edit `amplify/backend/function/analyticsHandler/src/app.js`:
+
+Replace the boilerplate code with analytics API endpoints:
+
+```javascript
+// Get workout progress stats
+app.get('/analytics/progress/:userId?', function(req, res) {
+  const userId = req.params.userId || req.apiGateway?.event?.requestContext?.identity?.cognitoIdentityId;
+  
+  // Mock progress data
+  const progressStats = {
+    userId,
+    totalWorkouts: 45,
+    totalExercises: 120,
+    averageWorkoutsPerWeek: 3.2,
+    currentStreak: 7,
+    longestStreak: 14,
+    weeklyProgress: [
+      { week: '2024-01-01', workouts: 3, exercises: 12 },
+      { week: '2024-01-08', workouts: 4, exercises: 16 },
+      { week: '2024-01-15', workouts: 3, exercises: 11 },
+      { week: '2024-01-22', workouts: 5, exercises: 18 }
+    ],
+    achievements: [
+      { id: 1, name: 'First Workout', earned: true, date: '2024-01-01' },
+      { id: 2, name: '7 Day Streak', earned: true, date: '2024-01-15' },
+      { id: 3, name: '30 Day Streak', earned: false, date: null }
+    ]
+  };
+  
+  res.json({ success: true, progressStats });
+});
+
+// Log workout completion
+app.post('/analytics/workout', function(req, res) {
+  const { exerciseCount, duration, workoutType = 'general' } = req.body;
+  const userId = req.apiGateway?.event?.requestContext?.identity?.cognitoIdentityId;
+  
+  if (!exerciseCount || !duration) {
+    return res.status(400).json({ error: 'exerciseCount and duration are required' });
+  }
+  
+  const workoutLog = {
+    id: Date.now(),
+    userId,
+    exerciseCount,
+    duration,
+    workoutType,
+    caloriesBurned: Math.round(duration * 8), // Rough estimate
+    timestamp: new Date().toISOString()
+  };
+  
+  res.json({ success: true, workoutLog });
+});
+
+// Get workout streaks and achievements
+app.get('/analytics/streaks', function(req, res) {
+  const userId = req.apiGateway?.event?.requestContext?.identity?.cognitoIdentityId;
+  
+  // Mock streak data
+  const streakData = {
+    userId,
+    currentStreak: 7,
+    longestStreak: 14,
+    streakHistory: [
+      { startDate: '2024-01-01', endDate: '2024-01-05', length: 5 },
+      { startDate: '2024-01-10', endDate: '2024-01-23', length: 14 },
+      { startDate: '2024-01-25', endDate: null, length: 7 }
+    ],
+    milestones: {
+      nextMilestone: 10,
+      daysToNext: 3,
+      totalMilestones: 2
+    },
+    weeklyGoal: {
+      target: 4,
+      current: 3,
+      percentage: 75
+    }
+  };
+  
+  res.json({ success: true, streakData });
+});
+```
+
+
+### 8. Deploy Backend
 
 ```bash
 amplify push
@@ -260,7 +373,7 @@ amplify push
 
 Select **Y** for all prompts to deploy your backend infrastructure.
 
-### 8. Add Hosting (Optional)
+### 9. Add Hosting (Optional)
 
 ```bash
 amplify add hosting  # Choose Amplify Console
