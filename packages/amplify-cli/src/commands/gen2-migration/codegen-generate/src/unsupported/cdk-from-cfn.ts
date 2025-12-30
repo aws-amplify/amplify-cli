@@ -84,7 +84,7 @@ export class CdkFromCfn {
     const stackFileName = `${resourceName}-stack`;
     const filePath = path.join(this.dir, 'amplify', 'analytics', `${stackFileName}.ts`);
     const templateS3Url = definition.providerMetadata.s3TemplateURL;
-    const template = await getS3ObjectContent(templateS3Url);
+    const template = await getCfnTemplateFromS3(templateS3Url);
     const stackName = definition.providerMetadata.logicalId;
 
     const finalTemplate = await this.preTransmute(template, stackName);
@@ -139,7 +139,7 @@ export class CdkFromCfn {
   }
 }
 
-async function getS3ObjectContent(s3Url: string): Promise<CFNTemplate> {
+async function getCfnTemplateFromS3(s3Url: string): Promise<CFNTemplate> {
   const url = new URL(s3Url);
   const splitPath = url.pathname.split('/');
   const bucket = splitPath[1];
