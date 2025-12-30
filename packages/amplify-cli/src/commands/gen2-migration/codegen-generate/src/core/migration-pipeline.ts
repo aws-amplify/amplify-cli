@@ -214,7 +214,6 @@ const copyGen1FunctionFiles = async (
  */
 export const createGen2Renderer = ({
   outputDir,
-  backendEnvironmentName,
   auth,
   storage,
   data,
