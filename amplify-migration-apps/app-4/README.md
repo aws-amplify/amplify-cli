@@ -283,84 +283,87 @@ Edit `amplify/backend/function/analyticsHandler/src/app.js`:
 
 Replace the boilerplate code with analytics API endpoints:
 
+
 ```javascript
-// Get workout progress stats
-app.get('/analytics/progress/:userId?', function(req, res) {
-  const userId = req.params.userId || req.apiGateway?.event?.requestContext?.identity?.cognitoIdentityId;
-  
-  // Mock progress data
-  const progressStats = {
-    userId,
-    totalWorkouts: 45,
-    totalExercises: 120,
-    averageWorkoutsPerWeek: 3.2,
-    currentStreak: 7,
-    longestStreak: 14,
-    weeklyProgress: [
-      { week: '2024-01-01', workouts: 3, exercises: 12 },
-      { week: '2024-01-08', workouts: 4, exercises: 16 },
-      { week: '2024-01-15', workouts: 3, exercises: 11 },
-      { week: '2024-01-22', workouts: 5, exercises: 18 }
-    ],
-    achievements: [
-      { id: 1, name: 'First Workout', earned: true, date: '2024-01-01' },
-      { id: 2, name: '7 Day Streak', earned: true, date: '2024-01-15' },
-      { id: 3, name: '30 Day Streak', earned: false, date: null }
-    ]
-  };
-  
-  res.json({ success: true, progressStats });
+// Enable CORS for all methods
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*")
+  res.header("Access-Control-Allow-Headers", "*")
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(200);
+  } else {
+    next();
+  }
 });
 
-// Log workout completion
-app.post('/analytics/workout', function(req, res) {
-  const { exerciseCount, duration, workoutType = 'general' } = req.body;
+// Food database for search
+const foodDatabase = [
+  { id: 1, name: 'Apple', calories: 95, protein: 0.5, carbs: 25, fat: 0.3 },
+  { id: 2, name: 'Banana', calories: 105, protein: 1.3, carbs: 27, fat: 0.4 },
+  { id: 3, name: 'Chicken Breast', calories: 165, protein: 31, carbs: 0, fat: 3.6 },
+  { id: 4, name: 'Rice', calories: 130, protein: 2.7, carbs: 28, fat: 0.3 },
+  { id: 5, name: 'Broccoli', calories: 25, protein: 3, carbs: 5, fat: 0.3 }
+];
+
+// Search food database
+app.get('/nutrition/search/:food', function(req, res) {
+  const searchTerm = req.params.food.toLowerCase();
+  const results = foodDatabase.filter(food => 
+    food.name.toLowerCase().includes(searchTerm)
+  );
+  res.json({ success: true, results, count: results.length });
+});
+
+// Log meal
+app.post('/nutrition/log', function(req, res) {
+  const { foodId, quantity = 1, mealType = 'snack' } = req.body;
   const userId = req.apiGateway?.event?.requestContext?.identity?.cognitoIdentityId;
   
-  if (!exerciseCount || !duration) {
-    return res.status(400).json({ error: 'exerciseCount and duration are required' });
+  if (!foodId) {
+    return res.status(400).json({ error: 'foodId is required' });
   }
   
-  const workoutLog = {
+  const food = foodDatabase.find(f => f.id === parseInt(foodId));
+  if (!food) {
+    return res.status(404).json({ error: 'Food not found' });
+  }
+  
+  const logEntry = {
     id: Date.now(),
     userId,
-    exerciseCount,
-    duration,
-    workoutType,
-    caloriesBurned: Math.round(duration * 8), // Rough estimate
+    food,
+    quantity,
+    mealType,
+    totalCalories: food.calories * quantity,
     timestamp: new Date().toISOString()
   };
   
-  res.json({ success: true, workoutLog });
+  res.json({ success: true, logEntry });
 });
 
-// Get workout streaks and achievements
-app.get('/analytics/streaks', function(req, res) {
+// Get daily nutrition summary
+app.get('/nutrition/daily/:date?', function(req, res) {
+  const date = req.params.date || new Date().toISOString().split('T')[0];
   const userId = req.apiGateway?.event?.requestContext?.identity?.cognitoIdentityId;
   
-  // Mock streak data
-  const streakData = {
+  // Mock daily summary
+  const summary = {
+    date,
     userId,
-    currentStreak: 7,
-    longestStreak: 14,
-    streakHistory: [
-      { startDate: '2024-01-01', endDate: '2024-01-05', length: 5 },
-      { startDate: '2024-01-10', endDate: '2024-01-23', length: 14 },
-      { startDate: '2024-01-25', endDate: null, length: 7 }
-    ],
-    milestones: {
-      nextMilestone: 10,
-      daysToNext: 3,
-      totalMilestones: 2
-    },
-    weeklyGoal: {
-      target: 4,
-      current: 3,
-      percentage: 75
+    totalCalories: 1850,
+    totalProtein: 120,
+    totalCarbs: 180,
+    totalFat: 65,
+    meals: {
+      breakfast: { calories: 450, items: 2 },
+      lunch: { calories: 650, items: 3 },
+      dinner: { calories: 600, items: 4 },
+      snacks: { calories: 150, items: 1 }
     }
   };
   
-  res.json({ success: true, streakData });
+  res.json({ success: true, summary });
 });
 ```
 
