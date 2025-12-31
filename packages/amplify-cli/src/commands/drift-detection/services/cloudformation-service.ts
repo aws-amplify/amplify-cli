@@ -29,10 +29,7 @@ export class CloudFormationService {
    * Uses the standard Amplify CloudFormation class for proper configuration
    */
   public async getClient(context: $TSContext): Promise<CloudFormationClient> {
-    // Use the standard Amplify CloudFormation class
     const cfn = await new CloudFormation(context, 'drift:detect');
-
-    // Return the internal CloudFormationClient
     return cfn.cfn;
   }
 
@@ -120,14 +117,9 @@ export class CloudFormationService {
 
       // Extract and replace the current cloud backend
       const unzippedDir = await extractZip(tempDir, currentCloudBackendZip);
-      const newDir = `${currentCloudBackendDir}.new`;
-
-      fs.copySync(unzippedDir, newDir);
-      fs.removeSync(currentCloudBackendDir);
-      fs.moveSync(newDir, currentCloudBackendDir);
-
-      // Clean up temp files
-      fs.removeSync(tempDir);
+      await fs.remove(currentCloudBackendDir);
+      await fs.move(unzippedDir, currentCloudBackendDir);
+      await fs.remove(tempDir);
 
       return true;
     } catch (error: any) {

@@ -107,6 +107,98 @@ export interface Gen2RenderingOptions {
 const createFileWriter = (path: string) => async (content: string) => fs.writeFile(path, content);
 
 /**
+ * Extracts dependencies from Gen 1 function package.json
+ * @param resourceName - Name of the function resource
+ * @returns Object with dependencies and devDependencies
+ */
+const extractGen1FunctionDependencies = async (
+  resourceName: string,
+): Promise<{ dependencies?: Record<string, string>; devDependencies?: Record<string, string> }> => {
+  try {
+    const packageJsonPath = path.join('amplify', 'backend', 'function', resourceName, 'src', 'package.json');
+    const packageContent = await fs.readFile(packageJsonPath, 'utf-8');
+    const packageJson = JSON.parse(packageContent);
+    return {
+      dependencies: packageJson.dependencies,
+      devDependencies: packageJson.devDependencies,
+    };
+  } catch {
+    // Safely return an empty dictionary if no package.json is found
+    return {};
+  }
+};
+
+/**
+ * Merges dependencies from all Gen 1 functions, selecting highest version for conflicts
+ * @param functions - Array of function definitions
+ * @returns Combined dependencies and devDependencies
+ */
+const mergeAllFunctionDependencies = async (
+  functions: FunctionDefinition[],
+): Promise<{ dependencies: Record<string, string>; devDependencies: Record<string, string> }> => {
+  const functionDeps: Record<string, string> = {};
+  const functionDevDeps: Record<string, string> = {};
+
+  const mergeWithHighestVersion = (target: Record<string, string>, source: Record<string, string>) => {
+    for (const [pkg, version] of Object.entries(source)) {
+      if (!target[pkg] || version > target[pkg]) {
+        target[pkg] = version;
+      }
+    }
+  };
+
+  for (const func of functions) {
+    if (func.resourceName) {
+      const deps = await extractGen1FunctionDependencies(func.resourceName);
+      mergeWithHighestVersion(functionDeps, deps.dependencies || {});
+      mergeWithHighestVersion(functionDevDeps, deps.devDependencies || {});
+    }
+  }
+
+  return { dependencies: functionDeps, devDependencies: functionDevDeps };
+};
+
+/**
+ * Copies all files from Gen 1 function src directory to Gen 2 function directory
+ * @param resourceName - Name of the function resource
+ * @param destDir - Destination directory for Gen 2 function
+ * @param fileWriter - Function to write files
+ */
+const copyGen1FunctionFiles = async (
+  resourceName: string,
+  destDir: string,
+  fileWriter: (content: string, path: string) => Promise<void>,
+): Promise<void> => {
+  try {
+    const gen1SrcDir = path.join('amplify', 'backend', 'function', resourceName, 'src');
+    const srcEntries = await fs.readdir(gen1SrcDir, { recursive: true, withFileTypes: true });
+
+    for (const entry of srcEntries) {
+      if (entry.isFile()) {
+        const file = path.relative(gen1SrcDir, path.join(entry.parentPath, entry.name));
+        const fileName = path.basename(file);
+        const skipFiles = ['package.json', 'package-lock.json', 'yarn.lock', 'pnpm-lock.yaml'];
+
+        if (!skipFiles.includes(fileName)) {
+          const srcPath = path.join(gen1SrcDir, file);
+          const content = await fs.readFile(srcPath, 'utf-8');
+          const destFile = file;
+          const destPath = path.join(destDir, destFile);
+
+          // Ensure destination directory exists
+          await fs.mkdir(path.dirname(destPath), { recursive: true });
+          await fileWriter(content, destPath);
+        }
+      }
+    }
+  } catch (error) {
+    throw new Error(
+      `Failed to copy Gen 1 function files for '${resourceName}': ${error instanceof Error ? error.message : 'Unknown error'}`,
+    );
+  }
+};
+
+/**
  * Creates a Gen 2 renderer pipeline that transforms Gen 1 Amplify configurations
  * into Gen 2 TypeScript resource definitions and project structure.
  *
@@ -151,9 +243,27 @@ export const createGen2Renderer = ({
       } catch (e) {
         // File doesn't exist or is inaccessible. Ignore.
       }
+      // Merge dependencies from all Gen 1 functions
+      const { dependencies: functionDeps, devDependencies: functionDevDeps } = functions?.length
+        ? await mergeAllFunctionDependencies(functions)
+        : { dependencies: {}, devDependencies: {} };
+
+      // Merge function dependencies into the package.json
+      const updatedPackageJson = {
+        ...packageJson,
+        dependencies: {
+          ...(packageJson.dependencies || {}),
+          ...functionDeps,
+        },
+        devDependencies: {
+          ...(packageJson.devDependencies || {}),
+          ...functionDevDeps,
+        },
+      };
+
       // Restrict dev dependencies to specific versions based on create-amplify gen2 flow:
       // https://github.com/aws-amplify/amplify-backend/blob/2dab201cb9a222c3b8c396a46c17d661411839ab/packages/create-amplify/src/amplify_project_creator.ts#L15-L24
-      return patchNpmPackageJson(packageJson, {
+      return patchNpmPackageJson(updatedPackageJson, {
         'aws-cdk': '^2',
         'aws-cdk-lib': '^2',
         'ci-info': '^4.3.1',
@@ -205,6 +315,11 @@ export const createGen2Renderer = ({
     const functionNamesAndCategory = new Map<string, string>();
     for (const func of functions) {
       if (func.name) {
+        if (!func.runtime?.startsWith('nodejs')) {
+          throw new Error(
+            `Function '${func.name}' uses unsupported runtime '${func.runtime}'. Gen 2 migration only supports Node.js functions.`,
+          );
+        }
         const resourceName = func.resourceName;
         assert(resourceName);
         const funcCategory = func.category;
@@ -218,17 +333,9 @@ export const createGen2Renderer = ({
             async () => renderFunctions(func),
             (content) => {
               // Create both resource.ts (with function definition) and copy handler from Gen 1
-              return fileWriter(content, path.join(dirPath, 'resource.ts')).then(async () => {
-                // Try to copy the original handler file from Gen 1
-                try {
-                  const gen1HandlerPath = path.join('amplify', 'backend', 'function', resourceName, 'src', 'index.js');
-                  const handlerContent = await fs.readFile(gen1HandlerPath, 'utf-8');
-                  return fileWriter(handlerContent, path.join(dirPath, 'handler.ts'));
-                } catch {
-                  // If Gen 1 handler doesn't exist, create empty handler
-                  return fileWriter('', path.join(dirPath, 'handler.ts'));
-                }
-              });
+              return fileWriter(content, path.join(dirPath, 'resource.ts')).then(() =>
+                copyGen1FunctionFiles(resourceName, dirPath, fileWriter),
+              );
             },
           ),
         );
@@ -275,6 +382,7 @@ export const createGen2Renderer = ({
     );
     backendRenderOptions.data = {
       importFrom: './data/resource',
+      additionalAuthProviders: data.additionalAuthProviders,
     };
   }
 
