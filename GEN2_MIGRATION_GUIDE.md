@@ -235,7 +235,7 @@ Following provides an overview of the supported (and unsupported) features for m
     - ❌ OpenID Connect
     - ❌ Lambda
 
-  - **Additional Authorication Type**
+  - **Additional Authorization Type**
 
 - ❌ **REST**
 
