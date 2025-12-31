@@ -184,7 +184,7 @@ git commit -m "feat: gen1"
 git push origin main
 ```
 
-Next, follow the getting started wizard to connect your repo and branch.
+Next, accept all the default values and follow the getting started wizard to connect your repo and branch.
 
 ![](./images/hosting-get-started.png)
 ![](./images/add-main-branch.png)
