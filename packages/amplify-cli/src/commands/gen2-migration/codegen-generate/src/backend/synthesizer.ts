@@ -857,12 +857,24 @@ export class BackendSynthesizer {
         imports.push(
           this.createImportStatement([factory.createIdentifier('HttpLambdaIntegration')], 'aws-cdk-lib/aws-apigatewayv2-integrations'),
         );
-        imports.push(
-          this.createImportStatement(
-            [factory.createIdentifier('HttpIamAuthorizer'), factory.createIdentifier('HttpUserPoolAuthorizer')],
-            'aws-cdk-lib/aws-apigatewayv2-authorizers',
-          ),
-        );
+
+        // Check which auth types are used to conditionally import authorizers
+        const hasPrivateAuth = renderArgs.data.restApis.some((restApi) => restApi.paths.some((path) => path.authType === 'private'));
+        const hasProtectedAuth = renderArgs.data.restApis.some((restApi) => restApi.paths.some((path) => path.authType === 'protected'));
+
+        // Only import authorizers that are actually needed
+        const authorizerImports = [];
+        if (hasPrivateAuth) {
+          authorizerImports.push(factory.createIdentifier('HttpIamAuthorizer'));
+        }
+        if (hasProtectedAuth && renderArgs.auth) {
+          authorizerImports.push(factory.createIdentifier('HttpUserPoolAuthorizer'));
+        }
+
+        if (authorizerImports.length > 0) {
+          imports.push(this.createImportStatement(authorizerImports, 'aws-cdk-lib/aws-apigatewayv2-authorizers'));
+        }
+
         imports.push(
           this.createImportStatement(
             [factory.createIdentifier('Policy'), factory.createIdentifier('PolicyStatement')],
@@ -1217,25 +1229,31 @@ export class BackendSynthesizer {
         );
         nodes.push(apiStackStatement);
 
-        // Create IAM authorizer for private endpoints (Gen1 'private' permission)
-        const iamAuthorizerStatement = factory.createVariableStatement(
-          [],
-          factory.createVariableDeclarationList(
-            [
-              factory.createVariableDeclaration(
-                'iamAuthorizer',
-                undefined,
-                undefined,
-                factory.createNewExpression(factory.createIdentifier('HttpIamAuthorizer'), undefined, []),
-              ),
-            ],
-            ts.NodeFlags.Const,
-          ),
-        );
-        nodes.push(iamAuthorizerStatement);
+        // Check which auth types are used to conditionally create authorizers
+        const hasPrivateAuth = validRestApis.some((restApi) => restApi.paths.some((path) => path.authType === 'private'));
+        const hasProtectedAuth = validRestApis.some((restApi) => restApi.paths.some((path) => path.authType === 'protected'));
 
-        // Create Cognito User Pool authorizer for protected endpoints (Gen1 'protected' permission)
-        if (renderArgs.auth) {
+        // Create IAM authorizer only if private endpoints exist
+        if (hasPrivateAuth) {
+          const iamAuthorizerStatement = factory.createVariableStatement(
+            [],
+            factory.createVariableDeclarationList(
+              [
+                factory.createVariableDeclaration(
+                  'iamAuthorizer',
+                  undefined,
+                  undefined,
+                  factory.createNewExpression(factory.createIdentifier('HttpIamAuthorizer'), undefined, []),
+                ),
+              ],
+              ts.NodeFlags.Const,
+            ),
+          );
+          nodes.push(iamAuthorizerStatement);
+        }
+
+        // Create Cognito User Pool authorizer only if protected endpoints exist and auth is configured
+        if (hasProtectedAuth && renderArgs.auth) {
           const userPoolAuthorizerStatement = factory.createVariableStatement(
             [],
             factory.createVariableDeclarationList(
@@ -1290,7 +1308,9 @@ export class BackendSynthesizer {
                     factory.createObjectLiteralExpression([
                       factory.createPropertyAssignment(
                         factory.createIdentifier('apiName'),
-                        factory.createStringLiteral(`${restApi.apiName}-api`),
+                        factory.createTemplateExpression(factory.createTemplateHead(`${restApi.apiName}-`), [
+                          factory.createTemplateSpan(factory.createIdentifier('branchName'), factory.createTemplateTail('')),
+                        ]),
                       ),
                       factory.createPropertyAssignment(factory.createIdentifier('createDefaultStage'), factory.createTrue()),
                       // Add CORS configuration for all HttpApis to enable browser access
@@ -1497,10 +1517,6 @@ export class BackendSynthesizer {
                   factory.createIdentifier('region'),
                 ),
               ),
-              factory.createPropertyAssignment(
-                factory.createIdentifier('apiName'),
-                factory.createPropertyAccessExpression(factory.createIdentifier(httpApiVar), factory.createIdentifier('httpApiName')),
-              ),
             ]),
           );
         });
@@ -1512,9 +1528,9 @@ export class BackendSynthesizer {
             [
               factory.createObjectLiteralExpression([
                 factory.createPropertyAssignment(
-                  factory.createIdentifier('custom'),
+                  factory.createIdentifier('api'),
                   factory.createObjectLiteralExpression([
-                    factory.createPropertyAssignment(factory.createIdentifier('API'), factory.createObjectLiteralExpression(apiOutputs)),
+                    factory.createPropertyAssignment(factory.createIdentifier('REST'), factory.createObjectLiteralExpression(apiOutputs)),
                   ]),
                 ),
               ]),
