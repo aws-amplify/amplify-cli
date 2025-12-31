@@ -5,7 +5,11 @@ export class BackendUpdater {
   /**
    * Updates backend.ts to register custom resources
    */
-  async updateBackendFile(backendFilePath: string, customResources: Map<string, string>): Promise<void> {
+  async updateBackendFile(
+    backendFilePath: string,
+    customResources: Map<string, string>,
+    resourceDependencies?: Map<string, string[]>,
+  ): Promise<void> {
     if (customResources.size === 0) {
       return;
     }
@@ -18,8 +22,9 @@ export class BackendUpdater {
     const entries = Array.from(customResources.entries());
     for (let i = 0; i < entries.length; i++) {
       const [resourceName, className] = entries[i];
+      const deps = resourceDependencies?.get(resourceName) || [];
       imports.push(this.createImport(resourceName, className));
-      instantiations.push(this.createInstantiation(resourceName, className));
+      instantiations.push(this.createInstantiation(resourceName, className, deps));
     }
 
     const updatedFile = this.injectIntoBackend(sourceFile, imports, instantiations);
@@ -43,17 +48,33 @@ export class BackendUpdater {
     );
   }
 
-  private createInstantiation(resourceName: string, className: string): ts.ExpressionStatement {
-    return ts.factory.createExpressionStatement(
-      ts.factory.createNewExpression(ts.factory.createIdentifier(resourceName), undefined, [
-        ts.factory.createCallExpression(
-          ts.factory.createPropertyAccessExpression(ts.factory.createIdentifier('backend'), 'createStack'),
-          undefined,
-          [ts.factory.createStringLiteral(resourceName)],
-        ),
-        ts.factory.createStringLiteral(resourceName),
-      ]),
-    );
+  // Map Gen1 category names to Gen2 backend property names
+  private static readonly CATEGORY_MAP: Record<string, string> = {
+    function: 'functions',
+    api: 'data',
+    storage: 'storage',
+    auth: 'auth',
+  };
+
+  private createInstantiation(resourceName: string, className: string, dependencies?: string[]): ts.ExpressionStatement {
+    const args: ts.Expression[] = [
+      ts.factory.createCallExpression(
+        ts.factory.createPropertyAccessExpression(ts.factory.createIdentifier('backend'), 'createStack'),
+        undefined,
+        [ts.factory.createStringLiteral(resourceName)],
+      ),
+      ts.factory.createStringLiteral(resourceName),
+    ];
+
+    // Add dependencies as positional arguments
+    if (dependencies && dependencies.length > 0) {
+      dependencies.forEach((dep) => {
+        const gen2Name = BackendUpdater.CATEGORY_MAP[dep] || dep;
+        args.push(ts.factory.createPropertyAccessExpression(ts.factory.createIdentifier('backend'), gen2Name));
+      });
+    }
+
+    return ts.factory.createExpressionStatement(ts.factory.createNewExpression(ts.factory.createIdentifier(resourceName), undefined, args));
   }
 
   private injectIntoBackend(
