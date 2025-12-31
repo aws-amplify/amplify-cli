@@ -219,6 +219,7 @@ export const createGen2Renderer = ({
   data,
   functions,
   customResources,
+  backendEnvironmentName,
   unsupportedCategories,
   fileWriter = (content, path) => createFileWriter(path)(content),
 }: Readonly<Gen2RenderingOptions>): Renderer => {
@@ -375,7 +376,7 @@ export const createGen2Renderer = ({
     renderers.push(new EnsureDirectory(path.join(outputDir, 'amplify', 'data')));
     renderers.push(
       new TypescriptNodeArrayRenderer(
-        async () => generateDataSource(data),
+        async () => generateDataSource(backendEnvironmentName, data),
         (content) => fileWriter(content, path.join(outputDir, 'amplify', 'data', 'resource.ts')),
       ),
     );

@@ -153,7 +153,7 @@ const migratedAmplifyGen1DynamoDbTableMappingsKeyName = 'migratedAmplifyGen1Dyna
  * const nodes = generateDataSource(dataDefinition);
  * ```
  */
-export const generateDataSource = async (dataDefinition?: DataDefinition): Promise<ts.NodeArray<ts.Node>> => {
+export const generateDataSource = async (gen1Env: string, dataDefinition?: DataDefinition): Promise<ts.NodeArray<ts.Node>> => {
   // Properties for the defineData() function call
   const dataRenderProperties: ObjectLiteralElementLike[] = [];
 
@@ -186,8 +186,7 @@ export const generateDataSource = async (dataDefinition?: DataDefinition): Promi
   if (!tableMappings && dataDefinition?.schema) {
     const apiId = await getApiId();
     if (apiId) {
-      const currentEnv = getCurrentEnvironment();
-      tableMappings = createDataSourceMapping(dataDefinition.schema, apiId, currentEnv);
+      tableMappings = createDataSourceMapping(dataDefinition.schema, apiId, gen1Env);
     }
   }
 
@@ -201,9 +200,8 @@ export const generateDataSource = async (dataDefinition?: DataDefinition): Promi
       );
     }
 
-    const currentEnv = getCurrentEnvironment();
     const branchNameExpression = ts.addSyntheticLeadingComment(
-      factory.createPropertyAssignment('branchName', factory.createStringLiteral(currentEnv)),
+      factory.createPropertyAssignment('branchName', factory.createStringLiteral(gen1Env)),
       ts.SyntaxKind.SingleLineCommentTrivia,
       'The "branchname" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables',
       true,
