@@ -18,12 +18,31 @@ will be reused and managed by the new Gen2 deployment.
 After completing this process you will have 2 functionally equivalent amplify applications that access the same data. 
 Once appropriate, you can decommission the Gen1 environment and continue managing your app through the Gen2 definition files.
 
-## Step By Step
+## Prerequisites 
 
-For the purpose of this guide, we assume:
-
-- Your Gen1 environment is stored in the `main` branch of a `GitHub` repository.
+- Your Gen1 environment is stored in the `main` branch of a `GitHub` repository and is deployed via the hosting service.
+- Your Gen1 environment is called `main`.
 - Your frontend code is located within the same repository as your backend application.
+- You have a `default` AWS profile configured with an `AdministratorAccess` policy.
+
+## What is supported
+
+See [feature coverage](#feature-coverage) for a list of supported (and unsupported) features.
+
+If you use a feature that is marked unsupported for _refactor_, you will not be able 
+to complete migration.
+
+If you use a feature that is marked unsupported for _generate_, you will need to manually 
+write CDK code in order to complete migration. This guide does not provide details on 
+what code will be necessary in such cases.
+
+## Limitations
+
+**GraphQL schema must include an `@auth` directive on all its models and operations.**
+
+> Why? Because the absence of `@auth` invokes default default auth providers, which differ between Gen1 and Gen2.
+
+## Step By Step
 
 First obtain a fresh and up-to-date local copy of your Amplify Gen1 environment and run the following:
 
@@ -79,13 +98,28 @@ Note that client side libraries support both files so no additional change is ne
 **In `./amplify/data/resource.ts`:**
 
 ```diff
-- branchName: "<gen1-env-name>"
+- branchName: "main"
 + branchName: "gen2-main"
 ```
 
 This is required in order to instruct the hosting service that DynamoDB tables 
 should be reused (imported) instead of recreated.
 
+#### 2.1 Post Generate | NodeJS Function
+
+If you have a NodeJS Lambda function in your app, you need to port your code 
+to ESM instead of CommonsJS. For example:
+
+```diff
+- exports.handler = async (event) => {
++ export async function handler(event) {
+```
+
+This is required because Gen2 adds lambda shims that conflict with CommonJS syntax. 
+Otherwise, you will see the following error when invoking the function: _"Cannot determine intended module format because both require() and top-level await are present"_
+
+
+> See [ESM/CJS Interoperability](https://www.typescriptlang.org/docs/handbook/modules/appendices/esm-cjs-interop.html)
 
 ### 3. Deploy
 
@@ -137,6 +171,28 @@ Once the command succeeds, login to the AWS Amplify console and redeploy the Gen
 This is required in order to regenerate the `amplify_outputs.json` file that corresponds to the stack 
 architecture that was updated during `refactor`.
 
+#### 4.1 Post Refactor | S3 Storage
+
+If your application contains an S3 bucket as part of the storage category, edit in `./amplify/backend.ts`:
+
+```diff
+- // s3Bucket.bucketName = '...';
++ s3Bucket.bucketName = '...';
+```
+
+> This is required in order to sync your local bucket name with the deployed template. 
+Otherwise, pushing changes to the `gen2-main` branch will result in a bucket replacement.
+
+And push the changes:
+
+```console
+git add .
+git commit -m "fix: reuse gen1 storage bucket"
+git push origin gen2-main
+```
+
+Wait for the deployment to finish successfully.
+
 ### 5. Decommission
 
 The final step of the migration is the decommissioning of your Gen1 environment. This can be done at your own pace and only after:
@@ -149,8 +205,81 @@ app (the one shipped with the new `amplify_outputs.json` configuration file)
 
 ```bash
 git checkout main
-npx gen2-migration decommission
+npx amplify gen2-migration decommission
 ```
 
+# Feature Coverage
+
+Following provides an overview of the supported (and unsupported) features for migration.
+
+## CLI Inputs
+
+### `amplify add auth`
+
+- ✅ **Default Configuration**
+
+  - ❌ Username
+  - ✅ Email
+  - ❌ Phone Number
+  - ❌ Email or Phone Number
+
+### `amplify add api`
+
+- ✅ **GraphQL**
+
+  - **Default Authorization Type**
+
+    - ✅ API Key
+    - ❌ Amazon Cognito User Pool
+    - ❌ IAM
+    - ❌ OpenID Connect
+    - ❌ Lambda
+
+  - **Additional Authorication Type**
+
+- ❌ **REST**
+
+### `amplify add function`
+
+- ✅ **Lambda function (serverless function)**
+
+  - ✅ Runtime
+
+    - ❌ .NET 8
+    - ❌ Go
+    - ❌ Java
+    - ✅ NodeJS
+    - ❌ Python
+
+- ❌ **Lambda layer (shared code & resource used across functions)**
+
+### `amplify add storage`
+
+- ✅ **Content (Images, audio, video, etc.)**
+
+  - ✅ **Who should have access**
+
+    - ✅ Auth and guest users
+
+      - **What kind of access do you want for Authenticated users?**
+
+        - ✅ create/update
+        - ✅ read
+        - ✅ delete
+
+      - **What kind of access do you want for Guest users?**
+
+        - ❌ create/update
+        - ✅ read
+        - ❌ delete
+
+  - ❌ **Do you want to add a Lambda Trigger for your S3 Bucket?**
 
 
+## GraphQL Schema
+
+## Function Code
+
+## Custom Resource Code
+
+## Overrides Code
