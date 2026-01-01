@@ -296,6 +296,8 @@ Following provides an overview of the supported (and unsupported) features for m
     - ✅ NodeJS
     - ❌ Python
 
+  - ❌ **Advanced Settings**
+
 - ❌ **Lambda layer (shared code & resource used across functions)**
 
 ### Lambda Handler Code
