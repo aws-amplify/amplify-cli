@@ -224,7 +224,7 @@ Edit in `./amplify/backend/data/resource.ts`:
 + branchName: "gen2-main"
 ```
 
-Edit in `./amplify/backend/function/quotegenerator/index.js`
+Edit in `./amplify/backend/function/quotegenerator/index.js`:
 
 ```diff
 - exports.handler = async (event) => {
