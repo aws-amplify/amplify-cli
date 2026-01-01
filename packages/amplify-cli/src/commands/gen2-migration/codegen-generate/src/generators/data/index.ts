@@ -164,27 +164,27 @@ export const generateDataSource = async (dataDefinition?: DataDefinition): Promi
   // Additional statements to include before the data export
   const schemaStatements: ts.Node[] = [];
 
-  if (dataDefinition.schema.includes('${env}')) {
-    const branchNameStatement = factory.createVariableStatement(
-      [],
-      factory.createVariableDeclarationList(
-        [
-          factory.createVariableDeclaration(
-            'branchName',
-            undefined,
-            undefined,
-            factory.createIdentifier('process.env.AWS_BRANCH ?? "sandbox"'),
-          ),
-        ],
-        ts.NodeFlags.Const,
-      ),
-    );
-    schemaStatements.push(branchNameStatement);
-    dataDefinition.schema = dataDefinition.schema.replaceAll('${env}', '${branchName}');
-  }
-
   // Generate schema variable declaration if schema is provided
   if (dataDefinition && dataDefinition.schema) {
+    if (dataDefinition.schema.includes('${env}')) {
+      const branchNameStatement = factory.createVariableStatement(
+        [],
+        factory.createVariableDeclarationList(
+          [
+            factory.createVariableDeclaration(
+              'branchName',
+              undefined,
+              undefined,
+              factory.createIdentifier('process.env.AWS_BRANCH ?? "sandbox"'),
+            ),
+          ],
+          ts.NodeFlags.Const,
+        ),
+      );
+      schemaStatements.push(branchNameStatement);
+      dataDefinition.schema = dataDefinition.schema.replaceAll('${env}', '${branchName}');
+    }
+
     const schemaVariableDeclaration = factory.createVariableDeclaration(
       'schema',
       undefined,
