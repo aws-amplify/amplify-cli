@@ -189,7 +189,7 @@ export const generateDataSource = async (dataDefinition?: DataDefinition): Promi
       'schema',
       undefined,
       undefined,
-      factory.createNoSubstitutionTemplateLiteral(dataDefinition.schema),
+      factory.createIdentifier('`' + dataDefinition.schema + '`'),
     );
     const schemaStatementAssignment = factory.createVariableStatement(
       [],
