@@ -212,9 +212,9 @@ npx amplify gen2-migration decommission
 
 Following provides an overview of the supported (and unsupported) features for migration.
 
-## CLI Inputs
+## Auth
 
-### `amplify add auth`
+### CLI Inputs (`amplify add auth`)
 
 - ✅ **Default Configuration**
 
@@ -223,7 +223,9 @@ Following provides an overview of the supported (and unsupported) features for m
   - ❌ Phone Number
   - ❌ Email or Phone Number
 
-### `amplify add api`
+## Api
+
+### CLI Inputs (`amplify add api`)
 
 - ✅ **GraphQL**
 
@@ -231,29 +233,26 @@ Following provides an overview of the supported (and unsupported) features for m
 
     - ✅ API Key
     - ❌ Amazon Cognito User Pool
-    - ❌ IAM
+    - ✅ IAM
     - ❌ OpenID Connect
     - ❌ Lambda
 
   - **Additional Authorization Type**
 
+    - ✅ API Key
+    - ✅ Amazon Cognito User Pool
+    - ❌ OpenID Connect
+    - ❌ Lambda
+
 - ❌ **REST**
 
-### `amplify add function`
+### GraphQL Schema
 
-- ✅ **Lambda function (serverless function)**
+### Custom Resolvers
 
-  - ✅ Runtime
+## Storage
 
-    - ❌ .NET 8
-    - ❌ Go
-    - ❌ Java
-    - ✅ NodeJS
-    - ❌ Python
-
-- ❌ **Lambda layer (shared code & resource used across functions)**
-
-### `amplify add storage`
+### CLI Inputs (`amplify add storage`)
 
 - ✅ **Content (Images, audio, video, etc.)**
 
@@ -273,13 +272,38 @@ Following provides an overview of the supported (and unsupported) features for m
         - ✅ read
         - ❌ delete
 
+    - ✅ Auth users only
+
+      - **What kind of access do you want for Authenticated users?**
+
+        - ✅ create/update
+        - ✅ read
+        - ✅ delete
+
   - ❌ **Do you want to add a Lambda Trigger for your S3 Bucket?**
 
+## Function
 
-## GraphQL Schema
+### CLI Inputs (`amplify add function`)
 
-## Function Code
+- ✅ **Lambda function (serverless function)**
 
-## Custom Resource Code
+  - ✅ Runtime
 
-## Overrides Code
+    - ❌ .NET 8
+    - ❌ Go
+    - ❌ Java
+    - ✅ NodeJS
+    - ❌ Python
+
+- ❌ **Lambda layer (shared code & resource used across functions)**
+
+### Lambda Handler Code
+
+## Custom 
+
+### CLI Inputs (`amplify add custom`)
+
+## Overrides 
+
+### CLI Inputs (`amplify override <category>`)
