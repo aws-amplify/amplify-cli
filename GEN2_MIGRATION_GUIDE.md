@@ -15,34 +15,28 @@ Migration to Gen2 is done in a (partial) blue/green deployment approach.
 3. Amplify CLI will refactor your underlying CloudFormation stacks such that any Gen1 stateful resource (e.g `UserPool`) 
 will be reused and managed by the new Gen2 deployment.
 
-After completing this process you will have 2 functionally equivalent amplify applications that access the same data. 
-Once appropriate, you can decommission the Gen1 environment and continue managing your app through the Gen2 definition files.
+After completing this process you will have 2 functionally equivalent amplify applications that access the same data.
 
 ## Prerequisites 
 
-- Your Gen1 environment is stored in the `main` branch of a `GitHub` repository and is deployed via the hosting service.
-- Your Gen1 environment is called `main`.
 - Your frontend code is located within the same repository as your backend application.
+- Your Gen1 environment is deployed via the hosting service.
 - You have a `default` AWS profile configured with an `AdministratorAccess` policy.
 
-## What is supported
+## Assumptions
 
-See [feature coverage](#feature-coverage) for a list of supported (and unsupported) features.
+These are a set of assumption the guide makes in order to provide more readable instructions. You should be 
+able to adapt them to fit your setup.
 
-If you use a feature that is marked unsupported for _refactor_, you will not be able 
-to complete migration.
-
-If you use a feature that is marked unsupported for _generate_, you will need to manually 
-write CDK code in order to complete migration. This guide does not provide details on 
-what code will be necessary in such cases.
-
-## Limitations
-
-**GraphQL schema must include an `@auth` directive on all its models and operations.**
-
-> Why? Because the absence of `@auth` invokes default default auth providers, which differ between Gen1 and Gen2.
+- Your Gen1 environment is stored in the `main` branch of a `GitHub` repository.
+- Your Gen1 environment is called `main`.
 
 ## Step By Step
+
+> **Before you begin, determine if your app can be migrated by reviewing:**
+>
+> - [Feature Coverage](#feature-coverage)
+>- [Limitations](#limitations)
 
 First obtain a fresh and up-to-date local copy of your Amplify Gen1 environment and run the following:
 
@@ -193,21 +187,6 @@ git push origin gen2-main
 
 Wait for the deployment to finish successfully.
 
-### 5. Decommission
-
-The final step of the migration is the decommissioning of your Gen1 environment. This can be done at your own pace and only after:
-
-1. You've validated the Gen2 application works as expected.
-2. You've validated the Gen1 application no longer accepts external traffic. If you have a webapp this can be achieved be performing 
-a domain shift. If you have a mobile app you'll need to wait until all customers upgrade to the new version of your 
-app (the one shipped with the new `amplify_outputs.json` configuration file)
-
-
-```bash
-git checkout main
-npx amplify gen2-migration decommission
-```
-
 # Feature Coverage
 
 Following provides an overview of the supported (and unsupported) features for migration.
@@ -251,6 +230,10 @@ Following provides an overview of the supported (and unsupported) features for m
 - ❌ **REST**
 
 ### GraphQL Schema
+
+**GraphQL schema must include an `@auth` directive on all its models and operations.**
+
+> Why? Because the absence of `@auth` invokes default default auth providers, which differ between Gen1 and Gen2.
 
 ### Custom Resolvers
 
@@ -334,3 +317,11 @@ Following provides an overview of the supported (and unsupported) features for m
 ## Overrides 
 
 ### `amplify override <category>`
+
+## Limitations
+
+**GraphQL types without an `@auth` directive**
+
+> Why? Because the absence of `@auth` invokes default default auth providers, which differ between Gen1 and Gen2.
+
+**GraphQL types protected by the `iam` auth provider**
