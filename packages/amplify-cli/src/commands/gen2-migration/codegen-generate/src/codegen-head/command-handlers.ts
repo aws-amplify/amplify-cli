@@ -322,6 +322,21 @@ export async function updateGitIgnoreForGen2() {
   await fs.writeFile(`${cwd}/.gitignore`, newGitIgnore, { encoding: 'utf-8' });
 }
 
+type CustomResourceServiceType = 'customCDK' | 'customCloudformation';
+
+const getCustomResourcesWithType = (): Map<string, CustomResourceServiceType> => {
+  const meta = stateManager.getMeta();
+  const customCategory = meta?.custom;
+  const resourceMap = new Map<string, CustomResourceServiceType>();
+
+  if (customCategory) {
+    Object.entries(customCategory).forEach(([name, config]: [string, { service: CustomResourceServiceType }]) => {
+      resourceMap.set(name, config.service);
+    });
+  }
+  return resourceMap;
+};
+
 const getCustomResources = (): string[] => {
   const meta = stateManager.getMeta();
   const customCategory = meta?.custom;
@@ -377,6 +392,9 @@ export async function updateCustomResources() {
     await fs.mkdir(destinationTypesPath, { recursive: true });
     await fs.cp(sourceTypesPath, destinationTypesPath, { recursive: true });
 
+    // Extract dependencies BEFORE transformation (from source files)
+    const resourceDependencies = await extractResourceDependencies(customResources, sourceCustomResourcePath);
+
     await updateCdkStackFile(customResources, destinationCustomResourcePath, rootDir);
 
     // Merge dependencies from custom resources into Gen2 package.json
@@ -395,7 +413,7 @@ export async function updateCustomResources() {
     const backendFilePath = path.join(amplifyGen2Dir, 'backend.ts');
     const customResourceMap = await getCustomResourceMap();
     const backendUpdater = new BackendUpdater();
-    await backendUpdater.updateBackendFile(backendFilePath, customResourceMap);
+    await backendUpdater.updateBackendFile(backendFilePath, customResourceMap, resourceDependencies);
 
     movingGen1CustomResources.succeed(`Moved ${GEN1_CUSTOM_RESOURCES_SUFFIX}`);
   }
@@ -417,14 +435,6 @@ export async function updateCdkStackFile(customResources: string[], destinationC
 
     try {
       let cdkStackContent = await fs.readFile(cdkStackFilePath, { encoding: 'utf-8' });
-
-      // Check for existence of AmplifyHelpers.addResourceDependency and throw an error if found
-      if (hasUncommentedDependency(cdkStackContent, 'AmplifyHelpers.addResourceDependency')) {
-        cdkStackContent = cdkStackContent.replace(
-          /export class/,
-          `throw new Error('Follow https://docs.amplify.aws/react/start/migrate-to-gen2/ to update the resource dependency');\n\nexport class`,
-        );
-      }
 
       // Add Construct import after other imports if not present
       if (!cdkStackContent.includes("from 'constructs'")) {
@@ -491,6 +501,50 @@ const hasUncommentedDependency = (fileContent: string, matchString: string) => {
   }
 
   return false;
+};
+
+const extractResourceDependencies = async (
+  customResources: string[],
+  destinationCustomResourcePath: string,
+): Promise<Map<string, string[]>> => {
+  const resourceDependencies = new Map<string, string[]>();
+
+  for (const resource of customResources) {
+    const cdkStackFilePath = path.join(destinationCustomResourcePath, resource, 'cdk-stack.ts');
+
+    try {
+      const cdkStackContent = await fs.readFile(cdkStackFilePath, { encoding: 'utf-8' });
+      const dependencies: string[] = [];
+
+      // Parse for AmplifyHelpers.addResourceDependency calls
+      const dependencyRegex = /AmplifyHelpers\.addResourceDependency\s*\([^,]+,[^,]+,[^,]+,\s*\[([^\]]+)\]/g;
+      let match;
+
+      while ((match = dependencyRegex.exec(cdkStackContent)) !== null) {
+        const dependenciesArray = match[1];
+
+        // Extract category values from dependency objects
+        const categoryRegex = /category:\s*['"]([^'"]+)['"]/g;
+        let categoryMatch;
+
+        while ((categoryMatch = categoryRegex.exec(dependenciesArray)) !== null) {
+          const category = categoryMatch[1];
+          if (!dependencies.includes(category)) {
+            dependencies.push(category);
+          }
+        }
+      }
+
+      if (dependencies.length > 0) {
+        resourceDependencies.set(resource, dependencies);
+      }
+    } catch (error) {
+      // If we can't read the file, skip dependency extraction for this resource
+      console.warn(`Could not extract dependencies for resource ${resource}:`, error);
+    }
+  }
+
+  return resourceDependencies;
 };
 export async function prepare(logger: Logger) {
   const appId = resolveAppId();
