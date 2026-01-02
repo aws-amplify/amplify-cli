@@ -7,6 +7,7 @@ import { DataDefinition } from '../core/migration-pipeline';
 import { AdditionalAuthProvider } from '../generators/data';
 import { pathManager } from '@aws-amplify/amplify-cli-core';
 
+/** Configuration for a single path in Gen1 REST API from cli-inputs.json */
 interface Gen1PathConfig {
   methods?: string[];
   permissions?: {
@@ -16,6 +17,7 @@ interface Gen1PathConfig {
   lambdaFunction?: string;
 }
 
+/** Complete structure of Gen1's cli-inputs.json file for REST APIs */
 interface Gen1CliInputs {
   paths?: Record<string, Gen1PathConfig>;
   corsConfiguration?: CorsConfiguration;
@@ -23,6 +25,7 @@ interface Gen1CliInputs {
   authType?: string;
 }
 
+/** API object structure from Gen1's amplify-meta.json */
 interface Gen1ApiObject {
   service: string;
   dependsOn?: Array<{
@@ -31,6 +34,7 @@ interface Gen1ApiObject {
   }>;
 }
 
+/** Processed REST API definition ready for Gen2 migration */
 export interface RestApiDefinition {
   apiName: string;
   functionName: string;
@@ -39,6 +43,7 @@ export interface RestApiDefinition {
   corsConfiguration?: CorsConfiguration;
 }
 
+/** Individual path configuration within a REST API */
 export interface RestApiPath {
   path: string;
   methods: string[];
@@ -46,6 +51,7 @@ export interface RestApiPath {
   lambdaFunction?: string;
 }
 
+/** Standard CORS configuration for web APIs */
 export interface CorsConfiguration {
   allowCredentials?: boolean;
   allowHeaders?: string[];
