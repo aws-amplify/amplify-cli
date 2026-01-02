@@ -15,6 +15,9 @@ interface Gen1PathConfig {
     auth?: string[];
   };
   lambdaFunction?: string;
+  // Support for User Pool Groups
+  restrictAccess?: boolean;
+  groupAccess?: string[];
 }
 
 /** Complete structure of Gen1's cli-inputs.json file for REST APIs */
@@ -41,6 +44,8 @@ export interface RestApiDefinition {
   paths: RestApiPath[];
   authType?: string;
   corsConfiguration?: CorsConfiguration;
+  // Support for multiple Lambda functions
+  uniqueFunctions?: string[];
 }
 
 /** Individual path configuration within a REST API */
@@ -49,6 +54,8 @@ export interface RestApiPath {
   methods: string[];
   authType?: string;
   lambdaFunction?: string;
+  // Support for User Pool Groups
+  userPoolGroups?: string[];
 }
 
 /** Standard CORS configuration for web APIs */
@@ -142,6 +149,8 @@ export class DataDefinitionFetcher {
               authType: pathAuthType,
               // Extract the actual Lambda function name for this specific path
               lambdaFunction: pathConfig.lambdaFunction,
+              // Extract User Pool Groups if specified
+              userPoolGroups: pathConfig.groupAccess,
             };
           });
         }
@@ -160,12 +169,24 @@ export class DataDefinitionFetcher {
         // The synthesizer will handle routing to different Lambda functions
         const defaultFunctionName = apiObj.dependsOn?.find((dep) => dep.category === 'function')?.resourceName;
 
+        // Collect all unique Lambda functions used across paths
+        const uniqueFunctions = new Set<string>();
+        if (defaultFunctionName) {
+          uniqueFunctions.add(defaultFunctionName);
+        }
+        paths.forEach((path) => {
+          if (path.lambdaFunction) {
+            uniqueFunctions.add(path.lambdaFunction);
+          }
+        });
+
         restApis.push({
           apiName,
           functionName: defaultFunctionName || 'defaultFunction',
           paths,
           authType: authType !== 'NONE' ? authType : undefined,
           corsConfiguration,
+          uniqueFunctions: Array.from(uniqueFunctions),
         });
       }
     }

@@ -824,6 +824,24 @@ export class BackendSynthesizer {
       }
     }
 
+    // Add imports for all unique functions used by REST APIs
+    if (renderArgs.data?.restApis) {
+      const allUniqueFunctions = new Set<string>();
+      renderArgs.data.restApis.forEach((restApi) => {
+        restApi.uniqueFunctions.forEach((funcName) => allUniqueFunctions.add(funcName));
+      });
+
+      // Only add functions that aren't already in the main function list
+      const existingFunctions = renderArgs.function?.functionNamesAndCategories || new Map();
+      allUniqueFunctions.forEach((funcName) => {
+        if (!existingFunctions.has(funcName)) {
+          const functionProperty = factory.createShorthandPropertyAssignment(factory.createIdentifier(funcName));
+          defineBackendProperties.push(functionProperty);
+          imports.push(this.createImportStatement([factory.createIdentifier(funcName)], `./function/${funcName}/resource`));
+        }
+      });
+    }
+
     // Dynamo table cannot be migrated
 
     if (renderArgs.storage?.dynamoDB) {
@@ -861,6 +879,9 @@ export class BackendSynthesizer {
         // Check which auth types are used to conditionally import authorizers
         const hasPrivateAuth = renderArgs.data.restApis.some((restApi) => restApi.paths.some((path) => path.authType === 'private'));
         const hasProtectedAuth = renderArgs.data.restApis.some((restApi) => restApi.paths.some((path) => path.authType === 'protected'));
+        const hasUserPoolGroups = renderArgs.data.restApis.some((restApi) =>
+          restApi.paths.some((path) => path.userPoolGroups && path.userPoolGroups.length > 0),
+        );
 
         // Only import authorizers that are actually needed
         const authorizerImports = [];
@@ -868,6 +889,9 @@ export class BackendSynthesizer {
           authorizerImports.push(factory.createIdentifier('HttpIamAuthorizer'));
         }
         if (hasProtectedAuth && renderArgs.auth) {
+          authorizerImports.push(factory.createIdentifier('HttpUserPoolAuthorizer'));
+        }
+        if (hasUserPoolGroups && renderArgs.auth) {
           authorizerImports.push(factory.createIdentifier('HttpUserPoolAuthorizer'));
         }
 
@@ -1232,6 +1256,9 @@ export class BackendSynthesizer {
         // Check which auth types are used to conditionally create authorizers
         const hasPrivateAuth = validRestApis.some((restApi) => restApi.paths.some((path) => path.authType === 'private'));
         const hasProtectedAuth = validRestApis.some((restApi) => restApi.paths.some((path) => path.authType === 'protected'));
+        const hasUserPoolGroups = validRestApis.some((restApi) =>
+          restApi.paths.some((path) => path.userPoolGroups && path.userPoolGroups.length > 0),
+        );
 
         // Create IAM authorizer only if private endpoints exist
         if (hasPrivateAuth) {
@@ -1286,6 +1313,57 @@ export class BackendSynthesizer {
             ),
           );
           nodes.push(userPoolAuthorizerStatement);
+        }
+
+        // Create User Pool Group authorizers for each unique group
+        if (hasUserPoolGroups && renderArgs.auth) {
+          const allGroups = new Set<string>();
+          validRestApis.forEach((restApi) => {
+            restApi.paths.forEach((path) => {
+              if (path.userPoolGroups) {
+                path.userPoolGroups.forEach((group) => allGroups.add(group));
+              }
+            });
+          });
+
+          allGroups.forEach((groupName) => {
+            const groupAuthorizerStatement = factory.createVariableStatement(
+              [],
+              factory.createVariableDeclarationList(
+                [
+                  factory.createVariableDeclaration(
+                    `${groupName}Authorizer`,
+                    undefined,
+                    undefined,
+                    factory.createNewExpression(factory.createIdentifier('HttpUserPoolAuthorizer'), undefined, [
+                      factory.createStringLiteral(`${groupName}Auth`),
+                      factory.createPropertyAccessExpression(
+                        factory.createIdentifier('backend.auth.resources'),
+                        factory.createIdentifier('userPool'),
+                      ),
+                      factory.createObjectLiteralExpression([
+                        factory.createPropertyAssignment(
+                          factory.createIdentifier('userPoolClients'),
+                          factory.createArrayLiteralExpression([
+                            factory.createPropertyAccessExpression(
+                              factory.createIdentifier('backend.auth.resources'),
+                              factory.createIdentifier('userPoolClient'),
+                            ),
+                          ]),
+                        ),
+                        factory.createPropertyAssignment(
+                          factory.createIdentifier('identitySource'),
+                          factory.createArrayLiteralExpression([factory.createStringLiteral('$request.header.Authorization')]),
+                        ),
+                      ]),
+                    ]),
+                  ),
+                ],
+                ts.NodeFlags.Const,
+              ),
+            );
+            nodes.push(groupAuthorizerStatement);
+          });
         }
 
         // Create separate HttpApi for each Gen1 REST API
@@ -1393,7 +1471,17 @@ export class BackendSynthesizer {
 
             // Map Gen1 permission settings to Gen2 authorizers:
             // 'private' -> iamAuthorizer, 'protected' -> userPoolAuthorizer, 'open' -> undefined
-            if (pathConfig.authType === 'private') {
+            // User Pool Groups -> specific group authorizer
+            if (pathConfig.userPoolGroups && pathConfig.userPoolGroups.length > 0) {
+              // Use the first group for the authorizer (Gen1 typically has one group per path)
+              const groupName = pathConfig.userPoolGroups[0];
+              routeConfig.push(
+                factory.createPropertyAssignment(
+                  factory.createIdentifier('authorizer'),
+                  factory.createIdentifier(`${groupName}Authorizer`),
+                ),
+              );
+            } else if (pathConfig.authType === 'private') {
               routeConfig.push(
                 factory.createPropertyAssignment(factory.createIdentifier('authorizer'), factory.createIdentifier('iamAuthorizer')),
               );
