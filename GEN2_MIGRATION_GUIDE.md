@@ -36,7 +36,7 @@ able to adapt them to fit your setup.
 > **Before you begin, determine if your app can be migrated by reviewing:**
 >
 > - [Feature Coverage](#feature-coverage)
->- [Limitations](#limitations)
+> - [Limitations](#limitations)
 
 First obtain a fresh and up-to-date local copy of your Amplify Gen1 environment and run the following:
 
@@ -322,6 +322,48 @@ Following provides an overview of the supported (and unsupported) features for m
 
 **GraphQL types without an `@auth` directive**
 
-> Why? Because the absence of `@auth` invokes default default auth providers, which differ between Gen1 and Gen2.
+```graphql
+type Todo @model {
+  id: ID!
+  name: String!
+  description: String
+}
+```
+
+In Gen1, types like these are considered _public_ and are assigned the `@aws_api_key` directive when transformed into an 
+AppSync compatible schema. In Gen2, they are considered _private_ and are assinged the `@aws_iam` directive.
+
+In order to preserve the same protections after migration, you must explicitly allow public access on 
+the type by adding the `@auth` directive:
+
+```graphql
+type Todo @model @auth(rules: [{ allow: public }]) {
+  id: ID!
+  name: String!
+  description: String
+}
+```
+
+The same behavior applies to **non** `@model` types as well. For such types however, `@auth` cannot be 
+applied on the type itself and therefore must be applied to each field. For example:
+
+```graphql
+type FunctionResponse {
+  fieldA: String! @auth(rules: [{ allow: public }])
+  fieldB: String! @auth(rules: [{ allow: public }])
+}
+
+type Query {
+  invokeFunction: FunctionResponse @function(name: "myfunction-${env}") @auth(rules: [{ allow: public }])
+}
+```
 
 **GraphQL types protected by the `iam` auth provider**
+
+```graphql
+type Todo @model @auth(rules: [{ allow: private, provider: iam }]) {
+  id: ID!
+  name: String!
+  description: String
+}
+```
