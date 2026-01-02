@@ -1535,6 +1535,106 @@ export class BackendSynthesizer {
               nodes.push(addRoutesStatement);
             }
             // Note: 'open' access requires no authorizer property
+
+            // Generate automatic proxy catch-all routes to match Gen1 behavior
+            //
+            // Why this is needed:
+            // Gen1 automatically creates TWO routes for every path:
+            //   1. /items (exact match for the main resource)
+            //   2. /items/{proxy+} (catch-all for sub-resources like /items/123, /items/abc/def)
+            //
+            // Without the proxy route:
+            //   GET /items → ✅ Works (matches exact route)
+            //   GET /items/123 → ❌ 404 Not Found (no matching route)
+            //
+            // With the proxy route:
+            //   GET /items → ✅ Works (matches exact route)
+            //   GET /items/123 → ✅ Works (matches proxy route, proxy="123")
+            //   POST /items/123/comments → ✅ Works (matches proxy route, proxy="123/comments")
+            //
+            // The Lambda function receives the full path and can handle routing internally
+            // using serverless-express or similar frameworks.
+            //
+            const proxyRouteConfig: ts.ObjectLiteralElementLike[] = [
+              factory.createPropertyAssignment(
+                factory.createIdentifier('path'),
+                factory.createStringLiteral(`${pathConfig.path}/{proxy+}`),
+              ),
+              factory.createPropertyAssignment(
+                factory.createIdentifier('methods'),
+                factory.createArrayLiteralExpression([
+                  factory.createPropertyAccessExpression(factory.createIdentifier('HttpMethod'), factory.createIdentifier('ANY')),
+                ]),
+              ),
+              factory.createPropertyAssignment(
+                factory.createIdentifier('integration'),
+                factory.createNewExpression(factory.createIdentifier('HttpLambdaIntegration'), undefined, [
+                  factory.createStringLiteral(`${pathFunctionName}ProxyIntegration`),
+                  factory.createPropertyAccessExpression(
+                    factory.createIdentifier(`backend.${pathFunctionName}.resources`),
+                    factory.createIdentifier('lambda'),
+                  ),
+                ]),
+              ),
+            ];
+
+            // Apply same authorization to proxy route
+            if (pathConfig.userPoolGroups && pathConfig.userPoolGroups.length > 0) {
+              pathConfig.userPoolGroups.forEach((groupName) => {
+                const groupProxyRouteConfig = [...proxyRouteConfig];
+                groupProxyRouteConfig.push(
+                  factory.createPropertyAssignment(
+                    factory.createIdentifier('authorizer'),
+                    factory.createIdentifier(`${groupName}Authorizer`),
+                  ),
+                );
+
+                const addGroupProxyRouteStatement = factory.createExpressionStatement(
+                  factory.createCallExpression(
+                    factory.createPropertyAccessExpression(factory.createIdentifier(httpApiVarName), factory.createIdentifier('addRoutes')),
+                    undefined,
+                    [factory.createObjectLiteralExpression(groupProxyRouteConfig)],
+                  ),
+                );
+                nodes.push(addGroupProxyRouteStatement);
+              });
+            } else if (pathConfig.authType === 'private') {
+              proxyRouteConfig.push(
+                factory.createPropertyAssignment(factory.createIdentifier('authorizer'), factory.createIdentifier('iamAuthorizer')),
+              );
+
+              const addProxyRoutesStatement = factory.createExpressionStatement(
+                factory.createCallExpression(
+                  factory.createPropertyAccessExpression(factory.createIdentifier(httpApiVarName), factory.createIdentifier('addRoutes')),
+                  undefined,
+                  [factory.createObjectLiteralExpression(proxyRouteConfig)],
+                ),
+              );
+              nodes.push(addProxyRoutesStatement);
+            } else if (pathConfig.authType === 'protected') {
+              proxyRouteConfig.push(
+                factory.createPropertyAssignment(factory.createIdentifier('authorizer'), factory.createIdentifier('userPoolAuthorizer')),
+              );
+
+              const addProxyRoutesStatement = factory.createExpressionStatement(
+                factory.createCallExpression(
+                  factory.createPropertyAccessExpression(factory.createIdentifier(httpApiVarName), factory.createIdentifier('addRoutes')),
+                  undefined,
+                  [factory.createObjectLiteralExpression(proxyRouteConfig)],
+                ),
+              );
+              nodes.push(addProxyRoutesStatement);
+            } else {
+              // Open access - no authorizer
+              const addProxyRoutesStatement = factory.createExpressionStatement(
+                factory.createCallExpression(
+                  factory.createPropertyAccessExpression(factory.createIdentifier(httpApiVarName), factory.createIdentifier('addRoutes')),
+                  undefined,
+                  [factory.createObjectLiteralExpression(proxyRouteConfig)],
+                ),
+              );
+              nodes.push(addProxyRoutesStatement);
+            }
           });
         });
 
