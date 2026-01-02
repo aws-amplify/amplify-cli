@@ -1,4 +1,4 @@
-import ts, { ObjectLiteralElementLike, ObjectLiteralExpression } from 'typescript';
+import ts, { ObjectLiteralElementLike } from 'typescript';
 import { renderResourceTsFile } from '../../resource/resource';
 import type { ConstructFactory, AmplifyFunction } from '@aws-amplify/plugin-types';
 import type { AuthorizationModes, DataLoggingOptions } from '@aws-amplify/backend-data';
@@ -166,11 +166,30 @@ export const generateDataSource = async (dataDefinition?: DataDefinition): Promi
 
   // Generate schema variable declaration if schema is provided
   if (dataDefinition && dataDefinition.schema) {
+    if (dataDefinition.schema.includes('${env}')) {
+      const branchNameStatement = factory.createVariableStatement(
+        [],
+        factory.createVariableDeclarationList(
+          [
+            factory.createVariableDeclaration(
+              'branchName',
+              undefined,
+              undefined,
+              factory.createIdentifier('process.env.AWS_BRANCH ?? "sandbox"'),
+            ),
+          ],
+          ts.NodeFlags.Const,
+        ),
+      );
+      schemaStatements.push(branchNameStatement);
+      dataDefinition.schema = dataDefinition.schema.replaceAll('${env}', '${branchName}');
+    }
+
     const schemaVariableDeclaration = factory.createVariableDeclaration(
       'schema',
       undefined,
       undefined,
-      factory.createNoSubstitutionTemplateLiteral(dataDefinition.schema),
+      factory.createIdentifier('`' + dataDefinition.schema + '`'),
     );
     const schemaStatementAssignment = factory.createVariableStatement(
       [],
