@@ -217,9 +217,6 @@ npx amplify gen2-migration generate
 Edit in `./amplify/backend/data/resource.ts`:
 
 ```diff
-- getRandomQuote: QuoteResponse @function(name: "quotegenerator-\${env}") 
-+ getRandomQuote: QuoteResponse @function(name: "quotegenerator-${branchName}") 
-
 - branchName: "main"
 + branchName: "gen2-main"
 ```
