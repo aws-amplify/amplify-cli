@@ -132,23 +132,6 @@ export const onCreateComment = /* GraphQL */ `subscription OnCreateComment(
   onCreateComment(filter: $filter, authorId: $authorId) {
     id
     productId
-    product {
-      id
-      serialno
-      engword
-      price
-      category
-      description
-      stock
-      brand
-      imageKey
-      images
-      createdBy
-      updatedBy
-      createdAt
-      updatedAt
-      __typename
-    }
     authorId
     authorName
     content
@@ -165,23 +148,6 @@ export const onUpdateComment = /* GraphQL */ `subscription OnUpdateComment(
   onUpdateComment(filter: $filter, authorId: $authorId) {
     id
     productId
-    product {
-      id
-      serialno
-      engword
-      price
-      category
-      description
-      stock
-      brand
-      imageKey
-      images
-      createdBy
-      updatedBy
-      createdAt
-      updatedAt
-      __typename
-    }
     authorId
     authorName
     content
@@ -198,23 +164,6 @@ export const onDeleteComment = /* GraphQL */ `subscription OnDeleteComment(
   onDeleteComment(filter: $filter, authorId: $authorId) {
     id
     productId
-    product {
-      id
-      serialno
-      engword
-      price
-      category
-      description
-      stock
-      brand
-      imageKey
-      images
-      createdBy
-      updatedBy
-      createdAt
-      updatedAt
-      __typename
-    }
     authorId
     authorName
     content

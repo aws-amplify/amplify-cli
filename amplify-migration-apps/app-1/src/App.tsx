@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { generateClient } from 'aws-amplify/api';
 import { uploadData, getUrl } from 'aws-amplify/storage';
 import { getCurrentUser } from 'aws-amplify/auth';
-import { listProducts, listUsers, getUser, listComments, checkLowStock } from './graphql/queries.ts';
+import { listProducts, listUsers, getUser, checkLowStock, commentsByProductId } from './graphql/queries.ts';
 import { createProduct, deleteProduct, updateProduct, createUser, updateUser, createComment } from './graphql/mutations.ts';
 import type { Product, User, Comment, UserRole } from './API';
 import './App.css';
@@ -248,10 +248,10 @@ function App({ signOut, user }: AppProps) {
   const fetchComments = async (productId: string) => {
     try {
       const result = await client.graphql({
-        query: listComments,
-        variables: { filter: { productId: { eq: productId } } },
+        query: commentsByProductId,
+        variables: { productId },
       });
-      const comments = (result.data?.listComments?.items?.filter((comment) => comment !== null) as Comment[]) || [];
+      const comments = (result.data?.commentsByProductId?.items?.filter((comment) => comment !== null) as Comment[]) || [];
       setProductComments((prev) => ({ ...prev, [productId]: comments }));
     } catch (error) {
       console.error('Error fetching comments:', error);
@@ -353,7 +353,7 @@ function App({ signOut, user }: AppProps) {
       }
 
       const productData = {
-        serialno: parseInt(formData.serialno) || 0,
+        serialno: parseInt(formData.serialno),
         engword: formData.engword,
         price: formData.price ? parseFloat(formData.price) : null,
         category: formData.category || null,
@@ -886,7 +886,7 @@ function App({ signOut, user }: AppProps) {
                       <Flex direction={{ base: 'column', large: 'row' }} gap="1rem">
                         <TextField
                           label="Serial Number *"
-                          placeholder="e.g., SKU001"
+                          placeholder="e.g., 001"
                           value={formData.serialno}
                           onChange={(e) => setFormData({ ...formData, serialno: e.target.value })}
                           required
@@ -1158,7 +1158,7 @@ function App({ signOut, user }: AppProps) {
                     <Flex justifyContent="space-between" alignItems="center" marginBottom="1.25rem">
                       <View backgroundColor="#f1f5f9" padding="0.5rem 0.75rem" borderRadius="6px">
                         <Text fontSize="xs" fontWeight="600" color="#64748b">
-                          SKU: {product.serialno}
+                          Serial: {product.serialno}
                         </Text>
                       </View>
                       {product.price && (

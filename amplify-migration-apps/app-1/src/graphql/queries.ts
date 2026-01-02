@@ -96,23 +96,6 @@ export const getComment = /* GraphQL */ `query GetComment($id: ID!) {
   getComment(id: $id) {
     id
     productId
-    product {
-      id
-      serialno
-      engword
-      price
-      category
-      description
-      stock
-      brand
-      imageKey
-      images
-      createdBy
-      updatedBy
-      createdAt
-      updatedAt
-      __typename
-    }
     authorId
     authorName
     content

@@ -141,23 +141,6 @@ export const createComment = /* GraphQL */ `mutation CreateComment(
   createComment(input: $input, condition: $condition) {
     id
     productId
-    product {
-      id
-      serialno
-      engword
-      price
-      category
-      description
-      stock
-      brand
-      imageKey
-      images
-      createdBy
-      updatedBy
-      createdAt
-      updatedAt
-      __typename
-    }
     authorId
     authorName
     content
@@ -174,23 +157,6 @@ export const updateComment = /* GraphQL */ `mutation UpdateComment(
   updateComment(input: $input, condition: $condition) {
     id
     productId
-    product {
-      id
-      serialno
-      engword
-      price
-      category
-      description
-      stock
-      brand
-      imageKey
-      images
-      createdBy
-      updatedBy
-      createdAt
-      updatedAt
-      __typename
-    }
     authorId
     authorName
     content
@@ -207,23 +173,6 @@ export const deleteComment = /* GraphQL */ `mutation DeleteComment(
   deleteComment(input: $input, condition: $condition) {
     id
     productId
-    product {
-      id
-      serialno
-      engword
-      price
-      category
-      description
-      stock
-      brand
-      imageKey
-      images
-      createdBy
-      updatedBy
-      createdAt
-      updatedAt
-      __typename
-    }
     authorId
     authorName
     content
