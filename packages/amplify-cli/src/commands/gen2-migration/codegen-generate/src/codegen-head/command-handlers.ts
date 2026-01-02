@@ -4,10 +4,10 @@ import fs from 'node:fs/promises';
 import assert from 'node:assert';
 import { v4 as uuid } from 'uuid';
 
-import { createGen2Renderer } from '../core/migration-pipeline';
+import { createGen2Renderer, Gen2RenderingOptions } from '../core/migration-pipeline';
 
 import { UsageData } from '../../../../../domain/amplify-usageData';
-import { AmplifyClient, UpdateAppCommand, GetAppCommand } from '@aws-sdk/client-amplify';
+import { AmplifyClient, UpdateAppCommand, GetAppCommand, BackendEnvironment } from '@aws-sdk/client-amplify';
 import { CloudFormationClient } from '@aws-sdk/client-cloudformation';
 import { CognitoIdentityProviderClient, LambdaConfigType } from '@aws-sdk/client-cognito-identity-provider';
 import { CognitoIdentityClient } from '@aws-sdk/client-cognito-identity';
@@ -22,7 +22,7 @@ import { BackendEnvironmentResolver } from './backend_environment_selector';
 import { Analytics, AppAnalytics } from './analytics';
 import { AppAuthDefinitionFetcher } from './app_auth_definition_fetcher';
 import { AppStorageDefinitionFetcher } from './app_storage_definition_fetcher';
-import { AmplifyCategories, IUsageData, stateManager, pathManager } from '@aws-amplify/amplify-cli-core';
+import { AmplifyCategories, IUsageData, stateManager, pathManager, JSONUtilities, $TSMeta } from '@aws-amplify/amplify-cli-core';
 import { AuthTriggerConnection } from '../adapters/auth/index';
 import { DataDefinitionFetcher } from './data_definition_fetcher';
 import { AmplifyStackParser } from './amplify_stack_parser';
@@ -44,6 +44,8 @@ interface CodegenCommandParameters {
   logger: Logger;
   outputDirectory: string;
   backendEnvironmentName: string | undefined;
+  ccbFetcher: BackendDownloader;
+  backendEnvironment: BackendEnvironment;
   dataDefinitionFetcher: DataDefinitionFetcher;
   authDefinitionFetcher: AppAuthDefinitionFetcher;
   storageDefinitionFetcher: AppStorageDefinitionFetcher;
@@ -79,6 +81,8 @@ const generateGen2Code = async ({
   dataDefinitionFetcher,
   storageDefinitionFetcher,
   functionsDefinitionFetcher,
+  ccbFetcher,
+  backendEnvironment,
   logger,
 }: CodegenCommandParameters) => {
   logger.info('Fetching definitions from AWS for category: Auth');
@@ -99,15 +103,15 @@ const generateGen2Code = async ({
   logger.debug(`Functions: ${functions ? `${functions.length} functions` : 'UNDEFINED'}`);
   logger.debug(`Backend env: ${backendEnvironmentName}`);
 
-  const gen2RenderOptions = {
+  const gen2RenderOptions: Gen2RenderingOptions = {
     outputDir: outputDirectory,
     backendEnvironmentName: backendEnvironmentName,
     auth,
     storage,
     data,
     functions,
-    customResources: await getCustomResourceMap(),
-    unsupportedCategories: unsupportedCategories(),
+    customResources: await getCustomResourceMap(ccbFetcher, backendEnvironment),
+    unsupportedCategories: await unsupportedCategories(ccbFetcher, backendEnvironment),
   };
 
   assert(gen2RenderOptions);
@@ -166,8 +170,15 @@ const getAccountId = async (): Promise<string | undefined> => {
   return callerIdentityResult.Account;
 };
 
-export const getAuthTriggersConnections = async (): Promise<Partial<Record<keyof LambdaConfigType, string>>> => {
-  const amplifyMeta: AmplifyMeta = stateManager.getMeta();
+export const getAuthTriggersConnections = async (
+  ccbFetcher: BackendDownloader,
+  backendEnvironment: BackendEnvironment,
+): Promise<Partial<Record<keyof LambdaConfigType, string>>> => {
+  const currentCloudBackendDirectory = await ccbFetcher.getCurrentCloudBackend(backendEnvironment.deploymentArtifacts);
+  const amplifyMetaPath = path.join(currentCloudBackendDirectory, 'amplify-meta.json');
+
+  const amplifyMeta: AmplifyMeta = JSONUtilities.readJson<$TSMeta>(amplifyMetaPath, { throwIfNotExist: true });
+
   if (!amplifyMeta.auth) {
     return {};
   }
@@ -204,12 +215,10 @@ export const getAuthTriggersConnections = async (): Promise<Partial<Record<keyof
   return {};
 };
 
-const resolveAppId = (): string => {
-  const meta = stateManager.getMeta();
-  return meta?.providers?.awscloudformation?.AmplifyAppId;
-};
-
-const unsupportedCategories = (): Map<string, string> => {
+const unsupportedCategories = async (
+  ccbFetcher: BackendDownloader,
+  backendEnvironment: BackendEnvironment,
+): Promise<Map<string, string>> => {
   const unsupportedCategories = new Map<string, string>();
   const urlPrefix = 'https://docs.amplify.aws/react/build-a-backend/add-aws-services';
   const restAPIKey = 'rest api';
@@ -221,7 +230,11 @@ const unsupportedCategories = (): Map<string, string> => {
   unsupportedCategories.set('interactions', `${urlPrefix}/interactions/`);
   unsupportedCategories.set('rest api', `${urlPrefix}/rest-api/`);
 
-  const meta = stateManager.getMeta();
+  const currentCloudBackendDirectory = await ccbFetcher.getCurrentCloudBackend(backendEnvironment.deploymentArtifacts);
+  const amplifyMetaPath = path.join(currentCloudBackendDirectory, 'amplify-meta.json');
+
+  const meta = JSONUtilities.readJson<$TSMeta>(amplifyMetaPath, { throwIfNotExist: true });
+
   const categories = Object.keys(meta);
 
   const unsupportedCategoriesList = new Map<string, string>();
@@ -322,16 +335,23 @@ export async function updateGitIgnoreForGen2() {
   await fs.writeFile(`${cwd}/.gitignore`, newGitIgnore, { encoding: 'utf-8' });
 }
 
-const getCustomResources = (): string[] => {
-  const meta = stateManager.getMeta();
+const getCustomResources = async (ccbFetcher: BackendDownloader, backendEnvironment: BackendEnvironment): Promise<string[]> => {
+  const currentCloudBackendDirectory = await ccbFetcher.getCurrentCloudBackend(backendEnvironment.deploymentArtifacts);
+  const amplifyMetaPath = path.join(currentCloudBackendDirectory, 'amplify-meta.json');
+
+  const meta = JSONUtilities.readJson<$TSMeta>(amplifyMetaPath, { throwIfNotExist: true });
+
   const customCategory = meta?.custom;
 
   // If the custom category exists, return its resource names; otherwise, return an empty array
   return customCategory ? Object.keys(customCategory) : [];
 };
 
-const getCustomResourceMap = async (): Promise<Map<string, string>> => {
-  const customResources = getCustomResources();
+const getCustomResourceMap = async (
+  ccbFetcher: BackendDownloader,
+  backendEnvironment: BackendEnvironment,
+): Promise<Map<string, string>> => {
+  const customResources = await getCustomResources(ccbFetcher, backendEnvironment);
   const customResourceMap = new Map<string, string>();
 
   const rootDir = pathManager.findProjectRoot();
@@ -351,8 +371,8 @@ const getCustomResourceMap = async (): Promise<Map<string, string>> => {
   return customResourceMap;
 };
 
-export async function updateCustomResources() {
-  const customResources = getCustomResources();
+export async function updateCustomResources(ccbFetcher: BackendDownloader, backendEnvironment: BackendEnvironment) {
+  const customResources = await getCustomResources(ccbFetcher, backendEnvironment);
   if (customResources.length > 0) {
     const movingGen1CustomResources = ora(`Moving ${GEN1_CUSTOM_RESOURCES_SUFFIX}`).start();
     const rootDir = pathManager.findProjectRoot();
@@ -393,7 +413,7 @@ export async function updateCustomResources() {
 
     // Update backend.ts to register custom resources
     const backendFilePath = path.join(amplifyGen2Dir, 'backend.ts');
-    const customResourceMap = await getCustomResourceMap();
+    const customResourceMap = await getCustomResourceMap(ccbFetcher, backendEnvironment);
     const backendUpdater = new BackendUpdater();
     await backendUpdater.updateBackendFile(backendFilePath, customResourceMap);
 
@@ -492,10 +512,9 @@ const hasUncommentedDependency = (fileContent: string, matchString: string) => {
 
   return false;
 };
-export async function prepare(logger: Logger) {
-  const appId = resolveAppId();
+export async function prepare(logger: Logger, appId: string, envName: string, region: string) {
   const amplifyClient = new AmplifyClient();
-  const backendEnvironmentResolver = new BackendEnvironmentResolver(appId, amplifyClient);
+  const backendEnvironmentResolver = new BackendEnvironmentResolver(appId, envName, amplifyClient);
   const backendEnvironment = await backendEnvironmentResolver.selectBackendEnvironment();
   assert(backendEnvironment);
   assert(backendEnvironmentResolver);
@@ -505,9 +524,7 @@ export async function prepare(logger: Logger) {
   const cloudFormationClient = new CloudFormationClient();
   const cognitoIdentityProviderClient = new CognitoIdentityProviderClient();
   const cognitoIdentityPoolClient = new CognitoIdentityClient();
-  const lambdaClient = new LambdaClient({
-    region: stateManager.getCurrentRegion(),
-  });
+  const lambdaClient = new LambdaClient({ region });
   const cloudWatchEventsClient = new CloudWatchEventsClient();
   const amplifyStackParser = new AmplifyStackParser(cloudFormationClient);
   const ccbFetcher = new BackendDownloader(s3Client);
@@ -520,7 +537,7 @@ export async function prepare(logger: Logger) {
       cognitoIdentityProviderClient,
       amplifyStackParser,
       backendEnvironmentResolver,
-      () => getAuthTriggersConnections(),
+      () => getAuthTriggersConnections(ccbFetcher, backendEnvironment),
       ccbFetcher,
     ),
     dataDefinitionFetcher: new DataDefinitionFetcher(backendEnvironmentResolver, new BackendDownloader(s3Client)),
@@ -529,10 +546,13 @@ export async function prepare(logger: Logger) {
       cloudWatchEventsClient,
       backendEnvironmentResolver,
       stateManager,
+      ccbFetcher,
     ),
     analytics: new AppAnalytics(appId),
     logger: logger,
-    backendEnvironmentName: backendEnvironment?.environmentName,
+    ccbFetcher,
+    backendEnvironment,
+    backendEnvironmentName: backendEnvironment.environmentName,
   });
 
   logger.info(`Creating 'amplify.yml' file for amplify hosting deployments`);
@@ -541,7 +561,7 @@ export async function prepare(logger: Logger) {
   logger.info('Updating .gitignore');
   await updateGitIgnoreForGen2();
 
-  await updateCustomResources();
+  await updateCustomResources(ccbFetcher, backendEnvironment);
 
   const cwd = process.cwd();
   logger.info(`Overriding local 'amplify' folder`);

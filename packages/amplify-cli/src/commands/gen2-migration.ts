@@ -120,9 +120,10 @@ export const run = async (context: $TSContext) => {
   const envName = localEnvName ?? migratingEnvName;
 
   const stackName = stateManager.getTeamProviderInfo()[envName].awscloudformation.StackName;
+  const region = stateManager.getTeamProviderInfo()[envName].awscloudformation.Region;
 
   const logger = new Logger(stepName, appName, envName);
-  const implementation: AmplifyMigrationStep = new step.class(logger, envName, appName, appId, stackName, context);
+  const implementation: AmplifyMigrationStep = new step.class(logger, envName, appName, appId, stackName, region, context);
 
   if (!skipValidations) {
     printer.blankLine();

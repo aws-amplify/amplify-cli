@@ -8,6 +8,7 @@ export abstract class AmplifyMigrationStep {
     protected readonly appName: string,
     protected readonly appId: string,
     protected readonly rootStackName: string,
+    protected readonly region: string,
     protected readonly context: $TSContext,
   ) {}
 
