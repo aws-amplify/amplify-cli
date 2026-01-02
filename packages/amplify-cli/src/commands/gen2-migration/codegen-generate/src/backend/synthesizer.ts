@@ -828,7 +828,10 @@ export class BackendSynthesizer {
     if (renderArgs.data?.restApis) {
       const allUniqueFunctions = new Set<string>();
       renderArgs.data.restApis.forEach((restApi) => {
-        restApi.uniqueFunctions.forEach((funcName) => allUniqueFunctions.add(funcName));
+        // Handle cases where uniqueFunctions might be undefined (backward compatibility)
+        if (restApi.uniqueFunctions) {
+          restApi.uniqueFunctions.forEach((funcName) => allUniqueFunctions.add(funcName));
+        }
       });
 
       // Only add functions that aren't already in the main function list
