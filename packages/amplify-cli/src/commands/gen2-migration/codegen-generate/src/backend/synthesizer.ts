@@ -167,7 +167,7 @@ export class BackendSynthesizer {
     return factory.createPropertyAssignment(factory.createIdentifier(identifier), factory.createStringLiteral(stringLiteral));
   }
 
-  private createUserPoolClientAssignment(userPoolClient: UserPoolClientType, imports: ts.ImportDeclaration[]) {
+  private createUserPoolClientAssignment(userPoolClient: UserPoolClientType, imports: ts.ImportDeclaration[], createConstant: boolean) {
     const userPoolClientAttributesMap = new Map<string, string>();
 
     userPoolClientAttributesMap.set('ClientSecret', 'generateSecret');
@@ -191,26 +191,10 @@ export class BackendSynthesizer {
     userPoolClientAttributesMap.set('ExplicitAuthFlows', 'authFlows');
     userPoolClientAttributesMap.set('AllowedOAuthFlows', 'flows');
 
-    const userPoolClientDeclaration = factory.createVariableStatement(
+    const addClientCall = factory.createCallExpression(
+      factory.createPropertyAccessExpression(factory.createIdentifier('userPool'), factory.createIdentifier('addClient')),
       undefined,
-      factory.createVariableDeclarationList(
-        [
-          factory.createVariableDeclaration(
-            factory.createIdentifier('userPoolClient'),
-            undefined,
-            undefined,
-            factory.createCallExpression(
-              factory.createPropertyAccessExpression(factory.createIdentifier('userPool'), factory.createIdentifier('addClient')),
-              undefined,
-              [
-                factory.createStringLiteral('NativeAppClient'),
-                this.createNestedObjectExpression(userPoolClient, userPoolClientAttributesMap),
-              ],
-            ),
-          ),
-        ],
-        ts.NodeFlags.Const,
-      ),
+      [factory.createStringLiteral('NativeAppClient'), this.createNestedObjectExpression(userPoolClient, userPoolClientAttributesMap)],
     );
 
     if (this.importDurationFlag) {
@@ -229,7 +213,19 @@ export class BackendSynthesizer {
       }
     }
 
-    return userPoolClientDeclaration;
+    if (createConstant) {
+      // Create const userPoolClient = userPool.addClient(...)
+      return factory.createVariableStatement(
+        undefined,
+        factory.createVariableDeclarationList(
+          [factory.createVariableDeclaration(factory.createIdentifier('userPoolClient'), undefined, undefined, addClientCall)],
+          ts.NodeFlags.Const,
+        ),
+      );
+    } else {
+      // Just create the userPool.addClient(...) expression statement
+      return factory.createExpressionStatement(addClientCall);
+    }
   }
 
   private createPropertyAccessChain(identifiers: string[]): ts.Expression {
@@ -963,7 +959,13 @@ export class BackendSynthesizer {
     if (renderArgs.auth?.userPoolClient) {
       const userPoolVariableStatement = this.createVariableStatement(this.createVariableDeclaration('userPool', 'auth.resources.userPool'));
       nodes.push(userPoolVariableStatement);
-      nodes.push(this.createUserPoolClientAssignment(renderArgs.auth?.userPoolClient, imports));
+
+      // Check if we need the userPoolClient constant (only if there are SupportedIdentityProviders)
+      // See call stack for createProviderSetupCode() function.
+      const needsUserPoolClientConstant =
+        renderArgs.auth.userPoolClient.SupportedIdentityProviders && renderArgs.auth.userPoolClient.SupportedIdentityProviders.length > 0;
+
+      nodes.push(this.createUserPoolClientAssignment(renderArgs.auth?.userPoolClient, imports, needsUserPoolClientConstant));
     }
 
     // Stores basic S3 bucket info
