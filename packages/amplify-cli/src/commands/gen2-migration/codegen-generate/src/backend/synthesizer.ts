@@ -1313,26 +1313,34 @@ export class BackendSynthesizer {
                         ]),
                       ),
                       factory.createPropertyAssignment(factory.createIdentifier('createDefaultStage'), factory.createTrue()),
-                      // Add CORS configuration for all HttpApis to enable browser access
+                      // Add CORS configuration - use Gen1 settings if available, otherwise secure defaults
                       factory.createPropertyAssignment(
                         factory.createIdentifier('corsPreflight'),
                         factory.createObjectLiteralExpression([
                           factory.createPropertyAssignment(
                             factory.createIdentifier('allowMethods'),
-                            factory.createArrayLiteralExpression([
-                              factory.createPropertyAccessExpression(
-                                factory.createIdentifier('CorsHttpMethod'),
-                                factory.createIdentifier('ANY'),
+                            factory.createArrayLiteralExpression(
+                              (restApi.corsConfiguration?.allowMethods || ['GET', 'POST', 'PUT', 'DELETE']).map((method) =>
+                                factory.createPropertyAccessExpression(
+                                  factory.createIdentifier('CorsHttpMethod'),
+                                  factory.createIdentifier(method.toUpperCase()),
+                                ),
                               ),
-                            ]),
+                            ),
                           ),
                           factory.createPropertyAssignment(
                             factory.createIdentifier('allowOrigins'),
-                            factory.createArrayLiteralExpression([factory.createStringLiteral('*')]),
+                            factory.createArrayLiteralExpression(
+                              (restApi.corsConfiguration?.allowOrigins || ['*']).map((origin) => factory.createStringLiteral(origin)),
+                            ),
                           ),
                           factory.createPropertyAssignment(
                             factory.createIdentifier('allowHeaders'),
-                            factory.createArrayLiteralExpression([factory.createStringLiteral('*')]),
+                            factory.createArrayLiteralExpression(
+                              (restApi.corsConfiguration?.allowHeaders || ['content-type', 'authorization']).map((header) =>
+                                factory.createStringLiteral(header),
+                              ),
+                            ),
                           ),
                         ]),
                       ),

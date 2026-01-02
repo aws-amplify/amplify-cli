@@ -48,7 +48,10 @@ describe('BackendSynthesizer REST API Migration', () => {
       expect(output).toContain('allowMethods');
       expect(output).toContain('allowOrigins');
       expect(output).toContain('allowHeaders');
-      expect(output).toContain('CorsHttpMethod.ANY');
+      expect(output).toContain('CorsHttpMethod.GET');
+      expect(output).toContain('CorsHttpMethod.POST');
+      expect(output).toContain('CorsHttpMethod.PUT');
+      expect(output).toContain('CorsHttpMethod.DELETE');
     });
 
     it('should map auth types to correct authorizers', () => {
@@ -324,6 +327,93 @@ describe('BackendSynthesizer REST API Migration', () => {
       // Should not contain route for non-existent function
       expect(output).not.toContain('/missing');
       expect(output).not.toContain('nonExistentFunction');
+    });
+
+    it('should respect CORS configuration from Gen1 project', () => {
+      const renderArgs: BackendRenderParameters = {
+        data: {
+          importFrom: './data/resource',
+          restApis: [
+            {
+              apiName: 'testapi',
+              functionName: 'testFunction',
+              paths: [
+                {
+                  path: '/items',
+                  methods: ['GET'],
+                  authType: 'open',
+                  lambdaFunction: 'testFunction',
+                },
+              ],
+              corsConfiguration: {
+                allowOrigins: ['https://example.com'],
+                allowMethods: ['GET', 'POST'],
+                allowHeaders: ['content-type', 'authorization'],
+              },
+            },
+          ],
+        },
+        function: {
+          importFrom: './function/resource',
+          functionNamesAndCategories: new Map([['testFunction', 'function']]),
+        },
+      };
+
+      const result = synthesizer.render(renderArgs);
+      const sourceFile = ts.createSourceFile('test.ts', '', ts.ScriptTarget.Latest);
+      const printer = ts.createPrinter();
+      const output = printer.printList(ts.ListFormat.SourceFileStatements, result, sourceFile);
+
+      // Should contain specific CORS configuration
+      expect(output).toContain('https://example.com');
+      expect(output).toContain('CorsHttpMethod.GET');
+      expect(output).toContain('CorsHttpMethod.POST');
+      expect(output).toContain('content-type');
+      expect(output).toContain('authorization');
+
+      // Should not contain wildcard CORS
+      expect(output).not.toContain('CorsHttpMethod.ANY');
+    });
+
+    it('should use default CORS configuration when not specified in Gen1', () => {
+      const renderArgs: BackendRenderParameters = {
+        data: {
+          importFrom: './data/resource',
+          restApis: [
+            {
+              apiName: 'testapi',
+              functionName: 'testFunction',
+              paths: [
+                {
+                  path: '/items',
+                  methods: ['GET'],
+                  authType: 'open',
+                  lambdaFunction: 'testFunction',
+                },
+              ],
+              // No corsConfiguration specified
+            },
+          ],
+        },
+        function: {
+          importFrom: './function/resource',
+          functionNamesAndCategories: new Map([['testFunction', 'function']]),
+        },
+      };
+
+      const result = synthesizer.render(renderArgs);
+      const sourceFile = ts.createSourceFile('test.ts', '', ts.ScriptTarget.Latest);
+      const printer = ts.createPrinter();
+      const output = printer.printList(ts.ListFormat.SourceFileStatements, result, sourceFile);
+
+      // Should contain default CORS configuration
+      expect(output).toContain('corsPreflight');
+      expect(output).toContain('CorsHttpMethod.GET');
+      expect(output).toContain('CorsHttpMethod.POST');
+      expect(output).toContain('CorsHttpMethod.PUT');
+      expect(output).toContain('CorsHttpMethod.DELETE');
+      expect(output).toContain('content-type');
+      expect(output).toContain('authorization');
     });
   });
 });
