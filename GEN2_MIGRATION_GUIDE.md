@@ -296,7 +296,15 @@ Following provides an overview of the supported (and unsupported) features for m
     - ✅ NodeJS
     - ❌ Python
 
-  - ❌ **Advanced Settings**
+  - ✅ **Advanced Settings**
+
+    - **Select the categories you want this function to have access to**
+
+      - ❌ Api
+
+        - **Select the operations you want to permit**
+
+          - ❌ Query
 
 - ❌ **Lambda layer (shared code & resource used across functions)**
 
