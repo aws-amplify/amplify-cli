@@ -214,7 +214,7 @@ Following provides an overview of the supported (and unsupported) features for m
 
 ## Auth
 
-### CLI Inputs (`amplify add auth`)
+### `amplify add auth`
 
 - ✅ **Default Configuration**
 
@@ -223,9 +223,13 @@ Following provides an overview of the supported (and unsupported) features for m
   - ❌ Phone Number
   - ❌ Email or Phone Number
 
+- ❌ **Default configuration with Social Provider (Federation)**
+
+- ❌ **Manual configuration**
+
 ## Api
 
-### CLI Inputs (`amplify add api`)
+### `amplify add api`
 
 - ✅ **GraphQL**
 
@@ -252,7 +256,7 @@ Following provides an overview of the supported (and unsupported) features for m
 
 ## Storage
 
-### CLI Inputs (`amplify add storage`)
+### `amplify add storage`
 
 - ✅ **Content (Images, audio, video, etc.)**
 
@@ -284,7 +288,7 @@ Following provides an overview of the supported (and unsupported) features for m
 
 ## Function
 
-### CLI Inputs (`amplify add function`)
+### `amplify add function`
 
 - ✅ **Lambda function (serverless function)**
 
@@ -305,6 +309,19 @@ Following provides an overview of the supported (and unsupported) features for m
         - **Select the operations you want to permit**
 
           - ❌ Query
+          - ❌ Mutation
+          - ❌ Subscription
+
+    - ❌ **Do you want to invoke this function on a recurring schedule**
+    - ❌ **Do you want to enable Lambda layers for this function**
+    - ❌ **Do you want to configure environment variables for this function**
+    - ❌ **Do you want to configure secret values this function can access**
+    - ✅ **Choose the package manager that you want to use**
+
+      - ✅ NPM
+      - ❌ Yarn
+      - ❌ PNPM
+      - ❌ Custom Build Command or Script Path
 
 - ❌ **Lambda layer (shared code & resource used across functions)**
 
@@ -312,8 +329,8 @@ Following provides an overview of the supported (and unsupported) features for m
 
 ## Custom 
 
-### CLI Inputs (`amplify add custom`)
+### `amplify add custom`
 
 ## Overrides 
 
-### CLI Inputs (`amplify override <category>`)
+### `amplify override <category>`
