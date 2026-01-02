@@ -420,7 +420,6 @@ export const createGen2Renderer = ({
     // Configure storage parameters for backend synthesis (includes both S3 and DynamoDB)
     backendRenderOptions.storage = {
       importFrom: './storage/resource',
-      dynamoDB: storage.dynamoDB,
       dynamoTables: storage.dynamoTables,
       accelerateConfiguration: storage.accelerateConfiguration,
       versionConfiguration: storage.versioningConfiguration,

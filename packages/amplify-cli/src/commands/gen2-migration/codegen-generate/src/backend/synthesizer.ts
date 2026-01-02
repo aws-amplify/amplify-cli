@@ -39,7 +39,6 @@ export interface BackendRenderParameters {
   };
   storage?: {
     importFrom: string;
-    dynamoDB?: string;
     dynamoTables?: DynamoDBTableDefinition[];
     accelerateConfiguration?: BucketAccelerateStatus;
     versionConfiguration?: BucketVersioningStatus;
@@ -810,7 +809,7 @@ export class BackendSynthesizer {
 
     // Same as auth
 
-    if (renderArgs.storage?.hasS3Bucket || renderArgs.storage?.dynamoDB || renderArgs.storage?.dynamoTables?.length) {
+    if (renderArgs.storage?.hasS3Bucket || renderArgs.storage?.dynamoTables?.length) {
       if (renderArgs.storage.hasS3Bucket) {
         imports.push(this.createImportStatement([storageFunctionIdentifier], renderArgs.storage.importFrom));
         const storage = factory.createShorthandPropertyAssignment(storageFunctionIdentifier);
