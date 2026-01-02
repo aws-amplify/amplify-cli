@@ -1471,35 +1471,70 @@ export class BackendSynthesizer {
 
             // Map Gen1 permission settings to Gen2 authorizers:
             // 'private' -> iamAuthorizer, 'protected' -> userPoolAuthorizer, 'open' -> undefined
-            // User Pool Groups -> specific group authorizer
+            // User Pool Groups -> create separate routes for each group
+            //
+            // Why separate routes? API Gateway v2 only supports ONE authorizer per route.
+            // Gen1: { path: '/admin', userPoolGroups: ['AdminUsers', 'SuperAdmins'] }
+            // Gen2: Must create separate routes with same path but different authorizers
+            //       API Gateway tries each route until one authorizer succeeds (OR logic)
             if (pathConfig.userPoolGroups && pathConfig.userPoolGroups.length > 0) {
-              // Use the first group for the authorizer (Gen1 typically has one group per path)
-              const groupName = pathConfig.userPoolGroups[0];
-              routeConfig.push(
-                factory.createPropertyAssignment(
-                  factory.createIdentifier('authorizer'),
-                  factory.createIdentifier(`${groupName}Authorizer`),
-                ),
-              );
+              // Create separate route for each group (Gen1 supports multiple groups per path)
+              pathConfig.userPoolGroups.forEach((groupName) => {
+                const groupRouteConfig = [...routeConfig];
+                groupRouteConfig.push(
+                  factory.createPropertyAssignment(
+                    factory.createIdentifier('authorizer'),
+                    factory.createIdentifier(`${groupName}Authorizer`),
+                  ),
+                );
+
+                const addGroupRouteStatement = factory.createExpressionStatement(
+                  factory.createCallExpression(
+                    factory.createPropertyAccessExpression(factory.createIdentifier(httpApiVarName), factory.createIdentifier('addRoutes')),
+                    undefined,
+                    [factory.createObjectLiteralExpression(groupRouteConfig)],
+                  ),
+                );
+                nodes.push(addGroupRouteStatement);
+              });
             } else if (pathConfig.authType === 'private') {
               routeConfig.push(
                 factory.createPropertyAssignment(factory.createIdentifier('authorizer'), factory.createIdentifier('iamAuthorizer')),
               );
+
+              const addRoutesStatement = factory.createExpressionStatement(
+                factory.createCallExpression(
+                  factory.createPropertyAccessExpression(factory.createIdentifier(httpApiVarName), factory.createIdentifier('addRoutes')),
+                  undefined,
+                  [factory.createObjectLiteralExpression(routeConfig)],
+                ),
+              );
+              nodes.push(addRoutesStatement);
             } else if (pathConfig.authType === 'protected') {
               routeConfig.push(
                 factory.createPropertyAssignment(factory.createIdentifier('authorizer'), factory.createIdentifier('userPoolAuthorizer')),
               );
+
+              const addRoutesStatement = factory.createExpressionStatement(
+                factory.createCallExpression(
+                  factory.createPropertyAccessExpression(factory.createIdentifier(httpApiVarName), factory.createIdentifier('addRoutes')),
+                  undefined,
+                  [factory.createObjectLiteralExpression(routeConfig)],
+                ),
+              );
+              nodes.push(addRoutesStatement);
+            } else {
+              // Open access - no authorizer
+              const addRoutesStatement = factory.createExpressionStatement(
+                factory.createCallExpression(
+                  factory.createPropertyAccessExpression(factory.createIdentifier(httpApiVarName), factory.createIdentifier('addRoutes')),
+                  undefined,
+                  [factory.createObjectLiteralExpression(routeConfig)],
+                ),
+              );
+              nodes.push(addRoutesStatement);
             }
             // Note: 'open' access requires no authorizer property
-
-            const addRoutesStatement = factory.createExpressionStatement(
-              factory.createCallExpression(
-                factory.createPropertyAccessExpression(factory.createIdentifier(httpApiVarName), factory.createIdentifier('addRoutes')),
-                undefined,
-                [factory.createObjectLiteralExpression(routeConfig)],
-              ),
-            );
-            nodes.push(addRoutesStatement);
           });
         });
 
