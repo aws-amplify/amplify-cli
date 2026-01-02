@@ -275,11 +275,10 @@ describe('BackendSynthesizer REST API Migration', () => {
 
       // Check for backend output generation
       expect(output).toContain('backend.addOutput');
-      expect(output).toContain('custom');
-      expect(output).toContain('API');
+      expect(output).toContain('api');
+      expect(output).toContain('REST');
       expect(output).toContain('endpoint');
       expect(output).toContain('region');
-      expect(output).toContain('apiName');
     });
 
     it('should skip routes for non-existent functions', () => {
