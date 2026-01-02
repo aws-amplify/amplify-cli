@@ -104,43 +104,50 @@ export class DataDefinitionFetcher {
 
     for (const apiName of Object.keys(apis)) {
       const apiObj = apis[apiName];
+      // Filter for REST APIs only (skip AppSync GraphQL APIs)
       if (apiObj.service === 'API Gateway') {
         // Read CLI inputs for detailed configuration
+        // We use cli-inputs.json instead of live AWS APIs because:
+        // 1. AWS API Gateway doesn't expose Gen1's abstracted path configurations
+        //    Gen1: { "permissions": { "setting": "private" } }
+        //    AWS: Complex CloudFormation resources (AWS::ApiGateway::Authorizer, etc.)
+        // 2. cli-inputs.json contains the original developer intent (permissions: 'private'/'protected'/'open')
+        //    Developer wrote: "private" (meaning: authenticated users only)
+        //    AWS deployed: IAM authorizer + Cognito integration (implementation details)
+        // 3. Path-level auth settings, method mappings, and CORS details aren't available via AWS APIs
+        //    cli-inputs.json: { "/users": { "lambdaFunction": "userHandler", "methods": ["GET"] } }
+        //    AWS API: Only shows resources exist, not which Lambda handles which path
         const cliInputsPath = path.join(rootDir, 'amplify', 'backend', 'api', apiName, 'cli-inputs.json');
         let paths: RestApiPath[] = [{ path: '/{proxy+}', methods: ['ANY'] }];
         let authType = 'NONE';
         let corsConfiguration;
 
-        try {
-          const cliInputs: Gen1CliInputs = JSON.parse(await fs.readFile(cliInputsPath, 'utf8'));
+        const cliInputs: Gen1CliInputs = JSON.parse(await fs.readFile(cliInputsPath, 'utf8'));
 
-          // Extract paths and methods with correct function mapping
-          if (cliInputs.paths) {
-            paths = Object.entries(cliInputs.paths).map(([pathName, pathConfig]) => {
-              // Parse permission setting correctly: private/protected/open
-              const pathAuthType = pathConfig.permissions?.setting || 'open';
+        // Extract paths and methods with correct function mapping
+        if (cliInputs.paths) {
+          paths = Object.entries(cliInputs.paths).map(([pathName, pathConfig]) => {
+            // Parse permission setting correctly: private/protected/open
+            const pathAuthType = pathConfig.permissions?.setting || 'open';
 
-              return {
-                path: pathName,
-                methods: this.extractMethodsFromPath(pathConfig),
-                authType: pathAuthType,
-                // Extract the actual Lambda function name for this specific path
-                lambdaFunction: pathConfig.lambdaFunction,
-              };
-            });
-          }
+            return {
+              path: pathName,
+              methods: this.extractMethodsFromPath(pathConfig),
+              authType: pathAuthType,
+              // Extract the actual Lambda function name for this specific path
+              lambdaFunction: pathConfig.lambdaFunction,
+            };
+          });
+        }
 
-          // Extract CORS configuration
-          if (cliInputs.corsConfiguration) {
-            corsConfiguration = cliInputs.corsConfiguration;
-          }
+        // Extract CORS configuration
+        if (cliInputs.corsConfiguration) {
+          corsConfiguration = cliInputs.corsConfiguration;
+        }
 
-          // Extract global auth type
-          if (cliInputs.restrictAccess) {
-            authType = cliInputs.authType || 'AWS_IAM';
-          }
-        } catch (error) {
-          // Fall back to basic configuration if cli-inputs.json not found
+        // Extract global auth type
+        if (cliInputs.restrictAccess) {
+          authType = cliInputs.authType || 'AWS_IAM';
         }
 
         // Keep all paths together in a single REST API definition
@@ -160,6 +167,14 @@ export class DataDefinitionFetcher {
     return restApis;
   };
 
+  /**
+   * Extracts HTTP methods from Gen1 path configuration.
+   *
+   * Gen1 allows flexible method specification:
+   * - Explicit: { methods: ['GET', 'POST'] } → ['GET', 'POST']
+   * - Permission-based: { permissions: { auth: ['read', 'create'] } } → ['GET', 'POST']
+   * - No config: {} → ['GET']
+   */
   private extractMethodsFromPath(pathConfig: Gen1PathConfig): string[] {
     // Use explicitly configured methods if available
     if (pathConfig.methods && pathConfig.methods.length > 0) {
