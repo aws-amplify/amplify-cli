@@ -62,7 +62,7 @@ export class AppStorageDefinitionFetcher {
   };
 
   // Check the properties
-  private parseDynamoDBTable = async (
+  private fetchDynamoDBTable = async (
     storageName: string,
     currentCloudBackendDirectory: string,
     storageOutput: StorageOutput,
@@ -246,7 +246,7 @@ export class AppStorageDefinitionFetcher {
             storageOptions.bucketEncryptionAlgorithm = serverSideEncryptionConf;
           }
         } else if (storageOutput.service === 'DynamoDB') {
-          const tableDefinition = await this.parseDynamoDBTable(storageName, currentCloudBackendDirectory, storageOutput);
+          const tableDefinition = await this.fetchDynamoDBTable(storageName, currentCloudBackendDirectory, storageOutput);
           dynamoTables.push(tableDefinition);
         }
       }
