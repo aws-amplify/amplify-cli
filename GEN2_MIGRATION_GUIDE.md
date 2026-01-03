@@ -268,11 +268,11 @@ Following provides an overview of the supported (and unsupported) features for m
 
 ### `amplify add storage`
 
-- ✅ **Content (Images, audio, video, etc.)**
+- ➤ **Content (Images, audio, video, etc.)**
 
-  - ✅ **Who should have access**
+  - ➤ **Who should have access**
 
-    - ✅ Auth and guest users
+    - ➤ Auth and guest users
 
       - **What kind of access do you want for Authenticated users?**
 
@@ -286,7 +286,7 @@ Following provides an overview of the supported (and unsupported) features for m
         - ✅ read
         - ❌ delete
 
-    - ✅ Auth users only
+    - ➤ Auth users only
 
       - **What kind of access do you want for Authenticated users?**
 
@@ -312,11 +312,11 @@ Following provides an overview of the supported (and unsupported) features for m
 
   - ➤ **Advanced Settings**
 
-    - **Select the categories you want this function to have access to**
+    - ➤ **Select the categories you want this function to have access to**
 
       - ➤ api
 
-        - **Select the operations you want to permit**
+        - ➤ **Select the operations you want to permit**
 
           - ⚠️ Query
           - ⚠️ Mutation
@@ -332,7 +332,7 @@ Following provides an overview of the supported (and unsupported) features for m
     - ❌ **Do you want to enable Lambda layers for this function**
     - ❌ **Do you want to configure environment variables for this function**
     - ❌ **Do you want to configure secret values this function can access**
-    - ✅ **Choose the package manager that you want to use**
+    - ➤ **Choose the package manager that you want to use**
 
       - ✅ NPM
       - ❌ Yarn
