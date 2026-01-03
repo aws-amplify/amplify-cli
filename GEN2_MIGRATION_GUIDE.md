@@ -372,8 +372,8 @@ Following provides an overview of the supported (and unsupported) features for m
 
     - ❌ **Do you want to invoke this function on a recurring schedule**
     - ❌ **Do you want to enable Lambda layers for this function**
-    - ❌ **Do you want to configure environment variables for this function**
-    - ❌ **Do you want to configure secret values this function can access**
+    - ✅ **Do you want to configure environment variables for this function**
+    - ⚠️ **Do you want to configure secret values this function can access**
     - ➤ **Choose the package manager that you want to use**
 
       - ✅ NPM
