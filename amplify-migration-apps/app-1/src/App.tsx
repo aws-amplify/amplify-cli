@@ -144,7 +144,7 @@ function App({ signOut, user }: AppProps) {
   const [filterCategory, setFilterCategory] = useState('');
   const [sortBy, setSortBy] = useState('name');
   const [stockCheckLoading, setStockCheckLoading] = useState(false);
-  const [lowStockAlert, setLowStockAlert] = useState<{ count: number; products: string[] } | null>(null);
+  const [lowStockAlert, setLowStockAlert] = useState<{ count: number; products: string[]; message: string } | null>(null);
 
   // User role management
   const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -340,18 +340,6 @@ function App({ signOut, user }: AppProps) {
         return;
       }
 
-      let imageKey = (editingProduct as any)?.imageKey || '';
-
-      if (selectedFile) {
-        const fileKey = `products/${Date.now()}-${selectedFile.name}`;
-        await uploadData({
-          key: fileKey,
-          data: selectedFile,
-          options: { contentType: selectedFile.type },
-        });
-        imageKey = fileKey;
-      }
-
       const productData = {
         serialno: parseInt(formData.serialno),
         engword: formData.engword,
@@ -360,25 +348,44 @@ function App({ signOut, user }: AppProps) {
         description: formData.description || null,
         stock: formData.stock ? parseInt(formData.stock) : null,
         brand: formData.brand || null,
-        imageKey: imageKey || null,
         createdBy: currentUser.id,
         updatedBy: currentUser.id,
       };
 
-      console.log('Creating product with data:', productData);
+      let productId;
 
       if (editingProduct) {
+        console.log(`Updating product (${editingProduct.id}) with data:`, productData);
         const result = await client.graphql({
           query: updateProduct,
           variables: { input: { id: editingProduct.id, ...productData } },
         });
         console.log('Update result:', result);
+        productId = editingProduct.id;
       } else {
+        console.log('Creating product with data:', productData);
         const result = await client.graphql({
           query: createProduct,
           variables: { input: productData },
         });
         console.log('Create result:', result);
+        productId = result.data.createProduct.id;
+      }
+
+      if (selectedFile) {
+        const fileKey = `products/${productId}_${Date.now()}-${selectedFile.name}`;
+        console.log(`Uploading image ${fileKey}`);
+        await uploadData({
+          key: fileKey,
+          data: selectedFile,
+          options: { contentType: selectedFile.type },
+        });
+
+        console.log(`Updating imageKey field`);
+        await client.graphql({
+          query: updateProduct,
+          variables: { input: { id: productId, imageKey: fileKey } },
+        });
       }
 
       resetForm();
@@ -413,6 +420,7 @@ function App({ signOut, user }: AppProps) {
         setLowStockAlert({
           count: data.lowStockProducts.length,
           products: data.lowStockProducts.map((p: any) => `${p.name} (${p.stock} left)`),
+          message: data.message,
         });
       } else {
         setLowStockAlert(null);
@@ -782,7 +790,7 @@ function App({ signOut, user }: AppProps) {
               </View>
               <View>
                 <Text fontSize="md" fontWeight="700" color="#92400e">
-                  Low Stock Alert: {lowStockAlert.count} products need attention
+                  Low Stock Alert: {lowStockAlert.count} products need attention ({lowStockAlert.message})
                 </Text>
                 <Text fontSize="sm" color="#b45309">
                   {lowStockAlert.products.slice(0, 3).join(', ')}
@@ -1154,7 +1162,12 @@ function App({ signOut, user }: AppProps) {
                     <Text fontSize="xl" fontWeight="700" marginBottom="0.75rem" lineHeight="1.3" color="#1e293b">
                       {product.engword}
                     </Text>
-
+                    <View backgroundColor="#f1f5f9" padding="0.5rem 0.75rem" borderRadius="6px">
+                      <Text fontSize="xs" fontWeight="600" color="#64748b">
+                        Image Uploaded At: {product.imageUploadedAt}
+                      </Text>
+                    </View>
+                    <br></br>
                     <Flex justifyContent="space-between" alignItems="center" marginBottom="1.25rem">
                       <View backgroundColor="#f1f5f9" padding="0.5rem 0.75rem" borderRadius="6px">
                         <Text fontSize="xs" fontWeight="600" color="#64748b">

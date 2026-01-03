@@ -26,6 +26,7 @@ type Product @model @auth(rules: [{ allow: private, provider: iam }]) {
   stock: Int
   brand: String
   imageKey: String
+  imageUploadedAt: String
   images: [String]
   createdBy: String
   updatedBy: String

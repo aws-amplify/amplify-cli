@@ -1,5 +1,5 @@
 {
   "adminRoleNames": [
-    "CognitoIdentityCredentials"
+    "amplify-${appId}"
   ]
 }

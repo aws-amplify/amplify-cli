@@ -2,6 +2,7 @@ const crypto = require('@aws-crypto/sha256-js');
 const { defaultProvider } = require('@aws-sdk/credential-provider-node');
 const { SignatureV4 } = require('@aws-sdk/signature-v4');
 const { HttpRequest } = require('@aws-sdk/protocol-http');
+const { SSMClient, GetParametersCommand } = require('@aws-sdk/client-ssm');
 
 const Sha256 = crypto.Sha256;
 
@@ -27,13 +28,14 @@ exports.handler = async (event) => {
   console.log(`EVENT: ${JSON.stringify(event)}`);
 
   try {
+    const secretValue = await fetchSecret();
     const products = await fetchProducts();
     const lowStockProducts = products.filter((product) => product.stock !== null && product.stock < LOW_STOCK_THRESHOLD);
 
     console.log(`Found ${lowStockProducts.length} low stock products`);
 
     return {
-      message: `Checked ${products.length} products, found ${lowStockProducts.length} low stock items`,
+      message: `Checked ${products.length} products, found ${lowStockProducts.length} low stock items (secret value: ${secretValue})`,
       lowStockProducts: lowStockProducts.map((p) => ({
         name: p.engword,
         stock: p.stock,
@@ -83,4 +85,16 @@ async function fetchProducts() {
   }
 
   return body.data.listProducts.items;
+}
+
+async function fetchSecret() {
+  const client = new SSMClient({ region: AWS_REGION });
+  const { Parameters } = await client.send(
+    new GetParametersCommand({
+      Names: ['PRODUCT_CATALOG_SECRET'].map((secretName) => process.env[secretName]),
+      WithDecryption: true,
+    }),
+  );
+
+  return Parameters[0].Value;
 }

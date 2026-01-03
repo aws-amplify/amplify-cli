@@ -8,6 +8,81 @@ type GeneratedSubscription<InputType, OutputType> = string & {
   __generatedSubscriptionOutput: OutputType;
 };
 
+export const onCreateProduct = /* GraphQL */ `subscription OnCreateProduct($filter: ModelSubscriptionProductFilterInput) {
+  onCreateProduct(filter: $filter) {
+    id
+    serialno
+    engword
+    price
+    category
+    description
+    stock
+    brand
+    imageKey
+    imageUploadedAt
+    images
+    createdBy
+    updatedBy
+    createdAt
+    updatedAt
+    comments {
+      nextToken
+      __typename
+    }
+    __typename
+  }
+}
+` as GeneratedSubscription<APITypes.OnCreateProductSubscriptionVariables, APITypes.OnCreateProductSubscription>;
+export const onUpdateProduct = /* GraphQL */ `subscription OnUpdateProduct($filter: ModelSubscriptionProductFilterInput) {
+  onUpdateProduct(filter: $filter) {
+    id
+    serialno
+    engword
+    price
+    category
+    description
+    stock
+    brand
+    imageKey
+    imageUploadedAt
+    images
+    createdBy
+    updatedBy
+    createdAt
+    updatedAt
+    comments {
+      nextToken
+      __typename
+    }
+    __typename
+  }
+}
+` as GeneratedSubscription<APITypes.OnUpdateProductSubscriptionVariables, APITypes.OnUpdateProductSubscription>;
+export const onDeleteProduct = /* GraphQL */ `subscription OnDeleteProduct($filter: ModelSubscriptionProductFilterInput) {
+  onDeleteProduct(filter: $filter) {
+    id
+    serialno
+    engword
+    price
+    category
+    description
+    stock
+    brand
+    imageKey
+    imageUploadedAt
+    images
+    createdBy
+    updatedBy
+    createdAt
+    updatedAt
+    comments {
+      nextToken
+      __typename
+    }
+    __typename
+  }
+}
+` as GeneratedSubscription<APITypes.OnDeleteProductSubscriptionVariables, APITypes.OnDeleteProductSubscription>;
 export const onCreateUser = /* GraphQL */ `subscription OnCreateUser(
   $filter: ModelSubscriptionUserFilterInput
   $id: String
@@ -53,78 +128,6 @@ export const onDeleteUser = /* GraphQL */ `subscription OnDeleteUser(
   }
 }
 ` as GeneratedSubscription<APITypes.OnDeleteUserSubscriptionVariables, APITypes.OnDeleteUserSubscription>;
-export const onCreateProduct = /* GraphQL */ `subscription OnCreateProduct($filter: ModelSubscriptionProductFilterInput) {
-  onCreateProduct(filter: $filter) {
-    id
-    serialno
-    engword
-    price
-    category
-    description
-    stock
-    brand
-    imageKey
-    images
-    createdBy
-    updatedBy
-    createdAt
-    updatedAt
-    comments {
-      nextToken
-      __typename
-    }
-    __typename
-  }
-}
-` as GeneratedSubscription<APITypes.OnCreateProductSubscriptionVariables, APITypes.OnCreateProductSubscription>;
-export const onUpdateProduct = /* GraphQL */ `subscription OnUpdateProduct($filter: ModelSubscriptionProductFilterInput) {
-  onUpdateProduct(filter: $filter) {
-    id
-    serialno
-    engword
-    price
-    category
-    description
-    stock
-    brand
-    imageKey
-    images
-    createdBy
-    updatedBy
-    createdAt
-    updatedAt
-    comments {
-      nextToken
-      __typename
-    }
-    __typename
-  }
-}
-` as GeneratedSubscription<APITypes.OnUpdateProductSubscriptionVariables, APITypes.OnUpdateProductSubscription>;
-export const onDeleteProduct = /* GraphQL */ `subscription OnDeleteProduct($filter: ModelSubscriptionProductFilterInput) {
-  onDeleteProduct(filter: $filter) {
-    id
-    serialno
-    engword
-    price
-    category
-    description
-    stock
-    brand
-    imageKey
-    images
-    createdBy
-    updatedBy
-    createdAt
-    updatedAt
-    comments {
-      nextToken
-      __typename
-    }
-    __typename
-  }
-}
-` as GeneratedSubscription<APITypes.OnDeleteProductSubscriptionVariables, APITypes.OnDeleteProductSubscription>;
 export const onCreateComment = /* GraphQL */ `subscription OnCreateComment(
   $filter: ModelSubscriptionCommentFilterInput
   $authorId: String

@@ -12,6 +12,7 @@ export type CreateProductInput = {
   stock?: number | null;
   brand?: string | null;
   imageKey?: string | null;
+  imageUploadedAt?: string | null;
   images?: Array<string | null> | null;
   createdBy?: string | null;
   updatedBy?: string | null;
@@ -28,6 +29,7 @@ export type ModelProductConditionInput = {
   stock?: ModelIntInput | null;
   brand?: ModelStringInput | null;
   imageKey?: ModelStringInput | null;
+  imageUploadedAt?: ModelStringInput | null;
   images?: ModelStringInput | null;
   createdBy?: ModelStringInput | null;
   updatedBy?: ModelStringInput | null;
@@ -114,6 +116,7 @@ export type Product = {
   stock?: number | null;
   brand?: string | null;
   imageKey?: string | null;
+  imageUploadedAt?: string | null;
   images?: Array<string | null> | null;
   createdBy?: string | null;
   updatedBy?: string | null;
@@ -149,6 +152,7 @@ export type UpdateProductInput = {
   stock?: number | null;
   brand?: string | null;
   imageKey?: string | null;
+  imageUploadedAt?: string | null;
   images?: Array<string | null> | null;
   createdBy?: string | null;
   updatedBy?: string | null;
@@ -269,6 +273,33 @@ export type DeleteCommentInput = {
   id: string;
 };
 
+export type ModelProductFilterInput = {
+  id?: ModelIDInput | null;
+  serialno?: ModelIntInput | null;
+  engword?: ModelStringInput | null;
+  price?: ModelFloatInput | null;
+  category?: ModelStringInput | null;
+  description?: ModelStringInput | null;
+  stock?: ModelIntInput | null;
+  brand?: ModelStringInput | null;
+  imageKey?: ModelStringInput | null;
+  imageUploadedAt?: ModelStringInput | null;
+  images?: ModelStringInput | null;
+  createdBy?: ModelStringInput | null;
+  updatedBy?: ModelStringInput | null;
+  createdAt?: ModelStringInput | null;
+  updatedAt?: ModelStringInput | null;
+  and?: Array<ModelProductFilterInput | null> | null;
+  or?: Array<ModelProductFilterInput | null> | null;
+  not?: ModelProductFilterInput | null;
+};
+
+export type ModelProductConnection = {
+  __typename: 'ModelProductConnection';
+  items: Array<Product | null>;
+  nextToken?: string | null;
+};
+
 export type ModelUserFilterInput = {
   id?: ModelIDInput | null;
   email?: ModelStringInput | null;
@@ -284,32 +315,6 @@ export type ModelUserFilterInput = {
 export type ModelUserConnection = {
   __typename: 'ModelUserConnection';
   items: Array<User | null>;
-  nextToken?: string | null;
-};
-
-export type ModelProductFilterInput = {
-  id?: ModelIDInput | null;
-  serialno?: ModelIntInput | null;
-  engword?: ModelStringInput | null;
-  price?: ModelFloatInput | null;
-  category?: ModelStringInput | null;
-  description?: ModelStringInput | null;
-  stock?: ModelIntInput | null;
-  brand?: ModelStringInput | null;
-  imageKey?: ModelStringInput | null;
-  images?: ModelStringInput | null;
-  createdBy?: ModelStringInput | null;
-  updatedBy?: ModelStringInput | null;
-  createdAt?: ModelStringInput | null;
-  updatedAt?: ModelStringInput | null;
-  and?: Array<ModelProductFilterInput | null> | null;
-  or?: Array<ModelProductFilterInput | null> | null;
-  not?: ModelProductFilterInput | null;
-};
-
-export type ModelProductConnection = {
-  __typename: 'ModelProductConnection';
-  items: Array<Product | null>;
   nextToken?: string | null;
 };
 
@@ -345,32 +350,6 @@ export type LowStockProduct = {
   stock: number;
 };
 
-export type ModelSubscriptionUserFilterInput = {
-  email?: ModelSubscriptionStringInput | null;
-  name?: ModelSubscriptionStringInput | null;
-  role?: ModelSubscriptionStringInput | null;
-  createdAt?: ModelSubscriptionStringInput | null;
-  updatedAt?: ModelSubscriptionStringInput | null;
-  and?: Array<ModelSubscriptionUserFilterInput | null> | null;
-  or?: Array<ModelSubscriptionUserFilterInput | null> | null;
-  id?: ModelStringInput | null;
-};
-
-export type ModelSubscriptionStringInput = {
-  ne?: string | null;
-  eq?: string | null;
-  le?: string | null;
-  lt?: string | null;
-  ge?: string | null;
-  gt?: string | null;
-  contains?: string | null;
-  notContains?: string | null;
-  between?: Array<string | null> | null;
-  beginsWith?: string | null;
-  in?: Array<string | null> | null;
-  notIn?: Array<string | null> | null;
-};
-
 export type ModelSubscriptionProductFilterInput = {
   id?: ModelSubscriptionIDInput | null;
   serialno?: ModelSubscriptionIntInput | null;
@@ -381,6 +360,7 @@ export type ModelSubscriptionProductFilterInput = {
   stock?: ModelSubscriptionIntInput | null;
   brand?: ModelSubscriptionStringInput | null;
   imageKey?: ModelSubscriptionStringInput | null;
+  imageUploadedAt?: ModelSubscriptionStringInput | null;
   images?: ModelSubscriptionStringInput | null;
   createdBy?: ModelSubscriptionStringInput | null;
   updatedBy?: ModelSubscriptionStringInput | null;
@@ -417,6 +397,21 @@ export type ModelSubscriptionIntInput = {
   notIn?: Array<number | null> | null;
 };
 
+export type ModelSubscriptionStringInput = {
+  ne?: string | null;
+  eq?: string | null;
+  le?: string | null;
+  lt?: string | null;
+  ge?: string | null;
+  gt?: string | null;
+  contains?: string | null;
+  notContains?: string | null;
+  between?: Array<string | null> | null;
+  beginsWith?: string | null;
+  in?: Array<string | null> | null;
+  notIn?: Array<string | null> | null;
+};
+
 export type ModelSubscriptionFloatInput = {
   ne?: number | null;
   eq?: number | null;
@@ -427,6 +422,17 @@ export type ModelSubscriptionFloatInput = {
   between?: Array<number | null> | null;
   in?: Array<number | null> | null;
   notIn?: Array<number | null> | null;
+};
+
+export type ModelSubscriptionUserFilterInput = {
+  email?: ModelSubscriptionStringInput | null;
+  name?: ModelSubscriptionStringInput | null;
+  role?: ModelSubscriptionStringInput | null;
+  createdAt?: ModelSubscriptionStringInput | null;
+  updatedAt?: ModelSubscriptionStringInput | null;
+  and?: Array<ModelSubscriptionUserFilterInput | null> | null;
+  or?: Array<ModelSubscriptionUserFilterInput | null> | null;
+  id?: ModelStringInput | null;
 };
 
 export type ModelSubscriptionCommentFilterInput = {
@@ -458,6 +464,7 @@ export type CreateProductMutation = {
     stock?: number | null;
     brand?: string | null;
     imageKey?: string | null;
+    imageUploadedAt?: string | null;
     images?: Array<string | null> | null;
     createdBy?: string | null;
     updatedBy?: string | null;
@@ -487,6 +494,7 @@ export type UpdateProductMutation = {
     stock?: number | null;
     brand?: string | null;
     imageKey?: string | null;
+    imageUploadedAt?: string | null;
     images?: Array<string | null> | null;
     createdBy?: string | null;
     updatedBy?: string | null;
@@ -516,6 +524,7 @@ export type DeleteProductMutation = {
     stock?: number | null;
     brand?: string | null;
     imageKey?: string | null;
+    imageUploadedAt?: string | null;
     images?: Array<string | null> | null;
     createdBy?: string | null;
     updatedBy?: string | null;
@@ -633,44 +642,6 @@ export type DeleteCommentMutation = {
   } | null;
 };
 
-export type GetUserQueryVariables = {
-  id: string;
-};
-
-export type GetUserQuery = {
-  getUser?: {
-    __typename: 'User';
-    id: string;
-    email: string;
-    name: string;
-    role: UserRole;
-    createdAt: string;
-    updatedAt: string;
-  } | null;
-};
-
-export type ListUsersQueryVariables = {
-  filter?: ModelUserFilterInput | null;
-  limit?: number | null;
-  nextToken?: string | null;
-};
-
-export type ListUsersQuery = {
-  listUsers?: {
-    __typename: 'ModelUserConnection';
-    items: Array<{
-      __typename: 'User';
-      id: string;
-      email: string;
-      name: string;
-      role: UserRole;
-      createdAt: string;
-      updatedAt: string;
-    } | null>;
-    nextToken?: string | null;
-  } | null;
-};
-
 export type GetProductQueryVariables = {
   id: string;
 };
@@ -687,6 +658,7 @@ export type GetProductQuery = {
     stock?: number | null;
     brand?: string | null;
     imageKey?: string | null;
+    imageUploadedAt?: string | null;
     images?: Array<string | null> | null;
     createdBy?: string | null;
     updatedBy?: string | null;
@@ -719,9 +691,48 @@ export type ListProductsQuery = {
       stock?: number | null;
       brand?: string | null;
       imageKey?: string | null;
+      imageUploadedAt?: string | null;
       images?: Array<string | null> | null;
       createdBy?: string | null;
       updatedBy?: string | null;
+      createdAt: string;
+      updatedAt: string;
+    } | null>;
+    nextToken?: string | null;
+  } | null;
+};
+
+export type GetUserQueryVariables = {
+  id: string;
+};
+
+export type GetUserQuery = {
+  getUser?: {
+    __typename: 'User';
+    id: string;
+    email: string;
+    name: string;
+    role: UserRole;
+    createdAt: string;
+    updatedAt: string;
+  } | null;
+};
+
+export type ListUsersQueryVariables = {
+  filter?: ModelUserFilterInput | null;
+  limit?: number | null;
+  nextToken?: string | null;
+};
+
+export type ListUsersQuery = {
+  listUsers?: {
+    __typename: 'ModelUserConnection';
+    items: Array<{
+      __typename: 'User';
+      id: string;
+      email: string;
+      name: string;
+      role: UserRole;
       createdAt: string;
       updatedAt: string;
     } | null>;
@@ -808,6 +819,93 @@ export type CheckLowStockQuery = {
   } | null;
 };
 
+export type OnCreateProductSubscriptionVariables = {
+  filter?: ModelSubscriptionProductFilterInput | null;
+};
+
+export type OnCreateProductSubscription = {
+  onCreateProduct?: {
+    __typename: 'Product';
+    id: string;
+    serialno: number;
+    engword: string;
+    price?: number | null;
+    category?: string | null;
+    description?: string | null;
+    stock?: number | null;
+    brand?: string | null;
+    imageKey?: string | null;
+    imageUploadedAt?: string | null;
+    images?: Array<string | null> | null;
+    createdBy?: string | null;
+    updatedBy?: string | null;
+    createdAt: string;
+    updatedAt: string;
+    comments?: {
+      __typename: 'ModelCommentConnection';
+      nextToken?: string | null;
+    } | null;
+  } | null;
+};
+
+export type OnUpdateProductSubscriptionVariables = {
+  filter?: ModelSubscriptionProductFilterInput | null;
+};
+
+export type OnUpdateProductSubscription = {
+  onUpdateProduct?: {
+    __typename: 'Product';
+    id: string;
+    serialno: number;
+    engword: string;
+    price?: number | null;
+    category?: string | null;
+    description?: string | null;
+    stock?: number | null;
+    brand?: string | null;
+    imageKey?: string | null;
+    imageUploadedAt?: string | null;
+    images?: Array<string | null> | null;
+    createdBy?: string | null;
+    updatedBy?: string | null;
+    createdAt: string;
+    updatedAt: string;
+    comments?: {
+      __typename: 'ModelCommentConnection';
+      nextToken?: string | null;
+    } | null;
+  } | null;
+};
+
+export type OnDeleteProductSubscriptionVariables = {
+  filter?: ModelSubscriptionProductFilterInput | null;
+};
+
+export type OnDeleteProductSubscription = {
+  onDeleteProduct?: {
+    __typename: 'Product';
+    id: string;
+    serialno: number;
+    engword: string;
+    price?: number | null;
+    category?: string | null;
+    description?: string | null;
+    stock?: number | null;
+    brand?: string | null;
+    imageKey?: string | null;
+    imageUploadedAt?: string | null;
+    images?: Array<string | null> | null;
+    createdBy?: string | null;
+    updatedBy?: string | null;
+    createdAt: string;
+    updatedAt: string;
+    comments?: {
+      __typename: 'ModelCommentConnection';
+      nextToken?: string | null;
+    } | null;
+  } | null;
+};
+
 export type OnCreateUserSubscriptionVariables = {
   filter?: ModelSubscriptionUserFilterInput | null;
   id?: string | null;
@@ -856,90 +954,6 @@ export type OnDeleteUserSubscription = {
     role: UserRole;
     createdAt: string;
     updatedAt: string;
-  } | null;
-};
-
-export type OnCreateProductSubscriptionVariables = {
-  filter?: ModelSubscriptionProductFilterInput | null;
-};
-
-export type OnCreateProductSubscription = {
-  onCreateProduct?: {
-    __typename: 'Product';
-    id: string;
-    serialno: number;
-    engword: string;
-    price?: number | null;
-    category?: string | null;
-    description?: string | null;
-    stock?: number | null;
-    brand?: string | null;
-    imageKey?: string | null;
-    images?: Array<string | null> | null;
-    createdBy?: string | null;
-    updatedBy?: string | null;
-    createdAt: string;
-    updatedAt: string;
-    comments?: {
-      __typename: 'ModelCommentConnection';
-      nextToken?: string | null;
-    } | null;
-  } | null;
-};
-
-export type OnUpdateProductSubscriptionVariables = {
-  filter?: ModelSubscriptionProductFilterInput | null;
-};
-
-export type OnUpdateProductSubscription = {
-  onUpdateProduct?: {
-    __typename: 'Product';
-    id: string;
-    serialno: number;
-    engword: string;
-    price?: number | null;
-    category?: string | null;
-    description?: string | null;
-    stock?: number | null;
-    brand?: string | null;
-    imageKey?: string | null;
-    images?: Array<string | null> | null;
-    createdBy?: string | null;
-    updatedBy?: string | null;
-    createdAt: string;
-    updatedAt: string;
-    comments?: {
-      __typename: 'ModelCommentConnection';
-      nextToken?: string | null;
-    } | null;
-  } | null;
-};
-
-export type OnDeleteProductSubscriptionVariables = {
-  filter?: ModelSubscriptionProductFilterInput | null;
-};
-
-export type OnDeleteProductSubscription = {
-  onDeleteProduct?: {
-    __typename: 'Product';
-    id: string;
-    serialno: number;
-    engword: string;
-    price?: number | null;
-    category?: string | null;
-    description?: string | null;
-    stock?: number | null;
-    brand?: string | null;
-    imageKey?: string | null;
-    images?: Array<string | null> | null;
-    createdBy?: string | null;
-    updatedBy?: string | null;
-    createdAt: string;
-    updatedAt: string;
-    comments?: {
-      __typename: 'ModelCommentConnection';
-      nextToken?: string | null;
-    } | null;
   } | null;
 };
 

@@ -114,7 +114,7 @@ Cognito-based authentication using email. Auto-configured during API setup.
 
 ### Storage
 
-S3 bucket to manager product images.
+S3 bucket to manage product images with a trigger function that updates the _Product_ model.
 
 ```console
 amplify add storage
@@ -126,7 +126,26 @@ amplify add storage
 ✔ Provide bucket name: · (accept default value)
 ✔ Who should have access: · Auth users only
 ✔ What kind of access do you want for Authenticated users? · create/update, read, delete
-✔ Do you want to add a Lambda Trigger for your S3 Bucket? (y/N) · no
+✔ Do you want to add a Lambda Trigger for your S3 Bucket? (y/N) · yes
+✔ Do you want to edit the local S3Triggera48a234d lambda function now? (y/N) · no
+```
+
+```console
+amplify update function
+```
+
+```console
+? Select the Lambda function you want to update S3Triggera48a234d
+? Which setting do you want to update? Resource access permissions
+? Select the categories you want this function to have access to. api
+? Select the operations you want to permit on productcatalog Mutation
+
+You can access the following resource attributes as environment variables from your Lambda function
+        API_PRODUCTCATALOG_GRAPHQLAPIENDPOINTOUTPUT
+        API_PRODUCTCATALOG_GRAPHQLAPIIDOUTPUT
+        API_PRODUCTCATALOG_GRAPHQLAPIKEYOUTPUT
+
+? Do you want to edit the local lambda function now? No
 ```
 
 ### Function
@@ -163,8 +182,14 @@ You can access the following resource attributes as environment variables from y
         REGION
 ? Do you want to invoke this function on a recurring schedule? No
 ? Do you want to enable Lambda layers for this function? No
-? Do you want to configure environment variables for this function? No
-? Do you want to configure secret values this function can access? No
+? Do you want to configure environment variables for this function? Yes
+? Enter the environment variable name: LOW_STOCK_THRESHOLD
+? Enter the environment variable value: 5
+? Select what you want to do with environment variables: I'm done
+? Do you want to configure secret values this function can access? Yes
+? Enter a secret name (this is the key used to look up the secret value): PRODUCT_CATALOG_SECRET
+? Enter the value for PRODUCT_CATALOG_SECRET: shhh
+? What do you want to do? I'm done
 ✔ Choose the package manager that you want to use: · NPM
 ? Do you want to edit the local lambda function now? No
 ```
@@ -172,19 +197,18 @@ You can access the following resource attributes as environment variables from y
 ## Configure
 
 ```console
-/bin/cp -f schema.graphql ./amplify/backend/api/productcatalog/schema.graphql
+npm run configure
 ```
 
-```console
-/bin/cp -f lowstockproducts.js ./amplify/backend/function/lowstockproducts/src/index.js
-```
+On the AWS Amplify console, locate the application id.
 
-```console
-/bin/cp -f lowstockproducts.package.json ./amplify/backend/function/lowstockproducts/src/package.json
-```
+![](./images/gen1-app-id.png)
 
-```console
-/bin/cp -f custom-roles.json ./amplify/backend/api/productcatalog/custom-roles.json
+**Edit in `./amplify/backend/api/productcatalog/custom-roles.json`:**
+
+```diff
+- "amplify-${appId}"
++ "amplify-<app-id>"
 ```
 
 ## Deploy Backend
@@ -197,13 +221,15 @@ amplify push
 ┌──────────┬────────────────────────┬───────────┬───────────────────┐
 │ Category │ Resource name          │ Operation │ Provider plugin   │
 ├──────────┼────────────────────────┼───────────┼───────────────────┤
-│ Auth     │ productcatalog03a8b689 │ Create    │ awscloudformation │
+│ Auth     │ productcatalog80b6eb59 │ Create    │ awscloudformation │
 ├──────────┼────────────────────────┼───────────┼───────────────────┤
 │ Api      │ productcatalog         │ Create    │ awscloudformation │
 ├──────────┼────────────────────────┼───────────┼───────────────────┤
-│ Storage  │ s380dbcc1e             │ Create    │ awscloudformation │
+│ Function │ S3Triggera48a234d      │ Create    │ awscloudformation │
 ├──────────┼────────────────────────┼───────────┼───────────────────┤
 │ Function │ lowstockproducts       │ Create    │ awscloudformation │
+├──────────┼────────────────────────┼───────────┼───────────────────┤
+│ Storage  │ s3df09eabf             │ Create    │ awscloudformation │
 └──────────┴────────────────────────┴───────────┴───────────────────┘
 
 ✔ Are you sure you want to continue? (Y/n) · yes
@@ -284,6 +310,16 @@ npx amplify gen2-migration generate
 +     actions: ['appsync:GraphQL'],
 +     resources: [`arn:aws:appsync:${backend.data.stack.region}:${backend.data.stack.account}:apis/${backend.data.apiId}/types/Query/*`]
 + }))
+
++ backend.S3Trigger<suffix>.addEnvironment('API_PRODUCTCATALOG_GRAPHQLAPIKEYOUTPUT', backend.data.apiKey!)
++ backend.S3Trigger<suffix>.addEnvironment('API_PRODUCTCATALOG_GRAPHQLAPIENDPOINTOUTPUT', backend.data.graphqlUrl)
++ backend.S3Trigger<suffix>.addEnvironment('API_PRODUCTCATALOG_GRAPHQLAPIIDOUTPUT', backend.data.apiId)
+
++ backend.S3Trigger<suffix>.resources.lambda.addToRolePolicy(new aws_iam.PolicyStatement({
++     effect: aws_iam.Effect.ALLOW,
++     actions: ['appsync:GraphQL'],
++     resources: [`arn:aws:appsync:${backend.data.stack.region}:${backend.data.stack.account}:apis/${backend.data.apiId}/types/Mutation/*`]
++ }))
 ``` 
 
 On the AppSync AWS Console, locate the ID of Gen1 API, it will be named `productcatalog-main`.
@@ -301,7 +337,29 @@ On the AppSync AWS Console, locate the ID of Gen1 API, it will be named `product
 ```
 
 
-**Edit in `./amplify/backend/function/quotegenerator/index.js`:**
+**Edit in `./amplify/backend/function/lowstockproducts/index.js`:**
+
+```diff
+- exports.handler = async (event) => {
++ export async function handler(event) {
+```
+
+```diff
+- const secretValue = await fetchSecret();
++ const secretValue = process.env['PRODUCT_CATALOG_SECRET'];
+```
+
+**Edit in `./amplify/backend/function/lowstockproducts/resource.ts`:**
+
+```diff
+- import { defineFunction } from "@aws-amplify/backend";
++ import { defineFunction, secret } from "@aws-amplify/backend";
+
+- PRODUCT_CATALOG_SECRET: "/amplify/d3ttwn44fldtgx/main/AMPLIFY_lowstockproducts_PRODUCT_CATALOG_SECRET"
++ PRODUCT_CATALOG_SECRET: secret("PRODUCT_CATALOG_SECRET")
+```
+
+**Edit in `./amplify/backend/storage/S3Trigger<suffix>/index.js`:**
 
 ```diff
 - exports.handler = async (event) => {
@@ -314,6 +372,10 @@ On the AppSync AWS Console, locate the ID of Gen1 API, it will be named `product
 - import amplifyconfig from './amplifyconfiguration.json';
 + import amplifyconfig from '../amplify_outputs.json';
 ```
+
+In the Amplify console, recreate the `PRODUCT_CATALOG_SECRET` secret:
+
+![](./images/recreate-secret.png)
 
 ```console
 git add .

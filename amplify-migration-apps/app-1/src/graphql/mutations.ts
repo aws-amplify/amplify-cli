@@ -22,6 +22,7 @@ export const createProduct = /* GraphQL */ `mutation CreateProduct(
     stock
     brand
     imageKey
+    imageUploadedAt
     images
     createdBy
     updatedBy
@@ -49,6 +50,7 @@ export const updateProduct = /* GraphQL */ `mutation UpdateProduct(
     stock
     brand
     imageKey
+    imageUploadedAt
     images
     createdBy
     updatedBy
@@ -76,6 +78,7 @@ export const deleteProduct = /* GraphQL */ `mutation DeleteProduct(
     stock
     brand
     imageKey
+    imageUploadedAt
     images
     createdBy
     updatedBy
