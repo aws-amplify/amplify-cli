@@ -13,7 +13,6 @@ import {
 } from '@aws-sdk/client-s3';
 import { BackendEnvironmentResolver } from './backend_environment_selector';
 import { fileOrDirectoryExists } from './directory_exists';
-import { stateManager } from '@aws-amplify/amplify-cli-core';
 import { DynamoDBClient, DescribeTableCommand } from '@aws-sdk/client-dynamodb';
 
 export interface AppStorageDefinitionFetcher {
