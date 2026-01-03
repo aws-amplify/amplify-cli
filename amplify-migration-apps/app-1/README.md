@@ -286,6 +286,21 @@ npx amplify gen2-migration generate
 + }))
 ``` 
 
+On the AppSync AWS Console, locate the ID of Gen1 API, it will be named `productcatalog-main`.
+
+![](./images/gen1-appsync-api-id.png)
+
+**Edit in `./amplify/backend.ts`:**
+
+```diff
++ backend.auth.resources.authenticatedUserIamRole.addToPrincipalPolicy(new aws_iam.PolicyStatement({
++     effect: aws_iam.Effect.ALLOW,
++     actions: ['appsync:GraphQL'],
++     resources: [`arn:aws:appsync:${backend.data.stack.region}:${backend.data.stack.account}:apis/<gen1-appsync-api-id>/*`]
++ }))
+```
+
+
 **Edit in `./amplify/backend/function/quotegenerator/index.js`:**
 
 ```diff
@@ -330,20 +345,6 @@ git checkout gen2-main
 ```diff
 - // s3Bucket.bucketName = '...';
 + s3Bucket.bucketName = '...';
-```
-
-On the AppSync AWS Console, locate the ID of original Gen1 API, it will be named `productcatalog-main`.
-
-![](./images/gen1-appsync-api-id.png)
-
-**Edit in `./amplify/backend.ts`:**
-
-```diff
-+ backend.auth.resources.authenticatedUserIamRole.addToPrincipalPolicy(new aws_iam.PolicyStatement({
-+     effect: aws_iam.Effect.ALLOW,
-+     actions: ['appsync:GraphQL'],
-+     resources: [`arn:aws:appsync:${backend.data.stack.region}:${backend.data.stack.account}:apis/<gen1-appsync-api-id>/*`]
-+ }))
 ```
 
 ```console
