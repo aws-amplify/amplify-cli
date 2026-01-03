@@ -17,11 +17,6 @@ export type DynamoDBTableDefinition = {
   partitionKey: DynamoDBAttribute;
   sortKey?: DynamoDBAttribute;
   gsis?: DynamoDBGSI[];
-  lambdaPermissions?: {
-    functionName: string;
-    envVarName: string;
-  }[];
-  triggerFunctions?: string[];
   billingMode?: 'PROVISIONED' | 'PAY_PER_REQUEST';
   readCapacity?: number;
   writeCapacity?: number;
