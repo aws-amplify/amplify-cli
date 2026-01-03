@@ -287,13 +287,19 @@ Following provides an overview of the supported (and unsupported) features for m
 
     - **Select the categories you want this function to have access to**
 
-      - ❌ Api
+      - ❌ api
 
         - **Select the operations you want to permit**
 
           - ❌ Query
           - ❌ Mutation
           - ❌ Subscription
+
+      - ❌ auth
+
+      - ❌ function
+
+      - ❌ storage
 
     - ❌ **Do you want to invoke this function on a recurring schedule**
     - ❌ **Do you want to enable Lambda layers for this function**
@@ -368,4 +374,21 @@ type Todo @model @auth(rules: [{ allow: private, provider: iam }]) {
 }
 ```
 
-Accessing such models is done using the `AuthRole`
+Clients access such models done using the `AuthRole` configured on the identity pool. 
+After the refactor operation, the `AuthRole` is updated to point to the Gen2 role, which doesn't 
+allow access to the Gen1 AppSync API.
+
+To workaround this issue, you must pre allow .. by configuring a custom admin role on the Gen1 API.
+
+`+ ./amplify/backend/api/<api-name>/custom-roles.json`
+
+```json
+{
+  "adminRoleNames": [ "amplify-${appId}" ]
+}
+```
+
+> Where `${appId}` should be replaced with the value of the Gen1 applicaion id. This role name follows 
+> the Gen2 `AuthRole` naming pattern and therefore allows access to **any** Gen2 environment (branch).
+
+Once added, redeploy the app by running `amplify push`.
