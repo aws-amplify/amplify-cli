@@ -75,13 +75,6 @@ describe('Storage Adapter DynamoDB Support', () => {
               sortKey: { name: 'createdAt', type: 'NUMBER' },
             },
           ],
-          lambdaPermissions: [
-            {
-              functionName: 'dataProcessor',
-              envVarName: 'TABLE_NAME',
-            },
-          ],
-          triggerFunctions: ['streamHandler'],
         },
       ];
 
@@ -94,8 +87,6 @@ describe('Storage Adapter DynamoDB Support', () => {
       expect(result.dynamoTables).toHaveLength(1);
       expect(result.dynamoTables![0].tableName).toBe('complexTable-dev');
       expect(result.dynamoTables![0].gsis).toHaveLength(1);
-      expect(result.dynamoTables![0].lambdaPermissions).toHaveLength(1);
-      expect(result.dynamoTables![0].triggerFunctions).toHaveLength(1);
       expect(result.dynamoTables![0].streamEnabled).toBe(true);
     });
 

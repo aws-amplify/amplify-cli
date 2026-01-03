@@ -117,20 +117,11 @@ export class AppStorageDefinitionFetcher {
       });
     }
 
-    const lambdaPermissions = this.findLambdaPermissions(actualTableName);
-
-    // Parse triggerFunctions from cli-inputs.json
-    const cliInputsPath = path.join(currentCloudBackendDirectory, 'storage', storageName, 'cli-inputs.json');
-    const cliInputs = await this.readJsonFile(cliInputsPath);
-    const triggerFunctions = cliInputs.triggerFunctions || [];
-
     return {
       tableName: actualTableName,
       partitionKey,
       sortKey,
       gsis: gsis.length > 0 ? gsis : undefined,
-      lambdaPermissions: lambdaPermissions.length > 0 ? lambdaPermissions : undefined,
-      triggerFunctions: triggerFunctions.length > 0 ? triggerFunctions : undefined,
       billingMode: table.BillingModeSummary?.BillingMode === 'PAY_PER_REQUEST' ? 'PAY_PER_REQUEST' : 'PROVISIONED',
       readCapacity: table.ProvisionedThroughput?.ReadCapacityUnits || 5,
       writeCapacity: table.ProvisionedThroughput?.WriteCapacityUnits || 5,
@@ -155,30 +146,6 @@ export class AppStorageDefinitionFetcher {
       default:
         return 'STRING';
     }
-  };
-
-  // Finding lambda permissions that exist
-  private findLambdaPermissions = (tableName: string) => {
-    const permissions: { functionName: string; envVarName: string }[] = [];
-    const meta = stateManager.getMeta();
-
-    if (meta.function) {
-      Object.entries(meta.function).forEach(([functionName]: [string, unknown]) => {
-        const functionInputs = stateManager.getResourceInputsJson(undefined, 'function', functionName);
-        if (functionInputs?.environmentVariables) {
-          Object.entries(functionInputs.environmentVariables).forEach(([envVar, value]: [string, unknown]) => {
-            if (typeof value === 'string' && value.includes(tableName)) {
-              permissions.push({
-                functionName,
-                envVarName: envVar,
-              });
-            }
-          });
-        }
-      });
-    }
-
-    return permissions;
   };
 
   getDefinition = async (): Promise<StorageRenderParameters | undefined> => {

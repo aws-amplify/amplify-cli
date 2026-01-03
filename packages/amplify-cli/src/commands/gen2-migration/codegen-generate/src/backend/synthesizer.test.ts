@@ -515,57 +515,6 @@ describe('BackendSynthesizer', () => {
       expect(source).toContain('stream: StreamViewType.NEW_AND_OLD_IMAGES');
     });
 
-    it('should generate Lambda permissions for table access', () => {
-      const tableDefinition: DynamoDBTableDefinition = {
-        tableName: 'permissionTable',
-        partitionKey: { name: 'id', type: 'STRING' },
-        billingMode: 'PAY_PER_REQUEST',
-        lambdaPermissions: [
-          {
-            functionName: 'testFunction',
-            envVarName: 'TABLE_NAME',
-          },
-        ],
-      };
-
-      const result = synthesizer.render({
-        storage: {
-          importFrom: './storage/resource',
-          dynamoTables: [tableDefinition],
-        },
-      });
-
-      const source = printNodeArray(result);
-      expect(source).toContain('permissionTable.grantReadWriteData');
-      expect(source).toContain('backend.testFunction.resources.lambda');
-      expect(source).toContain('backend.testFunction.addEnvironment("TABLE_NAME"');
-      expect(source).toContain('permissionTable.tableName');
-    });
-
-    it('should generate trigger functions for DynamoDB streams', () => {
-      const tableDefinition: DynamoDBTableDefinition = {
-        tableName: 'triggerTable',
-        partitionKey: { name: 'id', type: 'STRING' },
-        billingMode: 'PAY_PER_REQUEST',
-        streamEnabled: true,
-        streamViewType: 'NEW_IMAGE',
-        triggerFunctions: ['streamProcessor'],
-      };
-
-      const result = synthesizer.render({
-        storage: {
-          importFrom: './storage/resource',
-          dynamoTables: [tableDefinition],
-        },
-      });
-
-      const source = printNodeArray(result);
-      expect(source).toContain('triggerTable.grantStreamRead');
-      expect(source).toContain('backend.streamProcessor.resources.lambda');
-      expect(source).toContain('"TRIGGERTABLE_STREAM_ARN"');
-      expect(source).toContain('triggerTable.tableStreamArn');
-    });
-
     it('should handle multiple tables with different configurations', () => {
       const tables: DynamoDBTableDefinition[] = [
         {
