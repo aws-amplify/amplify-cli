@@ -288,7 +288,7 @@ Following provides an overview of the supported (and unsupported) features for m
         - ✅ read
         - ✅ delete
 
-  - ❌ **Do you want to add a Lambda Trigger for your S3 Bucket?**
+  - ✅ **Do you want to add a Lambda Trigger for your S3 Bucket?**
 
 ## Function
 
