@@ -140,6 +140,48 @@ environment variables and give it the necessary permissions.
 + }))
 ```
 
+If your function access AppSync using IAM credentials, you also need to add:
+
+```diff
++ backend.auth.resources.authenticatedUserIamRole.addToPrincipalPolicy(new aws_iam.PolicyStatement({
++     effect: aws_iam.Effect.ALLOW,
++     actions: ['appsync:GraphQL'],
++     resources: [`arn:aws:appsync:${backend.data.stack.region}:${backend.data.stack.account}:apis/<gen1-appsync-api-id>/*`]
++ }))
+```
+
+Navigate to the Amplify Console to find the `<gen1-appsync-api-id>` On the AppSync AWS Console. For example:
+
+![](./migration-guide-images/gen1-appsync-api-id.png)
+
+This is required in order for your Gen1 environment to keep functioning correctly after the `refactor` step.
+
+> See [GraphQL types protected with the IAM provider](#graphql-types-protected-by-the-iam-auth-provider) for more details.
+
+#### 2.3 Post Generate | Function Secrets
+
+If your function was configured with a secret value, you must first recreate the secret using the amplify console.
+
+**Hosting → Secrets → Manage Secrets → Add new**
+
+![](./migration-guide-images/add-secret.png)
+
+Next, pass this secret in the function definition. For example, for a secret called `MY_SECRET`, 
+**Edit in `./amplify/backend/<function-name>/resource.ts:**:
+
+```diff
+- import { defineFunction } from "@aws-amplify/backend";
++ import { defineFunction, secret } from "@aws-amplify/backend";
+
+- MY_SECRET: "/amplify/<hash>/main/AMPLIFY_<function-name>_MY_SECRET"
++ MY_SECRET: secret("/amplify/<hash>/main/AMPLIFY_<function-name>_MY_SECRET")
+```
+
+**Then, in your function code, use `process.MY_SECRET` to obtain the secret value.**
+
+> See [Secrets](https://docs.amplify.aws/react/build-a-backend/functions/environment-variables-and-secrets/#secrets) 
+> for more information.
+
 ### 3. Deploy
 
 To deploy the generated Gen2 application first push the code:
@@ -353,7 +395,7 @@ Following provides an overview of the supported (and unsupported) features for m
 
 ## Limitations
 
-**GraphQL types without an `@auth` directive**
+### GraphQL types without an `@auth` directive
 
 ```graphql
 type Todo @model {
@@ -391,7 +433,7 @@ type Query {
 }
 ```
 
-**GraphQL types protected by the `iam` auth provider**
+### GraphQL types protected by the `iam` auth provider
 
 ```graphql
 type Todo @model @auth(rules: [{ allow: private, provider: iam }]) {
