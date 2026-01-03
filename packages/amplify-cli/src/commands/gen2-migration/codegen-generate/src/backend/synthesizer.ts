@@ -895,7 +895,9 @@ export class BackendSynthesizer {
 
       // Generate tables
       renderArgs.storage.dynamoTables.forEach((table: DynamoDBTableDefinition) => {
-        const sanitizedTableName = this.sanitizeVariableName(table.tableName);
+        // Remove environment suffix from table name to make Gen2 code more portable
+        const baseTableName = table.tableName.replace(/-[^-]+$/, '');
+        const sanitizedTableName = this.sanitizeVariableName(baseTableName);
         const tableProps: ts.PropertyAssignment[] = [
           factory.createPropertyAssignment(
             'partitionKey',
