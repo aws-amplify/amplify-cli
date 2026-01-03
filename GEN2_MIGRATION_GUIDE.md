@@ -140,7 +140,7 @@ environment variables and give it the necessary permissions.
 + }))
 ```
 
-If your function access AppSync using IAM credentials, you also need to add:
+If your function accesses AppSync using IAM credentials, you also need to add:
 
 ```diff
 + backend.auth.resources.authenticatedUserIamRole.addToPrincipalPolicy(new aws_iam.PolicyStatement({
