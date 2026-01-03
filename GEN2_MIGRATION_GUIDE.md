@@ -216,11 +216,17 @@ Wait for the deployment to finish successfully.
 
 Following provides an overview of the supported (and unsupported) features for migration.
 
+> **Legend**
+>
+> - ❌ Unsupported
+> - ✅ Fully automated
+> - ⚠️ Requires manual code (provided by this guide)
+
 ## Auth
 
 ### `amplify add auth`
 
-- ✅ **Default Configuration**
+- ➤ **Default Configuration**
 
   - ❌ Username
   - ✅ Email
@@ -235,9 +241,9 @@ Following provides an overview of the supported (and unsupported) features for m
 
 ### `amplify add api`
 
-- ✅ **GraphQL**
+- ➤ **GraphQL**
 
-  - **Default Authorization Type**
+  - ➤ **Default Authorization Type**
 
     - ✅ API Key
     - ❌ Amazon Cognito User Pool
@@ -245,7 +251,7 @@ Following provides an overview of the supported (and unsupported) features for m
     - ❌ OpenID Connect
     - ❌ Lambda
 
-  - **Additional Authorization Type**
+  - ➤ **Additional Authorization Type**
 
     - ✅ API Key
     - ✅ Amazon Cognito User Pool
@@ -294,9 +300,9 @@ Following provides an overview of the supported (and unsupported) features for m
 
 ### `amplify add function`
 
-- ✅ **Lambda function (serverless function)**
+- ➤ **Lambda function (serverless function)**
 
-  - ✅ Runtime
+  - ➤ Runtime
 
     - ❌ .NET 8
     - ❌ Go
@@ -304,16 +310,16 @@ Following provides an overview of the supported (and unsupported) features for m
     - ✅ NodeJS
     - ❌ Python
 
-  - ✅ **Advanced Settings**
+  - ➤ **Advanced Settings**
 
     - **Select the categories you want this function to have access to**
 
-      - ✅ api
+      - ➤ api
 
         - **Select the operations you want to permit**
 
-          - ✅ Query
-          - ✅ Mutation
+          - ⚠️ Query
+          - ⚠️ Mutation
           - ❌ Subscription
 
       - ❌ auth
