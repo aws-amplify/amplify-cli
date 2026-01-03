@@ -99,7 +99,7 @@ Note that client side libraries support both files so no additional change is ne
 This is required in order to instruct the hosting service that DynamoDB tables 
 should be reused (imported) instead of recreated.
 
-#### 2.1 Post Generate | NodeJS Function
+#### 2.1 Post Generate | NodeJS Function ESM Compatibility
 
 If you have a NodeJS Lambda function in your app, you need to port your code 
 to ESM instead of CommonsJS. For example:
@@ -110,10 +110,35 @@ to ESM instead of CommonsJS. For example:
 ```
 
 This is required because Gen2 adds lambda shims that conflict with CommonJS syntax. 
-Otherwise, you will see the following error when invoking the function: _"Cannot determine intended module format because both require() and top-level await are present"_
+Otherwise, you will see the following error when invoking the function: 
+_"Cannot determine intended module format because both require() and top-level await are present"_
 
 
 > See [ESM/CJS Interoperability](https://www.typescriptlang.org/docs/handbook/modules/appendices/esm-cjs-interop.html)
+
+#### 2.2 Post Generate | Api Function Access
+
+If your function needs to access the AppSync API you need to explicitly provide it with the appropriate 
+environment variables and give it the necessary permissions.
+
+**Edit in `./amplify/backend.ts`:**
+
+```diff
+- import { Duration } from "aws-cdk-lib";
++ import { Duration, aws_iam } from "aws-cdk-lib";
+```
+
+```diff
++ backend.<function-friendly-name>.addEnvironment('API_PRODUCTCATALOG_GRAPHQLAPIKEYOUTPUT', backend.data.apiKey!)
++ backend.<function-friendly-name>.addEnvironment('API_PRODUCTCATALOG_GRAPHQLAPIENDPOINTOUTPUT', backend.data.graphqlUrl)
++ backend.<function-friendly-name>.addEnvironment('API_PRODUCTCATALOG_GRAPHQLAPIIDOUTPUT', backend.data.apiId)
+
++ backend.<function-friendly-name>.resources.lambda.addToRolePolicy(new aws_iam.PolicyStatement({
++     effect: aws_iam.Effect.ALLOW,
++     actions: ['appsync:GraphQL'],
++     resources: [`arn:aws:appsync:${backend.data.stack.region}:${backend.data.stack.account}:apis/${backend.data.apiId}/types/Query/*`]
++ }))
+```
 
 ### 3. Deploy
 
