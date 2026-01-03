@@ -439,8 +439,8 @@ describe('BackendSynthesizer', () => {
       });
 
       const source = printNodeArray(result);
-      expect(source).toContain('const countsTable_dev = new Table');
-      expect(source).toContain('"countsTable_dev"');
+      expect(source).toContain('const countsTable = new Table');
+      expect(source).toContain('"countsTable"');
       expect(source).not.toContain('countsTable-dev');
     });
 
@@ -540,10 +540,10 @@ describe('BackendSynthesizer', () => {
       });
 
       const source = printNodeArray(result);
-      expect(source).toContain('const table_one = new Table');
-      expect(source).toContain('const table_two = new Table');
-      expect(source).toContain('"table_one"');
-      expect(source).toContain('"table_two"');
+      expect(source).toContain('const table = new Table');
+      expect(source).toContain('const table = new Table');
+      expect(source).toContain('"table"');
+      expect(source).toContain('"table"');
       expect(source).toContain('readCapacity: 10');
       expect(source).toContain('writeCapacity: 10');
     });
@@ -621,8 +621,8 @@ describe('BackendSynthesizer', () => {
       });
 
       const source = printNodeArray(result);
-      expect(source).toContain('const my_complex_table_name_dev = new Table');
-      expect(source).toContain('"my_complex_table_name_dev"');
+      expect(source).toContain('const my_complex_table_name = new Table');
+      expect(source).toContain('"my_complex_table_name"');
       expect(source).not.toContain('my-complex-table-name-dev');
     });
 
