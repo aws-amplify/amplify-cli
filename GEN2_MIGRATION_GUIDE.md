@@ -367,3 +367,5 @@ type Todo @model @auth(rules: [{ allow: private, provider: iam }]) {
   description: String
 }
 ```
+
+Accessing such models is done using the `AuthRole`
