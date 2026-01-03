@@ -144,11 +144,7 @@ amplify add function
 ## Configure
 
 ```console
-/bin/cp -f schema.graphql ./amplify/backend/api/projectboards/schema.graphql
-```
-
-```console
-/bin/cp -f quotegenerator.js ./amplify/backend/function/quotegenerator/src/index.js
+npm run configure
 ```
 
 ## Deploy Backend
