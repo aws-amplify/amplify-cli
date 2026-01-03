@@ -162,7 +162,7 @@ This is required in order for your Gen1 environment to keep functioning correctl
 
 If your function was configured with a secret value, you must first recreate the secret using the amplify console.
 
-**Hosting → Secrets → Manage Secrets → Add new**
+_Hosting → Secrets → Manage Secrets → Add new_
 
 ![](./migration-guide-images/add-secret.png)
 
@@ -194,7 +194,7 @@ git push origin gen2-main
 
 Next, login to the AWS Amplify console and connect your new branch to the existing application:
 
-**App Settings → Branch Settings → Add Branch**
+_App Settings → Branch Settings → Add Branch_
 
 ![](./migration-guide-images/add-branch.png)
 
