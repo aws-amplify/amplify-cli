@@ -256,10 +256,6 @@ Following provides an overview of the supported (and unsupported) features for m
 
 ### GraphQL Schema
 
-**GraphQL schema must include an `@auth` directive on all its models and operations.**
-
-> Why? Because the absence of `@auth` invokes default default auth providers, which differ between Gen1 and Gen2.
-
 ### Custom Resolvers
 
 ## Storage
@@ -312,12 +308,12 @@ Following provides an overview of the supported (and unsupported) features for m
 
     - **Select the categories you want this function to have access to**
 
-      - ❌ api
+      - ✅ api
 
         - **Select the operations you want to permit**
 
-          - ❌ Query
-          - ❌ Mutation
+          - ✅ Query
+          - ✅ Mutation
           - ❌ Subscription
 
       - ❌ auth
@@ -399,11 +395,12 @@ type Todo @model @auth(rules: [{ allow: private, provider: iam }]) {
 }
 ```
 
-Clients access such models done using the `AuthRole` configured on the identity pool. 
-After the refactor operation, the `AuthRole` is updated to point to the Gen2 role, which doesn't 
-allow access to the Gen1 AppSync API.
+Clients access such models using the `AuthRole` configured on the identity pool. 
+After the refactor operation, the role is updated to point to the Gen2 role, which doesn't 
+allow access to the Gen1 AppSync API. This means that after refactor your **Gen1** environment will 
+loose IAM access to the API (but **Gen2** will work correctly).
 
-To workaround this issue, you must pre allow .. by configuring a custom admin role on the Gen1 API.
+To workaround this issue, you must pre allow the Gen2 `AuthRole` by [configuring a custom admin role](https://docs.amplify.aws/gen1/javascript/build-a-backend/graphqlapi/customize-authorization-rules/#use-iam-authorization-within-the-appsync-console) on the Gen1 API.
 
 `+ ./amplify/backend/api/<api-name>/custom-roles.json`
 
