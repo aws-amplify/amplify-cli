@@ -459,4 +459,10 @@ after: `import { DynamoDBClient } from '@aws-sdk/client-dynamodb';`
 before: `return (result.Items || []).map(item => ({`   
 after: `return (result.Items || []).map((item: any) => ({`  
 
+5. in `data/resource.ts`:   
+
+before: `@function(name: "activityLogger-\${env}")`   
+after: `@function(name: "amplify-<appId>-gen2<branchName>-handlerlambda<hash>-<suffix>")`   
+(Find actual Lambda name in CloudFormation → Stack Resources → search "handlerlambda") 
+
 The migration tool currently does not support lambda triggers on the dynamoDB resource. You will need to manually migrate this.
