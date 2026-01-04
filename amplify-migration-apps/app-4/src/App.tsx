@@ -5,6 +5,7 @@ import { useEffect, useState, useRef, createContext, useContext } from 'react';
 
 import { generateClient } from 'aws-amplify/api';
 import { uploadData, getUrl, downloadData, getProperties } from 'aws-amplify/storage';
+import { get, post } from 'aws-amplify/api';
 
 import { Button, Heading, Authenticator } from '@aws-amplify/ui-react';
 import '@aws-amplify/ui-react/styles.css';
@@ -499,7 +500,262 @@ const MultiImageDisplay: React.FC<{ imagePaths: string[] }> = ({ imagePaths }) =
   );
 };
 
-// Read-only App Component for unauthenticated users
+// Food Search Component
+const FoodSearch: React.FC<{ user?: AuthUser; onFoodSelect: (food: any) => void }> = ({ user, onFoodSelect }) => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const { theme } = useTheme();
+  const themedStyles = getThemedStyles(theme);
+
+  async function searchFood() {
+    if (!searchTerm.trim() || !user) return;
+    
+    try {
+      setLoading(true);
+      const response = await get({
+        apiName: 'nutritionapi',
+        path: `/nutrition/search/${encodeURIComponent(searchTerm)}`
+      }).response;
+      
+      const data = await response.body.json() as any;
+      if (data && data.success) {
+        setSearchResults(data.results);
+      }
+    } catch (error) {
+      console.log('Error searching food:', error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  if (!user) return null;
+
+  return (
+    <div style={{ marginBottom: 16 }}>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+        <input
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          onKeyPress={(e) => e.key === 'Enter' && searchFood()}
+          style={{ ...themedStyles.input, marginBottom: 0, flex: 1 }}
+          placeholder="Search foods (apple, chicken, etc.)"
+        />
+        <button 
+          style={{ ...themedStyles.editButton, padding: '8px 16px' }}
+          onClick={searchFood}
+          disabled={loading || !searchTerm.trim()}
+        >
+          {loading ? '⏳' : '🔍'}
+        </button>
+      </div>
+      
+      {searchResults.length > 0 && (
+        <div style={{ maxHeight: 200, overflowY: 'auto', border: theme === 'dark' ? '1px solid #4a5568' : '1px solid #e1e8ed', borderRadius: 6 }}>
+          {searchResults.map((food) => (
+            <div
+              key={food.id}
+              style={{
+                padding: 8,
+                borderBottom: theme === 'dark' ? '1px solid #4a5568' : '1px solid #e1e8ed',
+                cursor: 'pointer',
+                backgroundColor: theme === 'dark' ? '#2d3748' : 'white'
+              }}
+              onClick={() => onFoodSelect(food)}
+            >
+              <div style={{ fontWeight: '600', fontSize: 14 }}>{food.name}</div>
+              <div style={{ fontSize: 12, color: themedStyles.todoDescription.color }}>
+                {food.calories} cal | {food.protein}g protein | {food.carbs}g carbs | {food.fat}g fat
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Meal Logging Component
+const MealLogger: React.FC<{ user?: AuthUser; onMealLogged: () => void }> = ({ user, onMealLogged }) => {
+  const [selectedFood, setSelectedFood] = useState<any>(null);
+  const [quantity, setQuantity] = useState(1);
+  const [mealType, setMealType] = useState('breakfast');
+  const [logging, setLogging] = useState(false);
+  const { theme } = useTheme();
+  const themedStyles = getThemedStyles(theme);
+
+  async function logMeal() {
+    if (!selectedFood || !user) return;
+    
+    try {
+      setLogging(true);
+      const response = await post({
+        apiName: 'nutritionapi',
+        path: '/nutrition/log',
+        options: {
+          body: {
+            foodId: selectedFood.id,
+            quantity,
+            mealType
+          }
+        }
+      }).response;
+      
+      const data = await response.body.json() as any;
+      if (data && data.success) {
+        setSelectedFood(null);
+        setQuantity(1);
+        onMealLogged();
+      }
+    } catch (error) {
+      console.log('Error logging meal:', error);
+    } finally {
+      setLogging(false);
+    }
+  }
+
+  if (!user) return null;
+
+  return (
+    <div>
+      <FoodSearch user={user} onFoodSelect={setSelectedFood} />
+      
+      {selectedFood && (
+        <div style={{ padding: 12, backgroundColor: theme === 'dark' ? '#374151' : '#f8f9fa', borderRadius: 8, marginBottom: 16 }}>
+          <h4 style={{ margin: '0 0 8px 0', fontSize: 16 }}>Log: {selectedFood.name}</h4>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 12 }}>
+            <div>
+              <label style={{ fontSize: 12, color: themedStyles.todoDescription.color }}>Quantity:</label>
+              <input
+                type="number"
+                min="0.1"
+                step="0.1"
+                value={quantity}
+                onChange={(e) => setQuantity(parseFloat(e.target.value) || 1)}
+                style={{ ...themedStyles.input, marginBottom: 0 }}
+              />
+            </div>
+            <div>
+              <label style={{ fontSize: 12, color: themedStyles.todoDescription.color }}>Meal:</label>
+              <select
+                value={mealType}
+                onChange={(e) => setMealType(e.target.value)}
+                style={{ ...themedStyles.input, marginBottom: 0 }}
+              >
+                <option value="breakfast">🍳 Breakfast</option>
+                <option value="lunch">🥗 Lunch</option>
+                <option value="dinner">🍽️ Dinner</option>
+                <option value="snack">🍿 Snack</option>
+              </select>
+            </div>
+          </div>
+          <div style={{ fontSize: 12, color: themedStyles.todoDescription.color, marginBottom: 12 }}>
+            Total: {Math.round(selectedFood.calories * quantity)} calories
+          </div>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button 
+              style={themedStyles.saveButton}
+              onClick={logMeal}
+              disabled={logging}
+            >
+              {logging ? '⏳' : '✅'} Log Meal
+            </button>
+            <button 
+              style={themedStyles.cancelButton}
+              onClick={() => setSelectedFood(null)}
+            >
+              ❌ Cancel
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+// Nutrition Summary Component
+const NutritionSummary: React.FC<{ user?: AuthUser; refreshTrigger: number }> = ({ user, refreshTrigger }) => {
+  const [nutritionData, setNutritionData] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+  const { theme } = useTheme();
+  const themedStyles = getThemedStyles(theme);
+
+  async function fetchNutritionSummary() {
+    if (!user) return;
+    
+    try {
+      setLoading(true);
+      const today = new Date().toISOString().split('T')[0];
+      const response = await get({
+        apiName: 'nutritionapi',
+        path: `/nutrition/daily/${today}`
+      }).response;
+      
+      const data = await response.body.json() as any;
+      if (data && data.success) {
+        setNutritionData(data.summary);
+      }
+    } catch (error) {
+      console.log('Error fetching nutrition summary:', error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    fetchNutritionSummary();
+  }, [user, refreshTrigger]);
+
+  if (!user) return null;
+
+  return (
+    <div style={{ ...themedStyles.todo, marginBottom: 24 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+        <h3 style={{ ...themedStyles.todoName, margin: 0 }}>🍎 Today's Nutrition</h3>
+        <button 
+          style={{ ...themedStyles.editButton, padding: '4px 8px', fontSize: 12 }} 
+          onClick={fetchNutritionSummary}
+          disabled={loading}
+        >
+          {loading ? '⏳' : '🔄'} Refresh
+        </button>
+      </div>
+      
+      {nutritionData ? (
+        <div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 16 }}>
+            <div style={{ textAlign: 'center', padding: 8, backgroundColor: theme === 'dark' ? '#374151' : '#f8f9fa', borderRadius: 6 }}>
+              <div style={{ fontSize: 18, fontWeight: '600', color: '#e85d04' }}>{nutritionData.totalCalories}</div>
+              <div style={{ fontSize: 12, color: themedStyles.todoDescription.color }}>Calories</div>
+            </div>
+            <div style={{ textAlign: 'center', padding: 8, backgroundColor: theme === 'dark' ? '#374151' : '#f8f9fa', borderRadius: 6 }}>
+              <div style={{ fontSize: 18, fontWeight: '600', color: '#2a9d8f' }}>{nutritionData.totalProtein}g</div>
+              <div style={{ fontSize: 12, color: themedStyles.todoDescription.color }}>Protein</div>
+            </div>
+            <div style={{ textAlign: 'center', padding: 8, backgroundColor: theme === 'dark' ? '#374151' : '#f8f9fa', borderRadius: 6 }}>
+              <div style={{ fontSize: 18, fontWeight: '600', color: '#f48c06' }}>{nutritionData.totalCarbs}g</div>
+              <div style={{ fontSize: 12, color: themedStyles.todoDescription.color }}>Carbs</div>
+            </div>
+            <div style={{ textAlign: 'center', padding: 8, backgroundColor: theme === 'dark' ? '#374151' : '#f8f9fa', borderRadius: 6 }}>
+              <div style={{ fontSize: 18, fontWeight: '600', color: '#d62828' }}>{nutritionData.totalFat}g</div>
+              <div style={{ fontSize: 12, color: themedStyles.todoDescription.color }}>Fat</div>
+            </div>
+          </div>
+          
+          <div style={{ fontSize: 14, color: themedStyles.todoDescription.color }}>
+            <p style={{ margin: '4px 0' }}>🍳 Breakfast: {nutritionData.meals.breakfast.calories} cal ({nutritionData.meals.breakfast.items} items)</p>
+            <p style={{ margin: '4px 0' }}>🥗 Lunch: {nutritionData.meals.lunch.calories} cal ({nutritionData.meals.lunch.items} items)</p>
+            <p style={{ margin: '4px 0' }}>🍽️ Dinner: {nutritionData.meals.dinner.calories} cal ({nutritionData.meals.dinner.items} items)</p>
+            <p style={{ margin: '4px 0' }}>🍿 Snacks: {nutritionData.meals.snacks.calories} cal ({nutritionData.meals.snacks.items} items)</p>
+          </div>
+        </div>
+      ) : (
+        <p style={{ color: themedStyles.todoDescription.color, fontStyle: 'italic' }}>
+          {loading ? 'Loading nutrition data...' : 'No nutrition data available for today'}
+        </p>
+      )}
+    </div>
+  );
+};
 const ReadOnlyApp: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
@@ -1064,7 +1320,9 @@ const AuthenticatedApp: React.FC<AppProps> = ({ signOut, user }) => {
   const [unassignedTodos, setUnassignedTodos] = useState<Todo[]>([]);
   const [showProjectForm, setShowProjectForm] = useState(false);
   const [showTodoForm, setShowTodoForm] = useState(false);
+  const [showNutritionForm, setShowNutritionForm] = useState(false);
   const [selectedProject, setSelectedProject] = useState<string>('');
+  const [nutritionRefresh, setNutritionRefresh] = useState(0);
 
   // Project form state
   const [projectForm, setProjectForm] = useState<CreateProjectInput>({
@@ -1362,14 +1620,31 @@ const AuthenticatedApp: React.FC<AppProps> = ({ signOut, user }) => {
                 </button>
               </div>
             </div>
+          ) : showNutritionForm ? (
+            <div>
+              <h2 style={themedStyles.formTitle}>Log Food</h2>
+              <MealLogger 
+                user={user} 
+                onMealLogged={() => {
+                  setNutritionRefresh(prev => prev + 1);
+                  setShowNutritionForm(false);
+                }} 
+              />
+              <button style={themedStyles.cancelButton} onClick={() => setShowNutritionForm(false)}>
+                ❌ Cancel
+              </button>
+            </div>
           ) : (
             <div>
               <h2 style={themedStyles.formTitle}>Quick Actions</h2>
               <button style={{ ...themedStyles.button, marginBottom: 16 }} onClick={() => setShowProjectForm(true)}>
                 💪 New Workout Program
               </button>
-              <button style={themedStyles.button} onClick={() => setShowTodoForm(true)}>
+              <button style={{ ...themedStyles.button, marginBottom: 16 }} onClick={() => setShowTodoForm(true)}>
                 ➕ Add Exercise
+              </button>
+              <button style={themedStyles.button} onClick={() => setShowNutritionForm(true)}>
+                🍎 Log Food
               </button>
 
               <div style={{ marginTop: 24, padding: 16, backgroundColor: theme === 'dark' ? '#374151' : '#f8f9fa', borderRadius: 8 }}>
@@ -1388,6 +1663,9 @@ const AuthenticatedApp: React.FC<AppProps> = ({ signOut, user }) => {
 
         {/* Main content area with workout programs */}
         <div>
+          {/* Nutrition Summary */}
+          <NutritionSummary user={user} refreshTrigger={nutritionRefresh} />
+          
           {/* Workout Programs */}
           {projects.length > 0 && (
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 24, marginBottom: 24, alignItems: 'flex-start' }}>
