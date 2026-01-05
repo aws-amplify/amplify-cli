@@ -373,6 +373,7 @@ export const createGen2Renderer = ({
     backendRenderOptions.data = {
       importFrom: './data/resource',
       additionalAuthProviders: data.additionalAuthProviders,
+      restApis: data.restApis,
     };
   }
 

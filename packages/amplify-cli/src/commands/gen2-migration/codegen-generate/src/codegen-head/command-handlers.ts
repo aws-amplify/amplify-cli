@@ -228,7 +228,6 @@ const unsupportedCategories = async (
   unsupportedCategories.set('predictions', `${urlPrefix}/predictions/`);
   unsupportedCategories.set('notifications', `${urlPrefix}/in-app-messaging/`);
   unsupportedCategories.set('interactions', `${urlPrefix}/interactions/`);
-  unsupportedCategories.set('rest api', `${urlPrefix}/rest-api/`);
 
   const currentCloudBackendDirectory = await ccbFetcher.getCurrentCloudBackend(backendEnvironment.deploymentArtifacts);
   const amplifyMetaPath = path.join(currentCloudBackendDirectory, 'amplify-meta.json');

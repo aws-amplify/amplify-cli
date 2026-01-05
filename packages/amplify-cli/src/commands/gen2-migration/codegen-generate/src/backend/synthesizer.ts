@@ -16,12 +16,14 @@ import { ExplicitAuthFlowsType, OAuthFlowType, UserPoolClientType } from '@aws-s
 import assert from 'assert';
 import { newLineIdentifier } from '../ts_factory_utils';
 import type { AdditionalAuthProvider } from '../generators/data';
+import { RestApiDefinition } from '../codegen-head/data_definition_fetcher';
 
 const factory = ts.factory;
 export interface BackendRenderParameters {
   data?: {
     importFrom: string;
     additionalAuthProviders?: AdditionalAuthProvider[];
+    restApis?: RestApiDefinition[];
   };
   auth?: {
     importFrom: string;
@@ -1154,6 +1156,107 @@ export class BackendSynthesizer {
           ),
         );
       }
+    }
+
+    // Add HTTP API routes for REST APIs
+    if (renderArgs.data?.restApis && renderArgs.function) {
+      const functionNameCategories = renderArgs.function.functionNamesAndCategories;
+
+      renderArgs.data.restApis.forEach((restApi: RestApiDefinition) => {
+        if (functionNameCategories.has(restApi.functionName)) {
+          restApi.paths.forEach((pathConfig) => {
+            const httpApiConfig: ts.ObjectLiteralElementLike[] = [
+              factory.createPropertyAssignment(factory.createIdentifier('path'), factory.createStringLiteral(pathConfig.path)),
+              factory.createPropertyAssignment(
+                factory.createIdentifier('methods'),
+                factory.createArrayLiteralExpression(pathConfig.methods.map((method: string) => factory.createStringLiteral(method))),
+              ),
+            ];
+
+            // Add authentication if specified
+            if (pathConfig.authType || restApi.authType) {
+              const authType = pathConfig.authType || restApi.authType;
+              if (authType === 'AWS_IAM') {
+                httpApiConfig.push(
+                  factory.createPropertyAssignment(factory.createIdentifier('authorizationType'), factory.createStringLiteral('AWS_IAM')),
+                );
+              }
+            }
+
+            nodes.push(
+              factory.createExpressionStatement(
+                factory.createCallExpression(
+                  factory.createPropertyAccessExpression(
+                    factory.createPropertyAccessExpression(
+                      factory.createIdentifier('backend'),
+                      factory.createIdentifier(restApi.functionName),
+                    ),
+                    factory.createIdentifier('addHttpApi'),
+                  ),
+                  undefined,
+                  [factory.createObjectLiteralExpression(httpApiConfig)],
+                ),
+              ),
+            );
+          });
+
+          // Add CORS configuration if present
+          if (restApi.corsConfiguration) {
+            const corsConfig: ts.ObjectLiteralElementLike[] = [];
+
+            if (restApi.corsConfiguration.allowOrigins) {
+              corsConfig.push(
+                factory.createPropertyAssignment(
+                  factory.createIdentifier('allowOrigins'),
+                  factory.createArrayLiteralExpression(
+                    restApi.corsConfiguration.allowOrigins.map((origin) => factory.createStringLiteral(origin)),
+                  ),
+                ),
+              );
+            }
+
+            if (restApi.corsConfiguration.allowMethods) {
+              corsConfig.push(
+                factory.createPropertyAssignment(
+                  factory.createIdentifier('allowMethods'),
+                  factory.createArrayLiteralExpression(
+                    restApi.corsConfiguration.allowMethods.map((method) => factory.createStringLiteral(method)),
+                  ),
+                ),
+              );
+            }
+
+            if (restApi.corsConfiguration.allowHeaders) {
+              corsConfig.push(
+                factory.createPropertyAssignment(
+                  factory.createIdentifier('allowHeaders'),
+                  factory.createArrayLiteralExpression(
+                    restApi.corsConfiguration.allowHeaders.map((header) => factory.createStringLiteral(header)),
+                  ),
+                ),
+              );
+            }
+
+            if (corsConfig.length > 0) {
+              nodes.push(
+                factory.createExpressionStatement(
+                  factory.createCallExpression(
+                    factory.createPropertyAccessExpression(
+                      factory.createPropertyAccessExpression(
+                        factory.createIdentifier('backend'),
+                        factory.createIdentifier(restApi.functionName),
+                      ),
+                      factory.createIdentifier('addCors'),
+                    ),
+                    undefined,
+                    [factory.createObjectLiteralExpression(corsConfig)],
+                  ),
+                ),
+              );
+            }
+          }
+        }
+      });
     }
 
     // returns backend.ts file

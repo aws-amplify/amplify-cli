@@ -11,8 +11,18 @@ describe('Data Category code generation', () => {
     jest.restoreAllMocks();
   });
   it('generates the correct import', async () => {
-    const source = printNodeArray(await generateDataSource('main'));
+    const source = printNodeArray(await generateDataSource('main', { schema: 'type Test { id: ID! }' }));
     assert.match(source, /import\s?\{\s?defineData\s?\}\s?from\s?"\@aws-amplify\/backend"/);
+  });
+
+  it('returns undefined when no data definition provided', async () => {
+    const result = await generateDataSource();
+    assert.strictEqual(result, undefined);
+  });
+
+  it('returns undefined when no schema and no REST APIs', async () => {
+    const result = await generateDataSource({});
+    assert.strictEqual(result, undefined);
   });
   describe('import map', () => {
     it('is rendered', async () => {

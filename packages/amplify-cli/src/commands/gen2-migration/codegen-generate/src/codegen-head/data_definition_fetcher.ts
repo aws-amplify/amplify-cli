@@ -5,10 +5,33 @@ import assert from 'node:assert';
 
 import { DataDefinition } from '../core/migration-pipeline';
 import { AdditionalAuthProvider } from '../generators/data';
+import { pathManager } from '@aws-amplify/amplify-cli-core';
+
+export interface RestApiDefinition {
+  apiName: string;
+  functionName: string;
+  paths: RestApiPath[];
+  authType?: string;
+  corsConfiguration?: CorsConfiguration;
+}
+
+export interface RestApiPath {
+  path: string;
+  methods: string[];
+  authType?: string;
+}
+
+export interface CorsConfiguration {
+  allowCredentials?: boolean;
+  allowHeaders?: string[];
+  allowMethods?: string[];
+  allowOrigins?: string[];
+  exposeHeaders?: string[];
+  maxAge?: number;
+}
 
 import { BackendEnvironmentResolver } from './backend_environment_selector';
 import { BackendDownloader } from './backend_downloader';
-import { pathManager } from '@aws-amplify/amplify-cli-core';
 import { fileOrDirectoryExists } from './directory_exists';
 import { AppSyncClient, GetGraphqlApiCommand } from '@aws-sdk/client-appsync';
 
@@ -47,7 +70,82 @@ export class DataDefinitionFetcher {
   };
 
   /**
-   * Extracts GraphQL schema from Gen1 API configuration.
+   * Extracts REST API configurations from Gen1 API configuration.
+   */
+  getRestApis = async (apis: any): Promise<RestApiDefinition[]> => {
+    const restApis: RestApiDefinition[] = [];
+    const rootDir = pathManager.findProjectRoot();
+    assert(rootDir);
+
+    for (const apiName of Object.keys(apis)) {
+      const apiObj = apis[apiName];
+      if (apiObj.service === 'API Gateway') {
+        const functionName = apiObj.dependsOn?.find((dep: any) => dep.category === 'function')?.resourceName;
+
+        if (functionName) {
+          // Read CLI inputs for detailed configuration
+          const cliInputsPath = path.join(rootDir, 'amplify', 'backend', 'api', apiName, 'cli-inputs.json');
+          let paths: RestApiPath[] = [{ path: '/{proxy+}', methods: ['ANY'] }];
+          let authType = 'NONE';
+          let corsConfiguration;
+
+          try {
+            const cliInputs = JSON.parse(await fs.readFile(cliInputsPath, 'utf8'));
+
+            // Extract paths and methods
+            if (cliInputs.paths) {
+              paths = Object.entries(cliInputs.paths).map(([pathName, pathConfig]: [string, any]) => ({
+                path: pathName,
+                methods: this.extractMethodsFromPath(pathConfig),
+                authType: pathConfig.permissions?.setting === 'private' ? 'AWS_IAM' : undefined,
+              }));
+            }
+
+            // Extract CORS configuration
+            if (cliInputs.corsConfiguration) {
+              corsConfiguration = {
+                allowCredentials: cliInputs.corsConfiguration.allowCredentials,
+                allowHeaders: cliInputs.corsConfiguration.allowHeaders,
+                allowMethods: cliInputs.corsConfiguration.allowMethods,
+                allowOrigins: cliInputs.corsConfiguration.allowOrigins,
+                exposeHeaders: cliInputs.corsConfiguration.exposeHeaders,
+                maxAge: cliInputs.corsConfiguration.maxAge,
+              };
+            }
+
+            // Extract global auth type
+            if (cliInputs.restrictAccess) {
+              authType = cliInputs.authType || 'AWS_IAM';
+            }
+          } catch (error) {
+            // Fall back to basic configuration if cli-inputs.json not found
+          }
+
+          restApis.push({
+            apiName,
+            functionName,
+            paths,
+            authType: authType !== 'NONE' ? authType : undefined,
+            corsConfiguration,
+          });
+        }
+      }
+    }
+
+    return restApis;
+  };
+
+  private extractMethodsFromPath(pathConfig: any): string[] {
+    // Extract methods from path configuration
+    if (pathConfig.methods) {
+      return pathConfig.methods;
+    }
+    // Default to common REST methods if not specified
+    return ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'];
+  }
+
+  /**
+   * Extracts GraphQL schema from Gen1 project structure.
    *
    * Supports two schema organization patterns:
    * 1. Single schema.graphql file in the API directory
@@ -184,22 +282,36 @@ export class DataDefinitionFetcher {
 
     // Extract API configuration and schema if APIs exist
     if ('api' in amplifyMeta && Object.keys(amplifyMeta.api).length > 0) {
-      const schema = await this.getSchema(amplifyMeta.api);
+      const restApis = await this.getRestApis(amplifyMeta.api);
 
-      // Extract auth config from the AppSync API output
-      const appSyncApi = Object.values(amplifyMeta.api).find((api: any) => api.service === 'AppSync') as any;
-      const authorizationModes = appSyncApi?.output?.authConfig;
-      const apiId = appSyncApi?.output?.GraphQLAPIIdOutput;
-      const additionalAuthProviders = apiId ? await this.getAdditionalAuthProvidersFromConsole(apiId) : [];
+      // Check for GraphQL APIs
+      const hasGraphQL = Object.values(amplifyMeta.api).some((api: any) => api.service === 'AppSync');
 
-      const logging = apiId ? await this.getLoggingConfigFromConsole(apiId) : undefined;
-      return {
-        tableMappings: undefined, // Will be generated from schema during migration
-        schema,
-        authorizationModes,
-        additionalAuthProviders: additionalAuthProviders.length > 0 ? additionalAuthProviders : undefined,
-        logging,
-      };
+      if (hasGraphQL) {
+        const schema = await this.getSchema(amplifyMeta.api);
+        const appSyncApi = Object.values(amplifyMeta.api).find((api: any) => api.service === 'AppSync') as any;
+        const authorizationModes = appSyncApi?.output?.authConfig;
+        const apiId = appSyncApi?.output?.GraphQLAPIIdOutput;
+        const additionalAuthProviders = apiId ? await this.getAdditionalAuthProvidersFromConsole(apiId) : [];
+        const logging = apiId ? await this.getLoggingConfigFromConsole(apiId) : undefined;
+
+        return {
+          tableMappings: undefined,
+          schema,
+          authorizationModes,
+          additionalAuthProviders: additionalAuthProviders.length > 0 ? additionalAuthProviders : undefined,
+          logging,
+          restApis: restApis.length > 0 ? restApis : undefined,
+        };
+      }
+
+      // Only REST APIs, no GraphQL
+      if (restApis.length > 0) {
+        return {
+          tableMappings: undefined,
+          restApis,
+        };
+      }
     }
 
     // No APIs found in the project
