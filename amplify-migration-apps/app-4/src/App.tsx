@@ -510,15 +510,15 @@ const FoodSearch: React.FC<{ user?: AuthUser; onFoodSelect: (food: any) => void 
 
   async function searchFood() {
     if (!searchTerm.trim() || !user) return;
-    
+
     try {
       setLoading(true);
       const response = await get({
         apiName: 'nutritionapi',
-        path: `/nutrition/search/${encodeURIComponent(searchTerm)}`
+        path: `/nutrition/search/${encodeURIComponent(searchTerm)}`,
       }).response;
-      
-      const data = await response.body.json() as any;
+
+      const data = (await response.body.json()) as any;
       if (data && data.success) {
         setSearchResults(data.results);
       }
@@ -541,17 +541,20 @@ const FoodSearch: React.FC<{ user?: AuthUser; onFoodSelect: (food: any) => void 
           style={{ ...themedStyles.input, marginBottom: 0, flex: 1 }}
           placeholder="Search foods (apple, chicken, etc.)"
         />
-        <button 
-          style={{ ...themedStyles.editButton, padding: '8px 16px' }}
-          onClick={searchFood}
-          disabled={loading || !searchTerm.trim()}
-        >
+        <button style={{ ...themedStyles.editButton, padding: '8px 16px' }} onClick={searchFood} disabled={loading || !searchTerm.trim()}>
           {loading ? '⏳' : '🔍'}
         </button>
       </div>
-      
+
       {searchResults.length > 0 && (
-        <div style={{ maxHeight: 200, overflowY: 'auto', border: theme === 'dark' ? '1px solid #4a5568' : '1px solid #e1e8ed', borderRadius: 6 }}>
+        <div
+          style={{
+            maxHeight: 200,
+            overflowY: 'auto',
+            border: theme === 'dark' ? '1px solid #4a5568' : '1px solid #e1e8ed',
+            borderRadius: 6,
+          }}
+        >
           {searchResults.map((food) => (
             <div
               key={food.id}
@@ -559,7 +562,7 @@ const FoodSearch: React.FC<{ user?: AuthUser; onFoodSelect: (food: any) => void 
                 padding: 8,
                 borderBottom: theme === 'dark' ? '1px solid #4a5568' : '1px solid #e1e8ed',
                 cursor: 'pointer',
-                backgroundColor: theme === 'dark' ? '#2d3748' : 'white'
+                backgroundColor: theme === 'dark' ? '#2d3748' : 'white',
               }}
               onClick={() => onFoodSelect(food)}
             >
@@ -586,7 +589,7 @@ const MealLogger: React.FC<{ user?: AuthUser; onMealLogged: () => void }> = ({ u
 
   async function logMeal() {
     if (!selectedFood || !user) return;
-    
+
     try {
       setLogging(true);
       const response = await post({
@@ -596,12 +599,12 @@ const MealLogger: React.FC<{ user?: AuthUser; onMealLogged: () => void }> = ({ u
           body: {
             foodId: selectedFood.id,
             quantity,
-            mealType
-          }
-        }
+            mealType,
+          },
+        },
       }).response;
-      
-      const data = await response.body.json() as any;
+
+      const data = (await response.body.json()) as any;
       if (data && data.success) {
         setSelectedFood(null);
         setQuantity(1);
@@ -619,7 +622,7 @@ const MealLogger: React.FC<{ user?: AuthUser; onMealLogged: () => void }> = ({ u
   return (
     <div>
       <FoodSearch user={user} onFoodSelect={setSelectedFood} />
-      
+
       {selectedFood && (
         <div style={{ padding: 12, backgroundColor: theme === 'dark' ? '#374151' : '#f8f9fa', borderRadius: 8, marginBottom: 16 }}>
           <h4 style={{ margin: '0 0 8px 0', fontSize: 16 }}>Log: {selectedFood.name}</h4>
@@ -637,11 +640,7 @@ const MealLogger: React.FC<{ user?: AuthUser; onMealLogged: () => void }> = ({ u
             </div>
             <div>
               <label style={{ fontSize: 12, color: themedStyles.todoDescription.color }}>Meal:</label>
-              <select
-                value={mealType}
-                onChange={(e) => setMealType(e.target.value)}
-                style={{ ...themedStyles.input, marginBottom: 0 }}
-              >
+              <select value={mealType} onChange={(e) => setMealType(e.target.value)} style={{ ...themedStyles.input, marginBottom: 0 }}>
                 <option value="breakfast">🍳 Breakfast</option>
                 <option value="lunch">🥗 Lunch</option>
                 <option value="dinner">🍽️ Dinner</option>
@@ -653,17 +652,10 @@ const MealLogger: React.FC<{ user?: AuthUser; onMealLogged: () => void }> = ({ u
             Total: {Math.round(selectedFood.calories * quantity)} calories
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
-            <button 
-              style={themedStyles.saveButton}
-              onClick={logMeal}
-              disabled={logging}
-            >
+            <button style={themedStyles.saveButton} onClick={logMeal} disabled={logging}>
               {logging ? '⏳' : '✅'} Log Meal
             </button>
-            <button 
-              style={themedStyles.cancelButton}
-              onClick={() => setSelectedFood(null)}
-            >
+            <button style={themedStyles.cancelButton} onClick={() => setSelectedFood(null)}>
               ❌ Cancel
             </button>
           </div>
@@ -681,16 +673,16 @@ const NutritionSummary: React.FC<{ user?: AuthUser; refreshTrigger: number }> = 
 
   async function fetchNutritionSummary() {
     if (!user) return;
-    
+
     try {
       setLoading(true);
       const today = new Date().toISOString().split('T')[0];
       const response = await get({
         apiName: 'nutritionapi',
-        path: `/nutrition/daily/${today}`
+        path: `/nutrition/daily/${today}`,
       }).response;
-      
-      const data = await response.body.json() as any;
+
+      const data = (await response.body.json()) as any;
       if (data && data.success) {
         setNutritionData(data.summary);
       }
@@ -711,15 +703,11 @@ const NutritionSummary: React.FC<{ user?: AuthUser; refreshTrigger: number }> = 
     <div style={{ ...themedStyles.todo, marginBottom: 24 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
         <h3 style={{ ...themedStyles.todoName, margin: 0 }}>🍎 Today's Nutrition</h3>
-        <button 
-          style={{ ...themedStyles.editButton, padding: '4px 8px', fontSize: 12 }} 
-          onClick={fetchNutritionSummary}
-          disabled={loading}
-        >
+        <button style={{ ...themedStyles.editButton, padding: '4px 8px', fontSize: 12 }} onClick={fetchNutritionSummary} disabled={loading}>
           {loading ? '⏳' : '🔄'} Refresh
         </button>
       </div>
-      
+
       {nutritionData ? (
         <div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 16 }}>
@@ -740,12 +728,20 @@ const NutritionSummary: React.FC<{ user?: AuthUser; refreshTrigger: number }> = 
               <div style={{ fontSize: 12, color: themedStyles.todoDescription.color }}>Fat</div>
             </div>
           </div>
-          
+
           <div style={{ fontSize: 14, color: themedStyles.todoDescription.color }}>
-            <p style={{ margin: '4px 0' }}>🍳 Breakfast: {nutritionData.meals.breakfast.calories} cal ({nutritionData.meals.breakfast.items} items)</p>
-            <p style={{ margin: '4px 0' }}>🥗 Lunch: {nutritionData.meals.lunch.calories} cal ({nutritionData.meals.lunch.items} items)</p>
-            <p style={{ margin: '4px 0' }}>🍽️ Dinner: {nutritionData.meals.dinner.calories} cal ({nutritionData.meals.dinner.items} items)</p>
-            <p style={{ margin: '4px 0' }}>🍿 Snacks: {nutritionData.meals.snacks.calories} cal ({nutritionData.meals.snacks.items} items)</p>
+            <p style={{ margin: '4px 0' }}>
+              🍳 Breakfast: {nutritionData.meals.breakfast.calories} cal ({nutritionData.meals.breakfast.items} items)
+            </p>
+            <p style={{ margin: '4px 0' }}>
+              🥗 Lunch: {nutritionData.meals.lunch.calories} cal ({nutritionData.meals.lunch.items} items)
+            </p>
+            <p style={{ margin: '4px 0' }}>
+              🍽️ Dinner: {nutritionData.meals.dinner.calories} cal ({nutritionData.meals.dinner.items} items)
+            </p>
+            <p style={{ margin: '4px 0' }}>
+              🍿 Snacks: {nutritionData.meals.snacks.calories} cal ({nutritionData.meals.snacks.items} items)
+            </p>
           </div>
         </div>
       ) : (
@@ -1623,12 +1619,12 @@ const AuthenticatedApp: React.FC<AppProps> = ({ signOut, user }) => {
           ) : showNutritionForm ? (
             <div>
               <h2 style={themedStyles.formTitle}>Log Food</h2>
-              <MealLogger 
-                user={user} 
+              <MealLogger
+                user={user}
                 onMealLogged={() => {
-                  setNutritionRefresh(prev => prev + 1);
+                  setNutritionRefresh((prev) => prev + 1);
                   setShowNutritionForm(false);
-                }} 
+                }}
               />
               <button style={themedStyles.cancelButton} onClick={() => setShowNutritionForm(false)}>
                 ❌ Cancel
@@ -1665,7 +1661,7 @@ const AuthenticatedApp: React.FC<AppProps> = ({ signOut, user }) => {
         <div>
           {/* Nutrition Summary */}
           <NutritionSummary user={user} refreshTrigger={nutritionRefresh} />
-          
+
           {/* Workout Programs */}
           {projects.length > 0 && (
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 24, marginBottom: 24, alignItems: 'flex-start' }}>

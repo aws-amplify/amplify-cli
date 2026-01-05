@@ -31,6 +31,7 @@ import { AppFunctionsDefinitionFetcher } from './app_functions_definition_fetche
 import { printer } from './printer';
 import { format } from './format';
 import ora from 'ora';
+import { AppAnalyticsDefinitionFetcher } from './app_analytics_definition_fetcher';
 import * as ts from 'typescript';
 import { AmplifyHelperTransformer } from '../../../codegen-custom-resources/transformer/amplify-helper-transformer';
 import { DependencyMerger } from '../../../codegen-custom-resources/generator/dependency-merger';
@@ -44,12 +45,15 @@ interface CodegenCommandParameters {
   logger: Logger;
   outputDirectory: string;
   backendEnvironmentName: string | undefined;
+  rootStackName: string | undefined;
+  cloudFormationClient: CloudFormationClient;
   ccbFetcher: BackendDownloader;
   backendEnvironment: BackendEnvironment;
   dataDefinitionFetcher: DataDefinitionFetcher;
   authDefinitionFetcher: AppAuthDefinitionFetcher;
   storageDefinitionFetcher: AppStorageDefinitionFetcher;
   functionsDefinitionFetcher: AppFunctionsDefinitionFetcher;
+  analyticsDefinitionFetcher: AppAnalyticsDefinitionFetcher;
 }
 
 const TEMP_GEN_2_OUTPUT_DIR = 'amplify-gen2';
@@ -77,10 +81,13 @@ enum GEN2_AMPLIFY_GITIGNORE_FILES_OR_DIRS {
 const generateGen2Code = async ({
   outputDirectory,
   backendEnvironmentName,
+  rootStackName,
+  cloudFormationClient,
   authDefinitionFetcher,
   dataDefinitionFetcher,
   storageDefinitionFetcher,
   functionsDefinitionFetcher,
+  analyticsDefinitionFetcher,
   ccbFetcher,
   backendEnvironment,
   logger,
@@ -97,19 +104,26 @@ const generateGen2Code = async ({
   logger.info('Fetching definitions from AWS for category: Functions');
   const functions = await functionsDefinitionFetcher.getDefinition();
 
+  logger.info('Fetching definitions from AWS for category: Analytics');
+  const analytics = await analyticsDefinitionFetcher.getDefinition();
+
   logger.debug(`Auth: ${auth ? 'EXISTS' : 'UNDEFINED'}`);
   logger.debug(`Storage: ${storage ? 'EXISTS' : 'UNDEFINED'}`);
   logger.debug(`Data: ${data ? JSON.stringify(data, null, 2) : 'UNDEFINED'}`);
   logger.debug(`Functions: ${functions ? `${functions.length} functions` : 'UNDEFINED'}`);
   logger.debug(`Backend env: ${backendEnvironmentName}`);
+  logger.debug(`Analytics: ${analytics ? JSON.stringify(analytics, null, 2) : 'UNDEFINED'}`);
 
   const gen2RenderOptions: Gen2RenderingOptions = {
     outputDir: outputDirectory,
     backendEnvironmentName: backendEnvironmentName,
+    rootStackName: rootStackName,
+    cfnClient: cloudFormationClient,
     auth,
     storage,
     data,
     functions,
+    analytics,
     customResources: await getCustomResourceMap(ccbFetcher, backendEnvironment),
     unsupportedCategories: await unsupportedCategories(ccbFetcher, backendEnvironment),
   };
@@ -222,6 +236,7 @@ const unsupportedCategories = async (
   const unsupportedCategories = new Map<string, string>();
   const urlPrefix = 'https://docs.amplify.aws/react/build-a-backend/add-aws-services';
   const restAPIKey = 'rest api';
+  const analyticsKey = 'analytics';
 
   unsupportedCategories.set('geo', `${urlPrefix}/geo/`);
   unsupportedCategories.set('analytics', `${urlPrefix}/analytics/`);
@@ -240,10 +255,22 @@ const unsupportedCategories = async (
   const unsupportedCategoriesList = new Map<string, string>();
 
   categories.forEach((category) => {
-    if (unsupportedCategories.has(category) && Object.entries(meta[category]).length > 0) {
-      const unsupportedCategoryDocLink = unsupportedCategories.get(category);
-      assert(unsupportedCategoryDocLink);
-      unsupportedCategoriesList.set(category, unsupportedCategoryDocLink);
+    if (category === 'analytics') {
+      const analytics = meta?.analytics ?? {};
+      Object.keys(analytics).forEach((analytic) => {
+        const analyticObj = analytics[analytic];
+        if (analyticObj.service === 'Pinpoint') {
+          const analyticsDocLink = unsupportedCategories.get(analyticsKey);
+          assert(analyticsDocLink);
+          unsupportedCategoriesList.set(`Pinpoint ${analyticsKey}`, analyticsDocLink);
+        }
+      });
+    } else {
+      if (unsupportedCategories.has(category) && Object.entries(meta[category]).length > 0) {
+        const unsupportedCategoryDocLink = unsupportedCategories.get(category);
+        assert(unsupportedCategoryDocLink);
+        unsupportedCategoriesList.set(category, unsupportedCategoryDocLink);
+      }
     }
   });
 
@@ -534,11 +561,14 @@ export async function prepare(logger: Logger, appId: string, envName: string, re
       stateManager,
       ccbFetcher,
     ),
+    analyticsDefinitionFetcher: new AppAnalyticsDefinitionFetcher(backendEnvironmentResolver, stateManager),
     analytics: new AppAnalytics(appId),
     logger: logger,
     ccbFetcher,
     backendEnvironment,
     backendEnvironmentName: backendEnvironment.environmentName,
+    rootStackName: backendEnvironment.stackName,
+    cloudFormationClient: cloudFormationClient,
   });
 
   logger.info(`Creating 'amplify.yml' file for amplify hosting deployments`);

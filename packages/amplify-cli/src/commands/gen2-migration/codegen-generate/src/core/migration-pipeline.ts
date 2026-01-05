@@ -61,6 +61,9 @@ import { DataDefinition, DataTableMapping, generateDataSource } from '../generat
 
 import { FunctionDefinition, renderFunctions } from '../generators/functions/index';
 import assert from 'assert';
+import { CdkFromCfn, KinesisAnalyticsDefinition, AnalyticsCodegenResult } from '../unsupported/cdk-from-cfn';
+import { renderAnalytics, AnalyticsRenderParameters } from '../generators/analytics/index';
+import { CloudFormationClient } from '@aws-sdk/client-cloudformation';
 
 /**
  * Configuration options for Gen 2 rendering pipeline
@@ -78,6 +81,12 @@ export interface Gen2RenderingOptions {
   /** Backend environment name used for data table mapping resolution */
   backendEnvironmentName?: string | undefined;
 
+  /** Root CloudFormation stack name for the Gen1 backend */
+  rootStackName?: string;
+
+  /** CloudFormation client for resolving stack parameters */
+  cfnClient?: CloudFormationClient;
+
   /** Authentication configuration from Gen 1 project */
   auth?: AuthDefinition;
 
@@ -89,6 +98,9 @@ export interface Gen2RenderingOptions {
 
   /** Lambda function definitions */
   functions?: FunctionDefinition[];
+
+  /** Analytics (Kinesis) definitions from Gen 1 project */
+  analytics?: Record<string, KinesisAnalyticsDefinition>;
 
   /** Custom CloudFormation resources that need manual migration */
   customResources?: Map<string, string>;
@@ -218,8 +230,11 @@ export const createGen2Renderer = ({
   storage,
   data,
   functions,
+  analytics,
   customResources,
   backendEnvironmentName,
+  rootStackName,
+  cfnClient,
   unsupportedCategories,
   fileWriter = (content, path) => createFileWriter(path)(content),
 }: Readonly<Gen2RenderingOptions>): Renderer => {
@@ -298,6 +313,48 @@ export const createGen2Renderer = ({
   // Handle categories that cannot be automatically migrated
   if (unsupportedCategories && unsupportedCategories.size >= 1) {
     backendRenderOptions.unsupportedCategories = unsupportedCategories;
+  }
+
+  if (analytics) {
+    console.log('There are Analytics found in the Gen1 App');
+    const cdkFromCfn = new CdkFromCfn(outputDir, fileWriter, cfnClient, rootStackName);
+    const analyticsDir = path.join(outputDir, 'amplify', 'analytics');
+    renderers.push(new EnsureDirectory(analyticsDir));
+
+    // Process each analytics resource
+    for (const analyticName of Object.keys(analytics)) {
+      const analyticObj = analytics[analyticName];
+      analyticObj.name = analyticName;
+
+      if (analyticObj.service === 'Kinesis') {
+        console.log('Analytics backed by Kinesis found, generating L1 Code');
+
+        // Create a renderer that generates both the stack file and resource.ts
+        renderers.push(
+          new TypescriptNodeArrayRenderer(
+            async () => {
+              // Generate the stack file (e.g., todoprojectKinesis-stack.ts)
+              const codegenResult: AnalyticsCodegenResult = await cdkFromCfn.generateKinesisAnalyticsL1Code(analyticObj);
+
+              // Generate resource.ts using the analytics generator
+              const analyticsParams: AnalyticsRenderParameters = {
+                stackClassName: codegenResult.stackClassName,
+                stackFileName: codegenResult.stackFileName,
+                resourceName: codegenResult.resourceName,
+                shardCount: codegenResult.shardCount,
+              };
+
+              return renderAnalytics(analyticsParams);
+            },
+            (content) => fileWriter(content, path.join(analyticsDir, 'resource.ts')),
+          ),
+        );
+
+        backendRenderOptions.analytics = { importFrom: './analytics/resource' };
+      } else {
+        console.log('Analytics backed by Pinpoint found, still unsupported');
+      }
+    }
   }
 
   // Process Lambda functions - create resource.ts and handler.ts files
