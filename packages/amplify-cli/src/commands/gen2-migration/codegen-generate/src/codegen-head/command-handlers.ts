@@ -485,7 +485,7 @@ export async function updateCdkStackFile(customResources: string[], destinationC
 
       await fs.writeFile(cdkStackFilePath, cdkStackContent, { encoding: 'utf-8' });
     } catch (error) {
-      throw error(`Error updating the custom resource ${resource}`);
+      throw new Error(`Error updating the custom resource ${resource}`, { cause: error });
     }
   }
 }
