@@ -16,12 +16,12 @@ describe('Data Category code generation', () => {
   });
 
   it('returns undefined when no data definition provided', async () => {
-    const result = await generateDataSource();
+    const result = await generateDataSource('main');
     assert.strictEqual(result, undefined);
   });
 
   it('returns undefined when no schema and no REST APIs', async () => {
-    const result = await generateDataSource({});
+    const result = await generateDataSource('main', {});
     assert.strictEqual(result, undefined);
   });
   describe('import map', () => {
