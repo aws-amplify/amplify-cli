@@ -5,10 +5,71 @@ import assert from 'node:assert';
 
 import { DataDefinition } from '../core/migration-pipeline';
 import { AdditionalAuthProvider } from '../generators/data';
+import { pathManager } from '@aws-amplify/amplify-cli-core';
+
+/** Configuration for a single path in Gen1 REST API from cli-inputs.json */
+interface Gen1PathConfig {
+  methods?: string[];
+  permissions?: {
+    setting?: 'private' | 'protected' | 'open';
+    auth?: string[];
+  };
+  lambdaFunction?: string;
+  // Support for User Pool Groups
+  restrictAccess?: boolean;
+  groupAccess?: string[];
+}
+
+/** Complete structure of Gen1's cli-inputs.json file for REST APIs */
+interface Gen1CliInputs {
+  paths?: Record<string, Gen1PathConfig>;
+  corsConfiguration?: CorsConfiguration;
+  restrictAccess?: boolean;
+  authType?: string;
+}
+
+/** API object structure from Gen1's amplify-meta.json */
+interface Gen1ApiObject {
+  service: string;
+  dependsOn?: Array<{
+    category: string;
+    resourceName: string;
+  }>;
+}
+
+/** Processed REST API definition ready for Gen2 migration */
+export interface RestApiDefinition {
+  apiName: string;
+  functionName: string;
+  paths: RestApiPath[];
+  authType?: string;
+  corsConfiguration?: CorsConfiguration;
+  // Support for multiple Lambda functions
+  uniqueFunctions?: string[];
+}
+
+/** Individual path configuration within a REST API */
+export interface RestApiPath {
+  path: string;
+  methods: string[];
+  authType?: string;
+  lambdaFunction?: string;
+  // Support for User Pool Groups
+  userPoolGroups?: string[];
+}
+
+/** Standard CORS configuration for web APIs */
+export interface CorsConfiguration {
+  allowCredentials?: boolean;
+  allowHeaders?: string[];
+  allowMethods?: string[];
+  allowOrigins?: string[];
+  exposeHeaders?: string[];
+  maxAge?: number;
+}
 
 import { BackendEnvironmentResolver } from './backend_environment_selector';
 import { BackendDownloader } from './backend_downloader';
-import { pathManager } from '@aws-amplify/amplify-cli-core';
 import { fileOrDirectoryExists } from './directory_exists';
 import { AppSyncClient, GetGraphqlApiCommand } from '@aws-sdk/client-appsync';
 
@@ -47,7 +108,134 @@ export class DataDefinitionFetcher {
   };
 
   /**
-   * Extracts GraphQL schema from Gen1 API configuration.
+   * Extracts REST API configurations from Gen1 API configuration.
+   */
+  getRestApis = async (apis: Record<string, Gen1ApiObject>): Promise<RestApiDefinition[]> => {
+    const restApis: RestApiDefinition[] = [];
+    const rootDir = pathManager.findProjectRoot();
+    assert(rootDir);
+
+    for (const apiName of Object.keys(apis)) {
+      const apiObj = apis[apiName];
+      // Filter for REST APIs only (skip AppSync GraphQL APIs)
+      if (apiObj.service === 'API Gateway') {
+        // Read CLI inputs for detailed configuration
+        // We use cli-inputs.json instead of live AWS APIs because:
+        // 1. AWS API Gateway doesn't expose Gen1's abstracted path configurations
+        //    Gen1: { "permissions": { "setting": "private" } }
+        //    AWS: Complex CloudFormation resources (AWS::ApiGateway::Authorizer, etc.)
+        // 2. cli-inputs.json contains the original developer intent (permissions: 'private'/'protected'/'open')
+        //    Developer wrote: "private" (meaning: authenticated users only)
+        //    AWS deployed: IAM authorizer + Cognito integration (implementation details)
+        // 3. Path-level auth settings, method mappings, and CORS details aren't available via AWS APIs
+        //    cli-inputs.json: { "/users": { "lambdaFunction": "userHandler", "methods": ["GET"] } }
+        //    AWS API: Only shows resources exist, not which Lambda handles which path
+        const cliInputsPath = path.join(rootDir, 'amplify', 'backend', 'api', apiName, 'cli-inputs.json');
+        let paths: RestApiPath[] = [{ path: '/{proxy+}', methods: ['ANY'] }];
+        let authType = 'NONE';
+        let corsConfiguration;
+
+        const cliInputs: Gen1CliInputs = JSON.parse(await fs.readFile(cliInputsPath, 'utf8'));
+
+        // Extract paths and methods with correct function mapping
+        if (cliInputs.paths) {
+          paths = Object.entries(cliInputs.paths).map(([pathName, pathConfig]) => {
+            // Parse permission setting correctly: private/protected/open
+            const pathAuthType = pathConfig.permissions?.setting || 'open';
+
+            return {
+              path: pathName,
+              methods: this.extractMethodsFromPath(pathConfig),
+              authType: pathAuthType,
+              // Extract the actual Lambda function name for this specific path
+              lambdaFunction: pathConfig.lambdaFunction,
+              // Extract User Pool Groups if specified
+              userPoolGroups: pathConfig.groupAccess,
+            };
+          });
+        }
+
+        // Extract CORS configuration
+        if (cliInputs.corsConfiguration) {
+          corsConfiguration = cliInputs.corsConfiguration;
+        }
+
+        // Extract global auth type
+        if (cliInputs.restrictAccess) {
+          authType = cliInputs.authType || 'AWS_IAM';
+        }
+
+        // Keep all paths together in a single REST API definition
+        // The synthesizer will handle routing to different Lambda functions
+        const defaultFunctionName = apiObj.dependsOn?.find((dep) => dep.category === 'function')?.resourceName;
+
+        // Collect all unique Lambda functions used across paths
+        const uniqueFunctions = new Set<string>();
+        if (defaultFunctionName) {
+          uniqueFunctions.add(defaultFunctionName);
+        }
+        paths.forEach((path) => {
+          if (path.lambdaFunction) {
+            uniqueFunctions.add(path.lambdaFunction);
+          }
+        });
+
+        restApis.push({
+          apiName,
+          functionName: defaultFunctionName || 'defaultFunction',
+          paths,
+          authType: authType !== 'NONE' ? authType : undefined,
+          corsConfiguration,
+          uniqueFunctions: Array.from(uniqueFunctions),
+        });
+      }
+    }
+
+    return restApis;
+  };
+
+  /**
+   * Extracts HTTP methods from Gen1 path configuration.
+   *
+   * Gen1 allows flexible method specification:
+   * - Explicit: { methods: ['GET', 'POST'] } → ['GET', 'POST']
+   * - Permission-based: { permissions: { auth: ['read', 'create'] } } → ['GET', 'POST']
+   * - No config: {} → ['GET']
+   */
+  private extractMethodsFromPath(pathConfig: Gen1PathConfig): string[] {
+    // Use explicitly configured methods if available
+    if (pathConfig.methods && pathConfig.methods.length > 0) {
+      return pathConfig.methods;
+    }
+
+    // Map auth permissions to HTTP methods if no explicit methods
+    if (pathConfig.permissions?.auth && pathConfig.permissions.auth.length > 0) {
+      const methods: string[] = [];
+      pathConfig.permissions.auth.forEach((permission) => {
+        switch (permission) {
+          case 'read':
+            methods.push('GET');
+            break;
+          case 'create':
+            methods.push('POST');
+            break;
+          case 'update':
+            methods.push('PUT');
+            break;
+          case 'delete':
+            methods.push('DELETE');
+            break;
+        }
+      });
+      return methods.length > 0 ? methods : ['GET'];
+    }
+
+    // Default to GET only if no configuration found
+    return ['GET'];
+  }
+
+  /**
+   * Extracts GraphQL schema from Gen1 project structure.
    *
    * Supports two schema organization patterns:
    * 1. Single schema.graphql file in the API directory
@@ -184,22 +372,36 @@ export class DataDefinitionFetcher {
 
     // Extract API configuration and schema if APIs exist
     if ('api' in amplifyMeta && Object.keys(amplifyMeta.api).length > 0) {
-      const schema = await this.getSchema(amplifyMeta.api);
+      const restApis = await this.getRestApis(amplifyMeta.api);
 
-      // Extract auth config from the AppSync API output
-      const appSyncApi = Object.values(amplifyMeta.api).find((api: any) => api.service === 'AppSync') as any;
-      const authorizationModes = appSyncApi?.output?.authConfig;
-      const apiId = appSyncApi?.output?.GraphQLAPIIdOutput;
-      const additionalAuthProviders = apiId ? await this.getAdditionalAuthProvidersFromConsole(apiId) : [];
+      // Check for GraphQL APIs
+      const hasGraphQL = Object.values(amplifyMeta.api).some((api: any) => api.service === 'AppSync');
 
-      const logging = apiId ? await this.getLoggingConfigFromConsole(apiId) : undefined;
-      return {
-        tableMappings: undefined, // Will be generated from schema during migration
-        schema,
-        authorizationModes,
-        additionalAuthProviders: additionalAuthProviders.length > 0 ? additionalAuthProviders : undefined,
-        logging,
-      };
+      if (hasGraphQL) {
+        const schema = await this.getSchema(amplifyMeta.api);
+        const appSyncApi = Object.values(amplifyMeta.api).find((api: any) => api.service === 'AppSync') as any;
+        const authorizationModes = appSyncApi?.output?.authConfig;
+        const apiId = appSyncApi?.output?.GraphQLAPIIdOutput;
+        const additionalAuthProviders = apiId ? await this.getAdditionalAuthProvidersFromConsole(apiId) : [];
+        const logging = apiId ? await this.getLoggingConfigFromConsole(apiId) : undefined;
+
+        return {
+          tableMappings: undefined,
+          schema,
+          authorizationModes,
+          additionalAuthProviders: additionalAuthProviders.length > 0 ? additionalAuthProviders : undefined,
+          logging,
+          restApis: restApis.length > 0 ? restApis : undefined,
+        };
+      }
+
+      // Only REST APIs, no GraphQL
+      if (restApis.length > 0) {
+        return {
+          tableMappings: undefined,
+          restApis,
+        };
+      }
     }
 
     // No APIs found in the project

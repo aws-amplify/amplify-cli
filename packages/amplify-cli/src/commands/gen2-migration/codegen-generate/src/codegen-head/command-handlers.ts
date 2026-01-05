@@ -228,7 +228,7 @@ const unsupportedCategories = async (
   unsupportedCategories.set('predictions', `${urlPrefix}/predictions/`);
   unsupportedCategories.set('notifications', `${urlPrefix}/in-app-messaging/`);
   unsupportedCategories.set('interactions', `${urlPrefix}/interactions/`);
-  unsupportedCategories.set('rest api', `${urlPrefix}/rest-api/`);
+  unsupportedCategories.set(restAPIKey, `${urlPrefix}/rest-api/`);
 
   const currentCloudBackendDirectory = await ccbFetcher.getCurrentCloudBackend(backendEnvironment.deploymentArtifacts);
   const amplifyMetaPath = path.join(currentCloudBackendDirectory, 'amplify-meta.json');
@@ -240,24 +240,10 @@ const unsupportedCategories = async (
   const unsupportedCategoriesList = new Map<string, string>();
 
   categories.forEach((category) => {
-    if (category == 'api') {
-      const apiList = meta?.api;
-      if (apiList) {
-        Object.keys(apiList).forEach((api) => {
-          const apiObj = apiList[api];
-          if (apiObj.service == 'API Gateway') {
-            const restAPIDocsLink = unsupportedCategories.get(restAPIKey);
-            assert(restAPIDocsLink);
-            unsupportedCategoriesList.set(restAPIKey, restAPIDocsLink);
-          }
-        });
-      }
-    } else {
-      if (unsupportedCategories.has(category) && Object.entries(meta[category]).length > 0) {
-        const unsupportedCategoryDocLink = unsupportedCategories.get(category);
-        assert(unsupportedCategoryDocLink);
-        unsupportedCategoriesList.set(category, unsupportedCategoryDocLink);
-      }
+    if (unsupportedCategories.has(category) && Object.entries(meta[category]).length > 0) {
+      const unsupportedCategoryDocLink = unsupportedCategories.get(category);
+      assert(unsupportedCategoryDocLink);
+      unsupportedCategoriesList.set(category, unsupportedCategoryDocLink);
     }
   });
 
