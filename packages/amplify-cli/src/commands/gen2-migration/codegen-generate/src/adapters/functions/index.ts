@@ -52,17 +52,6 @@ export const getFunctionDefinition = (
     funcDef.name = configuration?.FunctionName;
     funcDef.timeoutSeconds = configuration?.Timeout;
     funcDef.memoryMB = configuration?.MemorySize;
-
-    // these are environment variables Gen1 automatically adds to the function if the user
-    // configures the function needs access to the api. we remove them because their value points
-    // to the gen1 appsync server, but we need the gen2 values now.
-    // currently we instruct the user to manually provide the correct values (TODO automate)
-    if (configuration.Environment?.Variables) {
-      delete configuration.Environment?.Variables.API_PRODUCTCATALOG_GRAPHQLAPIKEYOUTPUT;
-      delete configuration.Environment?.Variables.API_PRODUCTCATALOG_GRAPHQLAPIENDPOINTOUTPUT;
-      delete configuration.Environment?.Variables.API_PRODUCTCATALOG_GRAPHQLAPIIDOUTPUT;
-    }
-
     funcDef.environment = configuration?.Environment;
     funcDef.runtime = configuration?.Runtime;
     const functionName = configuration?.FunctionName;
