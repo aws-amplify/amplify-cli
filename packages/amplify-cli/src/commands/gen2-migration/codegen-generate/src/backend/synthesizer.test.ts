@@ -1,7 +1,10 @@
+import { describe, it, expect } from '@jest/globals';
 import { BackendSynthesizer, BackendRenderParameters } from './synthesizer';
+import { DynamoDBTableDefinition } from '../adapters/storage';
+import { printNodeArray } from '../test_utils/ts_node_printer';
 import ts from 'typescript';
 
-describe('BackendSynthesizer REST API Migration', () => {
+describe('BackendSynthesizer', () => {
   let synthesizer: BackendSynthesizer;
 
   beforeEach(() => {
@@ -414,6 +417,315 @@ describe('BackendSynthesizer REST API Migration', () => {
       expect(output).toContain('CorsHttpMethod.DELETE');
       expect(output).toContain('content-type');
       expect(output).toContain('authorization');
+    });
+  });
+
+  describe('DynamoDB table generation', () => {
+    it('should generate table with underscores in name', () => {
+      const tableDefinition: DynamoDBTableDefinition = {
+        tableName: 'countsTable-dev',
+        partitionKey: { name: 'postId', type: 'STRING' },
+        sortKey: { name: 'metricType', type: 'STRING' },
+        billingMode: 'PROVISIONED',
+        readCapacity: 5,
+        writeCapacity: 5,
+      };
+
+      const result = synthesizer.render({
+        storage: {
+          importFrom: './storage/resource',
+          dynamoTables: [tableDefinition],
+        },
+      });
+
+      const source = printNodeArray(result);
+      expect(source).toMatchInlineSnapshot(`
+        "import { Table, AttributeType, BillingMode, StreamViewType } from "aws-cdk-lib/aws-dynamodb";
+        import { defineBackend } from "@aws-amplify/backend";
+
+
+        const backend = defineBackend({});
+        const storageStack = backend.createStack("storage");
+        new Table(storageStack, "countsTable", { partitionKey: { name: "postId", type: AttributeType.STRING }, billingMode: BillingMode.PROVISIONED, readCapacity: 5, writeCapacity: 5, sortKey: { name: "metricType", type: AttributeType.STRING } });
+        "
+      `);
+    });
+
+    it('should generate table with partition key and sort key', () => {
+      const tableDefinition: DynamoDBTableDefinition = {
+        tableName: 'testTable',
+        partitionKey: { name: 'id', type: 'STRING' },
+        sortKey: { name: 'timestamp', type: 'NUMBER' },
+        billingMode: 'PAY_PER_REQUEST',
+      };
+
+      const result = synthesizer.render({
+        storage: {
+          importFrom: './storage/resource',
+          dynamoTables: [tableDefinition],
+        },
+      });
+
+      const source = printNodeArray(result);
+      expect(source).toMatchInlineSnapshot(`
+        "import { Table, AttributeType, BillingMode, StreamViewType } from "aws-cdk-lib/aws-dynamodb";
+        import { defineBackend } from "@aws-amplify/backend";
+
+
+        const backend = defineBackend({});
+        const storageStack = backend.createStack("storage");
+        new Table(storageStack, "testTable", { partitionKey: { name: "id", type: AttributeType.STRING }, billingMode: BillingMode.PAY_PER_REQUEST, sortKey: { name: "timestamp", type: AttributeType.NUMBER } });
+        "
+      `);
+    });
+
+    it('should generate table with GSI', () => {
+      const tableDefinition: DynamoDBTableDefinition = {
+        tableName: 'testTable',
+        partitionKey: { name: 'id', type: 'STRING' },
+        billingMode: 'PROVISIONED',
+        readCapacity: 5,
+        writeCapacity: 5,
+        gsis: [
+          {
+            indexName: 'testIndex',
+            partitionKey: { name: 'gsiPK', type: 'STRING' },
+            sortKey: { name: 'gsiSK', type: 'NUMBER' },
+          },
+        ],
+      };
+
+      const result = synthesizer.render({
+        storage: {
+          importFrom: './storage/resource',
+          dynamoTables: [tableDefinition],
+        },
+      });
+
+      const source = printNodeArray(result);
+      expect(source).toMatchInlineSnapshot(`
+        "import { Table, AttributeType, BillingMode, StreamViewType } from "aws-cdk-lib/aws-dynamodb";
+        import { defineBackend } from "@aws-amplify/backend";
+
+
+        const backend = defineBackend({});
+        const storageStack = backend.createStack("storage");
+        const testTable = new Table(storageStack, "testTable", { partitionKey: { name: "id", type: AttributeType.STRING }, billingMode: BillingMode.PROVISIONED, readCapacity: 5, writeCapacity: 5 });
+        testTable.addGlobalSecondaryIndex({ indexName: "testIndex", partitionKey: { name: "gsiPK", type: AttributeType.STRING }, sortKey: { name: "gsiSK", type: AttributeType.NUMBER }, readCapacity: 5, writeCapacity: 5 });
+        "
+      `);
+    });
+
+    it('should generate table with stream configuration', () => {
+      const tableDefinition: DynamoDBTableDefinition = {
+        tableName: 'streamTable',
+        partitionKey: { name: 'id', type: 'STRING' },
+        billingMode: 'PAY_PER_REQUEST',
+        streamEnabled: true,
+        streamViewType: 'NEW_AND_OLD_IMAGES',
+      };
+
+      const result = synthesizer.render({
+        storage: {
+          importFrom: './storage/resource',
+          dynamoTables: [tableDefinition],
+        },
+      });
+
+      const source = printNodeArray(result);
+      expect(source).toMatchInlineSnapshot(`
+        "import { Table, AttributeType, BillingMode, StreamViewType } from "aws-cdk-lib/aws-dynamodb";
+        import { defineBackend } from "@aws-amplify/backend";
+
+
+        const backend = defineBackend({});
+        const storageStack = backend.createStack("storage");
+        new Table(storageStack, "streamTable", { partitionKey: { name: "id", type: AttributeType.STRING }, billingMode: BillingMode.PAY_PER_REQUEST, stream: StreamViewType.NEW_AND_OLD_IMAGES });
+        "
+      `);
+    });
+
+    it('should handle multiple tables with different configurations', () => {
+      const tables: DynamoDBTableDefinition[] = [
+        {
+          tableName: 'table-one',
+          partitionKey: { name: 'pk1', type: 'STRING' },
+          billingMode: 'PAY_PER_REQUEST',
+        },
+        {
+          tableName: 'table-two',
+          partitionKey: { name: 'pk2', type: 'NUMBER' },
+          sortKey: { name: 'sk2', type: 'STRING' },
+          billingMode: 'PROVISIONED',
+          readCapacity: 10,
+          writeCapacity: 10,
+        },
+      ];
+
+      const result = synthesizer.render({
+        storage: {
+          importFrom: './storage/resource',
+          dynamoTables: tables,
+        },
+      });
+
+      const source = printNodeArray(result);
+      expect(source).toMatchInlineSnapshot(`
+        "import { Table, AttributeType, BillingMode, StreamViewType } from "aws-cdk-lib/aws-dynamodb";
+        import { defineBackend } from "@aws-amplify/backend";
+
+
+        const backend = defineBackend({});
+        const storageStack = backend.createStack("storage");
+        new Table(storageStack, "table", { partitionKey: { name: "pk1", type: AttributeType.STRING }, billingMode: BillingMode.PAY_PER_REQUEST });
+        new Table(storageStack, "table", { partitionKey: { name: "pk2", type: AttributeType.NUMBER }, billingMode: BillingMode.PROVISIONED, readCapacity: 10, writeCapacity: 10, sortKey: { name: "sk2", type: AttributeType.STRING } });
+        "
+      `);
+    });
+
+    it('should include required CDK imports for DynamoDB', () => {
+      const tableDefinition: DynamoDBTableDefinition = {
+        tableName: 'importTest',
+        partitionKey: { name: 'id', type: 'STRING' },
+        billingMode: 'PAY_PER_REQUEST',
+      };
+
+      const result = synthesizer.render({
+        storage: {
+          importFrom: './storage/resource',
+          dynamoTables: [tableDefinition],
+        },
+      });
+
+      const source = printNodeArray(result);
+      expect(source).toMatchInlineSnapshot(`
+        "import { Table, AttributeType, BillingMode, StreamViewType } from "aws-cdk-lib/aws-dynamodb";
+        import { defineBackend } from "@aws-amplify/backend";
+
+
+        const backend = defineBackend({});
+        const storageStack = backend.createStack("storage");
+        new Table(storageStack, "importTest", { partitionKey: { name: "id", type: AttributeType.STRING }, billingMode: BillingMode.PAY_PER_REQUEST });
+        "
+      `);
+    });
+
+    it('should create storage stack when no S3 bucket exists', () => {
+      const tableDefinition: DynamoDBTableDefinition = {
+        tableName: 'stackTest',
+        partitionKey: { name: 'id', type: 'STRING' },
+        billingMode: 'PAY_PER_REQUEST',
+      };
+
+      const result = synthesizer.render({
+        storage: {
+          importFrom: './storage/resource',
+          dynamoTables: [tableDefinition],
+        },
+      });
+
+      const source = printNodeArray(result);
+      expect(source).toMatchInlineSnapshot(`
+        "import { Table, AttributeType, BillingMode, StreamViewType } from "aws-cdk-lib/aws-dynamodb";
+        import { defineBackend } from "@aws-amplify/backend";
+
+
+        const backend = defineBackend({});
+        const storageStack = backend.createStack("storage");
+        new Table(storageStack, "stackTest", { partitionKey: { name: "id", type: AttributeType.STRING }, billingMode: BillingMode.PAY_PER_REQUEST });
+        "
+      `);
+    });
+
+    it('should use existing storage stack when S3 bucket exists', () => {
+      const tableDefinition: DynamoDBTableDefinition = {
+        tableName: 'stackTest',
+        partitionKey: { name: 'id', type: 'STRING' },
+        billingMode: 'PAY_PER_REQUEST',
+      };
+
+      const result = synthesizer.render({
+        storage: {
+          importFrom: './storage/resource',
+          dynamoTables: [tableDefinition],
+          hasS3Bucket: 'testBucket',
+          bucketName: 'testBucket',
+        },
+      });
+
+      const source = printNodeArray(result);
+      expect(source).toMatchInlineSnapshot(`
+        "import { storage } from "./storage/resource";
+        import { Table, AttributeType, BillingMode, StreamViewType } from "aws-cdk-lib/aws-dynamodb";
+        import { defineBackend } from "@aws-amplify/backend";
+
+
+        const backend = defineBackend({
+            storage
+        });
+        const storageStack = backend.storage.stack;
+        new Table(storageStack, "stackTest", { partitionKey: { name: "id", type: AttributeType.STRING }, billingMode: BillingMode.PAY_PER_REQUEST });
+        const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
+        // Use this bucket name post refactor
+        // s3Bucket.bucketName = 'testBucket';
+        "
+      `);
+    });
+  });
+
+  describe('Table name transformation', () => {
+    it('should replace multiple hyphens with underscores', () => {
+      const tableDefinition: DynamoDBTableDefinition = {
+        tableName: 'my-complex-table-name-dev',
+        partitionKey: { name: 'id', type: 'STRING' },
+        billingMode: 'PAY_PER_REQUEST',
+      };
+
+      const result = synthesizer.render({
+        storage: {
+          importFrom: './storage/resource',
+          dynamoTables: [tableDefinition],
+        },
+      });
+
+      const source = printNodeArray(result);
+      expect(source).toMatchInlineSnapshot(`
+        "import { Table, AttributeType, BillingMode, StreamViewType } from "aws-cdk-lib/aws-dynamodb";
+        import { defineBackend } from "@aws-amplify/backend";
+
+
+        const backend = defineBackend({});
+        const storageStack = backend.createStack("storage");
+        new Table(storageStack, "my_complex_table_name", { partitionKey: { name: "id", type: AttributeType.STRING }, billingMode: BillingMode.PAY_PER_REQUEST });
+        "
+      `);
+    });
+
+    it('should handle table names without hyphens', () => {
+      const tableDefinition: DynamoDBTableDefinition = {
+        tableName: 'simpleTableName',
+        partitionKey: { name: 'id', type: 'STRING' },
+        billingMode: 'PAY_PER_REQUEST',
+      };
+
+      const result = synthesizer.render({
+        storage: {
+          importFrom: './storage/resource',
+          dynamoTables: [tableDefinition],
+        },
+      });
+
+      const source = printNodeArray(result);
+      expect(source).toMatchInlineSnapshot(`
+        "import { Table, AttributeType, BillingMode, StreamViewType } from "aws-cdk-lib/aws-dynamodb";
+        import { defineBackend } from "@aws-amplify/backend";
+
+
+        const backend = defineBackend({});
+        const storageStack = backend.createStack("storage");
+        new Table(storageStack, "simpleTableName", { partitionKey: { name: "id", type: AttributeType.STRING }, billingMode: BillingMode.PAY_PER_REQUEST });
+        "
+      `);
     });
   });
 });

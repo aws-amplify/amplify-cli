@@ -1,6 +1,6 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { getStorageDefinition } from '../adapters/storage/index';
+import { getStorageDefinition, DynamoDBTableDefinition, DynamoDBAttribute, DynamoDBGSI } from '../adapters/storage/index';
 import { BackendDownloader } from './backend_downloader';
 import { StorageRenderParameters, StorageTriggerEvent, Lambda, ServerSideEncryptionConfiguration } from '../core/migration-pipeline';
 import {
@@ -13,6 +13,7 @@ import {
 } from '@aws-sdk/client-s3';
 import { BackendEnvironmentResolver } from './backend_environment_selector';
 import { fileOrDirectoryExists } from './directory_exists';
+import { DynamoDBClient, DescribeTableCommand } from '@aws-sdk/client-dynamodb';
 
 export interface AppStorageDefinitionFetcher {
   getDefinition(): Promise<ReturnType<typeof getStorageDefinition> | undefined>;
@@ -31,6 +32,7 @@ export class AppStorageDefinitionFetcher {
     private backendEnvironmentResolver: BackendEnvironmentResolver,
     private ccbFetcher: BackendDownloader,
     private s3Client: S3Client,
+    private dynamoClient: DynamoDBClient = new DynamoDBClient({}),
   ) {}
   private readJsonFile = async (filePath: string) => {
     const contents = await fs.readFile(filePath, { encoding: 'utf8' });
@@ -58,12 +60,98 @@ export class AppStorageDefinitionFetcher {
     return triggers;
   };
 
+  // Check the properties
+  private fetchDynamoDBTable = async (
+    storageName: string,
+    currentCloudBackendDirectory: string,
+    storageOutput: StorageOutput,
+  ): Promise<DynamoDBTableDefinition> => {
+    const actualTableName = storageOutput.output?.Name || storageName;
+    const describeResult = await this.dynamoClient.send(new DescribeTableCommand({ TableName: actualTableName }));
+    const table = describeResult.Table!;
+
+    // Extract schema from live table
+    const partitionKey: DynamoDBAttribute = {
+      name: table.KeySchema!.find((k) => k.KeyType === 'HASH')!.AttributeName!,
+      type: this.mapAttributeType(
+        table.AttributeDefinitions!.find((a) => a.AttributeName === table.KeySchema!.find((k) => k.KeyType === 'HASH')!.AttributeName)!
+          .AttributeType!,
+      ),
+    };
+
+    let sortKey: DynamoDBAttribute | undefined;
+    const sortKeySchema = table.KeySchema!.find((k) => k.KeyType === 'RANGE');
+    if (sortKeySchema) {
+      sortKey = {
+        name: sortKeySchema.AttributeName!,
+        type: this.mapAttributeType(
+          table.AttributeDefinitions!.find((a) => a.AttributeName === sortKeySchema.AttributeName)!.AttributeType!,
+        ),
+      };
+    }
+
+    const gsis: DynamoDBGSI[] = [];
+    if (table.GlobalSecondaryIndexes) {
+      table.GlobalSecondaryIndexes.forEach((gsi) => {
+        const gsiDef: DynamoDBGSI = {
+          indexName: gsi.IndexName!,
+          partitionKey: {
+            name: gsi.KeySchema!.find((k) => k.KeyType === 'HASH')!.AttributeName!,
+            type: this.mapAttributeType(
+              table.AttributeDefinitions!.find((a) => a.AttributeName === gsi.KeySchema!.find((k) => k.KeyType === 'HASH')!.AttributeName)!
+                .AttributeType!,
+            ),
+          },
+        };
+        const gsiSortKey = gsi.KeySchema!.find((k) => k.KeyType === 'RANGE');
+        if (gsiSortKey) {
+          gsiDef.sortKey = {
+            name: gsiSortKey.AttributeName!,
+            type: this.mapAttributeType(
+              table.AttributeDefinitions!.find((a) => a.AttributeName === gsiSortKey.AttributeName)!.AttributeType!,
+            ),
+          };
+        }
+        gsis.push(gsiDef);
+      });
+    }
+
+    return {
+      tableName: actualTableName,
+      partitionKey,
+      sortKey,
+      gsis: gsis.length > 0 ? gsis : undefined,
+      billingMode: table.BillingModeSummary?.BillingMode === 'PAY_PER_REQUEST' ? 'PAY_PER_REQUEST' : 'PROVISIONED',
+      readCapacity: table.ProvisionedThroughput?.ReadCapacityUnits || 5,
+      writeCapacity: table.ProvisionedThroughput?.WriteCapacityUnits || 5,
+      streamEnabled: !!table.StreamSpecification?.StreamEnabled,
+      streamViewType: table.StreamSpecification?.StreamViewType as
+        | 'KEYS_ONLY'
+        | 'NEW_IMAGE'
+        | 'OLD_IMAGE'
+        | 'NEW_AND_OLD_IMAGES'
+        | undefined,
+    };
+  };
+
+  private mapAttributeType = (dynamoType: string): 'STRING' | 'NUMBER' | 'BINARY' => {
+    switch (dynamoType) {
+      case 'S':
+        return 'STRING';
+      case 'N':
+        return 'NUMBER';
+      case 'B':
+        return 'BINARY';
+      default:
+        return 'STRING';
+    }
+  };
+
   getDefinition = async (): Promise<StorageRenderParameters | undefined> => {
     const backendEnvironment = await this.backendEnvironmentResolver.selectBackendEnvironment();
     if (!backendEnvironment?.deploymentArtifacts) return undefined;
 
     const currentCloudBackendDirectory = await this.ccbFetcher.getCurrentCloudBackend(backendEnvironment.deploymentArtifacts);
-
     const amplifyMetaPath = path.join(currentCloudBackendDirectory, 'amplify-meta.json');
 
     if (!(await fileOrDirectoryExists(amplifyMetaPath))) {
@@ -72,6 +160,7 @@ export class AppStorageDefinitionFetcher {
 
     const amplifyMeta = (await this.readJsonFile(amplifyMetaPath)) ?? {};
     let storageOptions: StorageRenderParameters | undefined = undefined;
+    const dynamoTables: DynamoDBTableDefinition[] = [];
 
     if ('storage' in amplifyMeta && Object.keys(amplifyMeta.storage).length) {
       for (const [storageName, storage] of Object.entries(amplifyMeta.storage)) {
@@ -81,9 +170,10 @@ export class AppStorageDefinitionFetcher {
           throw new Error(`Could not find cli-inputs.json for ${storageName}`);
         }
 
-        const cliInputs = await this.readJsonFile(cliInputsPath);
         const storageOutput = storage as StorageOutput;
+
         if (storageOutput.service === 'S3') {
+          const cliInputs = await this.readJsonFile(cliInputsPath);
           const bucketName = storageOutput.output.BucketName;
           if (!bucketName) throw new Error('Could not find bucket name');
 
@@ -122,14 +212,17 @@ export class AppStorageDefinitionFetcher {
             storageOptions.bucketEncryptionAlgorithm = serverSideEncryptionConf;
           }
         } else if (storageOutput.service === 'DynamoDB') {
-          const tableName = storageOutput.output.Name?.split('-')[0];
-          if (!tableName) throw new Error('Could not find table name');
-
-          if (!storageOptions) storageOptions = {};
-          storageOptions.dynamoDB = tableName;
+          const tableDefinition = await this.fetchDynamoDBTable(storageName, currentCloudBackendDirectory, storageOutput);
+          dynamoTables.push(tableDefinition);
         }
       }
     }
+
+    if (dynamoTables.length > 0) {
+      if (!storageOptions) storageOptions = {};
+      storageOptions.dynamoTables = dynamoTables;
+    }
+
     return storageOptions;
   };
 }

@@ -194,6 +194,7 @@ const copyGen1FunctionFiles = async (
         if (!skipFiles.includes(fileName)) {
           const srcPath = path.join(gen1SrcDir, file);
           const content = await fs.readFile(srcPath, 'utf-8');
+
           const destFile = file;
           const destPath = path.join(destDir, destFile);
 
@@ -437,6 +438,7 @@ export const createGen2Renderer = ({
   // Process storage configuration - create amplify/storage/resource.ts if S3 bucket is needed
   if (storage) {
     const hasS3Bucket = storage?.accessPatterns || storage?.storageIdentifier;
+
     if (hasS3Bucket) {
       renderers.push(new EnsureDirectory(path.join(outputDir, 'amplify', 'storage')));
       renderers.push(
@@ -449,7 +451,7 @@ export const createGen2Renderer = ({
     // Configure storage parameters for backend synthesis (includes both S3 and DynamoDB)
     backendRenderOptions.storage = {
       importFrom: './storage/resource',
-      dynamoDB: storage.dynamoDB,
+      dynamoTables: storage.dynamoTables,
       accelerateConfiguration: storage.accelerateConfiguration,
       versionConfiguration: storage.versioningConfiguration,
       hasS3Bucket: hasS3Bucket,

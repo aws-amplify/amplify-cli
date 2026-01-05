@@ -12,6 +12,7 @@ import ts, {
 import { PolicyOverrides, ReferenceAuth } from '../generators/auth';
 import type { BucketAccelerateStatus, BucketVersioningStatus } from '@aws-sdk/client-s3';
 import { AccessPatterns, ServerSideEncryptionConfiguration } from '../generators/storage';
+import { DynamoDBTableDefinition } from '../adapters/storage';
 import { ExplicitAuthFlowsType, OAuthFlowType, UserPoolClientType } from '@aws-sdk/client-cognito-identity-provider';
 import assert from 'assert';
 import { newLineIdentifier } from '../ts_factory_utils';
@@ -38,7 +39,7 @@ export interface BackendRenderParameters {
   };
   storage?: {
     importFrom: string;
-    dynamoDB?: string;
+    dynamoTables?: DynamoDBTableDefinition[];
     accelerateConfiguration?: BucketAccelerateStatus;
     versionConfiguration?: BucketVersioningStatus;
     hasS3Bucket?: string | AccessPatterns | undefined;
@@ -764,6 +765,10 @@ export class BackendSynthesizer {
     return [variableDeclaration, ifStatement];
   }
 
+  private sanitizeVariableName(name: string): string {
+    return name.replace(/-/g, '_');
+  }
+
   render(renderArgs: BackendRenderParameters): NodeArray<Node> {
     const authFunctionIdentifier = factory.createIdentifier('auth');
     const storageFunctionIdentifier = factory.createIdentifier('storage');
@@ -807,10 +812,12 @@ export class BackendSynthesizer {
 
     // Same as auth
 
-    if (renderArgs.storage?.hasS3Bucket) {
-      imports.push(this.createImportStatement([storageFunctionIdentifier], renderArgs.storage.importFrom));
-      const storage = factory.createShorthandPropertyAssignment(storageFunctionIdentifier);
-      defineBackendProperties.push(storage);
+    if (renderArgs.storage?.hasS3Bucket || renderArgs.storage?.dynamoTables?.length) {
+      if (renderArgs.storage.hasS3Bucket) {
+        imports.push(this.createImportStatement([storageFunctionIdentifier], renderArgs.storage.importFrom));
+        const storage = factory.createShorthandPropertyAssignment(storageFunctionIdentifier);
+        defineBackendProperties.push(storage);
+      }
     }
 
     // Context: Gen 1 might have multiple Lambda functions
@@ -848,18 +855,200 @@ export class BackendSynthesizer {
       });
     }
 
-    // Dynamo table cannot be migrated
-
-    if (renderArgs.storage?.dynamoDB) {
-      nodes.push(
-        factory.createThrowStatement(
-          factory.createNewExpression(factory.createIdentifier('Error'), undefined, [
-            factory.createStringLiteral(
-              `DynamoDB table \`${renderArgs.storage.dynamoDB}\` is referenced in your Gen 1 backend and will need to be manually migrated to reference with CDK.`,
-            ),
-          ]),
+    // DynamoDB tables generation
+    if (renderArgs.storage?.dynamoTables?.length) {
+      // Add CDK imports
+      imports.push(
+        this.createImportStatement(
+          [
+            factory.createIdentifier('Table'),
+            factory.createIdentifier('AttributeType'),
+            factory.createIdentifier('BillingMode'),
+            factory.createIdentifier('StreamViewType'),
+          ],
+          'aws-cdk-lib/aws-dynamodb',
         ),
       );
+
+      // Create storage stack
+      const stackDeclaration = factory.createVariableStatement(
+        [],
+        factory.createVariableDeclarationList(
+          [
+            factory.createVariableDeclaration(
+              'storageStack',
+              undefined,
+              undefined,
+              renderArgs.storage.hasS3Bucket
+                ? factory.createPropertyAccessExpression(
+                    factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier('storage')),
+                    factory.createIdentifier('stack'),
+                  )
+                : factory.createCallExpression(
+                    factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier('createStack')),
+                    undefined,
+                    [factory.createStringLiteral('storage')],
+                  ),
+            ),
+          ],
+          ts.NodeFlags.Const,
+        ),
+      );
+      nodes.push(stackDeclaration);
+
+      // Generate tables
+      renderArgs.storage.dynamoTables.forEach((table: DynamoDBTableDefinition) => {
+        // Remove environment suffix from table name to make Gen2 code more portable
+        const baseTableName = table.tableName.replace(/-[^-]+$/, '');
+        const sanitizedTableName = this.sanitizeVariableName(baseTableName);
+        const tableProps: ts.PropertyAssignment[] = [
+          factory.createPropertyAssignment(
+            'partitionKey',
+            factory.createObjectLiteralExpression([
+              factory.createPropertyAssignment('name', factory.createStringLiteral(table.partitionKey.name)),
+              factory.createPropertyAssignment(
+                'type',
+                factory.createPropertyAccessExpression(
+                  factory.createIdentifier('AttributeType'),
+                  factory.createIdentifier(table.partitionKey.type),
+                ),
+              ),
+            ]),
+          ),
+          factory.createPropertyAssignment(
+            'billingMode',
+            factory.createPropertyAccessExpression(
+              factory.createIdentifier('BillingMode'),
+              factory.createIdentifier(table.billingMode || 'PROVISIONED'),
+            ),
+          ),
+        ];
+
+        // Add throughput only for provisioned billing
+        if (table.billingMode !== 'PAY_PER_REQUEST') {
+          tableProps.push(factory.createPropertyAssignment('readCapacity', factory.createNumericLiteral(String(table.readCapacity || 5))));
+          tableProps.push(
+            factory.createPropertyAssignment('writeCapacity', factory.createNumericLiteral(String(table.writeCapacity || 5))),
+          );
+        }
+
+        // Add stream configuration if enabled
+        if (table.streamEnabled && table.streamViewType) {
+          tableProps.push(
+            factory.createPropertyAssignment(
+              'stream',
+              factory.createPropertyAccessExpression(
+                factory.createIdentifier('StreamViewType'),
+                factory.createIdentifier(table.streamViewType),
+              ),
+            ),
+          );
+        }
+
+        if (table.sortKey) {
+          tableProps.push(
+            factory.createPropertyAssignment(
+              'sortKey',
+              factory.createObjectLiteralExpression([
+                factory.createPropertyAssignment('name', factory.createStringLiteral(table.sortKey.name)),
+                factory.createPropertyAssignment(
+                  'type',
+                  factory.createPropertyAccessExpression(
+                    factory.createIdentifier('AttributeType'),
+                    factory.createIdentifier(table.sortKey.type),
+                  ),
+                ),
+              ]),
+            ),
+          );
+        }
+
+        // Only create table variable if GSIs exist
+        if (table.gsis && table.gsis.length > 0) {
+          const tableDeclaration = factory.createVariableStatement(
+            [],
+            factory.createVariableDeclarationList(
+              [
+                factory.createVariableDeclaration(
+                  sanitizedTableName,
+                  undefined,
+                  undefined,
+                  factory.createNewExpression(factory.createIdentifier('Table'), undefined, [
+                    factory.createIdentifier('storageStack'),
+                    factory.createStringLiteral(sanitizedTableName),
+                    factory.createObjectLiteralExpression(tableProps),
+                  ]),
+                ),
+              ],
+              ts.NodeFlags.Const,
+            ),
+          );
+          nodes.push(tableDeclaration);
+        } else {
+          // Create table without variable declaration if no GSIs
+          const tableCreation = factory.createExpressionStatement(
+            factory.createNewExpression(factory.createIdentifier('Table'), undefined, [
+              factory.createIdentifier('storageStack'),
+              factory.createStringLiteral(sanitizedTableName),
+              factory.createObjectLiteralExpression(tableProps),
+            ]),
+          );
+          nodes.push(tableCreation);
+        }
+
+        // Add GSIs
+        table.gsis?.forEach((gsi) => {
+          const gsiProps: ts.PropertyAssignment[] = [
+            factory.createPropertyAssignment('indexName', factory.createStringLiteral(gsi.indexName)),
+            factory.createPropertyAssignment(
+              'partitionKey',
+              factory.createObjectLiteralExpression([
+                factory.createPropertyAssignment('name', factory.createStringLiteral(gsi.partitionKey.name)),
+                factory.createPropertyAssignment(
+                  'type',
+                  factory.createPropertyAccessExpression(
+                    factory.createIdentifier('AttributeType'),
+                    factory.createIdentifier(gsi.partitionKey.type),
+                  ),
+                ),
+              ]),
+            ),
+          ];
+
+          if (gsi.sortKey) {
+            gsiProps.push(
+              factory.createPropertyAssignment(
+                'sortKey',
+                factory.createObjectLiteralExpression([
+                  factory.createPropertyAssignment('name', factory.createStringLiteral(gsi.sortKey.name)),
+                  factory.createPropertyAssignment(
+                    'type',
+                    factory.createPropertyAccessExpression(
+                      factory.createIdentifier('AttributeType'),
+                      factory.createIdentifier(gsi.sortKey.type),
+                    ),
+                  ),
+                ]),
+              ),
+            );
+          }
+
+          gsiProps.push(factory.createPropertyAssignment('readCapacity', factory.createNumericLiteral('5')));
+          gsiProps.push(factory.createPropertyAssignment('writeCapacity', factory.createNumericLiteral('5')));
+
+          const gsiCall = factory.createExpressionStatement(
+            factory.createCallExpression(
+              factory.createPropertyAccessExpression(
+                factory.createIdentifier(sanitizedTableName),
+                factory.createIdentifier('addGlobalSecondaryIndex'),
+              ),
+              undefined,
+              [factory.createObjectLiteralExpression(gsiProps)],
+            ),
+          );
+          nodes.push(gsiCall);
+        });
+      });
     }
 
     // Adds core import: import { defineBackend } from '@aws-amplify/backend';
@@ -1180,17 +1369,17 @@ export class BackendSynthesizer {
 
     // Additional auth providers for GraphQL API
     if (renderArgs.data?.additionalAuthProviders && renderArgs.auth) {
-      const cfnGraphQLApiVariableStatement = this.createVariableStatement(
-        this.createVariableDeclaration('cfnGraphQLApi', 'data.resources.cfnResources.cfnGraphqlApi'),
+      const cfnGraphqlApiVariableStatement = this.createVariableStatement(
+        this.createVariableDeclaration('cfnGraphqlApi', 'data.resources.cfnResources.cfnGraphqlApi'),
       );
-      nodes.push(cfnGraphQLApiVariableStatement);
+      nodes.push(cfnGraphqlApiVariableStatement);
 
       const additionalAuthProviders = this.createAdditionalAuthProvidersArray(renderArgs.data.additionalAuthProviders);
       nodes.push(
         factory.createExpressionStatement(
           factory.createAssignment(
             factory.createPropertyAccessExpression(
-              factory.createIdentifier('cfnGraphQLApi'),
+              factory.createIdentifier('cfnGraphqlApi'),
               factory.createIdentifier('additionalAuthenticationProviders'),
             ),
             additionalAuthProviders,
