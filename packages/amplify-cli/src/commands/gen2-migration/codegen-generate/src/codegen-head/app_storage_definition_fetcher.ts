@@ -119,12 +119,18 @@ export class AppStorageDefinitionFetcher {
 
     const lambdaPermissions = this.findLambdaPermissions(actualTableName);
 
+    // Parse triggerFunctions from cli-inputs.json
+    const cliInputsPath = path.join(currentCloudBackendDirectory, 'storage', storageName, 'cli-inputs.json');
+    const cliInputs = await this.readJsonFile(cliInputsPath);
+    const triggerFunctions = cliInputs.triggerFunctions || [];
+
     return {
       tableName: actualTableName,
       partitionKey,
       sortKey,
       gsis: gsis.length > 0 ? gsis : undefined,
       lambdaPermissions: lambdaPermissions.length > 0 ? lambdaPermissions : undefined,
+      triggerFunctions: triggerFunctions.length > 0 ? triggerFunctions : undefined,
       billingMode: table.BillingModeSummary?.BillingMode === 'PAY_PER_REQUEST' ? 'PAY_PER_REQUEST' : 'PROVISIONED',
       readCapacity: table.ProvisionedThroughput?.ReadCapacityUnits || 5,
       writeCapacity: table.ProvisionedThroughput?.WriteCapacityUnits || 5,

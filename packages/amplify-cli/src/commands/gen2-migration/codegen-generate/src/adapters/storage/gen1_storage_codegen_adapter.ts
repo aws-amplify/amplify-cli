@@ -21,6 +21,7 @@ export type DynamoDBTableDefinition = {
     functionName: string;
     envVarName: string;
   }[];
+  triggerFunctions?: string[];
   billingMode?: 'PROVISIONED' | 'PAY_PER_REQUEST';
   readCapacity?: number;
   writeCapacity?: number;

@@ -1067,6 +1067,49 @@ export class BackendSynthesizer {
           );
           nodes.push(envCall);
         });
+
+        // Add DynamoDB triggers (EventSourceMapping)
+        table.triggerFunctions?.forEach((functionName) => {
+          // Grant stream read permissions
+          const streamGrantCall = factory.createExpressionStatement(
+            factory.createCallExpression(
+              factory.createPropertyAccessExpression(
+                factory.createIdentifier(table.tableName),
+                factory.createIdentifier('grantStreamRead'),
+              ),
+              undefined,
+              [
+                factory.createPropertyAccessExpression(
+                  factory.createPropertyAccessExpression(
+                    factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier(functionName)),
+                    factory.createIdentifier('resources'),
+                  ),
+                  factory.createIdentifier('lambda'),
+                ),
+              ],
+            ),
+          );
+          nodes.push(streamGrantCall);
+
+          // Add stream ARN environment variable
+          const streamEnvCall = factory.createExpressionStatement(
+            factory.createCallExpression(
+              factory.createPropertyAccessExpression(
+                factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier(functionName)),
+                factory.createIdentifier('addEnvironment'),
+              ),
+              undefined,
+              [
+                factory.createStringLiteral(`${table.tableName.toUpperCase()}_STREAM_ARN`),
+                factory.createPropertyAccessExpression(
+                  factory.createIdentifier(table.tableName),
+                  factory.createIdentifier('tableStreamArn'),
+                ),
+              ],
+            ),
+          );
+          nodes.push(streamEnvCall);
+        });
       });
     }
 
@@ -1386,17 +1429,17 @@ export class BackendSynthesizer {
 
     // Additional auth providers for GraphQL API
     if (renderArgs.data?.additionalAuthProviders && renderArgs.auth) {
-      const cfnGraphQLApiVariableStatement = this.createVariableStatement(
-        this.createVariableDeclaration('cfnGraphQLApi', 'data.resources.cfnResources.cfnGraphqlApi'),
+      const cfnGraphqlApiVariableStatement = this.createVariableStatement(
+        this.createVariableDeclaration('cfnGraphqlApi', 'data.resources.cfnResources.cfnGraphqlApi'),
       );
-      nodes.push(cfnGraphQLApiVariableStatement);
+      nodes.push(cfnGraphqlApiVariableStatement);
 
       const additionalAuthProviders = this.createAdditionalAuthProvidersArray(renderArgs.data.additionalAuthProviders);
       nodes.push(
         factory.createExpressionStatement(
           factory.createAssignment(
             factory.createPropertyAccessExpression(
-              factory.createIdentifier('cfnGraphQLApi'),
+              factory.createIdentifier('cfnGraphqlApi'),
               factory.createIdentifier('additionalAuthenticationProviders'),
             ),
             additionalAuthProviders,
