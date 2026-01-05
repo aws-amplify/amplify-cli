@@ -4,7 +4,9 @@ import { getFunctionDefinition } from '../adapters/functions/index';
 import { BackendEnvironmentResolver } from './backend_environment_selector';
 import { GetFunctionCommand, GetPolicyCommand, LambdaClient } from '@aws-sdk/client-lambda';
 import { DescribeRuleCommand, CloudWatchEventsClient } from '@aws-sdk/client-cloudwatch-events';
-import { StateManager } from '@aws-amplify/amplify-cli-core';
+import * as path from 'path';
+import { StateManager, $TSMeta, JSONUtilities } from '@aws-amplify/amplify-cli-core';
+import { BackendDownloader } from './backend_downloader';
 
 /**
  * Configuration interface for Amplify Auth category resources.
@@ -63,6 +65,7 @@ export class AppFunctionsDefinitionFetcher {
     private cloudWatchEventsClient: CloudWatchEventsClient,
     private backendEnvironmentResolver: BackendEnvironmentResolver,
     private stateManager: StateManager,
+    private ccbFetcher: BackendDownloader,
   ) {}
 
   /**
@@ -84,8 +87,11 @@ export class AppFunctionsDefinitionFetcher {
     const backendEnvironment = await this.backendEnvironmentResolver.selectBackendEnvironment();
     assert(backendEnvironment?.stackName);
 
-    // Load project metadata from amplify-meta.json
-    const meta = this.stateManager.getMeta();
+    const currentCloudBackendDirectory = await this.ccbFetcher.getCurrentCloudBackend(backendEnvironment.deploymentArtifacts);
+    const amplifyMetaPath = path.join(currentCloudBackendDirectory, 'amplify-meta.json');
+
+    const meta = JSONUtilities.readJson<$TSMeta>(amplifyMetaPath, { throwIfNotExist: true });
+
     const functions = meta?.function ?? {};
     const auth = meta?.auth ?? {};
     const storageList = meta?.storage ?? {};

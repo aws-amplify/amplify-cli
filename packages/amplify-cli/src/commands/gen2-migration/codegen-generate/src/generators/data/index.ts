@@ -1,7 +1,8 @@
-import ts, { ObjectLiteralElementLike, ObjectLiteralExpression } from 'typescript';
+import ts, { ObjectLiteralElementLike } from 'typescript';
 import { renderResourceTsFile } from '../../resource/resource';
 import type { ConstructFactory, AmplifyFunction } from '@aws-amplify/plugin-types';
 import type { AuthorizationModes, DataLoggingOptions } from '@aws-amplify/backend-data';
+import { RestApiDefinition } from '../../codegen-head/data_definition_fetcher';
 export interface AdditionalAuthProvider {
   authenticationType: 'API_KEY' | 'AWS_IAM' | 'OPENID_CONNECT' | 'AMAZON_COGNITO_USER_POOLS' | 'AWS_LAMBDA';
   lambdaAuthorizerConfig?: {
@@ -118,7 +119,7 @@ export type DataDefinition = {
   /** Table mappings for the current environment */
   tableMappings?: DataTableMapping | undefined;
   /** GraphQL schema definition as a string */
-  schema: string;
+  schema?: string;
   /* Override authorization config, which will apply on top of defaults based on availability of auth, etc. */
   authorizationModes?: AuthorizationModes;
   /* Additional authentication providers for AppSync API */
@@ -127,6 +128,8 @@ export type DataDefinition = {
   functions?: Record<string, ConstructFactory<AmplifyFunction>>;
   /* Logging config for api */
   logging?: DataLoggingOptions;
+  /* REST API definitions */
+  restApis?: RestApiDefinition[];
 };
 
 /** Key name for the migrated table mappings property in the generated data resource */
@@ -153,7 +156,16 @@ const migratedAmplifyGen1DynamoDbTableMappingsKeyName = 'migratedAmplifyGen1Dyna
  * const nodes = generateDataSource(dataDefinition);
  * ```
  */
-export const generateDataSource = async (dataDefinition?: DataDefinition): Promise<ts.NodeArray<ts.Node>> => {
+export const generateDataSource = async (gen1Env: string, dataDefinition?: DataDefinition): Promise<ts.NodeArray<ts.Node> | undefined> => {
+  // Return undefined if no data definition is provided
+  if (!dataDefinition) {
+    return undefined;
+  }
+
+  // Return undefined if no schema and no REST APIs
+  if (!dataDefinition.schema && (!dataDefinition.restApis || dataDefinition.restApis.length === 0)) {
+    return undefined;
+  }
   // Properties for the defineData() function call
   const dataRenderProperties: ObjectLiteralElementLike[] = [];
 
@@ -166,11 +178,30 @@ export const generateDataSource = async (dataDefinition?: DataDefinition): Promi
 
   // Generate schema variable declaration if schema is provided
   if (dataDefinition && dataDefinition.schema) {
+    if (dataDefinition.schema.includes('${env}')) {
+      const branchNameStatement = factory.createVariableStatement(
+        [],
+        factory.createVariableDeclarationList(
+          [
+            factory.createVariableDeclaration(
+              'branchName',
+              undefined,
+              undefined,
+              factory.createIdentifier('process.env.AWS_BRANCH ?? "sandbox"'),
+            ),
+          ],
+          ts.NodeFlags.Const,
+        ),
+      );
+      schemaStatements.push(branchNameStatement);
+      dataDefinition.schema = dataDefinition.schema.replaceAll('${env}', '${branchName}');
+    }
+
     const schemaVariableDeclaration = factory.createVariableDeclaration(
       'schema',
       undefined,
       undefined,
-      factory.createNoSubstitutionTemplateLiteral(dataDefinition.schema),
+      factory.createIdentifier('`' + dataDefinition.schema + '`'),
     );
     const schemaStatementAssignment = factory.createVariableStatement(
       [],
@@ -186,8 +217,7 @@ export const generateDataSource = async (dataDefinition?: DataDefinition): Promi
   if (!tableMappings && dataDefinition?.schema) {
     const apiId = await getApiId();
     if (apiId) {
-      const currentEnv = getCurrentEnvironment();
-      tableMappings = createDataSourceMapping(dataDefinition.schema, apiId, currentEnv);
+      tableMappings = createDataSourceMapping(dataDefinition.schema, apiId, gen1Env);
     }
   }
 
@@ -201,9 +231,8 @@ export const generateDataSource = async (dataDefinition?: DataDefinition): Promi
       );
     }
 
-    const currentEnv = getCurrentEnvironment();
     const branchNameExpression = ts.addSyntheticLeadingComment(
-      factory.createPropertyAssignment('branchName', factory.createStringLiteral(currentEnv)),
+      factory.createPropertyAssignment('branchName', factory.createStringLiteral(gen1Env)),
       ts.SyntaxKind.SingleLineCommentTrivia,
       'The "branchname" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables',
       true,
@@ -344,7 +373,9 @@ export const generateDataSource = async (dataDefinition?: DataDefinition): Promi
   }
 
   // Add schema reference to the data configuration
-  dataRenderProperties.push(factory.createShorthandPropertyAssignment(factory.createIdentifier('schema')));
+  if (dataDefinition?.schema) {
+    dataRenderProperties.push(factory.createShorthandPropertyAssignment(factory.createIdentifier('schema')));
+  }
 
   // Generate the complete TypeScript file with imports, schema, and data export
   return renderResourceTsFile({

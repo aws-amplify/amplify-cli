@@ -15,7 +15,7 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
   }
 
   public async execute(): Promise<void> {
-    await prepare(this.logger);
+    await prepare(this.logger, this.appId, this.currentEnvName, this.region);
   }
 
   public async rollback(): Promise<void> {
