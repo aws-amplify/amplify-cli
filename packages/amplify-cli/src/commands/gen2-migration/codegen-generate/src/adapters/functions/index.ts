@@ -67,7 +67,7 @@ export const getFunctionDefinition = (
     // a circular import. instead, we need to generate some code in `backend.ts` (TODO)
     for (const envSuffix of ['GRAPHQLAPIKEYOUTPUT', 'GRAPHQLAPIENDPOINTOUTPUT', 'GRAPHQLAPIIDOUTPUT']) {
       for (const variable of Object.keys(configuration.Environment?.Variables ?? {})) {
-        if (variable.endsWith(envSuffix)) {
+        if (variable.startsWith('API_') && variable.endsWith(envSuffix)) {
           delete configuration.Environment?.Variables[variable];
         }
       }
