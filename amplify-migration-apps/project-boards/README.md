@@ -144,11 +144,7 @@ amplify add function
 ## Configure
 
 ```console
-/bin/cp -f schema.graphql ./amplify/backend/api/projectboards/schema.graphql
-```
-
-```console
-/bin/cp -f quotegenerator.js ./amplify/backend/function/quotegenerator/src/index.js
+npm run configure
 ```
 
 ## Deploy Backend
@@ -214,21 +210,21 @@ git checkout -b gen2-main
 npx amplify gen2-migration generate
 ```
 
-Edit in `./amplify/backend/data/resource.ts`:
+**Edit in `./amplify/backend/data/resource.ts`:**
 
 ```diff
 - branchName: "main"
 + branchName: "gen2-main"
 ```
 
-Edit in `./amplify/backend/function/quotegenerator/index.js`
+**Edit in `./amplify/backend/function/quotegenerator/index.js`:**
 
 ```diff
 - exports.handler = async (event) => {
 + export async function handler(event) {
 ```
 
-Edit in `./src/main.tsx`:
+**Edit in `./src/main.tsx`:**
 
 ```diff
 - import amplifyconfig from './amplifyconfiguration.json';
@@ -260,7 +256,7 @@ npx amplify gen2-migration refactor --to <gen2-stack-name>
 git checkout gen2-main
 ```
 
-Edit in `./amplify/backend.ts`:
+**Edit in `./amplify/backend.ts`:**
 
 ```diff
 - // s3Bucket.bucketName = '...';
@@ -274,4 +270,3 @@ git push origin gen2-main
 ```
 
 Wait for the deployment to finish successfully.
-
