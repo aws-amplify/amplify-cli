@@ -8,6 +8,60 @@ type GeneratedQuery<InputType, OutputType> = string & {
   __generatedQueryOutput: OutputType;
 };
 
+export const getProduct = /* GraphQL */ `query GetProduct($id: ID!) {
+  getProduct(id: $id) {
+    id
+    serialno
+    engword
+    price
+    category
+    description
+    stock
+    brand
+    imageKey
+    imageUploadedAt
+    images
+    createdBy
+    updatedBy
+    createdAt
+    updatedAt
+    comments {
+      nextToken
+      __typename
+    }
+    __typename
+  }
+}
+` as GeneratedQuery<APITypes.GetProductQueryVariables, APITypes.GetProductQuery>;
+export const listProducts = /* GraphQL */ `query ListProducts(
+  $filter: ModelProductFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listProducts(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      id
+      serialno
+      engword
+      price
+      category
+      description
+      stock
+      brand
+      imageKey
+      imageUploadedAt
+      images
+      createdBy
+      updatedBy
+      createdAt
+      updatedAt
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+` as GeneratedQuery<APITypes.ListProductsQueryVariables, APITypes.ListProductsQuery>;
 export const getUser = /* GraphQL */ `query GetUser($id: ID!) {
   getUser(id: $id) {
     id
@@ -40,79 +94,10 @@ export const listUsers = /* GraphQL */ `query ListUsers(
   }
 }
 ` as GeneratedQuery<APITypes.ListUsersQueryVariables, APITypes.ListUsersQuery>;
-export const getProduct = /* GraphQL */ `query GetProduct($id: ID!) {
-  getProduct(id: $id) {
-    id
-    serialno
-    engword
-    price
-    category
-    description
-    stock
-    brand
-    imageKey
-    images
-    createdBy
-    updatedBy
-    createdAt
-    updatedAt
-    comments {
-      nextToken
-      __typename
-    }
-    __typename
-  }
-}
-` as GeneratedQuery<APITypes.GetProductQueryVariables, APITypes.GetProductQuery>;
-export const listProducts = /* GraphQL */ `query ListProducts(
-  $filter: ModelProductFilterInput
-  $limit: Int
-  $nextToken: String
-) {
-  listProducts(filter: $filter, limit: $limit, nextToken: $nextToken) {
-    items {
-      id
-      serialno
-      engword
-      price
-      category
-      description
-      stock
-      brand
-      imageKey
-      images
-      createdBy
-      updatedBy
-      createdAt
-      updatedAt
-      __typename
-    }
-    nextToken
-    __typename
-  }
-}
-` as GeneratedQuery<APITypes.ListProductsQueryVariables, APITypes.ListProductsQuery>;
 export const getComment = /* GraphQL */ `query GetComment($id: ID!) {
   getComment(id: $id) {
     id
     productId
-    product {
-      id
-      serialno
-      engword
-      price
-      category
-      description
-      stock
-      brand
-      imageKey
-      images
-      createdBy
-      updatedBy
-      createdAt
-      updatedAt
-      __typename
-    }
     authorId
     authorName
     content

@@ -2,18 +2,6 @@
 /* eslint-disable */
 //  This file was automatically generated and should not be edited.
 
-export type LowStockResult = {
-  __typename: 'LowStockResult';
-  message: string;
-  lowStockProducts: Array<LowStockProduct>;
-};
-
-export type LowStockProduct = {
-  __typename: 'LowStockProduct';
-  name: string;
-  stock: number;
-};
-
 export type CreateProductInput = {
   id?: string | null;
   serialno: number;
@@ -24,6 +12,7 @@ export type CreateProductInput = {
   stock?: number | null;
   brand?: string | null;
   imageKey?: string | null;
+  imageUploadedAt?: string | null;
   images?: Array<string | null> | null;
   createdBy?: string | null;
   updatedBy?: string | null;
@@ -40,6 +29,7 @@ export type ModelProductConditionInput = {
   stock?: ModelIntInput | null;
   brand?: ModelStringInput | null;
   imageKey?: ModelStringInput | null;
+  imageUploadedAt?: ModelStringInput | null;
   images?: ModelStringInput | null;
   createdBy?: ModelStringInput | null;
   updatedBy?: ModelStringInput | null;
@@ -126,6 +116,7 @@ export type Product = {
   stock?: number | null;
   brand?: string | null;
   imageKey?: string | null;
+  imageUploadedAt?: string | null;
   images?: Array<string | null> | null;
   createdBy?: string | null;
   updatedBy?: string | null;
@@ -144,7 +135,6 @@ export type Comment = {
   __typename: 'Comment';
   id: string;
   productId: string;
-  product?: Product | null;
   authorId: string;
   authorName: string;
   content: string;
@@ -162,6 +152,7 @@ export type UpdateProductInput = {
   stock?: number | null;
   brand?: string | null;
   imageKey?: string | null;
+  imageUploadedAt?: string | null;
   images?: Array<string | null> | null;
   createdBy?: string | null;
   updatedBy?: string | null;
@@ -292,6 +283,7 @@ export type ModelProductFilterInput = {
   stock?: ModelIntInput | null;
   brand?: ModelStringInput | null;
   imageKey?: ModelStringInput | null;
+  imageUploadedAt?: ModelStringInput | null;
   images?: ModelStringInput | null;
   createdBy?: ModelStringInput | null;
   updatedBy?: ModelStringInput | null;
@@ -346,6 +338,18 @@ export const ModelSortDirection = {
 
 export type ModelSortDirection = (typeof ModelSortDirection)[keyof typeof ModelSortDirection];
 
+export type LowStockResponse = {
+  __typename: 'LowStockResponse';
+  message: string;
+  lowStockProducts: Array<LowStockProduct>;
+};
+
+export type LowStockProduct = {
+  __typename: 'LowStockProduct';
+  name: string;
+  stock: number;
+};
+
 export type ModelSubscriptionProductFilterInput = {
   id?: ModelSubscriptionIDInput | null;
   serialno?: ModelSubscriptionIntInput | null;
@@ -356,6 +360,7 @@ export type ModelSubscriptionProductFilterInput = {
   stock?: ModelSubscriptionIntInput | null;
   brand?: ModelSubscriptionStringInput | null;
   imageKey?: ModelSubscriptionStringInput | null;
+  imageUploadedAt?: ModelSubscriptionStringInput | null;
   images?: ModelSubscriptionStringInput | null;
   createdBy?: ModelSubscriptionStringInput | null;
   updatedBy?: ModelSubscriptionStringInput | null;
@@ -442,34 +447,6 @@ export type ModelSubscriptionCommentFilterInput = {
   authorId?: ModelStringInput | null;
 };
 
-export type CheckLowStockQueryVariables = {};
-
-export type CheckLowStockQuery = {
-  checkLowStock?: {
-    __typename: 'LowStockResult';
-    message: string;
-    lowStockProducts: Array<{
-      __typename: 'LowStockProduct';
-      name: string;
-      stock: number;
-    }>;
-  } | null;
-};
-
-export type CheckLowStockMutationVariables = {};
-
-export type CheckLowStockMutation = {
-  checkLowStock?: {
-    __typename: 'LowStockResult';
-    message: string;
-    lowStockProducts: Array<{
-      __typename: 'LowStockProduct';
-      name: string;
-      stock: number;
-    }>;
-  } | null;
-};
-
 export type CreateProductMutationVariables = {
   input: CreateProductInput;
   condition?: ModelProductConditionInput | null;
@@ -487,6 +464,7 @@ export type CreateProductMutation = {
     stock?: number | null;
     brand?: string | null;
     imageKey?: string | null;
+    imageUploadedAt?: string | null;
     images?: Array<string | null> | null;
     createdBy?: string | null;
     updatedBy?: string | null;
@@ -516,6 +494,7 @@ export type UpdateProductMutation = {
     stock?: number | null;
     brand?: string | null;
     imageKey?: string | null;
+    imageUploadedAt?: string | null;
     images?: Array<string | null> | null;
     createdBy?: string | null;
     updatedBy?: string | null;
@@ -545,6 +524,7 @@ export type DeleteProductMutation = {
     stock?: number | null;
     brand?: string | null;
     imageKey?: string | null;
+    imageUploadedAt?: string | null;
     images?: Array<string | null> | null;
     createdBy?: string | null;
     updatedBy?: string | null;
@@ -618,23 +598,6 @@ export type CreateCommentMutation = {
     __typename: 'Comment';
     id: string;
     productId: string;
-    product?: {
-      __typename: 'Product';
-      id: string;
-      serialno: number;
-      engword: string;
-      price?: number | null;
-      category?: string | null;
-      description?: string | null;
-      stock?: number | null;
-      brand?: string | null;
-      imageKey?: string | null;
-      images?: Array<string | null> | null;
-      createdBy?: string | null;
-      updatedBy?: string | null;
-      createdAt: string;
-      updatedAt: string;
-    } | null;
     authorId: string;
     authorName: string;
     content: string;
@@ -653,23 +616,6 @@ export type UpdateCommentMutation = {
     __typename: 'Comment';
     id: string;
     productId: string;
-    product?: {
-      __typename: 'Product';
-      id: string;
-      serialno: number;
-      engword: string;
-      price?: number | null;
-      category?: string | null;
-      description?: string | null;
-      stock?: number | null;
-      brand?: string | null;
-      imageKey?: string | null;
-      images?: Array<string | null> | null;
-      createdBy?: string | null;
-      updatedBy?: string | null;
-      createdAt: string;
-      updatedAt: string;
-    } | null;
     authorId: string;
     authorName: string;
     content: string;
@@ -688,23 +634,6 @@ export type DeleteCommentMutation = {
     __typename: 'Comment';
     id: string;
     productId: string;
-    product?: {
-      __typename: 'Product';
-      id: string;
-      serialno: number;
-      engword: string;
-      price?: number | null;
-      category?: string | null;
-      description?: string | null;
-      stock?: number | null;
-      brand?: string | null;
-      imageKey?: string | null;
-      images?: Array<string | null> | null;
-      createdBy?: string | null;
-      updatedBy?: string | null;
-      createdAt: string;
-      updatedAt: string;
-    } | null;
     authorId: string;
     authorName: string;
     content: string;
@@ -729,6 +658,7 @@ export type GetProductQuery = {
     stock?: number | null;
     brand?: string | null;
     imageKey?: string | null;
+    imageUploadedAt?: string | null;
     images?: Array<string | null> | null;
     createdBy?: string | null;
     updatedBy?: string | null;
@@ -761,6 +691,7 @@ export type ListProductsQuery = {
       stock?: number | null;
       brand?: string | null;
       imageKey?: string | null;
+      imageUploadedAt?: string | null;
       images?: Array<string | null> | null;
       createdBy?: string | null;
       updatedBy?: string | null;
@@ -818,23 +749,6 @@ export type GetCommentQuery = {
     __typename: 'Comment';
     id: string;
     productId: string;
-    product?: {
-      __typename: 'Product';
-      id: string;
-      serialno: number;
-      engword: string;
-      price?: number | null;
-      category?: string | null;
-      description?: string | null;
-      stock?: number | null;
-      brand?: string | null;
-      imageKey?: string | null;
-      images?: Array<string | null> | null;
-      createdBy?: string | null;
-      updatedBy?: string | null;
-      createdAt: string;
-      updatedAt: string;
-    } | null;
     authorId: string;
     authorName: string;
     content: string;
@@ -891,6 +805,20 @@ export type CommentsByProductIdQuery = {
   } | null;
 };
 
+export type CheckLowStockQueryVariables = {};
+
+export type CheckLowStockQuery = {
+  checkLowStock?: {
+    __typename: 'LowStockResponse';
+    message: string;
+    lowStockProducts: Array<{
+      __typename: 'LowStockProduct';
+      name: string;
+      stock: number;
+    }>;
+  } | null;
+};
+
 export type OnCreateProductSubscriptionVariables = {
   filter?: ModelSubscriptionProductFilterInput | null;
 };
@@ -907,6 +835,7 @@ export type OnCreateProductSubscription = {
     stock?: number | null;
     brand?: string | null;
     imageKey?: string | null;
+    imageUploadedAt?: string | null;
     images?: Array<string | null> | null;
     createdBy?: string | null;
     updatedBy?: string | null;
@@ -935,6 +864,7 @@ export type OnUpdateProductSubscription = {
     stock?: number | null;
     brand?: string | null;
     imageKey?: string | null;
+    imageUploadedAt?: string | null;
     images?: Array<string | null> | null;
     createdBy?: string | null;
     updatedBy?: string | null;
@@ -963,6 +893,7 @@ export type OnDeleteProductSubscription = {
     stock?: number | null;
     brand?: string | null;
     imageKey?: string | null;
+    imageUploadedAt?: string | null;
     images?: Array<string | null> | null;
     createdBy?: string | null;
     updatedBy?: string | null;
@@ -1036,23 +967,6 @@ export type OnCreateCommentSubscription = {
     __typename: 'Comment';
     id: string;
     productId: string;
-    product?: {
-      __typename: 'Product';
-      id: string;
-      serialno: number;
-      engword: string;
-      price?: number | null;
-      category?: string | null;
-      description?: string | null;
-      stock?: number | null;
-      brand?: string | null;
-      imageKey?: string | null;
-      images?: Array<string | null> | null;
-      createdBy?: string | null;
-      updatedBy?: string | null;
-      createdAt: string;
-      updatedAt: string;
-    } | null;
     authorId: string;
     authorName: string;
     content: string;
@@ -1071,23 +985,6 @@ export type OnUpdateCommentSubscription = {
     __typename: 'Comment';
     id: string;
     productId: string;
-    product?: {
-      __typename: 'Product';
-      id: string;
-      serialno: number;
-      engword: string;
-      price?: number | null;
-      category?: string | null;
-      description?: string | null;
-      stock?: number | null;
-      brand?: string | null;
-      imageKey?: string | null;
-      images?: Array<string | null> | null;
-      createdBy?: string | null;
-      updatedBy?: string | null;
-      createdAt: string;
-      updatedAt: string;
-    } | null;
     authorId: string;
     authorName: string;
     content: string;
@@ -1106,23 +1003,6 @@ export type OnDeleteCommentSubscription = {
     __typename: 'Comment';
     id: string;
     productId: string;
-    product?: {
-      __typename: 'Product';
-      id: string;
-      serialno: number;
-      engword: string;
-      price?: number | null;
-      category?: string | null;
-      description?: string | null;
-      stock?: number | null;
-      brand?: string | null;
-      imageKey?: string | null;
-      images?: Array<string | null> | null;
-      createdBy?: string | null;
-      updatedBy?: string | null;
-      createdAt: string;
-      updatedAt: string;
-    } | null;
     authorId: string;
     authorName: string;
     content: string;
