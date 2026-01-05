@@ -2,14 +2,6 @@ import { FunctionDefinition } from '../../core/migration-pipeline';
 import { FunctionConfiguration } from '@aws-sdk/client-lambda';
 import assert from 'node:assert';
 
-const ENV_VARIABLES_TO_REMOVE = [
-  // we remove these because their value points to the Gen1 appsync API.
-  // we need to point to the new one.
-  'GRAPHQLAPIKEYOUTPUT',
-  'GRAPHQLAPIENDPOINTOUTPUT',
-  'GRAPHQLAPIIDOUTPUT',
-];
-
 export type AmplifyMetaFunction = {
   service: string;
   providerPlugin: 'awscloudformation';
