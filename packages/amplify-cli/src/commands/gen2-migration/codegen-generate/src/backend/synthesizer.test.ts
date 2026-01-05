@@ -446,7 +446,7 @@ describe('BackendSynthesizer', () => {
 
         const backend = defineBackend({});
         const storageStack = backend.createStack("storage");
-        const countsTable = new Table(storageStack, "countsTable", { partitionKey: { name: "postId", type: AttributeType.STRING }, billingMode: BillingMode.PROVISIONED, readCapacity: 5, writeCapacity: 5, sortKey: { name: "metricType", type: AttributeType.STRING } });
+        new Table(storageStack, "countsTable", { partitionKey: { name: "postId", type: AttributeType.STRING }, billingMode: BillingMode.PROVISIONED, readCapacity: 5, writeCapacity: 5, sortKey: { name: "metricType", type: AttributeType.STRING } });
         "
       `);
     });
@@ -474,7 +474,7 @@ describe('BackendSynthesizer', () => {
 
         const backend = defineBackend({});
         const storageStack = backend.createStack("storage");
-        const testTable = new Table(storageStack, "testTable", { partitionKey: { name: "id", type: AttributeType.STRING }, billingMode: BillingMode.PAY_PER_REQUEST, sortKey: { name: "timestamp", type: AttributeType.NUMBER } });
+        new Table(storageStack, "testTable", { partitionKey: { name: "id", type: AttributeType.STRING }, billingMode: BillingMode.PAY_PER_REQUEST, sortKey: { name: "timestamp", type: AttributeType.NUMBER } });
         "
       `);
     });
@@ -540,7 +540,7 @@ describe('BackendSynthesizer', () => {
 
         const backend = defineBackend({});
         const storageStack = backend.createStack("storage");
-        const streamTable = new Table(storageStack, "streamTable", { partitionKey: { name: "id", type: AttributeType.STRING }, billingMode: BillingMode.PAY_PER_REQUEST, stream: StreamViewType.NEW_AND_OLD_IMAGES });
+        new Table(storageStack, "streamTable", { partitionKey: { name: "id", type: AttributeType.STRING }, billingMode: BillingMode.PAY_PER_REQUEST, stream: StreamViewType.NEW_AND_OLD_IMAGES });
         "
       `);
     });
@@ -577,8 +577,8 @@ describe('BackendSynthesizer', () => {
 
         const backend = defineBackend({});
         const storageStack = backend.createStack("storage");
-        const table = new Table(storageStack, "table", { partitionKey: { name: "pk1", type: AttributeType.STRING }, billingMode: BillingMode.PAY_PER_REQUEST });
-        const table = new Table(storageStack, "table", { partitionKey: { name: "pk2", type: AttributeType.NUMBER }, billingMode: BillingMode.PROVISIONED, readCapacity: 10, writeCapacity: 10, sortKey: { name: "sk2", type: AttributeType.STRING } });
+        new Table(storageStack, "table", { partitionKey: { name: "pk1", type: AttributeType.STRING }, billingMode: BillingMode.PAY_PER_REQUEST });
+        new Table(storageStack, "table", { partitionKey: { name: "pk2", type: AttributeType.NUMBER }, billingMode: BillingMode.PROVISIONED, readCapacity: 10, writeCapacity: 10, sortKey: { name: "sk2", type: AttributeType.STRING } });
         "
       `);
     });
@@ -605,7 +605,7 @@ describe('BackendSynthesizer', () => {
 
         const backend = defineBackend({});
         const storageStack = backend.createStack("storage");
-        const importTest = new Table(storageStack, "importTest", { partitionKey: { name: "id", type: AttributeType.STRING }, billingMode: BillingMode.PAY_PER_REQUEST });
+        new Table(storageStack, "importTest", { partitionKey: { name: "id", type: AttributeType.STRING }, billingMode: BillingMode.PAY_PER_REQUEST });
         "
       `);
     });
@@ -632,7 +632,7 @@ describe('BackendSynthesizer', () => {
 
         const backend = defineBackend({});
         const storageStack = backend.createStack("storage");
-        const stackTest = new Table(storageStack, "stackTest", { partitionKey: { name: "id", type: AttributeType.STRING }, billingMode: BillingMode.PAY_PER_REQUEST });
+        new Table(storageStack, "stackTest", { partitionKey: { name: "id", type: AttributeType.STRING }, billingMode: BillingMode.PAY_PER_REQUEST });
         "
       `);
     });
@@ -664,7 +664,7 @@ describe('BackendSynthesizer', () => {
             storage
         });
         const storageStack = backend.storage.stack;
-        const stackTest = new Table(storageStack, "stackTest", { partitionKey: { name: "id", type: AttributeType.STRING }, billingMode: BillingMode.PAY_PER_REQUEST });
+        new Table(storageStack, "stackTest", { partitionKey: { name: "id", type: AttributeType.STRING }, billingMode: BillingMode.PAY_PER_REQUEST });
         const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
         // Use this bucket name post refactor
         // s3Bucket.bucketName = 'testBucket';
@@ -696,7 +696,7 @@ describe('BackendSynthesizer', () => {
 
         const backend = defineBackend({});
         const storageStack = backend.createStack("storage");
-        const my_complex_table_name = new Table(storageStack, "my_complex_table_name", { partitionKey: { name: "id", type: AttributeType.STRING }, billingMode: BillingMode.PAY_PER_REQUEST });
+        new Table(storageStack, "my_complex_table_name", { partitionKey: { name: "id", type: AttributeType.STRING }, billingMode: BillingMode.PAY_PER_REQUEST });
         "
       `);
     });
@@ -723,7 +723,7 @@ describe('BackendSynthesizer', () => {
 
         const backend = defineBackend({});
         const storageStack = backend.createStack("storage");
-        const simpleTableName = new Table(storageStack, "simpleTableName", { partitionKey: { name: "id", type: AttributeType.STRING }, billingMode: BillingMode.PAY_PER_REQUEST });
+        new Table(storageStack, "simpleTableName", { partitionKey: { name: "id", type: AttributeType.STRING }, billingMode: BillingMode.PAY_PER_REQUEST });
         "
       `);
     });
