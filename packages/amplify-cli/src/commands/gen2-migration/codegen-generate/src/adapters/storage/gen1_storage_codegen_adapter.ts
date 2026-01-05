@@ -1,15 +1,47 @@
 import { StorageTriggerEvent, Lambda, StorageRenderParameters } from '../../core/migration-pipeline';
 import { StorageCLIInputsJSON, getStorageAccess } from './storage_access';
 
-export type StorageInputs = {
-  bucketName: string;
-  cliInputs: StorageCLIInputsJSON;
-  triggers?: Partial<Record<StorageTriggerEvent, Lambda>>;
+export type DynamoDBAttribute = {
+  name: string;
+  type: 'STRING' | 'NUMBER' | 'BINARY';
 };
-export const getStorageDefinition = ({ bucketName, cliInputs, triggers }: StorageInputs): StorageRenderParameters => {
-  return {
-    accessPatterns: getStorageAccess(cliInputs),
-    storageIdentifier: bucketName,
-    triggers: triggers ?? {},
-  };
+
+export type DynamoDBGSI = {
+  indexName: string;
+  partitionKey: DynamoDBAttribute;
+  sortKey?: DynamoDBAttribute;
+};
+
+export type DynamoDBTableDefinition = {
+  tableName: string;
+  partitionKey: DynamoDBAttribute;
+  sortKey?: DynamoDBAttribute;
+  gsis?: DynamoDBGSI[];
+  lambdaPermissions?: {
+    functionName: string;
+    envVarName: string;
+  }[];
+};
+
+export type StorageInputs = {
+  bucketName?: string;
+  cliInputs?: StorageCLIInputsJSON;
+  triggers?: Partial<Record<StorageTriggerEvent, Lambda>>;
+  dynamoTables?: DynamoDBTableDefinition[];
+};
+
+export const getStorageDefinition = ({ bucketName, cliInputs, triggers, dynamoTables }: StorageInputs): StorageRenderParameters => {
+  const result: StorageRenderParameters = {};
+
+  if (bucketName && cliInputs) {
+    result.accessPatterns = getStorageAccess(cliInputs);
+    result.storageIdentifier = bucketName;
+    result.triggers = triggers ?? {};
+  }
+
+  if (dynamoTables) {
+    result.dynamoTables = dynamoTables;
+  }
+
+  return result;
 };

@@ -1,6 +1,6 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { getStorageDefinition } from '../adapters/storage/index';
+import { getStorageDefinition, DynamoDBTableDefinition, DynamoDBAttribute, DynamoDBGSI } from '../adapters/storage/index';
 import { BackendDownloader } from './backend_downloader';
 import { StorageRenderParameters, StorageTriggerEvent, Lambda, ServerSideEncryptionConfiguration } from '../core/migration-pipeline';
 import {
@@ -13,6 +13,7 @@ import {
 } from '@aws-sdk/client-s3';
 import { BackendEnvironmentResolver } from './backend_environment_selector';
 import { fileOrDirectoryExists } from './directory_exists';
+import { stateManager } from '@aws-amplify/amplify-cli-core';
 
 export interface AppStorageDefinitionFetcher {
   getDefinition(): Promise<ReturnType<typeof getStorageDefinition> | undefined>;
@@ -58,12 +59,100 @@ export class AppStorageDefinitionFetcher {
     return triggers;
   };
 
+  private parseDynamoDBTable = async (storageName: string, currentCloudBackendDirectory: string): Promise<DynamoDBTableDefinition> => {
+    const cliInputsPath = path.join(currentCloudBackendDirectory, 'storage', storageName, 'cli-inputs.json');
+    const cliInputs = await this.readJsonFile(cliInputsPath);
+
+    const tableName = cliInputs.tableName || storageName;
+    const partitionKey: DynamoDBAttribute = {
+      name: cliInputs.partitionKey?.name || 'id',
+      type: this.mapAttributeType(cliInputs.partitionKey?.type || 'S'),
+    };
+
+    let sortKey: DynamoDBAttribute | undefined;
+    if (cliInputs.sortKey) {
+      sortKey = {
+        name: cliInputs.sortKey.name,
+        type: this.mapAttributeType(cliInputs.sortKey.type),
+      };
+    }
+
+    const gsis: DynamoDBGSI[] = [];
+    if (cliInputs.gsi) {
+      cliInputs.gsi.forEach((gsi: any) => {
+        const gsiDef: DynamoDBGSI = {
+          indexName: gsi.name,
+          partitionKey: {
+            name: gsi.partitionKey.name,
+            type: this.mapAttributeType(gsi.partitionKey.type),
+          },
+        };
+        if (gsi.sortKey) {
+          gsiDef.sortKey = {
+            name: gsi.sortKey.name,
+            type: this.mapAttributeType(gsi.sortKey.type),
+          };
+        }
+        gsis.push(gsiDef);
+      });
+    }
+
+    const lambdaPermissions = this.findLambdaPermissions(tableName);
+
+    return {
+      tableName,
+      partitionKey,
+      sortKey,
+      gsis: gsis.length > 0 ? gsis : undefined,
+      lambdaPermissions: lambdaPermissions.length > 0 ? lambdaPermissions : undefined,
+    };
+  };
+
+  private mapAttributeType = (dynamoType: string): 'STRING' | 'NUMBER' | 'BINARY' => {
+    switch (dynamoType) {
+      case 'S':
+        return 'STRING';
+      case 'N':
+        return 'NUMBER';
+      case 'B':
+        return 'BINARY';
+      default:
+        return 'STRING';
+    }
+  };
+
+  private findLambdaPermissions = (tableName: string) => {
+    const permissions: { functionName: string; envVarName: string }[] = [];
+    const meta = stateManager.getMeta();
+
+    if (meta.function) {
+      Object.entries(meta.function).forEach(([functionName, functionConfig]: [string, any]) => {
+        try {
+          const functionInputs = stateManager.getResourceInputsJson(undefined, 'function', functionName);
+          if (functionInputs?.environmentVariables) {
+            Object.entries(functionInputs.environmentVariables).forEach(([envVar, value]: [string, any]) => {
+              if (typeof value === 'string' && value.includes(tableName)) {
+                permissions.push({
+                  functionName,
+                  envVarName: envVar,
+                });
+              }
+            });
+          }
+        } catch (e) {
+          // Ignore errors reading function inputs
+        }
+      });
+    }
+
+    return permissions;
+  };
+
   getDefinition = async (): Promise<StorageRenderParameters | undefined> => {
     const backendEnvironment = await this.backendEnvironmentResolver.selectBackendEnvironment();
     if (!backendEnvironment?.deploymentArtifacts) return undefined;
 
     const currentCloudBackendDirectory = await this.ccbFetcher.getCurrentCloudBackend(backendEnvironment.deploymentArtifacts);
-
     const amplifyMetaPath = path.join(currentCloudBackendDirectory, 'amplify-meta.json');
 
     if (!(await fileOrDirectoryExists(amplifyMetaPath))) {
@@ -72,6 +161,7 @@ export class AppStorageDefinitionFetcher {
 
     const amplifyMeta = (await this.readJsonFile(amplifyMetaPath)) ?? {};
     let storageOptions: StorageRenderParameters | undefined = undefined;
+    const dynamoTables: DynamoDBTableDefinition[] = [];
 
     if ('storage' in amplifyMeta && Object.keys(amplifyMeta.storage).length) {
       for (const [storageName, storage] of Object.entries(amplifyMeta.storage)) {
@@ -81,9 +171,10 @@ export class AppStorageDefinitionFetcher {
           throw new Error(`Could not find cli-inputs.json for ${storageName}`);
         }
 
-        const cliInputs = await this.readJsonFile(cliInputsPath);
         const storageOutput = storage as StorageOutput;
+
         if (storageOutput.service === 'S3') {
+          const cliInputs = await this.readJsonFile(cliInputsPath);
           const bucketName = storageOutput.output.BucketName;
           if (!bucketName) throw new Error('Could not find bucket name');
 
@@ -122,14 +213,17 @@ export class AppStorageDefinitionFetcher {
             storageOptions.bucketEncryptionAlgorithm = serverSideEncryptionConf;
           }
         } else if (storageOutput.service === 'DynamoDB') {
-          const tableName = storageOutput.output.Name?.split('-')[0];
-          if (!tableName) throw new Error('Could not find table name');
-
-          if (!storageOptions) storageOptions = {};
-          storageOptions.dynamoDB = tableName;
+          const tableDefinition = await this.parseDynamoDBTable(storageName, currentCloudBackendDirectory);
+          dynamoTables.push(tableDefinition);
         }
       }
     }
+
+    if (dynamoTables.length > 0) {
+      if (!storageOptions) storageOptions = {};
+      storageOptions.dynamoTables = dynamoTables;
+    }
+
     return storageOptions;
   };
 }

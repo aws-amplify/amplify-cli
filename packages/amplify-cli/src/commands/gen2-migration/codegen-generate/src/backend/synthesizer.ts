@@ -11,7 +11,7 @@ import ts, {
 } from 'typescript';
 import { PolicyOverrides, ReferenceAuth } from '../generators/auth';
 import type { BucketAccelerateStatus, BucketVersioningStatus } from '@aws-sdk/client-s3';
-import { AccessPatterns, ServerSideEncryptionConfiguration } from '../generators/storage';
+import { AccessPatterns, ServerSideEncryptionConfiguration, DynamoDBTableDefinition } from '../generators/storage';
 import { ExplicitAuthFlowsType, OAuthFlowType, UserPoolClientType } from '@aws-sdk/client-cognito-identity-provider';
 import assert from 'assert';
 import { newLineIdentifier } from '../ts_factory_utils';
@@ -39,6 +39,7 @@ export interface BackendRenderParameters {
   storage?: {
     importFrom: string;
     dynamoDB?: string;
+    dynamoTables?: DynamoDBTableDefinition[];
     accelerateConfiguration?: BucketAccelerateStatus;
     versionConfiguration?: BucketVersioningStatus;
     hasS3Bucket?: string | AccessPatterns | undefined;
@@ -804,10 +805,12 @@ export class BackendSynthesizer {
 
     // Same as auth
 
-    if (renderArgs.storage?.hasS3Bucket) {
-      imports.push(this.createImportStatement([storageFunctionIdentifier], renderArgs.storage.importFrom));
-      const storage = factory.createShorthandPropertyAssignment(storageFunctionIdentifier);
-      defineBackendProperties.push(storage);
+    if (renderArgs.storage?.hasS3Bucket || renderArgs.storage?.dynamoDB || renderArgs.storage?.dynamoTables?.length) {
+      if (renderArgs.storage.hasS3Bucket) {
+        imports.push(this.createImportStatement([storageFunctionIdentifier], renderArgs.storage.importFrom));
+        const storage = factory.createShorthandPropertyAssignment(storageFunctionIdentifier);
+        defineBackendProperties.push(storage);
+      }
     }
 
     // Context: Gen 1 might have multiple Lambda functions
@@ -845,18 +848,201 @@ export class BackendSynthesizer {
       });
     }
 
-    // Dynamo table cannot be migrated
-
-    if (renderArgs.storage?.dynamoDB) {
-      nodes.push(
-        factory.createThrowStatement(
-          factory.createNewExpression(factory.createIdentifier('Error'), undefined, [
-            factory.createStringLiteral(
-              `DynamoDB table \`${renderArgs.storage.dynamoDB}\` is referenced in your Gen 1 backend and will need to be manually migrated to reference with CDK.`,
-            ),
-          ]),
+    // DynamoDB tables generation
+    if (renderArgs.storage?.dynamoTables?.length) {
+      // Add CDK imports
+      imports.push(
+        this.createImportStatement(
+          [factory.createIdentifier('Table'), factory.createIdentifier('AttributeType')],
+          'aws-cdk-lib/aws-dynamodb',
         ),
       );
+
+      // Create storage stack
+      const stackDeclaration = factory.createVariableStatement(
+        [],
+        factory.createVariableDeclarationList(
+          [
+            factory.createVariableDeclaration(
+              'storageStack',
+              undefined,
+              undefined,
+              renderArgs.storage.hasS3Bucket
+                ? factory.createPropertyAccessExpression(
+                    factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier('storage')),
+                    factory.createIdentifier('stack'),
+                  )
+                : factory.createCallExpression(
+                    factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier('createStack')),
+                    undefined,
+                    [factory.createStringLiteral('storage-stack')],
+                  ),
+            ),
+          ],
+          ts.NodeFlags.Const,
+        ),
+      );
+      nodes.push(stackDeclaration);
+
+      // Generate tables
+      renderArgs.storage.dynamoTables.forEach((table: DynamoDBTableDefinition) => {
+        const tableProps: ts.PropertyAssignment[] = [
+          factory.createPropertyAssignment(
+            'partitionKey',
+            factory.createObjectLiteralExpression([
+              factory.createPropertyAssignment('name', factory.createStringLiteral(table.partitionKey.name)),
+              factory.createPropertyAssignment(
+                'type',
+                factory.createPropertyAccessExpression(
+                  factory.createIdentifier('AttributeType'),
+                  factory.createIdentifier(table.partitionKey.type),
+                ),
+              ),
+            ]),
+          ),
+        ];
+
+        if (table.sortKey) {
+          tableProps.push(
+            factory.createPropertyAssignment(
+              'sortKey',
+              factory.createObjectLiteralExpression([
+                factory.createPropertyAssignment('name', factory.createStringLiteral(table.sortKey.name)),
+                factory.createPropertyAssignment(
+                  'type',
+                  factory.createPropertyAccessExpression(
+                    factory.createIdentifier('AttributeType'),
+                    factory.createIdentifier(table.sortKey.type),
+                  ),
+                ),
+              ]),
+            ),
+          );
+        }
+
+        const tableDeclaration = factory.createVariableStatement(
+          [],
+          factory.createVariableDeclarationList(
+            [
+              factory.createVariableDeclaration(
+                table.tableName,
+                undefined,
+                undefined,
+                factory.createNewExpression(factory.createIdentifier('Table'), undefined, [
+                  factory.createIdentifier('storageStack'),
+                  factory.createStringLiteral(table.tableName),
+                  factory.createObjectLiteralExpression(tableProps),
+                ]),
+              ),
+            ],
+            ts.NodeFlags.Const,
+          ),
+        );
+        nodes.push(tableDeclaration);
+
+        // Add GSIs
+        table.gsis?.forEach((gsi) => {
+          const gsiProps: ts.PropertyAssignment[] = [
+            factory.createPropertyAssignment('indexName', factory.createStringLiteral(gsi.indexName)),
+            factory.createPropertyAssignment(
+              'partitionKey',
+              factory.createObjectLiteralExpression([
+                factory.createPropertyAssignment('name', factory.createStringLiteral(gsi.partitionKey.name)),
+                factory.createPropertyAssignment(
+                  'type',
+                  factory.createPropertyAccessExpression(
+                    factory.createIdentifier('AttributeType'),
+                    factory.createIdentifier(gsi.partitionKey.type),
+                  ),
+                ),
+              ]),
+            ),
+          ];
+
+          if (gsi.sortKey) {
+            gsiProps.push(
+              factory.createPropertyAssignment(
+                'sortKey',
+                factory.createObjectLiteralExpression([
+                  factory.createPropertyAssignment('name', factory.createStringLiteral(gsi.sortKey.name)),
+                  factory.createPropertyAssignment(
+                    'type',
+                    factory.createPropertyAccessExpression(
+                      factory.createIdentifier('AttributeType'),
+                      factory.createIdentifier(gsi.sortKey.type),
+                    ),
+                  ),
+                ]),
+              ),
+            );
+          }
+
+          const gsiCall = factory.createExpressionStatement(
+            factory.createCallExpression(
+              factory.createPropertyAccessExpression(
+                factory.createIdentifier(table.tableName),
+                factory.createIdentifier('addGlobalSecondaryIndex'),
+              ),
+              undefined,
+              [factory.createObjectLiteralExpression(gsiProps)],
+            ),
+          );
+          nodes.push(gsiCall);
+        });
+
+        // Add Lambda permissions
+        table.lambdaPermissions?.forEach((perm) => {
+          const grantCall = factory.createExpressionStatement(
+            factory.createCallExpression(
+              factory.createPropertyAccessExpression(
+                factory.createIdentifier(table.tableName),
+                factory.createIdentifier('grantReadWriteData'),
+              ),
+              undefined,
+              [
+                factory.createPropertyAccessExpression(
+                  factory.createPropertyAccessExpression(
+                    factory.createPropertyAccessExpression(
+                      factory.createIdentifier('backend'),
+                      factory.createIdentifier(perm.functionName),
+                    ),
+                    factory.createIdentifier('resources'),
+                  ),
+                  factory.createIdentifier('lambda'),
+                ),
+              ],
+            ),
+          );
+          nodes.push(grantCall);
+
+          const envCall = factory.createExpressionStatement(
+            factory.createCallExpression(
+              factory.createPropertyAccessExpression(
+                factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier(perm.functionName)),
+                factory.createIdentifier('addEnvironment'),
+              ),
+              undefined,
+              [
+                factory.createStringLiteral(perm.envVarName),
+                factory.createPropertyAccessExpression(factory.createIdentifier(table.tableName), factory.createIdentifier('tableName')),
+              ],
+            ),
+          );
+          nodes.push(envCall);
+        });
+      });
+    }
+
+    // DynamoDB table escape hatch - print table names for manual migration
+    if (renderArgs.storage?.dynamoDB) {
+      const tableComment = factory.createEmptyStatement();
+      ts.addSyntheticLeadingComment(
+        tableComment,
+        ts.SyntaxKind.SingleLineCommentTrivia,
+        ` TODO: Migrate DynamoDB table '${renderArgs.storage.dynamoDB}' manually using CDK constructs`,
+        true,
+      );
+      nodes.push(tableComment);
     }
 
     // Adds core import: import { defineBackend } from '@aws-amplify/backend';
