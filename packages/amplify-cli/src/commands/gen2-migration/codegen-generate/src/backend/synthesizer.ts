@@ -960,25 +960,38 @@ export class BackendSynthesizer {
           );
         }
 
-        const tableDeclaration = factory.createVariableStatement(
-          [],
-          factory.createVariableDeclarationList(
-            [
-              factory.createVariableDeclaration(
-                sanitizedTableName,
-                undefined,
-                undefined,
-                factory.createNewExpression(factory.createIdentifier('Table'), undefined, [
-                  factory.createIdentifier('storageStack'),
-                  factory.createStringLiteral(sanitizedTableName),
-                  factory.createObjectLiteralExpression(tableProps),
-                ]),
-              ),
-            ],
-            ts.NodeFlags.Const,
-          ),
-        );
-        nodes.push(tableDeclaration);
+        // Only create table variable if GSIs exist
+        if (table.gsis && table.gsis.length > 0) {
+          const tableDeclaration = factory.createVariableStatement(
+            [],
+            factory.createVariableDeclarationList(
+              [
+                factory.createVariableDeclaration(
+                  sanitizedTableName,
+                  undefined,
+                  undefined,
+                  factory.createNewExpression(factory.createIdentifier('Table'), undefined, [
+                    factory.createIdentifier('storageStack'),
+                    factory.createStringLiteral(sanitizedTableName),
+                    factory.createObjectLiteralExpression(tableProps),
+                  ]),
+                ),
+              ],
+              ts.NodeFlags.Const,
+            ),
+          );
+          nodes.push(tableDeclaration);
+        } else {
+          // Create table without variable declaration if no GSIs
+          const tableCreation = factory.createExpressionStatement(
+            factory.createNewExpression(factory.createIdentifier('Table'), undefined, [
+              factory.createIdentifier('storageStack'),
+              factory.createStringLiteral(sanitizedTableName),
+              factory.createObjectLiteralExpression(tableProps),
+            ]),
+          );
+          nodes.push(tableCreation);
+        }
 
         // Add GSIs
         table.gsis?.forEach((gsi) => {
