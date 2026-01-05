@@ -352,6 +352,13 @@ Following provides an overview of the supported (and unsupported) features for m
     - ✅ NodeJS
     - ❌ Python
 
+  - ➤ Choose the function template that you want to use
+
+    - ✅ Hello world function
+    - ❌ CRUD function for Amazon DynamoDB table
+    - ❌ Serverless express function
+    - ❌ Lambda Trigger
+
   - ➤ **Advanced Settings**
 
     - ➤ **Select the categories you want this function to have access to**
