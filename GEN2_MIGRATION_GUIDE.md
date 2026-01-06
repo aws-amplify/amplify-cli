@@ -272,12 +272,90 @@ Following provides an overview of the supported (and unsupported) features for m
 
   - ❌ Username
   - ✅ Email
-  - ❌ Phone Number
+  - ✅ Phone Number
   - ❌ Email or Phone Number
 
 - ❌ **Default configuration with Social Provider (Federation)**
 
-- ❌ **Manual configuration**
+- ➤ **Manual configuration**
+
+  - ➤ **Select the authentication/authorization services that you want to use**
+
+    - ✅ User Sign-Up, Sign-In, connected with AWS IAM controls
+    - ❌ User Sign-Up & Sign-In only
+    
+  - ➤ **Allow unauthenticated logins**
+
+    - ❌ Yes
+    - ✅ No
+  
+  - ➤ **Do you want to enable 3rd party authentication providers in your identity pool**
+
+    - ❌ Yes
+    - ✅ No
+
+  - ➤ **Do you want to add User Pool Groups**
+
+    - ❌ Yes
+    - ✅ No
+
+  - ➤ **Do you want to add an admin queries API**
+
+    - ❌ Yes
+    - ✅ No
+
+  - ➤ **Multifactor authentication (MFA) user login options**
+
+    - ✅ OFF
+    - ❌ ON
+    - ❌ OPTIONAL
+  
+  - ➤ **Email based user registration/forgot password:**
+
+    - ❌ Enabled
+    - ✅ Disabled
+
+  - ✅ **Specify an email verification subject**
+
+  - ✅ **Specify an email verification message**
+
+  - ➤ **Do you want to override the default password policy for this User Pool**
+
+    - ❌ Yes
+    - ✅ No
+  
+  - ➤ **What attributes are required for signing up**
+
+    - ❌ Birthdate (This attribute is not supported by Login With Amazon, Sign in with Apple.)
+    - ✅ Email
+    - ❌ Family Name (This attribute is not supported by Login With Amazon.)
+    - ❌ Middle Name (This attribute is not supported by Google, Login With Amazon, Sign in with Apple.)
+    - ❌ Gender (This attribute is not supported by Login With Amazon, Sign in with Apple.)
+    - ❌ Locale (This attribute is not supported by Facebook, Google, Sign in with Apple.)
+  
+  - ✅ **Specify the app's refresh token expiration period (in days)**
+
+  - ❌ **Do you want to specify the user attributes this app can read and write**
+
+  - ➤ **Do you want to enable any of the following capabilities**
+
+    - Add Google reCaptcha Challenge
+    - Email Verification Link with Redirect
+    - Add User to Group
+    - Email Domain Filtering (denylist)
+    - Email Domain Filtering (allowlist)
+    - Custom Auth Challenge Flow (basic scaffolding - not for production)
+    - Override ID Token Claims
+  
+  - ➤ **Do you want to use an OAuth flow**
+
+    - ❌ Yes
+    - ✅ No
+
+  - ➤ **Do you want to configure Lambda Triggers for Cognito**
+
+    - ❌ Yes
+    - ✅ No
 
 ## Api
 
