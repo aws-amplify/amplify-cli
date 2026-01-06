@@ -94,6 +94,21 @@ class CfnOutputResolver {
           const fnGetAttRegExpPerLogicalId = new RegExp(`{"${GET_ATT}":\\["${groups.LogicalResourceId}","(?<AttributeName>\\w+)"]}`, 'g');
           const stackResourcePhysicalId = stackResourceWithMatchingLogicalId.PhysicalResourceId;
           assert(stackResourcePhysicalId);
+
+          // Kinesis streams require their ARN to be exposed in CloudFormation outputs.
+          // The physical resource ID for Kinesis streams is the stream name, not the ARN.
+          if (
+            stackResourceWithMatchingLogicalId.ResourceType === 'AWS::Kinesis::Stream' &&
+            groups.AttributeName === 'Arn' &&
+            !stackResourcePhysicalId.startsWith('arn:aws:kinesis')
+          ) {
+            throw new Error(
+              `Kinesis stream ARN must be exposed in CloudFormation outputs. ` +
+                `Found physical resource ID '${stackResourcePhysicalId}' for logical resource '${groups.LogicalResourceId}' which is not a valid ARN. ` +
+                `Please add an output with Fn::GetAtt for the Kinesis stream's Arn attribute.`,
+            );
+          }
+
           if (groups.AttributeName === 'Arn') {
             // Few resources like SQS have their physical ids as their HTTP URLs. We need to construct the arn manually in such cases.
             const resourceId = stackResourcePhysicalId.startsWith('http') ? stackResourcePhysicalId.split('/')[2] : stackResourcePhysicalId;
