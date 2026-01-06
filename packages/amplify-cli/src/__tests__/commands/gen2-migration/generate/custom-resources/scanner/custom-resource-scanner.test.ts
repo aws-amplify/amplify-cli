@@ -1,4 +1,4 @@
-import { CustomResourceScanner } from '../../../../../commands/gen2-migration/codegen-custom-resources/scanner/custom-resource-scanner';
+import { CustomResourceScanner } from '../../../../../../commands/gen2-migration/generate/custom-resources/scanner/custom-resource-scanner';
 import * as fs from 'fs-extra';
 import { promises as fsPromises } from 'fs';
 import * as path from 'path';

@@ -6,7 +6,7 @@ import { v4 as uuid } from 'uuid';
 
 import { createGen2Renderer, Gen2RenderingOptions } from '../core/migration-pipeline';
 
-import { UsageData } from '../../../../../domain/amplify-usageData';
+import { UsageData } from '../../../../domain/amplify-usageData';
 import { AmplifyClient, UpdateAppCommand, GetAppCommand, BackendEnvironment } from '@aws-sdk/client-amplify';
 import { CloudFormationClient } from '@aws-sdk/client-cloudformation';
 import { CognitoIdentityProviderClient, LambdaConfigType } from '@aws-sdk/client-cognito-identity-provider';
@@ -33,12 +33,12 @@ import { format } from './format';
 import ora from 'ora';
 import { AppAnalyticsDefinitionFetcher } from './app_analytics_definition_fetcher';
 import * as ts from 'typescript';
-import { AmplifyHelperTransformer } from '../../../codegen-custom-resources/transformer/amplify-helper-transformer';
-import { DependencyMerger } from '../../../codegen-custom-resources/generator/dependency-merger';
-import { FileConverter } from '../../../codegen-custom-resources/generator/file-converter';
-import { BackendUpdater } from '../../../codegen-custom-resources/generator/backend-updater';
+import { AmplifyHelperTransformer } from '../custom-resources/transformer/amplify-helper-transformer';
+import { DependencyMerger } from '../custom-resources/generator/dependency-merger';
+import { FileConverter } from '../custom-resources/generator/file-converter';
+import { BackendUpdater } from '../custom-resources/generator/backend-updater';
 import execa from 'execa';
-import { Logger } from '../../../../gen2-migration';
+import { Logger } from '../../../gen2-migration';
 
 interface CodegenCommandParameters {
   analytics: Analytics;

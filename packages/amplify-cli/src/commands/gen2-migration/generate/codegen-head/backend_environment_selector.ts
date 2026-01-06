@@ -1,6 +1,6 @@
 import assert from 'node:assert';
 import { AmplifyClient, BackendEnvironment, GetBackendEnvironmentCommand, ListBackendEnvironmentsCommand } from '@aws-sdk/client-amplify';
-import { getEnvInfo } from '../../../../../extensions/amplify-helpers/get-env-info';
+import { getEnvInfo } from '../../../../extensions/amplify-helpers/get-env-info';
 
 export class BackendEnvironmentResolver {
   constructor(private appId: string, private envName: string, private amplifyClient: AmplifyClient) {}

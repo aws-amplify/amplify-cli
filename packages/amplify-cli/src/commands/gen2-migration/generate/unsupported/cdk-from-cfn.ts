@@ -1,10 +1,10 @@
 import * as path from 'path';
 import * as fs from 'fs/promises';
 import * as cdk_from_cfn from 'cdk-from-cfn';
-import { CFNTemplate } from '../../../refactor/types';
+import { CFNTemplate } from '../../refactor/types';
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { CloudFormationClient, DescribeStackResourcesCommand, DescribeStacksCommand, Parameter } from '@aws-sdk/client-cloudformation';
-import CFNConditionResolver from '../../../refactor/resolvers/cfn-condition-resolver';
+import CFNConditionResolver from '../../refactor/resolvers/cfn-condition-resolver';
 
 /**
  * Definition for Kinesis Analytics resource from Gen1 amplify-meta.json
