@@ -1,4 +1,5 @@
 import { Permission, AccessPatterns } from '../../core/migration-pipeline';
+import { S3CloudFormationAccessParser, S3AccessPermission } from '../../codegen-head/s3_cfn_access_parser';
 
 export type CLIV1Permission = 'READ' | 'CREATE_AND_UPDATE' | 'DELETE';
 export type StorageCLIInputsJSON = {
@@ -12,6 +13,12 @@ export type StorageCLIInputsJSON = {
   groupAccess?: Record<string, CLIV1Permission[]>;
 };
 
+export interface FunctionS3Access {
+  functionName: string;
+  pathPattern: string;
+  permissions: Permission[];
+}
+
 const PERMISSION_MAP: Record<CLIV1Permission, Permission[]> = {
   READ: ['read'],
   DELETE: ['delete'],
@@ -20,6 +27,39 @@ const PERMISSION_MAP: Record<CLIV1Permission, Permission[]> = {
 const getGen2Permissions = (permissions: CLIV1Permission[]): Permission[] => {
   return permissions.flatMap((p) => PERMISSION_MAP[p]);
 };
+export const extractFunctionS3Access = (functionNames: string[], bucketName?: string): FunctionS3Access[] => {
+  const functionAccess: FunctionS3Access[] = [];
+
+  for (const functionName of functionNames) {
+    const templates = S3CloudFormationAccessParser.findFunctionCloudFormationTemplates(functionName);
+
+    for (const templatePath of templates) {
+      const s3Permissions = S3CloudFormationAccessParser.parseTemplateFile(templatePath);
+
+      for (const permission of s3Permissions) {
+        if (bucketName && permission.bucketResource !== bucketName) {
+          const bucketRefPattern = new RegExp(`storage${bucketName.replace(/[^a-zA-Z0-9]/g, '')}BucketName`);
+          if (!bucketRefPattern.test(permission.bucketResource)) {
+            continue;
+          }
+        }
+
+        const gen2Permissions = S3CloudFormationAccessParser.mapS3ActionsToGen2Permissions(permission.actions);
+
+        if (gen2Permissions.length > 0) {
+          functionAccess.push({
+            functionName,
+            pathPattern: permission.pathPattern,
+            permissions: gen2Permissions as Permission[],
+          });
+        }
+      }
+    }
+  }
+
+  return functionAccess;
+};
+
 export const getStorageAccess = (input: StorageCLIInputsJSON): AccessPatterns => {
   let groups: AccessPatterns['groups'] | undefined;
   if (input.groupAccess && Object.keys(input.groupAccess).length > 0) {

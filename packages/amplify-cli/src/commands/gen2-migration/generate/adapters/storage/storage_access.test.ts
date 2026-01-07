@@ -1,0 +1,100 @@
+import { extractFunctionS3Access, getStorageAccess } from './storage_access';
+import { S3CloudFormationAccessParser } from '../../codegen-head/s3_cfn_access_parser';
+import { renderStorage } from '../../generators/storage';
+
+jest.mock('../../codegen-head/s3_cfn_access_parser');
+const mockS3Parser = S3CloudFormationAccessParser as jest.Mocked<typeof S3CloudFormationAccessParser>;
+
+describe('Storage Access with S3 Function Support', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  describe('extractFunctionS3Access', () => {
+    it('should extract function access patterns from CloudFormation templates', () => {
+      mockS3Parser.findFunctionCloudFormationTemplates.mockReturnValue([
+        'amplify/backend/function/generateReports/generateReports-cloudformation-template.json',
+      ]);
+
+      mockS3Parser.parseTemplateFile.mockReturnValue([
+        {
+          bucketResource: 'storagefitnessappstorageBucketName',
+          pathPattern: 'reports/*',
+          actions: ['s3:PutObject', 's3:GetObject', 's3:DeleteObject'],
+        },
+      ]);
+
+      mockS3Parser.mapS3ActionsToGen2Permissions.mockReturnValue(['read', 'write', 'delete']);
+
+      const result = extractFunctionS3Access(['generateReports'], 'fitnessappstorage');
+
+      expect(result).toHaveLength(1);
+      expect(result[0]).toEqual({
+        functionName: 'generateReports',
+        pathPattern: 'reports/*',
+        permissions: ['read', 'write', 'delete'],
+      });
+    });
+
+    it('should filter out functions that do not access the specified bucket', () => {
+      mockS3Parser.findFunctionCloudFormationTemplates.mockReturnValue([
+        'amplify/backend/function/processImages/processImages-cloudformation-template.json',
+      ]);
+
+      mockS3Parser.parseTemplateFile.mockReturnValue([
+        {
+          bucketResource: 'differentBucketName',
+          pathPattern: 'images/*',
+          actions: ['s3:GetObject'],
+        },
+      ]);
+
+      const result = extractFunctionS3Access(['processImages'], 'myAppStorage');
+      expect(result).toHaveLength(0);
+    });
+  });
+
+  describe('getStorageAccess', () => {
+    it('should maintain existing functionality for CLI inputs', () => {
+      const cliInputs = {
+        guestAccess: ['READ' as const],
+        authAccess: ['READ' as const, 'CREATE_AND_UPDATE' as const],
+        groupAccess: {
+          Admins: ['READ' as const, 'CREATE_AND_UPDATE' as const, 'DELETE' as const],
+        },
+      };
+
+      const result = getStorageAccess(cliInputs);
+
+      expect(result).toEqual({
+        guest: ['read'],
+        auth: ['read', 'write'],
+        groups: {
+          Admins: ['read', 'write', 'delete'],
+        },
+      });
+    });
+  });
+
+  describe('renderStorage snapshot', () => {
+    it('should generate storage resource with function access patterns', () => {
+      const storageParams = {
+        storageIdentifier: 'fitnessappstorage-dev',
+        accessPatterns: {
+          guest: ['read' as const],
+          auth: ['read' as const, 'write' as const],
+          functions: [
+            {
+              functionName: 'generateReports',
+              pathPattern: 'reports/*',
+              permissions: ['read' as const, 'write' as const, 'delete' as const],
+            },
+          ],
+        },
+      };
+
+      const result = renderStorage(storageParams);
+      expect(result).toMatchSnapshot();
+    });
+  });
+});

@@ -18,6 +18,12 @@ export type AccessPatterns = {
   auth?: Permission[];
   guest?: Permission[];
   groups?: Record<string, Permission[]>;
+  /** Function access patterns for resource-based access */
+  functions?: Array<{
+    functionName: string;
+    pathPattern: string;
+    permissions: Permission[];
+  }>;
 };
 
 export type ServerSideEncryptionConfiguration = {
@@ -79,6 +85,17 @@ export const renderStorage = (storageParams: StorageRenderParameters = {}) => {
   }
   if (storageParams.accessPatterns) {
     propertyAssignments.push(getAccessPatterns(storageParams.accessPatterns));
+
+    // Add function imports if function access patterns are present
+    if (storageParams.accessPatterns.functions && storageParams.accessPatterns.functions.length > 0) {
+      for (const functionAccess of storageParams.accessPatterns.functions) {
+        const functionImportPath = `../function/${functionAccess.functionName}/resource`;
+        if (!namedImports[functionImportPath]) {
+          namedImports[functionImportPath] = new Set();
+        }
+        namedImports[functionImportPath].add(functionAccess.functionName);
+      }
+    }
   }
   if (storageParams.accessPatterns?.groups) {
     postImportStatements.push(

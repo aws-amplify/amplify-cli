@@ -162,6 +162,9 @@ export class AppStorageDefinitionFetcher {
     let storageOptions: StorageRenderParameters | undefined = undefined;
     const dynamoTables: DynamoDBTableDefinition[] = [];
 
+    // Extract function names from the project for access pattern analysis
+    const functionNames = amplifyMeta.function ? Object.keys(amplifyMeta.function) : [];
+
     if ('storage' in amplifyMeta && Object.keys(amplifyMeta.storage).length) {
       for (const [storageName, storage] of Object.entries(amplifyMeta.storage)) {
         const cliInputsPath = path.join(currentCloudBackendDirectory, 'storage', storageName, 'cli-inputs.json');
@@ -193,6 +196,7 @@ export class AppStorageDefinitionFetcher {
             cliInputs,
             bucketName,
             triggers,
+            functionNames, // Pass function names for access pattern analysis
           });
 
           if (!storageOptions) storageOptions = {};
