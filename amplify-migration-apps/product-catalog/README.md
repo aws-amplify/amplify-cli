@@ -296,11 +296,6 @@ npx amplify gen2-migration generate
 ```
 
 ```diff
-- awsRegion: "us-east-1"
-+ awsRegion: backend.auth.resources.userPool.stack.region
-```
-
-```diff
 + backend.lowstockproducts.addEnvironment('API_PRODUCTCATALOG_GRAPHQLAPIKEYOUTPUT', backend.data.apiKey!)
 + backend.lowstockproducts.addEnvironment('API_PRODUCTCATALOG_GRAPHQLAPIENDPOINTOUTPUT', backend.data.graphqlUrl)
 + backend.lowstockproducts.addEnvironment('API_PRODUCTCATALOG_GRAPHQLAPIIDOUTPUT', backend.data.apiId)
