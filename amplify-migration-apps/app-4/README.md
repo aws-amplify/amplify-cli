@@ -132,10 +132,6 @@ type QuoteResponse {
   totalQuotes: Int!
 }
 
-type Query {
-  getRandomQuote: QuoteResponse @function(name: "quotegenerator") 
-}
-
 enum ProjectStatus {
   ACTIVE
   COMPLETED
