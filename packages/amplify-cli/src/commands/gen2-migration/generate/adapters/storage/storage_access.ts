@@ -1,6 +1,6 @@
 import { Permission, AccessPatterns } from '../../core/migration-pipeline';
-import { S3CloudFormationAccessParser, S3AccessPermission } from '../../codegen-head/s3_cfn_access_parser';
-import { DynamoDBCloudFormationAccessParser, DynamoDBAccessPermission } from '../../codegen-head/dynamodb_cfn_access_parser';
+import { S3CloudFormationAccessParser } from '../../codegen-head/s3_cfn_access_parser';
+import { DynamoDBCloudFormationAccessParser } from '../../codegen-head/dynamodb_cfn_access_parser';
 
 export type CLIV1Permission = 'READ' | 'CREATE_AND_UPDATE' | 'DELETE';
 export type StorageCLIInputsJSON = {

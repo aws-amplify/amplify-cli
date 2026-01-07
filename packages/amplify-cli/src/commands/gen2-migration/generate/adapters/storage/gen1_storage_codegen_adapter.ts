@@ -1,12 +1,5 @@
 import { StorageTriggerEvent, Lambda, StorageRenderParameters } from '../../core/migration-pipeline';
-import {
-  StorageCLIInputsJSON,
-  getStorageAccess,
-  extractFunctionS3Access,
-  FunctionS3Access,
-  extractFunctionDynamoDBAccess,
-  FunctionDynamoDBAccess,
-} from './storage_access';
+import { StorageCLIInputsJSON, getStorageAccess, extractFunctionS3Access, extractFunctionDynamoDBAccess } from './storage_access';
 
 export type DynamoDBAttribute = {
   name: string;
