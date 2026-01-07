@@ -10,9 +10,16 @@ jobs:
         uses: actions/checkout@v3
         with:
           ref: gen2-migration
-      - run: |
+      - name: install
+        run: |
+          node --version
+          npm --version
           yarn install
+      - name: build
+        run: |
           yarn build
+      - name: release
+        run: |
           cd packages/amplify-cli
           package_name="@aws-amplify/cli-internal-gen2-migration-experimental-alpha"
           latest_version=$(npm view ${package_name} version 2>/dev/null || echo "0.0.0")
