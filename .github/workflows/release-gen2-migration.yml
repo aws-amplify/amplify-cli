@@ -22,7 +22,7 @@ jobs:
       - name: Build
         run: |
           yarn build
-      - name: Pack & Publish
+      - name: Pack
         run: |
           cd packages/amplify-cli
           package_name="@aws-amplify/cli-internal-gen2-migration-experimental-alpha"
@@ -31,6 +31,12 @@ jobs:
           npm version ${new_version} --no-workspace-update --no-commit-hooks --no-git-tag-version --no-workspaces
           npm pkg set name=${package_name}
           npm pack
-          npm i -g npm@latest
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 24.x
+      - name: Publish
+        run: |
+          cd packages/amplify-cli
           npm --version
           NPM_TRUSTED_PUBLISHER="true" npm publish "./aws-amplify-cli-internal-gen2-migration-experimental-alpha-${new_version}.tgz"
