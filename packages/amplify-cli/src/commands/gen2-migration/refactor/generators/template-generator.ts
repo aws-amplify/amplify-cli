@@ -171,6 +171,8 @@ class TemplateGenerator {
     }
   }
 
+  // this function never gets used... I think its best to remove it.
+  // TODO: Remove the following generate function from here and in tests.
   public async generate(customResourceMap?: ResourceMapping[]) {
     await fs.mkdir(TEMPLATES_DIR, { recursive: true });
     await this.parseCategoryStacks();
