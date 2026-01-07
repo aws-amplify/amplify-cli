@@ -11,6 +11,54 @@ describe('BackendSynthesizer', () => {
     synthesizer = new BackendSynthesizer();
   });
 
+  describe('identity pool overrides', () => {
+    it('allowUnauthenticatedIdentities is escape hatched if guest login is false', () => {
+      const renderArgs: BackendRenderParameters = {
+        auth: {
+          importFrom: './auth/resource',
+          guestLogin: false,
+        },
+      };
+
+      const result = synthesizer.render(renderArgs);
+      const source = printNodeArray(result);
+      expect(source).toMatchInlineSnapshot(`
+        "import { auth } from "./auth/resource";
+        import { defineBackend } from "@aws-amplify/backend";
+
+
+        const backend = defineBackend({
+            auth
+        });
+        const cfnIdentityPool = backend.auth.resources.cfnResources.cfnIdentityPool;
+        cfnIdentityPool.allowUnauthenticatedIdentities = false;
+        "
+      `);
+    });
+
+    it('cfnIdentityPool is not declared as a const if guest login is true', () => {
+      const renderArgs: BackendRenderParameters = {
+        auth: {
+          importFrom: './auth/resource',
+          guestLogin: true,
+        },
+      };
+
+      const result = synthesizer.render(renderArgs);
+      const source = printNodeArray(result);
+      expect(source).toMatchInlineSnapshot(`
+        "import { auth } from "./auth/resource";
+        import { defineBackend } from "@aws-amplify/backend";
+
+
+        const backend = defineBackend({
+            auth
+        });
+        "
+      `);
+    });
+  });
+
   describe('AppSync API Generation', () => {
     it('should set awsRegion to a dynamic value from backend', () => {
       const renderArgs: BackendRenderParameters = {
