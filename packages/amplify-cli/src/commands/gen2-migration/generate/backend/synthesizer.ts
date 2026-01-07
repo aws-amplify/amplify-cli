@@ -1182,14 +1182,12 @@ export class BackendSynthesizer {
     }
 
     // Identity pool overrides
-    if (renderArgs.auth?.guestLogin === false || (renderArgs.auth?.identityPoolName && !renderArgs?.auth?.referenceAuth)) {
+    if (renderArgs.auth?.guestLogin === false && !renderArgs?.auth?.referenceAuth) {
       const cfnIdentityPoolVariableStatement = this.createVariableStatement(
         this.createVariableDeclaration('cfnIdentityPool', 'auth.resources.cfnResources.cfnIdentityPool'),
       );
       nodes.push(cfnIdentityPoolVariableStatement);
-      if (renderArgs.auth?.guestLogin === false) {
-        nodes.push(this.setPropertyValue(factory.createIdentifier('cfnIdentityPool'), 'allowUnauthenticatedIdentities', false));
-      }
+      nodes.push(this.setPropertyValue(factory.createIdentifier('cfnIdentityPool'), 'allowUnauthenticatedIdentities', false));
     }
 
     // User pool client overrides
