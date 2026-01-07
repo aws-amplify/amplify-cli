@@ -112,7 +112,9 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
         this.logger.info(`📊 Found ${this.parsedResourceMappings?.length || 0} resource mapping(s)`);
       } catch (parseError) {
         throw new AmplifyError('InputValidationError', {
-          message: `Failed to parse JSON from resource mappings file: ${parseError instanceof Error ? parseError.message : 'Invalid JSON format'}`,
+          message: `Failed to parse JSON from resource mappings file: ${
+            parseError instanceof Error ? parseError.message : 'Invalid JSON format'
+          }`,
           resolution: 'Ensure the file contains valid JSON.',
         });
       }
@@ -121,8 +123,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
       if (!Array.isArray(this.parsedResourceMappings) || !this.parsedResourceMappings.every(this.isResourceMappingValid)) {
         throw new AmplifyError('InputValidationError', {
           message: 'Invalid resource mappings structure',
-          resolution:
-            'Each mapping must have Source and Destination objects with StackName and LogicalResourceId properties.',
+          resolution: 'Each mapping must have Source and Destination objects with StackName and LogicalResourceId properties.',
         });
       }
 
@@ -334,6 +335,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
       this.appId,
       this.currentEnvName,
       this.logger,
+      this.region,
     );
   }
 
