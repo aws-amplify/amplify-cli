@@ -39,4 +39,4 @@ jobs:
         run: |
           cd packages/amplify-cli
           npm --version
-          NPM_TRUSTED_PUBLISHER=true npm publish "./aws-amplify-cli-internal-gen2-migration-experimental-alpha-${new_version}.tgz"
+          NPM_TRUSTED_PUBLISHER=true npm publish
