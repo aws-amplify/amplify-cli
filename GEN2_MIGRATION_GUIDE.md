@@ -15,34 +15,28 @@ Migration to Gen2 is done in a (partial) blue/green deployment approach.
 3. Amplify CLI will refactor your underlying CloudFormation stacks such that any Gen1 stateful resource (e.g `UserPool`) 
 will be reused and managed by the new Gen2 deployment.
 
-After completing this process you will have 2 functionally equivalent amplify applications that access the same data. 
-Once appropriate, you can decommission the Gen1 environment and continue managing your app through the Gen2 definition files.
+After completing this process you will have 2 functionally equivalent amplify applications that access the same data.
 
 ## Prerequisites 
 
-- Your Gen1 environment is stored in the `main` branch of a `GitHub` repository and is deployed via the hosting service.
-- Your Gen1 environment is called `main`.
 - Your frontend code is located within the same repository as your backend application.
+- Your Gen1 environment is deployed via the hosting service.
 - You have a `default` AWS profile configured with an `AdministratorAccess` policy.
 
-## What is supported
+## Assumptions
 
-See [feature coverage](#feature-coverage) for a list of supported (and unsupported) features.
+These are a set of assumption the guide makes in order to provide more readable instructions. You should be 
+able to adapt them to fit your setup.
 
-If you use a feature that is marked unsupported for _refactor_, you will not be able 
-to complete migration.
-
-If you use a feature that is marked unsupported for _generate_, you will need to manually 
-write CDK code in order to complete migration. This guide does not provide details on 
-what code will be necessary in such cases.
-
-## Limitations
-
-**GraphQL schema must include an `@auth` directive on all its models and operations.**
-
-> Why? Because the absence of `@auth` invokes default default auth providers, which differ between Gen1 and Gen2.
+- Your Gen1 environment is stored in the `main` branch of a `GitHub` repository.
+- Your Gen1 environment is called `main`.
 
 ## Step By Step
+
+> **Before you begin, determine if your app can be migrated by reviewing:**
+>
+> - [Feature Coverage](#feature-coverage)
+> - [Limitations](#limitations)
 
 First obtain a fresh and up-to-date local copy of your Amplify Gen1 environment and run the following:
 
@@ -105,7 +99,7 @@ Note that client side libraries support both files so no additional change is ne
 This is required in order to instruct the hosting service that DynamoDB tables 
 should be reused (imported) instead of recreated.
 
-#### 2.1 Post Generate | NodeJS Function
+#### 2.1 Post Generate | NodeJS Function ESM Compatibility
 
 If you have a NodeJS Lambda function in your app, you need to port your code 
 to ESM instead of CommonsJS. For example:
@@ -116,10 +110,77 @@ to ESM instead of CommonsJS. For example:
 ```
 
 This is required because Gen2 adds lambda shims that conflict with CommonJS syntax. 
-Otherwise, you will see the following error when invoking the function: _"Cannot determine intended module format because both require() and top-level await are present"_
+Otherwise, you will see the following error when invoking the function: 
+_"Cannot determine intended module format because both require() and top-level await are present"_
 
 
 > See [ESM/CJS Interoperability](https://www.typescriptlang.org/docs/handbook/modules/appendices/esm-cjs-interop.html)
+
+#### 2.2 Post Generate | Api Function Access
+
+If your function needs to access the AppSync API you need to explicitly provide it with the appropriate 
+environment variables and give it the necessary permissions.
+
+**Edit in `./amplify/backend.ts`:**
+
+```diff
+- import { Duration } from "aws-cdk-lib";
++ import { Duration, aws_iam } from "aws-cdk-lib";
+```
+
+```diff
++ backend.<function-friendly-name>.addEnvironment('API_PRODUCTCATALOG_GRAPHQLAPIKEYOUTPUT', backend.data.apiKey!)
++ backend.<function-friendly-name>.addEnvironment('API_PRODUCTCATALOG_GRAPHQLAPIENDPOINTOUTPUT', backend.data.graphqlUrl)
++ backend.<function-friendly-name>.addEnvironment('API_PRODUCTCATALOG_GRAPHQLAPIIDOUTPUT', backend.data.apiId)
+
++ backend.<function-friendly-name>.resources.lambda.addToRolePolicy(new aws_iam.PolicyStatement({
++     effect: aws_iam.Effect.ALLOW,
++     actions: ['appsync:GraphQL'],
++     resources: [`arn:aws:appsync:${backend.data.stack.region}:${backend.data.stack.account}:apis/${backend.data.apiId}/types/Query/*`]
++ }))
+```
+
+If your function accesses AppSync using IAM credentials, you also need to add:
+
+```diff
++ backend.auth.resources.authenticatedUserIamRole.addToPrincipalPolicy(new aws_iam.PolicyStatement({
++     effect: aws_iam.Effect.ALLOW,
++     actions: ['appsync:GraphQL'],
++     resources: [`arn:aws:appsync:${backend.data.stack.region}:${backend.data.stack.account}:apis/<gen1-appsync-api-id>/*`]
++ }))
+```
+
+Navigate to the Amplify Console to find the `<gen1-appsync-api-id>` On the AppSync AWS Console. For example:
+
+![](./migration-guide-images/gen1-appsync-api-id.png)
+
+This is required in order for your Gen1 environment to keep functioning correctly after the `refactor` step.
+
+> See [GraphQL types protected with the IAM provider](#graphql-types-protected-by-the-iam-auth-provider) for more details.
+
+#### 2.3 Post Generate | Function Secrets
+
+If your function was configured with a secret value, you must first recreate the secret using the amplify console.
+
+_Hosting → Secrets → Manage Secrets → Add new_
+
+![](./migration-guide-images/add-secret.png)
+
+Next, pass this secret in the function definition. For example, for a secret called `MY_SECRET`, 
+**Edit in `./amplify/backend/<function-name>/resource.ts:**:
+
+```diff
+- import { defineFunction } from "@aws-amplify/backend";
++ import { defineFunction, secret } from "@aws-amplify/backend";
+
+- MY_SECRET: "/amplify/<hash>/main/AMPLIFY_<function-name>_MY_SECRET"
++ MY_SECRET: secret("/amplify/<hash>/main/AMPLIFY_<function-name>_MY_SECRET")
+```
+
+**Then, in your function code, use `process.MY_SECRET` to obtain the secret value.**
+
+> See [Secrets](https://docs.amplify.aws/react/build-a-backend/functions/environment-variables-and-secrets/#secrets) 
+> for more information.
 
 ### 3. Deploy
 
@@ -133,7 +194,7 @@ git push origin gen2-main
 
 Next, login to the AWS Amplify console and connect your new branch to the existing application:
 
-**App Settings → Branch Settings → Add Branch**
+_App Settings → Branch Settings → Add Branch_
 
 ![](./migration-guide-images/add-branch.png)
 
@@ -193,73 +254,67 @@ git push origin gen2-main
 
 Wait for the deployment to finish successfully.
 
-### 5. Decommission
-
-The final step of the migration is the decommissioning of your Gen1 environment. This can be done at your own pace and only after:
-
-1. You've validated the Gen2 application works as expected.
-2. You've validated the Gen1 application no longer accepts external traffic. If you have a webapp this can be achieved be performing 
-a domain shift. If you have a mobile app you'll need to wait until all customers upgrade to the new version of your 
-app (the one shipped with the new `amplify_outputs.json` configuration file)
-
-
-```bash
-git checkout main
-npx amplify gen2-migration decommission
-```
-
 # Feature Coverage
 
 Following provides an overview of the supported (and unsupported) features for migration.
 
-## CLI Inputs
+> **Legend**
+>
+> - ❌ Unsupported
+> - ✅ Fully automated
+> - ⚠️ Requires manual code (provided by this guide)
+
+## Auth
 
 ### `amplify add auth`
 
-- ✅ **Default Configuration**
+- ➤ **Default Configuration**
 
   - ❌ Username
   - ✅ Email
   - ❌ Phone Number
   - ❌ Email or Phone Number
 
+- ❌ **Default configuration with Social Provider (Federation)**
+
+- ❌ **Manual configuration**
+
+## Api
+
 ### `amplify add api`
 
-- ✅ **GraphQL**
+- ➤ **GraphQL**
 
-  - **Default Authorization Type**
+  - ➤ **Default Authorization Type**
 
     - ✅ API Key
     - ❌ Amazon Cognito User Pool
-    - ❌ IAM
+    - ✅ IAM
     - ❌ OpenID Connect
     - ❌ Lambda
 
-  - **Additional Authorization Type**
+  - ➤ **Additional Authorization Type**
+
+    - ✅ API Key
+    - ✅ Amazon Cognito User Pool
+    - ❌ OpenID Connect
+    - ❌ Lambda
 
 - ❌ **REST**
 
-### `amplify add function`
+### GraphQL Schema
 
-- ✅ **Lambda function (serverless function)**
+### Custom Resolvers
 
-  - ✅ Runtime
-
-    - ❌ .NET 8
-    - ❌ Go
-    - ❌ Java
-    - ✅ NodeJS
-    - ❌ Python
-
-- ❌ **Lambda layer (shared code & resource used across functions)**
+## Storage
 
 ### `amplify add storage`
 
-- ✅ **Content (Images, audio, video, etc.)**
+- ➤ **Content (Images, audio, video, etc.)**
 
-  - ✅ **Who should have access**
+  - ➤ **Who should have access**
 
-    - ✅ Auth and guest users
+    - ➤ Auth and guest users
 
       - **What kind of access do you want for Authenticated users?**
 
@@ -273,13 +328,144 @@ Following provides an overview of the supported (and unsupported) features for m
         - ✅ read
         - ❌ delete
 
-  - ❌ **Do you want to add a Lambda Trigger for your S3 Bucket?**
+    - ➤ Auth users only
 
+      - **What kind of access do you want for Authenticated users?**
 
-## GraphQL Schema
+        - ✅ create/update
+        - ✅ read
+        - ✅ delete
 
-## Function Code
+  - ✅ **Do you want to add a Lambda Trigger for your S3 Bucket?**
 
-## Custom Resource Code
+## Function
 
-## Overrides Code
+### `amplify add function`
+
+- ➤ **Lambda function (serverless function)**
+
+  - ➤ Runtime
+
+    - ❌ .NET 8
+    - ❌ Go
+    - ❌ Java
+    - ✅ NodeJS
+    - ❌ Python
+
+  - ➤ Choose the function template that you want to use
+
+    - ✅ Hello world function
+    - ❌ CRUD function for Amazon DynamoDB table
+    - ❌ Serverless express function
+    - ❌ Lambda Trigger
+
+  - ➤ **Advanced Settings**
+
+    - ➤ **Select the categories you want this function to have access to**
+
+      - ➤ api
+
+        - ➤ **Select the operations you want to permit**
+
+          - ⚠️ Query
+          - ⚠️ Mutation
+          - ❌ Subscription
+
+      - ❌ auth
+
+      - ❌ function
+
+      - ❌ storage
+
+    - ❌ **Do you want to invoke this function on a recurring schedule**
+    - ❌ **Do you want to enable Lambda layers for this function**
+    - ✅ **Do you want to configure environment variables for this function**
+    - ⚠️ **Do you want to configure secret values this function can access**
+    - ➤ **Choose the package manager that you want to use**
+
+      - ✅ NPM
+      - ❌ Yarn
+      - ❌ PNPM
+      - ❌ Custom Build Command or Script Path
+
+- ❌ **Lambda layer (shared code & resource used across functions)**
+
+### Lambda Handler Code
+
+## Custom 
+
+### `amplify add custom`
+
+## Overrides 
+
+### `amplify override <category>`
+
+## Limitations
+
+### GraphQL types without an `@auth` directive
+
+```graphql
+type Todo @model {
+  id: ID!
+  name: String!
+  description: String
+}
+```
+
+In Gen1, types like these are considered _public_ and are assigned the `@aws_api_key` directive when transformed into an 
+AppSync compatible schema. In Gen2, they are considered _private_ and are assinged the `@aws_iam` directive.
+
+In order to preserve the same protections after migration, you must explicitly allow public access on 
+the type by adding the `@auth` directive:
+
+```graphql
+type Todo @model @auth(rules: [{ allow: public }]) {
+  id: ID!
+  name: String!
+  description: String
+}
+```
+
+The same behavior applies to **non** `@model` types as well. For such types however, `@auth` cannot be 
+applied on the type itself and therefore must be applied to each field. For example:
+
+```graphql
+type FunctionResponse {
+  fieldA: String! @auth(rules: [{ allow: public }])
+  fieldB: String! @auth(rules: [{ allow: public }])
+}
+
+type Query {
+  invokeFunction: FunctionResponse @function(name: "myfunction-${env}") @auth(rules: [{ allow: public }])
+}
+```
+
+### GraphQL types protected by the `iam` auth provider
+
+```graphql
+type Todo @model @auth(rules: [{ allow: private, provider: iam }]) {
+  id: ID!
+  name: String!
+  description: String
+}
+```
+
+Clients access such models using the `AuthRole` configured on the identity pool. 
+After the refactor operation, the role is updated to point to the Gen2 role, which doesn't 
+allow access to the Gen1 AppSync API. This means that after refactor your **Gen1** environment will 
+loose IAM access to the API (but **Gen2** will work correctly).
+
+To workaround this issue, you must pre allow the Gen2 `AuthRole` by [configuring a custom admin role](https://docs.amplify.aws/gen1/javascript/build-a-backend/graphqlapi/customize-authorization-rules/#use-iam-authorization-within-the-appsync-console) on the Gen1 API.
+
+`+ ./amplify/backend/api/<api-name>/custom-roles.json`
+
+```json
+{
+  "adminRoleNames": [ "amplify-${appId}" ]
+}
+```
+
+> Where `${appId}` should be replaced with the value of the Gen1 applicaion id. This role name follows 
+> the Gen2 `AuthRole` naming pattern and therefore allows access to **any** Gen2 environment (branch).
+
+Once added, redeploy the app by running `amplify push`.
