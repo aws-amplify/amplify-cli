@@ -1,4 +1,4 @@
-import { getFunctionDefinition } from '../../../../../../../../src/commands/gen2-migration/codegen-generate/src/adapters/functions/index';
+import { getFunctionDefinition } from '../../../../../../commands/gen2-migration/generate/adapters/functions/index';
 
 describe('getFunctionDefinition', () => {
   test('graphql env variables are removed', () => {

@@ -1,4 +1,4 @@
-import { PatternDetector } from '../../../../../commands/gen2-migration/codegen-custom-resources/parser/pattern-detector';
+import { PatternDetector } from '../../../../../../commands/gen2-migration/generate/custom-resources/parser/pattern-detector';
 
 describe('PatternDetector', () => {
   let detector: PatternDetector;
