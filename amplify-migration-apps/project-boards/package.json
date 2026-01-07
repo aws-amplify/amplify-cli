@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "configure": "./configure.sh"
   },
   "dependencies": {
     "@aws-amplify/ui-react": "^6.13.0",

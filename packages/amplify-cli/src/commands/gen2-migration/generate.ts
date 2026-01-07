@@ -1,5 +1,5 @@
 import { AmplifyMigrationStep } from './_step';
-import { prepare } from './codegen-generate/src/codegen-head/command-handlers';
+import { prepare } from './generate/codegen-head/command-handlers';
 import { AmplifyGen2MigrationValidations } from './_validations';
 
 export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {

@@ -459,29 +459,10 @@ after: `import { DynamoDBClient } from '@aws-sdk/client-dynamodb';`
 before: `return (result.Items || []).map(item => ({`   
 after: `return (result.Items || []).map((item: any) => ({`  
 
-
-5. In `backend.ts`:  
-
-
-before: `throw new Error("DynamoDB table \countsTable` is referenced in your Gen 1 backend and will need to be manually migrated to reference with CDK.");`   
-
-after:  
-```typescript
-backend.activityLogger.resources.lambda.addToRolePolicy(   
-  new PolicyStatement({   
-    actions: ["dynamodb:PutItem", "dynamodb:GetItem", "dynamodb:Query", "dynamodb:UpdateItem", "dynamodb:DeleteItem"],   
-    resources: [   
-      "arn:aws:dynamodb:*:*:table/countsTable-demo",   
-      "arn:aws:dynamodb:*:*:table/countsTable-demo/index/*"   
-    ]   
-  })   
-);   
-```
-Post Deploy:   
-
-
-6. in `data/resource.ts`:   
+5. in `data/resource.ts`:   
 
 before: `@function(name: "activityLogger-\${env}")`   
 after: `@function(name: "amplify-<appId>-gen2<branchName>-handlerlambda<hash>-<suffix>")`   
 (Find actual Lambda name in CloudFormation → Stack Resources → search "handlerlambda") 
+
+The migration tool currently does not support lambda triggers on the dynamoDB resource. You will need to manually migrate this.

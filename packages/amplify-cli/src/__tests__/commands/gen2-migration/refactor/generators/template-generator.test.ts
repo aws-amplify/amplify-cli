@@ -1,3 +1,4 @@
+import './setup-jest';
 import { TemplateGenerator } from '../../../../../commands/gen2-migration/refactor/generators/template-generator';
 import CategoryTemplateGenerator from '../../../../../commands/gen2-migration/refactor/generators/category-template-generator';
 import {

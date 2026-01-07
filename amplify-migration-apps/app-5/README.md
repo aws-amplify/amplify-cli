@@ -142,7 +142,7 @@ type QuoteResponse {
 }
 
 type Query {
-  getRandomQuote: QuoteResponse @function(name: "quotegenerator")  @auth(rules: [{ allow: public }])
+  getRandomQuote: QuoteResponse @function(name: "quotegenerator-${env}")  @auth(rules: [{ allow: public }])
 }
 
 enum ProjectStatus {
