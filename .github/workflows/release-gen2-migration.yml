@@ -10,15 +10,19 @@ jobs:
         uses: actions/checkout@v3
         with:
           ref: gen2-migration
-      - name: install
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: lts/*
+      - name: Install
         run: |
           node --version
           npm --version
           yarn install
-      - name: build
+      - name: Build
         run: |
           yarn build
-      - name: release
+      - name: Release
         run: |
           cd packages/amplify-cli
           package_name="@aws-amplify/cli-internal-gen2-migration-experimental-alpha"
