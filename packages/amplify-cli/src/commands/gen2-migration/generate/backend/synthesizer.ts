@@ -640,7 +640,7 @@ export class BackendSynthesizer {
           userPoolConfigProps.push(
             factory.createPropertyAssignment(
               factory.createIdentifier('awsRegion'),
-              factory.createStringLiteral(provider.userPoolConfig.awsRegion),
+              factory.createPropertyAccessExpression(factory.createIdentifier('backend'), 'auth.resources.userPool.stack.region'),
             ),
           );
         }

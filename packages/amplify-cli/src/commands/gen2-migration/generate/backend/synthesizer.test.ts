@@ -11,6 +11,53 @@ describe('BackendSynthesizer', () => {
     synthesizer = new BackendSynthesizer();
   });
 
+  describe('AppSync API Generation', () => {
+    it('should set awsRegion to a dynamic value from backend', () => {
+      const renderArgs: BackendRenderParameters = {
+        data: {
+          importFrom: './data/resource',
+          additionalAuthProviders: [
+            {
+              authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+              userPoolConfig: {
+                awsRegion: 'us-east-1',
+                userPoolId: 'userpool_1234',
+              },
+            },
+          ],
+        },
+        auth: {
+          importFrom: './auth/resource',
+        },
+      };
+
+      const result = synthesizer.render(renderArgs);
+      const source = printNodeArray(result);
+      expect(source).toMatchInlineSnapshot(`
+        "import { auth } from "./auth/resource";
+        import { data } from "./data/resource";
+        import { defineBackend } from "@aws-amplify/backend";
+
+
+        const backend = defineBackend({
+            auth,
+            data
+        });
+        const cfnGraphqlApi = backend.data.resources.cfnResources.cfnGraphqlApi;
+        cfnGraphqlApi.additionalAuthenticationProviders = [
+            {
+                authenticationType: "AMAZON_COGNITO_USER_POOLS",
+                userPoolConfig: {
+                    awsRegion: backend.auth.resources.userPool.stack.region,
+                    userPoolId: backend.auth.resources.userPool.userPoolId
+                }
+            }
+        ];
+        "
+      `);
+    });
+  });
+
   describe('REST API Generation', () => {
     it('should generate HttpApi with CORS configuration', () => {
       const renderArgs: BackendRenderParameters = {
