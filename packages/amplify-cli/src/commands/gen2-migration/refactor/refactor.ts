@@ -164,7 +164,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
 
   private async executeStackRefactor(): Promise<void> {
     // Initialize template generator
-    const [templateGenerator, envName] = await this.initializeTemplateGenerator();
+    const templateGenerator = await this.initializeTemplateGenerator();
 
     // Initialize template generator (parse category stacks for assessment)
     await templateGenerator.initializeForAssessment();
@@ -184,9 +184,9 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
 
     if (success) {
       // Emit usage analytics
-      await this.emitUsageAnalytics(envName, true);
+      await this.emitUsageAnalytics(this.currentEnvName, true);
     } else {
-      await this.emitUsageAnalytics(envName, false);
+      await this.emitUsageAnalytics(this.currentEnvName, false);
       throw new Error('Failed to execute CloudFormation stack refactor');
     }
   }
@@ -307,7 +307,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
     return assessments;
   }
 
-  private async initializeTemplateGenerator(): Promise<[TemplateGenerator, string]> {
+  private async initializeTemplateGenerator(): Promise<TemplateGenerator> {
     // Get AWS account ID
     const stsClient = new STSClient({});
     const callerIdentityResult = await stsClient.send(new GetCallerIdentityCommand({}));
@@ -317,16 +317,13 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
       throw new Error('Unable to determine AWS account ID');
     }
 
-    const backendEnvironmentName = this.currentEnvName;
-
     // Create AWS service clients
     const cfnClient = new CloudFormationClient({});
     const ssmClient = new SSMClient({});
     const cognitoIdpClient = new CognitoIdentityProviderClient({});
 
     // Create template generator using the real TemplateGenerator implementation
-    const templateGenerator = new TemplateGenerator(
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return new TemplateGenerator(
       this.rootStackName,
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       this.toStack!,
@@ -335,11 +332,9 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
       ssmClient,
       cognitoIdpClient,
       this.appId,
-      backendEnvironmentName,
+      this.currentEnvName,
       this.logger,
     );
-
-    return [templateGenerator, backendEnvironmentName];
   }
 
   private async emitUsageAnalytics(envName: string, success: boolean): Promise<void> {
