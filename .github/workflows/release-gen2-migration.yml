@@ -39,4 +39,6 @@ jobs:
         run: |
           cd packages/amplify-cli
           npm --version
-          NPM_TRUSTED_PUBLISHER=true npm publish
+          npm publish
+        env:
+          NPM_TRUSTED_PUBLISHER: 'true'
