@@ -40,6 +40,7 @@ export interface StorageRenderParameters {
   bucketEncryptionAlgorithm?: ServerSideEncryptionConfiguration;
   // Dynamic import since it can cause a circular dependency otherwise. Needed since the interface contains this property
   dynamoTables?: import('../../adapters/storage').DynamoDBTableDefinition[];
+  dynamoFunctionAccess?: import('../../adapters/storage').FunctionDynamoDBAccess[];
   accelerateConfiguration?: BucketAccelerateStatus;
   versioningConfiguration?: BucketVersioningStatus;
 }

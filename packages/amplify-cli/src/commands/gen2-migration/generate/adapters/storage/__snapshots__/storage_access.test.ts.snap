@@ -1,5 +1,19 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Storage Access with S3 Function Support renderStorage snapshot should generate backend with DynamoDB function access escape hatch 1`] = `
+[
+  "backend.dataProcessor.resources.lambda.addToRolePolicy(",
+  "  new PolicyStatement({",
+  "    actions: ["dynamodb:PutItem", "dynamodb:GetItem", "dynamodb:Query"],",
+  "    resources: [",
+  "      "arn:aws:dynamodb:*:*:table/storagecountsTableName",",
+  "      "arn:aws:dynamodb:*:*:table/storagecountsTableName/index/*"",
+  "    ]",
+  "  })",
+  ");",
+]
+`;
+
 exports[`Storage Access with S3 Function Support renderStorage snapshot should generate storage resource with function access patterns 1`] = `
 [
   NodeObject {

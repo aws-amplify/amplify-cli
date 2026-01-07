@@ -1,5 +1,12 @@
 import { StorageTriggerEvent, Lambda, StorageRenderParameters } from '../../core/migration-pipeline';
-import { StorageCLIInputsJSON, getStorageAccess, extractFunctionS3Access, FunctionS3Access } from './storage_access';
+import {
+  StorageCLIInputsJSON,
+  getStorageAccess,
+  extractFunctionS3Access,
+  FunctionS3Access,
+  extractFunctionDynamoDBAccess,
+  FunctionDynamoDBAccess,
+} from './storage_access';
 
 export type DynamoDBAttribute = {
   name: string;
@@ -60,6 +67,14 @@ export const getStorageDefinition = ({
 
   if (dynamoTables) {
     result.dynamoTables = dynamoTables;
+
+    if (functionNames && functionNames.length > 0) {
+      const tableNames = dynamoTables.map((table) => table.tableName);
+      const dynamoFunctionAccess = extractFunctionDynamoDBAccess(functionNames, tableNames);
+      if (dynamoFunctionAccess.length > 0) {
+        result.dynamoFunctionAccess = dynamoFunctionAccess;
+      }
+    }
   }
 
   return result;

@@ -12,7 +12,7 @@ import ts, {
 import { PolicyOverrides, ReferenceAuth } from '../generators/auth';
 import type { BucketAccelerateStatus, BucketVersioningStatus } from '@aws-sdk/client-s3';
 import { AccessPatterns, ServerSideEncryptionConfiguration } from '../generators/storage';
-import { DynamoDBTableDefinition } from '../adapters/storage';
+import { DynamoDBTableDefinition, FunctionDynamoDBAccess } from '../adapters/storage';
 import { ExplicitAuthFlowsType, OAuthFlowType, UserPoolClientType } from '@aws-sdk/client-cognito-identity-provider';
 import assert from 'assert';
 import { newLineIdentifier } from '../ts_factory_utils';
@@ -40,6 +40,7 @@ export interface BackendRenderParameters {
   storage?: {
     importFrom: string;
     dynamoTables?: DynamoDBTableDefinition[];
+    dynamoFunctionAccess?: FunctionDynamoDBAccess[];
     accelerateConfiguration?: BucketAccelerateStatus;
     versionConfiguration?: BucketVersioningStatus;
     hasS3Bucket?: string | AccessPatterns | undefined;
@@ -2043,6 +2044,51 @@ export class BackendSynthesizer {
         );
         nodes.push(addOutputStatement);
       }
+    }
+
+    // DynamoDB function access escape hatch
+    if (renderArgs.storage?.dynamoFunctionAccess && renderArgs.storage.dynamoFunctionAccess.length > 0) {
+      imports.push(this.createImportStatement([factory.createIdentifier('PolicyStatement')], 'aws-cdk-lib/aws-iam'));
+
+      renderArgs.storage.dynamoFunctionAccess.forEach((functionAccess) => {
+        const tableArn = `arn:aws:dynamodb:*:*:table/${functionAccess.tableResource}`;
+        const indexArn = `${tableArn}/index/*`;
+
+        const policyStatement = factory.createExpressionStatement(
+          factory.createCallExpression(
+            factory.createPropertyAccessExpression(
+              factory.createPropertyAccessExpression(
+                factory.createPropertyAccessExpression(
+                  factory.createPropertyAccessExpression(
+                    factory.createIdentifier('backend'),
+                    factory.createIdentifier(functionAccess.functionName),
+                  ),
+                  factory.createIdentifier('resources'),
+                ),
+                factory.createIdentifier('lambda'),
+              ),
+              factory.createIdentifier('addToRolePolicy'),
+            ),
+            undefined,
+            [
+              factory.createNewExpression(factory.createIdentifier('PolicyStatement'), undefined, [
+                factory.createObjectLiteralExpression([
+                  factory.createPropertyAssignment(
+                    factory.createIdentifier('actions'),
+                    factory.createArrayLiteralExpression(functionAccess.actions.map((action) => factory.createStringLiteral(action))),
+                  ),
+                  factory.createPropertyAssignment(
+                    factory.createIdentifier('resources'),
+                    factory.createArrayLiteralExpression([factory.createStringLiteral(tableArn), factory.createStringLiteral(indexArn)]),
+                  ),
+                ]),
+              ]),
+            ],
+          ),
+        );
+
+        nodes.push(policyStatement);
+      });
     }
 
     // returns backend.ts file

@@ -1,5 +1,6 @@
 import { Permission, AccessPatterns } from '../../core/migration-pipeline';
 import { S3CloudFormationAccessParser, S3AccessPermission } from '../../codegen-head/s3_cfn_access_parser';
+import { DynamoDBCloudFormationAccessParser, DynamoDBAccessPermission } from '../../codegen-head/dynamodb_cfn_access_parser';
 
 export type CLIV1Permission = 'READ' | 'CREATE_AND_UPDATE' | 'DELETE';
 export type StorageCLIInputsJSON = {
@@ -17,6 +18,12 @@ export interface FunctionS3Access {
   functionName: string;
   pathPattern: string;
   permissions: Permission[];
+}
+
+export interface FunctionDynamoDBAccess {
+  functionName: string;
+  tableResource: string;
+  actions: string[];
 }
 
 const PERMISSION_MAP: Record<CLIV1Permission, Permission[]> = {
@@ -51,6 +58,40 @@ export const extractFunctionS3Access = (functionNames: string[], bucketName?: st
             functionName,
             pathPattern: permission.pathPattern,
             permissions: gen2Permissions as Permission[],
+          });
+        }
+      }
+    }
+  }
+
+  return functionAccess;
+};
+
+export const extractFunctionDynamoDBAccess = (functionNames: string[], tableNames?: string[]): FunctionDynamoDBAccess[] => {
+  const functionAccess: FunctionDynamoDBAccess[] = [];
+
+  for (const functionName of functionNames) {
+    const templates = DynamoDBCloudFormationAccessParser.findFunctionCloudFormationTemplates(functionName);
+
+    for (const templatePath of templates) {
+      const dynamoPermissions = DynamoDBCloudFormationAccessParser.parseTemplateFile(templatePath);
+
+      for (const permission of dynamoPermissions) {
+        if (tableNames && tableNames.length > 0) {
+          const matchesTable = tableNames.some((tableName) => {
+            const tableRefPattern = new RegExp(`storage${tableName.replace(/[^a-zA-Z0-9]/g, '')}Name`);
+            return permission.tableResource === tableName || tableRefPattern.test(permission.tableResource);
+          });
+          if (!matchesTable) {
+            continue;
+          }
+        }
+
+        if (permission.actions.length > 0) {
+          functionAccess.push({
+            functionName,
+            tableResource: permission.tableResource,
+            actions: permission.actions,
           });
         }
       }

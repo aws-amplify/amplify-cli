@@ -1,9 +1,12 @@
-import { extractFunctionS3Access, getStorageAccess } from './storage_access';
+import { extractFunctionS3Access, extractFunctionDynamoDBAccess, getStorageAccess } from './storage_access';
 import { S3CloudFormationAccessParser } from '../../codegen-head/s3_cfn_access_parser';
+import { DynamoDBCloudFormationAccessParser } from '../../codegen-head/dynamodb_cfn_access_parser';
 import { renderStorage } from '../../generators/storage';
 
 jest.mock('../../codegen-head/s3_cfn_access_parser');
+jest.mock('../../codegen-head/dynamodb_cfn_access_parser');
 const mockS3Parser = S3CloudFormationAccessParser as jest.Mocked<typeof S3CloudFormationAccessParser>;
+const mockDynamoParser = DynamoDBCloudFormationAccessParser as jest.Mocked<typeof DynamoDBCloudFormationAccessParser>;
 
 describe('Storage Access with S3 Function Support', () => {
   beforeEach(() => {
@@ -54,6 +57,30 @@ describe('Storage Access with S3 Function Support', () => {
     });
   });
 
+  describe('extractFunctionDynamoDBAccess', () => {
+    it('should extract DynamoDB access patterns from CloudFormation templates', () => {
+      mockDynamoParser.findFunctionCloudFormationTemplates.mockReturnValue([
+        'amplify/backend/function/dataProcessor/dataProcessor-cloudformation-template.json',
+      ]);
+
+      mockDynamoParser.parseTemplateFile.mockReturnValue([
+        {
+          tableResource: 'storagecountsTableName',
+          actions: ['dynamodb:PutItem', 'dynamodb:GetItem', 'dynamodb:Query'],
+        },
+      ]);
+
+      const result = extractFunctionDynamoDBAccess(['dataProcessor'], ['countsTable']);
+
+      expect(result).toHaveLength(1);
+      expect(result[0]).toEqual({
+        functionName: 'dataProcessor',
+        tableResource: 'storagecountsTableName',
+        actions: ['dynamodb:PutItem', 'dynamodb:GetItem', 'dynamodb:Query'],
+      });
+    });
+  });
+
   describe('getStorageAccess', () => {
     it('should maintain existing functionality for CLI inputs', () => {
       const cliInputs = {
@@ -94,6 +121,39 @@ describe('Storage Access with S3 Function Support', () => {
       };
 
       const result = renderStorage(storageParams);
+      expect(result).toMatchSnapshot();
+    });
+
+    it('should generate backend with DynamoDB function access escape hatch', () => {
+      const mockBackendSynthesizer = {
+        render: jest
+          .fn()
+          .mockReturnValue([
+            'backend.dataProcessor.resources.lambda.addToRolePolicy(',
+            '  new PolicyStatement({',
+            '    actions: ["dynamodb:PutItem", "dynamodb:GetItem", "dynamodb:Query"],',
+            '    resources: [',
+            '      "arn:aws:dynamodb:*:*:table/storagecountsTableName",',
+            '      "arn:aws:dynamodb:*:*:table/storagecountsTableName/index/*"',
+            '    ]',
+            '  })',
+            ');',
+          ]),
+      };
+
+      const renderArgs = {
+        storage: {
+          dynamoFunctionAccess: [
+            {
+              functionName: 'dataProcessor',
+              tableResource: 'storagecountsTableName',
+              actions: ['dynamodb:PutItem', 'dynamodb:GetItem', 'dynamodb:Query'],
+            },
+          ],
+        },
+      };
+
+      const result = mockBackendSynthesizer.render(renderArgs);
       expect(result).toMatchSnapshot();
     });
   });

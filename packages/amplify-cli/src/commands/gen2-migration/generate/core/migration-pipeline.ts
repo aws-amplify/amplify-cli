@@ -480,6 +480,7 @@ export const createGen2Renderer = ({
     backendRenderOptions.storage = {
       importFrom: './storage/resource',
       dynamoTables: storage.dynamoTables,
+      dynamoFunctionAccess: storage.dynamoFunctionAccess,
       accelerateConfiguration: storage.accelerateConfiguration,
       versionConfiguration: storage.versioningConfiguration,
       hasS3Bucket: hasS3Bucket,
