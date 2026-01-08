@@ -103,7 +103,7 @@ export const getFunctionDefinition = (
     assert(functionName);
     const functionRecordInMeta = Object.entries(meta.function).find(([, value]) => value.output.Name === functionName);
     assert(functionRecordInMeta);
-    funcDef.category = functionCategoryMap.get(functionRecordInMeta[0]) ?? 'function';
+    funcDef.category = 'function';
     funcDef.resourceName = functionRecordInMeta[0];
     funcDef.schedule = functionSchedules.find((schedule) => schedule.functionName === functionName)?.scheduleExpression;
 
