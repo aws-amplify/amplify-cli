@@ -228,7 +228,6 @@ export class AppStorageDefinitionFetcher {
       storageOptions.dynamoTables = dynamoTables;
 
       // Add DynamoDB function access detection
-      const tableNames = dynamoTables.map((table) => table.tableName);
       const dynamoStorageDefinition = getStorageDefinition({
         dynamoTables,
         functionNames, // Pass function names for DynamoDB access pattern analysis
