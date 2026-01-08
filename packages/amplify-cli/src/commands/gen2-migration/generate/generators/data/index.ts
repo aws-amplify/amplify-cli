@@ -3,10 +3,7 @@ import { renderResourceTsFile } from '../../resource/resource';
 import type { ConstructFactory, AmplifyFunction } from '@aws-amplify/plugin-types';
 import type { DataLoggingOptions } from '@aws-amplify/backend-data';
 import { RestApiDefinition } from '../../codegen-head/data_definition_fetcher';
-<<<<<<< HEAD:packages/amplify-cli/src/commands/gen2-migration/generate/generators/data/index.ts
-=======
 
->>>>>>> 91007e5104 (fix: updated code):packages/amplify-cli/src/commands/gen2-migration/codegen-generate/src/generators/data/index.ts
 export interface AdditionalAuthProvider {
   authenticationType: 'API_KEY' | 'AWS_IAM' | 'OPENID_CONNECT' | 'AMAZON_COGNITO_USER_POOLS' | 'AWS_LAMBDA';
   lambdaAuthorizerConfig?: {
@@ -65,7 +62,6 @@ const AUTH_MODE_MAP: Record<string, string> = {
  * Key: GraphQL model name, Value: DynamoDB table name/ID
  */
 export type DataTableMapping = Record<string, string>;
-
 
 /**
  * Creates dynamic table mappings when CloudFormation outputs are not available
@@ -178,9 +174,9 @@ export type DataDefinition = {
  * Handles ${env} substitution by replacing with ${branchName} and adding branchName declaration.
  *
  * @param schema - The GraphQL schema string
- * @returns Object containing the processed schema and array of TypeScript AST nodes for the schema declaration
+ * @returns Array of TypeScript AST nodes for the schema declaration
  */
-const generateSchemaStatement = (schema: string): { statements: ts.Node[]; processedSchema: string } => {
+const generateSchemaStatement = (schema: string): ts.Node[] => {
   const statements: ts.Node[] = [];
   let processedSchema = schema;
 
@@ -217,7 +213,7 @@ const generateSchemaStatement = (schema: string): { statements: ts.Node[]; proce
   );
   statements.push(schemaStatementAssignment);
 
-  return { statements, processedSchema };
+  return statements;
 };
 
 // ============================================================================
@@ -462,10 +458,7 @@ export const generateDataSource = async (gen1Env: string, dataDefinition?: DataD
   if (!dataDefinition.schema && (!dataDefinition.restApis || dataDefinition.restApis.length === 0)) {
     return undefined;
   }
-<<<<<<< HEAD:packages/amplify-cli/src/commands/gen2-migration/generate/generators/data/index.ts
-=======
 
->>>>>>> 91007e5104 (fix: updated code):packages/amplify-cli/src/commands/gen2-migration/codegen-generate/src/generators/data/index.ts
   // Properties for the defineData() function call
   const dataRenderProperties: ObjectLiteralElementLike[] = [];
 
@@ -473,48 +466,8 @@ export const generateDataSource = async (gen1Env: string, dataDefinition?: DataD
   const namedImports: Record<string, Set<string>> = { '@aws-amplify/backend': new Set() };
   namedImports['@aws-amplify/backend'].add('defineData');
 
-  // Additional statements to include before the data export
-  let schemaStatements: ts.Node[] = [];
-
   // Generate schema variable declaration if schema is provided
-<<<<<<< HEAD:packages/amplify-cli/src/commands/gen2-migration/generate/generators/data/index.ts
-  if (dataDefinition && dataDefinition.schema) {
-    if (dataDefinition.schema.includes('${env}')) {
-      const branchNameStatement = factory.createVariableStatement(
-        [],
-        factory.createVariableDeclarationList(
-          [
-            factory.createVariableDeclaration(
-              'branchName',
-              undefined,
-              undefined,
-              factory.createIdentifier('process.env.AWS_BRANCH ?? "sandbox"'),
-            ),
-          ],
-          ts.NodeFlags.Const,
-        ),
-      );
-      schemaStatements.push(branchNameStatement);
-      dataDefinition.schema = dataDefinition.schema.replaceAll('${env}', '${branchName}');
-    }
-
-    const schemaVariableDeclaration = factory.createVariableDeclaration(
-      'schema',
-      undefined,
-      undefined,
-      factory.createIdentifier('`' + dataDefinition.schema + '`'),
-    );
-    const schemaStatementAssignment = factory.createVariableStatement(
-      [],
-      factory.createVariableDeclarationList([schemaVariableDeclaration], ts.NodeFlags.Const),
-    );
-    schemaStatements.push(schemaStatementAssignment);
-=======
-  if (dataDefinition?.schema) {
-    const schemaResult = generateSchemaStatement(dataDefinition.schema);
-    schemaStatements = schemaResult.statements;
->>>>>>> 91007e5104 (fix: updated code):packages/amplify-cli/src/commands/gen2-migration/codegen-generate/src/generators/data/index.ts
-  }
+  const schemaStatements: ts.Node[] = dataDefinition.schema ? generateSchemaStatement(dataDefinition.schema) : [];
 
   // Generate table mappings for preserving existing DynamoDB tables during migration
   let tableMappings = dataDefinition?.tableMappings;
@@ -529,42 +482,7 @@ export const generateDataSource = async (gen1Env: string, dataDefinition?: DataD
 
   // Add table mappings property if available
   if (tableMappings) {
-<<<<<<< HEAD:packages/amplify-cli/src/commands/gen2-migration/generate/generators/data/index.ts
-    const tableMappingProperties: ObjectLiteralElementLike[] = [];
-
-    // Create model-to-table mappings for current environment
-    for (const [tableName, tableId] of Object.entries(tableMappings)) {
-      tableMappingProperties.push(
-        factory.createPropertyAssignment(factory.createIdentifier(tableName), factory.createStringLiteral(tableId)),
-      );
-    }
-
-    const branchNameExpression = ts.addSyntheticLeadingComment(
-      factory.createPropertyAssignment('branchName', factory.createStringLiteral(gen1Env)),
-      ts.SyntaxKind.SingleLineCommentTrivia,
-      'The "branchname" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables',
-      true,
-    );
-
-    const tableMappingExpression = factory.createPropertyAssignment(
-      'modelNameToTableNameMapping',
-      factory.createObjectLiteralExpression(tableMappingProperties),
-    );
-
-    // Create single environment mapping
-    const tableMappingForEnvironment = factory.createObjectLiteralExpression([branchNameExpression, tableMappingExpression], true);
-
-    // Add the table mappings array with single environment to the data configuration
-    dataRenderProperties.push(
-      factory.createPropertyAssignment(
-        MIGRATED_TABLE_MAPPINGS_KEY,
-        factory.createArrayLiteralExpression([tableMappingForEnvironment]),
-      ),
-    );
-=======
-    const tableMappingsProperty = generateTableMappingsProperty(tableMappings, gen1Env);
-    dataRenderProperties.push(tableMappingsProperty);
->>>>>>> 91007e5104 (fix: updated code):packages/amplify-cli/src/commands/gen2-migration/codegen-generate/src/generators/data/index.ts
+    dataRenderProperties.push(generateTableMappingsProperty(tableMappings, gen1Env));
   }
 
   // Add authorization modes property if available
@@ -579,7 +497,7 @@ export const generateDataSource = async (gen1Env: string, dataDefinition?: DataD
     dataRenderProperties.push(loggingProperty);
   }
 
-  // Add schema reference to the data configuration
+  // Add schema reference to the data configuration only if schema is defined
   if (dataDefinition?.schema) {
     dataRenderProperties.push(factory.createShorthandPropertyAssignment(factory.createIdentifier('schema')));
   }
