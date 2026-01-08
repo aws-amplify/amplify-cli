@@ -289,20 +289,11 @@ Following provides an overview of the supported (and unsupported) features for m
     - ❌ Yes
     - ✅ No
   
-  - ➤ **Do you want to enable 3rd party authentication providers in your identity pool**
+  - ❌ **Do you want to enable 3rd party authentication providers in your identity pool**
 
-    - ❌ Yes
-    - ✅ No
+  - ❌ **Do you want to add User Pool Groups**
 
-  - ➤ **Do you want to add User Pool Groups**
-
-    - ❌ Yes
-    - ✅ No
-
-  - ➤ **Do you want to add an admin queries API**
-
-    - ❌ Yes
-    - ✅ No
+  - ❌ **Do you want to add an admin queries API**
 
   - ➤ **Multifactor authentication (MFA) user login options**
 
