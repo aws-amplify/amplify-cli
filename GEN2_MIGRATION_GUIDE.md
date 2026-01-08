@@ -312,8 +312,8 @@ Following provides an overview of the supported (and unsupported) features for m
   
   - ➤ **Email based user registration/forgot password:**
 
-    - ❌ Enabled
-    - ✅ Disabled
+    - ✅ Enabled
+    - ❌ Disabled
 
   - ✅ **Specify an email verification subject**
 
@@ -339,13 +339,13 @@ Following provides an overview of the supported (and unsupported) features for m
 
   - ➤ **Do you want to enable any of the following capabilities**
 
-    - Add Google reCaptcha Challenge
-    - Email Verification Link with Redirect
-    - Add User to Group
-    - Email Domain Filtering (denylist)
-    - Email Domain Filtering (allowlist)
-    - Custom Auth Challenge Flow (basic scaffolding - not for production)
-    - Override ID Token Claims
+    - ❌ Add Google reCaptcha Challenge
+    - ❌ Email Verification Link with Redirect
+    - ❌ Add User to Group
+    - ❌ Email Domain Filtering (denylist)
+    - ❌ Email Domain Filtering (allowlist)
+    - ❌ Custom Auth Challenge Flow (basic scaffolding - not for production)
+    - ❌ Override ID Token Claims
   
   - ➤ **Do you want to use an OAuth flow**
 
@@ -416,6 +416,8 @@ Following provides an overview of the supported (and unsupported) features for m
 
   - ✅ **Do you want to add a Lambda Trigger for your S3 Bucket?**
 
+- ➤ NoSQL Database
+
 ## Function
 
 ### `amplify add function`
@@ -453,7 +455,18 @@ Following provides an overview of the supported (and unsupported) features for m
 
       - ❌ function
 
-      - ❌ storage
+      - ➤ storage
+
+        - ➤ dynamo
+
+          - ➤ **Select the operations you want to permit**
+
+            - ⚠️ create
+            - ⚠️ read
+            - ⚠️ update
+            - ⚠️ delete
+
+        - ❌ s3
 
     - ❌ **Do you want to invoke this function on a recurring schedule**
     - ❌ **Do you want to enable Lambda layers for this function**
