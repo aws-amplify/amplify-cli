@@ -1,7 +1,7 @@
 import ts, { ObjectLiteralElementLike } from 'typescript';
 import { renderResourceTsFile } from '../../resource/resource';
 import type { ConstructFactory, AmplifyFunction } from '@aws-amplify/plugin-types';
-import type { DataLoggingOptions } from '@aws-amplify/backend-data';
+import type { AuthorizationModes, DataLoggingOptions } from '@aws-amplify/backend-data';
 import { RestApiDefinition } from '../../codegen-head/data_definition_fetcher';
 
 export interface AdditionalAuthProvider {
@@ -153,7 +153,7 @@ export type DataDefinition = {
   /** GraphQL schema definition as a string */
   schema?: string;
   /* Override authorization config, which will apply on top of defaults based on availability of auth, etc. */
-  authorizationModes?: Gen1AuthorizationConfig;
+  authorizationModes?: AuthorizationModes;
   /* Additional authentication providers for AppSync API */
   additionalAuthProviders?: AdditionalAuthProvider[];
   /* Functions invokable by the API. The specific input type of the function is subject to change or removal. */
@@ -331,12 +331,12 @@ const generateOidcAuthMode = (oidcConfig: { issuer?: string; clientId?: string }
  * @param authorizationModes - Authorization configuration from Gen1
  * @returns ObjectLiteralElementLike for authorizationModes property, or undefined if no auth config
  */
-const generateAuthModesProperty = (authorizationModes: Gen1AuthorizationConfig | undefined): ObjectLiteralElementLike | undefined => {
+const generateAuthModesProperty = (authorizationModes: AuthorizationModes | undefined): ObjectLiteralElementLike | undefined => {
   if (!authorizationModes) {
     return undefined;
   }
 
-  const gen1AuthModes = authorizationModes;
+  const gen1AuthModes = authorizationModes as Gen1AuthorizationConfig;
   const authModeProperties: ObjectLiteralElementLike[] = [];
 
   // Add default authorization mode from Gen1 config
