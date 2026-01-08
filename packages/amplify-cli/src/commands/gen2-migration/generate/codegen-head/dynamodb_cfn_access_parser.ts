@@ -87,7 +87,7 @@ export class DynamoDBCloudFormationAccessParser {
       const joinParts = resource['Fn::Join'];
       if (Array.isArray(joinParts) && joinParts.length === 2) {
         const [delimiter, parts] = joinParts;
-        if (delimiter === '/' && Array.isArray(parts)) {
+        if (Array.isArray(parts)) {
           const tableRef = parts.find((part: any) => typeof part === 'object' && part.Ref);
           if (tableRef) {
             tableResource = tableRef.Ref;
