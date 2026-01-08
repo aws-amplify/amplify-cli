@@ -87,9 +87,8 @@ export class DynamoDBCloudFormationAccessParser {
       const joinParts = resource['Fn::Join'];
       if (Array.isArray(joinParts) && joinParts.length === 2) {
         const [delimiter, parts] = joinParts;
-        if (delimiter === '' && Array.isArray(parts)) {
+        if (delimiter === '/' && Array.isArray(parts)) {
           const tableRef = parts.find((part: any) => typeof part === 'object' && part.Ref);
-
           if (tableRef) {
             tableResource = tableRef.Ref;
           } else {
@@ -101,6 +100,9 @@ export class DynamoDBCloudFormationAccessParser {
       } else {
         return null;
       }
+    } else if (typeof resource === 'object' && resource.Ref) {
+      // Handle direct CloudFormation Ref parameters like {"Ref": "storagecountsTableArn"}
+      tableResource = resource.Ref;
     } else if (typeof resource === 'string' && resource.includes('dynamodb')) {
       const arnParts = resource.split('/');
       if (arnParts.length >= 2) {

@@ -80,7 +80,8 @@ export const extractFunctionDynamoDBAccess = (functionNames: string[], tableName
       for (const permission of dynamoPermissions) {
         if (tableNames && tableNames.length > 0) {
           const matchesTable = tableNames.some((tableName) => {
-            const tableRefPattern = new RegExp(`storage${tableName.replace(/[^a-zA-Z0-9]/g, '')}Name`);
+            // Match both Name and Arn patterns: storage{tableName}Name or storage{tableName}Arn
+            const tableRefPattern = new RegExp(`storage${tableName.replace(/[^a-zA-Z0-9]/g, '')}(Name|Arn)`);
             return permission.tableResource === tableName || tableRefPattern.test(permission.tableResource);
           });
           if (!matchesTable) {
