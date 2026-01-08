@@ -83,11 +83,13 @@ export const extractFunctionDynamoDBAccess = (functionNames: string[], tableName
       for (const permission of dynamoPermissions) {
         if (tableNames && tableNames.length > 0) {
           const matchesTable = tableNames.some((tableName) => {
-            // Match both Name and Arn patterns: storage{tableName}Name or storage{tableName}Arn
-            const tableRefPattern = new RegExp(`storage${tableName.replace(/[^a-zA-Z0-9]/g, '')}(Name|Arn)`);
+            // Extract base table name without environment suffix (e.g., "countsTable" from "countsTable-migrate")
+            const baseTableName = tableName.split('-')[0];
+            // Match both Name and Arn patterns: storage{baseTableName}Name or storage{baseTableName}Arn
+            const tableRefPattern = new RegExp(`storage${baseTableName.replace(/[^a-zA-Z0-9]/g, '')}(Name|Arn)`, 'i');
             const matches = permission.tableResource === tableName || tableRefPattern.test(permission.tableResource);
             console.log(
-              `DEBUG: Checking ${permission.tableResource} against ${tableName}, pattern: ${tableRefPattern}, matches: ${matches}`,
+              `DEBUG: Checking ${permission.tableResource} against ${tableName} (base: ${baseTableName}), pattern: ${tableRefPattern}, matches: ${matches}`,
             );
             return matches;
           });
