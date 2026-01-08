@@ -2048,11 +2048,40 @@ export class BackendSynthesizer {
 
     // DynamoDB function access escape hatch
     if (renderArgs.storage?.dynamoFunctionAccess && renderArgs.storage.dynamoFunctionAccess.length > 0) {
-      imports.push(this.createImportStatement([factory.createIdentifier('PolicyStatement')], 'aws-cdk-lib/aws-iam'));
+      imports.push(
+        this.createImportStatement(
+          [factory.createIdentifier('PolicyStatement'), factory.createIdentifier('Effect')],
+          'aws-cdk-lib/aws-iam',
+        ),
+      );
 
       renderArgs.storage.dynamoFunctionAccess.forEach((functionAccess) => {
-        const tableArn = `arn:aws:dynamodb:*:*:table/${functionAccess.tableResource}`;
-        const indexArn = `${tableArn}/index/*`;
+        // Find the corresponding table variable name from dynamoTables
+        const matchingTable = renderArgs.storage?.dynamoTables?.find((table) => {
+          const baseTableName = table.tableName.split('-')[0];
+          const tableRefPattern = new RegExp(`storage${baseTableName.replace(/[^a-zA-Z0-9]/g, '')}(Name|Arn)`, 'i');
+          return tableRefPattern.test(functionAccess.tableResource);
+        });
+
+        let tableArnExpression: ts.Expression;
+        let indexArnExpression: ts.Expression;
+
+        if (matchingTable) {
+          // Use the table variable reference
+          const sanitizedTableName = this.sanitizeVariableName(matchingTable.tableName.replace(/-[^-]+$/, ''));
+          tableArnExpression = factory.createPropertyAccessExpression(
+            factory.createIdentifier(sanitizedTableName),
+            factory.createIdentifier('tableArn'),
+          );
+          indexArnExpression = factory.createTemplateExpression(factory.createTemplateHead(''), [
+            factory.createTemplateSpan(tableArnExpression, factory.createTemplateTail('/index/*')),
+          ]);
+        } else {
+          // Fallback to hardcoded ARN (shouldn't happen with the fix)
+          const tableArn = `arn:aws:dynamodb:*:*:table/${functionAccess.tableResource}`;
+          tableArnExpression = factory.createStringLiteral(tableArn);
+          indexArnExpression = factory.createStringLiteral(`${tableArn}/index/*`);
+        }
 
         const policyStatement = factory.createExpressionStatement(
           factory.createCallExpression(
@@ -2074,12 +2103,16 @@ export class BackendSynthesizer {
               factory.createNewExpression(factory.createIdentifier('PolicyStatement'), undefined, [
                 factory.createObjectLiteralExpression([
                   factory.createPropertyAssignment(
+                    factory.createIdentifier('effect'),
+                    factory.createPropertyAccessExpression(factory.createIdentifier('Effect'), factory.createIdentifier('ALLOW')),
+                  ),
+                  factory.createPropertyAssignment(
                     factory.createIdentifier('actions'),
                     factory.createArrayLiteralExpression(functionAccess.actions.map((action) => factory.createStringLiteral(action))),
                   ),
                   factory.createPropertyAssignment(
                     factory.createIdentifier('resources'),
-                    factory.createArrayLiteralExpression([factory.createStringLiteral(tableArn), factory.createStringLiteral(indexArn)]),
+                    factory.createArrayLiteralExpression([tableArnExpression, indexArnExpression]),
                   ),
                 ]),
               ]),
