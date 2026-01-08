@@ -359,6 +359,7 @@ export const createGen2Renderer = ({
   }
 
   // Process Lambda functions - create resource.ts and handler.ts files
+  const functionNames: string[] = [];
   if (functions && functions.length) {
     const functionNamesAndCategory = new Map<string, string>();
     const functionsWithApiAccess = new Map<string, { hasQuery: boolean; hasMutation: boolean; hasSubscription: boolean }>();
@@ -375,6 +376,7 @@ export const createGen2Renderer = ({
         const funcCategory = func.category;
         assert(funcCategory);
         functionNamesAndCategory.set(resourceName, funcCategory);
+        functionNames.push(resourceName);
 
         // Track functions that have API access with specific permissions
         if (
@@ -383,7 +385,6 @@ export const createGen2Renderer = ({
         ) {
           functionsWithApiAccess.set(resourceName, func.apiPermissions);
         }
-
         const dirPath = path.join(outputDir, 'amplify', funcCategory, resourceName);
         // Create function directory and resource files
         renderers.push(new EnsureDirectory(dirPath));
