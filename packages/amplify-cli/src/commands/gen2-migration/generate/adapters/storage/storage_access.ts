@@ -34,7 +34,7 @@ const PERMISSION_MAP: Record<CLIV1Permission, Permission[]> = {
 const getGen2Permissions = (permissions: CLIV1Permission[]): Permission[] => {
   return permissions.flatMap((p) => PERMISSION_MAP[p]);
 };
-export const extractFunctionS3Access = (functionNames: string[], bucketName?: string): FunctionS3Access[] => {
+export const extractFunctionS3Access = (functionNames: string[], resourceName?: string): FunctionS3Access[] => {
   const functionAccess: FunctionS3Access[] = [];
 
   for (const functionName of functionNames) {
@@ -44,8 +44,9 @@ export const extractFunctionS3Access = (functionNames: string[], bucketName?: st
       const s3Permissions = S3CloudFormationAccessParser.parseTemplateFile(templatePath);
 
       for (const permission of s3Permissions) {
-        if (bucketName && permission.bucketResource !== bucketName) {
-          const bucketRefPattern = new RegExp(`storage${bucketName.replace(/[^a-zA-Z0-9]/g, '')}BucketName`);
+        if (resourceName && permission.bucketResource !== resourceName) {
+          // Match CloudFormation parameter pattern: storage{resourceName}BucketName
+          const bucketRefPattern = new RegExp(`storage${resourceName.replace(/[^a-zA-Z0-9]/g, '')}BucketName`);
           if (!bucketRefPattern.test(permission.bucketResource)) {
             continue;
           }

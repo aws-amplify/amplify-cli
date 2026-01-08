@@ -31,6 +31,8 @@ export type StorageInputs = {
   dynamoTables?: DynamoDBTableDefinition[];
   /** Array of function names that may have access to this storage resource */
   functionNames?: string[];
+  /** Resource name for S3 function access matching */
+  resourceName?: string;
 };
 
 export const getStorageDefinition = ({
@@ -39,6 +41,7 @@ export const getStorageDefinition = ({
   triggers,
   dynamoTables,
   functionNames,
+  resourceName,
 }: StorageInputs): StorageRenderParameters => {
   const result: StorageRenderParameters = {};
 
@@ -48,7 +51,7 @@ export const getStorageDefinition = ({
     result.triggers = triggers ?? {};
 
     if (functionNames && functionNames.length > 0) {
-      const functionAccess = extractFunctionS3Access(functionNames, bucketName);
+      const functionAccess = extractFunctionS3Access(functionNames, resourceName);
       if (functionAccess.length > 0) {
         if (!result.accessPatterns) {
           result.accessPatterns = {};
