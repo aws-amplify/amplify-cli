@@ -70,26 +70,39 @@ export const extractFunctionS3Access = (functionNames: string[], resourceName?: 
 
 export const extractFunctionDynamoDBAccess = (functionNames: string[], tableNames?: string[]): FunctionDynamoDBAccess[] => {
   const functionAccess: FunctionDynamoDBAccess[] = [];
+  console.log('DEBUG: extractFunctionDynamoDBAccess called with:', { functionNames, tableNames });
 
   for (const functionName of functionNames) {
     const templates = DynamoDBCloudFormationAccessParser.findFunctionCloudFormationTemplates(functionName);
+    console.log(`DEBUG: Found templates for ${functionName}:`, templates);
 
     for (const templatePath of templates) {
       const dynamoPermissions = DynamoDBCloudFormationAccessParser.parseTemplateFile(templatePath);
+      console.log(`DEBUG: Parsed permissions from ${templatePath}:`, dynamoPermissions);
 
       for (const permission of dynamoPermissions) {
         if (tableNames && tableNames.length > 0) {
           const matchesTable = tableNames.some((tableName) => {
             // Match both Name and Arn patterns: storage{tableName}Name or storage{tableName}Arn
             const tableRefPattern = new RegExp(`storage${tableName.replace(/[^a-zA-Z0-9]/g, '')}(Name|Arn)`);
-            return permission.tableResource === tableName || tableRefPattern.test(permission.tableResource);
+            const matches = permission.tableResource === tableName || tableRefPattern.test(permission.tableResource);
+            console.log(
+              `DEBUG: Checking ${permission.tableResource} against ${tableName}, pattern: ${tableRefPattern}, matches: ${matches}`,
+            );
+            return matches;
           });
           if (!matchesTable) {
+            console.log(`DEBUG: Permission ${permission.tableResource} doesn't match any table names`);
             continue;
           }
         }
 
         if (permission.actions.length > 0) {
+          console.log(`DEBUG: Adding function access:`, {
+            functionName,
+            tableResource: permission.tableResource,
+            actions: permission.actions,
+          });
           functionAccess.push({
             functionName,
             tableResource: permission.tableResource,
@@ -100,6 +113,7 @@ export const extractFunctionDynamoDBAccess = (functionNames: string[], tableName
     }
   }
 
+  console.log('DEBUG: Final functionAccess result:', functionAccess);
   return functionAccess;
 };
 
