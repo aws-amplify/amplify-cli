@@ -29,7 +29,11 @@ const createAllowPattern = (allowIdentifier: Identifier, userLevel: UserLevel, p
 const createResourcePattern = (allowIdentifier: Identifier, functionName: string, permissions: Permission[]) => {
   return factory.createCallExpression(
     factory.createPropertyAccessExpression(
-      factory.createPropertyAccessExpression(allowIdentifier, factory.createIdentifier('resource')),
+      factory.createCallExpression(
+        factory.createPropertyAccessExpression(allowIdentifier, factory.createIdentifier('resource')),
+        undefined,
+        [factory.createIdentifier(functionName)],
+      ),
       factory.createIdentifier('to'),
     ),
     undefined,
@@ -63,10 +67,26 @@ export const getAccessPatterns = (accessPatterns: AccessPatterns): ts.PropertyAs
     });
   }
 
-  // Handle function access patterns
+  // Handle function access patterns - consolidate by function and merge permissions
   if (accessPatterns.functions && accessPatterns.functions.length) {
+    const consolidatedFunctions: { [functionName: string]: { pathPattern: string; permissions: Set<Permission> } } = {};
+
+    // Consolidate permissions by function
     accessPatterns.functions.forEach(({ functionName, pathPattern, permissions }) => {
-      const resourcePattern = createResourcePattern(allowIdentifier, functionName, permissions);
+      if (!consolidatedFunctions[functionName]) {
+        consolidatedFunctions[functionName] = {
+          pathPattern: pathPattern, // Keep original path pattern from CloudFormation
+          permissions: new Set(permissions),
+        };
+      } else {
+        // Merge permissions
+        permissions.forEach((p) => consolidatedFunctions[functionName].permissions.add(p));
+      }
+    });
+
+    // Create access patterns for each function
+    Object.entries(consolidatedFunctions).forEach(([functionName, { pathPattern, permissions }]) => {
+      const resourcePattern = createResourcePattern(allowIdentifier, functionName, Array.from(permissions));
 
       if (!functionPathAccess[pathPattern]) {
         functionPathAccess[pathPattern] = [];
