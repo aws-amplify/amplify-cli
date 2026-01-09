@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-category-interactions",
-  "version": "5.1.35",
+  "version": "5.1.37",
   "description": "amplify-cli interactions plugin",
   "repository": {
     "type": "git",
@@ -25,7 +25,7 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/amplify-cli-core": "4.4.2",
+    "@aws-amplify/amplify-cli-core": "4.4.4",
     "@aws-amplify/amplify-prompts": "2.8.7",
     "fs-extra": "^8.1.0",
     "fuzzy": "^0.1.3",

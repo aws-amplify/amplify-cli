@@ -1,19 +1,27 @@
 import { $TSAny, $TSContext } from '@aws-amplify/amplify-cli-core';
 import {
+  CognitoIdentityProviderClient,
+  ListUserPoolsCommand,
+  DescribeUserPoolCommand,
+  ListUserPoolClientsCommand,
+  DescribeUserPoolClientCommand,
+  GetUserPoolMfaConfigCommand,
+  ListIdentityProvidersCommand,
+  DescribeIdentityProviderCommand,
+  UserPoolType,
+  UserPoolDescriptionType,
+  UserPoolClientType,
+  UserPoolClientDescription,
   GetUserPoolMfaConfigResponse,
   IdentityProviderType,
   ListIdentityProvidersResponse,
   ListUserPoolClientsResponse,
   ListUserPoolsResponse,
-  PaginationKeyType,
   ProviderDescription,
-  UserPoolClientDescription,
-  UserPoolClientType,
-  UserPoolDescriptionType,
-  UserPoolType,
-} from 'aws-sdk/clients/cognitoidentityserviceprovider';
-
-import { CognitoIdentityServiceProvider } from 'aws-sdk';
+  ListUserPoolClientsRequest,
+  ListIdentityProvidersRequest,
+  ListUserPoolsRequest,
+} from '@aws-sdk/client-cognito-identity-provider';
 import { ICognitoUserPoolService } from '@aws-amplify/amplify-util-import';
 import { loadConfiguration } from '../configuration-manager';
 import { fileLogger } from '../utils/aws-logger';
@@ -29,7 +37,10 @@ export const createCognitoUserPoolService = async (context: $TSContext, options:
     // could not load credentials
   }
 
-  const cognito = new CognitoIdentityServiceProvider({ ...credentials, ...options });
+  const cognito = new CognitoIdentityProviderClient({
+    ...credentials,
+    ...options,
+  });
 
   return new CognitoUserPoolService(cognito);
 };
@@ -37,19 +48,19 @@ export const createCognitoUserPoolService = async (context: $TSContext, options:
 export class CognitoUserPoolService implements ICognitoUserPoolService {
   private cachedUserPoolIds: Array<UserPoolDescriptionType> = [];
 
-  public constructor(private cognito: CognitoIdentityServiceProvider) {}
+  public constructor(private cognito: CognitoIdentityProviderClient) {}
 
   public async listUserPools(): Promise<UserPoolDescriptionType[]> {
     if (this.cachedUserPoolIds.length === 0) {
-      const result = await pagedAWSCall<ListUserPoolsResponse, UserPoolDescriptionType, PaginationKeyType>(
-        async (params: CognitoIdentityServiceProvider.Types.ListUserPoolsRequest, nextToken: PaginationKeyType) => {
+      const result = await pagedAWSCall<ListUserPoolsResponse, UserPoolDescriptionType, string>(
+        async (params: ListUserPoolsRequest, nextToken: string) => {
           logger('listUserPool.cognito.listUserPools', [{ params, NextToken: nextToken }])();
-          return await this.cognito
-            .listUserPools({
+          return await this.cognito.send(
+            new ListUserPoolsCommand({
               ...params,
               NextToken: nextToken,
-            })
-            .promise();
+            }),
+          );
         },
         {
           MaxResults: 60,
@@ -66,25 +77,25 @@ export class CognitoUserPoolService implements ICognitoUserPoolService {
 
   public async getUserPoolDetails(userPoolId: string): Promise<UserPoolType> {
     logger('getUserPoolDetails.cognito.describeUserPool', [{ userPoolId }])();
-    const result = await this.cognito
-      .describeUserPool({
+    const result = await this.cognito.send(
+      new DescribeUserPoolCommand({
         UserPoolId: userPoolId,
-      })
-      .promise();
+      }),
+    );
 
     return result.UserPool;
   }
 
   public async listUserPoolClients(userPoolId: string): Promise<UserPoolClientType[]> {
-    const userPoolClients = await pagedAWSCall<ListUserPoolClientsResponse, UserPoolClientDescription, PaginationKeyType>(
-      async (params: CognitoIdentityServiceProvider.Types.ListUserPoolClientsRequest, nextToken: PaginationKeyType) => {
+    const userPoolClients = await pagedAWSCall<ListUserPoolClientsResponse, UserPoolClientDescription, string>(
+      async (params: ListUserPoolClientsRequest, nextToken: string) => {
         logger('listUserPoolClients.cognito.listUserPoolClients', [{ params, NextToken: nextToken }])();
-        return await this.cognito
-          .listUserPoolClients({
+        return await this.cognito.send(
+          new ListUserPoolClientsCommand({
             ...params,
             NextToken: nextToken,
-          })
-          .promise();
+          }),
+        );
       },
       {
         UserPoolId: userPoolId,
@@ -104,12 +115,12 @@ export class CognitoUserPoolService implements ICognitoUserPoolService {
             ClientId: upc.ClientId,
           },
         ])();
-        return this.cognito
-          .describeUserPoolClient({
+        return this.cognito.send(
+          new DescribeUserPoolClientCommand({
             UserPoolId: userPoolId,
             ClientId: upc.ClientId,
-          })
-          .promise();
+          }),
+        );
       });
 
       const userPoolClientDetailsResults = await Promise.all(describeUserPoolClientPromises);
@@ -121,20 +132,20 @@ export class CognitoUserPoolService implements ICognitoUserPoolService {
   }
 
   public async listUserPoolIdentityProviders(userPoolId: string): Promise<IdentityProviderType[]> {
-    const identityProviders = await pagedAWSCall<ListIdentityProvidersResponse, ProviderDescription, PaginationKeyType>(
-      async (params: CognitoIdentityServiceProvider.Types.ListIdentityProvidersRequest, nextToken: PaginationKeyType) => {
+    const identityProviders = await pagedAWSCall<ListIdentityProvidersResponse, ProviderDescription, string>(
+      async (params: ListIdentityProvidersRequest, nextToken: string) => {
         logger('listUserPoolIdentityProviders.cognito.listIdentityProviders', [
           {
             ...params,
             NextToken: nextToken,
           },
         ])();
-        return await this.cognito
-          .listIdentityProviders({
+        return await this.cognito.send(
+          new ListIdentityProvidersCommand({
             ...params,
             NextToken: nextToken,
-          })
-          .promise();
+          }),
+        );
       },
       {
         UserPoolId: userPoolId,
@@ -154,12 +165,12 @@ export class CognitoUserPoolService implements ICognitoUserPoolService {
             ProviderName: idp.ProviderName,
           },
         ])();
-        return this.cognito
-          .describeIdentityProvider({
+        return this.cognito.send(
+          new DescribeIdentityProviderCommand({
             UserPoolId: userPoolId,
             ProviderName: idp.ProviderName,
-          })
-          .promise();
+          }),
+        );
       });
 
       const identityProviderDetailsResults = await Promise.all(describeIdentityProviderPromises);
@@ -176,11 +187,11 @@ export class CognitoUserPoolService implements ICognitoUserPoolService {
         UserPoolId: userPoolId,
       },
     ])();
-    const result = await this.cognito
-      .getUserPoolMfaConfig({
+    const result = await this.cognito.send(
+      new GetUserPoolMfaConfigCommand({
         UserPoolId: userPoolId,
-      })
-      .promise();
+      }),
+    );
 
     return result;
   }

@@ -3,6 +3,49 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.11.28](https://github.com/aws-amplify/amplify-console-integration-tests/compare/@aws-amplify/amplify-console-integration-tests@2.11.27...@aws-amplify/amplify-console-integration-tests@2.11.28) (2025-11-20)
+
+**Note:** Version bump only for package @aws-amplify/amplify-console-integration-tests
+
+
+
+
+
+## [2.11.27](https://github.com/aws-amplify/amplify-console-integration-tests/compare/@aws-amplify/amplify-console-integration-tests@2.11.26...@aws-amplify/amplify-console-integration-tests@2.11.27) (2025-11-03)
+
+**Note:** Version bump only for package @aws-amplify/amplify-console-integration-tests
+
+
+
+
+
+## [2.11.26](https://github.com/aws-amplify/amplify-console-integration-tests/compare/@aws-amplify/amplify-console-integration-tests@2.11.25...@aws-amplify/amplify-console-integration-tests@2.11.26) (2025-10-31)
+
+
+### Bug Fixes
+
+* upgrade `@aws-sdk/*` to latest ([#14306](https://github.com/aws-amplify/amplify-console-integration-tests/issues/14306)) ([faca740](https://github.com/aws-amplify/amplify-console-integration-tests/commit/faca7400e65374536e28f58119bb6a66c48aa4d7))
+
+
+
+
+
+## [2.11.25](https://github.com/aws-amplify/amplify-console-integration-tests/compare/@aws-amplify/amplify-console-integration-tests@2.11.24...@aws-amplify/amplify-console-integration-tests@2.11.25) (2025-10-22)
+
+**Note:** Version bump only for package @aws-amplify/amplify-console-integration-tests
+
+
+
+
+
+## [2.11.24](https://github.com/aws-amplify/amplify-console-integration-tests/compare/@aws-amplify/amplify-console-integration-tests@2.11.23...@aws-amplify/amplify-console-integration-tests@2.11.24) (2025-10-08)
+
+**Note:** Version bump only for package @aws-amplify/amplify-console-integration-tests
+
+
+
+
+
 ## [2.11.23](https://github.com/aws-amplify/amplify-console-integration-tests/compare/@aws-amplify/amplify-console-integration-tests@2.11.22...@aws-amplify/amplify-console-integration-tests@2.11.23) (2025-07-01)
 
 

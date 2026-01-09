@@ -1,6 +1,6 @@
 import { AmplifyStudioClient } from '../clients'; // eslint-disable-line import/no-extraneous-dependencies
 import { isFormDetachedFromModel, isFormSchemaCustomized, isStudioForm, deleteDetachedForms } from '../commands/utils';
-import { Form } from 'aws-sdk/clients/amplifyuibuilder';
+import { Form } from '@aws-sdk/client-amplifyuibuilder';
 
 const amplifyStudioClientMock = AmplifyStudioClient as any;
 

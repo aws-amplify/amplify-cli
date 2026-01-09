@@ -1,0 +1,49 @@
+name: Release Gen2 Migration
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    environment: release-gen2-migration
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          ref: gen2-migration
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22.x
+      - name: Install
+        run: |
+          node --version
+          npm --version
+          yarn install
+      - name: Build
+        run: |
+          yarn build
+      - name: Pack
+        run: |
+          cd packages/amplify-cli
+          package_name="@aws-amplify/cli-internal-gen2-migration-experimental-alpha"
+          latest_version=$(npm view ${package_name} version 2>/dev/null || echo "0.0.0")
+          new_version=$(npx semver --increment minor ${latest_version})
+          npm version ${new_version} --no-workspace-update --no-commit-hooks --no-git-tag-version --no-workspaces
+          npm pkg set name=${package_name}
+          npm pack
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 24.x
+      - name: Publish
+        run: |
+          cd packages/amplify-cli
+          npm --version
+          npm publish
+        env:
+          NPM_TRUSTED_PUBLISHER: 'true'

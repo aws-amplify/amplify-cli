@@ -7,16 +7,22 @@
 import { $TSAny } from '@aws-amplify/amplify-cli-core';
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { $TSObject } from '@aws-amplify/amplify-cli-core';
-import * as AWS_2 from 'aws-sdk';
+import { CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-provider';
 import { IAmplifyResource } from '@aws-amplify/amplify-cli-core';
+import { LocationClient } from '@aws-sdk/client-location';
+import { NodeHttpHandler } from '@smithy/node-http-handler';
+import { SSMClient } from '@aws-sdk/client-ssm';
 import { Template } from '@aws-amplify/amplify-cli-core';
 
 // @public (undocumented)
 export interface AwsSdkConfig {
     // (undocumented)
-    accessKeyId: string;
-    // (undocumented)
-    expiration?: Date;
+    credentials: {
+        accessKeyId: string;
+        secretAccessKey: string;
+        sessionToken?: string;
+        expiration?: Date;
+    };
     // (undocumented)
     httpOptions?: {
         agent: $TSAny;
@@ -24,9 +30,7 @@ export interface AwsSdkConfig {
     // (undocumented)
     region: string;
     // (undocumented)
-    secretAccessKey: string;
-    // (undocumented)
-    sessionToken?: string;
+    requestHandler?: NodeHttpHandler;
 }
 
 // @public (undocumented)

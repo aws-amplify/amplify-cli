@@ -11,9 +11,11 @@ jest.mock('dotenv');
 
 const loadConfigurationForEnv_mock = loadConfigurationForEnv as jest.MockedFunction<typeof loadConfigurationForEnv>;
 loadConfigurationForEnv_mock.mockResolvedValue({
-  accessKeyId: 'testaccesskey',
-  secretAccessKey: 'testsecretaccesskey',
-  sessionToken: 'testsessiontoken',
+  credentials: {
+    accessKeyId: 'testaccesskey',
+    secretAccessKey: 'testsecretaccesskey',
+    sessionToken: 'testsessiontoken',
+  },
   region: 'test-region',
 });
 

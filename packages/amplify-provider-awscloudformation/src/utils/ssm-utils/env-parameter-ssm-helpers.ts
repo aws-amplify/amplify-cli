@@ -1,9 +1,16 @@
 import { $TSContext, AmplifyFault, stateManager } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
-import type { SSM as SSMType } from 'aws-sdk';
 import { SSM } from '../../aws-utils/aws-ssm';
 import { resolveAppId } from '../resolve-appId';
 import { executeSdkPromisesWithExponentialBackOff } from './exp-backoff-executor';
+import {
+  GetParametersByPathResult,
+  GetParametersCommand,
+  GetParametersResult,
+  PutParameterCommand,
+  PutParameterCommandInput,
+  SSMClient,
+} from '@aws-sdk/client-ssm';
 
 /**
  * Higher order function for uploading CloudFormation parameters to the service
@@ -30,7 +37,7 @@ export const getEnvParametersUploadHandler = async (
 const uploadParameterToParameterStore = (
   appId: string,
   envName: string,
-  ssmClient: SSMType,
+  ssmClient: SSMClient,
 ): ((key: string, value: string | boolean | number) => Promise<void>) => {
   return async (key: string, value: string | boolean | number): Promise<void> => {
     try {
@@ -41,8 +48,8 @@ const uploadParameterToParameterStore = (
         Tier: 'Standard',
         Type: 'String',
         Value: stringValue,
-      };
-      await executeSdkPromisesWithExponentialBackOff([() => ssmClient.putParameter(sdkParameters).promise()]);
+      } as PutParameterCommandInput;
+      await executeSdkPromisesWithExponentialBackOff([() => ssmClient.send(new PutParameterCommand(sdkParameters))]);
     } catch (e) {
       throw new AmplifyFault(
         'ParameterUploadFault',
@@ -80,7 +87,7 @@ export const getEnvParametersDownloadHandler = async (context: $TSContext): Prom
   return downloadParametersFromParameterStore(appId, envName, client);
 };
 
-const downloadParametersFromParameterStore = (appId: string, envName: string, ssmClient: SSMType): DownloadHandler => {
+const downloadParametersFromParameterStore = (appId: string, envName: string, ssmClient: SSMClient): DownloadHandler => {
   return async (keys: string[]): Promise<PrimitiveRecord> => {
     if (keys.length === 0) {
       return {};
@@ -88,7 +95,7 @@ const downloadParametersFromParameterStore = (appId: string, envName: string, ss
     const keyPaths = keys.map((key) => `/amplify/${appId}/${envName}/${key}`);
     try {
       const sdkPromises = convertKeyPathsToSdkPromises(ssmClient, keyPaths);
-      const results = await executeSdkPromisesWithExponentialBackOff<SSMType.GetParametersResult>(sdkPromises);
+      const results = await executeSdkPromisesWithExponentialBackOff<GetParametersResult>(sdkPromises);
       return results.reduce((acc, { Parameters }) => {
         Parameters.forEach((param) => {
           const [, , , , /* leading slash */ /* amplify */ /* appId */ /* envName */ key] = param.Name.split('/');
@@ -108,7 +115,7 @@ const downloadParametersFromParameterStore = (appId: string, envName: string, ss
   };
 };
 
-const convertKeyPathsToSdkPromises = (ssmClient: SSMType, keyPaths: string[]): (() => Promise<SSMType.GetParametersByPathResult>)[] => {
+const convertKeyPathsToSdkPromises = (ssmClient: SSMClient, keyPaths: string[]): (() => Promise<GetParametersByPathResult>)[] => {
   const sdkParameterChunks = [];
   for (let i = 0; i < keyPaths.length; i += 10) {
     sdkParameterChunks.push({
@@ -116,5 +123,5 @@ const convertKeyPathsToSdkPromises = (ssmClient: SSMType, keyPaths: string[]): (
       WithDecryption: false,
     });
   }
-  return sdkParameterChunks.map((sdkParameters) => () => ssmClient.getParameters(sdkParameters).promise());
+  return sdkParameterChunks.map((sdkParameters) => () => ssmClient.send(new GetParametersCommand(sdkParameters)));
 };

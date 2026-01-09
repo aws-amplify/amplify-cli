@@ -1,6 +1,5 @@
-// aws-sdk, @aws-amplify/amplify-cli-core, amplify-prompts are in package dependencies
-import aws from 'aws-sdk'; // eslint-disable-line import/no-extraneous-dependencies
-import { Form } from 'aws-sdk/clients/amplifyuibuilder'; // eslint-disable-line import/no-extraneous-dependencies
+import { ExportFormsCommand, GetMetadataCommand } from '@aws-sdk/client-amplifyuibuilder';
+import { Form } from '@aws-sdk/client-amplifyuibuilder';
 import { printer } from '@aws-amplify/amplify-prompts'; // eslint-disable-line import/no-extraneous-dependencies
 import * as utils from '../commands/utils';
 import { prePushHandler } from '../utils/prePushHandler';
@@ -16,7 +15,15 @@ jest.mock('@aws-amplify/amplify-category-api', () => ({
   isDataStoreEnabled: jest.fn(),
 }));
 
-const awsMock = aws as any;
+const mockSend = jest.fn();
+
+jest.mock('@aws-sdk/client-amplifyuibuilder', () => ({
+  ...jest.requireActual('@aws-sdk/client-amplifyuibuilder'),
+  AmplifyUIBuilderClient: jest.fn().mockImplementation(() => ({
+    send: mockSend,
+  })),
+}));
+
 const utilsMock = utils as any;
 const isDataStoreEnabledMocked = jest.mocked(isDataStoreEnabled);
 
@@ -24,10 +31,10 @@ utilsMock.shouldRenderComponents = jest.fn().mockImplementation(() => true);
 
 describe('handlePrePush', () => {
   let context: any;
-  let mockedExport: jest.Mock<any, any>;
   let exportedForms: Form[];
 
   beforeEach(() => {
+    mockSend.mockReset();
     isDataStoreEnabledMocked.mockResolvedValue(true);
     context = {
       amplify: {
@@ -74,16 +81,12 @@ describe('handlePrePush', () => {
       },
     ];
 
-    mockedExport = jest.fn(() => ({
-      entities: exportedForms,
-    }));
-
-    awsMock.AmplifyUIBuilder = jest.fn(() => ({
-      exportForms: jest.fn(() => ({
-        promise: () => mockedExport(),
-      })),
-      getMetadata: jest.fn(() => ({
-        promise: jest.fn(() => ({
+    mockSend.mockImplementation((command) => {
+      if (command instanceof ExportFormsCommand) {
+        return Promise.resolve({ entities: exportedForms });
+      }
+      if (command instanceof GetMetadataCommand) {
+        return Promise.resolve({
           features: {
             autoGenerateForms: 'true',
             autoGenerateViews: 'true',
@@ -92,9 +95,10 @@ describe('handlePrePush', () => {
               isNonModelSupported: 'false',
             },
           },
-        })),
-      })),
-    }));
+        });
+      }
+      return Promise.resolve({});
+    });
   });
 
   it('runs handlePrePush', async () => {

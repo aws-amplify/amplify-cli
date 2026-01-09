@@ -326,7 +326,8 @@ const getRequiredParamsForHeadlessInit = (projectType: any, previousValues: any)
   const requiredParams: string[] = [];
 
   if (previousValues.thirdPartyAuth) {
-    if (previousValues.authProviders.includes('accounts.google.com')) {
+    const authProviders = previousValues.authProviders ?? [];
+    if (authProviders.includes('accounts.google.com')) {
       requiredParams.push('googleClientId');
       if (projectType === 'ios') {
         requiredParams.push('googleIos');
@@ -335,14 +336,14 @@ const getRequiredParamsForHeadlessInit = (projectType: any, previousValues: any)
         requiredParams.push('googleAndroid');
       }
     }
-    if (previousValues.authProviders.includes('graph.facebook.com')) {
+    if (authProviders.includes('graph.facebook.com')) {
       requiredParams.push('facebookAppId');
     }
-    if (previousValues.authProviders.includes('www.amazon.com')) {
+    if (authProviders.includes('www.amazon.com')) {
       requiredParams.push('amazonAppId');
     }
     // eslint-disable-next-line spellcheck/spell-checker
-    if (previousValues.authProviders.includes('appleid.apple.com')) {
+    if (authProviders.includes('appleid.apple.com')) {
       requiredParams.push('appleAppId');
     }
   }

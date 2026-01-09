@@ -1,18 +1,17 @@
 import { $TSContext, pathManager, stateManager, AmplifyCategories, spinner, AmplifyFault } from '@aws-amplify/amplify-cli-core';
-import type { S3 } from 'aws-sdk';
+import { S3Client, PutObjectCommand, PutObjectCommandInput, PutObjectCommandOutput } from '@aws-sdk/client-s3';
 import { createReadStream, readdirSync, existsSync } from 'fs-extra';
 import mime from 'mime-types';
 import * as path from 'path';
 import { getAuthResourceName } from '../../../utils/getAuthResourceName';
-import s3 from 'aws-sdk/clients/s3';
 
 const providerName = 'awscloudformation';
 
-const getS3Client = async (context: $TSContext, action: string): Promise<S3> => {
+const getS3Client = async (context: $TSContext, action: string): Promise<S3Client> => {
   const providerPlugins = context.amplify.getProviderPlugins(context);
   const provider = await import(providerPlugins[providerName]);
   const config = await provider.getConfiguredAWSClientConfig(context, AmplifyCategories.AUTH, action);
-  return new s3(config);
+  return new S3Client(config);
 };
 
 /**
@@ -36,7 +35,7 @@ export const uploadFiles = async (context: $TSContext): Promise<void> => {
       return;
     }
     const fileList = readdirSync(assetPath);
-    const uploadFileTasks: (() => Promise<S3.ManagedUpload.SendData>)[] = [];
+    const uploadFileTasks: (() => Promise<PutObjectCommandOutput>)[] = [];
     fileList.forEach((file) => {
       uploadFileTasks.push(async () => uploadFile(s3Client, bucketName, path.join(assetPath, file), file));
     });
@@ -54,10 +53,15 @@ export const uploadFiles = async (context: $TSContext): Promise<void> => {
   }
 };
 
-const uploadFile = async (s3Client: S3, hostingBucketName: string, filePath: string, file: string): Promise<S3.ManagedUpload.SendData> => {
+const uploadFile = async (
+  s3Client: S3Client,
+  hostingBucketName: string,
+  filePath: string,
+  file: string,
+): Promise<PutObjectCommandOutput> => {
   const fileStream = createReadStream(filePath);
   const contentType = mime.lookup(filePath);
-  const uploadParams = {
+  const uploadParams: PutObjectCommandInput = {
     Bucket: hostingBucketName,
     Key: file,
     Body: fileStream,
@@ -65,5 +69,6 @@ const uploadFile = async (s3Client: S3, hostingBucketName: string, filePath: str
     ACL: 'public-read',
   };
 
-  return s3Client.upload(uploadParams).promise();
+  const command = new PutObjectCommand(uploadParams);
+  return await s3Client.send(command);
 };

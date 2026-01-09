@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-category-hosting",
-  "version": "3.5.42",
+  "version": "3.5.44",
   "description": "amplify-cli hosting plugin",
   "repository": {
     "type": "git",
@@ -21,9 +21,11 @@
     "test": "jest --logHeapUsage --coverage"
   },
   "dependencies": {
-    "@aws-amplify/amplify-cli-core": "4.4.2",
+    "@aws-amplify/amplify-cli-core": "4.4.4",
     "@aws-amplify/amplify-prompts": "2.8.7",
-    "aws-sdk": "^2.1692.0",
+    "@aws-sdk/client-cloudfront": "^3.919.0",
+    "@aws-sdk/client-s3": "^3.919.0",
+    "@aws-sdk/lib-storage": "^3.919.0",
     "chalk": "^4.1.1",
     "fs-extra": "^8.1.0",
     "mime-types": "^2.1.26",

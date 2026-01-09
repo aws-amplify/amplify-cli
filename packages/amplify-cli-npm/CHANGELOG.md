@@ -3,6 +3,89 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [14.2.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@14.2.2...@aws-amplify/cli@14.2.3) (2025-11-20)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [14.2.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@14.2.1...@aws-amplify/cli@14.2.2) (2025-11-03)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [14.2.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@14.2.0...@aws-amplify/cli@14.2.1) (2025-10-31)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+# [14.2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@14.1.2...@aws-amplify/cli@14.2.0) (2025-10-22)
+
+
+### Features
+
+* bump version ([#14291](https://github.com/aws-amplify/amplify-cli/issues/14291)) ([a1438c5](https://github.com/aws-amplify/amplify-cli/commit/a1438c586b30f266a7ccca45ef71c23eae762bb8))
+
+
+### Reverts
+
+* Revert "refactor: amplify-category-notifications aws sdk v3 migration (#14271)" (#14285) ([510560d](https://github.com/aws-amplify/amplify-cli/commit/510560decb0735a0e8633aadfa6c23fae376dfe1)), closes [#14271](https://github.com/aws-amplify/amplify-cli/issues/14271) [#14285](https://github.com/aws-amplify/amplify-cli/issues/14285)
+
+
+
+
+
+## [14.1.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@14.1.1...@aws-amplify/cli@14.1.2) (2025-10-16)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [14.1.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@14.1.0...@aws-amplify/cli@14.1.1) (2025-10-10)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+# [14.1.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@14.0.2...@aws-amplify/cli@14.1.0) (2025-10-08)
+
+
+### Features
+
+* version bump ([#14273](https://github.com/aws-amplify/amplify-cli/issues/14273)) ([58861f8](https://github.com/aws-amplify/amplify-cli/commit/58861f883391d6eb12b1e22d7c085912d0825f70))
+
+
+
+
+
+## [14.0.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@14.0.1...@aws-amplify/cli@14.0.2) (2025-10-01)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [14.0.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@14.0.0...@aws-amplify/cli@14.0.1) (2025-09-17)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
 # [14.0.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@13.0.1...@aws-amplify/cli@14.0.0) (2025-07-01)
 
 

@@ -1,4 +1,4 @@
-import { CloudFront } from 'aws-sdk';
+import { CloudFrontClient, GetDistributionCommand } from '@aws-sdk/client-cloudfront';
 import {
   amplifyPublishWithoutUpdate,
   createReactTestProject,
@@ -77,11 +77,11 @@ describe('amplify add hosting', () => {
 });
 
 async function getCloudFrontDistribution(cloudFrontDistributionID: string) {
-  const cloudFrontClient = new CloudFront();
-  const getDistributionResult = await cloudFrontClient
-    .getDistribution({
+  const cloudFrontClient = new CloudFrontClient();
+  const getDistributionResult = await cloudFrontClient.send(
+    new GetDistributionCommand({
       Id: cloudFrontDistributionID,
-    })
-    .promise();
+    }),
+  );
   return getDistributionResult.Distribution;
 }

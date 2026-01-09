@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-python-function-template-provider",
-  "version": "1.4.7",
+  "version": "1.4.8",
   "description": "Python templates supplied by the Amplify Team",
   "repository": {
     "type": "git",
@@ -29,7 +29,7 @@
   },
   "devDependencies": {
     "@types/fs-extra": "^8.0.1",
-    "@types/node": "^12.12.6"
+    "@types/node": "^20.9.0"
   },
   "berry": {
     "plugins": [

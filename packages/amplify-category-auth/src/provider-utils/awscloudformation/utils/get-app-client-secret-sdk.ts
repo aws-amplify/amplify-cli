@@ -1,5 +1,5 @@
 import { $TSContext, AmplifyFault } from '@aws-amplify/amplify-cli-core';
-import { CognitoIdentityServiceProvider } from 'aws-sdk';
+import { CognitoIdentityProviderClient, DescribeUserPoolClientCommand } from '@aws-sdk/client-cognito-identity-provider';
 
 export const getAppClientSecret = async (context: $TSContext, userpoolId: string, clientId: string): Promise<string | undefined> => {
   try {
@@ -8,7 +8,8 @@ export const getAppClientSecret = async (context: $TSContext, userpoolId: string
       ClientId: clientId,
       UserPoolId: userpoolId,
     };
-    const result = await identity.describeUserPoolClient(params).promise();
+    const command = new DescribeUserPoolClientCommand(params);
+    const result = await identity.send(command);
     return result.UserPoolClient?.ClientSecret;
   } catch (error) {
     throw new AmplifyFault(
@@ -21,8 +22,8 @@ export const getAppClientSecret = async (context: $TSContext, userpoolId: string
   }
 };
 
-const getCognitoIdentityProviderClient = async (context: $TSContext): Promise<CognitoIdentityServiceProvider> => {
-  const { client } = await context.amplify.invokePluginMethod<{ client: CognitoIdentityServiceProvider }>(
+const getCognitoIdentityProviderClient = async (context: $TSContext): Promise<CognitoIdentityProviderClient> => {
+  const { client } = await context.amplify.invokePluginMethod<{ client: CognitoIdentityProviderClient }>(
     context,
     'awscloudformation',
     undefined,

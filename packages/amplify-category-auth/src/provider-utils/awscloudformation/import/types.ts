@@ -4,8 +4,8 @@ import {
   IdentityProviderType,
   UserPoolClientType,
   UserPoolType,
-} from 'aws-sdk/clients/cognitoidentityserviceprovider';
-import { CognitoIdentityProvider, IdentityPool } from 'aws-sdk/clients/cognitoidentity';
+} from '@aws-sdk/client-cognito-identity-provider';
+import { CognitoIdentityProvider, IdentityPool } from '@aws-sdk/client-cognito-identity';
 import { ICognitoUserPoolService, IIdentityPoolService } from '@aws-amplify/amplify-util-import';
 
 export type AuthSelections = 'userPoolOnly' | 'identityPoolAndUserPool';

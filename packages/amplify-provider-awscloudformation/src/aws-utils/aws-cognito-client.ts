@@ -1,16 +1,16 @@
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
-import aws from './aws.js';
-import * as AWS from 'aws-sdk';
-import { AwsSecrets, loadConfiguration } from '../configuration-manager';
+import { CognitoIdentityProviderClient, CognitoIdentityProviderClientConfig } from '@aws-sdk/client-cognito-identity-provider';
+import { NodeHttpHandler } from '@smithy/node-http-handler';
+import { loadConfiguration } from '../configuration-manager';
 import { proxyAgent } from './aws-globals';
 
 export class CognitoUserPoolClientProvider {
   private static instance: CognitoUserPoolClientProvider;
-  readonly client: AWS.CognitoIdentityServiceProvider;
+  readonly client: CognitoIdentityProviderClient;
 
   static async getInstance(context: $TSContext, options = {}): Promise<CognitoUserPoolClientProvider> {
     if (!CognitoUserPoolClientProvider.instance) {
-      let cred: AwsSecrets = {};
+      let cred = {};
       try {
         cred = await loadConfiguration(context);
       } catch (e) {
@@ -22,13 +22,16 @@ export class CognitoUserPoolClientProvider {
     return CognitoUserPoolClientProvider.instance;
   }
 
-  constructor(creds: AwsSecrets, options = {}) {
-    this.client = new aws.CognitoIdentityServiceProvider({
+  constructor(creds, options = {}) {
+    const clientConfig: CognitoIdentityProviderClientConfig = {
       ...creds,
       ...options,
-      httpOptions: {
-        agent: proxyAgent(),
-      },
-    });
+      requestHandler: new NodeHttpHandler({
+        httpAgent: proxyAgent(),
+        httpsAgent: proxyAgent(),
+      }),
+    };
+
+    this.client = new CognitoIdentityProviderClient(clientConfig);
   }
 }

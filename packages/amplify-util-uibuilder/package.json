@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-util-uibuilder",
-  "version": "1.14.20",
+  "version": "1.14.24",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
@@ -14,13 +14,14 @@
     "access": "public"
   },
   "dependencies": {
-    "@aws-amplify/amplify-category-api": "^5.15.0",
-    "@aws-amplify/amplify-cli-core": "4.4.2",
+    "@aws-amplify/amplify-category-api": "^5.15.3",
+    "@aws-amplify/amplify-cli-core": "4.4.4",
     "@aws-amplify/amplify-prompts": "2.8.7",
     "@aws-amplify/codegen-ui": "2.14.2",
     "@aws-amplify/codegen-ui-react": "2.14.2",
+    "@aws-sdk/client-amplifybackend": "^3.919.0",
+    "@aws-sdk/client-amplifyuibuilder": "^3.919.0",
     "amplify-codegen": "^4.10.3",
-    "aws-sdk": "^2.1464.0",
     "fs-extra": "^8.1.0",
     "node-fetch": "^2.6.7",
     "ora": "^4.0.3",

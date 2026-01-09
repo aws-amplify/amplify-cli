@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.54](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-runtime-provider@2.4.53...amplify-python-function-runtime-provider@2.4.54) (2025-10-31)
+
+
+### Reverts
+
+* Revert "refactor: amplify-category-notifications aws sdk v3 migration (#14271)" (#14285) ([510560d](https://github.com/aws-amplify/amplify-cli/commit/510560decb0735a0e8633aadfa6c23fae376dfe1)), closes [#14271](https://github.com/aws-amplify/amplify-cli/issues/14271) [#14285](https://github.com/aws-amplify/amplify-cli/issues/14285)
+
+
+
+
+
+## [2.4.53](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-runtime-provider@2.4.52...amplify-python-function-runtime-provider@2.4.53) (2025-10-08)
+
+
+### Bug Fixes
+
+* e2e tests for auth, geo, and python lambda functions ([#14264](https://github.com/aws-amplify/amplify-cli/issues/14264)) ([da6de92](https://github.com/aws-amplify/amplify-cli/commit/da6de92bf764db9f9c2797fbd1fd1d0f5b9c578a))
+
+
+
+
+
 ## [2.4.52](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-runtime-provider@2.4.51...amplify-python-function-runtime-provider@2.4.52) (2025-07-01)
 
 

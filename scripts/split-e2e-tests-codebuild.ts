@@ -129,6 +129,20 @@ const RUN_SOLO = [
   'src/__tests__/schema-auth-11-b.test.ts',
   'src/__tests__/predictions.test.ts',
 ];
+const RUN_DUO = [
+  'src/__tests__/api_6c.test.ts',
+  'src/__tests__/auth_9.test.ts',
+  'src/__tests__/function_2a.test.ts',
+  'src/__tests__/geo-add-d.test.ts',
+  'src/__tests__/migration/api.key.migration5.test.ts',
+  'src/__tests__/export-pull-a.test.ts',
+  'src/__tests__/export-pull-c.test.ts',
+  'src/__tests__/hosting.test.ts',
+  'src/__tests__/notifications-analytics-compatibility-in-app-2.test.ts',
+  'src/__tests__/schema-iterative-update-4.test.ts',
+  'src/__tests__/schema-searchable.test.ts',
+  'src/__tests__/studio-modelgen.test.ts',
+];
 const DISABLE_COVERAGE = [
   'src/__tests__/datastore-modelgen.test.ts',
   'src/__tests__/amplify-app.test.ts',
@@ -406,7 +420,7 @@ const splitTestsV3 = (
     const soloJobs = [];
     const osJobs = [createRandomJob(os)];
     for (let test of testSuites) {
-      const currentJob = osJobs[osJobs.length - 1];
+      let currentJob = osJobs[osJobs.length - 1];
 
       // if the current test is excluded from this OS, skip it
       if (TEST_EXCLUSIONS[os].find((excluded) => test === excluded)) {
@@ -432,6 +446,17 @@ const splitTestsV3 = (
         continue;
       }
 
+      let maxWorkers = os === 'w' ? MAX_WORKERS_WINDOWS : MAX_WORKERS;
+      if (os === 'l' && (RUN_DUO.find((duo) => test === duo) || currentJob.tests.some((duo) => RUN_DUO.includes(duo)))) {
+        maxWorkers = 2;
+        // if we had a test that requires it is in a job with only 2 tests and a job already has 2 tests, set up a new job
+        // this may mean there will occasionally be jobs that can run with 3 tests will be running with 2
+        if (currentJob.tests.length === maxWorkers) {
+          osJobs.push(createRandomJob(os));
+          currentJob = osJobs[osJobs.length - 1];
+        }
+      }
+
       // add the test
       currentJob.tests.push(test);
       if (FORCE_REGION) {
@@ -441,7 +466,6 @@ const splitTestsV3 = (
         currentJob.useParentAccount = true;
       }
 
-      const maxWorkers = os === 'w' ? MAX_WORKERS_WINDOWS : MAX_WORKERS;
       // create a new job once the current job is full;
       if (currentJob.tests.length >= maxWorkers) {
         osJobs.push(createRandomJob(os));

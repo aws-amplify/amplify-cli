@@ -1,10 +1,17 @@
-import aws from 'aws-sdk'; // eslint-disable-line import/no-extraneous-dependencies
+import { ExportComponentsCommand, CreateComponentCommand, GetMetadataCommand } from '@aws-sdk/client-amplifyuibuilder';
 import * as extractArgsDependency from '../commands/utils/extractArgs';
 import { run } from '../commands/cloneComponentsFromEnv';
 import { isDataStoreEnabled } from '@aws-amplify/amplify-category-api';
 
 const extractArgsDependencyMock = extractArgsDependency as any;
-const awsMock = aws as any;
+const mockSend = jest.fn();
+
+jest.mock('@aws-sdk/client-amplifyuibuilder', () => ({
+  ...jest.requireActual('@aws-sdk/client-amplifyuibuilder'),
+  AmplifyUIBuilderClient: jest.fn().mockImplementation(() => ({
+    send: mockSend,
+  })),
+}));
 
 jest.mock('../commands/utils/featureFlags', () => ({
   getTransformerVersion: jest.fn().mockReturnValue(2),
@@ -18,21 +25,10 @@ jest.mock('@aws-amplify/amplify-cli-core');
 
 const isDataStoreEnabledMocked = jest.mocked(isDataStoreEnabled);
 
-const mockedComponentExport = jest.fn((envName: string) => {
-  if (envName === 'newEnvName') {
-    return {
-      entities: [],
-    };
-  }
-  return {
-    entities: [{}],
-  };
-});
-const mockedComponentCreate = jest.fn().mockReturnValue({ entity: {} });
-
 describe('can clone components to new environment', () => {
   let context: any;
   beforeEach(() => {
+    mockSend.mockReset();
     isDataStoreEnabledMocked.mockResolvedValue(true);
     context = {
       amplify: {
@@ -51,13 +47,19 @@ describe('can clone components to new environment', () => {
       appId: 'appId',
       environmentName: 'environmentName',
     });
-    awsMock.AmplifyUIBuilder = jest.fn().mockReturnValue({
-      exportComponents: jest.fn(({ environmentName }) => ({
-        promise: () => mockedComponentExport(environmentName),
-      })),
-      createComponent: jest.fn().mockReturnValue({ promise: () => mockedComponentCreate() }),
-      getMetadata: jest.fn().mockReturnValue({
-        promise: jest.fn().mockReturnValue({
+
+    mockSend.mockImplementation((command) => {
+      if (command instanceof ExportComponentsCommand) {
+        if (command.input.environmentName === 'newEnvName') {
+          return Promise.resolve({ entities: [] });
+        }
+        return Promise.resolve({ entities: [{}] });
+      }
+      if (command instanceof CreateComponentCommand) {
+        return Promise.resolve({ entity: {} });
+      }
+      if (command instanceof GetMetadataCommand) {
+        return Promise.resolve({
           features: {
             autoGenerateForms: 'true',
             autoGenerateViews: 'true',
@@ -66,14 +68,16 @@ describe('can clone components to new environment', () => {
               isNonModelSupported: 'false',
             },
           },
-        }),
-      }),
+        });
+      }
+      return Promise.resolve({});
     });
   });
 
   it('clones components to a new env', async () => {
     await run(context);
-    expect(mockedComponentExport).toBeCalledTimes(2);
-    expect(mockedComponentCreate).toBeCalledTimes(1);
+    expect(mockSend).toHaveBeenCalledTimes(4);
+    expect(mockSend).toHaveBeenCalledWith(expect.any(ExportComponentsCommand));
+    expect(mockSend).toHaveBeenCalledWith(expect.any(CreateComponentCommand));
   });
 });

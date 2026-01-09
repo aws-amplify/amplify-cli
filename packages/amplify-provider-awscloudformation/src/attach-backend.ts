@@ -1,4 +1,3 @@
-import S3 from 'aws-sdk/clients/s3';
 import fs from 'fs-extra';
 import path from 'path';
 import { globSync } from 'glob';
@@ -13,6 +12,9 @@ import { isAmplifyAdminApp } from './utils/admin-helpers';
 import { resolveAppId } from './utils/resolve-appId';
 import { adminLoginFlow } from './admin-login';
 import { fileLogger } from './utils/aws-logger';
+import { GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { GetAppCommand, ListAppsCommand, GetBackendEnvironmentCommand, ListBackendEnvironmentsCommand } from '@aws-sdk/client-amplify';
+import { streamToBuffer } from './zip-util';
 
 const logger = fileLogger('attach-backend');
 
@@ -118,7 +120,7 @@ async function ensureAmplifyMeta(context, amplifyApp, awsConfigInfo) {
 
 async function storeArtifactsForAmplifyService(context, awsConfigInfo, deploymentBucketName) {
   const projectPath = process.cwd();
-  const s3Client = new S3(awsConfigInfo);
+  const s3Client = new S3Client(awsConfigInfo);
   const amplifyMetaFilePath = context.amplify.pathManager.getCurrentAmplifyMetaFilePath(projectPath);
   const backendConfigFilePath = context.amplify.pathManager.getCurrentBackendConfigFilePath(projectPath);
   await uploadFile(s3Client, deploymentBucketName, amplifyMetaFilePath);
@@ -137,7 +139,7 @@ async function uploadFile(s3Client, bucketName, filePath) {
     Body: body,
   };
   logger('uploadFile.s3.uploadFile', [{ Key: key, Bucket: bucketName }])();
-  await s3Client.putObject(s3Params).promise();
+  await s3Client.send(new PutObjectCommand(s3Params));
 }
 
 async function getAmplifyApp(context, amplifyClient) {
@@ -151,11 +153,11 @@ async function getAmplifyApp(context, amplifyClient) {
       },
     ])();
     try {
-      const getAppResult = await amplifyClient
-        .getApp({
+      const getAppResult = await amplifyClient.send(
+        new GetAppCommand({
           appId: inputAmplifyAppId,
-        })
-        .promise();
+        }),
+      );
       context.print.info(`Amplify AppID found: ${inputAmplifyAppId}. Amplify App name is: ${getAppResult.app.name}`);
       return getAppResult.app;
     } catch (e) {
@@ -185,12 +187,12 @@ async function getAmplifyApp(context, amplifyClient) {
       },
     ])();
 
-    listAppsResponse = await amplifyClient
-      .listApps({
+    listAppsResponse = await amplifyClient.send(
+      new ListAppsCommand({
         nextToken: listAppsResponse.nextToken,
         maxResults: 25,
-      })
-      .promise();
+      }),
+    );
     apps = apps.concat(listAppsResponse.apps);
   } while (listAppsResponse.nextToken);
 
@@ -233,12 +235,12 @@ async function getBackendEnv(context, amplifyClient, amplifyApp) {
       },
     ])();
     try {
-      const getBackendEnvironmentResult = await amplifyClient
-        .getBackendEnvironment({
+      const getBackendEnvironmentResult = await amplifyClient.send(
+        new GetBackendEnvironmentCommand({
           appId: amplifyApp.appId,
           environmentName: inputEnvName,
-        })
-        .promise();
+        }),
+      );
       context.print.info(`Backend environment ${inputEnvName} found in Amplify Console app: ${amplifyApp.name}`);
       return getBackendEnvironmentResult.backendEnvironment;
     } catch (e) {
@@ -263,12 +265,12 @@ async function getBackendEnv(context, amplifyClient, amplifyApp) {
         nextToken: listEnvResponse.nextToken,
       },
     ])();
-    listEnvResponse = await amplifyClient
-      .listBackendEnvironments({
+    listEnvResponse = await amplifyClient.send(
+      new ListBackendEnvironmentsCommand({
         appId: amplifyApp.appId,
         nextToken: listEnvResponse.nextToken,
-      })
-      .promise();
+      }),
+    );
 
     backendEnvs = backendEnvs.concat(listEnvResponse.backendEnvironments);
   } while (listEnvResponse.nextToken);
@@ -313,7 +315,7 @@ async function downloadBackend(context, backendEnv, awsConfigInfo) {
   const backendDir = context.amplify.pathManager.getBackendDirPath(projectPath);
   const zipFileName = constants.S3BackendZipFileName;
 
-  const s3Client = new S3(awsConfigInfo);
+  const s3Client = new S3Client(awsConfigInfo);
   const deploymentBucketName = backendEnv.deploymentArtifacts;
 
   const params = {
@@ -325,7 +327,7 @@ async function downloadBackend(context, backendEnv, awsConfigInfo) {
   let zipObject = null;
   try {
     log();
-    zipObject = await s3Client.getObject(params).promise();
+    zipObject = await s3Client.send(new GetObjectCommand(params));
   } catch (err) {
     log(err);
     context.print.error(`Error downloading ${zipFileName} from deployment bucket: ${deploymentBucketName}, the error is: ${err.message}`);
@@ -334,7 +336,7 @@ async function downloadBackend(context, backendEnv, awsConfigInfo) {
     return;
   }
 
-  const buff = Buffer.from(zipObject.Body);
+  const buff = await streamToBuffer(zipObject.Body);
 
   fs.ensureDirSync(tempDirPath);
 
