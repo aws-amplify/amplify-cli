@@ -958,26 +958,24 @@ export function renderAuthNode(
     const accessRules: ts.Expression[] = [];
 
     Object.entries(functionAccess).forEach(([functionName, authAccess]) => {
-      const permissions = Object.entries(authAccess)
+      Object.entries(authAccess)
         .filter(([, enabled]) => enabled)
-        .map(([permission]) => factory.createStringLiteral(permission));
-
-      if (permissions.length > 0) {
-        accessRules.push(
-          factory.createCallExpression(
-            factory.createPropertyAccessExpression(
-              factory.createCallExpression(
-                factory.createPropertyAccessExpression(factory.createIdentifier('allow'), factory.createIdentifier('resource')),
-                undefined,
-                [factory.createIdentifier(functionName)],
+        .forEach(([permission]) => {
+          accessRules.push(
+            factory.createCallExpression(
+              factory.createPropertyAccessExpression(
+                factory.createCallExpression(
+                  factory.createPropertyAccessExpression(factory.createIdentifier('allow'), factory.createIdentifier('resource')),
+                  undefined,
+                  [factory.createIdentifier(functionName)],
+                ),
+                factory.createIdentifier('to'),
               ),
-              factory.createIdentifier('to'),
+              undefined,
+              [factory.createArrayLiteralExpression([factory.createStringLiteral(permission)])],
             ),
-            undefined,
-            [factory.createArrayLiteralExpression(permissions)],
-          ),
-        );
-      }
+          );
+        });
     });
 
     if (accessRules.length > 0) {
