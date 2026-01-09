@@ -2,7 +2,7 @@ import { getFunctionDefinition } from './index';
 import { FunctionConfiguration } from '@aws-sdk/client-lambda';
 
 describe('getFunctionDefinition', () => {
-  it('should detect function access to API from environment variables', () => {
+  it('should analyze CloudFormation for API permissions and clean environment variables', () => {
     const functionConfigurations: FunctionConfiguration[] = [
       {
         FunctionName: 'myFunction-dev-12345',
@@ -37,6 +37,11 @@ describe('getFunctionDefinition', () => {
     const result = getFunctionDefinition(functionConfigurations, functionSchedules, functionCategoryMap, meta);
 
     expect(result).toHaveLength(1);
-    expect(result[0].apiAccess).toEqual(['MYAPI']);
+    expect(result[0].apiPermissions).toBeDefined();
+    // Check that API environment variables were removed
+    expect(result[0].environment?.Variables?.API_MYAPI_GRAPHQLAPIENDPOINTOUTPUT).toBeUndefined();
+    expect(result[0].environment?.Variables?.API_MYAPI_GRAPHQLAPIKEYOUTPUT).toBeUndefined();
+    expect(result[0].environment?.Variables?.API_MYAPI_GRAPHQLAPIIDOUTPUT).toBeUndefined();
+    expect(result[0].environment?.Variables?.OTHER_ENV_VAR).toBe('some-value');
   });
 });

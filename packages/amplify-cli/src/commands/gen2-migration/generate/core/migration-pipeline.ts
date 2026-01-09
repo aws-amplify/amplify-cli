@@ -361,7 +361,7 @@ export const createGen2Renderer = ({
   // Process Lambda functions - create resource.ts and handler.ts files
   if (functions && functions.length) {
     const functionNamesAndCategory = new Map<string, string>();
-    const functionsWithApiAccess = new Map<string, { hasQuery: boolean; hasMutation: boolean }>();
+    const functionsWithApiAccess = new Map<string, { hasQuery: boolean; hasMutation: boolean; hasSubscription: boolean }>();
 
     for (const func of functions) {
       if (func.name) {
