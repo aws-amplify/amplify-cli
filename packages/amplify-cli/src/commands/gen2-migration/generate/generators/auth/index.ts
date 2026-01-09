@@ -987,8 +987,8 @@ export function renderAuthNode(
             undefined,
             [factory.createParameterDeclaration(undefined, undefined, factory.createIdentifier('allow'))],
             undefined,
-            factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
-            factory.createArrayLiteralExpression(accessRules, true), // true for multiline
+            undefined,
+            factory.createParenthesizedExpression(factory.createArrayLiteralExpression(accessRules, true)),
           ),
         ),
       );
