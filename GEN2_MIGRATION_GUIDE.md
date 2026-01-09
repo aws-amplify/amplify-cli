@@ -310,11 +310,8 @@ Following provides an overview of the supported (and unsupported) features for m
 
   - ✅ **Specify an email verification message**
 
-  - ➤ **Do you want to override the default password policy for this User Pool**
+  - ❌ **Do you want to override the default password policy for this User Pool**
 
-    - ❌ Yes
-    - ✅ No
-  
   - ➤ **What attributes are required for signing up**
 
     - ❌ Birthdate (This attribute is not supported by Login With Amazon, Sign in with Apple.)
@@ -338,15 +335,9 @@ Following provides an overview of the supported (and unsupported) features for m
     - ❌ Custom Auth Challenge Flow (basic scaffolding - not for production)
     - ❌ Override ID Token Claims
   
-  - ➤ **Do you want to use an OAuth flow**
+  - ❌ **Do you want to use an OAuth flow**
 
-    - ❌ Yes
-    - ✅ No
-
-  - ➤ **Do you want to configure Lambda Triggers for Cognito**
-
-    - ❌ Yes
-    - ✅ No
+  - ❌ **Do you want to configure Lambda Triggers for Cognito**
 
 ## Api
 
@@ -409,6 +400,11 @@ Following provides an overview of the supported (and unsupported) features for m
 
 - ➤ NoSQL Database
 
+  - ✅ Do you want to add a sort key to your table
+  - ✅ Do you want to add global secondary indexes to your table
+  - ✅ Do you want to add a sort key to your global secondary index
+  - ❌ Do you want to add a Lambda Trigger for your Table
+
 ## Function
 
 ### `amplify add function`
@@ -428,13 +424,23 @@ Following provides an overview of the supported (and unsupported) features for m
     - ✅ Hello world function
     - ❌ CRUD function for Amazon DynamoDB table
     - ❌ Serverless express function
-    - ❌ Lambda Trigger
+    - ➤ Lambda Trigger
+
+      - ➤ **Amazon DynamoDB Stream**
+
+        - ➤ **Choose a DynamoDB event source option**
+
+          - ⚠️ Use API category graphql @model backed DynamoDB table(s) in the current Amplify project
+          - ❌ Use storage category DynamoDB table configured in the current Amplify project
+          - ❌ Provide the ARN of DynamoDB stream directly
+
+      - ❌ **Amazon Kinesis Stream**
 
   - ➤ **Advanced Settings**
 
     - ➤ **Select the categories you want this function to have access to**
 
-      - ➤ api
+      - ➤ **api**
 
         - ➤ **Select the operations you want to permit**
 
@@ -446,9 +452,9 @@ Following provides an overview of the supported (and unsupported) features for m
 
       - ❌ function
 
-      - ➤ storage
+      - ➤ **storage**
 
-        - ➤ dynamo
+        - ➤ **dynamo**
 
           - ➤ **Select the operations you want to permit**
 
