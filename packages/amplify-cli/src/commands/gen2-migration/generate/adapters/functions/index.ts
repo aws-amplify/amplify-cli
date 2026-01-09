@@ -53,17 +53,22 @@ export const getFunctionDefinition = (
     funcDef.timeoutSeconds = configuration?.Timeout;
     funcDef.memoryMB = configuration?.MemorySize;
 
-    // we remove these because their value points to the Gen1 appsync API.
-    // the correct value needs to come from `backend.data` attributes, which we don't have access to here
-    // since `backend` is configured in a different file. we can't import that file because it would create
-    // a circular import. instead, we need to generate some code in `backend.ts` (TODO)
+    // Detect function access to API by checking for API environment variables
+    const apiAccess: string[] = [];
     for (const envSuffix of ['GRAPHQLAPIKEYOUTPUT', 'GRAPHQLAPIENDPOINTOUTPUT', 'GRAPHQLAPIIDOUTPUT']) {
       for (const variable of Object.keys(configuration.Environment?.Variables ?? {})) {
         if (variable.startsWith('API_') && variable.endsWith(envSuffix)) {
+          // Extract API name from variable like API_MYAPI_GRAPHQLAPIENDPOINTOUTPUT
+          const apiName = variable.replace(/^API_/, '').replace(new RegExp(`_${envSuffix}$`), '');
+          if (!apiAccess.includes(apiName)) {
+            apiAccess.push(apiName);
+          }
+          // Remove the Gen1 API environment variable as it will be replaced in Gen2
           delete configuration.Environment?.Variables[variable];
         }
       }
     }
+    funcDef.apiAccess = apiAccess.length > 0 ? apiAccess : undefined;
 
     funcDef.environment = configuration?.Environment;
     funcDef.runtime = configuration?.Runtime;
