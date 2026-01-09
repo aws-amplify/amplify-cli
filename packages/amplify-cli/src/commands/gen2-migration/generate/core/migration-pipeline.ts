@@ -416,7 +416,11 @@ export const createGen2Renderer = ({
     renderers.push(
       new TypescriptNodeArrayRenderer(
         async () => renderAuthNode(auth, functionAccess, functionCategories),
-        (content) => fileWriter(content, path.join(outputDir, 'amplify', 'auth', 'resource.ts')),
+        async (content) => {
+          // Get proper (allow) format
+          const cleanedContent = content.replace(/(allow, _unused)/g, '(allow)');
+          return fileWriter(cleanedContent, path.join(outputDir, 'amplify', 'auth', 'resource.ts'));
+        },
       ),
     );
     // Configure auth parameters for backend synthesis

@@ -985,10 +985,13 @@ export function renderAuthNode(
           factory.createArrowFunction(
             undefined,
             undefined,
-            [factory.createParameterDeclaration(undefined, undefined, factory.createIdentifier('allow'))],
+            [
+              factory.createParameterDeclaration(undefined, undefined, factory.createIdentifier('allow')),
+              factory.createParameterDeclaration(undefined, undefined, factory.createIdentifier('_unused')),
+            ],
             undefined,
             undefined,
-            factory.createParenthesizedExpression(factory.createArrayLiteralExpression(accessRules, true)),
+            factory.createArrayLiteralExpression(accessRules, true),
           ),
         ),
       );
