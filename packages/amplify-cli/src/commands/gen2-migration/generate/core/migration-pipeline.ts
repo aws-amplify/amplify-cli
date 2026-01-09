@@ -60,6 +60,7 @@ import {
 import { DataDefinition, DataTableMapping, generateDataSource } from '../generators/data/index';
 
 import { FunctionDefinition, renderFunctions } from '../generators/functions/index';
+import { collectFunctionAuthAccess } from '../codegen-head/function_auth_collector';
 import assert from 'assert';
 import { CdkFromCfn, KinesisAnalyticsDefinition, AnalyticsCodegenResult } from '../unsupported/cdk-from-cfn';
 import { renderAnalytics, AnalyticsRenderParameters } from '../generators/analytics/index';
@@ -398,10 +399,23 @@ export const createGen2Renderer = ({
 
   // Process authentication configuration - create amplify/auth/resource.ts
   if (auth) {
+    // Collect function auth access permissions from CloudFormation templates
+    const functionAccess = functions ? collectFunctionAuthAccess(functions) : undefined;
+
+    // Create function category map for correct import paths
+    const functionCategories = new Map<string, string>();
+    if (functions) {
+      functions.forEach((func) => {
+        if (func.resourceName && func.category) {
+          functionCategories.set(func.resourceName, func.category);
+        }
+      });
+    }
+
     renderers.push(new EnsureDirectory(path.join(outputDir, 'amplify', 'auth')));
     renderers.push(
       new TypescriptNodeArrayRenderer(
-        async () => renderAuthNode(auth),
+        async () => renderAuthNode(auth, functionAccess, functionCategories),
         (content) => fileWriter(content, path.join(outputDir, 'amplify', 'auth', 'resource.ts')),
       ),
     );

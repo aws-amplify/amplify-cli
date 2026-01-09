@@ -1,45 +1,90 @@
 import { AuthAccess } from '../generators/functions/index';
 
 const AUTH_ACTION_MAPPING: Record<string, keyof AuthAccess> = {
-  // manageUsers actions
+  // Individual permissions (most specific mapping)
+  'cognito-idp:AdminAddUserToGroup': 'addUserToGroup',
+  'cognito-idp:AdminCreateUser': 'createUser',
+  'cognito-idp:AdminDeleteUser': 'deleteUser',
+  'cognito-idp:AdminDeleteUserAttributes': 'deleteUserAttributes',
+  'cognito-idp:AdminDisableUser': 'disableUser',
+  'cognito-idp:AdminEnableUser': 'enableUser',
+  'cognito-idp:AdminForgetDevice': 'forgetDevice',
+  'cognito-idp:AdminGetDevice': 'getDevice',
+  'cognito-idp:AdminGetUser': 'getUser',
+  'cognito-idp:AdminListDevices': 'listDevices',
+  'cognito-idp:AdminListGroupsForUser': 'listGroupsForUser',
+  'cognito-idp:AdminRemoveUserFromGroup': 'removeUserFromGroup',
+  'cognito-idp:AdminResetUserPassword': 'resetUserPassword',
+  'cognito-idp:AdminSetUserMFAPreference': 'setUserMfaPreference',
+  'cognito-idp:AdminSetUserPassword': 'setUserPassword',
+  'cognito-idp:AdminSetUserSettings': 'setUserSettings',
+  'cognito-idp:AdminUpdateDeviceStatus': 'updateDeviceStatus',
+  'cognito-idp:AdminUpdateUserAttributes': 'updateUserAttributes',
+  'cognito-idp:ListUsers': 'listUsers',
+  'cognito-idp:ListUsersInGroup': 'listUsersInGroup',
+
+  // Grouped permissions for actions not covered by individual permissions
   'cognito-idp:AdminConfirmSignUp': 'manageUsers',
-  'cognito-idp:AdminCreateUser': 'manageUsers',
-  'cognito-idp:AdminDeleteUser': 'manageUsers',
-  'cognito-idp:AdminDeleteUserAttributes': 'manageUsers',
-  'cognito-idp:AdminDisableUser': 'manageUsers',
-  'cognito-idp:AdminEnableUser': 'manageUsers',
-  'cognito-idp:AdminGetUser': 'manageUsers',
-  'cognito-idp:AdminListGroupsForUser': 'manageUsers',
   'cognito-idp:AdminRespondToAuthChallenge': 'manageUsers',
-  'cognito-idp:AdminSetUserMFAPreference': 'manageUsers',
-  'cognito-idp:AdminSetUserSettings': 'manageUsers',
-  'cognito-idp:AdminUpdateUserAttributes': 'manageUsers',
   'cognito-idp:AdminUserGlobalSignOut': 'manageUsers',
+  'cognito-idp:AdminInitiateAuth': 'manageUsers',
+  'cognito-idp:AdminUpdateAuthEventFeedback': 'manageUsers',
+  'cognito-idp:CreateUserImportJob': 'manageUsers',
+  'cognito-idp:StartUserImportJob': 'manageUsers',
+  'cognito-idp:StopUserImportJob': 'manageUsers',
+  'cognito-idp:AdminLinkProviderForUser': 'manageUsers',
+  'cognito-idp:AdminDisableProviderForUser': 'manageUsers',
+  'cognito-idp:AddCustomAttributes': 'manageUsers',
+  'cognito-idp:ConfirmSignUp': 'manageUsers',
+  'cognito-idp:SignUp': 'manageUsers',
+  'cognito-idp:GlobalSignOut': 'manageUsers',
+  'cognito-idp:ResendConfirmationCode': 'manageUsers',
+  'cognito-idp:InitiateAuth': 'manageUsers',
+  'cognito-idp:RespondToAuthChallenge': 'manageUsers',
 
-  // manageGroupMembership actions
-  'cognito-idp:AdminAddUserToGroup': 'manageGroupMembership',
-  'cognito-idp:AdminRemoveUserFromGroup': 'manageGroupMembership',
-
-  // manageGroups actions
+  // Group management
   'cognito-idp:GetGroup': 'manageGroups',
   'cognito-idp:ListGroups': 'manageGroups',
   'cognito-idp:CreateGroup': 'manageGroups',
   'cognito-idp:DeleteGroup': 'manageGroups',
   'cognito-idp:UpdateGroup': 'manageGroups',
 
-  // manageUserDevices actions
-  'cognito-idp:AdminForgetDevice': 'manageUserDevices',
-  'cognito-idp:AdminGetDevice': 'manageUserDevices',
-  'cognito-idp:AdminListDevices': 'manageUserDevices',
-  'cognito-idp:AdminUpdateDeviceStatus': 'manageUserDevices',
+  // Device management
+  'cognito-idp:ForgetDevice': 'forgetDevice',
+  'cognito-idp:ConfirmDevice': 'manageUserDevices',
 
-  // managePasswordRecovery actions
-  'cognito-idp:AdminResetUserPassword': 'managePasswordRecovery',
-  'cognito-idp:AdminSetUserPassword': 'managePasswordRecovery',
+  // Password recovery
+  'cognito-idp:ForgotPassword': 'managePasswordRecovery',
+  'cognito-idp:ConfirmForgotPassword': 'managePasswordRecovery',
+  'cognito-idp:ChangePassword': 'managePasswordRecovery',
 
-  // Individual actions
-  'cognito-idp:ListUsers': 'listUsers',
-  'cognito-idp:ListUsersInGroup': 'listUsersInGroup',
+  // User attributes
+  'cognito-idp:VerifyUserAttribute': 'updateUserAttributes',
+  'cognito-idp:UpdateUserAttributes': 'updateUserAttributes',
+  'cognito-idp:UpdateAuthEventFeedback': 'updateUserAttributes',
+
+  // MFA settings
+  'cognito-idp:SetUserMFAPreference': 'setUserMfaPreference',
+  'cognito-idp:AssociateSoftwareToken': 'setUserMfaPreference',
+  'cognito-idp:VerifySoftwareToken': 'setUserMfaPreference',
+
+  // User settings
+  'cognito-idp:SetUserSettings': 'setUserSettings',
+
+  // User Pool management (admin-level)
+  'cognito-idp:CreateUserPool': 'manageUsers',
+  'cognito-idp:UpdateUserPool': 'manageUsers',
+  'cognito-idp:CreateUserPoolClient': 'manageUsers',
+  'cognito-idp:UpdateUserPoolClient': 'manageUsers',
+  'cognito-idp:CreateUserPoolDomain': 'manageUsers',
+  'cognito-idp:UpdateUserPoolDomain': 'manageUsers',
+  'cognito-idp:CreateIdentityProvider': 'manageUsers',
+  'cognito-idp:UpdateIdentityProvider': 'manageUsers',
+  'cognito-idp:CreateResourceServer': 'manageUsers',
+  'cognito-idp:UpdateResourceServer': 'manageUsers',
+  'cognito-idp:SetUICustomization': 'manageUsers',
+  'cognito-idp:SetRiskConfiguration': 'manageUsers',
+  'cognito-idp:SetUserPoolMfaConfig': 'manageUsers',
 };
 
 export function parseAuthAccessFromTemplate(templateContent: string): AuthAccess {

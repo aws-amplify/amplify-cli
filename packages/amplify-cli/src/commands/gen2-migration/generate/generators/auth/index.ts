@@ -795,7 +795,11 @@ function createSecretErrorStatements(secretVariables: string[]): ts.Node[] {
   );
 }
 
-export function renderAuthNode(definition: AuthDefinition, functionAccess?: Record<string, AuthAccess>): ts.NodeArray<ts.Node> {
+export function renderAuthNode(
+  definition: AuthDefinition,
+  functionAccess?: Record<string, AuthAccess>,
+  functionCategories?: Map<string, string>,
+): ts.NodeArray<ts.Node> {
   // Track required imports from various packages
   //  Creates the data structure to track imports. Extracts reference auth config
   const namedImports: { [importedPackageName: string]: Set<string> } = { '@aws-amplify/backend': new Set() };
@@ -944,9 +948,11 @@ export function renderAuthNode(definition: AuthDefinition, functionAccess?: Reco
 
   // Add function access configuration if present
   if (functionAccess && Object.keys(functionAccess).length > 0) {
-    // Add function imports
+    // Add function imports based on their category
     Object.keys(functionAccess).forEach((functionName) => {
-      namedImports[`../functions/${functionName}/resource`] = new Set([functionName]);
+      // Get the function category from the provided map, default to 'function'
+      const functionCategory = functionCategories?.get(functionName) || 'function';
+      namedImports[`../${functionCategory}/${functionName}/resource`] = new Set([functionName]);
     });
 
     const accessRules: ts.Expression[] = [];

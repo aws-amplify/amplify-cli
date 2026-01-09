@@ -12,11 +12,14 @@ import assert from 'node:assert';
  * sources including local metadata, AWS Lambda configurations, and CloudWatch schedules.
  */
 export interface AuthAccess {
+  // Grouped permissions
   manageUsers?: boolean;
   manageGroups?: boolean;
   manageGroupMembership?: boolean;
   manageUserDevices?: boolean;
   managePasswordRecovery?: boolean;
+
+  // Individual permissions
   addUserToGroup?: boolean;
   createUser?: boolean;
   deleteUser?: boolean;
