@@ -3,6 +3,7 @@ import { ObjectLiteralElementLike, VariableDeclaration, VariableStatement } from
 import type { EnvironmentResponse } from '@aws-sdk/client-lambda';
 import { Runtime } from '@aws-sdk/client-lambda';
 import { renderResourceTsFile } from '../../resource/resource';
+import { parseAuthAccessFromTemplate } from '../../codegen-head/auth_access_parser';
 import assert from 'node:assert';
 
 /**
@@ -10,6 +11,34 @@ import assert from 'node:assert';
  * during migration to Gen 2. This interface combines configuration data from multiple
  * sources including local metadata, AWS Lambda configurations, and CloudWatch schedules.
  */
+export interface AuthAccess {
+  manageUsers?: boolean;
+  manageGroups?: boolean;
+  manageGroupMembership?: boolean;
+  manageUserDevices?: boolean;
+  managePasswordRecovery?: boolean;
+  addUserToGroup?: boolean;
+  createUser?: boolean;
+  deleteUser?: boolean;
+  deleteUserAttributes?: boolean;
+  disableUser?: boolean;
+  enableUser?: boolean;
+  forgetDevice?: boolean;
+  getDevice?: boolean;
+  getUser?: boolean;
+  listUsers?: boolean;
+  listDevices?: boolean;
+  listGroupsForUser?: boolean;
+  listUsersInGroup?: boolean;
+  removeUserFromGroup?: boolean;
+  resetUserPassword?: boolean;
+  setUserMfaPreference?: boolean;
+  setUserPassword?: boolean;
+  setUserSettings?: boolean;
+  updateDeviceStatus?: boolean;
+  updateUserAttributes?: boolean;
+}
+
 export interface FunctionDefinition {
   /** The Amplify category this function belongs to (e.g., 'function', 'auth', 'storage') */
   category?: string;
@@ -29,6 +58,10 @@ export interface FunctionDefinition {
   resourceName?: string;
   /** CloudWatch Events schedule expression (e.g., 'rate(5 minutes)', 'cron(0 12 * * ? *)') */
   schedule?: string;
+  /** Auth access permissions for this function */
+  authAccess?: AuthAccess;
+  /** CloudFormation template content for parsing permissions */
+  templateContent?: string;
 }
 
 /** TypeScript AST factory for creating code nodes */
@@ -164,6 +197,11 @@ export function createFunctionDefinition(
   backendEnvironmentName?: string,
 ) {
   const defineFunctionProperties: ObjectLiteralElementLike[] = [];
+
+  // Parse auth access from CloudFormation template if available
+  if (definition?.templateContent && !definition.authAccess) {
+    definition.authAccess = parseAuthAccessFromTemplate(definition.templateContent);
+  }
 
   // Fallback to index.js if there is no entry
   const entryPoint = definition?.entry || './index.js';

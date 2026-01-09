@@ -5,6 +5,7 @@ import assert from 'node:assert';
 import { PasswordPolicyType, UserPoolClientType } from '@aws-sdk/client-cognito-identity-provider';
 import { renderResourceTsFile } from '../../resource/resource';
 import { createTriggersProperty, Lambda } from '../functions/lambda';
+import { AuthAccess } from '../functions/index';
 
 /** OAuth 2.0 scopes supported by Cognito User Pools */
 export type Scope = 'phone' | 'email' | 'openid' | 'profile' | 'aws.cognito.signin.user.admin';
@@ -794,7 +795,7 @@ function createSecretErrorStatements(secretVariables: string[]): ts.Node[] {
   );
 }
 
-export function renderAuthNode(definition: AuthDefinition): ts.NodeArray<ts.Node> {
+export function renderAuthNode(definition: AuthDefinition, functionAccess?: Record<string, AuthAccess>): ts.NodeArray<ts.Node> {
   // Track required imports from various packages
   //  Creates the data structure to track imports. Extracts reference auth config
   const namedImports: { [importedPackageName: string]: Set<string> } = { '@aws-amplify/backend': new Set() };
@@ -939,6 +940,55 @@ export function renderAuthNode(definition: AuthDefinition): ts.NodeArray<ts.Node
         factory.createObjectLiteralExpression(multifactorProperties, true),
       ),
     );
+  }
+
+  // Add function access configuration if present
+  if (functionAccess && Object.keys(functionAccess).length > 0) {
+    // Add function imports
+    Object.keys(functionAccess).forEach((functionName) => {
+      namedImports[`../functions/${functionName}/resource`] = new Set([functionName]);
+    });
+
+    const accessRules: ts.Expression[] = [];
+
+    Object.entries(functionAccess).forEach(([functionName, authAccess]) => {
+      const permissions = Object.entries(authAccess)
+        .filter(([, enabled]) => enabled)
+        .map(([permission]) => factory.createStringLiteral(permission));
+
+      if (permissions.length > 0) {
+        accessRules.push(
+          factory.createCallExpression(
+            factory.createPropertyAccessExpression(
+              factory.createCallExpression(
+                factory.createPropertyAccessExpression(factory.createIdentifier('allow'), factory.createIdentifier('resource')),
+                undefined,
+                [factory.createIdentifier(functionName)],
+              ),
+              factory.createIdentifier('to'),
+            ),
+            undefined,
+            [factory.createArrayLiteralExpression(permissions)],
+          ),
+        );
+      }
+    });
+
+    if (accessRules.length > 0) {
+      defineAuthProperties.push(
+        factory.createPropertyAssignment(
+          factory.createIdentifier('access'),
+          factory.createArrowFunction(
+            undefined,
+            undefined,
+            [factory.createParameterDeclaration(undefined, undefined, 'allow')],
+            undefined,
+            undefined,
+            factory.createArrayLiteralExpression(accessRules),
+          ),
+        ),
+      );
+    }
   }
 
   // Generate the final TypeScript file with all configurations

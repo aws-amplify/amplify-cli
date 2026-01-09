@@ -5,6 +5,7 @@ import { BackendEnvironmentResolver } from './backend_environment_selector';
 import { GetFunctionCommand, GetPolicyCommand, LambdaClient } from '@aws-sdk/client-lambda';
 import { DescribeRuleCommand, CloudWatchEventsClient } from '@aws-sdk/client-cloudwatch-events';
 import * as path from 'path';
+import * as fs from 'fs';
 import { StateManager, $TSMeta, JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import { BackendDownloader } from './backend_downloader';
 
@@ -202,11 +203,31 @@ export class AppFunctionsDefinitionFetcher {
     // Wait for all schedule fetching operations to complete
     const functionSchedules = await Promise.all(getFunctionSchedulePromises);
 
+    // Read CloudFormation templates for each function to detect auth access
+    const functionTemplates = new Map<string, string>();
+    for (const functionName of Object.keys(functions)) {
+      try {
+        const templatePath = path.join(
+          currentCloudBackendDirectory,
+          'function',
+          functionName,
+          `${functionName}-cloudformation-template.json`,
+        );
+        if (fs.existsSync(templatePath)) {
+          const templateContent = fs.readFileSync(templatePath, 'utf8');
+          functionTemplates.set(functionName, templateContent);
+        }
+      } catch (error) {
+        // Template may not exist or may not be readable
+      }
+    }
+
     // Build comprehensive function definitions by combining:
     // - Live AWS Lambda configurations (runtime, memory, timeout, etc.)
     // - CloudWatch schedule expressions (for scheduled functions)
     // - Trigger category mappings (auth, storage, etc.)
     // - Original Amplify project metadata
-    return getFunctionDefinition(functionConfigurations, functionSchedules, functionCategoryMap, meta);
+    // - CloudFormation templates for auth access parsing
+    return getFunctionDefinition(functionConfigurations, functionSchedules, functionCategoryMap, meta, functionTemplates);
   };
 }

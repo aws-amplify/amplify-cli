@@ -43,6 +43,7 @@ export const getFunctionDefinition = (
   functionSchedules: FunctionSchedule[],
   functionCategoryMap: Map<string, string>,
   meta: AmplifyMetaWithFunction,
+  functionTemplates?: Map<string, string>,
 ): FunctionDefinition[] => {
   const funcDefList: FunctionDefinition[] = [];
 
@@ -74,6 +75,11 @@ export const getFunctionDefinition = (
     funcDef.category = functionCategoryMap.get(functionRecordInMeta[0]) ?? 'function';
     funcDef.resourceName = functionRecordInMeta[0];
     funcDef.schedule = functionSchedules.find((schedule) => schedule.functionName === functionName)?.scheduleExpression;
+
+    // Add CloudFormation template content for auth access parsing
+    if (functionTemplates?.has(functionRecordInMeta[0])) {
+      funcDef.templateContent = functionTemplates.get(functionRecordInMeta[0]);
+    }
 
     funcDefList.push(funcDef);
   }
