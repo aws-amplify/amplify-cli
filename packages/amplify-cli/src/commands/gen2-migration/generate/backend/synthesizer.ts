@@ -50,7 +50,7 @@ export interface BackendRenderParameters {
   function?: {
     importFrom: string;
     functionNamesAndCategories: Map<string, string>;
-    functionsWithApiAccess?: Set<string>; // Set of function names with API access
+    functionsWithApiAccess?: Map<string, { hasQuery: boolean; hasMutation: boolean }>;
   };
   analytics?: {
     importFrom: string;
@@ -1435,43 +1435,46 @@ export class BackendSynthesizer {
 
     // Grant function access to API resources
     if (renderArgs.function?.functionsWithApiAccess && renderArgs.data) {
-      for (const functionName of renderArgs.function.functionsWithApiAccess) {
-        // Grant query and mutation permissions
-        nodes.push(
-          factory.createExpressionStatement(
-            factory.createCallExpression(
-              factory.createPropertyAccessExpression(
-                factory.createIdentifier('backend.data.resources.graphqlApi'),
-                factory.createIdentifier('grantQuery'),
-              ),
-              undefined,
-              [
+      for (const [functionName, permissions] of renderArgs.function.functionsWithApiAccess) {
+        if (permissions.hasQuery) {
+          nodes.push(
+            factory.createExpressionStatement(
+              factory.createCallExpression(
                 factory.createPropertyAccessExpression(
-                  factory.createIdentifier(`backend.${functionName}.resources`),
-                  factory.createIdentifier('lambda'),
+                  factory.createIdentifier('backend.data.resources.graphqlApi'),
+                  factory.createIdentifier('grantQuery'),
                 ),
-              ],
+                undefined,
+                [
+                  factory.createPropertyAccessExpression(
+                    factory.createIdentifier(`backend.${functionName}.resources`),
+                    factory.createIdentifier('lambda'),
+                  ),
+                ],
+              ),
             ),
-          ),
-        );
+          );
+        }
 
-        nodes.push(
-          factory.createExpressionStatement(
-            factory.createCallExpression(
-              factory.createPropertyAccessExpression(
-                factory.createIdentifier('backend.data.resources.graphqlApi'),
-                factory.createIdentifier('grantMutation'),
-              ),
-              undefined,
-              [
+        if (permissions.hasMutation) {
+          nodes.push(
+            factory.createExpressionStatement(
+              factory.createCallExpression(
                 factory.createPropertyAccessExpression(
-                  factory.createIdentifier(`backend.${functionName}.resources`),
-                  factory.createIdentifier('lambda'),
+                  factory.createIdentifier('backend.data.resources.graphqlApi'),
+                  factory.createIdentifier('grantMutation'),
                 ),
-              ],
+                undefined,
+                [
+                  factory.createPropertyAccessExpression(
+                    factory.createIdentifier(`backend.${functionName}.resources`),
+                    factory.createIdentifier('lambda'),
+                  ),
+                ],
+              ),
             ),
-          ),
-        );
+          );
+        }
       }
     }
 

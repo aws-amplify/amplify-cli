@@ -31,6 +31,11 @@ export interface FunctionDefinition {
   schedule?: string;
   /** Array of API names this function has access to (for Gen1 to Gen2 migration) */
   apiAccess?: string[];
+  /** Specific API permissions detected from CloudFormation analysis */
+  apiPermissions?: {
+    hasQuery: boolean;
+    hasMutation: boolean;
+  };
 }
 
 /** TypeScript AST factory for creating code nodes */
