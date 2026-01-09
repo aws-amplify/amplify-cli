@@ -985,10 +985,10 @@ export function renderAuthNode(
           factory.createArrowFunction(
             undefined,
             undefined,
-            [factory.createParameterDeclaration(undefined, undefined, 'allow')],
+            [factory.createParameterDeclaration(undefined, undefined, factory.createIdentifier('allow'))],
             undefined,
-            undefined,
-            factory.createArrayLiteralExpression(accessRules),
+            factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
+            factory.createArrayLiteralExpression(accessRules, true), // true for multiline
           ),
         ),
       );
