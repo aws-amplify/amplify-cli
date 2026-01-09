@@ -33,6 +33,7 @@ export interface FunctionDefinition {
   apiPermissions?: {
     hasQuery: boolean;
     hasMutation: boolean;
+    hasSubscription: boolean;
   };
 }
 

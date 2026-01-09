@@ -7,6 +7,7 @@ import * as path from 'path';
 export interface ApiPermissions {
   hasQuery: boolean;
   hasMutation: boolean;
+  hasSubscription: boolean;
 }
 
 /**
@@ -28,6 +29,7 @@ export const analyzeApiPermissionsFromCfn = (functionResourceName: string): ApiP
 
     let hasQuery = false;
     let hasMutation = false;
+    let hasSubscription = false;
 
     // Check IAM policies in the template
     for (const resource of Object.values(cfnTemplate.Resources || {})) {
@@ -46,14 +48,17 @@ export const analyzeApiPermissionsFromCfn = (functionResourceName: string): ApiP
               if (action.includes('Mutation') || action === 'appsync:GraphQL') {
                 hasMutation = true;
               }
+              if (action.includes('Subscription') || action === 'appsync:GraphQL') {
+                hasSubscription = true;
+              }
             }
           }
         }
       }
     }
 
-    return { hasQuery, hasMutation };
+    return { hasQuery, hasMutation, hasSubscription };
   } catch {
-    return { hasQuery: false, hasMutation: false };
+    return { hasQuery: false, hasMutation: false, hasSubscription: false };
   }
 };
