@@ -54,6 +54,16 @@ export const getFunctionDefinition = (
     funcDef.timeoutSeconds = configuration?.Timeout;
     funcDef.memoryMB = configuration?.MemorySize;
 
+    // Remove Gen1 API environment variables that point to old AppSync API
+    // These will be replaced with Gen2 backend.data references
+    for (const envSuffix of ['GRAPHQLAPIKEYOUTPUT', 'GRAPHQLAPIENDPOINTOUTPUT', 'GRAPHQLAPIIDOUTPUT']) {
+      for (const variable of Object.keys(configuration.Environment?.Variables ?? {})) {
+        if (variable.startsWith('API_') && variable.endsWith(envSuffix)) {
+          delete configuration.Environment?.Variables[variable];
+        }
+      }
+    }
+
     funcDef.environment = configuration?.Environment;
     funcDef.runtime = configuration?.Runtime;
     const functionName = configuration?.FunctionName;
