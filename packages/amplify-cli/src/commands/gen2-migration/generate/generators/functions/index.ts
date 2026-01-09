@@ -29,8 +29,6 @@ export interface FunctionDefinition {
   resourceName?: string;
   /** CloudWatch Events schedule expression (e.g., 'rate(5 minutes)', 'cron(0 12 * * ? *)') */
   schedule?: string;
-  /** Array of API names this function has access to (for Gen1 to Gen2 migration) */
-  apiAccess?: string[];
   /** Specific API permissions detected from CloudFormation analysis */
   apiPermissions?: {
     hasQuery: boolean;

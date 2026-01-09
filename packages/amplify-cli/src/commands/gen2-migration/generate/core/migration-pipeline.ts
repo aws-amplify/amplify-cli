@@ -377,7 +377,7 @@ export const createGen2Renderer = ({
         functionNamesAndCategory.set(resourceName, funcCategory);
 
         // Track functions that have API access with specific permissions
-        if (func.apiAccess && func.apiAccess.length > 0 && func.apiPermissions) {
+        if (func.apiPermissions && (func.apiPermissions.hasQuery || func.apiPermissions.hasMutation)) {
           functionsWithApiAccess.set(resourceName, func.apiPermissions);
         }
 

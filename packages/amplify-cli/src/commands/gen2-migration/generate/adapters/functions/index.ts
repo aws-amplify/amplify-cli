@@ -54,21 +54,6 @@ export const getFunctionDefinition = (
     funcDef.timeoutSeconds = configuration?.Timeout;
     funcDef.memoryMB = configuration?.MemorySize;
 
-    // Detect function access to API by checking for API environment variables
-    const apiAccess: string[] = [];
-    for (const envSuffix of ['GRAPHQLAPIKEYOUTPUT', 'GRAPHQLAPIENDPOINTOUTPUT', 'GRAPHQLAPIIDOUTPUT']) {
-      for (const variable of Object.keys(configuration.Environment?.Variables ?? {})) {
-        if (variable.startsWith('API_') && variable.endsWith(envSuffix)) {
-          const apiName = variable.replace(/^API_/, '').replace(new RegExp(`_${envSuffix}$`), '');
-          if (!apiAccess.includes(apiName)) {
-            apiAccess.push(apiName);
-          }
-          delete configuration.Environment?.Variables[variable];
-        }
-      }
-    }
-    funcDef.apiAccess = apiAccess.length > 0 ? apiAccess : undefined;
-
     funcDef.environment = configuration?.Environment;
     funcDef.runtime = configuration?.Runtime;
     const functionName = configuration?.FunctionName;
@@ -79,8 +64,8 @@ export const getFunctionDefinition = (
     funcDef.resourceName = functionRecordInMeta[0];
     funcDef.schedule = functionSchedules.find((schedule) => schedule.functionName === functionName)?.scheduleExpression;
 
-    // Analyze CFN template for actual API permissions if function has API access
-    if (funcDef.apiAccess && funcDef.resourceName) {
+    // Analyze CFN template for API permissions
+    if (funcDef.resourceName) {
       funcDef.apiPermissions = analyzeApiPermissionsFromCfn(funcDef.resourceName);
     }
 
