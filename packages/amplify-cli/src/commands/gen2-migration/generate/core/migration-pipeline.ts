@@ -417,8 +417,8 @@ export const createGen2Renderer = ({
       new TypescriptNodeArrayRenderer(
         async () => renderAuthNode(auth, functionAccess, functionCategories),
         async (content) => {
-          // Get proper (allow) format
-          const cleanedContent = content.replace(/(allow, _unused)/g, '(allow)');
+          // Remove unused parameter to get proper (allow) format
+          const cleanedContent = content.replace(/\(allow, _unused\)/g, '(allow)');
           return fileWriter(cleanedContent, path.join(outputDir, 'amplify', 'auth', 'resource.ts'));
         },
       ),
