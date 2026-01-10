@@ -178,7 +178,7 @@
       "core": {
         "name": "core",
         "type": "core",
-        "packageName": "@aws-amplify/cli-internal"
+        "packageName": "@aws-amplify/cli-internal-gen2-migration-experimental-alpha"
       },
       "awscloudformation": {
         "name": "awscloudformation",
