@@ -596,3 +596,4 @@ To workaround this issue, you must pre allow the Gen2 `AuthRole` by [configuring
 > the Gen2 `AuthRole` naming pattern and therefore allows access to **any** Gen2 environment (branch).
 
 Once added, redeploy the app by running `amplify push`.
+

@@ -36,7 +36,7 @@
   "dependencies": {
     "@aws-amplify/amplify-app": "5.0.45",
     "@aws-amplify/amplify-category-analytics": "5.0.45",
-    "@aws-amplify/amplify-category-api": "^5.15.2",
+    "@aws-amplify/amplify-category-api": "^5.15.3",
     "@aws-amplify/amplify-category-auth": "3.7.26",
     "@aws-amplify/amplify-category-custom": "3.1.31",
     "@aws-amplify/amplify-category-function": "5.7.19",
@@ -178,7 +178,7 @@
       "core": {
         "name": "core",
         "type": "core",
-        "packageName": "@aws-amplify/cli-internal"
+        "packageName": "@aws-amplify/cli-internal-gen2-migration-experimental-alpha"
       },
       "awscloudformation": {
         "name": "awscloudformation",

@@ -1,0 +1,32 @@
+type Topic @model @auth(rules: [{ allow: public }]){
+  id: ID!
+  createdByUserId: String!
+  content: String!
+  posts: [Post] @hasMany
+}
+
+type Post @model @auth(rules: [{ allow: public }]){
+  id: ID!
+  createdByUserId: String!
+  content: String!
+  comments: [Comment] @hasMany
+  topic: Topic @belongsTo
+}
+
+type Comment @model @auth(rules: [{ allow: public }]){
+  id: ID!
+  createdByUserId: String!
+  content: String!
+  post: Post @belongsTo
+}
+
+type Query {
+  fetchUserActivity(userId: ID!): [Activity] @function(name: "fetchuseractivity-${env}") @auth(rules: [{ allow: public }])
+}
+
+type Activity {
+  id: ID! @auth(rules: [{ allow: public }])
+  userId: ID! @auth(rules: [{ allow: public }])
+  activityType: String! @auth(rules: [{ allow: public }])
+  timestamp: String! @auth(rules: [{ allow: public }])
+}

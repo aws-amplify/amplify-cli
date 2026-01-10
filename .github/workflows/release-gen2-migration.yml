@@ -1,6 +1,11 @@
 name: Release Gen2 Migration
 on:
   workflow_dispatch: {}
+
+permissions:
+  contents: read
+  id-token: write
+
 jobs:
   release:
     runs-on: ubuntu-latest
