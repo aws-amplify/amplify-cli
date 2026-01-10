@@ -23,5 +23,6 @@ dist-ssr
 # amplify
 .amplify
 amplify_outputs*
+src/aws-exports.js
 amplifyconfiguration*
 build
