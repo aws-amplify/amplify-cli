@@ -1,7 +1,7 @@
 import { Amplify } from 'aws-amplify';
 import { signUp, confirmSignUp, signIn, signOut, getCurrentUser } from 'aws-amplify/auth';
 import { generateClient } from 'aws-amplify/api';
-import awsconfig from '../amplify_outputs.json';
+import awsconfig from './aws-exports';
 import * as mutations from './graphql/mutations';
 import * as queries from './graphql/queries';
 
