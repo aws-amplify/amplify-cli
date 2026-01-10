@@ -35,7 +35,7 @@ const GROUPED_PERMISSIONS = {
 };
 
 const AUTH_ACTION_MAPPING: Record<string, keyof AuthAccess> = {
-  // Individual permissions (most specific mapping)
+  // Individual permissions only - no conflicts with grouped permissions
   'cognito-idp:AdminAddUserToGroup': 'addUserToGroup',
   'cognito-idp:AdminCreateUser': 'createUser',
   'cognito-idp:AdminDeleteUser': 'deleteUser',
@@ -57,87 +57,43 @@ const AUTH_ACTION_MAPPING: Record<string, keyof AuthAccess> = {
   'cognito-idp:ListUsers': 'listUsers',
   'cognito-idp:ListUsersInGroup': 'listUsersInGroup',
 
-  // Grouped permissions for actions not covered by individual permissions
+  // Actions that don't have individual permissions - map to grouped
   'cognito-idp:AdminConfirmSignUp': 'manageUsers',
   'cognito-idp:AdminRespondToAuthChallenge': 'manageUsers',
   'cognito-idp:AdminUserGlobalSignOut': 'manageUsers',
   'cognito-idp:AdminInitiateAuth': 'manageUsers',
   'cognito-idp:AdminUpdateAuthEventFeedback': 'manageUsers',
-  'cognito-idp:CreateUserImportJob': 'manageUsers',
-  'cognito-idp:StartUserImportJob': 'manageUsers',
-  'cognito-idp:StopUserImportJob': 'manageUsers',
-  'cognito-idp:AdminLinkProviderForUser': 'manageUsers',
-  'cognito-idp:AdminDisableProviderForUser': 'manageUsers',
-  'cognito-idp:AddCustomAttributes': 'manageUsers',
-  'cognito-idp:ConfirmSignUp': 'manageUsers',
-  'cognito-idp:SignUp': 'manageUsers',
-  'cognito-idp:GlobalSignOut': 'manageUsers',
-  'cognito-idp:ResendConfirmationCode': 'manageUsers',
-  'cognito-idp:InitiateAuth': 'manageUsers',
-  'cognito-idp:RespondToAuthChallenge': 'manageUsers',
 
-  // Group management
-  'cognito-idp:GetGroup': 'manageGroups',
-  'cognito-idp:ListGroups': 'manageGroups',
-  'cognito-idp:CreateGroup': 'manageGroups',
-  'cognito-idp:DeleteGroup': 'manageGroups',
-  'cognito-idp:UpdateGroup': 'manageGroups',
-
-  // Device management
+  // Other actions without individual permissions
   'cognito-idp:ForgetDevice': 'forgetDevice',
-  'cognito-idp:ConfirmDevice': 'manageUserDevices',
-
-  // Password recovery
-  'cognito-idp:ForgotPassword': 'managePasswordRecovery',
-  'cognito-idp:ConfirmForgotPassword': 'managePasswordRecovery',
-  'cognito-idp:ChangePassword': 'managePasswordRecovery',
-
-  // User attributes
   'cognito-idp:VerifyUserAttribute': 'updateUserAttributes',
   'cognito-idp:UpdateUserAttributes': 'updateUserAttributes',
-  'cognito-idp:UpdateAuthEventFeedback': 'updateUserAttributes',
-
-  // MFA settings
   'cognito-idp:SetUserMFAPreference': 'setUserMfaPreference',
-  'cognito-idp:AssociateSoftwareToken': 'setUserMfaPreference',
-  'cognito-idp:VerifySoftwareToken': 'setUserMfaPreference',
-
-  // User settings
   'cognito-idp:SetUserSettings': 'setUserSettings',
-
-  // User Pool management (admin-level)
-  'cognito-idp:CreateUserPool': 'manageUsers',
-  'cognito-idp:UpdateUserPool': 'manageUsers',
-  'cognito-idp:CreateUserPoolClient': 'manageUsers',
-  'cognito-idp:UpdateUserPoolClient': 'manageUsers',
-  'cognito-idp:CreateUserPoolDomain': 'manageUsers',
-  'cognito-idp:UpdateUserPoolDomain': 'manageUsers',
-  'cognito-idp:CreateIdentityProvider': 'manageUsers',
-  'cognito-idp:UpdateIdentityProvider': 'manageUsers',
-  'cognito-idp:CreateResourceServer': 'manageUsers',
-  'cognito-idp:UpdateResourceServer': 'manageUsers',
-  'cognito-idp:SetUICustomization': 'manageUsers',
-  'cognito-idp:SetRiskConfiguration': 'manageUsers',
-  'cognito-idp:SetUserPoolMfaConfig': 'manageUsers',
 };
 
 export function parseAuthAccessFromTemplate(templateContent: string): AuthAccess {
   const authAccess: AuthAccess = {};
   const cognitoActions = extractCognitoActions(templateContent);
+  const coveredActions = new Set<string>();
 
-  // First, map individual actions to individual permissions
-  cognitoActions.forEach((action) => {
-    const permission = AUTH_ACTION_MAPPING[action];
-    if (permission) {
-      authAccess[permission] = true;
-    }
-  });
-
-  // Then, check for complete grouped permissions
+  // First, check for complete grouped permissions
   Object.entries(GROUPED_PERMISSIONS).forEach(([groupedPermission, requiredActions]) => {
     const hasAllActions = requiredActions.every((action) => cognitoActions.includes(action));
     if (hasAllActions) {
       authAccess[groupedPermission as keyof AuthAccess] = true;
+      // Mark these actions as covered by the group permission
+      requiredActions.forEach((action) => coveredActions.add(action));
+    }
+  });
+
+  // Then, map remaining individual actions to individual permissions
+  cognitoActions.forEach((action) => {
+    if (!coveredActions.has(action)) {
+      const permission = AUTH_ACTION_MAPPING[action];
+      if (permission) {
+        authAccess[permission] = true;
+      }
     }
   });
 
