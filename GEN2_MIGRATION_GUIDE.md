@@ -2,9 +2,11 @@
 
 Following document describes how to migrate your Gen1 environment to a new Gen2 application.
 
-> [!CAUTION]
-> The tools presented here are in early stages of development and **SHOULD NOT** be executed on 
-> any production or mission critical environments.
+## Disclaimers ❗❗
+
+- The tools presented here are in early stages of development and **SHOULD NOT** be executed on any production 
+or mission critical environments.
+- 
 
 ## Overall Approach
 
@@ -16,6 +18,11 @@ Migration to Gen2 is done in a (partial) blue/green deployment approach.
 will be reused and managed by the new Gen2 deployment.
 
 After completing this process you will have 2 functionally equivalent amplify applications that access the same data.
+
+-> [!CAUTION]
+-> The refactor operation is currently not reversable. If it fails or 
+-> produces undesired results, you will need to recreate the environment. Make sure you 
+-> run it only on environments you can afford to delete.
 
 ## Prerequisites 
 
