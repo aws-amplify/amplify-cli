@@ -1,5 +1,39 @@
 import { AuthAccess } from '../generators/functions/index';
 
+// Define grouped permissions and their required actions
+const GROUPED_PERMISSIONS = {
+  manageUsers: [
+    'cognito-idp:AdminConfirmSignUp',
+    'cognito-idp:AdminCreateUser',
+    'cognito-idp:AdminDeleteUser',
+    'cognito-idp:AdminDeleteUserAttributes',
+    'cognito-idp:AdminDisableUser',
+    'cognito-idp:AdminEnableUser',
+    'cognito-idp:AdminGetUser',
+    'cognito-idp:AdminListGroupsForUser',
+    'cognito-idp:AdminRespondToAuthChallenge',
+    'cognito-idp:AdminSetUserMFAPreference',
+    'cognito-idp:AdminSetUserSettings',
+    'cognito-idp:AdminUpdateUserAttributes',
+    'cognito-idp:AdminUserGlobalSignOut',
+  ],
+  manageGroupMembership: ['cognito-idp:AdminAddUserToGroup', 'cognito-idp:AdminRemoveUserFromGroup'],
+  manageGroups: [
+    'cognito-idp:GetGroup',
+    'cognito-idp:ListGroups',
+    'cognito-idp:CreateGroup',
+    'cognito-idp:DeleteGroup',
+    'cognito-idp:UpdateGroup',
+  ],
+  manageUserDevices: [
+    'cognito-idp:AdminForgetDevice',
+    'cognito-idp:AdminGetDevice',
+    'cognito-idp:AdminListDevices',
+    'cognito-idp:AdminUpdateDeviceStatus',
+  ],
+  managePasswordRecovery: ['cognito-idp:AdminResetUserPassword', 'cognito-idp:AdminSetUserPassword'],
+};
+
 const AUTH_ACTION_MAPPING: Record<string, keyof AuthAccess> = {
   // Individual permissions (most specific mapping)
   'cognito-idp:AdminAddUserToGroup': 'addUserToGroup',
@@ -89,15 +123,21 @@ const AUTH_ACTION_MAPPING: Record<string, keyof AuthAccess> = {
 
 export function parseAuthAccessFromTemplate(templateContent: string): AuthAccess {
   const authAccess: AuthAccess = {};
-
-  // Parse CloudFormation template for cognito-idp actions
   const cognitoActions = extractCognitoActions(templateContent);
 
-  // Map individual actions to permissions
+  // First, map individual actions to individual permissions
   cognitoActions.forEach((action) => {
     const permission = AUTH_ACTION_MAPPING[action];
     if (permission) {
       authAccess[permission] = true;
+    }
+  });
+
+  // Then, check for complete grouped permissions
+  Object.entries(GROUPED_PERMISSIONS).forEach(([groupedPermission, requiredActions]) => {
+    const hasAllActions = requiredActions.every((action) => cognitoActions.includes(action));
+    if (hasAllActions) {
+      authAccess[groupedPermission as keyof AuthAccess] = true;
     }
   });
 

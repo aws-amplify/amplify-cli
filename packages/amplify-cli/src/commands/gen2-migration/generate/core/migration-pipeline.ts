@@ -417,8 +417,11 @@ export const createGen2Renderer = ({
       new TypescriptNodeArrayRenderer(
         async () => renderAuthNode(auth, functionAccess, functionCategories),
         async (content) => {
-          // Remove unused parameter to get proper (allow) format
-          const cleanedContent = content.replace(/\(allow, _unused\)/g, '(allow)');
+          // Remove unused parameter and add type annotation
+          let cleanedContent = content.replace(/\(allow, _unused\)/g, '(allow)');
+          cleanedContent = cleanedContent.replace(/\(allow\)/g, '(allow: any)');
+          // Add trailing comma after access array
+          cleanedContent = cleanedContent.replace(/(access: \(allow: any\) => \[[\s\S]*?\n {4}\])/g, '$1,');
           return fileWriter(cleanedContent, path.join(outputDir, 'amplify', 'auth', 'resource.ts'));
         },
       ),
