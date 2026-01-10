@@ -6,9 +6,21 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "configure": "./configure.sh",
+    "configure-schema": "./configure-schema.sh"
   },
   "devDependencies": {
+    "@aws-amplify/backend": "^1.18.0",
+    "@aws-amplify/backend-cli": "^1.8.0",
+    "@aws-amplify/backend-data": "^1.6.2",
+    "@types/node": "*",
+    "aws-cdk": "^2",
+    "aws-cdk-lib": "^2",
+    "ci-info": "^4.3.1",
+    "constructs": "^10.0.0",
+    "esbuild": "^0.27.0",
+    "tsx": "^4.20.6",
     "vite": "^7.2.2"
   },
   "dependencies": {

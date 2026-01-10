@@ -1,7 +1,7 @@
 import { Amplify } from 'aws-amplify';
 import { signUp, confirmSignUp, signIn, signOut, getCurrentUser } from 'aws-amplify/auth';
 import { generateClient } from 'aws-amplify/api';
-import awsconfig from './aws-exports';
+import awsconfig from '../amplify_outputs.json';
 import * as mutations from './graphql/mutations';
 import * as queries from './graphql/queries';
 
@@ -24,17 +24,6 @@ const DISCUSSIONS = [
   { id: 'food', name: 'Food & Cooking', icon: '🍳', color: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)' },
   { id: 'travel', name: 'Travel', icon: '✈️', color: 'linear-gradient(135deg, #30cfd0 0%, #330867 100%)' },
 ];
-
-async function logActivity(activityType, metadata = '') {
-  try {
-    await client.graphql({
-      query: mutations.logActivity,
-      variables: { userId: currentUserId, activityType, metadata },
-    });
-  } catch (error) {
-    console.error('Error logging activity:', error);
-  }
-}
 
 function showPage(pageId) {
   ['signinPage', 'signupPage', 'confirmPage', 'mainApp'].forEach((id) => {
@@ -72,7 +61,6 @@ function showPosts(topicId, topicName) {
 
 async function showPostDetail(postId) {
   currentPostId = postId;
-  await logActivity('post_view', postId);
   document.getElementById('postDetailPage').classList.remove('hidden');
   loadPostDetail(postId);
   loadComments(postId);
@@ -141,7 +129,6 @@ document.getElementById('signinBtn').addEventListener('click', async () => {
     const user = await getCurrentUser();
     currentUserPhone = phone;
     currentUserId = user.userId;
-    await logActivity('login', phone);
     showMainApp();
   } catch (error) {
     alert('Error: ' + error.message);
@@ -167,16 +154,26 @@ document.getElementById('backToDiscussionsFromActivity').addEventListener('click
 });
 
 async function loadActivity() {
+  const list = document.getElementById('activityList');
+
+  // Show loading state
+  list.innerHTML = `
+    <div class="empty">
+      <div class="empty-icon">⏳</div>
+      <div class="empty-text">Loading activity...</div>
+    </div>
+  `;
+
   try {
     const result = await client.graphql({
-      query: queries.getUserActivity,
+      query: queries.fetchUserActivity,
       variables: { userId: currentUserId },
     });
 
-    const list = document.getElementById('activityList');
+    // Clear loading state
     list.innerHTML = '';
 
-    const activities = result.data.getUserActivity || [];
+    const activities = result.data.fetchUserActivity || [];
 
     if (activities.length === 0) {
       list.innerHTML = `
@@ -191,28 +188,25 @@ async function loadActivity() {
     for (const activity of activities) {
       const div = document.createElement('div');
       div.className = 'topic-item';
-      const icon =
-        activity.activityType === 'login'
-          ? '🔐'
-          : activity.activityType === 'post_view'
-          ? '👁️'
-          : activity.activityType === 'post_create'
-          ? '📝'
-          : '💬';
       const label = activity.activityType.replace('_', ' ').toUpperCase();
       const time = new Date(activity.timestamp).toLocaleString();
 
       div.innerHTML = `
         <div class="topic-header">
-          <div class="topic-title">${icon} ${label}</div>
+          <div class="topic-title">${label}</div>
           <div class="topic-meta">${time}</div>
         </div>
-        <div class="topic-meta" style="margin-top: 5px;">${activity.metadata || ''}</div>
       `;
       list.appendChild(div);
     }
   } catch (error) {
     console.error('Error loading activity:', error);
+    list.innerHTML = `
+      <div class="empty">
+        <div class="empty-icon">❌</div>
+        <div class="empty-text">Error loading activity</div>
+      </div>
+    `;
   }
 }
 
@@ -258,11 +252,11 @@ function loadDiscussions() {
 // Topics
 async function loadTopics(discussionId) {
   try {
-    const result = await client.graphql({ query: queries.listBlogs });
+    const result = await client.graphql({ query: queries.listTopics });
     const list = document.getElementById('topicsList');
     list.innerHTML = '';
 
-    const topics = result.data.listBlogs.items.filter((b) => b.name.startsWith(discussionId + ':'));
+    const topics = result.data.listTopics.items.filter((b) => b.content.startsWith(discussionId + ':'));
 
     if (topics.length === 0) {
       list.innerHTML = `
@@ -275,12 +269,12 @@ async function loadTopics(discussionId) {
     }
 
     for (const topic of topics) {
-      const topicName = topic.name.split(':')[1] || topic.name;
+      const topicName = topic.content.split(':')[1];
 
       // Get posts count for this topic
       const postsResult = await client.graphql({
         query: queries.listPosts,
-        variables: { filter: { blogPostsId: { eq: topic.id } } },
+        variables: { filter: { topicPostsId: { eq: topic.id } } },
       });
       const postsCount = postsResult.data.listPosts.items.length;
 
@@ -309,8 +303,8 @@ document.getElementById('createTopicBtn').addEventListener('click', async () => 
 
   try {
     await client.graphql({
-      query: mutations.createBlog,
-      variables: { input: { name: `${currentDiscussionId}:${topicName}` } },
+      query: mutations.createTopic,
+      variables: { input: { content: `${currentDiscussionId}:${topicName}`, createdByUserId: currentUserId } },
     });
     document.getElementById('topicNameInput').value = '';
     loadTopics(currentDiscussionId);
@@ -333,13 +327,10 @@ document.getElementById('createPostBtn').addEventListener('click', async () => {
   if (!content) return;
 
   try {
-    const title = content.substring(0, 60) + (content.length > 60 ? '...' : '');
-    const result = await client.graphql({
+    await client.graphql({
       query: mutations.createPost,
-      variables: { input: { title, content, blogPostsId: currentTopicId } },
+      variables: { input: { content, topicPostsId: currentTopicId, createdByUserId: currentUserId } },
     });
-
-    await logActivity('post_create', result.data.createPost.id);
 
     postTextarea.value = '';
     postCharCount.textContent = '0 / 500';
@@ -353,7 +344,7 @@ async function loadPosts(topicId) {
   try {
     const result = await client.graphql({
       query: queries.listPosts,
-      variables: { filter: { blogPostsId: { eq: topicId } } },
+      variables: { filter: { topicPostsId: { eq: topicId } } },
     });
 
     const feed = document.getElementById('postsFeed');
@@ -386,7 +377,7 @@ async function loadPosts(topicId) {
           <div class="avatar">U</div>
           <div class="post-content-area">
             <div class="post-author">
-              <span class="username">User</span>
+              <span class="username">${post.createdByUserId}</span>
               <span class="timestamp">• just now</span>
             </div>
             <div class="post-text">${post.content || ''}</div>
@@ -445,7 +436,7 @@ async function loadPostDetail(postId) {
           <div class="avatar">U</div>
           <div class="post-content-area">
             <div class="post-author">
-              <span class="username">User</span>
+              <span class="username">${post.createdByUserId}</span>
               <span class="timestamp">• just now</span>
             </div>
             <div class="post-text">${post.content || ''}</div>
@@ -475,12 +466,10 @@ document.getElementById('addCommentBtn').addEventListener('click', async () => {
   if (!content) return;
 
   try {
-    const result = await client.graphql({
+    await client.graphql({
       query: mutations.createComment,
-      variables: { input: { content, postCommentsId: currentPostId } },
+      variables: { input: { content, postCommentsId: currentPostId, createdByUserId: currentUserId } },
     });
-
-    await logActivity('comment_create', result.data.createComment.id);
 
     commentTextarea.value = '';
     commentCharCount.textContent = '0 / 300';
@@ -518,7 +507,7 @@ async function loadComments(postId) {
         <div class="avatar">U</div>
         <div class="comment-content">
           <div class="post-author">
-            <span class="username">User</span>
+            <span class="username">${comment.createdByUserId}</span>
             <span class="timestamp">• just now</span>
           </div>
           <div class="comment-text">${comment.content}</div>
