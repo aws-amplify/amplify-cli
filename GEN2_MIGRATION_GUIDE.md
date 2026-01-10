@@ -129,9 +129,9 @@ environment variables and give it the necessary permissions.
 ```
 
 ```diff
-+ backend.<function-friendly-name>.addEnvironment('API_PRODUCTCATALOG_GRAPHQLAPIKEYOUTPUT', backend.data.apiKey!)
-+ backend.<function-friendly-name>.addEnvironment('API_PRODUCTCATALOG_GRAPHQLAPIENDPOINTOUTPUT', backend.data.graphqlUrl)
-+ backend.<function-friendly-name>.addEnvironment('API_PRODUCTCATALOG_GRAPHQLAPIIDOUTPUT', backend.data.apiId)
++ backend.<function-friendly-name>.addEnvironment('API_<API_NAME_CAPS>_GRAPHQLAPIKEYOUTPUT', backend.data.apiKey!)
++ backend.<function-friendly-name>.addEnvironment('API_<API_NAME_CAPS>_GRAPHQLAPIENDPOINTOUTPUT', backend.data.graphqlUrl)
++ backend.<function-friendly-name>.addEnvironment('API_<API_NAME_CAPS>_GRAPHQLAPIIDOUTPUT', backend.data.apiId)
 
 + backend.<function-friendly-name>.resources.lambda.addToRolePolicy(new aws_iam.PolicyStatement({
 +     effect: aws_iam.Effect.ALLOW,
@@ -158,7 +158,39 @@ This is required in order for your Gen1 environment to keep functioning correctl
 
 > See [GraphQL types protected with the IAM provider](#graphql-types-protected-by-the-iam-auth-provider) for more details.
 
-#### 2.3 Post Generate | Function Secrets
+#### 2.3 Post Generate | Stroage Function Access
+
+If your function needs to access the DynamoDB table configured as part of your storage category you need to explicitly 
+provide it with the appropriate environment variables and give it the necessary permissions.
+
+**Edit in `./amplify/backend.ts`:**
+
+```diff
++ backend.myfunction.addEnvironment('STORAGE_MYTABLE_ARN', mytable.tableArn);
++ backend.myfunction.addEnvironment('STORAGE_MYTABLE_NAME', mytable.tableName);
++ backend.myfunction.addEnvironment('STORAGE_MYTABLE_STREAMARN', mytable.tableStreamArn!);
++ mytable.grantReadData(backend.myfunction.resources.lambda);
+```
+
+> Where `myfunction` and `mytable` are the friendly names of the relevant function and table.
+
+#### 2.4 Post Generate | Api Function Trigger
+
+If your function is triggered based on model updates you need to explicitly create the trigger 
+and grant the function the necessary permissions.
+
+**Edit in `./amplify/backend.ts`:**
+
+```diff
++ const commentsTable = backend.data.resources.tables['Comment'];
++ backend.myfunction.resources.lambda.addEventSource(new DynamoEventSource(commentsTable, { startingPosition: StartingPosition.LATEST }));
++ commentsTable.grantStreamRead(backend.myfunction.resources.lambda.role!);
++ commentsTable.grantTableListStreams(backend.myfunction.resources.lambda.role!);
+```
+
+> Where `myfunction` is the function friendly name and `Comment` is the model name.
+
+#### 2.5 Post Generate | Function Secrets
 
 If your function was configured with a secret value, you must first recreate the secret using the amplify console.
 
