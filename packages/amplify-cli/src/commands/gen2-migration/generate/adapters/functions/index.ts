@@ -53,13 +53,24 @@ export const getFunctionDefinition = (
     funcDef.timeoutSeconds = configuration?.Timeout;
     funcDef.memoryMB = configuration?.MemorySize;
 
-    // we remove these because their value points to the Gen1 appsync API.
-    // the correct value needs to come from `backend.data` attributes, which we don't have access to here
+    // we remove these because their value points to the Gen1 values.
+    // the correct value needs to come from `backend` attributes, which we don't have access to here
     // since `backend` is configured in a different file. we can't import that file because it would create
     // a circular import. instead, we need to generate some code in `backend.ts` (TODO)
+
+    // api access env variables
     for (const envSuffix of ['GRAPHQLAPIKEYOUTPUT', 'GRAPHQLAPIENDPOINTOUTPUT', 'GRAPHQLAPIIDOUTPUT']) {
       for (const variable of Object.keys(configuration.Environment?.Variables ?? {})) {
         if (variable.startsWith('API_') && variable.endsWith(envSuffix)) {
+          delete configuration.Environment?.Variables[variable];
+        }
+      }
+    }
+
+    // storage access env variables
+    for (const envSuffix of ['ARN', 'NAME', 'STREAMARN']) {
+      for (const variable of Object.keys(configuration.Environment?.Variables ?? {})) {
+        if (variable.startsWith('STORAGE_') && variable.endsWith(envSuffix)) {
           delete configuration.Environment?.Variables[variable];
         }
       }
