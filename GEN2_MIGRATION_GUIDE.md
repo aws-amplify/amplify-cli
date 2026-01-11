@@ -309,12 +309,28 @@ Following provides an overview of the supported (and unsupported) features for m
 
 - ➤ **Default Configuration**
 
-  - ❌ Username
-  - ✅ Email
-  - ✅ Phone Number
-  - ❌ Email or Phone Number
+  - ➤ **How do you want users to be able to sign in**
 
-- ❌ **Default configuration with Social Provider (Federation)**
+    - ❌ Username
+    - ✅ Email
+    - ✅ Phone Number
+    - ❌ Email or Phone Number
+
+- ➤ **Default configuration with Social Provider (Federation)**
+
+  - ➤ **How do you want users to be able to sign in**
+
+    - ❌ Username
+    - ❌ Email
+    - ❌ Phone Number
+    - ✅ Email or Phone Number
+
+  - ➤ **Select the social providers you want to configure for your user pool**
+
+    - ✅ Facebook
+    - ✅ Google
+    - ❌ Login With Amazon
+    - ❌ Sign in with Apple
 
 - ➤ **Manual configuration**
 
@@ -330,7 +346,7 @@ Following provides an overview of the supported (and unsupported) features for m
   
   - ❌ **Do you want to enable 3rd party authentication providers in your identity pool**
 
-  - ❌ **Do you want to add User Pool Groups**
+  - ✅ **Do you want to add User Pool Groups**
 
   - ❌ **Do you want to add an admin queries API**
 
@@ -411,31 +427,25 @@ Following provides an overview of the supported (and unsupported) features for m
 
 - ➤ **Content (Images, audio, video, etc.)**
 
-  - ➤ **Who should have access**
+  - **What kind of access do you want for Authenticated users?**
 
-    - ➤ Auth and guest users
+    - ✅ create/update
+    - ✅ read
+    - ✅ delete
 
-      - **What kind of access do you want for Authenticated users?**
+  - **What kind of access do you want for Guest users?**
 
-        - ✅ create/update
-        - ✅ read
-        - ✅ delete
+    - ❌ create/update
+    - ✅ read
+    - ❌ delete
 
-      - **What kind of access do you want for Guest users?**
+  - **What kind of access do you want for {Group} users**
 
-        - ❌ create/update
-        - ✅ read
-        - ❌ delete
+    - ✅ create/update
+    - ✅ read
+    - ✅ delete
 
-    - ➤ Auth users only
-
-      - **What kind of access do you want for Authenticated users?**
-
-        - ✅ create/update
-        - ✅ read
-        - ✅ delete
-
-  - ✅ **Do you want to add a Lambda Trigger for your S3 Bucket?**
+  - ✅ Do you want to add a Lambda Trigger for your S3 Bucket
 
 - ➤ NoSQL Database
 
@@ -502,7 +512,14 @@ Following provides an overview of the supported (and unsupported) features for m
             - ⚠️ update
             - ⚠️ delete
 
-        - ❌ s3
+        - ➤ **s3**
+
+          - ➤ **Select the operations you want to permit**
+
+            - ⚠️ create
+            - ⚠️ read
+            - ⚠️ update
+            - ⚠️ delete
 
     - ❌ **Do you want to invoke this function on a recurring schedule**
     - ❌ **Do you want to enable Lambda layers for this function**
@@ -518,6 +535,14 @@ Following provides an overview of the supported (and unsupported) features for m
 - ❌ **Lambda layer (shared code & resource used across functions)**
 
 ### Lambda Handler Code
+
+## Analytics
+
+### `amplify add analytics`
+
+- ❌ **Amazon Pinpoint**
+
+- ❌ **Amazon Kinesis Streams**
 
 ## Custom 
 
