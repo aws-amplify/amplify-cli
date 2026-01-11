@@ -496,7 +496,14 @@ Following provides an overview of the supported (and unsupported) features for m
           - ⚠️ Mutation
           - ❌ Subscription
 
-      - ❌ auth
+      - ➤ **auth**
+
+          - ➤ **Select the operations you want to permit**
+
+            - ⚠️ create
+            - ⚠️ read
+            - ⚠️ update
+            - ⚠️ delete
 
       - ❌ function
 
