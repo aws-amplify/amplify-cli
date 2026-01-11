@@ -1,7 +1,7 @@
 import { getFunctionDefinition } from '../../../../../../commands/gen2-migration/generate/adapters/functions/index';
 
 describe('getFunctionDefinition', () => {
-  test('storage env variables are removed', () => {
+  test('auth env variables are removed', () => {
     const definition = getFunctionDefinition(
       [
         {
@@ -10,9 +10,75 @@ describe('getFunctionDefinition', () => {
           Environment: {
             Variables: {
               SOME_ENV: 'some-value',
-              STORAGE_ACTIVITY_ARN: 'apiKey',
-              STORAGE_ACTIVITY_NAME: 'apidEndpoint',
-              STORAGE_ACTIVITY_STREAMARN: 'apiId',
+              AUTH_MEDIAVAULT_USERPOOLID: 'authUserPoolId',
+            },
+          },
+        },
+      ],
+      [],
+      new Map(),
+      {
+        function: {
+          MyFunc: {
+            service: 'Lambda',
+            providerPlugin: 'awscloudformation',
+            output: {
+              Name: 'MyFunc',
+            },
+          },
+        },
+      },
+    );
+
+    expect(definition.length).toEqual(1);
+    expect(definition[0].environment?.Variables).toEqual({ SOME_ENV: 'some-value' });
+  });
+
+  test('storage dynamo env variables are removed', () => {
+    const definition = getFunctionDefinition(
+      [
+        {
+          Handler: undefined,
+          FunctionName: 'MyFunc',
+          Environment: {
+            Variables: {
+              SOME_ENV: 'some-value',
+              STORAGE_ACTIVITY_ARN: 'storageArn',
+              STORAGE_ACTIVITY_NAME: 'storageName',
+              STORAGE_ACTIVITY_STREAMARN: 'storageStreamName',
+            },
+          },
+        },
+      ],
+      [],
+      new Map(),
+      {
+        function: {
+          MyFunc: {
+            service: 'Lambda',
+            providerPlugin: 'awscloudformation',
+            output: {
+              Name: 'MyFunc',
+            },
+          },
+        },
+      },
+    );
+
+    expect(definition.length).toEqual(1);
+    expect(definition[0].environment?.Variables).toEqual({ SOME_ENV: 'some-value' });
+  });
+
+  test('storage s3 env variables are removed', () => {
+    const definition = getFunctionDefinition(
+      [
+        {
+          Handler: undefined,
+          FunctionName: 'MyFunc',
+          Environment: {
+            Variables: {
+              SOME_ENV: 'some-value',
+              STORAGE_MEDIAVAULT_BUCKETNAME: 'storageBucketName',
             },
           },
         },

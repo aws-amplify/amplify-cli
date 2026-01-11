@@ -67,10 +67,28 @@ export const getFunctionDefinition = (
       }
     }
 
-    // storage access env variables
+    // storage dynamo access env variables
     for (const envSuffix of ['ARN', 'NAME', 'STREAMARN']) {
       for (const variable of Object.keys(configuration.Environment?.Variables ?? {})) {
         if (variable.startsWith('STORAGE_') && variable.endsWith(envSuffix)) {
+          delete configuration.Environment?.Variables[variable];
+        }
+      }
+    }
+
+    // storage s3 access env variables
+    for (const envSuffix of ['BUCKETNAME']) {
+      for (const variable of Object.keys(configuration.Environment?.Variables ?? {})) {
+        if (variable.startsWith('STORAGE_') && variable.endsWith(envSuffix)) {
+          delete configuration.Environment?.Variables[variable];
+        }
+      }
+    }
+
+    // auth access env variables
+    for (const envSuffix of ['USERPOOLID']) {
+      for (const variable of Object.keys(configuration.Environment?.Variables ?? {})) {
+        if (variable.startsWith('AUTH_') && variable.endsWith(envSuffix)) {
           delete configuration.Environment?.Variables[variable];
         }
       }
