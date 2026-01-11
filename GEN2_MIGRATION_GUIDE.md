@@ -410,6 +410,7 @@ Following provides an overview of the supported (and unsupported) features for m
 
     - ✅ API Key
     - ✅ Amazon Cognito User Pool
+    - ❌ IAM
     - ❌ OpenID Connect
     - ❌ Lambda
 
@@ -489,11 +490,9 @@ Following provides an overview of the supported (and unsupported) features for m
 
       - ➤ **api**
 
-        - ➤ **Select the operations you want to permit**
-
-          - ⚠️ Query
-          - ⚠️ Mutation
-          - ❌ Subscription
+        - ⚠️ Query
+        - ⚠️ Mutation
+        - ❌ Subscription
 
       - ❌ auth
 
@@ -503,21 +502,17 @@ Following provides an overview of the supported (and unsupported) features for m
 
         - ➤ **dynamo**
 
-          - ➤ **Select the operations you want to permit**
-
-            - ⚠️ create
-            - ⚠️ read
-            - ⚠️ update
-            - ⚠️ delete
+          - ⚠️ create
+          - ⚠️ read
+          - ⚠️ update
+          - ⚠️ delete
 
         - ➤ **s3**
 
-          - ➤ **Select the operations you want to permit**
-
-            - ⚠️ create
-            - ⚠️ read
-            - ⚠️ update
-            - ⚠️ delete
+          - ⚠️ create
+          - ⚠️ read
+          - ⚠️ update
+          - ⚠️ delete
 
     - ❌ **Do you want to invoke this function on a recurring schedule**
     - ❌ **Do you want to enable Lambda layers for this function**
