@@ -454,12 +454,7 @@ after: (delete this line)
 before: `import amplifyconfig from './amplifyconfiguration.json';`    
 after: `import amplifyconfig from '../amplify_outputs.json';`   
 
-4. In `amplify/function/thumbnailgen/resource.ts`:
-   
-before: `entry: "index.handler",`     
-after: `entry: "index.js",`   
-
-5. In `amplify/data/resource.ts`:
+4. In `amplify/data/resource.ts`:
 
 after: Add `apiKeyAuthorizationMode: { expiresInDays: 100 }` to authorizationModes. 
  
