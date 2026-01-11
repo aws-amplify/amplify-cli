@@ -490,9 +490,11 @@ Following provides an overview of the supported (and unsupported) features for m
 
       - ➤ **api**
 
-        - ⚠️ Query
-        - ⚠️ Mutation
-        - ❌ Subscription
+        - ➤ **Select the operations you want to permit**
+
+          - ⚠️ Query
+          - ⚠️ Mutation
+          - ❌ Subscription
 
       - ❌ auth
 
@@ -502,17 +504,21 @@ Following provides an overview of the supported (and unsupported) features for m
 
         - ➤ **dynamo**
 
-          - ⚠️ create
-          - ⚠️ read
-          - ⚠️ update
-          - ⚠️ delete
+          - ➤ **Select the operations you want to permit**
+
+            - ⚠️ create
+            - ⚠️ read
+            - ⚠️ update
+            - ⚠️ delete
 
         - ➤ **s3**
 
-          - ⚠️ create
-          - ⚠️ read
-          - ⚠️ update
-          - ⚠️ delete
+          - ➤ **Select the operations you want to permit**
+
+            - ⚠️ create
+            - ⚠️ read
+            - ⚠️ update
+            - ⚠️ delete
 
     - ❌ **Do you want to invoke this function on a recurring schedule**
     - ❌ **Do you want to enable Lambda layers for this function**
