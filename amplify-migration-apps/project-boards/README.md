@@ -193,10 +193,16 @@ Wait for the deployment to finish successfully.
 
 > Based on https://github.com/aws-amplify/amplify-cli/blob/gen2-migration/GEN2_MIGRATION_GUIDE.md
 
-First install the experimental amplify CLI package that provides the migration commands.
+First add the experimental amplify CLI package that provides the migration commands to your `devDependencies`.
+
+**Edit in `package.json`:**
+
+```diff
++ "@aws-amplify/cli-internal-gen2-migration-experimental-alpha": "^0.4.0"
+```
 
 ```console
-npm install @aws-amplify/cli-internal-gen2-migration-experimental-alpha
+npm install
 ```
 
 Now run them:

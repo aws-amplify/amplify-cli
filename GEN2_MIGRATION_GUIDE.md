@@ -43,10 +43,16 @@ able to adapt them to fit your setup.
 > - [Feature Coverage](#feature-coverage)
 > - [Limitations](#limitations)
 
-First obtain a fresh and up-to-date local copy of your Amplify Gen1 environment and run the following:
+First obtain a fresh and up-to-date local copy of your Amplify Gen1 environment add the following to your `devDependencies`.
 
-```bash
-npm install --no-save @aws-amplify/cli-internal-gen2-migration-experimental-alpha
+**Edit in `package.json`:**
+
+```diff
++ "@aws-amplify/cli-internal-gen2-migration-experimental-alpha": "^0.4.0"
+```
+
+```console
+npm install
 ```
 
 This will install a flavor of the amplify Gen1 CLI that includes migration support.
