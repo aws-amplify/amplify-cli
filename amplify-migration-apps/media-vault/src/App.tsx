@@ -3,13 +3,19 @@ import { Authenticator } from '@aws-amplify/ui-react';
 import { generateClient } from 'aws-amplify/api';
 import { uploadData, list, remove, getUrl } from 'aws-amplify/storage';
 import { fetchUserAttributes, fetchAuthSession } from 'aws-amplify/auth';
-import { listNotes } from './graphql/queries';
+import { listNotes, generateThumbnail, addUserToGroup, removeUserFromGroup } from './graphql/queries';
+import { Amplify } from 'aws-amplify';
 import { createNote, deleteNote } from './graphql/mutations';
+import { S3Client, paginateListObjectsV2 } from '@aws-sdk/client-s3';
 import '@aws-amplify/ui-react/styles.css';
 import './App.css';
 
 const client = generateClient({
   authMode: 'userPool',
+});
+
+const publicClient = generateClient({
+  authMode: 'apiKey',
 });
 
 interface Note {
@@ -24,15 +30,27 @@ interface AuthenticatedAppProps {
   newNote: string;
   setNewNote: (value: string) => void;
   loading: boolean;
-  fetchNotes: () => void;
+  fetchNotes: () => Promise<void>;
   addNote: () => void;
   removeNote: (id: string) => void;
   files: string[];
   uploading: boolean;
   uploadFile: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  listFiles: () => void;
+  listFiles: () => Promise<void>;
   deleteFile: (key: string) => void;
   thumbnails: { [key: string]: string };
+}
+
+async function isCurrentUserAdmin(): Promise<boolean> {
+  const session = await fetchAuthSession({ forceRefresh: true });
+  const idToken = session.tokens?.idToken;
+  const groups = idToken?.payload['cognito:groups'] || [];
+  return Array.isArray(groups) && groups.includes('Admin');
+}
+
+async function fetchCurrentUserSub(): Promise<string> {
+  const session = await fetchAuthSession();
+  return session.userSub!;
 }
 
 function App() {
@@ -111,11 +129,23 @@ function App() {
 
     setUploading(true);
     try {
-      const result = await uploadData({
-        key: `media/${Date.now()}-${file.name}`,
+      const key = `media/${Date.now()}-${file.name}`;
+      const uploadResult = await uploadData({
+        key: key,
         data: file,
+        options: { accessLevel: 'private' },
       }).result;
-      console.log('Upload successful:', result);
+      console.log('Upload file:', uploadResult);
+
+      const session = await fetchAuthSession();
+
+      const thumbnailResult = await publicClient.graphql({
+        query: generateThumbnail,
+        variables: { mediaFileKey: `private/${session.identityId!}/${key}` },
+      });
+
+      console.log('Generate thumbnail:', thumbnailResult);
+
       await listFiles();
     } catch (error) {
       console.error('Error uploading file:', error);
@@ -124,18 +154,55 @@ function App() {
     }
   };
 
+  const fetchAllUsersFiles = async () => {
+    const bucketName = Amplify.getConfig().Storage!.S3!.bucket;
+    const region = Amplify.getConfig().Storage!.S3!.region;
+
+    const session = await fetchAuthSession();
+    const s3Client = new S3Client({
+      region: region,
+      credentials: session.credentials,
+    });
+
+    const paginator = paginateListObjectsV2(
+      { client: s3Client },
+      {
+        Bucket: bucketName,
+        Prefix: 'private/',
+      },
+    );
+
+    const files = [];
+
+    for await (const page of paginator) {
+      for (const obj of page.Contents ?? []) {
+        // slice 2 elements to remove 'private/{identity_id}'.
+        files.push(obj.Key!.split('/').slice(2).join('/'));
+      }
+    }
+
+    return files;
+  };
+
+  const fetchCurrentUserFiles = async () => {
+    const files = await list({ prefix: 'media/', options: { accessLevel: 'private' } });
+    return files.items.map((i) => i.key);
+  };
+
   const listFiles = async () => {
     try {
-      const result = await list({ prefix: 'media/' });
-      const fileKeys = result.items.map((item) => item.key).filter((key) => !key.includes('/thumbnails/'));
+      const isAdmin = await isCurrentUserAdmin();
+      if (isAdmin) {
+      }
+      const result = isAdmin ? await fetchAllUsersFiles() : await fetchCurrentUserFiles();
+      const fileKeys = result.filter((key) => !key.includes('/thumbnails/'));
       setFiles(fileKeys);
 
-      // Get thumbnail info for each image file
-      fileKeys.forEach((key) => {
+      for (const key of fileKeys) {
         if (key.match(/\.(jpg|jpeg|png|gif|webp)$/i)) {
-          getThumbnailInfo(key);
+          await setThumbnail(key);
         }
-      });
+      }
     } catch (error) {
       console.error('Error listing files:', error);
     }
@@ -143,18 +210,22 @@ function App() {
 
   const deleteFile = async (key: string) => {
     try {
-      await remove({ key });
+      await remove({ key, options: { accessLevel: 'private' } });
       await listFiles();
     } catch (error) {
       console.error('Error deleting file:', error);
     }
   };
 
-  const getThumbnailInfo = async (fileKey: string) => {
+  const setThumbnail = async (fileKey: string) => {
     try {
       const thumbnailKey = fileKey.replace(/^(.+)\/([^/]+)$/, '$1/thumbnails/$2') + '.txt';
-      const url = await getUrl({ key: thumbnailKey });
+      const url = await getUrl({ key: thumbnailKey, options: { accessLevel: 'private' } });
       const response = await fetch(url.url);
+      if (response.status !== 200) {
+        console.log('No thumbnail info found for:', fileKey);
+        return;
+      }
       const thumbnailInfo = await response.text();
       setThumbnails((prev) => ({ ...prev, [fileKey]: thumbnailInfo }));
     } catch (error) {
@@ -204,6 +275,7 @@ function AuthenticatedApp({
 }: AuthenticatedAppProps) {
   const [displayName, setDisplayName] = useState<string>('User');
   const [isAdmin, setIsAdmin] = useState(false);
+  const [toggleAdminInProgress, setToggleAdminInProgress] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(async () => {
@@ -215,19 +287,7 @@ function AuthenticatedApp({
         const attributes = await fetchUserAttributes();
         const name = attributes.name || attributes.given_name || attributes.email || 'User';
         setDisplayName(name);
-
-        // Check if user is admin using JWT token
-        console.log('All user attributes:', attributes);
-
-        const session = await fetchAuthSession();
-        console.log('Auth session:', session);
-
-        const idToken = session.tokens?.idToken;
-        const groups = idToken?.payload['cognito:groups'] || [];
-        console.log('User groups from token:', groups);
-        const isGroupsArray = Array.isArray(groups);
-        console.log('Is admin?', isGroupsArray && groups.includes('Admin'));
-        setIsAdmin(isGroupsArray && groups.includes('Admin'));
+        setIsAdmin(await isCurrentUserAdmin());
       } catch (error) {
         console.log('Could not fetch user attributes:', error);
       }
@@ -319,6 +379,39 @@ function AuthenticatedApp({
     },
   };
 
+  const toggleAdminPrivileges = async () => {
+    setToggleAdminInProgress(true);
+    try {
+      const isAdmin = await isCurrentUserAdmin();
+      if (isAdmin) {
+        console.log('Removing user from Admin group');
+        const result = await publicClient.graphql({
+          query: removeUserFromGroup,
+          variables: { userSub: await fetchCurrentUserSub(), group: 'Admin' },
+        });
+        console.log(result);
+        setIsAdmin(false);
+      } else {
+        console.log('Adding user to Admin group');
+        const result = await publicClient.graphql({
+          query: addUserToGroup,
+          variables: { userSub: await fetchCurrentUserSub(), group: 'Admin' },
+        });
+        console.log(result);
+        setIsAdmin(true);
+      }
+      await fetchAuthSession({ forceRefresh: true });
+      await listFiles();
+      await fetchNotes();
+    } catch (error) {
+      console.error('Error making user admin:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      alert('Error making user admin: ' + errorMessage);
+    } finally {
+      setToggleAdminInProgress(false);
+    }
+  };
+
   return (
     <div style={styles.container}>
       <div style={styles.header}>
@@ -342,6 +435,25 @@ function AuthenticatedApp({
           )}
         </p>
         {isAdmin && <p style={{ margin: '8px 0 0 0', opacity: 0.8, fontSize: '14px' }}>You have administrative access to all content</p>}
+
+        <div style={{ marginTop: '16px' }}>
+          <button
+            onClick={toggleAdminPrivileges}
+            disabled={toggleAdminInProgress}
+            style={{
+              padding: '8px 16px',
+              backgroundColor: '#10b981',
+              color: 'white',
+              border: 'none',
+              borderRadius: '6px',
+              fontSize: '14px',
+              cursor: 'pointer',
+              opacity: toggleAdminInProgress ? 0.5 : 1,
+            }}
+          >
+            {isAdmin ? 'Revoke Admin Privileges' : '🔑 Grant Admin Privileges'}
+          </button>
+        </div>
       </div>
 
       <div style={styles.grid}>
