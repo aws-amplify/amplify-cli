@@ -20,7 +20,6 @@ import { Amplify } from 'aws-amplify';
 import { signIn, signOut, getCurrentUser } from 'aws-amplify/auth';
 import { uploadData, getUrl, downloadData, getProperties } from 'aws-amplify/storage';
 import * as fs from 'fs';
-import * as path from 'path';
 import amplifyconfig from './amplifyconfiguration.json';
 
 // Configure Amplify
