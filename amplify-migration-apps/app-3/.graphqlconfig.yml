@@ -1,15 +1,19 @@
 projects:
-  personalmediavault:
-    schemaPath: src/graphql/schema.json
+  mediavault:
+    schemaPath: amplify/backend/api/mediavault/build/schema.graphql
     includes:
-      - src/graphql/**/*.js
+      - src/graphql/**/*.ts
     excludes:
       - ./amplify/**
+      - src/API.ts
     extensions:
       amplify:
-        codeGenTarget: javascript
-        generatedFileName: ''
+        codeGenTarget: typescript
+        generatedFileName: src/API.ts
         docsFilePath: src/graphql
+        region: us-east-1
+        apiId: null
+        maxDepth: 2
 extensions:
   amplify:
     version: 3

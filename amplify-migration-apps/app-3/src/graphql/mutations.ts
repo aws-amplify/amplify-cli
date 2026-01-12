@@ -1,80 +1,55 @@
-export const createNote = `
-  mutation CreateNote($input: CreateNoteInput!) {
-    createNote(input: $input) {
-      id
-      title
-      content
-      tags
-      isPinned
-      createdAt
-      updatedAt
-    }
-  }
-`;
+/* tslint:disable */
+/* eslint-disable */
+// this is an auto generated file. This will be overwritten
 
-export const deleteNote = `
-  mutation DeleteNote($input: DeleteNoteInput!) {
-    deleteNote(input: $input) {
-      id
-    }
-  }
-`;
+import * as APITypes from '../API';
+type GeneratedMutation<InputType, OutputType> = string & {
+  __generatedMutationInput: InputType;
+  __generatedMutationOutput: OutputType;
+};
 
-export const createMediaItem = `
-  mutation CreateMediaItem($input: CreateMediaItemInput!) {
-    createMediaItem(input: $input) {
-      id
-      title
-      description
-      fileUrl
-      thumbnailUrl
-      fileType
-      fileSize
-      mimeType
-      tags
-      isPrivate
-      uploadedAt
-      userProfileId
-      collectionId
-      createdAt
-      updatedAt
-    }
+export const createNote = /* GraphQL */ `mutation CreateNote(
+  $input: CreateNoteInput!
+  $condition: ModelNoteConditionInput
+) {
+  createNote(input: $input, condition: $condition) {
+    id
+    title
+    content
+    createdAt
+    updatedAt
+    owner
+    __typename
   }
-`;
-
-export const deleteMediaItem = `
-  mutation DeleteMediaItem($input: DeleteMediaItemInput!) {
-    deleteMediaItem(input: $input) {
-      id
-    }
+}
+` as GeneratedMutation<APITypes.CreateNoteMutationVariables, APITypes.CreateNoteMutation>;
+export const updateNote = /* GraphQL */ `mutation UpdateNote(
+  $input: UpdateNoteInput!
+  $condition: ModelNoteConditionInput
+) {
+  updateNote(input: $input, condition: $condition) {
+    id
+    title
+    content
+    createdAt
+    updatedAt
+    owner
+    __typename
   }
-`;
-
-export const createUserProfile = `
-  mutation CreateUserProfile($input: CreateUserProfileInput!) {
-    createUserProfile(input: $input) {
-      id
-      username
-      email
-      displayName
-      avatar
-      createdAt
-      updatedAt
-    }
+}
+` as GeneratedMutation<APITypes.UpdateNoteMutationVariables, APITypes.UpdateNoteMutation>;
+export const deleteNote = /* GraphQL */ `mutation DeleteNote(
+  $input: DeleteNoteInput!
+  $condition: ModelNoteConditionInput
+) {
+  deleteNote(input: $input, condition: $condition) {
+    id
+    title
+    content
+    createdAt
+    updatedAt
+    owner
+    __typename
   }
-`;
-
-export const createCollection = `
-  mutation CreateCollection($input: CreateCollectionInput!) {
-    createCollection(input: $input) {
-      id
-      name
-      description
-      coverImage
-      isPrivate
-      userProfileId
-      createdAt
-      updatedAt
-    }
-  }
-`;
+}
+` as GeneratedMutation<APITypes.DeleteNoteMutationVariables, APITypes.DeleteNoteMutation>;
