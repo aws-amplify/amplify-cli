@@ -21,7 +21,7 @@ batch:
     - identifier: build_windows
       buildspec: codebuild_specs/build_windows.yml
       env:
-        type: WINDOWS_SERVER_2019_CONTAINER
+        type: WINDOWS_SERVER_2022_CONTAINER
         compute-type: BUILD_GENERAL1_LARGE
         image: aws/codebuild/windows-base:2019-2.0
     - identifier: test
@@ -103,7 +103,7 @@ batch:
     - identifier: run_e2e_tests_windows
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
-        type: WINDOWS_SERVER_2019_CONTAINER
+        type: WINDOWS_SERVER_2022_CONTAINER
         compute-type: BUILD_GENERAL1_LARGE
         image: aws/codebuild/windows-base:2019-2.0
       depend-on:
