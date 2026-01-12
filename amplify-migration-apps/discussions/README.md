@@ -328,6 +328,10 @@ this process for any number of users.
 
 > Based on https://github.com/aws-amplify/amplify-cli/blob/gen2-migration/GEN2_MIGRATION_GUIDE.md
 
+> [!NOTE]
+> Migration is not fully supported for this app yet due to a missing feature for refactoring DynamoDB storage tables.
+> This guide ends at the `generate` step.
+
 First install the experimental amplify CLI package that provides the migration commands.
 
 ```console
