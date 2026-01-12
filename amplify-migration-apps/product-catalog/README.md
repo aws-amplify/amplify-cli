@@ -5,6 +5,10 @@
 An inventory management application built with Amplify Gen1, featuring role-based authentication, 
 GraphQL API, Lambda functions, S3 storage, and DynamoDB.
 
+> [!NOTICE]
+> Since amplify operations add files to your local directory, its better not to operate within this repo.
+> Instead, create your own private GitHub repository and copy the app over.
+
 ## Install Dependencies
 
 ```console
