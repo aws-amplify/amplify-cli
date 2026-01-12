@@ -10,6 +10,11 @@ and can exist unassigned.
 - Authenticated users can create Projects and Todos, and modify/delete their own. They may add 
 Todos to Projects that are not their own, but cannot change the Project settings.
 
+## Create a GitHub Repository
+
+Since amplify operations add files to your local directory, its better not to operate within this repo.
+Instead, follo
+
 ## Install Dependencies
 
 ```console
