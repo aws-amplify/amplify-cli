@@ -39,16 +39,23 @@ export const analyzeApiPermissionsFromCfn = (functionResourceName: string): ApiP
 
         for (const statement of statements) {
           const actions = Array.isArray(statement.Action) ? statement.Action : [statement.Action];
+          const resources = Array.isArray(statement.Resource) ? statement.Resource : [statement.Resource];
 
-          for (const action of actions) {
-            if (action.includes('appsync:GraphQL')) {
-              if (action.includes('Query') || action === 'appsync:GraphQL') {
+          // Check if this statement has appsync:GraphQL action
+          const hasAppSyncAction = actions.some((action) => action === 'appsync:GraphQL');
+
+          if (hasAppSyncAction) {
+            // Check resources to determine specific permissions
+            for (const resourceArn of resources) {
+              const resourceStr = typeof resourceArn === 'string' ? resourceArn : JSON.stringify(resourceArn);
+
+              if (resourceStr.includes('/types/Query/')) {
                 hasQuery = true;
               }
-              if (action.includes('Mutation') || action === 'appsync:GraphQL') {
+              if (resourceStr.includes('/types/Mutation/')) {
                 hasMutation = true;
               }
-              if (action.includes('Subscription') || action === 'appsync:GraphQL') {
+              if (resourceStr.includes('/types/Subscription/')) {
                 hasSubscription = true;
               }
             }
@@ -56,7 +63,6 @@ export const analyzeApiPermissionsFromCfn = (functionResourceName: string): ApiP
         }
       }
     }
-
     return { hasQuery, hasMutation, hasSubscription };
   } catch {
     return { hasQuery: false, hasMutation: false, hasSubscription: false };
