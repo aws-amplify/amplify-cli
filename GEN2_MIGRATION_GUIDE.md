@@ -329,100 +329,89 @@ Following provides an overview of the supported (and unsupported) features for m
 
 > **Legend**
 >
-> - ❌ Unsupported
-> - ✅ Fully automated
-> - ⚠️ Requires manual code (provided by this guide)
+> - ❌ | Unsupported
+> - ✅ | Fully automated
+> - ⚠️ | Requires manual code (provided by this guide)
+> - `{command}` ✔ | running `amplify gen2-migration {command}` works.
+> - `{command}` ✗ | running `amplify gen2-migration {command}` doesn't work. migration ends in the previous step.
 
 ## Auth
 
 ### `amplify add auth`
 
-- ➤ **Default Configuration**
+- ➤ **How do you want users to be able to sign in**
 
-  - ➤ **How do you want users to be able to sign in**
+  - ✅ Username (`generate` ✔ `refactor` ✔) 
+  - ✅ Email (`generate` ✔ `refactor` ✔)
+  - ✅ Phone Number (`generate` ✔ `refactor` ✔)
+  - ✅ Email or Phone Number (`generate` ✔ `refactor` ✔)
 
-    - ❌ Username
-    - ✅ Email
-    - ✅ Phone Number
-    - ❌ Email or Phone Number
+- ➤ **Select the social providers you want to configure for your user pool**
 
-- ➤ **Default configuration with Social Provider (Federation)**
+  - ✅ Facebook (`generate` ✔ `refactor` ✗)
+  - ✅ Google (`generate` ✔ `refactor` ✗)
+  - ❌ Login With Amazon
+  - ❌ Sign in with Apple
 
-  - ➤ **How do you want users to be able to sign in**
+- ➤ **Select the authentication/authorization services that you want to use**
 
-    - ❌ Username
-    - ❌ Email
-    - ❌ Phone Number
-    - ✅ Email or Phone Number
-
-  - ➤ **Select the social providers you want to configure for your user pool**
-
-    - ✅ Facebook
-    - ✅ Google
-    - ❌ Login With Amazon
-    - ❌ Sign in with Apple
-
-- ➤ **Manual configuration**
-
-  - ➤ **Select the authentication/authorization services that you want to use**
-
-    - ✅ User Sign-Up, Sign-In, connected with AWS IAM controls
-    - ❌ User Sign-Up & Sign-In only
-    
-  - ➤ **Allow unauthenticated logins**
-
-    - ❌ Yes
-    - ✅ No
+  - ✅ User Sign-Up, Sign-In, connected with AWS IAM controls (`generate` ✔ `refactor` ✔)
+  - ❌ User Sign-Up & Sign-In only
   
-  - ❌ **Do you want to enable 3rd party authentication providers in your identity pool**
+- ➤ **Allow unauthenticated logins**
 
-  - ✅ **Do you want to add User Pool Groups**
+  - ❌ Yes
+  - ✅ No (`generate` ✔ `refactor` ✔)
 
-  - ❌ **Do you want to add an admin queries API**
+- ❌ **Do you want to enable 3rd party authentication providers in your identity pool**
 
-  - ➤ **Multifactor authentication (MFA) user login options**
+- ✅ **Do you want to add User Pool Groups** (`generate` ✔ `refactor` ✔)
 
-    - ✅ OFF
-    - ❌ ON
-    - ❌ OPTIONAL
-  
-  - ➤ **Email based user registration/forgot password:**
+- ❌ **Do you want to add an admin queries API**
 
-    - ✅ Enabled
-    - ❌ Disabled
+- ➤ **Multifactor authentication (MFA) user login options**
 
-  - ✅ **Specify an email verification subject**
+  - ✅ OFF
+  - ❌ ON
+  - ❌ OPTIONAL
 
-  - ✅ **Specify an email verification message**
+- ➤ **Email based user registration/forgot password:**
 
-  - ❌ **Do you want to override the default password policy for this User Pool**
+  - ✅ Enabled
+  - ❌ Disabled
 
-  - ➤ **What attributes are required for signing up**
+- ✅ **Specify an email verification subject**
 
-    - ❌ Birthdate (This attribute is not supported by Login With Amazon, Sign in with Apple.)
-    - ✅ Email
-    - ❌ Family Name (This attribute is not supported by Login With Amazon.)
-    - ❌ Middle Name (This attribute is not supported by Google, Login With Amazon, Sign in with Apple.)
-    - ❌ Gender (This attribute is not supported by Login With Amazon, Sign in with Apple.)
-    - ❌ Locale (This attribute is not supported by Facebook, Google, Sign in with Apple.)
-  
-  - ✅ **Specify the app's refresh token expiration period (in days)**
+- ✅ **Specify an email verification message**
 
-  - ❌ **Do you want to specify the user attributes this app can read and write**
+- ❌ **Do you want to override the default password policy for this User Pool**
 
-  - ➤ **Do you want to enable any of the following capabilities**
+- ➤ **What attributes are required for signing up**
 
-    - ❌ Add Google reCaptcha Challenge
-    - ❌ Email Verification Link with Redirect
-    - ❌ Add User to Group
-    - ❌ Email Domain Filtering (denylist)
-    - ❌ Email Domain Filtering (allowlist)
-    - ❌ Custom Auth Challenge Flow (basic scaffolding - not for production)
-    - ❌ Override ID Token Claims
-  
-  - ❌ **Do you want to use an OAuth flow**
+  - ❌ Birthdate (This attribute is not supported by Login With Amazon, Sign in with Apple.)
+  - ✅ Email
+  - ❌ Family Name (This attribute is not supported by Login With Amazon.)
+  - ❌ Middle Name (This attribute is not supported by Google, Login With Amazon, Sign in with Apple.)
+  - ❌ Gender (This attribute is not supported by Login With Amazon, Sign in with Apple.)
+  - ❌ Locale (This attribute is not supported by Facebook, Google, Sign in with Apple.)
 
-  - ❌ **Do you want to configure Lambda Triggers for Cognito**
+- ✅ **Specify the app's refresh token expiration period (in days)**
+
+- ❌ **Do you want to specify the user attributes this app can read and write**
+
+- ➤ **Do you want to enable any of the following capabilities**
+
+  - ❌ Add Google reCaptcha Challenge
+  - ❌ Email Verification Link with Redirect
+  - ❌ Add User to Group
+  - ❌ Email Domain Filtering (denylist)
+  - ❌ Email Domain Filtering (allowlist)
+  - ❌ Custom Auth Challenge Flow (basic scaffolding - not for production)
+  - ❌ Override ID Token Claims
+
+- ❌ **Do you want to use an OAuth flow**
+
+- ❌ **Do you want to configure Lambda Triggers for Cognito**
 
 ## Api
 
