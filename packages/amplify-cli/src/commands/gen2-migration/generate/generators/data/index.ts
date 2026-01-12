@@ -29,16 +29,26 @@ export interface AdditionalAuthProvider {
  */
 interface Gen1AuthorizationConfig {
   defaultAuthentication?: {
-    authenticationType?: string;
+    authenticationType?: 'API_KEY' | 'AMAZON_COGNITO_USER_POOLS' | 'AWS_IAM' | 'OPENID_CONNECT' | 'AWS_LAMBDA';
     apiKeyConfig?: {
+      description?: string;
       apiKeyExpirationDays?: number;
+      apiKeyExpirationDate?: Date;
     };
-    lambdaAuthorizerConfig?: {
-      ttlSeconds?: number;
+    userPoolConfig?: {
+      userPoolId: string;
     };
     openIDConnectConfig?: {
-      issuer?: string;
+      name?: string;
+      issuerUrl?: string;
       clientId?: string;
+      iatTTL?: number;
+      authTTL?: number;
+    };
+    lambdaAuthorizerConfig?: {
+      lambdaFunction?: string;
+      lambdaArn?: string;
+      ttlSeconds?: number;
     };
   };
 }
@@ -303,15 +313,15 @@ const generateLambdaAuthMode = (lambdaConfig: { ttlSeconds?: number } | undefine
  * @param oidcConfig - OpenID Connect configuration from Gen1
  * @returns ObjectLiteralElementLike for oidcAuthorizationMode, or undefined
  */
-const generateOidcAuthMode = (oidcConfig: { issuer?: string; clientId?: string } | undefined): ObjectLiteralElementLike | undefined => {
+const generateOidcAuthMode = (oidcConfig: { issuerUrl?: string; clientId?: string } | undefined): ObjectLiteralElementLike | undefined => {
   if (!oidcConfig) {
     return undefined;
   }
 
   const oidcProps: ObjectLiteralElementLike[] = [];
 
-  if (oidcConfig.issuer) {
-    oidcProps.push(factory.createPropertyAssignment('oidcIssuerUrl', factory.createStringLiteral(oidcConfig.issuer)));
+  if (oidcConfig.issuerUrl) {
+    oidcProps.push(factory.createPropertyAssignment('oidcIssuerUrl', factory.createStringLiteral(oidcConfig.issuerUrl)));
   }
   if (oidcConfig.clientId) {
     oidcProps.push(factory.createPropertyAssignment('clientId', factory.createStringLiteral(oidcConfig.clientId)));
@@ -357,6 +367,10 @@ const generateAuthModesProperty = (authorizationModes: AuthorizationModes | unde
         break;
       case 'OPENID_CONNECT':
         modeSpecificConfig = generateOidcAuthMode(gen1AuthModes.defaultAuthentication?.openIDConnectConfig);
+        break;
+      case 'AWS_IAM':
+      case 'AMAZON_COGNITO_USER_POOLS':
+        // These auth modes don't require additional configuration
         break;
     }
 
