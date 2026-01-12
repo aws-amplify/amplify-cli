@@ -373,7 +373,7 @@ in the _Google Sign-In_ tab.
 
 > Based on https://github.com/aws-amplify/amplify-cli/blob/gen2-migration/GEN2_MIGRATION_GUIDE.md
 
-> [!WARN]
+> [!WARNING]
 > Migration is not fully supported for this app yet due to a bug in refactoring the social provider
 > configuration. This guide ends at the `generate` step.
 
