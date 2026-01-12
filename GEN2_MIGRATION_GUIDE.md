@@ -11,8 +11,9 @@ Following document describes how to migrate your Gen1 environment to a new Gen2 
 Migration to Gen2 is done in a (partial) blue/green deployment approach.
 
 1. Amplify CLI will code-generate the neccessary Gen2 definition files based on your deployed Gen1 environment.
-2. These new files will be pushed to a new branch and deployed via the hosting service.
-3. Amplify CLI will refactor your underlying CloudFormation stacks such that any Gen1 stateful resource (e.g `UserPool`) 
+2. You'll to perform some manual edits on those files. Amount of manual edits varries depending on the app itself.
+3. These new files will be pushed to a new branch and deployed via the hosting service.
+4. Amplify CLI will refactor your underlying CloudFormation stacks such that any Gen1 stateful resource (e.g `UserPool`) 
 will be reused and managed by the new Gen2 deployment.
 
 After completing this process you will have 2 functionally equivalent amplify applications that access the same data.
@@ -169,7 +170,7 @@ This is required in order for your Gen1 environment to keep functioning correctl
 
 > See [GraphQL types protected with the IAM provider](#graphql-types-protected-by-the-iam-auth-provider) for more details.
 
-#### 2.3 Post Generate | Stroage Function Access
+#### 2.3 Post Generate | Dynamo Stroage Function Access
 
 If your function needs to access the DynamoDB table configured as part of your storage category you need to explicitly 
 provide it with the appropriate environment variables and give it the necessary permissions.
@@ -183,9 +184,34 @@ provide it with the appropriate environment variables and give it the necessary 
 + mytable.grantReadData(backend.myfunction.resources.lambda);
 ```
 
-> Where `myfunction` and `mytable` are the friendly names of the relevant function and table.
+> Where `myfunction` and `mytable` are the function and dynamo storage friendly names respectively.
 
-#### 2.4 Post Generate | Api Function Trigger
+#### 2.4 Post Generate | S3 Stroage Function Access
+
+If your function needs to access the S3 table configured as part of your storage category you need to explicitly 
+provide it with the appropriate environment variables and give it the necessary permissions.
+
+**Edit in `./amplify/backend.ts`:**
+
+```diff
++ backend.myfunction.addEnvironment('STORAGE_MYBUCKET_ARN', mytable.tableArn);
+```
+
+> Where `myfunction` and `mybucket` are the function and s3 storage friendly names respectively.
+
+**Edit in `./amplify/backend/storage/resource.ts`:**
+
+Add this to every configured prefix:
+
+```diff
++ import { myfunction } from './function/myfunction/resource';
+```
+
+```diff
++ allow.resource(myfunction).to(["write", "read", "delete"])
+```
+
+#### 2.5 Post Generate | Api Function Trigger
 
 If your function is triggered based on model updates you need to explicitly create the trigger 
 and grant the function the necessary permissions.
@@ -201,7 +227,7 @@ and grant the function the necessary permissions.
 
 > Where `myfunction` is the function friendly name and `Comment` is the model name.
 
-#### 2.5 Post Generate | Function Secrets
+#### 2.6 Post Generate | Function Secrets
 
 If your function was configured with a secret value, you must first recreate the secret using the amplify console.
 
