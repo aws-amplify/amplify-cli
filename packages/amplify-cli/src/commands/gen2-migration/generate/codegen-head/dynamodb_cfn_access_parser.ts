@@ -20,12 +20,8 @@ const DYNAMODB_ACTION_TO_GEN2_PERMISSION: Record<string, string[]> = {
 
 export class DynamoDBCloudFormationAccessParser {
   static parseTemplateFile(templatePath: string): DynamoDBAccessPermission[] {
-    try {
-      const { cfnTemplate } = readCFNTemplate(templatePath);
-      return this.parseTemplate(cfnTemplate);
-    } catch {
-      return [];
-    }
+    const { cfnTemplate } = readCFNTemplate(templatePath);
+    return this.parseTemplate(cfnTemplate);
   }
 
   static parseTemplate(template: Template): DynamoDBAccessPermission[] {
