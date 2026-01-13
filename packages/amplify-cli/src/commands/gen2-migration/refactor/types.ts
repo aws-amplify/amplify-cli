@@ -101,6 +101,10 @@ export enum CFN_S3_TYPE {
   Bucket = 'AWS::S3::Bucket',
 }
 
+export enum CFN_DYNAMODB_TYPE {
+  Table = 'AWS::DynamoDB::Table',
+}
+
 export enum CFN_IAM_TYPE {
   Role = 'AWS::IAM::Role',
 }
