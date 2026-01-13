@@ -21,7 +21,6 @@ export type AccessPatterns = {
   /** Function access patterns for resource-based access */
   functions?: Array<{
     functionName: string;
-    pathPattern: string;
     permissions: Permission[];
   }>;
 };

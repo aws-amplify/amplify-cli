@@ -58,13 +58,9 @@ describe('S3CloudFormationAccessParser', () => {
 
       expect(permissions).toHaveLength(2);
       expect(permissions[0]).toEqual({
-        bucketResource: 'storagefitnessappstorageBucketName',
-        pathPattern: '*',
         actions: ['s3:ListBucket'],
       });
       expect(permissions[1]).toEqual({
-        bucketResource: 'storagefitnessappstorageBucketName',
-        pathPattern: '*',
         actions: ['s3:PutObject', 's3:GetObject', 's3:DeleteObject'],
       });
     });

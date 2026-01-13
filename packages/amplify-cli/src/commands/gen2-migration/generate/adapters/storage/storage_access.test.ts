@@ -15,53 +15,44 @@ describe('Storage Access with S3 Function Support', () => {
 
   describe('extractFunctionS3Access', () => {
     it('should extract function access patterns from CloudFormation templates', () => {
-      mockS3Parser.findFunctionCloudFormationTemplates.mockReturnValue([
+      mockS3Parser.findFunctionCloudFormationTemplate.mockReturnValue(
         'amplify/backend/function/generateReports/generateReports-cloudformation-template.json',
-      ]);
+      );
 
       mockS3Parser.parseTemplateFile.mockReturnValue([
         {
-          bucketResource: 'storagefitnessappstorageBucketName',
-          pathPattern: 'reports/*',
           actions: ['s3:PutObject', 's3:GetObject', 's3:DeleteObject'],
         },
       ]);
 
       mockS3Parser.mapS3ActionsToGen2Permissions.mockReturnValue(['read', 'write', 'delete']);
 
-      const result = extractFunctionS3Access(['generateReports'], 'fitnessappstorage');
+      const result = extractFunctionS3Access(['generateReports']);
 
       expect(result).toHaveLength(1);
       expect(result[0]).toEqual({
         functionName: 'generateReports',
-        pathPattern: 'reports/*',
         permissions: ['read', 'write', 'delete'],
       });
     });
 
-    it('should filter out functions that do not access the specified bucket', () => {
-      mockS3Parser.findFunctionCloudFormationTemplates.mockReturnValue([
+    it('should return empty array when no S3 actions found', () => {
+      mockS3Parser.findFunctionCloudFormationTemplate.mockReturnValue(
         'amplify/backend/function/processImages/processImages-cloudformation-template.json',
-      ]);
+      );
 
-      mockS3Parser.parseTemplateFile.mockReturnValue([
-        {
-          bucketResource: 'differentBucketName',
-          pathPattern: 'images/*',
-          actions: ['s3:GetObject'],
-        },
-      ]);
+      mockS3Parser.parseTemplateFile.mockReturnValue([]);
 
-      const result = extractFunctionS3Access(['processImages'], 'myAppStorage');
+      const result = extractFunctionS3Access(['processImages']);
       expect(result).toHaveLength(0);
     });
   });
 
   describe('extractFunctionDynamoDBAccess', () => {
     it('should extract DynamoDB access patterns from CloudFormation templates', () => {
-      mockDynamoParser.findFunctionCloudFormationTemplates.mockReturnValue([
+      mockDynamoParser.findFunctionCloudFormationTemplate.mockReturnValue(
         'amplify/backend/function/dataProcessor/dataProcessor-cloudformation-template.json',
-      ]);
+      );
 
       mockDynamoParser.parseTemplateFile.mockReturnValue([
         {
@@ -113,7 +104,6 @@ describe('Storage Access with S3 Function Support', () => {
           functions: [
             {
               functionName: 'generateReports',
-              pathPattern: 'reports/*',
               permissions: ['read' as const, 'write' as const, 'delete' as const],
             },
           ],

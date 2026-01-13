@@ -133,23 +133,7 @@ export class DynamoDBCloudFormationAccessParser {
     return Array.from(permissions);
   }
 
-  static findFunctionCloudFormationTemplate(functionResourceName: string): string | null {
-    const templatePath = path.join(
-      'amplify',
-      'backend',
-      'function',
-      functionResourceName,
-      `${functionResourceName}-cloudformation-template.json`,
-    );
-
-    try {
-      if (require('fs').existsSync(templatePath)) {
-        return templatePath;
-      }
-    } catch {
-      // Template doesn't exist
-    }
-
-    return null;
+  static findFunctionCloudFormationTemplate(functionResourceName: string): string {
+    return path.join('amplify', 'backend', 'function', functionResourceName, `${functionResourceName}-cloudformation-template.json`);
   }
 }
