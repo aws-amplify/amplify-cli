@@ -7,17 +7,6 @@ export interface DynamoDBAccessPermission {
   actions: string[];
 }
 
-const DYNAMODB_ACTION_TO_GEN2_PERMISSION: Record<string, string[]> = {
-  'dynamodb:GetItem': ['read'],
-  'dynamodb:PutItem': ['write'],
-  'dynamodb:UpdateItem': ['write'],
-  'dynamodb:DeleteItem': ['delete'],
-  'dynamodb:Query': ['read'],
-  'dynamodb:Scan': ['read'],
-  'dynamodb:BatchGetItem': ['read'],
-  'dynamodb:BatchWriteItem': ['write'],
-};
-
 export class DynamoDBCloudFormationAccessParser {
   static parseTemplateFile(templatePath: string): DynamoDBAccessPermission[] {
     const { cfnTemplate } = readCFNTemplate(templatePath);
@@ -110,19 +99,6 @@ export class DynamoDBCloudFormationAccessParser {
       tableResource,
       actions,
     };
-  }
-
-  static mapDynamoDBActionsToGen2Permissions(dynamoActions: string[]): string[] {
-    const permissions = new Set<string>();
-
-    for (const action of dynamoActions) {
-      const gen2Perms = DYNAMODB_ACTION_TO_GEN2_PERMISSION[action];
-      if (gen2Perms) {
-        gen2Perms.forEach((perm) => permissions.add(perm));
-      }
-    }
-
-    return Array.from(permissions);
   }
 
   static findFunctionCloudFormationTemplate(functionResourceName: string): string {

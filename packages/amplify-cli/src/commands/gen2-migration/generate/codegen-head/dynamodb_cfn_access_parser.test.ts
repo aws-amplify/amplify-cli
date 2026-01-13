@@ -69,14 +69,4 @@ describe('DynamoDBCloudFormationAccessParser', () => {
       expect(permissions).toHaveLength(0);
     });
   });
-
-  describe('mapDynamoDBActionsToGen2Permissions', () => {
-    it('should map DynamoDB actions to Gen2 permissions correctly', () => {
-      const dynamoActions = ['dynamodb:GetItem', 'dynamodb:PutItem', 'dynamodb:DeleteItem', 'dynamodb:Query'];
-      const gen2Permissions = DynamoDBCloudFormationAccessParser.mapDynamoDBActionsToGen2Permissions(dynamoActions);
-
-      expect(gen2Permissions).toEqual(expect.arrayContaining(['read', 'write', 'delete']));
-      expect(gen2Permissions).toHaveLength(3);
-    });
-  });
 });
