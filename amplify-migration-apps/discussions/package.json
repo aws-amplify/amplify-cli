@@ -6,7 +6,10 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "configure": "./configure.sh",
+    "configure-schema": "./configure-schema.sh",
+    "configure-functions": "./configure-functions.sh"
   },
   "devDependencies": {
     "vite": "^7.2.2"
