@@ -5,6 +5,10 @@
 A personal media management application featuring social authentication, GraphQL API, Lambda functions, S3 storage, and DynamoDB. 
 Users sign up with email/phone or social login (Facebook/Google)
 
+> [!NOTICE]
+> Since amplify operations add files to your local directory, its better not to operate within this repo.
+> Instead, create your own private GitHub repository and copy the app over.
+
 ## Install Dependencies
 
 ```console
@@ -369,14 +373,20 @@ in the _Google Sign-In_ tab.
 
 > Based on https://github.com/aws-amplify/amplify-cli/blob/gen2-migration/GEN2_MIGRATION_GUIDE.md
 
-> [!NOTE]
+> [!WARNING]
 > Migration is not fully supported for this app yet due to a bug in refactoring the social provider
 > configuration. This guide ends at the `generate` step.
 
-First install the experimental amplify CLI package that provides the migration commands.
+First add the experimental amplify CLI package that provides the migration commands to your `devDependencies`.
+
+**Edit in `package.json`:**
+
+```diff
++ "@aws-amplify/cli-internal-gen2-migration-experimental-alpha": "^0.4.0"
+```
 
 ```console
-npm install --no-save @aws-amplify/cli-internal-gen2-migration-experimental-alpha
+npm install
 ```
 
 Now run them:
