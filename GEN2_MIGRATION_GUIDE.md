@@ -11,7 +11,7 @@ Following document describes how to migrate your Gen1 environment to a new Gen2 
 Migration to Gen2 is done in a (partial) blue/green deployment approach.
 
 1. Amplify CLI will code-generate the neccessary Gen2 definition files based on your deployed Gen1 environment.
-2. You'll to perform some manual edits on those files. Amount of manual edits varries depending on the app itself.
+2. You'll need to perform some manual edits on those files. How much exactly varries depending on the app itself.
 3. These new files will be pushed to a new branch and deployed via the hosting service.
 4. Amplify CLI will refactor your underlying CloudFormation stacks such that any Gen1 stateful resource (e.g `UserPool`) 
 will be reused and managed by the new Gen2 deployment.
@@ -44,7 +44,7 @@ able to adapt them to fit your setup.
 > - [Feature Coverage](#feature-coverage)
 > - [Limitations](#limitations)
 
-First obtain a fresh and up-to-date local copy of your Amplify Gen1 environment add the following to your `devDependencies`.
+First obtain a fresh and up-to-date local copy of your Amplify Gen1 environment and add the following to your `devDependencies`.
 
 **Edit in `package.json`:**
 
@@ -467,10 +467,6 @@ to add the necessary configuration.
 
 - ❌ **REST**
 
-### GraphQL Schema
-
-### Custom Resolvers
-
 ## Storage
 
 ### `amplify add storage`
@@ -583,23 +579,37 @@ to add the necessary configuration.
 
 - ❌ **Lambda layer (shared code & resource used across functions)**
 
-### Lambda Handler Code
+## Geo
+
+### `amplify add geo` ❌
+
+## Interactions
+
+### `amplify add interactions` ❌
+
+## Predictions
+
+### `amplify add predictions` ❌
+
+## Notifications
+
+### `amplify add notifications` ❌
 
 ## Analytics
 
-### `amplify add analytics`
+### `amplify add analytics` ❌
 
-- ❌ **Amazon Pinpoint**
+## Hosting
 
-- ❌ **Amazon Kinesis Streams**
+### `amplify add hosting` ❌
 
 ## Custom 
 
-### `amplify add custom`
+### `amplify add custom` ❌
 
 ## Overrides 
 
-### `amplify override <category>`
+### `amplify override <category>` ❌
 
 ## Limitations
 
