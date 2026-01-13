@@ -204,22 +204,18 @@ export class AppFunctionsDefinitionFetcher {
     const functionSchedules = await Promise.all(getFunctionSchedulePromises);
 
     // Read CloudFormation templates for each function to detect auth access
+    // This is a trade off I am making design wise. Ideally, we need one source
+    // of cfn template scanning and all other categories should use that for access.
     const functionTemplates = new Map<string, string>();
     for (const functionName of Object.keys(functions)) {
-      try {
-        const templatePath = path.join(
-          currentCloudBackendDirectory,
-          'function',
-          functionName,
-          `${functionName}-cloudformation-template.json`,
-        );
-        if (fs.existsSync(templatePath)) {
-          const templateContent = fs.readFileSync(templatePath, 'utf8');
-          functionTemplates.set(functionName, templateContent);
-        }
-      } catch (error) {
-        // Template may not exist or may not be readable
-      }
+      const templatePath = path.join(
+        currentCloudBackendDirectory,
+        'function',
+        functionName,
+        `${functionName}-cloudformation-template.json`,
+      );
+      const templateContent = fs.readFileSync(templatePath, 'utf8');
+      functionTemplates.set(functionName, templateContent);
     }
 
     // Build comprehensive function definitions by combining:
