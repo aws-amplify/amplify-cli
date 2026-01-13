@@ -133,7 +133,7 @@ export class DynamoDBCloudFormationAccessParser {
     return Array.from(permissions);
   }
 
-  static findFunctionCloudFormationTemplates(functionResourceName: string): string[] {
+  static findFunctionCloudFormationTemplate(functionResourceName: string): string | null {
     const templatePath = path.join(
       'amplify',
       'backend',
@@ -144,12 +144,12 @@ export class DynamoDBCloudFormationAccessParser {
 
     try {
       if (require('fs').existsSync(templatePath)) {
-        return [templatePath];
+        return templatePath;
       }
     } catch {
       // Template doesn't exist
     }
 
-    return [];
+    return null;
   }
 }

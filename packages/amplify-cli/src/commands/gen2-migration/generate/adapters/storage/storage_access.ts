@@ -16,12 +16,12 @@ export type StorageCLIInputsJSON = {
 
 export interface FunctionS3Access {
   functionName: string;
-  pathPattern: string;
   permissions: Permission[];
 }
 
 export interface FunctionDynamoDBAccess {
   functionName: string;
+  // Needed since there can be multiple dynamoDB tables. It matches which table needs what access
   tableResource: string;
   actions: string[];
 }
@@ -38,21 +38,17 @@ export const extractFunctionS3Access = (functionNames: string[]): FunctionS3Acce
   const functionAccess: FunctionS3Access[] = [];
 
   for (const functionName of functionNames) {
-    const templates = S3CloudFormationAccessParser.findFunctionCloudFormationTemplates(functionName);
+    const templatePath = S3CloudFormationAccessParser.findFunctionCloudFormationTemplate(functionName);
+    const s3Permissions = S3CloudFormationAccessParser.parseTemplateFile(templatePath);
 
-    for (const templatePath of templates) {
-      const s3Permissions = S3CloudFormationAccessParser.parseTemplateFile(templatePath);
+    for (const permission of s3Permissions) {
+      const gen2Permissions = S3CloudFormationAccessParser.mapS3ActionsToGen2Permissions(permission.actions);
 
-      for (const permission of s3Permissions) {
-        const gen2Permissions = S3CloudFormationAccessParser.mapS3ActionsToGen2Permissions(permission.actions);
-
-        if (gen2Permissions.length > 0) {
-          functionAccess.push({
-            functionName,
-            pathPattern: permission.pathPattern,
-            permissions: gen2Permissions as Permission[],
-          });
-        }
+      if (gen2Permissions.length > 0) {
+        functionAccess.push({
+          functionName,
+          permissions: gen2Permissions as Permission[],
+        });
       }
     }
   }
@@ -64,33 +60,30 @@ export const extractFunctionDynamoDBAccess = (functionNames: string[], tableName
   const functionAccess: FunctionDynamoDBAccess[] = [];
 
   for (const functionName of functionNames) {
-    const templates = DynamoDBCloudFormationAccessParser.findFunctionCloudFormationTemplates(functionName);
+    const templatePath = DynamoDBCloudFormationAccessParser.findFunctionCloudFormationTemplate(functionName);
+    const dynamoPermissions = DynamoDBCloudFormationAccessParser.parseTemplateFile(templatePath);
 
-    for (const templatePath of templates) {
-      const dynamoPermissions = DynamoDBCloudFormationAccessParser.parseTemplateFile(templatePath);
-
-      for (const permission of dynamoPermissions) {
-        if (tableNames && tableNames.length > 0) {
-          const matchesTable = tableNames.some((tableName) => {
-            // Extract base table name without environment suffix (e.g., "countsTable" from "countsTable-migrate")
-            const baseTableName = tableName.split('-')[0];
-            // Match both Name and Arn patterns: storage{baseTableName}Name or storage{baseTableName}Arn
-            const tableRefPattern = new RegExp(`storage${baseTableName.replace(/[^a-zA-Z0-9]/g, '')}(Name|Arn)`, 'i');
-            const matches = permission.tableResource === tableName || tableRefPattern.test(permission.tableResource);
-            return matches;
-          });
-          if (!matchesTable) {
-            continue;
-          }
+    for (const permission of dynamoPermissions) {
+      if (tableNames && tableNames.length > 0) {
+        const matchesTable = tableNames.some((tableName) => {
+          // Extract base table name without environment suffix (e.g., "countsTable" from "countsTable-migrate")
+          const baseTableName = tableName.split('-')[0];
+          // Match both Name and Arn patterns: storage{baseTableName}Name or storage{baseTableName}Arn
+          const tableRefPattern = new RegExp(`storage${baseTableName.replace(/[^a-zA-Z0-9]/g, '')}(Name|Arn)`, 'i');
+          const matches = permission.tableResource === tableName || tableRefPattern.test(permission.tableResource);
+          return matches;
+        });
+        if (!matchesTable) {
+          continue;
         }
+      }
 
-        if (permission.actions.length > 0) {
-          functionAccess.push({
-            functionName,
-            tableResource: permission.tableResource,
-            actions: permission.actions,
-          });
-        }
+      if (permission.actions.length > 0) {
+        functionAccess.push({
+          functionName,
+          tableResource: permission.tableResource,
+          actions: permission.actions,
+        });
       }
     }
   }
