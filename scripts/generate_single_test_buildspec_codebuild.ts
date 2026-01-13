@@ -69,7 +69,7 @@ const main = () => {
     'depend-on': ['upb'],
   };
   if (os === 'w') {
-    jobBuildSpec.env.type = 'WINDOWS_SERVER_2019_CONTAINER';
+    jobBuildSpec.env.type = 'WINDOWS_SERVER_2022_CONTAINER';
     jobBuildSpec.env.image = '$WINDOWS_IMAGE_2019';
     jobBuildSpec['depend-on'].push('build_windows');
     necessaryIds.push('build_windows');
