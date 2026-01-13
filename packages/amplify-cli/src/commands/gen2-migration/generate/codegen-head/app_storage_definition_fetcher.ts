@@ -162,7 +162,11 @@ export class AppStorageDefinitionFetcher {
     let storageOptions: StorageRenderParameters | undefined = undefined;
     const dynamoTables: DynamoDBTableDefinition[] = [];
 
-    // Extract function names from the project for access pattern analysis
+    // Extract all function names from the project for access pattern analysis
+    // These are Lambda function names from amplifyMeta.function used to:
+    // 1. Find CloudFormation templates at amplify/backend/function/{name}/{name}-cloudformation-template.json
+    // 2. Parse IAM permissions for S3/DynamoDB access
+    // 3. Generate allow.resource(functionName).to([permissions]) patterns in Gen 2
     const functionNames = amplifyMeta.function ? Object.keys(amplifyMeta.function) : [];
 
     if ('storage' in amplifyMeta && Object.keys(amplifyMeta.storage).length) {
