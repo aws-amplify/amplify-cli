@@ -20,15 +20,13 @@ export class S3CloudFormationAccessParser {
   }
 
   static parseTemplate(template: Template): S3AccessPermission[] {
-    const permissions: S3AccessPermission[] = [];
+    const amplifyResourcesPolicy = template.Resources?.AmplifyResourcesPolicy;
 
-    for (const resource of Object.values(template.Resources)) {
-      if (resource.Type === 'AWS::IAM::Policy') {
-        permissions.push(...this.extractS3PermissionsFromPolicy(resource.Properties));
-      }
+    if (!amplifyResourcesPolicy || amplifyResourcesPolicy.Type !== 'AWS::IAM::Policy') {
+      return [];
     }
 
-    return permissions;
+    return this.extractS3PermissionsFromPolicy(amplifyResourcesPolicy.Properties);
   }
 
   private static extractS3PermissionsFromPolicy(policyProperties: any): S3AccessPermission[] {
