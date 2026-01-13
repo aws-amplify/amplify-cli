@@ -9,7 +9,6 @@ import { SSMClient } from '@aws-sdk/client-ssm';
 import { CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-provider';
 import { GetCallerIdentityCommand, STSClient } from '@aws-sdk/client-sts';
 import { AmplifyGen2MigrationValidations } from '../_validations';
-import { stateManager } from '@aws-amplify/amplify-cli-core';
 import { DescribeStacksCommand } from '@aws-sdk/client-cloudformation';
 import { TemplateGenerator } from './generators/template-generator';
 
@@ -98,7 +97,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
     // Read and parse the file
     try {
       if (!(await fs.pathExists(resourceMapPath))) {
-        throw new AmplifyError('FileNotFoundError', {
+        throw new AmplifyError('ResourceDoesNotExistError', {
           message: `Resource mappings file not found: ${resourceMapPath}`,
           resolution: 'Ensure the file exists and the path is correct.',
         });
@@ -133,7 +132,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
         throw error;
       }
       if (error instanceof Error && 'code' in error && error.code === 'ENOENT') {
-        throw new AmplifyError('FileNotFoundError', {
+        throw new AmplifyError('ResourceDoesNotExistError', {
           message: `Resource mappings file not found: ${resourceMapPath}`,
           resolution: 'Ensure the file exists and the path is correct.',
         });
