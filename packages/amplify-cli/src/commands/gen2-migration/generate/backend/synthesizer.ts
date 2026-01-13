@@ -2046,15 +2046,10 @@ export class BackendSynthesizer {
       }
     }
 
-    // DynamoDB function access escape hatch
+    // DynamoDB function access using table.grant()
+    // Generates cleaner CDK code: tableName.grant(lambda, "dynamodb:GetItem", "dynamodb:PutItem")
+    // instead of verbose PolicyStatement escape hatches
     if (renderArgs.storage?.dynamoFunctionAccess && renderArgs.storage.dynamoFunctionAccess.length > 0) {
-      imports.push(
-        this.createImportStatement(
-          [factory.createIdentifier('PolicyStatement'), factory.createIdentifier('Effect')],
-          'aws-cdk-lib/aws-iam',
-        ),
-      );
-
       renderArgs.storage.dynamoFunctionAccess.forEach((functionAccess) => {
         // Find the corresponding table variable name from dynamoTables
         const matchingTable = renderArgs.storage?.dynamoTables?.find((table) => {
@@ -2063,64 +2058,33 @@ export class BackendSynthesizer {
           return tableRefPattern.test(functionAccess.tableResource);
         });
 
-        let tableArnExpression: ts.Expression;
-        let indexArnExpression: ts.Expression;
-
         if (matchingTable) {
-          // Use the table variable reference
           const sanitizedTableName = this.sanitizeVariableName(matchingTable.tableName.replace(/-[^-]+$/, ''));
-          tableArnExpression = factory.createPropertyAccessExpression(
-            factory.createIdentifier(sanitizedTableName),
-            factory.createIdentifier('tableArn'),
-          );
-          indexArnExpression = factory.createTemplateExpression(factory.createTemplateHead(''), [
-            factory.createTemplateSpan(tableArnExpression, factory.createTemplateTail('/index/*')),
-          ]);
-        } else {
-          // Fallback to hardcoded ARN (shouldn't happen with the fix)
-          const tableArn = `arn:aws:dynamodb:*:*:table/${functionAccess.tableResource}`;
-          tableArnExpression = factory.createStringLiteral(tableArn);
-          indexArnExpression = factory.createStringLiteral(`${tableArn}/index/*`);
-        }
 
-        const policyStatement = factory.createExpressionStatement(
-          factory.createCallExpression(
-            factory.createPropertyAccessExpression(
-              factory.createPropertyAccessExpression(
+          // Generate: tableName.grant(backend.functionName.resources.lambda, "action1", "action2")
+          // This preserves exact Gen1 permissions while using cleaner CDK syntax
+          const grantStatement = factory.createExpressionStatement(
+            factory.createCallExpression(
+              factory.createPropertyAccessExpression(factory.createIdentifier(sanitizedTableName), factory.createIdentifier('grant')),
+              undefined,
+              [
                 factory.createPropertyAccessExpression(
                   factory.createPropertyAccessExpression(
-                    factory.createIdentifier('backend'),
-                    factory.createIdentifier(functionAccess.functionName),
-                  ),
-                  factory.createIdentifier('resources'),
-                ),
-                factory.createIdentifier('lambda'),
-              ),
-              factory.createIdentifier('addToRolePolicy'),
-            ),
-            undefined,
-            [
-              factory.createNewExpression(factory.createIdentifier('PolicyStatement'), undefined, [
-                factory.createObjectLiteralExpression([
-                  factory.createPropertyAssignment(
-                    factory.createIdentifier('effect'),
-                    factory.createPropertyAccessExpression(factory.createIdentifier('Effect'), factory.createIdentifier('ALLOW')),
-                  ),
-                  factory.createPropertyAssignment(
-                    factory.createIdentifier('actions'),
-                    factory.createArrayLiteralExpression(functionAccess.actions.map((action) => factory.createStringLiteral(action))),
-                  ),
-                  factory.createPropertyAssignment(
+                    factory.createPropertyAccessExpression(
+                      factory.createIdentifier('backend'),
+                      factory.createIdentifier(functionAccess.functionName),
+                    ),
                     factory.createIdentifier('resources'),
-                    factory.createArrayLiteralExpression([tableArnExpression, indexArnExpression]),
                   ),
-                ]),
-              ]),
-            ],
-          ),
-        );
+                  factory.createIdentifier('lambda'),
+                ),
+                ...functionAccess.actions.map((action) => factory.createStringLiteral(action)),
+              ],
+            ),
+          );
 
-        nodes.push(policyStatement);
+          nodes.push(grantStatement);
+        }
       });
     }
 
