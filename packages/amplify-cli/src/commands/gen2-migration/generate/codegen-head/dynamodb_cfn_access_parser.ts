@@ -29,17 +29,13 @@ export class DynamoDBCloudFormationAccessParser {
   }
 
   static parseTemplate(template: Template): DynamoDBAccessPermission[] {
-    const permissions: DynamoDBAccessPermission[] = [];
+    const amplifyResourcesPolicy = template.Resources?.AmplifyResourcesPolicy;
 
-    if (!template.Resources) return permissions;
-
-    for (const resource of Object.values(template.Resources)) {
-      if (resource.Type === 'AWS::IAM::Policy') {
-        permissions.push(...this.extractDynamoDBPermissionsFromPolicy(resource.Properties));
-      }
+    if (!amplifyResourcesPolicy || amplifyResourcesPolicy.Type !== 'AWS::IAM::Policy') {
+      return [];
     }
 
-    return permissions;
+    return this.extractDynamoDBPermissionsFromPolicy(amplifyResourcesPolicy.Properties);
   }
 
   private static extractDynamoDBPermissionsFromPolicy(policyProperties: any): DynamoDBAccessPermission[] {
