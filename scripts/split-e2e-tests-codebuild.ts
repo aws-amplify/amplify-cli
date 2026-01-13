@@ -343,7 +343,7 @@ function main(): void {
       identifier: 'run_e2e_tests_windows',
       buildspec: 'codebuild_specs/run_e2e_tests_windows.yml',
       env: {
-        type: 'WINDOWS_SERVER_2019_CONTAINER',
+        type: 'WINDOWS_SERVER_2022_CONTAINER',
         image: '$WINDOWS_IMAGE_2019',
       },
       'depend-on': ['build_windows', 'upb'],
