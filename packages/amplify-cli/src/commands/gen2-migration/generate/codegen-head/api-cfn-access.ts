@@ -39,7 +39,7 @@ export const analyzeApiPermissionsFromCfn = (functionResourceName: string): ApiP
     }
 
     const policyDocument = amplifyResourcesPolicy.Properties?.PolicyDocument;
-    const statements = policyDocument?.Statement || [];
+    const statements = Array.isArray(policyDocument?.Statement) ? policyDocument.Statement : [policyDocument?.Statement].filter(Boolean);
 
     for (const statement of statements) {
       const actions = Array.isArray(statement.Action) ? statement.Action : [statement.Action];
