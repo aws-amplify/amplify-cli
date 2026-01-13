@@ -236,6 +236,8 @@ export class AppStorageDefinitionFetcher {
         functionNames, // Pass function names for DynamoDB access pattern analysis
       });
 
+      // Only add DynamoDB function access if functions actually have DynamoDB permissions
+      // Avoids adding undefined/empty properties to the storage configuration
       if (dynamoStorageDefinition.dynamoFunctionAccess) {
         storageOptions.dynamoFunctionAccess = dynamoStorageDefinition.dynamoFunctionAccess;
       }
