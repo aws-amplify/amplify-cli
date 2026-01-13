@@ -2047,8 +2047,7 @@ export class BackendSynthesizer {
     }
 
     // DynamoDB function access using table.grant()
-    // Generates cleaner CDK code: tableName.grant(lambda, "dynamodb:GetItem", "dynamodb:PutItem")
-    // instead of verbose PolicyStatement escape hatches
+    // Generates CDK code: tableName.grant(lambda, "dynamodb:GetItem", "dynamodb:PutItem")
     if (renderArgs.storage?.dynamoFunctionAccess && renderArgs.storage.dynamoFunctionAccess.length > 0) {
       renderArgs.storage.dynamoFunctionAccess.forEach((functionAccess) => {
         // Find the corresponding table variable name from dynamoTables
@@ -2062,7 +2061,6 @@ export class BackendSynthesizer {
           const sanitizedTableName = this.sanitizeVariableName(matchingTable.tableName.replace(/-[^-]+$/, ''));
 
           // Generate: tableName.grant(backend.functionName.resources.lambda, "action1", "action2")
-          // This preserves exact Gen1 permissions while using cleaner CDK syntax
           const grantStatement = factory.createExpressionStatement(
             factory.createCallExpression(
               factory.createPropertyAccessExpression(factory.createIdentifier(sanitizedTableName), factory.createIdentifier('grant')),
