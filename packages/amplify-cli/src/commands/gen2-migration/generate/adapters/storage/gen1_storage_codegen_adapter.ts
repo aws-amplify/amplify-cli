@@ -51,7 +51,7 @@ export const getStorageDefinition = ({
     result.triggers = triggers ?? {};
 
     if (functionNames && functionNames.length > 0) {
-      const functionAccess = extractFunctionS3Access(functionNames, resourceName);
+      const functionAccess = extractFunctionS3Access(functionNames);
       if (functionAccess.length > 0) {
         if (!result.accessPatterns) {
           result.accessPatterns = {};

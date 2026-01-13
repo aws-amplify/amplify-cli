@@ -197,7 +197,6 @@ export class AppStorageDefinitionFetcher {
             bucketName,
             triggers,
             functionNames, // Pass function names for access pattern analysis
-            resourceName: storageName, // Pass resource name for S3 function access matching
           });
 
           if (!storageOptions) storageOptions = {};
