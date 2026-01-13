@@ -48,7 +48,6 @@ export const getAccessPatterns = (accessPatterns: AccessPatterns): ts.PropertyAs
   const publicPathAccess = [];
   const privatePathAccess = [];
   const protectedPathAccess = [];
-  const functionPathAccess: { [path: string]: CallExpression[] } = {};
 
   if (accessPatterns.guest && accessPatterns.guest.length) {
     publicPathAccess.push(createAllowPattern(allowIdentifier, 'guest', accessPatterns.guest ?? []));
@@ -67,31 +66,26 @@ export const getAccessPatterns = (accessPatterns: AccessPatterns): ts.PropertyAs
     });
   }
 
-  // Handle function access patterns - consolidate by function and merge permissions
+  // Handle function access patterns - add to all default paths
   if (accessPatterns.functions && accessPatterns.functions.length) {
-    const consolidatedFunctions: { [functionName: string]: { pathPattern: string; permissions: Set<Permission> } } = {};
+    const consolidatedFunctions: { [functionName: string]: Set<Permission> } = {};
 
     // Consolidate permissions by function
-    accessPatterns.functions.forEach(({ functionName, pathPattern, permissions }) => {
+    accessPatterns.functions.forEach(({ functionName, permissions }) => {
       if (!consolidatedFunctions[functionName]) {
-        consolidatedFunctions[functionName] = {
-          pathPattern: pathPattern, // Keep original path pattern from CloudFormation
-          permissions: new Set(permissions),
-        };
+        consolidatedFunctions[functionName] = new Set(permissions);
       } else {
         // Merge permissions
-        permissions.forEach((p) => consolidatedFunctions[functionName].permissions.add(p));
+        permissions.forEach((p) => consolidatedFunctions[functionName].add(p));
       }
     });
 
-    // Create access patterns for each function
-    Object.entries(consolidatedFunctions).forEach(([functionName, { pathPattern, permissions }]) => {
+    // Add function access to all three default paths
+    Object.entries(consolidatedFunctions).forEach(([functionName, permissions]) => {
       const resourcePattern = createResourcePattern(allowIdentifier, functionName, Array.from(permissions));
-
-      if (!functionPathAccess[pathPattern]) {
-        functionPathAccess[pathPattern] = [];
-      }
-      functionPathAccess[pathPattern].push(resourcePattern);
+      publicPathAccess.push(resourcePattern);
+      privatePathAccess.push(resourcePattern);
+      protectedPathAccess.push(resourcePattern);
     });
   }
 
@@ -114,10 +108,7 @@ export const getAccessPatterns = (accessPatterns: AccessPatterns): ts.PropertyAs
     allowAssignments.push(createAccessPropertyAssignment(privatePath, privatePathAccess));
   }
 
-  // Add function-specific path access patterns
-  Object.entries(functionPathAccess).forEach(([pathPattern, accessArray]) => {
-    allowAssignments.push(createAccessPropertyAssignment(pathPattern, accessArray));
-  });
+  // Add function-specific path access patterns (removed - functions now go in default paths)
 
   const accessFunction = factory.createArrowFunction(
     undefined,
