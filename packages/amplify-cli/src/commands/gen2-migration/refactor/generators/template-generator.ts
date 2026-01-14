@@ -48,6 +48,8 @@ const AUTH_RESOURCES_TO_REFACTOR = [
 ];
 const AUTH_USER_POOL_GROUP_RESOURCES_TO_REFACTOR = [CFN_AUTH_TYPE.UserPoolGroup];
 const STORAGE_RESOURCES_TO_REFACTOR = [CFN_S3_TYPE.Bucket, CFN_DYNAMODB_TYPE.Table];
+
+// The following is only used for revert operation
 const GEN1_RESOURCE_TYPE_TO_LOGICAL_RESOURCE_IDS_MAP = new Map<string, string>([
   [CFN_AUTH_TYPE.UserPool.valueOf(), 'UserPool'],
   [CFN_AUTH_TYPE.UserPoolClient.valueOf(), 'UserPoolClientWeb'],
@@ -55,11 +57,12 @@ const GEN1_RESOURCE_TYPE_TO_LOGICAL_RESOURCE_IDS_MAP = new Map<string, string>([
   [CFN_AUTH_TYPE.IdentityPoolRoleAttachment.valueOf(), 'IdentityPoolRoleMap'],
   [CFN_AUTH_TYPE.UserPoolDomain.valueOf(), 'UserPoolDomain'],
   [CFN_S3_TYPE.Bucket.valueOf(), 'S3Bucket'],
+  [CFN_DYNAMODB_TYPE.Table.valueOf(), 'DynamoDBTable'],
 ]);
 const LOGICAL_IDS_TO_REMOVE_FOR_REVERT_MAP = new Map<CATEGORY, CFN_RESOURCE_TYPES[]>([
   ['auth', AUTH_RESOURCES_TO_REFACTOR],
   ['auth-user-pool-group', AUTH_USER_POOL_GROUP_RESOURCES_TO_REFACTOR],
-  ['storage', [CFN_S3_TYPE.Bucket]],
+  ['storage', [CFN_S3_TYPE.Bucket, CFN_DYNAMODB_TYPE.Table]],
 ]);
 const GEN2_NATIVE_APP_CLIENT = 'UserPoolNativeAppClient';
 const GEN1_USER_POOL_GROUPS_STACK_TYPE_DESCRIPTION = 'auth-Cognito-UserPool-Groups';
