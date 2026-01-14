@@ -60,7 +60,6 @@ import {
 import { DataDefinition, DataTableMapping, generateDataSource } from '../generators/data/index';
 
 import { FunctionDefinition, renderFunctions } from '../generators/functions/index';
-import { collectFunctionAuthAccess } from '../codegen-head/function_auth_collector';
 import assert from 'assert';
 import { CdkFromCfn, KinesisAnalyticsDefinition, AnalyticsCodegenResult } from '../unsupported/cdk-from-cfn';
 import { renderAnalytics, AnalyticsRenderParameters } from '../generators/analytics/index';
