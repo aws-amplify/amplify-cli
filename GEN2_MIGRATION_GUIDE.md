@@ -526,7 +526,7 @@ to add the necessary configuration.
 
     - ✅ Hello world function
     - ❌ CRUD function for Amazon DynamoDB table
-    - ✅ Serverless express function (`generate` ✔ `refactor` ✔)
+    - ✅ Serverless express function
     - ➤ Lambda Trigger
 
       - ➤ **Amazon DynamoDB Stream**
@@ -576,11 +576,11 @@ to add the necessary configuration.
 
     - ❌ **Do you want to invoke this function on a recurring schedule**
     - ❌ **Do you want to enable Lambda layers for this function**
-    - ✅ **Do you want to configure environment variables for this function** (`generate` ✔ `refactor` ✔)
+    - ✅ **Do you want to configure environment variables for this function**
     - ⚠️ **Do you want to configure secret values this function can access** (`generate` ✗ `refactor` ✔)
     - ➤ **Choose the package manager that you want to use**
 
-      - ✅ NPM (`generate` ✔ `refactor` ✔)
+      - ✅ NPM
       - ❌ Yarn
       - ❌ PNPM
       - ❌ Custom Build Command or Script Path
