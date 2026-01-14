@@ -5,7 +5,6 @@ import { BackendEnvironmentResolver } from './backend_environment_selector';
 import { GetFunctionCommand, GetPolicyCommand, LambdaClient } from '@aws-sdk/client-lambda';
 import { DescribeRuleCommand, CloudWatchEventsClient } from '@aws-sdk/client-cloudwatch-events';
 import * as path from 'path';
-import * as fs from 'fs';
 import { StateManager, $TSMeta, JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import { BackendDownloader } from './backend_downloader';
 import { AuthAccessAnalyzer } from './auth_access_analyzer';

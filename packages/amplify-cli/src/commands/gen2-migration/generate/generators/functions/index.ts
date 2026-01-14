@@ -198,9 +198,6 @@ export function createFunctionDefinition(
 ) {
   const defineFunctionProperties: ObjectLiteralElementLike[] = [];
 
-  // Parse auth access from CloudFormation template if available
-  // Note: authAccess should already be populated during function definition creation
-
   // Fallback to index.js if there is no entry
   const entryPoint = definition?.entry || './index.js';
   defineFunctionProperties.push(createParameter('entry', factory.createStringLiteral(entryPoint)));
