@@ -117,9 +117,31 @@ export class AppFunctionsDefinitionFetcher {
       }
     }
 
-    // Note: All functions should be categorized as 'function' regardless of what resources they access.
-    // Only auth trigger functions are categorized differently.
-    // Functions that access S3/DynamoDB are still regular functions, not storage functions.
+    // Identify functions triggered by S3 storage events
+    // These functions are invoked when objects are created, deleted, or modified in S3 buckets
+    Object.keys(storageList).forEach((storage) => {
+      const storageObj = storageList[storage];
+      if (storageObj.dependsOn) {
+        for (const env of storageObj.dependsOn) {
+          if (env.category == 'function') {
+            functionCategoryMap.set(env.resourceName, 'storage');
+          }
+        }
+      }
+    });
+
+    // Identify functions triggered by DynamoDB storage events
+    // These functions are invoked by DynamoDB streams when items are added, updated, or deleted
+    Object.keys(functions).forEach((func) => {
+      const funcObj = functions[func];
+      if (funcObj.dependsOn) {
+        for (const env of funcObj.dependsOn) {
+          if (env.category == 'storage') {
+            functionCategoryMap.set(func, 'storage');
+          }
+        }
+      }
+    });
 
     // Fetch live AWS Lambda function configurations for all functions in the project
     // This provides runtime information like memory, timeout, environment variables, etc.
