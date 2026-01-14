@@ -458,6 +458,7 @@ describe('TemplateGenerator', () => {
       APP_ID,
       ENV_NAME,
       new Logger('mock', 'mock', 'mock'),
+      REGION,
     );
     await generator.generate();
 
@@ -481,6 +482,7 @@ describe('TemplateGenerator', () => {
       APP_ID,
       ENV_NAME,
       new Logger('mock', 'mock', 'mock'),
+      REGION,
     );
     await generator.generate();
 
@@ -508,6 +510,7 @@ describe('TemplateGenerator', () => {
       APP_ID,
       ENV_NAME,
       new Logger('mock', 'mock', 'mock'),
+      REGION,
     );
     await generator.generate(customResourceMap);
 
@@ -527,6 +530,7 @@ describe('TemplateGenerator', () => {
       APP_ID,
       ENV_NAME,
       new Logger('mock', 'mock', 'mock'),
+      REGION,
     );
     const failureSendMock = (command: any) => {
       if (command instanceof DescribeStackResourcesCommand) {
@@ -569,6 +573,7 @@ describe('TemplateGenerator', () => {
       APP_ID,
       ENV_NAME,
       new Logger('mock', 'mock', 'mock'),
+      REGION,
     );
     await expect(generator.generate()).rejects.toThrow(errorMessage);
   });
@@ -606,6 +611,7 @@ describe('TemplateGenerator', () => {
       APP_ID,
       ENV_NAME,
       new Logger('mock', 'mock', 'mock'),
+      REGION,
     );
     await generator.generate();
 
@@ -638,6 +644,7 @@ describe('TemplateGenerator', () => {
       APP_ID,
       ENV_NAME,
       new Logger('mock', 'mock', 'mock'),
+      REGION,
     );
     expect.assertions(1);
     // Intentionally not awaiting the below call to be able to advance timers and micro task queue in waitForPromisesAndFakeTimers
@@ -683,6 +690,7 @@ describe('TemplateGenerator', () => {
       APP_ID,
       ENV_NAME,
       new Logger('mock', 'mock', 'mock'),
+      REGION,
     );
     await generator.generate();
     const numCFNOperationsBeforeGen2StackUpdate = 5;
@@ -722,6 +730,7 @@ describe('TemplateGenerator', () => {
       APP_ID,
       ENV_NAME,
       new Logger('mock', 'mock', 'mock'),
+      REGION,
     );
     await generator.generate();
     const numCFNOperationsBeforeGen2StackUpdate = 5;
@@ -760,6 +769,7 @@ describe('TemplateGenerator', () => {
       APP_ID,
       ENV_NAME,
       new Logger('mock', 'mock', 'mock'),
+      REGION,
     );
     expect.assertions(1);
     // Intentionally not awaiting the below call to be able to advance timers and micro task queue in waitForPromisesAndFakeTimers
@@ -783,6 +793,7 @@ describe('TemplateGenerator', () => {
       APP_ID,
       ENV_NAME,
       new Logger('mock', 'mock', 'mock'),
+      REGION,
     );
     await generator.revert();
 
@@ -813,6 +824,7 @@ describe('TemplateGenerator', () => {
       APP_ID,
       ENV_NAME,
       new Logger('mock', 'mock', 'mock'),
+      REGION,
     );
     await generator.revert();
 

@@ -69,7 +69,6 @@ const NO_RESOURCES_TO_REMOVE_ERROR = 'No resources to remove';
 class TemplateGenerator {
   private _categoryStackMap: Map<CATEGORY, [string, string]>;
   private readonly categoryTemplateGenerators: [CATEGORY, string, string, CategoryTemplateGenerator<CFN_CATEGORY_TYPE>][];
-  private region: string | undefined;
   private readonly _cfnClient: CloudFormationClient;
   private readonly categoryGeneratorConfig = {
     auth: {
@@ -93,6 +92,7 @@ class TemplateGenerator {
     private readonly appId: string,
     private readonly environmentName: string,
     private readonly logger: Logger,
+    private readonly region: string,
   ) {
     this._categoryStackMap = new Map<CATEGORY, [string, string]>();
     this.categoryTemplateGenerators = [];
@@ -113,13 +113,8 @@ class TemplateGenerator {
     return this._cfnClient;
   }
 
-  private async setRegion() {
-    this.region = await this._cfnClient.config.region();
-  }
-
   // Initialize for assessment - parse category stacks without generating templates
   public async initializeForAssessment(): Promise<void> {
-    await this.setRegion();
     await this.parseCategoryStacks();
   }
 
@@ -176,9 +171,10 @@ class TemplateGenerator {
     }
   }
 
+  // this function never gets used... I think its best to remove it.
+  // TODO: Remove the following generate function from here and in tests.
   public async generate(customResourceMap?: ResourceMapping[]) {
     await fs.mkdir(TEMPLATES_DIR, { recursive: true });
-    await this.setRegion();
     await this.parseCategoryStacks();
     if (customResourceMap) {
       for (const { Source, Destination } of customResourceMap) {
@@ -189,7 +185,6 @@ class TemplateGenerator {
   }
 
   public async revert() {
-    await this.setRegion();
     await this.parseCategoryStacks(true);
     return await this.generateCategoryTemplates(true);
   }
@@ -408,7 +403,6 @@ class TemplateGenerator {
     resourcesToRefactor: CFN_CATEGORY_TYPE[],
     customResourceMap?: ResourceMapping[],
   ): CategoryTemplateGenerator<CFN_CATEGORY_TYPE> {
-    assert(this.region);
     return new CategoryTemplateGenerator(
       this.logger,
       sourceStackId,
