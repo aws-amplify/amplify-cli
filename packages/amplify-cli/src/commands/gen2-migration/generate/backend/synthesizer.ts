@@ -829,10 +829,10 @@ export class BackendSynthesizer {
 
     if (renderArgs.function) {
       const functionNameCategories = renderArgs.function.functionNamesAndCategories;
-      for (const [functionName, category] of functionNameCategories) {
+      for (const [functionName] of functionNameCategories) {
         const functionProperty = factory.createShorthandPropertyAssignment(factory.createIdentifier(functionName));
         defineBackendProperties.push(functionProperty);
-        imports.push(this.createImportStatement([factory.createIdentifier(functionName)], `./${category}/${functionName}/resource`));
+        imports.push(this.createImportStatement([factory.createIdentifier(functionName)], `./function/${functionName}/resource`));
       }
     }
 
