@@ -1,4 +1,11 @@
+import { BackendEnvironmentResolver } from './backend_environment_selector';
+import { BackendDownloader } from './backend_downloader';
+import { JSONUtilities, $TSMeta } from '@aws-amplify/amplify-cli-core';
+import { fileOrDirectoryExists } from './directory_exists';
 import { AuthAccess } from '../generators/functions/index';
+import path from 'node:path';
+import fs from 'node:fs/promises';
+import assert from 'node:assert';
 
 // Define grouped permissions and their required actions
 const GROUPED_PERMISSIONS = {
@@ -72,6 +79,31 @@ const AUTH_ACTION_MAPPING: Record<string, keyof AuthAccess> = {
   'cognito-idp:SetUserSettings': 'setUserSettings',
 };
 
+function extractCognitoActionsFromPolicy(amplifyResourcesPolicy: any): string[] {
+  const actions: string[] = [];
+  
+  const policyDocument = amplifyResourcesPolicy.Properties?.PolicyDocument;
+  const statements = Array.isArray(policyDocument?.Statement) 
+    ? policyDocument.Statement 
+    : [policyDocument?.Statement].filter(Boolean);
+
+  for (const statement of statements) {
+    const statementActions = Array.isArray(statement.Action) 
+      ? statement.Action 
+      : [statement.Action];
+
+    for (const action of statementActions) {
+      if (typeof action === 'string' && action.startsWith('cognito-idp:')) {
+        if (!actions.includes(action)) {
+          actions.push(action);
+        }
+      }
+    }
+  }
+
+  return actions;
+}
+
 export function parseAuthAccessFromTemplate(templateContent: string): AuthAccess {
   const authAccess: AuthAccess = {};
 
@@ -110,24 +142,66 @@ export function parseAuthAccessFromTemplate(templateContent: string): AuthAccess
   return authAccess;
 }
 
-function extractCognitoActionsFromPolicy(amplifyResourcesPolicy: any): string[] {
-  const actions: string[] = [];
+/**
+ * Combined auth access analyzer that handles both template fetching and parsing.
+ * Provides centralized functionality for auth-related CloudFormation analysis.
+ */
+export class AuthAccessAnalyzer {
+  constructor(
+    private backendEnvironmentResolver: BackendEnvironmentResolver,
+    private ccbFetcher: BackendDownloader,
+  ) {}
 
-  const policyDocument = amplifyResourcesPolicy.Properties?.PolicyDocument;
-  const statements = Array.isArray(policyDocument?.Statement) ? policyDocument.Statement : [policyDocument?.Statement].filter(Boolean);
-
-  for (const statement of statements) {
-    const statementActions = Array.isArray(statement.Action) ? statement.Action : [statement.Action];
-
-    for (const action of statementActions) {
-      if (typeof action === 'string' && action.startsWith('cognito-idp:')) {
-        // To prevent duplicates
-        if (!actions.includes(action)) {
-          actions.push(action);
+  /**
+   * Fetches CloudFormation templates for all functions in the project.
+   * @returns Map of function names to their CloudFormation template content
+   */
+  async getFunctionTemplates(): Promise<Map<string, string>> {
+    const backendEnvironment = await this.backendEnvironmentResolver.selectBackendEnvironment();
+    assert(backendEnvironment?.deploymentArtifacts);
+    
+    const currentCloudBackendDirectory = await this.ccbFetcher.getCurrentCloudBackend(backendEnvironment.deploymentArtifacts);
+    const amplifyMetaPath = path.join(currentCloudBackendDirectory, 'amplify-meta.json');
+    
+    const meta = JSONUtilities.readJson<$TSMeta>(amplifyMetaPath, { throwIfNotExist: true });
+    const functions = meta?.function ?? {};
+    
+    const functionTemplates = new Map<string, string>();
+    for (const functionName of Object.keys(functions)) {
+      try {
+        const templatePath = path.join(
+          currentCloudBackendDirectory,
+          'function',
+          functionName,
+          `${functionName}-cloudformation-template.json`,
+        );
+        if (await fileOrDirectoryExists(templatePath)) {
+          const templateContent = await fs.readFile(templatePath, 'utf8');
+          functionTemplates.set(functionName, templateContent);
         }
+      } catch (error) {
+        // Template may not exist or may not be readable
       }
     }
+    
+    return functionTemplates;
   }
 
-  return actions;
+  /**
+   * Analyzes auth access for all functions by fetching templates and parsing them.
+   * @returns Map of function names to their auth access permissions
+   */
+  async analyzeFunctionAuthAccess(): Promise<Map<string, AuthAccess>> {
+    const templates = await this.getFunctionTemplates();
+    const authAccessMap = new Map<string, AuthAccess>();
+    
+    for (const [functionName, templateContent] of templates) {
+      const authAccess = parseAuthAccessFromTemplate(templateContent);
+      if (Object.keys(authAccess).length > 0) {
+        authAccessMap.set(functionName, authAccess);
+      }
+    }
+    
+    return authAccessMap;
+  }
 }
