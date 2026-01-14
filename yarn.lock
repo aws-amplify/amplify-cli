@@ -607,7 +607,7 @@ __metadata:
 
 "@aws-amplify/amplify-e2e-core@file:../amplify-e2e-core::locator=amplify-migration-e2e-system%40workspace%3Apackages%2Famplify-migration-e2e-system":
   version: 5.7.9
-  resolution: "@aws-amplify/amplify-e2e-core@file:../amplify-e2e-core#../amplify-e2e-core::hash=76e555&locator=amplify-migration-e2e-system%40workspace%3Apackages%2Famplify-migration-e2e-system"
+  resolution: "@aws-amplify/amplify-e2e-core@file:../amplify-e2e-core#../amplify-e2e-core::hash=7d4643&locator=amplify-migration-e2e-system%40workspace%3Apackages%2Famplify-migration-e2e-system"
   dependencies:
     "@aws-amplify/amplify-cli-core": 4.4.4
     "@aws-sdk/client-amplifybackend": ^3.919.0
@@ -651,7 +651,6 @@ __metadata:
     strip-ansi: ^6.0.0
     throat: ^5.0.0
     uuid: ^8.3.2
-  checksum: 4fd078ba9d73147babdfab9a0f897cb567cb607c503b34acd7affe00355f099a554aeae3ebafdb4ad67c27887d85b3f608a777522fe96144493dc295f4bbbc55
   languageName: node
   linkType: hard
 
