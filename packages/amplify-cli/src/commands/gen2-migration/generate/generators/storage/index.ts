@@ -42,6 +42,7 @@ export interface StorageRenderParameters {
   dynamoFunctionAccess?: import('../../adapters/storage').FunctionDynamoDBAccess[];
   accelerateConfiguration?: BucketAccelerateStatus;
   versioningConfiguration?: BucketVersioningStatus;
+  functionNamesAndCategories?: Map<string, string>;
 }
 
 const createVariableStatement = (variableDeclaration: VariableDeclaration): VariableStatement => {
@@ -89,7 +90,8 @@ export const renderStorage = (storageParams: StorageRenderParameters = {}) => {
     // Add function imports if function access patterns are present
     if (storageParams.accessPatterns.functions && storageParams.accessPatterns.functions.length > 0) {
       for (const functionAccess of storageParams.accessPatterns.functions) {
-        const functionImportPath = `../function/${functionAccess.functionName}/resource`;
+        const functionCategory = storageParams.functionNamesAndCategories?.get(functionAccess.functionName) || 'function';
+        const functionImportPath = `../${functionCategory}/${functionAccess.functionName}/resource`;
         if (!namedImports[functionImportPath]) {
           namedImports[functionImportPath] = new Set();
         }
@@ -114,10 +116,13 @@ export const renderStorage = (storageParams: StorageRenderParameters = {}) => {
     propertyAssignments.push(createTriggersProperty(triggers));
     for (const value of Object.values(triggers)) {
       const functionName = value.source.split('/')[3];
-      if (!namedImports[`./${functionName}/resource`]) {
-        namedImports[`./${functionName}/resource`] = new Set();
+      const functionCategory = storageParams.functionNamesAndCategories?.get(functionName) || 'function';
+      const functionImportPath =
+        functionCategory === 'storage' ? `./${functionName}/resource` : `../${functionCategory}/${functionName}/resource`;
+      if (!namedImports[functionImportPath]) {
+        namedImports[functionImportPath] = new Set();
       }
-      namedImports[`./${functionName}/resource`].add(functionName);
+      namedImports[functionImportPath].add(functionName);
     }
   }
   const storageArgs = factory.createObjectLiteralExpression(propertyAssignments);

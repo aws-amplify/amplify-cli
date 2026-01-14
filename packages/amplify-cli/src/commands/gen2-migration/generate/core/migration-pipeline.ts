@@ -472,7 +472,7 @@ export const createGen2Renderer = ({
       renderers.push(new EnsureDirectory(path.join(outputDir, 'amplify', 'storage')));
       renderers.push(
         new TypescriptNodeArrayRenderer(
-          async () => renderStorage(storage),
+          async () => renderStorage({ ...storage, functionNamesAndCategories: functionNamesAndCategory }),
           (content) => fileWriter(content, path.join(outputDir, 'amplify', 'storage', 'resource.ts')),
         ),
       );
