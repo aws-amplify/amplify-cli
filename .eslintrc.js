@@ -152,6 +152,7 @@ module.exports = {
     '/cypress',
     '/packages/amplify-appsync-simulator/public',
     '/packages/amplify-cli/scripts/post-install.js',
+    '/packages/amplify-migration-e2e-system/src/test-setup.ts',
 
     // Ignore project/file templates
     'function-template-dir',

@@ -3,9 +3,48 @@
 /* eslint-disable func-style */
 import { EOL } from 'os';
 import { v4 as uuid } from 'uuid';
+import * as fs from 'fs-extra';
+import * as ini from 'ini';
+import { pathManager } from '@aws-amplify/amplify-cli-core';
 import { nspawn as spawn, getCLIPath, singleSelect, addCircleCITags } from '..';
 import { KEY_DOWN_ARROW } from '../utils';
 import { amplifyRegions } from '../configure';
+
+/**
+ * Gets the index of a profile in the AWS config file.
+ * The Amplify CLI uses the config file order for profile selection.
+ * Config file sections are named "default" or "profile <name>".
+ * @param profileName The name of the profile to find
+ * @returns The index of the profile in the list (0-based), or 0 if not found
+ */
+function getProfileIndex(profileName: string): number {
+  try {
+    const configPath = pathManager.getAWSConfigFilePath();
+    if (!fs.existsSync(configPath)) {
+      console.log('[getProfileIndex] Config file not found, defaulting to index 0');
+      return 0;
+    }
+    const configContents = ini.parse(fs.readFileSync(configPath, 'utf-8'));
+    // Config file uses "default" and "profile <name>" as section names
+    // Extract actual profile names from section names
+    const profiles = Object.keys(configContents).map((section) => {
+      if (section === 'default') {
+        return 'default';
+      }
+      // Remove "profile " prefix if present
+      return section.replace(/^profile\s+/, '');
+    });
+    const index = profiles.indexOf(profileName);
+    console.log(`[getProfileIndex] Available profiles: ${profiles.join(', ')}`);
+    if (index === -1) {
+      throw Error(`Profile: ${profileName} not found.`);
+    }
+    console.log(`[getProfileIndex] Profile: ${profileName}, found at index: ${index}`);
+    return index;
+  } catch (error) {
+    throw Error(`[getProfileIndex] Error reading config file: ${(error as Error).message}`);
+  }
+}
 
 const defaultSettings = {
   name: EOL,
@@ -33,6 +72,12 @@ const defaultSettings = {
 
 export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof defaultSettings>): Promise<void> {
   const s = { ...defaultSettings, ...settings };
+
+  // Debug logging for profile investigation
+  console.log('[DEBUG initJSProjectWithProfile] Received settings:', JSON.stringify(settings, null, 2));
+  console.log('[DEBUG initJSProjectWithProfile] Merged settings.profileName:', s.profileName);
+  console.log('[DEBUG initJSProjectWithProfile] cwd:', cwd);
+
   let env;
 
   if (s.disableAmplifyAppCreation === true) {
@@ -46,6 +91,7 @@ export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof 
   const cliArgs = ['init'];
   const providerConfigSpecified = !!s.providerConfig && typeof s.providerConfig === 'object';
   if (providerConfigSpecified) {
+    console.log('initJSProjectWithProfile: provider config specified: ', s.providerConfig);
     cliArgs.push('--providers', JSON.stringify(s.providerConfig));
   }
 
@@ -93,12 +139,20 @@ export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof 
     .sendCarriageReturn();
 
   if (!providerConfigSpecified) {
+    const profileIndex = getProfileIndex(s.profileName);
+    console.log('initJSProjectWithProfile: no provider config specified, using profile', s.profileName, 'at index', profileIndex);
+
     chain
       .wait('Using default provider  awscloudformation')
       .wait('Select the authentication method you want to use:')
       .sendCarriageReturn()
-      .wait('Please choose the profile you want to use')
-      .sendLine(s.profileName);
+      .wait('Please choose the profile you want to use');
+
+    if (profileIndex > 0) {
+      chain.sendKeyDown(profileIndex);
+    }
+
+    chain.sendCarriageReturn();
   }
 
   if (s.includeUsageDataPrompt) {
@@ -309,9 +363,7 @@ export function initProjectWithAccessKey(
     const chain = spawn(getCLIPath(), ['init'], {
       cwd,
       stripColors: true,
-      env: {
-        CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
-      },
+      env: { CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: s.disableAmplifyAppCreation ? '1' : '0' },
     })
       .wait('Do you want to continue with Amplify Gen 1?')
       .sendYes()

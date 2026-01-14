@@ -1,0 +1,37 @@
+{
+  "app": {
+    "name": "media-vault",
+    "description": "Personal media vault with social authentication and thumbnail generation"
+  },
+  "categories": {
+    "api": {
+      "type": "GraphQL",
+      "schema": "schema.graphql",
+      "authModes": ["COGNITO_USER_POOLS", "API_KEY"]
+    },
+    "auth": {
+      "signInMethods": ["email", "phone"],
+      "socialProviders": ["facebook", "google"]
+    },
+    "storage": {
+      "buckets": [
+        {
+          "name": "media",
+          "access": ["auth", "guest"]
+        }
+      ]
+    },
+    "function": {
+      "functions": [
+        {
+          "name": "thumbnailgen",
+          "runtime": "nodejs",
+          "template": "hello-world"
+        }
+      ]
+    },
+    "hosting": {
+      "type": "amplify-console"
+    }
+  }
+}

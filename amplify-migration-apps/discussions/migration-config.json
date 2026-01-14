@@ -1,0 +1,39 @@
+{
+  "app": {
+    "name": "discussions",
+    "description": "Discussion app with phone authentication and activity logging"
+  },
+  "categories": {
+    "api": {
+      "type": "GraphQL",
+      "schema": "schema.graphql",
+      "authModes": ["API_KEY", "COGNITO_USER_POOLS"],
+      "customQueries": ["getUserActivity"],
+      "customMutations": ["logActivity"]
+    },
+    "auth": {
+      "signInMethods": ["phone"],
+      "socialProviders": []
+    },
+    "storage": {
+      "buckets": [
+        {
+          "name": "countsTable",
+          "access": ["auth"]
+        }
+      ]
+    },
+    "function": {
+      "functions": [
+        {
+          "name": "activityLogger",
+          "runtime": "nodejs",
+          "template": "hello-world"
+        }
+      ]
+    },
+    "hosting": {
+      "type": "amplify-console"
+    }
+  }
+}
