@@ -398,9 +398,6 @@ export const createGen2Renderer = ({
 
   // Process authentication configuration - create amplify/auth/resource.ts
   if (auth) {
-    // Collect function auth access permissions from CloudFormation templates
-    const functionAccess = functions ? collectFunctionAuthAccess(functions) : undefined;
-
     // Create function category map for correct import paths
     const functionCategories = new Map<string, string>();
     if (functions) {
@@ -414,7 +411,7 @@ export const createGen2Renderer = ({
     renderers.push(new EnsureDirectory(path.join(outputDir, 'amplify', 'auth')));
     renderers.push(
       new TypescriptNodeArrayRenderer(
-        async () => renderAuthNode(auth, functionAccess, functionCategories),
+        async () => renderAuthNode(auth, functions, functionCategories),
         async (content) => {
           // Remove unused parameter and add type annotation
           let cleanedContent = content.replace(/\(allow, _unused\)/g, '(allow: any)');

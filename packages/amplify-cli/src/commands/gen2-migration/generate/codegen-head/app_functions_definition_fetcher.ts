@@ -8,6 +8,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { StateManager, $TSMeta, JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import { BackendDownloader } from './backend_downloader';
+import { AuthFunctionScanner } from './auth_function_scanner';
 
 /**
  * Configuration interface for Amplify Auth category resources.
@@ -67,6 +68,7 @@ export class AppFunctionsDefinitionFetcher {
     private backendEnvironmentResolver: BackendEnvironmentResolver,
     private stateManager: StateManager,
     private ccbFetcher: BackendDownloader,
+    private authScanner: AuthFunctionScanner,
   ) {}
 
   /**
@@ -203,20 +205,8 @@ export class AppFunctionsDefinitionFetcher {
     // Wait for all schedule fetching operations to complete
     const functionSchedules = await Promise.all(getFunctionSchedulePromises);
 
-    // Read CloudFormation templates for each function to detect auth access
-    // This is a trade off I am making design wise. Ideally, we need one source
-    // of cfn template scanning and all other categories should use that for access.
-    const functionTemplates = new Map<string, string>();
-    for (const functionName of Object.keys(functions)) {
-      const templatePath = path.join(
-        currentCloudBackendDirectory,
-        'function',
-        functionName,
-        `${functionName}-cloudformation-template.json`,
-      );
-      const templateContent = fs.readFileSync(templatePath, 'utf8');
-      functionTemplates.set(functionName, templateContent);
-    }
+    // Get CloudFormation templates from auth scanner for auth access analysis
+    const functionTemplates = await this.authScanner.getFunctionTemplates();
 
     // Build comprehensive function definitions by combining:
     // - Live AWS Lambda configurations (runtime, memory, timeout, etc.)
