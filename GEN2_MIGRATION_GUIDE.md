@@ -54,6 +54,8 @@ First obtain a fresh and up-to-date local copy of your Amplify Gen1 environment 
 
 ```console
 npm install
+git add .
+git commit -m "chore: install gen2-migration cli"
 ```
 
 This will install a flavor of the amplify Gen1 CLI that includes migration support.

@@ -208,6 +208,8 @@ First add the experimental amplify CLI package that provides the migration comma
 
 ```console
 npm install
+git add .
+git commit -m "chore: install gen2-migration cli"
 ```
 
 Now run them:
