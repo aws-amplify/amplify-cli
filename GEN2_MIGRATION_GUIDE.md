@@ -441,7 +441,10 @@ to add the necessary configuration.
 
 - ❌ **Do you want to use an OAuth flow**
 
-- ❌ **Do you want to configure Lambda Triggers for Cognito**
+- ➤ **Do you want to configure Lambda Triggers for Cognito**
+
+  - Post Authentication ✅ (`generate` ✔ `refactor` ✔)
+  - ...
 
 ## Api
 
@@ -518,7 +521,7 @@ to add the necessary configuration.
 
     - ✅ Hello world function (`generate` ✔ `refactor` ✔)
     - ❌ CRUD function for Amazon DynamoDB table
-    - ❌ Serverless express function
+    - ✅ Serverless express function (`generate` ✔ `refactor` ✔)
     - ➤ Lambda Trigger
 
       - ➤ **Amazon DynamoDB Stream**
