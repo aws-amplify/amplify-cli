@@ -6,7 +6,6 @@ import { PasswordPolicyType, UserPoolClientType } from '@aws-sdk/client-cognito-
 import { renderResourceTsFile } from '../../resource/resource';
 import { createTriggersProperty, Lambda } from '../functions/lambda';
 import { FunctionDefinition } from '../functions/index';
-import { parseAuthAccessFromTemplate } from '../../codegen-head/auth_access_analyzer';
 
 /** OAuth 2.0 scopes supported by Cognito User Pools */
 export type Scope = 'phone' | 'email' | 'openid' | 'profile' | 'aws.cognito.signin.user.admin';
