@@ -360,10 +360,9 @@ export const createGen2Renderer = ({
 
   // Process Lambda functions - create resource.ts and handler.ts files
   const functionNames: string[] = [];
+  const functionNamesAndCategory = new Map<string, string>();
+  const functionsWithApiAccess = new Map<string, { hasQuery: boolean; hasMutation: boolean; hasSubscription: boolean }>();
   if (functions && functions.length) {
-    const functionNamesAndCategory = new Map<string, string>();
-    const functionsWithApiAccess = new Map<string, { hasQuery: boolean; hasMutation: boolean; hasSubscription: boolean }>();
-
     for (const func of functions) {
       if (func.name) {
         if (!func.runtime?.startsWith('nodejs')) {
