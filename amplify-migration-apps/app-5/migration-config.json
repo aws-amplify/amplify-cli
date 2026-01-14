@@ -1,0 +1,78 @@
+{
+  "app": {
+    "name": "app-5",
+    "description": "Advanced fitness goal tracker with stress-test schema, comprehensive logging, and authentication triggers",
+    "framework": "react"
+  },
+  "categories": {
+    "api": {
+      "type": "GraphQL",
+      "schema": "schema.graphql",
+      "authModes": ["API_KEY", "COGNITO_USER_POOLS"],
+      "customQueries": ["getRandomQuote"]
+    },
+    "auth": {
+      "signInMethods": ["email"],
+      "socialProviders": [],
+      "userPoolConfig": {
+        "emailVerification": true,
+        "mfaConfiguration": {
+          "mode": "OFF"
+        }
+      },
+      "triggers": {
+        "postAuthentication": {
+          "functionName": "PostAuthentication",
+          "description": "Logs user authentication events to S3"
+        }
+      }
+    },
+    "storage": {
+      "buckets": [
+        {
+          "name": "fitnessappstorage",
+          "access": ["auth", "guest"],
+          "cors": {
+            "allowedOrigins": ["*"],
+            "allowedMethods": ["GET", "POST", "PUT", "DELETE"],
+            "allowedHeaders": ["*"],
+            "maxAge": 3000
+          }
+        }
+      ]
+    },
+    "function": {
+      "functions": [
+        {
+          "name": "quotegenerator",
+          "runtime": "nodejs",
+          "template": "hello-world",
+          "handler": "index.handler",
+          "description": "Generates motivational fitness quotes"
+        },
+        {
+          "name": "PostAuthentication",
+          "runtime": "nodejs",
+          "template": "trigger",
+          "handler": "index.handler",
+          "description": "Cognito post-authentication trigger for logging user activity",
+          "permissions": [
+            "s3:PutObject",
+            "s3:GetObject"
+          ],
+          "environment": {
+            "STORAGE_FITNESSAPPSTORAGE_BUCKETNAME": "fitnessappbucket"
+          }
+        }
+      ]
+    },
+    "hosting": {
+      "type": "amplify-console",
+      "buildSettings": {
+        "buildCommand": "npm run build",
+        "outputDirectory": "dist",
+        "nodeVersion": "25"
+      }
+    }
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "name": "amplify-migration-e2e-system",
+  "version": "1.0.0",
+  "description": "Migration automation system for AWS Amplify Gen1 to Gen2",
+  "main": "dist/index.js",
+  "bin": {
+    "amplify-migrate": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "migrate": "ts-node src/cli.ts",
+    "test": "jest --testPathIgnorePatterns='\\.e2e\\.' --testPathIgnorePatterns='integration'",
+    "test:integ": "NODE_OPTIONS='--experimental-vm-modules' jest --testPathPattern='integration'",
+    "test:e2e": "NODE_OPTIONS='--experimental-vm-modules' jest --testPathPattern=\"\\.e2e\\.\"",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts --fix"
+  },
+  "dependencies": {
+    "@aws-amplify/amplify-e2e-core": "file:../amplify-e2e-core",
+    "@paralleldrive/cuid2": "^3.0.6",
+    "chalk": "^4.1.2",
+    "execa": "^5.1.1",
+    "fs-extra": "^11.1.1",
+    "glob": "^13.0.0",
+    "inquirer": "^8.2.6",
+    "ora": "^5.4.1",
+    "uuid": "^9.0.1",
+    "yargs": "^17.7.2"
+  },
+  "optionalDependencies": {
+    "@cdklabs/cdk-atmosphere-client": "latest"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "@types/inquirer": "^8.2.6",
+    "@types/jest": "^29.0.0",
+    "@types/node": "^20.9.0",
+    "@types/uuid": "^9.0.7",
+    "dotenv": "^16.3.1",
+    "eslint": "^8.57.1",
+    "fast-check": "^3.15.0",
+    "jest": "29",
+    "node-fetch": "^2.7.0",
+    "ts-jest": "^29.0.0",
+    "ts-node": "^10.4.0",
+    "typescript": "^4.9.5"
+  },
+  "keywords": [
+    "amplify",
+    "migration",
+    "gen1",
+    "gen2",
+    "aws",
+    "automation"
+  ],
+  "author": "AWS Amplify Team",
+  "license": "Apache-2.0"
+}
