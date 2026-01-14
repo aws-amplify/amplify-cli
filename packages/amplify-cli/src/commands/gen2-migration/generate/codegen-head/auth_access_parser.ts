@@ -74,7 +74,17 @@ const AUTH_ACTION_MAPPING: Record<string, keyof AuthAccess> = {
 
 export function parseAuthAccessFromTemplate(templateContent: string): AuthAccess {
   const authAccess: AuthAccess = {};
-  const cognitoActions = extractCognitoActions(templateContent);
+
+  const cfnTemplate = JSON.parse(templateContent);
+
+  // Check only AmplifyResourcesPolicy for consistency with other parsers
+  const amplifyResourcesPolicy = cfnTemplate.Resources?.AmplifyResourcesPolicy;
+
+  if (!amplifyResourcesPolicy || amplifyResourcesPolicy.Type !== 'AWS::IAM::Policy') {
+    return {};
+  }
+
+  const cognitoActions = extractCognitoActionsFromPolicy(amplifyResourcesPolicy);
   const coveredActions = new Set<string>();
 
   // First, check for complete grouped permissions
@@ -100,15 +110,22 @@ export function parseAuthAccessFromTemplate(templateContent: string): AuthAccess
   return authAccess;
 }
 
-function extractCognitoActions(templateContent: string): string[] {
+function extractCognitoActionsFromPolicy(amplifyResourcesPolicy: any): string[] {
   const actions: string[] = [];
-  const actionRegex = /"cognito-idp:[A-Za-z]+"/g;
-  let match;
 
-  while ((match = actionRegex.exec(templateContent)) !== null) {
-    const action = match[0].replace(/"/g, '');
-    if (!actions.includes(action)) {
-      actions.push(action);
+  const policyDocument = amplifyResourcesPolicy.Properties?.PolicyDocument;
+  const statements = Array.isArray(policyDocument?.Statement) ? policyDocument.Statement : [policyDocument?.Statement].filter(Boolean);
+
+  for (const statement of statements) {
+    const statementActions = Array.isArray(statement.Action) ? statement.Action : [statement.Action];
+
+    for (const action of statementActions) {
+      if (typeof action === 'string' && action.startsWith('cognito-idp:')) {
+        // To prevent duplicates
+        if (!actions.includes(action)) {
+          actions.push(action);
+        }
+      }
     }
   }
 
