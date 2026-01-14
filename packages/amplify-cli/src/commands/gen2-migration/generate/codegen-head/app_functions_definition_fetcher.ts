@@ -205,8 +205,8 @@ export class AppFunctionsDefinitionFetcher {
     // Wait for all schedule fetching operations to complete
     const functionSchedules = await Promise.all(getFunctionSchedulePromises);
 
-    // Get CloudFormation templates from auth analyzer for auth access analysis
-    const functionTemplates = await this.authAnalyzer.getFunctionTemplates();
+    // Get auth access from auth analyzer for function definitions
+    const functionAuthAccess = await this.authAnalyzer.getFunctionAuthAccess();
 
     // Build comprehensive function definitions by combining:
     // - Live AWS Lambda configurations (runtime, memory, timeout, etc.)
@@ -214,6 +214,6 @@ export class AppFunctionsDefinitionFetcher {
     // - Trigger category mappings (auth, storage, etc.)
     // - Original Amplify project metadata
     // - CloudFormation templates for auth access parsing
-    return getFunctionDefinition(functionConfigurations, functionSchedules, functionCategoryMap, meta, functionTemplates);
+    return getFunctionDefinition(functionConfigurations, functionSchedules, functionCategoryMap, meta, functionAuthAccess);
   };
 }

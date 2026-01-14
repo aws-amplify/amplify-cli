@@ -180,7 +180,7 @@ export class AuthAccessAnalyzer {
    * Analyzes auth access for all functions by fetching templates and parsing them.
    * @returns Map of function names to their auth access permissions
    */
-  async analyzeFunctionAuthAccess(): Promise<Map<string, AuthAccess>> {
+  async getFunctionAuthAccess(): Promise<Map<string, AuthAccess>> {
     const templates = await this.getFunctionTemplates();
     const authAccessMap = new Map<string, AuthAccess>();
 

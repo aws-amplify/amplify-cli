@@ -3,7 +3,6 @@ import { ObjectLiteralElementLike, VariableDeclaration, VariableStatement } from
 import type { EnvironmentResponse } from '@aws-sdk/client-lambda';
 import { Runtime } from '@aws-sdk/client-lambda';
 import { renderResourceTsFile } from '../../resource/resource';
-import { parseAuthAccessFromTemplate } from '../../codegen-head/auth_access_parser';
 import assert from 'node:assert';
 
 /**
@@ -63,8 +62,6 @@ export interface FunctionDefinition {
   schedule?: string;
   /** Auth access permissions for this function */
   authAccess?: AuthAccess;
-  /** CloudFormation template content for parsing permissions */
-  templateContent?: string;
 }
 
 /** TypeScript AST factory for creating code nodes */
@@ -202,9 +199,7 @@ export function createFunctionDefinition(
   const defineFunctionProperties: ObjectLiteralElementLike[] = [];
 
   // Parse auth access from CloudFormation template if available
-  if (definition?.templateContent && !definition.authAccess) {
-    definition.authAccess = parseAuthAccessFromTemplate(definition.templateContent);
-  }
+  // Note: authAccess should already be populated during function definition creation
 
   // Fallback to index.js if there is no entry
   const entryPoint = definition?.entry || './index.js';

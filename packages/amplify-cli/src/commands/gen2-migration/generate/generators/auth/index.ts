@@ -950,7 +950,7 @@ export function renderAuthNode(
   // Add function access configuration if present
   if (functions && functions.length > 0) {
     // Extract functions with auth access from the functions array
-    const functionsWithAuthAccess = functions.filter((func) => func.templateContent && func.resourceName);
+    const functionsWithAuthAccess = functions.filter((func) => func.authAccess && Object.keys(func.authAccess).length > 0);
 
     if (functionsWithAuthAccess.length > 0) {
       // Add function imports based on their category
@@ -965,10 +965,8 @@ export function renderAuthNode(
       const accessRules: ts.Expression[] = [];
 
       functionsWithAuthAccess.forEach((func) => {
-        if (func.templateContent && func.resourceName) {
-          const authAccess = parseAuthAccessFromTemplate(func.templateContent);
-
-          Object.entries(authAccess)
+        if (func.authAccess && func.resourceName) {
+          Object.entries(func.authAccess)
             .filter(([, enabled]) => enabled)
             .forEach(([permission]) => {
               accessRules.push(

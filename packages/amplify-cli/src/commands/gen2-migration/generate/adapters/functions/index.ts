@@ -1,5 +1,6 @@
 import { FunctionDefinition } from '../../core/migration-pipeline';
 import { FunctionConfiguration } from '@aws-sdk/client-lambda';
+import { AuthAccess } from '../../generators/functions/index';
 import assert from 'node:assert';
 
 export type AmplifyMetaFunction = {
@@ -43,7 +44,7 @@ export const getFunctionDefinition = (
   functionSchedules: FunctionSchedule[],
   functionCategoryMap: Map<string, string>,
   meta: AmplifyMetaWithFunction,
-  functionTemplates?: Map<string, string>,
+  functionAuthAccess?: Map<string, AuthAccess>,
 ): FunctionDefinition[] => {
   const funcDefList: FunctionDefinition[] = [];
 
@@ -76,9 +77,9 @@ export const getFunctionDefinition = (
     funcDef.resourceName = functionRecordInMeta[0];
     funcDef.schedule = functionSchedules.find((schedule) => schedule.functionName === functionName)?.scheduleExpression;
 
-    // Add CloudFormation template content for auth access parsing
-    if (functionTemplates?.has(functionRecordInMeta[0])) {
-      funcDef.templateContent = functionTemplates.get(functionRecordInMeta[0]);
+    // Add auth access configuration if available
+    if (functionAuthAccess?.has(functionRecordInMeta[0])) {
+      funcDef.authAccess = functionAuthAccess.get(functionRecordInMeta[0]);
     }
 
     funcDefList.push(funcDef);
