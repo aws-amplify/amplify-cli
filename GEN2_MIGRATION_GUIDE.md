@@ -355,16 +355,12 @@ by the CLI setting that configures them.
 
 - ❌ | Unsupported.
 - ✅ | Fully automated
-- ⚠️ | Partially supported. Requires manual code edits provided by this guide.
- 
-Next to each supported or partially supported setting there's an indication whether it supports `generate`, `refactor`, or both. 
+- ⚠️ | Partially supported. Includes indication whether it lacks support for `generate` or `refactor`.
 
 - If a feature is not supported for `refactor` you will not be able to fully migrate the app. You can however still generate 
 and deploy it to test whether code generation works properly.
-
 - If a feature is not supported for `generate` you will be able to manually augment the generated code 
 to add the necessary configuration.
-
 - Unsupported features naturally don't support either command.
 
 ## Auth
@@ -373,61 +369,61 @@ to add the necessary configuration.
 
 - ➤ **How do you want users to be able to sign in**
 
-  - ✅ Username (`generate` ✔ `refactor` ✔) 
-  - ✅ Email (`generate` ✔ `refactor` ✔)
-  - ✅ Phone Number (`generate` ✔ `refactor` ✔)
-  - ✅ Email or Phone Number (`generate` ✔ `refactor` ✔)
+  - ✅ Username
+  - ✅ Email
+  - ✅ Phone Number
+  - ✅ Email or Phone Number
 
 - ➤ **Select the social providers you want to configure for your user pool**
 
-  - ✅ Facebook (`generate` ✔ `refactor` ✗)
-  - ✅ Google (`generate` ✔ `refactor` ✗)
+  - ⚠️ Facebook (`generate` ✔ `refactor` ✗)
+  - ⚠️ Google (`generate` ✔ `refactor` ✗)
   - ❌ Login With Amazon
   - ❌ Sign in with Apple
 
 - ➤ **Select the authentication/authorization services that you want to use**
 
-  - ✅ User Sign-Up, Sign-In, connected with AWS IAM controls (`generate` ✔ `refactor` ✔)
+  - ✅ User Sign-Up, Sign-In, connected with AWS IAM controls
   - ❌ User Sign-Up & Sign-In only
   
 - ➤ **Allow unauthenticated logins**
 
   - ❌ Yes
-  - ✅ No (`generate` ✔ `refactor` ✔)
+  - ✅ No
 
 - ❌ **Do you want to enable 3rd party authentication providers in your identity pool**
 
-- ✅ **Do you want to add User Pool Groups** (`generate` ✔ `refactor` ✔)
+- ✅ **Do you want to add User Pool Groups**
 
 - ❌ **Do you want to add an admin queries API**
 
 - ➤ **Multifactor authentication (MFA) user login options**
 
-  - ✅ OFF (`generate` ✔ `refactor` ✔)
+  - ✅ OFF
   - ❌ ON
   - ❌ OPTIONAL
 
 - ➤ **Email based user registration/forgot password:**
 
-  - ✅ Enabled (`generate` ✔ `refactor` ✔)
+  - ✅ Enabled
   - ❌ Disabled
 
-- ✅ **Specify an email verification subject** (`generate` ✔ `refactor` ✔)
+- ✅ **Specify an email verification subject**
 
-- ✅ **Specify an email verification message** (`generate` ✔ `refactor` ✔)
+- ✅ **Specify an email verification message**
 
 - ❌ **Do you want to override the default password policy for this User Pool**
 
 - ➤ **What attributes are required for signing up**
 
   - ❌ Birthdate (This attribute is not supported by Login With Amazon, Sign in with Apple.)
-  - ✅ Email (`generate` ✔ `refactor` ✔)
+  - ✅ Email
   - ❌ Family Name (This attribute is not supported by Login With Amazon.)
   - ❌ Middle Name (This attribute is not supported by Google, Login With Amazon, Sign in with Apple.)
   - ❌ Gender (This attribute is not supported by Login With Amazon, Sign in with Apple.)
   - ❌ Locale (This attribute is not supported by Facebook, Google, Sign in with Apple.)
 
-- ✅ **Specify the app's refresh token expiration period (in days)** (`generate` ✔ `refactor` ✔)
+- ✅ **Specify the app's refresh token expiration period (in days)**
 
 - ❌ **Do you want to specify the user attributes this app can read and write**
 
@@ -445,8 +441,15 @@ to add the necessary configuration.
 
 - ➤ **Do you want to configure Lambda Triggers for Cognito**
 
-  - Post Authentication ✅ (`generate` ✔ `refactor` ✔)
-  - ...
+  - ❌ Create Auth Challenge
+  - ❌ Custom Message
+  - ❌ Define Auth Challenge
+  - ✅ Post Authentication
+  - ❌ Post Confirmation
+  - ❌ Pre Authentication
+  - ❌ Pre Sign-up
+  - ❌ Verify Auth Challenge Response
+  - ❌ Pre Token Generation
 
 ## Api
 
@@ -456,16 +459,16 @@ to add the necessary configuration.
 
   - ➤ **Default Authorization Type**
 
-    - ✅ API Key (`generate` ✔ `refactor` ✔)
+    - ✅ API Key
     - ❌ Amazon Cognito User Pool
-    - ✅ IAM (`generate` ✔ `refactor` ✔)
+    - ✅ IAM
     - ❌ OpenID Connect
     - ❌ Lambda
 
   - ➤ **Additional Authorization Type**
 
-    - ✅ API Key (`generate` ✔ `refactor` ✔)
-    - ✅ Amazon Cognito User Pool (`generate` ✔ `refactor` ✔)
+    - ✅ API Key
+    - ✅ Amazon Cognito User Pool
     - ❌ IAM
     - ❌ OpenID Connect
     - ❌ Lambda
@@ -480,29 +483,29 @@ to add the necessary configuration.
 
   - **What kind of access do you want for Authenticated users?**
 
-    - ✅ create/update (`generate` ✔ `refactor` ✔)
-    - ✅ read (`generate` ✔ `refactor` ✔)
-    - ✅ delete (`generate` ✔ `refactor` ✔)
+    - ✅ create/update
+    - ✅ read
+    - ✅ delete
 
   - **What kind of access do you want for Guest users?**
 
-    - ✅ create/update (`generate` ✔ `refactor` ✔)
-    - ✅ read (`generate` ✔ `refactor` ✔)
-    - ✅ delete (`generate` ✔ `refactor` ✔)
+    - ✅ create/update
+    - ✅ read
+    - ✅ delete
 
   - **What kind of access do you want for {Group} users**
 
-    - ✅ create/update (`generate` ✔ `refactor` ✔)
-    - ✅ read (`generate` ✔ `refactor` ✔)
-    - ✅ delete (`generate` ✔ `refactor` ✔)
+    - ✅ create/update
+    - ✅ read
+    - ✅ delete
 
   - ✅ Do you want to add a Lambda Trigger for your S3 Bucket
 
 - ➤ NoSQL Database
 
-  - ✅ Do you want to add a sort key to your table (`generate` ✔ `refactor` ✗)
-  - ✅ Do you want to add global secondary indexes to your table (`generate` ✔ `refactor` ✗)
-  - ✅ Do you want to add a sort key to your global secondary index (`generate` ✔ `refactor` ✗)
+  - ✅ Do you want to add a sort key to your table
+  - ✅ Do you want to add global secondary indexes to your table
+  - ✅ Do you want to add a sort key to your global secondary index
   - ❌ Do you want to add a Lambda Trigger for your Table
 
 ## Function
@@ -516,12 +519,12 @@ to add the necessary configuration.
     - ❌ .NET 8
     - ❌ Go
     - ❌ Java
-    - ✅ NodeJS (`generate` ✔ `refactor` ✔)
+    - ✅ NodeJS
     - ❌ Python
 
   - ➤ Choose the function template that you want to use
 
-    - ✅ Hello world function (`generate` ✔ `refactor` ✔)
+    - ✅ Hello world function
     - ❌ CRUD function for Amazon DynamoDB table
     - ✅ Serverless express function (`generate` ✔ `refactor` ✔)
     - ➤ Lambda Trigger
@@ -530,7 +533,7 @@ to add the necessary configuration.
 
         - ➤ **Choose a DynamoDB event source option**
 
-          - ⚠️ Use API category graphql @model backed DynamoDB table(s) in the current Amplify project (`generate` ✔ `refactor` ✔)
+          - ⚠️ Use API category graphql @model backed DynamoDB table(s) in the current Amplify project (`generate` ✗ `refactor` ✔)
           - ❌ Use storage category DynamoDB table configured in the current Amplify project
           - ❌ Provide the ARN of DynamoDB stream directly
 
@@ -542,39 +545,39 @@ to add the necessary configuration.
 
       - ➤ **api**
 
-        - ⚠️ Query (`generate` ✔ `refactor` ✔)
-        - ⚠️ Mutation (`generate` ✔ `refactor` ✔)
+        - ⚠️ Query (`generate` ✗ `refactor` ✔)
+        - ⚠️ Mutation (`generate` ✗ `refactor` ✔)
         - ❌ Subscription
 
       - ➤ **auth**
 
-        - ⚠️ create (`generate` ✔ `refactor` ✔)
-        - ⚠️ read (`generate` ✔ `refactor` ✔)
-        - ⚠️ update (`generate` ✔ `refactor` ✔)
-        - ⚠️ delete (`generate` ✔ `refactor` ✔)
+        - ⚠️ create (`generate` ✗ `refactor` ✔)
+        - ⚠️ read (`generate` ✗ `refactor` ✔)
+        - ⚠️ update (`generate` ✗ `refactor` ✔)
+        - ⚠️ delete (`generate` ✗ `refactor` ✔)
 
       - ❌ function
 
       - ➤ **storage:dynamo**
 
-        - ⚠️ create (`generate` ✔ `refactor` ✔)
-        - ⚠️ read (`generate` ✔ `refactor` ✔)
-        - ⚠️ update (`generate` ✔ `refactor` ✔)
-        - ⚠️ delete (`generate` ✔ `refactor` ✔)
+        - ⚠️ create (`generate` ✗ `refactor` ✔)
+        - ⚠️ read (`generate` ✗ `refactor` ✔)
+        - ⚠️ update (`generate` ✗ `refactor` ✔)
+        - ⚠️ delete (`generate` ✗ `refactor` ✔)
 
       - ➤ **storage:s3**
 
-        - ⚠️ create (`generate` ✔ `refactor` ✔)
-        - ⚠️ read (`generate` ✔ `refactor` ✔)
-        - ⚠️ update (`generate` ✔ `refactor` ✔)
-        - ⚠️ delete (`generate` ✔ `refactor` ✔)
+        - ⚠️ create (`generate` ✗ `refactor` ✔)
+        - ⚠️ read (`generate` ✗ `refactor` ✔)
+        - ⚠️ update (`generate` ✗ `refactor` ✔)
+        - ⚠️ delete (`generate` ✗ `refactor` ✔)
 
       - ❌ function
 
     - ❌ **Do you want to invoke this function on a recurring schedule**
     - ❌ **Do you want to enable Lambda layers for this function**
     - ✅ **Do you want to configure environment variables for this function** (`generate` ✔ `refactor` ✔)
-    - ⚠️ **Do you want to configure secret values this function can access** (`generate` ✔ `refactor` ✔)
+    - ⚠️ **Do you want to configure secret values this function can access** (`generate` ✗ `refactor` ✔)
     - ➤ **Choose the package manager that you want to use**
 
       - ✅ NPM (`generate` ✔ `refactor` ✔)
