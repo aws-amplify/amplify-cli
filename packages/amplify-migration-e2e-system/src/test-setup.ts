@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Jest Test Setup
  * Automatically loads environment variables from .gamma.env for all tests, if the file is present
