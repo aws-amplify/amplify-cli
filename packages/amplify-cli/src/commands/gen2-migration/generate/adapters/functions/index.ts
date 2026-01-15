@@ -109,9 +109,10 @@ export const getFunctionDefinition = (
 
     // Add auth access configuration if available
     if (functionAuthAccess?.has(functionRecordInMeta[0])) {
-      funcDef.authAccess = functionAuthAccess.get(functionRecordInMeta[0]) };
+      funcDef.authAccess = functionAuthAccess.get(functionRecordInMeta[0]);
+    }
 
-      // Analyze CFN template for API permissions
+    // Analyze CFN template for API permissions
     if (funcDef.resourceName) {
       funcDef.apiPermissions = analyzeApiPermissionsFromCfn(funcDef.resourceName);
     }
