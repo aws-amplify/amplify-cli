@@ -61,8 +61,19 @@ export const getFunctionDefinition = (
     // since `backend` is configured in a different file. we can't import that file because it would create
     // a circular import. instead, we need to generate some code in `backend.ts` (TODO)
 
-    // api access env variables
+    // api appsync access env variables
     for (const envSuffix of ['GRAPHQLAPIKEYOUTPUT', 'GRAPHQLAPIENDPOINTOUTPUT', 'GRAPHQLAPIIDOUTPUT']) {
+      for (const variable of Object.keys(configuration.Environment?.Variables ?? {})) {
+        if (variable.startsWith('API_') && variable.endsWith(envSuffix)) {
+          delete configuration.Environment?.Variables[variable];
+        }
+      }
+    }
+
+    // api direct model access env variables
+    // e.g API_FITNESSTRACKER_MEALTABLE_ARN
+    // e.g API_FITNESSTRACKER_MEALTABLE_NAME
+    for (const envSuffix of ['ARN', 'NAME']) {
       for (const variable of Object.keys(configuration.Environment?.Variables ?? {})) {
         if (variable.startsWith('API_') && variable.endsWith(envSuffix)) {
           delete configuration.Environment?.Variables[variable];
@@ -109,9 +120,10 @@ export const getFunctionDefinition = (
 
     // Add auth access configuration if available
     if (functionAuthAccess?.has(functionRecordInMeta[0])) {
-      funcDef.authAccess = functionAuthAccess.get(functionRecordInMeta[0]) };
+      funcDef.authAccess = functionAuthAccess.get(functionRecordInMeta[0]);
+    }
 
-      // Analyze CFN template for API permissions
+    // Analyze CFN template for API permissions
     if (funcDef.resourceName) {
       funcDef.apiPermissions = analyzeApiPermissionsFromCfn(funcDef.resourceName);
     }

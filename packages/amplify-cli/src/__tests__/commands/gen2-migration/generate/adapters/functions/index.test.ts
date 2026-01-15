@@ -1,6 +1,38 @@
 import { getFunctionDefinition } from '../../../../../../commands/gen2-migration/generate/adapters/functions/index';
 
 describe('getFunctionDefinition', () => {
+  test('api models env variables are removed', () => {
+    const definition = getFunctionDefinition(
+      [
+        {
+          Handler: undefined,
+          FunctionName: 'MyFunc',
+          Environment: {
+            Variables: {
+              SOME_ENV: 'some-value',
+              API_FITNESSTRACKER_MEALTABLE_ARN: 'authUserPoolId',
+            },
+          },
+        },
+      ],
+      [],
+      new Map(),
+      {
+        function: {
+          MyFunc: {
+            service: 'Lambda',
+            providerPlugin: 'awscloudformation',
+            output: {
+              Name: 'MyFunc',
+            },
+          },
+        },
+      },
+    );
+
+    expect(definition.length).toEqual(1);
+    expect(definition[0].environment?.Variables).toEqual({ SOME_ENV: 'some-value' });
+  });
   test('auth env variables are removed', () => {
     const definition = getFunctionDefinition(
       [

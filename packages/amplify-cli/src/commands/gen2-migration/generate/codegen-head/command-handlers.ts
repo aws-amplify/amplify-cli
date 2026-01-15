@@ -565,7 +565,7 @@ export async function prepare(logger: Logger, appId: string, envName: string, re
       ccbFetcher,
       authAnalyzer,
     ),
-    analyticsDefinitionFetcher: new AppAnalyticsDefinitionFetcher(backendEnvironmentResolver, stateManager),
+    analyticsDefinitionFetcher: new AppAnalyticsDefinitionFetcher(backendEnvironmentResolver, new BackendDownloader(s3Client)),
     analytics: new AppAnalytics(appId),
     logger: logger,
     ccbFetcher,
