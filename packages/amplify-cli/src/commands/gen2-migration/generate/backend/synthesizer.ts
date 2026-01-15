@@ -18,6 +18,7 @@ import assert from 'assert';
 import { newLineIdentifier } from '../ts_factory_utils';
 import type { AdditionalAuthProvider } from '../generators/data';
 import { RestApiDefinition } from '../codegen-head/data_definition_fetcher';
+import { generateEnvEscapeHatches } from '../generators/functions/lambda_env_generator';
 
 const factory = ts.factory;
 export interface BackendRenderParameters {
@@ -51,6 +52,7 @@ export interface BackendRenderParameters {
     importFrom: string;
     functionNamesAndCategories: Map<string, string>;
     functionsWithApiAccess?: Map<string, { hasQuery: boolean; hasMutation: boolean; hasSubscription: boolean }>;
+    functionEnvironments?: Map<string, Record<string, string>>;
   };
   analytics?: {
     importFrom: string;
@@ -1430,6 +1432,13 @@ export class BackendSynthesizer {
             ),
           ),
         );
+
+        // Generate environment variable escape hatches
+        if (renderArgs.function.functionEnvironments?.has(functionName)) {
+          const envVars = renderArgs.function.functionEnvironments.get(functionName)!;
+          const escapeHatches = generateEnvEscapeHatches(functionName, envVars);
+          nodes.push(...escapeHatches);
+        }
       }
     }
 
