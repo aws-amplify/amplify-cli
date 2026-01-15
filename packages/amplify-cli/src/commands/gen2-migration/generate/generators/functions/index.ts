@@ -62,6 +62,12 @@ export interface FunctionDefinition {
   schedule?: string;
   /** Auth access permissions for this function */
   authAccess?: AuthAccess;
+  /** Specific API permissions detected from CloudFormation analysis */
+  apiPermissions?: {
+    hasQuery: boolean;
+    hasMutation: boolean;
+    hasSubscription: boolean;
+  };
 }
 
 /** TypeScript AST factory for creating code nodes */
