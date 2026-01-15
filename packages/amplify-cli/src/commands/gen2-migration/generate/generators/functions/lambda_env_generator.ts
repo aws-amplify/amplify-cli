@@ -2,12 +2,11 @@ import ts from 'typescript';
 
 const factory = ts.factory;
 
+// Maps Gen1 environment variable patterns to Gen2 backend resource paths
 const ENV_VAR_PATTERNS = {
   'API_.*_GRAPHQLAPIENDPOINTOUTPUT': 'data.graphqlUrl',
   'API_.*_GRAPHQLAPIIDOUTPUT': 'data.apiId',
   'API_.*_GRAPHQLAPIKEYOUTPUT': 'data.apiKey!',
-  'API_.*_.*TABLE_ARN': 'data.resources.tables.{table}.tableArn',
-  'API_.*_.*TABLE_NAME': 'data.resources.tables.{table}.tableName',
   'AUTH_.*_USERPOOLID': 'auth.resources.userPool.userPoolId',
   'STORAGE_.*_ARN': 'data.resources.tables.{table}.tableArn',
   'STORAGE_.*_NAME': 'data.resources.tables.{table}.tableName',
@@ -15,13 +14,22 @@ const ENV_VAR_PATTERNS = {
   'STORAGE_.*_BUCKETNAME': 'storage.resources.bucket.bucketName',
 };
 
+/**
+ * Generates escape hatch statements for Lambda function environment variables.
+ * Creates backend.functionName.addEnvironment() calls for Gen1 env vars that reference other Amplify resources.
+ *
+ * @param functionName - The Gen2 function resource name
+ * @param envVars - Environment variables from the Gen1 Lambda function
+ * @returns Array of TypeScript statements for escape hatches
+ */
 export function generateEnvEscapeHatches(functionName: string, envVars: Record<string, string>): ts.ExpressionStatement[] {
   const statements: ts.ExpressionStatement[] = [];
 
-  for (const [envVar, value] of Object.entries(envVars)) {
+  for (const [envVar] of Object.entries(envVars)) {
     for (const [pattern, backendPath] of Object.entries(ENV_VAR_PATTERNS)) {
       if (new RegExp(`^${pattern}$`).test(envVar)) {
         let path = backendPath;
+        // Extract table name from environment variable for DynamoDB resources
         if (path.includes('{table}')) {
           const tableMatch = envVar.match(/(?:API|STORAGE)_.*?_(.+?)(?:TABLE_|_)/);
           if (tableMatch) path = path.replace('{table}', tableMatch[1].toLowerCase());

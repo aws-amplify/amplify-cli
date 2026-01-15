@@ -52,6 +52,7 @@ export interface BackendRenderParameters {
     importFrom: string;
     functionNamesAndCategories: Map<string, string>;
     functionsWithApiAccess?: Map<string, { hasQuery: boolean; hasMutation: boolean; hasSubscription: boolean }>;
+    /** Environment variables from Gen1 Lambda functions for generating escape hatches */
     functionEnvironments?: Map<string, Record<string, string>>;
   };
   analytics?: {
