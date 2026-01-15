@@ -18,7 +18,7 @@
     "lint:fix": "eslint src/**/*.ts --fix"
   },
   "dependencies": {
-    "@aws-amplify/amplify-e2e-core": "file:../amplify-e2e-core",
+    "@aws-amplify/amplify-e2e-core": "workspace:^",
     "@paralleldrive/cuid2": "^3.0.6",
     "chalk": "^4.1.2",
     "execa": "^5.1.1",
