@@ -70,6 +70,8 @@ export interface FunctionDefinition {
     hasMutation: boolean;
     hasSubscription: boolean;
   };
+  /** Data model table access from GraphQL API */
+  dataModelAccess?: import('../../codegen-head/data_model_access_parser').DataModelTableAccess[];
 }
 
 /** TypeScript AST factory for creating code nodes */

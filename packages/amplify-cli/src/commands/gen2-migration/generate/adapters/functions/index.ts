@@ -2,6 +2,7 @@ import { FunctionDefinition } from '../../core/migration-pipeline';
 import { FunctionConfiguration } from '@aws-sdk/client-lambda';
 import { AuthAccess } from '../../generators/functions/index';
 import { analyzeApiPermissionsFromCfn } from '../../codegen-head/api-cfn-access';
+import { DataModelAccessParser } from '../../codegen-head/data_model_access_parser';
 import assert from 'node:assert';
 
 export type AmplifyMetaFunction = {
@@ -123,6 +124,12 @@ export const getFunctionDefinition = (
     // Analyze CFN template for API permissions
     if (funcDef.resourceName) {
       funcDef.apiPermissions = analyzeApiPermissionsFromCfn(funcDef.resourceName);
+
+      // Analyze CFN template for data model table access
+      const dataModelAccess = DataModelAccessParser.extractFunctionDataModelAccess([funcDef.resourceName]);
+      if (dataModelAccess.length > 0) {
+        funcDef.dataModelAccess = dataModelAccess;
+      }
     }
 
     funcDefList.push(funcDef);
