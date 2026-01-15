@@ -3,10 +3,13 @@ import ts from 'typescript';
 const factory = ts.factory;
 
 // Maps Gen1 environment variable patterns to Gen2 backend resource paths
+// Handles both GraphQL data model tables (API_*TABLE_*) and standalone DynamoDB tables (STORAGE_*)
 const ENV_VAR_PATTERNS = {
   'API_.*_GRAPHQLAPIENDPOINTOUTPUT': 'data.graphqlUrl',
   'API_.*_GRAPHQLAPIIDOUTPUT': 'data.apiId',
   'API_.*_GRAPHQLAPIKEYOUTPUT': 'data.apiKey!',
+  'API_.*TABLE_ARN': 'data.resources.tables.{table}.tableArn',
+  'API_.*TABLE_NAME': 'data.resources.tables.{table}.tableName',
   'AUTH_.*_USERPOOLID': 'auth.resources.userPool.userPoolId',
   'STORAGE_.*_ARN': '{table}.tableArn',
   'STORAGE_.*_NAME': '{table}.tableName',
@@ -35,8 +38,16 @@ export function generateLambdaEnvVars(functionName: string, envVars: Record<stri
         if (path.includes('{table}')) {
           const tableMatch = envVar.match(/(?:API|STORAGE)_(.+?)(?:TABLE_|_)/);
           if (tableMatch) {
-            path = path.replace('{table}', tableMatch[1].toLowerCase());
-            isDirect = true;
+            let tableName = tableMatch[1];
+            // Convert Gen1 table naming to Gen2 data model table keys:
+            // API_TESTAPP_TODOTABLE_ARN -> 'TODOTABLE' -> 'TODO' (remove TABLE suffix)
+            // STORAGE_MYTABLE_ARN -> 'MYTABLE' (keep as-is for standalone tables)
+            if (envVar.startsWith('API_') && tableName.endsWith('TABLE')) {
+              tableName = tableName.slice(0, -5); // Remove 'TABLE' suffix
+            }
+            path = path.replace('{table}', tableName);
+            // API tables use backend references, STORAGE tables use direct CDK construct references
+            isDirect = envVar.startsWith('STORAGE_');
           }
         }
 
