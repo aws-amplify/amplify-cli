@@ -363,8 +363,6 @@ export const createGen2Renderer = ({
   const functionNamesAndCategory = new Map<string, string>();
   const functionsWithApiAccess = new Map<string, { hasQuery: boolean; hasMutation: boolean; hasSubscription: boolean }>();
   if (functions && functions.length) {
-    const functionNamesAndCategory = new Map<string, string>();
-    const functionsWithApiAccess = new Map<string, { hasQuery: boolean; hasMutation: boolean; hasSubscription: boolean }>();
     const functionEnvironments = new Map<string, Record<string, string>>();
 
     for (const func of functions) {
