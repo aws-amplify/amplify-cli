@@ -32,7 +32,7 @@ export function generateLambdaEnvVars(functionName: string, envVars: Record<stri
         let path = backendPath;
         // Extract table name from environment variable for DynamoDB resources
         if (path.includes('{table}')) {
-          const tableMatch = envVar.match(/(?:API|STORAGE)_.*?_(.+?)(?:TABLE_|_)/);
+          const tableMatch = envVar.match(/(?:API|STORAGE)_(.+?)(?:TABLE_|_)/);
           if (tableMatch) path = path.replace('{table}', tableMatch[1].toLowerCase());
         }
 

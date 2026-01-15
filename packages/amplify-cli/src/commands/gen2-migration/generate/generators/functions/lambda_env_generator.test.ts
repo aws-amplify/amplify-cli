@@ -18,7 +18,7 @@ describe('generateLambdaEnvVars', () => {
     const result = generateLambdaEnvVars('myFunction', envVars);
 
     const code = printer.printNode(ts.EmitHint.Unspecified, result[0], ts.createSourceFile('', '', ts.ScriptTarget.Latest));
-    expect(code).toBe("backend.myFunction.addEnvironment('API_TESTAPP_GRAPHQLAPIKEYOUTPUT', backend.data.apiKey!);");
+    expect(code).toBe('backend.myFunction.addEnvironment("API_TESTAPP_GRAPHQLAPIKEYOUTPUT", backend.data.apiKey!);');
   });
 
   it('generates auth user pool escape hatch', () => {
@@ -26,7 +26,7 @@ describe('generateLambdaEnvVars', () => {
     const result = generateLambdaEnvVars('myFunction', envVars);
 
     const code = printer.printNode(ts.EmitHint.Unspecified, result[0], ts.createSourceFile('', '', ts.ScriptTarget.Latest));
-    expect(code).toBe("backend.myFunction.addEnvironment('AUTH_TESTAPP_USERPOOLID', backend.auth.resources.userPool.userPoolId);");
+    expect(code).toBe('backend.myFunction.addEnvironment("AUTH_TESTAPP_USERPOOLID", backend.auth.resources.userPool.userPoolId);');
   });
 
   it('generates storage table escape hatch with table name extraction', () => {
@@ -34,7 +34,7 @@ describe('generateLambdaEnvVars', () => {
     const result = generateLambdaEnvVars('myFunction', envVars);
 
     const code = printer.printNode(ts.EmitHint.Unspecified, result[0], ts.createSourceFile('', '', ts.ScriptTarget.Latest));
-    expect(code).toBe("backend.myFunction.addEnvironment('STORAGE_TODOTABLE_ARN', backend.data.resources.tables.todo.tableArn);");
+    expect(code).toBe('backend.myFunction.addEnvironment("STORAGE_TODOTABLE_ARN", backend.data.resources.tables.todo.tableArn);');
   });
 
   it('generates S3 bucket escape hatch', () => {
@@ -42,7 +42,7 @@ describe('generateLambdaEnvVars', () => {
     const result = generateLambdaEnvVars('myFunction', envVars);
 
     const code = printer.printNode(ts.EmitHint.Unspecified, result[0], ts.createSourceFile('', '', ts.ScriptTarget.Latest));
-    expect(code).toBe("backend.myFunction.addEnvironment('STORAGE_S32F16FFE0_BUCKETNAME', backend.storage.resources.bucket.bucketName);");
+    expect(code).toBe('backend.myFunction.addEnvironment("STORAGE_S32F16FFE0_BUCKETNAME", backend.storage.resources.bucket.bucketName);');
   });
 
   it('generates function name escape hatch with function name extraction', () => {
@@ -51,7 +51,7 @@ describe('generateLambdaEnvVars', () => {
 
     const code = printer.printNode(ts.EmitHint.Unspecified, result[0], ts.createSourceFile('', '', ts.ScriptTarget.Latest));
     expect(code).toBe(
-      "backend.myFunction.addEnvironment('FUNCTION_TESTAPP9725C797_NAME', backend.testapp9725c797.resources.lambda.functionName);",
+      'backend.myFunction.addEnvironment("FUNCTION_TESTAPP9725C797_NAME", backend.testapp9725c797.resources.lambda.functionName);',
     );
   });
 
