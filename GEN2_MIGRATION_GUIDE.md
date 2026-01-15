@@ -379,11 +379,34 @@ If your application contains an S3 bucket as part of the storage category, edit 
 > This is required in order to sync your local bucket name with the deployed template. 
 Otherwise, pushing changes to the `gen2-main` branch will result in a bucket replacement.
 
-And push the changes:
-
 ```console
 git add .
 git commit -m "fix: reuse gen1 storage bucket"
+```
+
+#### 4.2 Post Refactor | DynamoDB Storage
+
+If your application contains a DynamoDB table as part of the storage category, edit in `./amplify/backend.ts`:
+
+```diff
+- new Table(storageStack, "myTable", { partitionKey: ... });
+- // Add this property to the Table above post refactor: tableName: 'my-table-main'
++ new Table(storageStack, "myTable", { tableName: 'my-table-main', partitionKey: ... });
+```
+
+> This is required in order to sync your local table name with the deployed template. 
+Otherwise, pushing changes to the `gen2-main` branch will result in a table replacement.
+
+```console
+git add .
+git commit -m "fix: reuse gen1 dynamodb table"
+```
+
+#### 4.3 Deploy
+
+Push the changes:
+
+```
 git push origin gen2-main
 ```
 
