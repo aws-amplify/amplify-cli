@@ -58,6 +58,7 @@ import {
 } from '../generators/storage';
 
 import { DataDefinition, DataTableMapping, generateDataSource } from '../generators/data/index';
+import { DataModelTableAccess } from '../codegen-head/data_model_access_parser';
 
 import { FunctionDefinition, renderFunctions } from '../generators/functions/index';
 import assert from 'assert';
@@ -362,6 +363,7 @@ export const createGen2Renderer = ({
   const functionNames: string[] = [];
   const functionNamesAndCategory = new Map<string, string>();
   const functionsWithApiAccess = new Map<string, { hasQuery: boolean; hasMutation: boolean; hasSubscription: boolean }>();
+  const functionsWithDataModelAccess = new Map<string, DataModelTableAccess[]>();
   if (functions && functions.length) {
     const functionEnvironments = new Map<string, Record<string, string>>();
 
@@ -391,6 +393,11 @@ export const createGen2Renderer = ({
         ) {
           functionsWithApiAccess.set(resourceName, func.apiPermissions);
         }
+
+        // Track functions that have data model access
+        if (func.dataModelAccess && func.dataModelAccess.length > 0) {
+          functionsWithDataModelAccess.set(resourceName, func.dataModelAccess);
+        }
         const dirPath = path.join(outputDir, 'amplify', funcCategory, resourceName);
         // Create function directory and resource files
         renderers.push(new EnsureDirectory(dirPath));
@@ -413,6 +420,7 @@ export const createGen2Renderer = ({
       functionNamesAndCategories: functionNamesAndCategory,
       functionsWithApiAccess: functionsWithApiAccess.size > 0 ? functionsWithApiAccess : undefined,
       functionEnvironments: functionEnvironments,
+      functionsWithDataModelAccess: functionsWithDataModelAccess.size > 0 ? functionsWithDataModelAccess : undefined,
     };
   }
 
