@@ -179,7 +179,7 @@ describe('getFunctionDefinition', () => {
     expect(definition).toMatchSnapshot();
   });
 
-  test('should analyze CloudFormation for API permissions and clean environment variables', () => {
+  test('entry is derived from Handler', () => {
     const functionConfigurations: FunctionConfiguration[] = [
       {
         FunctionName: 'myFunction-dev-12345',
