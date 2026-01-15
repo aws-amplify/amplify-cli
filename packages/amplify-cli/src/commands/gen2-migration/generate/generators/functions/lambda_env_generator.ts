@@ -42,18 +42,35 @@ export function generateLambdaEnvVars(functionName: string, envVars: Record<stri
           if (functionMatch) path = path.replace('{function}', functionMatch[1].toLowerCase());
         }
 
-        // Create property access expression: backend.data.graphqlUrl
-        const pathParts = ['backend', ...path.split('.')];
-        let expression: ts.Expression = factory.createIdentifier(pathParts[0]);
-        for (let i = 1; i < pathParts.length; i++) {
-          const part = pathParts[i];
-          if (part.endsWith('!')) {
-            // Handle non-null assertion: backend.data.apiKey!
-            expression = factory.createNonNullExpression(
-              factory.createPropertyAccessExpression(expression, factory.createIdentifier(part.slice(0, -1))),
-            );
-          } else {
-            expression = factory.createPropertyAccessExpression(expression, factory.createIdentifier(part));
+        // Create property access expression
+        let expression: ts.Expression;
+        if (path.startsWith('{table}') || path.startsWith('{function}')) {
+          // Direct variable reference (e.g., activity.tableArn)
+          const pathParts = path.split('.');
+          expression = factory.createIdentifier(pathParts[0]);
+          for (let i = 1; i < pathParts.length; i++) {
+            const part = pathParts[i];
+            if (part.endsWith('!')) {
+              expression = factory.createNonNullExpression(
+                factory.createPropertyAccessExpression(expression, factory.createIdentifier(part.slice(0, -1))),
+              );
+            } else {
+              expression = factory.createPropertyAccessExpression(expression, factory.createIdentifier(part));
+            }
+          }
+        } else {
+          // Backend reference (e.g., backend.data.graphqlUrl)
+          const pathParts = ['backend', ...path.split('.')];
+          expression = factory.createIdentifier(pathParts[0]);
+          for (let i = 1; i < pathParts.length; i++) {
+            const part = pathParts[i];
+            if (part.endsWith('!')) {
+              expression = factory.createNonNullExpression(
+                factory.createPropertyAccessExpression(expression, factory.createIdentifier(part.slice(0, -1))),
+              );
+            } else {
+              expression = factory.createPropertyAccessExpression(expression, factory.createIdentifier(part));
+            }
           }
         }
 
