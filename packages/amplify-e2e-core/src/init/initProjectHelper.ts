@@ -73,11 +73,6 @@ const defaultSettings = {
 export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof defaultSettings>): Promise<void> {
   const s = { ...defaultSettings, ...settings };
 
-  // Debug logging for profile investigation
-  console.log('[DEBUG initJSProjectWithProfile] Received settings:', JSON.stringify(settings, null, 2));
-  console.log('[DEBUG initJSProjectWithProfile] Merged settings.profileName:', s.profileName);
-  console.log('[DEBUG initJSProjectWithProfile] cwd:', cwd);
-
   let env;
 
   if (s.disableAmplifyAppCreation === true) {
