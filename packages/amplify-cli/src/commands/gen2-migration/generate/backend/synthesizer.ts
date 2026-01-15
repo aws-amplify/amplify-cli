@@ -19,6 +19,7 @@ import { newLineIdentifier } from '../ts_factory_utils';
 import type { AdditionalAuthProvider } from '../generators/data';
 import { RestApiDefinition } from '../codegen-head/data_definition_fetcher';
 import { generateLambdaEnvVars } from '../generators/functions/lambda_env_generator';
+import { DataModelTableAccess } from '../codegen-head/data_model_access_parser';
 
 const factory = ts.factory;
 export interface BackendRenderParameters {
@@ -55,6 +56,7 @@ export interface BackendRenderParameters {
     functionsWithApiAccess?: Map<string, { hasQuery: boolean; hasMutation: boolean; hasSubscription: boolean }>;
     /** Environment variables from Gen1 Lambda functions for generating escape hatches */
     functionEnvironments?: Map<string, Record<string, string>>;
+    functionsWithDataModelAccess?: Map<string, DataModelTableAccess[]>;
   };
   analytics?: {
     importFrom: string;
@@ -2104,6 +2106,37 @@ export class BackendSynthesizer {
           nodes.push(grantStatement);
         }
       });
+    }
+
+    // Grant function access to data model tables from our parser
+    if (renderArgs.function?.functionsWithDataModelAccess && renderArgs.data) {
+      for (const [functionName, tableAccesses] of renderArgs.function.functionsWithDataModelAccess) {
+        for (const tableAccess of tableAccesses) {
+          const tableName = tableAccess.tableName.replace('Table', ''); // Remove 'Table' suffix
+
+          nodes.push(
+            factory.createExpressionStatement(
+              factory.createCallExpression(
+                factory.createPropertyAccessExpression(
+                  factory.createElementAccessExpression(
+                    factory.createIdentifier('backend.data.resources.tables'),
+                    factory.createStringLiteral(tableName),
+                  ),
+                  factory.createIdentifier('grant'),
+                ),
+                undefined,
+                [
+                  factory.createPropertyAccessExpression(
+                    factory.createIdentifier(`backend.${functionName}.resources`),
+                    factory.createIdentifier('lambda'),
+                  ),
+                  ...tableAccess.actions.map((action) => factory.createStringLiteral(action)),
+                ],
+              ),
+            ),
+          );
+        }
+      }
     }
 
     // returns backend.ts file
