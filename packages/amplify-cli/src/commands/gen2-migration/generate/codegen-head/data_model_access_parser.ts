@@ -1,4 +1,3 @@
-import { DynamoDBCloudFormationAccessParser } from './dynamodb_cfn_access_parser';
 import { readCFNTemplate } from '@aws-amplify/amplify-cli-core';
 import path from 'path';
 
