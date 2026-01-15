@@ -162,6 +162,13 @@ export class AppStorageDefinitionFetcher {
     let storageOptions: StorageRenderParameters | undefined = undefined;
     const dynamoTables: DynamoDBTableDefinition[] = [];
 
+    // Extract all function names from the project for access pattern analysis
+    // These are Lambda function names from amplifyMeta.function used to:
+    // 1. Find CloudFormation templates at amplify/backend/function/{name}/{name}-cloudformation-template.json
+    // 2. Parse IAM permissions for S3/DynamoDB access
+    // 3. Generate allow.resource(functionName).to([permissions]) patterns in Gen 2
+    const functionNames = amplifyMeta.function ? Object.keys(amplifyMeta.function) : [];
+
     if ('storage' in amplifyMeta && Object.keys(amplifyMeta.storage).length) {
       for (const [storageName, storage] of Object.entries(amplifyMeta.storage)) {
         const cliInputsPath = path.join(currentCloudBackendDirectory, 'storage', storageName, 'cli-inputs.json');
@@ -193,6 +200,7 @@ export class AppStorageDefinitionFetcher {
             cliInputs,
             bucketName,
             triggers,
+            functionNames, // Pass function names for access pattern analysis
           });
 
           if (!storageOptions) storageOptions = {};
@@ -221,6 +229,18 @@ export class AppStorageDefinitionFetcher {
     if (dynamoTables.length > 0) {
       if (!storageOptions) storageOptions = {};
       storageOptions.dynamoTables = dynamoTables;
+
+      // Add DynamoDB function access detection
+      const dynamoStorageDefinition = getStorageDefinition({
+        dynamoTables,
+        functionNames, // Pass function names for DynamoDB access pattern analysis
+      });
+
+      // Only add DynamoDB function access if functions actually have DynamoDB permissions
+      // Avoids adding undefined/empty properties to the storage configuration
+      if (dynamoStorageDefinition.dynamoFunctionAccess) {
+        storageOptions.dynamoFunctionAccess = dynamoStorageDefinition.dynamoFunctionAccess;
+      }
     }
 
     return storageOptions;

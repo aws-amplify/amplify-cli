@@ -359,10 +359,10 @@ export const createGen2Renderer = ({
   }
 
   // Process Lambda functions - create resource.ts and handler.ts files
+  const functionNames: string[] = [];
+  const functionNamesAndCategory = new Map<string, string>();
+  const functionsWithApiAccess = new Map<string, { hasQuery: boolean; hasMutation: boolean; hasSubscription: boolean }>();
   if (functions && functions.length) {
-    const functionNamesAndCategory = new Map<string, string>();
-    const functionsWithApiAccess = new Map<string, { hasQuery: boolean; hasMutation: boolean; hasSubscription: boolean }>();
-
     for (const func of functions) {
       if (func.name) {
         if (!func.runtime?.startsWith('nodejs')) {
@@ -375,6 +375,7 @@ export const createGen2Renderer = ({
         const funcCategory = func.category;
         assert(funcCategory);
         functionNamesAndCategory.set(resourceName, funcCategory);
+        functionNames.push(resourceName);
 
         // Track functions that have API access with specific permissions
         if (
@@ -383,7 +384,6 @@ export const createGen2Renderer = ({
         ) {
           functionsWithApiAccess.set(resourceName, func.apiPermissions);
         }
-
         const dirPath = path.join(outputDir, 'amplify', funcCategory, resourceName);
         // Create function directory and resource files
         renderers.push(new EnsureDirectory(dirPath));
@@ -471,7 +471,7 @@ export const createGen2Renderer = ({
       renderers.push(new EnsureDirectory(path.join(outputDir, 'amplify', 'storage')));
       renderers.push(
         new TypescriptNodeArrayRenderer(
-          async () => renderStorage(storage),
+          async () => renderStorage({ ...storage, functionNamesAndCategories: functionNamesAndCategory }),
           (content) => fileWriter(content, path.join(outputDir, 'amplify', 'storage', 'resource.ts')),
         ),
       );
@@ -480,6 +480,7 @@ export const createGen2Renderer = ({
     backendRenderOptions.storage = {
       importFrom: './storage/resource',
       dynamoTables: storage.dynamoTables,
+      dynamoFunctionAccess: storage.dynamoFunctionAccess,
       accelerateConfiguration: storage.accelerateConfiguration,
       versionConfiguration: storage.versioningConfiguration,
       hasS3Bucket: hasS3Bucket,
