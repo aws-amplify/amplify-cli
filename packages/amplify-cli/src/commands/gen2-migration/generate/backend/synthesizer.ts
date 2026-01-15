@@ -998,6 +998,16 @@ export class BackendSynthesizer {
           nodes.push(tableCreation);
         }
 
+        // Add comment for tableName to use post refactor (similar to S3 bucket)
+        const tableNameComment1 = factory.createNotEmittedStatement(factory.createStringLiteral(''));
+        ts.addSyntheticLeadingComment(
+          tableNameComment1,
+          ts.SyntaxKind.SingleLineCommentTrivia,
+          ` Add this property to the Table above post refactor: tableName: '${table.tableName}'`,
+          true,
+        );
+        nodes.push(tableNameComment1);
+
         // Add GSIs
         table.gsis?.forEach((gsi) => {
           const gsiProps: ts.PropertyAssignment[] = [

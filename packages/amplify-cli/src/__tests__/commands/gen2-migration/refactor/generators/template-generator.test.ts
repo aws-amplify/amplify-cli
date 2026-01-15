@@ -18,7 +18,14 @@ import {
 import fs from 'node:fs/promises';
 import { SSMClient } from '@aws-sdk/client-ssm';
 import { CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-provider';
-import { CATEGORY, CFN_AUTH_TYPE, CFN_S3_TYPE, CFN_IAM_TYPE, CFNTemplate } from '../../../../../commands/gen2-migration/refactor/types';
+import {
+  CATEGORY,
+  CFN_AUTH_TYPE,
+  CFN_S3_TYPE,
+  CFN_DYNAMODB_TYPE,
+  CFN_IAM_TYPE,
+  CFNTemplate,
+} from '../../../../../commands/gen2-migration/refactor/types';
 
 import assert from 'node:assert';
 import { Logger } from '../../../../../commands/gen2-migration';
@@ -50,6 +57,8 @@ const GEN1_STORAGE_STACK_ID = getStackId(GEN1_ROOT_STACK_NAME, 'storage');
 const GEN2_STORAGE_STACK_ID = getStackId(GEN2_ROOT_STACK_NAME, 'storage');
 const GEN1_S3_BUCKET_LOGICAL_ID = 'S3Bucket';
 const GEN2_S3_BUCKET_LOGICAL_ID = 'Gen2S3Bucket';
+const GEN1_DDB_TABLE_LOGICAL_ID = 'DynamoDBTable';
+const GEN2_DDB_TABLE_LOGICAL_ID = 'Gen2DynamoDBTable';
 const STUB_CFN_CLIENT = new CloudFormationClient();
 const STUB_SSM_CLIENT = new SSMClient();
 const STUB_COGNITO_IDP_CLIENT = new CognitoIdentityProviderClient();
@@ -103,6 +112,13 @@ const mockDescribeGen1StackResources: DescribeStackResourcesOutput = {
       Timestamp: new Date(),
     },
     {
+      ResourceType: CFN_DYNAMODB_TYPE.Table,
+      ResourceStatus: 'CREATE_COMPLETE',
+      LogicalResourceId: GEN1_DDB_TABLE_LOGICAL_ID,
+      PhysicalResourceId: 'my-ddb-table-gen1',
+      Timestamp: new Date(),
+    },
+    {
       ResourceType: 'AWS::Cognito::UserPoolClient',
       ResourceStatus: 'CREATE_COMPLETE',
       LogicalResourceId: 'UserPoolClient',
@@ -133,6 +149,13 @@ const mockDescribeGen2StackResources: DescribeStackResourcesOutput = {
       ResourceStatus: 'CREATE_COMPLETE',
       LogicalResourceId: GEN2_S3_BUCKET_LOGICAL_ID,
       PhysicalResourceId: 'my-s3-bucket-gen2',
+      Timestamp: new Date(),
+    },
+    {
+      ResourceType: CFN_DYNAMODB_TYPE.Table,
+      ResourceStatus: 'CREATE_COMPLETE',
+      LogicalResourceId: GEN2_DDB_TABLE_LOGICAL_ID,
+      PhysicalResourceId: 'my-ddb-table-gen2',
       Timestamp: new Date(),
     },
   ],
@@ -171,6 +194,13 @@ const mockDescribeGen2StorageStackResources: DescribeStackResourcesOutput = {
       ResourceStatus: 'CREATE_COMPLETE',
       LogicalResourceId: GEN2_S3_BUCKET_LOGICAL_ID,
       PhysicalResourceId: `myGen1BucketAfterRefactor`,
+      Timestamp: new Date(),
+    },
+    {
+      ResourceType: CFN_DYNAMODB_TYPE.Table,
+      ResourceStatus: 'CREATE_COMPLETE',
+      LogicalResourceId: GEN2_DDB_TABLE_LOGICAL_ID,
+      PhysicalResourceId: `myGen1DDBTableAfterRefactor`,
       Timestamp: new Date(),
     },
   ],
@@ -293,6 +323,12 @@ const stubReadTemplate: CFNTemplate = {
         BucketName: 'S3BucketName',
       },
       Type: CFN_S3_TYPE.Bucket,
+    },
+    [GEN2_DDB_TABLE_LOGICAL_ID]: {
+      Properties: {
+        TableName: 'DynamoDBTableName',
+      },
+      Type: CFN_DYNAMODB_TYPE.Table,
     },
   },
   Outputs: {
@@ -812,6 +848,7 @@ describe('TemplateGenerator', () => {
   it('should revert resources from Gen2 to Gen1 successfully, skipping categories that have already been updated previously', async () => {
     const clonedStubGetTemplate = JSON.parse(JSON.stringify(stubReadTemplate));
     delete clonedStubGetTemplate.Resources[GEN2_S3_BUCKET_LOGICAL_ID];
+    delete clonedStubGetTemplate.Resources[GEN2_DDB_TABLE_LOGICAL_ID];
     mockReadTemplate.mockReturnValue(clonedStubGetTemplate);
     // Act
     const generator = new TemplateGenerator(
@@ -891,7 +928,7 @@ describe('TemplateGenerator', () => {
       STUB_COGNITO_IDP_CLIENT,
       APP_ID,
       ENV_NAME,
-      [CFN_S3_TYPE.Bucket],
+      [CFN_S3_TYPE.Bucket, CFN_DYNAMODB_TYPE.Table],
       undefined,
     );
   }
@@ -950,7 +987,7 @@ describe('TemplateGenerator', () => {
       STUB_COGNITO_IDP_CLIENT,
       APP_ID,
       ENV_NAME,
-      [CFN_S3_TYPE.Bucket],
+      [CFN_S3_TYPE.Bucket, CFN_DYNAMODB_TYPE.Table],
       undefined,
     );
   }
@@ -1009,7 +1046,7 @@ describe('TemplateGenerator', () => {
       STUB_COGNITO_IDP_CLIENT,
       APP_ID,
       ENV_NAME,
-      [CFN_S3_TYPE.Bucket],
+      [CFN_S3_TYPE.Bucket, CFN_DYNAMODB_TYPE.Table],
       undefined,
     );
     // custom resource category
