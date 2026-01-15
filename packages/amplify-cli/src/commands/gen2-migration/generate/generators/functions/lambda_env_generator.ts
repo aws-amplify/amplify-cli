@@ -8,8 +8,8 @@ const ENV_VAR_PATTERNS = {
   'API_.*_GRAPHQLAPIENDPOINTOUTPUT': 'data.graphqlUrl',
   'API_.*_GRAPHQLAPIIDOUTPUT': 'data.apiId',
   'API_.*_GRAPHQLAPIKEYOUTPUT': 'data.apiKey!',
-  'API_.*TABLE_ARN': 'data.resources.tables.{table}.tableArn',
-  'API_.*TABLE_NAME': 'data.resources.tables.{table}.tableName',
+  'API_.*TABLE_ARN': 'data.resources.tables[{table}].tableArn',
+  'API_.*TABLE_NAME': 'data.resources.tables[{table}].tableName',
   'AUTH_.*_USERPOOLID': 'auth.resources.userPool.userPoolId',
   'STORAGE_.*_ARN': '{table}.tableArn',
   'STORAGE_.*_NAME': '{table}.tableName',
@@ -39,10 +39,12 @@ export function generateLambdaEnvVars(functionName: string, envVars: Record<stri
           let tableName: string | undefined;
 
           if (envVar.startsWith('API_') && envVar.includes('TABLE_')) {
-            // API_TESTAPP_TODOTABLE_ARN -> extract 'TODO' from 'TODOTABLE'
+            // API_DISCUSSIONS_COMMENTTABLE_ARN -> extract 'COMMENT' from 'COMMENTTABLE' -> 'Comment'
             const apiMatch = envVar.match(/API_.*_(.+?)TABLE_/);
             if (apiMatch) {
-              tableName = apiMatch[1].toLowerCase();
+              // Convert to PascalCase for GraphQL model names: COMMENT -> Comment
+              const rawName = apiMatch[1];
+              tableName = rawName.charAt(0).toUpperCase() + rawName.slice(1).toLowerCase();
             }
           } else if (envVar.startsWith('STORAGE_')) {
             // STORAGE_TODOTABLE_ARN -> extract 'TODO' from 'TODOTABLE'
@@ -102,6 +104,17 @@ export function generateLambdaEnvVars(functionName: string, envVars: Record<stri
               expression = factory.createNonNullExpression(
                 factory.createPropertyAccessExpression(expression, factory.createIdentifier(part.slice(0, -1))),
               );
+            } else if (part.includes('[') && part.includes(']')) {
+              // Handle bracket notation: tables[comment] -> backend.data.resources.tables["comment"]
+              const bracketMatch = part.match(/(.+?)\[(.+?)\](.*)/);
+              if (bracketMatch) {
+                const [, beforeBracket, insideBracket, afterBracket] = bracketMatch;
+                expression = factory.createPropertyAccessExpression(expression, factory.createIdentifier(beforeBracket));
+                expression = factory.createElementAccessExpression(expression, factory.createStringLiteral(insideBracket));
+                if (afterBracket) {
+                  expression = factory.createPropertyAccessExpression(expression, factory.createIdentifier(afterBracket));
+                }
+              }
             } else {
               expression = factory.createPropertyAccessExpression(expression, factory.createIdentifier(part));
             }
