@@ -3,6 +3,7 @@ import { ObjectLiteralElementLike, VariableDeclaration, VariableStatement } from
 import type { EnvironmentResponse } from '@aws-sdk/client-lambda';
 import { Runtime } from '@aws-sdk/client-lambda';
 import { renderResourceTsFile } from '../../resource/resource';
+import { DataModelTableAccess } from '../../codegen-head/data_model_access_parser';
 import assert from 'node:assert';
 
 /**
@@ -71,7 +72,7 @@ export interface FunctionDefinition {
     hasSubscription: boolean;
   };
   /** Data model table access from GraphQL API */
-  dataModelAccess?: import('../../codegen-head/data_model_access_parser').DataModelTableAccess[];
+  dataModelAccess?: DataModelTableAccess[];
 }
 
 /** TypeScript AST factory for creating code nodes */
