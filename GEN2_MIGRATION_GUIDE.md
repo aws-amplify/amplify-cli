@@ -120,7 +120,7 @@ _"Cannot determine intended module format because both require() and top-level a
 
 > See [ESM/CJS Interoperability](https://www.typescriptlang.org/docs/handbook/modules/appendices/esm-cjs-interop.html)
 
-#### 2.2 Post Generate | Api Function Access
+#### 2.2 Post Generate | GraphQL Endpoint Function Access
 
 If your function needs to access the AppSync API you need to explicitly provide it with the appropriate 
 environment variables and give it the necessary permissions.
@@ -146,25 +146,27 @@ environment variables and give it the necessary permissions.
 
 > Where `myfunction` and `myapp` are the function and app friendly names respectively.
 
-If your function accesses AppSync using IAM credentials, you also need to add:
+#### 2.3 Post Generate | GraphQL Model Function Access
+
+If your function needs to access the DynamoDB tables storing your GraphQL models, you need to explicitly provide it with the appropriate 
+environment variables and give it the necessary permissions.
+
+**Edit in `./amplify/backend.ts`:**
 
 ```diff
-+ backend.auth.resources.authenticatedUserIamRole.addToPrincipalPolicy(new aws_iam.PolicyStatement({
-+     effect: aws_iam.Effect.ALLOW,
-+     actions: ['appsync:GraphQL'],
-+     resources: [`arn:aws:appsync:${backend.data.stack.region}:${backend.data.stack.account}:apis/<gen1-appsync-api-id>/*`]
-+ }))
+- import { Duration } from "aws-cdk-lib";
++ import { Duration, aws_iam } from "aws-cdk-lib";
 ```
 
-Navigate to the Amplify Console to find the `<gen1-appsync-api-id>` On the AppSync AWS Console. For example:
+```diff
++ const modelTable = backend.data.resources.tables['Model'];
++ modelTable.grantWriteData(backend.myfunction.resources.lambda);
++ backend.lognutrition.addEnvironment('API_MYAPP_MODELTABLE_NAME', modelTable.tableName);
+```
 
-![](./migration-guide-images/gen1-appsync-api-id.png)
+> Where `myfunction` and `myapp` are the function and app friendly names respectively.
 
-This is required in order for your Gen1 environment to keep functioning correctly after the `refactor` step.
-
-> See [GraphQL types protected with the IAM provider](#graphql-types-protected-by-the-iam-auth-provider) for more details.
-
-#### 2.3 Post Generate | Dynamo Stroage Function Access
+#### 2.4 Post Generate | Dynamo Stroage Function Access
 
 If your function needs to access the DynamoDB table configured as part of your storage category you need to explicitly 
 provide it with the appropriate environment variables and give it the necessary permissions.
@@ -180,7 +182,7 @@ provide it with the appropriate environment variables and give it the necessary 
 
 > Where `myfunction` and `mytable` are the function and dynamo storage friendly names respectively.
 
-#### 2.4 Post Generate | S3 Stroage Function Access
+#### 2.5 Post Generate | S3 Stroage Function Access
 
 If your function needs to access the S3 table configured as part of your storage category you need to explicitly 
 provide it with the appropriate environment variables and give it the necessary permissions.
@@ -205,7 +207,7 @@ Add this to every configured prefix:
 + allow.resource(myfunction).to(["write", "read", "delete"])
 ```
 
-#### 2.5 Post Generate | Auth Function Access
+#### 2.6 Post Generate | Auth Function Access
 
 If your function needs to access the auth category you need to explicitly provide it with the appropriate environment 
 variables and give it the necessary permissions.
@@ -224,7 +226,7 @@ variables and give it the necessary permissions.
 
 > Where `myfunction` is the friendly name of your function.
 
-#### 2.6 Post Generate | Api Function Trigger
+#### 2.7 Post Generate | Api Function Trigger
 
 If your function is triggered based on model updates you need to explicitly create the trigger 
 and grant the function the necessary permissions.
@@ -240,7 +242,7 @@ and grant the function the necessary permissions.
 
 > Where `myfunction` is the function friendly name and `Comment` is the model name.
 
-#### 2.7 Post Generate | Function Secrets
+#### 2.8 Post Generate | Function Secrets
 
 If your function was configured with a secret value, you must first recreate the secret using the amplify console.
 
@@ -263,6 +265,49 @@ Next, pass this secret in the function definition. For example, for a secret cal
 
 > See [Secrets](https://docs.amplify.aws/react/build-a-backend/functions/environment-variables-and-secrets/#secrets) 
 > for more information.
+
+#### 2.9 Post Generate | GrapQL IAM Access
+
+If your frontend accesses AppSync using IAM credentials, you also need to add:
+
+```diff
++ backend.auth.resources.authenticatedUserIamRole.addToPrincipalPolicy(new aws_iam.PolicyStatement({
++     effect: aws_iam.Effect.ALLOW,
++     actions: ['appsync:GraphQL'],
++     resources: [`arn:aws:appsync:${backend.data.stack.region}:${backend.data.stack.account}:apis/<gen1-appsync-api-id>/*`]
++ }))
+```
+
+Navigate to the Amplify Console to find the `<gen1-appsync-api-id>` On the AppSync AWS Console. For example:
+
+![](./migration-guide-images/gen1-appsync-api-id.png)
+
+This is required in order for your Gen1 environment to keep functioning correctly after the `refactor` step.
+
+> See [GraphQL types protected with the IAM provider](#graphql-types-protected-by-the-iam-auth-provider) for more details.
+
+#### 2.10 Post Generate | REST IAM Access
+
+If your frontend accesses REST using IAM credentials, you also need to add:
+
+```diff
++ const gen1Api = HttpApi.fromHttpApiAttributes(apiStack, "Gen1HttpApi", { httpApiId: '<gen1-rest-api-id>' })
++ const gen1ApiPolicy = new Policy(apiStack, "Gen1ApiPolicy", {
++     statements: [
++         new PolicyStatement({
++             actions: ["execute-api:Invoke"],
++             resources: [`${gen1Api.arnForExecuteApi("*", "/*")}`]
++         })
++     ]
++ });
++ backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(gen1ApiPolicy);
+```
+
+Navigate to the Amplify Console to find the `<gen1-rest-api-id>` On the ApiGateway AWS Console. For example:
+
+![](./migration-guide-images/gen1-rest-api-id.png)
+
+This is required in order for your Gen1 environment to keep functioning correctly after the `refactor` step.
 
 ### 3. Deploy
 
