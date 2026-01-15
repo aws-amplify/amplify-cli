@@ -1,0 +1,24 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`generateLambdaEnvVars generates API GraphQL endpoint escape hatch 1`] = `"backend.myFunction.addEnvironment("API_PRODUCTCATALOG_GRAPHQLAPIENDPOINTOUTPUT", backend.data.graphqlUrl);"`;
+
+exports[`generateLambdaEnvVars generates multiple escape hatches snapshot 1`] = `
+"backend.S3Trigger.addEnvironment("API_TESTAPP_GRAPHQLAPIENDPOINTOUTPUT", backend.data.graphqlUrl);
+backend.S3Trigger.addEnvironment("AUTH_TESTAPP_USERPOOLID", backend.auth.resources.userPool.userPoolId);
+backend.S3Trigger.addEnvironment("STORAGE_TODOTABLE_ARN", backend.data.resources.tables.{table}.tableArn);
+backend.S3Trigger.addEnvironment("FUNCTION_TESTAPP9725C797_NAME", backend.testapp9725c797.resources.lambda.functionName);"
+`;
+
+exports[`generateLambdaEnvVars snapshots matches snapshot for all supported environment variable patterns 1`] = `
+[
+  "backend.S3Trigger.addEnvironment("API_PRODUCTCATALOG_GRAPHQLAPIENDPOINTOUTPUT", backend.data.graphqlUrl);",
+  "backend.S3Trigger.addEnvironment("API_TESTAPP_GRAPHQLAPIIDOUTPUT", backend.data.apiId);",
+  "backend.S3Trigger.addEnvironment("API_TESTAPP_GRAPHQLAPIKEYOUTPUT", backend.data.apiKey!);",
+  "backend.S3Trigger.addEnvironment("AUTH_TESTAPP_USERPOOLID", backend.auth.resources.userPool.userPoolId);",
+  "backend.S3Trigger.addEnvironment("STORAGE_TODOTABLE_ARN", backend.data.resources.tables.{table}.tableArn);",
+  "backend.S3Trigger.addEnvironment("STORAGE_COUNTSTABLE_NAME", backend.data.resources.tables.{table}.tableName);",
+  "backend.S3Trigger.addEnvironment("STORAGE_TODOTABLE_STREAMARN", backend.data.resources.tables.{table}.tableStreamArn);",
+  "backend.S3Trigger.addEnvironment("STORAGE_S32F16FFE0_BUCKETNAME", backend.storage.resources.bucket.bucketName);",
+  "backend.S3Trigger.addEnvironment("FUNCTION_TESTAPP9725C797_NAME", backend.testapp9725c797.resources.lambda.functionName);",
+]
+`;
