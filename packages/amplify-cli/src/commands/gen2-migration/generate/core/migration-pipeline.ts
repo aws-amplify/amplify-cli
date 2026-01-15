@@ -378,8 +378,8 @@ export const createGen2Renderer = ({
         functionNamesAndCategory.set(resourceName, funcCategory);
 
         // Store function environment variables for escape hatch generation
-        if (func.environment?.Variables) {
-          functionEnvironments.set(resourceName, func.environment.Variables);
+        if (func.filteredEnvironmentVariables && Object.keys(func.filteredEnvironmentVariables).length > 0) {
+          functionEnvironments.set(resourceName, func.filteredEnvironmentVariables);
         }
 
         // Track functions that have API access with specific permissions
