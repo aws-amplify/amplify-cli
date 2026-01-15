@@ -266,7 +266,7 @@ Next, pass this secret in the function definition. For example, for a secret cal
 > See [Secrets](https://docs.amplify.aws/react/build-a-backend/functions/environment-variables-and-secrets/#secrets) 
 > for more information.
 
-#### 2.9 Post Generate | GrapQL IAM Access
+#### 2.9 Post Generate | GraphQL IAM Access
 
 If your frontend accesses AppSync using IAM credentials, you also need to add:
 
