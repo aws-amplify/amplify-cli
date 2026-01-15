@@ -607,7 +607,7 @@ __metadata:
 
 "@aws-amplify/amplify-e2e-core@file:../amplify-e2e-core::locator=amplify-migration-e2e-system%40workspace%3Apackages%2Famplify-migration-e2e-system":
   version: 5.7.9
-  resolution: "@aws-amplify/amplify-e2e-core@file:../amplify-e2e-core#../amplify-e2e-core::hash=7d4643&locator=amplify-migration-e2e-system%40workspace%3Apackages%2Famplify-migration-e2e-system"
+  resolution: "@aws-amplify/amplify-e2e-core@file:../amplify-e2e-core#../amplify-e2e-core::hash=034f0c&locator=amplify-migration-e2e-system%40workspace%3Apackages%2Famplify-migration-e2e-system"
   dependencies:
     "@aws-amplify/amplify-cli-core": 4.4.4
     "@aws-sdk/client-amplifybackend": ^3.919.0
