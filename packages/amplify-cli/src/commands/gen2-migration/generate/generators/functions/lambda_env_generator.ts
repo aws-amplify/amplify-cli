@@ -8,9 +8,9 @@ const ENV_VAR_PATTERNS = {
   'API_.*_GRAPHQLAPIIDOUTPUT': 'data.apiId',
   'API_.*_GRAPHQLAPIKEYOUTPUT': 'data.apiKey!',
   'AUTH_.*_USERPOOLID': 'auth.resources.userPool.userPoolId',
-  'STORAGE_.*_ARN': 'data.resources.tables.{table}.tableArn',
-  'STORAGE_.*_NAME': 'data.resources.tables.{table}.tableName',
-  'STORAGE_.*_STREAMARN': 'data.resources.tables.{table}.tableStreamArn',
+  'STORAGE_.*_ARN': '{table}.tableArn',
+  'STORAGE_.*_NAME': '{table}.tableName',
+  'STORAGE_.*_STREAMARN': '{table}.tableStreamArn',
   'STORAGE_.*_BUCKETNAME': 'storage.resources.bucket.bucketName',
   'FUNCTION_.*_NAME': '{function}.resources.lambda.functionName',
 };
