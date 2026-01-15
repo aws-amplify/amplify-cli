@@ -10,6 +10,7 @@ import {
   renderAuthNode,
   UserPoolMfaConfig,
 } from './index';
+import { FunctionDefinition } from '../functions/index';
 import { printNodeArray } from '../../test_utils/ts_node_printer';
 
 describe('render auth node', () => {
@@ -451,6 +452,164 @@ describe('render auth node', () => {
       assert.match(source, /groups:/);
       assert.match(source, /"Admin": "AdminRoleARN"/);
       assert.match(source, /"Read-Only": "ReadOnlyRoleARN"/);
+    });
+  });
+
+  describe('function access', () => {
+    it('generates access rules for functions with auth permissions', () => {
+      const functions: FunctionDefinition[] = [
+        {
+          resourceName: 'authFunction',
+          authAccess: {
+            createUser: true,
+            getUser: true,
+            manageUsers: false,
+          },
+        },
+        {
+          resourceName: 'regularFunction',
+          // No auth access
+        },
+      ];
+
+      const rendered = renderAuthNode({ loginOptions: { email: true } }, functions);
+      const source = printNodeArray(rendered);
+
+      assert.match(source, /access:\s*\(allow,\s*_unused\)\s*=>\s*\[/);
+      assert.match(source, /allow\.resource\(authFunction\)\.to\(\["createUser"\]\)/);
+      assert.match(source, /allow\.resource\(authFunction\)\.to\(\["getUser"\]\)/);
+      assert(!source.includes('manageUsers')); // Should not include false permissions
+      assert(!source.includes('regularFunction')); // Should not include functions without auth access
+    });
+
+    it('imports functions from correct categories', () => {
+      const functions: FunctionDefinition[] = [
+        {
+          resourceName: 'authTrigger',
+          authAccess: { createUser: true },
+        },
+        {
+          resourceName: 'regularFunction',
+          authAccess: { getUser: true },
+        },
+      ];
+
+      const functionCategories = new Map([
+        ['authTrigger', 'auth'],
+        ['regularFunction', 'function'],
+      ]);
+
+      const rendered = renderAuthNode({ loginOptions: { email: true } }, functions, functionCategories);
+      const source = printNodeArray(rendered);
+
+      assert.match(source, /import\s*{\s*authTrigger\s*}\s*from\s*"\.\.\/auth\/authTrigger\/resource"/);
+      assert.match(source, /import\s*{\s*regularFunction\s*}\s*from\s*"\.\.\/function\/regularFunction\/resource"/);
+    });
+
+    it('defaults to function category when not specified', () => {
+      const functions: FunctionDefinition[] = [
+        {
+          resourceName: 'myFunction',
+          authAccess: { createUser: true },
+        },
+      ];
+
+      const rendered = renderAuthNode({ loginOptions: { email: true } }, functions);
+      const source = printNodeArray(rendered);
+
+      assert.match(source, /import\s*{\s*myFunction\s*}\s*from\s*"\.\.\/function\/myFunction\/resource"/);
+    });
+
+    it('handles multiple permissions for same function', () => {
+      const functions: FunctionDefinition[] = [
+        {
+          resourceName: 'multiPermFunction',
+          authAccess: {
+            createUser: true,
+            deleteUser: true,
+            getUser: true,
+            updateUserAttributes: true,
+          },
+        },
+      ];
+
+      const rendered = renderAuthNode({ loginOptions: { email: true } }, functions);
+      const source = printNodeArray(rendered);
+
+      assert.match(source, /allow\.resource\(multiPermFunction\)\.to\(\["createUser"\]\)/);
+      assert.match(source, /allow\.resource\(multiPermFunction\)\.to\(\["deleteUser"\]\)/);
+      assert.match(source, /allow\.resource\(multiPermFunction\)\.to\(\["getUser"\]\)/);
+      assert.match(source, /allow\.resource\(multiPermFunction\)\.to\(\["updateUserAttributes"\]\)/);
+    });
+
+    it('handles grouped permissions', () => {
+      const functions: FunctionDefinition[] = [
+        {
+          resourceName: 'adminFunction',
+          authAccess: {
+            manageUsers: true,
+            manageGroups: true,
+          },
+        },
+      ];
+
+      const rendered = renderAuthNode({ loginOptions: { email: true } }, functions);
+      const source = printNodeArray(rendered);
+
+      assert.match(source, /allow\.resource\(adminFunction\)\.to\(\["manageUsers"\]\)/);
+      assert.match(source, /allow\.resource\(adminFunction\)\.to\(\["manageGroups"\]\)/);
+    });
+
+    it('does not generate access property when no functions have auth access', () => {
+      const functions: FunctionDefinition[] = [
+        {
+          resourceName: 'regularFunction1',
+          // No auth access
+        },
+        {
+          resourceName: 'regularFunction2',
+          authAccess: {}, // Empty auth access
+        },
+      ];
+
+      const rendered = renderAuthNode({ loginOptions: { email: true } }, functions);
+      const source = printNodeArray(rendered);
+
+      assert(!source.includes('access:'));
+      assert(!source.includes('allow.resource'));
+    });
+
+    it('does not generate access property when functions array is empty', () => {
+      const rendered = renderAuthNode({ loginOptions: { email: true } }, []);
+      const source = printNodeArray(rendered);
+
+      assert(!source.includes('access:'));
+    });
+
+    it('does not generate access property when functions is undefined', () => {
+      const rendered = renderAuthNode({ loginOptions: { email: true } });
+      const source = printNodeArray(rendered);
+
+      assert(!source.includes('access:'));
+    });
+
+    it('skips functions without resourceName', () => {
+      const functions: FunctionDefinition[] = [
+        {
+          // Missing resourceName
+          authAccess: { createUser: true },
+        },
+        {
+          resourceName: 'validFunction',
+          authAccess: { getUser: true },
+        },
+      ];
+
+      const rendered = renderAuthNode({ loginOptions: { email: true } }, functions);
+      const source = printNodeArray(rendered);
+
+      assert.match(source, /allow\.resource\(validFunction\)\.to\(\["getUser"\]\)/);
+      assert(!source.includes('createUser')); // Should not include function without resourceName
     });
   });
 });

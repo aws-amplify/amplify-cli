@@ -1,5 +1,6 @@
 import { FunctionDefinition } from '../../core/migration-pipeline';
 import { FunctionConfiguration } from '@aws-sdk/client-lambda';
+import { AuthAccess } from '../../generators/functions/index';
 import { analyzeApiPermissionsFromCfn } from '../../codegen-head/api-cfn-access';
 import assert from 'node:assert';
 
@@ -44,6 +45,7 @@ export const getFunctionDefinition = (
   functionSchedules: FunctionSchedule[],
   functionCategoryMap: Map<string, string>,
   meta: AmplifyMetaWithFunction,
+  functionAuthAccess?: Map<string, AuthAccess>,
 ): FunctionDefinition[] => {
   const funcDefList: FunctionDefinition[] = [];
 
@@ -105,7 +107,11 @@ export const getFunctionDefinition = (
     funcDef.resourceName = functionRecordInMeta[0];
     funcDef.schedule = functionSchedules.find((schedule) => schedule.functionName === functionName)?.scheduleExpression;
 
-    // Analyze CFN template for API permissions
+    // Add auth access configuration if available
+    if (functionAuthAccess?.has(functionRecordInMeta[0])) {
+      funcDef.authAccess = functionAuthAccess.get(functionRecordInMeta[0]) };
+
+      // Analyze CFN template for API permissions
     if (funcDef.resourceName) {
       funcDef.apiPermissions = analyzeApiPermissionsFromCfn(funcDef.resourceName);
     }

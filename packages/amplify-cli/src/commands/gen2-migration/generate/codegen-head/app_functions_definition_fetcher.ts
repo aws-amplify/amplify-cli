@@ -7,6 +7,7 @@ import { DescribeRuleCommand, CloudWatchEventsClient } from '@aws-sdk/client-clo
 import * as path from 'path';
 import { StateManager, $TSMeta, JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import { BackendDownloader } from './backend_downloader';
+import { AuthAccessAnalyzer } from './auth_access_analyzer';
 
 /**
  * Configuration interface for Amplify Auth category resources.
@@ -66,6 +67,7 @@ export class AppFunctionsDefinitionFetcher {
     private backendEnvironmentResolver: BackendEnvironmentResolver,
     private stateManager: StateManager,
     private ccbFetcher: BackendDownloader,
+    private authAnalyzer: AuthAccessAnalyzer,
   ) {}
 
   /**
@@ -202,11 +204,15 @@ export class AppFunctionsDefinitionFetcher {
     // Wait for all schedule fetching operations to complete
     const functionSchedules = await Promise.all(getFunctionSchedulePromises);
 
+    // Get auth access from auth analyzer for function definitions
+    const functionAuthAccess = await this.authAnalyzer.getFunctionAuthAccess();
+
     // Build comprehensive function definitions by combining:
     // - Live AWS Lambda configurations (runtime, memory, timeout, etc.)
     // - CloudWatch schedule expressions (for scheduled functions)
     // - Trigger category mappings (auth, storage, etc.)
     // - Original Amplify project metadata
-    return getFunctionDefinition(functionConfigurations, functionSchedules, functionCategoryMap, meta);
+    // - CloudFormation templates for auth access parsing
+    return getFunctionDefinition(functionConfigurations, functionSchedules, functionCategoryMap, meta, functionAuthAccess);
   };
 }

@@ -10,6 +10,37 @@ import assert from 'node:assert';
  * during migration to Gen 2. This interface combines configuration data from multiple
  * sources including local metadata, AWS Lambda configurations, and CloudWatch schedules.
  */
+export interface AuthAccess {
+  // Grouped permissions
+  manageUsers?: boolean;
+  manageGroups?: boolean;
+  manageGroupMembership?: boolean;
+  manageUserDevices?: boolean;
+  managePasswordRecovery?: boolean;
+
+  // Individual permissions
+  addUserToGroup?: boolean;
+  createUser?: boolean;
+  deleteUser?: boolean;
+  deleteUserAttributes?: boolean;
+  disableUser?: boolean;
+  enableUser?: boolean;
+  forgetDevice?: boolean;
+  getDevice?: boolean;
+  getUser?: boolean;
+  listUsers?: boolean;
+  listDevices?: boolean;
+  listGroupsForUser?: boolean;
+  listUsersInGroup?: boolean;
+  removeUserFromGroup?: boolean;
+  resetUserPassword?: boolean;
+  setUserMfaPreference?: boolean;
+  setUserPassword?: boolean;
+  setUserSettings?: boolean;
+  updateDeviceStatus?: boolean;
+  updateUserAttributes?: boolean;
+}
+
 export interface FunctionDefinition {
   /** The Amplify category this function belongs to (e.g., 'function', 'auth', 'storage') */
   category?: string;
@@ -29,6 +60,8 @@ export interface FunctionDefinition {
   resourceName?: string;
   /** CloudWatch Events schedule expression (e.g., 'rate(5 minutes)', 'cron(0 12 * * ? *)') */
   schedule?: string;
+  /** Auth access permissions for this function */
+  authAccess?: AuthAccess;
   /** Specific API permissions detected from CloudFormation analysis */
   apiPermissions?: {
     hasQuery: boolean;

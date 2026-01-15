@@ -410,11 +410,27 @@ export const createGen2Renderer = ({
 
   // Process authentication configuration - create amplify/auth/resource.ts
   if (auth) {
+    // Create function category map for correct import paths
+    const functionCategories = new Map<string, string>();
+    if (functions) {
+      functions.forEach((func) => {
+        if (func.resourceName && func.category) {
+          functionCategories.set(func.resourceName, func.category);
+        }
+      });
+    }
+
     renderers.push(new EnsureDirectory(path.join(outputDir, 'amplify', 'auth')));
     renderers.push(
       new TypescriptNodeArrayRenderer(
-        async () => renderAuthNode(auth),
-        (content) => fileWriter(content, path.join(outputDir, 'amplify', 'auth', 'resource.ts')),
+        async () => renderAuthNode(auth, functions, functionCategories),
+        async (content) => {
+          // Remove unused parameter and add type annotation
+          let cleanedContent = content.replace(/\(allow, _unused\)/g, '(allow: any)');
+          // Add trailing comma after access array
+          cleanedContent = cleanedContent.replace(/(access: \(allow: any\) => \[[\s\S]*?\n {4}\])/g, '$1,');
+          return fileWriter(cleanedContent, path.join(outputDir, 'amplify', 'auth', 'resource.ts'));
+        },
       ),
     );
     // Configure auth parameters for backend synthesis

@@ -5,6 +5,7 @@ import assert from 'node:assert';
 import { PasswordPolicyType, UserPoolClientType } from '@aws-sdk/client-cognito-identity-provider';
 import { renderResourceTsFile } from '../../resource/resource';
 import { createTriggersProperty, Lambda } from '../functions/lambda';
+import { FunctionDefinition } from '../functions/index';
 
 /** OAuth 2.0 scopes supported by Cognito User Pools */
 export type Scope = 'phone' | 'email' | 'openid' | 'profile' | 'aws.cognito.signin.user.admin';
@@ -794,7 +795,11 @@ function createSecretErrorStatements(secretVariables: string[]): ts.Node[] {
   );
 }
 
-export function renderAuthNode(definition: AuthDefinition): ts.NodeArray<ts.Node> {
+export function renderAuthNode(
+  definition: AuthDefinition,
+  functions?: FunctionDefinition[],
+  functionCategories?: Map<string, string>,
+): ts.NodeArray<ts.Node> {
   // Track required imports from various packages
   //  Creates the data structure to track imports. Extracts reference auth config
   const namedImports: { [importedPackageName: string]: Set<string> } = { '@aws-amplify/backend': new Set() };
@@ -939,6 +944,67 @@ export function renderAuthNode(definition: AuthDefinition): ts.NodeArray<ts.Node
         factory.createObjectLiteralExpression(multifactorProperties, true),
       ),
     );
+  }
+
+  // Add function access configuration if present
+  if (functions && functions.length > 0) {
+    // Extract functions with auth access from the functions array
+    const functionsWithAuthAccess = functions.filter((func) => func.authAccess && Object.keys(func.authAccess).length > 0);
+
+    if (functionsWithAuthAccess.length > 0) {
+      // Add function imports based on their category
+      functionsWithAuthAccess.forEach((func) => {
+        if (func.resourceName) {
+          // Get the function category from the provided map, default to 'function'
+          const functionCategory = functionCategories?.get(func.resourceName) || 'function';
+          namedImports[`../${functionCategory}/${func.resourceName}/resource`] = new Set([func.resourceName]);
+        }
+      });
+
+      const accessRules: ts.Expression[] = [];
+
+      functionsWithAuthAccess.forEach((func) => {
+        if (func.authAccess && func.resourceName) {
+          Object.entries(func.authAccess)
+            .filter(([, enabled]) => enabled)
+            .forEach(([permission]) => {
+              accessRules.push(
+                factory.createCallExpression(
+                  factory.createPropertyAccessExpression(
+                    factory.createCallExpression(
+                      factory.createPropertyAccessExpression(factory.createIdentifier('allow'), factory.createIdentifier('resource')),
+                      undefined,
+                      [factory.createIdentifier(func.resourceName!)],
+                    ),
+                    factory.createIdentifier('to'),
+                  ),
+                  undefined,
+                  [factory.createArrayLiteralExpression([factory.createStringLiteral(permission)])],
+                ),
+              );
+            });
+        }
+      });
+
+      if (accessRules.length > 0) {
+        defineAuthProperties.push(
+          factory.createPropertyAssignment(
+            factory.createIdentifier('access'),
+            factory.createArrowFunction(
+              undefined,
+              undefined,
+              [
+                factory.createParameterDeclaration(undefined, undefined, factory.createIdentifier('allow')),
+                factory.createParameterDeclaration(undefined, undefined, factory.createIdentifier('_unused')),
+              ],
+              undefined,
+              undefined,
+              factory.createArrayLiteralExpression(accessRules, true),
+            ),
+          ),
+        );
+      }
+    }
   }
 
   // Generate the final TypeScript file with all configurations
