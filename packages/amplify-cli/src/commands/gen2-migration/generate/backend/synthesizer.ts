@@ -12,7 +12,7 @@ import ts, {
 import { PolicyOverrides, ReferenceAuth } from '../generators/auth';
 import type { BucketAccelerateStatus, BucketVersioningStatus } from '@aws-sdk/client-s3';
 import { AccessPatterns, ServerSideEncryptionConfiguration } from '../generators/storage';
-import { DynamoDBTableDefinition } from '../adapters/storage';
+import { DynamoDBTableDefinition, FunctionDynamoDBAccess } from '../adapters/storage';
 import { ExplicitAuthFlowsType, OAuthFlowType, UserPoolClientType } from '@aws-sdk/client-cognito-identity-provider';
 import assert from 'assert';
 import { newLineIdentifier } from '../ts_factory_utils';
@@ -40,6 +40,7 @@ export interface BackendRenderParameters {
   storage?: {
     importFrom: string;
     dynamoTables?: DynamoDBTableDefinition[];
+    dynamoFunctionAccess?: FunctionDynamoDBAccess[];
     accelerateConfiguration?: BucketAccelerateStatus;
     versionConfiguration?: BucketVersioningStatus;
     hasS3Bucket?: string | AccessPatterns | undefined;
@@ -50,6 +51,7 @@ export interface BackendRenderParameters {
   function?: {
     importFrom: string;
     functionNamesAndCategories: Map<string, string>;
+    functionsWithApiAccess?: Map<string, { hasQuery: boolean; hasMutation: boolean; hasSubscription: boolean }>;
   };
   analytics?: {
     importFrom: string;
@@ -1432,6 +1434,71 @@ export class BackendSynthesizer {
       }
     }
 
+    // Grant function access to API resources
+    if (renderArgs.function?.functionsWithApiAccess && renderArgs.data) {
+      for (const [functionName, permissions] of renderArgs.function.functionsWithApiAccess) {
+        if (permissions.hasQuery) {
+          nodes.push(
+            factory.createExpressionStatement(
+              factory.createCallExpression(
+                factory.createPropertyAccessExpression(
+                  factory.createIdentifier('backend.data.resources.graphqlApi'),
+                  factory.createIdentifier('grantQuery'),
+                ),
+                undefined,
+                [
+                  factory.createPropertyAccessExpression(
+                    factory.createIdentifier(`backend.${functionName}.resources`),
+                    factory.createIdentifier('lambda'),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+
+        if (permissions.hasMutation) {
+          nodes.push(
+            factory.createExpressionStatement(
+              factory.createCallExpression(
+                factory.createPropertyAccessExpression(
+                  factory.createIdentifier('backend.data.resources.graphqlApi'),
+                  factory.createIdentifier('grantMutation'),
+                ),
+                undefined,
+                [
+                  factory.createPropertyAccessExpression(
+                    factory.createIdentifier(`backend.${functionName}.resources`),
+                    factory.createIdentifier('lambda'),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+
+        if (permissions.hasSubscription) {
+          nodes.push(
+            factory.createExpressionStatement(
+              factory.createCallExpression(
+                factory.createPropertyAccessExpression(
+                  factory.createIdentifier('backend.data.resources.graphqlApi'),
+                  factory.createIdentifier('grantSubscription'),
+                ),
+                undefined,
+                [
+                  factory.createPropertyAccessExpression(
+                    factory.createIdentifier(`backend.${functionName}.resources`),
+                    factory.createIdentifier('lambda'),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+      }
+    }
+
     // Generate REST API infrastructure using CDK constructs
     // This replaces Gen1's declarative API Gateway config with Gen2's imperative CDK code
     if (renderArgs.data?.restApis && renderArgs.function) {
@@ -1977,6 +2044,46 @@ export class BackendSynthesizer {
         );
         nodes.push(addOutputStatement);
       }
+    }
+
+    // DynamoDB function access using table.grant()
+    // Generates CDK code: tableName.grant(lambda, "dynamodb:GetItem", "dynamodb:PutItem")
+    if (renderArgs.storage?.dynamoFunctionAccess && renderArgs.storage.dynamoFunctionAccess.length > 0) {
+      renderArgs.storage.dynamoFunctionAccess.forEach((functionAccess) => {
+        // Find the corresponding table variable name from dynamoTables
+        const matchingTable = renderArgs.storage?.dynamoTables?.find((table) => {
+          const baseTableName = table.tableName.split('-')[0];
+          const tableRefPattern = new RegExp(`storage${baseTableName.replace(/[^a-zA-Z0-9]/g, '')}(Name|Arn)`, 'i');
+          return tableRefPattern.test(functionAccess.tableResource);
+        });
+
+        if (matchingTable) {
+          const sanitizedTableName = this.sanitizeVariableName(matchingTable.tableName.replace(/-[^-]+$/, ''));
+
+          // Generate: tableName.grant(backend.functionName.resources.lambda, "action1", "action2")
+          const grantStatement = factory.createExpressionStatement(
+            factory.createCallExpression(
+              factory.createPropertyAccessExpression(factory.createIdentifier(sanitizedTableName), factory.createIdentifier('grant')),
+              undefined,
+              [
+                factory.createPropertyAccessExpression(
+                  factory.createPropertyAccessExpression(
+                    factory.createPropertyAccessExpression(
+                      factory.createIdentifier('backend'),
+                      factory.createIdentifier(functionAccess.functionName),
+                    ),
+                    factory.createIdentifier('resources'),
+                  ),
+                  factory.createIdentifier('lambda'),
+                ),
+                ...functionAccess.actions.map((action) => factory.createStringLiteral(action)),
+              ],
+            ),
+          );
+
+          nodes.push(grantStatement);
+        }
+      });
     }
 
     // returns backend.ts file

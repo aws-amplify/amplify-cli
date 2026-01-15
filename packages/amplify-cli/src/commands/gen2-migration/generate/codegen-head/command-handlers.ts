@@ -27,6 +27,7 @@ import { AuthTriggerConnection } from '../adapters/auth/index';
 import { DataDefinitionFetcher } from './data_definition_fetcher';
 import { AmplifyStackParser } from './amplify_stack_parser';
 import { AppFunctionsDefinitionFetcher } from './app_functions_definition_fetcher';
+import { AuthAccessAnalyzer } from './auth_access_analyzer';
 // import { TemplateGenerator, ResourceMapping } from '@aws-amplify/migrate-template-gen'; // Package not available
 import { printer } from './printer';
 import { format } from './format';
@@ -542,6 +543,8 @@ export async function prepare(logger: Logger, appId: string, envName: string, re
   const amplifyStackParser = new AmplifyStackParser(cloudFormationClient);
   const ccbFetcher = new BackendDownloader(s3Client);
 
+  const authAnalyzer = new AuthAccessAnalyzer(backendEnvironmentResolver, ccbFetcher);
+
   await generateGen2Code({
     outputDirectory: TEMP_GEN_2_OUTPUT_DIR,
     storageDefinitionFetcher: new AppStorageDefinitionFetcher(backendEnvironmentResolver, new BackendDownloader(s3Client), s3Client),
@@ -560,8 +563,9 @@ export async function prepare(logger: Logger, appId: string, envName: string, re
       backendEnvironmentResolver,
       stateManager,
       ccbFetcher,
+      authAnalyzer,
     ),
-    analyticsDefinitionFetcher: new AppAnalyticsDefinitionFetcher(backendEnvironmentResolver, stateManager),
+    analyticsDefinitionFetcher: new AppAnalyticsDefinitionFetcher(backendEnvironmentResolver, new BackendDownloader(s3Client)),
     analytics: new AppAnalytics(appId),
     logger: logger,
     ccbFetcher,

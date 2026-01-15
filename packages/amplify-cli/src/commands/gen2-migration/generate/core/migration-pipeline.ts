@@ -359,8 +359,10 @@ export const createGen2Renderer = ({
   }
 
   // Process Lambda functions - create resource.ts and handler.ts files
+  const functionNames: string[] = [];
+  const functionNamesAndCategory = new Map<string, string>();
+  const functionsWithApiAccess = new Map<string, { hasQuery: boolean; hasMutation: boolean; hasSubscription: boolean }>();
   if (functions && functions.length) {
-    const functionNamesAndCategory = new Map<string, string>();
     for (const func of functions) {
       if (func.name) {
         if (!func.runtime?.startsWith('nodejs')) {
@@ -373,6 +375,15 @@ export const createGen2Renderer = ({
         const funcCategory = func.category;
         assert(funcCategory);
         functionNamesAndCategory.set(resourceName, funcCategory);
+        functionNames.push(resourceName);
+
+        // Track functions that have API access with specific permissions
+        if (
+          func.apiPermissions &&
+          (func.apiPermissions.hasQuery || func.apiPermissions.hasMutation || func.apiPermissions.hasSubscription)
+        ) {
+          functionsWithApiAccess.set(resourceName, func.apiPermissions);
+        }
         const dirPath = path.join(outputDir, 'amplify', funcCategory, resourceName);
         // Create function directory and resource files
         renderers.push(new EnsureDirectory(dirPath));
@@ -393,16 +404,33 @@ export const createGen2Renderer = ({
     backendRenderOptions.function = {
       importFrom: './function/resource',
       functionNamesAndCategories: functionNamesAndCategory,
+      functionsWithApiAccess: functionsWithApiAccess.size > 0 ? functionsWithApiAccess : undefined,
     };
   }
 
   // Process authentication configuration - create amplify/auth/resource.ts
   if (auth) {
+    // Create function category map for correct import paths
+    const functionCategories = new Map<string, string>();
+    if (functions) {
+      functions.forEach((func) => {
+        if (func.resourceName && func.category) {
+          functionCategories.set(func.resourceName, func.category);
+        }
+      });
+    }
+
     renderers.push(new EnsureDirectory(path.join(outputDir, 'amplify', 'auth')));
     renderers.push(
       new TypescriptNodeArrayRenderer(
-        async () => renderAuthNode(auth),
-        (content) => fileWriter(content, path.join(outputDir, 'amplify', 'auth', 'resource.ts')),
+        async () => renderAuthNode(auth, functions, functionCategories),
+        async (content) => {
+          // Remove unused parameter and add type annotation
+          let cleanedContent = content.replace(/\(allow, _unused\)/g, '(allow: any)');
+          // Add trailing comma after access array
+          cleanedContent = cleanedContent.replace(/(access: \(allow: any\) => \[[\s\S]*?\n {4}\])/g, '$1,');
+          return fileWriter(cleanedContent, path.join(outputDir, 'amplify', 'auth', 'resource.ts'));
+        },
       ),
     );
     // Configure auth parameters for backend synthesis
@@ -443,7 +471,7 @@ export const createGen2Renderer = ({
       renderers.push(new EnsureDirectory(path.join(outputDir, 'amplify', 'storage')));
       renderers.push(
         new TypescriptNodeArrayRenderer(
-          async () => renderStorage(storage),
+          async () => renderStorage({ ...storage, functionNamesAndCategories: functionNamesAndCategory }),
           (content) => fileWriter(content, path.join(outputDir, 'amplify', 'storage', 'resource.ts')),
         ),
       );
@@ -452,6 +480,7 @@ export const createGen2Renderer = ({
     backendRenderOptions.storage = {
       importFrom: './storage/resource',
       dynamoTables: storage.dynamoTables,
+      dynamoFunctionAccess: storage.dynamoFunctionAccess,
       accelerateConfiguration: storage.accelerateConfiguration,
       versionConfiguration: storage.versioningConfiguration,
       hasS3Bucket: hasS3Bucket,

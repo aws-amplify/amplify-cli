@@ -1,0 +1,107 @@
+import { Template } from 'cloudform-types';
+import { readCFNTemplate } from '@aws-amplify/amplify-cli-core';
+import path from 'path';
+
+export interface DynamoDBAccessPermission {
+  tableResource: string;
+  actions: string[];
+}
+
+export class DynamoDBCloudFormationAccessParser {
+  static parseTemplateFile(templatePath: string): DynamoDBAccessPermission[] {
+    const { cfnTemplate } = readCFNTemplate(templatePath);
+    return this.parseTemplate(cfnTemplate);
+  }
+
+  static parseTemplate(template: Template): DynamoDBAccessPermission[] {
+    const amplifyResourcesPolicy = template.Resources?.AmplifyResourcesPolicy;
+
+    if (!amplifyResourcesPolicy || amplifyResourcesPolicy.Type !== 'AWS::IAM::Policy') {
+      return [];
+    }
+
+    return this.extractDynamoDBPermissionsFromPolicy(amplifyResourcesPolicy.Properties);
+  }
+
+  private static extractDynamoDBPermissionsFromPolicy(policyProperties: any): DynamoDBAccessPermission[] {
+    const permissions: DynamoDBAccessPermission[] = [];
+
+    if (!policyProperties?.PolicyDocument?.Statement) return permissions;
+
+    const statements = Array.isArray(policyProperties.PolicyDocument.Statement)
+      ? policyProperties.PolicyDocument.Statement
+      : [policyProperties.PolicyDocument.Statement];
+
+    for (const statement of statements) {
+      if (statement.Effect === 'Allow' && statement.Resource) {
+        permissions.push(...this.extractDynamoDBPermissionsFromStatement(statement));
+      }
+    }
+
+    return permissions;
+  }
+
+  private static extractDynamoDBPermissionsFromStatement(statement: any): DynamoDBAccessPermission[] {
+    const permissions: DynamoDBAccessPermission[] = [];
+
+    const actions = Array.isArray(statement.Action) ? statement.Action : [statement.Action];
+    const resources = Array.isArray(statement.Resource) ? statement.Resource : [statement.Resource];
+
+    const dynamoActions = actions.filter((action: string) => typeof action === 'string' && action.startsWith('dynamodb:'));
+
+    if (dynamoActions.length === 0) return permissions;
+
+    for (const resource of resources) {
+      const dynamoPermission = this.parseDynamoDBResource(resource, dynamoActions);
+      if (dynamoPermission) {
+        permissions.push(dynamoPermission);
+      }
+    }
+
+    return permissions;
+  }
+
+  private static parseDynamoDBResource(resource: any, actions: string[]): DynamoDBAccessPermission | null {
+    let tableResource: string;
+
+    if (typeof resource === 'object' && resource['Fn::Join']) {
+      const joinParts = resource['Fn::Join'];
+      if (Array.isArray(joinParts) && joinParts.length === 2) {
+        const [, parts] = joinParts;
+        if (Array.isArray(parts)) {
+          const tableRef = parts.find((part: any) => typeof part === 'object' && part.Ref);
+          if (tableRef) {
+            tableResource = tableRef.Ref;
+          } else {
+            return null;
+          }
+        } else {
+          return null;
+        }
+      } else {
+        return null;
+      }
+    } else if (typeof resource === 'object' && resource.Ref) {
+      // Handle direct CloudFormation Ref parameters like {"Ref": "storagecountsTableArn"}
+      tableResource = resource.Ref;
+    } else if (typeof resource === 'string' && resource.includes('dynamodb')) {
+      const arnParts = resource.split('/');
+      if (arnParts.length >= 2) {
+        tableResource = arnParts[1];
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
+
+    return {
+      tableResource,
+      actions,
+    };
+  }
+
+  static findFunctionCloudFormationTemplate(functionResourceName: string): string {
+    return path.join('amplify', 'backend', 'function', functionResourceName, `${functionResourceName}-cloudformation-template.json`);
+  }
+}

@@ -279,4 +279,3 @@ git push origin gen2-main
 ```
 
 Wait for the deployment to finish successfully.
-
