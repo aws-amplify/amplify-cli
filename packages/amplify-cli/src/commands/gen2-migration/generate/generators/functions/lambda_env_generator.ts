@@ -30,21 +30,28 @@ export function generateLambdaEnvVars(functionName: string, envVars: Record<stri
     for (const [pattern, backendPath] of Object.entries(ENV_VAR_PATTERNS)) {
       if (new RegExp(`^${pattern}$`).test(envVar)) {
         let path = backendPath;
+        let isDirect = false;
         // Extract table name from environment variable for DynamoDB resources
         if (path.includes('{table}')) {
           const tableMatch = envVar.match(/(?:API|STORAGE)_(.+?)(?:TABLE_|_)/);
-          if (tableMatch) path = path.replace('{table}', tableMatch[1].toLowerCase());
+          if (tableMatch) {
+            path = path.replace('{table}', tableMatch[1].toLowerCase());
+            isDirect = true;
+          }
         }
 
         // Extract function name from environment variable for function references
         if (path.includes('{function}')) {
           const functionMatch = envVar.match(/FUNCTION_(.+?)_NAME/);
-          if (functionMatch) path = path.replace('{function}', functionMatch[1].toLowerCase());
+          if (functionMatch) {
+            path = path.replace('{function}', functionMatch[1].toLowerCase());
+            // Functions use backend reference, not direct reference
+          }
         }
 
         // Create property access expression
         let expression: ts.Expression;
-        if (path.startsWith('{table}') || path.startsWith('{function}')) {
+        if (isDirect) {
           // Direct variable reference (e.g., activity.tableArn)
           const pathParts = path.split('.');
           expression = factory.createIdentifier(pathParts[0]);
