@@ -379,6 +379,8 @@ If your application contains an S3 bucket as part of the storage category, edit 
 > This is required in order to sync your local bucket name with the deployed template. 
 Otherwise, pushing changes to the `gen2-main` branch will result in a bucket replacement.
 
+Commit the changes:
+
 ```console
 git add .
 git commit -m "fix: reuse gen1 storage bucket"
@@ -396,6 +398,8 @@ If your application contains a DynamoDB table as part of the storage category, e
 
 > This is required in order to sync your local table name with the deployed template. 
 Otherwise, pushing changes to the `gen2-main` branch will result in a table replacement.
+
+Commit the changes:
 
 ```console
 git add .
