@@ -1,5 +1,6 @@
 import { FunctionDefinition } from '../../core/migration-pipeline';
 import { FunctionConfiguration } from '@aws-sdk/client-lambda';
+import { analyzeApiPermissionsFromCfn } from '../../codegen-head/api-cfn-access';
 import assert from 'node:assert';
 
 export type AmplifyMetaFunction = {
@@ -103,6 +104,11 @@ export const getFunctionDefinition = (
     funcDef.category = functionCategoryMap.get(functionRecordInMeta[0]) ?? 'function';
     funcDef.resourceName = functionRecordInMeta[0];
     funcDef.schedule = functionSchedules.find((schedule) => schedule.functionName === functionName)?.scheduleExpression;
+
+    // Analyze CFN template for API permissions
+    if (funcDef.resourceName) {
+      funcDef.apiPermissions = analyzeApiPermissionsFromCfn(funcDef.resourceName);
+    }
 
     funcDefList.push(funcDef);
   }
