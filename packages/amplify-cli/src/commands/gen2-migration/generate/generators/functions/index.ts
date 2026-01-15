@@ -54,6 +54,8 @@ export interface FunctionDefinition {
   memoryMB?: number;
   /** Environment variables configuration from AWS Lambda */
   environment?: EnvironmentResponse;
+  /** Environment variables filtered out by adapters for escape hatch generation */
+  filteredEnvironmentVariables?: Record<string, string>;
   /** AWS Lambda runtime (e.g., 'nodejs18.x', 'python3.9') */
   runtime?: Runtime | string;
   /** The Amplify resource name used for identification and file generation */

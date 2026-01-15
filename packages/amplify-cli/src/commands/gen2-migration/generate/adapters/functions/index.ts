@@ -56,6 +56,9 @@ export const getFunctionDefinition = (
     funcDef.timeoutSeconds = configuration?.Timeout;
     funcDef.memoryMB = configuration?.MemorySize;
 
+    // Store filtered environment variables for escape hatch generation
+    const filteredEnvVars: Record<string, string> = {};
+
     // we remove these because their value points to the Gen1 values.
     // the correct value needs to come from `backend` attributes, which we don't have access to here
     // since `backend` is configured in a different file. we can't import that file because it would create
@@ -65,6 +68,7 @@ export const getFunctionDefinition = (
     for (const envSuffix of ['GRAPHQLAPIKEYOUTPUT', 'GRAPHQLAPIENDPOINTOUTPUT', 'GRAPHQLAPIIDOUTPUT']) {
       for (const variable of Object.keys(configuration.Environment?.Variables ?? {})) {
         if (variable.startsWith('API_') && variable.endsWith(envSuffix)) {
+          filteredEnvVars[variable] = configuration.Environment?.Variables?.[variable] ?? '';
           delete configuration.Environment?.Variables[variable];
         }
       }
@@ -74,6 +78,7 @@ export const getFunctionDefinition = (
     for (const envSuffix of ['ARN', 'NAME', 'STREAMARN']) {
       for (const variable of Object.keys(configuration.Environment?.Variables ?? {})) {
         if (variable.startsWith('STORAGE_') && variable.endsWith(envSuffix)) {
+          filteredEnvVars[variable] = configuration.Environment?.Variables?.[variable] ?? '';
           delete configuration.Environment?.Variables[variable];
         }
       }
@@ -83,6 +88,7 @@ export const getFunctionDefinition = (
     for (const envSuffix of ['BUCKETNAME']) {
       for (const variable of Object.keys(configuration.Environment?.Variables ?? {})) {
         if (variable.startsWith('STORAGE_') && variable.endsWith(envSuffix)) {
+          filteredEnvVars[variable] = configuration.Environment?.Variables?.[variable] ?? '';
           delete configuration.Environment?.Variables[variable];
         }
       }
@@ -92,12 +98,14 @@ export const getFunctionDefinition = (
     for (const envSuffix of ['USERPOOLID']) {
       for (const variable of Object.keys(configuration.Environment?.Variables ?? {})) {
         if (variable.startsWith('AUTH_') && variable.endsWith(envSuffix)) {
+          filteredEnvVars[variable] = configuration.Environment?.Variables?.[variable] ?? '';
           delete configuration.Environment?.Variables[variable];
         }
       }
     }
 
     funcDef.environment = configuration?.Environment;
+    funcDef.filteredEnvironmentVariables = filteredEnvVars;
     funcDef.runtime = configuration?.Runtime;
     const functionName = configuration?.FunctionName;
     assert(functionName);
