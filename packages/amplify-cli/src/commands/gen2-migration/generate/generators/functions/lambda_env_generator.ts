@@ -12,6 +12,7 @@ const ENV_VAR_PATTERNS = {
   'STORAGE_.*_NAME': 'data.resources.tables.{table}.tableName',
   'STORAGE_.*_STREAMARN': 'data.resources.tables.{table}.tableStreamArn',
   'STORAGE_.*_BUCKETNAME': 'storage.resources.bucket.bucketName',
+  'FUNCTION_.*_NAME': '{function}.resources.lambda.functionName',
 };
 
 /**
@@ -22,7 +23,7 @@ const ENV_VAR_PATTERNS = {
  * @param envVars - Environment variables from the Gen1 Lambda function
  * @returns Array of TypeScript statements for escape hatches
  */
-export function generateEnvEscapeHatches(functionName: string, envVars: Record<string, string>): ts.ExpressionStatement[] {
+export function generateLambdaEnvVars(functionName: string, envVars: Record<string, string>): ts.ExpressionStatement[] {
   const statements: ts.ExpressionStatement[] = [];
 
   for (const [envVar] of Object.entries(envVars)) {
@@ -33,6 +34,12 @@ export function generateEnvEscapeHatches(functionName: string, envVars: Record<s
         if (path.includes('{table}')) {
           const tableMatch = envVar.match(/(?:API|STORAGE)_.*?_(.+?)(?:TABLE_|_)/);
           if (tableMatch) path = path.replace('{table}', tableMatch[1].toLowerCase());
+        }
+
+        // Extract function name from environment variable for function references
+        if (path.includes('{function}')) {
+          const functionMatch = envVar.match(/FUNCTION_(.+?)_NAME/);
+          if (functionMatch) path = path.replace('{function}', functionMatch[1].toLowerCase());
         }
 
         // Create property access expression: backend.data.graphqlUrl

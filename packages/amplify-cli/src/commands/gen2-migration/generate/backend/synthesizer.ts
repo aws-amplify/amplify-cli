@@ -18,7 +18,7 @@ import assert from 'assert';
 import { newLineIdentifier } from '../ts_factory_utils';
 import type { AdditionalAuthProvider } from '../generators/data';
 import { RestApiDefinition } from '../codegen-head/data_definition_fetcher';
-import { generateEnvEscapeHatches } from '../generators/functions/lambda_env_generator';
+import { generateLambdaEnvVars } from '../generators/functions/lambda_env_generator';
 
 const factory = ts.factory;
 export interface BackendRenderParameters {
@@ -1437,7 +1437,7 @@ export class BackendSynthesizer {
         // Generate environment variable escape hatches
         if (renderArgs.function.functionEnvironments?.has(functionName)) {
           const envVars = renderArgs.function.functionEnvironments.get(functionName)!;
-          const escapeHatches = generateEnvEscapeHatches(functionName, envVars);
+          const escapeHatches = generateLambdaEnvVars(functionName, envVars);
           nodes.push(...escapeHatches);
         }
       }
