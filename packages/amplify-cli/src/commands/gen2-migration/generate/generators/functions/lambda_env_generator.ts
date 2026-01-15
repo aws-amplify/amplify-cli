@@ -49,15 +49,15 @@ export function generateLambdaEnvVars(functionName: string, envVars: Record<stri
           }
         }
 
-        // Create property access expression
         let expression: ts.Expression;
         if (isDirect) {
-          // Direct variable reference (e.g., activity.tableArn)
+          // Direct variable reference for standalone CDK constructs
           const pathParts = path.split('.');
           expression = factory.createIdentifier(pathParts[0]);
           for (let i = 1; i < pathParts.length; i++) {
             const part = pathParts[i];
             if (part.endsWith('!')) {
+              // Handle TypeScript non-null assertion operator
               expression = factory.createNonNullExpression(
                 factory.createPropertyAccessExpression(expression, factory.createIdentifier(part.slice(0, -1))),
               );
@@ -66,12 +66,14 @@ export function generateLambdaEnvVars(functionName: string, envVars: Record<stri
             }
           }
         } else {
-          // Backend reference (e.g., backend.data.graphqlUrl)
+          // Backend reference for resources in defineBackend()
+          // Example: backend.data.graphqlUrl (references resources through the backend object)
           const pathParts = ['backend', ...path.split('.')];
           expression = factory.createIdentifier(pathParts[0]);
           for (let i = 1; i < pathParts.length; i++) {
             const part = pathParts[i];
             if (part.endsWith('!')) {
+              // Handle TypeScript non-null assertion operator
               expression = factory.createNonNullExpression(
                 factory.createPropertyAccessExpression(expression, factory.createIdentifier(part.slice(0, -1))),
               );

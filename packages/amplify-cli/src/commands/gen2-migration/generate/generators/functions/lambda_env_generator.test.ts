@@ -34,7 +34,7 @@ describe('generateLambdaEnvVars', () => {
     const result = generateLambdaEnvVars('myFunction', envVars);
 
     const code = printer.printNode(ts.EmitHint.Unspecified, result[0], ts.createSourceFile('', '', ts.ScriptTarget.Latest));
-    expect(code).toBe('backend.myFunction.addEnvironment("STORAGE_TODOTABLE_ARN", backend.data.resources.tables.todo.tableArn);');
+    expect(code).toBe('backend.myFunction.addEnvironment("STORAGE_TODOTABLE_ARN", todo.tableArn);');
   });
 
   it('generates S3 bucket escape hatch', () => {
