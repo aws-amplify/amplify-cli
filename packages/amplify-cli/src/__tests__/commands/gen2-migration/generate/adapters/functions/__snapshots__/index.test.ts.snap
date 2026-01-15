@@ -56,13 +56,17 @@ exports[`getFunctionDefinition entry is derived from Handler 1`] = `
     },
     "category": "function",
     "entry": "./index.js",
-    "environment": undefined,
-    "memoryMB": undefined,
-    "name": "MyFunc",
-    "resourceName": "MyFunc",
+    "environment": {
+      "Variables": {
+        "OTHER_ENV_VAR": "some-value",
+      },
+    },
+    "memoryMB": 128,
+    "name": "myFunction-dev-12345",
+    "resourceName": "myFunction",
     "runtime": undefined,
     "schedule": undefined,
-    "timeoutSeconds": undefined,
+    "timeoutSeconds": 30,
   },
 ]
 `;
@@ -88,31 +92,6 @@ exports[`getFunctionDefinition graphql env variables are removed 1`] = `
     "runtime": undefined,
     "schedule": undefined,
     "timeoutSeconds": undefined,
-  },
-]
-`;
-
-exports[`getFunctionDefinition should analyze CloudFormation for API permissions and clean environment variables 1`] = `
-[
-  {
-    "apiPermissions": {
-      "hasMutation": false,
-      "hasQuery": false,
-      "hasSubscription": false,
-    },
-    "category": "function",
-    "entry": "./index.js",
-    "environment": {
-      "Variables": {
-        "OTHER_ENV_VAR": "some-value",
-      },
-    },
-    "memoryMB": 128,
-    "name": "myFunction-dev-12345",
-    "resourceName": "myFunction",
-    "runtime": undefined,
-    "schedule": undefined,
-    "timeoutSeconds": 30,
   },
 ]
 `;
