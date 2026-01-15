@@ -2071,7 +2071,25 @@ export class BackendSynthesizer {
     // DynamoDB function access using table.grant()
     // Generates CDK code: tableName.grant(lambda, "dynamodb:GetItem", "dynamodb:PutItem")
     if (renderArgs.storage?.dynamoFunctionAccess && renderArgs.storage.dynamoFunctionAccess.length > 0) {
+      // Deduplicate function access entries to prevent duplicate grant statements
+      // This can occur because Gen1 CloudFormation templates separate table and GSI permissions
+      // The parser creates separate FunctionDynamoDBAccess entries for each resource, even though they reference the same logical table
+      const uniqueFunctionAccess = new Map<string, FunctionDynamoDBAccess>();
       renderArgs.storage.dynamoFunctionAccess.forEach((functionAccess) => {
+        const key = `${functionAccess.functionName}-${functionAccess.tableResource}`;
+        if (!uniqueFunctionAccess.has(key)) {
+          uniqueFunctionAccess.set(key, functionAccess);
+        } else {
+          // Merge actions if same function-table combination exists
+          const existing = uniqueFunctionAccess.get(key);
+          if (existing) {
+            const mergedActions = [...new Set([...existing.actions, ...functionAccess.actions])];
+            uniqueFunctionAccess.set(key, { ...existing, actions: mergedActions });
+          }
+        }
+      });
+
+      uniqueFunctionAccess.forEach((functionAccess) => {
         // Find the corresponding table variable name from dynamoTables
         const matchingTable = renderArgs.storage?.dynamoTables?.find((table) => {
           const baseTableName = table.tableName.split('-')[0];
