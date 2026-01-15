@@ -542,6 +542,7 @@ describe('BackendSynthesizer', () => {
         const backend = defineBackend({});
         const storageStack = backend.createStack("storage");
         new Table(storageStack, "countsTable", { partitionKey: { name: "postId", type: AttributeType.STRING }, billingMode: BillingMode.PROVISIONED, readCapacity: 5, writeCapacity: 5, sortKey: { name: "metricType", type: AttributeType.STRING } });
+        // Add this property to the Table above post refactor: tableName: 'countsTable-dev'
         "
       `);
     });
@@ -570,6 +571,7 @@ describe('BackendSynthesizer', () => {
         const backend = defineBackend({});
         const storageStack = backend.createStack("storage");
         new Table(storageStack, "testTable", { partitionKey: { name: "id", type: AttributeType.STRING }, billingMode: BillingMode.PAY_PER_REQUEST, sortKey: { name: "timestamp", type: AttributeType.NUMBER } });
+        // Add this property to the Table above post refactor: tableName: 'testTable'
         "
       `);
     });
@@ -606,6 +608,7 @@ describe('BackendSynthesizer', () => {
         const backend = defineBackend({});
         const storageStack = backend.createStack("storage");
         const testTable = new Table(storageStack, "testTable", { partitionKey: { name: "id", type: AttributeType.STRING }, billingMode: BillingMode.PROVISIONED, readCapacity: 5, writeCapacity: 5 });
+        // Add this property to the Table above post refactor: tableName: 'testTable'
         testTable.addGlobalSecondaryIndex({ indexName: "testIndex", partitionKey: { name: "gsiPK", type: AttributeType.STRING }, sortKey: { name: "gsiSK", type: AttributeType.NUMBER }, readCapacity: 5, writeCapacity: 5 });
         "
       `);
@@ -636,6 +639,7 @@ describe('BackendSynthesizer', () => {
         const backend = defineBackend({});
         const storageStack = backend.createStack("storage");
         new Table(storageStack, "streamTable", { partitionKey: { name: "id", type: AttributeType.STRING }, billingMode: BillingMode.PAY_PER_REQUEST, stream: StreamViewType.NEW_AND_OLD_IMAGES });
+        // Add this property to the Table above post refactor: tableName: 'streamTable'
         "
       `);
     });
@@ -673,7 +677,9 @@ describe('BackendSynthesizer', () => {
         const backend = defineBackend({});
         const storageStack = backend.createStack("storage");
         new Table(storageStack, "table", { partitionKey: { name: "pk1", type: AttributeType.STRING }, billingMode: BillingMode.PAY_PER_REQUEST });
+        // Add this property to the Table above post refactor: tableName: 'table-one'
         new Table(storageStack, "table", { partitionKey: { name: "pk2", type: AttributeType.NUMBER }, billingMode: BillingMode.PROVISIONED, readCapacity: 10, writeCapacity: 10, sortKey: { name: "sk2", type: AttributeType.STRING } });
+        // Add this property to the Table above post refactor: tableName: 'table-two'
         "
       `);
     });
@@ -701,6 +707,7 @@ describe('BackendSynthesizer', () => {
         const backend = defineBackend({});
         const storageStack = backend.createStack("storage");
         new Table(storageStack, "importTest", { partitionKey: { name: "id", type: AttributeType.STRING }, billingMode: BillingMode.PAY_PER_REQUEST });
+        // Add this property to the Table above post refactor: tableName: 'importTest'
         "
       `);
     });
@@ -728,6 +735,7 @@ describe('BackendSynthesizer', () => {
         const backend = defineBackend({});
         const storageStack = backend.createStack("storage");
         new Table(storageStack, "stackTest", { partitionKey: { name: "id", type: AttributeType.STRING }, billingMode: BillingMode.PAY_PER_REQUEST });
+        // Add this property to the Table above post refactor: tableName: 'stackTest'
         "
       `);
     });
@@ -760,6 +768,7 @@ describe('BackendSynthesizer', () => {
         });
         const storageStack = backend.storage.stack;
         new Table(storageStack, "stackTest", { partitionKey: { name: "id", type: AttributeType.STRING }, billingMode: BillingMode.PAY_PER_REQUEST });
+        // Add this property to the Table above post refactor: tableName: 'stackTest'
         const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
         // Use this bucket name post refactor
         // s3Bucket.bucketName = 'testBucket';
@@ -792,6 +801,7 @@ describe('BackendSynthesizer', () => {
         const backend = defineBackend({});
         const storageStack = backend.createStack("storage");
         new Table(storageStack, "my_complex_table_name", { partitionKey: { name: "id", type: AttributeType.STRING }, billingMode: BillingMode.PAY_PER_REQUEST });
+        // Add this property to the Table above post refactor: tableName: 'my-complex-table-name-dev'
         "
       `);
     });
@@ -819,6 +829,7 @@ describe('BackendSynthesizer', () => {
         const backend = defineBackend({});
         const storageStack = backend.createStack("storage");
         new Table(storageStack, "simpleTableName", { partitionKey: { name: "id", type: AttributeType.STRING }, billingMode: BillingMode.PAY_PER_REQUEST });
+        // Add this property to the Table above post refactor: tableName: 'simpleTableName'
         "
       `);
     });

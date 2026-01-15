@@ -7,13 +7,35 @@ const factory = ts.factory;
  * @see https://docs.amplify.aws/gen1/react/build-a-backend/storage/configure-storage/#s3-access-permissions
  */
 
-type AccessPath = 'public/*' | 'private/{entity_id}/*' | 'protected/{entity_id}/*';
+type AccessPath = 'public/*' | 'private/{entity_id}/*' | 'protected/{entity_id}/*' | string;
 
-type UserLevel = 'guest' | 'authenticated' | `entity('identity')` | `groups(['${string}'])`;
+type UserLevel = 'guest' | 'authenticated' | `entity('identity')` | `groups(['${string}'])` | `resource(${string})`;
 
 const createAllowPattern = (allowIdentifier: Identifier, userLevel: UserLevel, permissions: Permission[]) => {
   return factory.createCallExpression(
     factory.createPropertyAccessExpression(allowIdentifier, factory.createIdentifier(`${userLevel}.to`)),
+    undefined,
+    [factory.createArrayLiteralExpression(permissions.map((p) => factory.createStringLiteral(p)))],
+  );
+};
+
+/**
+ * Creates a resource access pattern for functions
+ * @param allowIdentifier - The 'allow' identifier
+ * @param functionName - Name of the function
+ * @param permissions - Array of permissions
+ * @returns CallExpression for the resource access pattern
+ */
+const createResourcePattern = (allowIdentifier: Identifier, functionName: string, permissions: Permission[]) => {
+  return factory.createCallExpression(
+    factory.createPropertyAccessExpression(
+      factory.createCallExpression(
+        factory.createPropertyAccessExpression(allowIdentifier, factory.createIdentifier('resource')),
+        undefined,
+        [factory.createIdentifier(functionName)],
+      ),
+      factory.createIdentifier('to'),
+    ),
     undefined,
     [factory.createArrayLiteralExpression(permissions.map((p) => factory.createStringLiteral(p)))],
   );
@@ -44,6 +66,29 @@ export const getAccessPatterns = (accessPatterns: AccessPatterns): ts.PropertyAs
     });
   }
 
+  // Handle function access patterns - add to all default paths
+  if (accessPatterns.functions && accessPatterns.functions.length) {
+    const consolidatedFunctions: { [functionName: string]: Set<Permission> } = {};
+
+    // Consolidate permissions by function
+    accessPatterns.functions.forEach(({ functionName, permissions }) => {
+      if (!consolidatedFunctions[functionName]) {
+        consolidatedFunctions[functionName] = new Set(permissions);
+      } else {
+        // Merge permissions
+        permissions.forEach((p) => consolidatedFunctions[functionName].add(p));
+      }
+    });
+
+    // Add function access to all three default paths
+    Object.entries(consolidatedFunctions).forEach(([functionName, permissions]) => {
+      const resourcePattern = createResourcePattern(allowIdentifier, functionName, Array.from(permissions));
+      publicPathAccess.push(resourcePattern);
+      privatePathAccess.push(resourcePattern);
+      protectedPathAccess.push(resourcePattern);
+    });
+  }
+
   const publicPath: AccessPath = 'public/*';
   const privatePath: AccessPath = 'private/{entity_id}/*';
   const protectedPath: AccessPath = 'protected/{entity_id}/*';
@@ -62,6 +107,8 @@ export const getAccessPatterns = (accessPatterns: AccessPatterns): ts.PropertyAs
   if (privatePathAccess.length) {
     allowAssignments.push(createAccessPropertyAssignment(privatePath, privatePathAccess));
   }
+
+  // Add function-specific path access patterns (removed - functions now go in default paths)
 
   const accessFunction = factory.createArrowFunction(
     undefined,

@@ -107,7 +107,7 @@ The module supports migrating the following CloudFormation resource types:
 |----------|---------------|
 | `auth` | `AWS::Cognito::UserPool`, `AWS::Cognito::UserPoolClient`, `AWS::Cognito::IdentityPool`, `AWS::Cognito::IdentityPoolRoleAttachment`, `AWS::Cognito::UserPoolDomain` |
 | `auth-user-pool-group` | `AWS::Cognito::UserPoolGroup` |
-| `storage` | `AWS::S3::Bucket` |
+| `storage` | `AWS::S3::Bucket`, `AWS::DynamoDB::Table` |
 
 ## Dependencies
 
@@ -224,7 +224,8 @@ const resourceMapPath = this.resourceMappings.split(FILE_PROTOCOL_PREFIX)[1];
 
 ## Known Limitations
 
-- Storage refactor only supports S3 buckets, not DynamoDB tables—DynamoDB is handled in the 'generate' step via table mappings
+- Multiple resources of the same type (e.g., multiple DynamoDB tables) are matched arbitrarily by type alone—the mapping may not preserve correct resource correspondence without explicit `--resourceMappings`
+- The `--resourceMappings` CLI option is currently disabled (commented out in code)
 - Auth with OAuth providers is known to be broken—fails on deployment after refactor when trying to replace IdP that already exists
 - The `rollback()` method is not implemented—it only logs 'Not implemented'. Manual intervention required on failure
 - The refactor operation has a 60-minute timeout (300 attempts × 12s)—very large stacks may timeout

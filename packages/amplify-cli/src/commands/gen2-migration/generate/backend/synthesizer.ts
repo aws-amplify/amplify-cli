@@ -12,7 +12,7 @@ import ts, {
 import { PolicyOverrides, ReferenceAuth } from '../generators/auth';
 import type { BucketAccelerateStatus, BucketVersioningStatus } from '@aws-sdk/client-s3';
 import { AccessPatterns, ServerSideEncryptionConfiguration } from '../generators/storage';
-import { DynamoDBTableDefinition } from '../adapters/storage';
+import { DynamoDBTableDefinition, FunctionDynamoDBAccess } from '../adapters/storage';
 import { ExplicitAuthFlowsType, OAuthFlowType, UserPoolClientType } from '@aws-sdk/client-cognito-identity-provider';
 import assert from 'assert';
 import { newLineIdentifier } from '../ts_factory_utils';
@@ -41,6 +41,7 @@ export interface BackendRenderParameters {
   storage?: {
     importFrom: string;
     dynamoTables?: DynamoDBTableDefinition[];
+    dynamoFunctionAccess?: FunctionDynamoDBAccess[];
     accelerateConfiguration?: BucketAccelerateStatus;
     versionConfiguration?: BucketVersioningStatus;
     hasS3Bucket?: string | AccessPatterns | undefined;
@@ -999,6 +1000,16 @@ export class BackendSynthesizer {
           );
           nodes.push(tableCreation);
         }
+
+        // Add comment for tableName to use post refactor (similar to S3 bucket)
+        const tableNameComment1 = factory.createNotEmittedStatement(factory.createStringLiteral(''));
+        ts.addSyntheticLeadingComment(
+          tableNameComment1,
+          ts.SyntaxKind.SingleLineCommentTrivia,
+          ` Add this property to the Table above post refactor: tableName: '${table.tableName}'`,
+          true,
+        );
+        nodes.push(tableNameComment1);
 
         // Add GSIs
         table.gsis?.forEach((gsi) => {
@@ -2053,6 +2064,46 @@ export class BackendSynthesizer {
         );
         nodes.push(addOutputStatement);
       }
+    }
+
+    // DynamoDB function access using table.grant()
+    // Generates CDK code: tableName.grant(lambda, "dynamodb:GetItem", "dynamodb:PutItem")
+    if (renderArgs.storage?.dynamoFunctionAccess && renderArgs.storage.dynamoFunctionAccess.length > 0) {
+      renderArgs.storage.dynamoFunctionAccess.forEach((functionAccess) => {
+        // Find the corresponding table variable name from dynamoTables
+        const matchingTable = renderArgs.storage?.dynamoTables?.find((table) => {
+          const baseTableName = table.tableName.split('-')[0];
+          const tableRefPattern = new RegExp(`storage${baseTableName.replace(/[^a-zA-Z0-9]/g, '')}(Name|Arn)`, 'i');
+          return tableRefPattern.test(functionAccess.tableResource);
+        });
+
+        if (matchingTable) {
+          const sanitizedTableName = this.sanitizeVariableName(matchingTable.tableName.replace(/-[^-]+$/, ''));
+
+          // Generate: tableName.grant(backend.functionName.resources.lambda, "action1", "action2")
+          const grantStatement = factory.createExpressionStatement(
+            factory.createCallExpression(
+              factory.createPropertyAccessExpression(factory.createIdentifier(sanitizedTableName), factory.createIdentifier('grant')),
+              undefined,
+              [
+                factory.createPropertyAccessExpression(
+                  factory.createPropertyAccessExpression(
+                    factory.createPropertyAccessExpression(
+                      factory.createIdentifier('backend'),
+                      factory.createIdentifier(functionAccess.functionName),
+                    ),
+                    factory.createIdentifier('resources'),
+                  ),
+                  factory.createIdentifier('lambda'),
+                ),
+                ...functionAccess.actions.map((action) => factory.createStringLiteral(action)),
+              ],
+            ),
+          );
+
+          nodes.push(grantStatement);
+        }
+      });
     }
 
     // returns backend.ts file

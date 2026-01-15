@@ -336,16 +336,10 @@ this process for any number of users.
 > Migration is not fully supported for this app yet due to a missing feature for refactoring DynamoDB storage tables.
 > This guide ends at the `generate` step.
 
-First add the experimental amplify CLI package that provides the migration commands to your `devDependencies`.
-
-**Edit in `package.json`:**
-
-```diff
-+ "@aws-amplify/cli-internal-gen2-migration-experimental-alpha": "^0.4.0"
-```
+First and install the experimental CLI package the provides the new commands:
 
 ```console
-npm install
+npm install --no-save @aws-amplify/cli-internal-gen2-migration-experimental-alpha
 ```
 
 Now run them:

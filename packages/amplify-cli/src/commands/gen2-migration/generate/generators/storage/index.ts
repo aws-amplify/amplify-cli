@@ -18,6 +18,11 @@ export type AccessPatterns = {
   auth?: Permission[];
   guest?: Permission[];
   groups?: Record<string, Permission[]>;
+  /** Function access patterns for resource-based access */
+  functions?: Array<{
+    functionName: string;
+    permissions: Permission[];
+  }>;
 };
 
 export type ServerSideEncryptionConfiguration = {
@@ -34,8 +39,10 @@ export interface StorageRenderParameters {
   bucketEncryptionAlgorithm?: ServerSideEncryptionConfiguration;
   // Dynamic import since it can cause a circular dependency otherwise. Needed since the interface contains this property
   dynamoTables?: import('../../adapters/storage').DynamoDBTableDefinition[];
+  dynamoFunctionAccess?: import('../../adapters/storage').FunctionDynamoDBAccess[];
   accelerateConfiguration?: BucketAccelerateStatus;
   versioningConfiguration?: BucketVersioningStatus;
+  functionNamesAndCategories?: Map<string, string>;
 }
 
 const createVariableStatement = (variableDeclaration: VariableDeclaration): VariableStatement => {
@@ -79,6 +86,18 @@ export const renderStorage = (storageParams: StorageRenderParameters = {}) => {
   }
   if (storageParams.accessPatterns) {
     propertyAssignments.push(getAccessPatterns(storageParams.accessPatterns));
+
+    // Add function imports if function access patterns are present
+    if (storageParams.accessPatterns.functions && storageParams.accessPatterns.functions.length > 0) {
+      for (const functionAccess of storageParams.accessPatterns.functions) {
+        const functionCategory = storageParams.functionNamesAndCategories?.get(functionAccess.functionName) || 'function';
+        const functionImportPath = `../${functionCategory}/${functionAccess.functionName}/resource`;
+        if (!namedImports[functionImportPath]) {
+          namedImports[functionImportPath] = new Set();
+        }
+        namedImports[functionImportPath].add(functionAccess.functionName);
+      }
+    }
   }
   if (storageParams.accessPatterns?.groups) {
     postImportStatements.push(
@@ -97,10 +116,13 @@ export const renderStorage = (storageParams: StorageRenderParameters = {}) => {
     propertyAssignments.push(createTriggersProperty(triggers));
     for (const value of Object.values(triggers)) {
       const functionName = value.source.split('/')[3];
-      if (!namedImports[`./${functionName}/resource`]) {
-        namedImports[`./${functionName}/resource`] = new Set();
+      const functionCategory = storageParams.functionNamesAndCategories?.get(functionName) || 'function';
+      const functionImportPath =
+        functionCategory === 'storage' ? `./${functionName}/resource` : `../${functionCategory}/${functionName}/resource`;
+      if (!namedImports[functionImportPath]) {
+        namedImports[functionImportPath] = new Set();
       }
-      namedImports[`./${functionName}/resource`].add(functionName);
+      namedImports[functionImportPath].add(functionName);
     }
   }
   const storageArgs = factory.createObjectLiteralExpression(propertyAssignments);
