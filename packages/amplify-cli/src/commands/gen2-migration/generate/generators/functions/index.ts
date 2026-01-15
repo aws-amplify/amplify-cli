@@ -222,11 +222,6 @@ export function createFunctionDefinition(
     defineFunctionProperties.push(createParameter('memoryMB', factory.createNumericLiteral(definition.memoryMB)));
   }
 
-  // Add resourceGroupName based on function category
-  if (definition?.category && definition.category !== 'function') {
-    defineFunctionProperties.push(createParameter('resourceGroupName', factory.createStringLiteral(definition.category)));
-  }
-
   // Process environment variables with special handling for secrets and ENV variable
   if (definition?.environment?.Variables) {
     defineFunctionProperties.push(
