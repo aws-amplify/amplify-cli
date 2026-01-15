@@ -10,7 +10,7 @@ const ENV_VAR_PATTERNS = {
   'AUTH_.*_USERPOOLID': 'auth.resources.userPool.userPoolId',
   'STORAGE_.*_ARN': '{table}.tableArn',
   'STORAGE_.*_NAME': '{table}.tableName',
-  'STORAGE_.*_STREAMARN': '{table}.tableStreamArn',
+  'STORAGE_.*_STREAMARN': '{table}.tableStreamArn!',
   'STORAGE_.*_BUCKETNAME': 'storage.resources.bucket.bucketName',
   'FUNCTION_.*_NAME': '{function}.resources.lambda.functionName',
 };
