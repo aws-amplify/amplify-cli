@@ -45,10 +45,16 @@ export function generateLambdaEnvVars(functionName: string, envVars: Record<stri
               tableName = apiMatch[1].toLowerCase();
             }
           } else if (envVar.startsWith('STORAGE_')) {
-            // STORAGE_MYTABLE_ARN -> extract 'MYTABLE'
-            const storageMatch = envVar.match(/STORAGE_(.+?)_/);
+            // STORAGE_TODOTABLE_ARN -> extract 'TODO' from 'TODOTABLE'
+            const storageMatch = envVar.match(/STORAGE_(.+?)TABLE_/);
             if (storageMatch) {
               tableName = storageMatch[1].toLowerCase();
+            } else {
+              // STORAGE_MYTABLE_ARN -> extract 'MYTABLE'
+              const fallbackMatch = envVar.match(/STORAGE_(.+?)_/);
+              if (fallbackMatch) {
+                tableName = fallbackMatch[1].toLowerCase();
+              }
             }
           }
 
