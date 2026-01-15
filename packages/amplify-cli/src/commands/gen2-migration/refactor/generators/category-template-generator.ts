@@ -309,6 +309,7 @@ class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
     const gen1ToGen2ResourceLogicalIdMapping = new Map<string, string>();
     for (const [gen1ResourceLogicalId, gen1Resource] of clonedGen1ResourceMap) {
       this.logger.debug(`[DEBUG] Processing Gen1 resource: ${gen1ResourceLogicalId} (Type: ${gen1Resource.Type})`);
+      let foundMapping = false;
       for (const [gen2ResourceLogicalId, gen2Resource] of clonedGen2ResourceMap) {
         if (gen2Resource.Type !== gen1Resource.Type) {
           continue;
@@ -332,8 +333,17 @@ class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
           gen1ToGen2ResourceLogicalIdMapping.set(gen1ResourceLogicalId, gen2ResourceLogicalId);
           clonedGen1ResourceMap.delete(gen1ResourceLogicalId);
           clonedGen2ResourceMap.delete(gen2ResourceLogicalId);
+          foundMapping = true;
           break;
         }
+      }
+      // If no Gen2 resource found (e.g., Gen2 stack was already updated in a previous failed attempt),
+      // use the Gen1 logical ID as the destination. This allows the refactor to complete
+      // when re-running after a partial failure.
+      if (!foundMapping) {
+        this.logger.debug(`No Gen2 mapping found for ${gen1ResourceLogicalId}, using Gen1 logical ID as destination`);
+        gen1ToGen2ResourceLogicalIdMapping.set(gen1ResourceLogicalId, gen1ResourceLogicalId);
+        clonedGen1ResourceMap.delete(gen1ResourceLogicalId);
       }
     }
     this.logger.debug(`Final resource mapping: ${Array.from(gen1ToGen2ResourceLogicalIdMapping.entries())}`);
