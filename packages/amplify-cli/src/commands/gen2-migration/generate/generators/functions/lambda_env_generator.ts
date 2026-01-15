@@ -36,15 +36,23 @@ export function generateLambdaEnvVars(functionName: string, envVars: Record<stri
         let isDirect = false;
         // Extract table name from environment variable for DynamoDB resources
         if (path.includes('{table}')) {
-          const tableMatch = envVar.match(/(?:API|STORAGE)_(.+?)(?:TABLE_|_)/);
-          if (tableMatch) {
-            let tableName = tableMatch[1];
-            // Convert Gen1 table naming to Gen2 data model table keys:
-            // API_TESTAPP_TODOTABLE_ARN -> 'TODOTABLE' -> 'TODO' (remove TABLE suffix)
-            // STORAGE_MYTABLE_ARN -> 'MYTABLE' (keep as-is for standalone tables)
-            if (envVar.startsWith('API_') && tableName.endsWith('TABLE')) {
-              tableName = tableName.slice(0, -5); // Remove 'TABLE' suffix
+          let tableName: string | undefined;
+
+          if (envVar.startsWith('API_') && envVar.includes('TABLE_')) {
+            // API_TESTAPP_TODOTABLE_ARN -> extract 'TODO' from 'TODOTABLE'
+            const apiMatch = envVar.match(/API_.*_(.+?)TABLE_/);
+            if (apiMatch) {
+              tableName = apiMatch[1].toLowerCase();
             }
+          } else if (envVar.startsWith('STORAGE_')) {
+            // STORAGE_MYTABLE_ARN -> extract 'MYTABLE'
+            const storageMatch = envVar.match(/STORAGE_(.+?)_/);
+            if (storageMatch) {
+              tableName = storageMatch[1].toLowerCase();
+            }
+          }
+
+          if (tableName) {
             path = path.replace('{table}', tableName);
             // API tables use backend references, STORAGE tables use direct CDK construct references
             isDirect = envVar.startsWith('STORAGE_');
