@@ -2128,33 +2128,52 @@ export class BackendSynthesizer {
 
     // Grant function access to data model tables from our parser
     if (renderArgs.function?.functionsWithDataModelAccess && renderArgs.data) {
+      // Deduplicate data model access entries to prevent duplicate grant statements
+      // This can occur when the DataModelAccessParser finds the same table referenced multiple times
+      // in a function's CloudFormation template (e.g., separate permissions for table and GSI operations)
+      const uniqueDataModelAccess = new Map<string, DataModelTableAccess>();
+
       for (const [functionName, tableAccesses] of renderArgs.function.functionsWithDataModelAccess) {
         for (const tableAccess of tableAccesses) {
-          const tableName = tableAccess.tableName.replace('Table', ''); // Remove 'Table' suffix
-
-          nodes.push(
-            factory.createExpressionStatement(
-              factory.createCallExpression(
-                factory.createPropertyAccessExpression(
-                  factory.createElementAccessExpression(
-                    factory.createIdentifier('backend.data.resources.tables'),
-                    factory.createStringLiteral(tableName),
-                  ),
-                  factory.createIdentifier('grant'),
-                ),
-                undefined,
-                [
-                  factory.createPropertyAccessExpression(
-                    factory.createIdentifier(`backend.${functionName}.resources`),
-                    factory.createIdentifier('lambda'),
-                  ),
-                  ...tableAccess.actions.map((action) => factory.createStringLiteral(action)),
-                ],
-              ),
-            ),
-          );
+          const key = `${functionName}-${tableAccess.tableName}`;
+          if (!uniqueDataModelAccess.has(key)) {
+            uniqueDataModelAccess.set(key, tableAccess);
+          } else {
+            // Merge actions if same function-table combination exists
+            const existing = uniqueDataModelAccess.get(key);
+            if (existing) {
+              const mergedActions = [...new Set([...existing.actions, ...tableAccess.actions])];
+              uniqueDataModelAccess.set(key, { ...existing, actions: mergedActions });
+            }
+          }
         }
       }
+
+      uniqueDataModelAccess.forEach((tableAccess) => {
+        const tableName = tableAccess.tableName.replace('Table', ''); // Remove 'Table' suffix
+
+        nodes.push(
+          factory.createExpressionStatement(
+            factory.createCallExpression(
+              factory.createPropertyAccessExpression(
+                factory.createElementAccessExpression(
+                  factory.createIdentifier('backend.data.resources.tables'),
+                  factory.createStringLiteral(tableName),
+                ),
+                factory.createIdentifier('grant'),
+              ),
+              undefined,
+              [
+                factory.createPropertyAccessExpression(
+                  factory.createIdentifier(`backend.${tableAccess.functionName}.resources`),
+                  factory.createIdentifier('lambda'),
+                ),
+                ...tableAccess.actions.map((action) => factory.createStringLiteral(action)),
+              ],
+            ),
+          ),
+        );
+      });
     }
 
     // returns backend.ts file
