@@ -377,18 +377,10 @@ in the _Google Sign-In_ tab.
 > Migration is not fully supported for this app yet due to a bug in refactoring the social provider
 > configuration. This guide ends at the `generate` step.
 
-First add the experimental amplify CLI package that provides the migration commands to your `devDependencies`.
-
-**Edit in `package.json`:**
-
-```diff
-+ "@aws-amplify/cli-internal-gen2-migration-experimental-alpha": "^0.4.0"
-```
+First and install the experimental CLI package the provides the new commands:
 
 ```console
-npm install
-git add .
-git commit -m "chore: install gen2-migration cli"
+npm install --no-save @aws-amplify/cli-internal-gen2-migration-experimental-alpha
 ```
 
 Now run them:
@@ -553,6 +545,10 @@ Now connect the `gen2-main` branch to the hosting service:
 Wait for the deployment to finish successfully. Next, locate the root stack of the Gen2 branch:
 
 ![](./images/find-gen2-stack.png)
+
+```console
+npm install --no-save @aws-amplify/cli-internal-gen2-migration-experimental-alpha
+```
 
 ```console
 git checkout main
