@@ -1,6 +1,26 @@
 import { getFunctionDefinition } from '../../../../../../commands/gen2-migration/generate/adapters/functions/index';
+import { FunctionConfiguration } from '@aws-sdk/client-lambda';
+import * as amplifyCliCore from '@aws-amplify/amplify-cli-core';
+
+// Mock the readCFNTemplate function
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
+  ...jest.requireActual('@aws-amplify/amplify-cli-core'),
+  readCFNTemplate: jest.fn(),
+}));
+
+const mockReadCFNTemplate = amplifyCliCore.readCFNTemplate as jest.MockedFunction<typeof amplifyCliCore.readCFNTemplate>;
 
 describe('getFunctionDefinition', () => {
+  beforeEach(() => {
+    mockReadCFNTemplate.mockReturnValue({
+      templateFormat: 'json' as any,
+      cfnTemplate: { Resources: {} },
+    });
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
   test('auth env variables are removed', () => {
     const definition = getFunctionDefinition(
       [
@@ -30,8 +50,7 @@ describe('getFunctionDefinition', () => {
       },
     );
 
-    expect(definition.length).toEqual(1);
-    expect(definition[0].environment?.Variables).toEqual({ SOME_ENV: 'some-value' });
+    expect(definition).toMatchSnapshot();
   });
 
   test('storage dynamo env variables are removed', () => {
@@ -65,8 +84,7 @@ describe('getFunctionDefinition', () => {
       },
     );
 
-    expect(definition.length).toEqual(1);
-    expect(definition[0].environment?.Variables).toEqual({ SOME_ENV: 'some-value' });
+    expect(definition).toMatchSnapshot();
   });
 
   test('storage s3 env variables are removed', () => {
@@ -98,8 +116,7 @@ describe('getFunctionDefinition', () => {
       },
     );
 
-    expect(definition.length).toEqual(1);
-    expect(definition[0].environment?.Variables).toEqual({ SOME_ENV: 'some-value' });
+    expect(definition).toMatchSnapshot();
   });
 
   test('graphql env variables are removed', () => {
@@ -133,8 +150,7 @@ describe('getFunctionDefinition', () => {
       },
     );
 
-    expect(definition.length).toEqual(1);
-    expect(definition[0].environment?.Variables).toEqual({ SOME_ENV: 'some-value' });
+    expect(definition).toMatchSnapshot();
   });
 
   test('entry defaults to ./index.js', () => {
@@ -160,34 +176,43 @@ describe('getFunctionDefinition', () => {
       },
     );
 
-    expect(definition.length).toEqual(1);
-    expect(definition[0].entry).toEqual('./index.js');
+    expect(definition).toMatchSnapshot();
   });
 
   test('entry is derived from Handler', () => {
-    const definition = getFunctionDefinition(
-      [
-        {
-          Handler: 'index.handler',
-          FunctionName: 'MyFunc',
-        },
-      ],
-      [],
-      new Map(),
+    const functionConfigurations: FunctionConfiguration[] = [
       {
-        function: {
-          MyFunc: {
-            service: 'Lambda',
-            providerPlugin: 'awscloudformation',
-            output: {
-              Name: 'MyFunc',
-            },
+        FunctionName: 'myFunction-dev-12345',
+        Handler: 'index.handler',
+        Timeout: 30,
+        MemorySize: 128,
+        Environment: {
+          Variables: {
+            API_MYAPI_GRAPHQLAPIENDPOINTOUTPUT: 'https://example.appsync-api.us-east-1.amazonaws.com/graphql',
+            API_MYAPI_GRAPHQLAPIKEYOUTPUT: 'da2-fakeApiKey123456',
+            API_MYAPI_GRAPHQLAPIIDOUTPUT: 'abcdefghijklmnopqrstuvwxyz',
+            OTHER_ENV_VAR: 'some-value',
           },
         },
       },
-    );
+    ];
 
-    expect(definition.length).toEqual(1);
-    expect(definition[0].entry).toEqual('./index.js');
+    const functionSchedules = [];
+    const functionCategoryMap = new Map();
+    const meta = {
+      function: {
+        myFunction: {
+          service: 'Lambda',
+          providerPlugin: 'awscloudformation' as const,
+          output: {
+            Name: 'myFunction-dev-12345',
+          },
+        },
+      },
+    };
+
+    const result = getFunctionDefinition(functionConfigurations, functionSchedules, functionCategoryMap, meta);
+
+    expect(result).toMatchSnapshot();
   });
 });

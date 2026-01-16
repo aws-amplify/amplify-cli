@@ -2,6 +2,7 @@ import { FunctionDefinition } from '../../core/migration-pipeline';
 import { FunctionConfiguration } from '@aws-sdk/client-lambda';
 import { AuthAccess } from '../../generators/functions/index';
 import { analyzeApiPermissionsFromCfn } from '../../codegen-head/api-cfn-access';
+import { DataModelAccessParser } from '../../codegen-head/data_model_access_parser';
 import assert from 'node:assert';
 
 export type AmplifyMetaFunction = {
@@ -65,7 +66,7 @@ export const getFunctionDefinition = (
     // a circular import. instead, we need to generate some code in `backend.ts` (TODO)
 
     // api access env variables
-    for (const envSuffix of ['GRAPHQLAPIKEYOUTPUT', 'GRAPHQLAPIENDPOINTOUTPUT', 'GRAPHQLAPIIDOUTPUT']) {
+    for (const envSuffix of ['GRAPHQLAPIKEYOUTPUT', 'GRAPHQLAPIENDPOINTOUTPUT', 'GRAPHQLAPIIDOUTPUT', 'TABLE_ARN', 'TABLE_NAME']) {
       for (const variable of Object.keys(configuration.Environment?.Variables ?? {})) {
         if (variable.startsWith('API_') && variable.endsWith(envSuffix)) {
           filteredEnvVars[variable] = configuration.Environment?.Variables?.[variable] ?? '';
@@ -123,6 +124,12 @@ export const getFunctionDefinition = (
     // Analyze CFN template for API permissions
     if (funcDef.resourceName) {
       funcDef.apiPermissions = analyzeApiPermissionsFromCfn(funcDef.resourceName);
+
+      // Analyze CFN template for data model table access
+      const dataModelAccess = DataModelAccessParser.extractFunctionDataModelAccess([funcDef.resourceName]);
+      if (dataModelAccess.length > 0) {
+        funcDef.dataModelAccess = dataModelAccess;
+      }
     }
 
     funcDefList.push(funcDef);

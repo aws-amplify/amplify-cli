@@ -55,6 +55,32 @@ describe('generateLambdaEnvVars', () => {
     );
   });
 
+  it('generates API table ARN escape hatch with PascalCase conversion', () => {
+    const envVars = { API_DISCUSSIONS_COMMENTTABLE_ARN: 'arn:aws:dynamodb:us-east-1:123:table/CommentTable' };
+    const result = generateLambdaEnvVars('myFunction', envVars);
+
+    const code = printer.printNode(ts.EmitHint.Unspecified, result[0], ts.createSourceFile('', '', ts.ScriptTarget.Latest));
+    expect(code).toBe(
+      'backend.myFunction.addEnvironment("API_DISCUSSIONS_COMMENTTABLE_ARN", backend.data.resources.tables["Comment"].tableArn);',
+    );
+  });
+
+  it('generates API table NAME escape hatch with PascalCase conversion', () => {
+    const envVars = { API_BLOG_POSTTABLE_NAME: 'PostTable' };
+    const result = generateLambdaEnvVars('myFunction', envVars);
+
+    const code = printer.printNode(ts.EmitHint.Unspecified, result[0], ts.createSourceFile('', '', ts.ScriptTarget.Latest));
+    expect(code).toBe('backend.myFunction.addEnvironment("API_BLOG_POSTTABLE_NAME", backend.data.resources.tables["Post"].tableName);');
+  });
+
+  it('generates storage table stream ARN with non-null assertion', () => {
+    const envVars = { STORAGE_TODOTABLE_STREAMARN: 'arn:aws:dynamodb:us-east-1:123:table/todo/stream' };
+    const result = generateLambdaEnvVars('myFunction', envVars);
+
+    const code = printer.printNode(ts.EmitHint.Unspecified, result[0], ts.createSourceFile('', '', ts.ScriptTarget.Latest));
+    expect(code).toBe('backend.myFunction.addEnvironment("STORAGE_TODOTABLE_STREAMARN", todo.tableStreamArn!);');
+  });
+
   it('ignores non-matching environment variables', () => {
     const envVars = { CUSTOM_VAR: 'value', REGION: 'us-east-1' };
     const result = generateLambdaEnvVars('myFunction', envVars);
@@ -75,6 +101,31 @@ describe('generateLambdaEnvVars', () => {
       .map((stmt) => printer.printNode(ts.EmitHint.Unspecified, stmt, ts.createSourceFile('', '', ts.ScriptTarget.Latest)))
       .join('\n');
     expect(code).toMatchSnapshot();
+  });
+
+  describe('edge cases', () => {
+    it('handles empty environment variables', () => {
+      const result = generateLambdaEnvVars('myFunction', {});
+      expect(result).toHaveLength(0);
+    });
+
+    it('handles mixed case in API table names', () => {
+      const envVars = { API_MYAPP_USERTABLE_ARN: 'arn:aws:dynamodb:us-east-1:123:table/UserTable' };
+      const result = generateLambdaEnvVars('myFunction', envVars);
+
+      const code = printer.printNode(ts.EmitHint.Unspecified, result[0], ts.createSourceFile('', '', ts.ScriptTarget.Latest));
+      expect(code).toBe('backend.myFunction.addEnvironment("API_MYAPP_USERTABLE_ARN", backend.data.resources.tables["User"].tableArn);');
+    });
+
+    it('handles function names with numbers and underscores', () => {
+      const envVars = { FUNCTION_MYAPP123_HANDLER_NAME: 'myapp123-handler-dev' };
+      const result = generateLambdaEnvVars('myFunction', envVars);
+
+      const code = printer.printNode(ts.EmitHint.Unspecified, result[0], ts.createSourceFile('', '', ts.ScriptTarget.Latest));
+      expect(code).toBe(
+        'backend.myFunction.addEnvironment("FUNCTION_MYAPP123_HANDLER_NAME", backend.myapp123_handler.resources.lambda.functionName);',
+      );
+    });
   });
 
   describe('snapshots', () => {

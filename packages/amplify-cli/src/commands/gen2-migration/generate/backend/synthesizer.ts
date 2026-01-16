@@ -19,6 +19,7 @@ import { newLineIdentifier } from '../ts_factory_utils';
 import type { AdditionalAuthProvider } from '../generators/data';
 import { RestApiDefinition } from '../codegen-head/data_definition_fetcher';
 import { generateLambdaEnvVars } from '../generators/functions/lambda_env_generator';
+import { DataModelTableAccess } from '../codegen-head/data_model_access_parser';
 
 const factory = ts.factory;
 export interface BackendRenderParameters {
@@ -55,6 +56,7 @@ export interface BackendRenderParameters {
     functionsWithApiAccess?: Map<string, { hasQuery: boolean; hasMutation: boolean; hasSubscription: boolean }>;
     /** Environment variables from Gen1 Lambda functions for generating escape hatches */
     functionEnvironments?: Map<string, Record<string, string>>;
+    functionsWithDataModelAccess?: Map<string, DataModelTableAccess[]>;
   };
   analytics?: {
     importFrom: string;
@@ -2069,7 +2071,25 @@ export class BackendSynthesizer {
     // DynamoDB function access using table.grant()
     // Generates CDK code: tableName.grant(lambda, "dynamodb:GetItem", "dynamodb:PutItem")
     if (renderArgs.storage?.dynamoFunctionAccess && renderArgs.storage.dynamoFunctionAccess.length > 0) {
+      // Deduplicate function access entries to prevent duplicate grant statements
+      // This can occur because Gen1 CloudFormation templates separate table and GSI permissions
+      // The parser creates separate FunctionDynamoDBAccess entries for each resource, even though they reference the same logical table
+      const uniqueFunctionAccess = new Map<string, FunctionDynamoDBAccess>();
       renderArgs.storage.dynamoFunctionAccess.forEach((functionAccess) => {
+        const key = `${functionAccess.functionName}-${functionAccess.tableResource}`;
+        if (!uniqueFunctionAccess.has(key)) {
+          uniqueFunctionAccess.set(key, functionAccess);
+        } else {
+          // Merge actions if same function-table combination exists
+          const existing = uniqueFunctionAccess.get(key);
+          if (existing) {
+            const mergedActions = [...new Set([...existing.actions, ...functionAccess.actions])];
+            uniqueFunctionAccess.set(key, { ...existing, actions: mergedActions });
+          }
+        }
+      });
+
+      uniqueFunctionAccess.forEach((functionAccess) => {
         // Find the corresponding table variable name from dynamoTables
         const matchingTable = renderArgs.storage?.dynamoTables?.find((table) => {
           const baseTableName = table.tableName.split('-')[0];
@@ -2103,6 +2123,56 @@ export class BackendSynthesizer {
 
           nodes.push(grantStatement);
         }
+      });
+    }
+
+    // Grant function access to data model tables from our parser
+    if (renderArgs.function?.functionsWithDataModelAccess && renderArgs.data) {
+      // Deduplicate data model access entries to prevent duplicate grant statements
+      // This can occur when the DataModelAccessParser finds the same table referenced multiple times
+      // in a function's CloudFormation template (e.g., separate permissions for table and GSI operations)
+      const uniqueDataModelAccess = new Map<string, DataModelTableAccess>();
+
+      for (const [functionName, tableAccesses] of renderArgs.function.functionsWithDataModelAccess) {
+        for (const tableAccess of tableAccesses) {
+          const key = `${functionName}-${tableAccess.tableName}`;
+          if (!uniqueDataModelAccess.has(key)) {
+            uniqueDataModelAccess.set(key, tableAccess);
+          } else {
+            // Merge actions if same function-table combination exists
+            const existing = uniqueDataModelAccess.get(key);
+            if (existing) {
+              const mergedActions = [...new Set([...existing.actions, ...tableAccess.actions])];
+              uniqueDataModelAccess.set(key, { ...existing, actions: mergedActions });
+            }
+          }
+        }
+      }
+
+      uniqueDataModelAccess.forEach((tableAccess) => {
+        const tableName = tableAccess.tableName.replace('Table', ''); // Remove 'Table' suffix
+
+        nodes.push(
+          factory.createExpressionStatement(
+            factory.createCallExpression(
+              factory.createPropertyAccessExpression(
+                factory.createElementAccessExpression(
+                  factory.createIdentifier('backend.data.resources.tables'),
+                  factory.createStringLiteral(tableName),
+                ),
+                factory.createIdentifier('grant'),
+              ),
+              undefined,
+              [
+                factory.createPropertyAccessExpression(
+                  factory.createIdentifier(`backend.${tableAccess.functionName}.resources`),
+                  factory.createIdentifier('lambda'),
+                ),
+                ...tableAccess.actions.map((action) => factory.createStringLiteral(action)),
+              ],
+            ),
+          ),
+        );
       });
     }
 
