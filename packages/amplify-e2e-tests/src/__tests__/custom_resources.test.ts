@@ -18,6 +18,7 @@ import { v4 as uuid } from 'uuid';
 
 describe('adding custom resources test', () => {
   let projRoot: string;
+
   beforeEach(async () => {
     projRoot = await createNewProjectDir('custom-resources');
   });
@@ -129,5 +130,24 @@ describe('adding custom resources test', () => {
         Description: `Input parameter describing snsTopicArn attribute for custom/${cdkResourceName} resource`,
       },
     });
+  });
+
+  it('should use default cdk env var if set', async () => {
+    const cdkResourceName = `custom${uuid().split('-')[0]}`;
+    const destCustomResourceFilePath = path.join(projRoot, 'amplify', 'backend', 'custom', cdkResourceName, 'cdk-stack.ts');
+    const srcCustomResourceFilePath = path.join(__dirname, '..', '..', 'custom-resources', 'barebone-cdk-stack.ts');
+
+    await initJSProjectWithProfile(projRoot, {});
+    await addCDKCustomResource(projRoot, { name: cdkResourceName });
+
+    fs.copyFileSync(srcCustomResourceFilePath, destCustomResourceFilePath);
+
+    // no aws account & region set, should throw error,
+    await expect(amplifyPushAuth(projRoot)).rejects.toThrowError();
+
+    // should pickup to default cdk env vars and build cfn stack.
+    process.env.CDK_DEFAULT_ACCOUNT = 'some_id';
+    process.env.CDK_DEFAULT_REGION = process.env.CLI_REGION;
+    await amplifyPushAuth(projRoot);
   });
 });
