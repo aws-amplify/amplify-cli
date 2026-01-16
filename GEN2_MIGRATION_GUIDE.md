@@ -198,7 +198,7 @@ provide it with the appropriate environment variables and give it the necessary 
 
 > Where `myfunction` and `mybucket` are the function and s3 storage friendly names respectively.
 
-**Edit in `./amplify/backend/storage/resource.ts`:**
+**Edit in `./amplify/storage/resource.ts`:**
 
 Add this to every configured prefix:
 
@@ -254,7 +254,7 @@ _Hosting → Secrets → Manage Secrets → Add new_
 ![](./migration-guide-images/add-secret.png)
 
 Next, pass this secret in the function definition. For example, for a secret called `MY_SECRET`, 
-**Edit in `./amplify/backend/<function-name>/resource.ts:**:
+**Edit in `./amplify/<function-name>/resource.ts:**:
 
 ```diff
 - import { defineFunction } from "@aws-amplify/backend";
@@ -752,7 +752,7 @@ loose IAM access to the API (but **Gen2** will work correctly).
 
 To workaround this issue, you must pre allow the Gen2 `AuthRole` by [configuring a custom admin role](https://docs.amplify.aws/gen1/javascript/build-a-backend/graphqlapi/customize-authorization-rules/#use-iam-authorization-within-the-appsync-console) on the Gen1 API.
 
-`+ ./amplify/backend/api/<api-name>/custom-roles.json`
+`+ ./amplify/api/<api-name>/custom-roles.json`
 
 ```json
 {
