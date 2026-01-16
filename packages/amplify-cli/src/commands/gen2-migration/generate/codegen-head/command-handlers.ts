@@ -221,14 +221,31 @@ export const getAuthTriggersConnections = async (
     } else if ('triggers' in authInputs.cognitoConfig && typeof authInputs.cognitoConfig.triggers === 'object') {
       const authTriggers = authInputs.cognitoConfig.triggers;
       return Object.keys(authTriggers).reduce((prev, authTrigger) => {
-        const triggerResourceName = `${resourceName}${authTrigger}`;
-        prev[authTrigger as keyof LambdaConfigType] = getFunctionPath(triggerResourceName);
+        const cognitoAuthTrigger = amplifyGen1InputsTriggerNameToCognitoTriggerName(authTrigger);
+        prev[cognitoAuthTrigger] = getFunctionPath(`${resourceName}${authTrigger}`);
         return prev;
       }, {} as Partial<Record<keyof LambdaConfigType, string>>);
     }
   }
   return {};
 };
+
+/**
+ *
+ * @param triggerName The trigger name as registered in cli-inputs.json
+ * @returns The corresponding trigger name as Cognito refers to it.
+ */
+function amplifyGen1InputsTriggerNameToCognitoTriggerName(triggerName: string): keyof LambdaConfigType {
+  switch (triggerName) {
+    case 'PreSignup':
+      // notice the casing change
+      return 'PreSignUp';
+    default:
+      // we don't know yet if this mapping needs to happen for other triggers
+      // as we didn't test them yet. add here if we identify a new case.
+      return triggerName as keyof LambdaConfigType;
+  }
+}
 
 const unsupportedCategories = async (
   ccbFetcher: BackendDownloader,
@@ -592,7 +609,11 @@ export async function prepare(logger: Logger, appId: string, envName: string, re
 
   logger.info('Installing dependencies');
 
-  // unclear why but it takes 2 installs to get the lock file in sync
+  // hard reset on the dependencies. its not clear yet why a single `npm install` isn't
+  // enough. empirecally we've seen many cases where such a hard reset resolves strange dependency conflicts.
+  // TODO figure this out.
+  await fs.rm(path.join(cwd, 'package-lock.json'), { recursive: true });
+  await fs.rm(path.join(cwd, 'node_modules'), { recursive: true });
   await execa('npm', ['install']);
   await execa('npm', ['install']);
 }
