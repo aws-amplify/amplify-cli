@@ -322,7 +322,7 @@ And add:
 
 This is required in order for your Gen1 environment to keep functioning correctly after the `refactor` step.
 
-#### Post Generate | Functions with dynamic require
+#### Post Generate | Functions with Dynamic Require
 
 If you have a function that uses a dynamic require statement:
 
