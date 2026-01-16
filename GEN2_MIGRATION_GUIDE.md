@@ -45,7 +45,7 @@ able to adapt them to fit your setup.
 > **Before you begin, determine if your app can be migrated by reviewing:**
 >
 > - [Feature Coverage](#feature-coverage)
-> - [Limitations](#limitations)
+> - [Pre Migration Operations](#pre-migration-operations)
 
 First obtain a fresh and up-to-date local copy of your Amplify Gen1 environment and install the experimental CLI package:
 
@@ -735,7 +735,7 @@ to add the necessary configuration.
 
 ### `amplify override <category>` ❌
 
-## Limitations
+## Pre Migration Operations
 
 ### GraphQL types protected by the `iam` auth provider
 
