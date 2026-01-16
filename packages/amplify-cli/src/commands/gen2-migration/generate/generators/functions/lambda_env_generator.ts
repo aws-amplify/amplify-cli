@@ -26,6 +26,8 @@ const ENV_VAR_PATTERNS = {
  * @param envVars - Environment variables from the Gen1 Lambda function
  * @returns Array of TypeScript statements for escape hatches
  */
+// Current assumptions - Model names are generated in pascal case for codegen currently & resource names in small for env variables
+// Need to extract name from - "Fn::Sub": "${apidiscussionsGraphQLAPIIdOutput}:GetAtt:CommentTable:Name"
 export function generateLambdaEnvVars(functionName: string, envVars: Record<string, string>): ts.ExpressionStatement[] {
   const statements: ts.ExpressionStatement[] = [];
 
