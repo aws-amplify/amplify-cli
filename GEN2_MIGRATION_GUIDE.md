@@ -492,8 +492,8 @@ to add the necessary configuration.
 
 - ➤ **Select the social providers you want to configure for your user pool**
 
-  - ⚠️ `Facebook` (`generate` ✔ `refactor` ✗)
-  - ⚠️ `Google` (`generate` ✔ `refactor` ✗)
+  - ⚠️ `Facebook` (_generate_ ✔ _refactor_ ✗)
+  - ⚠️ `Google` (_generate_ ✔ _refactor_ ✗)
   - ❌ `Login With Amazon`
   - ❌ `Sign in with Apple`
 
@@ -589,7 +589,7 @@ to add the necessary configuration.
     - ❌ `OpenID Connect`
     - ❌ `Lambda`
 
-- ⚠️ **REST** (`generate` ✗ `refactor` ✔)
+- ⚠️ **REST** (_generate_ ✗ _refactor_ ✔)
 
 ## Storage
 
@@ -649,7 +649,7 @@ to add the necessary configuration.
 
         - ➤ **Choose a DynamoDB event source option**
 
-          - ⚠️ `Use API category graphql @model backed DynamoDB table(s) in the current Amplify project` (`generate` ✗ `refactor` ✔)
+          - ⚠️ `Use API category graphql @model backed DynamoDB table(s) in the current Amplify project` (_generate_ ✗ _refactor_ ✔)
           - ❌ `Use storage category DynamoDB table configured in the current Amplify project`
           - ❌ `Provide the ARN of DynamoDB stream directly`
 
@@ -661,39 +661,39 @@ to add the necessary configuration.
 
       - ➤ **api**
 
-        - ⚠️ `Query` (`generate` ✗ `refactor` ✔)
-        - ⚠️ `Mutation` (`generate` ✗ `refactor` ✔)
+        - ⚠️ `Query` (_generate_ ✗ _refactor_ ✔)
+        - ⚠️ `Mutation` (_generate_ ✗ _refactor_ ✔)
         - ❌ `Subscription`
 
       - ➤ **auth**
 
-        - ⚠️ `create` (`generate` ✗ `refactor` ✔)
-        - ⚠️ `read` (`generate` ✗ `refactor` ✔)
-        - ⚠️ `update` (`generate` ✗ `refactor` ✔)
-        - ⚠️ `delete` (`generate` ✗ `refactor` ✔)
+        - ⚠️ `create` (_generate_ ✗ _refactor_ ✔)
+        - ⚠️ `read` (_generate_ ✗ _refactor_ ✔)
+        - ⚠️ `update` (_generate_ ✗ _refactor_ ✔)
+        - ⚠️ `delete` (_generate_ ✗ _refactor_ ✔)
 
       - ❌ function
 
       - ➤ **storage:dynamo**
 
-        - ⚠️ `create` (`generate` ✗ `refactor` ✔)
-        - ⚠️ `read` (`generate` ✗ `refactor` ✔)
-        - ⚠️ `update` (`generate` ✗ `refactor` ✔)
-        - ⚠️ `delete` (`generate` ✗ `refactor` ✔)
+        - ⚠️ `create` (_generate_ ✗ _refactor_ ✔)
+        - ⚠️ `read` (_generate_ ✗ _refactor_ ✔)
+        - ⚠️ `update` (_generate_ ✗ _refactor_ ✔)
+        - ⚠️ `delete` (_generate_ ✗ _refactor_ ✔)
 
       - ➤ **storage:s3**
 
-        - ⚠️ `create` (`generate` ✗ `refactor` ✔)
-        - ⚠️ `read` (`generate` ✗ `refactor` ✔)
-        - ⚠️ `update` (`generate` ✗ `refactor` ✔)
-        - ⚠️ `delete` (`generate` ✗ `refactor` ✔)
+        - ⚠️ `create` (_generate_ ✗ _refactor_ ✔)
+        - ⚠️ `read` (_generate_ ✗ _refactor_ ✔)
+        - ⚠️ `update` (_generate_ ✗ _refactor_ ✔)
+        - ⚠️ `delete` (_generate_ ✗ _refactor_ ✔)
 
       - ❌ function
 
     - ❌ **Do you want to invoke this function on a recurring schedule**
     - ❌ **Do you want to enable Lambda layers for this function**
     - ✅ **Do you want to configure environment variables for this function**
-    - ⚠️ **Do you want to configure secret values this function can access** (`generate` ✗ `refactor` ✔)
+    - ⚠️ **Do you want to configure secret values this function can access** (_generate_ ✗ _refactor_ ✔)
     - ➤ **Choose the package manager that you want to use**
 
       - ✅ `NPM`
