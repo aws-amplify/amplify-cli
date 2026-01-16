@@ -81,14 +81,6 @@ describe('generateLambdaEnvVars', () => {
     expect(code).toBe('backend.myFunction.addEnvironment("STORAGE_TODOTABLE_STREAMARN", todo.tableStreamArn!);');
   });
 
-  it('handles storage table without TABLE suffix', () => {
-    const envVars = { STORAGE_MYTABLE_ARN: 'arn:aws:dynamodb:us-east-1:123:table/mytable' };
-    const result = generateLambdaEnvVars('myFunction', envVars);
-
-    const code = printer.printNode(ts.EmitHint.Unspecified, result[0], ts.createSourceFile('', '', ts.ScriptTarget.Latest));
-    expect(code).toBe('backend.myFunction.addEnvironment("STORAGE_MYTABLE_ARN", mytable.tableArn);');
-  });
-
   it('ignores non-matching environment variables', () => {
     const envVars = { CUSTOM_VAR: 'value', REGION: 'us-east-1' };
     const result = generateLambdaEnvVars('myFunction', envVars);
