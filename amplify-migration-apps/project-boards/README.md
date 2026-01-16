@@ -2,12 +2,12 @@
 
 <img width="625" height="300" src="./images/app.png" />
 
-This is a project board app that supports authentication. Each Project board can hold multiple Todo items, 
-each of which has a title, description, and optionally, images. Todos do not need to be in a Project 
-and can exist unassigned. 
+This is a project board app that supports authentication. Each Project board can hold multiple Todo items,
+each of which has a title, description, and optionally, images. Todos do not need to be in a Project
+and can exist unassigned.
 
 - Unauthenticated users can only view Projects and Todos, and cannot modify or delete them.
-- Authenticated users can create Projects and Todos, and modify/delete their own. They may add 
+- Authenticated users can create Projects and Todos, and modify/delete their own. They may add
 
 Todos to Projects that are not their own, but cannot change the Project settings.
 
@@ -25,7 +25,7 @@ npm install
 
 ```console
 amplify init
-````
+```
 
 ```console
 ⚠️ For new projects, we recommend starting with AWS Amplify Gen 2, our new code-first developer experience. Get started at https://docs.amplify.aws/react/start/quickstart/
@@ -67,7 +67,7 @@ https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html
 
 ## Add Categories
 
-### Auth 
+### Auth
 
 Cognito-based auth using email.
 
@@ -77,7 +77,7 @@ amplify add auth
 
 ```console
  Do you want to use the default authentication and security configuration? Default configuration
- Warning: you will not be able to edit these selections. 
+ Warning: you will not be able to edit these selections.
  How do you want users to be able to sign in? Email
  Do you want to configure advanced settings? No, I am done.
 ```
@@ -88,8 +88,8 @@ GraphQL API with schema containing:
 
 - _Todo_ model.
 - _Project_ model with a `@hasMany` relationship to the _Todo_ model.
-- _getRandomQuote_ query that returns inspirational quotes by invoking a 
-lambda function using the `@function` directive.
+- _getRandomQuote_ query that returns inspirational quotes by invoking a
+  lambda function using the `@function` directive.
 
 ```console
 amplify add api
@@ -104,7 +104,7 @@ amplify add api
 
 ### Storage
 
-S3-based storage for images of the _Todo_ model. Authenticated users can perform all operations, 
+S3-based storage for images of the _Todo_ model. Authenticated users can perform all operations,
 unauthenticated users can only read.
 
 ```console
@@ -191,7 +191,6 @@ Next, accept all the default values and follow the getting started wizard to con
 ![](./images/add-main-branch.png)
 ![](./images/deploying-main-branch.png)
 
-
 Wait for the deployment to finish successfully.
 
 ## Migrating to Gen2
@@ -215,14 +214,14 @@ git checkout -b gen2-main
 npx amplify gen2-migration generate
 ```
 
-**Edit in `./amplify/backend/data/resource.ts`:**
+**Edit in `./amplify/data/resource.ts`:**
 
 ```diff
 - branchName: "main"
 + branchName: "gen2-main"
 ```
 
-**Edit in `./amplify/backend/function/quotegenerator/index.js`:**
+**Edit in `./amplify/function/quotegenerator/index.js`:**
 
 ```diff
 - exports.handler = async (event) => {
@@ -246,7 +245,6 @@ Now connect the `gen2-main` branch to the hosting service:
 
 ![](./images/add-gen2-main-branch.png)
 ![](./images/deploying-gen2-main-branch.png)
-
 
 Wait for the deployment to finish successfully. Next, locate the root stack of the Gen2 branch:
 

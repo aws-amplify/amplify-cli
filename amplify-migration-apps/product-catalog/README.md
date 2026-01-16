@@ -2,7 +2,7 @@
 
 <img width="250" height="300" src="./images/app.png" />
 
-An inventory management application built with Amplify Gen1, featuring role-based authentication, 
+An inventory management application built with Amplify Gen1, featuring role-based authentication,
 GraphQL API, Lambda functions, S3 storage, and DynamoDB.
 
 > [!NOTICE]
@@ -19,7 +19,7 @@ npm install
 
 ```console
 amplify init
-````
+```
 
 ```console
 ⚠️ For new projects, we recommend starting with AWS Amplify Gen 2, our new code-first developer experience. Get started at https://docs.amplify.aws/react/start/quickstart/
@@ -63,7 +63,7 @@ https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html
 
 ### Api
 
-GraphQL API with schema containing 
+GraphQL API with schema containing
 
 - _Comment_ model.
 - _Product_ model with a `@hasMany` relationship to the _Comment_ model.
@@ -87,11 +87,11 @@ API key configuration
 ✔ After how many days from now the API key should expire (1-365): · 7
 Cognito UserPool configuration
 Using service: Cognito, provided by: awscloudformation
- 
- The current configured provider is Amazon Cognito. 
- 
+
+ The current configured provider is Amazon Cognito.
+
  Do you want to use the default authentication and security configuration? Default configuration
- Warning: you will not be able to edit these selections. 
+ Warning: you will not be able to edit these selections.
  How do you want users to be able to sign in? Email
  Do you want to configure advanced settings? No, I am done.
 ✅ Successfully added auth resource productcatalog3766b428 locally
@@ -208,7 +208,7 @@ On the AWS Amplify console, locate the application id.
 
 ![](./images/gen1-app-id.png)
 
-**Edit in `./amplify/backend/api/productcatalog/custom-roles.json`:**
+**Edit in `./amplify/api/productcatalog/custom-roles.json`:**
 
 ```diff
 - "amplify-${appId}"
@@ -279,7 +279,7 @@ git checkout -b gen2-main
 npx amplify gen2-migration generate
 ```
 
-**Edit in `./amplify/backend/data/resource.ts`:**
+**Edit in `./amplify/data/resource.ts`:**
 
 ```diff
 - branchName: "main"
@@ -319,7 +319,7 @@ npx amplify gen2-migration generate
 +     actions: ['appsync:GraphQL'],
 +     resources: [`arn:aws:appsync:${backend.data.stack.region}:${backend.data.stack.account}:apis/${backend.data.apiId}/types/Mutation/*`]
 + }))
-``` 
+```
 
 On the AppSync AWS Console, locate the ID of Gen1 API, it will be named `productcatalog-main`.
 
@@ -335,8 +335,7 @@ On the AppSync AWS Console, locate the ID of Gen1 API, it will be named `product
 + }))
 ```
 
-
-**Edit in `./amplify/backend/function/lowstockproducts/index.js`:**
+**Edit in `./amplify/function/lowstockproducts/index.js`:**
 
 ```diff
 - exports.handler = async (event) => {
@@ -348,7 +347,7 @@ On the AppSync AWS Console, locate the ID of Gen1 API, it will be named `product
 + const secretValue = process.env['PRODUCT_CATALOG_SECRET'];
 ```
 
-**Edit in `./amplify/backend/function/lowstockproducts/resource.ts`:**
+**Edit in `./amplify/function/lowstockproducts/resource.ts`:**
 
 ```diff
 - import { defineFunction } from "@aws-amplify/backend";
@@ -358,10 +357,10 @@ On the AppSync AWS Console, locate the ID of Gen1 API, it will be named `product
 + PRODUCT_CATALOG_SECRET: secret("PRODUCT_CATALOG_SECRET")
 ```
 
-**Edit in `./amplify/backend/storage/S3Trigger<suffix>/index.js`:**
+**Edit in `./amplify/storage/S3Trigger<suffix>/index.js`:**
 
 ```diff
-- exports.handler = async (event) => {
+- exports.handler = async function (event) {
 + export async function handler(event) {
 ```
 
@@ -386,7 +385,6 @@ Now connect the `gen2-main` branch to the hosting service:
 
 ![](./images/add-gen2-main-branch.png)
 ![](./images/deploying-gen2-main-branch.png)
-
 
 Wait for the deployment to finish successfully. Next, locate the root stack of the Gen2 branch:
 
