@@ -322,6 +322,24 @@ And add:
 
 This is required in order for your Gen1 environment to keep functioning correctly after the `refactor` step.
 
+#### Post Generate | Functions with dynamic require
+
+If you have a function that uses a dynamic require statement:
+
+```console
+const modules = moduleNames.map((name) => require(`./${name}`));
+```
+
+You need to change it to use static requires instead:
+
+```diff
+- const modules = moduleNames.map((name) => require(`./${name}`));
++ const modules = [require('./email-filter-allowlist')]
+```
+
+This is required because Gen2 functions are bundled with `esbuild`; a dynamic require like so may cause 
+unnecessary bundling and exceed the lambda memory limit.
+
 #### Post Generate | Models without an `@auth` directive
 
 ```graphql
