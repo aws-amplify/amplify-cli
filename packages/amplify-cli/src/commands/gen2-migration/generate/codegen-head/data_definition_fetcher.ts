@@ -372,7 +372,10 @@ export class DataDefinitionFetcher {
 
     // Extract API configuration and schema if APIs exist
     if ('api' in amplifyMeta && Object.keys(amplifyMeta.api).length > 0) {
-      const restApis = await this.getRestApis(amplifyMeta.api);
+      // the current implementation of rest api generates too much incorrect code
+      // so we skip it for now. we provide manual instructions until we get this sorted out.
+      const restApis = [];
+      // const restApis = await this.getRestApis(amplifyMeta.api);
 
       // Check for GraphQL APIs
       const hasGraphQL = Object.values(amplifyMeta.api).some((api: any) => api.service === 'AppSync');

@@ -1,4 +1,4 @@
-# Amplify Gen1 → Gen2 Migration Guide (Alpha)
+# Amplify Gen1 → Gen2 Migration Guide (Beta)
 
 Following document describes how to migrate your Gen1 environment to a new Gen2 application.
 
@@ -25,7 +25,10 @@ After completing this process you will have 2 functionally equivalent amplify ap
 
 ## Prerequisites 
 
+Following are prerequisites the beta version of the tool relies. Some or all will be removed in the stable version.
+
 - Your frontend code is located within the same repository as your backend application.
+- Your frontend code is an NPM compatible based app.
 - Your Gen1 environment is deployed via the hosting service.
 - You have a `default` AWS profile configured with an `AdministratorAccess` policy.
 
@@ -394,11 +397,11 @@ Wait for the deployment to finish successfully.
 Following provides an overview of the supported (and unsupported) features for migration. Features are organized 
 by the CLI setting that configures them.
 
-**Legend**
-
-- ❌ | Unsupported.
-- ✅ | Fully automated
-- ⚠️ | Partially supported. Includes indication whether it lacks support for `generate` or `refactor`.
+> **Legend**
+>
+> - ❌ | Unsupported.
+> - ✅ | Fully automated
+> - ⚠️ | Partially supported. Includes indication whether it lacks support for `generate` or `refactor`.
 
 - If a feature is not supported for `refactor` you will not be able to fully migrate the app. You can however still generate 
 and deploy it to test whether code generation works properly.
