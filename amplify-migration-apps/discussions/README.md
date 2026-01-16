@@ -18,7 +18,7 @@ npm install
 
 ```console
 amplify init
-````
+```
 
 ```console
 ⚠️ For new projects, we recommend starting with AWS Amplify Gen 2, our new code-first developer experience. Get started at https://docs.amplify.aws/react/start/quickstart/
@@ -116,7 +116,7 @@ amplify add api
 
 ### Storage
 
-DynamoDB table for storing user activity logs with partition key, sort key, 
+DynamoDB table for storing user activity logs with partition key, sort key,
 and global secondary index for querying by activity type.
 
 ```console
@@ -309,23 +309,23 @@ Wait for the deployment to finish successfully.
 
 ### Create A User
 
-Since our AWS accounts are not configured to send SMS messages, we must confirm user creation 
+Since our AWS accounts are not configured to send SMS messages, we must confirm user creation
 directly via the cognito user pool.
 
-First, login to the app itself and click *Sign Up*, fill the form and click *Sign Up* again. Normally you 
+First, login to the app itself and click _Sign Up_, fill the form and click _Sign Up_ again. Normally you
 would get a SMS message with a confirmation code; to bypass that:
 
-1. Go to *AWS Console* → *Cognito* → *User Pools*
+1. Go to _AWS Console_ → _Cognito_ → _User Pools_
 2. Click on your user pool: `discussions<hash>_userpool_<hash>-main`
 3. Click on your user (shows up with the email)
-4. Click *Actions* → *Confirm account*
-5. Go to *User Attributes* → *Edit*.
-6. Check *Mark phone number as verified* and *Mark email address as verified*
-7. Click *Save changes*
+4. Click _Actions_ → _Confirm account_
+5. Go to _User Attributes_ → _Edit_.
+6. Check _Mark phone number as verified_ and _Mark email address as verified_
+7. Click _Save changes_
 
 ![](./images/confirm-user.png)
 
-Then, reload the app and sign in with the details you provided. You can repeat 
+Then, reload the app and sign in with the details you provided. You can repeat
 this process for any number of users.
 
 ## Migrating to Gen2
@@ -353,7 +353,7 @@ git checkout -b gen2-main
 npx amplify gen2-migration generate
 ```
 
-**Edit in `./amplify/backend/data/resource.ts`:**
+**Edit in `./amplify/data/resource.ts`:**
 
 ```diff
 - branchName: "main"
@@ -386,14 +386,14 @@ npx amplify gen2-migration generate
 + }
 ```
 
-**Edit in `./amplify/backend/storage/fetchuseractivity/index.js`:**
+**Edit in `./amplify/storage/fetchuseractivity/index.js`:**
 
 ```diff
 - exports.handler = async (event) => {
 + export async function handler(event) {
 ```
 
-**Edit in `./amplify/backend/storage/recorduseractivity/index.js`:**
+**Edit in `./amplify/storage/recorduseractivity/index.js`:**
 
 ```diff
 - exports.handler = async (event) => {
@@ -417,6 +417,5 @@ Now connect the `gen2-main` branch to the hosting service:
 
 ![](./images/add-gen2-main-branch.png)
 ![](./images/deploying-gen2-main-branch.png)
-
 
 Wait for the deployment to finish successfully.
