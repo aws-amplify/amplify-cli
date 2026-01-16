@@ -363,6 +363,8 @@ export const createGen2Renderer = ({
   const functionNamesAndCategory = new Map<string, string>();
   const functionsWithApiAccess = new Map<string, { hasQuery: boolean; hasMutation: boolean; hasSubscription: boolean }>();
   if (functions && functions.length) {
+    const functionEnvironments = new Map<string, Record<string, string>>();
+
     for (const func of functions) {
       if (func.name) {
         if (!func.runtime?.startsWith('nodejs')) {
@@ -376,6 +378,11 @@ export const createGen2Renderer = ({
         assert(funcCategory);
         functionNamesAndCategory.set(resourceName, funcCategory);
         functionNames.push(resourceName);
+
+        // Store function environment variables for escape hatch generation
+        if (func.filteredEnvironmentVariables && Object.keys(func.filteredEnvironmentVariables).length > 0) {
+          functionEnvironments.set(resourceName, func.filteredEnvironmentVariables);
+        }
 
         // Track functions that have API access with specific permissions
         if (
@@ -405,6 +412,7 @@ export const createGen2Renderer = ({
       importFrom: './function/resource',
       functionNamesAndCategories: functionNamesAndCategory,
       functionsWithApiAccess: functionsWithApiAccess.size > 0 ? functionsWithApiAccess : undefined,
+      functionEnvironments: functionEnvironments,
     };
   }
 

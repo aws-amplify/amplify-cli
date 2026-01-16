@@ -2,7 +2,7 @@
 
 ![](./images/app.png)
 
-A personal media management application featuring social authentication, GraphQL API, Lambda functions, S3 storage, and DynamoDB. 
+A personal media management application featuring social authentication, GraphQL API, Lambda functions, S3 storage, and DynamoDB.
 Users sign up with email/phone or social login (Facebook/Google)
 
 > [!NOTICE]
@@ -19,7 +19,7 @@ npm install
 
 ```console
 amplify init
-````
+```
 
 ```console
 ⚠️ For new projects, we recommend starting with AWS Amplify Gen 2, our new code-first developer experience. Get started at https://docs.amplify.aws/react/start/quickstart/
@@ -71,7 +71,7 @@ amplify add auth
 
 ```console
 Do you want to use the default authentication and security configuration? Default configuration with Social Provider (Federation)
-Warning: you will not be able to edit these selections. 
+Warning: you will not be able to edit these selections.
 How do you want users to be able to sign in? Email or Phone Number
 Do you want to configure advanced settings? No, I am done.
 What domain name prefix do you want to use? (accept default value)
@@ -80,21 +80,21 @@ Enter your redirect signin URI: https://main.<appId>.amplifyapp.com/ (replace <a
 Enter your redirect signout URI: https://main.<appId>.amplifyapp.com/ (replace <appId> with the actual value)
 ? Do you want to add another redirect signout URI No
 Select the social providers you want to configure for your user pool: Facebook, Google
-  
-You've opted to allow users to authenticate via Facebook.  If you haven't already, you'll need to go to https://developers.facebook.com and create an App ID. 
- 
+
+You've opted to allow users to authenticate via Facebook.  If you haven't already, you'll need to go to https://developers.facebook.com and create an App ID.
+
 Enter your Facebook App ID for your OAuth flow:  (secret)
 Enter your Facebook App Secret for your OAuth flow:  (secret)
-  
-You've opted to allow users to authenticate via Google.  If you haven't already, you'll need to go to https://developers.google.com/identity and create an App ID. 
- 
+
+You've opted to allow users to authenticate via Google.  If you haven't already, you'll need to go to https://developers.google.com/identity and create an App ID.
+
 Enter your Google Web Client ID for your OAuth flow:  (secret)
 Enter your Google Web Client Secret for your OAuth flow:  (secret)
 ```
 
 > [!NOTE]
-> Publishing SMS messages to US numbers requires AWS account configuration not covered by this guide. If you happen to 
-> own a foreign phone number you can configure it directly via the [SNS text messaging console](https://console.aws.amazon.com/sns/v3/home#/mobile/text-messaging). 
+> Publishing SMS messages to US numbers requires AWS account configuration not covered by this guide. If you happen to
+> own a foreign phone number you can configure it directly via the [SNS text messaging console](https://console.aws.amazon.com/sns/v3/home#/mobile/text-messaging).
 > Otherwise use email to sign up for the deployed app.
 
 ```console
@@ -323,37 +323,37 @@ Next, accept all default values and follow the getting started wizard to connect
 ![](./images/add-main-branch.png)
 ![](./images/deploying-main-branch.png)
 
-Wait for the deployment to finish successfully. Now you need to setup social provider identities for the Cognito user pool. 
+Wait for the deployment to finish successfully. Now you need to setup social provider identities for the Cognito user pool.
 Grab the App ID from the Amplify Console and the Cognito domain prefix from the Cognito Console.
 
 ![](./images/cognito-domain-prefix.png)
 
 **Facebook**
 
-1. Follow the [instructions](https://docs.amplify.aws/gen1/javascript/build-a-backend/auth/add-social-provider/#set-up-your-social-auth-provider) 
-in the Facebook Login_ tab. 
+1. Follow the [instructions](https://docs.amplify.aws/gen1/javascript/build-a-backend/auth/add-social-provider/#set-up-your-social-auth-provider)
+   in the Facebook Login\_ tab.
 
    - Set application name to `amplify-media-vault-gen1`.
    - Note the `App ID` and `App Secret` values, they will be needed later on.
 
-2. In [facebook dev console](https://developers.facebook.com/apps/), locate your app and navigate to _App Settings_ → _Basic_  → _App domains_.
+2. In [facebook dev console](https://developers.facebook.com/apps/), locate your app and navigate to _App Settings_ → _Basic_ → _App domains_.
 
-    - `https://main.<appId>.amplifyapp.com`
-    - `https://<cognito-prefix>.auth.us-east-1.amazoncognito.com/`
+   - `https://main.<appId>.amplifyapp.com`
+   - `https://<cognito-prefix>.auth.us-east-1.amazoncognito.com/`
 
-3. In [facebook dev console](https://developers.facebook.com/apps/), locate your app and navigate to _Use Cases_ → _Authenticate and request data from users with Facebook Login → Settings → _Valid OAuth Redirect URIs_.
+3. In [facebook dev console](https://developers.facebook.com/apps/), locate your app and navigate to _Use Cases_ → _Authenticate and request data from users with Facebook Login → Settings → \_Valid OAuth Redirect URIs_.
 
-    - `https://main.<appId>.amplifyapp.com/oauth2/idpresponse/`
-    - `https://<cognito-prefix>.auth.us-east-1.amazoncognito.com/oauth2/idpresponse/`
+   - `https://main.<appId>.amplifyapp.com/oauth2/idpresponse/`
+   - `https://<cognito-prefix>.auth.us-east-1.amazoncognito.com/oauth2/idpresponse/`
 
-4. In [facebook dev console](https://developers.facebook.com/apps/), locate your app and navigate to _Use Cases_ → _Authenticate and request data from users with Facebook Login → Permissions and features → _email_ → _Add_.
+4. In [facebook dev console](https://developers.facebook.com/apps/), locate your app and navigate to _Use Cases_ → _Authenticate and request data from users with Facebook Login → Permissions and features → \_email_ → _Add_.
 
-    ![](./images/facebook-email-scope.png)
+   ![](./images/facebook-email-scope.png)
 
 **Google**
 
-1. Follow the [instructions](https://docs.amplify.aws/gen1/javascript/build-a-backend/auth/add-social-provider/#set-up-your-social-auth-provider) 
-in the _Google Sign-In_ tab. 
+1. Follow the [instructions](https://docs.amplify.aws/gen1/javascript/build-a-backend/auth/add-social-provider/#set-up-your-social-auth-provider)
+   in the _Google Sign-In_ tab.
 
    - Set application name to `amplify-media-vault-gen1`.
    - Set client name to `GoogleWebClient1`.
@@ -361,13 +361,13 @@ in the _Google Sign-In_ tab.
 
 2. Navigate to _Clients_ → _GoogleWebClient1_ → _Authorized JavaScript origins_.
 
-    - `https://main.<appId>.amplifyapp.com`
-    - `https://<cognito-prefix>.auth.us-east-1.amazoncognito.com/`
+   - `https://main.<appId>.amplifyapp.com`
+   - `https://<cognito-prefix>.auth.us-east-1.amazoncognito.com/`
 
 3. Navigate to _Clients_ → _GoogleWebClient1_ → _Authorized redirect URIs_.
 
-    - `https://main.<appId>.amplifyapp.com/oauth2/idpresponse/`
-    - `https://<cognito-prefix>.auth.us-east-1.amazoncognito.com/oauth2/idpresponse/`
+   - `https://main.<appId>.amplifyapp.com/oauth2/idpresponse/`
+   - `https://<cognito-prefix>.auth.us-east-1.amazoncognito.com/oauth2/idpresponse/`
 
 ## Migrating to Gen2
 
@@ -394,7 +394,7 @@ git checkout -b gen2-main
 npx amplify gen2-migration generate
 ```
 
-**Edit in `./amplify/backend/data/resource.ts`:**
+**Edit in `./amplify/data/resource.ts`:**
 
 ```diff
 - branchName: "main"
@@ -494,21 +494,21 @@ Add this to every configured prefix:
 + backend.removeuserfromgroup.addEnvironment('AUTH_MEDIAVAULT_USERPOOLID', backend.auth.resources.userPool.userPoolId);
 ```
 
-**Edit in `./amplify/backend/function/addusertogroup/index.js`:**
+**Edit in `./amplify/function/addusertogroup/index.js`:**
 
 ```diff
 - exports.handler = async (event) => {
 + export async function handler(event) {
 ```
 
-**Edit in `./amplify/backend/function/removeuserfromgroup/index.js`:**
+**Edit in `./amplify/function/removeuserfromgroup/index.js`:**
 
 ```diff
 - exports.handler = async (event) => {
 + export async function handler(event) {
 ```
 
-**Edit in `./amplify/backend/storage/thumbnailgen/index.js`:**
+**Edit in `./amplify/storage/thumbnailgen/index.js`:**
 
 ```diff
 - exports.handler = async (event) => {

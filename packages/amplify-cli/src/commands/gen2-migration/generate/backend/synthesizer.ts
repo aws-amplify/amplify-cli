@@ -18,6 +18,7 @@ import assert from 'assert';
 import { newLineIdentifier } from '../ts_factory_utils';
 import type { AdditionalAuthProvider } from '../generators/data';
 import { RestApiDefinition } from '../codegen-head/data_definition_fetcher';
+import { generateLambdaEnvVars } from '../generators/functions/lambda_env_generator';
 
 const factory = ts.factory;
 export interface BackendRenderParameters {
@@ -52,6 +53,8 @@ export interface BackendRenderParameters {
     importFrom: string;
     functionNamesAndCategories: Map<string, string>;
     functionsWithApiAccess?: Map<string, { hasQuery: boolean; hasMutation: boolean; hasSubscription: boolean }>;
+    /** Environment variables from Gen1 Lambda functions for generating escape hatches */
+    functionEnvironments?: Map<string, Record<string, string>>;
   };
   analytics?: {
     importFrom: string;
@@ -998,6 +1001,16 @@ export class BackendSynthesizer {
           nodes.push(tableCreation);
         }
 
+        // Add comment for tableName to use post refactor (similar to S3 bucket)
+        const tableNameComment1 = factory.createNotEmittedStatement(factory.createStringLiteral(''));
+        ts.addSyntheticLeadingComment(
+          tableNameComment1,
+          ts.SyntaxKind.SingleLineCommentTrivia,
+          ` Add this property to the Table above post refactor: tableName: '${table.tableName}'`,
+          true,
+        );
+        nodes.push(tableNameComment1);
+
         // Add GSIs
         table.gsis?.forEach((gsi) => {
           const gsiProps: ts.PropertyAssignment[] = [
@@ -1431,6 +1444,13 @@ export class BackendSynthesizer {
             ),
           ),
         );
+
+        // Generate environment variable escape hatches
+        if (renderArgs.function.functionEnvironments?.has(functionName)) {
+          const envVars = renderArgs.function.functionEnvironments.get(functionName)!;
+          const escapeHatches = generateLambdaEnvVars(functionName, envVars);
+          nodes.push(...escapeHatches);
+        }
       }
     }
 
