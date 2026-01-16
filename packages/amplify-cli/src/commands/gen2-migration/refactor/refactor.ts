@@ -270,37 +270,41 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
       stackId: string;
     }> = [];
 
-    for (const [category, [sourceCategoryStackId]] of templateGenerator.categoryStackMap.entries()) {
-      try {
-        const sourceTemplate = await templateGenerator.getStackTemplate(sourceCategoryStackId);
-        if (!sourceTemplate?.Resources) continue;
+    // categoryStackMap now stores arrays of stack pairs per category
+    for (const [category, stackPairs] of templateGenerator.categoryStackMap.entries()) {
+      // Process each stack pair for this category
+      for (const [sourceCategoryStackId] of stackPairs) {
+        try {
+          const sourceTemplate = await templateGenerator.getStackTemplate(sourceCategoryStackId);
+          if (!sourceTemplate?.Resources) continue;
 
-        const resourcesToMigrate = templateGenerator.getResourcesToMigrate(sourceTemplate, category);
+          const resourcesToMigrate = templateGenerator.getResourcesToMigrate(sourceTemplate, category);
 
-        if (resourcesToMigrate.length === 0) continue;
+          if (resourcesToMigrate.length === 0) continue;
 
-        // Get resource types
-        const resourceTypes = [
-          ...new Set(resourcesToMigrate.map((logicalId) => sourceTemplate.Resources[logicalId]?.Type).filter(Boolean)),
-        ];
+          // Get resource types
+          const resourceTypes = [
+            ...new Set(resourcesToMigrate.map((logicalId) => sourceTemplate.Resources[logicalId]?.Type).filter(Boolean)),
+          ];
 
-        // Check for OAuth (auth category only)
-        let hasOAuth = false;
-        if (category === 'auth') {
-          const stackInfo = await templateGenerator.cfnClient.send(new DescribeStacksCommand({ StackName: sourceCategoryStackId }));
-          const parameters = stackInfo.Stacks?.[0]?.Parameters || [];
-          hasOAuth = parameters.some((param) => param.ParameterKey === 'hostedUIProviderMeta');
+          // Check for OAuth (auth category only)
+          let hasOAuth = false;
+          if (category === 'auth') {
+            const stackInfo = await templateGenerator.cfnClient.send(new DescribeStacksCommand({ StackName: sourceCategoryStackId }));
+            const parameters = stackInfo.Stacks?.[0]?.Parameters || [];
+            hasOAuth = parameters.some((param) => param.ParameterKey === 'hostedUIProviderMeta');
+          }
+
+          assessments.push({
+            category,
+            resourceCount: resourcesToMigrate.length,
+            resourceTypes,
+            hasOAuth,
+            stackId: sourceCategoryStackId,
+          });
+        } catch (error) {
+          this.logger.debug(`Failed to assess ${category} category: ${error instanceof Error ? error.message : 'Unknown error'}`);
         }
-
-        assessments.push({
-          category,
-          resourceCount: resourcesToMigrate.length,
-          resourceTypes,
-          hasOAuth,
-          stackId: sourceCategoryStackId,
-        });
-      } catch (error) {
-        this.logger.debug(`Failed to assess ${category} category: ${error instanceof Error ? error.message : 'Unknown error'}`);
       }
     }
 

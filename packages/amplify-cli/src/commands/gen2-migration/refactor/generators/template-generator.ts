@@ -70,8 +70,14 @@ const GEN1_AUTH_STACK_TYPE_DESCRIPTION = 'auth-Cognito';
 const NO_RESOURCES_TO_MOVE_ERROR = 'No resources to move';
 const NO_RESOURCES_TO_REMOVE_ERROR = 'No resources to remove';
 
+/**
+ * A stack pair represents a source (Gen1) and destination (Gen2) stack for migration.
+ */
+type StackPair = [sourceStackId: string, destinationStackId: string];
+
 class TemplateGenerator {
-  private _categoryStackMap: Map<CATEGORY, [string, string]>;
+  // Map from category to array of stack pairs (supports multiple stacks per category)
+  private _categoryStackMap: Map<CATEGORY, StackPair[]>;
   private readonly categoryTemplateGenerators: [CATEGORY, string, string, CategoryTemplateGenerator<CFN_CATEGORY_TYPE>][];
   private readonly _cfnClient: CloudFormationClient;
   private readonly categoryGeneratorConfig = {
@@ -98,7 +104,7 @@ class TemplateGenerator {
     private readonly logger: Logger,
     private readonly region: string,
   ) {
-    this._categoryStackMap = new Map<CATEGORY, [string, string]>();
+    this._categoryStackMap = new Map<CATEGORY, StackPair[]>();
     this.categoryTemplateGenerators = [];
     this._cfnClient = cfnClient;
   }
@@ -108,7 +114,7 @@ class TemplateGenerator {
     return this._categoryStackMap;
   }
 
-  private set categoryStackMap(value: Map<CATEGORY, [string, string]>) {
+  private set categoryStackMap(value: Map<CATEGORY, StackPair[]>) {
     this._categoryStackMap = value;
   }
 
@@ -155,10 +161,10 @@ class TemplateGenerator {
     await fs.mkdir(TEMPLATES_DIR, { recursive: true });
 
     // Filter categoryStackMap to only include selected categories
-    const filteredCategoryStackMap = new Map<CATEGORY, [string, string]>();
-    for (const [category, stacks] of this._categoryStackMap.entries()) {
+    const filteredCategoryStackMap = new Map<CATEGORY, StackPair[]>();
+    for (const [category, stackPairs] of this._categoryStackMap.entries()) {
       if (selectedCategories.includes(category)) {
-        filteredCategoryStackMap.set(category, stacks);
+        filteredCategoryStackMap.set(category, stackPairs);
       }
     }
 
@@ -182,7 +188,7 @@ class TemplateGenerator {
     await this.parseCategoryStacks();
     if (customResourceMap) {
       for (const { Source, Destination } of customResourceMap) {
-        this.updateCategoryStackMap(Source.LogicalResourceId, Source.StackName, Destination.StackName, false, false);
+        this.addStackPairToCategory(Source.LogicalResourceId as CATEGORY, Source.StackName, Destination.StackName);
       }
     }
     return await this.generateCategoryTemplates(false, customResourceMap);
@@ -198,15 +204,12 @@ class TemplateGenerator {
    *
    * 1. Queries both Gen1 (source) and Gen2 (destination) root stacks for their nested stacks
    * 2. Matches nested stacks by category (e.g., Gen1's "authXYZ" → Gen2's "authABC")
-   * 3. Populates _categoryStackMap with: category → [sourceStackId, destinationStackId]
-   *
+   * 3. Populates _categoryStackMap with: category → array of [sourceStackId, destinationStackId] pairs
    *
    * Special handling for auth: Gen1 may have separate stacks for UserPool vs UserPoolGroups,
    * while Gen2 combines them into one stack. The code detects this via stack description metadata.
    *
    * @param isRevert - If true, we're moving resources FROM Gen2 back TO Gen1 (reverse of migration)
-   * TODO: isRevert function is untested. We may want to remove this as an input parameter and instead
-   * move revert to a new function.
    */
   private async parseCategoryStacks(isRevert = false): Promise<void> {
     const sourceStackResourcesResponse = await this.cfnClient.send(
@@ -233,7 +236,7 @@ class TemplateGenerator {
 
     for (const { LogicalResourceId: sourceLogicalResourceId, PhysicalResourceId: sourcePhysicalResourceId } of sourceCategoryStacks) {
       // Check if this stack's logical ID starts with a known category name (e.g., "authXYZ123", "storageDEF456")
-      const category = CATEGORIES.find((category) => sourceLogicalResourceId?.startsWith(category));
+      const category = CATEGORIES.find((cat) => sourceLogicalResourceId?.startsWith(cat));
       if (!category) continue;
 
       assert(sourcePhysicalResourceId);
@@ -241,6 +244,8 @@ class TemplateGenerator {
       let userPoolGroupDestinationPhysicalResourceId: string | undefined;
 
       // Find the corresponding category stack in the destination by matching category prefix
+      // For storage: Gen1 has separate stacks per resource type (S3, DynamoDB), but Gen2 combines them
+      // into a single stack. All Gen1 storage stacks map to the same Gen2 storage stack.
       const correspondingCategoryStackInDestination = destinationCategoryStacks.find(
         ({ LogicalResourceId: destinationLogicalResourceId }) => destinationLogicalResourceId?.startsWith(category),
       );
@@ -292,6 +297,16 @@ class TemplateGenerator {
   }
 
   /**
+   * Adds a stack pair to a category in the map. Creates the array if it doesn't exist.
+   */
+  private addStackPairToCategory(category: CATEGORY, sourceStackId: string, destinationStackId: string): void {
+    if (!this._categoryStackMap.has(category)) {
+      this._categoryStackMap.set(category, []);
+    }
+    this._categoryStackMap.get(category)!.push([sourceStackId, destinationStackId]);
+  }
+
+  /**
    * Stores a category mapping in _categoryStackMap.
    *
    * Handles the complexity of auth category where Gen1 has separate stacks for
@@ -305,7 +320,7 @@ class TemplateGenerator {
    * @param userPoolGroupDestinationPhysicalResourceId - For revert: the separate UserPoolGroups stack in Gen1
    */
   private updateCategoryStackMap(
-    category: CATEGORY | string,
+    category: CATEGORY,
     sourcePhysicalResourceId: string,
     destinationPhysicalResourceId: string,
     isUserPoolGroupStack: boolean,
@@ -313,10 +328,8 @@ class TemplateGenerator {
     userPoolGroupDestinationPhysicalResourceId?: string,
   ): void {
     // For non-UserPoolGroup stacks, or during revert (where we need both mappings), store the main category mapping
-    // Example: 'auth' → [gen1AuthStackId, gen2AuthStackId]
-    //          'storage' → [gen1StorageStackId, gen2StorageStackId]
     if (!isUserPoolGroupStack || isRevert) {
-      this.categoryStackMap.set(category, [sourcePhysicalResourceId, destinationPhysicalResourceId]);
+      this.addStackPairToCategory(category, sourcePhysicalResourceId, destinationPhysicalResourceId);
     }
 
     // For UserPoolGroup stacks, store a separate mapping under 'auth-user-pool-group'
@@ -327,7 +340,7 @@ class TemplateGenerator {
       const destinationId =
         isRevert && userPoolGroupDestinationPhysicalResourceId ? userPoolGroupDestinationPhysicalResourceId : destinationPhysicalResourceId;
 
-      this.categoryStackMap.set('auth-user-pool-group', [sourcePhysicalResourceId, destinationId]);
+      this.addStackPairToCategory('auth-user-pool-group', sourcePhysicalResourceId, destinationId);
     }
   }
 
@@ -381,12 +394,12 @@ class TemplateGenerator {
     );
   }
 
-  private getStackCategoryName(category: string) {
+  private getStackCategoryName(category: CATEGORY) {
     return !this.isCustomResource(category) ? category : 'custom';
   }
 
   private async processGen1Stack(
-    category: string,
+    category: CATEGORY,
     categoryTemplateGenerator: CategoryTemplateGenerator<CFN_CATEGORY_TYPE>,
     sourceCategoryStackId: string,
   ): Promise<[CFNTemplate, Parameter[]] | undefined> {
@@ -411,7 +424,7 @@ class TemplateGenerator {
   }
 
   private async processGen2Stack(
-    category: string,
+    category: CATEGORY,
     categoryTemplateGenerator: CategoryTemplateGenerator<CFN_CATEGORY_TYPE>,
     destinationCategoryStackId: string,
   ): Promise<{
@@ -444,23 +457,48 @@ class TemplateGenerator {
   private initializeCategoryGenerators(customResourceMap?: ResourceMapping[]) {
     assert(this.region);
 
-    for (const [category, [sourceStackId, destinationStackId]] of this.categoryStackMap.entries()) {
+    // Track original Gen2 resource logical IDs per destination stack
+    // This prevents removing resources that were migrated in a previous iteration
+    const originalGen2ResourceIds = new Map<string, Set<string>>();
+
+    // Iterate over each category and its array of stack pairs
+    for (const [category, stackPairs] of this.categoryStackMap.entries()) {
       const config = this.categoryGeneratorConfig[category as keyof typeof this.categoryGeneratorConfig];
 
-      if (config) {
-        this.categoryTemplateGenerators.push([
-          category,
-          sourceStackId,
-          destinationStackId,
-          this.createCategoryTemplateGenerator(sourceStackId, destinationStackId, config.resourcesToRefactor),
-        ]);
-      } else if (customResourceMap && this.isCustomResource(category)) {
-        this.categoryTemplateGenerators.push([
-          category,
-          sourceStackId,
-          destinationStackId,
-          this.createCategoryTemplateGenerator(sourceStackId, destinationStackId, [], customResourceMap),
-        ]);
+      // Process each stack pair for this category
+      for (const [sourceStackId, destinationStackId] of stackPairs) {
+        // Capture original Gen2 resource IDs if not already captured for this destination
+        if (!originalGen2ResourceIds.has(destinationStackId)) {
+          originalGen2ResourceIds.set(destinationStackId, new Set());
+        }
+
+        if (config) {
+          this.categoryTemplateGenerators.push([
+            category,
+            sourceStackId,
+            destinationStackId,
+            this.createCategoryTemplateGenerator(
+              sourceStackId,
+              destinationStackId,
+              config.resourcesToRefactor,
+              undefined,
+              originalGen2ResourceIds.get(destinationStackId),
+            ),
+          ]);
+        } else if (customResourceMap && this.isCustomResource(category)) {
+          this.categoryTemplateGenerators.push([
+            category,
+            sourceStackId,
+            destinationStackId,
+            this.createCategoryTemplateGenerator(
+              sourceStackId,
+              destinationStackId,
+              [],
+              customResourceMap,
+              originalGen2ResourceIds.get(destinationStackId),
+            ),
+          ]);
+        }
       }
     }
   }
@@ -470,6 +508,7 @@ class TemplateGenerator {
     destinationStackId: string,
     resourcesToRefactor: CFN_CATEGORY_TYPE[],
     customResourceMap?: ResourceMapping[],
+    originalGen2ResourceIds?: Set<string>,
   ): CategoryTemplateGenerator<CFN_CATEGORY_TYPE> {
     return new CategoryTemplateGenerator(
       this.logger,
@@ -496,10 +535,11 @@ class TemplateGenerator {
             );
           }
         : undefined,
+      originalGen2ResourceIds,
     );
   }
 
-  private isCustomResource(category: string) {
+  private isCustomResource(category: CATEGORY) {
     return !Object.values(NON_CUSTOM_RESOURCE_CATEGORY)
       .map((nonCustomCategory) => nonCustomCategory.valueOf())
       .includes(category);
@@ -638,7 +678,7 @@ class TemplateGenerator {
     logicalIdMappingForRefactor: Map<string, string>,
     sourceCategoryStackId: string,
     destinationCategoryStackId: string,
-    category: 'auth' | 'storage' | 'auth-user-pool-group' | string,
+    category: CATEGORY,
     isRevert: boolean,
     sourceTemplateForRefactor: CFNTemplate,
     destinationTemplateForRefactor: CFNTemplate,
