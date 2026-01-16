@@ -55,7 +55,7 @@ export function generateLambdaEnvVars(functionName: string, envVars: Record<stri
               tableName = storageMatch[1].toLowerCase();
             } else {
               // STORAGE_MYTABLE_ARN -> extract 'MYTABLE'
-              const fallbackMatch = envVar.match(/STORAGE_(.+?)_/);
+              const fallbackMatch = envVar.match(/STORAGE_(.+?)_(?:ARN|NAME|STREAMARN)$/);
               if (fallbackMatch) {
                 tableName = fallbackMatch[1].toLowerCase();
               }

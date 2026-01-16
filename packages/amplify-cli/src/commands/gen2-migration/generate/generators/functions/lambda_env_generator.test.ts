@@ -131,7 +131,7 @@ describe('generateLambdaEnvVars', () => {
 
       const code = printer.printNode(ts.EmitHint.Unspecified, result[0], ts.createSourceFile('', '', ts.ScriptTarget.Latest));
       expect(code).toBe(
-        'backend.myFunction.addEnvironment("FUNCTION_MYAPP123_HANDLER_NAME", backend.myapp123.resources.lambda.functionName);',
+        'backend.myFunction.addEnvironment("FUNCTION_MYAPP123_HANDLER_NAME", backend.myapp123_handler.resources.lambda.functionName);',
       );
     });
   });
