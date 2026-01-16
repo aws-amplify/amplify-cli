@@ -8,18 +8,18 @@ type GeneratedMutation<InputType, OutputType> = string & {
   __generatedMutationOutput: OutputType;
 };
 
-export const createProject = /* GraphQL */ `mutation CreateProject(
-  $input: CreateProjectInput!
-  $condition: ModelProjectConditionInput
+export const createWorkoutProgram = /* GraphQL */ `mutation CreateWorkoutProgram(
+  $input: CreateWorkoutProgramInput!
+  $condition: ModelWorkoutProgramConditionInput
 ) {
-  createProject(input: $input, condition: $condition) {
+  createWorkoutProgram(input: $input, condition: $condition) {
     id
     title
     description
     status
     deadline
     color
-    todos {
+    exercises {
       nextToken
       __typename
     }
@@ -29,19 +29,19 @@ export const createProject = /* GraphQL */ `mutation CreateProject(
     __typename
   }
 }
-` as GeneratedMutation<APITypes.CreateProjectMutationVariables, APITypes.CreateProjectMutation>;
-export const updateProject = /* GraphQL */ `mutation UpdateProject(
-  $input: UpdateProjectInput!
-  $condition: ModelProjectConditionInput
+` as GeneratedMutation<APITypes.CreateWorkoutProgramMutationVariables, APITypes.CreateWorkoutProgramMutation>;
+export const updateWorkoutProgram = /* GraphQL */ `mutation UpdateWorkoutProgram(
+  $input: UpdateWorkoutProgramInput!
+  $condition: ModelWorkoutProgramConditionInput
 ) {
-  updateProject(input: $input, condition: $condition) {
+  updateWorkoutProgram(input: $input, condition: $condition) {
     id
     title
     description
     status
     deadline
     color
-    todos {
+    exercises {
       nextToken
       __typename
     }
@@ -51,19 +51,19 @@ export const updateProject = /* GraphQL */ `mutation UpdateProject(
     __typename
   }
 }
-` as GeneratedMutation<APITypes.UpdateProjectMutationVariables, APITypes.UpdateProjectMutation>;
-export const deleteProject = /* GraphQL */ `mutation DeleteProject(
-  $input: DeleteProjectInput!
-  $condition: ModelProjectConditionInput
+` as GeneratedMutation<APITypes.UpdateWorkoutProgramMutationVariables, APITypes.UpdateWorkoutProgramMutation>;
+export const deleteWorkoutProgram = /* GraphQL */ `mutation DeleteWorkoutProgram(
+  $input: DeleteWorkoutProgramInput!
+  $condition: ModelWorkoutProgramConditionInput
 ) {
-  deleteProject(input: $input, condition: $condition) {
+  deleteWorkoutProgram(input: $input, condition: $condition) {
     id
     title
     description
     status
     deadline
     color
-    todos {
+    exercises {
       nextToken
       __typename
     }
@@ -73,58 +73,145 @@ export const deleteProject = /* GraphQL */ `mutation DeleteProject(
     __typename
   }
 }
-` as GeneratedMutation<APITypes.DeleteProjectMutationVariables, APITypes.DeleteProjectMutation>;
-export const createTodo = /* GraphQL */ `mutation CreateTodo(
-  $input: CreateTodoInput!
-  $condition: ModelTodoConditionInput
+` as GeneratedMutation<APITypes.DeleteWorkoutProgramMutationVariables, APITypes.DeleteWorkoutProgramMutation>;
+export const createExercise = /* GraphQL */ `mutation CreateExercise(
+  $input: CreateExerciseInput!
+  $condition: ModelExerciseConditionInput
 ) {
-  createTodo(input: $input, condition: $condition) {
+  createExercise(input: $input, condition: $condition) {
     id
+    workoutProgramId
     name
     description
-    images
-    projectID
     createdAt
     updatedAt
-    projectTodosId
+    workoutProgramExercisesId
     owner
     __typename
   }
 }
-` as GeneratedMutation<APITypes.CreateTodoMutationVariables, APITypes.CreateTodoMutation>;
-export const updateTodo = /* GraphQL */ `mutation UpdateTodo(
-  $input: UpdateTodoInput!
-  $condition: ModelTodoConditionInput
+` as GeneratedMutation<APITypes.CreateExerciseMutationVariables, APITypes.CreateExerciseMutation>;
+export const updateExercise = /* GraphQL */ `mutation UpdateExercise(
+  $input: UpdateExerciseInput!
+  $condition: ModelExerciseConditionInput
 ) {
-  updateTodo(input: $input, condition: $condition) {
+  updateExercise(input: $input, condition: $condition) {
     id
+    workoutProgramId
     name
     description
-    images
-    projectID
     createdAt
     updatedAt
-    projectTodosId
+    workoutProgramExercisesId
     owner
     __typename
   }
 }
-` as GeneratedMutation<APITypes.UpdateTodoMutationVariables, APITypes.UpdateTodoMutation>;
-export const deleteTodo = /* GraphQL */ `mutation DeleteTodo(
-  $input: DeleteTodoInput!
-  $condition: ModelTodoConditionInput
+` as GeneratedMutation<APITypes.UpdateExerciseMutationVariables, APITypes.UpdateExerciseMutation>;
+export const deleteExercise = /* GraphQL */ `mutation DeleteExercise(
+  $input: DeleteExerciseInput!
+  $condition: ModelExerciseConditionInput
 ) {
-  deleteTodo(input: $input, condition: $condition) {
+  deleteExercise(input: $input, condition: $condition) {
     id
+    workoutProgramId
     name
     description
-    images
-    projectID
     createdAt
     updatedAt
-    projectTodosId
+    workoutProgramExercisesId
     owner
     __typename
   }
 }
-` as GeneratedMutation<APITypes.DeleteTodoMutationVariables, APITypes.DeleteTodoMutation>;
+` as GeneratedMutation<APITypes.DeleteExerciseMutationVariables, APITypes.DeleteExerciseMutation>;
+export const createMeal = /* GraphQL */ `mutation CreateMeal(
+  $input: CreateMealInput!
+  $condition: ModelMealConditionInput
+) {
+  createMeal(input: $input, condition: $condition) {
+    id
+    userName
+    content
+    timestamp
+    createdAt
+    updatedAt
+    __typename
+  }
+}
+` as GeneratedMutation<APITypes.CreateMealMutationVariables, APITypes.CreateMealMutation>;
+export const updateMeal = /* GraphQL */ `mutation UpdateMeal(
+  $input: UpdateMealInput!
+  $condition: ModelMealConditionInput
+) {
+  updateMeal(input: $input, condition: $condition) {
+    id
+    userName
+    content
+    timestamp
+    createdAt
+    updatedAt
+    __typename
+  }
+}
+` as GeneratedMutation<APITypes.UpdateMealMutationVariables, APITypes.UpdateMealMutation>;
+export const deleteMeal = /* GraphQL */ `mutation DeleteMeal(
+  $input: DeleteMealInput!
+  $condition: ModelMealConditionInput
+) {
+  deleteMeal(input: $input, condition: $condition) {
+    id
+    userName
+    content
+    timestamp
+    createdAt
+    updatedAt
+    __typename
+  }
+}
+` as GeneratedMutation<APITypes.DeleteMealMutationVariables, APITypes.DeleteMealMutation>;
+export const createAuthActivity = /* GraphQL */ `mutation CreateAuthActivity(
+  $input: CreateAuthActivityInput!
+  $condition: ModelAuthActivityConditionInput
+) {
+  createAuthActivity(input: $input, condition: $condition) {
+    id
+    userName
+    activityType
+    timestamp
+    createdAt
+    updatedAt
+    __typename
+  }
+}
+` as GeneratedMutation<APITypes.CreateAuthActivityMutationVariables, APITypes.CreateAuthActivityMutation>;
+export const updateAuthActivity = /* GraphQL */ `mutation UpdateAuthActivity(
+  $input: UpdateAuthActivityInput!
+  $condition: ModelAuthActivityConditionInput
+) {
+  updateAuthActivity(input: $input, condition: $condition) {
+    id
+    userName
+    activityType
+    timestamp
+    createdAt
+    updatedAt
+    __typename
+  }
+}
+` as GeneratedMutation<APITypes.UpdateAuthActivityMutationVariables, APITypes.UpdateAuthActivityMutation>;
+export const deleteAuthActivity = /* GraphQL */ `mutation DeleteAuthActivity(
+  $input: DeleteAuthActivityInput!
+  $condition: ModelAuthActivityConditionInput
+) {
+  deleteAuthActivity(input: $input, condition: $condition) {
+    id
+    userName
+    activityType
+    timestamp
+    createdAt
+    updatedAt
+    __typename
+  }
+}
+` as GeneratedMutation<APITypes.DeleteAuthActivityMutationVariables, APITypes.DeleteAuthActivityMutation>;

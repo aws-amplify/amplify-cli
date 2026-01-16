@@ -8,26 +8,15 @@ type GeneratedQuery<InputType, OutputType> = string & {
   __generatedQueryOutput: OutputType;
 };
 
-export const getRandomQuote = /* GraphQL */ `query GetRandomQuote {
-  getRandomQuote {
-    message
-    quote
-    author
-    timestamp
-    totalQuotes
-    __typename
-  }
-}
-` as GeneratedQuery<APITypes.GetRandomQuoteQueryVariables, APITypes.GetRandomQuoteQuery>;
-export const getProject = /* GraphQL */ `query GetProject($id: ID!) {
-  getProject(id: $id) {
+export const getWorkoutProgram = /* GraphQL */ `query GetWorkoutProgram($id: ID!) {
+  getWorkoutProgram(id: $id) {
     id
     title
     description
     status
     deadline
     color
-    todos {
+    exercises {
       nextToken
       __typename
     }
@@ -37,13 +26,13 @@ export const getProject = /* GraphQL */ `query GetProject($id: ID!) {
     __typename
   }
 }
-` as GeneratedQuery<APITypes.GetProjectQueryVariables, APITypes.GetProjectQuery>;
-export const listProjects = /* GraphQL */ `query ListProjects(
-  $filter: ModelProjectFilterInput
+` as GeneratedQuery<APITypes.GetWorkoutProgramQueryVariables, APITypes.GetWorkoutProgramQuery>;
+export const listWorkoutPrograms = /* GraphQL */ `query ListWorkoutPrograms(
+  $filter: ModelWorkoutProgramFilterInput
   $limit: Int
   $nextToken: String
 ) {
-  listProjects(filter: $filter, limit: $limit, nextToken: $nextToken) {
+  listWorkoutPrograms(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       id
       title
@@ -60,37 +49,35 @@ export const listProjects = /* GraphQL */ `query ListProjects(
     __typename
   }
 }
-` as GeneratedQuery<APITypes.ListProjectsQueryVariables, APITypes.ListProjectsQuery>;
-export const getTodo = /* GraphQL */ `query GetTodo($id: ID!) {
-  getTodo(id: $id) {
+` as GeneratedQuery<APITypes.ListWorkoutProgramsQueryVariables, APITypes.ListWorkoutProgramsQuery>;
+export const getExercise = /* GraphQL */ `query GetExercise($id: ID!) {
+  getExercise(id: $id) {
     id
+    workoutProgramId
     name
     description
-    images
-    projectID
     createdAt
     updatedAt
-    projectTodosId
+    workoutProgramExercisesId
     owner
     __typename
   }
 }
-` as GeneratedQuery<APITypes.GetTodoQueryVariables, APITypes.GetTodoQuery>;
-export const listTodos = /* GraphQL */ `query ListTodos(
-  $filter: ModelTodoFilterInput
+` as GeneratedQuery<APITypes.GetExerciseQueryVariables, APITypes.GetExerciseQuery>;
+export const listExercises = /* GraphQL */ `query ListExercises(
+  $filter: ModelExerciseFilterInput
   $limit: Int
   $nextToken: String
 ) {
-  listTodos(filter: $filter, limit: $limit, nextToken: $nextToken) {
+  listExercises(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       id
+      workoutProgramId
       name
       description
-      images
-      projectID
       createdAt
       updatedAt
-      projectTodosId
+      workoutProgramExercisesId
       owner
       __typename
     }
@@ -98,4 +85,68 @@ export const listTodos = /* GraphQL */ `query ListTodos(
     __typename
   }
 }
-` as GeneratedQuery<APITypes.ListTodosQueryVariables, APITypes.ListTodosQuery>;
+` as GeneratedQuery<APITypes.ListExercisesQueryVariables, APITypes.ListExercisesQuery>;
+export const getMeal = /* GraphQL */ `query GetMeal($id: ID!) {
+  getMeal(id: $id) {
+    id
+    userName
+    content
+    timestamp
+    createdAt
+    updatedAt
+    __typename
+  }
+}
+` as GeneratedQuery<APITypes.GetMealQueryVariables, APITypes.GetMealQuery>;
+export const listMeals = /* GraphQL */ `query ListMeals(
+  $filter: ModelMealFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listMeals(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      id
+      userName
+      content
+      timestamp
+      createdAt
+      updatedAt
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+` as GeneratedQuery<APITypes.ListMealsQueryVariables, APITypes.ListMealsQuery>;
+export const getAuthActivity = /* GraphQL */ `query GetAuthActivity($id: ID!) {
+  getAuthActivity(id: $id) {
+    id
+    userName
+    activityType
+    timestamp
+    createdAt
+    updatedAt
+    __typename
+  }
+}
+` as GeneratedQuery<APITypes.GetAuthActivityQueryVariables, APITypes.GetAuthActivityQuery>;
+export const listAuthActivities = /* GraphQL */ `query ListAuthActivities(
+  $filter: ModelAuthActivityFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listAuthActivities(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      id
+      userName
+      activityType
+      timestamp
+      createdAt
+      updatedAt
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+` as GeneratedQuery<APITypes.ListAuthActivitiesQueryVariables, APITypes.ListAuthActivitiesQuery>;

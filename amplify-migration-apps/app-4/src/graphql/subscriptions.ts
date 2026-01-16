@@ -8,18 +8,18 @@ type GeneratedSubscription<InputType, OutputType> = string & {
   __generatedSubscriptionOutput: OutputType;
 };
 
-export const onCreateProject = /* GraphQL */ `subscription OnCreateProject(
-  $filter: ModelSubscriptionProjectFilterInput
+export const onCreateWorkoutProgram = /* GraphQL */ `subscription OnCreateWorkoutProgram(
+  $filter: ModelSubscriptionWorkoutProgramFilterInput
   $owner: String
 ) {
-  onCreateProject(filter: $filter, owner: $owner) {
+  onCreateWorkoutProgram(filter: $filter, owner: $owner) {
     id
     title
     description
     status
     deadline
     color
-    todos {
+    exercises {
       nextToken
       __typename
     }
@@ -29,19 +29,19 @@ export const onCreateProject = /* GraphQL */ `subscription OnCreateProject(
     __typename
   }
 }
-` as GeneratedSubscription<APITypes.OnCreateProjectSubscriptionVariables, APITypes.OnCreateProjectSubscription>;
-export const onUpdateProject = /* GraphQL */ `subscription OnUpdateProject(
-  $filter: ModelSubscriptionProjectFilterInput
+` as GeneratedSubscription<APITypes.OnCreateWorkoutProgramSubscriptionVariables, APITypes.OnCreateWorkoutProgramSubscription>;
+export const onUpdateWorkoutProgram = /* GraphQL */ `subscription OnUpdateWorkoutProgram(
+  $filter: ModelSubscriptionWorkoutProgramFilterInput
   $owner: String
 ) {
-  onUpdateProject(filter: $filter, owner: $owner) {
+  onUpdateWorkoutProgram(filter: $filter, owner: $owner) {
     id
     title
     description
     status
     deadline
     color
-    todos {
+    exercises {
       nextToken
       __typename
     }
@@ -51,19 +51,19 @@ export const onUpdateProject = /* GraphQL */ `subscription OnUpdateProject(
     __typename
   }
 }
-` as GeneratedSubscription<APITypes.OnUpdateProjectSubscriptionVariables, APITypes.OnUpdateProjectSubscription>;
-export const onDeleteProject = /* GraphQL */ `subscription OnDeleteProject(
-  $filter: ModelSubscriptionProjectFilterInput
+` as GeneratedSubscription<APITypes.OnUpdateWorkoutProgramSubscriptionVariables, APITypes.OnUpdateWorkoutProgramSubscription>;
+export const onDeleteWorkoutProgram = /* GraphQL */ `subscription OnDeleteWorkoutProgram(
+  $filter: ModelSubscriptionWorkoutProgramFilterInput
   $owner: String
 ) {
-  onDeleteProject(filter: $filter, owner: $owner) {
+  onDeleteWorkoutProgram(filter: $filter, owner: $owner) {
     id
     title
     description
     status
     deadline
     color
-    todos {
+    exercises {
       nextToken
       __typename
     }
@@ -73,58 +73,133 @@ export const onDeleteProject = /* GraphQL */ `subscription OnDeleteProject(
     __typename
   }
 }
-` as GeneratedSubscription<APITypes.OnDeleteProjectSubscriptionVariables, APITypes.OnDeleteProjectSubscription>;
-export const onCreateTodo = /* GraphQL */ `subscription OnCreateTodo(
-  $filter: ModelSubscriptionTodoFilterInput
+` as GeneratedSubscription<APITypes.OnDeleteWorkoutProgramSubscriptionVariables, APITypes.OnDeleteWorkoutProgramSubscription>;
+export const onCreateExercise = /* GraphQL */ `subscription OnCreateExercise(
+  $filter: ModelSubscriptionExerciseFilterInput
   $owner: String
 ) {
-  onCreateTodo(filter: $filter, owner: $owner) {
+  onCreateExercise(filter: $filter, owner: $owner) {
     id
+    workoutProgramId
     name
     description
-    images
-    projectID
     createdAt
     updatedAt
-    projectTodosId
+    workoutProgramExercisesId
     owner
     __typename
   }
 }
-` as GeneratedSubscription<APITypes.OnCreateTodoSubscriptionVariables, APITypes.OnCreateTodoSubscription>;
-export const onUpdateTodo = /* GraphQL */ `subscription OnUpdateTodo(
-  $filter: ModelSubscriptionTodoFilterInput
+` as GeneratedSubscription<APITypes.OnCreateExerciseSubscriptionVariables, APITypes.OnCreateExerciseSubscription>;
+export const onUpdateExercise = /* GraphQL */ `subscription OnUpdateExercise(
+  $filter: ModelSubscriptionExerciseFilterInput
   $owner: String
 ) {
-  onUpdateTodo(filter: $filter, owner: $owner) {
+  onUpdateExercise(filter: $filter, owner: $owner) {
     id
+    workoutProgramId
     name
     description
-    images
-    projectID
     createdAt
     updatedAt
-    projectTodosId
+    workoutProgramExercisesId
     owner
     __typename
   }
 }
-` as GeneratedSubscription<APITypes.OnUpdateTodoSubscriptionVariables, APITypes.OnUpdateTodoSubscription>;
-export const onDeleteTodo = /* GraphQL */ `subscription OnDeleteTodo(
-  $filter: ModelSubscriptionTodoFilterInput
+` as GeneratedSubscription<APITypes.OnUpdateExerciseSubscriptionVariables, APITypes.OnUpdateExerciseSubscription>;
+export const onDeleteExercise = /* GraphQL */ `subscription OnDeleteExercise(
+  $filter: ModelSubscriptionExerciseFilterInput
   $owner: String
 ) {
-  onDeleteTodo(filter: $filter, owner: $owner) {
+  onDeleteExercise(filter: $filter, owner: $owner) {
     id
+    workoutProgramId
     name
     description
-    images
-    projectID
     createdAt
     updatedAt
-    projectTodosId
+    workoutProgramExercisesId
     owner
     __typename
   }
 }
-` as GeneratedSubscription<APITypes.OnDeleteTodoSubscriptionVariables, APITypes.OnDeleteTodoSubscription>;
+` as GeneratedSubscription<APITypes.OnDeleteExerciseSubscriptionVariables, APITypes.OnDeleteExerciseSubscription>;
+export const onCreateMeal = /* GraphQL */ `subscription OnCreateMeal($filter: ModelSubscriptionMealFilterInput) {
+  onCreateMeal(filter: $filter) {
+    id
+    userName
+    content
+    timestamp
+    createdAt
+    updatedAt
+    __typename
+  }
+}
+` as GeneratedSubscription<APITypes.OnCreateMealSubscriptionVariables, APITypes.OnCreateMealSubscription>;
+export const onUpdateMeal = /* GraphQL */ `subscription OnUpdateMeal($filter: ModelSubscriptionMealFilterInput) {
+  onUpdateMeal(filter: $filter) {
+    id
+    userName
+    content
+    timestamp
+    createdAt
+    updatedAt
+    __typename
+  }
+}
+` as GeneratedSubscription<APITypes.OnUpdateMealSubscriptionVariables, APITypes.OnUpdateMealSubscription>;
+export const onDeleteMeal = /* GraphQL */ `subscription OnDeleteMeal($filter: ModelSubscriptionMealFilterInput) {
+  onDeleteMeal(filter: $filter) {
+    id
+    userName
+    content
+    timestamp
+    createdAt
+    updatedAt
+    __typename
+  }
+}
+` as GeneratedSubscription<APITypes.OnDeleteMealSubscriptionVariables, APITypes.OnDeleteMealSubscription>;
+export const onCreateAuthActivity = /* GraphQL */ `subscription OnCreateAuthActivity(
+  $filter: ModelSubscriptionAuthActivityFilterInput
+) {
+  onCreateAuthActivity(filter: $filter) {
+    id
+    userName
+    activityType
+    timestamp
+    createdAt
+    updatedAt
+    __typename
+  }
+}
+` as GeneratedSubscription<APITypes.OnCreateAuthActivitySubscriptionVariables, APITypes.OnCreateAuthActivitySubscription>;
+export const onUpdateAuthActivity = /* GraphQL */ `subscription OnUpdateAuthActivity(
+  $filter: ModelSubscriptionAuthActivityFilterInput
+) {
+  onUpdateAuthActivity(filter: $filter) {
+    id
+    userName
+    activityType
+    timestamp
+    createdAt
+    updatedAt
+    __typename
+  }
+}
+` as GeneratedSubscription<APITypes.OnUpdateAuthActivitySubscriptionVariables, APITypes.OnUpdateAuthActivitySubscription>;
+export const onDeleteAuthActivity = /* GraphQL */ `subscription OnDeleteAuthActivity(
+  $filter: ModelSubscriptionAuthActivityFilterInput
+) {
+  onDeleteAuthActivity(filter: $filter) {
+    id
+    userName
+    activityType
+    timestamp
+    createdAt
+    updatedAt
+    __typename
+  }
+}
+` as GeneratedSubscription<APITypes.OnDeleteAuthActivitySubscriptionVariables, APITypes.OnDeleteAuthActivitySubscription>;

@@ -1,188 +1,77 @@
-# Fitness Goal Tracker
+# Fitness Tracker (Amplify Gen1)
 
-A fitness tracking application built with AWS Amplify Gen1, React, and TypeScript. Track your workout programs, exercises, and progress with photos while staying motivated with daily fitness quotes.
+![](./images/app.png)
 
-![Fitness Goal Tracker](https://img.shields.io/badge/Fitness-Goal%20Tracker-e85d04)
-![AWS Amplify](https://img.shields.io/badge/AWS-Amplify-orange)
-![React](https://img.shields.io/badge/React-19.1-blue)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue)
+A fitness tracking application built. Log your meals, track your workout programs and exercises done.
 
-## Features
+## Install Dependencies
 
-### Workout Program Management
-- Create and manage multiple workout programs
-- Track program status: Active, Achieved, Paused, or Archived
-- Customize program colors for visual organization
-- Organize exercises within programs
-
-### Exercise Tracking
-- Add individual exercises with detailed descriptions
-- Include sets, reps, and personal notes
-- Upload progress photos to track your transformation
-- Assign exercises to programs or keep them standalone
-
-### Progress Photos
-- Upload multiple photos per exercise
-- View photos in an interactive gallery
-- Download photos for your records
-- Track visual progress over time
-
-### Login Activity Tracking
-- Automatic login logging via Cognito trigger
-- View recent login history in CloudWatch logs
-
-### Dark Mode
-- Comfortable viewing in any lighting
-- Automatic theme persistence
-- Fitness-themed color palette
-
-### Authentication & Security
-- Read-only mode for unauthenticated users
-- Full CRUD access for authenticated users
-- Owner-based permissions
-- Secure AWS Cognito authentication
-
-
-### Backend (AWS Amplify Gen1)
-- **GraphQL API**: AppSync with DynamoDB
-- **Authentication**: Amazon Cognito with Post Authentication trigger
-- **Storage**: Amazon S3 for progress photos
-- **Serverless Functions**: AWS Lambda for auth logging (Logs can be checked in CloudWatch)
-- **Hosting**: Amplify Console
-
-### Frontend
-- **Framework**: React 19.1 with TypeScript
-- **Build Tool**: Vite
-- **UI Components**: AWS Amplify UI React
-- **State Management**: React Hooks
-- **Styling**: Inline styles with theme support
-
-## Prerequisites
-
-- Node.js 25+ (stable)
-- AWS Account with appropriate permissions
-- AWS Amplify CLI
-
-```bash
-$ node -v
-v25.2.1
-```
-
-[Amplify Gen1 Getting Started](https://docs.amplify.aws/gen1/react/start/getting-started/installation/)
-
-## Setup
-
-### 1. Install Dependencies
-
-```bash
+```console
 npm install
 ```
 
-### 2. Initialize Amplify
+## Initialize Environment
 
-```bash
+```console
 amplify init
-```
+````
 
-Configuration:
-- Select all default options except:
-- **Distribution Directory Path**: `dist` (not `build`)
-- Choose your AWS profile with Amplify permissions
+```console
+⚠️ For new projects, we recommend starting with AWS Amplify Gen 2, our new code-first developer experience. Get started at https://docs.amplify.aws/react/start/quickstart/
+✔ Do you want to continue with Amplify Gen 1? (y/N) · yes
+✔ Why would you like to use Amplify Gen 1? · Prefer not to answer
+Note: It is recommended to run this command from the root of your app directory
+? Enter a name for the project fitnesstracker
+The following configuration will be applied:
 
-```
+Project information
+| Name: fitnesstracker
+| Environment: dev
+| Default editor: Visual Studio Code
+| App type: javascript
+| Javascript framework: none
+| Source Directory Path: src
+| Distribution Directory Path: dist
+| Build Command: npm run-script build
+| Start Command: npm run-script start
+
 ? Initialize the project with the above configuration? No
-? Enter a name for the environment dev
+? Enter a name for the environment main
 ? Choose your default editor: Visual Studio Code
 ✔ Choose the type of app that you're building · javascript
+Please tell us about your project
 ? What javascript framework are you using react
-? Source Directory Path: src
+? Source Directory Path:  src
 ? Distribution Directory Path: dist
-? Build Command: npm run-script build
+? Build Command:  npm run-script build
 ? Start Command: npm run-script start
-Using default provider awscloudformation
+Using default provider  awscloudformation
 ? Select the authentication method you want to use: AWS profile
+
+For more information on AWS Profiles, see:
+https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html
+
 ? Please choose the profile you want to use default
 ```
 
-### 3. Add API
+## Add Categories
 
-```bash
-amplify add api
-```
+### Auth
 
-Settings:
-- Choose: **GraphQL**
-- Name: `fitnessappapi`
-- Authorization: **API key** (default, 7 days expiration)
-- Conflict detection: **Disabled**
-- Template: **Single object with fields**
-Edit the graphql schema now:   
-copy the following piece of code to schema.graphql:
-
-```graphql
-# This "input" configures a global authorization rule to enable public access to
-# all models in this schema. Learn more about authorization rules here: https://docs.amplify.aws/cli/graphql/authorization-rules
-input AMPLIFY { globalAuthRule: AuthRule = { allow: public } } # FOR TESTING ONLY!
-
-type QuoteResponse {
-  message: String!
-  quote: String!
-  author: String!
-  timestamp: String!
-  totalQuotes: Int!
-}
-
-enum ProjectStatus {
-  ACTIVE
-  COMPLETED
-  ON_HOLD
-  ARCHIVED
-}
-
-type Project @model @auth(rules: [
-  { allow: public, operations: [read] },
-  { allow: owner, operations: [create, read, update, delete] }
-]) {
-  id: ID!
-  title: String!
-  description: String
-  status: ProjectStatus!
-  deadline: AWSDateTime
-  color: String
-  todos: [Todo] @hasMany
-}
-
-type Todo @model @auth(rules: [
-  { allow: public, operations: [read] },
-  { allow: owner, operations: [create, read, update, delete] }
-]) {
-  id: ID!
-  name: String!
-  description: String
-  images: [String]
-  projectID: ID
-}
-```
-
-The GraphQL schema defines:
-- **Project** model: Workout programs with status tracking
-- **Todo** model: Individual exercises with image support
-
-  
-### 4. Add Authentication
-
-```bash
+```console
 amplify add auth
 ```
 
-```
+```console
 ? Do you want to use the default authentication and security configuration? Manual configuration
-? Select the authentication/authorization services that you want to use: User Sign-Up, Sign-In, connected with AWS IAM controls
-? Provide a friendly name for your resource that will be used to label this category in the project: <resource-name>
-? Enter a name for your user pool: <user-pool-name>
-? How do you want users to be able to sign in? Email
+? Select the authentication/authorization services that you want to use: User Sign-Up, Sign-In, connected with AWS IAM controls (Enables per-user Storage features for i
+mages or other content, Analytics, and more)
+? Provide a friendly name for your resource that will be used to label this category in the project: (accept default value)
+? Enter a name for your identity pool. (accept default value)
 ? Allow unauthenticated logins? (Provides scoped down permissions that you can control via AWS IAM) No
 ? Do you want to enable 3rd party authentication providers in your identity pool? No
+? Provide a name for your user pool: (accept default value)
+? How do you want users to be able to sign in? Username
 ? Do you want to add User Pool Groups? No
 ? Do you want to add an admin queries API? No
 ? Multifactor authentication (MFA) user login options: OFF
@@ -193,279 +82,337 @@ amplify add auth
 ? What attributes are required for signing up? Email
 ? Specify the app's refresh token expiration period (in days): 30
 ? Do you want to specify the user attributes this app can read and write? No
-? Do you want to enable any of the following capabilities? (skip all)
+? Do you want to enable any of the following capabilities? (enter)
 ? Do you want to use an OAuth flow? No
 ? Do you want to configure Lambda Triggers for Cognito? Yes
-? Which triggers do you want to enable for Cognito? Post Authentication
-? What functionality do you want to use for Post Authentication? Create your own module
-Successfully added resource <resourcename>PostAuthentication locally
+? Which triggers do you want to enable for Cognito Pre Sign-up
+? What functionality do you want to use for Pre Sign-up Sign-Up email filtering (allowlist)
+✔ Enter a comma-delimited list of allowed email domains (example: 'mydomain.com, myotherdomain.com'). · amazon.com
 ? Do you want to edit your custom function now? No
 ```
 
-### 5. Add Storage
+### Api
 
-```bash
-amplify add storage
-```
-
-```
-? Select from one of the below mentioned services: Content (Images, audio, video, etc.)
-? Provide a friendly name: fitnessappstorage
-? Provide bucket name: fitnessappbucket
-? Who should have access: Auth and guest users
-? What kind of access for Authenticated users? create/update, read, delete
-? What kind of access for Guest users? create/update, read, delete
-? Do you want to add a Lambda Trigger? No
-```
-
-
-### 6. Update Auth Function to Access Storage
-
-```bash
-amplify update function
-```
-
-```
-? Select the Lambda function you want to update: <auth-trigger-function-name>PostAuthentication
-? Which setting do you want to update? Resource access permissions
-? Select the categories you want this function to have access to: storage
-? Storage has 2 resources in this project. Select the one you would like your Lambda to access: <fitnessappstorage>
-? Select the operations you want to permit on <fitnessappstorage>: create, read, update, delete
-? Do you want to edit the local lambda function now? Yes
-```
-
-Edit `amplify/backend/function/<resourcename>PostAuthentication/src/index.js`:  
-
-The `index.js` file is auto-generated and loads `custom.js` via the `MODULES` environment variable. Delete the `custom.js` file and replace `index.js` with the following code :  
-
-
-```javascript
-exports.handler = async (event) => {
-  const message = `Welcome ${event.userName}! You logged in at ${new Date().toISOString()}`;
-  console.log(message);
-  return event;
-};
-```
-
-### 8. Add Nutrition REST API
-
-```bash
+```console
 amplify add api
+```
 
+```console
+? Select from one of the below mentioned services: GraphQL
+? Here is the GraphQL API that we will create. Select a setting to edit or continue Authorization modes: API key (default, expiration time: 7 days from now)
+? Choose the default authorization type for the API Amazon Cognito User Pool
+? Configure additional auth types? Yes
+? Choose the additional authorization types you want to configure for the API API key
+✔ Enter a description for the API key: · graphql
+✔ After how many days from now the API key should expire (1-365): · 7
+? Here is the GraphQL API that we will create. Select a setting to edit or continue Continue
+? Choose a schema template: One-to-many relationship (e.g., “Blogs” with “Posts” and “Comments”)
+✔ Do you want to edit the schema now? (Y/n) · no
+```
+
+```console
+npm run configure-schema
+```
+
+```console
+amplify add api
+```
+
+```console
 ? Select from one of the below mentioned services: REST
 ✔ Provide a friendly name for your resource to be used as a label for this category in the project: · nutritionapi
 ✔ Provide a path (e.g., /book/{isbn}): · /nutrition/log
 ✔ Choose a Lambda source · Create a new Lambda function
-? Provide an AWS Lambda function name: nutritionHandler
+? Provide an AWS Lambda function name: lognutrition
 ? Choose the runtime that you want to use: NodeJS
 ? Choose the function template that you want to use: Serverless ExpressJS function (Integration with API Gateway)
-? Do you want to configure advanced settings? No
-? Do you want edit the local lambda function now? Yes
-? Press enter to continue
-✔ Restrict API access? (Y/n) · yes
-✔ Who should have access? · Authenticated users only
-✔ What permissions do you want to grant to Authenticated users? · create, read, update, delete
-✔ Do you want to add another path? (y/N) · yes
-✔ Provide a path (e.g., /book/{isbn}): · /nutrition/daily
-✔ Choose a Lambda source · Use a Lambda function already added in the current Amplify project
-✔ Choose the Lambda function to invoke by this path · nutritionHandler
-✔ Restrict API access? (Y/n) · yes
-✔ Who should have access? · Authenticated users only
-✔ What permissions do you want to grant to Authenticated users? · create, read, update, delete
-✔ Do you want to add another path? (y/N) · yes
-✔ Provide a path (e.g., /book/{isbn}): · /nutrition/{food}
-✔ Choose a Lambda source · Use a Lambda function already added in the current Amplify project
-✔ Choose the Lambda function to invoke by this path · nutritionHandler
+
+✅ Available advanced settings:
+- Resource access permissions
+- Scheduled recurring invocation
+- Lambda layers configuration
+- Environment variables configuration
+- Secret values configuration
+
+? Do you want to configure advanced settings? Yes
+? Do you want to access other resources in this project from your Lambda function? Yes
+? Select the categories you want this function to have access to. storage
+? Storage has 4 resources in this project. Select the one you would like your Lambda to access Meal:@model(appsync)
+? Select the operations you want to permit on Meal:@model(appsync) create, read, update, delete
+
+You can access the following resource attributes as environment variables from your Lambda function
+        API_FITNESSTRACKER_GRAPHQLAPIIDOUTPUT
+        API_FITNESSTRACKER_MEALTABLE_ARN
+        API_FITNESSTRACKER_MEALTABLE_NAME
+        ENV
+        REGION
+? Do you want to invoke this function on a recurring schedule? No
+? Do you want to enable Lambda layers for this function? No
+? Do you want to configure environment variables for this function? No
+? Do you want to configure secret values this function can access? No
+✔ Choose the package manager that you want to use: · NPM
+? Do you want to edit the local lambda function now? No
 ✔ Restrict API access? (Y/n) · yes
 ✔ Who should have access? · Authenticated users only
 ✔ What permissions do you want to grant to Authenticated users? · create, read, update, delete
 ✔ Do you want to add another path? (y/N) · no
 ```
 
-Edit `amplify/backend/function/analyticsHandler/src/app.js`:
+## Configure
 
-Replace the boilerplate code with analytics API endpoints:
-
-
-```javascript
-// Enable CORS for all methods
-app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*")
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control")
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-  res.header("Access-Control-Allow-Credentials", "false")
-  
-  if (req.method === 'OPTIONS') {
-    res.status(200).end();  // ✅ Properly ends the response
-    return;                 // ✅ Prevents further processing
-  }
-  next();
-});
-
-
-// Food database for search
-const foodDatabase = [
-  { id: 1, name: 'Apple', calories: 95, protein: 0.5, carbs: 25, fat: 0.3 },
-  { id: 2, name: 'Banana', calories: 105, protein: 1.3, carbs: 27, fat: 0.4 },
-  { id: 3, name: 'Chicken Breast', calories: 165, protein: 31, carbs: 0, fat: 3.6 },
-  { id: 4, name: 'Rice', calories: 130, protein: 2.7, carbs: 28, fat: 0.3 },
-  { id: 5, name: 'Broccoli', calories: 25, protein: 3, carbs: 5, fat: 0.3 }
-];
-
-// Search food database
-app.get('/nutrition/search/:food', function(req, res) {
-  const searchTerm = req.params.food.toLowerCase();
-  const results = foodDatabase.filter(food => 
-    food.name.toLowerCase().includes(searchTerm)
-  );
-  res.json({ success: true, results, count: results.length });
-});
-
-// Log meal
-app.post('/nutrition/log', function(req, res) {
-  const { foodId, quantity = 1, mealType = 'snack' } = req.body;
-  const userId = req.apiGateway?.event?.requestContext?.identity?.cognitoIdentityId;
-  
-  if (!foodId) {
-    return res.status(400).json({ error: 'foodId is required' });
-  }
-  
-  const food = foodDatabase.find(f => f.id === parseInt(foodId));
-  if (!food) {
-    return res.status(404).json({ error: 'Food not found' });
-  }
-  
-  const logEntry = {
-    id: Date.now(),
-    userId,
-    food,
-    quantity,
-    mealType,
-    totalCalories: food.calories * quantity,
-    timestamp: new Date().toISOString()
-  };
-  
-  res.json({ success: true, logEntry });
-});
-
-// Get daily nutrition summary
-app.get('/nutrition/daily/:date?', function(req, res) {
-  const date = req.params.date || new Date().toISOString().split('T')[0];
-  const userId = req.apiGateway?.event?.requestContext?.identity?.cognitoIdentityId;
-  
-  // Mock daily summary
-  const summary = {
-    date,
-    userId,
-    totalCalories: 1850,
-    totalProtein: 120,
-    totalCarbs: 180,
-    totalFat: 65,
-    meals: {
-      breakfast: { calories: 450, items: 2 },
-      lunch: { calories: 650, items: 3 },
-      dinner: { calories: 600, items: 4 },
-      snacks: { calories: 150, items: 1 }
-    }
-  };
-  
-  res.json({ success: true, summary });
-});
+```console
+npm run configure
 ```
 
+## Deploy Backend
 
-### 8. Deploy Backend
-
-```bash
+```console
 amplify push
 ```
 
-Select **Y** for all prompts to deploy your backend infrastructure.
+```console
+┌──────────┬─────────────────────────────────────────┬───────────┬───────────────────┐
+│ Category │ Resource name                           │ Operation │ Provider plugin   │
+├──────────┼─────────────────────────────────────────┼───────────┼───────────────────┤
+│ Function │ fitnesstracker6d664d176d664d17PreSignup │ Create    │ awscloudformation │
+├──────────┼─────────────────────────────────────────┼───────────┼───────────────────┤
+│ Function │ lognutrition                            │ Create    │ awscloudformation │
+├──────────┼─────────────────────────────────────────┼───────────┼───────────────────┤
+│ Auth     │ fitnesstracker6d664d176d664d17          │ Create    │ awscloudformation │
+├──────────┼─────────────────────────────────────────┼───────────┼───────────────────┤
+│ Api      │ fitnesstracker                          │ Create    │ awscloudformation │
+├──────────┼─────────────────────────────────────────┼───────────┼───────────────────┤
+│ Api      │ nutritionapi                            │ Create    │ awscloudformation │
+└──────────┴─────────────────────────────────────────┴───────────┴───────────────────┘
 
-### 9. Add Hosting (Optional)
-
-```bash
-amplify add hosting  # Choose Amplify Console
-amplify publish
+? Are you sure you want to continue? (Y/n) › 
 ```
 
-## Development
+## Publish Frontend
 
-### Run Development Server
+To publish the frontend, we leverage the Amplify hosting console. First push everything to the `main` branch:
 
-```bash
-npm run dev
+```console
+git add .
+git commit -m "feat: gen1"
+git push origin main
 ```
 
-Access the app at `http://localhost:5173`
+Next, accept all default values and follow the getting started wizard to connect your repo and branch.
 
-### Build for Production
+![](./images/hosting-get-started.png)
+![](./images/add-main-branch.png)
+![](./images/deploying-main-branch.png)
 
-```bash
-npm run build
+Wait for the deployment to finish successfully.
+
+## Migrating to Gen2
+
+> Based on https://github.com/aws-amplify/amplify-cli/blob/gen2-migration/GEN2_MIGRATION_GUIDE.md
+
+First and install the experimental CLI package the provides the new commands:
+
+```console
+npm install --no-save @aws-amplify/cli-internal-gen2-migration-experimental-alpha
 ```
 
-### Lint Code
+Now run them:
 
-```bash
-npm run lint
+```console
+npx amplify gen2-migration lock
 ```
 
-## Data Models
-
-### Project (Workout Program)
-```graphql
-type Project {
-  id: ID!
-  title: String!
-  description: String
-  status: ProjectStatus!  # ACTIVE, COMPLETED, ON_HOLD, ARCHIVED
-  deadline: AWSDateTime
-  color: String
-  todos: [Todo]
-}
+```console
+git checkout -b gen2-main
+npx amplify gen2-migration generate
 ```
 
-### Todo (Exercise)
-```graphql
-type Todo {
-  id: ID!
-  name: String!
-  description: String
-  images: [String]  # S3 paths to progress photos
-  projectID: ID
-}
+**Edit in `./amplify/data/resource.ts`:**
+
+```diff
+- branchName: "main"
++ branchName: "gen2-main"
 ```
 
-## Security & Permissions
+```diff
+-    defaultAuthorizationMode: "userPool",
++    defaultAuthorizationMode: "userPool",
++    apiKeyAuthorizationMode: { expiresInDays: 7 }
+```
 
-### Authorization Rules
+**Edit in `./amplify/backend.ts`:**
 
-**Projects & Exercises**:
-- **Public**: Read-only access
-- **Owner**: Full CRUD operations
+```diff
++ import { RestApi, LambdaIntegration, AuthorizationType } from "aws-cdk-lib/aws-apigateway";
++ import { Policy, PolicyStatement } from "aws-cdk-lib/aws-iam";
++ import { Stack } from "aws-cdk-lib";
+```
 
-**Authentication**:
-- Cognito-managed user pools
-- Email-based sign-in
-- Owner-based access control
+```diff
++ const mealsTable = backend.data.resources.tables['Meal'];
++ mealsTable.grantWriteData(backend.lognutrition.resources.lambda);
++ backend.lognutrition.addEnvironment('API_FITNESSTRACKER_MEALTABLE_NAME', mealsTable.tableName);
+```
 
-## Summary of changes required during Gen1 to Gen2 migration:
+```diff
++ const restApiStack = backend.createStack("rest-api-stack");
++ const restApi = new RestApi(restApiStack, "RestApi", {
++     restApiName: `nutritionapi-${branchName}`,
++     defaultCorsPreflightOptions: {
++         allowMethods: Cors.ALL_METHODS,
++         allowOrigins: Cors.ALL_ORIGINS,
++         allowHeaders: Cors.DEFAULT_HEADERS
++     },
++ });
++ 
++ const lambdaIntegration = new LambdaIntegration(backend.lognutrition.resources.lambda);
++ 
++ const nutritionlog = restApi.root.addResource('nutrition').addResource('log', { defaultMethodOptions: { authorizationType: AuthorizationType.IAM } });
++ nutritionlog.addMethod('GET', lambdaIntegration);
++ nutritionlog.addMethod('POST', lambdaIntegration);
++ nutritionlog.addMethod('DELETE', lambdaIntegration);
++ nutritionlog.addMethod('PUT', lambdaIntegration);
++ 
++ nutritionlog.addProxy({ anyMethod: true, defaultIntegration: lambdaIntegration });
++ 
++ const apiPolicy = new Policy(restApiStack, "ApiPolicy", { statements: [new PolicyStatement({ actions: ["execute-api:Invoke"], resources: [`${restApi.arnForExecuteApi("*", "/*")}`] })] });
++ backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(apiPolicy);
++ backend.addOutput({
++     custom: {
++         API: {
++             [restApi.restApiName]: {
++                 endpoint: restApi.url,
++                 region: Stack.of(restApi).region,
++                 apiName: restApi.restApiName,
++             }
++         }
++     },
++ });
+```
 
-Post `amplify gen2-migration generate` :
+Navigate to the Amplify Console to find the `<gen1-rest-api-id>` and `<gen1-root-resource-id>` on the ApiGateway AWS Console. For example:
 
-1. in `data/resource.ts`:   
-before:  `branchName: "main"`  
-after:  `branchName: "gen2-main"` 
+![](./images/gen1-rest-api-id.png)
+![](./images/gen1-root-resource-id.png)
 
-2.  in `main.tsx`:     
-before: `import amplifyconfig from './amplifyconfiguration.json';`   
-after: `import amplifyconfig from '../amplify_outputs.json';`
+```diff
++ const gen1RestApi = RestApi.fromRestApiAttributes(restApiStack, "Gen1RestApi", {
++     restApiId: '<gen1-rest-api-id>',
++     rootResourceId: '<gen1-root-resource-id>',
++ })
++ const gen1RestApiPolicy = new Policy(restApiStack, "Gen1RestApiPolicy", {
++     statements: [
++         new PolicyStatement({
++             actions: ["execute-api:Invoke"],
++             resources: [`${gen1RestApi.arnForExecuteApi("*", "/*")}`]
++         })
++     ]
++ });
++ backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(gen1RestApiPolicy);
+```
 
-3.  in `auth/<functionname>/resource.ts`:  
-before: `environment: { MODULES: "custom", ENV: `${branchName}`, REGION: "us-east-1" }`,  
-after: DELETE THIS ENTIRE LINE ~`environment: { MODULES: "custom", ENV: `${branchName}`, REGION: "us-east-1" }`~
+**Edit in `./amplify/auth/fitnesstrackerd21d4fcdd21d4fcdPreSignup/resource.ts`:**
 
-4. in : `auth/<functionname>/handler.ts` (TS error and ES6 module format)  
-before: `exports.handler = async (event)`  
-after: `export const handler = async (event: any)`   
+> Note: The hash value after `fitnesstracker` changes for each app; you will have a different one.
+
+```diff
+- entry: "./index.js",
++ entry: "./index.js",
++ resourceGroupName: 'auth',
+```
+
+**Edit in `./amplify/function/lognutrition/resource.ts`:**
+
+```diff
+- entry: "./index.js",
++ entry: "./index.js",
++ resourceGroupName: 'data',
+```
+
+**Edit in `./amplify/function/lognutrition/index.js`:**
+
+```diff
+- exports.handler = (event, context) => {
++ export async function handler(event, context) {
+```
+
+**Edit in `./amplify/function/fitnesstrackerd21d4fcdd21d4fcdPreSignup/src/index.js`:**
+
+> Note: The hash value after `fitnesstracker` changes for each app; you will have a different one.
+
+```diff
+- const modules = moduleNames.map((name) => require(`./${name}`));
++ const modules = [require('./email-filter-allowlist')]
+```
+
+```diff
+- exports.handler = (event, context) => {
++ export async function handler(event, context) {
+```
+
+**Edit in `./amplify/function/fitnesstrackerd21d4fcdd21d4fcdPreSignup/src/email-filter-allowlist.js`:**
+
+> Note: The hash value after `fitnesstracker` changes for each app; you will have a different one.
+
+```diff
+- exports.handler = (event) => {
++ export async function handler(event) {
+```
+
+**Edit in `./src/App.tx`:**
+
+```diff
+- apiName: 'nutritionapi',
++ apiName: 'nutritionapi-gen2-main',
+```
+
+**Edit in `./src/main.tsx`:**
+
+```diff
+- import awsExports from './amplifyconfiguration.json';
++ import outputs from '../amplify_outputs.json';
++ import { parseAmplifyConfig } from "aws-amplify/utils";
++ import { Amplify } from 'aws-amplify';
+```
+
+```diff
+- Amplify.configure(awsExports);
++ const amplifyConfig = parseAmplifyConfig(outputs);
++ 
++ Amplify.configure(
++   {
++     ...amplifyConfig,
++     API: {
++       ...amplifyConfig.API,
++       REST: outputs.custom.API,
++     },
++   },
++ );
+```
+
+```console
+git add .
+git commit -m "feat: migrate to gen2"
+git push origin gen2-main
+```
+
+Now connect the `gen2-main` branch to the hosting service:
+
+![](./images/add-gen2-main-branch.png)
+![](./images/deploying-gen2-main-branch.png)
+
+
+Wait for the deployment to finish successfully. Next, locate the root stack of the Gen2 branch:
+
+![](./images/find-gen2-stack.png)
+
+```console
+git checkout main
+npx amplify gen2-migration refactor --to <gen2-stack-name>
+```
+
+Redeploy the gen2 environment to regenerate the outputs file:
+
+![](./images/redeploy-gen2.png)
+
+Wait for the deployment to finish successfully
