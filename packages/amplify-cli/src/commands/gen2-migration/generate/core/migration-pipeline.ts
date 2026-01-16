@@ -59,7 +59,7 @@ import {
 
 import { DataDefinition, DataTableMapping, generateDataSource } from '../generators/data/index';
 import { DataModelTableAccess } from '../codegen-head/data_model_access_parser';
-import { ApiTriggerDetector, DynamoTriggerInfo } from '../adapters/functions/api-trigger-detector';
+import { ApiTriggerDetector } from '../adapters/functions/api-trigger-detector';
 
 import { FunctionDefinition, renderFunctions } from '../generators/functions/index';
 import assert from 'assert';
