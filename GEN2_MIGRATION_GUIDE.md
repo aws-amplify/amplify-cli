@@ -34,7 +34,7 @@ Following are prerequisites the beta version of the tool relies. Some or all wil
 
 ## Assumptions
 
-These are a set of assumption the guide makes in order to provide more readable instructions. You should be 
+These are a set of assumptions the guide makes in order to provide more readable instructions. You should be 
 able to adapt them to fit your setup.
 
 - Your Gen1 environment is stored in the `main` branch of a `GitHub` repository.
@@ -60,9 +60,7 @@ npm install --no-save @aws-amplify/cli-internal-gen2-migration-experimental-alph
 ### 1. Lock
 
 During the migration period your Gen1 environment should not undergo any changes; otherwise we run 
-the risk of code-generating an incomplete application and possibly encountering unexpected migration failures.
-
-To ensure this, run the following:
+the risk of code-generating an incomplete application and possibly encountering unexpected migration failures. To ensure this, run the following:
 
 ```bash
 npx amplify gen2-migration lock
@@ -86,7 +84,9 @@ npx amplify gen2-migration generate
 This command will override your local `./amplify` directory with Gen2 definition files. Once successfull, 
 perform the following manual edits:
 
-**In `./src/main.tsx` (or equivalent):**
+#### Post Generate | Frontend Config
+
+**Edit in `./src/main.tsx` (or equivalent):**
 
 ```diff
 - import amplifyconfig from './amplifyconfiguration.json';
@@ -96,17 +96,19 @@ perform the following manual edits:
 This is required because in Gen2 amplify generates an `amplify_outputs.json` file instead of the `amplifyconfiguration.json` file. 
 Note that client side libraries support both files so no additional change is needed.
 
-**In `./amplify/data/resource.ts`:**
+#### Post Generate | Reuse Model Tables
+
+**Edit in `./amplify/data/resource.ts`:**
 
 ```diff
 - branchName: "main"
 + branchName: "gen2-main"
 ```
 
-This is required in order to instruct the hosting service that DynamoDB tables 
-should be reused (imported) instead of recreated.
+This is required in order to instruct the hosting service that the DynamoDB tables hosting your 
+models should be reused (imported) instead of recreated.
 
-#### 2.1 Post Generate | NodeJS Function ESM Compatibility
+#### Post Generate | NodeJS Function ESM Compatibility
 
 If you have a NodeJS Lambda function in your app, you need to port your code 
 to ESM instead of CommonsJS. For example:
@@ -123,7 +125,7 @@ _"Cannot determine intended module format because both require() and top-level a
 
 > See [ESM/CJS Interoperability](https://www.typescriptlang.org/docs/handbook/modules/appendices/esm-cjs-interop.html)
 
-#### 2.2 Post Generate | GraphQL Endpoint Function Access
+#### Post Generate | GraphQL Endpoint Function Access
 
 If your function needs to access the AppSync API you need to explicitly provide it with the appropriate 
 environment variables and give it the necessary permissions.
@@ -149,7 +151,7 @@ environment variables and give it the necessary permissions.
 
 > Where `myfunction` and `myapp` are the function and app friendly names respectively.
 
-#### 2.3 Post Generate | GraphQL Model Function Access
+#### Post Generate | GraphQL Model Function Access
 
 If your function needs to access the DynamoDB tables storing your GraphQL models, you need to explicitly provide it with the appropriate 
 environment variables and give it the necessary permissions.
@@ -169,7 +171,7 @@ environment variables and give it the necessary permissions.
 
 > Where `myfunction` and `myapp` are the function and app friendly names respectively.
 
-#### 2.4 Post Generate | Dynamo Stroage Function Access
+#### Post Generate | Dynamo Stroage Function Access
 
 If your function needs to access the DynamoDB table configured as part of your storage category you need to explicitly 
 provide it with the appropriate environment variables and give it the necessary permissions.
@@ -185,7 +187,7 @@ provide it with the appropriate environment variables and give it the necessary 
 
 > Where `myfunction` and `mytable` are the function and dynamo storage friendly names respectively.
 
-#### 2.5 Post Generate | S3 Stroage Function Access
+#### Post Generate | S3 Stroage Function Access
 
 If your function needs to access the S3 table configured as part of your storage category you need to explicitly 
 provide it with the appropriate environment variables and give it the necessary permissions.
@@ -210,7 +212,7 @@ Add this to every configured prefix:
 + allow.resource(myfunction).to(["write", "read", "delete"])
 ```
 
-#### 2.6 Post Generate | Auth Function Access
+#### Post Generate | Auth Function Access
 
 If your function needs to access the auth category you need to explicitly provide it with the appropriate environment 
 variables and give it the necessary permissions.
@@ -229,7 +231,7 @@ variables and give it the necessary permissions.
 
 > Where `myfunction` is the friendly name of your function.
 
-#### 2.7 Post Generate | Api Function Trigger
+#### Post Generate | Api Function Trigger
 
 If your function is triggered based on model updates you need to explicitly create the trigger 
 and grant the function the necessary permissions.
@@ -245,7 +247,7 @@ and grant the function the necessary permissions.
 
 > Where `myfunction` is the function friendly name and `Comment` is the model name.
 
-#### 2.8 Post Generate | Function Secrets
+#### Post Generate | Function Secrets
 
 If your function was configured with a secret value, you must first recreate the secret using the amplify console.
 
@@ -269,7 +271,7 @@ Next, pass this secret in the function definition. For example, for a secret cal
 > See [Secrets](https://docs.amplify.aws/react/build-a-backend/functions/environment-variables-and-secrets/#secrets) 
 > for more information.
 
-#### 2.9 Post Generate | GraphQL IAM Access
+#### Post Generate | GraphQL IAM Access
 
 If your frontend accesses AppSync using IAM credentials, you also need to add:
 
@@ -289,7 +291,7 @@ This is required in order for your Gen1 environment to keep functioning correctl
 
 > See [GraphQL types protected with the IAM provider](#graphql-types-protected-by-the-iam-auth-provider) for more details.
 
-#### 2.10 Post Generate | REST API
+#### Post Generate | REST API
 
 Follow instructions to [Set up an Amplify REST API](https://docs.amplify.aws/react/build-a-backend/add-aws-services/rest-api/set-up-rest-api/). 
 Then, if your frontend accesses REST using IAM credentials, you also need to add:
@@ -313,7 +315,7 @@ Navigate to the Amplify Console to find the `<gen1-rest-api-id>` On the ApiGatew
 
 This is required in order for your Gen1 environment to keep functioning correctly after the `refactor` step.
 
-#### 2.11 Post Generate | Models without an `@auth` directive
+#### Post Generate | Models without an `@auth` directive
 
 ```graphql
 type Todo @model {
@@ -411,7 +413,7 @@ Once the command succeeds, login to the AWS Amplify console and redeploy the Gen
 This is required in order to regenerate the `amplify_outputs.json` file that corresponds to the stack 
 architecture that was updated during `refactor`.
 
-#### 4.1 Post Refactor | S3 Storage
+#### Post Refactor | S3 Storage
 
 If your application contains an S3 bucket as part of the storage category, edit in `./amplify/backend.ts`:
 
@@ -430,7 +432,7 @@ git add .
 git commit -m "fix: reuse gen1 storage bucket"
 ```
 
-#### 4.2 Post Refactor | DynamoDB Storage
+#### Post Refactor | DynamoDB Storage
 
 If your application contains a DynamoDB table as part of the storage category, edit in `./amplify/backend.ts`:
 
@@ -450,7 +452,7 @@ git add .
 git commit -m "fix: reuse gen1 dynamodb table"
 ```
 
-#### 4.3 Deploy
+#### Deploy
 
 Push the changes:
 
