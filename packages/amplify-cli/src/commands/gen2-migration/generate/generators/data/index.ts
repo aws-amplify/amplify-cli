@@ -1,6 +1,6 @@
 import ts, { ObjectLiteralElementLike } from 'typescript';
 import { renderResourceTsFile } from '../../resource/resource';
-import { AppSyncClient, paginateListApis } from '@aws-sdk/client-appsync';
+import { AppSyncClient, paginateListGraphqlApis } from '@aws-sdk/client-appsync';
 import type { ConstructFactory, AmplifyFunction } from '@aws-amplify/plugin-types';
 import type { AuthorizationModes, DataLoggingOptions } from '@aws-amplify/backend-data';
 import { RestApiDefinition } from '../../codegen-head/data_definition_fetcher';
@@ -59,15 +59,6 @@ const extractModelsFromSchema = (schema: string): string[] => {
   return models;
 };
 
-const getCurrentEnvironment = (): string => {
-  try {
-    const { stateManager } = require('@aws-amplify/amplify-cli-core');
-    return stateManager.getCurrentEnvName() || 'main';
-  } catch {
-    return 'main';
-  }
-};
-
 const getProjectName = (): string | undefined => {
   try {
     const fs = require('fs');
@@ -94,9 +85,8 @@ const getApiId = async (envName: string): Promise<string | undefined> => {
 
   const projectName = getProjectName();
 
-  const paginator = paginateListApis({ client }, {});
-  for await (const page of paginator) {
-    for (const api of page.apis ?? []) {
+  for await (const page of paginateListGraphqlApis({ client }, {})) {
+    for (const api of page.graphqlApis ?? []) {
       const matchesEnv = api.tags?.['user:Stack'] === envName;
       const matchesProject = projectName ? api.tags?.['user:Application'] === projectName : true;
       if (matchesEnv && matchesProject) {

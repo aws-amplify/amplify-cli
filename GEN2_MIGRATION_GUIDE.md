@@ -294,24 +294,31 @@ This is required in order for your Gen1 environment to keep functioning correctl
 #### Post Generate | REST API
 
 Follow instructions to [Set up an Amplify REST API](https://docs.amplify.aws/react/build-a-backend/add-aws-services/rest-api/set-up-rest-api/). 
-Then, if your frontend accesses REST using IAM credentials, you also need to add:
+Then, if your frontend accesses REST using IAM credentials, navigate to the Amplify Console to find the `<gen1-rest-api-id>` and `<gen1-root-resource-id>` 
+on the ApiGateway AWS Console. For example:
+
+![](./migration-guide-images/gen1-rest-api-id.png)
+![](./migration-guide-images/gen1-root-resource-id.png)
+
+And add:
 
 ```diff
-+ const gen1Api = HttpApi.fromHttpApiAttributes(apiStack, "Gen1HttpApi", { httpApiId: '<gen1-rest-api-id>' })
-+ const gen1ApiPolicy = new Policy(apiStack, "Gen1ApiPolicy", {
++ const gen1RestApi = RestApi.fromRestApiAttributes(restApiStack, "Gen1RestApi", {
++     restApiId: '<gen1-rest-api-id>',
++     rootResourceId: '<gen1-root-resource-id>',
++ })
++ const gen1RestApiPolicy = new Policy(restApiStack, "Gen1RestApiPolicy", {
 +     statements: [
 +         new PolicyStatement({
 +             actions: ["execute-api:Invoke"],
-+             resources: [`${gen1Api.arnForExecuteApi("*", "/*")}`]
++             resources: [`${gen1RestApi.arnForExecuteApi("*", "/*")}`]
 +         })
 +     ]
 + });
-+ backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(gen1ApiPolicy);
++ backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(gen1RestApiPolicy);
 ```
 
-Navigate to the Amplify Console to find the `<gen1-rest-api-id>` On the ApiGateway AWS Console. For example:
-
-![](./migration-guide-images/gen1-rest-api-id.png)
+> Where `restApiStack` is the variable name you assigned when creating the dedicated stack.
 
 This is required in order for your Gen1 environment to keep functioning correctly after the `refactor` step.
 
