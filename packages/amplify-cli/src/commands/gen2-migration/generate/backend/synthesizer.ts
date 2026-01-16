@@ -19,6 +19,7 @@ import { newLineIdentifier } from '../ts_factory_utils';
 import type { AdditionalAuthProvider } from '../generators/data';
 import { RestApiDefinition } from '../codegen-head/data_definition_fetcher';
 import { generateLambdaEnvVars } from '../generators/functions/lambda_env_generator';
+import { DynamoTriggerInfo } from '../adapters/functions/api-trigger-detector';
 import { DataModelTableAccess } from '../codegen-head/data_model_access_parser';
 
 const factory = ts.factory;
@@ -63,6 +64,7 @@ export interface BackendRenderParameters {
   };
   customResources?: Map<string, string>;
   unsupportedCategories?: Map<string, string>;
+  dynamoTriggers?: DynamoTriggerInfo[];
 }
 
 // const amplifyGen1EnvName = 'AMPLIFY_GEN_1_ENV_NAME';
@@ -1066,6 +1068,12 @@ export class BackendSynthesizer {
           nodes.push(gsiCall);
         });
       });
+    }
+
+    // Add DynamoDB trigger imports if needed
+    if (renderArgs.dynamoTriggers && renderArgs.dynamoTriggers.length > 0) {
+      imports.push(this.createImportStatement([factory.createIdentifier('DynamoEventSource')], 'aws-cdk-lib/aws-lambda-event-sources'));
+      imports.push(this.createImportStatement([factory.createIdentifier('StartingPosition')], 'aws-cdk-lib/aws-lambda'));
     }
 
     // Adds core import: import { defineBackend } from '@aws-amplify/backend';
@@ -2173,6 +2181,114 @@ export class BackendSynthesizer {
             ),
           ),
         );
+      });
+    }
+
+    // Generate Lambda API Triggers
+    if (renderArgs.dynamoTriggers && renderArgs.dynamoTriggers.length > 0) {
+      // Create for loop for each function's triggers
+      renderArgs.dynamoTriggers.forEach((trigger) => {
+        if (trigger.models.length > 0) {
+          const forStatement = factory.createForStatement(
+            factory.createVariableDeclarationList(
+              [factory.createVariableDeclaration('model', undefined, undefined, undefined)],
+              ts.NodeFlags.Const,
+            ),
+            factory.createBinaryExpression(
+              factory.createIdentifier('model'),
+              factory.createToken(ts.SyntaxKind.InKeyword),
+              factory.createArrayLiteralExpression(trigger.models.map((model) => factory.createStringLiteral(model))),
+            ),
+            undefined,
+            factory.createBlock(
+              [
+                // const table = backend.data.resources.tables[model];
+                factory.createVariableStatement(
+                  [],
+                  factory.createVariableDeclarationList(
+                    [
+                      factory.createVariableDeclaration(
+                        'table',
+                        undefined,
+                        undefined,
+                        factory.createElementAccessExpression(
+                          factory.createPropertyAccessExpression(
+                            factory.createIdentifier('backend.data.resources'),
+                            factory.createIdentifier('tables'),
+                          ),
+                          factory.createIdentifier('model'),
+                        ),
+                      ),
+                    ],
+                    ts.NodeFlags.Const,
+                  ),
+                ),
+                // backend.functionName.resources.lambda.addEventSource(...)
+                factory.createExpressionStatement(
+                  factory.createCallExpression(
+                    factory.createPropertyAccessExpression(
+                      factory.createPropertyAccessExpression(
+                        factory.createIdentifier(`backend.${trigger.functionName}.resources`),
+                        factory.createIdentifier('lambda'),
+                      ),
+                      factory.createIdentifier('addEventSource'),
+                    ),
+                    undefined,
+                    [
+                      factory.createNewExpression(factory.createIdentifier('DynamoEventSource'), undefined, [
+                        factory.createIdentifier('table'),
+                        factory.createObjectLiteralExpression([
+                          factory.createPropertyAssignment(
+                            'startingPosition',
+                            factory.createPropertyAccessExpression(
+                              factory.createIdentifier('StartingPosition'),
+                              factory.createIdentifier('LATEST'),
+                            ),
+                          ),
+                        ]),
+                      ]),
+                    ],
+                  ),
+                ),
+                // table.grantStreamRead(...)
+                factory.createExpressionStatement(
+                  factory.createCallExpression(
+                    factory.createPropertyAccessExpression(factory.createIdentifier('table'), factory.createIdentifier('grantStreamRead')),
+                    undefined,
+                    [
+                      factory.createNonNullExpression(
+                        factory.createPropertyAccessExpression(
+                          factory.createIdentifier(`backend.${trigger.functionName}.resources.lambda`),
+                          factory.createIdentifier('role'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                // table.grantTableListStreams(...)
+                factory.createExpressionStatement(
+                  factory.createCallExpression(
+                    factory.createPropertyAccessExpression(
+                      factory.createIdentifier('table'),
+                      factory.createIdentifier('grantTableListStreams'),
+                    ),
+                    undefined,
+                    [
+                      factory.createNonNullExpression(
+                        factory.createPropertyAccessExpression(
+                          factory.createIdentifier(`backend.${trigger.functionName}.resources.lambda`),
+                          factory.createIdentifier('role'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+              true,
+            ),
+          );
+          nodes.push(forStatement);
+        }
       });
     }
 

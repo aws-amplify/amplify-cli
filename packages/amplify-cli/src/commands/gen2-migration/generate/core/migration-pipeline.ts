@@ -59,6 +59,7 @@ import {
 
 import { DataDefinition, DataTableMapping, generateDataSource } from '../generators/data/index';
 import { DataModelTableAccess } from '../codegen-head/data_model_access_parser';
+import { ApiTriggerDetector, DynamoTriggerInfo } from '../adapters/functions/api-trigger-detector';
 
 import { FunctionDefinition, renderFunctions } from '../generators/functions/index';
 import assert from 'assert';
@@ -364,6 +365,9 @@ export const createGen2Renderer = ({
   const functionNamesAndCategory = new Map<string, string>();
   const functionsWithApiAccess = new Map<string, { hasQuery: boolean; hasMutation: boolean; hasSubscription: boolean }>();
   const functionsWithDataModelAccess = new Map<string, DataModelTableAccess[]>();
+
+  // Detect DynamoDB triggers for functions
+  const dynamoTriggers = functions ? ApiTriggerDetector.detectDynamoTriggers(functions) : [];
   if (functions && functions.length) {
     const functionEnvironments = new Map<string, Record<string, string>>();
 
@@ -508,6 +512,11 @@ export const createGen2Renderer = ({
   // Handle custom CloudFormation resources that require manual migration
   if (customResources && customResources.size > 0) {
     backendRenderOptions.customResources = customResources;
+  }
+
+  // Handle DynamoDB triggers
+  if (dynamoTriggers && dynamoTriggers.length > 0) {
+    backendRenderOptions.dynamoTriggers = dynamoTriggers;
   }
 
   // Generate the main backend.ts file that imports and combines all resources
