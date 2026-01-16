@@ -50,7 +50,7 @@ export function generateLambdaEnvVars(functionName: string, envVars: Record<stri
             }
           } else if (envVar.startsWith('STORAGE_')) {
             // STORAGE_TODOTABLE_ARN -> extract 'TODO' from 'TODOTABLE'
-            const storageMatch = envVar.match(/STORAGE_(.+?)TABLE_/);
+            const storageMatch = envVar.match(/STORAGE_(.+)TABLE_(?:ARN|NAME|STREAMARN)$/);
             if (storageMatch) {
               tableName = storageMatch[1].toLowerCase();
             } else {
