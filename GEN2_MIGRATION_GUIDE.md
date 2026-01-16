@@ -320,7 +320,17 @@ And add:
 
 > Where `restApiStack` is the variable name you assigned when creating the dedicated stack.
 
-This is required in order for your Gen1 environment to keep functioning correctly after the `refactor` step.
+This is required in order for your Gen1 environment to keep functioning correctly after the `refactor` step. You'll also need to change 
+your frontend code to point to the new API name:
+
+**Edit in `./src/App.tsx` (or equivalent)**:
+
+```diff
+- apiName: '<gen1-rest-api-name>',
++ apiName: '<gen2-rest-api-name>',
+```
+
+Both APIs are fully functional so your Gen1 app will continue to work and access the Gen1 API.
 
 #### Post Generate | Functions with Dynamic Require
 
@@ -330,15 +340,16 @@ If you have a function that uses a dynamic require statement:
 const modules = moduleNames.map((name) => require(`./${name}`));
 ```
 
-You need to change it to use static requires instead:
+You may need to change it to use static requires instead:
 
 ```diff
 - const modules = moduleNames.map((name) => require(`./${name}`));
 + const modules = [require('./email-filter-allowlist')]
 ```
 
-This is required because Gen2 functions are bundled with `esbuild`; a dynamic require like so may cause 
-unnecessary bundling and exceed the lambda memory limit.
+Gen2 functions are bundled with `esbuild`; if `esbuild` is unable to properly analyze the code, it may cause 
+unnecessary bundling and exceed the lambda memory limit. If that is the case, you will see `Out Of Memory` 
+errors in your function execution logs.
 
 #### Post Generate | Models without an `@auth` directive
 
