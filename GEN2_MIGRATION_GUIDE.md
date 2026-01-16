@@ -442,13 +442,6 @@ git checkout main
 npx amplify gen2-migration refactor --to <gen2-root-stack-name>
 ```
 
-Once the command succeeds, login to the AWS Amplify console and redeploy the Gen2 branch:
-
-![](./migration-guide-images/redeploy.png)
-
-This is required in order to regenerate the `amplify_outputs.json` file that corresponds to the stack 
-architecture that was updated during `refactor`.
-
 #### Post Refactor | S3 Storage
 
 If your application contains an S3 bucket as part of the storage category, edit in `./amplify/backend.ts`:
@@ -461,12 +454,15 @@ If your application contains an S3 bucket as part of the storage category, edit 
 > This is required in order to sync your local bucket name with the deployed template. 
 Otherwise, pushing changes to the `gen2-main` branch will result in a bucket replacement.
 
-Commit the changes:
+Push the changes:
 
 ```console
 git add .
 git commit -m "fix: reuse gen1 storage bucket"
+git push origin gen2-main
 ```
+
+Wait for the deployment to finish successfully.
 
 #### Post Refactor | DynamoDB Storage
 
@@ -481,22 +477,26 @@ If your application contains a DynamoDB table as part of the storage category, e
 > This is required in order to sync your local table name with the deployed template. 
 Otherwise, pushing changes to the `gen2-main` branch will result in a table replacement.
 
-Commit the changes:
+Push the changes:
 
 ```console
 git add .
 git commit -m "fix: reuse gen1 dynamodb table"
-```
-
-#### Deploy
-
-Push the changes:
-
-```
 git push origin gen2-main
 ```
 
 Wait for the deployment to finish successfully.
+
+#### Post Refactor | Redeploy
+
+> Note: If you've already followed one of the other post refactor steps, this can be skipped.
+
+Login to the AWS Amplify console and redeploy the Gen2 branch:
+
+![](./migration-guide-images/redeploy.png)
+
+This is required in order to regenerate the `amplify_outputs.json` file that corresponds to the stack 
+architecture that was updated during `refactor`.
 
 # Feature Coverage
 
