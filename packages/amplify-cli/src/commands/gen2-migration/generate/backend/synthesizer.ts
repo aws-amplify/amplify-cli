@@ -2189,17 +2189,13 @@ export class BackendSynthesizer {
       // Create for loop for each function's triggers
       renderArgs.dynamoTriggers.forEach((trigger) => {
         if (trigger.models.length > 0) {
-          const forStatement = factory.createForStatement(
+          const forStatement = factory.createForOfStatement(
+            undefined,
             factory.createVariableDeclarationList(
               [factory.createVariableDeclaration('model', undefined, undefined, undefined)],
               ts.NodeFlags.Const,
             ),
-            factory.createBinaryExpression(
-              factory.createIdentifier('model'),
-              factory.createToken(ts.SyntaxKind.InKeyword),
-              factory.createArrayLiteralExpression(trigger.models.map((model) => factory.createStringLiteral(model))),
-            ),
-            undefined,
+            factory.createArrayLiteralExpression(trigger.models.map((model) => factory.createStringLiteral(model))),
             factory.createBlock(
               [
                 // const table = backend.data.resources.tables[model];
