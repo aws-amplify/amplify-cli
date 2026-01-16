@@ -289,9 +289,10 @@ This is required in order for your Gen1 environment to keep functioning correctl
 
 > See [GraphQL types protected with the IAM provider](#graphql-types-protected-by-the-iam-auth-provider) for more details.
 
-#### 2.10 Post Generate | REST IAM Access
+#### 2.10 Post Generate | REST API
 
-If your frontend accesses REST using IAM credentials, you also need to add:
+Follow instructions to [Set up an Amplify REST API](https://docs.amplify.aws/react/build-a-backend/add-aws-services/rest-api/set-up-rest-api/). 
+Then, if your frontend accesses REST using IAM credentials, you also need to add:
 
 ```diff
 + const gen1Api = HttpApi.fromHttpApiAttributes(apiStack, "Gen1HttpApi", { httpApiId: '<gen1-rest-api-id>' })
@@ -311,6 +312,46 @@ Navigate to the Amplify Console to find the `<gen1-rest-api-id>` On the ApiGatew
 ![](./migration-guide-images/gen1-rest-api-id.png)
 
 This is required in order for your Gen1 environment to keep functioning correctly after the `refactor` step.
+
+#### 2.11 Post Generate | Models without an `@auth` directive
+
+```graphql
+type Todo @model {
+  id: ID!
+  name: String!
+  description: String
+}
+```
+
+In Gen1, types like these are considered _public_ and are assigned the `@aws_api_key` directive when transformed into an 
+AppSync compatible schema. In Gen2, they are considered _private_ and are assinged the `@aws_iam` directive.
+
+In order to preserve the same protections after migration, you must explicitly allow public access on 
+the type by adding the `@auth` directive:
+
+```graphql
+type Todo @model @auth(rules: [{ allow: public }]) {
+  id: ID!
+  name: String!
+  description: String
+}
+```
+
+The same behavior applies to **non** `@model` types as well. For such types however, `@auth` cannot be 
+applied on the type itself and therefore must be applied to each field. For example:
+
+```graphql
+type FunctionResponse {
+  fieldA: String! @auth(rules: [{ allow: public }])
+  fieldB: String! @auth(rules: [{ allow: public }])
+}
+
+type Query {
+  invokeFunction: FunctionResponse @function(name: "myfunction-${env}") @auth(rules: [{ allow: public }])
+}
+```
+
+Your schema is located in `./amplify/data/resource.ts`.
 
 ### 3. Deploy
 
@@ -519,7 +560,7 @@ to add the necessary configuration.
     - ❌ OpenID Connect
     - ❌ Lambda
 
-- ❌ **REST**
+- ⚠️ **REST** (`generate` ✗ `refactor` ✔)
 
 ## Storage
 
@@ -666,44 +707,6 @@ to add the necessary configuration.
 ### `amplify override <category>` ❌
 
 ## Limitations
-
-### GraphQL types without an `@auth` directive
-
-```graphql
-type Todo @model {
-  id: ID!
-  name: String!
-  description: String
-}
-```
-
-In Gen1, types like these are considered _public_ and are assigned the `@aws_api_key` directive when transformed into an 
-AppSync compatible schema. In Gen2, they are considered _private_ and are assinged the `@aws_iam` directive.
-
-In order to preserve the same protections after migration, you must explicitly allow public access on 
-the type by adding the `@auth` directive:
-
-```graphql
-type Todo @model @auth(rules: [{ allow: public }]) {
-  id: ID!
-  name: String!
-  description: String
-}
-```
-
-The same behavior applies to **non** `@model` types as well. For such types however, `@auth` cannot be 
-applied on the type itself and therefore must be applied to each field. For example:
-
-```graphql
-type FunctionResponse {
-  fieldA: String! @auth(rules: [{ allow: public }])
-  fieldB: String! @auth(rules: [{ allow: public }])
-}
-
-type Query {
-  invokeFunction: FunctionResponse @function(name: "myfunction-${env}") @auth(rules: [{ allow: public }])
-}
-```
 
 ### GraphQL types protected by the `iam` auth provider
 
