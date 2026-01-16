@@ -811,7 +811,7 @@ __metadata:
     node-fetch: ^2.6.7
     openpgp: ^5.10.2
     promise-toolbox: ^0.20.0
-    tar: ^6.1.11
+    tar: ^7.5.3
     uuid: ^8.3.2
     wait-port: ^0.2.7
   languageName: unknown
@@ -15491,7 +15491,7 @@ __metadata:
     logdown: ^3.3.0
     node-fetch: ^2.6.7
     promise-toolbox: ^0.20.0
-    tar: ^6.1.11
+    tar: ^7.5.3
     wait-port: ^0.2.7
     which: ^2.0.2
   languageName: unknown
