@@ -899,6 +899,8 @@ Here is where you can share:
 
 # Known Issues
 
+> [GitHub Query](https://github.com/aws-amplify/amplify-cli/issues?q=is%3Aissue%20state%3Aopen%20label%3Agen2-migration)
+
 - [unexpected drift detected for s3 storage triggers](https://github.com/aws-amplify/amplify-cli/issues/14483)
 - [generated code is missing `expiresInDays` config when API key is configured as an additional auth method](https://github.com/aws-amplify/amplify-cli/issues/14484)
 - [unrecoverable state due to refactor occasionally timing out](https://github.com/aws-amplify/amplify-cli/issues/14485)
