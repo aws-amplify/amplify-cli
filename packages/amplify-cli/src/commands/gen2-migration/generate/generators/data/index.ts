@@ -1,5 +1,6 @@
 import ts, { ObjectLiteralElementLike } from 'typescript';
 import { renderResourceTsFile } from '../../resource/resource';
+import { AppSyncClient, paginateListGraphqlApis } from '@aws-sdk/client-appsync';
 import type { ConstructFactory, AmplifyFunction } from '@aws-amplify/plugin-types';
 import type { AuthorizationModes, DataLoggingOptions } from '@aws-amplify/backend-data';
 import { RestApiDefinition } from '../../codegen-head/data_definition_fetcher';
@@ -58,15 +59,6 @@ const extractModelsFromSchema = (schema: string): string[] => {
   return models;
 };
 
-const getCurrentEnvironment = (): string => {
-  try {
-    const { stateManager } = require('@aws-amplify/amplify-cli-core');
-    return stateManager.getCurrentEnvName() || 'main';
-  } catch {
-    return 'main';
-  }
-};
-
 const getProjectName = (): string | undefined => {
   try {
     const fs = require('fs');
@@ -88,28 +80,21 @@ const getProjectName = (): string | undefined => {
   }
 };
 
-const getApiId = async (): Promise<string | undefined> => {
-  try {
-    const { AppSyncClient, ListGraphqlApisCommand } = require('@aws-sdk/client-appsync');
-    const client = new AppSyncClient({});
+const getApiId = async (envName: string): Promise<string | undefined> => {
+  const client = new AppSyncClient({});
 
-    const response = await client.send(new ListGraphqlApisCommand({}));
-    const currentEnv = getCurrentEnvironment();
+  const projectName = getProjectName();
 
-    // Match with tags equalling env and project name
-    const projectName = getProjectName();
-    const api = response.graphqlApis?.find((api) => {
-      const matchesEnv = api.tags?.['user:Stack'] === currentEnv;
+  for await (const page of paginateListGraphqlApis({ client }, {})) {
+    for (const api of page.graphqlApis ?? []) {
+      const matchesEnv = api.tags?.['user:Stack'] === envName;
       const matchesProject = projectName ? api.tags?.['user:Application'] === projectName : true;
-
-      return matchesEnv && matchesProject;
-    });
-
-    return api?.apiId;
-  } catch (error) {
-    console.warn('Failed to fetch API ID from AWS:', error.message);
-    return undefined;
+      if (matchesEnv && matchesProject) {
+        return api.apiId;
+      }
+    }
   }
+  return undefined;
 };
 
 /**
@@ -215,7 +200,7 @@ export const generateDataSource = async (gen1Env: string, dataDefinition?: DataD
 
   // Generate table mappings if not provided but schema is available
   if (!tableMappings && dataDefinition?.schema) {
-    const apiId = await getApiId();
+    const apiId = await getApiId(gen1Env);
     if (apiId) {
       tableMappings = createDataSourceMapping(dataDefinition.schema, apiId, gen1Env);
     }

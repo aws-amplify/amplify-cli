@@ -1,4 +1,4 @@
-# Amplify Gen1 → Gen2 Migration Guide (Alpha)
+# Amplify Gen1 → Gen2 Migration Guide (Beta)
 
 Following document describes how to migrate your Gen1 environment to a new Gen2 application.
 
@@ -25,13 +25,16 @@ After completing this process you will have 2 functionally equivalent amplify ap
 
 ## Prerequisites 
 
+Following are prerequisites the beta version of the tool relies. Some or all will be removed in the stable version.
+
 - Your frontend code is located within the same repository as your backend application.
+- Your frontend code is an NPM compatible based app.
 - Your Gen1 environment is deployed via the hosting service.
 - You have a `default` AWS profile configured with an `AdministratorAccess` policy.
 
 ## Assumptions
 
-These are a set of assumption the guide makes in order to provide more readable instructions. You should be 
+These are a set of assumptions the guide makes in order to provide more readable instructions. You should be 
 able to adapt them to fit your setup.
 
 - Your Gen1 environment is stored in the `main` branch of a `GitHub` repository.
@@ -42,7 +45,7 @@ able to adapt them to fit your setup.
 > **Before you begin, determine if your app can be migrated by reviewing:**
 >
 > - [Feature Coverage](#feature-coverage)
-> - [Limitations](#limitations)
+> - [Pre Migration Operations](#pre-migration-operations)
 
 First obtain a fresh and up-to-date local copy of your Amplify Gen1 environment and install the experimental CLI package:
 
@@ -57,9 +60,7 @@ npm install --no-save @aws-amplify/cli-internal-gen2-migration-experimental-alph
 ### 1. Lock
 
 During the migration period your Gen1 environment should not undergo any changes; otherwise we run 
-the risk of code-generating an incomplete application and possibly encountering unexpected migration failures.
-
-To ensure this, run the following:
+the risk of code-generating an incomplete application and possibly encountering unexpected migration failures. To ensure this, run the following:
 
 ```bash
 npx amplify gen2-migration lock
@@ -83,7 +84,9 @@ npx amplify gen2-migration generate
 This command will override your local `./amplify` directory with Gen2 definition files. Once successfull, 
 perform the following manual edits:
 
-**In `./src/main.tsx` (or equivalent):**
+#### Post Generate | Frontend Config
+
+**Edit in `./src/main.tsx` (or equivalent):**
 
 ```diff
 - import amplifyconfig from './amplifyconfiguration.json';
@@ -93,17 +96,19 @@ perform the following manual edits:
 This is required because in Gen2 amplify generates an `amplify_outputs.json` file instead of the `amplifyconfiguration.json` file. 
 Note that client side libraries support both files so no additional change is needed.
 
-**In `./amplify/data/resource.ts`:**
+#### Post Generate | Reuse Model Tables
+
+**Edit in `./amplify/data/resource.ts`:**
 
 ```diff
 - branchName: "main"
 + branchName: "gen2-main"
 ```
 
-This is required in order to instruct the hosting service that DynamoDB tables 
-should be reused (imported) instead of recreated.
+This is required in order to instruct the hosting service that the DynamoDB tables hosting your 
+models should be reused (imported) instead of recreated.
 
-#### 2.1 Post Generate | NodeJS Function ESM Compatibility
+#### Post Generate | NodeJS Function ESM Compatibility
 
 If you have a NodeJS Lambda function in your app, you need to port your code 
 to ESM instead of CommonsJS. For example:
@@ -120,7 +125,7 @@ _"Cannot determine intended module format because both require() and top-level a
 
 > See [ESM/CJS Interoperability](https://www.typescriptlang.org/docs/handbook/modules/appendices/esm-cjs-interop.html)
 
-#### 2.2 Post Generate | GraphQL Endpoint Function Access
+#### Post Generate | GraphQL Endpoint Function Access
 
 If your function needs to access the AppSync API you need to explicitly provide it with the appropriate 
 environment variables and give it the necessary permissions.
@@ -146,7 +151,7 @@ environment variables and give it the necessary permissions.
 
 > Where `myfunction` and `myapp` are the function and app friendly names respectively.
 
-#### 2.3 Post Generate | GraphQL Model Function Access
+#### Post Generate | GraphQL Model Function Access
 
 If your function needs to access the DynamoDB tables storing your GraphQL models, you need to explicitly provide it with the appropriate 
 environment variables and give it the necessary permissions.
@@ -166,7 +171,7 @@ environment variables and give it the necessary permissions.
 
 > Where `myfunction` and `myapp` are the function and app friendly names respectively.
 
-#### 2.4 Post Generate | Dynamo Stroage Function Access
+#### Post Generate | Dynamo Stroage Function Access
 
 If your function needs to access the DynamoDB table configured as part of your storage category you need to explicitly 
 provide it with the appropriate environment variables and give it the necessary permissions.
@@ -182,7 +187,7 @@ provide it with the appropriate environment variables and give it the necessary 
 
 > Where `myfunction` and `mytable` are the function and dynamo storage friendly names respectively.
 
-#### 2.5 Post Generate | S3 Stroage Function Access
+#### Post Generate | S3 Stroage Function Access
 
 If your function needs to access the S3 table configured as part of your storage category you need to explicitly 
 provide it with the appropriate environment variables and give it the necessary permissions.
@@ -195,7 +200,7 @@ provide it with the appropriate environment variables and give it the necessary 
 
 > Where `myfunction` and `mybucket` are the function and s3 storage friendly names respectively.
 
-**Edit in `./amplify/backend/storage/resource.ts`:**
+**Edit in `./amplify/storage/resource.ts`:**
 
 Add this to every configured prefix:
 
@@ -207,7 +212,7 @@ Add this to every configured prefix:
 + allow.resource(myfunction).to(["write", "read", "delete"])
 ```
 
-#### 2.6 Post Generate | Auth Function Access
+#### Post Generate | Auth Function Access
 
 If your function needs to access the auth category you need to explicitly provide it with the appropriate environment 
 variables and give it the necessary permissions.
@@ -226,7 +231,7 @@ variables and give it the necessary permissions.
 
 > Where `myfunction` is the friendly name of your function.
 
-#### 2.7 Post Generate | Api Function Trigger
+#### Post Generate | Api Function Trigger
 
 If your function is triggered based on model updates you need to explicitly create the trigger 
 and grant the function the necessary permissions.
@@ -242,7 +247,7 @@ and grant the function the necessary permissions.
 
 > Where `myfunction` is the function friendly name and `Comment` is the model name.
 
-#### 2.8 Post Generate | Function Secrets
+#### Post Generate | Function Secrets
 
 If your function was configured with a secret value, you must first recreate the secret using the amplify console.
 
@@ -251,7 +256,7 @@ _Hosting → Secrets → Manage Secrets → Add new_
 ![](./migration-guide-images/add-secret.png)
 
 Next, pass this secret in the function definition. For example, for a secret called `MY_SECRET`, 
-**Edit in `./amplify/backend/<function-name>/resource.ts:**:
+**Edit in `./amplify/<function-name>/resource.ts:**:
 
 ```diff
 - import { defineFunction } from "@aws-amplify/backend";
@@ -266,7 +271,7 @@ Next, pass this secret in the function definition. For example, for a secret cal
 > See [Secrets](https://docs.amplify.aws/react/build-a-backend/functions/environment-variables-and-secrets/#secrets) 
 > for more information.
 
-#### 2.9 Post Generate | GrapQL IAM Access
+#### Post Generate | GraphQL IAM Access
 
 If your frontend accesses AppSync using IAM credentials, you also need to add:
 
@@ -286,28 +291,105 @@ This is required in order for your Gen1 environment to keep functioning correctl
 
 > See [GraphQL types protected with the IAM provider](#graphql-types-protected-by-the-iam-auth-provider) for more details.
 
-#### 2.10 Post Generate | REST IAM Access
+#### Post Generate | REST API
 
-If your frontend accesses REST using IAM credentials, you also need to add:
+Follow instructions to [Set up an Amplify REST API](https://docs.amplify.aws/react/build-a-backend/add-aws-services/rest-api/set-up-rest-api/). 
+Then, if your frontend accesses REST using IAM credentials, navigate to the Amplify Console to find the `<gen1-rest-api-id>` and `<gen1-root-resource-id>` 
+on the ApiGateway AWS Console. For example:
+
+![](./migration-guide-images/gen1-rest-api-id.png)
+![](./migration-guide-images/gen1-root-resource-id.png)
+
+And add:
 
 ```diff
-+ const gen1Api = HttpApi.fromHttpApiAttributes(apiStack, "Gen1HttpApi", { httpApiId: '<gen1-rest-api-id>' })
-+ const gen1ApiPolicy = new Policy(apiStack, "Gen1ApiPolicy", {
++ const gen1RestApi = RestApi.fromRestApiAttributes(restApiStack, "Gen1RestApi", {
++     restApiId: '<gen1-rest-api-id>',
++     rootResourceId: '<gen1-root-resource-id>',
++ })
++ const gen1RestApiPolicy = new Policy(restApiStack, "Gen1RestApiPolicy", {
 +     statements: [
 +         new PolicyStatement({
 +             actions: ["execute-api:Invoke"],
-+             resources: [`${gen1Api.arnForExecuteApi("*", "/*")}`]
++             resources: [`${gen1RestApi.arnForExecuteApi("*", "/*")}`]
 +         })
 +     ]
 + });
-+ backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(gen1ApiPolicy);
++ backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(gen1RestApiPolicy);
 ```
 
-Navigate to the Amplify Console to find the `<gen1-rest-api-id>` On the ApiGateway AWS Console. For example:
+> Where `restApiStack` is the variable name you assigned when creating the dedicated stack.
 
-![](./migration-guide-images/gen1-rest-api-id.png)
+This is required in order for your Gen1 environment to keep functioning correctly after the `refactor` step. You'll also need to change 
+your frontend code to point to the new API name:
 
-This is required in order for your Gen1 environment to keep functioning correctly after the `refactor` step.
+**Edit in `./src/App.tsx` (or equivalent)**:
+
+```diff
+- apiName: '<gen1-rest-api-name>',
++ apiName: '<gen2-rest-api-name>',
+```
+
+Both APIs are fully functional so your Gen1 app will continue to work and access the Gen1 API.
+
+#### Post Generate | Functions with Dynamic Require
+
+If you have a function that uses a dynamic require statement:
+
+```console
+const modules = moduleNames.map((name) => require(`./${name}`));
+```
+
+You may need to change it to use static requires instead:
+
+```diff
+- const modules = moduleNames.map((name) => require(`./${name}`));
++ const modules = [require('./email-filter-allowlist')]
+```
+
+Gen2 functions are bundled with `esbuild`; if `esbuild` is unable to properly analyze the code, it may cause 
+unnecessary bundling and exceed the lambda memory limit. If that is the case, you will see `Out Of Memory` 
+errors in your function execution logs.
+
+#### Post Generate | Models without an `@auth` directive
+
+```graphql
+type Todo @model {
+  id: ID!
+  name: String!
+  description: String
+}
+```
+
+In Gen1, types like these are considered _public_ and are assigned the `@aws_api_key` directive when transformed into an 
+AppSync compatible schema. In Gen2, they are considered _private_ and are assinged the `@aws_iam` directive.
+
+In order to preserve the same protections after migration, you must explicitly allow public access on 
+the type by adding the `@auth` directive:
+
+```graphql
+type Todo @model @auth(rules: [{ allow: public }]) {
+  id: ID!
+  name: String!
+  description: String
+}
+```
+
+The same behavior applies to **non** `@model` types as well. For such types however, `@auth` cannot be 
+applied on the type itself and therefore must be applied to each field. For example:
+
+```graphql
+type FunctionResponse {
+  fieldA: String! @auth(rules: [{ allow: public }])
+  fieldB: String! @auth(rules: [{ allow: public }])
+}
+
+type Query {
+  invokeFunction: FunctionResponse @function(name: "myfunction-${env}") @auth(rules: [{ allow: public }])
+}
+```
+
+Your schema is located in `./amplify/data/resource.ts`.
 
 ### 3. Deploy
 
@@ -360,14 +442,7 @@ git checkout main
 npx amplify gen2-migration refactor --to <gen2-root-stack-name>
 ```
 
-Once the command succeeds, login to the AWS Amplify console and redeploy the Gen2 branch:
-
-![](./migration-guide-images/redeploy.png)
-
-This is required in order to regenerate the `amplify_outputs.json` file that corresponds to the stack 
-architecture that was updated during `refactor`.
-
-#### 4.1 Post Refactor | S3 Storage
+#### Post Refactor | S3 Storage
 
 If your application contains an S3 bucket as part of the storage category, edit in `./amplify/backend.ts`:
 
@@ -379,14 +454,17 @@ If your application contains an S3 bucket as part of the storage category, edit 
 > This is required in order to sync your local bucket name with the deployed template. 
 Otherwise, pushing changes to the `gen2-main` branch will result in a bucket replacement.
 
-Commit the changes:
+Push the changes:
 
 ```console
 git add .
 git commit -m "fix: reuse gen1 storage bucket"
+git push origin gen2-main
 ```
 
-#### 4.2 Post Refactor | DynamoDB Storage
+Wait for the deployment to finish successfully.
+
+#### Post Refactor | DynamoDB Storage
 
 If your application contains a DynamoDB table as part of the storage category, edit in `./amplify/backend.ts`:
 
@@ -399,33 +477,37 @@ If your application contains a DynamoDB table as part of the storage category, e
 > This is required in order to sync your local table name with the deployed template. 
 Otherwise, pushing changes to the `gen2-main` branch will result in a table replacement.
 
-Commit the changes:
+Push the changes:
 
 ```console
 git add .
 git commit -m "fix: reuse gen1 dynamodb table"
-```
-
-#### 4.3 Deploy
-
-Push the changes:
-
-```
 git push origin gen2-main
 ```
 
 Wait for the deployment to finish successfully.
+
+#### Post Refactor | Redeploy
+
+> Note: If you've already followed one of the other post refactor steps, this can be skipped.
+
+Login to the AWS Amplify console and redeploy the Gen2 branch:
+
+![](./migration-guide-images/redeploy.png)
+
+This is required in order to regenerate the `amplify_outputs.json` file that corresponds to the stack 
+architecture that was updated during `refactor`.
 
 # Feature Coverage
 
 Following provides an overview of the supported (and unsupported) features for migration. Features are organized 
 by the CLI setting that configures them.
 
-**Legend**
-
-- ❌ | Unsupported.
-- ✅ | Fully automated
-- ⚠️ | Partially supported. Includes indication whether it lacks support for `generate` or `refactor`.
+> **Legend**
+>
+> - ❌ | Unsupported.
+> - ✅ | Fully automated
+> - ⚠️ | Partially supported. Includes indication whether it lacks support for `generate` or `refactor`.
 
 - If a feature is not supported for `refactor` you will not be able to fully migrate the app. You can however still generate 
 and deploy it to test whether code generation works properly.
@@ -439,27 +521,27 @@ to add the necessary configuration.
 
 - ➤ **How do you want users to be able to sign in**
 
-  - ✅ Username
-  - ✅ Email
-  - ✅ Phone Number
-  - ✅ Email or Phone Number
+  - ✅ `Username`
+  - ✅ `Email`
+  - ✅ `Phone Number`
+  - ✅ `Email or Phone Number`
 
 - ➤ **Select the social providers you want to configure for your user pool**
 
-  - ⚠️ Facebook (`generate` ✔ `refactor` ✗)
-  - ⚠️ Google (`generate` ✔ `refactor` ✗)
-  - ❌ Login With Amazon
-  - ❌ Sign in with Apple
+  - ⚠️ `Facebook` (_generate_ ✔ _refactor_ ✗)
+  - ⚠️ `Google` (_generate_ ✔ _refactor_ ✗)
+  - ❌ `Login With Amazon`
+  - ❌ `Sign in with Apple`
 
 - ➤ **Select the authentication/authorization services that you want to use**
 
-  - ✅ User Sign-Up, Sign-In, connected with AWS IAM controls
-  - ❌ User Sign-Up & Sign-In only
+  - ✅ `User Sign-Up, Sign-In, connected with AWS IAM controls`
+  - ❌ `User Sign-Up & Sign-In only`
   
 - ➤ **Allow unauthenticated logins**
 
-  - ❌ Yes
-  - ✅ No
+  - ❌ `Yes`
+  - ✅ `No`
 
 - ❌ **Do you want to enable 3rd party authentication providers in your identity pool**
 
@@ -469,14 +551,14 @@ to add the necessary configuration.
 
 - ➤ **Multifactor authentication (MFA) user login options**
 
-  - ✅ OFF
-  - ❌ ON
-  - ❌ OPTIONAL
+  - ✅ `OFF`
+  - ❌ `ON`
+  - ❌ `OPTIONAL`
 
 - ➤ **Email based user registration/forgot password:**
 
-  - ✅ Enabled
-  - ❌ Disabled
+  - ✅ `Enabled`
+  - ❌ `Disabled`
 
 - ✅ **Specify an email verification subject**
 
@@ -486,12 +568,12 @@ to add the necessary configuration.
 
 - ➤ **What attributes are required for signing up**
 
-  - ❌ Birthdate (This attribute is not supported by Login With Amazon, Sign in with Apple.)
-  - ✅ Email
-  - ❌ Family Name (This attribute is not supported by Login With Amazon.)
-  - ❌ Middle Name (This attribute is not supported by Google, Login With Amazon, Sign in with Apple.)
-  - ❌ Gender (This attribute is not supported by Login With Amazon, Sign in with Apple.)
-  - ❌ Locale (This attribute is not supported by Facebook, Google, Sign in with Apple.)
+  - ❌ `Birthdate (This attribute is not supported by Login With Amazon, Sign in with Apple.)`
+  - ✅ `Email`
+  - ❌ `Family Name (This attribute is not supported by Login With Amazon.)`
+  - ❌ `Middle Name (This attribute is not supported by Google, Login With Amazon, Sign in with Apple.)`
+  - ❌ `Gender (This attribute is not supported by Login With Amazon, Sign in with Apple.)`
+  - ❌ `Locale (This attribute is not supported by Facebook, Google, Sign in with Apple.)`
 
 - ✅ **Specify the app's refresh token expiration period (in days)**
 
@@ -499,27 +581,27 @@ to add the necessary configuration.
 
 - ➤ **Do you want to enable any of the following capabilities**
 
-  - ❌ Add Google reCaptcha Challenge
-  - ❌ Email Verification Link with Redirect
-  - ❌ Add User to Group
-  - ❌ Email Domain Filtering (denylist)
-  - ❌ Email Domain Filtering (allowlist)
-  - ❌ Custom Auth Challenge Flow (basic scaffolding - not for production)
-  - ❌ Override ID Token Claims
+  - ❌ `Add Google reCaptcha Challenge`
+  - ❌ `Email Verification Link with Redirect`
+  - ❌ `Add User to Group`
+  - ❌ `Email Domain Filtering (denylist)`
+  - ❌ `Email Domain Filtering (allowlist)`
+  - ❌ `Custom Auth Challenge Flow (basic scaffolding - not for production)`
+  - ❌ `Override ID Token Claims`
 
 - ❌ **Do you want to use an OAuth flow**
 
 - ➤ **Do you want to configure Lambda Triggers for Cognito**
 
-  - ❌ Create Auth Challenge
-  - ❌ Custom Message
-  - ❌ Define Auth Challenge
-  - ✅ Post Authentication
-  - ❌ Post Confirmation
-  - ❌ Pre Authentication
-  - ❌ Pre Sign-up
-  - ❌ Verify Auth Challenge Response
-  - ❌ Pre Token Generation
+  - ❌ `Create Auth Challenge`
+  - ❌ `Custom Message`
+  - ❌ `Define Auth Challenge`
+  - ❌ `Post Authentication`
+  - ❌ `Post Confirmation`
+  - ❌ `Pre Authentication`
+  - ✅ `Pre Sign-up`
+  - ❌ `Verify Auth Challenge Response`
+  - ❌ `Pre Token Generation`
 
 ## Api
 
@@ -529,21 +611,21 @@ to add the necessary configuration.
 
   - ➤ **Default Authorization Type**
 
-    - ✅ API Key
-    - ❌ Amazon Cognito User Pool
-    - ✅ IAM
-    - ❌ OpenID Connect
-    - ❌ Lambda
+    - ✅ `API Key`
+    - ❌ `Amazon Cognito User Pool`
+    - ✅ `IAM`
+    - ❌ `OpenID Connect`
+    - ❌ `Lambda`
 
   - ➤ **Additional Authorization Type**
 
-    - ✅ API Key
-    - ✅ Amazon Cognito User Pool
-    - ❌ IAM
-    - ❌ OpenID Connect
-    - ❌ Lambda
+    - ✅ `API Key`
+    - ✅ `Amazon Cognito User Pool`
+    - ❌ `IAM`
+    - ❌ `OpenID Connect`
+    - ❌ `Lambda`
 
-- ❌ **REST**
+- ⚠️ **REST** (_generate_ ✗ _refactor_ ✔)
 
 ## Storage
 
@@ -553,30 +635,30 @@ to add the necessary configuration.
 
   - **What kind of access do you want for Authenticated users?**
 
-    - ✅ create/update
-    - ✅ read
-    - ✅ delete
+    - ✅ `create/update`
+    - ✅ `read`
+    - ✅ `delete`
 
   - **What kind of access do you want for Guest users?**
 
-    - ✅ create/update
-    - ✅ read
-    - ✅ delete
+    - ✅ `create/update`
+    - ✅ `read`
+    - ✅ `delete`
 
   - **What kind of access do you want for {Group} users**
 
-    - ✅ create/update
-    - ✅ read
-    - ✅ delete
+    - ✅ `create/update`
+    - ✅ `read`
+    - ✅ `delete`
 
   - ✅ Do you want to add a Lambda Trigger for your S3 Bucket
 
 - ➤ NoSQL Database
 
-  - ✅ Do you want to add a sort key to your table
-  - ✅ Do you want to add global secondary indexes to your table
-  - ✅ Do you want to add a sort key to your global secondary index
-  - ❌ Do you want to add a Lambda Trigger for your Table
+  - ✅ `Do you want to add a sort key to your table`
+  - ✅ `Do you want to add global secondary indexes to your table`
+  - ✅ `Do you want to add a sort key to your global secondary index`
+  - ❌ `Do you want to add a Lambda Trigger for your Table`
 
 ## Function
 
@@ -586,26 +668,26 @@ to add the necessary configuration.
 
   - ➤ Runtime
 
-    - ❌ .NET 8
-    - ❌ Go
-    - ❌ Java
-    - ✅ NodeJS
-    - ❌ Python
+    - ❌ `.NET 8`
+    - ❌ `Go`
+    - ❌ `Java`
+    - ✅ `NodeJS`
+    - ❌ `Python`
 
   - ➤ Choose the function template that you want to use
 
-    - ✅ Hello world function
-    - ❌ CRUD function for Amazon DynamoDB table
-    - ✅ Serverless express function
-    - ➤ Lambda Trigger
+    - ✅ `Hello world function`
+    - ❌ `CRUD function for Amazon DynamoDB table`
+    - ✅ `Serverless express function`
+    - ➤ `Lambda Trigger`
 
       - ➤ **Amazon DynamoDB Stream**
 
         - ➤ **Choose a DynamoDB event source option**
 
-          - ⚠️ Use API category graphql @model backed DynamoDB table(s) in the current Amplify project (`generate` ✗ `refactor` ✔)
-          - ❌ Use storage category DynamoDB table configured in the current Amplify project
-          - ❌ Provide the ARN of DynamoDB stream directly
+          - ⚠️ `Use API category graphql @model backed DynamoDB table(s) in the current Amplify project` (_generate_ ✗ _refactor_ ✔)
+          - ❌ `Use storage category DynamoDB table configured in the current Amplify project`
+          - ❌ `Provide the ARN of DynamoDB stream directly`
 
       - ❌ **Amazon Kinesis Stream**
 
@@ -615,45 +697,45 @@ to add the necessary configuration.
 
       - ➤ **api**
 
-        - ⚠️ Query (`generate` ✗ `refactor` ✔)
-        - ⚠️ Mutation (`generate` ✗ `refactor` ✔)
-        - ❌ Subscription
+        - ⚠️ `Query` (_generate_ ✗ _refactor_ ✔)
+        - ⚠️ `Mutation` (_generate_ ✗ _refactor_ ✔)
+        - ❌ `Subscription`
 
       - ➤ **auth**
 
-        - ⚠️ create (`generate` ✗ `refactor` ✔)
-        - ⚠️ read (`generate` ✗ `refactor` ✔)
-        - ⚠️ update (`generate` ✗ `refactor` ✔)
-        - ⚠️ delete (`generate` ✗ `refactor` ✔)
+        - ⚠️ `create` (_generate_ ✗ _refactor_ ✔)
+        - ⚠️ `read` (_generate_ ✗ _refactor_ ✔)
+        - ⚠️ `update` (_generate_ ✗ _refactor_ ✔)
+        - ⚠️ `delete` (_generate_ ✗ _refactor_ ✔)
 
       - ❌ function
 
       - ➤ **storage:dynamo**
 
-        - ⚠️ create (`generate` ✗ `refactor` ✔)
-        - ⚠️ read (`generate` ✗ `refactor` ✔)
-        - ⚠️ update (`generate` ✗ `refactor` ✔)
-        - ⚠️ delete (`generate` ✗ `refactor` ✔)
+        - ⚠️ `create` (_generate_ ✗ _refactor_ ✔)
+        - ⚠️ `read` (_generate_ ✗ _refactor_ ✔)
+        - ⚠️ `update` (_generate_ ✗ _refactor_ ✔)
+        - ⚠️ `delete` (_generate_ ✗ _refactor_ ✔)
 
       - ➤ **storage:s3**
 
-        - ⚠️ create (`generate` ✗ `refactor` ✔)
-        - ⚠️ read (`generate` ✗ `refactor` ✔)
-        - ⚠️ update (`generate` ✗ `refactor` ✔)
-        - ⚠️ delete (`generate` ✗ `refactor` ✔)
+        - ⚠️ `create` (_generate_ ✗ _refactor_ ✔)
+        - ⚠️ `read` (_generate_ ✗ _refactor_ ✔)
+        - ⚠️ `update` (_generate_ ✗ _refactor_ ✔)
+        - ⚠️ `delete` (_generate_ ✗ _refactor_ ✔)
 
       - ❌ function
 
     - ❌ **Do you want to invoke this function on a recurring schedule**
     - ❌ **Do you want to enable Lambda layers for this function**
     - ✅ **Do you want to configure environment variables for this function**
-    - ⚠️ **Do you want to configure secret values this function can access** (`generate` ✗ `refactor` ✔)
+    - ⚠️ **Do you want to configure secret values this function can access** (_generate_ ✗ _refactor_ ✔)
     - ➤ **Choose the package manager that you want to use**
 
-      - ✅ NPM
-      - ❌ Yarn
-      - ❌ PNPM
-      - ❌ Custom Build Command or Script Path
+      - ✅ `NPM`
+      - ❌ `Yarn`
+      - ❌ `PNPM`
+      - ❌ `Custom Build Command or Script Path`
 
 - ❌ **Lambda layer (shared code & resource used across functions)**
 
@@ -689,45 +771,7 @@ to add the necessary configuration.
 
 ### `amplify override <category>` ❌
 
-## Limitations
-
-### GraphQL types without an `@auth` directive
-
-```graphql
-type Todo @model {
-  id: ID!
-  name: String!
-  description: String
-}
-```
-
-In Gen1, types like these are considered _public_ and are assigned the `@aws_api_key` directive when transformed into an 
-AppSync compatible schema. In Gen2, they are considered _private_ and are assinged the `@aws_iam` directive.
-
-In order to preserve the same protections after migration, you must explicitly allow public access on 
-the type by adding the `@auth` directive:
-
-```graphql
-type Todo @model @auth(rules: [{ allow: public }]) {
-  id: ID!
-  name: String!
-  description: String
-}
-```
-
-The same behavior applies to **non** `@model` types as well. For such types however, `@auth` cannot be 
-applied on the type itself and therefore must be applied to each field. For example:
-
-```graphql
-type FunctionResponse {
-  fieldA: String! @auth(rules: [{ allow: public }])
-  fieldB: String! @auth(rules: [{ allow: public }])
-}
-
-type Query {
-  invokeFunction: FunctionResponse @function(name: "myfunction-${env}") @auth(rules: [{ allow: public }])
-}
-```
+## Pre Migration Operations
 
 ### GraphQL types protected by the `iam` auth provider
 
@@ -746,7 +790,7 @@ loose IAM access to the API (but **Gen2** will work correctly).
 
 To workaround this issue, you must pre allow the Gen2 `AuthRole` by [configuring a custom admin role](https://docs.amplify.aws/gen1/javascript/build-a-backend/graphqlapi/customize-authorization-rules/#use-iam-authorization-within-the-appsync-console) on the Gen1 API.
 
-`+ ./amplify/backend/api/<api-name>/custom-roles.json`
+`+ ./amplify/api/<api-name>/custom-roles.json`
 
 ```json
 {

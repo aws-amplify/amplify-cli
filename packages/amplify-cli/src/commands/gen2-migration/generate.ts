@@ -4,7 +4,12 @@ import { AmplifyGen2MigrationValidations } from './_validations';
 
 export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
   public implications(): string[] {
-    return [`Override your local 'amplify' folder with Gen2 definition files`, `Update you local 'package.json' with Gen2 dependencies`];
+    return [
+      `Override your local 'amplify' folder with Gen2 definition files`,
+      `Update you local 'package.json' with Gen2 dependencies`,
+      'Recreate package-lock.json',
+      'Recreate node_modules directory',
+    ];
   }
 
   public async validate(): Promise<void> {
