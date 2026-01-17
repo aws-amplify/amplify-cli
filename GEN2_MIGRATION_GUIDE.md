@@ -876,3 +876,6 @@ Once added, redeploy the app by running `amplify push`.
 # Feedback
 
 # Known Issues
+
+- [unexpected drift detected for s3 storage triggers](https://github.com/aws-amplify/amplify-cli/issues/14483)
+- [generated code is missing `expiresInDays` config when API key is configured as an additional auth method](https://github.com/aws-amplify/amplify-cli/issues/14484)
