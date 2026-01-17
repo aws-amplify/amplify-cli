@@ -12,16 +12,38 @@ Migration to Gen2 is done in a (partial) blue/green deployment approach.
 
 1. Amplify CLI will code-generate the neccessary Gen2 definition files based on your deployed Gen1 environment.
 2. You'll need to perform some manual edits on those files. How much exactly varries depending on the app itself.
-3. These new files will be pushed to a new branch and deployed via the hosting service.
+3. These new files will be pushed to a new branch and deployed via the hosting service. Apart from the DynamoDB tables that host your models (see [below](#note-on-dynamodb-model-tables)), all stateful resources will be cloned and your Gen2 application will start with empty data for those.
 4. Amplify CLI will refactor your underlying CloudFormation stacks such that any Gen1 stateful resource (e.g `UserPool`) 
 will be reused and managed by the new Gen2 deployment.
 
-After completing this process you will have 2 functionally equivalent amplify applications that access the same data.
-
 > [!CAUTION]
 > The refactor operation is currently not reversable. If it fails or 
-> produces undesired results, you will need to recreate the environment. Make sure you 
-> run it only on environments you can afford to delete.
+> produces undesired results, you will need to recreate the environment. **Make sure you 
+> run it only on environments you can afford to delete**.
+
+After completing this process you will have 2 functionally equivalent amplify applications that access the same data.
+
+![](./migration-guide-images/workflow.png)
+
+### Note on DynamoDB Model Tables
+
+DynamoDB tables that host your models are not cloned as part of the Gen2 deployment and therefore don't participate in the `refactor` 
+operation. This means that your Gen2 deployment will immediately have access to the Gen1 data.
+
+### Note on Other Stateful Resources
+
+In addition to DynamoDB model tables, there can be other stateful resources in your app:
+
+- S3 Bucket (`storage` cateogry)
+- DynmoDB Table (`storage` category)
+- Cognito User Pool (`auth` category)
+- Cognito Identity Pool (`auth` category)
+
+The Gen2 deployment will create new empty instances of these resources. This allows you to test their functionality 
+(e.g user registration) on the Gen2 deployment without impacting your Gen1 app. 
+
+Once you are satisified the Gen2 application works correctly, `refactor` will bring these resources as well from your 
+Gen1 app to your Gen2 app. After `refactor`, your Gen2 application shares and **ALL** data with your Gen1 app.
 
 ## Prerequisites 
 
@@ -31,6 +53,7 @@ Following are prerequisites the beta version of the tool relies. Some or all wil
 - Your frontend code is an NPM compatible based app.
 - Your Gen1 environment is deployed via the hosting service.
 - You have a `default` AWS profile configured with an `AdministratorAccess` policy.
+- Your account and region has been [boostrapped with CDK](https://docs.aws.amazon.com/cdk/v2/guide/bootstrapping-env.html).
 
 ## Assumptions
 
@@ -95,6 +118,9 @@ perform the following manual edits:
 
 This is required because in Gen2 amplify generates an `amplify_outputs.json` file instead of the `amplifyconfiguration.json` file. 
 Note that client side libraries support both files so no additional change is needed.
+
+> Note: The `amplify_outputs.json` file **will not** exist on your local file system so you will see a compilation error. 
+Thats ok - it is generated at deploy time in the hosting service.
 
 #### Post Generate | Reuse Model Tables
 
