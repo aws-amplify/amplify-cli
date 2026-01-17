@@ -4,7 +4,8 @@ Following document describes how to migrate your Gen1 backend environment to a n
 
 > [!CAUTION]
 > The tools presented here are in early stages of development and **SHOULD NOT** be 
-> executed on any production or mission critical environments.
+> executed on any production or mission critical environments. Only run it for testing 
+purposes on environments you can affort to delete. 
 
 > [!NOTE]
 > Not all Gen1 apps are support for migration. Refer to the rest of this document to determine if your app can be migrated.
