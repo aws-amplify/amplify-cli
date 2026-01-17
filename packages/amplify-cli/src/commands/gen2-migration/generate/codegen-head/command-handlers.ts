@@ -607,18 +607,38 @@ export async function prepare(logger: Logger, appId: string, envName: string, re
   await fs.rename(`${TEMP_GEN_2_OUTPUT_DIR}/package.json`, `${cwd}/package.json`);
   await fs.rm(TEMP_GEN_2_OUTPUT_DIR, { recursive: true });
 
+  const packageLockPath = path.join(cwd, 'package-lock.json');
+  const nodeModulesPath = path.join(cwd, 'node_modules');
+
   // hard reset on the dependencies. its not clear yet why a single `npm install` isn't
   // enough. empirecally we've seen many cases where such a hard reset resolves strange dependency conflicts.
   // TODO figure this out.
-  logger.info('Deleting package-lock.json');
-  await fs.rm(path.join(cwd, 'package-lock.json'), { recursive: true });
 
-  logger.info('Deleting node_modules');
-  await fs.rm(path.join(cwd, 'node_modules'), { recursive: true });
+  if (await pathExists(packageLockPath)) {
+    logger.info('Deleting package-lock.json');
+    await fs.rm(packageLockPath, { recursive: true });
+  }
+
+  if (await pathExists(nodeModulesPath)) {
+    logger.info('Deleting node_modules');
+    await fs.rm(nodeModulesPath, { recursive: true });
+  }
 
   logger.info('Installing dependencies');
 
   // again weird dependency issues - it takes two times to sync it up fully.
   await execa('npm', ['install']);
   await execa('npm', ['install']);
+}
+
+async function pathExists(path: string) {
+  try {
+    await fs.stat(path);
+    return true;
+  } catch (error) {
+    if (error.code === 'ENOENT') {
+      return false;
+    }
+    throw error;
+  }
 }

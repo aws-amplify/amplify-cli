@@ -56,9 +56,25 @@ data with your Gen1 app.
 Following are prerequisites the beta version of the tool relies. Some or all will be removed in the stable version.
 
 - Your frontend code is located within the same repository as your backend application.
-- Your frontend code is an NPM compatible based app.
-- Your Gen1 environment is deployed via the hosting service.
+- Your frontend code is an NPM (compatible) based app.
+- Your Gen1 environment is deployed via the hosting service. (???)
 - You have a `default` AWS profile configured with an `AdministratorAccess` policy.
+
+    \+ `~/.aws/credentials`
+    ```console
+    [default]
+    aws_access_key_id = <access-key-id>
+    aws_secret_access_key = <secrete-access-key>
+    aws_session_token = <session-token>
+    ```
+
+    \+ `~/.aws/config`
+    ```console
+    [profile default]
+    region = <region>
+    ```
+
+
 - Your account and region has been [boostrapped with CDK](https://docs.aws.amazon.com/cdk/v2/guide/bootstrapping-env.html).
 
 ## Assumptions
@@ -74,6 +90,7 @@ able to adapt them to fit your setup.
 > **Before you begin, determine if your app can be migrated by reviewing:**
 >
 > - [Feature Coverage](#feature-coverage)
+> - [Limitations](#limitations)
 > - [Pre Migration Operations](#pre-migration-operations)
 
 First obtain a fresh and up-to-date local copy of your Amplify Gen1 environment and install the experimental CLI package:
@@ -89,14 +106,15 @@ npm install --no-save @aws-amplify/cli-internal-gen2-migration-experimental-alph
 ### 1. Lock
 
 During the migration period your Gen1 environment should not undergo any changes; otherwise we run 
-the risk of code-generating an incomplete application and possibly encountering unexpected migration failures. To ensure this, run the following:
+the risk of code-generating an incomplete application and possibly encountering unexpected migration failures. 
+To achieve this, run the following:
 
 ```bash
 npx amplify gen2-migration lock
 ```
 
-This command will first perform a few validations to ensure your Gen1 environment is in a 
-healthy state and proceed to lock your Gen1 environment by attaching a restrictive stack policy on the root stack. 
+This command will first perform a few validations to analyze if your Gen1 environment is in a 
+healthy state and proceed to lock your Gen1 environment by attaching a restrictive IAM policy on the root stack. 
 
 > [!TIP]
 > It is also advisable to disable any automatic pipelines that deploy to your Gen1 environment.
@@ -802,6 +820,10 @@ to add the necessary configuration.
 ## Overrides 
 
 ### `amplify override <category>` ❌
+
+## Limitations
+
+- S3 + Dynamo doesn't work.
 
 ## Pre Migration Operations
 
