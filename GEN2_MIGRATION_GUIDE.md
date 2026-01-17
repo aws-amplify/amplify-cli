@@ -16,6 +16,7 @@ Following document describes how to migrate your Gen1 environment to a new Gen2 
 - [Feature Coverage](#feature-coverage)
 - [Limitations](#limitations)
 - [Pre Migration Operations](#pre-migration-operations)
+- [Known Issues](#known-issues)
 - [Feedback](#feedback)
 --------------
 <!-- END TOC -->
@@ -873,3 +874,5 @@ To workaround this issue, you must pre allow the Gen2 `AuthRole` by [configuring
 Once added, redeploy the app by running `amplify push`.
 
 # Feedback
+
+# Known Issues
