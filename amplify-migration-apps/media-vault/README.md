@@ -410,11 +410,6 @@ npx amplify gen2-migration generate
 **Edit in `./amplify/auth/resource.ts`:**
 
 ```diff
-+ import { addusertogroup } from '../function/addusertogroup/resource';
-+ import { removeuserfromgroup } from '../function/removeuserfromgroup/resource';
-```
-
-```diff
 + const branchName = process.env.AWS_BRANCH ?? "sandbox";
 ```
 
@@ -424,25 +419,6 @@ npx amplify gen2-migration generate
 
 - logoutUrls: ["https://main.d1086iitvfyy6.amplifyapp.com/"],
 + logoutUrls: ["https://main.d1086iitvfyy6.amplifyapp.com/", `https://${branchName}.d1086iitvfyy6.amplifyapp.com/`],
-```
-
-```diff
-+ access: (allow) => [
-+     allow.resource(addusertogroup).to(["addUserToGroup"]),
-+     allow.resource(removeuserfromgroup).to(["removeUserFromGroup"])
-+ ],
-```
-
-**Edit in `./amplify/storage/resource.ts`:**
-
-```diff
-+ import { thumbnailgen } from './thumbnailgen/resource';
-```
-
-Add this to every configured prefix:
-
-```diff
-+ allow.resource(thumbnailgen).to(["write", "read", "delete"])
 ```
 
 **Edit in `./amplify/storage/thumbnailgen/resource.ts`:**
@@ -486,12 +462,6 @@ Add this to every configured prefix:
 
 ```diff
 - flows: ["code"],
-```
-
-```diff
-+ backend.thumbnailgen.addEnvironment('STORAGE_MEDIAVAULT_BUCKETNAME', backend.storage.resources.bucket.bucketName);
-+ backend.addusertogroup.addEnvironment('AUTH_MEDIAVAULT_USERPOOLID', backend.auth.resources.userPool.userPoolId);
-+ backend.removeuserfromgroup.addEnvironment('AUTH_MEDIAVAULT_USERPOOLID', backend.auth.resources.userPool.userPoolId);
 ```
 
 **Edit in `./amplify/function/addusertogroup/index.js`:**
@@ -542,34 +512,6 @@ Now connect the `gen2-main` branch to the hosting service:
 ![](./images/add-gen2-main-branch.png)
 ![](./images/deploying-gen2-main-branch.png)
 
-Wait for the deployment to finish successfully. Next, locate the root stack of the Gen2 branch:
+Wait for the deployment to finish successfully. 
 
-![](./images/find-gen2-stack.png)
-
-```console
-npm install --no-save @aws-amplify/cli-internal-gen2-migration-experimental-alpha
-```
-
-```console
-git checkout main
-npx amplify gen2-migration refactor --to <gen2-stack-name>
-```
-
-```console
-git checkout gen2-main
-```
-
-**Edit in `./amplify/backend.ts`:**
-
-```diff
-- // s3Bucket.bucketName = '...';
-+ s3Bucket.bucketName = '...';
-```
-
-```console
-git add .
-git commit -m "chore: post refactor"
-git push origin gen2-main
-```
-
-Wait for the deployment to finish successfully.
+**The guide ends here because social providers don't support refactoring yet.**
