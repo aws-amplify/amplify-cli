@@ -274,6 +274,8 @@ Now run them:
 npx amplify gen2-migration lock
 ```
 
+> If this command reports drift see [unexpected drift detected for s3 storage triggers](https://github.com/aws-amplify/amplify-cli/issues/14483).
+
 ```console
 git checkout -b gen2-main
 npx amplify gen2-migration generate
@@ -297,28 +299,6 @@ npx amplify gen2-migration generate
 ```diff
 - import { Duration } from "aws-cdk-lib";
 + import { Duration, aws_iam } from "aws-cdk-lib";
-```
-
-```diff
-+ backend.lowstockproducts.addEnvironment('API_PRODUCTCATALOG_GRAPHQLAPIKEYOUTPUT', backend.data.apiKey!)
-+ backend.lowstockproducts.addEnvironment('API_PRODUCTCATALOG_GRAPHQLAPIENDPOINTOUTPUT', backend.data.graphqlUrl)
-+ backend.lowstockproducts.addEnvironment('API_PRODUCTCATALOG_GRAPHQLAPIIDOUTPUT', backend.data.apiId)
-
-+ backend.lowstockproducts.resources.lambda.addToRolePolicy(new aws_iam.PolicyStatement({
-+     effect: aws_iam.Effect.ALLOW,
-+     actions: ['appsync:GraphQL'],
-+     resources: [`arn:aws:appsync:${backend.data.stack.region}:${backend.data.stack.account}:apis/${backend.data.apiId}/types/Query/*`]
-+ }))
-
-+ backend.S3Trigger<suffix>.addEnvironment('API_PRODUCTCATALOG_GRAPHQLAPIKEYOUTPUT', backend.data.apiKey!)
-+ backend.S3Trigger<suffix>.addEnvironment('API_PRODUCTCATALOG_GRAPHQLAPIENDPOINTOUTPUT', backend.data.graphqlUrl)
-+ backend.S3Trigger<suffix>.addEnvironment('API_PRODUCTCATALOG_GRAPHQLAPIIDOUTPUT', backend.data.apiId)
-
-+ backend.S3Trigger<suffix>.resources.lambda.addToRolePolicy(new aws_iam.PolicyStatement({
-+     effect: aws_iam.Effect.ALLOW,
-+     actions: ['appsync:GraphQL'],
-+     resources: [`arn:aws:appsync:${backend.data.stack.region}:${backend.data.stack.account}:apis/${backend.data.apiId}/types/Mutation/*`]
-+ }))
 ```
 
 On the AppSync AWS Console, locate the ID of Gen1 API, it will be named `productcatalog-main`.

@@ -197,32 +197,6 @@ _"Cannot determine intended module format because both require() and top-level a
 
 > See [ESM/CJS Interoperability](https://www.typescriptlang.org/docs/handbook/modules/appendices/esm-cjs-interop.html)
 
-#### Post Generate | GraphQL Endpoint Function Access
-
-If your function needs to access the AppSync API you need to explicitly provide it with the appropriate 
-environment variables and give it the necessary permissions.
-
-**Edit in `./amplify/backend.ts`:**
-
-```diff
-- import { Duration } from "aws-cdk-lib";
-+ import { Duration, aws_iam } from "aws-cdk-lib";
-```
-
-```diff
-+ backend.myfunction.addEnvironment('API_MYAPP_GRAPHQLAPIKEYOUTPUT', backend.data.apiKey!)
-+ backend.myfunction.addEnvironment('API_MYAPP_GRAPHQLAPIENDPOINTOUTPUT', backend.data.graphqlUrl)
-+ backend.myfunction.addEnvironment('API_MYAPP_GRAPHQLAPIIDOUTPUT', backend.data.apiId)
-
-+ backend.myfunction.resources.lambda.addToRolePolicy(new aws_iam.PolicyStatement({
-+     effect: aws_iam.Effect.ALLOW,
-+     actions: ['appsync:GraphQL'],
-+     resources: [`arn:aws:appsync:${backend.data.stack.region}:${backend.data.stack.account}:apis/${backend.data.apiId}/types/Query/*`]
-+ }))
-```
-
-> Where `myfunction` and `myapp` are the function and app friendly names respectively.
-
 #### Post Generate | GraphQL Model Function Access
 
 If your function needs to access the DynamoDB tables storing your GraphQL models, you need to explicitly provide it with the appropriate 
