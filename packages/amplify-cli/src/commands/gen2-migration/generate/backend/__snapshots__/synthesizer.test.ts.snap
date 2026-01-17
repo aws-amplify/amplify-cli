@@ -14,7 +14,7 @@ const backend = defineBackend({
 });
 const branchName = process.env.AWS_BRANCH ?? "sandbox";
 backend.recordUserActivity.resources.cfnResources.cfnFunction.functionName = \`recordUserActivity-\${branchName}\`;
-for (const model of ["Comment", "Post", "Topic"]) {
+for (const model of ["Comment", "Post", "Topic", "randomTable"]) {
     const table = backend.data.resources.tables[model];
     backend.recordUserActivity.resources.lambda.addEventSource(new DynamoEventSource(table, { startingPosition: StartingPosition.LATEST }));
     table.grantStreamRead(backend.recordUserActivity.resources.lambda.role!);
