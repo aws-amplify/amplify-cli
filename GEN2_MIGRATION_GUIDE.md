@@ -405,6 +405,8 @@ Next, login to the AWS Amplify console and connect your new branch to the existi
 
 _App Settings → Branch Settings → Add Branch_
 
+> **Note:** If you have never deployed CDK resources to your AWS account/region, you must run `cdk bootstrap` before the deployment will succeed. Gen2 uses CDK under the hood and requires the bootstrap stack to be present.
+
 ![](./migration-guide-images/add-branch.png)
 
 Once added the hosting service will start deploying this branch. Wait for it to complete.
@@ -628,6 +630,9 @@ to add the necessary configuration.
 - ⚠️ **REST** (_generate_ ✗ _refactor_ ✔)
 
 ## Storage
+
+⚠️ **Multiple storage resources** (e.g., one DynamoDB table and one S3 bucket) not supported in refactor
+(_generate_ ✔ _refactor_ ✗)
 
 ### `amplify add storage`
 
