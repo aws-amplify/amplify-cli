@@ -834,4 +834,28 @@ describe('BackendSynthesizer', () => {
       `);
     });
   });
+
+  describe('DynamoDB Triggers', () => {
+    it('should generate escape hatches for DynamoDB triggers', () => {
+      const renderArgs: BackendRenderParameters = {
+        data: {
+          importFrom: './data/resource',
+        },
+        function: {
+          importFrom: './function/resource',
+          functionNamesAndCategories: new Map([['recordUserActivity', 'function']]),
+        },
+        dynamoTriggers: [
+          {
+            functionName: 'recordUserActivity',
+            models: ['Comment', 'Post', 'Topic', 'randomTable'],
+          },
+        ],
+      };
+
+      const result = synthesizer.render(renderArgs);
+      const source = printNodeArray(result);
+      expect(source).toMatchSnapshot();
+    });
+  });
 });
