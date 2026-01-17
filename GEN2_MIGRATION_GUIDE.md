@@ -6,11 +6,26 @@ Following document describes how to migrate your Gen1 environment to a new Gen2 
 > The tools presented here are in early stages of development and **SHOULD NOT** be 
 > executed on any production or mission critical environments.
 
+<!-- BEGIN TOC -->
+--------------
+
+- [Overall Approach](#overall-approach)
+- [Prerequisites](#prerequisites)
+- [Assumptions](#assumptions)
+- [Step By Step](#step-by-step)
+- [Feature Coverage](#feature-coverage)
+- [Limitations](#limitations)
+- [Pre Migration Operations](#pre-migration-operations)
+- [Feedback](#feedback)
+--------------
+<!-- END TOC -->
+
+
 ## Overall Approach
 
 Migration to Gen2 is done in a (partial) blue/green deployment approach.
 
-1. Ampliyf CLI will _lock_ your Gen1 environment by attaching a `Deny:*` policy to the root CloudFormation stack. 
+1. Amplify CLI will _lock_ your Gen1 environment by attaching a `Deny:*` policy to the root CloudFormation stack. 
 This will intentionally prevent updates during migration.
 2. Amplify CLI will _generate_ the neccessary Gen2 definition files based on your deployed Gen1 environment.
 3. You will perform some manual edits on those files. How much exactly varries depending on the app itself.
@@ -60,7 +75,7 @@ Following are prerequisites the beta version of the tool relies. Some or all wil
 - Your Gen1 environment is deployed via the hosting service. (???)
 - You have a `default` AWS profile configured with an `AdministratorAccess` policy.
 
-    \+ `~/.aws/credentials`
+    `+` _~/.aws/credentials_
     ```console
     [default]
     aws_access_key_id = <access-key-id>
@@ -68,7 +83,7 @@ Following are prerequisites the beta version of the tool relies. Some or all wil
     aws_session_token = <session-token>
     ```
 
-    \+ `~/.aws/config`
+    `+` _~/.aws/config_
     ```console
     [profile default]
     region = <region>
@@ -821,13 +836,13 @@ to add the necessary configuration.
 
 ### `amplify override <category>` ❌
 
-## Limitations
+# Limitations
 
 - S3 + Dynamo doesn't work.
 
-## Pre Migration Operations
+# Pre Migration Operations
 
-### GraphQL types protected by the `iam` auth provider
+## GraphQL types protected by the `iam` auth provider
 
 ```graphql
 type Todo @model @auth(rules: [{ allow: private, provider: iam }]) {
@@ -856,3 +871,5 @@ To workaround this issue, you must pre allow the Gen2 `AuthRole` by [configuring
 > the Gen2 `AuthRole` naming pattern and therefore allows access to **any** Gen2 environment (branch).
 
 Once added, redeploy the app by running `amplify push`.
+
+# Feedback
