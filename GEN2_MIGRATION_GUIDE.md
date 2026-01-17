@@ -1,6 +1,6 @@
-# Amplify Gen1 → Gen2 Migration Guide (Beta)
+# Amplify Backend Gen1 → Gen2 Migration Guide (Beta)
 
-Following document describes how to migrate your Gen1 environment to a new Gen2 application.
+Following document describes how to migrate your Gen1 backend environment to a new Gen2 backend application.
 
 > [!CAUTION]
 > The tools presented here are in early stages of development and **SHOULD NOT** be 
