@@ -16,8 +16,10 @@ Following document describes how to migrate your Gen1 environment to a new Gen2 
 - [Feature Coverage](#feature-coverage)
 - [Limitations](#limitations)
 - [Pre Migration Operations](#pre-migration-operations)
-- [Known Issues](#known-issues)
+- [Example Apps](#example-apps)
 - [Feedback](#feedback)
+- [Known Issues](#known-issues)
+
 --------------
 <!-- END TOC -->
 
@@ -774,7 +776,7 @@ to add the necessary configuration.
         - ⚠️ `update` (_generate_ ✗ _refactor_ ✔)
         - ⚠️ `delete` (_generate_ ✗ _refactor_ ✔)
 
-      - ❌ function
+      - ❌ **function**
 
       - ➤ **storage:dynamo**
 
@@ -873,6 +875,10 @@ To workaround this issue, you must pre allow the Gen2 `AuthRole` by [configuring
 
 Once added, redeploy the app by running `amplify push`.
 
+# Example Apps
+
+See [amplify-migration-apps](./amplify-migration-apps/)
+
 # Feedback
 
 Your feedback will significantly help the team improve and stabilize the tool. We welcome and encourage any 
@@ -888,9 +894,8 @@ Here is where you can share:
 - [Create an Issue](https://github.com/aws-amplify/amplify-cli/issues/new)
 - [Participate in the GitHub Discussion](TODO)
 
-
-
 # Known Issues
 
 - [unexpected drift detected for s3 storage triggers](https://github.com/aws-amplify/amplify-cli/issues/14483)
 - [generated code is missing `expiresInDays` config when API key is configured as an additional auth method](https://github.com/aws-amplify/amplify-cli/issues/14484)
+- [unrecoverable state due to refactor occasionally timing out](https://github.com/aws-amplify/amplify-cli/issues/14485)

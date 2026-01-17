@@ -74,6 +74,7 @@ enum GEN2_AMPLIFY_GITIGNORE_FILES_OR_DIRS {
   DOT_AMPLIFY = '.amplify',
   AMPLIFY_OUTPUTS = 'amplify_outputs*',
   AMPLIFY_CONFIGURATION = 'amplifyconfiguration*',
+  AWS_EXPORTS = 'aws-exports*',
   NODE_MODULES = 'node_modules',
   BUILD = 'build',
   DIST = 'dist',
@@ -351,6 +352,9 @@ export async function updateGitIgnoreForGen2() {
   }
   if (!newGitIgnore.includes(GEN2_AMPLIFY_GITIGNORE_FILES_OR_DIRS.AMPLIFY_CONFIGURATION)) {
     newGitIgnore = `${newGitIgnore}\n${GEN2_AMPLIFY_GITIGNORE_FILES_OR_DIRS.AMPLIFY_CONFIGURATION}`;
+  }
+  if (!newGitIgnore.includes(GEN2_AMPLIFY_GITIGNORE_FILES_OR_DIRS.AWS_EXPORTS)) {
+    newGitIgnore = `${newGitIgnore}\n${GEN2_AMPLIFY_GITIGNORE_FILES_OR_DIRS.AWS_EXPORTS}`;
   }
   if (!newGitIgnore.includes(GEN2_AMPLIFY_GITIGNORE_FILES_OR_DIRS.NODE_MODULES)) {
     newGitIgnore = `${newGitIgnore}\n# node_modules\n${GEN2_AMPLIFY_GITIGNORE_FILES_OR_DIRS.NODE_MODULES}`;
