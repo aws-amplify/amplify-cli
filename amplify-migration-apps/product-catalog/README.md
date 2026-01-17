@@ -208,7 +208,7 @@ On the AWS Amplify console, locate the application id.
 
 ![](./images/gen1-app-id.png)
 
-**Edit in `./amplify/api/productcatalog/custom-roles.json`:**
+**Edit in `./amplify/backend/api/productcatalog/custom-roles.json`:**
 
 ```diff
 - "amplify-${appId}"
