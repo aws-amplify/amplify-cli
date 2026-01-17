@@ -79,7 +79,7 @@ Following are prerequisites the beta version of the tool relies. Some or all wil
 
 - Your frontend code is located within the same repository as your backend application.
 - Your frontend code is an NPM (compatible) based app.
-- Your Gen1 environment is deployed via the hosting service. (???)
+- Your Gen1 environment is deployed via the hosting service.
 - You have a `default` AWS profile configured with an `AdministratorAccess` policy.
 
     `+` _~/.aws/credentials_
