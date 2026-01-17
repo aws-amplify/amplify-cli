@@ -875,6 +875,21 @@ Once added, redeploy the app by running `amplify push`.
 
 # Feedback
 
+Your feedback will significantly help the team improve and stabilize the tool. We welcome and encourage any 
+feedback on the migration process:
+
+- Success stories
+- Failure stories
+- General Questions
+- Anything you want
+
+Here is where you can share:
+
+- [Create an Issue](https://github.com/aws-amplify/amplify-cli/issues/new)
+- [Participate in the GitHub Discussion](TODO)
+
+
+
 # Known Issues
 
 - [unexpected drift detected for s3 storage triggers](https://github.com/aws-amplify/amplify-cli/issues/14483)
