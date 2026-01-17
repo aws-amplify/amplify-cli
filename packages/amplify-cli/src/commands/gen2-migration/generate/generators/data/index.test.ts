@@ -11,7 +11,8 @@ describe('Data Category code generation', () => {
     jest.restoreAllMocks();
   });
   it('generates the correct import', async () => {
-    const source = printNodeArray(await generateDataSource('main', { schema: 'type Test { id: ID! }' }));
+    const tableMappings = { Todo: 'my-todo-mapping' };
+    const source = printNodeArray(await generateDataSource('main', { tableMappings, schema: 'type Test { id: ID! }' }));
     assert.match(source, /import\s?\{\s?defineData\s?\}\s?from\s?"\@aws-amplify\/backend"/);
   });
 
@@ -40,10 +41,6 @@ describe('Data Category code generation', () => {
         source,
         /modelNameToTableNameMapping: { Todo: ['"]Todo-abc123-dev['"], User: ['"]User-abc123-dev['"], Post: ['"]Post-abc123-dev['"] }/,
       );
-    });
-    it('includes a comment for missing table mappings', async () => {
-      const source = printNodeArray(await generateDataSource('main', { schema: 'schema' }));
-      assert.match(source, /const schema = `schema`;\n\nexport const data = defineData\(\{\n\s+schema\n\}\)/);
     });
     it('has each each key in defineData', async () => {
       const tableMappings = { Todo: 'my-todo-mapping' };
