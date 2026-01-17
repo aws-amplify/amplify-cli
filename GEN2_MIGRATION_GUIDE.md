@@ -10,14 +10,19 @@ Following document describes how to migrate your Gen1 environment to a new Gen2 
 
 Migration to Gen2 is done in a (partial) blue/green deployment approach.
 
-1. Amplify CLI will code-generate the neccessary Gen2 definition files based on your deployed Gen1 environment.
-2. You'll need to perform some manual edits on those files. How much exactly varries depending on the app itself.
-3. These new files will be pushed to a new branch and deployed via the hosting service. Apart from the DynamoDB tables that host your models (see [below](#note-on-dynamodb-model-tables)), all stateful resources will be cloned and your Gen2 application will start with empty data for those.
-4. Amplify CLI will refactor your underlying CloudFormation stacks such that any Gen1 stateful resource (e.g `UserPool`) 
+1. Ampliyf CLI will _lock_ your Gen1 environment by attaching a `Deny:*` policy to the root CloudFormation stack. 
+This will intentionally prevent updates during migration.
+2. Amplify CLI will _generate_ the neccessary Gen2 definition files based on your deployed Gen1 environment.
+3. You will perform some manual edits on those files. How much exactly varries depending on the app itself.
+4. Generated code will be pushed to a new branch and deployed via the hosting service. Apart from the DynamoDB tables 
+that host your models (see [below](#note-on-dynamodb-model-tables)), all stateful resources (e.g `UserPool`) will be cloned and your 
+Gen2 application will start with empty data for those.
+5. Amplify CLI will _refactor_ (using [CloudFormation Refactor](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stack-refactoring.html)) 
+your underlying CloudFormation stacks such that any Gen1 stateful resource (e.g `UserPool`) 
 will be reused and managed by the new Gen2 deployment.
 
 > [!CAUTION]
-> The refactor operation is currently not reversable. If it fails or 
+> The `refactor` operation is currently not reversable. If it fails or 
 > produces undesired results, you will need to recreate the environment. **Make sure you 
 > run it only on environments you can afford to delete**.
 
@@ -43,7 +48,8 @@ The Gen2 deployment will create new empty instances of these resources. This all
 (e.g user registration) on the Gen2 deployment without impacting your Gen1 app. 
 
 Once you are satisified the Gen2 application works correctly, `refactor` will bring these resources as well from your 
-Gen1 app to your Gen2 app. After `refactor`, your Gen2 application shares and **ALL** data with your Gen1 app.
+Gen1 app to your Gen2 app. After `refactor`, the new instances are deleted and your Gen2 application shares and **ALL** 
+data with your Gen1 app.
 
 ## Prerequisites 
 
