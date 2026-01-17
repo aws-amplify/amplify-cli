@@ -233,50 +233,6 @@ provide it with the appropriate environment variables and give it the necessary 
 
 > Where `myfunction` and `mytable` are the function and dynamo storage friendly names respectively.
 
-#### Post Generate | S3 Stroage Function Access
-
-If your function needs to access the S3 table configured as part of your storage category you need to explicitly 
-provide it with the appropriate environment variables and give it the necessary permissions.
-
-**Edit in `./amplify/backend.ts`:**
-
-```diff
-+ backend.myfunction.addEnvironment('STORAGE_MYBUCKET_ARN', mytable.tableArn);
-```
-
-> Where `myfunction` and `mybucket` are the function and s3 storage friendly names respectively.
-
-**Edit in `./amplify/storage/resource.ts`:**
-
-Add this to every configured prefix:
-
-```diff
-+ import { myfunction } from './function/myfunction/resource';
-```
-
-```diff
-+ allow.resource(myfunction).to(["write", "read", "delete"])
-```
-
-#### Post Generate | Auth Function Access
-
-If your function needs to access the auth category you need to explicitly provide it with the appropriate environment 
-variables and give it the necessary permissions.
-
-**Edit in `./amplify/auth/resource.ts`:**
-
-```diff
-+ import { myfunction } from '../function/myfunction/resource';
-```
-
-```diff
-+ access: (allow) => [
-+     allow.resource(myfunction).to(["addUserToGroup"]),
-+ ],
-```
-
-> Where `myfunction` is the friendly name of your function.
-
 #### Post Generate | Api Function Trigger
 
 If your function is triggered based on model updates you need to explicitly create the trigger 
@@ -743,16 +699,16 @@ to add the necessary configuration.
 
       - ➤ **api**
 
-        - ⚠️ `Query` (_generate_ ✗ _refactor_ ✔)
-        - ⚠️ `Mutation` (_generate_ ✗ _refactor_ ✔)
-        - ❌ `Subscription`
+        - ✅ `Query`
+        - ✅ `Mutation`
+        - ✅ `Subscription`
 
       - ➤ **auth**
 
-        - ⚠️ `create` (_generate_ ✗ _refactor_ ✔)
-        - ⚠️ `read` (_generate_ ✗ _refactor_ ✔)
-        - ⚠️ `update` (_generate_ ✗ _refactor_ ✔)
-        - ⚠️ `delete` (_generate_ ✗ _refactor_ ✔)
+        - ✅ `create`
+        - ✅ `read`
+        - ✅ `update`
+        - ✅ `delete`
 
       - ❌ **function**
 
@@ -765,10 +721,10 @@ to add the necessary configuration.
 
       - ➤ **storage:s3**
 
-        - ⚠️ `create` (_generate_ ✗ _refactor_ ✔)
-        - ⚠️ `read` (_generate_ ✗ _refactor_ ✔)
-        - ⚠️ `update` (_generate_ ✗ _refactor_ ✔)
-        - ⚠️ `delete` (_generate_ ✗ _refactor_ ✔)
+        - ✅ `create`
+        - ✅ `read`
+        - ✅ `update`
+        - ✅ `delete`
 
       - ❌ function
 
