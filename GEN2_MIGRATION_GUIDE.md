@@ -6,6 +6,9 @@ Following document describes how to migrate your Gen1 environment to a new Gen2 
 > The tools presented here are in early stages of development and **SHOULD NOT** be 
 > executed on any production or mission critical environments.
 
+> [!NOTE]
+> Not all Gen1 apps are support for migration. Refer to the rest of this document to determine if your app can be migrated.
+
 <!-- BEGIN TOC -->
 --------------
 
