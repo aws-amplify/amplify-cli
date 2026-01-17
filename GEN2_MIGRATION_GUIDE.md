@@ -96,8 +96,8 @@ Following are prerequisites the beta version of the tool relies. Some or all wil
     region = <region>
     ```
 
-
-- Your account and region has been [boostrapped with CDK](https://docs.aws.amazon.com/cdk/v2/guide/bootstrapping-env.html).
+- Since Gen2 uses CDK under the hood, your account and region must be [boostrapped with CDK](https://docs.aws.amazon.com/cdk/v2/guide/bootstrapping-env.html) 
+in order for the Gen2 deployment to succeed succeed.
 
 ## Assumptions
 
@@ -451,8 +451,6 @@ Next, login to the AWS Amplify console and connect your new branch to the existi
 
 _App Settings → Branch Settings → Add Branch_
 
-> **Note:** If you have never deployed CDK resources to your AWS account/region, you must run `cdk bootstrap` before the deployment will succeed. Gen2 uses CDK under the hood and requires the bootstrap stack to be present.
-
 ![](./migration-guide-images/add-branch.png)
 
 Once added the hosting service will start deploying this branch. Wait for it to complete.
@@ -677,9 +675,6 @@ to add the necessary configuration.
 
 ## Storage
 
-⚠️ **Multiple storage resources** (e.g., one DynamoDB table and one S3 bucket) not supported in refactor
-(_generate_ ✔ _refactor_ ✗)
-
 ### `amplify add storage`
 
 - ➤ **Content (Images, audio, video, etc.)**
@@ -824,7 +819,8 @@ to add the necessary configuration.
 
 # Limitations
 
-- S3 + Dynamo doesn't work.
+- Apps with multiple storage resources (e.g S3 bucket **and** DynamoDB Table) are not supported for refactor. 
+You may still follow the guide until the `generate` step.
 
 # Pre Migration Operations
 
