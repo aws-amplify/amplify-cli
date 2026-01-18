@@ -205,26 +205,6 @@ _"Cannot determine intended module format because both require() and top-level a
 
 > See [ESM/CJS Interoperability](https://www.typescriptlang.org/docs/handbook/modules/appendices/esm-cjs-interop.html)
 
-#### Post Generate | GraphQL Model Function Access
-
-If your function needs to access the DynamoDB tables storing your GraphQL models, you need to explicitly provide it with the appropriate 
-environment variables and give it the necessary permissions.
-
-**Edit in `./amplify/backend.ts`:**
-
-```diff
-- import { Duration } from "aws-cdk-lib";
-+ import { Duration, aws_iam } from "aws-cdk-lib";
-```
-
-```diff
-+ const modelTable = backend.data.resources.tables['Model'];
-+ modelTable.grantWriteData(backend.myfunction.resources.lambda);
-+ backend.lognutrition.addEnvironment('API_MYAPP_MODELTABLE_NAME', modelTable.tableName);
-```
-
-> Where `myfunction` and `myapp` are the function and app friendly names respectively.
-
 #### Post Generate | Function Secrets
 
 If your function was configured with a secret value, you must first recreate the secret using the amplify console.
