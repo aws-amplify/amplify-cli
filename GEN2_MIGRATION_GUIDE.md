@@ -8,7 +8,7 @@ Following document describes how to migrate your Gen1 backend environment to a n
 purposes on environments you can afford to delete. 
 
 > [!NOTE]
-> Not all Gen1 apps are support for migration. Refer to the rest of this document to determine if your app can be migrated.
+> Not all Gen1 apps are supported for migration. Refer to the rest of this document to determine if your app can be migrated.
 
 <!-- BEGIN TOC -->
 --------------
@@ -34,8 +34,8 @@ Migration to Gen2 is done in a (partial) blue/green deployment approach.
 
 1. Amplify CLI will _lock_ your Gen1 environment by attaching a `Deny:*` policy to the root CloudFormation stack. 
 This will intentionally prevent updates during migration.
-2. Amplify CLI will _generate_ the neccessary Gen2 definition files based on your deployed Gen1 environment.
-3. You will perform some manual edits on those files. How much exactly varries depending on the app itself.
+2. Amplify CLI will _generate_ the necessary Gen2 definition files based on your deployed Gen1 environment.
+3. You will perform some manual edits on those files. How much exactly varies depending on the app itself.
 4. Generated code will be pushed to a new branch and deployed via the hosting service. Apart from the DynamoDB tables 
 that host your models (see [below](#note-on-dynamodb-model-tables)), all stateful resources (e.g `UserPool`) will be cloned and your 
 Gen2 application will start with empty data for those.
@@ -44,7 +44,7 @@ your underlying CloudFormation stacks such that any Gen1 stateful resource (e.g 
 will be reused and managed by the new Gen2 deployment.
 
 > [!CAUTION]
-> The `refactor` operation is currently not reversable. If it fails or 
+> The `refactor` operation is currently not reversible. If it fails or 
 > produces undesired results, you will need to recreate the environment. **Make sure you 
 > run it only on environments you can afford to delete**.
 
@@ -63,15 +63,15 @@ operation. This means that your Gen2 deployment will immediately have access to 
 
 In addition to DynamoDB model tables, there can be other stateful resources in your app:
 
-- S3 Bucket (`storage` cateogry)
-- DynmoDB Table (`storage` category)
+- S3 Bucket (`storage` category)
+- DynamoDB Table (`storage` category)
 - Cognito User Pool (`auth` category)
 - Cognito Identity Pool (`auth` category)
 
 The Gen2 deployment will create new empty instances of these resources. This allows you to test their functionality 
 (e.g user registration) on the Gen2 deployment without impacting your Gen1 app. 
 
-Once you are satisified the Gen2 application works correctly, `refactor` will bring these resources as well from your 
+Once you are satisfied the Gen2 application works correctly, `refactor` will bring these resources as well from your 
 Gen1 app to your Gen2 app. After `refactor`, the new instances are deleted and your Gen2 application shares and **ALL** 
 data with your Gen1 app.
 
@@ -88,7 +88,7 @@ Following are prerequisites the beta version of the tool relies. Some or all wil
     ```console
     [default]
     aws_access_key_id = <access-key-id>
-    aws_secret_access_key = <secrete-access-key>
+    aws_secret_access_key = <secret-access-key>
     aws_session_token = <session-token>
     ```
 
@@ -98,8 +98,8 @@ Following are prerequisites the beta version of the tool relies. Some or all wil
     region = <region>
     ```
 
-- Since Gen2 uses CDK under the hood, your account and region must be [boostrapped with CDK](https://docs.aws.amazon.com/cdk/v2/guide/bootstrapping-env.html) 
-in order for the Gen2 deployment to succeed succeed.
+- Since Gen2 uses CDK under the hood, your account and region must be [bootstrapped with CDK](https://docs.aws.amazon.com/cdk/v2/guide/bootstrapping-env.html) 
+in order for the Gen2 deployment to succeed.
 
 ## Assumptions
 
@@ -158,7 +158,7 @@ git checkout -b gen2-main
 npx amplify gen2-migration generate
 ```
 
-This command will override your local `./amplify` directory with Gen2 definition files. Once successfull, 
+This command will override your local `./amplify` directory with Gen2 definition files. Once successful, 
 perform the following manual edits:
 
 #### Post Generate | Frontend Config
@@ -340,7 +340,7 @@ type Todo @model {
 ```
 
 In Gen1, types like these are considered _public_ and are assigned the `@aws_api_key` directive when transformed into an 
-AppSync compatible schema. In Gen2, they are considered _private_ and are assinged the `@aws_iam` directive.
+AppSync compatible schema. In Gen2, they are considered _private_ and are assigned the `@aws_iam` directive.
 
 In order to preserve the same protections after migration, you must explicitly allow public access on 
 the type by adding the `@auth` directive:
@@ -771,7 +771,7 @@ type Todo @model @auth(rules: [{ allow: private, provider: iam }]) {
 Clients access such models using the `AuthRole` configured on the identity pool. 
 After the refactor operation, the role is updated to point to the Gen2 role, which doesn't 
 allow access to the Gen1 AppSync API. This means that after refactor your **Gen1** environment will 
-loose IAM access to the API (but **Gen2** will work correctly).
+lose IAM access to the API (but **Gen2** will work correctly).
 
 To workaround this issue, you must pre allow the Gen2 `AuthRole` by [configuring a custom admin role](https://docs.amplify.aws/gen1/javascript/build-a-backend/graphqlapi/customize-authorization-rules/#use-iam-authorization-within-the-appsync-console) on the Gen1 API.
 
@@ -783,7 +783,7 @@ To workaround this issue, you must pre allow the Gen2 `AuthRole` by [configuring
 }
 ```
 
-> Where `${appId}` should be replaced with the value of the Gen1 applicaion id. This role name follows 
+> Where `${appId}` should be replaced with the value of the Gen1 application id. This role name follows 
 > the Gen2 `AuthRole` naming pattern and therefore allows access to **any** Gen2 environment (branch).
 
 Once added, redeploy the app by running `amplify push`.
