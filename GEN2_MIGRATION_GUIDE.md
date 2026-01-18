@@ -796,6 +796,7 @@ feedback on the migration process:
 Here is where you can share:
 
 - [Create an Issue](https://github.com/aws-amplify/amplify-cli/issues/new)
+- [Participate in the GitHub Discussion](https://github.com/aws-amplify/amplify-cli/discussions/14490)
 
 # Known Issues
 
