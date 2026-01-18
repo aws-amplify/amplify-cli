@@ -54,6 +54,7 @@ const GEN1_AUTH_STACK_ID = getStackId(GEN1_ROOT_STACK_NAME, 'auth');
 const GEN1_AUTH_USER_POOL_GROUP_STACK_ID = getStackId(GEN1_ROOT_STACK_NAME, 'auth-user-pool-group');
 const GEN2_AUTH_STACK_ID = getStackId(GEN2_ROOT_STACK_NAME, 'auth');
 const GEN1_STORAGE_STACK_ID = getStackId(GEN1_ROOT_STACK_NAME, 'storage');
+const GEN1_STORAGE_DDB_STACK_ID = `arn:aws:cloudformation:${REGION}:${ACCOUNT_ID}:stack/${GEN1_ROOT_STACK_NAME}-storageDDB/12345`;
 const GEN2_STORAGE_STACK_ID = getStackId(GEN2_ROOT_STACK_NAME, 'storage');
 const GEN1_S3_BUCKET_LOGICAL_ID = 'S3Bucket';
 const GEN2_S3_BUCKET_LOGICAL_ID = 'Gen2S3Bucket';
@@ -123,6 +124,40 @@ const mockDescribeGen1StackResources: DescribeStackResourcesOutput = {
       ResourceStatus: 'CREATE_COMPLETE',
       LogicalResourceId: 'UserPoolClient',
       PhysicalResourceId: 'user-pool-client-id',
+      Timestamp: new Date(),
+    },
+  ],
+};
+
+// Gen1 stack resources with multiple storage stacks (S3 and DynamoDB as separate stacks)
+const mockDescribeGen1StackResourcesWithMultipleStorage: DescribeStackResourcesOutput = {
+  StackResources: [
+    {
+      ResourceType: 'AWS::CloudFormation::Stack',
+      ResourceStatus: 'CREATE_COMPLETE',
+      LogicalResourceId: 'auth',
+      PhysicalResourceId: GEN1_AUTH_STACK_ID,
+      Timestamp: new Date(),
+    },
+    {
+      ResourceType: 'AWS::CloudFormation::Stack',
+      ResourceStatus: 'CREATE_COMPLETE',
+      LogicalResourceId: 'authUserPoolGroup',
+      PhysicalResourceId: GEN1_AUTH_USER_POOL_GROUP_STACK_ID,
+      Timestamp: new Date(),
+    },
+    {
+      ResourceType: 'AWS::CloudFormation::Stack',
+      ResourceStatus: 'CREATE_COMPLETE',
+      LogicalResourceId: 'storageS3',
+      PhysicalResourceId: GEN1_STORAGE_STACK_ID,
+      Timestamp: new Date(),
+    },
+    {
+      ResourceType: 'AWS::CloudFormation::Stack',
+      ResourceStatus: 'CREATE_COMPLETE',
+      LogicalResourceId: 'storageDDB',
+      PhysicalResourceId: GEN1_STORAGE_DDB_STACK_ID,
       Timestamp: new Date(),
     },
   ],
@@ -501,6 +536,84 @@ describe('TemplateGenerator', () => {
     // Assert
     successfulTemplateGenerationAssertions();
     assertCFNCalls();
+  });
+
+  it('should map multiple Gen1 storage stacks to the same Gen2 storage stack', async () => {
+    // Override mock to return multiple storage stacks
+    mockCfnClientSendMock.mockImplementation((command) => {
+      if (command instanceof DescribeStackResourcesCommand) {
+        if (command.input.StackName === GEN1_ROOT_STACK_NAME) {
+          return Promise.resolve(mockDescribeGen1StackResourcesWithMultipleStorage);
+        }
+        return describeStackResourcesResponse(command.input.StackName);
+      }
+      if (command instanceof UpdateStackCommand) {
+        return Promise.resolve({});
+      }
+      if (command instanceof DescribeStacksCommand) {
+        return describeStacksResponse(command.input.StackName);
+      }
+      if (command instanceof CreateStackRefactorCommand) {
+        return Promise.resolve({ StackRefactorId: '12345' });
+      }
+      if (command instanceof DescribeStackRefactorCommand) {
+        return Promise.resolve({
+          Status: StackRefactorStatus.CREATE_COMPLETE,
+          ExecutionStatus: StackRefactorExecutionStatus.EXECUTE_COMPLETE,
+        });
+      }
+      return Promise.resolve({});
+    });
+
+    const generator = new TemplateGenerator(
+      GEN1_ROOT_STACK_NAME,
+      GEN2_ROOT_STACK_NAME,
+      ACCOUNT_ID,
+      STUB_CFN_CLIENT,
+      STUB_SSM_CLIENT,
+      STUB_COGNITO_IDP_CLIENT,
+      APP_ID,
+      ENV_NAME,
+      new Logger('mock', 'mock', 'mock'),
+      REGION,
+    );
+    await generator.generate();
+
+    // Both Gen1 storage stacks should map to the same Gen2 storage stack
+    // CategoryTemplateGenerator should be called 4 times: auth, auth-user-pool-group, storage (S3), storage (DDB)
+    expect(CategoryTemplateGenerator).toBeCalledTimes(4);
+    expect(CategoryTemplateGenerator).toHaveBeenNthCalledWith(
+      3,
+      expect.anything(),
+      GEN1_STORAGE_STACK_ID,
+      GEN2_STORAGE_STACK_ID,
+      REGION,
+      ACCOUNT_ID,
+      expect.anything(),
+      expect.anything(),
+      expect.anything(),
+      APP_ID,
+      ENV_NAME,
+      [CFN_S3_TYPE.Bucket, CFN_DYNAMODB_TYPE.Table],
+      undefined,
+      expect.any(Set),
+    );
+    expect(CategoryTemplateGenerator).toHaveBeenNthCalledWith(
+      4,
+      expect.anything(),
+      GEN1_STORAGE_DDB_STACK_ID,
+      GEN2_STORAGE_STACK_ID, // Same Gen2 stack as above
+      REGION,
+      ACCOUNT_ID,
+      expect.anything(),
+      expect.anything(),
+      expect.anything(),
+      APP_ID,
+      ENV_NAME,
+      [CFN_S3_TYPE.Bucket, CFN_DYNAMODB_TYPE.Table],
+      undefined,
+      expect.any(Set),
+    );
   });
 
   it('should refactor resources from Gen1 to Gen2 successfully, skipping categories that have already been refactored previously', async () => {
@@ -900,6 +1013,7 @@ describe('TemplateGenerator', () => {
         CFN_AUTH_TYPE.UserPoolDomain,
       ],
       undefined,
+      expect.any(Set),
     );
     expect(CategoryTemplateGenerator).toHaveBeenNthCalledWith(
       2,
@@ -915,6 +1029,7 @@ describe('TemplateGenerator', () => {
       ENV_NAME,
       [CFN_AUTH_TYPE.UserPoolGroup],
       undefined,
+      expect.any(Set),
     );
     expect(CategoryTemplateGenerator).toHaveBeenNthCalledWith(
       3,
@@ -930,6 +1045,7 @@ describe('TemplateGenerator', () => {
       ENV_NAME,
       [CFN_S3_TYPE.Bucket, CFN_DYNAMODB_TYPE.Table],
       undefined,
+      expect.any(Set),
     );
   }
 
@@ -959,6 +1075,7 @@ describe('TemplateGenerator', () => {
         CFN_AUTH_TYPE.UserPoolDomain,
       ],
       undefined,
+      expect.any(Set),
     );
     expect(CategoryTemplateGenerator).toHaveBeenNthCalledWith(
       2,
@@ -974,6 +1091,7 @@ describe('TemplateGenerator', () => {
       ENV_NAME,
       [CFN_AUTH_TYPE.UserPoolGroup],
       undefined,
+      expect.any(Set),
     );
     expect(CategoryTemplateGenerator).toHaveBeenNthCalledWith(
       3,
@@ -989,6 +1107,7 @@ describe('TemplateGenerator', () => {
       ENV_NAME,
       [CFN_S3_TYPE.Bucket, CFN_DYNAMODB_TYPE.Table],
       undefined,
+      expect.any(Set),
     );
   }
 
@@ -1018,6 +1137,7 @@ describe('TemplateGenerator', () => {
         CFN_AUTH_TYPE.UserPoolDomain,
       ],
       undefined,
+      expect.any(Set),
     );
     expect(CategoryTemplateGenerator).toHaveBeenNthCalledWith(
       2,
@@ -1033,6 +1153,7 @@ describe('TemplateGenerator', () => {
       ENV_NAME,
       [CFN_AUTH_TYPE.UserPoolGroup],
       undefined,
+      expect.any(Set),
     );
     expect(CategoryTemplateGenerator).toHaveBeenNthCalledWith(
       3,
@@ -1048,6 +1169,7 @@ describe('TemplateGenerator', () => {
       ENV_NAME,
       [CFN_S3_TYPE.Bucket, CFN_DYNAMODB_TYPE.Table],
       undefined,
+      expect.any(Set),
     );
     // custom resource category
     expect(CategoryTemplateGenerator).toHaveBeenNthCalledWith(
@@ -1064,6 +1186,7 @@ describe('TemplateGenerator', () => {
       ENV_NAME,
       [],
       expect.any(Function),
+      expect.any(Set),
     );
   }
 

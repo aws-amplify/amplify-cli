@@ -2,7 +2,8 @@ import { CloudFormationClient, DescribeStacksCommand, Parameter, UpdateStackComm
 import { CFNTemplate } from './types';
 import assert from 'node:assert';
 
-const POLL_ATTEMPTS = 60;
+// Increased from 60 to support multiple sequential stack updates (e.g., multiple storage stacks)
+const POLL_ATTEMPTS = 200;
 const POLL_INTERVAL_MS = 1500;
 const NO_UPDATES_MESSAGE = 'No updates are to be performed';
 const CFN_IAM_CAPABILIY = 'CAPABILITY_NAMED_IAM';

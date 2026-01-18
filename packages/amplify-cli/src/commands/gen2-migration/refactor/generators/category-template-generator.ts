@@ -57,6 +57,7 @@ class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
     private readonly environmentName: string,
     private readonly resourcesToMove: CFNCategoryType[],
     private readonly resourcesToMovePredicate?: (resourcesToMove: CFN_CATEGORY_TYPE[], resourceEntry: [string, CFNResource]) => boolean,
+    private readonly originalGen2ResourceIds?: Set<string>,
   ) {
     this.gen1ResourcesToMove = new Map();
     this.gen2ResourcesToRemove = new Map();
@@ -178,8 +179,23 @@ class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
     this.logger.debug(`Gen2 Template Resources count: ${Object.keys(oldGen2Template.Resources).length}`);
     this.gen2Template = oldGen2Template;
 
+    // Capture original Gen2 resource IDs on first access to this destination stack
+    // This prevents removing resources that were migrated from Gen1 in a previous iteration
+    const isFirstAccessToDestination = this.originalGen2ResourceIds && this.originalGen2ResourceIds.size === 0;
+    if (isFirstAccessToDestination) {
+      for (const logicalId of Object.keys(oldGen2Template.Resources)) {
+        this.originalGen2ResourceIds!.add(logicalId);
+      }
+      this.logger.debug(`Captured original Gen2 resource IDs: ${Array.from(this.originalGen2ResourceIds!)}`);
+    }
+
     this.gen2ResourcesToRemove = new Map(
       Object.entries(oldGen2Template.Resources).filter(([logicalId, value]) => {
+        // Only remove resources that were in the original Gen2 template
+        if (this.originalGen2ResourceIds && !this.originalGen2ResourceIds.has(logicalId)) {
+          this.logger.debug(`Skipping ${logicalId} - not in original Gen2 template (likely migrated from Gen1)`);
+          return false;
+        }
         return (
           this.resourcesToMovePredicate?.(this.resourcesToMove, [logicalId, value]) ??
           this.resourcesToMove.some((resourceToMove) => resourceToMove.valueOf() === value.Type)
@@ -309,6 +325,7 @@ class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
     const gen1ToGen2ResourceLogicalIdMapping = new Map<string, string>();
     for (const [gen1ResourceLogicalId, gen1Resource] of clonedGen1ResourceMap) {
       this.logger.debug(`[DEBUG] Processing Gen1 resource: ${gen1ResourceLogicalId} (Type: ${gen1Resource.Type})`);
+      let foundMapping = false;
       for (const [gen2ResourceLogicalId, gen2Resource] of clonedGen2ResourceMap) {
         if (gen2Resource.Type !== gen1Resource.Type) {
           continue;
@@ -332,8 +349,17 @@ class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
           gen1ToGen2ResourceLogicalIdMapping.set(gen1ResourceLogicalId, gen2ResourceLogicalId);
           clonedGen1ResourceMap.delete(gen1ResourceLogicalId);
           clonedGen2ResourceMap.delete(gen2ResourceLogicalId);
+          foundMapping = true;
           break;
         }
+      }
+      // If no Gen2 resource found (e.g., Gen2 stack was already updated in a previous failed attempt),
+      // use the Gen1 logical ID as the destination. This allows the refactor to complete
+      // when re-running after a partial failure.
+      if (!foundMapping) {
+        this.logger.debug(`No Gen2 mapping found for ${gen1ResourceLogicalId}, using Gen1 logical ID as destination`);
+        gen1ToGen2ResourceLogicalIdMapping.set(gen1ResourceLogicalId, gen1ResourceLogicalId);
+        clonedGen1ResourceMap.delete(gen1ResourceLogicalId);
       }
     }
     this.logger.debug(`Final resource mapping: ${Array.from(gen1ToGen2ResourceLogicalIdMapping.entries())}`);
