@@ -249,7 +249,7 @@ This is required in order for your Gen1 environment to keep functioning correctl
 
 > See [GraphQL types protected with the IAM provider](#graphql-types-protected-by-the-iam-auth-provider) for more details.
 
-#### Post Generate | REST API
+#### Post Generate | REST Api IAM Access
 
 Follow instructions to [Set up an Amplify REST API](https://docs.amplify.aws/react/build-a-backend/add-aws-services/rest-api/set-up-rest-api/). 
 Then, if your frontend accesses REST using IAM credentials, navigate to the Amplify Console to find the `<gen1-rest-api-id>` and `<gen1-root-resource-id>` 
