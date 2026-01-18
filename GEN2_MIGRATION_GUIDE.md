@@ -754,6 +754,7 @@ to add the necessary configuration.
 - Apps with multiple storage resources (e.g S3 bucket **and** DynamoDB Table) are not supported for refactor. 
 You may still follow the guide until the `generate` step.
 - You cannot migrate multiple environments of the same app at the same time.
+- If you have a function accessing a DynamoDB **model** table, the model name must be `PascalCased` (e.g `Comment` - not `comment`)
 
 # Pre Migration Operations
 
@@ -814,3 +815,4 @@ Here is where you can share:
 - [generated code is missing `expiresInDays` config when API key is configured as an additional auth method](https://github.com/aws-amplify/amplify-cli/issues/14484)
 - [unrecoverable state due to refactor occasionally timing out](https://github.com/aws-amplify/amplify-cli/issues/14485)
 - [generated code sometimes doesn't include dynamo table mappings](https://github.com/aws-amplify/amplify-cli/issues/14487)
+- [unexpected drift for apps that have REST api](https://github.com/aws-amplify/amplify-cli/issues/14489)

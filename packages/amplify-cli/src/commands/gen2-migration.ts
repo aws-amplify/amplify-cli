@@ -29,6 +29,10 @@ const STEPS = {
     class: AmplifyMigrationGenerateStep,
     description: 'Generate Gen2 application code from your existing Gen1 environment',
   },
+  lock: {
+    class: AmplifyMigrationLockStep,
+    description: 'Locks your Gen1 environment to prevent updates during migration',
+  },
   refactor: {
     class: AmplifyMigrationRefactorStep,
     description: 'Move stateful resources from your Gen1 environment to your newly deployed Gen2 branch',
