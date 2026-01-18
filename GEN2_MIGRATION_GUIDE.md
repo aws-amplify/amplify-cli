@@ -402,6 +402,10 @@ npx amplify gen2-migration refactor --to <gen2-root-stack-name>
 
 #### Post Refactor | S3 Storage
 
+```console
+git checkout gen2-main
+```
+
 If your application contains an S3 bucket as part of the storage category, edit in `./amplify/backend.ts`:
 
 ```diff
@@ -423,6 +427,10 @@ git push origin gen2-main
 Wait for the deployment to finish successfully.
 
 #### Post Refactor | DynamoDB Storage
+
+```console
+git checkout gen2-main
+```
 
 If your application contains a DynamoDB table as part of the storage category, edit in `./amplify/backend.ts`:
 
@@ -796,6 +804,7 @@ feedback on the migration process:
 Here is where you can share:
 
 - [Create an Issue](https://github.com/aws-amplify/amplify-cli/issues/new)
+- [Participate in the GitHub Discussion](https://github.com/aws-amplify/amplify-cli/discussions/14490)
 
 # Known Issues
 
