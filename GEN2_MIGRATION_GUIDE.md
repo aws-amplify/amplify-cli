@@ -402,11 +402,11 @@ npx amplify gen2-migration refactor --to <gen2-root-stack-name>
 
 #### Post Refactor | S3 Storage
 
-If your application contains an S3 bucket as part of the storage category, edit in `./amplify/backend.ts`:
-
 ```console
 git checkout gen2-main
 ```
+
+If your application contains an S3 bucket as part of the storage category, edit in `./amplify/backend.ts`:
 
 ```diff
 - // s3Bucket.bucketName = '...';
@@ -428,11 +428,11 @@ Wait for the deployment to finish successfully.
 
 #### Post Refactor | DynamoDB Storage
 
-If your application contains a DynamoDB table as part of the storage category, edit in `./amplify/backend.ts`:
-
 ```console
 git checkout gen2-main
 ```
+
+If your application contains a DynamoDB table as part of the storage category, edit in `./amplify/backend.ts`:
 
 ```diff
 - new Table(storageStack, "myTable", { partitionKey: ... });
