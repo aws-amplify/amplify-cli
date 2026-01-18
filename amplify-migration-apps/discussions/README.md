@@ -332,10 +332,6 @@ this process for any number of users.
 
 > Based on https://github.com/aws-amplify/amplify-cli/blob/gen2-migration/GEN2_MIGRATION_GUIDE.md
 
-> [!WARNING]
-> Migration is not fully supported for this app yet due to a missing feature for refactoring DynamoDB storage tables.
-> This guide ends at the `generate` step.
-
 First and install the experimental CLI package the provides the new commands:
 
 ```console
@@ -358,32 +354,6 @@ npx amplify gen2-migration generate
 ```diff
 - branchName: "main"
 + branchName: "gen2-main"
-```
-
-**Edit in `./amplify/backend.ts`:**
-
-```diff
-+ import { DynamoEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
-+ import { StartingPosition } from 'aws-cdk-lib/aws-lambda';
-```
-
-```diff
-+ backend.fetchuseractivity.addEnvironment('STORAGE_ACTIVITY_ARN', activity.tableArn);
-+ backend.fetchuseractivity.addEnvironment('STORAGE_ACTIVITY_NAME', activity.tableName);
-+ backend.fetchuseractivity.addEnvironment('STORAGE_ACTIVITY_STREAMARN', activity.tableStreamArn!);
-+ activity.grantReadData(backend.fetchuseractivity.resources.lambda);
-
-+ backend.recorduseractivity.addEnvironment('STORAGE_ACTIVITY_ARN', activity.tableArn);
-+ backend.recorduseractivity.addEnvironment('STORAGE_ACTIVITY_NAME', activity.tableName);
-+ backend.recorduseractivity.addEnvironment('STORAGE_ACTIVITY_STREAMARN', activity.tableStreamArn!);
-+ activity.grantReadWriteData(backend.recorduseractivity.resources.lambda);
-
-+ for (const model of ['Comment', 'Post', 'Topic']) {
-+   const table = backend.data.resources.tables[model];
-+   backend.recorduseractivity.resources.lambda.addEventSource(new DynamoEventSource(table, { startingPosition: StartingPosition.LATEST }));
-+   table.grantStreamRead(backend.recorduseractivity.resources.lambda.role!);
-+   table.grantTableListStreams(backend.recorduseractivity.resources.lambda.role!);
-+ }
 ```
 
 **Edit in `./amplify/storage/fetchuseractivity/index.js`:**
@@ -418,4 +388,35 @@ Now connect the `gen2-main` branch to the hosting service:
 ![](./images/add-gen2-main-branch.png)
 ![](./images/deploying-gen2-main-branch.png)
 
+Wait for the deployment to finish successfully. Next, locate the root stack of the Gen2 branch:
+
+![](./images/find-gen2-stack.png)
+
+```console
+npm install --no-save @aws-amplify/cli-internal-gen2-migration-experimental-alpha
+```
+
+```console
+git checkout main
+npx amplify gen2-migration refactor --to <gen2-stack-name>
+```
+
+```console
+git checkout gen2-main
+```
+
+**Edit in `./amplify/backend.ts`:**
+
+```diff
+- const activity = new Table(storageStack, "activity", { partitionKey: { name: "id", type: AttributeType.STRING }, billingMode: BillingMode.PROVISIONED, readCapacity: 5, writeCapacity: 5, stream: StreamViewType.NEW_IMAGE, sortKey: { name: "userId", type: AttributeType.STRING } });
++ const activity = new Table(storageStack, "activity", { tableName: "activity-main", partitionKey: { name: "id", type: AttributeType.STRING }, billingMode: BillingMode.PROVISIONED, readCapacity: 5, writeCapacity: 5, stream: StreamViewType.NEW_IMAGE, sortKey: { name: "userId", type: AttributeType.STRING } });
+```
+
+```console
+git add .
+git commit -m "chore: post refactor"
+git push origin gen2-main
+```
+
 Wait for the deployment to finish successfully.
+

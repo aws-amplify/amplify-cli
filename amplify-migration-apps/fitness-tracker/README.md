@@ -235,23 +235,17 @@ npx amplify gen2-migration generate
 ```
 
 ```diff
--    defaultAuthorizationMode: "userPool",
-+    defaultAuthorizationMode: "userPool",
-+    apiKeyAuthorizationMode: { expiresInDays: 7 }
+- defaultAuthorizationMode: "userPool",
++ defaultAuthorizationMode: "userPool",
++ apiKeyAuthorizationMode: { expiresInDays: 7 }
 ```
 
 **Edit in `./amplify/backend.ts`:**
 
 ```diff
-+ import { RestApi, LambdaIntegration, AuthorizationType } from "aws-cdk-lib/aws-apigateway";
++ import { RestApi, LambdaIntegration, AuthorizationType, Cors } from "aws-cdk-lib/aws-apigateway";
 + import { Policy, PolicyStatement } from "aws-cdk-lib/aws-iam";
 + import { Stack } from "aws-cdk-lib";
-```
-
-```diff
-+ const mealsTable = backend.data.resources.tables['Meal'];
-+ mealsTable.grantWriteData(backend.lognutrition.resources.lambda);
-+ backend.lognutrition.addEnvironment('API_FITNESSTRACKER_MEALTABLE_NAME', mealsTable.tableName);
 ```
 
 ```diff
@@ -369,14 +363,13 @@ Navigate to the Amplify Console to find the `<gen1-rest-api-id>` and `<gen1-root
 **Edit in `./src/main.tsx`:**
 
 ```diff
-- import awsExports from './amplifyconfiguration.json';
+- import amplifyconfig from './amplifyconfiguration.json';
 + import outputs from '../amplify_outputs.json';
 + import { parseAmplifyConfig } from "aws-amplify/utils";
-+ import { Amplify } from 'aws-amplify';
 ```
 
 ```diff
-- Amplify.configure(awsExports);
+- Amplify.configure(amplifyconfig);
 + const amplifyConfig = parseAmplifyConfig(outputs);
 + 
 + Amplify.configure(
@@ -401,6 +394,9 @@ Now connect the `gen2-main` branch to the hosting service:
 ![](./images/add-gen2-main-branch.png)
 ![](./images/deploying-gen2-main-branch.png)
 
+> Note: REST API currently cannot be accessed via the Gen2 app due to some CORS misconfiguration that is 
+unrelated to the automatic migration process. It is likely a problem with the manually written REST API definitions 
+and needs to be addressed for the app to fully work.
 
 Wait for the deployment to finish successfully. Next, locate the root stack of the Gen2 branch:
 

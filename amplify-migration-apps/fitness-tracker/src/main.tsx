@@ -4,8 +4,8 @@ import './index.css';
 import App from './App.tsx';
 
 import { Amplify } from 'aws-amplify';
-import awsExports from './aws-exports.js';
-Amplify.configure(awsExports);
+import amplifyconfig from './amplifyconfiguration.json';
+Amplify.configure(amplifyconfig);
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

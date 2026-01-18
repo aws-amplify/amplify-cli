@@ -15,31 +15,31 @@ import chalk from 'chalk';
 const STEPS = {
   cleanup: {
     class: AmplifyMigrationCleanupStep,
-    description: 'TODO',
+    description: 'Not Implemented',
   },
   clone: {
     class: AmplifyMigrationCloneStep,
-    description: 'TODO',
+    description: 'Not Implemented',
   },
   decommission: {
     class: AmplifyMigrationDecommissionStep,
-    description: 'TODO',
+    description: 'Decommission the Gen1 environment post migration',
   },
   generate: {
     class: AmplifyMigrationGenerateStep,
-    description: 'TODO',
+    description: 'Generate Gen2 application code from your existing Gen1 environment',
   },
   lock: {
     class: AmplifyMigrationLockStep,
-    description: 'TODO',
+    description: 'Locks your Gen1 environment to prevent updates during migration',
   },
   refactor: {
     class: AmplifyMigrationRefactorStep,
-    description: 'TODO',
+    description: 'Move stateful resources from your Gen1 environment to your newly deployed Gen2 branch',
   },
   shift: {
     class: AmplifyMigrationShiftStep,
-    description: 'TODO',
+    description: 'Not Implemented',
   },
 };
 
