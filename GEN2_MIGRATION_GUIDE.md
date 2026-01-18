@@ -48,9 +48,11 @@ will be reused and managed by the new Gen2 deployment.
 > produces undesired results, you will need to recreate the environment. **Make sure you 
 > run it only on environments you can afford to delete**.
 
-After completing this process you will have 2 functionally equivalent amplify applications that access the same data.
+After completing this process you will have 2 functionally equivalent amplify applications that access the same data. 
 
 ![](./migration-guide-images/workflow.png)
+
+**Note that you will not be able to continue evolving your Gen1 environment by pushing changes to it, use the new Gen2 app instead.**
 
 ### Note on DynamoDB Model Tables
 
@@ -137,6 +139,12 @@ npx amplify gen2-migration lock
 
 This command will first perform a few validations to analyze if your Gen1 environment is in a 
 healthy state and proceed to lock your Gen1 environment by attaching a restrictive IAM policy on the root stack. 
+
+```json
+{"Statement":[{"Effect":"Deny","Action":"Update:*","Principal":"*","Resource":"*"}]}
+```
+
+You will need to remove this policy from the stack if you'd like to push updates to the Gen1 environment.
 
 > [!TIP]
 > It is also advisable to disable any automatic pipelines that deploy to your Gen1 environment.
@@ -745,6 +753,7 @@ to add the necessary configuration.
 
 - Apps with multiple storage resources (e.g S3 bucket **and** DynamoDB Table) are not supported for refactor. 
 You may still follow the guide until the `generate` step.
+- You cannot migrate multiple environments of the same app at the same time.
 
 # Pre Migration Operations
 
