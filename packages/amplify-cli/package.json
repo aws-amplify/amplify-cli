@@ -1,6 +1,6 @@
 {
-  "name": "@aws-amplify/cli-internal-gen2-migration-experimental-alpha",
-  "version": "0.6.0",
+  "name": "@aws-amplify/cli-internal",
+  "version": "0.0.0",
   "description": "Amplify CLI",
   "repository": {
     "type": "git",
