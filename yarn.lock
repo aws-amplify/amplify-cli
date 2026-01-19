@@ -169,7 +169,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-category-api@npm:^5.15.3":
+"@aws-amplify/amplify-category-api@npm:^5.15.2, @aws-amplify/amplify-category-api@npm:^5.15.3":
   version: 5.15.3
   resolution: "@aws-amplify/amplify-category-api@npm:5.15.3"
   dependencies:
@@ -1196,9 +1196,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/cli-internal@14.2.3, @aws-amplify/cli-internal@workspace:packages/amplify-cli":
+"@aws-amplify/cli-internal-gen2-migration-experimental-alpha@workspace:packages/amplify-cli":
   version: 0.0.0-use.local
-  resolution: "@aws-amplify/cli-internal@workspace:packages/amplify-cli"
+  resolution: "@aws-amplify/cli-internal-gen2-migration-experimental-alpha@workspace:packages/amplify-cli"
   dependencies:
     "@aws-amplify/amplify-app": 5.0.45
     "@aws-amplify/amplify-category-analytics": 5.0.45
@@ -1309,6 +1309,86 @@ __metadata:
     amplify: bin/amplify
   languageName: unknown
   linkType: soft
+
+"@aws-amplify/cli-internal@npm:14.2.3":
+  version: 14.2.3
+  resolution: "@aws-amplify/cli-internal@npm:14.2.3"
+  dependencies:
+    "@aws-amplify/amplify-app": 5.0.45
+    "@aws-amplify/amplify-category-analytics": 5.0.45
+    "@aws-amplify/amplify-category-api": ^5.15.2
+    "@aws-amplify/amplify-category-auth": 3.7.26
+    "@aws-amplify/amplify-category-custom": 3.1.31
+    "@aws-amplify/amplify-category-function": 5.7.19
+    "@aws-amplify/amplify-category-geo": 3.5.25
+    "@aws-amplify/amplify-category-hosting": 3.5.44
+    "@aws-amplify/amplify-category-interactions": 5.1.37
+    "@aws-amplify/amplify-category-notifications": 2.26.41
+    "@aws-amplify/amplify-category-predictions": 5.5.25
+    "@aws-amplify/amplify-category-storage": 5.5.25
+    "@aws-amplify/amplify-cli-core": 4.4.4
+    "@aws-amplify/amplify-cli-logger": 1.3.8
+    "@aws-amplify/amplify-cli-shared-interfaces": 1.2.6
+    "@aws-amplify/amplify-console-hosting": 2.5.42
+    "@aws-amplify/amplify-container-hosting": 2.8.23
+    "@aws-amplify/amplify-dotnet-function-template-provider": 2.7.8
+    "@aws-amplify/amplify-environment-parameters": 1.9.23
+    "@aws-amplify/amplify-frontend-android": 3.5.8
+    "@aws-amplify/amplify-frontend-flutter": 1.4.7
+    "@aws-amplify/amplify-frontend-ios": 3.7.15
+    "@aws-amplify/amplify-frontend-javascript": 3.10.25
+    "@aws-amplify/amplify-go-function-template-provider": 1.4.9
+    "@aws-amplify/amplify-nodejs-function-template-provider": 2.10.18
+    "@aws-amplify/amplify-prompts": 2.8.7
+    "@aws-amplify/amplify-provider-awscloudformation": 8.11.17
+    "@aws-amplify/amplify-python-function-template-provider": 1.4.8
+    "@aws-amplify/amplify-util-import": 2.8.6
+    "@aws-amplify/amplify-util-mock": 5.10.25
+    "@aws-amplify/amplify-util-uibuilder": 1.14.24
+    "@aws-cdk/cloudformation-diff": ~2.68.0
+    "@aws-sdk/client-amplify": ^3.919.0
+    "@aws-sdk/client-cognito-identity-provider": ^3.919.0
+    amplify-codegen: ^4.10.3
+    amplify-dotnet-function-runtime-provider: 2.1.7
+    amplify-go-function-runtime-provider: 2.3.54
+    amplify-java-function-runtime-provider: 2.3.54
+    amplify-java-function-template-provider: 1.5.24
+    amplify-nodejs-function-runtime-provider: 2.5.32
+    amplify-python-function-runtime-provider: 2.4.54
+    aws-cdk-lib: ~2.189.1
+    chalk: ^4.1.1
+    ci-info: ^3.8.0
+    cli-table3: ^0.6.0
+    cloudform-types: ^4.2.0
+    colors: 1.4.0
+    ejs: ^3.1.7
+    env-editor: ^0.5.0
+    execa: ^5.1.1
+    folder-hash: ^4.0.2
+    fs-extra: ^8.1.0
+    glob: ^11.0.1
+    graphql: ^15.5.0
+    graphql-transformer-core: ^8.2.18
+    gunzip-maybe: ^1.4.2
+    hidefile: ^3.0.0
+    ini: ^1.3.5
+    inquirer: ^7.3.3
+    lodash: ^4.17.21
+    node-fetch: ^2.6.7
+    ora: ^4.0.3
+    progress: ^2.0.3
+    promise-sequential: ^1.1.1
+    semver: ^7.5.4
+    tar-fs: ^2.1.1
+    treeify: ^1.1.0
+    update-notifier: ^5.1.0
+    uuid: ^8.3.2
+    which: ^2.0.2
+  bin:
+    amplify: bin/amplify
+  checksum: 680ac93ad6a692465764d248fc8668eba11320d1991d5096b4817acc33d110fd571d50bfa8f90bc444b6c5728e3a9ef49244dd7b838762df89b016e4350a2305
+  languageName: node
+  linkType: hard
 
 "@aws-amplify/cli@workspace:packages/amplify-cli-npm":
   version: 0.0.0-use.local
