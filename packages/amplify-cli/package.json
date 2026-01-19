@@ -115,6 +115,7 @@
     "semver": "^7.5.4",
     "tar-fs": "^2.1.1",
     "treeify": "^1.1.0",
+    "typescript": "~5.9.3",
     "unzipper": "^0.10.14",
     "update-notifier": "^5.1.0",
     "uuid": "^8.3.2",
