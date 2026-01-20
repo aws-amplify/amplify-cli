@@ -2,6 +2,12 @@ import assert from 'node:assert';
 import { printNodeArray } from '../../test_utils/ts_node_printer';
 import { generateDataSource } from './index';
 
+// Mock AWS SDK
+jest.mock('@aws-sdk/client-appsync', () => ({
+  AppSyncClient: jest.fn(),
+  paginateListGraphqlApis: jest.fn().mockReturnValue([]),
+}));
+
 describe('Data Category code generation', () => {
   beforeEach(() => {
     jest.spyOn(console, 'warn').mockImplementation(() => {});
