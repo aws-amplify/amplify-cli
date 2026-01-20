@@ -52,3 +52,35 @@ describe('Data Category code generation', () => {
     });
   });
 });
+describe('authorization modes', () => {
+  it('generates API key config', async () => {
+    const authorizationModes = {
+      defaultAuthentication: {
+        authenticationType: 'API_KEY',
+        apiKeyConfig: { apiKeyExpirationDays: 7 },
+      },
+    };
+    const source = printNodeArray(
+      await generateDataSource('main', { schema: 'type Test { id: ID! }', authorizationModes: authorizationModes as any }),
+    );
+    assert.match(source, /defaultAuthorizationMode: "apiKey"/);
+    assert.match(source, /apiKeyAuthorizationMode: { expiresInDays: 7 }/);
+  });
+
+  it('generates additional auth providers', async () => {
+    const authorizationModes = {
+      defaultAuthentication: { authenticationType: 'AMAZON_COGNITO_USER_POOLS' },
+      additionalAuthenticationProviders: [
+        {
+          authenticationType: 'API_KEY',
+          apiKeyConfig: { apiKeyExpirationDays: 30 },
+        },
+      ],
+    };
+    const source = printNodeArray(
+      await generateDataSource('main', { schema: 'type Test { id: ID! }', authorizationModes: authorizationModes as any }),
+    );
+    assert.match(source, /defaultAuthorizationMode: "userPool"/);
+    assert.match(source, /apiKeyAuthorizationMode: { expiresInDays: 30 }/);
+  });
+});
