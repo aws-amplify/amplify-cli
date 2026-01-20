@@ -312,6 +312,8 @@ export const generateDataSource = async (gen1Env: string, dataDefinition?: DataD
     if (gen1AuthModes.defaultAuthentication?.authenticationType) {
       const gen2AuthMode = authModeMap[gen1AuthModes.defaultAuthentication.authenticationType] || 'userPool';
       authModeProperties.push(factory.createPropertyAssignment('defaultAuthorizationMode', factory.createStringLiteral(gen2AuthMode)));
+
+      // Add config for default auth mode if it needs configuration
       addAuthModeConfig(gen1AuthModes.defaultAuthentication);
     }
 
