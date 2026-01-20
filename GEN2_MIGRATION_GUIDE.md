@@ -115,6 +115,7 @@ able to adapt them to fit your setup.
 > **Before you begin, determine if your app can be migrated by reviewing:**
 >
 > - [Feature Coverage](#feature-coverage)
+> - [Supported Frameworks](#supported-frameworks)
 > - [Limitations](#limitations)
 > - [Pre Migration Operations](#pre-migration-operations)
 
