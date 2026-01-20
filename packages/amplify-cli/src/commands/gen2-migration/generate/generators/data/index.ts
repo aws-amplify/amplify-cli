@@ -253,6 +253,18 @@ export const generateDataSource = async (gen1Env: string, dataDefinition?: DataD
       OPENID_CONNECT: 'oidc',
     };
 
+    /**
+     * Processes a Gen 1 authentication provider and generates corresponding Gen 2 auth mode configuration.
+     *
+     * @param provider - Gen 1 auth provider object containing:
+     *   - authenticationType: 'API_KEY' | 'AWS_LAMBDA' | 'OPENID_CONNECT' | 'AMAZON_COGNITO_USER_POOLS' | 'AWS_IAM'
+     *   - Type-specific config (apiKeyConfig, lambdaAuthorizerConfig, openIDConnectConfig, etc.)
+     *
+     * Generates Gen 2 auth mode properties like:
+     *   - apiKeyAuthorizationMode: { expiresInDays: number }
+     *   - lambdaAuthorizationMode: { timeToLiveInSeconds: number }
+     *   - oidcAuthorizationMode: { oidcIssuerUrl: string, clientId?: string }
+     */
     const addAuthModeConfig = (provider: any) => {
       switch (provider.authenticationType) {
         case 'API_KEY':
@@ -319,7 +331,9 @@ export const generateDataSource = async (gen1Env: string, dataDefinition?: DataD
 
     // Add additional auth providers
     if (gen1AuthModes.additionalAuthenticationProviders) {
-      gen1AuthModes.additionalAuthenticationProviders.forEach(addAuthModeConfig);
+      for (const provider of gen1AuthModes.additionalAuthenticationProviders) {
+        addAuthModeConfig(provider);
+      }
     }
 
     if (authModeProperties.length > 0) {
