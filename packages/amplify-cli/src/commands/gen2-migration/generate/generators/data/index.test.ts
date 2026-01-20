@@ -67,6 +67,7 @@ describe('authorization modes', () => {
       },
     };
     const source = printNodeArray(
+      // Using 'as any' because we're testing with Gen 1 auth format but TypeScript expects Gen 2 AuthorizationModes type
       await generateDataSource('main', { schema: 'type Test { id: ID! }', authorizationModes: authorizationModes as any }),
     );
     assert.match(source, /defaultAuthorizationMode: "apiKey"/);
@@ -84,6 +85,7 @@ describe('authorization modes', () => {
       ],
     };
     const source = printNodeArray(
+      // Using 'as any' because we're testing with Gen 1 auth format but TypeScript expects Gen 2 AuthorizationModes type
       await generateDataSource('main', { schema: 'type Test { id: ID! }', authorizationModes: authorizationModes as any }),
     );
     assert.match(source, /defaultAuthorizationMode: "userPool"/);
