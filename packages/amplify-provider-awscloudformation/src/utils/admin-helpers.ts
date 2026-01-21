@@ -195,6 +195,10 @@ export const adminBackendMap: {
     appStateUrl: string;
   };
 } = {
+  'ap-east-1': {
+    amplifyAdminUrl: 'https://ap-east-1.admin.amplifyapp.com',
+    appStateUrl: 'https://prod.ap-east-1.appstate.amplifyapp.com',
+  },
   'ap-northeast-1': {
     amplifyAdminUrl: 'https://ap-northeast-1.admin.amplifyapp.com',
     appStateUrl: 'https://prod.ap-northeast-1.appstate.amplifyapp.com',
