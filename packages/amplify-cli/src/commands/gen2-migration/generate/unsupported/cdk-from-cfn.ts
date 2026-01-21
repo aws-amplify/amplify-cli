@@ -98,7 +98,7 @@ export class CdkFromCfn {
     const shardCount = parseInt(shardCountParam.ParameterValue, 10);
 
     const finalTemplate = await this.preTransmute(template, stackName);
-    const tsFile = cdk_from_cfn.transmute(JSON.stringify(finalTemplate), 'typescript', stackName);
+    const tsFile = cdk_from_cfn.transmute(JSON.stringify(finalTemplate), 'typescript', stackName, 'construct');
     await fs.mkdir(path.dirname(filePath), { recursive: true });
     await this.fileWriter(tsFile, filePath);
 
