@@ -230,11 +230,6 @@ npx amplify gen2-migration generate
 **Edit in `./amplify/data/resource.ts`:**
 
 ```diff
-- branchName: "main"
-+ branchName: "gen2-main"
-```
-
-```diff
 - defaultAuthorizationMode: "userPool",
 + defaultAuthorizationMode: "userPool",
 + apiKeyAuthorizationMode: { expiresInDays: 7 }
@@ -407,8 +402,17 @@ git checkout main
 npx amplify gen2-migration refactor --to <gen2-stack-name>
 ```
 
-Redeploy the gen2 environment to regenerate the outputs file:
+**Edit in `./amplify/data/resource.ts`:**
 
-![](./images/redeploy-gen2.png)
+```diff
+- branchName: "main"
++ branchName: "gen2-main"
+```
+
+```console
+git add .
+git commit -m "chore: post refactor"
+git push origin gen2-main
+```
 
 Wait for the deployment to finish successfully

@@ -284,11 +284,6 @@ npx amplify gen2-migration generate
 **Edit in `./amplify/data/resource.ts`:**
 
 ```diff
-- branchName: "main"
-+ branchName: "gen2-main"
-```
-
-```diff
 -    defaultAuthorizationMode: "iam",
 +    defaultAuthorizationMode: "iam",
 +    apiKeyAuthorizationMode: { expiresInDays: 7 }
@@ -388,6 +383,13 @@ git checkout gen2-main
 ```diff
 - // s3Bucket.bucketName = '...';
 + s3Bucket.bucketName = '...';
+```
+
+**Edit in `./amplify/data/resource.ts`:**
+
+```diff
+- branchName: "main"
++ branchName: "gen2-main"
 ```
 
 ```console

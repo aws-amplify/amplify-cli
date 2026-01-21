@@ -214,13 +214,6 @@ git checkout -b gen2-main
 npx amplify gen2-migration generate
 ```
 
-**Edit in `./amplify/data/resource.ts`:**
-
-```diff
-- branchName: "main"
-+ branchName: "gen2-main"
-```
-
 **Edit in `./amplify/function/quotegenerator/index.js`:**
 
 ```diff
@@ -263,6 +256,13 @@ npx amplify gen2-migration refactor --to <gen2-stack-name>
 git checkout gen2-main
 ```
 
+**Edit in `./amplify/data/resource.ts`:**
+
+```diff
+- branchName: "main"
++ branchName: "gen2-main"
+```
+
 **Edit in `./amplify/backend.ts`:**
 
 ```diff
@@ -272,7 +272,7 @@ git checkout gen2-main
 
 ```console
 git add .
-git commit -m "fix: reuse gen1 storage bucket"
+git commit -m "chore: post refactor"
 git push origin gen2-main
 ```
 

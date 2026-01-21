@@ -397,11 +397,6 @@ npx amplify gen2-migration generate
 **Edit in `./amplify/data/resource.ts`:**
 
 ```diff
-- branchName: "main"
-+ branchName: "gen2-main"
-```
-
-```diff
 - defaultAuthorizationMode: "userPool"
 + defaultAuthorizationMode: "userPool",
 + apiKeyAuthorizationMode: { expiresInDays: 100 }
@@ -443,6 +438,13 @@ npx amplify gen2-migration generate
 - entry: "./index.js",
 + entry: "./index.js",
 + resourceGroupName: 'auth',
+```
+
+**Edit in `./amplify/data/resource.ts`:**
+
+```diff
+- branchName: "main"
++ branchName: "gen2-main"
 ```
 
 **Edit in `./amplify/backend.ts`:**

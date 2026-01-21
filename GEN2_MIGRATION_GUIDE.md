@@ -36,10 +36,8 @@ Migration to Gen2 is done in a (partial) blue/green deployment approach.
 This will intentionally prevent updates during migration.
 2. Amplify CLI will _generate_ the necessary Gen2 definition files based on your deployed Gen1 environment.
 3. You will perform some manual edits on those files. How much exactly varies depending on the app itself.
-4. Generated code will be pushed to a new branch and deployed via the hosting service. Apart from the DynamoDB tables 
-that host your models (see [below](#note-on-dynamodb-model-tables)), all stateful resources (e.g `UserPool`) will be cloned and your 
-Gen2 application will start with empty data for those.
-5. Amplify CLI will _refactor_ (using [CloudFormation Refactor](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stack-refactoring.html)) 
+4. Generated code will be pushed to a new branch and deployed via the hosting service. This deployment will be an empty clone of your Gen1 environment that you can test in isolation.
+5. Once you are satisified the Gen2 deployment behaves as expected, the Amplify CLI will _refactor_ (using [CloudFormation Refactor](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stack-refactoring.html)) 
 your underlying CloudFormation stacks such that any Gen1 stateful resource (e.g `UserPool`) 
 will be reused and managed by the new Gen2 deployment.
 
@@ -48,32 +46,9 @@ will be reused and managed by the new Gen2 deployment.
 > produces undesired results, you will need to recreate the environment. **Make sure you 
 > run it only on environments you can afford to delete**.
 
-After completing this process you will have 2 functionally equivalent amplify applications that access the same data. 
-
 ![](./migration-guide-images/workflow.png)
 
-**Note that you will not be able to continue evolving your Gen1 environment by pushing changes to it, use the new Gen2 app instead.**
-
-### Note on DynamoDB Model Tables
-
-DynamoDB tables that host your models are not cloned as part of the Gen2 deployment and therefore don't participate in the `refactor` 
-operation. This means that your Gen2 deployment will immediately have access to the Gen1 data.
-
-### Note on Other Stateful Resources
-
-In addition to DynamoDB model tables, there can be other stateful resources in your app:
-
-- S3 Bucket (`storage` category)
-- DynamoDB Table (`storage` category)
-- Cognito User Pool (`auth` category)
-- Cognito Identity Pool (`auth` category)
-
-The Gen2 deployment will create new empty instances of these resources. This allows you to test their functionality 
-(e.g user registration) on the Gen2 deployment without impacting your Gen1 app. 
-
-Once you are satisfied the Gen2 application works correctly, `refactor` will bring these resources as well from your 
-Gen1 app to your Gen2 app. After `refactor`, the new instances are deleted and your Gen2 application shares and **ALL** 
-data with your Gen1 app.
+After completing this process you will have 2 functionally equivalent amplify applications that access the same data. **Note that you will not be able to continue evolving your Gen1 environment by pushing changes to it, use the new Gen2 app instead.**
 
 ## Prerequisites 
 
@@ -175,18 +150,6 @@ Note that client side libraries support both files so no additional change is ne
 
 > Note: The `amplify_outputs.json` file **will not** exist on your local file system so you will see a compilation error. 
 Thats ok - it is generated at deploy time in the hosting service.
-
-#### Post Generate | Reuse Model Tables
-
-**Edit in `./amplify/data/resource.ts`:**
-
-```diff
-- branchName: "main"
-+ branchName: "gen2-main"
-```
-
-This is required in order to instruct the hosting service that the DynamoDB tables hosting your 
-models should be reused (imported) instead of recreated.
 
 #### Post Generate | NodeJS Function ESM Compatibility
 
@@ -399,6 +362,22 @@ And run:
 git checkout main
 npx amplify gen2-migration refactor --to <gen2-root-stack-name>
 ```
+
+#### Post Refactor | Dynamo Model Tables
+
+```console
+git checkout gen2-main
+```
+
+**Edit in `./amplify/data/resource.ts`:**
+
+```diff
+- branchName: "main"
++ branchName: "gen2-main"
+```
+
+This is required in order to instruct the hosting service that the DynamoDB tables hosting your 
+models should now be reused (imported) instead of recreated.
 
 #### Post Refactor | S3 Storage
 

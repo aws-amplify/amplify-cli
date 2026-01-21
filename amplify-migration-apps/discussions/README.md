@@ -349,13 +349,6 @@ git checkout -b gen2-main
 npx amplify gen2-migration generate
 ```
 
-**Edit in `./amplify/data/resource.ts`:**
-
-```diff
-- branchName: "main"
-+ branchName: "gen2-main"
-```
-
 **Edit in `./amplify/storage/fetchuseractivity/index.js`:**
 
 ```diff
@@ -410,6 +403,13 @@ git checkout gen2-main
 ```diff
 - const activity = new Table(storageStack, "activity", { partitionKey: { name: "id", type: AttributeType.STRING }, billingMode: BillingMode.PROVISIONED, readCapacity: 5, writeCapacity: 5, stream: StreamViewType.NEW_IMAGE, sortKey: { name: "userId", type: AttributeType.STRING } });
 + const activity = new Table(storageStack, "activity", { tableName: "activity-main", partitionKey: { name: "id", type: AttributeType.STRING }, billingMode: BillingMode.PROVISIONED, readCapacity: 5, writeCapacity: 5, stream: StreamViewType.NEW_IMAGE, sortKey: { name: "userId", type: AttributeType.STRING } });
+```
+
+**Edit in `./amplify/data/resource.ts`:**
+
+```diff
+- branchName: "main"
++ branchName: "gen2-main"
 ```
 
 ```console
