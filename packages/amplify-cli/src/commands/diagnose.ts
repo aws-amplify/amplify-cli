@@ -226,7 +226,7 @@ const sendFile = async (
     body: data,
   });
   if (response.status !== 200) {
-    throw new DiagnoseReportUploadError();
+    throw new DiagnoseReportUploadError(response.statusText);
   }
 };
 
