@@ -17,7 +17,7 @@ export const tryUpdateTopLevelComment = (resourceDirPath: string, envVars: strin
   updateTopLevelComment(sourceFilePath, newComment);
 };
 
-const createTopLevelComment = (envVars: string[]) => `${topLevelCommentPrefix}${envVars.sort().join(`${EOL}\t`)}${topLevelCommentSuffix}`;
+const createTopLevelComment = (envVars: string[]) => `${topLevelCommentPrefix}\t${envVars.sort().join(`${EOL}\t`)}${topLevelCommentSuffix}`;
 
 const updateTopLevelComment = (filePath, newComment) => {
   const commentRegex = new RegExp(`${_.escapeRegExp(topLevelCommentPrefix)}[a-zA-Z0-9\\-\\s._=]+${_.escapeRegExp(topLevelCommentSuffix)}`);
