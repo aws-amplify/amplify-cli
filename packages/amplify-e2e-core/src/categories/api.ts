@@ -851,6 +851,10 @@ export function modifyRestAPI(projectDir: string, apiName: string) {
   fs.writeFileSync(indexFilePath, modifiedApi);
 }
 
+export function amplifyMockApi(cwd: string, testingWithLatestCodebase?: false): ExecutionContext {
+    return spawn(getCLIPath(testingWithLatestCodebase), ['mock', 'api'], { cwd, stripColors: true, noOutputTimeout: 1000 * 60 * 20 });
+};
+
 export function cancelAmplifyMockApi(cwd: string): Promise<void> {
   return new Promise<void>((resolve, reject) => {
     spawn(getCLIPath(), ['mock', 'api'], { cwd, stripColors: true })
