@@ -75,8 +75,10 @@ const onSuccess = async (context: $TSContext): Promise<void> => {
   await postPullCodegen(context);
 
   if (!inputParams.yes) {
-    const shouldKeepAmplifyDir = context.exeInfo.existingLocalEnvInfo?.noUpdateBackend
-      ? !context.exeInfo.existingLocalEnvInfo.noUpdateBackend
+    const noUpdateBackend = context.exeInfo.existingLocalEnvInfo?.noUpdateBackend || inputParams.noUpdateBackend;
+
+    const shouldKeepAmplifyDir = noUpdateBackend
+      ? !noUpdateBackend
       : await context.amplify.confirmPrompt('Do you plan on modifying this backend?', true);
 
     if (shouldKeepAmplifyDir) {
