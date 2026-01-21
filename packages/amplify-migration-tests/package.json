@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-migration-tests",
-  "version": "6.5.10",
+  "version": "6.5.11-rc.d4e090636558ef5.0",
   "description": "",
   "repository": {
     "type": "git",
@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "@aws-amplify/amplify-cli-core": "4.4.4",
-    "@aws-amplify/amplify-e2e-core": "5.7.9",
+    "@aws-amplify/amplify-e2e-core": "5.7.10-rc.d4e090636558ef5.0",
     "@aws-cdk/cloudformation-diff": "~2.68.0",
     "@aws-sdk/client-s3": "^3.919.0",
     "amplify-headless-interface": "1.17.8",
