@@ -1191,6 +1191,23 @@ export const formNestedStack = async (
         const { imported, userPoolId, authRoleArn, authRoleName, unauthRoleArn, unauthRoleName } =
           context.amplify.getImportedAuthProperties(context);
 
+        /** mimic some side effects from {@link uploadAppSyncFiles} writeUpdatedParametersJson */
+        if (category === AmplifyCategories.API) {
+          // If authRoleName parameter not present, add it
+          if (!parameters.authRoleName) {
+            parameters.authRoleName = {
+              Ref: 'AuthRoleName',
+            };
+          }
+
+          // If unauthRoleName parameter not present, add it
+          if (!parameters.unauthRoleName) {
+            parameters.unauthRoleName = {
+              Ref: 'UnauthRoleName',
+            };
+          }
+        }
+
         if (category !== AmplifyCategories.AUTH && resourceDetails.service !== 'Cognito' && imported) {
           if (parameters.AuthCognitoUserPoolId) {
             parameters.AuthCognitoUserPoolId = userPoolId;

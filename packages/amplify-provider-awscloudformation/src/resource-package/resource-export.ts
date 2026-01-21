@@ -1,5 +1,6 @@
 import {
   $TSContext,
+  AmplifyCategories,
   CFNTemplateFormat,
   FeatureFlags,
   JSONUtilities,
@@ -55,6 +56,8 @@ const {
   AMPLIFY_AUTH_ASSETS,
   NETWORK_STACK_LOGICAL_ID,
   APIGW_AUTH_STACK_LOGICAL_ID,
+  IMPORT_AUTH_PARAMS,
+  AUTH_TRASH_PARAMS,
 } = Constants;
 export class ResourceExport extends ResourcePackager {
   exportDirectoryPath: string;
@@ -92,17 +95,44 @@ export class ResourceExport extends ResourcePackager {
   fixNestedStackParameters(transformedCfnResources: TransformedCfnResource[], stackParameters: StackParameters): StackParameters {
     const projectPath = pathManager.findProjectRoot();
     const { StackName: rootstackName } = this.amplifyMeta[PROVIDER][PROVIDER_NAME];
+    const authResource = this.filterResourceByCategoryService(
+      transformedCfnResources,
+      AUTH_CATEGORY.NAME,
+      AUTH_CATEGORY.SERVICE.COGNITO,
+    ).shift();
+    const imported = authResource ? authResource.serviceType === 'imported' : false;
     const nestedStack = stackParameters[rootstackName].nestedStacks;
     for (const resource of transformedCfnResources) {
       const fileParameters = stateManager.getResourceParametersJson(projectPath, resource.category, resource.resourceName, {
         default: {},
         throwIfNotExist: false,
       });
+      if (resource.serviceType === 'imported') {
+        // 'imported' services do not have stacks
+        continue;
+      }
       const nestedStackName = resource.category + resource.resourceName;
       const usedParameters = nestedStack[nestedStackName].parameters;
       Object.keys(usedParameters).forEach((paramKey) => {
         if (paramKey in fileParameters) {
-          usedParameters[paramKey] = fileParameters[paramKey];
+          if (
+            // none of these conditions shall pass
+            !(
+              /** skip file parameter if we know auth is imported so the cfn has modifications we keep from {@link formNestedStack} */
+              (
+                resource.category !== AmplifyCategories.AUTH &&
+                resource.service !== 'Cognito' &&
+                imported &&
+                IMPORT_AUTH_PARAMS.includes(paramKey)
+              )
+            )
+          ) {
+            usedParameters[paramKey] = fileParameters[paramKey];
+          }
+        }
+        /** delete AUTH param mutations that sneak in during @aws-amplify/amplify-category-api/graphql-transformer/transform-graphql-schema-v2/transformGraphQLSchemaV2 */
+        if (AUTH_TRASH_PARAMS.includes(paramKey)) {
+          delete usedParameters[paramKey];
         }
       });
     }
