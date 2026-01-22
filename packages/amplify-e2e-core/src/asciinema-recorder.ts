@@ -58,7 +58,7 @@ export class Recorder {
       cols: this.cols,
       rows: this.rows,
       cwd: this.cwd,
-      shell: process.platform === 'darwin' ? process.env.SHELL || '/bin/bash' : true,
+      shell: process.platform === 'darwin' ? process.env.SHELL || '/bin/zsh' : true,
       // Do not set useConpty. node-pty is smart enough to set it to true only on versions of Windows that support it.
       // useConpty: true,
       ...this.options,
