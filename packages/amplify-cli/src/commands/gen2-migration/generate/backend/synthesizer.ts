@@ -1856,21 +1856,24 @@ export class BackendSynthesizer {
 
     // Function name escape hatch - set function names with branch suffix
     if (renderArgs.function) {
-      const branchNameStatement = factory.createVariableStatement(
-        [],
-        factory.createVariableDeclarationList(
-          [
-            factory.createVariableDeclaration(
-              'branchName',
-              undefined,
-              undefined,
-              factory.createIdentifier('process.env.AWS_BRANCH ?? "sandbox"'),
-            ),
-          ],
-          ts.NodeFlags.Const,
-        ),
-      );
-      nodes.push(branchNameStatement);
+      // Only declare branchName if REST APIs didn't already declare it
+      if (!renderArgs.data?.restApis) {
+        const branchNameStatement = factory.createVariableStatement(
+          [],
+          factory.createVariableDeclarationList(
+            [
+              factory.createVariableDeclaration(
+                'branchName',
+                undefined,
+                undefined,
+                factory.createIdentifier('process.env.AWS_BRANCH ?? "sandbox"'),
+              ),
+            ],
+            ts.NodeFlags.Const,
+          ),
+        );
+        nodes.push(branchNameStatement);
+      }
 
       const functionNameCategories = renderArgs.function.functionNamesAndCategories;
       for (const [functionName] of functionNameCategories) {
