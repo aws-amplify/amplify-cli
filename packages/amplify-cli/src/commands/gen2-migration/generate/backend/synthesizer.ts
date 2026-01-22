@@ -1659,15 +1659,18 @@ export class BackendSynthesizer {
           path.methods.forEach((method) => {
             const methodOptions =
               path.authType === 'private'
-                ? factory.createObjectLiteralExpression([
-                    factory.createPropertyAssignment(
-                      'authorizationType',
-                      factory.createPropertyAccessExpression(
-                        factory.createIdentifier('AuthorizationType'),
-                        factory.createIdentifier('IAM'),
+                ? factory.createObjectLiteralExpression(
+                    [
+                      factory.createPropertyAssignment(
+                        'authorizationType',
+                        factory.createPropertyAccessExpression(
+                          factory.createIdentifier('AuthorizationType'),
+                          factory.createIdentifier('IAM'),
+                        ),
                       ),
-                    ),
-                  ])
+                    ],
+                    true,
+                  )
                 : undefined;
 
             const addMethodCall = factory.createExpressionStatement(
@@ -1714,42 +1717,45 @@ export class BackendSynthesizer {
                   factory.createNewExpression(factory.createIdentifier('Policy'), undefined, [
                     factory.createIdentifier('restApiStack'),
                     factory.createStringLiteral('ApiPolicy'),
-                    factory.createObjectLiteralExpression([
-                      factory.createPropertyAssignment(
-                        'statements',
-                        factory.createArrayLiteralExpression([
-                          factory.createNewExpression(factory.createIdentifier('PolicyStatement'), undefined, [
-                            factory.createObjectLiteralExpression(
-                              [
-                                factory.createPropertyAssignment(
-                                  'actions',
-                                  factory.createArrayLiteralExpression([factory.createStringLiteral('execute-api:Invoke')]),
-                                ),
-                                factory.createPropertyAssignment(
-                                  'resources',
-                                  factory.createArrayLiteralExpression([
-                                    factory.createTemplateExpression(factory.createTemplateHead(''), [
-                                      factory.createTemplateSpan(
-                                        factory.createCallExpression(
-                                          factory.createPropertyAccessExpression(
-                                            factory.createIdentifier('restApi'),
-                                            factory.createIdentifier('arnForExecuteApi'),
+                    factory.createObjectLiteralExpression(
+                      [
+                        factory.createPropertyAssignment(
+                          'statements',
+                          factory.createArrayLiteralExpression([
+                            factory.createNewExpression(factory.createIdentifier('PolicyStatement'), undefined, [
+                              factory.createObjectLiteralExpression(
+                                [
+                                  factory.createPropertyAssignment(
+                                    'actions',
+                                    factory.createArrayLiteralExpression([factory.createStringLiteral('execute-api:Invoke')]),
+                                  ),
+                                  factory.createPropertyAssignment(
+                                    'resources',
+                                    factory.createArrayLiteralExpression([
+                                      factory.createTemplateExpression(factory.createTemplateHead(''), [
+                                        factory.createTemplateSpan(
+                                          factory.createCallExpression(
+                                            factory.createPropertyAccessExpression(
+                                              factory.createIdentifier('restApi'),
+                                              factory.createIdentifier('arnForExecuteApi'),
+                                            ),
+                                            undefined,
+                                            [factory.createStringLiteral('*'), factory.createStringLiteral('/*')],
                                           ),
-                                          undefined,
-                                          [factory.createStringLiteral('*'), factory.createStringLiteral('/*')],
+                                          factory.createTemplateTail(''),
                                         ),
-                                        factory.createTemplateTail(''),
-                                      ),
+                                      ]),
                                     ]),
-                                  ]),
-                                ),
-                              ],
-                              true,
-                            ),
+                                  ),
+                                ],
+                                true,
+                              ),
+                            ]),
                           ]),
-                        ]),
-                      ),
-                    ]),
+                        ),
+                      ],
+                      true,
+                    ),
                   ]),
                 ),
               ],
@@ -1781,47 +1787,65 @@ export class BackendSynthesizer {
             factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier('addOutput')),
             undefined,
             [
-              factory.createObjectLiteralExpression([
-                factory.createPropertyAssignment(
-                  'custom',
-                  factory.createObjectLiteralExpression([
-                    factory.createPropertyAssignment(
-                      'API',
-                      factory.createObjectLiteralExpression([
+              factory.createObjectLiteralExpression(
+                [
+                  factory.createPropertyAssignment(
+                    'custom',
+                    factory.createObjectLiteralExpression(
+                      [
                         factory.createPropertyAssignment(
-                          factory.createComputedPropertyName(
-                            factory.createPropertyAccessExpression(
-                              factory.createIdentifier('restApi'),
-                              factory.createIdentifier('restApiName'),
-                            ),
+                          'API',
+                          factory.createObjectLiteralExpression(
+                            [
+                              factory.createPropertyAssignment(
+                                factory.createComputedPropertyName(
+                                  factory.createPropertyAccessExpression(
+                                    factory.createIdentifier('restApi'),
+                                    factory.createIdentifier('restApiName'),
+                                  ),
+                                ),
+                                factory.createObjectLiteralExpression(
+                                  [
+                                    factory.createPropertyAssignment(
+                                      'endpoint',
+                                      factory.createPropertyAccessExpression(
+                                        factory.createIdentifier('restApi'),
+                                        factory.createIdentifier('url'),
+                                      ),
+                                    ),
+                                    factory.createPropertyAssignment(
+                                      'region',
+                                      factory.createCallExpression(
+                                        factory.createPropertyAccessExpression(
+                                          factory.createIdentifier('Stack'),
+                                          factory.createIdentifier('of'),
+                                        ),
+                                        undefined,
+                                        [factory.createIdentifier('restApi')],
+                                      ),
+                                    ),
+                                    factory.createPropertyAssignment(
+                                      'apiName',
+                                      factory.createPropertyAccessExpression(
+                                        factory.createIdentifier('restApi'),
+                                        factory.createIdentifier('restApiName'),
+                                      ),
+                                    ),
+                                  ],
+                                  true,
+                                ),
+                              ),
+                            ],
+                            true,
                           ),
-                          factory.createObjectLiteralExpression([
-                            factory.createPropertyAssignment(
-                              'endpoint',
-                              factory.createPropertyAccessExpression(factory.createIdentifier('restApi'), factory.createIdentifier('url')),
-                            ),
-                            factory.createPropertyAssignment(
-                              'region',
-                              factory.createCallExpression(
-                                factory.createPropertyAccessExpression(factory.createIdentifier('Stack'), factory.createIdentifier('of')),
-                                undefined,
-                                [factory.createIdentifier('restApi')],
-                              ),
-                            ),
-                            factory.createPropertyAssignment(
-                              'apiName',
-                              factory.createPropertyAccessExpression(
-                                factory.createIdentifier('restApi'),
-                                factory.createIdentifier('restApiName'),
-                              ),
-                            ),
-                          ]),
                         ),
-                      ]),
+                      ],
+                      true,
                     ),
-                  ]),
-                ),
-              ]),
+                  ),
+                ],
+                true,
+              ),
             ],
           ),
         );
