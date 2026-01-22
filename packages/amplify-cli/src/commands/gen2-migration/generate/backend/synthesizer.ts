@@ -1562,42 +1562,45 @@ export class BackendSynthesizer {
                 factory.createNewExpression(factory.createIdentifier('Policy'), undefined, [
                   factory.createIdentifier('restApiStack'),
                   factory.createStringLiteral('Gen1RestApiPolicy'),
-                  factory.createObjectLiteralExpression([
-                    factory.createPropertyAssignment(
-                      'statements',
-                      factory.createArrayLiteralExpression([
-                        factory.createNewExpression(factory.createIdentifier('PolicyStatement'), undefined, [
-                          factory.createObjectLiteralExpression(
-                            [
-                              factory.createPropertyAssignment(
-                                'actions',
-                                factory.createArrayLiteralExpression([factory.createStringLiteral('execute-api:Invoke')]),
-                              ),
-                              factory.createPropertyAssignment(
-                                'resources',
-                                factory.createArrayLiteralExpression([
-                                  factory.createTemplateExpression(factory.createTemplateHead(''), [
-                                    factory.createTemplateSpan(
-                                      factory.createCallExpression(
-                                        factory.createPropertyAccessExpression(
-                                          factory.createIdentifier('gen1RestApi'),
-                                          factory.createIdentifier('arnForExecuteApi'),
+                  factory.createObjectLiteralExpression(
+                    [
+                      factory.createPropertyAssignment(
+                        'statements',
+                        factory.createArrayLiteralExpression([
+                          factory.createNewExpression(factory.createIdentifier('PolicyStatement'), undefined, [
+                            factory.createObjectLiteralExpression(
+                              [
+                                factory.createPropertyAssignment(
+                                  'actions',
+                                  factory.createArrayLiteralExpression([factory.createStringLiteral('execute-api:Invoke')]),
+                                ),
+                                factory.createPropertyAssignment(
+                                  'resources',
+                                  factory.createArrayLiteralExpression([
+                                    factory.createTemplateExpression(factory.createTemplateHead(''), [
+                                      factory.createTemplateSpan(
+                                        factory.createCallExpression(
+                                          factory.createPropertyAccessExpression(
+                                            factory.createIdentifier('gen1RestApi'),
+                                            factory.createIdentifier('arnForExecuteApi'),
+                                          ),
+                                          undefined,
+                                          [factory.createStringLiteral('*'), factory.createStringLiteral('/*')],
                                         ),
-                                        undefined,
-                                        [factory.createStringLiteral('*'), factory.createStringLiteral('/*')],
+                                        factory.createTemplateTail(''),
                                       ),
-                                      factory.createTemplateTail(''),
-                                    ),
+                                    ]),
                                   ]),
-                                ]),
-                              ),
-                            ],
-                            true,
-                          ),
+                                ),
+                              ],
+                              true,
+                            ),
+                          ]),
                         ]),
-                      ]),
-                    ),
-                  ]),
+                      ),
+                    ],
+                    true,
+                  ),
                 ]),
               ),
             ],
