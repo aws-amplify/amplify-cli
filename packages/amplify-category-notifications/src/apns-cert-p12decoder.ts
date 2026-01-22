@@ -94,62 +94,23 @@ const getPemFileContent = (filePath: string, filePassword: string): string => {
   }
 };
 
-const getCertificate = (pemFileContent: string): string | undefined => {
-  let certificate;
-  const beginMark = '-----BEGIN CERTIFICATE-----';
-  const beginIndex = pemFileContent.indexOf(beginMark) + beginMark.length;
-  if (beginIndex > -1) {
-    const endMark = '-----END CERTIFICATE-----';
-    const endIndex = pemFileContent.indexOf(endMark, beginIndex);
-    if (endIndex > -1) {
-      certificate = pemFileContent.slice(beginIndex, endIndex).replace(/\s/g, '');
-      return beginMark + os.EOL + certificate + os.EOL + endMark;
-    }
-  }
-  return certificate;
+const extractPemBlock = (pemFileContent: string, beginMark: string, endMark: string): string | undefined => {
+  const rawIndex = pemFileContent.indexOf(beginMark);
+  if (rawIndex === -1) return undefined;
+  const beginIndex = rawIndex + beginMark.length;
+  const endIndex = pemFileContent.indexOf(endMark, beginIndex);
+  if (endIndex === -1) return undefined;
+  const content = pemFileContent.slice(beginIndex, endIndex).replace(/\s/g, '');
+  return beginMark + os.EOL + content + os.EOL + endMark;
 };
 
-const getPrivateKey = (pemFileContent: string): string | undefined => {
-  let privateKey;
-  const beginMark = '-----BEGIN PRIVATE KEY-----';
-  const beginIndex = pemFileContent.indexOf(beginMark) + beginMark.length;
-  if (beginIndex > -1) {
-    const endMark = '-----END PRIVATE KEY-----';
-    const endIndex = pemFileContent.indexOf(endMark, beginIndex);
-    if (endIndex > -1) {
-      privateKey = pemFileContent.slice(beginIndex, endIndex).replace(/\s/g, '');
-      return beginMark + os.EOL + privateKey + os.EOL + endMark;
-    }
-  }
-  return privateKey;
-};
+const getCertificate = (pem: string): string | undefined =>
+  extractPemBlock(pem, '-----BEGIN CERTIFICATE-----', '-----END CERTIFICATE-----');
 
-const getRSAPrivateKey = (pemFileContent: string): string | undefined => {
-  let privateKey;
-  const beginMark = '-----BEGIN RSA PRIVATE KEY-----';
-  const beginIndex = pemFileContent.indexOf(beginMark) + beginMark.length;
-  if (beginIndex > -1) {
-    const endMark = '-----END RSA PRIVATE KEY-----';
-    const endIndex = pemFileContent.indexOf(endMark, beginIndex);
-    if (endIndex > -1) {
-      privateKey = pemFileContent.slice(beginIndex, endIndex).replace(/\s/g, '');
-      return beginMark + os.EOL + privateKey + os.EOL + endMark;
-    }
-  }
-  return privateKey;
-};
+const getPrivateKey = (pem: string): string | undefined => extractPemBlock(pem, '-----BEGIN PRIVATE KEY-----', '-----END PRIVATE KEY-----');
 
-const getEncryptedPrivateKey = (pemFileContent: string): string | undefined => {
-  let privateKey;
-  const beginMark = '-----BEGIN ENCRYPTED PRIVATE KEY-----';
-  const beginIndex = pemFileContent.indexOf(beginMark) + beginMark.length;
-  if (beginIndex > -1) {
-    const endMark = '-----END ENCRYPTED PRIVATE KEY-----';
-    const endIndex = pemFileContent.indexOf(endMark, beginIndex);
-    if (endIndex > -1) {
-      privateKey = pemFileContent.slice(beginIndex, endIndex).replace(/\s/g, '');
-      return beginMark + os.EOL + privateKey + os.EOL + endMark;
-    }
-  }
-  return privateKey;
-};
+const getRSAPrivateKey = (pem: string): string | undefined =>
+  extractPemBlock(pem, '-----BEGIN RSA PRIVATE KEY-----', '-----END RSA PRIVATE KEY-----');
+
+const getEncryptedPrivateKey = (pem: string): string | undefined =>
+  extractPemBlock(pem, '-----BEGIN ENCRYPTED PRIVATE KEY-----', '-----END ENCRYPTED PRIVATE KEY-----');
