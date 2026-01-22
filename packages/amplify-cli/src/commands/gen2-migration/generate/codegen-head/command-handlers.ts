@@ -301,27 +301,40 @@ export async function updateAmplifyYmlFile(amplifyClient: AmplifyClient, appId: 
   assert(rootDir);
   const amplifyYmlPath = path.join(rootDir, 'amplify.yml');
 
-  try {
-    // Read the content of amplify.yml file if it exists
-    const amplifyYmlContent = await fs.readFile(amplifyYmlPath, 'utf-8');
+  let amplifyYmlContent: string;
 
-    await writeToAmplifyYmlFile(amplifyYmlPath, amplifyYmlContent);
-  } catch (error) {
-    if (error.code === 'ENOENT') {
-      // If amplify.yml file doesn't exist, make a getApp call to get buildSpec
-      const getAppResponse = await amplifyClient.send(new GetAppCommand({ appId }));
-
-      assert(getAppResponse.app, 'App not found');
-      const buildSpec = getAppResponse.app.buildSpec;
-
-      if (buildSpec) {
-        await writeToAmplifyYmlFile(amplifyYmlPath, buildSpec);
-      }
-    } else {
-      // Throw the original error if it's not related to file not found
-      throw error;
-    }
+  if (await pathExists(amplifyYmlPath)) {
+    amplifyYmlContent = await fs.readFile(amplifyYmlPath, 'utf-8');
+  } else {
+    const app = await amplifyClient.send(new GetAppCommand({ appId }));
+    amplifyYmlContent = app.app.buildSpec;
   }
+
+  if (amplifyYmlContent === undefined) {
+    // create an backend only yml so that the branch can be deployed via hosting.
+    // note that this will still create a blank webapp; this is intentional since hosting requires a frontend.
+    // eslint-disable-next-line spellcheck/spell-checker
+    amplifyYmlContent = `version: 1
+backend:
+  phases:
+    build:
+      commands:
+        - '# Execute Amplify CLI with the helper script'
+        - npm ci --cache .npm --prefer-offline
+        - npx ampx pipeline-deploy --branch $AWS_BRANCH --app-id $AWS_APP_ID
+frontend:
+  phases:
+    build:
+      commands:
+        - mkdir dist
+        - touch dist/index.html
+  artifacts:
+    baseDirectory: dist
+    files:
+      - '**/*'`;
+  }
+
+  await writeToAmplifyYmlFile(amplifyYmlPath, amplifyYmlContent);
 }
 
 async function writeToAmplifyYmlFile(amplifyYmlPath: string, content: string) {
@@ -635,7 +648,7 @@ export async function prepare(logger: Logger, appId: string, envName: string, re
   await execa('npm', ['install']);
 }
 
-async function pathExists(path: string) {
+export async function pathExists(path: string) {
   try {
     await fs.stat(path);
     return true;

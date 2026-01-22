@@ -12,7 +12,7 @@ import { removeEnvFromCloud } from '../../extensions/amplify-helpers/remove-env-
 import { invokeDeleteEnvParamsFromService } from '../../extensions/amplify-helpers/invoke-delete-env-params';
 
 export class AmplifyMigrationDecommissionStep extends AmplifyMigrationStep {
-  public implications(): string[] {
+  public async implications(): Promise<string[]> {
     return ['Delete the Gen1 environment'];
   }
 

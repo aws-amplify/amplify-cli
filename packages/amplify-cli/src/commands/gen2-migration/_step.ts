@@ -18,5 +18,5 @@ export abstract class AmplifyMigrationStep {
 
   public abstract rollback(): Promise<void>;
 
-  public abstract implications(): string[];
+  public abstract implications(): Promise<string[]>;
 }

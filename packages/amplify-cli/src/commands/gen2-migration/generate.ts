@@ -1,15 +1,50 @@
 import { AmplifyMigrationStep } from './_step';
-import { prepare } from './generate/codegen-head/command-handlers';
+import { prepare, pathExists } from './generate/codegen-head/command-handlers';
 import { AmplifyGen2MigrationValidations } from './_validations';
+import * as path from 'path';
 
 export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
-  public implications(): string[] {
-    return [
-      `Override your local 'amplify' folder with Gen2 definition files`,
-      `Update you local 'package.json' with Gen2 dependencies`,
-      'Recreate package-lock.json',
-      'Recreate node_modules directory',
-    ];
+  private readonly packageJsonPath = path.join(process.cwd(), 'package.json');
+  private readonly nodeModulesPath = path.join(process.cwd(), 'package.json');
+  private readonly packageLockPath = path.join(process.cwd(), 'package-lock.json');
+
+  public async packageJsonExists(): Promise<boolean> {
+    return await pathExists(this.packageJsonPath);
+  }
+
+  public async nodeModulesExists(): Promise<boolean> {
+    return await pathExists(this.nodeModulesPath);
+  }
+
+  public async packageLockExists(): Promise<boolean> {
+    return await pathExists(this.nodeModulesPath);
+  }
+
+  public async implications(): Promise<string[]> {
+    const implications = [];
+
+    if (await this.packageJsonExists()) {
+      implications.push(`Add Gen2 TypeScript dependencies to ${this.packageJsonPath}`);
+    } else {
+      implications.push(`Create ${this.packageJsonPath} with Gen2 TypeScript dependencies`);
+    }
+
+    if (await this.packageLockExists()) {
+      implications.push(`Regenerate ${this.packageLockPath}`);
+    } else {
+      implications.push(`Create ${this.packageLockPath}`);
+    }
+
+    if (await this.nodeModulesExists()) {
+      implications.push(`Recreate ${this.nodeModulesPath}`);
+    } else {
+      implications.push(`Create ${this.nodeModulesPath}`);
+    }
+
+    implications.push(`Replace your local 'amplify' folder with corresponding Gen2 TypeScript definition files`);
+    implications.push(`Install Gen2 dependencies`);
+
+    return implications;
   }
 
   public async validate(): Promise<void> {

@@ -272,7 +272,7 @@ git checkout gen2-main
 
 ```console
 git add .
-git commit -m "fix: reuse gen1 storage bucket"
+git commit -m "chore: post refactor"
 git push origin gen2-main
 ```
 
