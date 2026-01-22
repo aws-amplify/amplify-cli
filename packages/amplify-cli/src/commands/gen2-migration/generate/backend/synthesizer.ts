@@ -1433,20 +1433,23 @@ export class BackendSynthesizer {
 
         // Configure CORS options for cross-origin requests
         // Allows all methods, origins, and default headers for maximum compatibility
-        const corsOptions = factory.createObjectLiteralExpression([
-          factory.createPropertyAssignment(
-            'allowMethods',
-            factory.createPropertyAccessExpression(factory.createIdentifier('Cors'), factory.createIdentifier('ALL_METHODS')),
-          ),
-          factory.createPropertyAssignment(
-            'allowOrigins',
-            factory.createPropertyAccessExpression(factory.createIdentifier('Cors'), factory.createIdentifier('ALL_ORIGINS')),
-          ),
-          factory.createPropertyAssignment(
-            'allowHeaders',
-            factory.createPropertyAccessExpression(factory.createIdentifier('Cors'), factory.createIdentifier('DEFAULT_HEADERS')),
-          ),
-        ]);
+        const corsOptions = factory.createObjectLiteralExpression(
+          [
+            factory.createPropertyAssignment(
+              'allowMethods',
+              factory.createPropertyAccessExpression(factory.createIdentifier('Cors'), factory.createIdentifier('ALL_METHODS')),
+            ),
+            factory.createPropertyAssignment(
+              'allowOrigins',
+              factory.createPropertyAccessExpression(factory.createIdentifier('Cors'), factory.createIdentifier('ALL_ORIGINS')),
+            ),
+            factory.createPropertyAssignment(
+              'allowHeaders',
+              factory.createPropertyAccessExpression(factory.createIdentifier('Cors'), factory.createIdentifier('DEFAULT_HEADERS')),
+            ),
+          ],
+          true,
+        );
 
         // Create new Gen2 REST API Gateway
         // Names API with environment suffix for multi-environment deployments
@@ -1461,15 +1464,18 @@ export class BackendSynthesizer {
                 factory.createNewExpression(factory.createIdentifier('RestApi'), undefined, [
                   factory.createIdentifier('restApiStack'),
                   factory.createStringLiteral('RestApi'),
-                  factory.createObjectLiteralExpression([
-                    factory.createPropertyAssignment(
-                      'restApiName',
-                      factory.createTemplateExpression(factory.createTemplateHead(`${restApi.apiName}-`), [
-                        factory.createTemplateSpan(factory.createIdentifier('branchName'), factory.createTemplateTail('')),
-                      ]),
-                    ),
-                    factory.createPropertyAssignment('defaultCorsPreflightOptions', corsOptions),
-                  ]),
+                  factory.createObjectLiteralExpression(
+                    [
+                      factory.createPropertyAssignment(
+                        'restApiName',
+                        factory.createTemplateExpression(factory.createTemplateHead(`${restApi.apiName}-`), [
+                          factory.createTemplateSpan(factory.createIdentifier('branchName'), factory.createTemplateTail('')),
+                        ]),
+                      ),
+                      factory.createPropertyAssignment('defaultCorsPreflightOptions', corsOptions),
+                    ],
+                    true,
+                  ),
                 ]),
               ),
             ],
@@ -1527,10 +1533,13 @@ export class BackendSynthesizer {
                   [
                     factory.createIdentifier('restApiStack'),
                     factory.createStringLiteral('Gen1RestApi'),
-                    factory.createObjectLiteralExpression([
-                      factory.createPropertyAssignment('restApiId', factory.createStringLiteral('<gen1-rest-api-id>')),
-                      factory.createPropertyAssignment('rootResourceId', factory.createStringLiteral('<gen1-root-resource-id>')),
-                    ]),
+                    factory.createObjectLiteralExpression(
+                      [
+                        factory.createPropertyAssignment('restApiId', factory.createStringLiteral('<gen1-rest-api-id>')),
+                        factory.createPropertyAssignment('rootResourceId', factory.createStringLiteral('<gen1-root-resource-id>')),
+                      ],
+                      true,
+                    ),
                   ],
                 ),
               ),
@@ -1558,30 +1567,33 @@ export class BackendSynthesizer {
                       'statements',
                       factory.createArrayLiteralExpression([
                         factory.createNewExpression(factory.createIdentifier('PolicyStatement'), undefined, [
-                          factory.createObjectLiteralExpression([
-                            factory.createPropertyAssignment(
-                              'actions',
-                              factory.createArrayLiteralExpression([factory.createStringLiteral('execute-api:Invoke')]),
-                            ),
-                            factory.createPropertyAssignment(
-                              'resources',
-                              factory.createArrayLiteralExpression([
-                                factory.createTemplateExpression(factory.createTemplateHead(''), [
-                                  factory.createTemplateSpan(
-                                    factory.createCallExpression(
-                                      factory.createPropertyAccessExpression(
-                                        factory.createIdentifier('gen1RestApi'),
-                                        factory.createIdentifier('arnForExecuteApi'),
+                          factory.createObjectLiteralExpression(
+                            [
+                              factory.createPropertyAssignment(
+                                'actions',
+                                factory.createArrayLiteralExpression([factory.createStringLiteral('execute-api:Invoke')]),
+                              ),
+                              factory.createPropertyAssignment(
+                                'resources',
+                                factory.createArrayLiteralExpression([
+                                  factory.createTemplateExpression(factory.createTemplateHead(''), [
+                                    factory.createTemplateSpan(
+                                      factory.createCallExpression(
+                                        factory.createPropertyAccessExpression(
+                                          factory.createIdentifier('gen1RestApi'),
+                                          factory.createIdentifier('arnForExecuteApi'),
+                                        ),
+                                        undefined,
+                                        [factory.createStringLiteral('*'), factory.createStringLiteral('/*')],
                                       ),
-                                      undefined,
-                                      [factory.createStringLiteral('*'), factory.createStringLiteral('/*')],
+                                      factory.createTemplateTail(''),
                                     ),
-                                    factory.createTemplateTail(''),
-                                  ),
+                                  ]),
                                 ]),
-                              ]),
-                            ),
-                          ]),
+                              ),
+                            ],
+                            true,
+                          ),
                         ]),
                       ]),
                     ),
@@ -1676,10 +1688,13 @@ export class BackendSynthesizer {
               factory.createPropertyAccessExpression(factory.createIdentifier(resourceName), factory.createIdentifier('addProxy')),
               undefined,
               [
-                factory.createObjectLiteralExpression([
-                  factory.createPropertyAssignment('anyMethod', factory.createTrue()),
-                  factory.createPropertyAssignment('defaultIntegration', factory.createIdentifier('lambdaIntegration')),
-                ]),
+                factory.createObjectLiteralExpression(
+                  [
+                    factory.createPropertyAssignment('anyMethod', factory.createTrue()),
+                    factory.createPropertyAssignment('defaultIntegration', factory.createIdentifier('lambdaIntegration')),
+                  ],
+                  true,
+                ),
               ],
             ),
           );
@@ -1704,30 +1719,33 @@ export class BackendSynthesizer {
                         'statements',
                         factory.createArrayLiteralExpression([
                           factory.createNewExpression(factory.createIdentifier('PolicyStatement'), undefined, [
-                            factory.createObjectLiteralExpression([
-                              factory.createPropertyAssignment(
-                                'actions',
-                                factory.createArrayLiteralExpression([factory.createStringLiteral('execute-api:Invoke')]),
-                              ),
-                              factory.createPropertyAssignment(
-                                'resources',
-                                factory.createArrayLiteralExpression([
-                                  factory.createTemplateExpression(factory.createTemplateHead(''), [
-                                    factory.createTemplateSpan(
-                                      factory.createCallExpression(
-                                        factory.createPropertyAccessExpression(
-                                          factory.createIdentifier('restApi'),
-                                          factory.createIdentifier('arnForExecuteApi'),
+                            factory.createObjectLiteralExpression(
+                              [
+                                factory.createPropertyAssignment(
+                                  'actions',
+                                  factory.createArrayLiteralExpression([factory.createStringLiteral('execute-api:Invoke')]),
+                                ),
+                                factory.createPropertyAssignment(
+                                  'resources',
+                                  factory.createArrayLiteralExpression([
+                                    factory.createTemplateExpression(factory.createTemplateHead(''), [
+                                      factory.createTemplateSpan(
+                                        factory.createCallExpression(
+                                          factory.createPropertyAccessExpression(
+                                            factory.createIdentifier('restApi'),
+                                            factory.createIdentifier('arnForExecuteApi'),
+                                          ),
+                                          undefined,
+                                          [factory.createStringLiteral('*'), factory.createStringLiteral('/*')],
                                         ),
-                                        undefined,
-                                        [factory.createStringLiteral('*'), factory.createStringLiteral('/*')],
+                                        factory.createTemplateTail(''),
                                       ),
-                                      factory.createTemplateTail(''),
-                                    ),
+                                    ]),
                                   ]),
-                                ]),
-                              ),
-                            ]),
+                                ),
+                              ],
+                              true,
+                            ),
                           ]),
                         ]),
                       ),
