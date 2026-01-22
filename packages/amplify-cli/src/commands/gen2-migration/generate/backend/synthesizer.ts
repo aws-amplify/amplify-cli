@@ -1639,12 +1639,40 @@ export class BackendSynthesizer {
             factory.createIdentifier('root'),
           );
 
-          // Add each path segment as a resource
-          pathSegments.forEach((segment) => {
+          // Add each path segment as a resource, with auth options on the final segment
+          pathSegments.forEach((segment, index) => {
+            const isLastSegment = index === pathSegments.length - 1;
+            const resourceArgs: ts.Expression[] = [factory.createStringLiteral(segment)];
+
+            // Add defaultMethodOptions to the final resource if auth is required
+            if (isLastSegment && path.authType === 'private') {
+              const methodOptions = factory.createObjectLiteralExpression(
+                [
+                  factory.createPropertyAssignment(
+                    'defaultMethodOptions',
+                    factory.createObjectLiteralExpression(
+                      [
+                        factory.createPropertyAssignment(
+                          'authorizationType',
+                          factory.createPropertyAccessExpression(
+                            factory.createIdentifier('AuthorizationType'),
+                            factory.createIdentifier('IAM'),
+                          ),
+                        ),
+                      ],
+                      true,
+                    ),
+                  ),
+                ],
+                true,
+              );
+              resourceArgs.push(methodOptions);
+            }
+
             resourceExpression = factory.createCallExpression(
               factory.createPropertyAccessExpression(resourceExpression, factory.createIdentifier('addResource')),
               undefined,
-              [factory.createStringLiteral(segment)],
+              resourceArgs,
             );
           });
 
@@ -1658,31 +1686,13 @@ export class BackendSynthesizer {
           );
           nodes.push(resourceDeclaration);
 
-          // Add methods with auth configuration
+          // Add methods without individual auth options (auth is set at resource level)
           path.methods.forEach((method) => {
-            const methodOptions =
-              path.authType === 'private'
-                ? factory.createObjectLiteralExpression(
-                    [
-                      factory.createPropertyAssignment(
-                        'authorizationType',
-                        factory.createPropertyAccessExpression(
-                          factory.createIdentifier('AuthorizationType'),
-                          factory.createIdentifier('IAM'),
-                        ),
-                      ),
-                    ],
-                    true,
-                  )
-                : undefined;
-
             const addMethodCall = factory.createExpressionStatement(
               factory.createCallExpression(
                 factory.createPropertyAccessExpression(factory.createIdentifier(resourceName), factory.createIdentifier('addMethod')),
                 undefined,
-                methodOptions
-                  ? [factory.createStringLiteral(method), factory.createIdentifier('lambdaIntegration'), methodOptions]
-                  : [factory.createStringLiteral(method), factory.createIdentifier('lambdaIntegration')],
+                [factory.createStringLiteral(method), factory.createIdentifier('lambdaIntegration')],
               ),
             );
             nodes.push(addMethodCall);
@@ -1818,13 +1828,16 @@ export class BackendSynthesizer {
                                     ),
                                     factory.createPropertyAssignment(
                                       'region',
-                                      factory.createCallExpression(
-                                        factory.createPropertyAccessExpression(
-                                          factory.createIdentifier('Stack'),
-                                          factory.createIdentifier('of'),
+                                      factory.createPropertyAccessExpression(
+                                        factory.createCallExpression(
+                                          factory.createPropertyAccessExpression(
+                                            factory.createIdentifier('Stack'),
+                                            factory.createIdentifier('of'),
+                                          ),
+                                          undefined,
+                                          [factory.createIdentifier('restApi')],
                                         ),
-                                        undefined,
-                                        [factory.createIdentifier('restApi')],
+                                        factory.createIdentifier('region'),
                                       ),
                                     ),
                                     factory.createPropertyAssignment(
