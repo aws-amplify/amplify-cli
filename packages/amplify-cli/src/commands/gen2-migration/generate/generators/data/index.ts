@@ -201,44 +201,40 @@ export const generateDataSource = async (gen1Env: string, dataDefinition?: DataD
   // Generate table mappings if not provided but schema is available
   if (!tableMappings && dataDefinition?.schema) {
     const apiId = await getApiId(gen1Env);
-    if (apiId) {
-      tableMappings = createDataSourceMapping(dataDefinition.schema, apiId, gen1Env);
-    }
+    tableMappings = createDataSourceMapping(dataDefinition.schema, apiId, gen1Env);
   }
 
-  if (tableMappings) {
-    const tableMappingProperties: ObjectLiteralElementLike[] = [];
+  const tableMappingProperties: ObjectLiteralElementLike[] = [];
 
-    // Create model-to-table mappings for current environment
-    for (const [tableName, tableId] of Object.entries(tableMappings)) {
-      tableMappingProperties.push(
-        factory.createPropertyAssignment(factory.createIdentifier(tableName), factory.createStringLiteral(tableId)),
-      );
-    }
-
-    const branchNameExpression = ts.addSyntheticLeadingComment(
-      factory.createPropertyAssignment('branchName', factory.createStringLiteral(gen1Env)),
-      ts.SyntaxKind.SingleLineCommentTrivia,
-      'The "branchname" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables',
-      true,
-    );
-
-    const tableMappingExpression = factory.createPropertyAssignment(
-      'modelNameToTableNameMapping',
-      factory.createObjectLiteralExpression(tableMappingProperties),
-    );
-
-    // Create single environment mapping
-    const tableMappingForEnvironment = factory.createObjectLiteralExpression([branchNameExpression, tableMappingExpression], true);
-
-    // Add the table mappings array with single environment to the data configuration
-    dataRenderProperties.push(
-      factory.createPropertyAssignment(
-        migratedAmplifyGen1DynamoDbTableMappingsKeyName,
-        factory.createArrayLiteralExpression([tableMappingForEnvironment]),
-      ),
+  // Create model-to-table mappings for current environment
+  for (const [tableName, tableId] of Object.entries(tableMappings)) {
+    tableMappingProperties.push(
+      factory.createPropertyAssignment(factory.createIdentifier(tableName), factory.createStringLiteral(tableId)),
     );
   }
+
+  const branchNameExpression = ts.addSyntheticLeadingComment(
+    factory.createPropertyAssignment('branchName', factory.createStringLiteral(gen1Env)),
+    ts.SyntaxKind.SingleLineCommentTrivia,
+    'The "branchname" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables',
+    true,
+  );
+
+  const tableMappingExpression = factory.createPropertyAssignment(
+    'modelNameToTableNameMapping',
+    factory.createObjectLiteralExpression(tableMappingProperties),
+  );
+
+  // Create single environment mapping
+  const tableMappingForEnvironment = factory.createObjectLiteralExpression([branchNameExpression, tableMappingExpression], true);
+
+  // Add the table mappings array with single environment to the data configuration
+  dataRenderProperties.push(
+    factory.createPropertyAssignment(
+      migratedAmplifyGen1DynamoDbTableMappingsKeyName,
+      factory.createArrayLiteralExpression([tableMappingForEnvironment]),
+    ),
+  );
 
   // Add authorization modes if available
   if (dataDefinition?.authorizationModes) {
