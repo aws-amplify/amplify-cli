@@ -862,6 +862,26 @@ export class BackendSynthesizer {
           imports.push(this.createImportStatement([factory.createIdentifier(funcName)], `./function/${funcName}/resource`));
         }
       });
+
+      // Add REST API imports
+      imports.push(
+        this.createImportStatement(
+          [
+            factory.createIdentifier('RestApi'),
+            factory.createIdentifier('LambdaIntegration'),
+            factory.createIdentifier('AuthorizationType'),
+            factory.createIdentifier('Cors'),
+          ],
+          'aws-cdk-lib/aws-apigateway',
+        ),
+      );
+      imports.push(
+        this.createImportStatement(
+          [factory.createIdentifier('Policy'), factory.createIdentifier('PolicyStatement')],
+          'aws-cdk-lib/aws-iam',
+        ),
+      );
+      imports.push(this.createImportStatement([factory.createIdentifier('Stack')], 'aws-cdk-lib'));
     }
 
     // DynamoDB tables generation
@@ -1361,6 +1381,436 @@ export class BackendSynthesizer {
         ),
       );
     }
+
+    // ========== START: REST API GENERATION ==========
+    // Generates Gen2 REST API resources from Gen1 API Gateway configurations
+    // This section creates:
+    // 1. New Gen2 REST API with Lambda integration
+    // 2. Reference to existing Gen1 REST API for backward compatibility
+    // 3. IAM policies for authenticated user access
+    // 4. CORS configuration and method routing
+    if (renderArgs.data?.restApis) {
+      // Create branchName variable for environment-specific API naming
+      // This ensures API names are unique per deployment environment
+      const branchNameStatement = factory.createVariableStatement(
+        [],
+        factory.createVariableDeclarationList(
+          [
+            factory.createVariableDeclaration(
+              'branchName',
+              undefined,
+              undefined,
+              factory.createIdentifier('process.env.AWS_BRANCH ?? "sandbox"'),
+            ),
+          ],
+          ts.NodeFlags.Const,
+        ),
+      );
+      nodes.push(branchNameStatement);
+
+      renderArgs.data.restApis.forEach((restApi) => {
+        // Create dedicated stack for REST API resources
+        // Isolates API Gateway resources from other backend components
+        const restApiStackDeclaration = factory.createVariableStatement(
+          [],
+          factory.createVariableDeclarationList(
+            [
+              factory.createVariableDeclaration(
+                'restApiStack',
+                undefined,
+                undefined,
+                factory.createCallExpression(
+                  factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier('createStack')),
+                  undefined,
+                  [factory.createStringLiteral('rest-api-stack')],
+                ),
+              ),
+            ],
+            ts.NodeFlags.Const,
+          ),
+        );
+        nodes.push(restApiStackDeclaration);
+
+        // Configure CORS options for cross-origin requests
+        // Allows all methods, origins, and default headers for maximum compatibility
+        const corsOptions = factory.createObjectLiteralExpression([
+          factory.createPropertyAssignment(
+            'allowMethods',
+            factory.createPropertyAccessExpression(factory.createIdentifier('Cors'), factory.createIdentifier('ALL_METHODS')),
+          ),
+          factory.createPropertyAssignment(
+            'allowOrigins',
+            factory.createPropertyAccessExpression(factory.createIdentifier('Cors'), factory.createIdentifier('ALL_ORIGINS')),
+          ),
+          factory.createPropertyAssignment(
+            'allowHeaders',
+            factory.createPropertyAccessExpression(factory.createIdentifier('Cors'), factory.createIdentifier('DEFAULT_HEADERS')),
+          ),
+        ]);
+
+        // Create new Gen2 REST API Gateway
+        // Names API with environment suffix for multi-environment deployments
+        const restApiDeclaration = factory.createVariableStatement(
+          [],
+          factory.createVariableDeclarationList(
+            [
+              factory.createVariableDeclaration(
+                'restApi',
+                undefined,
+                undefined,
+                factory.createNewExpression(factory.createIdentifier('RestApi'), undefined, [
+                  factory.createIdentifier('restApiStack'),
+                  factory.createStringLiteral('RestApi'),
+                  factory.createObjectLiteralExpression([
+                    factory.createPropertyAssignment(
+                      'restApiName',
+                      factory.createTemplateExpression(factory.createTemplateHead(`${restApi.apiName}-`), [
+                        factory.createTemplateSpan(factory.createIdentifier('branchName'), factory.createTemplateTail('')),
+                      ]),
+                    ),
+                    factory.createPropertyAssignment('defaultCorsPreflightOptions', corsOptions),
+                  ]),
+                ]),
+              ),
+            ],
+            ts.NodeFlags.Const,
+          ),
+        );
+        nodes.push(restApiDeclaration);
+
+        // Create Lambda integration for REST API
+        // Connects the API Gateway to the Lambda function from Gen1 configuration
+        const lambdaIntegrationDeclaration = factory.createVariableStatement(
+          [],
+          factory.createVariableDeclarationList(
+            [
+              factory.createVariableDeclaration(
+                'lambdaIntegration',
+                undefined,
+                undefined,
+                factory.createNewExpression(factory.createIdentifier('LambdaIntegration'), undefined, [
+                  factory.createPropertyAccessExpression(
+                    factory.createPropertyAccessExpression(
+                      factory.createPropertyAccessExpression(
+                        factory.createIdentifier('backend'),
+                        factory.createIdentifier(restApi.functionName),
+                      ),
+                      factory.createIdentifier('resources'),
+                    ),
+                    factory.createIdentifier('lambda'),
+                  ),
+                ]),
+              ),
+            ],
+            ts.NodeFlags.Const,
+          ),
+        );
+        nodes.push(lambdaIntegrationDeclaration);
+
+        // Create reference to existing Gen1 REST API
+        // Allows continued access to the original API during migration
+        // Users must replace placeholders with actual Gen1 API Gateway IDs
+        const gen1RestApiDeclaration = factory.createVariableStatement(
+          [],
+          factory.createVariableDeclarationList(
+            [
+              factory.createVariableDeclaration(
+                'gen1RestApi',
+                undefined,
+                undefined,
+                factory.createCallExpression(
+                  factory.createPropertyAccessExpression(
+                    factory.createIdentifier('RestApi'),
+                    factory.createIdentifier('fromRestApiAttributes'),
+                  ),
+                  undefined,
+                  [
+                    factory.createIdentifier('restApiStack'),
+                    factory.createStringLiteral('Gen1RestApi'),
+                    factory.createObjectLiteralExpression([
+                      factory.createPropertyAssignment('restApiId', factory.createStringLiteral('<gen1-rest-api-id>')),
+                      factory.createPropertyAssignment('rootResourceId', factory.createStringLiteral('<gen1-root-resource-id>')),
+                    ]),
+                  ],
+                ),
+              ),
+            ],
+            ts.NodeFlags.Const,
+          ),
+        );
+        nodes.push(gen1RestApiDeclaration);
+
+        // Create IAM policy for Gen1 REST API access
+        // Grants execute-api:Invoke permission for all methods and resources
+        const gen1RestApiPolicyDeclaration = factory.createVariableStatement(
+          [],
+          factory.createVariableDeclarationList(
+            [
+              factory.createVariableDeclaration(
+                'gen1RestApiPolicy',
+                undefined,
+                undefined,
+                factory.createNewExpression(factory.createIdentifier('Policy'), undefined, [
+                  factory.createIdentifier('restApiStack'),
+                  factory.createStringLiteral('Gen1RestApiPolicy'),
+                  factory.createObjectLiteralExpression([
+                    factory.createPropertyAssignment(
+                      'statements',
+                      factory.createArrayLiteralExpression([
+                        factory.createNewExpression(factory.createIdentifier('PolicyStatement'), undefined, [
+                          factory.createObjectLiteralExpression([
+                            factory.createPropertyAssignment(
+                              'actions',
+                              factory.createArrayLiteralExpression([factory.createStringLiteral('execute-api:Invoke')]),
+                            ),
+                            factory.createPropertyAssignment(
+                              'resources',
+                              factory.createArrayLiteralExpression([
+                                factory.createTemplateExpression(factory.createTemplateHead(''), [
+                                  factory.createTemplateSpan(
+                                    factory.createCallExpression(
+                                      factory.createPropertyAccessExpression(
+                                        factory.createIdentifier('gen1RestApi'),
+                                        factory.createIdentifier('arnForExecuteApi'),
+                                      ),
+                                      undefined,
+                                      [factory.createStringLiteral('*'), factory.createStringLiteral('/*')],
+                                    ),
+                                    factory.createTemplateTail(''),
+                                  ),
+                                ]),
+                              ]),
+                            ),
+                          ]),
+                        ]),
+                      ]),
+                    ),
+                  ]),
+                ]),
+              ),
+            ],
+            ts.NodeFlags.Const,
+          ),
+        );
+        nodes.push(gen1RestApiPolicyDeclaration);
+
+        // Attach Gen1 REST API policy to authenticated user IAM role
+        // Enables authenticated users to access the existing Gen1 API
+        const attachGen1PolicyCall = factory.createExpressionStatement(
+          factory.createCallExpression(
+            factory.createPropertyAccessExpression(
+              factory.createPropertyAccessExpression(
+                factory.createIdentifier('backend.auth.resources'),
+                factory.createIdentifier('authenticatedUserIamRole'),
+              ),
+              factory.createIdentifier('attachInlinePolicy'),
+            ),
+            undefined,
+            [factory.createIdentifier('gen1RestApiPolicy')],
+          ),
+        );
+        nodes.push(attachGen1PolicyCall);
+
+        // Generate resources and methods for each path
+        restApi.paths.forEach((path) => {
+          const pathSegments = path.path.split('/').filter((segment) => segment && segment !== '{proxy+}');
+
+          // Create resource variable name from path segments
+          const resourceName = pathSegments.join('') || 'root';
+
+          // Build resource chain starting from root
+          let resourceExpression: ts.Expression = factory.createPropertyAccessExpression(
+            factory.createIdentifier('restApi'),
+            factory.createIdentifier('root'),
+          );
+
+          // Add each path segment as a resource
+          pathSegments.forEach((segment) => {
+            resourceExpression = factory.createCallExpression(
+              factory.createPropertyAccessExpression(resourceExpression, factory.createIdentifier('addResource')),
+              undefined,
+              [factory.createStringLiteral(segment)],
+            );
+          });
+
+          // Create final resource with auth options
+          const resourceDeclaration = factory.createVariableStatement(
+            [],
+            factory.createVariableDeclarationList(
+              [factory.createVariableDeclaration(resourceName, undefined, undefined, resourceExpression)],
+              ts.NodeFlags.Const,
+            ),
+          );
+          nodes.push(resourceDeclaration);
+
+          // Add methods with auth configuration
+          path.methods.forEach((method) => {
+            const methodOptions =
+              path.authType === 'private'
+                ? factory.createObjectLiteralExpression([
+                    factory.createPropertyAssignment(
+                      'authorizationType',
+                      factory.createPropertyAccessExpression(
+                        factory.createIdentifier('AuthorizationType'),
+                        factory.createIdentifier('IAM'),
+                      ),
+                    ),
+                  ])
+                : undefined;
+
+            const addMethodCall = factory.createExpressionStatement(
+              factory.createCallExpression(
+                factory.createPropertyAccessExpression(factory.createIdentifier(resourceName), factory.createIdentifier('addMethod')),
+                undefined,
+                methodOptions
+                  ? [factory.createStringLiteral(method), factory.createIdentifier('lambdaIntegration'), methodOptions]
+                  : [factory.createStringLiteral(method), factory.createIdentifier('lambdaIntegration')],
+              ),
+            );
+            nodes.push(addMethodCall);
+          });
+
+          // Add proxy for catch-all
+          const addProxyCall = factory.createExpressionStatement(
+            factory.createCallExpression(
+              factory.createPropertyAccessExpression(factory.createIdentifier(resourceName), factory.createIdentifier('addProxy')),
+              undefined,
+              [
+                factory.createObjectLiteralExpression([
+                  factory.createPropertyAssignment('anyMethod', factory.createTrue()),
+                  factory.createPropertyAssignment('defaultIntegration', factory.createIdentifier('lambdaIntegration')),
+                ]),
+              ],
+            ),
+          );
+          nodes.push(addProxyCall);
+        });
+
+        // Create API policy for authenticated users
+        if (restApi.authType && renderArgs.auth) {
+          const apiPolicyDeclaration = factory.createVariableStatement(
+            [],
+            factory.createVariableDeclarationList(
+              [
+                factory.createVariableDeclaration(
+                  'apiPolicy',
+                  undefined,
+                  undefined,
+                  factory.createNewExpression(factory.createIdentifier('Policy'), undefined, [
+                    factory.createIdentifier('restApiStack'),
+                    factory.createStringLiteral('ApiPolicy'),
+                    factory.createObjectLiteralExpression([
+                      factory.createPropertyAssignment(
+                        'statements',
+                        factory.createArrayLiteralExpression([
+                          factory.createNewExpression(factory.createIdentifier('PolicyStatement'), undefined, [
+                            factory.createObjectLiteralExpression([
+                              factory.createPropertyAssignment(
+                                'actions',
+                                factory.createArrayLiteralExpression([factory.createStringLiteral('execute-api:Invoke')]),
+                              ),
+                              factory.createPropertyAssignment(
+                                'resources',
+                                factory.createArrayLiteralExpression([
+                                  factory.createTemplateExpression(factory.createTemplateHead(''), [
+                                    factory.createTemplateSpan(
+                                      factory.createCallExpression(
+                                        factory.createPropertyAccessExpression(
+                                          factory.createIdentifier('restApi'),
+                                          factory.createIdentifier('arnForExecuteApi'),
+                                        ),
+                                        undefined,
+                                        [factory.createStringLiteral('*'), factory.createStringLiteral('/*')],
+                                      ),
+                                      factory.createTemplateTail(''),
+                                    ),
+                                  ]),
+                                ]),
+                              ),
+                            ]),
+                          ]),
+                        ]),
+                      ),
+                    ]),
+                  ]),
+                ),
+              ],
+              ts.NodeFlags.Const,
+            ),
+          );
+          nodes.push(apiPolicyDeclaration);
+
+          // Attach policy to authenticated role
+          const attachPolicyCall = factory.createExpressionStatement(
+            factory.createCallExpression(
+              factory.createPropertyAccessExpression(
+                factory.createPropertyAccessExpression(
+                  factory.createIdentifier('backend.auth.resources'),
+                  factory.createIdentifier('authenticatedUserIamRole'),
+                ),
+                factory.createIdentifier('attachInlinePolicy'),
+              ),
+              undefined,
+              [factory.createIdentifier('apiPolicy')],
+            ),
+          );
+          nodes.push(attachPolicyCall);
+        }
+
+        // Add backend output
+        const addOutputCall = factory.createExpressionStatement(
+          factory.createCallExpression(
+            factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier('addOutput')),
+            undefined,
+            [
+              factory.createObjectLiteralExpression([
+                factory.createPropertyAssignment(
+                  'custom',
+                  factory.createObjectLiteralExpression([
+                    factory.createPropertyAssignment(
+                      'API',
+                      factory.createObjectLiteralExpression([
+                        factory.createPropertyAssignment(
+                          factory.createComputedPropertyName(
+                            factory.createPropertyAccessExpression(
+                              factory.createIdentifier('restApi'),
+                              factory.createIdentifier('restApiName'),
+                            ),
+                          ),
+                          factory.createObjectLiteralExpression([
+                            factory.createPropertyAssignment(
+                              'endpoint',
+                              factory.createPropertyAccessExpression(factory.createIdentifier('restApi'), factory.createIdentifier('url')),
+                            ),
+                            factory.createPropertyAssignment(
+                              'region',
+                              factory.createCallExpression(
+                                factory.createPropertyAccessExpression(factory.createIdentifier('Stack'), factory.createIdentifier('of')),
+                                undefined,
+                                [factory.createIdentifier('restApi')],
+                              ),
+                            ),
+                            factory.createPropertyAssignment(
+                              'apiName',
+                              factory.createPropertyAccessExpression(
+                                factory.createIdentifier('restApi'),
+                                factory.createIdentifier('restApiName'),
+                              ),
+                            ),
+                          ]),
+                        ),
+                      ]),
+                    ),
+                  ]),
+                ),
+              ]),
+            ],
+          ),
+        );
+        nodes.push(addOutputCall);
+      });
+    }
+    // ========== END: REST API GENERATION ==========
 
     // Function name escape hatch - set function names with branch suffix
     if (renderArgs.function) {
