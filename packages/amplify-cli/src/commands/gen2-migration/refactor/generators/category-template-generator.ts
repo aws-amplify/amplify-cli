@@ -189,6 +189,9 @@ class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
       this.logger.debug(`Captured original Gen2 resource IDs: ${Array.from(this.originalGen2ResourceIds!)}`);
     }
 
+    // Get the resource types that are actually in the Gen1 stack
+    const gen1ResourceTypes = new Set([...this.gen1ResourcesToMove.values()].map((r) => r.Type));
+
     this.gen2ResourcesToRemove = new Map(
       Object.entries(oldGen2Template.Resources).filter(([logicalId, value]) => {
         // Only remove resources that were in the original Gen2 template
@@ -197,8 +200,7 @@ class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
           return false;
         }
         return (
-          this.resourcesToMovePredicate?.(this.resourcesToMove, [logicalId, value]) ??
-          this.resourcesToMove.some((resourceToMove) => resourceToMove.valueOf() === value.Type)
+          this.resourcesToMovePredicate?.(this.resourcesToMove, [logicalId, value]) ?? gen1ResourceTypes.has(value.Type) // <-- Only remove types that exist in Gen1 stack
         );
       }),
     );
