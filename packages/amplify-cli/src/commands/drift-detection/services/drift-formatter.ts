@@ -7,9 +7,10 @@ import type { CloudFormationClient } from '@aws-sdk/client-cloudformation';
 import type { StackResourceDrift } from '@aws-sdk/client-cloudformation';
 import { StackResourceDriftStatus } from '@aws-sdk/client-cloudformation';
 import chalk from 'chalk';
-import type { CombinedDriftResults } from '../detect-stack-drift';
+import type { CloudFormationDriftResults } from '../detect-stack-drift';
 import { CloudFormationService } from './cloudformation-service';
 import { AmplifyConfigService } from './amplify-config-service';
+import type { LocalDriftResults } from '../detect-local-drift';
 
 // CloudFormation template type definition
 export interface CloudFormationTemplate {
@@ -96,8 +97,8 @@ const TREE_SYMBOLS = {
  * Drift formatter that processes and formats drift detection results
  */
 export class DriftFormatter {
-  private readonly cfnService: CloudFormationService;
   private readonly configService: AmplifyConfigService;
+  private readonly cfnService: CloudFormationService;
 
   // Data stored after processing
   private rootStackName = '';
@@ -118,9 +119,13 @@ export class DriftFormatter {
     totalFailed: 0,
   };
 
-  constructor() {
-    this.cfnService = new CloudFormationService();
+  // Phase 2 and Phase 3 results storage
+  private phase2Results: any = null;
+  private phase3Results: LocalDriftResults | null = null;
+
+  constructor(cfnService: CloudFormationService) {
     this.configService = new AmplifyConfigService();
+    this.cfnService = cfnService;
   }
 
   /**
@@ -130,23 +135,22 @@ export class DriftFormatter {
     cfn: CloudFormationClient,
     stackName: string,
     rootTemplate: CloudFormationTemplate,
-    combinedResults: CombinedDriftResults,
+    combinedResults: CloudFormationDriftResults,
   ): Promise<void> {
     this.rootStackName = stackName;
     this.rootTemplate = rootTemplate;
     this.rootDrifts = combinedResults.rootStackDrifts.StackResourceDrifts || [];
 
-    // Reset counters
+    // Reset counters (display purposes only)
     this.summary = {
       totalStacks: 1,
-      totalDrifted: 0,
+      totalDrifted: combinedResults.totalDrifted, // Use Phase 1 count from detector
       totalInSync: 0,
       totalUnchecked: 0,
       totalFailed: 0,
     };
 
-    // Count root stack resources for summary
-    this.summary.totalDrifted += this.countDrifted(this.rootDrifts);
+    // Count root stack resources for display summary only
     this.summary.totalInSync += this.countInSync(this.rootDrifts);
     this.summary.totalUnchecked += this.countUnchecked(this.rootDrifts, this.rootTemplate);
     this.summary.totalFailed += this.countFailed(this.rootDrifts);
@@ -162,8 +166,7 @@ export class DriftFormatter {
       const nestedTemplate = await this.cfnService.getStackTemplate(cfn, physicalName);
       const nestedDrifts = nestedDrift.StackResourceDrifts;
 
-      // Count nested stack resources for summary
-      this.summary.totalDrifted += this.countDrifted(nestedDrifts);
+      // Count nested stack resources for display summary only
       this.summary.totalInSync += this.countInSync(nestedDrifts);
       this.summary.totalUnchecked += this.countUnchecked(nestedDrifts, nestedTemplate);
       this.summary.totalFailed += this.countFailed(nestedDrifts);
@@ -234,7 +237,7 @@ export class DriftFormatter {
    * Create a summary dashboard with overall statistics
    */
   private createSummaryDashboard(): string {
-    const projectName = this.extractProjectName(this.rootStackName);
+    const projectName = this.configService.getProjectName();
 
     const border = '─'.repeat(DISPLAY_CONSTANTS.BORDER_WIDTH);
     let dashboard = '';
@@ -291,7 +294,7 @@ export class DriftFormatter {
         chalk.yellow(
           `WARNING: Drift detection failed for ${this.summary.totalFailed} resource(s).\n` +
             `This may be due to insufficient permissions or AWS API issues.\n` +
-            `Run with --verbose to see which resources failed.`,
+            `Run with --debug to see which resources failed.`,
         );
     }
 
@@ -541,8 +544,10 @@ export class DriftFormatter {
       result += `${prefix}${propPrefix} ${chalk.yellow('PROPERTY:')} ${propDiff.PropertyPath}\n`;
 
       const valuePrefix = isLastProp ? TREE_SYMBOLS.EMPTY : TREE_SYMBOLS.VERTICAL;
-      result += `${prefix}${valuePrefix}├── ${chalk.red('[-]')} ${chalk.red(propDiff.ExpectedValue)}\n`;
-      result += `${prefix}${valuePrefix}└── ${chalk.green('[+]')} ${chalk.green(propDiff.ActualValue)}\n`;
+      // ActualValue (current/remote state) is shown first with + (green)
+      result += `${prefix}${valuePrefix}├── ${chalk.green('[+]')} ${chalk.green(propDiff.ActualValue)}\n`;
+      // ExpectedValue (template/local state) is  shown second with - (red)
+      result += `${prefix}${valuePrefix}└── ${chalk.red('[-]')} ${chalk.red(propDiff.ExpectedValue)}\n`;
     });
 
     return result;
@@ -657,14 +662,6 @@ export class DriftFormatter {
   }
 
   /**
-   * Extract project name from Amplify stack name
-   */
-  private extractProjectName(stackName: string): string {
-    const match = stackName.match(/^amplify-([^-]+)-/);
-    return match ? match[1] : stackName;
-  }
-
-  /**
    * Determine Amplify category from identifier
    */
   private determineCategory(identifier: string): string {
@@ -701,5 +698,330 @@ export class DriftFormatter {
       default:
         return chalk.white('[OTHER]');
     }
+  }
+
+  /**
+   * Add Phase 2 results for formatting
+   */
+  public addPhase2Results(results: any): void {
+    this.phase2Results = results;
+    // Update drift count in summary
+    if (results && !results.skipped) {
+      this.summary.totalDrifted += results.totalDrifted || 0;
+    }
+  }
+
+  /**
+   * Add Phase 3 results for formatting
+   */
+  public addPhase3Results(results: LocalDriftResults): void {
+    this.phase3Results = results;
+    // Update drift count in summary
+    if (results && !results.skipped) {
+      this.summary.totalDrifted += results.totalDrifted || 0;
+    }
+  }
+
+  /**
+   * Recursively format nested changes at any depth level
+   */
+  private formatNestedChanges(nestedChanges: any[], prefix: string, level: number): string {
+    let output = '';
+
+    nestedChanges.forEach((change: any, index: number) => {
+      const isLast = index === nestedChanges.length - 1;
+      const changePrefix = isLast ? '└──' : '├──';
+      const action = change.action || 'Unknown';
+      const resourceId = change.logicalResourceId || 'Unknown';
+      const resourceType = change.resourceType || 'Unknown';
+
+      let actionColor = chalk.yellow;
+      let actionSymbol = '~';
+      if (action === 'Add') {
+        actionColor = chalk.green;
+        actionSymbol = '+';
+      } else if (action === 'Remove') {
+        actionColor = chalk.red;
+        actionSymbol = '-';
+      } else if (action === 'Modify') {
+        actionColor = chalk.yellow;
+        actionSymbol = '~';
+      }
+
+      output += `\n${prefix}${changePrefix} ${actionColor(`${actionSymbol} ${action}`)}: ${chalk.bold(resourceId)} (${chalk.gray(
+        resourceType,
+      )})`;
+
+      // Show details if available
+      if (change.details && change.details.length > 0) {
+        const detailPrefix = isLast ? '    ' : '│   ';
+        change.details.forEach((detail: any) => {
+          if (detail.name) {
+            output += `\n${prefix}${detailPrefix}└── Property: ${detail.name}`;
+            if (detail.changeSource) {
+              output += chalk.gray(` (${detail.changeSource})`);
+            }
+          }
+        });
+      }
+
+      // Recursively show even deeper nested changes
+      if (change.nestedChanges && change.nestedChanges.length > 0) {
+        const childPrefix = isLast ? '    ' : '│   ';
+        output += this.formatNestedChanges(change.nestedChanges, prefix + childPrefix, level + 1);
+      }
+    });
+
+    return output;
+  }
+
+  /**
+   * Format Phase 2 template drift results with nested changeset details
+   */
+  public formatPhase2Results(): string | null {
+    if (!this.phase2Results) return null;
+
+    if (this.phase2Results.skipped) {
+      return null;
+    }
+
+    const changes = this.phase2Results.changes || [];
+
+    if (changes.length === 0) {
+      return '\nTEMPLATE CHANGES:\n└── Status: NO DRIFT DETECTED';
+    }
+
+    let output = '\nTEMPLATE CHANGES:';
+
+    if (changes.length > 0) {
+      output += '\n├── Status: ' + chalk.yellow('DRIFT DETECTED');
+      changes.forEach((change: any, index: number) => {
+        const isLast = index === changes.length - 1;
+        const prefix = isLast ? '└──' : '├──';
+        const action = change.action || 'Unknown';
+        const resourceId = change.logicalResourceId || 'Unknown';
+        const resourceType = change.resourceType || 'Unknown';
+
+        let actionColor = chalk.yellow;
+        let actionSymbol = '~';
+        if (action === 'Add') {
+          actionColor = chalk.green;
+          actionSymbol = '+';
+        } else if (action === 'Remove') {
+          actionColor = chalk.red;
+          actionSymbol = '-';
+        } else if (action === 'Modify') {
+          actionColor = chalk.yellow;
+          actionSymbol = '~';
+        }
+
+        output += `\n${prefix} ${actionColor(`${actionSymbol} ${action}`)}: ${chalk.bold(resourceId)} (${chalk.gray(resourceType)})`;
+
+        if (change.replacement) {
+          output += chalk.red(' [REQUIRES REPLACEMENT]');
+        }
+
+        // Add property details if available
+        if (change.details && change.details.length > 0) {
+          const detailPrefix = isLast ? '    ' : '│   ';
+
+          // Check if this is a nested stack with automatic changes
+          const isNestedStack = resourceType === 'AWS::CloudFormation::Stack';
+          const hasOnlyAutomaticChanges = change.details.every((d: any) => d.changeSource === 'Automatic' && !d.name);
+
+          if (isNestedStack && hasOnlyAutomaticChanges) {
+            // Check for nested changes to provide more detail
+            if (change.nestedChanges && change.nestedChanges.length > 0) {
+              output += `\n${detailPrefix}└── ${chalk.cyan('Nested stack changes detected:')}`;
+
+              // Format nested changes
+              change.nestedChanges.forEach((nestedChange: any, nestedIndex: number) => {
+                const isLastNested = nestedIndex === change.nestedChanges.length - 1;
+                const nestedPrefix = isLastNested ? '    └──' : '    ├──';
+                const nestedAction = nestedChange.action || 'Unknown';
+                const nestedResourceId = nestedChange.logicalResourceId || 'Unknown';
+                const nestedResourceType = nestedChange.resourceType || 'Unknown';
+
+                let nestedActionColor = chalk.yellow;
+                let nestedActionSymbol = '~';
+                if (nestedAction === 'Add') {
+                  nestedActionColor = chalk.green;
+                  nestedActionSymbol = '+';
+                } else if (nestedAction === 'Remove') {
+                  nestedActionColor = chalk.red;
+                  nestedActionSymbol = '-';
+                } else if (nestedAction === 'Modify') {
+                  nestedActionColor = chalk.yellow;
+                  nestedActionSymbol = '~';
+                }
+
+                output += `\n${detailPrefix}${nestedPrefix} ${nestedActionColor(`${nestedActionSymbol} ${nestedAction}`)}: ${chalk.bold(
+                  nestedResourceId,
+                )} (${chalk.gray(nestedResourceType)})`;
+
+                // Show nested resource details if available
+                if (nestedChange.details && nestedChange.details.length > 0) {
+                  const nestedDetailPrefix = isLastNested ? '            ' : '    │       ';
+                  nestedChange.details.forEach((detail: any) => {
+                    if (detail.name) {
+                      output += `\n${detailPrefix}${nestedDetailPrefix}└── Property: ${detail.name}`;
+                    }
+                  });
+                }
+
+                // Recursively show deeper nested changes if they exist
+                if (nestedChange.nestedChanges && nestedChange.nestedChanges.length > 0) {
+                  // Recursively format deeper nested changes (3rd level and beyond)
+                  output += this.formatNestedChanges(nestedChange.nestedChanges, detailPrefix + '        ', 3);
+                }
+              });
+            } else {
+              // No nested changeset details available, show generic message
+              output += `\n${detailPrefix}└── ${chalk.cyan('Template changed in nested stack')}`;
+              output += `\n${detailPrefix}    ${chalk.gray('(The nested stack template or its resources have been modified)')}`;
+            }
+          } else {
+            // Regular property changes
+            const propDetails = change.details.filter((d: any) => d.name);
+            if (propDetails.length > 0) {
+              propDetails.forEach((detail: any, detailIndex: number) => {
+                const isLastDetail = detailIndex === propDetails.length - 1;
+                const detailSymbol = isLastDetail ? '└──' : '├──';
+
+                let changeType = 'Modified';
+                let changeColor = chalk.yellow;
+                if (detail.changeSource === 'DirectModification') {
+                  changeType = 'Direct Change';
+                  changeColor = chalk.cyan;
+                } else if (detail.changeSource === 'Automatic') {
+                  changeType = 'Automatic';
+                  changeColor = chalk.gray;
+                }
+
+                output += `\n${detailPrefix}${detailSymbol} ${chalk.bold('Property')}: ${detail.name}`;
+
+                if (detail.requiresRecreation) {
+                  const recreationPrefix = isLastDetail ? '        ' : '│       ';
+                  const recreationType =
+                    detail.requiresRecreation === 'Always'
+                      ? chalk.red('Always requires replacement')
+                      : detail.requiresRecreation === 'Never'
+                      ? chalk.green('No replacement needed')
+                      : chalk.yellow('May require replacement');
+                  output += `\n${detailPrefix}${recreationPrefix}└── Impact: ${recreationType}`;
+                }
+              });
+            } else if (change.details.length > 0) {
+              // Has details but no specific property names
+              output += `\n${detailPrefix}└── ${chalk.gray('Template or configuration change detected')}`;
+            }
+          }
+        }
+      });
+    } else {
+      output += '\n└── Status: NO DRIFT DETECTED';
+    }
+
+    return output;
+  }
+
+  /**
+   * Format Phase 3 drift results (local vs cloud backend)
+   */
+  public formatPhase3Results(): string {
+    if (!this.phase3Results) {
+      return '';
+    }
+
+    let output = '';
+
+    // Add phase header matching Phase 1 style
+    output += chalk.bold('\nLOCAL CHANGES:\n');
+
+    // Handle skipped case
+    if (this.phase3Results.skipped) {
+      output += `└── Status: ${chalk.gray(this.phase3Results.skipReason)}\n`;
+      return output;
+    }
+
+    // Check if there are any local changes
+    if (this.phase3Results.totalDrifted === 0) {
+      output += `└── Status: ${chalk.green('NO DRIFT DETECTED')}\n`;
+      return output;
+    }
+
+    // Group resources by category for structured display (including no-drift categories)
+    const categoryGroups = this.groupPhase3ResourcesByCategory();
+    const allCategories = this.getAllCategoriesForPhase3(categoryGroups);
+    const categoryEntries = Array.from(allCategories.entries());
+
+    categoryEntries.forEach(([categoryName, resources], categoryIndex) => {
+      const isLastCategory = categoryIndex === categoryEntries.length - 1;
+      const categoryPrefix = isLastCategory ? TREE_SYMBOLS.LAST_BRANCH : TREE_SYMBOLS.BRANCH;
+
+      const categoryIcon = this.getCategoryIcon(categoryName);
+
+      const statusText =
+        resources.length > 0
+          ? chalk.red(`DRIFT DETECTED: ${resources.length} resource${resources.length === 1 ? '' : 's'}`)
+          : chalk.green('NO DRIFT DETECTED');
+
+      output += `${categoryPrefix} ${categoryIcon} ${chalk.bold(categoryName)}\n`;
+
+      const stackPrefix = isLastCategory ? TREE_SYMBOLS.EMPTY : TREE_SYMBOLS.VERTICAL;
+      output += `${stackPrefix}└── Status: ${statusText}\n`;
+    });
+
+    return output;
+  }
+
+  /**
+   * Group Phase 3 resources by category
+   */
+  private groupPhase3ResourcesByCategory(): Map<string, any[]> {
+    const categories = new Map<string, any[]>();
+
+    if (!this.phase3Results || this.phase3Results.skipped) return categories;
+
+    const allResources = [
+      ...(this.phase3Results.resourcesToBeCreated || []),
+      ...(this.phase3Results.resourcesToBeUpdated || []),
+      ...(this.phase3Results.resourcesToBeDeleted || []),
+    ];
+
+    allResources.forEach((resource) => {
+      const categoryName = this.determineCategory(resource.category || resource.service || 'Other');
+
+      if (!categories.has(categoryName)) {
+        categories.set(categoryName, []);
+      }
+      categories.get(categoryName)!.push(resource);
+    });
+
+    return categories;
+  }
+
+  /**
+   * Get all categories for Phase 3, including those with no drift (matching CFN style)
+   */
+  private getAllCategoriesForPhase3(driftedCategories: Map<string, any[]>): Map<string, any[]> {
+    const allCategories = new Map<string, any[]>();
+
+    // Add all nested stack categories from Phase 1 (CFN drift)
+    this.nestedStacks.forEach((stack) => {
+      const categoryName = this.determineCategory(stack.category || stack.logicalId);
+      if (!allCategories.has(categoryName)) {
+        allCategories.set(categoryName, driftedCategories.get(categoryName) || []);
+      }
+    });
+
+    // Add any additional categories from Phase 3 that weren't in Phase 1
+    driftedCategories.forEach((resources, categoryName) => {
+      if (!allCategories.has(categoryName)) {
+        allCategories.set(categoryName, resources);
+      }
+    });
+
+    return allCategories;
   }
 }

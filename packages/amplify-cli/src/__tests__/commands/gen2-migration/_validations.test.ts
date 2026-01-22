@@ -1,12 +1,18 @@
 import { AmplifyGen2MigrationValidations } from '../../../commands/gen2-migration/_validations';
 import { $TSContext, stateManager } from '@aws-amplify/amplify-cli-core';
 import { CloudFormationClient, DescribeChangeSetOutput } from '@aws-sdk/client-cloudformation';
+import { Logger } from '../../../commands/gen2-migration';
 
 jest.mock('@aws-sdk/client-cloudformation');
+jest.mock('bottleneck', () => {
+  return jest.fn().mockImplementation(() => ({
+    schedule: jest.fn((fn) => fn()),
+  }));
+});
 jest.mock('@aws-amplify/amplify-cli-core', () => ({
   ...jest.requireActual('@aws-amplify/amplify-cli-core'),
   stateManager: {
-    getMeta: jest.fn(),
+    getTeamProviderInfo: jest.fn(),
   },
 }));
 
@@ -16,10 +22,23 @@ describe('AmplifyGen2MigrationValidations', () => {
 
   beforeEach(() => {
     mockContext = {} as $TSContext;
-    validations = new AmplifyGen2MigrationValidations(mockContext);
+    validations = new AmplifyGen2MigrationValidations(new Logger('mock', 'mock', 'mock'), 'mock', 'mock', mockContext);
   });
 
   describe('validateStatefulResources', () => {
+    let mockSend: jest.Mock;
+
+    beforeEach(() => {
+      mockSend = jest.fn();
+      (CloudFormationClient as jest.Mock).mockImplementation(() => ({
+        send: mockSend,
+      }));
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
     it('should pass when no changes exist', async () => {
       const changeSet: DescribeChangeSetOutput = {};
       await expect(validations.validateStatefulResources(changeSet)).resolves.not.toThrow();
@@ -56,8 +75,8 @@ describe('AmplifyGen2MigrationValidations', () => {
       };
       await expect(validations.validateStatefulResources(changeSet)).rejects.toMatchObject({
         name: 'DestructiveMigrationError',
-        message: 'Stateful resources scheduled for deletion: MyTable (AWS::DynamoDB::Table).',
-        resolution: 'Review the migration plan and ensure data is backed up before proceeding.',
+        message: 'Decommission will delete stateful resources.',
+        resolution: 'Review the resources above and ensure data is backed up before proceeding.',
       });
     });
 
@@ -84,8 +103,8 @@ describe('AmplifyGen2MigrationValidations', () => {
       };
       await expect(validations.validateStatefulResources(changeSet)).rejects.toMatchObject({
         name: 'DestructiveMigrationError',
-        message: 'Stateful resources scheduled for deletion: Bucket1 (AWS::S3::Bucket), UserPool1 (AWS::Cognito::UserPool).',
-        resolution: 'Review the migration plan and ensure data is backed up before proceeding.',
+        message: 'Decommission will delete stateful resources.',
+        resolution: 'Review the resources above and ensure data is backed up before proceeding.',
       });
     });
 
@@ -176,8 +195,8 @@ describe('AmplifyGen2MigrationValidations', () => {
       };
       await expect(validations.validateStatefulResources(changeSet)).rejects.toMatchObject({
         name: 'DestructiveMigrationError',
-        message: 'Stateful resources scheduled for deletion: MyEBSVolume (AWS::EC2::Volume).',
-        resolution: 'Review the migration plan and ensure data is backed up before proceeding.',
+        message: 'Decommission will delete stateful resources.',
+        resolution: 'Review the resources above and ensure data is backed up before proceeding.',
       });
     });
 
@@ -212,9 +231,8 @@ describe('AmplifyGen2MigrationValidations', () => {
       };
       await expect(validations.validateStatefulResources(changeSet)).rejects.toMatchObject({
         name: 'DestructiveMigrationError',
-        message:
-          'Stateful resources scheduled for deletion: Database (AWS::RDS::DBInstance), UsersTable (AWS::DynamoDB::Table), EventStream (AWS::Kinesis::Stream).',
-        resolution: 'Review the migration plan and ensure data is backed up before proceeding.',
+        message: 'Decommission will delete stateful resources.',
+        resolution: 'Review the resources above and ensure data is backed up before proceeding.',
       });
     });
 
@@ -321,34 +339,20 @@ describe('AmplifyGen2MigrationValidations', () => {
       };
       await expect(validations.validateStatefulResources(changeSet)).rejects.toMatchObject({
         name: 'DestructiveMigrationError',
-        message: 'Stateful resources scheduled for deletion: DeletedBucket (AWS::S3::Bucket).',
+        message: 'Decommission will delete stateful resources.',
       });
-    });
-  });
-
-  describe('validateStatefulResources - nested stacks', () => {
-    let mockSend: jest.Mock;
-
-    beforeEach(() => {
-      mockSend = jest.fn();
-      (CloudFormationClient as jest.Mock).mockImplementation(() => ({
-        send: mockSend,
-      }));
-    });
-
-    afterEach(() => {
-      jest.clearAllMocks();
     });
 
     it('should throw when nested stack contains stateful resources', async () => {
       mockSend.mockResolvedValueOnce({
-        StackResources: [
+        StackResourceSummaries: [
           {
             ResourceType: 'AWS::DynamoDB::Table',
             PhysicalResourceId: 'MyTable',
             LogicalResourceId: 'Table',
           },
         ],
+        NextToken: undefined,
       });
 
       const changeSet: DescribeChangeSetOutput = {
@@ -367,20 +371,20 @@ describe('AmplifyGen2MigrationValidations', () => {
 
       await expect(validations.validateStatefulResources(changeSet)).rejects.toMatchObject({
         name: 'DestructiveMigrationError',
-        message:
-          'Stateful resources scheduled for deletion: AuthStack (AWS::CloudFormation::Stack) containing: Table (AWS::DynamoDB::Table).',
+        message: 'Decommission will delete stateful resources.',
       });
     });
 
     it('should pass when nested stack contains only stateless resources', async () => {
       mockSend.mockResolvedValueOnce({
-        StackResources: [
+        StackResourceSummaries: [
           {
             ResourceType: 'AWS::Lambda::Function',
             PhysicalResourceId: 'MyFunction',
             LogicalResourceId: 'Function',
           },
         ],
+        NextToken: undefined,
       });
 
       const changeSet: DescribeChangeSetOutput = {
@@ -402,23 +406,25 @@ describe('AmplifyGen2MigrationValidations', () => {
 
     it('should handle multiple levels of nested stacks', async () => {
       mockSend.mockResolvedValueOnce({
-        StackResources: [
+        StackResourceSummaries: [
           {
             ResourceType: 'AWS::CloudFormation::Stack',
             PhysicalResourceId: 'storage-nested-stack',
             LogicalResourceId: 'StorageNestedStack',
           },
         ],
+        NextToken: undefined,
       });
 
       mockSend.mockResolvedValueOnce({
-        StackResources: [
+        StackResourceSummaries: [
           {
             ResourceType: 'AWS::S3::Bucket',
             PhysicalResourceId: 'my-bucket',
             LogicalResourceId: 'Bucket',
           },
         ],
+        NextToken: undefined,
       });
 
       const changeSet: DescribeChangeSetOutput = {
@@ -460,13 +466,14 @@ describe('AmplifyGen2MigrationValidations', () => {
 
     it('should handle mixed direct and nested stateful resources', async () => {
       mockSend.mockResolvedValueOnce({
-        StackResources: [
+        StackResourceSummaries: [
           {
             ResourceType: 'AWS::Cognito::UserPool',
             PhysicalResourceId: 'user-pool',
             LogicalResourceId: 'UserPool',
           },
         ],
+        NextToken: undefined,
       });
 
       const changeSet: DescribeChangeSetOutput = {
@@ -493,7 +500,61 @@ describe('AmplifyGen2MigrationValidations', () => {
 
       await expect(validations.validateStatefulResources(changeSet)).rejects.toMatchObject({
         name: 'DestructiveMigrationError',
-        message: expect.stringContaining('DirectTable'),
+        message: 'Decommission will delete stateful resources.',
+      });
+    });
+
+    it('should pass when deployment bucket is removed with excludeDeploymentBucket=true', async () => {
+      jest.spyOn(stateManager, 'getTeamProviderInfo').mockReturnValue({
+        mock: {
+          awscloudformation: {
+            DeploymentBucketName: 'amplify-deployment-bucket-12345',
+          },
+        },
+      });
+
+      const changeSet: DescribeChangeSetOutput = {
+        Changes: [
+          {
+            Type: 'Resource',
+            ResourceChange: {
+              Action: 'Remove',
+              ResourceType: 'AWS::S3::Bucket',
+              PhysicalResourceId: 'amplify-deployment-bucket-12345',
+            },
+          },
+        ],
+      };
+
+      await expect(validations.validateStatefulResources(changeSet, true)).resolves.not.toThrow();
+    });
+
+    it('should throw when non-deployment S3 bucket is removed even with excludeDeploymentBucket=true', async () => {
+      jest.spyOn(stateManager, 'getTeamProviderInfo').mockReturnValue({
+        mock: {
+          awscloudformation: {
+            DeploymentBucketName: 'amplify-deployment-bucket-12345',
+          },
+        },
+      });
+
+      const changeSet: DescribeChangeSetOutput = {
+        Changes: [
+          {
+            Type: 'Resource',
+            ResourceChange: {
+              Action: 'Remove',
+              ResourceType: 'AWS::S3::Bucket',
+              PhysicalResourceId: 'user-data-bucket',
+            },
+          },
+        ],
+      };
+
+      await expect(validations.validateStatefulResources(changeSet, true)).rejects.toMatchObject({
+        name: 'DestructiveMigrationError',
+        message: 'Decommission will delete stateful resources.',
+        resolution: 'Review the resources above and ensure data is backed up before proceeding.',
       });
     });
   });
@@ -512,41 +573,19 @@ describe('AmplifyGen2MigrationValidations', () => {
       jest.clearAllMocks();
     });
 
-    it('should throw StackNotFoundError when stackName is missing', async () => {
-      jest.spyOn(stateManager, 'getMeta').mockReturnValue({
-        providers: {
-          awscloudformation: {},
-        },
-      });
-
-      await expect(validations.validateDeploymentStatus()).rejects.toMatchObject({
-        name: 'StackNotFoundError',
-        message: 'Root stack not found',
-        resolution: 'Ensure the project is initialized and deployed.',
-      });
-    });
-
     it('should throw StackNotFoundError when stack not found in CloudFormation', async () => {
-      jest.spyOn(stateManager, 'getMeta').mockReturnValue({
-        providers: {
-          awscloudformation: {
-            StackName: 'test-stack',
-          },
-        },
-      });
-
       mockSend.mockResolvedValue({ Stacks: [] });
 
       await expect(validations.validateDeploymentStatus()).rejects.toMatchObject({
         name: 'StackNotFoundError',
-        message: 'Stack test-stack not found in CloudFormation',
+        message: 'Stack mock not found in CloudFormation',
         resolution: 'Ensure the project is deployed.',
       });
     });
 
     it('should pass when stack status is UPDATE_COMPLETE', async () => {
-      jest.spyOn(stateManager, 'getMeta').mockReturnValue({
-        providers: {
+      jest.spyOn(stateManager, 'getTeamProviderInfo').mockReturnValue({
+        mock: {
           awscloudformation: {
             StackName: 'test-stack',
           },
@@ -561,8 +600,8 @@ describe('AmplifyGen2MigrationValidations', () => {
     });
 
     it('should pass when stack status is CREATE_COMPLETE', async () => {
-      jest.spyOn(stateManager, 'getMeta').mockReturnValue({
-        providers: {
+      jest.spyOn(stateManager, 'getTeamProviderInfo').mockReturnValue({
+        mock: {
           awscloudformation: {
             StackName: 'test-stack',
           },
@@ -577,8 +616,8 @@ describe('AmplifyGen2MigrationValidations', () => {
     });
 
     it('should throw StackStateError when status is UPDATE_IN_PROGRESS', async () => {
-      jest.spyOn(stateManager, 'getMeta').mockReturnValue({
-        providers: {
+      jest.spyOn(stateManager, 'getTeamProviderInfo').mockReturnValue({
+        mock: {
           awscloudformation: {
             StackName: 'test-stack',
           },
@@ -597,8 +636,8 @@ describe('AmplifyGen2MigrationValidations', () => {
     });
 
     it('should throw StackStateError when status is ROLLBACK_COMPLETE', async () => {
-      jest.spyOn(stateManager, 'getMeta').mockReturnValue({
-        providers: {
+      jest.spyOn(stateManager, 'getTeamProviderInfo').mockReturnValue({
+        mock: {
           awscloudformation: {
             StackName: 'test-stack',
           },
@@ -613,6 +652,128 @@ describe('AmplifyGen2MigrationValidations', () => {
         name: 'StackStateError',
         message: 'Root stack status is ROLLBACK_COMPLETE, expected UPDATE_COMPLETE or CREATE_COMPLETE',
         resolution: 'Complete the deployment before proceeding.',
+      });
+    });
+  });
+
+  describe('validateLockStatus', () => {
+    let mockSend: jest.Mock;
+
+    beforeEach(() => {
+      mockSend = jest.fn();
+      (CloudFormationClient as jest.Mock).mockImplementation(() => ({
+        send: mockSend,
+      }));
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should throw MigrationError when stack is not locked', async () => {
+      jest.spyOn(stateManager, 'getTeamProviderInfo').mockReturnValue({
+        mock: {
+          awscloudformation: {
+            StackName: 'test-stack',
+          },
+        },
+      });
+
+      mockSend.mockResolvedValue({ StackPolicyBody: undefined });
+
+      await expect(validations.validateLockStatus()).rejects.toMatchObject({
+        name: 'MigrationError',
+        message: 'Stack is not locked',
+        resolution: 'Run the lock command before proceeding with migration.',
+      });
+    });
+
+    it('should pass when stack has correct lock policy', async () => {
+      jest.spyOn(stateManager, 'getTeamProviderInfo').mockReturnValue({
+        mock: {
+          awscloudformation: {
+            StackName: 'test-stack',
+          },
+        },
+      });
+
+      const expectedPolicy = {
+        Statement: [
+          {
+            Effect: 'Deny',
+            Action: 'Update:*',
+            Principal: '*',
+            Resource: '*',
+          },
+        ],
+      };
+
+      mockSend.mockResolvedValue({
+        StackPolicyBody: JSON.stringify(expectedPolicy),
+      });
+
+      await expect(validations.validateLockStatus()).resolves.not.toThrow();
+    });
+
+    it('should throw MigrationError when stack policy has wrong effect', async () => {
+      jest.spyOn(stateManager, 'getTeamProviderInfo').mockReturnValue({
+        mock: {
+          awscloudformation: {
+            StackName: 'test-stack',
+          },
+        },
+      });
+
+      const wrongPolicy = {
+        Statement: [
+          {
+            Effect: 'Allow',
+            Action: 'Update:*',
+            Principal: '*',
+            Resource: '*',
+          },
+        ],
+      };
+
+      mockSend.mockResolvedValue({
+        StackPolicyBody: JSON.stringify(wrongPolicy),
+      });
+
+      await expect(validations.validateLockStatus()).rejects.toMatchObject({
+        name: 'MigrationError',
+        message: 'Stack policy does not match expected lock policy',
+        resolution: 'Run the lock command to set the correct stack policy.',
+      });
+    });
+
+    it('should throw MigrationError when stack policy has different action', async () => {
+      jest.spyOn(stateManager, 'getTeamProviderInfo').mockReturnValue({
+        mock: {
+          awscloudformation: {
+            StackName: 'test-stack',
+          },
+        },
+      });
+
+      const wrongPolicy = {
+        Statement: [
+          {
+            Effect: 'Deny',
+            Action: 'Update:Delete',
+            Principal: '*',
+            Resource: '*',
+          },
+        ],
+      };
+
+      mockSend.mockResolvedValue({
+        StackPolicyBody: JSON.stringify(wrongPolicy),
+      });
+
+      await expect(validations.validateLockStatus()).rejects.toMatchObject({
+        name: 'MigrationError',
+        message: 'Stack policy does not match expected lock policy',
+        resolution: 'Run the lock command to set the correct stack policy.',
       });
     });
   });

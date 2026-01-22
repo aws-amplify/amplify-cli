@@ -1,3 +1,4 @@
+import './setup-jest';
 import { TemplateGenerator } from '../../../../../commands/gen2-migration/refactor/generators/template-generator';
 import CategoryTemplateGenerator from '../../../../../commands/gen2-migration/refactor/generators/category-template-generator';
 import {
@@ -17,9 +18,17 @@ import {
 import fs from 'node:fs/promises';
 import { SSMClient } from '@aws-sdk/client-ssm';
 import { CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-provider';
-import { CATEGORY, CFN_AUTH_TYPE, CFN_S3_TYPE, CFN_IAM_TYPE, CFNTemplate } from '../../../../../commands/gen2-migration/refactor/types';
+import {
+  CATEGORY,
+  CFN_AUTH_TYPE,
+  CFN_S3_TYPE,
+  CFN_DYNAMODB_TYPE,
+  CFN_IAM_TYPE,
+  CFNTemplate,
+} from '../../../../../commands/gen2-migration/refactor/types';
 
 import assert from 'node:assert';
+import { Logger } from '../../../../../commands/gen2-migration';
 
 jest.useFakeTimers();
 
@@ -30,8 +39,6 @@ const mockGenerateStackRefactorTemplates = jest.fn();
 const mockGenerateRefactorTemplates = jest.fn();
 const mockReadTemplate = jest.fn();
 const mockDescribeStack = jest.fn();
-const mockReadMeInitialize = jest.fn();
-const mockReadMeRenderStep1 = jest.fn();
 const REGION = 'us-east-1';
 const getStackId = (stackName: string, category: CATEGORY) => {
   // In Gen1, user pool group and auth are their own stacks. In Gen2, they are combined into 1.
@@ -50,6 +57,8 @@ const GEN1_STORAGE_STACK_ID = getStackId(GEN1_ROOT_STACK_NAME, 'storage');
 const GEN2_STORAGE_STACK_ID = getStackId(GEN2_ROOT_STACK_NAME, 'storage');
 const GEN1_S3_BUCKET_LOGICAL_ID = 'S3Bucket';
 const GEN2_S3_BUCKET_LOGICAL_ID = 'Gen2S3Bucket';
+const GEN1_DDB_TABLE_LOGICAL_ID = 'DynamoDBTable';
+const GEN2_DDB_TABLE_LOGICAL_ID = 'Gen2DynamoDBTable';
 const STUB_CFN_CLIENT = new CloudFormationClient();
 const STUB_SSM_CLIENT = new SSMClient();
 const STUB_COGNITO_IDP_CLIENT = new CognitoIdentityProviderClient();
@@ -103,6 +112,13 @@ const mockDescribeGen1StackResources: DescribeStackResourcesOutput = {
       Timestamp: new Date(),
     },
     {
+      ResourceType: CFN_DYNAMODB_TYPE.Table,
+      ResourceStatus: 'CREATE_COMPLETE',
+      LogicalResourceId: GEN1_DDB_TABLE_LOGICAL_ID,
+      PhysicalResourceId: 'my-ddb-table-gen1',
+      Timestamp: new Date(),
+    },
+    {
       ResourceType: 'AWS::Cognito::UserPoolClient',
       ResourceStatus: 'CREATE_COMPLETE',
       LogicalResourceId: 'UserPoolClient',
@@ -133,6 +149,13 @@ const mockDescribeGen2StackResources: DescribeStackResourcesOutput = {
       ResourceStatus: 'CREATE_COMPLETE',
       LogicalResourceId: GEN2_S3_BUCKET_LOGICAL_ID,
       PhysicalResourceId: 'my-s3-bucket-gen2',
+      Timestamp: new Date(),
+    },
+    {
+      ResourceType: CFN_DYNAMODB_TYPE.Table,
+      ResourceStatus: 'CREATE_COMPLETE',
+      LogicalResourceId: GEN2_DDB_TABLE_LOGICAL_ID,
+      PhysicalResourceId: 'my-ddb-table-gen2',
       Timestamp: new Date(),
     },
   ],
@@ -171,6 +194,13 @@ const mockDescribeGen2StorageStackResources: DescribeStackResourcesOutput = {
       ResourceStatus: 'CREATE_COMPLETE',
       LogicalResourceId: GEN2_S3_BUCKET_LOGICAL_ID,
       PhysicalResourceId: `myGen1BucketAfterRefactor`,
+      Timestamp: new Date(),
+    },
+    {
+      ResourceType: CFN_DYNAMODB_TYPE.Table,
+      ResourceStatus: 'CREATE_COMPLETE',
+      LogicalResourceId: GEN2_DDB_TABLE_LOGICAL_ID,
+      PhysicalResourceId: `myGen1DDBTableAfterRefactor`,
       Timestamp: new Date(),
     },
   ],
@@ -234,14 +264,6 @@ jest.mock('@aws-sdk/client-cloudformation', () => {
 });
 
 jest.mock('node:fs/promises');
-jest.mock('../../../../../commands/gen2-migration/refactor/generators/migration-readme-generator', () => {
-  return function () {
-    return {
-      initialize: mockReadMeInitialize,
-      renderStep1: mockReadMeRenderStep1,
-    };
-  };
-});
 const stubReadTemplate: CFNTemplate = {
   AWSTemplateFormatVersion: 'AWSTemplateFormatVersion',
   Description: 'Gen2 template',
@@ -301,6 +323,12 @@ const stubReadTemplate: CFNTemplate = {
         BucketName: 'S3BucketName',
       },
       Type: CFN_S3_TYPE.Bucket,
+    },
+    [GEN2_DDB_TABLE_LOGICAL_ID]: {
+      Properties: {
+        TableName: 'DynamoDBTableName',
+      },
+      Type: CFN_DYNAMODB_TYPE.Table,
     },
   },
   Outputs: {
@@ -465,6 +493,8 @@ describe('TemplateGenerator', () => {
       STUB_COGNITO_IDP_CLIENT,
       APP_ID,
       ENV_NAME,
+      new Logger('mock', 'mock', 'mock'),
+      REGION,
     );
     await generator.generate();
 
@@ -487,6 +517,8 @@ describe('TemplateGenerator', () => {
       STUB_COGNITO_IDP_CLIENT,
       APP_ID,
       ENV_NAME,
+      new Logger('mock', 'mock', 'mock'),
+      REGION,
     );
     await generator.generate();
 
@@ -513,6 +545,8 @@ describe('TemplateGenerator', () => {
       STUB_COGNITO_IDP_CLIENT,
       APP_ID,
       ENV_NAME,
+      new Logger('mock', 'mock', 'mock'),
+      REGION,
     );
     await generator.generate(customResourceMap);
 
@@ -531,6 +565,8 @@ describe('TemplateGenerator', () => {
       STUB_COGNITO_IDP_CLIENT,
       APP_ID,
       ENV_NAME,
+      new Logger('mock', 'mock', 'mock'),
+      REGION,
     );
     const failureSendMock = (command: any) => {
       if (command instanceof DescribeStackResourcesCommand) {
@@ -572,6 +608,8 @@ describe('TemplateGenerator', () => {
       STUB_COGNITO_IDP_CLIENT,
       APP_ID,
       ENV_NAME,
+      new Logger('mock', 'mock', 'mock'),
+      REGION,
     );
     await expect(generator.generate()).rejects.toThrow(errorMessage);
   });
@@ -608,6 +646,8 @@ describe('TemplateGenerator', () => {
       STUB_COGNITO_IDP_CLIENT,
       APP_ID,
       ENV_NAME,
+      new Logger('mock', 'mock', 'mock'),
+      REGION,
     );
     await generator.generate();
 
@@ -639,6 +679,8 @@ describe('TemplateGenerator', () => {
       STUB_COGNITO_IDP_CLIENT,
       APP_ID,
       ENV_NAME,
+      new Logger('mock', 'mock', 'mock'),
+      REGION,
     );
     expect.assertions(1);
     // Intentionally not awaiting the below call to be able to advance timers and micro task queue in waitForPromisesAndFakeTimers
@@ -683,11 +725,12 @@ describe('TemplateGenerator', () => {
       STUB_COGNITO_IDP_CLIENT,
       APP_ID,
       ENV_NAME,
+      new Logger('mock', 'mock', 'mock'),
+      REGION,
     );
     await generator.generate();
     const numCFNOperationsBeforeGen2StackUpdate = 5;
     assertRollbackRefactor('auth', numCFNOperationsBeforeGen2StackUpdate + 1, true);
-    expect(mockReadMeRenderStep1).not.toHaveBeenCalled();
   });
 
   it('should rollback gen2 stack when execute stack refactor fails', async () => {
@@ -722,11 +765,12 @@ describe('TemplateGenerator', () => {
       STUB_COGNITO_IDP_CLIENT,
       APP_ID,
       ENV_NAME,
+      new Logger('mock', 'mock', 'mock'),
+      REGION,
     );
     await generator.generate();
     const numCFNOperationsBeforeGen2StackUpdate = 5;
     assertRollbackRefactor('auth', numCFNOperationsBeforeGen2StackUpdate + 1, false, true);
-    expect(mockReadMeRenderStep1).not.toHaveBeenCalled();
   });
 
   it('should fail after all poll attempts have exhausted during create stack refactor', async () => {
@@ -760,13 +804,14 @@ describe('TemplateGenerator', () => {
       STUB_COGNITO_IDP_CLIENT,
       APP_ID,
       ENV_NAME,
+      new Logger('mock', 'mock', 'mock'),
+      REGION,
     );
-    expect.assertions(2);
+    expect.assertions(1);
     // Intentionally not awaiting the below call to be able to advance timers and micro task queue in waitForPromisesAndFakeTimers
     // and catch the error below
     generator.generate().catch((e) => {
       expect(e.message).toBe(`Stack refactor 12345 did not reach a completion state within the given time period.`);
-      expect(mockReadMeRenderStep1).not.toHaveBeenCalled();
     });
     await waitForPromisesAndFakeTimers();
     return;
@@ -783,6 +828,8 @@ describe('TemplateGenerator', () => {
       STUB_COGNITO_IDP_CLIENT,
       APP_ID,
       ENV_NAME,
+      new Logger('mock', 'mock', 'mock'),
+      REGION,
     );
     await generator.revert();
 
@@ -801,6 +848,7 @@ describe('TemplateGenerator', () => {
   it('should revert resources from Gen2 to Gen1 successfully, skipping categories that have already been updated previously', async () => {
     const clonedStubGetTemplate = JSON.parse(JSON.stringify(stubReadTemplate));
     delete clonedStubGetTemplate.Resources[GEN2_S3_BUCKET_LOGICAL_ID];
+    delete clonedStubGetTemplate.Resources[GEN2_DDB_TABLE_LOGICAL_ID];
     mockReadTemplate.mockReturnValue(clonedStubGetTemplate);
     // Act
     const generator = new TemplateGenerator(
@@ -812,6 +860,8 @@ describe('TemplateGenerator', () => {
       STUB_COGNITO_IDP_CLIENT,
       APP_ID,
       ENV_NAME,
+      new Logger('mock', 'mock', 'mock'),
+      REGION,
     );
     await generator.revert();
 
@@ -829,11 +879,10 @@ describe('TemplateGenerator', () => {
     expect(mockGenerateGen1PreProcessTemplate).toBeCalledTimes(NUM_CATEGORIES_TO_REFACTOR);
     expect(mockGenerateGen2ResourceRemovalTemplate).toBeCalledTimes(NUM_CATEGORIES_TO_REFACTOR - numCategoriesToSkipUpdate);
     expect(mockGenerateStackRefactorTemplates).toBeCalledTimes(NUM_CATEGORIES_TO_REFACTOR - numCategoriesToSkipUpdate);
-    expect(mockReadMeInitialize).toBeCalledTimes(1);
-    expect(mockReadMeRenderStep1).toBeCalledTimes(1);
     expect(CategoryTemplateGenerator).toBeCalledTimes(3);
     expect(CategoryTemplateGenerator).toHaveBeenNthCalledWith(
       1,
+      new Logger('mock', 'mock', 'mock'),
       GEN1_AUTH_STACK_ID,
       GEN2_AUTH_STACK_ID,
       REGION,
@@ -854,6 +903,7 @@ describe('TemplateGenerator', () => {
     );
     expect(CategoryTemplateGenerator).toHaveBeenNthCalledWith(
       2,
+      new Logger('mock', 'mock', 'mock'),
       GEN1_AUTH_USER_POOL_GROUP_STACK_ID,
       GEN2_AUTH_STACK_ID,
       REGION,
@@ -868,6 +918,7 @@ describe('TemplateGenerator', () => {
     );
     expect(CategoryTemplateGenerator).toHaveBeenNthCalledWith(
       3,
+      new Logger('mock', 'mock', 'mock'),
       GEN1_STORAGE_STACK_ID,
       GEN2_STORAGE_STACK_ID,
       REGION,
@@ -877,7 +928,7 @@ describe('TemplateGenerator', () => {
       STUB_COGNITO_IDP_CLIENT,
       APP_ID,
       ENV_NAME,
-      [CFN_S3_TYPE.Bucket],
+      [CFN_S3_TYPE.Bucket, CFN_DYNAMODB_TYPE.Table],
       undefined,
     );
   }
@@ -887,11 +938,10 @@ describe('TemplateGenerator', () => {
     expect(mockGenerateGen1PreProcessTemplate).not.toBeCalled();
     expect(mockGenerateGen2ResourceRemovalTemplate).not.toBeCalled();
     expect(mockGenerateRefactorTemplates).toBeCalledTimes(NUM_CATEGORIES_TO_REFACTOR - numCategoriesToSkipUpdate);
-    expect(mockReadMeInitialize).not.toBeCalled();
-    expect(mockReadMeRenderStep1).not.toBeCalled();
     expect(CategoryTemplateGenerator).toBeCalledTimes(NUM_CATEGORIES_TO_REFACTOR);
     expect(CategoryTemplateGenerator).toHaveBeenNthCalledWith(
       1,
+      new Logger('mock', 'mock', 'mock'),
       GEN2_AUTH_STACK_ID,
       GEN1_AUTH_STACK_ID,
       REGION,
@@ -912,6 +962,7 @@ describe('TemplateGenerator', () => {
     );
     expect(CategoryTemplateGenerator).toHaveBeenNthCalledWith(
       2,
+      new Logger('mock', 'mock', 'mock'),
       GEN2_AUTH_STACK_ID,
       GEN1_AUTH_USER_POOL_GROUP_STACK_ID,
       REGION,
@@ -926,6 +977,7 @@ describe('TemplateGenerator', () => {
     );
     expect(CategoryTemplateGenerator).toHaveBeenNthCalledWith(
       3,
+      new Logger('mock', 'mock', 'mock'),
       GEN2_STORAGE_STACK_ID,
       GEN1_STORAGE_STACK_ID,
       REGION,
@@ -935,7 +987,7 @@ describe('TemplateGenerator', () => {
       STUB_COGNITO_IDP_CLIENT,
       APP_ID,
       ENV_NAME,
-      [CFN_S3_TYPE.Bucket],
+      [CFN_S3_TYPE.Bucket, CFN_DYNAMODB_TYPE.Table],
       undefined,
     );
   }
@@ -945,11 +997,10 @@ describe('TemplateGenerator', () => {
     expect(mockGenerateGen1PreProcessTemplate).toBeCalledTimes(4);
     expect(mockGenerateGen2ResourceRemovalTemplate).toBeCalledTimes(4);
     expect(mockGenerateStackRefactorTemplates).toBeCalledTimes(3);
-    expect(mockReadMeInitialize).toBeCalledTimes(1);
-    expect(mockReadMeRenderStep1).toBeCalledTimes(1);
     expect(CategoryTemplateGenerator).toBeCalledTimes(4);
     expect(CategoryTemplateGenerator).toHaveBeenNthCalledWith(
       1,
+      new Logger('mock', 'mock', 'mock'),
       GEN1_AUTH_STACK_ID,
       GEN2_AUTH_STACK_ID,
       REGION,
@@ -970,6 +1021,7 @@ describe('TemplateGenerator', () => {
     );
     expect(CategoryTemplateGenerator).toHaveBeenNthCalledWith(
       2,
+      new Logger('mock', 'mock', 'mock'),
       GEN1_AUTH_USER_POOL_GROUP_STACK_ID,
       GEN2_AUTH_STACK_ID,
       REGION,
@@ -984,6 +1036,7 @@ describe('TemplateGenerator', () => {
     );
     expect(CategoryTemplateGenerator).toHaveBeenNthCalledWith(
       3,
+      new Logger('mock', 'mock', 'mock'),
       GEN1_STORAGE_STACK_ID,
       GEN2_STORAGE_STACK_ID,
       REGION,
@@ -993,12 +1046,13 @@ describe('TemplateGenerator', () => {
       STUB_COGNITO_IDP_CLIENT,
       APP_ID,
       ENV_NAME,
-      [CFN_S3_TYPE.Bucket],
+      [CFN_S3_TYPE.Bucket, CFN_DYNAMODB_TYPE.Table],
       undefined,
     );
     // custom resource category
     expect(CategoryTemplateGenerator).toHaveBeenNthCalledWith(
       4,
+      new Logger('mock', 'mock', 'mock'),
       GEN1_ROOT_STACK_NAME,
       GEN2_ROOT_STACK_NAME,
       REGION,

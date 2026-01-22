@@ -5,6 +5,9 @@ on:
     branches: [dev]
   pull_request:
 
+permissions:
+  contents: read
+
 env:
   NODE_OPTIONS: --max-old-space-size=8096
 

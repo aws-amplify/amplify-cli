@@ -1,0 +1,22 @@
+{
+  "name": "discussions",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "configure": "./configure.sh",
+    "configure-schema": "./configure-schema.sh",
+    "configure-functions": "./configure-functions.sh"
+  },
+  "devDependencies": {
+    "vite": "^7.2.2"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.936.0",
+    "@aws-sdk/lib-dynamodb": "^3.936.0",
+    "aws-amplify": "^6.15.8"
+  }
+}

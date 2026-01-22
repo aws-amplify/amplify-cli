@@ -10,17 +10,20 @@ import {
   DescribeStackResourcesCommand,
   type DescribeStackResourceDriftsCommandOutput,
   type DescribeStackDriftDetectionStatusCommandOutput,
-  type StackResourceDrift,
 } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
-import { getAmplifyLogger } from '@aws-amplify/amplify-cli-logger';
-
-const logger = getAmplifyLogger();
+import chalk from 'chalk';
+import type { Print } from '../drift';
 
 /**
- * Combined drift results including nested stacks
+ * CloudFormation drift results including nested stacks
  */
-export interface CombinedDriftResults {
+export interface CloudFormationDriftResults {
+  /**
+   * Total count of drifted resources (MODIFIED or DELETED)
+   */
+  totalDrifted: number;
+
   /**
    * Drift results for the root stack
    */
@@ -35,6 +38,24 @@ export interface CombinedDriftResults {
    * Map of logical resource IDs to physical resource IDs for nested stacks
    */
   nestedStackPhysicalIds: Map<string, string>;
+
+  /**
+   * List of nested stacks that were skipped due to errors
+   */
+  skippedNestedStacks?: string[];
+}
+
+/**
+ * Count drifted resources (MODIFIED or DELETED status only)
+ */
+function countDriftedResources(driftOutput: DescribeStackResourceDriftsCommandOutput): number {
+  if (!driftOutput.StackResourceDrifts) {
+    return 0;
+  }
+
+  return driftOutput.StackResourceDrifts.filter(
+    (drift) => drift.StackResourceDriftStatus === 'MODIFIED' || drift.StackResourceDriftStatus === 'DELETED',
+  ).length;
 }
 
 /**
@@ -48,19 +69,17 @@ export interface CombinedDriftResults {
 export async function detectStackDrift(
   cfn: CloudFormationClient,
   stackName: string,
-  print?: { info: (msg: string) => void; debug: (msg: string) => void; warning: (msg: string) => void },
+  print: Print,
 ): Promise<DescribeStackResourceDriftsCommandOutput> {
   // Start drift detection
-  logger.logInfo({ message: `detectStackDrift: ${stackName}` });
+  print.debug(`detectStackDrift: ${stackName}`);
   const driftDetection = await cfn.send(
     new DetectStackDriftCommand({
       StackName: stackName,
     }),
   );
 
-  if (print?.debug) {
-    print.debug(`Detecting drift with ID ${driftDetection.StackDriftDetectionId} for stack ${stackName}...`);
-  }
+  print.debug(`Detecting drift with ID ${driftDetection.StackDriftDetectionId} for stack ${stackName}...`);
 
   // Wait for drift detection to complete
   const driftStatus = await waitForDriftDetection(cfn, driftDetection.StackDriftDetectionId!, print);
@@ -68,43 +87,150 @@ export async function detectStackDrift(
   // Handle UNKNOWN stack drift status
   if (driftStatus?.StackDriftStatus === 'UNKNOWN') {
     const reason = formatReason(driftStatus.DetectionStatusReason);
-    if (print?.debug) {
-      print.debug(
-        'Stack drift status is UNKNOWN. This may occur when CloudFormation is unable to detect drift for at least one resource and all other resources are IN_SYNC.\n' +
-          `Reason: ${reason}`,
-      );
-    }
+    print.debug(
+      'Stack drift status is UNKNOWN. This may occur when CloudFormation is unable to detect drift for at least one resource and all other resources are IN_SYNC.\n' +
+        `Reason: ${reason}`,
+    );
   }
 
-  // Get the drift results, including resources with UNKNOWN status
+  // Get the drift results, including ALL statuses (IN_SYNC, MODIFIED, DELETED, NOT_CHECKED)
   const driftResults = await cfn.send(
     new DescribeStackResourceDriftsCommand({
       StackName: stackName,
+      StackResourceDriftStatusFilters: ['IN_SYNC', 'MODIFIED', 'DELETED', 'NOT_CHECKED'],
     }),
   );
 
-  // Log info for resources with NOT_CHECKED status (expected behavior)
-  const notCheckedResources = driftResults.StackResourceDrifts?.filter((drift) => drift.StackResourceDriftStatus === 'NOT_CHECKED');
+  // Filter out known Amplify Auth IdP Deny→Allow changes from property differences BEFORE printing
+  if (driftResults.StackResourceDrifts) {
+    driftResults.StackResourceDrifts = driftResults.StackResourceDrifts.map((drift) => {
+      // For modified resources, filter out Auth IdP Deny→Allow property changes
+      if (drift.StackResourceDriftStatus === 'MODIFIED' && drift.PropertyDifferences && drift.PropertyDifferences.length > 0) {
+        // Filter out Auth IdP changes from property differences
+        drift.PropertyDifferences = drift.PropertyDifferences.filter((propDiff) => {
+          return !isAmplifyAuthRoleDenyToAllowChange(propDiff, print);
+        });
 
-  if (notCheckedResources && notCheckedResources.length > 0 && print?.debug) {
-    print.debug(
-      'Some resources were not checked for drift (resource type does not support drift detection):\n' +
-        notCheckedResources.map((r) => `  - ${r.LogicalResourceId} (${r.ResourceType})`).join('\n'),
-    );
+        // If all property differences were filtered out, change status to IN_SYNC
+        if (drift.PropertyDifferences.length === 0) {
+          drift.StackResourceDriftStatus = 'IN_SYNC';
+        }
+      }
+
+      return drift;
+    });
   }
 
-  // Log warning for resources with UNKNOWN status (actual problems)
-  const unknownResources = driftResults.StackResourceDrifts?.filter((drift) => drift.StackResourceDriftStatus === 'UNKNOWN');
+  // Print detailed resource table in verbose mode (AFTER filtering)
+  if (driftResults.StackResourceDrifts && driftResults.StackResourceDrifts.length > 0) {
+    // Count resources by status
+    const statusCounts = {
+      IN_SYNC: 0,
+      MODIFIED: 0,
+      DELETED: 0,
+      NOT_CHECKED: 0,
+      UNKNOWN: 0,
+    };
 
-  if (unknownResources && unknownResources.length > 0 && print?.debug) {
-    print.debug(
-      'WARNING: Drift detection failed for some resources. This may be due to insufficient permissions or throttling:\n' +
-        unknownResources.map((r) => `  - ${r.LogicalResourceId} (${r.ResourceType})`).join('\n'),
-    );
+    // Count the filtered statuses
+    for (const drift of driftResults.StackResourceDrifts) {
+      const status = drift.StackResourceDriftStatus;
+      if (status && status in statusCounts) {
+        statusCounts[status as keyof typeof statusCounts]++;
+      }
+    }
+
+    print.debug('Resource drift status:');
+
+    // Display each resource with its filtered status
+    for (const drift of driftResults.StackResourceDrifts) {
+      const status = drift.StackResourceDriftStatus || 'UNKNOWN';
+      const logicalId = drift.LogicalResourceId || 'Unknown';
+      const physicalId = drift.PhysicalResourceId || 'N/A';
+      const resourceType = drift.ResourceType || 'Unknown';
+
+      let statusDisplay = '';
+      switch (status) {
+        case 'IN_SYNC':
+          statusDisplay = '✓ IN_SYNC';
+          break;
+        case 'MODIFIED':
+          statusDisplay = '✗ MODIFIED';
+          break;
+        case 'DELETED':
+          statusDisplay = '✗ DELETED';
+          break;
+        case 'NOT_CHECKED':
+          statusDisplay = '○ UNCHECKED';
+          break;
+        default:
+          statusDisplay = '? UNKNOWN';
+      }
+
+      print.info(`${statusDisplay} | ${logicalId} | ${physicalId} | ${resourceType}`);
+
+      // Show property differences for MODIFIED resources
+      if (status === 'MODIFIED' && drift.PropertyDifferences && drift.PropertyDifferences.length > 0) {
+        for (const propDiff of drift.PropertyDifferences) {
+          const propPath = propDiff.PropertyPath || 'Unknown';
+          const diffType = propDiff.DifferenceType || 'UNKNOWN';
+          print.debug(`      → ${propPath}: ${diffType}`);
+        }
+      }
+    }
   }
 
-  logger.logInfo({ message: `detectStackDrift.complete: ${stackName}, ${driftResults.StackResourceDrifts?.length} resources` });
+  print.debug(`detectStackDrift.complete: ${stackName}, ${driftResults.StackResourceDrifts?.length} resources`);
   return driftResults;
+}
+
+/**
+ * Check if a property difference is an Amplify auth role Deny→Allow change (intended drift)
+ */
+function isAmplifyAuthRoleDenyToAllowChange(propDiff: any, print: Print): boolean {
+  // Check if this is an AssumeRolePolicyDocument change
+  if (!propDiff.PropertyPath || !propDiff.PropertyPath.includes('AssumeRolePolicyDocument')) {
+    return false;
+  }
+
+  // Check if this involves Effect changing from Deny to Allow
+  const expectedValue = propDiff.ExpectedValue;
+  const actualValue = propDiff.ActualValue;
+
+  if (typeof expectedValue === 'string' && typeof actualValue === 'string') {
+    try {
+      // Parse JSON values to check for Effect change
+      const expectedJson = JSON.parse(expectedValue);
+      const actualJson = JSON.parse(actualValue);
+
+      // Check if this is a Statement array change with Effect Deny→Allow
+      if (expectedJson.Statement && actualJson.Statement && Array.isArray(expectedJson.Statement) && Array.isArray(actualJson.Statement)) {
+        // Look for Deny→Allow change in any statement
+        for (let i = 0; i < Math.max(expectedJson.Statement.length, actualJson.Statement.length); i++) {
+          const expectedStmt = expectedJson.Statement[i];
+          const actualStmt = actualJson.Statement[i];
+
+          if (
+            expectedStmt &&
+            actualStmt &&
+            expectedStmt.Effect === 'Deny' &&
+            actualStmt.Effect === 'Allow' &&
+            expectedStmt.Principal?.Federated === 'cognito-identity.amazonaws.com' &&
+            actualStmt.Principal?.Federated === 'cognito-identity.amazonaws.com'
+          ) {
+            return true;
+          }
+        }
+      }
+    } catch (e: any) {
+      // If JSON parsing fails, it's not the specific change we're looking for
+      // This is expected for some policy formats, so we log at debug level
+      print.debug(`Failed to parse AssumeRolePolicyDocument JSON: ${e.message || 'Unknown error'}`);
+      return false;
+    }
+  }
+
+  return false;
 }
 
 /**
@@ -114,7 +240,7 @@ export async function detectStackDrift(
 async function waitForDriftDetection(
   cfn: CloudFormationClient,
   driftDetectionId: string,
-  print?: { info: (msg: string) => void },
+  print: Print,
 ): Promise<DescribeStackDriftDetectionStatusCommandOutput | undefined> {
   const maxWaitForDrift = 300_000; // 5 minutes max
   const timeBetweenOutputs = 10_000; // User feedback every 10 seconds
@@ -149,7 +275,7 @@ async function waitForDriftDetection(
       });
     }
 
-    if (Date.now() > checkIn && print?.info) {
+    if (Date.now() > checkIn) {
       print.info('Waiting for drift detection to complete...');
       checkIn = Date.now() + timeBetweenOutputs;
     }
@@ -169,17 +295,15 @@ async function waitForDriftDetection(
  * @param stackName - the name of the root stack to check for drift
  * @param print - printer for user feedback
  * @param level - current nesting level (for tracking)
- * @param parentPrefix - prefix for nested stack names (for display)
  * @returns combined drift results for root and all nested stacks
  */
 export async function detectStackDriftRecursive(
   cfn: CloudFormationClient,
   stackName: string,
-  print?: { info: (msg: string) => void; debug: (msg: string) => void; warning: (msg: string) => void },
+  print: Print,
   level = 0,
-  parentPrefix = '',
-): Promise<CombinedDriftResults> {
-  logger.logInfo({ message: `detectStackDriftRecursive: ${stackName} (level ${level})` });
+): Promise<CloudFormationDriftResults> {
+  print.debug(`detectStackDriftRecursive: ${stackName} (level ${level})`);
 
   // Detect drift on the current stack
   const currentStackDrifts = await detectStackDrift(cfn, stackName, print);
@@ -194,13 +318,14 @@ export async function detectStackDriftRecursive(
   // Find all nested stacks in the current stack
   const nestedStacks = stackResources.StackResources?.filter((resource) => resource.ResourceType === 'AWS::CloudFormation::Stack') || [];
 
-  if (nestedStacks.length > 0 && print?.info) {
-    print.info(`Found ${nestedStacks.length} nested stack(s)`);
+  if (nestedStacks.length > 0) {
+    print.info(`Found ${chalk.yellow(nestedStacks.length)} nested stack(s)`);
   }
 
   // Initialize results
   const nestedStackDrifts = new Map<string, DescribeStackResourceDriftsCommandOutput>();
   const nestedStackPhysicalIds = new Map<string, string>();
+  const skippedNestedStacks: string[] = [];
 
   // Process each nested stack recursively
   for (const nestedStack of nestedStacks) {
@@ -210,17 +335,12 @@ export async function detectStackDriftRecursive(
 
     // Skip if the nested stack has been deleted
     if (nestedStack.ResourceStatus?.includes('DELETE')) {
-      if (print?.debug) {
-        print.debug(`Skipping deleted nested stack: ${nestedStack.LogicalResourceId}`);
-      }
+      print.debug(`Skipping deleted nested stack: ${nestedStack.LogicalResourceId}`);
       continue;
     }
 
     try {
-      // Show message for this nested stack (no indentation in the message itself)
-      if (print?.info) {
-        print.info(`Checking drift for nested stack: ${nestedStack.LogicalResourceId}`);
-      }
+      print.info(`Checking drift for nested stack: ${chalk.yellow(nestedStack.LogicalResourceId)}`);
 
       // Extract stack name from PhysicalResourceId
       // Handle both ARN format and direct stack names
@@ -244,24 +364,20 @@ export async function detectStackDriftRecursive(
           }
         } catch (e) {
           // If parsing fails, log and use the original value
-          logger.logInfo({
-            message: `Failed to parse ARN for nested stack ${nestedStack.LogicalResourceId}: ${nestedStackName}. Using original value.`,
-          });
+          print.debug(`Failed to parse ARN for nested stack ${nestedStack.LogicalResourceId}: ${nestedStackName}. Using original value.`);
         }
       }
 
       // Validate the extracted name
       if (!nestedStackName || nestedStackName === nestedStack.PhysicalResourceId) {
-        logger.logInfo({
-          message: `Could not extract stack name from PhysicalResourceId: ${nestedStack.PhysicalResourceId}`,
-        });
+        print.debug(`Could not extract stack name from PhysicalResourceId: ${nestedStack.PhysicalResourceId}`);
       }
 
       // Store the mapping
       nestedStackPhysicalIds.set(nestedStack.LogicalResourceId, nestedStackName);
 
       // Recursively detect drift for this nested stack and all its children
-      const nestedResults = await detectStackDriftRecursive(cfn, nestedStackName, print, level + 1, nestedStack.LogicalResourceId);
+      const nestedResults = await detectStackDriftRecursive(cfn, nestedStackName, print, level + 1);
 
       // Store the direct drift results for this nested stack
       nestedStackDrifts.set(nestedStack.LogicalResourceId, nestedResults.rootStackDrifts);
@@ -279,29 +395,33 @@ export async function detectStackDriftRecursive(
         nestedStackPhysicalIds.set(fullKey, value);
       });
 
-      logger.logInfo({
-        message: `detectStackDriftRecursive.nestedStack: ${nestedStack.LogicalResourceId}, ${nestedResults.rootStackDrifts.StackResourceDrifts?.length} direct resources, ${nestedResults.nestedStackDrifts.size} sub-stacks`,
-      });
+      print.debug(
+        `detectStackDriftRecursive.nestedStack: ${nestedStack.LogicalResourceId}, ${nestedResults.rootStackDrifts.StackResourceDrifts?.length} direct resources, ${nestedResults.nestedStackDrifts.size} sub-stacks`,
+      );
     } catch (error: any) {
       // Log error but continue checking other nested stacks
-      if (print?.warning) {
-        print.warning(`Failed to check drift for nested stack ${nestedStack.LogicalResourceId}: ${error.message}`);
-      }
-      logger.logError({
-        message: `detectStackDriftRecursive.nestedStack.error: ${nestedStack.LogicalResourceId}`,
-        error: error,
-      });
+      print.warning(`Failed to check drift for nested stack ${nestedStack.LogicalResourceId}: ${error.message}`);
+      // Track this as a skipped stack
+      skippedNestedStacks.push(nestedStack.LogicalResourceId);
     }
   }
 
-  logger.logInfo({
-    message: `detectStackDriftRecursive.complete: ${stackName} (level ${level}), ${nestedStackDrifts.size} total nested stacks`,
-  });
+  print.debug(`detectStackDriftRecursive.complete: ${stackName} (level ${level}), ${nestedStackDrifts.size} total nested stacks`);
+
+  // Calculate total drifted count (root + all nested stacks)
+  let totalDrifted = countDriftedResources(currentStackDrifts);
+  for (const nestedDrift of nestedStackDrifts.values()) {
+    totalDrifted += countDriftedResources(nestedDrift);
+  }
+
+  print.debug(`Total drifted resources: ${totalDrifted}`);
 
   return {
+    totalDrifted,
     rootStackDrifts: currentStackDrifts,
     nestedStackDrifts,
     nestedStackPhysicalIds,
+    skippedNestedStacks: skippedNestedStacks.length > 0 ? skippedNestedStacks : undefined,
   };
 }
 

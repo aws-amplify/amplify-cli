@@ -15,13 +15,13 @@ import {
   CFN_CATEGORY_TYPE,
   CFN_RESOURCE_TYPES,
   CFN_S3_TYPE,
+  CFN_DYNAMODB_TYPE,
   CFNResource,
   CFNStackStatus,
   CFNTemplate,
   ResourceMapping,
   CFN_ANALYTICS_TYPE,
 } from '../types';
-import MigrationReadmeGenerator from './migration-readme-generator';
 import { pollStackForCompletionState, tryUpdateStack } from '../cfn-stack-updater';
 import { SSMClient } from '@aws-sdk/client-ssm';
 import { CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-provider';
@@ -29,7 +29,7 @@ import { tryRefactorStack } from '../cfn-stack-refactor-updater';
 import CfnOutputResolver from '../resolvers/cfn-output-resolver';
 import CfnDependencyResolver from '../resolvers/cfn-dependency-resolver';
 import CfnParameterResolver from '../resolvers/cfn-parameter-resolver';
-import ora from 'ora';
+import { Logger } from '../../../gen2-migration';
 
 const CFN_RESOURCE_STACK_TYPE = 'AWS::CloudFormation::Stack';
 const GEN2_AMPLIFY_AUTH_LOGICAL_ID_PREFIX = 'amplifyAuth';
@@ -48,8 +48,10 @@ const AUTH_RESOURCES_TO_REFACTOR = [
   CFN_AUTH_TYPE.UserPoolDomain,
 ];
 const AUTH_USER_POOL_GROUP_RESOURCES_TO_REFACTOR = [CFN_AUTH_TYPE.UserPoolGroup];
-const STORAGE_RESOURCES_TO_REFACTOR = [CFN_S3_TYPE.Bucket];
+const STORAGE_RESOURCES_TO_REFACTOR = [CFN_S3_TYPE.Bucket, CFN_DYNAMODB_TYPE.Table];
 const ANALYTICS_RESOURCES_TO_REFACTOR = [CFN_ANALYTICS_TYPE.Stream];
+
+// The following is only used for revert operation
 const GEN1_RESOURCE_TYPE_TO_LOGICAL_RESOURCE_IDS_MAP = new Map<string, string>([
   [CFN_AUTH_TYPE.UserPool.valueOf(), 'UserPool'],
   [CFN_AUTH_TYPE.UserPoolClient.valueOf(), 'UserPoolClientWeb'],
@@ -57,12 +59,13 @@ const GEN1_RESOURCE_TYPE_TO_LOGICAL_RESOURCE_IDS_MAP = new Map<string, string>([
   [CFN_AUTH_TYPE.IdentityPoolRoleAttachment.valueOf(), 'IdentityPoolRoleMap'],
   [CFN_AUTH_TYPE.UserPoolDomain.valueOf(), 'UserPoolDomain'],
   [CFN_S3_TYPE.Bucket.valueOf(), 'S3Bucket'],
+  [CFN_DYNAMODB_TYPE.Table.valueOf(), 'DynamoDBTable'],
   [CFN_ANALYTICS_TYPE.Stream.valueOf(), 'KinesisStream'],
 ]);
 const LOGICAL_IDS_TO_REMOVE_FOR_REVERT_MAP = new Map<CATEGORY, CFN_RESOURCE_TYPES[]>([
   ['auth', AUTH_RESOURCES_TO_REFACTOR],
   ['auth-user-pool-group', AUTH_USER_POOL_GROUP_RESOURCES_TO_REFACTOR],
-  ['storage', [CFN_S3_TYPE.Bucket]],
+  ['storage', [CFN_S3_TYPE.Bucket, CFN_DYNAMODB_TYPE.Table]],
   ['analytics', ANALYTICS_RESOURCES_TO_REFACTOR],
 ]);
 const GEN2_NATIVE_APP_CLIENT = 'UserPoolNativeAppClient';
@@ -74,7 +77,6 @@ const NO_RESOURCES_TO_REMOVE_ERROR = 'No resources to remove';
 class TemplateGenerator {
   private _categoryStackMap: Map<CATEGORY, [string, string]>;
   private readonly categoryTemplateGenerators: [CATEGORY, string, string, CategoryTemplateGenerator<CFN_CATEGORY_TYPE>][];
-  private region: string | undefined;
   private readonly _cfnClient: CloudFormationClient;
   private readonly categoryGeneratorConfig = {
     auth: {
@@ -100,6 +102,8 @@ class TemplateGenerator {
     private readonly cognitoIdpClient: CognitoIdentityProviderClient,
     private readonly appId: string,
     private readonly environmentName: string,
+    private readonly logger: Logger,
+    private readonly region: string,
   ) {
     this._categoryStackMap = new Map<CATEGORY, [string, string]>();
     this.categoryTemplateGenerators = [];
@@ -120,13 +124,8 @@ class TemplateGenerator {
     return this._cfnClient;
   }
 
-  private async setRegion() {
-    this.region = await this._cfnClient.config.region();
-  }
-
   // Initialize for assessment - parse category stacks without generating templates
   public async initializeForAssessment(): Promise<void> {
-    await this.setRegion();
     await this.parseCategoryStacks();
   }
 
@@ -183,9 +182,10 @@ class TemplateGenerator {
     }
   }
 
+  // this function never gets used... I think its best to remove it.
+  // TODO: Remove the following generate function from here and in tests.
   public async generate(customResourceMap?: ResourceMapping[]) {
     await fs.mkdir(TEMPLATES_DIR, { recursive: true });
-    await this.setRegion();
     await this.parseCategoryStacks();
     if (customResourceMap) {
       for (const { Source, Destination } of customResourceMap) {
@@ -196,11 +196,25 @@ class TemplateGenerator {
   }
 
   public async revert() {
-    await this.setRegion();
     await this.parseCategoryStacks(true);
     return await this.generateCategoryTemplates(true);
   }
 
+  /**
+   * Discovers and maps category nested stacks between Gen1 and Gen2 root stacks.
+   *
+   * 1. Queries both Gen1 (source) and Gen2 (destination) root stacks for their nested stacks
+   * 2. Matches nested stacks by category (e.g., Gen1's "authXYZ" → Gen2's "authABC")
+   * 3. Populates _categoryStackMap with: category → [sourceStackId, destinationStackId]
+   *
+   *
+   * Special handling for auth: Gen1 may have separate stacks for UserPool vs UserPoolGroups,
+   * while Gen2 combines them into one stack. The code detects this via stack description metadata.
+   *
+   * @param isRevert - If true, we're moving resources FROM Gen2 back TO Gen1 (reverse of migration)
+   * TODO: isRevert function is untested. We may want to remove this as an input parameter and instead
+   * move revert to a new function.
+   */
   private async parseCategoryStacks(isRevert = false): Promise<void> {
     const sourceStackResourcesResponse = await this.cfnClient.send(
       new DescribeStackResourcesCommand({
@@ -212,18 +226,23 @@ class TemplateGenerator {
         StackName: this.toStack,
       }),
     );
+
     const sourceStackResources = sourceStackResourcesResponse.StackResources;
     const destStackResources = destStackResourcesResponse.StackResources;
     assert(sourceStackResources, 'No source stack resources found');
     assert(destStackResources, 'No destination stack resources found');
-    const sourceCategoryStacks = sourceStackResources?.filter((stackResource) => stackResource.ResourceType === CFN_RESOURCE_STACK_TYPE);
-    const destinationCategoryStacks = destStackResources?.filter((stackResource) => stackResource.ResourceType === CFN_RESOURCE_STACK_TYPE);
-    assert(sourceCategoryStacks && sourceCategoryStacks?.length > 0, 'No source category stack found');
-    assert(destinationCategoryStacks && destinationCategoryStacks?.length > 0, 'No destination category stack found');
+
+    // Filter to only nested stacks (AWS::CloudFormation::Stack) to retrieve category stacks
+    const sourceCategoryStacks = sourceStackResources.filter((stackResource) => stackResource.ResourceType === CFN_RESOURCE_STACK_TYPE);
+    const destinationCategoryStacks = destStackResources.filter((stackResource) => stackResource.ResourceType === CFN_RESOURCE_STACK_TYPE);
+    assert(sourceCategoryStacks && sourceCategoryStacks.length > 0, 'No source category stack found');
+    assert(destinationCategoryStacks && destinationCategoryStacks.length > 0, 'No destination category stack found');
+
     for (const { LogicalResourceId: sourceLogicalResourceId, PhysicalResourceId: sourcePhysicalResourceId } of sourceCategoryStacks) {
-      // find the valid, migrate-able categories in Gen1 stack
+      // Check if this stack's logical ID starts with a known category name (e.g., "authXYZ123", "storageDEF456")
       const category = CATEGORIES.find((category) => sourceLogicalResourceId?.startsWith(category));
       if (!category) continue;
+
       assert(sourcePhysicalResourceId);
       let destinationPhysicalResourceId: string | undefined;
       let userPoolGroupDestinationPhysicalResourceId: string | undefined;
@@ -237,11 +256,15 @@ class TemplateGenerator {
       }
       destinationPhysicalResourceId = correspondingCategoryStackInDestination.PhysicalResourceId;
 
+      // Gen1 can have TWO auth stacks (UserPool/IdentityPool + UserPoolGroups), Gen2 combines them
       let isUserPoolGroupStack = false;
+
       if (!isRevert && category === 'auth') {
+        // Forward migration: check if this Gen1 auth stack is specifically for UserPoolGroups
         const gen1AuthTypeStack = await this.getGen1AuthTypeStack(sourcePhysicalResourceId);
         isUserPoolGroupStack = gen1AuthTypeStack === 'auth-user-pool-group';
       } else if (isRevert && category === 'auth') {
+        // Reverse migration: need to find both auth stacks in destination (Gen1) since Gen2 combined them
         for (const {
           LogicalResourceId: destinationLogicalResourceId,
           PhysicalResourceId: _destinationPhysicalResourceId,
@@ -249,8 +272,10 @@ class TemplateGenerator {
           assert(_destinationPhysicalResourceId);
           const destinationIsAuthCategory = destinationLogicalResourceId?.startsWith('auth');
           if (!destinationIsAuthCategory) continue;
+
           const gen1AuthTypeStack = await this.getGen1AuthTypeStack(_destinationPhysicalResourceId);
           isUserPoolGroupStack = gen1AuthTypeStack === 'auth-user-pool-group';
+
           if (isUserPoolGroupStack) {
             userPoolGroupDestinationPhysicalResourceId = _destinationPhysicalResourceId;
           } else if (gen1AuthTypeStack === 'auth') {
@@ -261,6 +286,7 @@ class TemplateGenerator {
 
       assert(destinationPhysicalResourceId);
 
+      // Store the mapping in _categoryStackMap
       this.updateCategoryStackMap(
         category,
         sourcePhysicalResourceId,
@@ -272,6 +298,19 @@ class TemplateGenerator {
     }
   }
 
+  /**
+   * Stores a category mapping in _categoryStackMap.
+   *
+   * Handles the complexity of auth category where Gen1 has separate stacks for
+   * UserPool vs UserPoolGroups, but Gen2 combines them.
+   *
+   * @param category - The category name ('auth', 'storage', etc.)
+   * @param sourcePhysicalResourceId - The ARN/ID of the source (Gen1) nested stack
+   * @param destinationPhysicalResourceId - The ARN/ID of the destination (Gen2) nested stack
+   * @param isUserPoolGroupStack - True if this is specifically a UserPoolGroups stack (not main auth)
+   * @param isRevert - True if we're doing a reverse migration (Gen2 → Gen1)
+   * @param userPoolGroupDestinationPhysicalResourceId - For revert: the separate UserPoolGroups stack in Gen1
+   */
   private updateCategoryStackMap(
     category: CATEGORY | string,
     sourcePhysicalResourceId: string,
@@ -280,12 +319,18 @@ class TemplateGenerator {
     isRevert: boolean,
     userPoolGroupDestinationPhysicalResourceId?: string,
   ): void {
-    // User pool groups and the auth resources are part of the same stack in Gen2, but different in Gen1
-    // Hence, we need to also add auth category stack mapping in case of revert (moving back to Gen1).
+    // For non-UserPoolGroup stacks, or during revert (where we need both mappings), store the main category mapping
+    // Example: 'auth' → [gen1AuthStackId, gen2AuthStackId]
+    //          'storage' → [gen1StorageStackId, gen2StorageStackId]
     if (!isUserPoolGroupStack || isRevert) {
       this.categoryStackMap.set(category, [sourcePhysicalResourceId, destinationPhysicalResourceId]);
     }
+
+    // For UserPoolGroup stacks, store a separate mapping under 'auth-user-pool-group'
+    // This is needed because Gen1 has a separate stack for groups, but Gen2 combines them
     if (isUserPoolGroupStack) {
+      // During revert: use the separate Gen1 UserPoolGroups stack as destination
+      // During forward migration: use the same Gen2 auth stack (since Gen2 combines them)
       const destinationId =
         isRevert && userPoolGroupDestinationPhysicalResourceId ? userPoolGroupDestinationPhysicalResourceId : destinationPhysicalResourceId;
 
@@ -293,27 +338,43 @@ class TemplateGenerator {
     }
   }
 
+  /**
+   * Determines the type of a Gen1 auth stack by parsing its Description metadata.
+   *
+   * Gen1 Amplify stores JSON metadata in the stack's Description field, including a 'stackType'
+   * that indicates whether this is the main auth stack or the UserPoolGroups stack.
+   *
+   * @param stackName - The stack name/ARN to inspect
+   * @returns 'auth' for main auth stack, 'auth-user-pool-group' for groups stack, null if unknown
+   */
   private getGen1AuthTypeStack = async (stackName: string): Promise<CATEGORY | null> => {
     const describeStacksResponse = await this.cfnClient.send(
       new DescribeStacksCommand({
         StackName: stackName,
       }),
     );
+
     const stackDescription = describeStacksResponse?.Stacks?.[0]?.Description;
     assert(stackDescription);
+
     try {
+      // Gen1 stores metadata as JSON in the Description field
+      // Example: {"stackType": "auth-Cognito"} or {"stackType": "auth-Cognito-UserPool-Groups"}
       const parsedStackDescription = JSON.parse(stackDescription);
+
       if (typeof parsedStackDescription === 'object' && 'stackType' in parsedStackDescription) {
         switch (parsedStackDescription.stackType) {
-          case GEN1_USER_POOL_GROUPS_STACK_TYPE_DESCRIPTION:
+          case GEN1_USER_POOL_GROUPS_STACK_TYPE_DESCRIPTION: // 'auth-Cognito-UserPool-Groups'
             return 'auth-user-pool-group';
-          case GEN1_AUTH_STACK_TYPE_DESCRIPTION:
+          case GEN1_AUTH_STACK_TYPE_DESCRIPTION: // 'auth-Cognito'
             return 'auth';
         }
       }
     } catch (e) {
-      // unable to parse description. Fail silently.
+      // Description might not be valid JSON (older stacks or different format)
+      // Fail silently and return null
     }
+
     return null;
   };
 
@@ -336,23 +397,20 @@ class TemplateGenerator {
     categoryTemplateGenerator: CategoryTemplateGenerator<CFN_CATEGORY_TYPE>,
     sourceCategoryStackId: string,
   ): Promise<[CFNTemplate, Parameter[]] | undefined> {
-    let updatingGen1CategoryStack;
     try {
       const { newTemplate, parameters: gen1StackParameters } = await categoryTemplateGenerator.generateGen1PreProcessTemplate();
       assert(gen1StackParameters);
-      updatingGen1CategoryStack = ora(`Updating Gen 1 ${this.getStackCategoryName(category)} stack...`).start();
+      this.logger.info(`Updating Gen 1 ${this.getStackCategoryName(category)} stack...`);
 
       const gen1StackUpdateStatus = await tryUpdateStack(this.cfnClient, sourceCategoryStackId, gen1StackParameters, newTemplate);
 
       assert(gen1StackUpdateStatus === CFNStackStatus.UPDATE_COMPLETE, `Gen 1 stack is in an invalid state: ${gen1StackUpdateStatus}`);
-      updatingGen1CategoryStack.succeed(`Updated Gen 1 ${this.getStackCategoryName(category)} stack successfully`);
+      this.logger.info(`Updated Gen 1 ${this.getStackCategoryName(category)} stack successfully`);
 
       return [newTemplate, gen1StackParameters];
     } catch (e) {
       if (this.isNoResourcesError(e)) {
-        updatingGen1CategoryStack?.succeed(
-          `No resources found to move in Gen 1 ${this.getStackCategoryName(category)} stack. Skipping update.`,
-        );
+        this.logger.info(`No resources found to move in Gen 1 ${this.getStackCategoryName(category)} stack. Skipping update.`);
         return undefined;
       }
       throw e;
@@ -371,12 +429,12 @@ class TemplateGenerator {
     try {
       const { newTemplate, oldTemplate, parameters } = await categoryTemplateGenerator.generateGen2ResourceRemovalTemplate();
 
-      const updatingGen2CategoryStack = ora(`Updating Gen 2 ${this.getStackCategoryName(category)} stack...`).start();
+      this.logger.info(`Updating Gen 2 ${this.getStackCategoryName(category)} stack...`);
 
       const gen2StackUpdateStatus = await tryUpdateStack(this.cfnClient, destinationCategoryStackId, parameters ?? [], newTemplate);
 
       assert(gen2StackUpdateStatus === CFNStackStatus.UPDATE_COMPLETE, `Gen 2 stack is in an invalid state: ${gen2StackUpdateStatus}`);
-      updatingGen2CategoryStack.succeed(`Updated Gen 2 ${this.getStackCategoryName(category)} stack successfully`);
+      this.logger.info(`Updated Gen 2 ${this.getStackCategoryName(category)} stack successfully`);
 
       return { newTemplate, oldTemplate, parameters };
     } catch (e) {
@@ -420,8 +478,8 @@ class TemplateGenerator {
     resourcesToRefactor: CFN_CATEGORY_TYPE[],
     customResourceMap?: ResourceMapping[],
   ): CategoryTemplateGenerator<CFN_CATEGORY_TYPE> {
-    assert(this.region);
     return new CategoryTemplateGenerator(
+      this.logger,
       sourceStackId,
       destinationStackId,
       this.region,
@@ -549,9 +607,9 @@ class TemplateGenerator {
         }
       }
 
-      const refactorResources = ora(
+      this.logger.info(
         `Moving ${this.getStackCategoryName(category)} resources from ${this.getSourceToDestinationMessage(isRevert)} stack...`,
-      ).start();
+      );
       const { success, failedRefactorMetadata } = await this.refactorResources(
         logicalIdMappingForRefactor,
         sourceCategoryStackId,
@@ -562,7 +620,7 @@ class TemplateGenerator {
         destinationTemplateForRefactor,
       );
       if (!success) {
-        refactorResources.fail(
+        this.logger.info(
           `Moving ${this.getStackCategoryName(category)} resources from ${this.getSourceToDestinationMessage(
             isRevert,
           )} stack failed. Reason: ${failedRefactorMetadata?.reason}. Status: ${failedRefactorMetadata?.status}. RefactorId: ${
@@ -575,19 +633,10 @@ class TemplateGenerator {
         }
         return false;
       } else {
-        refactorResources.succeed(
+        this.logger.info(
           `Moved ${this.getStackCategoryName(category)} resources from ${this.getSourceToDestinationMessage(isRevert)} stack successfully`,
         );
       }
-    }
-    if (!isRevert) {
-      const migrationReadMeGenerator = new MigrationReadmeGenerator({
-        path: `${TEMPLATES_DIR}`,
-        categories: [...this.categoryStackMap.keys()],
-        hasOAuthEnabled,
-      });
-      await migrationReadMeGenerator.initialize();
-      await migrationReadMeGenerator.renderStep1();
     }
     return true;
   }
@@ -636,10 +685,10 @@ class TemplateGenerator {
     gen2StackParameters: Parameter[] | undefined,
     oldGen2Template: CFNTemplate,
   ) {
-    const rollingBackGen2Stack = ora(`Rolling back Gen 2 ${this.getStackCategoryName(category)} stack...`).start();
+    this.logger.info(`Rolling back Gen 2 ${this.getStackCategoryName(category)} stack...`);
     const gen2StackUpdateStatus = await tryUpdateStack(this.cfnClient, gen2CategoryStackId, gen2StackParameters ?? [], oldGen2Template);
     assert(gen2StackUpdateStatus === CFNStackStatus.UPDATE_COMPLETE, `Gen 2 Stack is in a failed state: ${gen2StackUpdateStatus}.`);
-    rollingBackGen2Stack.succeed(`Rolled back Gen 2 ${this.getStackCategoryName(category)} stack successfully`);
+    this.logger.info(`Rolled back Gen 2 ${this.getStackCategoryName(category)} stack successfully`);
   }
 
   private async generateRefactorTemplatesForRevert(

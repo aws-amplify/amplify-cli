@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Discus - Thoughtful Discussions</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    /* Header */
+    .header {
+      max-width: 1200px;
+      margin: 0 auto 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: white;
+    }
+    .logo-icon {
+      width: 50px;
+      height: 50px;
+      background: white;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    .logo-text {
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -1px;
+    }
+    .user-section {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    .avatar {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: white;
+      font-size: 14px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      flex-shrink: 0;
+    }
+    .signout-btn {
+      background: rgba(255,255,255,0.2);
+      backdrop-filter: blur(10px);
+      color: white;
+      border: 2px solid rgba(255,255,255,0.3);
+      padding: 10px 24px;
+      border-radius: 25px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+    .signout-btn:hover {
+      background: rgba(255,255,255,0.3);
+      transform: translateY(-2px);
+    }
+    
+    /* Container */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      overflow: hidden;
+      min-height: 600px;
+    }
+    
+    /* Auth Pages */
+    .auth-page {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    .auth-box {
+      background: white;
+      padding: 50px;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      width: 100%;
+      max-width: 450px;
+    }
+    .auth-logo {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .auth-logo-icon {
+      width: 70px;
+      height: 70px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      margin-bottom: 15px;
+    }
+    .auth-box h2 {
+      font-size: 28px;
+      margin-bottom: 10px;
+      text-align: center;
+      color: #2d3748;
+    }
+    .auth-subtitle {
+      text-align: center;
+      color: #718096;
+      margin-bottom: 30px;
+      font-size: 15px;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 15px;
+      margin: 10px 0;
+      background: #f7fafc;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      color: #2d3748;
+      font-size: 15px;
+      transition: all 0.3s;
+    }
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: #667eea;
+      background: white;
+    }
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+      font-family: inherit;
+    }
+    button {
+      width: 100%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 15px;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 15px;
+    }
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+    }
+    .link-text {
+      text-align: center;
+      margin-top: 25px;
+      color: #718096;
+      font-size: 14px;
+    }
+    .link-text a {
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .link-text a:hover {
+      text-decoration: underline;
+    }
+    
+    /* Navigation */
+    .nav-tabs {
+      display: flex;
+      background: #f7fafc;
+      border-bottom: 2px solid #e2e8f0;
+    }
+    .nav-tab {
+      flex: 1;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      font-weight: 600;
+      color: #718096;
+      transition: all 0.3s;
+      border-bottom: 3px solid transparent;
+      background: none;
+      border-radius: 0;
+      margin: 0;
+    }
+    .nav-tab:hover {
+      color: #667eea;
+      background: white;
+      transform: none;
+      box-shadow: none;
+    }
+    .nav-tab.active {
+      color: #667eea;
+      border-bottom-color: #667eea;
+      background: white;
+    }
+    
+    /* Content Area */
+    .content-area {
+      padding: 30px;
+      min-height: 500px;
+    }
+    
+    /* Discussion Cards */
+    .discussion-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+    .discussion-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 30px;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: all 0.3s;
+      color: white;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .discussion-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 30px rgba(102, 126, 234, 0.4);
+    }
+    .discussion-icon {
+      font-size: 40px;
+      margin-bottom: 15px;
+    }
+    .discussion-name {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .discussion-stats {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+    
+    /* Topic List */
+    .topic-list {
+      margin-top: 20px;
+    }
+    .topic-item {
+      background: #f7fafc;
+      padding: 25px;
+      margin-bottom: 15px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s;
+      border-left: 4px solid #667eea;
+    }
+    .topic-item:hover {
+      background: white;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      transform: translateX(5px);
+    }
+    .topic-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .topic-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #2d3748;
+    }
+    .topic-meta {
+      color: #718096;
+      font-size: 14px;
+    }
+    
+    /* Post Feed */
+    .post-feed {
+      margin-top: 20px;
+    }
+    .post-card {
+      background: white;
+      border: 2px solid #e2e8f0;
+      padding: 25px;
+      margin-bottom: 20px;
+      border-radius: 12px;
+      transition: all 0.3s;
+    }
+    .post-card:hover {
+      border-color: #667eea;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+    }
+    .post-header {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+    .post-content-area {
+      flex: 1;
+    }
+    .post-author {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .username {
+      font-weight: 700;
+      color: #2d3748;
+    }
+    .timestamp {
+      color: #a0aec0;
+      font-size: 14px;
+    }
+    .post-text {
+      color: #4a5568;
+      line-height: 1.7;
+      margin-bottom: 15px;
+      white-space: pre-wrap;
+      font-size: 15px;
+    }
+    .post-actions {
+      display: flex;
+      gap: 25px;
+      padding-top: 15px;
+      border-top: 1px solid #e2e8f0;
+    }
+    .action-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      color: #718096;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.2s;
+      background: none;
+      border: none;
+      padding: 0;
+      width: auto;
+      margin: 0;
+    }
+    .action-btn:hover {
+      color: #667eea;
+      transform: scale(1.05);
+    }
+    .action-btn.liked {
+      color: #f56565;
+    }
+    
+    /* Compose Box */
+    .compose-box {
+      background: #f7fafc;
+      padding: 25px;
+      border-radius: 12px;
+      margin-bottom: 30px;
+      border: 2px solid #e2e8f0;
+    }
+    .compose-header {
+      font-size: 18px;
+      font-weight: 700;
+      color: #2d3748;
+      margin-bottom: 15px;
+    }
+    .compose-textarea {
+      width: 100%;
+      min-height: 100px;
+      padding: 15px;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      font-size: 15px;
+      resize: vertical;
+      background: white;
+      margin-bottom: 15px;
+    }
+    .compose-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .char-count {
+      color: #718096;
+      font-size: 14px;
+    }
+    .submit-btn {
+      width: auto;
+      padding: 12px 30px;
+      margin: 0;
+    }
+    
+    /* Back Button */
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #f7fafc;
+      color: #667eea;
+      border: 2px solid #e2e8f0;
+      padding: 10px 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      width: auto;
+      transition: all 0.3s;
+    }
+    .back-btn:hover {
+      background: white;
+      border-color: #667eea;
+      transform: translateX(-3px);
+    }
+    
+    /* Comments */
+    .comments-section {
+      margin-top: 30px;
+      padding-top: 30px;
+      border-top: 2px solid #e2e8f0;
+    }
+    .comments-header {
+      font-size: 20px;
+      font-weight: 700;
+      color: #2d3748;
+      margin-bottom: 20px;
+    }
+    .comment {
+      display: flex;
+      gap: 15px;
+      padding: 20px;
+      background: #f7fafc;
+      border-radius: 12px;
+      margin-bottom: 15px;
+    }
+    .comment-content {
+      flex: 1;
+    }
+    .comment-text {
+      color: #4a5568;
+      line-height: 1.6;
+      margin-bottom: 10px;
+    }
+    .delete-btn {
+      background: transparent;
+      color: #f56565;
+      border: 2px solid #f56565;
+      padding: 6px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      width: auto;
+      margin: 0;
+    }
+    .delete-btn:hover {
+      background: #fff5f5;
+      transform: none;
+      box-shadow: none;
+    }
+    
+    /* Empty State */
+    .empty {
+      text-align: center;
+      padding: 60px 20px;
+      color: #a0aec0;
+    }
+    .empty-icon {
+      font-size: 60px;
+      margin-bottom: 15px;
+    }
+    .empty-text {
+      font-size: 18px;
+      font-weight: 600;
+    }
+    
+    /* Utilities */
+    .hidden { display: none; }
+    
+    /* Page Header */
+    .page-header {
+      margin-bottom: 25px;
+    }
+    .page-title {
+      font-size: 32px;
+      font-weight: 800;
+      color: #2d3748;
+      margin-bottom: 8px;
+    }
+    .page-subtitle {
+      color: #718096;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Auth Pages -->
+  <div id="signinPage" class="auth-page">
+    <div class="auth-box">
+      <div class="auth-logo">
+        <div class="auth-logo-icon">💬</div>
+        <h2>Welcome to Discus</h2>
+        <p class="auth-subtitle">Join thoughtful discussions</p>
+      </div>
+      <input id="signinPhone" placeholder="Phone number (+1234567890)" />
+      <input id="signinPassword" placeholder="Password" type="password" />
+      <button id="signinBtn">Sign In</button>
+      <div class="link-text">
+        Don't have an account? <a id="goToSignup">Sign up</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="signupPage" class="auth-page hidden">
+    <div class="auth-box">
+      <div class="auth-logo">
+        <div class="auth-logo-icon">💬</div>
+        <h2>Join Discus</h2>
+        <p class="auth-subtitle">Start meaningful conversations</p>
+      </div>
+      <input id="signupPhone" placeholder="Phone number (+1234567890)" />
+      <input id="signupEmail" placeholder="Email" type="email" />
+      <input id="signupPassword" placeholder="Password" type="password" />
+      <button id="signupBtn">Sign Up</button>
+      <div class="link-text">
+        Already have an account? <a id="goToSignin">Sign in</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="confirmPage" class="auth-page hidden">
+    <div class="auth-box">
+      <div class="auth-logo">
+        <div class="auth-logo-icon">✉️</div>
+        <h2>Confirm Your Account</h2>
+        <p class="auth-subtitle">Enter the code sent to your phone</p>
+      </div>
+      <input id="confirmPhone" placeholder="Phone number" />
+      <input id="confirmCode" placeholder="Confirmation code" />
+      <button id="confirmBtn">Confirm</button>
+      <div class="link-text">
+        <a id="backToSignin">Back to sign in</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main App -->
+  <div id="mainApp" class="hidden">
+    <div class="header">
+      <div class="logo">
+        <div class="logo-icon">💬</div>
+        <div class="logo-text">Discus</div>
+      </div>
+      <div class="user-section">
+        <button class="signout-btn" id="activityBtn" style="margin-right: 10px;">📊 Activity</button>
+        <div class="avatar" id="userAvatar">U</div>
+        <button class="signout-btn" id="signoutBtn">Sign Out</button>
+      </div>
+    </div>
+
+    <div class="container">
+      <!-- Discussions Page -->
+      <div id="discussionsPage">
+        <div class="content-area">
+          <div class="page-header">
+            <h1 class="page-title">Discussions</h1>
+            <p class="page-subtitle">Choose a discussion to explore</p>
+          </div>
+          <div class="discussion-grid" id="discussionsList"></div>
+        </div>
+      </div>
+
+      <!-- Topics Page -->
+    <div id="topicsPage" class="hidden">
+      <div class="content-area">
+        <button class="back-btn" id="backToDiscussions">← Back to Discussions</button>
+        <div class="page-header">
+          <h1 class="page-title" id="discussionTitle"></h1>
+          <p class="page-subtitle">Select a topic to view posts</p>
+        </div>
+        
+        <div class="compose-box">
+          <div class="compose-header">Create New Topic</div>
+          <input id="topicNameInput" placeholder="Topic name..." style="width: 100%; padding: 15px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 15px; background: white; margin-bottom: 15px;" />
+          <button class="submit-btn" id="createTopicBtn" style="width: auto; padding: 12px 30px; margin: 0;">Create Topic</button>
+        </div>
+        
+        <div class="topic-list" id="topicsList"></div>
+      </div>
+    </div>
+
+
+      <!-- Posts Page -->
+      <div id="postsPage" class="hidden">
+        <div class="content-area">
+          <button class="back-btn" id="backToTopics">← Back to Topics</button>
+          <div class="page-header">
+            <h1 class="page-title" id="topicTitle"></h1>
+            <p class="page-subtitle">Share your thoughts</p>
+          </div>
+          
+          <div class="compose-box">
+            <div class="compose-header">Create a Post</div>
+            <textarea id="postTextarea" class="compose-textarea" placeholder="What's on your mind?"></textarea>
+            <div class="compose-footer">
+              <span class="char-count" id="postCharCount">0 / 500</span>
+              <button class="submit-btn" id="createPostBtn">Post</button>
+            </div>
+          </div>
+          
+          <div class="post-feed" id="postsFeed"></div>
+        </div>
+      </div>
+
+      <!-- Activity Page -->
+      <div id="activityPage" class="hidden">
+        <div class="content-area">
+          <button class="back-btn" id="backToDiscussionsFromActivity">← Back</button>
+          <div class="page-header">
+            <h1 class="page-title">📊 Activity</h1>
+            <p class="page-subtitle">Your recent actions</p>
+          </div>
+          <div id="activityList"></div>
+        </div>
+      </div>
+
+      <!-- Post Detail Page -->
+      <div id="postDetailPage" class="hidden">
+        <div class="content-area">
+          <button class="back-btn" id="backToPosts">← Back to Posts</button>
+          <div id="postDetail"></div>
+          
+          <div class="comments-section">
+            <div class="comments-header">Comments</div>
+            <div class="compose-box">
+              <textarea id="commentTextarea" class="compose-textarea" placeholder="Add a comment..." style="min-height: 80px;"></textarea>
+              <div class="compose-footer">
+                <span class="char-count" id="commentCharCount">0 / 300</span>
+                <button class="submit-btn" id="addCommentBtn">Comment</button>
+              </div>
+            </div>
+            <div id="commentsList"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

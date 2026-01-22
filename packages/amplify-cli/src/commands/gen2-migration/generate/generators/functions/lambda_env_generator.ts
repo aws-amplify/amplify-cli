@@ -1,0 +1,144 @@
+import ts from 'typescript';
+
+const factory = ts.factory;
+
+// Maps Gen1 environment variable patterns to Gen2 backend resource paths
+// Handles both GraphQL data model tables (API_*TABLE_*) and standalone DynamoDB tables (STORAGE_*)
+const ENV_VAR_PATTERNS = {
+  'API_.*_GRAPHQLAPIENDPOINTOUTPUT': 'data.graphqlUrl',
+  'API_.*_GRAPHQLAPIIDOUTPUT': 'data.apiId',
+  'API_.*_GRAPHQLAPIKEYOUTPUT': 'data.apiKey!',
+  'API_.*TABLE_ARN': 'data.resources.tables[{table}].tableArn',
+  'API_.*TABLE_NAME': 'data.resources.tables[{table}].tableName',
+  'AUTH_.*_USERPOOLID': 'auth.resources.userPool.userPoolId',
+  'STORAGE_.*_ARN': '{table}.tableArn',
+  'STORAGE_.*_NAME': '{table}.tableName',
+  'STORAGE_.*_STREAMARN': '{table}.tableStreamArn!',
+  'STORAGE_.*_BUCKETNAME': 'storage.resources.bucket.bucketName',
+  'FUNCTION_.*_NAME': '{function}.resources.lambda.functionName',
+};
+
+/**
+ * Generates escape hatch statements for Lambda function environment variables.
+ * Creates backend.functionName.addEnvironment() calls for Gen1 env vars that reference other Amplify resources.
+ *
+ * @param functionName - The Gen2 function resource name
+ * @param envVars - Environment variables from the Gen1 Lambda function
+ * @returns Array of TypeScript statements for escape hatches
+ */
+// Current assumptions - Model names are generated in pascal case for codegen currently & resource names in small for env variables
+// Need to extract name from - "Fn::Sub": "${apidiscussionsGraphQLAPIIdOutput}:GetAtt:CommentTable:Name"
+export function generateLambdaEnvVars(functionName: string, envVars: Record<string, string>): ts.ExpressionStatement[] {
+  const statements: ts.ExpressionStatement[] = [];
+
+  for (const [envVar] of Object.entries(envVars)) {
+    for (const [pattern, backendPath] of Object.entries(ENV_VAR_PATTERNS)) {
+      if (new RegExp(`^${pattern}$`).test(envVar)) {
+        let path = backendPath;
+        let isDirect = false;
+        // Extract table name from environment variable for DynamoDB resources
+        if (path.includes('{table}')) {
+          let tableName: string | undefined;
+
+          if (envVar.startsWith('API_') && envVar.includes('TABLE_')) {
+            // API_DISCUSSIONS_COMMENTTABLE_ARN -> extract 'COMMENT' from 'COMMENTTABLE' -> 'Comment'
+            const apiMatch = envVar.match(/API_.*_(.+?)TABLE_/);
+            if (apiMatch) {
+              // Convert to PascalCase for GraphQL model names: COMMENT -> Comment
+              const rawName = apiMatch[1];
+              tableName = rawName.charAt(0).toUpperCase() + rawName.slice(1).toLowerCase();
+            }
+          } else if (envVar.startsWith('STORAGE_')) {
+            // STORAGE_TODOTABLE_ARN -> extract 'TODO' from 'TODOTABLE'
+            const storageMatch = envVar.match(/STORAGE_(.+?)TABLE_/);
+            if (storageMatch) {
+              tableName = storageMatch[1].toLowerCase();
+            } else {
+              // STORAGE_MYTABLE_ARN -> extract 'MYTABLE'
+              const fallbackMatch = envVar.match(/STORAGE_(.+?)_/);
+              if (fallbackMatch) {
+                tableName = fallbackMatch[1].toLowerCase();
+              }
+            }
+          }
+
+          if (tableName) {
+            path = path.replace('{table}', tableName);
+            // API tables use backend references, STORAGE tables use direct CDK construct references
+            isDirect = envVar.startsWith('STORAGE_');
+          }
+        }
+
+        // Extract function name from environment variable for function references
+        if (path.includes('{function}')) {
+          const functionMatch = envVar.match(/FUNCTION_(.+?)_NAME/);
+          if (functionMatch) {
+            path = path.replace('{function}', functionMatch[1].toLowerCase());
+            // Functions use backend reference, not direct reference
+          }
+        }
+
+        let expression: ts.Expression;
+        if (isDirect) {
+          // Direct variable reference for standalone CDK constructs
+          const pathParts = path.split('.');
+          expression = factory.createIdentifier(pathParts[0]);
+          for (let i = 1; i < pathParts.length; i++) {
+            const part = pathParts[i];
+            if (part.endsWith('!')) {
+              // Handle TypeScript non-null assertion operator
+              expression = factory.createNonNullExpression(
+                factory.createPropertyAccessExpression(expression, factory.createIdentifier(part.slice(0, -1))),
+              );
+            } else {
+              expression = factory.createPropertyAccessExpression(expression, factory.createIdentifier(part));
+            }
+          }
+        } else {
+          // Backend reference for resources in defineBackend()
+          // Example: backend.data.graphqlUrl (references resources through the backend object)
+          const pathParts = ['backend', ...path.split('.')];
+          expression = factory.createIdentifier(pathParts[0]);
+          for (let i = 1; i < pathParts.length; i++) {
+            const part = pathParts[i];
+            if (part.endsWith('!')) {
+              // Handle TypeScript non-null assertion operator
+              expression = factory.createNonNullExpression(
+                factory.createPropertyAccessExpression(expression, factory.createIdentifier(part.slice(0, -1))),
+              );
+            } else if (part.includes('[') && part.includes(']')) {
+              // Handle bracket notation: tables[comment] -> backend.data.resources.tables["comment"]
+              const bracketMatch = part.match(/(.+?)\[(.+?)\](.*)/);
+              if (bracketMatch) {
+                const [, beforeBracket, insideBracket, afterBracket] = bracketMatch;
+                expression = factory.createPropertyAccessExpression(expression, factory.createIdentifier(beforeBracket));
+                expression = factory.createElementAccessExpression(expression, factory.createStringLiteral(insideBracket));
+                if (afterBracket) {
+                  expression = factory.createPropertyAccessExpression(expression, factory.createIdentifier(afterBracket));
+                }
+              }
+            } else {
+              expression = factory.createPropertyAccessExpression(expression, factory.createIdentifier(part));
+            }
+          }
+        }
+
+        statements.push(
+          factory.createExpressionStatement(
+            factory.createCallExpression(
+              factory.createPropertyAccessExpression(
+                factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier(functionName)),
+                factory.createIdentifier('addEnvironment'),
+              ),
+              undefined,
+              [factory.createStringLiteral(envVar), expression],
+            ),
+          ),
+        );
+        break;
+      }
+    }
+  }
+
+  return statements;
+}

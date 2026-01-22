@@ -1,5 +1,11 @@
 import CategoryTemplateGenerator from '../../../../../commands/gen2-migration/refactor/generators/category-template-generator';
-import { CFN_AUTH_TYPE, CFN_PSEUDO_PARAMETERS_REF, CFN_S3_TYPE, CFNTemplate } from '../../../../../commands/gen2-migration/refactor/types';
+import {
+  CFN_AUTH_TYPE,
+  CFN_PSEUDO_PARAMETERS_REF,
+  CFN_S3_TYPE,
+  CFN_DYNAMODB_TYPE,
+  CFNTemplate,
+} from '../../../../../commands/gen2-migration/refactor/types';
 import {
   CloudFormationClient,
   DescribeStacksCommand,
@@ -15,6 +21,7 @@ import {
   DescribeIdentityProviderCommand,
   DescribeIdentityProviderResponse,
 } from '@aws-sdk/client-cognito-identity-provider';
+import { Logger } from '../../../../../commands/gen2-migration';
 
 // We use 'stub' to indicate fake implementation. If we are asserting a fake, it becomes a 'mock'.
 // Ref: https://learn.microsoft.com/en-us/dotnet/core/testing/unit-testing-best-practices#lets-speak-the-same-language
@@ -33,6 +40,12 @@ const GEN1_S3_BUCKET_LOGICAL_ID = 'S3Bucket';
 const GEN2_S3_BUCKET_LOGICAL_ID = 'Gen2S3Bucket';
 const GEN1_ANOTHER_S3_BUCKET_LOGICAL_ID = 'MyOtherS3Bucket';
 const GEN2_ANOTHER_S3_BUCKET_LOGICAL_ID = 'MyOtherGen2S3Bucket';
+const GEN1_DDB_TABLE_LOGICAL_ID = 'DynamoDBTable';
+const GEN2_DDB_TABLE_LOGICAL_ID = 'Gen2DynamoDBTable';
+const GEN1_DDB_STORAGE_CATEGORY_STACK_NAME = 'amplify-testddb-dev-12345-storage-ABCDE';
+const GEN1_DDB_CATEGORY_STACK_ID = `arn:aws:cloudformation:us-east-1:1234567890:stack/${GEN1_DDB_STORAGE_CATEGORY_STACK_NAME}/12345`;
+const GEN2_DDB_CATEGORY_STACK_ID =
+  'arn:aws:cloudformation:us-east-1:1234567890:stack/amplify-mygen2app-test-sandbox-12345-storage-DDB/12345';
 const MOCK_APP_ID = 'd123456';
 const ENV_NAME = 'test';
 const GEN1_AUTH_USER_POOL_LOGICAL_ID = 'UserPool';
@@ -391,6 +404,109 @@ const oldGen2TemplateWithoutS3Bucket = JSON.parse(JSON.stringify(oldGen2Template
 delete oldGen2TemplateWithoutS3Bucket.Resources[GEN2_S3_BUCKET_LOGICAL_ID];
 delete oldGen2TemplateWithoutS3Bucket.Resources[GEN2_ANOTHER_S3_BUCKET_LOGICAL_ID];
 
+// DynamoDB Templates - Shared resources
+const DDB_TABLE_SCHEMA = {
+  AttributeDefinitions: [{ AttributeName: 'id', AttributeType: 'S' }],
+  KeySchema: [{ AttributeName: 'id', KeyType: 'HASH' }],
+};
+
+const createDDBTablePolicy = (resource: unknown) => ({
+  Type: 'AWS::IAM::Policy',
+  Properties: {
+    PolicyName: 'MyDDBTablePolicy',
+    PolicyDocument: {
+      Statement: [{ Effect: 'Allow', Action: 'dynamodb:GetItem', Resource: resource }],
+    },
+  },
+});
+
+const DDB_TABLE_ARN_RESOLVED = 'arn:aws:dynamodb:us-east-1:1234567890:table/my-test-table-dev';
+
+const oldGen1DDBTemplate: CFNTemplate = {
+  ...oldGen1Template,
+  Description: 'DynamoDB Test template',
+  Outputs: {
+    TableNameOutputRef: { Description: 'Table name', Value: { Ref: GEN1_DDB_TABLE_LOGICAL_ID } },
+    UserPoolId: { Description: 'User pool id', Value: 'userPoolId' },
+  },
+  Resources: {
+    [GEN1_DDB_TABLE_LOGICAL_ID]: {
+      Type: CFN_DYNAMODB_TYPE.Table,
+      Properties: {
+        TableName: { 'Fn::Join': ['-', ['my-test-table', { Ref: 'Environment' }, { Ref: CFN_PSEUDO_PARAMETERS_REF.StackName }]] },
+        ...DDB_TABLE_SCHEMA,
+      },
+    },
+    MyDDBTablePolicy: createDDBTablePolicy({ 'Fn::GetAtt': [GEN1_DDB_TABLE_LOGICAL_ID, 'Arn'] }),
+  },
+};
+
+const newGen1DDBTemplate: CFNTemplate = {
+  ...oldGen1DDBTemplate,
+  Outputs: {
+    TableNameOutputRef: { Description: 'Table name', Value: 'my-test-table-dev' },
+    UserPoolId: { Description: 'User pool id', Value: 'userPoolId' },
+  },
+  Resources: {
+    [GEN1_DDB_TABLE_LOGICAL_ID]: {
+      Type: CFN_DYNAMODB_TYPE.Table,
+      Properties: {
+        TableName: { 'Fn::Join': ['-', ['my-test-table', 'dev', GEN1_DDB_STORAGE_CATEGORY_STACK_NAME]] },
+        ...DDB_TABLE_SCHEMA,
+      },
+    },
+    MyDDBTablePolicy: createDDBTablePolicy(DDB_TABLE_ARN_RESOLVED),
+  },
+};
+
+const oldGen2DDBTemplate: CFNTemplate = {
+  ...oldGen1DDBTemplate,
+  Outputs: {
+    TableNameOutputRef: { Description: 'Table name', Value: { Ref: GEN2_DDB_TABLE_LOGICAL_ID } },
+    UserPoolId: { Description: 'User pool id', Value: 'userPoolId' },
+  },
+  Resources: {
+    MyDDBTablePolicy: createDDBTablePolicy({ 'Fn::GetAtt': [GEN2_DDB_TABLE_LOGICAL_ID, 'Arn'] }),
+    [GEN2_DDB_TABLE_LOGICAL_ID]: {
+      Type: CFN_DYNAMODB_TYPE.Table,
+      Properties: {
+        TableName: { 'Fn::Join': ['-', ['my-test-table', { Ref: 'Environment' }]] },
+        ...DDB_TABLE_SCHEMA,
+      },
+    },
+  },
+};
+
+const newGen2DDBTemplate: CFNTemplate = {
+  ...oldGen2DDBTemplate,
+  Outputs: {
+    TableNameOutputRef: { Description: 'Table name', Value: 'my-test-table-dev' },
+    UserPoolId: { Description: 'User pool id', Value: 'userPoolId' },
+  },
+  Resources: {
+    MyDDBTablePolicy: createDDBTablePolicy(DDB_TABLE_ARN_RESOLVED),
+  },
+};
+
+const refactoredGen1DDBTemplate: CFNTemplate = {
+  ...newGen1DDBTemplate,
+  Resources: { MyDDBTablePolicy: createDDBTablePolicy(DDB_TABLE_ARN_RESOLVED) },
+};
+
+const refactoredGen2DDBTemplate: CFNTemplate = {
+  ...newGen2DDBTemplate,
+  Resources: {
+    MyDDBTablePolicy: createDDBTablePolicy(DDB_TABLE_ARN_RESOLVED),
+    [GEN2_DDB_TABLE_LOGICAL_ID]: {
+      Type: CFN_DYNAMODB_TYPE.Table,
+      Properties: {
+        TableName: { 'Fn::Join': ['-', ['my-test-table', 'dev', GEN1_DDB_STORAGE_CATEGORY_STACK_NAME]] },
+        ...DDB_TABLE_SCHEMA,
+      },
+    },
+  },
+};
+
 const oldGen1AuthTemplate: CFNTemplate = {
   AWSTemplateFormatVersion: '2010-09-09',
   Description: 'Test template',
@@ -592,6 +708,11 @@ const generateDescribeStacksResponse = (command: DescribeStacksCommand): Describ
           Description: 'My bucket',
         },
         {
+          OutputKey: 'TableNameOutputRef',
+          OutputValue: 'my-test-table-dev',
+          Description: 'My table',
+        },
+        {
           OutputKey: 'UserPoolId',
           OutputValue: 'userPoolId',
           Description: 'My user pool',
@@ -619,6 +740,14 @@ const generateGetTemplateResponse = (command: GetTemplateCommand): GetTemplateOu
     }
     case GEN2_AUTH_CATEGORY_STACK_ID: {
       templateBody = JSON.stringify(oldGen2AuthTemplate);
+      break;
+    }
+    case GEN1_DDB_CATEGORY_STACK_ID: {
+      templateBody = JSON.stringify(oldGen1DDBTemplate);
+      break;
+    }
+    case GEN2_DDB_CATEGORY_STACK_ID: {
+      templateBody = JSON.stringify(oldGen2DDBTemplate);
       break;
     }
     default:
@@ -661,14 +790,29 @@ jest.mock('@aws-sdk/client-cloudformation', () => {
           } else if (command instanceof GetTemplateCommand) {
             return Promise.resolve(generateGetTemplateResponse(command));
           } else if (command instanceof DescribeStackResourcesCommand) {
+            const stackName = command.input.StackName;
+            let logicalId: string;
+            let resourceType: string;
+
+            switch (stackName) {
+              case GEN1_DDB_CATEGORY_STACK_ID:
+              case GEN2_DDB_CATEGORY_STACK_ID:
+                logicalId = GEN1_DDB_TABLE_LOGICAL_ID;
+                resourceType = CFN_DYNAMODB_TYPE.Table;
+                break;
+              default:
+                logicalId = GEN1_S3_BUCKET_LOGICAL_ID;
+                resourceType = CFN_S3_TYPE.Bucket;
+            }
+
             return Promise.resolve({
               StackResources: [
                 {
-                  StackId: command.input.StackName,
-                  StackName: command.input.StackName,
-                  LogicalResourceId: GEN1_S3_BUCKET_LOGICAL_ID,
-                  PhysicalResourceId: GEN1_S3_BUCKET_LOGICAL_ID,
-                  ResourceType: CFN_S3_TYPE.Bucket,
+                  StackId: stackName,
+                  StackName: stackName,
+                  LogicalResourceId: logicalId,
+                  PhysicalResourceId: logicalId,
+                  ResourceType: resourceType,
                   ResourceStatus: 'CREATE_COMPLETE',
                   Timestamp: new Date(),
                 },
@@ -716,6 +860,7 @@ jest.mock('@aws-sdk/client-ssm', () => {
 
 describe('CategoryTemplateGenerator', () => {
   const s3TemplateGenerator = new CategoryTemplateGenerator(
+    new Logger('mock', 'mock', 'mock'),
     GEN1_CATEGORY_STACK_ID,
     GEN2_CATEGORY_STACK_ID,
     'us-east-1',
@@ -729,6 +874,7 @@ describe('CategoryTemplateGenerator', () => {
   );
 
   const s3TemplateGeneratorWithPredicate = new CategoryTemplateGenerator(
+    new Logger('mock', 'mock', 'mock'),
     GEN1_CATEGORY_STACK_ID,
     GEN2_CATEGORY_STACK_ID,
     'us-east-1',
@@ -744,6 +890,7 @@ describe('CategoryTemplateGenerator', () => {
   );
 
   const noGen1ResourcesToMoveS3TemplateGenerator = new CategoryTemplateGenerator(
+    new Logger('mock', 'mock', 'mock'),
     GEN1_CATEGORY_STACK_ID,
     GEN2_CATEGORY_STACK_ID,
     'us-east-1',
@@ -757,6 +904,7 @@ describe('CategoryTemplateGenerator', () => {
   );
 
   const authTemplateGenerator = new CategoryTemplateGenerator(
+    new Logger('mock', 'mock', 'mock'),
     GEN1_AUTH_CATEGORY_STACK_ID,
     GEN2_AUTH_CATEGORY_STACK_ID,
     'us-east-1',
@@ -767,6 +915,20 @@ describe('CategoryTemplateGenerator', () => {
     MOCK_APP_ID,
     ENV_NAME,
     [CFN_AUTH_TYPE.UserPoolClient, CFN_AUTH_TYPE.UserPool, CFN_AUTH_TYPE.IdentityPool, CFN_AUTH_TYPE.UserPoolDomain],
+  );
+
+  const ddbTemplateGenerator = new CategoryTemplateGenerator(
+    new Logger('mock', 'mock', 'mock'),
+    GEN1_DDB_CATEGORY_STACK_ID,
+    GEN2_DDB_CATEGORY_STACK_ID,
+    'us-east-1',
+    '1234567890',
+    new CloudFormationClient(),
+    new SSMClient(),
+    new CognitoIdentityProviderClient(),
+    MOCK_APP_ID,
+    ENV_NAME,
+    [CFN_DYNAMODB_TYPE.Table],
   );
 
   it('should preprocess gen1 template prior to refactor', async () => {
@@ -887,5 +1049,18 @@ describe('CategoryTemplateGenerator', () => {
     await expect(noGen1ResourcesToMoveS3TemplateGenerator.generateGen2ResourceRemovalTemplate()).rejects.toThrowError(
       'No resources to remove in Gen2 stack.',
     );
+  });
+
+  it('should refactor DynamoDB gen1 resources into gen2 stack', async () => {
+    const { newTemplate: processedGen1Template } = await ddbTemplateGenerator.generateGen1PreProcessTemplate();
+    const { newTemplate: processedGen2Template } = await ddbTemplateGenerator.generateGen2ResourceRemovalTemplate();
+    const { sourceTemplate, destinationTemplate, logicalIdMapping } = ddbTemplateGenerator.generateStackRefactorTemplates(
+      processedGen1Template,
+      processedGen2Template,
+    );
+
+    expect(sourceTemplate).toEqual<CFNTemplate>(refactoredGen1DDBTemplate);
+    expect(destinationTemplate).toEqual<CFNTemplate>(refactoredGen2DDBTemplate);
+    expect(logicalIdMapping).toEqual(new Map<string, string>([[GEN1_DDB_TABLE_LOGICAL_ID, GEN2_DDB_TABLE_LOGICAL_ID]]));
   });
 });

@@ -157,6 +157,10 @@ class CfnOutputResolver {
             return {
               Arn: `arn:aws:s3:::${resourceIdentifier}`,
             };
+          case 'AWS::DynamoDB::Table':
+            return {
+              Arn: `arn:aws:dynamodb:${this.region}:${this.accountId}:table/${resourceIdentifier}`,
+            };
           case 'AWS::Cognito::UserPool':
             return {
               Arn: `arn:aws:cognito-idp:${this.region}:${this.accountId}:userpool/${resourceIdentifier}`,
