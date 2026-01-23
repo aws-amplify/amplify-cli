@@ -3,6 +3,7 @@ import path from 'node:path';
 import fs from 'node:fs/promises';
 import assert from 'node:assert';
 import { v4 as uuid } from 'uuid';
+import * as yaml from 'yaml';
 
 import { createGen2Renderer, Gen2RenderingOptions } from '../core/migration-pipeline';
 
@@ -22,7 +23,15 @@ import { BackendEnvironmentResolver } from './backend_environment_selector';
 import { Analytics, AppAnalytics } from './analytics';
 import { AppAuthDefinitionFetcher } from './app_auth_definition_fetcher';
 import { AppStorageDefinitionFetcher } from './app_storage_definition_fetcher';
-import { AmplifyCategories, IUsageData, stateManager, pathManager, JSONUtilities, $TSMeta } from '@aws-amplify/amplify-cli-core';
+import {
+  AmplifyCategories,
+  IUsageData,
+  stateManager,
+  pathManager,
+  JSONUtilities,
+  $TSMeta,
+  AmplifyError,
+} from '@aws-amplify/amplify-cli-core';
 import { AuthTriggerConnection } from '../adapters/auth/index';
 import { DataDefinitionFetcher } from './data_definition_fetcher';
 import { AmplifyStackParser } from './amplify_stack_parser';
@@ -48,6 +57,7 @@ interface CodegenCommandParameters {
   backendEnvironmentName: string | undefined;
   rootStackName: string | undefined;
   cloudFormationClient: CloudFormationClient;
+  amplifyClient: AmplifyClient;
   ccbFetcher: BackendDownloader;
   backendEnvironment: BackendEnvironment;
   dataDefinitionFetcher: DataDefinitionFetcher;
@@ -55,6 +65,7 @@ interface CodegenCommandParameters {
   storageDefinitionFetcher: AppStorageDefinitionFetcher;
   functionsDefinitionFetcher: AppFunctionsDefinitionFetcher;
   analyticsDefinitionFetcher: AppAnalyticsDefinitionFetcher;
+  appId: string;
 }
 
 const TEMP_GEN_2_OUTPUT_DIR = 'amplify-gen2';
@@ -85,6 +96,7 @@ const generateGen2Code = async ({
   backendEnvironmentName,
   rootStackName,
   cloudFormationClient,
+  amplifyClient,
   authDefinitionFetcher,
   dataDefinitionFetcher,
   storageDefinitionFetcher,
@@ -92,6 +104,7 @@ const generateGen2Code = async ({
   analyticsDefinitionFetcher,
   ccbFetcher,
   backendEnvironment,
+  appId,
   logger,
 }: CodegenCommandParameters) => {
   logger.info('Fetching definitions from AWS for category: Auth');
@@ -121,6 +134,8 @@ const generateGen2Code = async ({
     backendEnvironmentName: backendEnvironmentName,
     rootStackName: rootStackName,
     cfnClient: cloudFormationClient,
+    amplifyClient: amplifyClient,
+    appId,
     auth,
     storage,
     data,
@@ -296,45 +311,66 @@ const unsupportedCategories = async (
   return unsupportedCategoriesList;
 };
 
-export async function updateAmplifyYmlFile(amplifyClient: AmplifyClient, appId: string) {
+export async function updateAmplifyYmlFile(logger: Logger, amplifyClient: AmplifyClient, appId: string) {
   const rootDir = pathManager.findProjectRoot();
   assert(rootDir);
   const amplifyYmlPath = path.join(rootDir, 'amplify.yml');
 
-  let amplifyYmlContent: string;
+  let amplifyYml: any;
 
   if (await pathExists(amplifyYmlPath)) {
-    amplifyYmlContent = await fs.readFile(amplifyYmlPath, 'utf-8');
+    logger.info(`Repurposing local buildspec: ${amplifyYmlPath}`);
+    amplifyYml = yaml.parse(await fs.readFile(amplifyYmlPath, 'utf-8'));
   } else {
-    const app = await amplifyClient.send(new GetAppCommand({ appId }));
-    amplifyYmlContent = app.app.buildSpec;
+    const response = await amplifyClient.send(new GetAppCommand({ appId }));
+    if (response.app.buildSpec) {
+      logger.info(`Repurposing remote buildspec`);
+      amplifyYml = yaml.parse(response.app.buildSpec);
+      if (!amplifyYml.frontend) {
+        // shouldn't really happen because it indicates a corrupt gen1 app.
+        // we validate this because a missing 'frontend' section will prevent deploying the gen2 app via hosting.
+        throw new AmplifyError('MigrationError', {
+          message: `Remote buildspec for app '${appId}' is missing a 'frontend' section`,
+          resolution: `Add a 'frontend' section to your build settings in the amplify console and try again`,
+        });
+      }
+    }
   }
 
-  if (amplifyYmlContent === undefined) {
-    // create an backend only yml so that the branch can be deployed via hosting.
-    // note that this will still create a blank webapp; this is intentional since hosting requires a frontend.
+  if (amplifyYml === undefined) {
+    // this means the gen1 environment was never deployed through hosting, neither backend nor frontend.
+    // since we currently instruct customers to deploy their Gen2 branch via hosting, we need to create
+    // a spec for them. so we create a backend only spec with an empty webapp.
     // eslint-disable-next-line spellcheck/spell-checker
-    amplifyYmlContent = `version: 1
-backend:
-  phases:
-    build:
-      commands:
-        - '# Execute Amplify CLI with the helper script'
-        - npm ci --cache .npm --prefer-offline
-        - npx ampx pipeline-deploy --branch $AWS_BRANCH --app-id $AWS_APP_ID
-frontend:
-  phases:
-    build:
-      commands:
-        - mkdir dist
-        - touch dist/index.html
-  artifacts:
-    baseDirectory: dist
-    files:
-      - '**/*'`;
+    logger.info(`Creating a new buildspec`);
+    amplifyYml = {
+      version: 1,
+      backend: {
+        phases: {
+          build: {
+            commands: [
+              '# Execute Amplify CLI with the helper script',
+              'npm ci --cache .npm --prefer-offline',
+              'npx ampx pipeline-deploy --branch $AWS_BRANCH --app-id $AWS_APP_ID',
+            ],
+          },
+        },
+      },
+      frontend: {
+        phases: {
+          build: {
+            commands: ['mkdir dist', 'touch dist/index.html'],
+          },
+        },
+      },
+      artifacts: {
+        baseDirectory: 'dist',
+        files: ['**/*'],
+      },
+    };
   }
 
-  await writeToAmplifyYmlFile(amplifyYmlPath, amplifyYmlContent);
+  await writeToAmplifyYmlFile(amplifyYmlPath, yaml.stringify(amplifyYml));
 }
 
 async function writeToAmplifyYmlFile(amplifyYmlPath: string, content: string) {
@@ -607,10 +643,11 @@ export async function prepare(logger: Logger, appId: string, envName: string, re
     backendEnvironmentName: backendEnvironment.environmentName,
     rootStackName: backendEnvironment.stackName,
     cloudFormationClient: cloudFormationClient,
+    amplifyClient: amplifyClient,
+    appId: appId,
   });
 
-  logger.info(`Creating 'amplify.yml' file for amplify hosting deployments`);
-  await updateAmplifyYmlFile(amplifyClient, appId);
+  await updateAmplifyYmlFile(logger, amplifyClient, appId);
 
   logger.info('Updating .gitignore');
   await updateGitIgnoreForGen2();

@@ -5,7 +5,7 @@ import * as path from 'path';
 
 export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
   private readonly packageJsonPath = path.join(process.cwd(), 'package.json');
-  private readonly nodeModulesPath = path.join(process.cwd(), 'package.json');
+  private readonly nodeModulesPath = path.join(process.cwd(), 'node_modules');
   private readonly packageLockPath = path.join(process.cwd(), 'package-lock.json');
 
   public async packageJsonExists(): Promise<boolean> {
@@ -17,7 +17,7 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
   }
 
   public async packageLockExists(): Promise<boolean> {
-    return await pathExists(this.nodeModulesPath);
+    return await pathExists(this.packageLockPath);
   }
 
   public async implications(): Promise<string[]> {
