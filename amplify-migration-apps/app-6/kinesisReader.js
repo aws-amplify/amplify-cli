@@ -1,5 +1,5 @@
 /* Amplify Params - DO NOT EDIT
-	ANALYTICS_APP6KINESIS_KINESISSTREAMARN
+	ANALYTICS_MOODBOARDKINESIS_KINESISSTREAMARN
 	ENV
 	REGION
 Amplify Params - DO NOT EDIT */
@@ -18,7 +18,7 @@ function getStreamName(arn) {
 exports.handler = async (event) => {
   console.log('EVENT:', JSON.stringify(event));
 
-  const streamArn = process.env.ANALYTICS_APP6KINESIS_KINESISSTREAMARN;
+  const streamArn = process.env.ANALYTICS_MOODBOARDKINESIS_KINESISSTREAMARN;
   const streamName = getStreamName(streamArn);
 
   console.log('Reading from stream:', streamName);

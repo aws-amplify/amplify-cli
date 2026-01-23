@@ -10,7 +10,7 @@ Amplify.configure({
   ...parseAmplifyConfig(amplifyconfig),
   Analytics: {
     Kinesis: {
-      region: amplifyconfig.aws_project_region,
+      region: 'us-east-1',
       bufferSize: 1000,
       flushSize: 100,
       flushInterval: 5000,
