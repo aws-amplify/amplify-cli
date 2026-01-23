@@ -20,6 +20,7 @@ import {
   CFNStackStatus,
   CFNTemplate,
   ResourceMapping,
+  CFN_ANALYTICS_TYPE,
 } from '../types';
 import { pollStackForCompletionState, tryUpdateStack } from '../cfn-stack-updater';
 import { SSMClient } from '@aws-sdk/client-ssm';
@@ -33,7 +34,7 @@ import { Logger } from '../../../gen2-migration';
 const CFN_RESOURCE_STACK_TYPE = 'AWS::CloudFormation::Stack';
 const GEN2_AMPLIFY_AUTH_LOGICAL_ID_PREFIX = 'amplifyAuth';
 
-const CATEGORIES: CATEGORY[] = ['auth', 'storage'];
+const CATEGORIES: CATEGORY[] = ['auth', 'storage', 'analytics'];
 const TEMPLATES_DIR = '.amplify/migration/templates';
 const SEPARATOR = ' to ';
 
@@ -48,6 +49,7 @@ const AUTH_RESOURCES_TO_REFACTOR = [
 ];
 const AUTH_USER_POOL_GROUP_RESOURCES_TO_REFACTOR = [CFN_AUTH_TYPE.UserPoolGroup];
 const STORAGE_RESOURCES_TO_REFACTOR = [CFN_S3_TYPE.Bucket, CFN_DYNAMODB_TYPE.Table];
+const ANALYTICS_RESOURCES_TO_REFACTOR = [CFN_ANALYTICS_TYPE.Stream];
 
 // The following is only used for revert operation
 const GEN1_RESOURCE_TYPE_TO_LOGICAL_RESOURCE_IDS_MAP = new Map<string, string>([
@@ -58,11 +60,13 @@ const GEN1_RESOURCE_TYPE_TO_LOGICAL_RESOURCE_IDS_MAP = new Map<string, string>([
   [CFN_AUTH_TYPE.UserPoolDomain.valueOf(), 'UserPoolDomain'],
   [CFN_S3_TYPE.Bucket.valueOf(), 'S3Bucket'],
   [CFN_DYNAMODB_TYPE.Table.valueOf(), 'DynamoDBTable'],
+  [CFN_ANALYTICS_TYPE.Stream.valueOf(), 'KinesisStream'],
 ]);
 const LOGICAL_IDS_TO_REMOVE_FOR_REVERT_MAP = new Map<CATEGORY, CFN_RESOURCE_TYPES[]>([
   ['auth', AUTH_RESOURCES_TO_REFACTOR],
   ['auth-user-pool-group', AUTH_USER_POOL_GROUP_RESOURCES_TO_REFACTOR],
   ['storage', [CFN_S3_TYPE.Bucket, CFN_DYNAMODB_TYPE.Table]],
+  ['analytics', ANALYTICS_RESOURCES_TO_REFACTOR],
 ]);
 const GEN2_NATIVE_APP_CLIENT = 'UserPoolNativeAppClient';
 const GEN1_USER_POOL_GROUPS_STACK_TYPE_DESCRIPTION = 'auth-Cognito-UserPool-Groups';
@@ -83,6 +87,9 @@ class TemplateGenerator {
     },
     storage: {
       resourcesToRefactor: STORAGE_RESOURCES_TO_REFACTOR,
+    },
+    analytics: {
+      resourcesToRefactor: ANALYTICS_RESOURCES_TO_REFACTOR,
     },
   } as const;
 
@@ -240,7 +247,7 @@ class TemplateGenerator {
       let destinationPhysicalResourceId: string | undefined;
       let userPoolGroupDestinationPhysicalResourceId: string | undefined;
 
-      // Find the corresponding category stack in the destination by matching category prefix
+      // find the corresponding category stack in Gen2 stack
       const correspondingCategoryStackInDestination = destinationCategoryStacks.find(
         ({ LogicalResourceId: destinationLogicalResourceId }) => destinationLogicalResourceId?.startsWith(category),
       );

@@ -65,6 +65,12 @@ describe('CFNOutputResolver', () => {
           Ref: 'snstopic',
         },
       },
+      KinesisStreamArn: {
+        Description: 'Kinesis Stream Arn',
+        Value: {
+          'Fn::GetAtt': ['MyKinesisStream', 'Arn'],
+        },
+      },
     },
     Resources: {
       MyS3Bucket: {
@@ -221,6 +227,29 @@ describe('CFNOutputResolver', () => {
           },
         },
       },
+      MyKinesisStream: {
+        Type: 'AWS::Kinesis::Stream',
+        Properties: {
+          Name: 'MyKinesisStream',
+          ShardCount: 1,
+        },
+      },
+      KinesisStreamPolicy: {
+        Type: 'AWS::IAM::Policy',
+        Properties: {
+          PolicyName: 'KinesisStreamPolicy',
+          PolicyDocument: {
+            Statement: [
+              {
+                Effect: 'Allow',
+                Action: 'kinesis:PutRecord',
+                Resource: { 'Fn::GetAtt': ['MyKinesisStream', 'Arn'] },
+              },
+            ],
+          },
+          Roles: [{ Ref: 'AuthenticatedRole' }],
+        },
+      },
     },
   };
   const expectedTemplate: CFNTemplate = {
@@ -263,6 +292,10 @@ describe('CFNOutputResolver', () => {
       snsTopicArn: {
         Description: 'SnsTopicArn',
         Value: 'arn:aws:sns:us-east-1:12345:snsTopic',
+      },
+      KinesisStreamArn: {
+        Description: 'Kinesis Stream Arn',
+        Value: 'arn:aws:kinesis:us-east-1:12345:stream/MyKinesisStream',
       },
     },
     Resources: {
@@ -412,6 +445,29 @@ describe('CFNOutputResolver', () => {
           BucketName: 'test-bucket',
         },
       },
+      MyKinesisStream: {
+        Type: 'AWS::Kinesis::Stream',
+        Properties: {
+          Name: 'MyKinesisStream',
+          ShardCount: 1,
+        },
+      },
+      KinesisStreamPolicy: {
+        Type: 'AWS::IAM::Policy',
+        Properties: {
+          PolicyName: 'KinesisStreamPolicy',
+          PolicyDocument: {
+            Statement: [
+              {
+                Effect: 'Allow',
+                Action: 'kinesis:PutRecord',
+                Resource: 'arn:aws:kinesis:us-east-1:12345:stream/MyKinesisStream',
+              },
+            ],
+          },
+          Roles: [{ Ref: 'AuthenticatedRole' }],
+        },
+      },
     },
   };
 
@@ -452,6 +508,10 @@ describe('CFNOutputResolver', () => {
             OutputKey: 'snsTopicArn',
             OutputValue: 'arn:aws:sns:us-east-1:12345:snsTopic',
           },
+          {
+            OutputKey: 'KinesisStreamArn',
+            OutputValue: 'arn:aws:kinesis:us-east-1:12345:stream/MyKinesisStream',
+          },
         ],
         [
           {
@@ -484,5 +544,68 @@ describe('CFNOutputResolver', () => {
         ],
       ),
     ).toEqual(expectedTemplate);
+  });
+
+  it('should throw error when Kinesis ARN is not exposed in outputs', () => {
+    // Template with Kinesis stream reference NOT exposed via outputs
+    const templateWithKinesisNotInOutputs: CFNTemplate = {
+      AWSTemplateFormatVersion: '2010-09-09',
+      Description: 'Test template - Kinesis not in outputs',
+      Parameters: {},
+      Outputs: {
+        SomeOtherOutput: {
+          Description: 'Other output',
+          Value: 'some-value',
+        },
+      },
+      Resources: {
+        MyKinesisStream: {
+          Type: 'AWS::Kinesis::Stream',
+          Properties: {
+            Name: 'MyKinesisStream',
+            ShardCount: 1,
+          },
+        },
+        KinesisPolicy: {
+          Type: 'AWS::IAM::Policy',
+          Properties: {
+            PolicyName: 'KinesisPolicy',
+            PolicyDocument: {
+              Statement: [
+                {
+                  Effect: 'Allow',
+                  Action: 'kinesis:PutRecord',
+                  Resource: { 'Fn::GetAtt': ['MyKinesisStream', 'Arn'] },
+                },
+              ],
+            },
+          },
+        },
+      },
+    };
+
+    // When Kinesis ARN is not exposed in outputs, the resolver should fail early
+    // since the physical resource ID for Kinesis streams is the stream name, not the ARN.
+    expect(() =>
+      new CfnOutputResolver(templateWithKinesisNotInOutputs, 'us-east-1', '123456789012').resolve(
+        [],
+        [{ OutputKey: 'SomeOtherOutput', OutputValue: 'some-value' }],
+        [
+          {
+            StackName: 'test-stack',
+            StackId: 'arn:aws:cloudformation:us-east-1:123456789012:stack/test-stack',
+            LogicalResourceId: 'MyKinesisStream',
+            PhysicalResourceId: 'MyKinesisStream', // Stream name, NOT ARN
+            ResourceType: 'AWS::Kinesis::Stream',
+            Timestamp: new Date(),
+            ResourceStatus: 'CREATE_COMPLETE',
+          },
+        ],
+      ),
+    ).toThrow(
+      `Kinesis stream ARN must be exposed in CloudFormation outputs. ` +
+        `Found physical resource ID 'MyKinesisStream' for logical resource 'MyKinesisStream' which is not a valid ARN. ` +
+        `Please add an output with Fn::GetAtt for the Kinesis stream's Arn attribute.`,
+    );
   });
 });
