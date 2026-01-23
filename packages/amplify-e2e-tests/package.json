@@ -1,6 +1,6 @@
 {
   "name": "amplify-e2e-tests",
-  "version": "4.11.13",
+  "version": "4.11.14",
   "description": "",
   "repository": {
     "type": "git",
@@ -27,7 +27,7 @@
   "dependencies": {
     "@aws-amplify/amplify-category-auth": "3.7.26",
     "@aws-amplify/amplify-cli-core": "4.4.4",
-    "@aws-amplify/amplify-e2e-core": "5.7.9",
+    "@aws-amplify/amplify-e2e-core": "5.7.10",
     "@aws-amplify/amplify-opensearch-simulator": "1.7.23",
     "@aws-amplify/graphql-transformer-core": "^2.11.3",
     "@aws-sdk/client-amplify": "^3.919.0",
