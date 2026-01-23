@@ -362,10 +362,10 @@ export async function updateAmplifyYmlFile(logger: Logger, amplifyClient: Amplif
             commands: ['mkdir dist', 'touch dist/index.html'],
           },
         },
-      },
-      artifacts: {
-        baseDirectory: 'dist',
-        files: ['**/*'],
+        artifacts: {
+          baseDirectory: 'dist',
+          files: ['**/*'],
+        },
       },
     };
   }
