@@ -105,12 +105,8 @@ The following diagram describes how existing frontend applications interact with
 <img width="320" height="250" src="./migration-guide-images/gen1-frontend-post-migration.png" />
 
 Once you are satisfied the Gen2 application works correctly, you will publish a new version of 
-your frontend that connects to the Gen2 stateless resources.
-
-<img width="380" height="250" src="./migration-guide-images/two-frontends-post-migration.png" />
-
-Note that in Gen2, the connecting file has a different structure and is called `amplify_outputs.json`, you'll need to edit your code. 
-For example:
+your frontend that connects to the Gen2 stateless resources. Note that in Gen2, the connecting file has a different 
+structure and is called `amplify_outputs.json`, you'll need to edit your code. For example:
 
 ```ts
 import amplifyconfig from '../amplify_outputs.json';
@@ -118,6 +114,8 @@ Amplify.configure(amplifyconfig);
 ```
 
 Amplify client libraries will detect the different structure and adjust itself accordingly; no other changes are required.
+
+<img width="380" height="250" src="./migration-guide-images/two-frontends-post-migration.png" />
 
 ## Prerequisites 
 
