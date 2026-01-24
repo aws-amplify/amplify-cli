@@ -206,9 +206,8 @@ RUN set -ex \
 ENV NODE_VERSION="22.12.0"
 
 RUN  n $NODE_VERSION && npm install --save-dev -g -f grunt && npm install --save-dev -g -f grunt-cli && npm install --save-dev -g -f webpack \
-     && curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
-     && echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list \
-     && apt-get update && apt-get install -y -qq --no-install-recommends yarn \
+     && corepack enable \
+     && corepack prepare yarn@stable --activate \
      && yarn --version \
      && cd / && rm -rf $N_SRC_DIR && rm -rf /tmp/*
 
