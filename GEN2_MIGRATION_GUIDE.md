@@ -76,9 +76,8 @@ stateful resources. The stateless resources will now be connected to your Gen1 s
 application now shares and accesses the Gen1 data.
 
 > [!WARNING]
-> DynamoDB tables that host your models are not cloned as part of the Gen2 deployment and therefore don't participate in the 
+> DynamoDB tables that host your models are not cloned as part of the Gen2 deployment and therefore do not participate in the 
 > refactoring phase. **This means that your Gen2 deployment will immediately have access to the Gen1 model data.**
->
 
 --------------
 
