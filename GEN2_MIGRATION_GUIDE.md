@@ -89,13 +89,12 @@ you will no longer be able to update your Gen1 environment. To continue evolving
 
 ## Frontend Migration
 
-Amplify Gen1 frontends communicate with backend resources via the language specific `amplifyconfiguration` file. 
+Amplify Gen1 frontends communicate with backend resources via the language specific `amplifyconfiguration` file. For example:
 
-> For webapps for example:
-> 
-> ```ts
-> import amplifyconfig from './amplifyconfiguration.json';
-> Amplify.configure(amplifyconfig);
+```ts
+import amplifyconfig from './amplifyconfiguration.json';
+Amplify.configure(amplifyconfig);
+```
 
 All values in this file (e.g AppSync endpoint URLs, User Pool IDs, etc...) remain valid and active throughout the 
 entire migration process. This means that Gen1 frontends continue to work without any change and 
@@ -105,10 +104,20 @@ The following diagram describes how existing frontend applications interact with
 
 ![](./migration-guide-images/gen1-frontend-post-migration)
 
-Once you are satisfied the Gen2 application works correctly, you will publish and distribute a new version of 
-your frontend that connects to the Gen2 stateless resources:
+Once you are satisfied the Gen2 application works correctly, you will publish a new version of 
+your frontend that connects to the Gen2 stateless resources.
 
 ![](./migration-guide-images/two-frontends-post-migration.png)
+
+Note that in Gen2, the connecting file has a different structure and is called `amplify_outputs.json`, you'll need to edit your code. 
+For example:
+
+```ts
+import amplifyconfig from '../amplify_outputs.json';
+Amplify.configure(amplifyconfig);
+```
+
+Amplify client libraries will detect the different structure and adjust itself accordingly; no other changes are required.
 
 ## Prerequisites 
 
