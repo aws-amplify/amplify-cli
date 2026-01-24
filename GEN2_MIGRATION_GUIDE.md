@@ -14,9 +14,14 @@ purposes on environments you can afford to delete.
 --------------
 
 - [Overall Approach](#overall-approach)
+- [Frontend Migration](#frontend-migration)
 - [Prerequisites](#prerequisites)
 - [Assumptions](#assumptions)
 - [Step By Step](#step-by-step)
+   1. [Lock](#1-lock)
+   2. [Generate](#2-generate)
+   3. [Deploy](#3-deploy)
+   4. [Refactor](#4-refactor)
 - [Feature Coverage](#feature-coverage)
 - [Supported Frameworks](#supported-frameworks)
 - [Limitations](#limitations)
@@ -55,12 +60,16 @@ After completing this process you will have 2 functionally equivalent amplify ap
 
 **Note that you will not be able to continue evolving your Gen1 environment by pushing changes to it, use the new Gen2 app instead.**
 
-### Note on DynamoDB Model Tables
+### Stateless Resources
+
+### Statefull Resources
+
+#### DynamoDB Model Tables
 
 DynamoDB tables that host your models are not cloned as part of the Gen2 deployment and therefore don't participate in the `refactor` 
 operation. This means that your Gen2 deployment will immediately have access to the Gen1 data.
 
-### Note on Other Stateful Resources
+#### Other Stateful Resources
 
 In addition to DynamoDB model tables, there can be other stateful resources in your app:
 
@@ -76,13 +85,32 @@ Once you are satisfied the Gen2 application works correctly, `refactor` will bri
 Gen1 app to your Gen2 app. After `refactor`, the new instances are deleted and your Gen2 application shares and **ALL** 
 data with your Gen1 app.
 
+## Frontend Migration
+
+Amplify Gen1 frontends communicate with backend resources via the language specific `amplifyconfiguration` file. 
+
+> For webapps for example:
+> 
+> ```ts
+> import amplifyconfig from './amplifyconfiguration.json';
+> Amplify.configure(amplifyconfig);
+
+All values in this file (e.g AppSync endpoint URLs, User Pool IDs, etc...) remain valid and active throughout the 
+entire migration process. This means that Gen1 frontends continue to work without any change and 
+your customers will not be affected.
+
+The following diagram describes how existing frontend applications interact with your backend resources post migration:
+
+![](./migration-guide-images/front-end-post-migration.png)
+
+Once you are satisfied the Gen2 application works correctly, you will likely want to publish a new version of 
+your frontend that connects to the Gen2 stateless resources:
+
+
 ## Prerequisites 
 
 Following are prerequisites the beta version of the tool relies. Some or all will be removed in the stable version.
 
-- Your frontend code is located within the same repository as your backend application.
-- Your frontend code is an NPM (compatible) based app.
-- Your Gen1 environment is deployed via the hosting service.
 - You have a `default` AWS profile configured with an `AdministratorAccess` policy.
 
     `+` _~/.aws/credentials_
@@ -164,6 +192,13 @@ This command will override your local `./amplify` directory with Gen2 definition
 perform the following manual edits:
 
 #### Post Generate | Frontend Config
+
+
+> [!NOTE]
+> 
+> The Gen1 resources will be removed 
+
+In Gen2 this has file has been renamed to `amplify_outputs`
 
 **Edit in `./src/main.tsx` (or equivalent):**
 
@@ -353,7 +388,13 @@ Your schema is located in `./amplify/data/resource.ts`.
 
 ### 3. Deploy
 
-To deploy the generated Gen2 application first push the code:
+Deploying the generated Gen2 application is done via [fullstack-branch-deployments](https://docs.amplify.aws/flutter/deploy-and-host/fullstack-branching/branch-deployments/). First, push the code:
+
+> [!NOTE]
+> 
+> The migration tool generates an `amplify.yml` buildspec file that allows for 
+> branch deployments to deploy Gen2 backend applications even in the absence of a 
+> webapp published via amplify hosting.
 
 ```bash
 git add .
