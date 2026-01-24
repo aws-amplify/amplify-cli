@@ -97,10 +97,8 @@ Amplify.configure(amplifyconfig);
 ```
 
 All values in this file (e.g AppSync endpoint URLs, User Pool IDs, etc...) remain valid and active throughout the 
-entire migration process. This means that Gen1 frontends continue to work without any change and 
-your customers will not be affected.
-
-The following diagram describes how existing frontend applications interact with your backend resources post migration:
+entire migration process. This means that Gen1 frontends continue to work without any change. The following diagram 
+describes how existing frontend applications interact with your backend resources post migration:
 
 <img width="320" height="250" src="./migration-guide-images/gen1-frontend-post-migration.png" />
 
@@ -203,12 +201,7 @@ perform the following manual edits:
 
 #### Post Generate | Frontend Config
 
-
-> [!NOTE]
-> 
-> The Gen1 resources will be removed 
-
-In Gen2 this has file has been renamed to `amplify_outputs`
+If your frontend is stored within the same repo and consumes the `amplifyconfiguration.json` file created during `amplify push`:
 
 **Edit in `./src/main.tsx` (or equivalent):**
 
@@ -218,7 +211,7 @@ In Gen2 this has file has been renamed to `amplify_outputs`
 ```
 
 This is required because in Gen2 amplify generates an `amplify_outputs.json` file instead of the `amplifyconfiguration.json` file. 
-Note that client side libraries support both files so no additional change is needed.
+Amplify client side libraries support both files so no additional change is needed.
 
 > Note: The `amplify_outputs.json` file **will not** exist on your local file system so you will see a compilation error. 
 Thats ok - it is generated at deploy time in the hosting service.
