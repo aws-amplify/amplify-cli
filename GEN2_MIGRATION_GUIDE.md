@@ -151,7 +151,6 @@ able to adapt them to fit your setup.
 > **Before you begin, determine if your app can be migrated by reviewing:**
 >
 > - [Feature Coverage](#feature-coverage)
-> - [Supported Frameworks](#supported-frameworks)
 > - [Limitations](#limitations)
 > - [Pre Migration Operations](#pre-migration-operations)
 
@@ -394,7 +393,6 @@ Your schema is located in `./amplify/data/resource.ts`.
 Deploying the generated Gen2 application is done via [fullstack-branch-deployments](https://docs.amplify.aws/flutter/deploy-and-host/fullstack-branching/branch-deployments/). First, push the code:
 
 > [!NOTE]
-> 
 > The migration tool generates an `amplify.yml` buildspec file that allows for 
 > branch deployments to deploy Gen2 backend applications even in the absence of a 
 > webapp published via amplify hosting.
@@ -801,18 +799,6 @@ to add the necessary configuration.
 ## Overrides 
 
 ### `amplify override <category>` ❌
-
-# Supported Frameworks
-
-- `React` ✅
-- `NextJS` ✅
-- `Angular` ✅
-- `Vue` ✅
-- `JavaScript` ✅
-- `React Native` ✅
-- `Flutter` ❌
-- `Android` ❌
-- `Swift` ❌
 
 # Limitations
 
