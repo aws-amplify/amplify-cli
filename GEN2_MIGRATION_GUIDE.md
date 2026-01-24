@@ -18,10 +18,6 @@ purposes on environments you can afford to delete.
 - [Prerequisites](#prerequisites)
 - [Assumptions](#assumptions)
 - [Step By Step](#step-by-step)
-   1. [Lock](#1-lock)
-   2. [Generate](#2-generate)
-   3. [Deploy](#3-deploy)
-   4. [Refactor](#4-refactor)
 - [Feature Coverage](#feature-coverage)
 - [Supported Frameworks](#supported-frameworks)
 - [Limitations](#limitations)
@@ -40,14 +36,15 @@ Migration to Gen2 is done in a (partial) blue/green deployment approach.
 
 1. Amplify CLI will _lock_ your Gen1 environment by attaching a `Deny:*` policy to the root CloudFormation stack. 
 This will intentionally prevent updates during migration.
-2. Amplify CLI will _generate_ the necessary Gen2 definition files based on your deployed Gen1 environment.
-3. You will perform some manual edits on those files. How much exactly varies depending on the app itself.
-4. Generated code will be pushed to a new branch and deployed via the hosting service. Apart from the DynamoDB tables 
-that host your models (see [below](#note-on-dynamodb-model-tables)), all stateful resources (e.g `UserPool`) will be cloned and your 
-Gen2 application will start with empty data for those.
-5. Amplify CLI will _refactor_ (using [CloudFormation Refactor](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stack-refactoring.html)) 
-your underlying CloudFormation stacks such that any Gen1 stateful resource (e.g `UserPool`) 
-will be reused and managed by the new Gen2 deployment.
+2. Amplify CLI will _generate_ the necessary Gen2 definition files based on your deployed Gen1 environment. Note that:
+
+    - Not all Gen1 features are natively supported in Gen2; in those cases, the migration tool will generate AWS CDK code to 
+    configure the appropriate resource settings. 
+    - Not everything can be codegenerated so you will need to perform some manual edits as well.
+
+3. Gen2 code will be pushed to a new branch and deployed via the hosting service.
+4. Amplify CLI will _refactor_ (using [CloudFormation Refactor](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stack-refactoring.html)) 
+your underlying CloudFormation stacks such that any Gen1 stateful resource (e.g `UserPool`) will be reused and managed by the new Gen2 deployment.
 
 > [!CAUTION]
 > The `refactor` operation is currently not reversible. If it fails or 
