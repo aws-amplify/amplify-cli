@@ -32,36 +32,46 @@ purposes on environments you can afford to delete.
 
 ## Overall Approach
 
-Migration to Gen2 is done in a (partial) blue/green deployment approach.
+Migration to Gen2 is done in a (partial) blue/green deployment approach:
 
-1. Amplify CLI will _lock_ your Gen1 environment by attaching a `Deny:*` policy to the root CloudFormation stack. 
-This will intentionally prevent updates during migration.
-2. Amplify CLI will _generate_ the necessary Gen2 definition files based on your deployed Gen1 environment. Note that:
+1. Generate the necessary Gen2 definition files based on your deployed Gen1 environment.
+2. Deploy the new Gen2 code to create a new environment (in Gen2 they are referred to as branches).
+3. Refactor your underlying CloudFormation stacks such that any Gen1 stateful resource will be managed by the new Gen2 deployment. 
 
-    - Not all Gen1 features are natively supported in Gen2; in those cases, the migration tool will generate AWS CDK code to 
-    configure the appropriate resource settings. 
-    - Not everything can be codegenerated so you will need to perform some manual edits as well.
+After completing this process you will have 2 functionally equivalent amplify applications that access the same data. Note that 
+you will no longer be able to update your Gen1 environment. To continue evolving your application, push updates to the Gen2 code.
 
-3. Gen2 code will be pushed to a new branch and deployed via the hosting service.
-4. Amplify CLI will _refactor_ (using [CloudFormation Refactor](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stack-refactoring.html)) 
-your underlying CloudFormation stacks such that any Gen1 stateful resource (e.g `UserPool`) will be reused and managed 
-by the new Gen2 deployment. Following this operation, **you will not be able to continue evolving your Gen1 environment**, 
-use the new Gen2 app instead.
+> [!NOTE]
+> - Not all Gen1 features are natively supported in Gen2; in those cases, the migration tool will generate AWS CDK code to 
+> configure the appropriate resource settings. 
+> - Not everything can be codegenerated, so you will need to perform some manual edits as well.
 
-> [!CAUTION]
-> The `refactor` operation is currently not reversible. If it fails or 
-> produces undesired results, you will need to recreate the environment. **Make sure you 
-> run it only on environments you can afford to delete**.
-
-After completing this process you will have 2 functionally equivalent amplify applications that access the same data. 
-
-![](./migration-guide-images/workflow.png)
+An amplify backend environment consists of collection of _Stateless_ and _Statefull_ resources. Each group undergoes 
+a different process during migration.
 
 ### Stateless Resources
 
+Stateless resources are ones that don't store any user data. They include:
 
+- AppSync GraphQL APIs & Resolvers
+- API Gateway REST APIs
+- Lambda Functions
+- IAM Roles & Policies
+- ...
+
+During migration, new instances of these resources will be created (with the same configuration). The new instances 
 
 ### Statefull Resources
+
+Stateful resources are ones that store user data. They include:
+
+- S3 Bucket
+- DynamoDB Table
+- Cognito User Pool
+- Cognito Identity Pool
+- ...
+
+During migration
 
 #### DynamoDB Model Tables
 
@@ -83,6 +93,11 @@ The Gen2 deployment will create new empty instances of these resources. This all
 Once you are satisfied the Gen2 application works correctly, `refactor` will bring these resources as well from your 
 Gen1 app to your Gen2 app. After `refactor`, the new instances are deleted and your Gen2 application shares and **ALL** 
 data with your Gen1 app.
+
+
+The following diagram describes the workflow and resource state in every step during migration.
+
+![](./migration-guide-images/workflow.png)
 
 ## Frontend Migration
 
@@ -418,6 +433,11 @@ stateful resources, a `refactor` is required.
 
 ### 4. Refactor
 
+> [!CAUTION]
+> The `refactor` operation is currently not reversible. If it fails or 
+> produces undesired results, you will need to recreate the environment. **Make sure you 
+> run it only on environments you can afford to delete**.
+
 Refactoring is the process of updating the underlying CloudFormation stacks of both your Gen1 and 
 Gen2 applications such that all stateful resources are reused across both apps. In order to refactor, 
 we first need to find the name of the Gen2 root CloudFormation stack:
@@ -441,6 +461,9 @@ And run:
 git checkout main
 npx amplify gen2-migration refactor --to <gen2-root-stack-name>
 ```
+
+> Note: This operations makes use of 
+the [CloudFormation Refactor](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stack-refactoring.html) APIs
 
 #### Post Refactor | S3 Storage
 
