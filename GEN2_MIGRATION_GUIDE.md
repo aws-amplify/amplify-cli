@@ -102,12 +102,12 @@ your customers will not be affected.
 
 The following diagram describes how existing frontend applications interact with your backend resources post migration:
 
-<img width="200" height="150" src="./migration-guide-images/gen1-frontend-post-migration.png" />
+<img width="320" height="250" src="./migration-guide-images/gen1-frontend-post-migration.png" />
 
 Once you are satisfied the Gen2 application works correctly, you will publish a new version of 
 your frontend that connects to the Gen2 stateless resources.
 
-<img width="250" height="150" src="./migration-guide-images/two-frontends-post-migration.png" />
+<img width="380" height="250" src="./migration-guide-images/two-frontends-post-migration.png" />
 
 Note that in Gen2, the connecting file has a different structure and is called `amplify_outputs.json`, you'll need to edit your code. 
 For example:
