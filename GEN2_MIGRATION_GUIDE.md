@@ -70,18 +70,15 @@ Stateful resources are ones that store user data. They include:
 - ...
 
 Deploying the Gen2 code will create new empty instances of these resources. The stateless resources will initially be 
-connected to these new instances. This allows you to test your Gen2 application functionality in isolation from the Gen1 environment.
-
-
+connected to these new instances. This allows you to test your Gen2 application functionality in isolation from the Gen1 environment. 
 Once you are satisfied the Gen2 application works correctly, the refactoring phase will delete them and replace with your Gen1 
-stateful resources. The stateless resources will now be connected to your Gen1 stateful resources. This means your Gen2 
+stateful resources. The stateless resources will now be connected to your Gen1 stateful resources and your Gen2 
 application now shares and accesses the Gen1 data.
 
-> [!NOTE]
-> DynamoDB tables that host your models are not cloned as part of the Gen2 deployment and therefore don't participate in the `refactor` 
-> operation. This means that your Gen2 deployment will immediately have access to the Gen1 data.
+> [!WARNING]
+> DynamoDB tables that host your models are not cloned as part of the Gen2 deployment and therefore don't participate in the 
+> refactoring phase. **This means that your Gen2 deployment will immediately have access to the Gen1 model data.**
 >
-> 
 
 --------------
 
