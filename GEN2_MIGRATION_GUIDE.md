@@ -38,13 +38,10 @@ Migration to Gen2 is done in a (partial) blue/green deployment approach:
 2. Deploy the new Gen2 code to create a new environment (in Gen2 they are referred to as branches).
 3. Refactor your underlying CloudFormation stacks such that any Gen1 stateful resource will be managed by the new Gen2 deployment. 
 
-After completing this process you will have 2 functionally equivalent amplify applications that access the same data. Note that 
-you will no longer be able to update your Gen1 environment. To continue evolving your application, push updates to the Gen2 code.
-
 > [!NOTE]
 > - Not all Gen1 features are natively supported in Gen2; in those cases, the migration tool will generate AWS CDK code to 
 > configure the appropriate resource settings. 
-> - Not everything can be codegenerated, so you will need to perform some manual edits as well.
+> - Not everything can be codegenerated, you will need to perform some manual edits as well.
 
 An amplify backend environment consists of collection of _Stateless_ and _Statefull_ resources. Each group undergoes 
 a different process during migration.
@@ -59,7 +56,8 @@ Stateless resources are ones that don't store any user data. They include:
 - IAM Roles & Policies
 - ...
 
-During migration, new instances of these resources will be created (with the same configuration). The new instances 
+Deploying the Gen2 code will create new instances of these resources, which will eventually replace the Gen1 resources. 
+These resources are untouched during the refactoring phase.
 
 ### Statefull Resources
 
@@ -71,33 +69,28 @@ Stateful resources are ones that store user data. They include:
 - Cognito Identity Pool
 - ...
 
-During migration
+Deploying the Gen2 code will create new empty instances of these resources. The stateless resources will initially be 
+connected to these new instances. This allows you to test your Gen2 application functionality in isolation from the Gen1 environment.
 
-#### DynamoDB Model Tables
 
-DynamoDB tables that host your models are not cloned as part of the Gen2 deployment and therefore don't participate in the `refactor` 
-operation. This means that your Gen2 deployment will immediately have access to the Gen1 data.
+Once you are satisfied the Gen2 application works correctly, the refactoring phase will delete them and replace with your Gen1 
+stateful resources. The stateless resources will now be connected to your Gen1 stateful resources. This means your Gen2 
+application now shares and accesses the Gen1 data.
 
-#### Other Stateful Resources
+> [!NOTE]
+> DynamoDB tables that host your models are not cloned as part of the Gen2 deployment and therefore don't participate in the `refactor` 
+> operation. This means that your Gen2 deployment will immediately have access to the Gen1 data.
+>
+> 
 
-In addition to DynamoDB model tables, there can be other stateful resources in your app:
-
-- S3 Bucket (`storage` category)
-- DynamoDB Table (`storage` category)
-- Cognito User Pool (`auth` category)
-- Cognito Identity Pool (`auth` category)
-
-The Gen2 deployment will create new empty instances of these resources. This allows you to test their functionality 
-(e.g user registration) on the Gen2 deployment without impacting your Gen1 app. 
-
-Once you are satisfied the Gen2 application works correctly, `refactor` will bring these resources as well from your 
-Gen1 app to your Gen2 app. After `refactor`, the new instances are deleted and your Gen2 application shares and **ALL** 
-data with your Gen1 app.
-
+--------------
 
 The following diagram describes the workflow and resource state in every step during migration.
 
 ![](./migration-guide-images/workflow.png)
+
+After completing this process you will have 2 functionally equivalent amplify applications that access the same data. Note that 
+you will no longer be able to update your Gen1 environment. To continue evolving your application, push updates to the Gen2 code.
 
 ## Frontend Migration
 
