@@ -56,7 +56,7 @@ Stateless resources are ones that don't store any user data. They include:
 - IAM Roles & Policies
 - ...
 
-Deploying the Gen2 code will create new instances of these resources, which will eventually replace the Gen1 resources. 
+Deploying the Gen2 code will create new instances of these resources, which will eventually be used instead of the Gen1 resources. 
 These resources are untouched during the refactoring phase.
 
 ### Statefull Resources
@@ -69,15 +69,14 @@ Stateful resources are ones that store user data. They include:
 - Cognito Identity Pool
 - ...
 
-Deploying the Gen2 code will create new empty instances of these resources. The stateless resources will initially be 
-connected to these new instances. This allows you to test your Gen2 application functionality in isolation from the Gen1 environment. 
-Once you are satisfied the Gen2 application works correctly, the refactoring phase will delete them and replace with your Gen1 
-stateful resources. The stateless resources will now be connected to your Gen1 stateful resources and your Gen2 
-application now shares and accesses the Gen1 data.
+Deploying the Gen2 code will create new empty instances of these resources and connect them to the new stateless resources. 
+This allows you to test your Gen2 application functionality in isolation from the Gen1 environment. Once you are satisfied 
+the Gen2 application works correctly, the refactoring phase will delete them and replace with your Gen1 
+stateful resources. Your Gen2 application will now share and access all the Gen1 data.
 
 > [!WARNING]
 > DynamoDB tables that host your models are not cloned as part of the Gen2 deployment and therefore do not participate in the 
-> refactoring phase. **This means that your Gen2 deployment will immediately have access to the Gen1 model data.**
+> refactoring phase. **This means that your Gen2 application will have access to the Gen1 model data immediately after deployment.**
 
 --------------
 
@@ -104,11 +103,12 @@ your customers will not be affected.
 
 The following diagram describes how existing frontend applications interact with your backend resources post migration:
 
-![](./migration-guide-images/front-end-post-migration.png)
+![](./migration-guide-images/gen1-frontend-post-migration)
 
-Once you are satisfied the Gen2 application works correctly, you will likely want to publish a new version of 
+Once you are satisfied the Gen2 application works correctly, you will publish and distribute a new version of 
 your frontend that connects to the Gen2 stateless resources:
 
+![](./migration-guide-images/two-frontends-post-migration.png)
 
 ## Prerequisites 
 
