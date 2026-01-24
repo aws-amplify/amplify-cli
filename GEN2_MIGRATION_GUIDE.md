@@ -74,7 +74,7 @@ This allows you to test your Gen2 application functionality in isolation from th
 the Gen2 application works correctly, the refactoring phase will delete them and replace with your Gen1 
 stateful resources. Your Gen2 application will now share and access all the Gen1 data.
 
-> [!WARNING]
+> [!NOTE]
 > DynamoDB tables that host your models are not cloned as part of the Gen2 deployment and therefore do not participate in the 
 > refactoring phase. **This means that your Gen2 application will have access to the Gen1 model data immediately after deployment.**
 
@@ -102,12 +102,12 @@ your customers will not be affected.
 
 The following diagram describes how existing frontend applications interact with your backend resources post migration:
 
-![](./migration-guide-images/gen1-frontend-post-migration)
+<img width="200" height="150" src="./migration-guide-images/gen1-frontend-post-migration.png" />
 
 Once you are satisfied the Gen2 application works correctly, you will publish a new version of 
 your frontend that connects to the Gen2 stateless resources.
 
-![](./migration-guide-images/two-frontends-post-migration.png)
+<img width="250" height="150" src="./migration-guide-images/two-frontends-post-migration.png" />
 
 Note that in Gen2, the connecting file has a different structure and is called `amplify_outputs.json`, you'll need to edit your code. 
 For example:
