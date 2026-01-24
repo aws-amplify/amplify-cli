@@ -44,7 +44,9 @@ This will intentionally prevent updates during migration.
 
 3. Gen2 code will be pushed to a new branch and deployed via the hosting service.
 4. Amplify CLI will _refactor_ (using [CloudFormation Refactor](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stack-refactoring.html)) 
-your underlying CloudFormation stacks such that any Gen1 stateful resource (e.g `UserPool`) will be reused and managed by the new Gen2 deployment.
+your underlying CloudFormation stacks such that any Gen1 stateful resource (e.g `UserPool`) will be reused and managed 
+by the new Gen2 deployment. Following this operation, **you will not be able to continue evolving your Gen1 environment**, 
+use the new Gen2 app instead.
 
 > [!CAUTION]
 > The `refactor` operation is currently not reversible. If it fails or 
@@ -55,9 +57,9 @@ After completing this process you will have 2 functionally equivalent amplify ap
 
 ![](./migration-guide-images/workflow.png)
 
-**Note that you will not be able to continue evolving your Gen1 environment by pushing changes to it, use the new Gen2 app instead.**
-
 ### Stateless Resources
+
+
 
 ### Statefull Resources
 
