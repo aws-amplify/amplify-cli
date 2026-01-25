@@ -150,7 +150,7 @@ amplify add analytics
 
 ```console
 ? Select an Analytics provider: Amazon Kinesis Streams
-? Enter a Stream name: moodBoardKinesis
+? Enter a Stream name: moodboardKinesis
 ? Enter number of shards: 1
 ```
 
@@ -250,3 +250,88 @@ Next, accept all the default values and follow the getting started wizard to con
 Wait for the deployment to finish successfully.
 
 ## Migrating to Gen2
+
+First install the experimental amplify CLI package that provides the migration commands.
+
+```console
+npm install @aws-amplify/cli-internal-gen2-migration-experimental-alpha
+```
+
+Now run them:
+
+```console
+npx amplify gen2-migration lock
+```
+
+```console
+git checkout -b gen2-main
+npx amplify gen2-migration generate
+
+Edit in `./amplify/data/resource.ts`:
+
+```diff
+- branchName: "main"
++ branchName: "gen2-main"
+```
+
+Edit in `./amplify/function/moodboardRandomEmojiGenerator/index.js`
+
+```diff
+- exports.handler = async (event) => {
++ export async function handler(event) {
+```
+
+Edit in `./amplify/function/moodboardKinesisReader/index.js`
+
+```diff
+- exports.handler = async (event) => {
++ export async function handler(event) {
+```
+
+Edit in `./amplify/function/moodboardkinesisReader/resource.ts`
+
+```diff
+- environment: { ANALYTICS_MOODBOARDKINESIS_KINESISSTREAMARN: "arn:aws:kinesis:us-east-1:014148916658:stream/moodboardKinesis-dev", ENV: `${branchName}`, REGION: "us-east-1" },
++ environment: { ANALYTICS_MOODBOARDKINESIS_KINESISSTREAMARN: "arn:aws:kinesis:us-east-1:014148916658:stream/moodboardKinesis-gen2-main", ENV: `${branchName}`, REGION: "us-east-1" },
+```
+
+Edit in `./src/main.tsx`:
+
+```diff
+- import amplifyconfig from './amplifyconfiguration.json';
++ import amplifyconfig from '../amplify_outputs.json';
+```
+
+Edit in `./src/components/SurpriseMeButton.tsx`:
+
+```diff
+- const STREAM_NAME = 'moodboardKinesis-main';
++ const STREAM_NAME = 'moodboardKinesis-gen2-main';
+```
+
+Edit in `./amplify/backend.ts`:
+
+```diff
++ backend.kinesisReader.resources.lambda.addToRolePolicy(
++     new iam.PolicyStatement({
++         actions: [
++             "kinesis:ListShards",
++             "kinesis:GetShardIterator",
++             "kinesis:GetRecords",
++             "kinesis:DescribeStream"
++         ],
++         resources: ["arn:aws:kinesis:us-east-1:014148916658:stream/moodboardKinesis-gen2-main"]
++     })
++ );
+```
+
+```console
+git add .
+git commit -m "feat: migrate to gen2"
+git push origin gen2-main
+```
+
+Now connect the `gen2-main` branch to the hosting service:
+
+![](./images/add-gen2-main-branch.png)
+![](./images/deploying-gen2-main-branch.png)
