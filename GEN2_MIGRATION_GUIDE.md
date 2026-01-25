@@ -19,7 +19,6 @@ purposes on environments you can afford to delete.
 - [Assumptions](#assumptions)
 - [Step By Step](#step-by-step)
 - [Feature Coverage](#feature-coverage)
-- [Supported Frameworks](#supported-frameworks)
 - [Limitations](#limitations)
 - [Pre Migration Operations](#pre-migration-operations)
 - [Example Apps](#example-apps)
