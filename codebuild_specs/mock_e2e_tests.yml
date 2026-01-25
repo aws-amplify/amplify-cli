@@ -4,6 +4,7 @@ env:
   variables:
     JEST_JUNIT_OUTPUT: 'reports/junit/js-test-results.xml'
     NODE_OPTIONS: --max-old-space-size=4096
+    COREPACK_HOME: "/tmp/corepack"
 phases:
   build:
     commands:
