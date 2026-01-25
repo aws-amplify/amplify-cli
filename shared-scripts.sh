@@ -201,6 +201,9 @@ function _verifyVersionsMatch {
     checkPackageVersionsInLocalNpmRegistry
 }
 function _mockE2ETests {
+    export COREPACK_HOME="${COREPACK_HOME:-/tmp/corepack}"
+    mkdir -p "$COREPACK_HOME"
+    
     # download [repo, .cache from s3]
     loadCache repo $CODEBUILD_SRC_DIR
     loadCache .cache $HOME/.cache
