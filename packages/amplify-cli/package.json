@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/cli-internal",
-  "version": "14.2.4",
+  "version": "14.2.5",
   "description": "Amplify CLI",
   "repository": {
     "type": "git",
@@ -43,7 +43,7 @@
     "@aws-amplify/amplify-category-geo": "3.5.25",
     "@aws-amplify/amplify-category-hosting": "3.5.44",
     "@aws-amplify/amplify-category-interactions": "5.1.37",
-    "@aws-amplify/amplify-category-notifications": "2.26.41",
+    "@aws-amplify/amplify-category-notifications": "2.26.42",
     "@aws-amplify/amplify-category-predictions": "5.5.25",
     "@aws-amplify/amplify-category-storage": "5.5.25",
     "@aws-amplify/amplify-cli-core": "4.4.4",
