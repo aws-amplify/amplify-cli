@@ -335,3 +335,43 @@ Now connect the `gen2-main` branch to the hosting service:
 
 ![](./images/add-gen2-main-branch.png)
 ![](./images/deploying-gen2-main-branch.png)
+
+Wait for the deployment to finish successfully. Next, locate the root stack of the Gen2 branch:
+
+![](./images/find-gen2-stack.png)
+
+```console
+git checkout main
+npx amplify gen2-migration refactor --to <gen2-stack-name>
+```
+
+```console
+git checkout gen2-main
+```
+
+Edit in `./amplify/backend.ts`:
+
+```diff
+- // s3Bucket.bucketName = '...';
++ s3Bucket.bucketName = '...';
+```
+Edit in `./src/components/SurpriseMeButton.tsx`:
+
+```diff
+- const STREAM_NAME = 'moodboardKinesis-gen2-main';
++ const STREAM_NAME = 'moodboardKinesis-main';
+```
+Edit in `./amplify/function/moodboardkinesisReader/resource.ts`
+
+```diff
+- environment: { ANALYTICS_MOODBOARDKINESIS_KINESISSTREAMARN: "arn:aws:kinesis:us-east-1:014148916658:stream/moodboardKinesis-ge2-main", ENV: `${branchName}`, REGION: "us-east-1" },
++ environment: { ANALYTICS_MOODBOARDKINESIS_KINESISSTREAMARN: "arn:aws:kinesis:us-east-1:014148916658:stream/moodboardKinesis-main", ENV: `${branchName}`, REGION: "us-east-1" },
+```
+
+```console
+git add .
+git commit -m "chore: post refactor"
+git push origin gen2-main
+```
+
+Wait for the deployment to finish successfully.
