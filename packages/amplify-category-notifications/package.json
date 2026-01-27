@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-category-notifications",
-  "version": "2.26.41",
+  "version": "2.26.42",
   "description": "amplify-cli notifications plugin",
   "repository": {
     "type": "git",

@@ -178,6 +178,7 @@
     "follow-redirects": "^1.15.6",
     "tar": "^6.2.1",
     "ejs": "^3.1.10",
-    "form-data": "^4.0.4"
+    "form-data": "^4.0.4",
+    "node-gyp": "^12.1.0"
   }
 }
