@@ -23,7 +23,9 @@
 >
 > If you are starting a new project, we recommend starting with [Amplify Gen 2](https://github.com/aws-amplify/amplify-backend).
 >
-> If you are an existing Gen 1 customer, we recommend that you continue working with your Gen 1 Amplify project. We are actively developing migration tooling to aid in transitioning your project from Gen 1 to Gen 2. We remain committed to supporting both Gen 1 and Gen 2 for the foreseeable future.
+> If you are an existing Gen 1 customer, we encourage you to start planning your move to Gen2 by
+> testing the [beta version of migration tool](https://github.com/aws-amplify/amplify-cli/discussions/14490)
+> on **non production** environments. We remain committed to supporting both Gen 1 and Gen 2 for the foreseeable future.
 >
 > Customers on Gen 1 will continue to receive support for high-priority bugs and essential security updates.
 
