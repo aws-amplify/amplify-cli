@@ -23,7 +23,7 @@ batch:
     - identifier: build_windows
       buildspec: codebuild_specs/build_windows.yml
       env:
-        type: WINDOWS_SERVER_2019_CONTAINER
+        type: WINDOWS_SERVER_2022_CONTAINER
         compute-type: BUILD_GENERAL1_LARGE
         image: $WINDOWS_IMAGE_2019
     - identifier: test

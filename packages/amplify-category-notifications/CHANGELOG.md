@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.26.42](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-notifications@2.26.41...@aws-amplify/amplify-category-notifications@2.26.42) (2026-01-26)
+
+
+### Bug Fixes
+
+* errant certificate mark handling ([#14514](https://github.com/aws-amplify/amplify-cli/issues/14514)) ([f1edf0b](https://github.com/aws-amplify/amplify-cli/commit/f1edf0b714b025992de05e8ab6c478f5b90fa89d))
+* unsanitized input in pem file content handler ([#14508](https://github.com/aws-amplify/amplify-cli/issues/14508)) ([c4f6aaf](https://github.com/aws-amplify/amplify-cli/commit/c4f6aaf76f14587cbd20f1e17dfae4542e8405cb))
+
+
+
+
+
+## [2.26.41](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-notifications@2.26.40...@aws-amplify/amplify-category-notifications@2.26.41) (2025-11-20)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-notifications
+
+
+
+
+
 ## [2.26.40](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-notifications@2.26.39...@aws-amplify/amplify-category-notifications@2.26.40) (2025-11-03)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-notifications
