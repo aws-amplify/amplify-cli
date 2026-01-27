@@ -326,15 +326,16 @@ export async function updateAmplifyYmlFile(logger: Logger, amplifyClient: Amplif
     if (response.app.buildSpec) {
       logger.info(`Repurposing remote buildspec`);
       amplifyYml = yaml.parse(response.app.buildSpec);
-      if (!amplifyYml.frontend) {
-        // shouldn't really happen because it indicates a corrupt gen1 app.
-        // we validate this because a missing 'frontend' section will prevent deploying the gen2 app via hosting.
-        throw new AmplifyError('MigrationError', {
-          message: `Remote buildspec for app '${appId}' is missing a 'frontend' section`,
-          resolution: `Add a 'frontend' section to your build settings in the amplify console and try again`,
-        });
-      }
     }
+  }
+
+  if (amplifyYml && !amplifyYml.frontend) {
+    // shouldn't really happen because it indicates a corrupt gen1 app.
+    // we validate this because a missing 'frontend' section will prevent deploying the gen2 app via hosting.
+    throw new AmplifyError('MigrationError', {
+      message: `Buildspec for app '${appId}' is missing a 'frontend' section`,
+      resolution: `Add a 'frontend' section to your 'amplify.yml' file and try again`,
+    });
   }
 
   if (amplifyYml === undefined) {
