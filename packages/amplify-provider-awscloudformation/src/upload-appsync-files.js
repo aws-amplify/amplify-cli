@@ -7,7 +7,9 @@ const TransformPackage = require('graphql-transformer-core');
 const { S3 } = require('./aws-utils/aws-s3');
 const { fileLogger } = require('./utils/aws-logger');
 const { minifyAllJSONInFolderRecursively } = require('./utils/minify-json');
-
+const { compareCloudFormationStackFilesDetailed } = require('./utils/compare-json');
+const { compareVtlFilesDetailed } = require('./utils/compare-vtl');
+const { optimizeAppSyncResolverDeployment } = require('./utils/appsync-resolver-optimizer');
 const logger = fileLogger('upload-appsync-files');
 
 const ROOT_APPSYNC_S3_KEY = 'amplify-appsync-files';
@@ -22,6 +24,42 @@ function getProjectBucket(context) {
   const projectDetails = context.amplify.getProjectDetails();
   const projectBucket = projectDetails.amplifyMeta.providers ? projectDetails.amplifyMeta.providers[providerName].DeploymentBucketName : '';
   return projectBucket;
+}
+
+function extractS3DeploymentRootKeyfromTemplateURL(templateURL) {
+  if (templateURL && templateURL['Fn::Join']) {
+    const joinParts = templateURL['Fn::Join'][1];
+    for (let i = 0; i < joinParts.length; i++) {
+      const part = joinParts[i];
+      if (typeof part === 'string' && part.startsWith(`${ROOT_APPSYNC_S3_KEY}/`)) {
+        const keyPart = part.substring(ROOT_APPSYNC_S3_KEY.length + 1);
+        const keyParts = keyPart.split('/');
+        if (keyParts.length > 0) {
+          return `${ROOT_APPSYNC_S3_KEY}/${keyParts[0]}`;
+        }
+      }
+    }
+  }
+  return undefined;
+}
+
+function createS3TemplateUrl(deploymentKey, stackKey) {
+  return {
+    'Fn::Join': [
+      '',
+      [
+        'https://s3.',
+        { Ref: 'AWS::Region' },
+        '.',
+        { Ref: 'AWS::URLSuffix' },
+        '/',
+        { Ref: 'S3DeploymentBucket' },
+        '/',
+        deploymentKey,
+        `/stacks/${stackKey}.json`,
+      ],
+    ],
+  };
 }
 /**
  * Updates build/parameters.json with new timestamps and then uploads the
@@ -187,6 +225,17 @@ async function uploadAppSyncFiles(context, resourcesToUpdate, allResources, opti
     const deploymentRootKey = await getDeploymentRootKey(resourceDir);
     writeUpdatedParametersJson(resource, deploymentRootKey);
 
+    if (context.input.options?.['skip-unchanged-resolvers'] && category === 'api') {
+      await optimizeAppSyncResolverDeployment(
+        context,
+        category,
+        resourceName,
+        resourceBuildDir,
+        deploymentRootKey,
+        useDeprecatedParameters,
+      );
+    }
+
     // Upload build/* to S3.
     const s3Client = await S3.getInstance(context);
     if (!fs.existsSync(resourceBuildDir)) {
@@ -195,6 +244,7 @@ async function uploadAppSyncFiles(context, resourcesToUpdate, allResources, opti
     if (context.input.options?.minify) {
       minifyAllJSONInFolderRecursively(resourceBuildDir);
     }
+
     const spinner = new ora('Uploading files.');
     spinner.start();
     await TransformPackage.uploadAPIProject({
