@@ -129,7 +129,18 @@ export class StorageServer extends EventEmitter {
     if (fs.existsSync(filePath) && !fs.statSync(filePath).isDirectory()) {
       fs.readFile(filePath, (err, data) => {
         if (err) {
-          console.log('error');
+          response.set('Content-Type', 'text/xml');
+          response.status(500);
+          response.send(
+            o2x({
+              '?xml version="1.0" encoding="utf-8"?': null,
+              Error: {
+                Code: 'InternalServerException',
+                Message: err.message,
+              },
+            }),
+          );
+          return;
         }
         response.send(data);
       });
@@ -230,7 +241,20 @@ export class StorageServer extends EventEmitter {
     const filePath = path.join(this.localDirectoryPath, request.params.path);
     if (fs.existsSync(filePath)) {
       fs.unlink(filePath, (err) => {
-        if (err) throw err;
+        if (err) {
+          response.set('Content-Type', 'text/xml');
+          response.status(500);
+          response.send(
+            o2x({
+              '?xml version="1.0" encoding="utf-8"?': null,
+              Error: {
+                Code: 'InternalServerException',
+                Message: err.message,
+              },
+            }),
+          );
+          return;
+        }
         response.set('Content-Type', 'text/xml');
         response.send(xml(convert.json2xml(JSON.stringify(request.params.id + 'was deleted'))));
       });
