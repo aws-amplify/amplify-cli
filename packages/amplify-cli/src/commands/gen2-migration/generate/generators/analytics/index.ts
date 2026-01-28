@@ -22,6 +22,7 @@ export interface AnalyticsRenderParameters {
  *
  * Generated output:
  * ```typescript
+ * import { CfnStream } from 'aws-cdk-lib/aws-kinesis';
  * import { constructClassName } from './constructFileName';
  * import { Backend } from '@aws-amplify/backend';
  *
@@ -38,6 +39,8 @@ export interface AnalyticsRenderParameters {
  *     unauthRoleName: backend.auth.resources.unauthenticatedUserIamRole.roleName,
  *     branchName
  *   });
+ *   //Use this post-refactor
+ *   //(analytics.node.findChild('KinesisStream') as CfnStream).name = "streamName"
  *   return analytics;
  * };
  * ```
@@ -65,6 +68,17 @@ export const renderAnalytics = (params: AnalyticsRenderParameters): ts.NodeArray
       factory.createNamedImports([factory.createImportSpecifier(false, undefined, factory.createIdentifier('Backend'))]),
     ),
     factory.createStringLiteral('@aws-amplify/backend'),
+  );
+
+  // Import: import { CfnStream } from 'aws-cdk-lib/aws-kinesis';
+  const cfnStreamImport = factory.createImportDeclaration(
+    undefined,
+    factory.createImportClause(
+      false,
+      undefined,
+      factory.createNamedImports([factory.createImportSpecifier(false, undefined, factory.createIdentifier('CfnStream'))]),
+    ),
+    factory.createStringLiteral('aws-cdk-lib/aws-kinesis'),
   );
 
   // Create const branchName = process.env.AWS_BRANCH ?? 'sandbox';
@@ -180,7 +194,25 @@ export const renderAnalytics = (params: AnalyticsRenderParameters): ts.NodeArray
     ),
   );
 
+  // Create return statement
   const returnStatement = factory.createReturnStatement(factory.createIdentifier('analytics'));
+  // returnStatement = "return analytics"
+
+  // Create comment: //Use this post-refactor
+  // //(analytics.node.findChild('KinesisStream') as CfnStream).name = "resourceName-main"
+  const postRefactorComment = ts.addSyntheticLeadingComment(
+    returnStatement,
+    ts.SyntaxKind.SingleLineCommentTrivia,
+    'Use this post-refactor',
+    true,
+  );
+  // Add second line comment
+  const postRefactorCode = ts.addSyntheticLeadingComment(
+    postRefactorComment,
+    ts.SyntaxKind.SingleLineCommentTrivia,
+    `(analytics.node.findChild('KinesisStream') as CfnStream).name = "${resourceName}-main"`,
+    false,
+  );
 
   // Create the arrow function: export const defineAnalytics = (backend: Backend<any>) => { ... }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Using 'any' for generated code to avoid complex type inference
@@ -198,7 +230,7 @@ export const renderAnalytics = (params: AnalyticsRenderParameters): ts.NodeArray
     ],
     undefined,
     factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
-    factory.createBlock([createStackCall, analyticsConstDeclaration, returnStatement], true),
+    factory.createBlock([createStackCall, analyticsConstDeclaration, postRefactorCode], true),
   );
 
   // Export statement: export const defineAnalytics = ...
@@ -210,5 +242,13 @@ export const renderAnalytics = (params: AnalyticsRenderParameters): ts.NodeArray
     ),
   );
 
-  return factory.createNodeArray([constructImport, backendImport, newLineIdentifier, branchNameConst, newLineIdentifier, exportStatement]);
+  return factory.createNodeArray([
+    cfnStreamImport,
+    constructImport,
+    backendImport,
+    newLineIdentifier,
+    branchNameConst,
+    newLineIdentifier,
+    exportStatement,
+  ]);
 };
