@@ -329,15 +329,6 @@ export async function updateAmplifyYmlFile(logger: Logger, amplifyClient: Amplif
     }
   }
 
-  if (amplifyYml && !amplifyYml.frontend) {
-    // shouldn't really happen because it indicates a corrupt gen1 app.
-    // we validate this because a missing 'frontend' section will prevent deploying the gen2 app via hosting.
-    throw new AmplifyError('MigrationError', {
-      message: `Buildspec for app '${appId}' is missing a 'frontend' section`,
-      resolution: `Add a 'frontend' section to your 'amplify.yml' file and try again`,
-    });
-  }
-
   if (amplifyYml === undefined) {
     // this means the gen1 environment was never deployed through hosting, neither backend nor frontend.
     // since we currently instruct customers to deploy their Gen2 branch via hosting, we need to create

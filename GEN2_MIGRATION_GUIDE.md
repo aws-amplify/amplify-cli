@@ -389,18 +389,21 @@ Your schema is located in `./amplify/data/resource.ts`.
 
 ### 3. Deploy
 
-Deploying the generated Gen2 application is done via [fullstack-branch-deployments](https://docs.amplify.aws/flutter/deploy-and-host/fullstack-branching/branch-deployments/). First, push the code:
-
-> [!NOTE]
-> The migration tool generates an `amplify.yml` buildspec file that allows for 
-> branch deployments to deploy Gen2 backend applications even in the absence of a 
-> webapp published via amplify hosting.
+Deploying the generated Gen2 application is done via [fullstack-branch-deployments](https://docs.amplify.aws/flutter/deploy-and-host/fullstack-branching/branch-deployments/). 
+First, push the code:
 
 ```bash
 git add .
 git commit -m "feat: migrate to gen2"
 git push origin gen2-main
 ```
+
+> [!NOTE]
+> The migration tool generates an `amplify.yml` buildspec file that allows for 
+> branch deployments to deploy Gen2 backend applications even in the absence of a 
+> webapp published via amplify hosting. If you'd like to start using the hosting service to publish your Gen2 webapp, you'll 
+> need to manually add a `frontend` section to this file and provide the necessary configuration to build your webapp. 
+> See [Build specification reference](https://docs.aws.amazon.com/amplify/latest/userguide/yml-specification-syntax.html) for more details.
 
 Next, login to the AWS Amplify console and connect your new branch to the existing application:
 
