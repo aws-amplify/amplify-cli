@@ -86,18 +86,17 @@ export async function detectStackDrift(
 
   // Handle UNKNOWN stack drift status
   if (driftStatus?.StackDriftStatus === 'UNKNOWN') {
-    const reason = formatReason(driftStatus.DetectionStatusReason);
     print.debug(
       'Stack drift status is UNKNOWN. This may occur when CloudFormation is unable to detect drift for at least one resource and all other resources are IN_SYNC.\n' +
-        `Reason: ${reason}`,
+        `Reason: ${driftStatus.DetectionStatusReason ?? 'No reason provided'}`,
     );
   }
 
-  // Get the drift results, including ALL statuses (IN_SYNC, MODIFIED, DELETED, NOT_CHECKED)
+  // Get the drift results, including ALL statuses
   const driftResults = await cfn.send(
     new DescribeStackResourceDriftsCommand({
       StackName: stackName,
-      StackResourceDriftStatusFilters: ['IN_SYNC', 'MODIFIED', 'DELETED', 'NOT_CHECKED'],
+      StackResourceDriftStatusFilters: ['IN_SYNC', 'MODIFIED', 'DELETED', 'NOT_CHECKED', 'UNKNOWN'],
     }),
   );
 
@@ -263,7 +262,7 @@ async function waitForDriftDetection(
 
     if (response.DetectionStatus === 'DETECTION_FAILED') {
       throw new AmplifyError('CloudFormationTemplateError', {
-        message: `Drift detection failed: ${formatReason(response.DetectionStatusReason)}`,
+        message: `Drift detection failed: ${response.DetectionStatusReason ?? 'No reason provided'}`,
         resolution: 'Check CloudFormation console for more details or try again.',
       });
     }
@@ -428,6 +427,3 @@ export async function detectStackDriftRecursive(
 /**
  * Format a reason string, handling undefined/null values
  */
-function formatReason(reason: string | undefined): string {
-  return reason || 'No reason provided';
-}
