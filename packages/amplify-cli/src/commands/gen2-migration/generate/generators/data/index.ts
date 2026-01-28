@@ -253,22 +253,29 @@ export const generateDataSource = async (gen1Env: string, dataDefinition?: DataD
       OPENID_CONNECT: 'oidc',
     };
 
-    // Add default authorization mode from Gen1 config
-    if (gen1AuthModes.defaultAuthentication?.authenticationType) {
-      const gen2AuthMode = authModeMap[gen1AuthModes.defaultAuthentication.authenticationType] || 'userPool';
-      authModeProperties.push(factory.createPropertyAssignment('defaultAuthorizationMode', factory.createStringLiteral(gen2AuthMode)));
-
-      // Add auth mode config based on default authentication type
-      switch (gen1AuthModes.defaultAuthentication.authenticationType) {
+    /**
+     * Processes a Gen 1 authentication provider and generates corresponding Gen 2 auth mode configuration.
+     *
+     * @param provider - Gen 1 auth provider object containing:
+     *   - authenticationType: 'API_KEY' | 'AWS_LAMBDA' | 'OPENID_CONNECT' | 'AMAZON_COGNITO_USER_POOLS' | 'AWS_IAM'
+     *   - Type-specific config (apiKeyConfig, lambdaAuthorizerConfig, openIDConnectConfig, etc.)
+     *
+     * Generates Gen 2 auth mode properties like:
+     *   - apiKeyAuthorizationMode: { expiresInDays: number }
+     *   - lambdaAuthorizationMode: { timeToLiveInSeconds: number }
+     *   - oidcAuthorizationMode: { oidcIssuerUrl: string, clientId?: string }
+     */
+    const addAuthModeConfig = (provider: any) => {
+      switch (provider.authenticationType) {
         case 'API_KEY':
-          if (gen1AuthModes.defaultAuthentication.apiKeyConfig?.apiKeyExpirationDays) {
+          if (provider.apiKeyConfig?.apiKeyExpirationDays) {
             authModeProperties.push(
               factory.createPropertyAssignment(
                 'apiKeyAuthorizationMode',
                 factory.createObjectLiteralExpression([
                   factory.createPropertyAssignment(
                     'expiresInDays',
-                    factory.createNumericLiteral(gen1AuthModes.defaultAuthentication.apiKeyConfig.apiKeyExpirationDays.toString()),
+                    factory.createNumericLiteral(provider.apiKeyConfig.apiKeyExpirationDays.toString()),
                   ),
                 ]),
               ),
@@ -276,14 +283,14 @@ export const generateDataSource = async (gen1Env: string, dataDefinition?: DataD
           }
           break;
         case 'AWS_LAMBDA':
-          if (gen1AuthModes.defaultAuthentication.lambdaAuthorizerConfig?.ttlSeconds) {
+          if (provider.lambdaAuthorizerConfig?.ttlSeconds) {
             authModeProperties.push(
               factory.createPropertyAssignment(
                 'lambdaAuthorizationMode',
                 factory.createObjectLiteralExpression([
                   factory.createPropertyAssignment(
                     'timeToLiveInSeconds',
-                    factory.createNumericLiteral(gen1AuthModes.defaultAuthentication.lambdaAuthorizerConfig.ttlSeconds.toString()),
+                    factory.createNumericLiteral(provider.lambdaAuthorizerConfig.ttlSeconds.toString()),
                   ),
                 ]),
               ),
@@ -291,22 +298,16 @@ export const generateDataSource = async (gen1Env: string, dataDefinition?: DataD
           }
           break;
         case 'OPENID_CONNECT':
-          if (gen1AuthModes.defaultAuthentication.openIDConnectConfig) {
+          if (provider.openIDConnectConfig) {
             const oidcProps = [];
-            if (gen1AuthModes.defaultAuthentication.openIDConnectConfig.issuer) {
+            if (provider.openIDConnectConfig.issuer) {
               oidcProps.push(
-                factory.createPropertyAssignment(
-                  'oidcIssuerUrl',
-                  factory.createStringLiteral(gen1AuthModes.defaultAuthentication.openIDConnectConfig.issuer),
-                ),
+                factory.createPropertyAssignment('oidcIssuerUrl', factory.createStringLiteral(provider.openIDConnectConfig.issuer)),
               );
             }
-            if (gen1AuthModes.defaultAuthentication.openIDConnectConfig.clientId) {
+            if (provider.openIDConnectConfig.clientId) {
               oidcProps.push(
-                factory.createPropertyAssignment(
-                  'clientId',
-                  factory.createStringLiteral(gen1AuthModes.defaultAuthentication.openIDConnectConfig.clientId),
-                ),
+                factory.createPropertyAssignment('clientId', factory.createStringLiteral(provider.openIDConnectConfig.clientId)),
               );
             }
             if (oidcProps.length > 0) {
@@ -316,6 +317,22 @@ export const generateDataSource = async (gen1Env: string, dataDefinition?: DataD
             }
           }
           break;
+      }
+    };
+
+    // Add default authorization mode
+    if (gen1AuthModes.defaultAuthentication?.authenticationType) {
+      const gen2AuthMode = authModeMap[gen1AuthModes.defaultAuthentication.authenticationType] || 'userPool';
+      authModeProperties.push(factory.createPropertyAssignment('defaultAuthorizationMode', factory.createStringLiteral(gen2AuthMode)));
+
+      // Add config for default auth mode if it needs configuration
+      addAuthModeConfig(gen1AuthModes.defaultAuthentication);
+    }
+
+    // Add additional auth providers
+    if (gen1AuthModes.additionalAuthenticationProviders) {
+      for (const provider of gen1AuthModes.additionalAuthenticationProviders) {
+        addAuthModeConfig(provider);
       }
     }
 
