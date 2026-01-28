@@ -25,16 +25,18 @@ export interface AnalyticsRenderParameters {
  * import { constructClassName } from './constructFileName';
  * import { Backend } from '@aws-amplify/backend';
  *
+ * const branchName = process.env.AWS_BRANCH ?? 'sandbox';
+ *
  * export const analytics = (backend: Backend<any>) => {
  *   const analyticsStack = backend.createStack('analytics');
  *   new constructClassName(analyticsStack, 'resourceName', {
  *     kinesisStreamName: 'resourceName',
  *     kinesisStreamShardCount: shardCount,
- *     authPolicyName: 'resourceName-auth-policy',
- *     unauthPolicyName: 'resourceName-unauth-policy',
+ *     authPolicyName: `resourceName-auth-policy-${branchName}`,
+ *     unauthPolicyName: `resourceName-unauth-policy-${branchName}`,
  *     authRoleName: backend.auth.resources.authenticatedUserIamRole.roleName,
  *     unauthRoleName: backend.auth.resources.unauthenticatedUserIamRole.roleName,
- *     branchName: process.env.AWS_BRANCH ?? 'sandbox'
+ *     branchName
  *   });
  * };
  * ```
@@ -62,6 +64,29 @@ export const renderAnalytics = (params: AnalyticsRenderParameters): ts.NodeArray
       factory.createNamedImports([factory.createImportSpecifier(false, undefined, factory.createIdentifier('Backend'))]),
     ),
     factory.createStringLiteral('@aws-amplify/backend'),
+  );
+
+  // const branchName = process.env.AWS_BRANCH ?? 'sandbox';
+  const branchNameConst = factory.createVariableStatement(
+    undefined,
+    factory.createVariableDeclarationList(
+      [
+        factory.createVariableDeclaration(
+          'branchName',
+          undefined,
+          undefined,
+          factory.createBinaryExpression(
+            factory.createPropertyAccessExpression(
+              factory.createPropertyAccessExpression(factory.createIdentifier('process'), factory.createIdentifier('env')),
+              factory.createIdentifier('AWS_BRANCH'),
+            ),
+            factory.createToken(ts.SyntaxKind.QuestionQuestionToken),
+            factory.createStringLiteral('sandbox'),
+          ),
+        ),
+      ],
+      ts.NodeFlags.Const,
+    ),
   );
 
   // Create backend.createStack('analytics') call
@@ -110,17 +135,6 @@ export const renderAnalytics = (params: AnalyticsRenderParameters): ts.NodeArray
       factory.createIdentifier('roleName'),
     );
 
-  // Create process.env.AWS_BRANCH ?? 'sandbox'
-  const createEnvExpression = () =>
-    factory.createBinaryExpression(
-      factory.createPropertyAccessExpression(
-        factory.createPropertyAccessExpression(factory.createIdentifier('process'), factory.createIdentifier('env')),
-        factory.createIdentifier('AWS_BRANCH'),
-      ),
-      factory.createToken(ts.SyntaxKind.QuestionQuestionToken),
-      factory.createStringLiteral('sandbox'),
-    );
-
   // Create the new Construct instantiation with props
   const newConstructExpression = factory.createExpressionStatement(
     factory.createNewExpression(factory.createIdentifier(constructClassName), undefined, [
@@ -132,15 +146,19 @@ export const renderAnalytics = (params: AnalyticsRenderParameters): ts.NodeArray
           factory.createPropertyAssignment(factory.createIdentifier('kinesisStreamShardCount'), factory.createNumericLiteral(shardCount)),
           factory.createPropertyAssignment(
             factory.createIdentifier('authPolicyName'),
-            factory.createStringLiteral(`${resourceName}-auth-policy`),
+            factory.createTemplateExpression(factory.createTemplateHead(`${resourceName}-auth-policy-`), [
+              factory.createTemplateSpan(factory.createIdentifier('branchName'), factory.createTemplateTail('')),
+            ]),
           ),
           factory.createPropertyAssignment(
             factory.createIdentifier('unauthPolicyName'),
-            factory.createStringLiteral(`${resourceName}-unauth-policy`),
+            factory.createTemplateExpression(factory.createTemplateHead(`${resourceName}-unauth-policy-`), [
+              factory.createTemplateSpan(factory.createIdentifier('branchName'), factory.createTemplateTail('')),
+            ]),
           ),
           factory.createPropertyAssignment(factory.createIdentifier('authRoleName'), createAuthRoleAccess()),
           factory.createPropertyAssignment(factory.createIdentifier('unauthRoleName'), createUnauthRoleAccess()),
-          factory.createPropertyAssignment(factory.createIdentifier('branchName'), createEnvExpression()),
+          factory.createShorthandPropertyAssignment(factory.createIdentifier('branchName')),
         ],
         true,
       ),
@@ -175,5 +193,5 @@ export const renderAnalytics = (params: AnalyticsRenderParameters): ts.NodeArray
     ),
   );
 
-  return factory.createNodeArray([constructImport, backendImport, newLineIdentifier, exportStatement]);
+  return factory.createNodeArray([constructImport, backendImport, newLineIdentifier, branchNameConst, newLineIdentifier, exportStatement]);
 };
