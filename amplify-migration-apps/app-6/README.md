@@ -266,63 +266,72 @@ npx amplify gen2-migration lock
 ```console
 git checkout -b gen2-main
 npx amplify gen2-migration generate
-
-Edit in `./amplify/data/resource.ts`:
+```
+**Edit in `./amplify/data/resource.ts`:**
 
 ```diff
 - branchName: "main"
 + branchName: "gen2-main"
 ```
 
-Edit in `./amplify/function/moodboardRandomEmojiGenerator/index.js`
+**Edit in `./amplify/function/moodboardRandomEmojiGenerator/index.js`**
 
 ```diff
 - exports.handler = async (event) => {
 + export async function handler(event) {
 ```
 
-Edit in `./amplify/function/moodboardKinesisReader/index.js`
+**Edit in `./amplify/function/moodboardKinesisReader/index.js`**
 
 ```diff
 - exports.handler = async (event) => {
 + export async function handler(event) {
 ```
 
-Edit in `./amplify/function/moodboardkinesisReader/resource.ts`
+**Edit in `./amplify/function/moodboardKinesisReader/resource.ts`**
 
 ```diff
-- environment: { ANALYTICS_MOODBOARDKINESIS_KINESISSTREAMARN: "arn:aws:kinesis:us-east-1:014148916658:stream/moodboardKinesis-dev", ENV: `${branchName}`, REGION: "us-east-1" },
+- environment: { ANALYTICS_MOODBOARDKINESIS_KINESISSTREAMARN: "arn:aws:kinesis:us-east-1:014148916658:stream/moodboardKinesis-main", ENV: `${branchName}`, REGION: "us-east-1" },
 + environment: { ANALYTICS_MOODBOARDKINESIS_KINESISSTREAMARN: "arn:aws:kinesis:us-east-1:014148916658:stream/moodboardKinesis-gen2-main", ENV: `${branchName}`, REGION: "us-east-1" },
 ```
 
-Edit in `./src/main.tsx`:
+**Edit in `./src/main.tsx`:**
 
 ```diff
 - import amplifyconfig from './amplifyconfiguration.json';
 + import amplifyconfig from '../amplify_outputs.json';
 ```
 
-Edit in `./src/components/SurpriseMeButton.tsx`:
+**Edit in `./src/components/SurpriseMeButton.tsx`:**
 
 ```diff
 - const STREAM_NAME = 'moodboardKinesis-main';
 + const STREAM_NAME = 'moodboardKinesis-gen2-main';
 ```
 
-Edit in `./amplify/backend.ts`:
+**Edit in `./amplify/backend.ts`:**
 
 ```diff
-+ backend.kinesisReader.resources.lambda.addToRolePolicy(
-+     new iam.PolicyStatement({
+- import { Duration } from "aws-cdk-lib";
++ import { Duration, aws_iam } from "aws-cdk-lib";
+```
+
+```diff
++ backend.moodboardKinesisReader.resources.lambda.addToRolePolicy(
++     new aws_iam.PolicyStatement({
 +         actions: [
 +             "kinesis:ListShards",
 +             "kinesis:GetShardIterator",
 +             "kinesis:GetRecords",
 +             "kinesis:DescribeStream"
 +         ],
-+         resources: ["arn:aws:kinesis:us-east-1:014148916658:stream/moodboardKinesis-gen2-main"]
++         resources: [analytics.kinesisStreamArn]
 +     })
 + );
+```
+
+```diff
++ backend.moodBoardKinesisReader.addEnvironment("ANALYTICS_MOODBOARDDEMOKINESIS_KINESISSTREAMARN",analytics.kinesisStreamArn)
 ```
 
 ```console
@@ -349,22 +358,28 @@ npx amplify gen2-migration refactor --to <gen2-stack-name>
 git checkout gen2-main
 ```
 
-Edit in `./amplify/backend.ts`:
+**Edit in `./amplify/analytics/resource.ts`:**
+
+```diff
+- //(analytics.node.findChild('KinesisStream') as CfnStream).name = "..."
++ (analytics.node.findChild('KinesisStream') as CfnStream).name = "..."
+```
+**Edit in `./amplify/backend.ts`:**
 
 ```diff
 - // s3Bucket.bucketName = '...';
 + s3Bucket.bucketName = '...';
 ```
-Edit in `./src/components/SurpriseMeButton.tsx`:
+**Edit in `./src/components/SurpriseMeButton.tsx`:**
 
 ```diff
 - const STREAM_NAME = 'moodboardKinesis-gen2-main';
 + const STREAM_NAME = 'moodboardKinesis-main';
 ```
-Edit in `./amplify/function/moodboardkinesisReader/resource.ts`
+**Edit in `./amplify/function/moodboardKinesisReader/resource.ts`**
 
 ```diff
-- environment: { ANALYTICS_MOODBOARDKINESIS_KINESISSTREAMARN: "arn:aws:kinesis:us-east-1:014148916658:stream/moodboardKinesis-ge2-main", ENV: `${branchName}`, REGION: "us-east-1" },
+- environment: { ANALYTICS_MOODBOARDKINESIS_KINESISSTREAMARN: "arn:aws:kinesis:us-east-1:014148916658:stream/moodboardKinesis-gen2-main", ENV: `${branchName}`, REGION: "us-east-1" },
 + environment: { ANALYTICS_MOODBOARDKINESIS_KINESISSTREAMARN: "arn:aws:kinesis:us-east-1:014148916658:stream/moodboardKinesis-main", ENV: `${branchName}`, REGION: "us-east-1" },
 ```
 
