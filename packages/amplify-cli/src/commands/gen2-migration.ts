@@ -145,7 +145,7 @@ export const run = async (context: $TSContext) => {
       printer.blankLine();
       printer.info(chalk.yellow(`You are about to execute '${stepName}' on environment '${appId}/${envName}'. This operation will:`));
       printer.blankLine();
-      for (const implication of implementation.implications()) {
+      for (const implication of await implementation.implications()) {
         printer.info(`- ${implication}`);
       }
       printer.blankLine();

@@ -8,7 +8,7 @@ import { AppSyncClient, paginateListGraphqlApis } from '@aws-sdk/client-appsync'
 import { AmplifyGen2MigrationValidations } from './_validations';
 
 export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
-  public implications(): string[] {
+  public async implications(): Promise<string[]> {
     return ['Enable deletion protection on DynamoDB tables storing your model data', 'Lock the environment from future updates'];
   }
 

@@ -2,7 +2,7 @@ import { AmplifyMigrationStep } from './_step';
 import { printer } from '@aws-amplify/amplify-prompts';
 
 export class AmplifyMigrationCleanupStep extends AmplifyMigrationStep {
-  public implications(): string[] {
+  public async implications(): Promise<string[]> {
     throw new Error('Method not implemented.');
   }
 
