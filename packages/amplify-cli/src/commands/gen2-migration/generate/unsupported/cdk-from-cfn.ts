@@ -46,6 +46,30 @@ export class CdkFromCfn {
   ) {}
 
   /**
+   * Gets the physical stack name for a nested stack by looking up its physical resource ID
+   * from the root stack.
+   */
+  private async getNestedStackPhysicalName(logicalId: string): Promise<string | undefined> {
+    if (!this.cfnClient || !this.rootStackName) {
+      return undefined;
+    }
+
+    try {
+      const describeResourcesResponse = await this.cfnClient.send(
+        new DescribeStackResourcesCommand({
+          StackName: this.rootStackName,
+          LogicalResourceId: logicalId,
+        }),
+      );
+
+      return describeResourcesResponse.StackResources?.[0]?.PhysicalResourceId;
+    } catch (error) {
+      console.log(`Error getting nested stack physical name: ${error}`);
+      return undefined;
+    }
+  }
+
+  /**
    * Gets the parameters for a nested stack by looking up its physical resource ID
    * from the root stack and then describing that stack.
    */
@@ -55,16 +79,8 @@ export class CdkFromCfn {
     }
 
     try {
-      // Get the physical resource ID (actual stack name) from the root stack
-      const describeResourcesResponse = await this.cfnClient.send(
-        new DescribeStackResourcesCommand({
-          StackName: this.rootStackName,
-          LogicalResourceId: logicalId,
-        }),
-      );
-
-      const stackResource = describeResourcesResponse.StackResources?.[0];
-      if (!stackResource?.PhysicalResourceId) {
+      const nestedStackName = await this.getNestedStackPhysicalName(logicalId);
+      if (!nestedStackName) {
         console.log(`Could not find physical resource ID for nested stack: ${logicalId}`);
         return [];
       }
@@ -72,7 +88,7 @@ export class CdkFromCfn {
       // Describe the nested stack to get its parameters
       const describeStacksResponse = await this.cfnClient.send(
         new DescribeStacksCommand({
-          StackName: stackResource.PhysicalResourceId,
+          StackName: nestedStackName,
         }),
       );
 
@@ -80,6 +96,34 @@ export class CdkFromCfn {
     } catch (error) {
       console.log(`Error getting nested stack parameters: ${error}`);
       return [];
+    }
+  }
+
+  /**
+   * Gets the physical resource ID of a resource within a nested stack.
+   */
+  private async getNestedStackResourcePhysicalId(nestedStackLogicalId: string, resourceLogicalId: string): Promise<string | undefined> {
+    if (!this.cfnClient || !this.rootStackName) {
+      return undefined;
+    }
+
+    try {
+      const nestedStackName = await this.getNestedStackPhysicalName(nestedStackLogicalId);
+      if (!nestedStackName) {
+        return undefined;
+      }
+
+      const describeResourcesResponse = await this.cfnClient.send(
+        new DescribeStackResourcesCommand({
+          StackName: nestedStackName,
+          LogicalResourceId: resourceLogicalId,
+        }),
+      );
+
+      return describeResourcesResponse.StackResources?.[0]?.PhysicalResourceId;
+    } catch (error) {
+      console.log(`Error getting nested stack resource physical ID: ${error}`);
+      return undefined;
     }
   }
 
@@ -94,15 +138,16 @@ export class CdkFromCfn {
     // Get shardCount from deployed stack parameters
     const parameters = await this.getNestedStackParameters(nestedStackLogicalId);
     const shardCountParam = parameters.find((p) => p.ParameterKey === 'kinesisStreamShardCount');
-    const streamNameParam = parameters.find((p) => p.ParameterKey === 'kinesisStreamName');
     if (!shardCountParam?.ParameterValue) {
       throw new Error(`kinesisStreamShardCount parameter not found for nested stack with logical ID: ${nestedStackLogicalId}`);
     }
-    if (!streamNameParam?.ParameterValue) {
-      throw new Error(`kinesisStreamName parameter not found for nested stack with logical ID: ${nestedStackLogicalId}`);
-    }
     const shardCount = parseInt(shardCountParam.ParameterValue, 10);
-    const streamName = streamNameParam.ParameterValue;
+
+    // Get the actual deployed Kinesis stream name (physical resource ID)
+    const streamName = await this.getNestedStackResourcePhysicalId(nestedStackLogicalId, 'KinesisStream');
+    if (!streamName) {
+      throw new Error(`Could not find physical stream name for KinesisStream in nested stack: ${nestedStackLogicalId}`);
+    }
 
     const finalTemplate = await this.preTransmute(template, nestedStackLogicalId);
     const tsFile = cdk_from_cfn.transmute(JSON.stringify(finalTemplate), 'typescript', nestedStackLogicalId, 'construct');
