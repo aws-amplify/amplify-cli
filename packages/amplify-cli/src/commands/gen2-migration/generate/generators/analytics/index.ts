@@ -34,7 +34,7 @@ export interface AnalyticsRenderParameters {
  *     unauthPolicyName: 'resourceName-unauth-policy',
  *     authRoleName: backend.auth.resources.authenticatedUserIamRole.roleName,
  *     unauthRoleName: backend.auth.resources.unauthenticatedUserIamRole.roleName,
- *     amplifyEnv: process.env.AWS_BRANCH ?? 'sandbox'
+ *     branchName: process.env.AWS_BRANCH ?? 'sandbox'
  *   });
  * };
  * ```
@@ -140,7 +140,7 @@ export const renderAnalytics = (params: AnalyticsRenderParameters): ts.NodeArray
           ),
           factory.createPropertyAssignment(factory.createIdentifier('authRoleName'), createAuthRoleAccess()),
           factory.createPropertyAssignment(factory.createIdentifier('unauthRoleName'), createUnauthRoleAccess()),
-          factory.createPropertyAssignment(factory.createIdentifier('amplifyEnv'), createEnvExpression()),
+          factory.createPropertyAssignment(factory.createIdentifier('branchName'), createEnvExpression()),
         ],
         true,
       ),

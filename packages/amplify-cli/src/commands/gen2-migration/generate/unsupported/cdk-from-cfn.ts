@@ -115,18 +115,18 @@ export class CdkFromCfn {
   }
 
   private async preTransmute(template: CFNTemplate, logicalId: string): Promise<CFNTemplate> {
-    // Rename "env" parameter to "amplify-env"
+    // Rename "env" parameter to "branchName"
     if (template.Parameters?.env) {
-      template.Parameters['amplify-env'] = template.Parameters.env;
+      template.Parameters['branchName'] = template.Parameters.env;
       delete template.Parameters.env;
     }
 
-    // Update all Ref references from "env" to "amplify-env"
+    // Update all Ref references from "env" to "branchName"
     const updateRefs = (obj: unknown): void => {
       if (typeof obj === 'object' && obj !== null) {
         const record = obj as Record<string, unknown>;
         if (record.Ref === 'env') {
-          record.Ref = 'amplify-env';
+          record.Ref = 'branchName';
         }
         Object.values(record).forEach(updateRefs);
       }
