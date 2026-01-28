@@ -27,9 +27,9 @@ export interface AnalyticsRenderParameters {
  *
  * const branchName = process.env.AWS_BRANCH ?? 'sandbox';
  *
- * export const analytics = (backend: Backend<any>) => {
+ * export const defineAnalytics = (backend: Backend<any>) => {
  *   const analyticsStack = backend.createStack('analytics');
- *   new constructClassName(analyticsStack, 'resourceName', {
+ *   const analytics = new constructClassName(analyticsStack, 'resourceName', {
  *     kinesisStreamName: 'resourceName',
  *     kinesisStreamShardCount: shardCount,
  *     authPolicyName: `resourceName-auth-policy-${branchName}`,
@@ -38,6 +38,7 @@ export interface AnalyticsRenderParameters {
  *     unauthRoleName: backend.auth.resources.unauthenticatedUserIamRole.roleName,
  *     branchName
  *   });
+ *   return analytics;
  * };
  * ```
  */
@@ -66,7 +67,7 @@ export const renderAnalytics = (params: AnalyticsRenderParameters): ts.NodeArray
     factory.createStringLiteral('@aws-amplify/backend'),
   );
 
-  // const branchName = process.env.AWS_BRANCH ?? 'sandbox';
+  // Create const branchName = process.env.AWS_BRANCH ?? 'sandbox';
   const branchNameConst = factory.createVariableStatement(
     undefined,
     factory.createVariableDeclarationList(
@@ -135,37 +136,53 @@ export const renderAnalytics = (params: AnalyticsRenderParameters): ts.NodeArray
       factory.createIdentifier('roleName'),
     );
 
-  // Create the new Construct instantiation with props
-  const newConstructExpression = factory.createExpressionStatement(
-    factory.createNewExpression(factory.createIdentifier(constructClassName), undefined, [
-      factory.createIdentifier('analyticsStack'),
-      factory.createStringLiteral(resourceName),
-      factory.createObjectLiteralExpression(
-        [
-          factory.createPropertyAssignment(factory.createIdentifier('kinesisStreamName'), factory.createStringLiteral(resourceName)),
-          factory.createPropertyAssignment(factory.createIdentifier('kinesisStreamShardCount'), factory.createNumericLiteral(shardCount)),
-          factory.createPropertyAssignment(
-            factory.createIdentifier('authPolicyName'),
-            factory.createTemplateExpression(factory.createTemplateHead(`${resourceName}-auth-policy-`), [
-              factory.createTemplateSpan(factory.createIdentifier('branchName'), factory.createTemplateTail('')),
-            ]),
-          ),
-          factory.createPropertyAssignment(
-            factory.createIdentifier('unauthPolicyName'),
-            factory.createTemplateExpression(factory.createTemplateHead(`${resourceName}-unauth-policy-`), [
-              factory.createTemplateSpan(factory.createIdentifier('branchName'), factory.createTemplateTail('')),
-            ]),
-          ),
-          factory.createPropertyAssignment(factory.createIdentifier('authRoleName'), createAuthRoleAccess()),
-          factory.createPropertyAssignment(factory.createIdentifier('unauthRoleName'), createUnauthRoleAccess()),
-          factory.createShorthandPropertyAssignment(factory.createIdentifier('branchName')),
-        ],
-        true,
-      ),
-    ]),
+  // Create const analytics = new Construct(...) with props
+  const analyticsConstDeclaration = factory.createVariableStatement(
+    undefined,
+    factory.createVariableDeclarationList(
+      [
+        factory.createVariableDeclaration(
+          'analytics',
+          undefined,
+          undefined,
+          factory.createNewExpression(factory.createIdentifier(constructClassName), undefined, [
+            factory.createIdentifier('analyticsStack'),
+            factory.createStringLiteral(resourceName),
+            factory.createObjectLiteralExpression(
+              [
+                factory.createPropertyAssignment(factory.createIdentifier('kinesisStreamName'), factory.createStringLiteral(resourceName)),
+                factory.createPropertyAssignment(
+                  factory.createIdentifier('kinesisStreamShardCount'),
+                  factory.createNumericLiteral(shardCount),
+                ),
+                factory.createPropertyAssignment(
+                  factory.createIdentifier('authPolicyName'),
+                  factory.createTemplateExpression(factory.createTemplateHead(`${resourceName}-auth-policy-`), [
+                    factory.createTemplateSpan(factory.createIdentifier('branchName'), factory.createTemplateTail('')),
+                  ]),
+                ),
+                factory.createPropertyAssignment(
+                  factory.createIdentifier('unauthPolicyName'),
+                  factory.createTemplateExpression(factory.createTemplateHead(`${resourceName}-unauth-policy-`), [
+                    factory.createTemplateSpan(factory.createIdentifier('branchName'), factory.createTemplateTail('')),
+                  ]),
+                ),
+                factory.createPropertyAssignment(factory.createIdentifier('authRoleName'), createAuthRoleAccess()),
+                factory.createPropertyAssignment(factory.createIdentifier('unauthRoleName'), createUnauthRoleAccess()),
+                factory.createShorthandPropertyAssignment(factory.createIdentifier('branchName')),
+              ],
+              true,
+            ),
+          ]),
+        ),
+      ],
+      ts.NodeFlags.Const,
+    ),
   );
 
-  // Create the arrow function: export const analytics = (backend: Backend<any>) => { ... }
+  const returnStatement = factory.createReturnStatement(factory.createIdentifier('analytics'));
+
+  // Create the arrow function: export const defineAnalytics = (backend: Backend<any>) => { ... }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Using 'any' for generated code to avoid complex type inference
   const arrowFunction = factory.createArrowFunction(
     undefined,
@@ -181,14 +198,14 @@ export const renderAnalytics = (params: AnalyticsRenderParameters): ts.NodeArray
     ],
     undefined,
     factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
-    factory.createBlock([createStackCall, newConstructExpression], true),
+    factory.createBlock([createStackCall, analyticsConstDeclaration, returnStatement], true),
   );
 
-  // Export statement: export const analytics = ...
+  // Export statement: export const defineAnalytics = ...
   const exportStatement = factory.createVariableStatement(
     [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
     factory.createVariableDeclarationList(
-      [factory.createVariableDeclaration(factory.createIdentifier('analytics'), undefined, undefined, arrowFunction)],
+      [factory.createVariableDeclaration(factory.createIdentifier('defineAnalytics'), undefined, undefined, arrowFunction)],
       ts.NodeFlags.Const,
     ),
   );
