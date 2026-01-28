@@ -1,0 +1,39 @@
+{
+  "app": {
+    "name": "app-1",
+    "description": "Product catalog with role-based authentication and inventory management",
+    "framework": "react"
+  },
+  "categories": {
+    "api": {
+      "type": "GraphQL",
+      "schema": "schema.graphql",
+      "authModes": ["IAM", "API_KEY", "COGNITO_USER_POOLS"],
+      "customQueries": ["checkLowStock"]
+    },
+    "auth": {
+      "signInMethods": ["email"],
+      "socialProviders": []
+    },
+    "storage": {
+      "buckets": [
+        {
+          "name": "productimages3bucket",
+          "access": ["auth"]
+        }
+      ]
+    },
+    "function": {
+      "functions": [
+        {
+          "name": "lowstockproductcatalog",
+          "runtime": "nodejs",
+          "template": "hello-world"
+        }
+      ]
+    },
+    "hosting": {
+      "type": "amplify-console"
+    }
+  }
+}

@@ -1,0 +1,4 @@
+dist
+*.env
+logs/
+migration-output/

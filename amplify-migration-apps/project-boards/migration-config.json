@@ -1,0 +1,38 @@
+{
+  "app": {
+    "name": "project-boards",
+    "description": "Project board app with authentication and file storage",
+    "framework": "react"
+  },
+  "categories": {
+    "api": {
+      "type": "GraphQL",
+      "schema": "schema.graphql",
+      "authModes": ["API_KEY", "COGNITO_USER_POOLS"]
+    },
+    "auth": {
+      "signInMethods": ["email"],
+      "socialProviders": []
+    },
+    "storage": {
+      "buckets": [
+        {
+          "name": "images",
+          "access": ["auth", "guest"]
+        }
+      ]
+    },
+    "function": {
+      "functions": [
+        {
+          "name": "quotegenerator",
+          "runtime": "nodejs",
+          "template": "hello-world"
+        }
+      ]
+    },
+    "hosting": {
+      "type": "amplify-console"
+    }
+  }
+}
