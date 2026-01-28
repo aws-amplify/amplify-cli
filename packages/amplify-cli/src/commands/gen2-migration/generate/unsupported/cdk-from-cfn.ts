@@ -33,6 +33,8 @@ export interface AnalyticsCodegenResult {
   resourceName: string;
   /** The number of shards for the Kinesis stream */
   shardCount: number;
+  /** The actual deployed Kinesis stream name from Gen1 */
+  streamName: string;
 }
 
 export class CdkFromCfn {
@@ -92,10 +94,15 @@ export class CdkFromCfn {
     // Get shardCount from deployed stack parameters
     const parameters = await this.getNestedStackParameters(nestedStackLogicalId);
     const shardCountParam = parameters.find((p) => p.ParameterKey === 'kinesisStreamShardCount');
+    const streamNameParam = parameters.find((p) => p.ParameterKey === 'kinesisStreamName');
     if (!shardCountParam?.ParameterValue) {
       throw new Error(`kinesisStreamShardCount parameter not found for nested stack with logical ID: ${nestedStackLogicalId}`);
     }
+    if (!streamNameParam?.ParameterValue) {
+      throw new Error(`kinesisStreamName parameter not found for nested stack with logical ID: ${nestedStackLogicalId}`);
+    }
     const shardCount = parseInt(shardCountParam.ParameterValue, 10);
+    const streamName = streamNameParam.ParameterValue;
 
     const finalTemplate = await this.preTransmute(template, nestedStackLogicalId);
     const tsFile = cdk_from_cfn.transmute(JSON.stringify(finalTemplate), 'typescript', nestedStackLogicalId, 'construct');
@@ -111,6 +118,7 @@ export class CdkFromCfn {
       constructFileName,
       resourceName,
       shardCount,
+      streamName,
     };
   }
 

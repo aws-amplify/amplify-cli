@@ -345,6 +345,7 @@ export const createGen2Renderer = ({
                 constructFileName: codegenResult.constructFileName,
                 resourceName: codegenResult.resourceName,
                 shardCount: codegenResult.shardCount,
+                streamName: codegenResult.streamName,
               };
 
               return renderAnalytics(analyticsParams);

@@ -15,6 +15,8 @@ export interface AnalyticsRenderParameters {
   resourceName: string;
   /** The number of shards for the Kinesis stream */
   shardCount: number;
+  /** The actual deployed Kinesis stream name from Gen1 */
+  streamName: string;
 }
 
 /**
@@ -46,7 +48,7 @@ export interface AnalyticsRenderParameters {
  * ```
  */
 export const renderAnalytics = (params: AnalyticsRenderParameters): ts.NodeArray<ts.Node> => {
-  const { constructClassName, constructFileName, resourceName, shardCount } = params;
+  const { constructClassName, constructFileName, resourceName, shardCount, streamName } = params;
 
   // Import statement: import { constructClassName } from './constructFileName';
   const constructImport = factory.createImportDeclaration(
@@ -199,7 +201,7 @@ export const renderAnalytics = (params: AnalyticsRenderParameters): ts.NodeArray
   // returnStatement = "return analytics"
 
   // Create comment: //Use this post-refactor
-  // //(analytics.node.findChild('KinesisStream') as CfnStream).name = "resourceName-main"
+  // //(analytics.node.findChild('KinesisStream') as CfnStream).name = "streamName"
   const postRefactorComment = ts.addSyntheticLeadingComment(
     returnStatement,
     ts.SyntaxKind.SingleLineCommentTrivia,
@@ -210,7 +212,7 @@ export const renderAnalytics = (params: AnalyticsRenderParameters): ts.NodeArray
   const postRefactorCode = ts.addSyntheticLeadingComment(
     postRefactorComment,
     ts.SyntaxKind.SingleLineCommentTrivia,
-    `(analytics.node.findChild('KinesisStream') as CfnStream).name = "${resourceName}-main"`,
+    `(analytics.node.findChild('KinesisStream') as CfnStream).name = "${streamName}"`,
     false,
   );
 
