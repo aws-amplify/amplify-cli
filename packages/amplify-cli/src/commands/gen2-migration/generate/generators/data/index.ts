@@ -4,6 +4,7 @@ import { AppSyncClient, paginateListGraphqlApis } from '@aws-sdk/client-appsync'
 import type { ConstructFactory, AmplifyFunction } from '@aws-amplify/plugin-types';
 import type { AuthorizationModes, DataLoggingOptions } from '@aws-amplify/backend-data';
 import { RestApiDefinition } from '../../codegen-head/data_definition_fetcher';
+
 export interface AdditionalAuthProvider {
   authenticationType: 'API_KEY' | 'AWS_IAM' | 'OPENID_CONNECT' | 'AMAZON_COGNITO_USER_POOLS' | 'AWS_LAMBDA';
   lambdaAuthorizerConfig?: {
@@ -24,7 +25,48 @@ export interface AdditionalAuthProvider {
   };
 }
 
+/**
+ * Gen1 authorization configuration structure from amplify-meta.json
+ */
+interface Gen1AuthorizationConfig {
+  defaultAuthentication?: {
+    authenticationType?: 'API_KEY' | 'AMAZON_COGNITO_USER_POOLS' | 'AWS_IAM' | 'OPENID_CONNECT' | 'AWS_LAMBDA';
+    apiKeyConfig?: {
+      description?: string;
+      apiKeyExpirationDays?: number;
+      apiKeyExpirationDate?: Date;
+    };
+    userPoolConfig?: {
+      userPoolId: string;
+    };
+    openIDConnectConfig?: {
+      name?: string;
+      issuerUrl?: string;
+      clientId?: string;
+      iatTTL?: number;
+      authTTL?: number;
+    };
+    lambdaAuthorizerConfig?: {
+      lambdaFunction?: string;
+      lambdaArn?: string;
+      ttlSeconds?: number;
+    };
+  };
+}
+
 const factory = ts.factory;
+
+/** Key name for the migrated table mappings property in the generated data resource */
+const MIGRATED_TABLE_MAPPINGS_KEY = 'migratedAmplifyGen1DynamoDbTableMappings';
+
+/** Maps Gen1 auth types to Gen2 auth mode identifiers */
+const AUTH_MODE_MAP: Record<string, string> = {
+  AWS_IAM: 'iam',
+  AMAZON_COGNITO_USER_POOLS: 'userPool',
+  API_KEY: 'apiKey',
+  AWS_LAMBDA: 'lambda',
+  OPENID_CONNECT: 'oidc',
+};
 
 /**
  * Maps model names to their corresponding DynamoDB table names for a specific environment.
@@ -117,8 +159,271 @@ export type DataDefinition = {
   restApis?: RestApiDefinition[];
 };
 
-/** Key name for the migrated table mappings property in the generated data resource */
-const migratedAmplifyGen1DynamoDbTableMappingsKeyName = 'migratedAmplifyGen1DynamoDbTableMappings';
+// ============================================================================
+// Schema Generation
+// ============================================================================
+
+/**
+ * Generates the schema variable declaration statement.
+ * Creates: const schema = `...graphql schema...`;
+ * Handles ${env} substitution by replacing with ${branchName} and adding branchName declaration.
+ *
+ * @param schema - The GraphQL schema string
+ * @returns Array of TypeScript AST nodes for the schema declaration
+ */
+const generateSchemaStatement = (schema: string): ts.Node[] => {
+  const statements: ts.Node[] = [];
+  let processedSchema = schema;
+
+  // Handle ${env} substitution
+  if (schema.includes('${env}')) {
+    const branchNameStatement = factory.createVariableStatement(
+      [],
+      factory.createVariableDeclarationList(
+        [
+          factory.createVariableDeclaration(
+            'branchName',
+            undefined,
+            undefined,
+            factory.createIdentifier('process.env.AWS_BRANCH ?? "sandbox"'),
+          ),
+        ],
+        ts.NodeFlags.Const,
+      ),
+    );
+    statements.push(branchNameStatement);
+    processedSchema = schema.replaceAll('${env}', '${branchName}');
+  }
+
+  const schemaVariableDeclaration = factory.createVariableDeclaration(
+    'schema',
+    undefined,
+    undefined,
+    factory.createIdentifier('`' + processedSchema + '`'),
+  );
+
+  const schemaStatementAssignment = factory.createVariableStatement(
+    [],
+    factory.createVariableDeclarationList([schemaVariableDeclaration], ts.NodeFlags.Const),
+  );
+  statements.push(schemaStatementAssignment);
+
+  return statements;
+};
+
+// ============================================================================
+// Table Mappings Generation
+// ============================================================================
+
+/**
+ * Generates the table mappings property for preserving existing DynamoDB tables.
+ * Creates the migratedAmplifyGen1DynamoDbTableMappings array with branch and model mappings.
+ *
+ * @param tableMappings - Map of model names to DynamoDB table names
+ * @param envName - Current environment/branch name
+ * @returns ObjectLiteralElementLike for the table mappings property
+ */
+const generateTableMappingsProperty = (tableMappings: DataTableMapping, envName: string): ObjectLiteralElementLike => {
+  const tableMappingProperties: ObjectLiteralElementLike[] = [];
+
+  // Create model-to-table mappings for current environment
+  for (const [tableName, tableId] of Object.entries(tableMappings)) {
+    tableMappingProperties.push(
+      factory.createPropertyAssignment(factory.createIdentifier(tableName), factory.createStringLiteral(tableId)),
+    );
+  }
+
+  // Add branchName with helpful comment
+  const branchNameExpression = ts.addSyntheticLeadingComment(
+    factory.createPropertyAssignment('branchName', factory.createStringLiteral(envName)),
+    ts.SyntaxKind.SingleLineCommentTrivia,
+    'The "branchname" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables',
+    true,
+  );
+
+  const tableMappingExpression = factory.createPropertyAssignment(
+    'modelNameToTableNameMapping',
+    factory.createObjectLiteralExpression(tableMappingProperties),
+  );
+
+  // Create single environment mapping object
+  const tableMappingForEnvironment = factory.createObjectLiteralExpression([branchNameExpression, tableMappingExpression], true);
+
+  return factory.createPropertyAssignment(MIGRATED_TABLE_MAPPINGS_KEY, factory.createArrayLiteralExpression([tableMappingForEnvironment]));
+};
+
+// ============================================================================
+// Authorization Modes Generation
+// ============================================================================
+
+/**
+ * Generates API key authorization mode configuration.
+ *
+ * @param apiKeyConfig - API key configuration from Gen1
+ * @returns ObjectLiteralElementLike for apiKeyAuthorizationMode, or undefined
+ */
+const generateApiKeyAuthMode = (apiKeyConfig: { apiKeyExpirationDays?: number } | undefined): ObjectLiteralElementLike | undefined => {
+  if (!apiKeyConfig?.apiKeyExpirationDays) {
+    return undefined;
+  }
+  return factory.createPropertyAssignment(
+    'apiKeyAuthorizationMode',
+    factory.createObjectLiteralExpression([
+      factory.createPropertyAssignment('expiresInDays', factory.createNumericLiteral(apiKeyConfig.apiKeyExpirationDays.toString())),
+    ]),
+  );
+};
+
+/**
+ * Generates Lambda authorization mode configuration.
+ *
+ * @param lambdaConfig - Lambda authorizer configuration from Gen1
+ * @returns ObjectLiteralElementLike for lambdaAuthorizationMode, or undefined
+ */
+const generateLambdaAuthMode = (lambdaConfig: { ttlSeconds?: number } | undefined): ObjectLiteralElementLike | undefined => {
+  if (!lambdaConfig?.ttlSeconds) {
+    return undefined;
+  }
+  return factory.createPropertyAssignment(
+    'lambdaAuthorizationMode',
+    factory.createObjectLiteralExpression([
+      factory.createPropertyAssignment('timeToLiveInSeconds', factory.createNumericLiteral(lambdaConfig.ttlSeconds.toString())),
+    ]),
+  );
+};
+
+/**
+ * Generates OIDC authorization mode configuration.
+ *
+ * @param oidcConfig - OpenID Connect configuration from Gen1
+ * @returns ObjectLiteralElementLike for oidcAuthorizationMode, or undefined
+ */
+const generateOidcAuthMode = (oidcConfig: { issuerUrl?: string; clientId?: string } | undefined): ObjectLiteralElementLike | undefined => {
+  if (!oidcConfig) {
+    return undefined;
+  }
+
+  const oidcProps: ObjectLiteralElementLike[] = [];
+
+  if (oidcConfig.issuerUrl) {
+    oidcProps.push(factory.createPropertyAssignment('oidcIssuerUrl', factory.createStringLiteral(oidcConfig.issuerUrl)));
+  }
+  if (oidcConfig.clientId) {
+    oidcProps.push(factory.createPropertyAssignment('clientId', factory.createStringLiteral(oidcConfig.clientId)));
+  }
+
+  if (oidcProps.length === 0) {
+    return undefined;
+  }
+
+  return factory.createPropertyAssignment('oidcAuthorizationMode', factory.createObjectLiteralExpression(oidcProps));
+};
+
+/**
+ * Generates the complete authorization modes property for the data configuration.
+ * Maps Gen1 auth types to Gen2 format and includes mode-specific configurations.
+ *
+ * @param authorizationModes - Authorization configuration from Gen1
+ * @returns ObjectLiteralElementLike for authorizationModes property, or undefined if no auth config
+ */
+const generateAuthModesProperty = (authorizationModes: AuthorizationModes | undefined): ObjectLiteralElementLike | undefined => {
+  if (!authorizationModes) {
+    return undefined;
+  }
+
+  const gen1AuthModes = authorizationModes as Gen1AuthorizationConfig;
+  const authModeProperties: ObjectLiteralElementLike[] = [];
+
+  // Add default authorization mode from Gen1 config
+  const defaultAuthType = gen1AuthModes.defaultAuthentication?.authenticationType;
+  if (defaultAuthType) {
+    const gen2AuthMode = AUTH_MODE_MAP[defaultAuthType] || 'userPool';
+    authModeProperties.push(factory.createPropertyAssignment('defaultAuthorizationMode', factory.createStringLiteral(gen2AuthMode)));
+
+    // Add auth mode-specific configuration
+    let modeSpecificConfig: ObjectLiteralElementLike | undefined;
+
+    switch (defaultAuthType) {
+      case 'API_KEY':
+        modeSpecificConfig = generateApiKeyAuthMode(gen1AuthModes.defaultAuthentication?.apiKeyConfig);
+        break;
+      case 'AWS_LAMBDA':
+        modeSpecificConfig = generateLambdaAuthMode(gen1AuthModes.defaultAuthentication?.lambdaAuthorizerConfig);
+        break;
+      case 'OPENID_CONNECT':
+        modeSpecificConfig = generateOidcAuthMode(gen1AuthModes.defaultAuthentication?.openIDConnectConfig);
+        break;
+      case 'AWS_IAM':
+      case 'AMAZON_COGNITO_USER_POOLS':
+        // These auth modes don't require additional configuration
+        break;
+    }
+
+    if (modeSpecificConfig) {
+      authModeProperties.push(modeSpecificConfig);
+    }
+  }
+
+  if (authModeProperties.length === 0) {
+    return undefined;
+  }
+
+  return factory.createPropertyAssignment('authorizationModes', factory.createObjectLiteralExpression(authModeProperties, true));
+};
+
+// ============================================================================
+// Logging Configuration Generation
+// ============================================================================
+
+/**
+ * Generates the logging configuration property for the data configuration.
+ * Supports both boolean (true) and detailed object configuration.
+ *
+ * @param logging - Logging configuration from Gen1
+ * @returns ObjectLiteralElementLike for logging property, or undefined if no logging config
+ */
+const generateLoggingProperty = (logging: DataLoggingOptions | undefined): ObjectLiteralElementLike | undefined => {
+  if (!logging) {
+    return undefined;
+  }
+
+  // Handle simple boolean logging
+  if (logging === true) {
+    return factory.createPropertyAssignment('logging', factory.createTrue());
+  }
+
+  // Handle detailed logging configuration
+  if (typeof logging === 'object') {
+    const loggingProperties: ObjectLiteralElementLike[] = [];
+
+    if (logging.fieldLogLevel !== undefined) {
+      loggingProperties.push(factory.createPropertyAssignment('fieldLogLevel', factory.createStringLiteral(logging.fieldLogLevel)));
+    }
+
+    if (logging.excludeVerboseContent !== undefined) {
+      loggingProperties.push(
+        factory.createPropertyAssignment(
+          'excludeVerboseContent',
+          logging.excludeVerboseContent ? factory.createTrue() : factory.createFalse(),
+        ),
+      );
+    }
+
+    if (logging.retention !== undefined) {
+      loggingProperties.push(factory.createPropertyAssignment('retention', factory.createStringLiteral(logging.retention)));
+    }
+
+    if (loggingProperties.length > 0) {
+      return factory.createPropertyAssignment('logging', factory.createObjectLiteralExpression(loggingProperties));
+    }
+  }
+
+  return undefined;
+};
+
+// ============================================================================
+// Main Generator Function
+// ============================================================================
 
 /**
  * Generates TypeScript AST nodes for an Amplify Gen 2 data resource configuration.
@@ -126,6 +431,7 @@ const migratedAmplifyGen1DynamoDbTableMappingsKeyName = 'migratedAmplifyGen1Dyna
  * This function creates the necessary code structure for migrating Amplify Gen 1 GraphQL APIs
  * to Gen 2, preserving existing DynamoDB table mappings to avoid data loss during migration.
  *
+ * @param gen1Env - The Gen1 environment name
  * @param dataDefinition - Optional configuration containing schema and table mappings
  * @returns TypeScript AST nodes representing the complete data resource file
  *
@@ -151,6 +457,7 @@ export const generateDataSource = async (gen1Env: string, dataDefinition?: DataD
   if (!dataDefinition.schema && (!dataDefinition.restApis || dataDefinition.restApis.length === 0)) {
     return undefined;
   }
+
   // Properties for the defineData() function call
   const dataRenderProperties: ObjectLiteralElementLike[] = [];
 
@@ -158,42 +465,8 @@ export const generateDataSource = async (gen1Env: string, dataDefinition?: DataD
   const namedImports: Record<string, Set<string>> = { '@aws-amplify/backend': new Set() };
   namedImports['@aws-amplify/backend'].add('defineData');
 
-  // Additional statements to include before the data export
-  const schemaStatements: ts.Node[] = [];
-
   // Generate schema variable declaration if schema is provided
-  if (dataDefinition && dataDefinition.schema) {
-    if (dataDefinition.schema.includes('${env}')) {
-      const branchNameStatement = factory.createVariableStatement(
-        [],
-        factory.createVariableDeclarationList(
-          [
-            factory.createVariableDeclaration(
-              'branchName',
-              undefined,
-              undefined,
-              factory.createIdentifier('process.env.AWS_BRANCH ?? "sandbox"'),
-            ),
-          ],
-          ts.NodeFlags.Const,
-        ),
-      );
-      schemaStatements.push(branchNameStatement);
-      dataDefinition.schema = dataDefinition.schema.replaceAll('${env}', '${branchName}');
-    }
-
-    const schemaVariableDeclaration = factory.createVariableDeclaration(
-      'schema',
-      undefined,
-      undefined,
-      factory.createIdentifier('`' + dataDefinition.schema + '`'),
-    );
-    const schemaStatementAssignment = factory.createVariableStatement(
-      [],
-      factory.createVariableDeclarationList([schemaVariableDeclaration], ts.NodeFlags.Const),
-    );
-    schemaStatements.push(schemaStatementAssignment);
-  }
+  const schemaStatements: ts.Node[] = dataDefinition.schema ? generateSchemaStatement(dataDefinition.schema) : [];
 
   // Generate table mappings for preserving existing DynamoDB tables during migration
   let tableMappings = dataDefinition?.tableMappings;
@@ -206,158 +479,24 @@ export const generateDataSource = async (gen1Env: string, dataDefinition?: DataD
     }
   }
 
+  // Add table mappings property if available
   if (tableMappings) {
-    const tableMappingProperties: ObjectLiteralElementLike[] = [];
-
-    // Create model-to-table mappings for current environment
-    for (const [tableName, tableId] of Object.entries(tableMappings)) {
-      tableMappingProperties.push(
-        factory.createPropertyAssignment(factory.createIdentifier(tableName), factory.createStringLiteral(tableId)),
-      );
-    }
-
-    const branchNameExpression = ts.addSyntheticLeadingComment(
-      factory.createPropertyAssignment('branchName', factory.createStringLiteral(gen1Env)),
-      ts.SyntaxKind.SingleLineCommentTrivia,
-      'The "branchname" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables',
-      true,
-    );
-
-    const tableMappingExpression = factory.createPropertyAssignment(
-      'modelNameToTableNameMapping',
-      factory.createObjectLiteralExpression(tableMappingProperties),
-    );
-
-    // Create single environment mapping
-    const tableMappingForEnvironment = factory.createObjectLiteralExpression([branchNameExpression, tableMappingExpression], true);
-
-    // Add the table mappings array with single environment to the data configuration
-    dataRenderProperties.push(
-      factory.createPropertyAssignment(
-        migratedAmplifyGen1DynamoDbTableMappingsKeyName,
-        factory.createArrayLiteralExpression([tableMappingForEnvironment]),
-      ),
-    );
+    dataRenderProperties.push(generateTableMappingsProperty(tableMappings, gen1Env));
   }
 
-  // Add authorization modes if available
-  if (dataDefinition?.authorizationModes) {
-    const gen1AuthModes = dataDefinition.authorizationModes as any;
-    const authModeProperties: ObjectLiteralElementLike[] = [];
-
-    const authModeMap: Record<string, string> = {
-      AWS_IAM: 'iam',
-      AMAZON_COGNITO_USER_POOLS: 'userPool',
-      API_KEY: 'apiKey',
-      AWS_LAMBDA: 'lambda',
-      OPENID_CONNECT: 'oidc',
-    };
-
-    // Add default authorization mode from Gen1 config
-    if (gen1AuthModes.defaultAuthentication?.authenticationType) {
-      const gen2AuthMode = authModeMap[gen1AuthModes.defaultAuthentication.authenticationType] || 'userPool';
-      authModeProperties.push(factory.createPropertyAssignment('defaultAuthorizationMode', factory.createStringLiteral(gen2AuthMode)));
-
-      // Add auth mode config based on default authentication type
-      switch (gen1AuthModes.defaultAuthentication.authenticationType) {
-        case 'API_KEY':
-          if (gen1AuthModes.defaultAuthentication.apiKeyConfig?.apiKeyExpirationDays) {
-            authModeProperties.push(
-              factory.createPropertyAssignment(
-                'apiKeyAuthorizationMode',
-                factory.createObjectLiteralExpression([
-                  factory.createPropertyAssignment(
-                    'expiresInDays',
-                    factory.createNumericLiteral(gen1AuthModes.defaultAuthentication.apiKeyConfig.apiKeyExpirationDays.toString()),
-                  ),
-                ]),
-              ),
-            );
-          }
-          break;
-        case 'AWS_LAMBDA':
-          if (gen1AuthModes.defaultAuthentication.lambdaAuthorizerConfig?.ttlSeconds) {
-            authModeProperties.push(
-              factory.createPropertyAssignment(
-                'lambdaAuthorizationMode',
-                factory.createObjectLiteralExpression([
-                  factory.createPropertyAssignment(
-                    'timeToLiveInSeconds',
-                    factory.createNumericLiteral(gen1AuthModes.defaultAuthentication.lambdaAuthorizerConfig.ttlSeconds.toString()),
-                  ),
-                ]),
-              ),
-            );
-          }
-          break;
-        case 'OPENID_CONNECT':
-          if (gen1AuthModes.defaultAuthentication.openIDConnectConfig) {
-            const oidcProps = [];
-            if (gen1AuthModes.defaultAuthentication.openIDConnectConfig.issuer) {
-              oidcProps.push(
-                factory.createPropertyAssignment(
-                  'oidcIssuerUrl',
-                  factory.createStringLiteral(gen1AuthModes.defaultAuthentication.openIDConnectConfig.issuer),
-                ),
-              );
-            }
-            if (gen1AuthModes.defaultAuthentication.openIDConnectConfig.clientId) {
-              oidcProps.push(
-                factory.createPropertyAssignment(
-                  'clientId',
-                  factory.createStringLiteral(gen1AuthModes.defaultAuthentication.openIDConnectConfig.clientId),
-                ),
-              );
-            }
-            if (oidcProps.length > 0) {
-              authModeProperties.push(
-                factory.createPropertyAssignment('oidcAuthorizationMode', factory.createObjectLiteralExpression(oidcProps)),
-              );
-            }
-          }
-          break;
-      }
-    }
-
-    if (authModeProperties.length > 0) {
-      dataRenderProperties.push(
-        factory.createPropertyAssignment('authorizationModes', factory.createObjectLiteralExpression(authModeProperties, true)),
-      );
-    }
+  // Add authorization modes property if available
+  const authModesProperty = generateAuthModesProperty(dataDefinition?.authorizationModes);
+  if (authModesProperty) {
+    dataRenderProperties.push(authModesProperty);
   }
 
-  // Add logging configuration if available
-  if (dataDefinition?.logging) {
-    if (dataDefinition.logging === true) {
-      dataRenderProperties.push(factory.createPropertyAssignment('logging', factory.createTrue()));
-    } else if (typeof dataDefinition.logging === 'object') {
-      const loggingConfig = dataDefinition.logging;
-      const loggingProperties: ObjectLiteralElementLike[] = [];
-
-      if (loggingConfig.fieldLogLevel !== undefined) {
-        loggingProperties.push(factory.createPropertyAssignment('fieldLogLevel', factory.createStringLiteral(loggingConfig.fieldLogLevel)));
-      }
-
-      if (loggingConfig.excludeVerboseContent !== undefined) {
-        loggingProperties.push(
-          factory.createPropertyAssignment(
-            'excludeVerboseContent',
-            loggingConfig.excludeVerboseContent ? factory.createTrue() : factory.createFalse(),
-          ),
-        );
-      }
-
-      if (loggingConfig.retention !== undefined) {
-        loggingProperties.push(factory.createPropertyAssignment('retention', factory.createStringLiteral(loggingConfig.retention)));
-      }
-
-      if (loggingProperties.length > 0) {
-        dataRenderProperties.push(factory.createPropertyAssignment('logging', factory.createObjectLiteralExpression(loggingProperties)));
-      }
-    }
+  // Add logging configuration property if available
+  const loggingProperty = generateLoggingProperty(dataDefinition?.logging);
+  if (loggingProperty) {
+    dataRenderProperties.push(loggingProperty);
   }
 
-  // Add schema reference to the data configuration
+  // Add schema reference to the data configuration only if schema is defined
   if (dataDefinition?.schema) {
     dataRenderProperties.push(factory.createShorthandPropertyAssignment(factory.createIdentifier('schema')));
   }
