@@ -41,7 +41,7 @@ export interface AnalyticsRenderParameters {
  *     unauthRoleName: backend.auth.resources.unauthenticatedUserIamRole.roleName,
  *     branchName
  *   });
- *   //Use this post-refactor
+ *   //Use this kinesis stream name post-refactor
  *   //(analytics.node.findChild('KinesisStream') as CfnStream).name = "streamName"
  *   return analytics;
  * };
@@ -200,12 +200,12 @@ export const renderAnalytics = (params: AnalyticsRenderParameters): ts.NodeArray
   const returnStatement = factory.createReturnStatement(factory.createIdentifier('analytics'));
   // returnStatement = "return analytics"
 
-  // Create comment: //Use this post-refactor
+  // Create comment: //Use this kinesis stream name post-refactor
   // //(analytics.node.findChild('KinesisStream') as CfnStream).name = "streamName"
   const postRefactorComment = ts.addSyntheticLeadingComment(
     returnStatement,
     ts.SyntaxKind.SingleLineCommentTrivia,
-    'Use this post-refactor',
+    'Use this kinesis stream name post-refactor',
     true,
   );
   // Add second line comment
