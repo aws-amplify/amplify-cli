@@ -319,7 +319,6 @@ export const createGen2Renderer = ({
   }
 
   if (analytics) {
-    console.log('There are Analytics found in the Gen1 App');
     const cdkFromCfn = new CdkFromCfn(outputDir, fileWriter, cfnClient, rootStackName);
     const analyticsDir = path.join(outputDir, 'amplify', 'analytics');
     renderers.push(new EnsureDirectory(analyticsDir));
@@ -330,8 +329,6 @@ export const createGen2Renderer = ({
       analyticObj.name = analyticName;
 
       if (analyticObj.service === 'Kinesis') {
-        console.log('Analytics backed by Kinesis found, generating L1 Code');
-
         // Create a renderer that generates both the stack file and resource.ts
         renderers.push(
           new TypescriptNodeArrayRenderer(
