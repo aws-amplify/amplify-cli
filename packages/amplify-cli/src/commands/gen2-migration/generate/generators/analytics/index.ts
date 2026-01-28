@@ -7,11 +7,11 @@ const factory = ts.factory;
  * Parameters for rendering analytics resource.ts file
  */
 export interface AnalyticsRenderParameters {
-  /** The class name of the generated stack (e.g., 'analyticstodoprojectKinesis') */
-  stackClassName: string;
-  /** The file name of the generated stack without extension (e.g., 'todoprojectKinesis-stack') */
-  stackFileName: string;
-  /** The resource name used for stack ID and props (e.g., 'todoprojectKinesis') */
+  /** The class name of the generated construct (e.g., 'analyticstodoprojectKinesis') */
+  constructClassName: string;
+  /** The file name of the generated construct without extension (e.g., 'todoprojectKinesis-construct') */
+  constructFileName: string;
+  /** The resource name used for construct ID and props (e.g., 'todoprojectKinesis') */
   resourceName: string;
   /** The number of shards for the Kinesis stream */
   shardCount: number;
@@ -22,12 +22,12 @@ export interface AnalyticsRenderParameters {
  *
  * Generated output:
  * ```typescript
- * import { stackClassName } from './stackFileName';
+ * import { constructClassName } from './constructFileName';
  * import { Backend } from '@aws-amplify/backend';
  *
  * export const analytics = (backend: Backend<any>) => {
  *   const analyticsStack = backend.createStack('analytics');
- *   new stackClassName(analyticsStack, 'resourceName', {
+ *   new constructClassName(analyticsStack, 'resourceName', {
  *     kinesisStreamName: 'resourceName',
  *     kinesisStreamShardCount: shardCount,
  *     authPolicyName: 'resourceName-auth-policy',
@@ -40,17 +40,17 @@ export interface AnalyticsRenderParameters {
  * ```
  */
 export const renderAnalytics = (params: AnalyticsRenderParameters): ts.NodeArray<ts.Node> => {
-  const { stackClassName, stackFileName, resourceName, shardCount } = params;
+  const { constructClassName, constructFileName, resourceName, shardCount } = params;
 
-  // Import statement: import { stackClassName } from './stackFileName';
-  const stackImport = factory.createImportDeclaration(
+  // Import statement: import { constructClassName } from './constructFileName';
+  const constructImport = factory.createImportDeclaration(
     undefined,
     factory.createImportClause(
       false,
       undefined,
-      factory.createNamedImports([factory.createImportSpecifier(false, undefined, factory.createIdentifier(stackClassName))]),
+      factory.createNamedImports([factory.createImportSpecifier(false, undefined, factory.createIdentifier(constructClassName))]),
     ),
-    factory.createStringLiteral(`./${stackFileName}`),
+    factory.createStringLiteral(`./${constructFileName}`),
   );
 
   // Import Backend type: import { Backend } from '@aws-amplify/backend';
@@ -121,9 +121,9 @@ export const renderAnalytics = (params: AnalyticsRenderParameters): ts.NodeArray
       factory.createStringLiteral('sandbox'),
     );
 
-  // Create the new NestedStack instantiation with props
-  const newStackExpression = factory.createExpressionStatement(
-    factory.createNewExpression(factory.createIdentifier(stackClassName), undefined, [
+  // Create the new Construct instantiation with props
+  const newConstructExpression = factory.createExpressionStatement(
+    factory.createNewExpression(factory.createIdentifier(constructClassName), undefined, [
       factory.createIdentifier('analyticsStack'),
       factory.createStringLiteral(resourceName),
       factory.createObjectLiteralExpression(
@@ -163,7 +163,7 @@ export const renderAnalytics = (params: AnalyticsRenderParameters): ts.NodeArray
     ],
     undefined,
     factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
-    factory.createBlock([createStackCall, newStackExpression], true),
+    factory.createBlock([createStackCall, newConstructExpression], true),
   );
 
   // Export statement: export const analytics = ...
@@ -175,5 +175,5 @@ export const renderAnalytics = (params: AnalyticsRenderParameters): ts.NodeArray
     ),
   );
 
-  return factory.createNodeArray([stackImport, backendImport, newLineIdentifier, exportStatement]);
+  return factory.createNodeArray([constructImport, backendImport, newLineIdentifier, exportStatement]);
 };

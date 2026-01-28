@@ -336,13 +336,13 @@ export const createGen2Renderer = ({
         renderers.push(
           new TypescriptNodeArrayRenderer(
             async () => {
-              // Generate the stack file (e.g., todoprojectKinesis-stack.ts)
+              // Generate the construct file (e.g., projectKinesis-construct.ts)
               const codegenResult: AnalyticsCodegenResult = await cdkFromCfn.generateKinesisAnalyticsL1Code(analyticObj);
 
               // Generate resource.ts using the analytics generator
               const analyticsParams: AnalyticsRenderParameters = {
-                stackClassName: codegenResult.stackClassName,
-                stackFileName: codegenResult.stackFileName,
+                constructClassName: codegenResult.constructClassName,
+                constructFileName: codegenResult.constructFileName,
                 resourceName: codegenResult.resourceName,
                 shardCount: codegenResult.shardCount,
               };
