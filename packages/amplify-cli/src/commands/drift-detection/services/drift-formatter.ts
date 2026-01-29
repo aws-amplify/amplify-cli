@@ -11,6 +11,7 @@ import type { CloudFormationDriftResults } from '../detect-stack-drift';
 import { CloudFormationService } from './cloudformation-service';
 import { AmplifyConfigService } from './amplify-config-service';
 import type { LocalDriftResults } from '../detect-local-drift';
+import { extractCategory } from '../../gen2-migration/categories';
 
 // CloudFormation template type definition
 export interface CloudFormationTemplate {
@@ -175,7 +176,7 @@ export class DriftFormatter {
       this.nestedStacks.push({
         logicalId,
         physicalName,
-        category: this.configService.extractCategory(logicalId),
+        category: extractCategory(logicalId),
         drifts: nestedDrifts,
         template: nestedTemplate,
       });
@@ -440,7 +441,7 @@ export class DriftFormatter {
       if (node.stack) {
         // Calculate counts for this nested stack
         const counts = this.getResourceCounts(node.stack.drifts, node.stack.template);
-        const categoryName = this.determineCategory(node.stack.category || node.stack.logicalId);
+        const categoryName = extractCategory(node.stack.category || node.stack.logicalId);
 
         const displayName = name.includes('/') ? name.split('/').pop() : name;
 
@@ -499,7 +500,7 @@ export class DriftFormatter {
           ...drift,
           stackContext: stack.logicalId,
           stackName: stack.physicalName,
-          category: this.determineCategory(stack.category || stack.logicalId),
+          category: extractCategory(stack.category || stack.logicalId),
         }),
       ),
     );
@@ -601,7 +602,7 @@ export class DriftFormatter {
 
     // Add nested stacks
     this.nestedStacks.forEach((stack) => {
-      const categoryName = this.determineCategory(stack.category || stack.logicalId);
+      const categoryName = extractCategory(stack.category || stack.logicalId);
       const counts = this.getResourceCounts(stack.drifts, stack.template);
 
       if (!categories.has(categoryName)) {
@@ -659,21 +660,6 @@ export class DriftFormatter {
       (d) =>
         d.StackResourceDriftStatus === StackResourceDriftStatus.MODIFIED || d.StackResourceDriftStatus === StackResourceDriftStatus.DELETED,
     );
-  }
-
-  /**
-   * Determine Amplify category from identifier
-   */
-  private determineCategory(identifier: string): string {
-    const idLower = identifier.toLowerCase();
-    if (idLower.includes('auth')) return 'Auth';
-    if (idLower.includes('storage')) return 'Storage';
-    if (idLower.includes('function')) return 'Function';
-    if (idLower.includes('api')) return 'API';
-    if (idLower.includes('hosting')) return 'Hosting';
-    if (idLower.includes('analytics')) return 'Analytics';
-    if (idLower.includes('core') || idLower.includes('infrastructure')) return 'Core Infrastructure';
-    return 'Other';
   }
 
   /**
@@ -990,7 +976,7 @@ export class DriftFormatter {
     ];
 
     allResources.forEach((resource) => {
-      const categoryName = this.determineCategory(resource.category || resource.service || 'Other');
+      const categoryName = extractCategory(resource.category || resource.service || 'Other');
 
       if (!categories.has(categoryName)) {
         categories.set(categoryName, []);
@@ -1009,7 +995,7 @@ export class DriftFormatter {
 
     // Add all nested stack categories from Phase 1 (CFN drift)
     this.nestedStacks.forEach((stack) => {
-      const categoryName = this.determineCategory(stack.category || stack.logicalId);
+      const categoryName = extractCategory(stack.category || stack.logicalId);
       if (!allCategories.has(categoryName)) {
         allCategories.set(categoryName, driftedCategories.get(categoryName) || []);
       }
