@@ -280,10 +280,8 @@ async function analyzeChangeSet(
     if (rc.Details) {
       for (const detail of rc.Details) {
         changeInfo.details?.push({
-          attribute: detail.Target?.Attribute,
           name: detail.Target?.Name,
           changeSource: detail.ChangeSource,
-          evaluation: detail.Evaluation,
           requiresRecreation: detail.Target?.RequiresRecreation,
         });
       }

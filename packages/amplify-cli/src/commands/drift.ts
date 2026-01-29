@@ -5,11 +5,25 @@
 
 import { $TSContext, AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
+import { CloudFormationClient } from '@aws-sdk/client-cloudformation';
 import chalk from 'chalk';
-import { detectStackDriftRecursive, type DriftDisplayFormat } from './drift-detection';
+import { detectStackDriftRecursive, type CloudFormationDriftResults, type DriftDisplayFormat } from './drift-detection';
 import { detectLocalDrift, type LocalDriftResults } from './drift-detection/detect-local-drift';
 import { detectTemplateDrift, type TemplateDriftResults } from './drift-detection/detect-template-drift';
-import { CloudFormationService, AmplifyConfigService, FileService, DriftFormatter } from './drift-detection/services';
+import {
+  CloudFormationService,
+  AmplifyConfigService,
+  FileService,
+  type CloudFormationTemplate,
+  type ProcessedDriftData,
+  type StackDriftData,
+  countDrifted,
+  countInSync,
+  countFailed,
+  countUnchecked,
+  formatDriftResults,
+} from './drift-detection/services';
+import { extractCategory } from './gen2-migration/categories';
 
 /**
  * Print interface for consistent logging across drift detection
@@ -56,7 +70,6 @@ export class AmplifyDriftDetector {
   private readonly cfnService: CloudFormationService;
   private readonly configService: AmplifyConfigService;
   private readonly fileService: FileService;
-  private readonly formatter: DriftFormatter;
   private readonly printer: Print;
   private readonly options: DriftOptions;
 
@@ -87,7 +100,6 @@ export class AmplifyDriftDetector {
     this.cfnService = new CloudFormationService(this.printer);
     this.configService = new AmplifyConfigService();
     this.fileService = new FileService();
-    this.formatter = new DriftFormatter(this.cfnService);
   }
 
   /**
@@ -152,13 +164,11 @@ export class AmplifyDriftDetector {
     } else {
       this.printer.debug('S3 sync completed successfully');
 
-      // Phase 2: Detect template drift using changeset
       this.printer.debug('Starting Phase 2: Template drift detection');
       this.printer.info('Checking for template drift using changesets...');
       phase2Results = await detectTemplateDrift(stackName, this.printer, cfn);
       this.printer.debug(`Phase 2 complete: totalDrifted=${phase2Results.totalDrifted}`);
 
-      // Phase 3: Detect local vs cloud backend drift
       this.printer.debug('Starting Phase 3: Local drift detection');
       this.printer.info('Checking local files vs cloud backend...');
       phase3Results = await detectLocalDrift(this.context);
@@ -169,16 +179,19 @@ export class AmplifyDriftDetector {
 
     // Process results with the formatter
     this.printer.debug('Processing and formatting results');
-    const rootTemplate = await this.cfnService.getStackTemplate(cfn, stackName);
-    await this.formatter.processResults(cfn, stackName, rootTemplate, phase1Results);
+    const processedData = await this.processData(cfn, stackName, projectName, phase1Results, phase2Results, phase3Results);
 
-    // 9. Display results
-    this.displayResults(options, phase2Results, phase3Results);
+    this.displayResults(options, processedData);
 
     // 10. Save JSON if requested
     if (options['output-file']) {
       this.printer.debug(`Saving output to: ${options['output-file']}`);
-      const simplifiedJson = this.formatter.createSimplifiedJsonOutput();
+      const simplifiedJson = {
+        stackName,
+        numResourcesWithDrift: processedData.summary.totalDrifted,
+        numResourcesUnchecked: processedData.summary.totalUnchecked,
+        timestamp: new Date().toISOString(),
+      };
       await this.fileService.saveJsonOutput(options['output-file'], simplifiedJson, this.printer);
     }
 
@@ -235,79 +248,128 @@ export class AmplifyDriftDetector {
   /**
    * Display results based on format option
    */
-  private displayResults(options: DriftOptions, phase2Results: TemplateDriftResults, phase3Results: LocalDriftResults): void {
-    // Add Phase 2 and Phase 3 results to formatter for display
-    this.formatter.addPhase2Results(phase2Results);
-    this.formatter.addPhase3Results(phase3Results);
-
+  private displayResults(options: DriftOptions, data: ProcessedDriftData): void {
     if (options.format === 'json') {
-      const simplifiedJson = this.formatter.createSimplifiedJsonOutput();
+      const simplifiedJson = {
+        stackName: data.rootStackName,
+        numResourcesWithDrift: data.summary.totalDrifted,
+        numResourcesUnchecked: data.summary.totalUnchecked,
+        timestamp: new Date().toISOString(),
+      };
       printer.info(JSON.stringify(simplifiedJson, null, 2));
     } else if (options.format === 'summary') {
-      const output = this.formatter.formatDrift('summary');
+      const output = formatDriftResults(data, 'summary');
       printer.info(output.summaryDashboard);
       if (output.categoryBreakdown) {
         printer.info(output.categoryBreakdown);
       }
-
-      // Display Phase 2 results (between AMPLIFY CATEGORIES and LOCAL CHANGES)
-      const phase2Output = this.formatter.formatPhase2Results();
-      if (phase2Output) {
-        printer.info(phase2Output);
+      if (output.phase2Output) {
+        printer.info(output.phase2Output);
       }
-
-      // Display Phase 3 results
-      const phase3Output = this.formatter.formatPhase3Results();
-      if (phase3Output) {
-        printer.info(phase3Output);
+      if (output.phase3Output) {
+        printer.info(output.phase3Output);
       }
     } else if (options.format === 'tree') {
-      const output = this.formatter.formatDrift('tree');
+      const output = formatDriftResults(data, 'tree');
       printer.info(output.summaryDashboard);
       if (output.treeView) {
         printer.info(output.treeView);
       }
-
-      // Display detailed changes for drifted resources
       if (output.detailedChanges) {
         printer.info(output.detailedChanges);
       }
-
       if (options.debug && output.categoryBreakdown) {
         printer.info(output.categoryBreakdown);
       }
-
-      // Display Phase 2 results (between AMPLIFY CATEGORIES and LOCAL CHANGES)
-      const phase2Output = this.formatter.formatPhase2Results();
-      if (phase2Output) {
-        printer.info(phase2Output);
+      if (output.phase2Output) {
+        printer.info(output.phase2Output);
       }
-
-      // Display Phase 3 results
-      const phase3Output = this.formatter.formatPhase3Results();
-      if (phase3Output) {
-        printer.info(phase3Output);
+      if (output.phase3Output) {
+        printer.info(output.phase3Output);
       }
     } else {
-      // This shouldn't happen with TypeScript, but handle gracefully
       printer.warn(`Unknown format: ${options.format}. Using summary format.`);
-      const output = this.formatter.formatDrift('summary');
+      const output = formatDriftResults(data, 'summary');
       printer.info(output.summaryDashboard);
       if (output.categoryBreakdown) {
         printer.info(output.categoryBreakdown);
       }
-
-      // Display Phase 2 results (between AMPLIFY CATEGORIES and LOCAL CHANGES)
-      const phase2Output = this.formatter.formatPhase2Results();
-      if (phase2Output) {
-        printer.info(phase2Output);
+      if (output.phase2Output) {
+        printer.info(output.phase2Output);
       }
-
-      // Display Phase 3 results
-      const phase3Output = this.formatter.formatPhase3Results();
-      if (phase3Output) {
-        printer.info(phase3Output);
+      if (output.phase3Output) {
+        printer.info(output.phase3Output);
       }
     }
+  }
+
+  /**
+   * Process drift detection results into ProcessedDriftData
+   */
+  private async processData(
+    cfn: CloudFormationClient,
+    stackName: string,
+    projectName: string,
+    phase1Results: CloudFormationDriftResults,
+    phase2Results: TemplateDriftResults,
+    phase3Results: LocalDriftResults,
+  ): Promise<ProcessedDriftData> {
+    const rootTemplate = await this.cfnService.getStackTemplate(cfn, stackName);
+
+    // Fetch all nested stack templates
+    const nestedTemplates = new Map<string, CloudFormationTemplate>();
+    for (const [logicalId] of phase1Results.nestedStackDrifts.entries()) {
+      const physicalName = phase1Results.nestedStackPhysicalIds.get(logicalId) || logicalId;
+      nestedTemplates.set(logicalId, await this.cfnService.getStackTemplate(cfn, physicalName));
+    }
+
+    // Build root counts
+    const rootDrifts = phase1Results.rootStackDrifts.StackResourceDrifts || [];
+    const rootCounts = {
+      drifted: countDrifted(rootDrifts),
+      inSync: countInSync(rootDrifts),
+      unchecked: countUnchecked(rootDrifts, rootTemplate),
+      failed: countFailed(rootDrifts),
+    };
+
+    // Build nested stacks data
+    const nestedStacks: StackDriftData[] = [];
+    let totalInSync = rootCounts.inSync;
+    let totalUnchecked = rootCounts.unchecked;
+    let totalFailed = rootCounts.failed;
+
+    for (const [logicalId, nestedDrift] of phase1Results.nestedStackDrifts.entries()) {
+      if (!nestedDrift.StackResourceDrifts) continue;
+      const physicalName = phase1Results.nestedStackPhysicalIds.get(logicalId) || logicalId;
+      const template = nestedTemplates.get(logicalId) || {};
+      const drifts = nestedDrift.StackResourceDrifts;
+      const counts = {
+        drifted: countDrifted(drifts),
+        inSync: countInSync(drifts),
+        unchecked: countUnchecked(drifts, template),
+        failed: countFailed(drifts),
+      };
+      totalInSync += counts.inSync;
+      totalUnchecked += counts.unchecked;
+      totalFailed += counts.failed;
+      nestedStacks.push({ logicalId, physicalName, category: extractCategory(logicalId), drifts, template, counts });
+    }
+
+    return {
+      projectName,
+      rootStackName: stackName,
+      root: {
+        logicalId: stackName,
+        physicalName: stackName,
+        category: 'root',
+        drifts: rootDrifts,
+        template: rootTemplate,
+        counts: rootCounts,
+      },
+      nestedStacks,
+      summary: { totalStacks: 1 + nestedStacks.length, totalDrifted: phase1Results.totalDrifted, totalInSync, totalUnchecked, totalFailed },
+      phase2Results,
+      phase3Results,
+    };
   }
 }
