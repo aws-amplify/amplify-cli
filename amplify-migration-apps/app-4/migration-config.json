@@ -1,0 +1,38 @@
+{
+  "app": {
+    "name": "app-4",
+    "description": "Fitness goal tracker with progress photos and authentication logging",
+    "framework": "react"
+  },
+  "categories": {
+    "api": {
+      "type": "GraphQL",
+      "schema": "schema.graphql",
+      "authModes": ["API_KEY", "COGNITO_USER_POOLS"]
+    },
+    "auth": {
+      "signInMethods": ["email"],
+      "socialProviders": []
+    },
+    "storage": {
+      "buckets": [
+        {
+          "name": "progress-photos",
+          "access": ["auth", "guest"]
+        }
+      ]
+    },
+    "function": {
+      "functions": [
+        {
+          "name": "quotegenerator",
+          "runtime": "nodejs",
+          "template": "hello-world"
+        }
+      ]
+    },
+    "hosting": {
+      "type": "amplify-console"
+    }
+  }
+}
