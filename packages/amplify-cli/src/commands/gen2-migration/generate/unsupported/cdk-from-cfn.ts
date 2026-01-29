@@ -25,14 +25,16 @@ export interface KinesisAnalyticsDefinition {
  * Result of analytics codegen containing metadata needed for resource.ts generation
  */
 export interface AnalyticsCodegenResult {
-  /** The class name of the generated stack (extracted from generated code) */
-  stackClassName: string;
-  /** The file name of the generated stack without extension */
-  stackFileName: string;
-  /** The resource name used for stack ID and props */
+  /** The class name of the generated construct (extracted from generated code) */
+  constructClassName: string;
+  /** The file name of the generated construct without extension */
+  constructFileName: string;
+  /** The resource name used for construct ID and props */
   resourceName: string;
   /** The number of shards for the Kinesis stream */
   shardCount: number;
+  /** The actual deployed Kinesis stream name from Gen1 */
+  streamName: string;
 }
 
 export class CdkFromCfn {
@@ -44,16 +46,15 @@ export class CdkFromCfn {
   ) {}
 
   /**
-   * Gets the parameters for a nested analytics stack by looking up its physical resource ID
-   * from the root stack and then describing that stack.
+   * Gets the physical stack name for a nested stack by looking up its physical resource ID
+   * from the root stack.
    */
-  private async getAnalyticsStackParameters(logicalId: string): Promise<Parameter[]> {
+  private async getNestedStackPhysicalName(logicalId: string): Promise<string | undefined> {
     if (!this.cfnClient || !this.rootStackName) {
-      return [];
+      return undefined;
     }
 
     try {
-      // Get the physical resource ID (actual stack name) from the root stack
       const describeResourcesResponse = await this.cfnClient.send(
         new DescribeStackResourcesCommand({
           StackName: this.rootStackName,
@@ -61,72 +62,124 @@ export class CdkFromCfn {
         }),
       );
 
-      const stackResource = describeResourcesResponse.StackResources?.[0];
-      if (!stackResource?.PhysicalResourceId) {
-        console.log(`Could not find physical resource ID for analytics stack: ${logicalId}`);
+      return describeResourcesResponse.StackResources?.[0]?.PhysicalResourceId;
+    } catch (error) {
+      console.log(`Error getting nested stack physical name: ${error}`);
+      return undefined;
+    }
+  }
+
+  /**
+   * Gets the parameters for a nested stack by looking up its physical resource ID
+   * from the root stack and then describing that stack.
+   */
+  private async getNestedStackParameters(logicalId: string): Promise<Parameter[]> {
+    if (!this.cfnClient || !this.rootStackName) {
+      return [];
+    }
+
+    try {
+      const nestedStackName = await this.getNestedStackPhysicalName(logicalId);
+      if (!nestedStackName) {
+        console.log(`Could not find physical resource ID for nested stack: ${logicalId}`);
         return [];
       }
 
       // Describe the nested stack to get its parameters
       const describeStacksResponse = await this.cfnClient.send(
         new DescribeStacksCommand({
-          StackName: stackResource.PhysicalResourceId,
+          StackName: nestedStackName,
         }),
       );
 
       return describeStacksResponse.Stacks?.[0]?.Parameters ?? [];
     } catch (error) {
-      console.log(`Error getting analytics stack parameters: ${error}`);
+      console.log(`Error getting nested stack parameters: ${error}`);
       return [];
+    }
+  }
+
+  /**
+   * Gets the physical resource ID of a resource within a nested stack.
+   */
+  private async getNestedStackResourcePhysicalId(nestedStackLogicalId: string, resourceLogicalId: string): Promise<string | undefined> {
+    if (!this.cfnClient || !this.rootStackName) {
+      return undefined;
+    }
+
+    try {
+      const nestedStackName = await this.getNestedStackPhysicalName(nestedStackLogicalId);
+      if (!nestedStackName) {
+        return undefined;
+      }
+
+      const describeResourcesResponse = await this.cfnClient.send(
+        new DescribeStackResourcesCommand({
+          StackName: nestedStackName,
+          LogicalResourceId: resourceLogicalId,
+        }),
+      );
+
+      return describeResourcesResponse.StackResources?.[0]?.PhysicalResourceId;
+    } catch (error) {
+      console.log(`Error getting nested stack resource physical ID: ${error}`);
+      return undefined;
     }
   }
 
   public async generateKinesisAnalyticsL1Code(definition: KinesisAnalyticsDefinition): Promise<AnalyticsCodegenResult> {
     const resourceName = definition.name ?? 'kinesis';
-    const stackFileName = `${resourceName}-stack`;
-    const filePath = path.join(this.dir, 'amplify', 'analytics', `${stackFileName}.ts`);
+    const constructFileName = `${resourceName}-construct`;
+    const filePath = path.join(this.dir, 'amplify', 'analytics', `${constructFileName}.ts`);
     const templateS3Url = definition.providerMetadata.s3TemplateURL;
     const template = await getCfnTemplateFromS3(templateS3Url);
-    const stackName = definition.providerMetadata.logicalId;
+    const nestedStackLogicalId = definition.providerMetadata.logicalId;
 
     // Get shardCount from deployed stack parameters
-    const parameters = await this.getAnalyticsStackParameters(stackName);
+    const parameters = await this.getNestedStackParameters(nestedStackLogicalId);
     const shardCountParam = parameters.find((p) => p.ParameterKey === 'kinesisStreamShardCount');
     if (!shardCountParam?.ParameterValue) {
-      throw new Error(`kinesisStreamShardCount parameter not found for stack ${stackName}`);
+      throw new Error(`kinesisStreamShardCount parameter not found for nested stack with logical ID: ${nestedStackLogicalId}`);
     }
     const shardCount = parseInt(shardCountParam.ParameterValue, 10);
 
-    const finalTemplate = await this.preTransmute(template, stackName);
-    const tsFile = cdk_from_cfn.transmute(JSON.stringify(finalTemplate), 'typescript', stackName);
+    // Get the actual deployed Kinesis stream name (physical resource ID)
+    const streamName = await this.getNestedStackResourcePhysicalId(nestedStackLogicalId, 'KinesisStream');
+    if (!streamName) {
+      throw new Error(`Could not find physical stream name for KinesisStream in nested stack: ${nestedStackLogicalId}`);
+    }
+
+    const finalTemplate = await this.preTransmute(template, nestedStackLogicalId);
+    const tsFile = cdk_from_cfn.transmute(JSON.stringify(finalTemplate), 'typescript', nestedStackLogicalId, 'construct');
     await fs.mkdir(path.dirname(filePath), { recursive: true });
     await this.fileWriter(tsFile, filePath);
 
     // Extract the class name from the generated code
     const classNameMatch = tsFile.match(/export class (\w+) extends/);
-    const stackClassName = classNameMatch ? classNameMatch[1] : `analytics${resourceName}`;
+    const constructClassName = classNameMatch ? classNameMatch[1] : `analytics${resourceName}`;
 
     return {
-      stackClassName,
-      stackFileName,
+      constructClassName,
+      constructFileName,
       resourceName,
       shardCount,
+      streamName,
     };
   }
 
   private async preTransmute(template: CFNTemplate, logicalId: string): Promise<CFNTemplate> {
-    // Rename "env" parameter to "amplify-env"
+    // Rename "env" parameter to "branchName"
     if (template.Parameters?.env) {
-      template.Parameters['amplify-env'] = template.Parameters.env;
+      template.Parameters['branchName'] = template.Parameters.env;
       delete template.Parameters.env;
     }
 
-    // Update all Ref references from "env" to "amplify-env"
+    // Update all Ref references from "env" to "branchName"
     const updateRefs = (obj: unknown): void => {
       if (typeof obj === 'object' && obj !== null) {
         const record = obj as Record<string, unknown>;
         if (record.Ref === 'env') {
-          record.Ref = 'amplify-env';
+          record.Ref = 'branchName';
         }
         Object.values(record).forEach(updateRefs);
       }
@@ -137,7 +190,7 @@ export class CdkFromCfn {
     // Resolve CFN conditions using deployed stack parameters
     // This is critical because cdk-from-cfn generates broken TypeScript for CFN conditions
     // (e.g., `const shouldNotCreateEnvResources = props.env! === 'NONE';` which is invalid syntax)
-    const parameters = await this.getAnalyticsStackParameters(logicalId);
+    const parameters = await this.getNestedStackParameters(logicalId);
     if (parameters.length > 0) {
       const resolved = new CFNConditionResolver(template).resolve(parameters);
       // Delete the Conditions block after resolution - cdk-from-cfn generates broken code for conditions
