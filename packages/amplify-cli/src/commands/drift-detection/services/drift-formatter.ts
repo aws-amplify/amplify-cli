@@ -419,7 +419,7 @@ function getCategoryIcon(category: string): string {
       return chalk.blue('[STORAGE]');
     case 'Function':
       return chalk.yellow('[FUNCTION]');
-    case 'API':
+    case 'Api':
       return chalk.green('[API]');
     case 'Hosting':
       return chalk.cyan('[HOSTING]');
