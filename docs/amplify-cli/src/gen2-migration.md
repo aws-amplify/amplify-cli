@@ -68,12 +68,6 @@ flowchart LR
 | Logger | `src/commands/gen2-migration.ts` | Structured logging with timestamps, step names, and app/env context |
 | AmplifyMigrationStep | `_step.ts` | Abstract base class defining the step lifecycle contract with separate execute/rollback validation and operation methods |
 | AmplifyMigrationOperation | `_step.ts` | Interface for atomic operations that can describe themselves and execute |
-| AmplifyGen2MigrationValidations | `_validations.ts` | Shared validation utilities for drift detection, deployment status, stateful resources, and lock status |
-| AmplifyMigrationLockStep | `lock.ts` | Locks environment by setting CloudFormation stack policy, enabling DynamoDB deletion protection, and setting migration environment variable |
-| AmplifyMigrationGenerateStep | `generate.ts` | Generates Gen2 backend code by delegating to codegen-generate module |
-| AmplifyMigrationRefactorStep | `refactor/refactor.ts` | Moves stateful resources between CloudFormation stacks with interactive category selection |
-| AmplifyMigrationDecommissionStep | `decommission.ts` | Removes Gen1 environment after validating no stateful resources will be deleted |
-| STATEFUL_RESOURCES | `stateful-resources.ts` | Defines AWS resource types that contain stateful data (DynamoDB, S3, Cognito, RDS, etc.) |
 
 ## Interface
 
