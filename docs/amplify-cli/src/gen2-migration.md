@@ -29,27 +29,35 @@ Shared validations are centralized in `AmplifyGen2MigrationValidations`.
 ```mermaid
 flowchart TD
     CLI[amplify gen2-migration 'subcommand'] --> RUN[run dispatcher]
-    RUN --> PARSE[Parse subcommand]
+    RUN --> EXTRACT[Extract Gen1 Config<br/>appId, envName, rootStackName]
+    EXTRACT --> PARSE[Parse subcommand & flags]
     
-    PARSE --> LOCK[AmplifyMigrationLockStep]
-    PARSE --> GEN[AmplifyMigrationGenerateStep]
-    PARSE --> REF[AmplifyMigrationRefactorStep]
-    PARSE --> DEC[AmplifyMigrationDecommissionStep]
+    PARSE --> STEP[Instantiate Step Class]
     
-    subgraph "Step Lifecycle"
-        VI[executeValidate/rollbackValidate] --> IMP[executeImplications/rollbackImplications]
-        IMP --> OPS[execute/rollback returns operations]
-        OPS --> EX[operations executed]
-        EX --> AR[auto-rollback on failure]
+    STEP --> FORWARD{Forward Execution?}
+    STEP --> ROLLBACK{Rollback Execution?}
+    
+    subgraph "Forward Execution Path"
+        FORWARD -->|yes| FV[executeValidate]
+        FV --> FIMP[executeImplications]
+        FIMP --> FSUM[Display Operations Summary]
+        FSUM --> FCONF[User Confirmation]
+        FCONF --> FOPS[execute returns operations]
+        FOPS --> FEX[Execute operations]
+        FEX --> FERR{Failure?}
+        FERR -->|yes & auto-rollback| RAR[Auto-rollback]
+        FERR -->|no| FDONE[Complete]
     end
     
-    LOCK --> VI
-    GEN --> VI
-    REF --> VI
-    DEC --> VI
-    
-    GEN -->|delegates| CG[codegen-generate]
-    REF -->|delegates| RF[refactor submodule]
+    subgraph "Rollback Execution Path"
+        ROLLBACK -->|yes| RV[rollbackValidate]
+        RV --> RIMP[rollbackImplications]
+        RIMP --> RSUM[Display Operations Summary]
+        RSUM --> RCONF[User Confirmation]
+        RCONF --> ROPS[rollback returns operations]
+        ROPS --> REX[Execute rollback operations]
+        REX --> RDONE[Complete]
+    end
     
     subgraph "Shared Validations"
         VAL[AmplifyGen2MigrationValidations]
@@ -60,10 +68,8 @@ flowchart TD
         VAL --> VL[validateLockStatus]
     end
     
-    LOCK --> VAL
-    GEN --> VAL
-    REF --> VAL
-    DEC --> VAL
+    FV --> VAL
+    RV --> VAL
 ```
 
 **Data Flow:** CLI invokes `run()` → Validates environment (appId, envName, stackName) → Instantiates step class → Shows operations summary and implications → Prompts for confirmation → Runs validations with `AmplifyGen2MigrationValidations` → Executes operations returned by `execute()` or `rollback()` → On failure, automatically runs rollback operations unless `--no-rollback` is specified.
