@@ -46,22 +46,37 @@ const STEPS = {
 export class Logger {
   constructor(private readonly stepName: string, private readonly appName: string, private readonly envName: string) {}
 
+  /**
+   * Logs a message with a visual envelope border for major section headers
+   */
   public envelope(message: string) {
     printer.info(chalk.cyan(this._message(message, '→')));
   }
 
+  /**
+   * Logs informational messages that are always displayed to the user.
+   */
   public info(message: string): void {
     printer.info(this._message(message, '•'));
   }
 
+  /**
+   * Logs debug-level messages that are shown only if the command is executed with --debug.
+   */
   public debug(message: string): void {
     printer.debug(this._message(message, '·'));
   }
 
+  /**
+   * Logs warning messages that are always displayed to the user.
+   */
   public warn(message: string): void {
     printer.warn(this._message(message, '·'));
   }
 
+  /**
+   * Alias to `warn`.
+   */
   public warning(message: string): void {
     printer.warn(this._message(message, '·'));
   }

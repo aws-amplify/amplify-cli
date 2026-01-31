@@ -62,12 +62,90 @@ flowchart LR
 
 ### Components
 
-| Component | File | Purpose |
-|-----------|------|---------|
-| run (dispatcher) | `src/commands/gen2-migration.ts` | Main entry point that parses CLI input, validates environment, displays operation summaries, and dispatches to step implementations |
-| Logger | `src/commands/gen2-migration.ts` | Structured logging with timestamps, step names, and app/env context |
-| AmplifyMigrationStep | `_step.ts` | Abstract base class defining the step lifecycle contract with separate execute/rollback validation and operation methods |
-| AmplifyMigrationOperation | `_step.ts` | Interface for atomic operations that can describe themselves and execute |
+#### run (dispatcher)
+
+> **File:** `src/commands/gen2-migration.ts`<br>
+> **Type:** _Function_
+
+```ts
+export const run = async (context: $TSContext) => {...}
+```
+
+Main entry point into the amplify CLI that orchestrates the migration workflow. Parses CLI input, extracts common Gen1 configuration, 
+displays operation summaries with implications, prompts for user confirmation, and dispatches 
+to step implementations.
+
+#### Logger
+
+> **File:** `src/commands/gen2-migration.ts`<br>
+> **Type:** _Class_
+
+Logging utility that wraps the standard printer with additional gen2-migration specific context.
+
+```ts
+/**
+ * Logs a message with a visual envelope border for major section headers
+ */
+public envelope(message: string) {...}
+```
+
+```ts
+/**
+ * Logs informational messages that are always displayed to the user.
+ */
+public info(message: string): void {...}
+```
+
+```ts
+/**
+ * Logs debug-level messages that are shown only if the command is executed with --debug.
+ */
+public debug(message: string): void {...}
+```
+
+```ts
+/**
+ * Logs warning messages that are always displayed to the user.
+ */
+public warn(message: string): void {...}
+```
+
+```ts
+/**
+ * Alias to `warn`.
+ */
+public warning(message: string): void {...}
+```
+
+#### AmplifyMigrationStep
+
+> **File:** `src/commands/gen2-migration/_step.ts`<br>
+> **Type:** _AbstractClass_
+
+Abstract base class that defines the lifecycle contract for all migration steps. Each step must implement six abstract methods:
+
+- `executeValidate(): Promise<void>`: Validates prerequisites before executing forward operations. Throws errors if validation fails. Should check environment state, resource availability, and any step-specific requirements.
+
+- `rollbackValidate(): Promise<void>`: Validates prerequisites before executing rollback operations. Ensures the environment is in a state where rollback can proceed safely.
+
+- `execute(): Promise<AmplifyMigrationOperation[]>`: Returns an array of operations to perform for forward execution. Each operation describes what it will do and contains the logic to execute it. Operations are executed sequentially after user confirmation.
+
+- `rollback(): Promise<AmplifyMigrationOperation[]>`: Returns an array of operations to perform for rollback. Reverses the changes made by execute(). Operations are executed sequentially after user confirmation.
+
+- `executeImplications(): Promise<string[]>`: Returns an array of human-readable strings describing the implications and side effects of executing forward operations. Displayed to users before confirmation prompt.
+
+- `rollbackImplications(): Promise<string[]>`: Returns an array of human-readable strings describing the implications and side effects of executing rollback operations. Displayed to users before confirmation prompt.
+
+#### AmplifyMigrationOperation
+
+> **File:** `src/commands/gen2-migration/_step.ts`<br>
+> **Type:** _Interface_
+
+Interface for atomic operations that can be executed as part of a migration step. Each operation must implement two methods:
+
+- `describe(): Promise<string[]>`: Returns an array of human-readable strings describing what the operation will do. Used to display an operations summary to users before execution. Each string should be a concise, actionable description (e.g., "Enable deletion protection for table 'MyTable'").
+
+- `execute(): Promise<void>`: Executes the operation. Should be idempotent where possible and throw descriptive errors on failure. Called sequentially for each operation after user confirmation.
 
 ## Interface
 
