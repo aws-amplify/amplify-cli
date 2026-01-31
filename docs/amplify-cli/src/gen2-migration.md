@@ -23,7 +23,7 @@ Detailed documentation for submodules is available in `docs/amplify-cli/gen2-mig
 
 ## Architecture
 
-The module uses a step-based architecture with a central orchestrator (`run` function) that dispatches to step implementations. Each step extends the abstract `AmplifyMigrationStep` class and implements `validate()`, `execute()`, `rollback()`, and `implications()` methods. Shared validations are centralized in `AmplifyGen2MigrationValidations`. The module delegates code generation to the `codegen-generate` submodule and stack refactoring to the `refactor` submodule.
+The module uses a step-based architecture with a central orchestrator (`run` function) that dispatches to step implementations. Each step extends the abstract `AmplifyMigrationStep` class and implements separate validation and execution methods for both forward execution and rollback operations. Steps return `AmplifyMigrationOperation` arrays that describe and execute atomic operations. Shared validations are centralized in `AmplifyGen2MigrationValidations`. The module delegates code generation to the `codegen-generate` submodule and stack refactoring to the `refactor` submodule.
 
 ```mermaid
 flowchart TD
@@ -36,14 +36,16 @@ flowchart TD
     PARSE --> DEC[AmplifyMigrationDecommissionStep]
     
     subgraph "Step Lifecycle"
-        V[validate] --> E[execute]
-        E --> R[rollback on failure]
+        VI[executeValidate/rollbackValidate] --> IMP[executeImplications/rollbackImplications]
+        IMP --> OPS[execute/rollback returns operations]
+        OPS --> EX[operations executed]
+        EX --> AR[auto-rollback on failure]
     end
     
-    LOCK --> V
-    GEN --> V
-    REF --> V
-    DEC --> V
+    LOCK --> VI
+    GEN --> VI
+    REF --> VI
+    DEC --> VI
     
     GEN -->|delegates| CG[codegen-generate]
     REF -->|delegates| RF[refactor submodule]
@@ -63,17 +65,18 @@ flowchart TD
     DEC --> VAL
 ```
 
-**Data Flow:** CLI invokes `run()` → Validates environment (appId, envName, stackName) → Instantiates step class → Runs `validate()` with `AmplifyGen2MigrationValidations` → Shows implications and prompts for confirmation → Runs `execute()` → On failure, runs `rollback()` unless `--skip-rollback`.
+**Data Flow:** CLI invokes `run()` → Validates environment (appId, envName, stackName) → Instantiates step class → Shows operations summary and implications → Prompts for confirmation → Runs validations with `AmplifyGen2MigrationValidations` → Executes operations returned by `execute()` or `rollback()` → On failure, automatically runs rollback operations unless `--no-rollback` is specified.
 
 ### Components
 
 | Component | File | Purpose |
 |-----------|------|---------|
-| run (orchestrator) | `src/commands/gen2-migration.ts` | Main entry point that parses CLI input, validates environment, and dispatches to step implementations |
+| run (orchestrator) | `src/commands/gen2-migration.ts` | Main entry point that parses CLI input, validates environment, displays operation summaries, and dispatches to step implementations |
 | Logger | `src/commands/gen2-migration.ts` | Structured logging with timestamps, step names, and app/env context |
-| AmplifyMigrationStep | `_step.ts` | Abstract base class defining the step lifecycle contract |
+| AmplifyMigrationStep | `_step.ts` | Abstract base class defining the step lifecycle contract with separate execute/rollback validation and operation methods |
+| AmplifyMigrationOperation | `_step.ts` | Interface for atomic operations that can describe themselves and execute |
 | AmplifyGen2MigrationValidations | `_validations.ts` | Shared validation utilities for drift detection, deployment status, stateful resources, and lock status |
-| AmplifyMigrationLockStep | `lock.ts` | Locks environment by setting CloudFormation stack policy and enabling DynamoDB deletion protection |
+| AmplifyMigrationLockStep | `lock.ts` | Locks environment by setting CloudFormation stack policy, enabling DynamoDB deletion protection, and setting migration environment variable |
 | AmplifyMigrationGenerateStep | `generate.ts` | Generates Gen2 backend code by delegating to codegen-generate module |
 | AmplifyMigrationRefactorStep | `refactor/refactor.ts` | Moves stateful resources between CloudFormation stacks with interactive category selection |
 | AmplifyMigrationDecommissionStep | `decommission.ts` | Removes Gen1 environment after validating no stateful resources will be deleted |
@@ -103,7 +106,8 @@ amplify gen2-migration <step> [options]
 |--------|-------------|
 | `--skip-validations` | Skip pre-execution validations |
 | `--validations-only` | Run validations without executing |
-| `--skip-rollback` | Skip automatic rollback on failure |
+| `--rollback` | Execute rollback operations for the step |
+| `--no-rollback` | Disable automatic rollback on execution failure |
 | `--to <stack>` | Target Gen2 stack name (refactor step) |
 | `--resourceMappings <file>` | Custom resource mappings file (refactor step) |
 
@@ -124,10 +128,18 @@ class Logger {
 
 // Step lifecycle contract
 abstract class AmplifyMigrationStep {
-  abstract validate(): Promise<void>;
-  abstract execute(): Promise<void>;
-  abstract rollback(): Promise<void>;
-  abstract implications(): string[];
+  abstract executeValidate(): Promise<void>;
+  abstract rollbackValidate(): Promise<void>;
+  abstract execute(): Promise<AmplifyMigrationOperation[]>;
+  abstract rollback(): Promise<AmplifyMigrationOperation[]>;
+  abstract executeImplications(): Promise<string[]>;
+  abstract rollbackImplications(): Promise<string[]>;
+}
+
+// Operation interface for atomic operations
+interface AmplifyMigrationOperation {
+  describe(): Promise<string[]>;
+  execute(): Promise<void>;
 }
 
 // Shared validation utilities
@@ -184,44 +196,105 @@ class AmplifyMigrationDecommissionStep extends AmplifyMigrationStep
 
 ### Step Lifecycle Pattern
 
-Each migration step implements a consistent lifecycle with validation, execution, and rollback phases:
+Each migration step implements a consistent lifecycle with separate validation and execution methods for both forward execution and rollback:
 
 ```typescript
 // From src/commands/gen2-migration/_step.ts
-public abstract validate(): Promise<void>;
-public abstract execute(): Promise<void>;
-public abstract rollback(): Promise<void>;
-public abstract implications(): string[];
+public abstract executeValidate(): Promise<void>;
+public abstract rollbackValidate(): Promise<void>;
+public abstract execute(): Promise<AmplifyMigrationOperation[]>;
+public abstract rollback(): Promise<AmplifyMigrationOperation[]>;
+public abstract executeImplications(): Promise<string[]>;
+public abstract rollbackImplications(): Promise<string[]>;
 ```
 
-### User Confirmation with Implications
+### Operation-Based Execution
 
-Before executing destructive operations, the step displays implications and prompts for confirmation:
+Steps return arrays of `AmplifyMigrationOperation` objects that describe and execute atomic operations:
+
+```typescript
+// From src/commands/gen2-migration/lock.ts
+public async execute(): Promise<AmplifyMigrationOperation[]> {
+  const operations: AmplifyMigrationOperation[] = [];
+  
+  operations.push({
+    describe: async () => {
+      return [`Enable deletion protection for table '${tableName}'`];
+    },
+    execute: async () => {
+      await this.ddbClient().send(
+        new UpdateTableCommand({
+          TableName: tableName,
+          DeletionProtectionEnabled: true,
+        }),
+      );
+    },
+  });
+  
+  return operations;
+}
+```
+
+### User Confirmation with Operations Summary
+
+Before executing operations, the orchestrator displays a summary of all operations and their implications:
 
 ```typescript
 // From src/commands/gen2-migration.ts
-for (const implication of implementation.implications()) {
-  printer.info(`- ${implication}`);
+printer.info(chalk.bold(chalk.underline('Operations Summary')));
+for (const operation of await implementation.execute()) {
+  for (const description of await operation.describe()) {
+    printer.info(`• ${description}`);
+  }
 }
-if (await prompter.confirmContinue()) {
-  await implementation.execute();
+
+printer.info(chalk.bold(chalk.underline('Implications')));
+for (const implication of await implementation.executeImplications()) {
+  printer.info(`• ${implication}`);
+}
+
+if (!(await prompter.confirmContinue())) {
+  return;
+}
+```
+
+### Automatic Rollback on Failure
+
+The orchestrator automatically executes rollback operations when execution fails, unless disabled:
+
+```typescript
+// From src/commands/gen2-migration.ts
+try {
+  await runExecute(implementation, logger);
+} catch (error: unknown) {
+  if (!disableAutoRollback) {
+    printer.error(`Execution failed: ${error}`);
+    await runRollback(implementation, logger);
+  }
+  throw error;
 }
 ```
 
 ### Validation Composition
 
-Steps compose validations from the shared `AmplifyGen2MigrationValidations` class based on their requirements:
+Steps compose validations from the shared `AmplifyGen2MigrationValidations` class based on their requirements, with separate methods for execute and rollback validations:
 
 ```typescript
 // From src/commands/gen2-migration/generate.ts
-const validations = new AmplifyGen2MigrationValidations(
-  this.logger, 
-  this.rootStackName, 
-  this.currentEnvName, 
-  this.context
-);
-await validations.validateLockStatus();
-await validations.validateWorkingDirectory();
+public async executeValidate(): Promise<void> {
+  const validations = new AmplifyGen2MigrationValidations(
+    this.logger, 
+    this.rootStackName, 
+    this.currentEnvName, 
+    this.context
+  );
+  await validations.validateLockStatus();
+  await validations.validateWorkingDirectory();
+}
+
+public async rollbackValidate(): Promise<void> {
+  // Rollback-specific validations
+}
 ```
 
 ### Rate-Limited AWS API Calls
@@ -249,24 +322,32 @@ if (STATEFUL_RESOURCES.has(change.ResourceChange.ResourceType)) {
 }
 ```
 
-### Environment Locking via Stack Policy
+### Environment Locking via Stack Policy and Environment Variable
 
-Prevents accidental updates to Gen1 stack during migration by setting a deny-all stack policy:
+Prevents accidental updates to Gen1 stack during migration by setting a deny-all stack policy and tracking the migration with an environment variable:
 
 ```typescript
 // From src/commands/gen2-migration/lock.ts
-const stackPolicy = {
+const stackPolicy = JSON.stringify({
   Statement: [{
     Effect: 'Deny',
     Action: 'Update:*',
     Principal: '*',
     Resource: '*',
   }],
-};
+});
 await cfnClient.send(new SetStackPolicyCommand({ 
   StackName, 
-  StackPolicyBody: JSON.stringify(stackPolicy) 
+  StackPolicyBody: stackPolicy 
 }));
+
+// Track which environment is being migrated
+const app = await amplifyClient.send(new GetAppCommand({ appId }));
+const environmentVariables = { 
+  ...(app.app.environmentVariables ?? {}), 
+  GEN2_MIGRATION_ENVIRONMENT_NAME: currentEnvName 
+};
+await amplifyClient.send(new UpdateAppCommand({ appId, environmentVariables }));
 ```
 
 ## AI Development Notes
@@ -274,16 +355,22 @@ await cfnClient.send(new SetStackPolicyCommand({
 **Important considerations:**
 - The step execution order matters: lock → generate → refactor → decommission. Each step validates prerequisites from previous steps.
 - The `clone`, `shift`, and `cleanup` steps are NOT IMPLEMENTED—they throw 'Method not implemented' errors.
-- The `GEN2_MIGRATION_ENVIRONMENT_NAME` environment variable on the Amplify app tracks which environment is being migrated.
+- The `GEN2_MIGRATION_ENVIRONMENT_NAME` environment variable on the Amplify app tracks which environment is being migrated and prevents concurrent migrations.
 - Stateful resources (defined in `STATEFUL_RESOURCES` set) require special handling—the module prevents their deletion and enables deletion protection.
 - The refactor step uses interactive prompts to let users select which categories to migrate.
+- Steps now return arrays of `AmplifyMigrationOperation` objects that describe and execute atomic operations, enabling better visibility and control.
+- The orchestrator displays an operations summary and implications before prompting for user confirmation.
+- Automatic rollback is enabled by default but can be disabled with `--no-rollback`.
+- The `--rollback` flag explicitly executes rollback operations for a step.
 
 **Common pitfalls:**
 - Don't skip the lock step—subsequent steps validate that the stack is locked before proceeding.
 - The `--skip-validations` flag bypasses safety checks—use with extreme caution in production.
 - Environment mismatch between local and migration target will throw an error—ensure consistency.
-- Rollback implementations are incomplete for most steps—manual intervention may be needed on failure.
+- Rollback implementations are incomplete for most steps (throw 'Not Implemented' errors)—manual intervention may be needed on failure.
 - The decommission step creates a changeset to analyze resources—this can timeout for large stacks.
+- Cannot specify both `--rollback` and `--no-rollback` flags simultaneously.
+- The lock step's rollback does not disable deletion protection on DynamoDB tables (preserves safety).
 
 **Testing guidance:**
-Test with deployed Amplify Gen1 projects that have auth, data, and storage categories. Verify the lock step enables deletion protection on DynamoDB tables. Test the refactor step with `--to` pointing to a valid Gen2 stack. Use `--validations-only` to test validation logic without executing. Test error handling by simulating drift or uncommitted changes.
+Test with deployed Amplify Gen1 projects that have auth, data, and storage categories. Verify the lock step enables deletion protection on DynamoDB tables and sets the migration environment variable. Test the refactor step with `--to` pointing to a valid Gen2 stack. Use `--validations-only` to test validation logic without executing. Test error handling by simulating drift or uncommitted changes. Test rollback functionality with `--rollback` flag. Verify automatic rollback triggers on execution failures.
