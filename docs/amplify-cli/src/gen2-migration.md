@@ -1,7 +1,7 @@
 # Command | `gen2-migration` 
 
 The `gen2-migration` command is a parent command that dispatches individual subcommands that facilitate the 
-the migration of Gen1 applications to Gen2. It implements a step-based CLI workflow that guides users 
+the migration of Gen1 applications to Gen2. It exposes a step-based CLI workflow that guides users 
 through the complete migration process: 
 
 1. Locking the Gen1 environment 
