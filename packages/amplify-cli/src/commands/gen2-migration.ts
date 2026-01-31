@@ -1,6 +1,6 @@
 import { AmplifyMigrationCloneStep } from './gen2-migration/clone';
 import { $TSContext, AmplifyError } from '@aws-amplify/amplify-cli-core';
-import { AmplifyMigrationStep } from './gen2-migration/_step';
+import { AmplifyMigrationOperation, AmplifyMigrationStep } from './gen2-migration/_step';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import { AmplifyMigrationCleanupStep } from './gen2-migration/cleanup';
 import { AmplifyMigrationDecommissionStep } from './gen2-migration/decommission';
@@ -46,22 +46,37 @@ const STEPS = {
 export class Logger {
   constructor(private readonly stepName: string, private readonly appName: string, private readonly envName: string) {}
 
+  /**
+   * Logs a message with a visual envelope border for major section headers
+   */
   public envelope(message: string) {
     printer.info(chalk.cyan(this._message(message, '→')));
   }
 
+  /**
+   * Logs informational messages that are always displayed to the user.
+   */
   public info(message: string): void {
     printer.info(this._message(message, '•'));
   }
 
+  /**
+   * Logs debug-level messages that are shown only if the command is executed with --debug.
+   */
   public debug(message: string): void {
     printer.debug(this._message(message, '·'));
   }
 
+  /**
+   * Logs warning messages that are always displayed to the user.
+   */
   public warn(message: string): void {
     printer.warn(this._message(message, '·'));
   }
 
+  /**
+   * Alias to `warn`.
+   */
   public warning(message: string): void {
     printer.warn(this._message(message, '·'));
   }
@@ -85,11 +100,18 @@ export const run = async (context: $TSContext) => {
 
   const skipValidations = (context.input.options ?? {})['skip-validations'] ?? false;
   const validationsOnly = (context.input.options ?? {})['validations-only'] ?? false;
-  const skipRollback = (context.input.options ?? {})['skip-rollback'] ?? false;
+  const rollingBack = (context.input.options ?? {})['rollback'] ?? false;
+  const disableAutoRollback = (context.input.options ?? {})['no-rollback'] ?? false;
 
   if (skipValidations && validationsOnly) {
     throw new AmplifyError('InputValidationError', {
       message: 'Cannot specify both --skip-validations and --validation-only',
+    });
+  }
+
+  if (rollingBack && disableAutoRollback) {
+    throw new AmplifyError('InputValidationError', {
+      message: 'Cannot specify both --rollback and --no-rollback',
     });
   }
 
@@ -125,58 +147,109 @@ export const run = async (context: $TSContext) => {
   const logger = new Logger(stepName, appName, envName);
   const implementation: AmplifyMigrationStep = new step.class(logger, envName, appName, appId, stackName, region, context);
 
-  if (!skipValidations) {
-    printer.blankLine();
-    logger.envelope('Performing validations');
-    try {
-      await implementation.validate();
-    } catch (e) {
-      const skipValidationsCommand = `amplify ${context.input.argv.join(' ').trim()} --skip-validations`;
-      throw new AmplifyError('MigrationError', {
-        message: `Validations failed: ${e.message}`,
-        resolution: `Resolve the validation errors or skip them by running '${skipValidationsCommand}'`,
-      });
-    }
-    logger.envelope('Validations complete');
+  if (validationsOnly) {
+    await validate(implementation, rollingBack, logger);
+    return;
   }
 
-  if (!validationsOnly) {
-    try {
-      printer.blankLine();
-      printer.info(chalk.yellow(`You are about to execute '${stepName}' on environment '${appId}/${envName}'. This operation will:`));
-      printer.blankLine();
-      for (const implication of await implementation.implications()) {
-        printer.info(`- ${implication}`);
-      }
-      printer.blankLine();
-      if (await prompter.confirmContinue()) {
-        printer.blankLine();
-        logger.envelope('Executing');
-        await implementation.execute();
-        logger.envelope('Execution complete');
-      }
-    } catch (error: unknown) {
-      if (!skipRollback) {
-        printer.error(`Execution failed: ${error}`);
-        printer.blankLine();
-        logger.envelope('Rolling back');
-        await implementation.rollback();
-        logger.envelope('Rollback complete');
-      }
-      throw error;
+  printer.blankLine();
+  printer.info(
+    chalk.yellow(`You are about to ${rollingBack ? 'rollback' : 'execute'} '${stepName}' on environment '${appId}/${envName}'.`),
+  );
+  printer.blankLine();
+
+  printer.info(chalk.bold(chalk.underline('Operations Summary')));
+  printer.blankLine();
+
+  for (const operation of rollingBack ? await implementation.rollback() : await implementation.execute()) {
+    for (const description of await operation.describe()) {
+      printer.info(`• ${description}`);
     }
   }
 
   printer.blankLine();
-  printer.success('Done');
+
+  printer.info(chalk.bold(chalk.underline('Implications')));
+  printer.blankLine();
+
+  for (const implication of rollingBack ? await implementation.rollbackImplications() : await implementation.executeImplications()) {
+    printer.info(`• ${implication}`);
+  }
+
+  printer.blankLine();
+
+  if (!rollingBack) {
+    printer.info(chalk.grey(`(You can rollback this command by running: 'amplify gen2-migration ${stepName} --rollback')`));
+    printer.blankLine();
+  }
+
+  if (!(await prompter.confirmContinue())) {
+    return;
+  }
+
+  printer.blankLine();
+
+  if (!skipValidations) {
+    await validate(implementation, rollingBack, logger);
+    printer.blankLine();
+  }
+
+  if (rollingBack) {
+    await runRollback(implementation, logger);
+    printer.blankLine();
+    printer.success('Done');
+    return;
+  }
+
+  try {
+    await runExecute(implementation, logger);
+    printer.blankLine();
+    printer.success('Done');
+    return;
+  } catch (error: unknown) {
+    if (!disableAutoRollback) {
+      printer.error(`Execution failed: ${error}`);
+      printer.blankLine();
+      await runRollback(implementation, logger);
+    }
+
+    throw error;
+  }
 };
+
+async function validate(step: AmplifyMigrationStep, rollback: boolean, logger: Logger) {
+  logger.envelope('Performing validations');
+  if (rollback) {
+    await step.rollbackValidate();
+  } else {
+    await step.executeValidate();
+  }
+  logger.envelope('Validations complete');
+}
+
+async function runOperations(operations: AmplifyMigrationOperation[]) {
+  for (const operation of operations) {
+    await operation.execute();
+  }
+}
+
+async function runRollback(step: AmplifyMigrationStep, logger: Logger) {
+  logger.envelope('Rolling back');
+  await runOperations(await step.rollback());
+  logger.envelope('Rollback complete');
+}
+
+async function runExecute(step: AmplifyMigrationStep, logger: Logger) {
+  logger.envelope('Executing');
+  await runOperations(await step.execute());
+  logger.envelope('Execution complete');
+}
 
 function shiftParams(context) {
   delete context.parameters.first;
   delete context.parameters.second;
   delete context.parameters.third;
   const { subCommands } = context.input;
-  /* eslint-disable */
   if (subCommands && subCommands.length > 1) {
     if (subCommands.length > 1) {
       context.parameters.first = subCommands[1];
@@ -188,7 +261,6 @@ function shiftParams(context) {
       context.parameters.third = subCommands[3];
     }
   }
-  /* eslint-enable */
 }
 
 function displayHelp(context: $TSContext) {

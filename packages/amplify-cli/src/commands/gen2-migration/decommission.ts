@@ -1,4 +1,4 @@
-import { AmplifyMigrationStep } from './_step';
+import { AmplifyMigrationOperation, AmplifyMigrationStep } from './_step';
 import { AmplifyGen2MigrationValidations } from './_validations';
 import {
   CloudFormationClient,
@@ -12,11 +12,15 @@ import { removeEnvFromCloud } from '../../extensions/amplify-helpers/remove-env-
 import { invokeDeleteEnvParamsFromService } from '../../extensions/amplify-helpers/invoke-delete-env-params';
 
 export class AmplifyMigrationDecommissionStep extends AmplifyMigrationStep {
-  public async implications(): Promise<string[]> {
+  public async executeImplications(): Promise<string[]> {
     return ['Delete the Gen1 environment'];
   }
 
-  public async validate(): Promise<void> {
+  public async rollbackImplications(): Promise<string[]> {
+    throw new Error('Method not implemented.');
+  }
+
+  public async executeValidate(): Promise<void> {
     const changeSet = await this.createChangeSet();
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -25,23 +29,36 @@ export class AmplifyMigrationDecommissionStep extends AmplifyMigrationStep {
     await validations.validateStatefulResources(changeSet, true);
   }
 
-  public async execute(): Promise<void> {
-    this.logger.info(`Starting decommission of environment: ${this.currentEnvName}`);
-
-    this.logger.info('Preparing to delete Gen1 resources...');
-
-    this.logger.info('Deleting Gen1 resources from the cloud. This will take a few minutes.');
-    await removeEnvFromCloud(this.context, this.currentEnvName, true);
-
-    this.logger.info('Cleaning up SSM parameters...');
-    await invokeDeleteEnvParamsFromService(this.context, this.currentEnvName);
-
-    this.logger.info('Successfully decommissioned Gen1 environment from the cloud');
-    this.logger.info(`Environment '${this.currentEnvName}' has been completely removed from AWS`);
+  public async rollbackValidate(): Promise<void> {
+    throw new Error('Method not implemented.');
   }
 
-  public async rollback(): Promise<void> {
-    this.logger.warn('Not implemented');
+  public async execute(): Promise<AmplifyMigrationOperation[]> {
+    return [
+      {
+        describe: async () => {
+          return ['Delete the Gen1 environment'];
+        },
+        execute: async () => {
+          this.logger.info(`Starting decommission of environment: ${this.currentEnvName}`);
+
+          this.logger.info('Preparing to delete Gen1 resources...');
+
+          this.logger.info('Deleting Gen1 resources from the cloud. This will take a few minutes.');
+          await removeEnvFromCloud(this.context, this.currentEnvName, true);
+
+          this.logger.info('Cleaning up SSM parameters...');
+          await invokeDeleteEnvParamsFromService(this.context, this.currentEnvName);
+
+          this.logger.info('Successfully decommissioned Gen1 environment from the cloud');
+          this.logger.info(`Environment '${this.currentEnvName}' has been completely removed from AWS`);
+        },
+      },
+    ];
+  }
+
+  public async rollback(): Promise<AmplifyMigrationOperation[]> {
+    throw new Error('Not Implemented');
   }
 
   private async createChangeSet(): Promise<DescribeChangeSetOutput> {
