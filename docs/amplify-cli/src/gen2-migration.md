@@ -122,52 +122,110 @@ public warning(message: string): void {...}
 > **File:** `src/commands/gen2-migration/_step.ts`<br>
 > **Type:** _AbstractClass_
 
-Abstract base class that defines the lifecycle contract for all migration steps. Each step must implement six abstract methods:
+```ts
+/**
+ * Abstract base class that defines the lifecycle contract for all migration steps. 
+ * Subcommands must extend this base class.
+ */
+export abstract class AmplifyMigrationStep {...}
+```
 
-- `executeValidate(): Promise<void>`: Validates prerequisites before executing forward operations. Throws errors if validation fails. Should check environment state, resource availability, and any step-specific requirements.
+```ts
+/**
+ * Validates prerequisites before executing forward operations.
+ * Should check environment state, resource availability, and any step-specific requirements.
+ * Throws errors if validation fails.
+ */
+public abstract executeValidate(): Promise<void>;
+```
 
-- `rollbackValidate(): Promise<void>`: Validates prerequisites before executing rollback operations. Ensures the environment is in a state where rollback can proceed safely.
+```ts
+/**
+ * Validates prerequisites before executing rollback operations.
+ * Ensures the environment is in a state where rollback can proceed safely.
+ * Throws errors if validation fails.
+ */
+public abstract rollbackValidate(): Promise<void>;
+```
 
-- `execute(): Promise<AmplifyMigrationOperation[]>`: Returns an array of operations to perform for forward execution. Each operation describes what it will do and contains the logic to execute it. Operations are executed sequentially after user confirmation.
+```ts
+/**
+ * Returns an array of operations to perform for forward execution.
+ * Each operation describes what it will do and contains the logic to execute it.
+ * Operations are executed sequentially after user confirmation.
+ */
+public abstract execute(): Promise<AmplifyMigrationOperation[]>;
+```
 
-- `rollback(): Promise<AmplifyMigrationOperation[]>`: Returns an array of operations to perform for rollback. Reverses the changes made by execute(). Operations are executed sequentially after user confirmation.
+```ts
+/**
+ * Returns an array of operations to perform for rollback.
+ * Reverses the changes made by execute().
+ * Operations are executed sequentially after user confirmation.
+ */
+public abstract rollback(): Promise<AmplifyMigrationOperation[]>;
+```
 
-- `executeImplications(): Promise<string[]>`: Returns an array of human-readable strings describing the implications and side effects of executing forward operations. Displayed to users before confirmation prompt.
+```ts
+/**
+ * Returns human-readable strings describing the implications and side effects of executing forward operations.
+ * Displayed to users before confirmation prompt to help them understand the impact of the migration step.
+ */
+public abstract executeImplications(): Promise<string[]>;
+```
 
-- `rollbackImplications(): Promise<string[]>`: Returns an array of human-readable strings describing the implications and side effects of executing rollback operations. Displayed to users before confirmation prompt.
+```ts
+/**
+ * Returns human-readable strings describing the implications and side effects of executing rollback operations.
+ * Displayed to users before confirmation prompt to help them understand the impact of reverting the migration step.
+ */
+public abstract rollbackImplications(): Promise<string[]>;
+```
 
 #### AmplifyMigrationOperation
 
 > **File:** `src/commands/gen2-migration/_step.ts`<br>
 > **Type:** _Interface_
 
-Interface for atomic operations that can be executed as part of a migration step. Each operation must implement two methods:
+Interface for atomic operations that can be executed as part of a migration step.
 
-- `describe(): Promise<string[]>`: Returns an array of human-readable strings describing what the operation will do. Used to display an operations summary to users before execution. Each string should be a concise, actionable description (e.g., "Enable deletion protection for table 'MyTable'").
+```ts
+/**
+ * Returns human-readable strings describing what the operation will do.
+ * Used to display an operations summary to users before execution.
+ * Each string should be a concise, actionable description (e.g., "Enable deletion protection for table 'MyTable'").
+ */
+describe(): Promise<string[]>;
+```
 
-- `execute(): Promise<void>`: Executes the operation. Should be idempotent where possible and throw descriptive errors on failure. Called sequentially for each operation after user confirmation.
+```ts
+/**
+ * Executes the operation.
+ * Should be idempotent where possible and throw descriptive errors on failure.
+ * Called sequentially for each operation after user confirmation.
+ */
+execute(): Promise<void>;
+```
 
-## Interface
-
-### CLI Command
+## CLI Interface
 
 ```bash
 amplify gen2-migration <step> [options]
 ```
 
-**Subcommands:**
+### Subcommands
 
-| Subcommand | Description |
-|------------|-------------|
-| `clone` | Clone environment for migration [NOT IMPLEMENTED] |
-| `lock` | Lock environment and enable deletion protection on stateful resources |
-| `generate` | Generate Gen2 backend code from Gen1 configuration |
-| `refactor` | Move stateful resources from Gen1 to Gen2 stacks |
-| `shift` | Shift traffic to Gen2 [NOT IMPLEMENTED] |
-| `decommission` | Delete Gen1 environment after migration |
-| `cleanup` | Clean up migration artifacts [NOT IMPLEMENTED] |
+| Subcommand | Description | Implementation | Status |
+|------------|-------------|----------------|--------|
+| `clone` | Clone environment for migration | `clone.ts` → `AmplifyMigrationCloneStep` | NOT IMPLEMENTED |
+| `lock` | Lock environment and enable deletion protection on stateful resources | `lock.ts` → `AmplifyMigrationLockStep` | Implemented |
+| `generate` | Generate Gen2 backend code from Gen1 configuration | `generate.ts` → `AmplifyMigrationGenerateStep` | Implemented |
+| `refactor` | Move stateful resources from Gen1 to Gen2 stacks | `refactor/refactor.ts` → `AmplifyMigrationRefactorStep` | Implemented |
+| `shift` | Shift traffic to Gen2 | `shift.ts` → `AmplifyMigrationShiftStep` | NOT IMPLEMENTED |
+| `decommission` | Delete Gen1 environment after migration | `decommission.ts` → `AmplifyMigrationDecommissionStep` | Implemented |
+| `cleanup` | Clean up migration artifacts | `cleanup.ts` → `AmplifyMigrationCleanupStep` | NOT IMPLEMENTED |
 
-**Options:**
+### Global Options
 
 | Option | Description |
 |--------|-------------|
@@ -175,87 +233,6 @@ amplify gen2-migration <step> [options]
 | `--validations-only` | Run validations without executing |
 | `--rollback` | Execute rollback operations for the step |
 | `--no-rollback` | Disable automatic rollback on execution failure |
-
-### Exported Classes and Functions
-
-```typescript
-// Main entry point
-async function run(context: $TSContext): Promise<void>
-
-// Structured logging utility
-class Logger {
-  envelope(message: string): void;
-  info(message: string): void;
-  debug(message: string): void;
-  warn(message: string): void;
-  warning(message: string): void;
-}
-
-// Step lifecycle contract
-abstract class AmplifyMigrationStep {
-  abstract executeValidate(): Promise<void>;
-  abstract rollbackValidate(): Promise<void>;
-  abstract execute(): Promise<AmplifyMigrationOperation[]>;
-  abstract rollback(): Promise<AmplifyMigrationOperation[]>;
-  abstract executeImplications(): Promise<string[]>;
-  abstract rollbackImplications(): Promise<string[]>;
-}
-
-// Operation interface for atomic operations
-interface AmplifyMigrationOperation {
-  describe(): Promise<string[]>;
-  execute(): Promise<void>;
-}
-
-// Shared validation utilities
-class AmplifyGen2MigrationValidations {
-  validateDrift(): Promise<void>;
-  validateWorkingDirectory(): Promise<void>;
-  validateDeploymentStatus(): Promise<void>;
-  validateStatefulResources(): Promise<void>;
-  validateLockStatus(): Promise<void>;
-}
-
-// Stateful resource types
-const STATEFUL_RESOURCES: Set<string>;
-```
-
-### Step Classes
-
-```typescript
-class AmplifyMigrationLockStep extends AmplifyMigrationStep
-class AmplifyMigrationGenerateStep extends AmplifyMigrationStep
-class AmplifyMigrationRefactorStep extends AmplifyMigrationStep
-class AmplifyMigrationDecommissionStep extends AmplifyMigrationStep
-```
-
-## Dependencies
-
-**Internal:**
-| Module | Usage |
-|--------|-------|
-| drift-detection | `AmplifyDriftDetector` used by `validateDrift()` to ensure no infrastructure drift before migration |
-| codegen-generate | `prepare()` function called by GenerateStep to create Gen2 backend code |
-| refactor | `TemplateGenerator` used by RefactorStep to move resources between stacks |
-| amplify-helpers | `removeEnvFromCloud` and `invokeDeleteEnvParamsFromService` for decommission |
-
-**External:**
-| Package | Purpose |
-|---------|---------|
-| `@aws-sdk/client-cloudformation` | Stack operations (DescribeStacks, SetStackPolicy, CreateChangeSet, ListStackResources) |
-| `@aws-sdk/client-amplify` | App operations (GetApp, UpdateApp for migration environment variable) |
-| `@aws-sdk/client-dynamodb` | Enable deletion protection on model tables (UpdateTable, ListTables) |
-| `@aws-sdk/client-appsync` | Find GraphQL API for the environment (ListGraphqlApis) |
-| `@aws-sdk/client-cognito-identity-provider` | Cognito operations during refactor |
-| `@aws-sdk/client-ssm` | SSM parameter operations during refactor |
-| `@aws-sdk/client-sts` | Get AWS account ID (GetCallerIdentity) |
-| `@aws-amplify/amplify-cli-core` | Core utilities (AmplifyError, stateManager, $TSContext) |
-| `@aws-amplify/amplify-prompts` | CLI output (printer) and user prompts (prompter) |
-| `bottleneck` | Rate limiting for concurrent AWS API calls in validations |
-| `chalk` | Terminal output colorization |
-| `cli-table3` | Table formatting for stateful resource display |
-| `execa` | Git command execution for working directory validation |
-| `fs-extra` | File system operations for resource mappings |
 
 ## Code Patterns
 
@@ -338,81 +315,6 @@ try {
   }
   throw error;
 }
-```
-
-### Validation Composition
-
-Steps compose validations from the shared `AmplifyGen2MigrationValidations` class based on their requirements, with separate methods for execute and rollback validations:
-
-```typescript
-// From src/commands/gen2-migration/generate.ts
-public async executeValidate(): Promise<void> {
-  const validations = new AmplifyGen2MigrationValidations(
-    this.logger, 
-    this.rootStackName, 
-    this.currentEnvName, 
-    this.context
-  );
-  await validations.validateLockStatus();
-  await validations.validateWorkingDirectory();
-}
-
-public async rollbackValidate(): Promise<void> {
-  // Rollback-specific validations
-}
-```
-
-### Rate-Limited AWS API Calls
-
-Uses Bottleneck to limit concurrent API calls when scanning nested stacks for stateful resources:
-
-```typescript
-// From src/commands/gen2-migration/_validations.ts
-private limiter = new Bottleneck({
-  maxConcurrent: 3,
-  minTime: 50,
-});
-// ...
-this.limiter.schedule(() => this.getStatefulResources(task.physicalId, ...))
-```
-
-### Stateful Resource Protection
-
-Identifies and protects stateful AWS resources from accidental deletion during migration:
-
-```typescript
-// From src/commands/gen2-migration/_validations.ts
-if (STATEFUL_RESOURCES.has(change.ResourceChange.ResourceType)) {
-  statefulRemoves.push({ category, resourceType, physicalId });
-}
-```
-
-### Environment Locking via Stack Policy and Environment Variable
-
-Prevents accidental updates to Gen1 stack during migration by setting a deny-all stack policy and tracking the migration with an environment variable:
-
-```typescript
-// From src/commands/gen2-migration/lock.ts
-const stackPolicy = JSON.stringify({
-  Statement: [{
-    Effect: 'Deny',
-    Action: 'Update:*',
-    Principal: '*',
-    Resource: '*',
-  }],
-});
-await cfnClient.send(new SetStackPolicyCommand({ 
-  StackName, 
-  StackPolicyBody: stackPolicy 
-}));
-
-// Track which environment is being migrated
-const app = await amplifyClient.send(new GetAppCommand({ appId }));
-const environmentVariables = { 
-  ...(app.app.environmentVariables ?? {}), 
-  GEN2_MIGRATION_ENVIRONMENT_NAME: currentEnvName 
-};
-await amplifyClient.send(new UpdateAppCommand({ appId, environmentVariables }));
 ```
 
 ## AI Development Notes
