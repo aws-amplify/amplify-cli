@@ -11,6 +11,38 @@ through the complete migration process:
 
 Each step follows a consistent `validate → execute → rollback` lifecycle pattern with user confirmation and safety checks.
 
+## Key Responsebilities
+
+### Argument Parsing
+
+TODO
+
+### Common Gen1 Configuration Extraction
+
+TODO
+
+### Subcommand Dispatching
+
+TODO
+
+### Operations Reporting
+
+TODO
+
+### Implications Reporting
+
+TODO
+
+### User Confirmation
+
+TODO
+
+### Operation-Based Execution
+
+TODO
+
+### Automatic Rollback on Failure
+
 ## Extended Documentation
 
 Detailed documentation for subcommands is available in:
@@ -60,64 +92,7 @@ flowchart LR
     REX --> RDONE[Complete]
 ```
 
-### Components
-
-#### run (dispatcher)
-
-> **File:** `src/commands/gen2-migration.ts`<br>
-> **Type:** _Function_
-
-```ts
-export const run = async (context: $TSContext) => {...}
-```
-
-Main entry point into the amplify CLI that orchestrates the migration workflow. Parses CLI input, extracts common Gen1 configuration, 
-displays operation summaries with implications, prompts for user confirmation, and dispatches 
-to step implementations.
-
-#### Logger
-
-> **File:** `src/commands/gen2-migration.ts`<br>
-> **Type:** _Class_
-
-Logging utility that wraps the standard printer with additional gen2-migration specific context.
-
-```ts
-/**
- * Logs a message with a visual envelope border for major section headers
- */
-public envelope(message: string) {...}
-```
-
-```ts
-/**
- * Logs informational messages that are always displayed to the user.
- */
-public info(message: string): void {...}
-```
-
-```ts
-/**
- * Logs debug-level messages that are shown only if the command is executed with --debug.
- */
-public debug(message: string): void {...}
-```
-
-```ts
-/**
- * Logs warning messages that are always displayed to the user.
- */
-public warn(message: string): void {...}
-```
-
-```ts
-/**
- * Alias to `warn`.
- */
-public warning(message: string): void {...}
-```
-
-#### AmplifyMigrationStep
+### AmplifyMigrationStep
 
 > **File:** `src/commands/gen2-migration/_step.ts`<br>
 > **Type:** _AbstractClass_
@@ -182,7 +157,7 @@ public abstract executeImplications(): Promise<string[]>;
 public abstract rollbackImplications(): Promise<string[]>;
 ```
 
-#### AmplifyMigrationOperation
+### AmplifyMigrationOperation
 
 > **File:** `src/commands/gen2-migration/_step.ts`<br>
 > **Type:** _Interface_
@@ -205,6 +180,48 @@ describe(): Promise<string[]>;
  * Called sequentially for each operation after user confirmation.
  */
 execute(): Promise<void>;
+```
+
+### Logger
+
+> **File:** `src/commands/gen2-migration.ts`<br>
+> **Type:** _Class_
+
+Logging utility that wraps the standard printer with additional gen2-migration specific context.
+
+```ts
+/**
+ * Logs a message with a visual envelope border for major section headers
+ */
+public envelope(message: string) {...}
+```
+
+```ts
+/**
+ * Logs informational messages that are always displayed to the user.
+ */
+public info(message: string): void {...}
+```
+
+```ts
+/**
+ * Logs debug-level messages that are shown only if the command is executed with --debug.
+ */
+public debug(message: string): void {...}
+```
+
+```ts
+/**
+ * Logs warning messages that are always displayed to the user.
+ */
+public warn(message: string): void {...}
+```
+
+```ts
+/**
+ * Alias to `warn`.
+ */
+public warning(message: string): void {...}
 ```
 
 ## CLI Interface
@@ -233,89 +250,6 @@ amplify gen2-migration <step> [options]
 | `--validations-only` | Run validations without executing |
 | `--rollback` | Execute rollback operations for the step |
 | `--no-rollback` | Disable automatic rollback on execution failure |
-
-## Code Patterns
-
-### Step Lifecycle Pattern
-
-Each migration step implements a consistent lifecycle with separate validation and execution methods for both forward execution and rollback:
-
-```typescript
-// From src/commands/gen2-migration/_step.ts
-public abstract executeValidate(): Promise<void>;
-public abstract rollbackValidate(): Promise<void>;
-public abstract execute(): Promise<AmplifyMigrationOperation[]>;
-public abstract rollback(): Promise<AmplifyMigrationOperation[]>;
-public abstract executeImplications(): Promise<string[]>;
-public abstract rollbackImplications(): Promise<string[]>;
-```
-
-### Operation-Based Execution
-
-Steps return arrays of `AmplifyMigrationOperation` objects that describe and execute atomic operations:
-
-```typescript
-// From src/commands/gen2-migration/lock.ts
-public async execute(): Promise<AmplifyMigrationOperation[]> {
-  const operations: AmplifyMigrationOperation[] = [];
-  
-  operations.push({
-    describe: async () => {
-      return [`Enable deletion protection for table '${tableName}'`];
-    },
-    execute: async () => {
-      await this.ddbClient().send(
-        new UpdateTableCommand({
-          TableName: tableName,
-          DeletionProtectionEnabled: true,
-        }),
-      );
-    },
-  });
-  
-  return operations;
-}
-```
-
-### User Confirmation with Operations Summary
-
-Before executing operations, the orchestrator displays a summary of all operations and their implications:
-
-```typescript
-// From src/commands/gen2-migration.ts
-printer.info(chalk.bold(chalk.underline('Operations Summary')));
-for (const operation of await implementation.execute()) {
-  for (const description of await operation.describe()) {
-    printer.info(`• ${description}`);
-  }
-}
-
-printer.info(chalk.bold(chalk.underline('Implications')));
-for (const implication of await implementation.executeImplications()) {
-  printer.info(`• ${implication}`);
-}
-
-if (!(await prompter.confirmContinue())) {
-  return;
-}
-```
-
-### Automatic Rollback on Failure
-
-The orchestrator automatically executes rollback operations when execution fails, unless disabled:
-
-```typescript
-// From src/commands/gen2-migration.ts
-try {
-  await runExecute(implementation, logger);
-} catch (error: unknown) {
-  if (!disableAutoRollback) {
-    printer.error(`Execution failed: ${error}`);
-    await runRollback(implementation, logger);
-  }
-  throw error;
-}
-```
 
 ## AI Development Notes
 
