@@ -21,10 +21,9 @@ Detailed documentation for subcommands is available in:
 
 ## Architecture
 
-The module uses a step-based architecture with a central orchestrator (`run` function) that dispatches to step implementations. 
+The command forces a step-based architecture with a central orchestrator (`run` function) that dispatches to step implementations. 
 Each step extends the abstract `AmplifyMigrationStep` class and implements separate validation and execution methods for both 
-forward and rollback execution modes. Steps return `AmplifyMigrationOperation` arrays that describe and execute atomic operations. 
-Shared validations are centralized in `AmplifyGen2MigrationValidations`.
+forward and rollback execution modes. Steps return `AmplifyMigrationOperation` arrays that describe and execute atomic operations.
 
 ```mermaid
 flowchart TD
