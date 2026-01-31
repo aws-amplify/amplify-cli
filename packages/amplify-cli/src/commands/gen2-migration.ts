@@ -167,26 +167,20 @@ export const run = async (context: $TSContext) => {
 
   if (rollingBack) {
     await runRollback(implementation, logger);
-
     printer.blankLine();
     printer.success('Done');
-
     return;
   }
 
   try {
     await runExecute(implementation, logger);
-
     printer.blankLine();
     printer.success('Done');
-
     return;
   } catch (error: unknown) {
     if (!disableAutoRollback) {
       printer.error(`Execution failed: ${error}`);
-
       printer.blankLine();
-
       await runRollback(implementation, logger);
     }
 
