@@ -1,33 +1,34 @@
-# Gen2 Migration Core
+# Command | `gen2-migration` 
 
-The gen2-migration-core module provides the orchestration layer for migrating AWS Amplify projects from Gen1 to Gen2 architecture. It implements a step-based CLI workflow that guides users through the complete migration process: locking the Gen1 environment, generating Gen2 code, refactoring CloudFormation stacks to move stateful resources, and decommissioning the Gen1 environment. Each step follows a consistent validate-execute-rollback lifecycle pattern with user confirmation and safety checks.
+The `gen2-migration` command is a parent command that dispatches individual subcommands that facilitate the 
+the migration of Gen1 applications to Gen2. It implements a step-based CLI workflow that guides users 
+through the complete migration process: 
 
-This module addresses a critical operational challenge: safely migrating Amplify Gen1 projects to the newer Gen2 architecture while preserving stateful resources like DynamoDB tables, Cognito user pools, and S3 buckets. Without careful orchestration, migrations could result in data loss or service disruption. The module prevents this through validation checks at each step, deletion protection on stateful resources, and rollback capabilities when operations fail.
+1. Locking the Gen1 environment 
+2. Generating Gen2 code, 
+3. Refactoring CloudFormation stacks to move stateful resources, 
+4. Decommissioning the Gen1 environment. 
 
-Primary consumers include Amplify CLI users migrating their projects from Gen1 to Gen2, DevOps engineers managing Amplify infrastructure transitions, and CI/CD pipelines automating migration workflows.
+Each step follows a consistent `validate → execute → rollback` lifecycle pattern with user confirmation and safety checks.
 
 ## Extended Documentation
 
-Detailed documentation for submodules is available in `docs/amplify-cli/gen2-migration/`:
+Detailed documentation for subcommands is available in:
+
 - [codegen-generate.md](gen2-migration/codegen-generate.md) - Code generation pipeline for transforming Gen1 configs to Gen2 TypeScript
 - [codegen-custom-resources.md](gen2-migration/codegen-custom-resources.md) - Custom CDK resource scanner and transformer
 - [refactor.md](gen2-migration/refactor.md) - CloudFormation stack refactoring for moving stateful resources
 
-## Key Responsibilities
-
-- Orchestrate multi-step migration workflow with validate-execute-rollback lifecycle for each step
-- Lock Gen1 environments by setting CloudFormation stack policies and enabling DynamoDB deletion protection
-- Generate Gen2 backend code from existing Gen1 configuration using the codegen-generate submodule
-- Refactor CloudFormation stacks to move stateful resources from Gen1 to Gen2 management
-- Validate migration safety by detecting drift, checking deployment status, and identifying stateful resources at risk
-
 ## Architecture
 
-The module uses a step-based architecture with a central orchestrator (`run` function) that dispatches to step implementations. Each step extends the abstract `AmplifyMigrationStep` class and implements separate validation and execution methods for both forward execution and rollback operations. Steps return `AmplifyMigrationOperation` arrays that describe and execute atomic operations. Shared validations are centralized in `AmplifyGen2MigrationValidations`. The module delegates code generation to the `codegen-generate` submodule and stack refactoring to the `refactor` submodule.
+The module uses a step-based architecture with a central orchestrator (`run` function) that dispatches to step implementations. 
+Each step extends the abstract `AmplifyMigrationStep` class and implements separate validation and execution methods for both 
+forward and rollback execution modes. Steps return `AmplifyMigrationOperation` arrays that describe and execute atomic operations. 
+Shared validations are centralized in `AmplifyGen2MigrationValidations`.
 
 ```mermaid
 flowchart TD
-    CLI[amplify gen2-migration command] --> RUN[run orchestrator]
+    CLI[amplify gen2-migration 'subcommand'] --> RUN[run dispatcher]
     RUN --> PARSE[Parse subcommand]
     
     PARSE --> LOCK[AmplifyMigrationLockStep]
@@ -71,7 +72,7 @@ flowchart TD
 
 | Component | File | Purpose |
 |-----------|------|---------|
-| run (orchestrator) | `src/commands/gen2-migration.ts` | Main entry point that parses CLI input, validates environment, displays operation summaries, and dispatches to step implementations |
+| run (dispatcher) | `src/commands/gen2-migration.ts` | Main entry point that parses CLI input, validates environment, displays operation summaries, and dispatches to step implementations |
 | Logger | `src/commands/gen2-migration.ts` | Structured logging with timestamps, step names, and app/env context |
 | AmplifyMigrationStep | `_step.ts` | Abstract base class defining the step lifecycle contract with separate execute/rollback validation and operation methods |
 | AmplifyMigrationOperation | `_step.ts` | Interface for atomic operations that can describe themselves and execute |
@@ -91,6 +92,7 @@ amplify gen2-migration <step> [options]
 ```
 
 **Subcommands:**
+
 | Subcommand | Description |
 |------------|-------------|
 | `clone` | Clone environment for migration [NOT IMPLEMENTED] |
@@ -102,14 +104,13 @@ amplify gen2-migration <step> [options]
 | `cleanup` | Clean up migration artifacts [NOT IMPLEMENTED] |
 
 **Options:**
+
 | Option | Description |
 |--------|-------------|
 | `--skip-validations` | Skip pre-execution validations |
 | `--validations-only` | Run validations without executing |
 | `--rollback` | Execute rollback operations for the step |
 | `--no-rollback` | Disable automatic rollback on execution failure |
-| `--to <stack>` | Target Gen2 stack name (refactor step) |
-| `--resourceMappings <file>` | Custom resource mappings file (refactor step) |
 
 ### Exported Classes and Functions
 
@@ -371,6 +372,3 @@ await amplifyClient.send(new UpdateAppCommand({ appId, environmentVariables }));
 - The decommission step creates a changeset to analyze resources—this can timeout for large stacks.
 - Cannot specify both `--rollback` and `--no-rollback` flags simultaneously.
 - The lock step's rollback does not disable deletion protection on DynamoDB tables (preserves safety).
-
-**Testing guidance:**
-Test with deployed Amplify Gen1 projects that have auth, data, and storage categories. Verify the lock step enables deletion protection on DynamoDB tables and sets the migration environment variable. Test the refactor step with `--to` pointing to a valid Gen2 stack. Use `--validations-only` to test validation logic without executing. Test error handling by simulating drift or uncommitted changes. Test rollback functionality with `--rollback` flag. Verify automatic rollback triggers on execution failures.
