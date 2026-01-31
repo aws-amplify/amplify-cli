@@ -29,8 +29,6 @@ Extracts shared Gen1 configuration (`appId`, `appName`, `envName`, `stackName`, 
 then passes these values to step constructors. This establishes a single source of truth; subcommands should use the injected values 
 rather than re-extracting them independently.
 
-**For example:**
-
 ```ts
 const appId = (Object.values(stateManager.getTeamProviderInfo())[0] as any).awscloudformation.AmplifyAppId;
 const envName = localEnvName ?? migratingEnvName;
