@@ -163,8 +163,8 @@ flowchart LR
 
 ### AmplifyMigrationStep
 
-> **File:** `src/commands/gen2-migration/_step.ts`<br>
-> **Type:** _AbstractClass_
+**File:** `src/commands/gen2-migration/_step.ts`<br>
+**Type:** _AbstractClass_
 
 ```ts
 /**
@@ -228,8 +228,8 @@ public abstract rollbackImplications(): Promise<string[]>;
 
 ### AmplifyMigrationOperation
 
-> **File:** `src/commands/gen2-migration/_step.ts`<br>
-> **Type:** _Interface_
+**File:** `src/commands/gen2-migration/_step.ts`<br>
+**Type:** _Interface_
 
 Interface for atomic operations that can be executed as part of a migration step.
 
@@ -253,8 +253,8 @@ execute(): Promise<void>;
 
 ### Logger
 
-> **File:** `src/commands/gen2-migration.ts`<br>
-> **Type:** _Class_
+**File:** `src/commands/gen2-migration.ts`<br>
+**Type:** _Class_
 
 Logging utility that wraps the standard printer with additional gen2-migration specific context.
 
