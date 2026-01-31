@@ -26,7 +26,7 @@ Each step extends the abstract `AmplifyMigrationStep` class and implements separ
 forward and rollback execution modes. Steps return `AmplifyMigrationOperation` arrays that describe and execute atomic operations.
 
 ```mermaid
-flowchart TD
+flowchart LR
     CLI[amplify gen2-migration 'subcommand'] --> RUN[run dispatcher]
     RUN --> EXTRACT[Extract Gen1 Config<br/>appId, envName, rootStackName]
     EXTRACT --> PARSE[Parse subcommand & flags]
