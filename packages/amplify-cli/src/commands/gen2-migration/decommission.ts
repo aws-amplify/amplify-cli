@@ -21,39 +21,32 @@ export class AmplifyMigrationDecommissionStep extends AmplifyMigrationStep {
     await validations.validateStatefulResources(changeSet, true);
   }
 
-  public async operations(): Promise<AmplifyMigrationOperation[]> {
+  public async execute(): Promise<AmplifyMigrationOperation[]> {
     return [
       {
         describe: async () => {
           return ['Delete the Gen1 environment'];
         },
         execute: async () => {
-          await this.execute();
-        },
-        rollback: async () => {
-          await this.rollback();
+          this.logger.info(`Starting decommission of environment: ${this.currentEnvName}`);
+
+          this.logger.info('Preparing to delete Gen1 resources...');
+
+          this.logger.info('Deleting Gen1 resources from the cloud. This will take a few minutes.');
+          await removeEnvFromCloud(this.context, this.currentEnvName, true);
+
+          this.logger.info('Cleaning up SSM parameters...');
+          await invokeDeleteEnvParamsFromService(this.context, this.currentEnvName);
+
+          this.logger.info('Successfully decommissioned Gen1 environment from the cloud');
+          this.logger.info(`Environment '${this.currentEnvName}' has been completely removed from AWS`);
         },
       },
     ];
   }
 
-  private async execute(): Promise<void> {
-    this.logger.info(`Starting decommission of environment: ${this.currentEnvName}`);
-
-    this.logger.info('Preparing to delete Gen1 resources...');
-
-    this.logger.info('Deleting Gen1 resources from the cloud. This will take a few minutes.');
-    await removeEnvFromCloud(this.context, this.currentEnvName, true);
-
-    this.logger.info('Cleaning up SSM parameters...');
-    await invokeDeleteEnvParamsFromService(this.context, this.currentEnvName);
-
-    this.logger.info('Successfully decommissioned Gen1 environment from the cloud');
-    this.logger.info(`Environment '${this.currentEnvName}' has been completely removed from AWS`);
-  }
-
-  private async rollback(): Promise<void> {
-    this.logger.warn('Not implemented');
+  public async rollback(): Promise<AmplifyMigrationOperation[]> {
+    throw new Error('Not Implemented');
   }
 
   private async createChangeSet(): Promise<DescribeChangeSetOutput> {

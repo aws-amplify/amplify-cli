@@ -38,41 +38,34 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
     return;
   }
 
-  public async operations(): Promise<AmplifyMigrationOperation[]> {
+  public async execute(): Promise<AmplifyMigrationOperation[]> {
     return [
       {
         describe: async () => {
           return ['Move stateful resources from your Gen1 app to be managed by your Gen2 app'];
         },
         execute: async () => {
-          await this.execute();
-        },
-        rollback: async () => {
-          await this.rollback();
+          // Extract parameters from context
+          this.extractParameters();
+
+          // Process resource mappings if provided
+          if (this.resourceMappings) {
+            await this.processResourceMappings();
+          }
+
+          if (this.parsedResourceMappings) {
+            this.logger.debug(`📊 Using ${this.parsedResourceMappings.length} custom resource mapping(s)`);
+          }
+
+          // Execute the stack refactoring
+          await this.executeStackRefactor();
         },
       },
     ];
   }
 
-  private async execute(): Promise<void> {
-    // Extract parameters from context
-    this.extractParameters();
-
-    // Process resource mappings if provided
-    if (this.resourceMappings) {
-      await this.processResourceMappings();
-    }
-
-    if (this.parsedResourceMappings) {
-      this.logger.debug(`📊 Using ${this.parsedResourceMappings.length} custom resource mapping(s)`);
-    }
-
-    // Execute the stack refactoring
-    await this.executeStackRefactor();
-  }
-
-  private async rollback(): Promise<void> {
-    this.logger.info('Not implemented');
+  public async rollback(): Promise<AmplifyMigrationOperation[]> {
+    throw new Error('Not Implemented');
   }
 
   private extractParameters(): void {

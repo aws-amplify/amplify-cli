@@ -1,6 +1,6 @@
 import { AmplifyMigrationCloneStep } from './gen2-migration/clone';
 import { $TSContext, AmplifyError } from '@aws-amplify/amplify-cli-core';
-import { AmplifyMigrationStep } from './gen2-migration/_step';
+import { AmplifyMigrationOperation, AmplifyMigrationStep } from './gen2-migration/_step';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import { AmplifyMigrationCleanupStep } from './gen2-migration/cleanup';
 import { AmplifyMigrationDecommissionStep } from './gen2-migration/decommission';
@@ -132,74 +132,90 @@ export const run = async (context: $TSContext) => {
   const logger = new Logger(stepName, appName, envName);
   const implementation: AmplifyMigrationStep = new step.class(logger, envName, appName, appId, stackName, region, context);
 
-  if (!skipValidations) {
-    printer.blankLine();
-    logger.envelope('Performing validations');
-    try {
-      await implementation.validate();
-    } catch (e) {
-      const skipValidationsCommand = `amplify ${context.input.argv.join(' ').trim()} --skip-validations`;
-      throw new AmplifyError('MigrationError', {
-        message: `Validations failed: ${e.message}`,
-        resolution: `Resolve the validation errors or skip them by running '${skipValidationsCommand}'`,
-      });
-    }
-    logger.envelope('Validations complete');
+  if (validationsOnly) {
+    await validate(implementation, logger);
+    return;
   }
 
-  if (!validationsOnly) {
-    const operations = await implementation.operations();
+  printer.blankLine();
+  printer.info(
+    chalk.yellow(`You are about to ${rollingBack ? 'rollback' : 'execute'} '${stepName}' on environment '${appId}/${envName}'.`),
+  );
+  printer.blankLine();
 
-    // remember the operations that succeeded since these are the ones
-    // we need to auto rollback in case of a failure.
-    const operationsSucceeded = [];
+  printer.info(chalk.bold('Operations Summary'));
+  printer.blankLine();
 
-    try {
-      printer.blankLine();
-      printer.info(chalk.yellow(`You are about to execute '${stepName}' on environment '${appId}/${envName}'. This step will:`));
-      printer.blankLine();
-      for (const operation of operations) {
-        printer.info(`- ${operation.describe()}${rollingBack ? ` (undo)` : ``}`);
-      }
-      printer.blankLine();
-      if (await prompter.confirmContinue()) {
-        printer.blankLine();
-        logger.envelope('Executing');
-        for (const operation of operations) {
-          if (rollingBack) {
-            // executing with --rollback so we just perform rollback execution
-            await operation.rollback();
-          } else {
-            // executing without --rollback so we perform regular execution
-            await operation.execute();
-          }
-        }
-        logger.envelope('Execution complete');
-      }
-    } catch (error: unknown) {
-      printer.error(`Execution failed: ${error}`);
-      if (!disableAutoRollback && !rollingBack) {
-        printer.blankLine();
-        logger.envelope('Rolling back');
-        for (const operation of operationsSucceeded) {
-          await operation.rollback();
-        }
-        logger.envelope('Rollback complete');
-      }
-      throw error;
+  for (const operation of rollingBack ? await implementation.rollback() : await implementation.execute()) {
+    for (const description of await operation.describe()) {
+      printer.info(`- ${description}`);
     }
   }
 
   printer.blankLine();
-  printer.success('Done');
+
+  if (!(await prompter.confirmContinue())) {
+    return;
+  }
+
+  printer.blankLine();
+
+  if (!skipValidations) {
+    await validate(implementation, logger);
+    printer.blankLine();
+  }
+
+  if (rollingBack) {
+    await runOperations(await implementation.rollback(), logger);
+
+    printer.blankLine();
+    printer.success('Done');
+
+    return;
+  }
+
+  try {
+    await runOperations(await implementation.execute(), logger);
+
+    printer.blankLine();
+    printer.success('Done');
+
+    return;
+  } catch (error: unknown) {
+    if (!disableAutoRollback) {
+      printer.error(`Execution failed: ${error}`);
+
+      printer.blankLine();
+      logger.envelope('Rolling back');
+
+      await runOperations(await implementation.rollback(), logger);
+
+      logger.envelope('Rollback complete');
+    }
+
+    throw error;
+  }
 };
+
+async function validate(step: AmplifyMigrationStep, logger: Logger) {
+  logger.envelope('Performing validations');
+  await step.validate();
+  logger.envelope('Validations complete');
+}
+
+async function runOperations(operations: AmplifyMigrationOperation[], logger: Logger) {
+  logger.envelope('Executing');
+  for (const operation of operations) {
+    await operation.execute();
+  }
+  logger.envelope('Execution complete');
+}
 
 function shiftParams(context) {
   delete context.parameters.first;
   delete context.parameters.second;
   delete context.parameters.third;
   const { subCommands } = context.input;
-  /* eslint-disable */
   if (subCommands && subCommands.length > 1) {
     if (subCommands.length > 1) {
       context.parameters.first = subCommands[1];
@@ -211,7 +227,6 @@ function shiftParams(context) {
       context.parameters.third = subCommands[3];
     }
   }
-  /* eslint-enable */
 }
 
 function displayHelp(context: $TSContext) {

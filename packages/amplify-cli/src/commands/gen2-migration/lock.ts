@@ -19,13 +19,13 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
     await this.validations.validateDrift();
   }
 
-  public async operations(): Promise<AmplifyMigrationOperation[]> {
+  public async execute(): Promise<AmplifyMigrationOperation[]> {
     const operations: AmplifyMigrationOperation[] = [];
 
     for (const tableName of await this.dynamoTableNames()) {
       operations.push({
         describe: async () => {
-          return [`Enable deletion protection for table ${tableName}`];
+          return [`Enable deletion protection for table '${tableName}'`];
         },
         execute: async () => {
           await this.ddbClient().send(
@@ -36,7 +36,59 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
           );
           this.logger.info(`Enabled deletion protection for table '${tableName}'`);
         },
-        rollback: async () => {
+      });
+    }
+
+    operations.push({
+      describe: async () => {
+        return [`Add environment variable '${GEN2_MIGRATION_ENVIRONMENT_NAME}' (value: ${this.currentEnvName})`];
+      },
+      execute: async () => {
+        const app = await this.amplifyClient().send(new GetAppCommand({ appId: this.appId }));
+        const environmentVariables = { ...(app.app.environmentVariables ?? {}), [GEN2_MIGRATION_ENVIRONMENT_NAME]: this.currentEnvName };
+        await this.amplifyClient().send(new UpdateAppCommand({ appId: this.appId, environmentVariables }));
+        this.logger.info(`Added '${GEN2_MIGRATION_ENVIRONMENT_NAME}' environment variable (value: ${this.currentEnvName})`);
+      },
+    });
+
+    const stackPolicy = JSON.stringify({
+      Statement: [
+        {
+          Effect: 'Deny',
+          Action: 'Update:*',
+          Principal: '*',
+          Resource: '*',
+        },
+      ],
+    });
+
+    operations.push({
+      describe: async () => {
+        return [`Set a policy to stack '${this.rootStackName}': ${stackPolicy}`];
+      },
+      execute: async () => {
+        await this.cfnClient().send(
+          new SetStackPolicyCommand({
+            StackName: this.rootStackName,
+            StackPolicyBody: stackPolicy,
+          }),
+        );
+        this.logger.info(`Successfully set policy on stack '${this.rootStackName}': ${stackPolicy}`);
+      },
+    });
+
+    return operations;
+  }
+
+  public async rollback(): Promise<AmplifyMigrationOperation[]> {
+    const operations: AmplifyMigrationOperation[] = [];
+
+    for (const tableName of await this.dynamoTableNames()) {
+      operations.push({
+        describe: async () => {
+          return [`Disable deletion protection for table '${tableName}'`];
+        },
+        execute: async () => {
           await this.ddbClient().send(
             new UpdateTableCommand({
               TableName: tableName,
@@ -50,15 +102,9 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
 
     operations.push({
       describe: async () => {
-        return [`Mark environment '${this.currentEnvName}' for migration`];
+        return [`Remove environment variable '${GEN2_MIGRATION_ENVIRONMENT_NAME}'`];
       },
       execute: async () => {
-        const app = await this.amplifyClient().send(new GetAppCommand({ appId: this.appId }));
-        const environmentVariables = { ...(app.app.environmentVariables ?? {}), [GEN2_MIGRATION_ENVIRONMENT_NAME]: this.currentEnvName };
-        await this.amplifyClient().send(new UpdateAppCommand({ appId: this.appId, environmentVariables }));
-        this.logger.info(`Added ${GEN2_MIGRATION_ENVIRONMENT_NAME} environment variable (value: ${this.currentEnvName})`);
-      },
-      rollback: async () => {
         const app = await this.amplifyClient().send(new GetAppCommand({ appId: this.appId }));
         const environmentVariables = app.app.environmentVariables ?? {};
         delete environmentVariables[GEN2_MIGRATION_ENVIRONMENT_NAME];
@@ -67,47 +113,29 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
       },
     });
 
+    const stackPolicy = JSON.stringify({
+      Statement: [
+        {
+          Effect: 'Allow',
+          Action: 'Update:*',
+          Principal: '*',
+          Resource: '*',
+        },
+      ],
+    });
+
     operations.push({
       describe: async () => {
-        return [`Add a restrictive update policy to stack '${this.rootStackName}' to prevent deployments during migration`];
+        return [`Set a policy to stack '${this.rootStackName}': ${stackPolicy}`];
       },
       execute: async () => {
-        const stackPolicy = {
-          Statement: [
-            {
-              Effect: 'Deny',
-              Action: 'Update:*',
-              Principal: '*',
-              Resource: '*',
-            },
-          ],
-        };
-
         await this.cfnClient().send(
           new SetStackPolicyCommand({
             StackName: this.rootStackName,
-            StackPolicyBody: JSON.stringify(stackPolicy),
+            StackPolicyBody: stackPolicy,
           }),
         );
-      },
-      rollback: async () => {
-        const stackPolicy = {
-          Statement: [
-            {
-              Effect: 'Allow',
-              Action: 'Update:*',
-              Principal: '*',
-              Resource: '*',
-            },
-          ],
-        };
-
-        await this.cfnClient().send(
-          new SetStackPolicyCommand({
-            StackName: this.rootStackName,
-            StackPolicyBody: JSON.stringify(stackPolicy),
-          }),
-        );
+        this.logger.info(`Successfully set policy on stack '${this.rootStackName}': ${stackPolicy}`);
       },
     });
 

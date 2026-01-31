@@ -19,13 +19,13 @@ export abstract class AmplifyMigrationStep {
 
   public abstract validate(): Promise<void>;
 
-  public abstract operations(): Promise<AmplifyMigrationOperation[]>;
+  public abstract execute(): Promise<AmplifyMigrationOperation[]>;
+
+  public abstract rollback(): Promise<AmplifyMigrationOperation[]>;
 }
 
 export interface AmplifyMigrationOperation {
   describe(): Promise<string[]>;
 
   execute(): Promise<void>;
-
-  rollback(): Promise<void>;
 }

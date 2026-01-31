@@ -21,7 +21,7 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
   }
 
   private async implications(): Promise<string[]> {
-    const implications = [];
+    const implications: string[] = [];
 
     if (await this.packageJsonExists()) {
       implications.push(`Add Gen2 TypeScript dependencies to ${this.packageJsonPath}`);
@@ -54,27 +54,20 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
     await validations.validateWorkingDirectory();
   }
 
-  public async operations(): Promise<AmplifyMigrationOperation[]> {
+  public async execute(): Promise<AmplifyMigrationOperation[]> {
     return [
       {
         describe: async () => {
-          return this.implications();
+          return await this.implications();
         },
         execute: async () => {
-          await this.execute();
-        },
-        rollback: async () => {
-          await this.rollback();
+          await prepare(this.logger, this.appId, this.currentEnvName, this.region);
         },
       },
     ];
   }
 
-  private async execute(): Promise<void> {
-    await prepare(this.logger, this.appId, this.currentEnvName, this.region);
-  }
-
-  private async rollback(): Promise<void> {
-    // Rollback logic can be added here if needed
+  public async rollback(): Promise<AmplifyMigrationOperation[]> {
+    throw new Error('Not Implemented');
   }
 }

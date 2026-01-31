@@ -5,7 +5,11 @@ export class AmplifyMigrationCloneStep extends AmplifyMigrationStep {
     throw new Error('Method not implemented.');
   }
 
-  public operations(): Promise<AmplifyMigrationOperation[]> {
+  public async execute(): Promise<AmplifyMigrationOperation[]> {
     throw new Error('Method not implemented.');
+  }
+
+  public async rollback(): Promise<AmplifyMigrationOperation[]> {
+    throw new Error('Not Implemented');
   }
 }
