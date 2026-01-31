@@ -36,22 +36,21 @@ flowchart TD
     
     STEP --> BRANCH{Rollback Flag?}
     
-    BRANCH -->|no| FV[executeValidate]
-    FV --> FIMP[executeImplications]
-    FIMP --> FSUM[Display Operations Summary]
+    BRANCH -->|no| FV[Validate Execution]
+    FV --> FIMP[Display Execute Implications]
+    FIMP --> FSUM[Display Execution Operations Summary]
     FSUM --> FCONF[User Confirmation]
-    FCONF --> FOPS[execute returns operations]
-    FOPS --> FEX[Execute operations]
+    FCONF --> FEX[Run Execute operations]
     FEX --> FERR{Failure?}
     FERR -->|yes & auto-rollback| RAR[Auto-rollback]
     FERR -->|no| FDONE[Complete]
     
-    BRANCH -->|yes| RV[rollbackValidate]
-    RV --> RIMP[rollbackImplications]
-    RIMP --> RSUM[Display Operations Summary]
+    BRANCH -->|yes| RV[Validate Rollback]
+    RV --> RIMP[Display Rollback Implications]
+    RIMP --> RSUM[Display Rollback Operations Summary]
     RSUM --> RCONF[User Confirmation]
-    RCONF --> ROPS[rollback returns operations]
-    ROPS --> REX[Execute rollback operations]
+
+    RCONF --> REX[Run rollback operations]
     REX --> RDONE[Complete]
 ```
 
