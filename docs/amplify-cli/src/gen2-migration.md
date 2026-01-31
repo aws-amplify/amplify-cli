@@ -15,13 +15,12 @@ Each step follows a consistent `validate → execute → rollback` lifecycle pat
 
 ### Argument Parsing
 
-The command parses CLI flags to control execution behavior. Key flags include `--skip-validations`, `--validations-only`, `--rollback`, and `--no-rollback`.
+Parses CLI flags to control execution flow—whether to skip validations, run validations only, execute rollback operations, or 
+disable automatic rollback on failure. Validates flag combinations to prevent conflicting options.
 
 ```ts
 const skipValidations = (context.input.options ?? {})['skip-validations'] ?? false;
-const validationsOnly = (context.input.options ?? {})['validations-only'] ?? false;
 const rollingBack = (context.input.options ?? {})['rollback'] ?? false;
-const disableAutoRollback = (context.input.options ?? {})['no-rollback'] ?? false;
 ```
 
 ### Common Gen1 Configuration Extraction
@@ -41,7 +40,8 @@ const implementation: AmplifyMigrationStep = new step.class(logger, envName, app
 
 ### Subcommand Dispatching
 
-Maps subcommand names to their implementation classes via the `STEPS` registry and instantiates the appropriate step class.
+Maps the subcommand name to its implementation class via the `STEPS` registry, then instantiates the step with extracted configuration. 
+This allows adding new migration steps by simply registering them in the `STEPS` object.
 
 ```ts
 const stepName = (context.input.subCommands ?? [])[0];
@@ -51,10 +51,10 @@ const implementation: AmplifyMigrationStep = new step.class(logger, envName, app
 
 ### Operations Reporting
 
-Displays a summary of operations that will be executed by calling `describe()` on each operation returned by the step.
+Displays a summary of what will happen before execution by calling `describe()` on each operation. This gives users visibility 
+into the specific actions that will be performed, enabling informed decision-making before confirming.
 
 ```ts
-printer.info(chalk.bold(chalk.underline('Operations Summary')));
 for (const operation of rollingBack ? await implementation.rollback() : await implementation.execute()) {
   for (const description of await operation.describe()) {
     printer.info(`• ${description}`);
@@ -64,10 +64,11 @@ for (const operation of rollingBack ? await implementation.rollback() : await im
 
 ### Implications Reporting
 
-Displays implications and side effects by calling the step's `executeImplications()` or `rollbackImplications()` method.
+Displays the broader implications and side effects of the operation by calling the step's implications methods. 
+This helps users understand the impact beyond the immediate operations, such as downtime, 
+resource state changes, or irreversible actions.
 
 ```ts
-printer.info(chalk.bold(chalk.underline('Implications')));
 for (const implication of rollingBack ? await implementation.rollbackImplications() : await implementation.executeImplications()) {
   printer.info(`• ${implication}`);
 }
@@ -75,7 +76,8 @@ for (const implication of rollingBack ? await implementation.rollbackImplication
 
 ### User Confirmation
 
-Prompts the user to confirm before executing operations. Exits if the user declines.
+Prompts the user to confirm before executing operations, providing a safety gate after displaying the operations summary 
+and implications. Exits gracefully if the user declines.
 
 ```ts
 if (!(await prompter.confirmContinue())) {
@@ -85,7 +87,8 @@ if (!(await prompter.confirmContinue())) {
 
 ### Operation-Based Execution
 
-Executes operations sequentially by iterating through the array and calling `execute()` on each operation.
+Executes operations sequentially by iterating through the array and calling `execute()` on each. This sequential 
+execution ensures operations complete in the correct order and allows for proper error handling at the operation level.
 
 ```ts
 async function runOperations(operations: AmplifyMigrationOperation[]) {
@@ -97,14 +100,14 @@ async function runOperations(operations: AmplifyMigrationOperation[]) {
 
 ### Automatic Rollback on Failure
 
-Catches execution failures and automatically triggers rollback unless disabled with `--no-rollback`.
+Catches execution failures and automatically triggers rollback operations to restore the previous state, unless disabled 
+with `--no-rollback`. This provides a safety net for partial failures during migration steps.
 
 ```ts
 try {
   await runExecute(implementation, logger);
 } catch (error: unknown) {
   if (!disableAutoRollback) {
-    printer.error(`Execution failed: ${error}`);
     await runRollback(implementation, logger);
   }
   throw error;
