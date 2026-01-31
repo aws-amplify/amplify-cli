@@ -57,6 +57,9 @@ export abstract class AmplifyMigrationStep {
   public abstract rollback(): Promise<AmplifyMigrationOperation[]>;
 }
 
+/**
+ * Interface for atomic operations that can be executed as part of a migration step.
+ */
 export interface AmplifyMigrationOperation {
   /**
    * Returns human-readable strings describing what the operation will do.

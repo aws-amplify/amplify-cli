@@ -161,10 +161,9 @@ flowchart LR
     REX --> RDONE[Complete]
 ```
 
-### AmplifyMigrationStep
+### `AmplifyMigrationStep`
 
-**File:** `src/commands/gen2-migration/_step.ts`<br>
-**Type:** _AbstractClass_
+[`src/commands/gen2-migration/_step.ts`](../../../packages/amplify-cli/src/commands/gen2-migration/_step.ts)
 
 ```ts
 /**
@@ -226,12 +225,16 @@ public abstract executeImplications(): Promise<string[]>;
 public abstract rollbackImplications(): Promise<string[]>;
 ```
 
-### AmplifyMigrationOperation
+### `AmplifyMigrationOperation`
 
-**File:** `src/commands/gen2-migration/_step.ts`<br>
-**Type:** _Interface_
+[`src/commands/gen2-migration/_step.ts`](../../../packages/amplify-cli/src/commands/gen2-migration/_step.ts)
 
-Interface for atomic operations that can be executed as part of a migration step.
+```ts
+/**
+ * Interface for atomic operations that can be executed as part of a migration step.
+ */
+export interface AmplifyMigrationOperation {...}
+```
 
 ```ts
 /**
@@ -251,12 +254,16 @@ describe(): Promise<string[]>;
 execute(): Promise<void>;
 ```
 
-### Logger
+### `Logger`
 
-**File:** `src/commands/gen2-migration.ts`<br>
-**Type:** _Class_
+[`src/commands/gen2-migration.ts`](../../../packages/amplify-cli/src/commands/gen2-migration.ts)
 
-Logging utility that wraps the standard printer with additional gen2-migration specific context.
+```ts
+/**
+ * Logging utility that wraps the standard printer with additional gen2-migration specific context.
+ */
+export class Logger {...}
+```
 
 ```ts
 /**

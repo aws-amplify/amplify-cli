@@ -43,6 +43,9 @@ const STEPS = {
   },
 };
 
+/**
+ * Logging utility that wraps the standard printer with additional gen2-migration specific context.
+ */
 export class Logger {
   constructor(private readonly stepName: string, private readonly appName: string, private readonly envName: string) {}
 
