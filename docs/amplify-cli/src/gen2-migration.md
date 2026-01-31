@@ -35,21 +35,20 @@ flowchart LR
     
     STEP --> BRANCH{Rollback Flag?}
     
-    BRANCH -->|no| FV[Validate Execution]
-    FV --> FIMP[Display Execute Implications]
-    FIMP --> FSUM[Display Execution Operations Summary]
-    FSUM --> FCONF[User Confirmation]
-    FCONF --> FEX[Run Execute operations]
+    BRANCH -->|no| FSUM[Display Execute Operations Summary]
+    FSUM --> FIMP[Display Execute Implications]
+    FIMP --> FCONF[User Confirmation]
+    FCONF --> FV[Validate Execution]
+    FV --> FEX[Run Execute operations]
     FEX --> FERR{Failure?}
     FERR -->|yes & auto-rollback| REX
     FERR -->|no| FDONE[Complete]
     
-    BRANCH -->|yes| RV[Validate Rollback]
-    RV --> RIMP[Display Rollback Implications]
-    RIMP --> RSUM[Display Rollback Operations Summary]
-    RSUM --> RCONF[User Confirmation]
-
-    RCONF --> REX[Run rollback operations]
+    BRANCH -->|yes| RSUM[Display Rollback Operations Summary]
+    RSUM --> RIMP[Display Rollback Implications]
+    RIMP --> RCONF[User Confirmation]
+    RCONF --> RV[Validate Rollback]
+    RV --> REX[Run rollback operations]
     REX --> RDONE[Complete]
 ```
 
