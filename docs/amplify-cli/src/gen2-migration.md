@@ -33,7 +33,15 @@ flowchart LR
     
     PARSE --> STEP[Instantiate Step Class]
     
-    STEP --> BRANCH{Rollback Flag?}
+    STEP --> VALONLY{Validations Only?}
+    
+    VALONLY -->|yes| VALBRANCH{Rollback Flag?}
+    VALBRANCH -->|no| VALEXEC[Validate Execute]
+    VALBRANCH -->|yes| VALROLL[Validate Rollback]
+    VALEXEC --> VALDONE[Complete]
+    VALROLL --> VALDONE
+    
+    VALONLY -->|no| BRANCH{Rollback Flag?}
     
     BRANCH -->|no| FSUM[Display Execute Operations Summary]
     FSUM --> FIMP[Display Execute Implications]
