@@ -41,7 +41,7 @@ flowchart TD
     FSUM --> FCONF[User Confirmation]
     FCONF --> FEX[Run Execute operations]
     FEX --> FERR{Failure?}
-    FERR -->|yes & auto-rollback| RAR[Auto-rollback]
+    FERR -->|yes & auto-rollback| REX
     FERR -->|no| FDONE[Complete]
     
     BRANCH -->|yes| RV[Validate Rollback]
@@ -52,8 +52,6 @@ flowchart TD
     RCONF --> REX[Run rollback operations]
     REX --> RDONE[Complete]
 ```
-
-**Data Flow:** CLI invokes `run()` → Validates environment (appId, envName, stackName) → Instantiates step class → Shows operations summary and implications → Prompts for confirmation → Runs validations with `AmplifyGen2MigrationValidations` → Executes operations returned by `execute()` or `rollback()` → On failure, automatically runs rollback operations unless `--no-rollback` is specified.
 
 ### Components
 
