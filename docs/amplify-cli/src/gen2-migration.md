@@ -11,37 +11,105 @@ through the complete migration process:
 
 Each step follows a consistent `validate → execute → rollback` lifecycle pattern with user confirmation and safety checks.
 
-## Key Responsebilities
+## Key Responsibilities
 
 ### Argument Parsing
 
-TODO
+The command parses CLI flags to control execution behavior. Key flags include `--skip-validations`, `--validations-only`, `--rollback`, and `--no-rollback`.
+
+```ts
+const skipValidations = (context.input.options ?? {})['skip-validations'] ?? false;
+const validationsOnly = (context.input.options ?? {})['validations-only'] ?? false;
+const rollingBack = (context.input.options ?? {})['rollback'] ?? false;
+const disableAutoRollback = (context.input.options ?? {})['no-rollback'] ?? false;
+```
 
 ### Common Gen1 Configuration Extraction
 
-TODO
+Extracts shared Gen1 configuration (`appId`, `appName`, `envName`, `stackName`, `region`) once from state manager and Amplify service, 
+then passes these values to step constructors. This establishes a single source of truth; subcommands should use the injected values 
+rather than re-extracting them independently.
+
+**For example:**
+
+```ts
+const appId = (Object.values(stateManager.getTeamProviderInfo())[0] as any).awscloudformation.AmplifyAppId;
+const envName = localEnvName ?? migratingEnvName;
+// ... extract other config values
+const implementation: AmplifyMigrationStep = new step.class(logger, envName, appName, appId, stackName, region, context);
+```
 
 ### Subcommand Dispatching
 
-TODO
+Maps subcommand names to their implementation classes via the `STEPS` registry and instantiates the appropriate step class.
+
+```ts
+const stepName = (context.input.subCommands ?? [])[0];
+const step = STEPS[stepName];
+const implementation: AmplifyMigrationStep = new step.class(logger, envName, appName, appId, stackName, region, context);
+```
 
 ### Operations Reporting
 
-TODO
+Displays a summary of operations that will be executed by calling `describe()` on each operation returned by the step.
+
+```ts
+printer.info(chalk.bold(chalk.underline('Operations Summary')));
+for (const operation of rollingBack ? await implementation.rollback() : await implementation.execute()) {
+  for (const description of await operation.describe()) {
+    printer.info(`• ${description}`);
+  }
+}
+```
 
 ### Implications Reporting
 
-TODO
+Displays implications and side effects by calling the step's `executeImplications()` or `rollbackImplications()` method.
+
+```ts
+printer.info(chalk.bold(chalk.underline('Implications')));
+for (const implication of rollingBack ? await implementation.rollbackImplications() : await implementation.executeImplications()) {
+  printer.info(`• ${implication}`);
+}
+```
 
 ### User Confirmation
 
-TODO
+Prompts the user to confirm before executing operations. Exits if the user declines.
+
+```ts
+if (!(await prompter.confirmContinue())) {
+  return;
+}
+```
 
 ### Operation-Based Execution
 
-TODO
+Executes operations sequentially by iterating through the array and calling `execute()` on each operation.
+
+```ts
+async function runOperations(operations: AmplifyMigrationOperation[]) {
+  for (const operation of operations) {
+    await operation.execute();
+  }
+}
+```
 
 ### Automatic Rollback on Failure
+
+Catches execution failures and automatically triggers rollback unless disabled with `--no-rollback`.
+
+```ts
+try {
+  await runExecute(implementation, logger);
+} catch (error: unknown) {
+  if (!disableAutoRollback) {
+    printer.error(`Execution failed: ${error}`);
+    await runRollback(implementation, logger);
+  }
+  throw error;
+}
+```
 
 ## Extended Documentation
 
