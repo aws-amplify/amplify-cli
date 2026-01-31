@@ -34,42 +34,25 @@ flowchart TD
     
     PARSE --> STEP[Instantiate Step Class]
     
-    STEP --> FORWARD{Forward Execution?}
-    STEP --> ROLLBACK{Rollback Execution?}
+    STEP --> BRANCH{Rollback Flag?}
     
-    subgraph "Forward Execution Path"
-        FORWARD -->|yes| FV[executeValidate]
-        FV --> FIMP[executeImplications]
-        FIMP --> FSUM[Display Operations Summary]
-        FSUM --> FCONF[User Confirmation]
-        FCONF --> FOPS[execute returns operations]
-        FOPS --> FEX[Execute operations]
-        FEX --> FERR{Failure?}
-        FERR -->|yes & auto-rollback| RAR[Auto-rollback]
-        FERR -->|no| FDONE[Complete]
-    end
+    BRANCH -->|no| FV[executeValidate]
+    FV --> FIMP[executeImplications]
+    FIMP --> FSUM[Display Operations Summary]
+    FSUM --> FCONF[User Confirmation]
+    FCONF --> FOPS[execute returns operations]
+    FOPS --> FEX[Execute operations]
+    FEX --> FERR{Failure?}
+    FERR -->|yes & auto-rollback| RAR[Auto-rollback]
+    FERR -->|no| FDONE[Complete]
     
-    subgraph "Rollback Execution Path"
-        ROLLBACK -->|yes| RV[rollbackValidate]
-        RV --> RIMP[rollbackImplications]
-        RIMP --> RSUM[Display Operations Summary]
-        RSUM --> RCONF[User Confirmation]
-        RCONF --> ROPS[rollback returns operations]
-        ROPS --> REX[Execute rollback operations]
-        REX --> RDONE[Complete]
-    end
-    
-    subgraph "Shared Validations"
-        VAL[AmplifyGen2MigrationValidations]
-        VAL --> VD[validateDrift]
-        VAL --> VW[validateWorkingDirectory]
-        VAL --> VS[validateDeploymentStatus]
-        VAL --> VSR[validateStatefulResources]
-        VAL --> VL[validateLockStatus]
-    end
-    
-    FV --> VAL
-    RV --> VAL
+    BRANCH -->|yes| RV[rollbackValidate]
+    RV --> RIMP[rollbackImplications]
+    RIMP --> RSUM[Display Operations Summary]
+    RSUM --> RCONF[User Confirmation]
+    RCONF --> ROPS[rollback returns operations]
+    ROPS --> REX[Execute rollback operations]
+    REX --> RDONE[Complete]
 ```
 
 **Data Flow:** CLI invokes `run()` → Validates environment (appId, envName, stackName) → Instantiates step class → Shows operations summary and implications → Prompts for confirmation → Runs validations with `AmplifyGen2MigrationValidations` → Executes operations returned by `execute()` or `rollback()` → On failure, automatically runs rollback operations unless `--no-rollback` is specified.
