@@ -1,6 +1,6 @@
 /* eslint-disable spellcheck/spell-checker */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { AmplifyMigrationStep } from '../_step';
+import { AmplifyMigrationOperation, AmplifyMigrationStep } from '../_step';
 import { prompter } from '@aws-amplify/amplify-prompts';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import fs from 'fs-extra';
@@ -32,17 +32,29 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
   private resourceMappings?: string;
   private parsedResourceMappings?: ResourceMapping[];
 
-  public async implications(): Promise<string[]> {
-    return ['Move stateful resources from your Gen1 app to be managed by your Gen2 app'];
-  }
-
   public async validate(): Promise<void> {
     const validations = new AmplifyGen2MigrationValidations(this.logger, this.rootStackName, this.currentEnvName, this.context);
     await validations.validateLockStatus();
     return;
   }
 
-  public async execute(): Promise<void> {
+  public async operations(): Promise<AmplifyMigrationOperation[]> {
+    return [
+      {
+        describe: async () => {
+          return ['Move stateful resources from your Gen1 app to be managed by your Gen2 app'];
+        },
+        execute: async () => {
+          await this.execute();
+        },
+        rollback: async () => {
+          await this.rollback();
+        },
+      },
+    ];
+  }
+
+  private async execute(): Promise<void> {
     // Extract parameters from context
     this.extractParameters();
 
@@ -59,7 +71,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
     await this.executeStackRefactor();
   }
 
-  public async rollback(): Promise<void> {
+  private async rollback(): Promise<void> {
     this.logger.info('Not implemented');
   }
 

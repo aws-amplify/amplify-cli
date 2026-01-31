@@ -1,4 +1,4 @@
-import { AmplifyMigrationStep } from './_step';
+import { AmplifyMigrationOperation, AmplifyMigrationStep } from './_step';
 import { prepare, pathExists } from './generate/codegen-head/command-handlers';
 import { AmplifyGen2MigrationValidations } from './_validations';
 import * as path from 'path';
@@ -20,7 +20,7 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
     return await pathExists(this.packageLockPath);
   }
 
-  public async implications(): Promise<string[]> {
+  private async implications(): Promise<string[]> {
     const implications = [];
 
     if (await this.packageJsonExists()) {
@@ -54,11 +54,27 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
     await validations.validateWorkingDirectory();
   }
 
-  public async execute(): Promise<void> {
+  public async operations(): Promise<AmplifyMigrationOperation[]> {
+    return [
+      {
+        describe: async () => {
+          return this.implications();
+        },
+        execute: async () => {
+          await this.execute();
+        },
+        rollback: async () => {
+          await this.rollback();
+        },
+      },
+    ];
+  }
+
+  private async execute(): Promise<void> {
     await prepare(this.logger, this.appId, this.currentEnvName, this.region);
   }
 
-  public async rollback(): Promise<void> {
+  private async rollback(): Promise<void> {
     // Rollback logic can be added here if needed
   }
 }

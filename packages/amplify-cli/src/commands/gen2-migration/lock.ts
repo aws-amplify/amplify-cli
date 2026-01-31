@@ -1,76 +1,117 @@
-import { AmplifyMigrationStep } from './_step';
-import { printer } from '@aws-amplify/amplify-prompts';
-import { AmplifyError, stateManager } from '@aws-amplify/amplify-cli-core';
+import { AmplifyMigrationOperation, AmplifyMigrationStep } from './_step';
+import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { CloudFormationClient, SetStackPolicyCommand } from '@aws-sdk/client-cloudformation';
-import { AmplifyClient, UpdateAppCommand } from '@aws-sdk/client-amplify';
+import { AmplifyClient, UpdateAppCommand, GetAppCommand } from '@aws-sdk/client-amplify';
 import { DynamoDBClient, UpdateTableCommand, paginateListTables } from '@aws-sdk/client-dynamodb';
 import { AppSyncClient, paginateListGraphqlApis } from '@aws-sdk/client-appsync';
-import { AmplifyGen2MigrationValidations } from './_validations';
+
+const GEN2_MIGRATION_ENVIRONMENT_NAME = 'GEN2_MIGRATION_ENVIRONMENT_NAME';
 
 export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
-  public async implications(): Promise<string[]> {
-    return ['Enable deletion protection on DynamoDB tables storing your model data', 'Lock the environment from future updates'];
-  }
+  private _dynamoTableNames: string[];
+
+  private _ddbClient: DynamoDBClient;
+  private _amplifyClient: AmplifyClient;
+  private _cfnClient: CloudFormationClient;
 
   public async validate(): Promise<void> {
-    const validations = new AmplifyGen2MigrationValidations(this.logger, this.rootStackName, this.currentEnvName, this.context);
-    await validations.validateDeploymentStatus();
-    await validations.validateDrift();
+    await this.validations.validateDeploymentStatus();
+    await this.validations.validateDrift();
   }
 
-  public async execute(): Promise<void> {
-    const amplifyClient = new AmplifyClient();
+  public async operations(): Promise<AmplifyMigrationOperation[]> {
+    const operations: AmplifyMigrationOperation[] = [];
 
-    await amplifyClient.send(
-      new UpdateAppCommand({
-        appId: this.appId,
-        environmentVariables: {
-          GEN2_MIGRATION_ENVIRONMENT_NAME: this.currentEnvName,
+    for (const tableName of await this.dynamoTableNames()) {
+      operations.push({
+        describe: async () => {
+          return [`Enable deletion protection for table ${tableName}`];
         },
-      }),
-    );
-
-    this.logger.info(`Environment '${this.currentEnvName}' has been marked for migration`);
-
-    const graphQLApiId = await this.fetchGraphQLApiId();
-
-    if (graphQLApiId) {
-      const dynamoClient = new DynamoDBClient();
-      for (const tableName of await this.fetchGraphQLModelTables(graphQLApiId)) {
-        await dynamoClient.send(
-          new UpdateTableCommand({
-            TableName: tableName,
-            DeletionProtectionEnabled: true,
-          }),
-        );
-        this.logger.info(`Enabled deletion protection on table '${tableName}'`);
-      }
+        execute: async () => {
+          await this.ddbClient().send(
+            new UpdateTableCommand({
+              TableName: tableName,
+              DeletionProtectionEnabled: true,
+            }),
+          );
+          this.logger.info(`Enabled deletion protection for table '${tableName}'`);
+        },
+        rollback: async () => {
+          await this.ddbClient().send(
+            new UpdateTableCommand({
+              TableName: tableName,
+              DeletionProtectionEnabled: false,
+            }),
+          );
+          this.logger.info(`Disabled deletion protection on table '${tableName}'`);
+        },
+      });
     }
 
-    const stackPolicy = {
-      Statement: [
-        {
-          Effect: 'Deny',
-          Action: 'Update:*',
-          Principal: '*',
-          Resource: '*',
-        },
-      ],
-    };
+    operations.push({
+      describe: async () => {
+        return [`Mark environment '${this.currentEnvName}' for migration`];
+      },
+      execute: async () => {
+        const app = await this.amplifyClient().send(new GetAppCommand({ appId: this.appId }));
+        const environmentVariables = { ...(app.app.environmentVariables ?? {}), [GEN2_MIGRATION_ENVIRONMENT_NAME]: this.currentEnvName };
+        await this.amplifyClient().send(new UpdateAppCommand({ appId: this.appId, environmentVariables }));
+        this.logger.info(`Added ${GEN2_MIGRATION_ENVIRONMENT_NAME} environment variable (value: ${this.currentEnvName})`);
+      },
+      rollback: async () => {
+        const app = await this.amplifyClient().send(new GetAppCommand({ appId: this.appId }));
+        const environmentVariables = app.app.environmentVariables ?? {};
+        delete environmentVariables[GEN2_MIGRATION_ENVIRONMENT_NAME];
+        await this.amplifyClient().send(new UpdateAppCommand({ appId: this.appId, environmentVariables }));
+        this.logger.info(`Removed ${GEN2_MIGRATION_ENVIRONMENT_NAME} environment variable`);
+      },
+    });
 
-    const cfnClient = new CloudFormationClient({});
-    await cfnClient.send(
-      new SetStackPolicyCommand({
-        StackName: this.rootStackName,
-        StackPolicyBody: JSON.stringify(stackPolicy),
-      }),
-    );
+    operations.push({
+      describe: async () => {
+        return [`Add a restrictive update policy to stack '${this.rootStackName}' to prevent deployments during migration`];
+      },
+      execute: async () => {
+        const stackPolicy = {
+          Statement: [
+            {
+              Effect: 'Deny',
+              Action: 'Update:*',
+              Principal: '*',
+              Resource: '*',
+            },
+          ],
+        };
 
-    this.logger.info(`Root stack '${this.rootStackName}' has been locked`);
-  }
+        await this.cfnClient().send(
+          new SetStackPolicyCommand({
+            StackName: this.rootStackName,
+            StackPolicyBody: JSON.stringify(stackPolicy),
+          }),
+        );
+      },
+      rollback: async () => {
+        const stackPolicy = {
+          Statement: [
+            {
+              Effect: 'Allow',
+              Action: 'Update:*',
+              Principal: '*',
+              Resource: '*',
+            },
+          ],
+        };
 
-  public async rollback(): Promise<void> {
-    printer.warn('Not implemented');
+        await this.cfnClient().send(
+          new SetStackPolicyCommand({
+            StackName: this.rootStackName,
+            StackPolicyBody: JSON.stringify(stackPolicy),
+          }),
+        );
+      },
+    });
+
+    return operations;
   }
 
   private async fetchGraphQLApiId(): Promise<string> {
@@ -100,5 +141,34 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
       }
     }
     return tables;
+  }
+
+  private async dynamoTableNames(): Promise<string[]> {
+    if (!this._dynamoTableNames) {
+      const graphQLApiId = await this.fetchGraphQLApiId();
+      this._dynamoTableNames = await this.fetchGraphQLModelTables(graphQLApiId);
+    }
+    return this._dynamoTableNames;
+  }
+
+  private ddbClient() {
+    if (!this._ddbClient) {
+      this._ddbClient = new DynamoDBClient();
+    }
+    return this._ddbClient;
+  }
+
+  private amplifyClient() {
+    if (!this._amplifyClient) {
+      this._amplifyClient = new AmplifyClient();
+    }
+    return this._amplifyClient;
+  }
+
+  private cfnClient() {
+    if (!this._cfnClient) {
+      this._cfnClient = new CloudFormationClient({});
+    }
+    return this._cfnClient;
   }
 }

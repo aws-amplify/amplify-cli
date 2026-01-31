@@ -85,11 +85,18 @@ export const run = async (context: $TSContext) => {
 
   const skipValidations = (context.input.options ?? {})['skip-validations'] ?? false;
   const validationsOnly = (context.input.options ?? {})['validations-only'] ?? false;
-  const skipRollback = (context.input.options ?? {})['skip-rollback'] ?? false;
+  const rollingBack = (context.input.options ?? {})['rollback'] ?? false;
+  const disableAutoRollback = (context.input.options ?? {})['no-rollback'] ?? false;
 
   if (skipValidations && validationsOnly) {
     throw new AmplifyError('InputValidationError', {
       message: 'Cannot specify both --skip-validations and --validation-only',
+    });
+  }
+
+  if (rollingBack && disableAutoRollback) {
+    throw new AmplifyError('InputValidationError', {
+      message: 'Cannot specify both --rollback and --no-rollback',
     });
   }
 
@@ -141,26 +148,42 @@ export const run = async (context: $TSContext) => {
   }
 
   if (!validationsOnly) {
+    const operations = await implementation.operations();
+
+    // remember the operations that succeeded since these are the ones
+    // we need to auto rollback in case of a failure.
+    const operationsSucceeded = [];
+
     try {
       printer.blankLine();
-      printer.info(chalk.yellow(`You are about to execute '${stepName}' on environment '${appId}/${envName}'. This operation will:`));
+      printer.info(chalk.yellow(`You are about to execute '${stepName}' on environment '${appId}/${envName}'. This step will:`));
       printer.blankLine();
-      for (const implication of await implementation.implications()) {
-        printer.info(`- ${implication}`);
+      for (const operation of operations) {
+        printer.info(`- ${operation.describe()}${rollingBack ? ` (undo)` : ``}`);
       }
       printer.blankLine();
       if (await prompter.confirmContinue()) {
         printer.blankLine();
         logger.envelope('Executing');
-        await implementation.execute();
+        for (const operation of operations) {
+          if (rollingBack) {
+            // executing with --rollback so we just perform rollback execution
+            await operation.rollback();
+          } else {
+            // executing without --rollback so we perform regular execution
+            await operation.execute();
+          }
+        }
         logger.envelope('Execution complete');
       }
     } catch (error: unknown) {
-      if (!skipRollback) {
-        printer.error(`Execution failed: ${error}`);
+      printer.error(`Execution failed: ${error}`);
+      if (!disableAutoRollback && !rollingBack) {
         printer.blankLine();
         logger.envelope('Rolling back');
-        await implementation.rollback();
+        for (const operation of operationsSucceeded) {
+          await operation.rollback();
+        }
         logger.envelope('Rollback complete');
       }
       throw error;

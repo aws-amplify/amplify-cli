@@ -1,4 +1,4 @@
-import { AmplifyMigrationStep } from './_step';
+import { AmplifyMigrationOperation, AmplifyMigrationStep } from './_step';
 import { AmplifyGen2MigrationValidations } from './_validations';
 import {
   CloudFormationClient,
@@ -12,10 +12,6 @@ import { removeEnvFromCloud } from '../../extensions/amplify-helpers/remove-env-
 import { invokeDeleteEnvParamsFromService } from '../../extensions/amplify-helpers/invoke-delete-env-params';
 
 export class AmplifyMigrationDecommissionStep extends AmplifyMigrationStep {
-  public async implications(): Promise<string[]> {
-    return ['Delete the Gen1 environment'];
-  }
-
   public async validate(): Promise<void> {
     const changeSet = await this.createChangeSet();
 
@@ -25,7 +21,23 @@ export class AmplifyMigrationDecommissionStep extends AmplifyMigrationStep {
     await validations.validateStatefulResources(changeSet, true);
   }
 
-  public async execute(): Promise<void> {
+  public async operations(): Promise<AmplifyMigrationOperation[]> {
+    return [
+      {
+        describe: async () => {
+          return ['Delete the Gen1 environment'];
+        },
+        execute: async () => {
+          await this.execute();
+        },
+        rollback: async () => {
+          await this.rollback();
+        },
+      },
+    ];
+  }
+
+  private async execute(): Promise<void> {
     this.logger.info(`Starting decommission of environment: ${this.currentEnvName}`);
 
     this.logger.info('Preparing to delete Gen1 resources...');
@@ -40,7 +52,7 @@ export class AmplifyMigrationDecommissionStep extends AmplifyMigrationStep {
     this.logger.info(`Environment '${this.currentEnvName}' has been completely removed from AWS`);
   }
 
-  public async rollback(): Promise<void> {
+  private async rollback(): Promise<void> {
     this.logger.warn('Not implemented');
   }
 
