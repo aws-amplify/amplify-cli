@@ -133,7 +133,7 @@ export const run = async (context: $TSContext) => {
   const implementation: AmplifyMigrationStep = new step.class(logger, envName, appName, appId, stackName, region, context);
 
   if (validationsOnly) {
-    await validate(implementation, logger);
+    await validate(implementation, rollingBack, logger);
     return;
   }
 
@@ -143,16 +143,30 @@ export const run = async (context: $TSContext) => {
   );
   printer.blankLine();
 
-  printer.info(chalk.bold('Operations Summary'));
+  printer.info(chalk.bold(chalk.underline('Operations Summary')));
   printer.blankLine();
 
   for (const operation of rollingBack ? await implementation.rollback() : await implementation.execute()) {
     for (const description of await operation.describe()) {
-      printer.info(`- ${description}`);
+      printer.info(`• ${description}`);
     }
   }
 
   printer.blankLine();
+
+  printer.info(chalk.bold(chalk.underline('Implications')));
+  printer.blankLine();
+
+  for (const implication of rollingBack ? await implementation.rollbackImplications() : await implementation.executeImplications()) {
+    printer.info(`• ${implication}`);
+  }
+
+  printer.blankLine();
+
+  if (!rollingBack) {
+    printer.info(chalk.grey(`(You can rollback this command by running: 'amplify gen2-migration ${stepName} --rollback')`));
+    printer.blankLine();
+  }
 
   if (!(await prompter.confirmContinue())) {
     return;
@@ -161,7 +175,7 @@ export const run = async (context: $TSContext) => {
   printer.blankLine();
 
   if (!skipValidations) {
-    await validate(implementation, logger);
+    await validate(implementation, rollingBack, logger);
     printer.blankLine();
   }
 
@@ -188,9 +202,13 @@ export const run = async (context: $TSContext) => {
   }
 };
 
-async function validate(step: AmplifyMigrationStep, logger: Logger) {
+async function validate(step: AmplifyMigrationStep, rollback: boolean, logger: Logger) {
   logger.envelope('Performing validations');
-  await step.validate();
+  if (rollback) {
+    await step.rollbackValidate();
+  } else {
+    await step.executeValidate();
+  }
   logger.envelope('Validations complete');
 }
 
@@ -208,7 +226,7 @@ async function runRollback(step: AmplifyMigrationStep, logger: Logger) {
 
 async function runExecute(step: AmplifyMigrationStep, logger: Logger) {
   logger.envelope('Executing');
-  await runOperations(await step.rollback());
+  await runOperations(await step.execute());
   logger.envelope('Execution complete');
 }
 

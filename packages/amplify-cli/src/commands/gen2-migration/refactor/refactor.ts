@@ -32,18 +32,28 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
   private resourceMappings?: string;
   private parsedResourceMappings?: ResourceMapping[];
 
-  public async validate(): Promise<void> {
+  public async executeImplications(): Promise<string[]> {
+    return ['Move stateful resources from your Gen1 app to be managed by your Gen2 app'];
+  }
+
+  public async rollbackImplications(): Promise<string[]> {
+    throw new Error('Method not implemented.');
+  }
+
+  public async executeValidate(): Promise<void> {
     const validations = new AmplifyGen2MigrationValidations(this.logger, this.rootStackName, this.currentEnvName, this.context);
     await validations.validateLockStatus();
     return;
   }
 
+  public async rollbackValidate(): Promise<void> {
+    throw new Error('Method not implemented.');
+  }
+
   public async execute(): Promise<AmplifyMigrationOperation[]> {
     return [
       {
-        describe: async () => {
-          return ['Move stateful resources from your Gen1 app to be managed by your Gen2 app'];
-        },
+        describe: async () => ['Move stateful resources from your Gen1 app to be managed by your Gen2 app'],
         execute: async () => {
           // Extract parameters from context
           this.extractParameters();

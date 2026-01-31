@@ -12,13 +12,25 @@ import { removeEnvFromCloud } from '../../extensions/amplify-helpers/remove-env-
 import { invokeDeleteEnvParamsFromService } from '../../extensions/amplify-helpers/invoke-delete-env-params';
 
 export class AmplifyMigrationDecommissionStep extends AmplifyMigrationStep {
-  public async validate(): Promise<void> {
+  public async executeImplications(): Promise<string[]> {
+    return ['Delete the Gen1 environment'];
+  }
+
+  public async rollbackImplications(): Promise<string[]> {
+    throw new Error('Method not implemented.');
+  }
+
+  public async executeValidate(): Promise<void> {
     const changeSet = await this.createChangeSet();
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const validations = new AmplifyGen2MigrationValidations(this.logger, this.rootStackName, this.currentEnvName, this.context);
     // eslint-disable-next-line spellcheck/spell-checker
     await validations.validateStatefulResources(changeSet, true);
+  }
+
+  public async rollbackValidate(): Promise<void> {
+    throw new Error('Method not implemented.');
   }
 
   public async execute(): Promise<AmplifyMigrationOperation[]> {

@@ -4,6 +4,7 @@ import { CloudFormationClient, SetStackPolicyCommand } from '@aws-sdk/client-clo
 import { AmplifyClient, UpdateAppCommand, GetAppCommand } from '@aws-sdk/client-amplify';
 import { DynamoDBClient, UpdateTableCommand, paginateListTables } from '@aws-sdk/client-dynamodb';
 import { AppSyncClient, paginateListGraphqlApis } from '@aws-sdk/client-appsync';
+import { AmplifyGen2MigrationValidations } from './_validations';
 
 const GEN2_MIGRATION_ENVIRONMENT_NAME = 'GEN2_MIGRATION_ENVIRONMENT_NAME';
 
@@ -14,9 +15,29 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
   private _amplifyClient: AmplifyClient;
   private _cfnClient: CloudFormationClient;
 
-  public async validate(): Promise<void> {
-    await this.validations.validateDeploymentStatus();
-    await this.validations.validateDrift();
+  public async executeImplications(): Promise<string[]> {
+    return [
+      `You will not be able to run 'amplify push' on environment '${this.currentEnvName}'`,
+      `You will not be able to migrate another environment until migration of '${this.currentEnvName}' is complete or rolled back`,
+    ];
+  }
+
+  public async rollbackImplications(): Promise<string[]> {
+    return [
+      `You will be able to run 'amplify push' on environment '${this.currentEnvName}'`,
+      `You will be able to start migration of another environment`,
+    ];
+  }
+
+  public async executeValidate(): Promise<void> {
+    const validations = new AmplifyGen2MigrationValidations(this.logger, this.rootStackName, this.currentEnvName, this.context);
+    await validations.validateDeploymentStatus();
+    await validations.validateDrift();
+  }
+
+  public async rollbackValidate(): Promise<void> {
+    // https://github.com/aws-amplify/amplify-cli/issues/14570
+    return;
   }
 
   public async execute(): Promise<AmplifyMigrationOperation[]> {
@@ -64,7 +85,7 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
 
     operations.push({
       describe: async () => {
-        return [`Set a policy to stack '${this.rootStackName}': ${stackPolicy}`];
+        return [`Set a policy on stack '${this.rootStackName}': ${stackPolicy}`];
       },
       execute: async () => {
         await this.cfnClient().send(
@@ -83,22 +104,8 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
   public async rollback(): Promise<AmplifyMigrationOperation[]> {
     const operations: AmplifyMigrationOperation[] = [];
 
-    for (const tableName of await this.dynamoTableNames()) {
-      operations.push({
-        describe: async () => {
-          return [`Disable deletion protection for table '${tableName}'`];
-        },
-        execute: async () => {
-          await this.ddbClient().send(
-            new UpdateTableCommand({
-              TableName: tableName,
-              DeletionProtectionEnabled: false,
-            }),
-          );
-          this.logger.info(`Disabled deletion protection on table '${tableName}'`);
-        },
-      });
-    }
+    // note that we don't disable deletion protection on the tables because we don't
+    // know what the original value was; to play it safe we leave it untouched.
 
     operations.push({
       describe: async () => {
@@ -126,7 +133,7 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
 
     operations.push({
       describe: async () => {
-        return [`Set a policy to stack '${this.rootStackName}': ${stackPolicy}`];
+        return [`Set a policy on stack '${this.rootStackName}': ${stackPolicy}`];
       },
       execute: async () => {
         await this.cfnClient().send(

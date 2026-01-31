@@ -1,10 +1,7 @@
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { Logger } from '../gen2-migration';
-import { AmplifyGen2MigrationValidations } from './_validations';
 
 export abstract class AmplifyMigrationStep {
-  protected validations: AmplifyGen2MigrationValidations;
-
   constructor(
     protected readonly logger: Logger,
     protected readonly currentEnvName: string,
@@ -13,11 +10,15 @@ export abstract class AmplifyMigrationStep {
     protected readonly rootStackName: string,
     protected readonly region: string,
     protected readonly context: $TSContext,
-  ) {
-    this.validations = new AmplifyGen2MigrationValidations(this.logger, this.rootStackName, this.currentEnvName, this.context);
-  }
+  ) {}
 
-  public abstract validate(): Promise<void>;
+  public abstract executeImplications(): Promise<string[]>;
+
+  public abstract rollbackImplications(): Promise<string[]>;
+
+  public abstract executeValidate(): Promise<void>;
+
+  public abstract rollbackValidate(): Promise<void>;
 
   public abstract execute(): Promise<AmplifyMigrationOperation[]>;
 
