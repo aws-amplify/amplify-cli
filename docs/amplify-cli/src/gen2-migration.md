@@ -28,7 +28,7 @@ forward and rollback execution modes. Steps return `AmplifyMigrationOperation` a
 ```mermaid
 flowchart LR
     CLI[amplify gen2-migration 'subcommand'] --> RUN[run dispatcher]
-    RUN --> EXTRACT[Extract Gen1 Config<br/>appId, envName, rootStackName]
+    RUN --> EXTRACT[Extract Common Gen1 Config: 'appId', 'envName', 'rootStackName', etc...]
     EXTRACT --> PARSE[Parse subcommand & flags]
     
     PARSE --> STEP[Instantiate Step Class]
