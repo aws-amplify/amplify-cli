@@ -166,9 +166,7 @@ export const run = async (context: $TSContext) => {
   }
 
   if (rollingBack) {
-    logger.envelope('Rolling back');
-    await runOperations(await implementation.rollback());
-    logger.envelope('Rollback complete');
+    await runRollback(implementation, logger);
 
     printer.blankLine();
     printer.success('Done');
@@ -177,9 +175,7 @@ export const run = async (context: $TSContext) => {
   }
 
   try {
-    logger.envelope('Executing');
-    await runOperations(await implementation.execute());
-    logger.envelope('Execution complete');
+    await runExecute(implementation, logger);
 
     printer.blankLine();
     printer.success('Done');
@@ -191,9 +187,7 @@ export const run = async (context: $TSContext) => {
 
       printer.blankLine();
 
-      logger.envelope('Rolling back');
-      await runOperations(await implementation.rollback());
-      logger.envelope('Rollback complete');
+      await runRollback(implementation, logger);
     }
 
     throw error;
@@ -210,6 +204,18 @@ async function runOperations(operations: AmplifyMigrationOperation[]) {
   for (const operation of operations) {
     await operation.execute();
   }
+}
+
+async function runRollback(step: AmplifyMigrationStep, logger: Logger) {
+  logger.envelope('Rolling back');
+  await runOperations(await step.rollback());
+  logger.envelope('Rollback complete');
+}
+
+async function runExecute(step: AmplifyMigrationStep, logger: Logger) {
+  logger.envelope('Executing');
+  await runOperations(await step.rollback());
+  logger.envelope('Execution complete');
 }
 
 function shiftParams(context) {
