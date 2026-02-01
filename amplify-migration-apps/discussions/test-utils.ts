@@ -263,12 +263,12 @@ export function createQueryTests(queries: GraphQLQueries) {
 // Mutation Test Functions
 // ============================================================
 export function createMutationTests(mutations: GraphQLMutations, getCurrentUserId: () => string | null) {
-  async function testCreateTopic(discussionId: string = 'tech'): Promise<string | null> {
+  async function testCreateTopic(): Promise<string | null> {
     console.log('\n🆕 Testing createTopic...');
     const publicClient = generateClient({ authMode: 'apiKey' });
 
     const topicName = `Test Topic ${Date.now()}`;
-    const content = `${discussionId}:${topicName}`;
+    const content = `tech:${topicName}`;
 
     const result = await publicClient.graphql({
       query: mutations.createTopic,
@@ -563,7 +563,7 @@ async function runTopicMutationTests(
   console.log('='.repeat(60));
 
   // Create topic
-  const topicId = await runTest('createTopic', () => mutationTests.testCreateTopic('tech'));
+  const topicId = await runTest('createTopic', () => mutationTests.testCreateTopic());
   if (!topicId) {
     console.log('❌ Failed to create topic, skipping remaining topic tests');
     return null;
