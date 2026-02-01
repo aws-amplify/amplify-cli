@@ -565,24 +565,24 @@ by the CLI setting that configures them.
 
 - 🟢 **Do you want to add User Pool Groups**
 
-- 🔴 **Do you want to add an admin queries API**
+- ⚠️ **Do you want to add an admin queries API**
 
 - ➤ **Multifactor authentication (MFA) user login options**
 
   - 🟢 `OFF`
-  - 🔴 `ON`
-  - 🔴 `OPTIONAL`
+  - ⚠️ `ON`
+  - ⚠️ `OPTIONAL`
 
 - ➤ **Email based user registration/forgot password:**
 
   - 🟢 `Enabled`
-  - 🔴 `Disabled`
+  - ⚠️ `Disabled`
 
 - 🟢 **Specify an email verification subject**
 
 - 🟢 **Specify an email verification message**
 
-- 🔴 **Do you want to override the default password policy for this User Pool**
+- ⚠️ **Do you want to override the default password policy for this User Pool**
 
 - ➤ **What attributes are required for signing up**
 
@@ -606,7 +606,7 @@ by the CLI setting that configures them.
 
 - 🟢 **Specify the app's refresh token expiration period (in days)**
 
-- 🔴 **Do you want to specify the user attributes this app can read and write**
+- ⚠️ **Do you want to specify the user attributes this app can read and write**
 
 - ➤ **Do you want to enable any of the following capabilities**
 
@@ -618,7 +618,7 @@ by the CLI setting that configures them.
   - ⚠️ `Custom Auth Challenge Flow (basic scaffolding - not for production)`
   - ⚠️ `Override ID Token Claims`
 
-- 🔴 **Do you want to use an OAuth flow**
+- ⚠️ **Do you want to use an OAuth flow**
 
 - ➤ **Do you want to configure Lambda Triggers for Cognito**
 
