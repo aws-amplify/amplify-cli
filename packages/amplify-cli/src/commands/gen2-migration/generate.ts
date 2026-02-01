@@ -1,4 +1,5 @@
-import { AmplifyMigrationOperation, AmplifyMigrationStep } from './_step';
+import { AmplifyMigrationStep } from './_step';
+import { AmplifyMigrationOperation } from './_operation';
 import { prepare, pathExists } from './generate/codegen-head/command-handlers';
 import { AmplifyGen2MigrationValidations } from './_validations';
 import * as path from 'path';

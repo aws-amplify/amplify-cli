@@ -1,6 +1,7 @@
 import { AmplifyMigrationCloneStep } from './gen2-migration/clone';
 import { $TSContext, AmplifyError } from '@aws-amplify/amplify-cli-core';
-import { AmplifyMigrationOperation, AmplifyMigrationStep } from './gen2-migration/_step';
+import { AmplifyMigrationStep } from './gen2-migration/_step';
+import { AmplifyMigrationOperation } from './gen2-migration/_operation';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import { AmplifyMigrationCleanupStep } from './gen2-migration/cleanup';
 import { AmplifyMigrationDecommissionStep } from './gen2-migration/decommission';

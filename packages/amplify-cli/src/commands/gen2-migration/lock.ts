@@ -1,4 +1,5 @@
-import { AmplifyMigrationOperation, AmplifyMigrationStep } from './_step';
+import { AmplifyMigrationStep } from './_step';
+import { AmplifyMigrationOperation } from './_operation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { CloudFormationClient, SetStackPolicyCommand } from '@aws-sdk/client-cloudformation';
 import { AmplifyClient, UpdateAppCommand, GetAppCommand } from '@aws-sdk/client-amplify';

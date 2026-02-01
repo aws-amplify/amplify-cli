@@ -1,6 +1,7 @@
 /* eslint-disable spellcheck/spell-checker */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { AmplifyMigrationOperation, AmplifyMigrationStep } from '../_step';
+import { AmplifyMigrationStep } from '../_step';
+import { AmplifyMigrationOperation } from '../_operation';
 import { prompter } from '@aws-amplify/amplify-prompts';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import fs from 'fs-extra';

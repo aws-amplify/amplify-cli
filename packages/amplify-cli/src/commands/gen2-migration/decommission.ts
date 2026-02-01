@@ -1,4 +1,5 @@
-import { AmplifyMigrationOperation, AmplifyMigrationStep } from './_step';
+import { AmplifyMigrationStep } from './_step';
+import { AmplifyMigrationOperation } from './_operation';
 import { AmplifyGen2MigrationValidations } from './_validations';
 import {
   CloudFormationClient,

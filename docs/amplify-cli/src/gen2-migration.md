@@ -227,7 +227,7 @@ public abstract rollbackImplications(): Promise<string[]>;
 
 ### `AmplifyMigrationOperation`
 
-[`src/commands/gen2-migration/_step.ts`](../../../packages/amplify-cli/src/commands/gen2-migration/_step.ts)
+[`src/commands/gen2-migration/_operation.ts`](../../../packages/amplify-cli/src/commands/gen2-migration/_operation.ts)
 
 ```ts
 /**

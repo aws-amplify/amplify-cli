@@ -1,4 +1,5 @@
-import { AmplifyMigrationOperation, AmplifyMigrationStep } from './_step';
+import { AmplifyMigrationStep } from './_step';
+import { AmplifyMigrationOperation } from './_operation';
 
 export class AmplifyMigrationCloneStep extends AmplifyMigrationStep {
   public async executeImplications(): Promise<string[]> {
