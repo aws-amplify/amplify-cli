@@ -219,6 +219,5 @@ module.exports = {
 
     // Ignore example apps
     '/amplify-migration-apps/',
-    '/amplify-migration-system',
   ],
 };
