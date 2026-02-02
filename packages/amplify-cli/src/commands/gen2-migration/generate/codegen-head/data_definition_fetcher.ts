@@ -160,8 +160,12 @@ export class DataDefinitionFetcher {
           corsConfiguration = cliInputs.corsConfiguration;
         }
 
-        // Extract global auth type
-        if (cliInputs.restrictAccess) {
+        // Extract auth type - check both global and path-level auth
+        const hasPathAuth = Object.values(cliInputs.paths || {}).some(
+          (path) => path.permissions?.setting === 'private' || path.permissions?.setting === 'protected',
+        );
+
+        if (cliInputs.restrictAccess || hasPathAuth) {
           authType = cliInputs.authType || 'AWS_IAM';
         }
 
