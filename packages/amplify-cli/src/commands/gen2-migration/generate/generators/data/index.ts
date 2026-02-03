@@ -285,38 +285,27 @@ export const generateDataSource = async (gen1Env: string, dataDefinition?: DataD
           }
           break;
         case 'AWS_LAMBDA':
-          if (provider.lambdaAuthorizerConfig?.ttlSeconds) {
+          if (provider.ttlSeconds) {
             authModeProperties.push(
               factory.createPropertyAssignment(
                 'lambdaAuthorizationMode',
                 factory.createObjectLiteralExpression([
-                  factory.createPropertyAssignment(
-                    'timeToLiveInSeconds',
-                    factory.createNumericLiteral(provider.lambdaAuthorizerConfig.ttlSeconds.toString()),
-                  ),
+                  factory.createPropertyAssignment('timeToLiveInSeconds', factory.createNumericLiteral(provider.ttlSeconds.toString())),
                 ]),
               ),
             );
           }
           break;
         case 'OPENID_CONNECT':
-          if (provider.openIDConnectConfig) {
+          if (provider.openIDIssuerURL) {
             const oidcProps = [];
-            if (provider.openIDConnectConfig.issuer) {
-              oidcProps.push(
-                factory.createPropertyAssignment('oidcIssuerUrl', factory.createStringLiteral(provider.openIDConnectConfig.issuer)),
-              );
+            oidcProps.push(factory.createPropertyAssignment('oidcIssuerUrl', factory.createStringLiteral(provider.openIDIssuerURL)));
+            if (provider.openIDClientID) {
+              oidcProps.push(factory.createPropertyAssignment('clientId', factory.createStringLiteral(provider.openIDClientID)));
             }
-            if (provider.openIDConnectConfig.clientId) {
-              oidcProps.push(
-                factory.createPropertyAssignment('clientId', factory.createStringLiteral(provider.openIDConnectConfig.clientId)),
-              );
-            }
-            if (oidcProps.length > 0) {
-              authModeProperties.push(
-                factory.createPropertyAssignment('oidcAuthorizationMode', factory.createObjectLiteralExpression(oidcProps)),
-              );
-            }
+            authModeProperties.push(
+              factory.createPropertyAssignment('oidcAuthorizationMode', factory.createObjectLiteralExpression(oidcProps)),
+            );
           }
           break;
       }

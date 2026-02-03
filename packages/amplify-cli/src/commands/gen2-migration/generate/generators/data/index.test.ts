@@ -91,4 +91,41 @@ describe('authorization modes', () => {
     assert.match(source, /defaultAuthorizationMode: "userPool"/);
     assert.match(source, /apiKeyAuthorizationMode: { expiresInDays: 30 }/);
   });
+
+  it('generates user pool default with lambda additional auth', async () => {
+    const authorizationModes = {
+      defaultAuthentication: { authenticationType: 'AMAZON_COGNITO_USER_POOLS' },
+      additionalAuthenticationProviders: [
+        {
+          authenticationType: 'AWS_LAMBDA',
+          lambdaFunction: 'graphQlLambdaAuthorizer3703353a',
+          ttlSeconds: 200,
+        },
+      ],
+    };
+    const source = printNodeArray(
+      await generateDataSource('main', { schema: 'type Test { id: ID! }', authorizationModes: authorizationModes as any }),
+    );
+    assert.match(source, /defaultAuthorizationMode: "userPool"/);
+    assert.match(source, /lambdaAuthorizationMode: { timeToLiveInSeconds: 200 }/);
+  });
+
+  it('generates OIDC auth config', async () => {
+    const authorizationModes = {
+      defaultAuthentication: { authenticationType: 'AMAZON_COGNITO_USER_POOLS' },
+      additionalAuthenticationProviders: [
+        {
+          authenticationType: 'OPENID_CONNECT',
+          openIDProviderName: 'amazon',
+          openIDIssuerURL: 'https://your-domain.com/',
+          openIDClientID: 'client123',
+        },
+      ],
+    };
+    const source = printNodeArray(
+      await generateDataSource('main', { schema: 'type Test { id: ID! }', authorizationModes: authorizationModes as any }),
+    );
+    assert.match(source, /defaultAuthorizationMode: "userPool"/);
+    assert.match(source, /oidcAuthorizationMode: { oidcIssuerUrl: "https:\/\/your-domain\.com\/", clientId: "client123" }/);
+  });
 });
