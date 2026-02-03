@@ -231,50 +231,16 @@ export class AmplifyDriftDetector {
    * Display results based on format option
    */
   private displayResults(options: DriftOptions, data: ProcessedDriftData): void {
-    if (options.format === 'summary') {
-      const output = formatDriftResults(data, 'summary');
-      printer.info(output.summaryDashboard);
-      if (output.categoryBreakdown) {
-        printer.info(output.categoryBreakdown);
-      }
-      if (output.phase2Output) {
-        printer.info(output.phase2Output);
-      }
-      if (output.phase3Output) {
-        printer.info(output.phase3Output);
-      }
-    } else if (options.format === 'tree') {
-      const output = formatDriftResults(data, 'tree');
-      printer.info(output.summaryDashboard);
-      if (output.treeView) {
-        printer.info(output.treeView);
-      }
-      if (output.detailedChanges) {
-        printer.info(output.detailedChanges);
-      }
-      if (options.debug && output.categoryBreakdown) {
-        printer.info(output.categoryBreakdown);
-      }
-      if (output.phase2Output) {
-        printer.info(output.phase2Output);
-      }
-      if (output.phase3Output) {
-        printer.info(output.phase3Output);
-      }
-    } else {
-      printer.warn(`Unknown format: ${options.format}. Using summary format.`);
-      const output = formatDriftResults(data, 'summary');
-      printer.info(output.summaryDashboard);
-      if (output.categoryBreakdown) {
-        printer.info(output.categoryBreakdown);
-      }
-      if (output.phase2Output) {
-        printer.info(output.phase2Output);
-      }
-      if (output.phase3Output) {
-        printer.info(output.phase3Output);
-      }
-    }
+    const format = options.format === 'summary' || options.format === 'tree' ? options.format : 'summary';
+    if (format !== options.format) printer.warn(`Unknown format: ${options.format}. Using summary format.`);
+
+    const output = formatDriftResults(data, format);
+    printer.info(output.summaryDashboard);
+    if (output.treeView) printer.info(output.treeView);
+    if (output.detailedChanges) printer.info(output.detailedChanges);
+    if (output.categoryBreakdown) printer.info(output.categoryBreakdown);
+    if (output.phase2Output) printer.info(output.phase2Output);
+    if (output.phase3Output) printer.info(output.phase3Output);
   }
 
   /**
