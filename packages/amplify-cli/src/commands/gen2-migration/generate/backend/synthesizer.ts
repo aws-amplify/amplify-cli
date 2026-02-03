@@ -1420,6 +1420,14 @@ export class BackendSynthesizer {
       nodes.push(branchNameStatement);
 
       renderArgs.data.restApis.forEach((restApi) => {
+        // Create unique variable names for multiple REST APIs
+        const stackVarName = `${restApi.apiName}Stack`;
+        const apiVarName = `${restApi.apiName}Api`;
+        const integrationVarName = `${restApi.apiName}Integration`;
+        const gen1ApiVarName = `gen1${restApi.apiName}Api`;
+        const gen1PolicyVarName = `gen1${restApi.apiName}Policy`;
+        const apiPolicyVarName = `${restApi.apiName}Policy`;
+
         // Create dedicated stack for REST API resources
         // Isolates API Gateway resources from other backend components
         const restApiStackDeclaration = factory.createVariableStatement(
@@ -1427,13 +1435,13 @@ export class BackendSynthesizer {
           factory.createVariableDeclarationList(
             [
               factory.createVariableDeclaration(
-                'restApiStack',
+                stackVarName,
                 undefined,
                 undefined,
                 factory.createCallExpression(
                   factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier('createStack')),
                   undefined,
-                  [factory.createStringLiteral('rest-api-stack')],
+                  [factory.createStringLiteral(`rest-api-stack-${restApi.apiName}`)],
                 ),
               ),
             ],
@@ -1469,11 +1477,11 @@ export class BackendSynthesizer {
           factory.createVariableDeclarationList(
             [
               factory.createVariableDeclaration(
-                'restApi',
+                apiVarName,
                 undefined,
                 undefined,
                 factory.createNewExpression(factory.createIdentifier('RestApi'), undefined, [
-                  factory.createIdentifier('restApiStack'),
+                  factory.createIdentifier(stackVarName),
                   factory.createStringLiteral('RestApi'),
                   factory.createObjectLiteralExpression(
                     [
@@ -1502,7 +1510,7 @@ export class BackendSynthesizer {
           factory.createVariableDeclarationList(
             [
               factory.createVariableDeclaration(
-                'lambdaIntegration',
+                integrationVarName,
                 undefined,
                 undefined,
                 factory.createNewExpression(factory.createIdentifier('LambdaIntegration'), undefined, [
@@ -1532,7 +1540,7 @@ export class BackendSynthesizer {
           factory.createVariableDeclarationList(
             [
               factory.createVariableDeclaration(
-                'gen1RestApi',
+                gen1ApiVarName,
                 undefined,
                 undefined,
                 factory.createCallExpression(
@@ -1542,12 +1550,15 @@ export class BackendSynthesizer {
                   ),
                   undefined,
                   [
-                    factory.createIdentifier('restApiStack'),
-                    factory.createStringLiteral('Gen1RestApi'),
+                    factory.createIdentifier(stackVarName),
+                    factory.createStringLiteral(`Gen1${restApi.apiName}Api`),
                     factory.createObjectLiteralExpression(
                       [
-                        factory.createPropertyAssignment('restApiId', factory.createStringLiteral('<gen1-rest-api-id>')),
-                        factory.createPropertyAssignment('rootResourceId', factory.createStringLiteral('<gen1-root-resource-id>')),
+                        factory.createPropertyAssignment('restApiId', factory.createStringLiteral(`<gen1-${restApi.apiName}-api-id>`)),
+                        factory.createPropertyAssignment(
+                          'rootResourceId',
+                          factory.createStringLiteral(`<gen1-${restApi.apiName}-root-resource-id>`),
+                        ),
                       ],
                       true,
                     ),
@@ -1567,12 +1578,12 @@ export class BackendSynthesizer {
           factory.createVariableDeclarationList(
             [
               factory.createVariableDeclaration(
-                'gen1RestApiPolicy',
+                gen1PolicyVarName,
                 undefined,
                 undefined,
                 factory.createNewExpression(factory.createIdentifier('Policy'), undefined, [
-                  factory.createIdentifier('restApiStack'),
-                  factory.createStringLiteral('Gen1RestApiPolicy'),
+                  factory.createIdentifier(stackVarName),
+                  factory.createStringLiteral(`Gen1${restApi.apiName}Policy`),
                   factory.createObjectLiteralExpression(
                     [
                       factory.createPropertyAssignment(
@@ -1592,7 +1603,7 @@ export class BackendSynthesizer {
                                       factory.createTemplateSpan(
                                         factory.createCallExpression(
                                           factory.createPropertyAccessExpression(
-                                            factory.createIdentifier('gen1RestApi'),
+                                            factory.createIdentifier(gen1ApiVarName),
                                             factory.createIdentifier('arnForExecuteApi'),
                                           ),
                                           undefined,
@@ -1632,7 +1643,7 @@ export class BackendSynthesizer {
               factory.createIdentifier('attachInlinePolicy'),
             ),
             undefined,
-            [factory.createIdentifier('gen1RestApiPolicy')],
+            [factory.createIdentifier(gen1PolicyVarName)],
           ),
         );
         nodes.push(attachGen1PolicyCall);
@@ -1703,7 +1714,7 @@ export class BackendSynthesizer {
               factory.createCallExpression(
                 factory.createPropertyAccessExpression(factory.createIdentifier(resourceName), factory.createIdentifier('addMethod')),
                 undefined,
-                [factory.createStringLiteral(method), factory.createIdentifier('lambdaIntegration')],
+                [factory.createStringLiteral(method), factory.createIdentifier(integrationVarName)],
               ),
             );
             nodes.push(addMethodCall);
@@ -1718,7 +1729,7 @@ export class BackendSynthesizer {
                 factory.createObjectLiteralExpression(
                   [
                     factory.createPropertyAssignment('anyMethod', factory.createTrue()),
-                    factory.createPropertyAssignment('defaultIntegration', factory.createIdentifier('lambdaIntegration')),
+                    factory.createPropertyAssignment('defaultIntegration', factory.createIdentifier(integrationVarName)),
                   ],
                   true,
                 ),
@@ -1735,12 +1746,12 @@ export class BackendSynthesizer {
             factory.createVariableDeclarationList(
               [
                 factory.createVariableDeclaration(
-                  'apiPolicy',
+                  apiPolicyVarName,
                   undefined,
                   undefined,
                   factory.createNewExpression(factory.createIdentifier('Policy'), undefined, [
-                    factory.createIdentifier('restApiStack'),
-                    factory.createStringLiteral('ApiPolicy'),
+                    factory.createIdentifier(stackVarName),
+                    factory.createStringLiteral(`${restApi.apiName}Policy`),
                     factory.createObjectLiteralExpression(
                       [
                         factory.createPropertyAssignment(
@@ -1760,7 +1771,7 @@ export class BackendSynthesizer {
                                         factory.createTemplateSpan(
                                           factory.createCallExpression(
                                             factory.createPropertyAccessExpression(
-                                              factory.createIdentifier('restApi'),
+                                              factory.createIdentifier(apiVarName),
                                               factory.createIdentifier('arnForExecuteApi'),
                                             ),
                                             undefined,
@@ -1799,7 +1810,7 @@ export class BackendSynthesizer {
                 factory.createIdentifier('attachInlinePolicy'),
               ),
               undefined,
-              [factory.createIdentifier('apiPolicy')],
+              [factory.createIdentifier(apiPolicyVarName)],
             ),
           );
           nodes.push(attachPolicyCall);
@@ -1824,7 +1835,7 @@ export class BackendSynthesizer {
                               factory.createPropertyAssignment(
                                 factory.createComputedPropertyName(
                                   factory.createPropertyAccessExpression(
-                                    factory.createIdentifier('restApi'),
+                                    factory.createIdentifier(apiVarName),
                                     factory.createIdentifier('restApiName'),
                                   ),
                                 ),
@@ -1833,7 +1844,7 @@ export class BackendSynthesizer {
                                     factory.createPropertyAssignment(
                                       'endpoint',
                                       factory.createPropertyAccessExpression(
-                                        factory.createIdentifier('restApi'),
+                                        factory.createIdentifier(apiVarName),
                                         factory.createIdentifier('url'),
                                       ),
                                     ),
@@ -1846,7 +1857,7 @@ export class BackendSynthesizer {
                                             factory.createIdentifier('of'),
                                           ),
                                           undefined,
-                                          [factory.createIdentifier('restApi')],
+                                          [factory.createIdentifier(apiVarName)],
                                         ),
                                         factory.createIdentifier('region'),
                                       ),
@@ -1854,7 +1865,7 @@ export class BackendSynthesizer {
                                     factory.createPropertyAssignment(
                                       'apiName',
                                       factory.createPropertyAccessExpression(
-                                        factory.createIdentifier('restApi'),
+                                        factory.createIdentifier(apiVarName),
                                         factory.createIdentifier('restApiName'),
                                       ),
                                     ),
