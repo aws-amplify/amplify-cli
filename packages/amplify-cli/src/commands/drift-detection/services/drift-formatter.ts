@@ -32,7 +32,7 @@ export type CloudFormationTemplate = { Resources?: Record<string, unknown> };
 /**
  * Output format options
  */
-export type DriftDisplayFormat = 'tree' | 'summary' | 'json';
+export type DriftDisplayFormat = 'tree' | 'summary';
 
 /**
  * Resource count structure
@@ -755,9 +755,6 @@ export function formatDriftResults(data: ProcessedDriftData, format: DriftDispla
       break;
     case 'summary':
       categoryBreakdown = createCategoryBreakdown(data);
-      break;
-    case 'json':
-      // JSON format handled separately
       break;
   }
 

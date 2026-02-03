@@ -13,7 +13,6 @@ import { detectTemplateDrift, type TemplateDriftResults } from './drift-detectio
 import {
   CloudFormationService,
   AmplifyConfigService,
-  FileService,
   type CloudFormationTemplate,
   type ProcessedDriftData,
   type StackDriftData,
@@ -40,8 +39,7 @@ export interface Print {
  */
 interface DriftOptions {
   debug?: boolean;
-  format?: 'tree' | 'summary' | 'json';
-  'output-file'?: string;
+  format?: 'tree' | 'summary';
 }
 
 /**
@@ -51,7 +49,6 @@ export const run = async (context: $TSContext): Promise<void> => {
   const options: DriftOptions = {
     debug: context.parameters?.options?.debug || false,
     format: context.parameters?.options?.format || 'summary',
-    'output-file': context.parameters?.options?.['output-file'],
   };
 
   const detector = new AmplifyDriftDetector(context);
@@ -69,7 +66,6 @@ export const run = async (context: $TSContext): Promise<void> => {
 export class AmplifyDriftDetector {
   private readonly cfnService: CloudFormationService;
   private readonly configService: AmplifyConfigService;
-  private readonly fileService: FileService;
   private readonly printer: Print;
   private readonly options: DriftOptions;
 
@@ -78,7 +74,6 @@ export class AmplifyDriftDetector {
     this.options = {
       debug: context.parameters?.options?.debug || false,
       format: context.parameters?.options?.format || 'summary',
-      'output-file': context.parameters?.options?.['output-file'],
     };
 
     if (!print) {
@@ -99,7 +94,6 @@ export class AmplifyDriftDetector {
 
     this.cfnService = new CloudFormationService(this.printer);
     this.configService = new AmplifyConfigService();
-    this.fileService = new FileService();
   }
 
   /**
@@ -183,18 +177,6 @@ export class AmplifyDriftDetector {
 
     this.displayResults(options, processedData);
 
-    // 10. Save JSON if requested
-    if (options['output-file']) {
-      this.printer.debug(`Saving output to: ${options['output-file']}`);
-      const simplifiedJson = {
-        stackName,
-        numResourcesWithDrift: processedData.summary.totalDrifted,
-        numResourcesUnchecked: processedData.summary.totalUnchecked,
-        timestamp: new Date().toISOString(),
-      };
-      await this.fileService.saveJsonOutput(options['output-file'], simplifiedJson, this.printer);
-    }
-
     // 11. Check for errors during detection - including Phase 1 nested stack skips
     const hasPhase1Errors = Boolean(phase1Results.skippedNestedStacks && phase1Results.skippedNestedStacks.length > 0);
     const hasAnyErrors = hasPhase1Errors || phase2Results.skipped || phase3Results.skipped;
@@ -249,15 +231,7 @@ export class AmplifyDriftDetector {
    * Display results based on format option
    */
   private displayResults(options: DriftOptions, data: ProcessedDriftData): void {
-    if (options.format === 'json') {
-      const simplifiedJson = {
-        stackName: data.rootStackName,
-        numResourcesWithDrift: data.summary.totalDrifted,
-        numResourcesUnchecked: data.summary.totalUnchecked,
-        timestamp: new Date().toISOString(),
-      };
-      printer.info(JSON.stringify(simplifiedJson, null, 2));
-    } else if (options.format === 'summary') {
+    if (options.format === 'summary') {
       const output = formatDriftResults(data, 'summary');
       printer.info(output.summaryDashboard);
       if (output.categoryBreakdown) {

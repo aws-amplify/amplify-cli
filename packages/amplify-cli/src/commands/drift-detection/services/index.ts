@@ -5,7 +5,6 @@
 
 export { CloudFormationService } from './cloudformation-service';
 export { AmplifyConfigService } from './amplify-config-service';
-export { FileService } from './file-service';
 export {
   type CloudFormationTemplate,
   type ProcessedDriftData,
