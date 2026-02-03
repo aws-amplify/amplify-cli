@@ -10,7 +10,6 @@ export {
   type ProcessedDriftData,
   type StackDriftData,
   type ResourceCounts,
-  type FormattedDriftOutput,
   type DriftDisplayFormat,
   countDrifted,
   countInSync,

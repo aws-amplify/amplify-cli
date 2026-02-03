@@ -88,19 +88,6 @@ export interface ProcessedDriftData {
   phase3Results: LocalDriftResults | null;
 }
 
-/**
- * Output from formatting functions
- */
-export interface FormattedDriftOutput {
-  summaryDashboard: string;
-  treeView?: string;
-  detailedChanges?: string;
-  categoryBreakdown?: string;
-  phase2Output?: string;
-  phase3Output?: string;
-  totalDrifted: number;
-}
-
 // Display constants
 const DISPLAY_CONSTANTS = {
   BORDER_WIDTH: 61,
@@ -740,7 +727,7 @@ export function formatPhase3Results(data: ProcessedDriftData): string {
   return output;
 }
 
-export function formatDriftResults(data: ProcessedDriftData, format: DriftDisplayFormat = 'tree'): FormattedDriftOutput {
+export function formatDriftResults(data: ProcessedDriftData, format: DriftDisplayFormat = 'tree') {
   const summaryDashboard = createSummaryDashboard(data);
 
   let treeView: string | undefined;
@@ -768,6 +755,5 @@ export function formatDriftResults(data: ProcessedDriftData, format: DriftDispla
     categoryBreakdown,
     phase2Output,
     phase3Output,
-    totalDrifted: data.summary.totalDrifted,
   };
 }
