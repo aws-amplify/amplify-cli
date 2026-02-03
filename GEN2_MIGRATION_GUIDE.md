@@ -525,15 +525,13 @@ by the CLI setting that configures them.
 
 > **Legend**
 >
-> - ❌ | Unsupported.
-> - ✅ | Fully automated.
-> - ⚠️ | Partially supported. Includes indication whether it lacks support for `generate` or `refactor`.
-
-- If a feature is not supported for `refactor` you will not be able to fully migrate the app. You can however still generate 
-and deploy it to test whether code generation works properly.
-- If a feature is not supported for `generate` you will be able to manually augment the generated code 
-to add the necessary configuration.
-- Unsupported features naturally don't support either command.
+> - 🔴 | Unsupported.
+> - 🟢 | Fully automated.
+> - 🟡 | Partially supported. Includes indication whether it lacks support for `generate` or `refactor`. 
+> If a feature is not supported for `refactor` you will not be able to fully migrate the app. You can however still generate 
+> and deploy it to test whether code generation works properly. If a feature is not supported for `generate` you will be able 
+> to manually augment the generated code to add the necessary configuration.
+> - ⚠️ | Untested. You're welcome to try it out and let us know!
 
 ## Auth
 
@@ -541,98 +539,98 @@ to add the necessary configuration.
 
 - ➤ **How do you want users to be able to sign in**
 
-  - ✅ `Username`
-  - ✅ `Email`
-  - ✅ `Phone Number`
-  - ✅ `Email or Phone Number`
+  - 🟢 `Username`
+  - 🟢 `Email`
+  - 🟢 `Phone Number`
+  - 🟢 `Email or Phone Number`
 
 - ➤ **Select the social providers you want to configure for your user pool**
 
-  - ⚠️ `Facebook` (_generate_ ✔ _refactor_ ✗)
-  - ⚠️ `Google` (_generate_ ✔ _refactor_ ✗)
-  - ❌ `Login With Amazon`
-  - ❌ `Sign in with Apple`
+  - 🟡 `Facebook` (_generate_ ✔ _refactor_ ✗)
+  - 🟡 `Google` (_generate_ ✔ _refactor_ ✗)
+  - 🔴 `Login With Amazon`
+  - 🔴 `Sign in with Apple`
 
 - ➤ **Select the authentication/authorization services that you want to use**
 
-  - ✅ `User Sign-Up, Sign-In, connected with AWS IAM controls`
-  - ❌ `User Sign-Up & Sign-In only`
+  - 🟢 `User Sign-Up, Sign-In, connected with AWS IAM controls`
+  - ⚠️ `User Sign-Up & Sign-In only`
   
 - ➤ **Allow unauthenticated logins**
 
-  - ❌ `Yes`
-  - ✅ `No`
+  - ⚠️ `Yes`
+  - 🟢 `No`
 
-- ❌ **Do you want to enable 3rd party authentication providers in your identity pool**
+- 🔴 **Do you want to enable 3rd party authentication providers in your identity pool**
 
-- ✅ **Do you want to add User Pool Groups**
+- 🟢 **Do you want to add User Pool Groups**
 
-- ❌ **Do you want to add an admin queries API**
+- ⚠️ **Do you want to add an admin queries API**
 
 - ➤ **Multifactor authentication (MFA) user login options**
 
-  - ✅ `OFF`
-  - ❌ `ON`
-  - ❌ `OPTIONAL`
+  - 🟢 `OFF`
+  - ⚠️ `ON`
+  - ⚠️ `OPTIONAL`
 
 - ➤ **Email based user registration/forgot password:**
 
-  - ✅ `Enabled`
-  - ❌ `Disabled`
+  - 🟢 `Enabled`
+  - ⚠️ `Disabled`
 
-- ✅ **Specify an email verification subject**
+- 🟢 **Specify an email verification subject**
 
-- ✅ **Specify an email verification message**
+- 🟢 **Specify an email verification message**
 
-- ❌ **Do you want to override the default password policy for this User Pool**
+- ⚠️ **Do you want to override the default password policy for this User Pool**
 
 - ➤ **What attributes are required for signing up**
 
-  - ❌ `Birthdate (This attribute is not supported by Login With Amazon, Sign in with Apple.)`
-  - ✅ `Email`
-  - ❌ `Family Name (This attribute is not supported by Login With Amazon.)`
-  - ❌ `Middle Name (This attribute is not supported by Google, Login With Amazon, Sign in with Apple.)`
-  - ❌ `Gender (This attribute is not supported by Login With Amazon, Sign in with Apple.)`
-  - ❌ `Locale (This attribute is not supported by Facebook, Google, Sign in with Apple.)`
-  - ❌ `Given Name (This attribute is not supported by Login With Amazon.)`
-  - ❌ `Name`
-  - ❌ `Nickname (This attribute is not supported by Facebook, Google, Login With Amazon, Sign in with Apple.)`
-  - ❌ `Phone Number (This attribute is not supported by Facebook, Login With Amazon, Sign in with Apple.)`
-  - ❌ `Preferred Username (This attribute is not supported by Facebook, Google, Login With Amazon, Sign in with Apple.)`
-  - ❌ `Picture (This attribute is not supported by Login With Amazon, Sign in with Apple.)`
-  - ❌ `Profile (This attribute is not supported by Facebook, Google, Login With Amazon, Sign in with Apple.)`
-  - ❌ `Updated At (This attribute is not supported by Google, Login With Amazon, Sign in with Apple.)`
-  - ❌ `Website (This attribute is not supported by Facebook, Google, Login With Amazon, Sign in with Apple.)`
-  - ❌ `Zone Info (This attribute is not supported by Facebook, Google, Login With Amazon, Sign in with Apple.)`
-  - ❌ `Address (This attribute is not supported by Facebook, Google, Login With Amazon, Sign in with Apple.)`
+  - ⚠️ `Birthdate (This attribute is not supported by Login With Amazon, Sign in with Apple.)`
+  - 🟢 `Email`
+  - ⚠️ `Family Name (This attribute is not supported by Login With Amazon.)`
+  - ⚠️ `Middle Name (This attribute is not supported by Google, Login With Amazon, Sign in with Apple.)`
+  - ⚠️ `Gender (This attribute is not supported by Login With Amazon, Sign in with Apple.)`
+  - ⚠️ `Locale (This attribute is not supported by Facebook, Google, Sign in with Apple.)`
+  - ⚠️ `Given Name (This attribute is not supported by Login With Amazon.)`
+  - ⚠️ `Name`
+  - ⚠️ `Nickname (This attribute is not supported by Facebook, Google, Login With Amazon, Sign in with Apple.)`
+  - ⚠️ `Phone Number (This attribute is not supported by Facebook, Login With Amazon, Sign in with Apple.)`
+  - ⚠️ `Preferred Username (This attribute is not supported by Facebook, Google, Login With Amazon, Sign in with Apple.)`
+  - ⚠️ `Picture (This attribute is not supported by Login With Amazon, Sign in with Apple.)`
+  - ⚠️ `Profile (This attribute is not supported by Facebook, Google, Login With Amazon, Sign in with Apple.)`
+  - ⚠️ `Updated At (This attribute is not supported by Google, Login With Amazon, Sign in with Apple.)`
+  - ⚠️ `Website (This attribute is not supported by Facebook, Google, Login With Amazon, Sign in with Apple.)`
+  - ⚠️ `Zone Info (This attribute is not supported by Facebook, Google, Login With Amazon, Sign in with Apple.)`
+  - ⚠️ `Address (This attribute is not supported by Facebook, Google, Login With Amazon, Sign in with Apple.)`
 
-- ✅ **Specify the app's refresh token expiration period (in days)**
+- 🟢 **Specify the app's refresh token expiration period (in days)**
 
-- ❌ **Do you want to specify the user attributes this app can read and write**
+- ⚠️ **Do you want to specify the user attributes this app can read and write**
 
 - ➤ **Do you want to enable any of the following capabilities**
 
-  - ❌ `Add Google reCaptcha Challenge`
-  - ❌ `Email Verification Link with Redirect`
-  - ❌ `Add User to Group`
-  - ❌ `Email Domain Filtering (denylist)`
-  - ❌ `Email Domain Filtering (allowlist)`
-  - ❌ `Custom Auth Challenge Flow (basic scaffolding - not for production)`
-  - ❌ `Override ID Token Claims`
+  - ⚠️ `Add Google reCaptcha Challenge`
+  - ⚠️ `Email Verification Link with Redirect`
+  - ⚠️ `Add User to Group`
+  - ⚠️ `Email Domain Filtering (denylist)`
+  - 🟢 `Email Domain Filtering (allowlist)`
+  - ⚠️ `Custom Auth Challenge Flow (basic scaffolding - not for production)`
+  - ⚠️ `Override ID Token Claims`
 
-- ❌ **Do you want to use an OAuth flow**
+- ⚠️ **Do you want to use an OAuth flow**
 
 - ➤ **Do you want to configure Lambda Triggers for Cognito**
 
-  - ❌ `Create Auth Challenge`
-  - ❌ `Custom Message`
-  - ❌ `Define Auth Challenge`
-  - ❌ `Post Authentication`
-  - ❌ `Post Confirmation`
-  - ❌ `Pre Authentication`
-  - ✅ `Pre Sign-up`
-  - ❌ `Verify Auth Challenge Response`
-  - ❌ `Pre Token Generation`
+  - ⚠️ `Create Auth Challenge`
+  - ⚠️ `Custom Message`
+  - ⚠️ `Define Auth Challenge`
+  - ⚠️ `Post Authentication`
+  - ⚠️ `Post Confirmation`
+  - ⚠️ `Pre Authentication`
+  - 🟢 `Pre Sign-up`
+  - ⚠️ `Verify Auth Challenge Response`
+  - ⚠️ `Pre Token Generation`
 
 ## Api
 
@@ -642,21 +640,21 @@ to add the necessary configuration.
 
   - ➤ **Default Authorization Type**
 
-    - ✅ `API Key`
-    - ❌ `Amazon Cognito User Pool`
-    - ✅ `IAM`
-    - ❌ `OpenID Connect`
-    - ❌ `Lambda`
+    - 🟢 `API Key`
+    - 🟢 `Amazon Cognito User Pool`
+    - 🟢 `IAM`
+    - 🔴 `OpenID Connect`
+    - 🔴 `Lambda`
 
   - ➤ **Additional Authorization Type**
 
-    - ✅ `API Key`
-    - ✅ `Amazon Cognito User Pool`
-    - ❌ `IAM`
-    - ❌ `OpenID Connect`
-    - ❌ `Lambda`
+    - 🟢 `API Key`
+    - 🟢 `Amazon Cognito User Pool`
+    - 🔴 `IAM`
+    - 🔴 `OpenID Connect`
+    - 🔴 `Lambda`
 
-- ⚠️ **REST** (_generate_ ✗ _refactor_ ✔)
+- 🟡 **REST** (_generate_ ✗ _refactor_ ✔)
 
 ## Storage
 
@@ -666,30 +664,30 @@ to add the necessary configuration.
 
   - **What kind of access do you want for Authenticated users?**
 
-    - ✅ `create/update`
-    - ✅ `read`
-    - ✅ `delete`
+    - 🟢 `create/update`
+    - 🟢 `read`
+    - 🟢 `delete`
 
   - **What kind of access do you want for Guest users?**
 
-    - ✅ `create/update`
-    - ✅ `read`
-    - ✅ `delete`
+    - 🟢 `create/update`
+    - 🟢 `read`
+    - 🟢 `delete`
 
   - **What kind of access do you want for {Group} users**
 
-    - ✅ `create/update`
-    - ✅ `read`
-    - ✅ `delete`
+    - 🟢 `create/update`
+    - 🟢 `read`
+    - 🟢 `delete`
 
-  - ✅ Do you want to add a Lambda Trigger for your S3 Bucket
+  - 🟢 Do you want to add a Lambda Trigger for your S3 Bucket
 
 - ➤ NoSQL Database
 
-  - ✅ `Do you want to add a sort key to your table`
-  - ✅ `Do you want to add global secondary indexes to your table`
-  - ✅ `Do you want to add a sort key to your global secondary index`
-  - ❌ `Do you want to add a Lambda Trigger for your Table`
+  - 🟢 `Do you want to add a sort key to your table`
+  - 🟢 `Do you want to add global secondary indexes to your table`
+  - 🟢 `Do you want to add a sort key to your global secondary index`
+  - 🔴 `Do you want to add a Lambda Trigger for your Table`
 
 ## Function
 
@@ -699,28 +697,28 @@ to add the necessary configuration.
 
   - ➤ Runtime
 
-    - ❌ `.NET 8`
-    - ❌ `Go`
-    - ❌ `Java`
-    - ✅ `NodeJS`
-    - ❌ `Python`
+    - 🔴 `.NET 8`
+    - 🔴 `Go`
+    - 🔴 `Java`
+    - 🟢 `NodeJS`
+    - 🔴 `Python`
 
   - ➤ Choose the function template that you want to use
 
-    - ✅ `Hello world function`
-    - ❌ `CRUD function for Amazon DynamoDB table`
-    - ✅ `Serverless express function`
+    - 🟢 `Hello world function`
+    - ⚠️ `CRUD function for Amazon DynamoDB table`
+    - 🟢 `Serverless express function`
     - ➤ `Lambda Trigger`
 
       - ➤ **Amazon DynamoDB Stream**
 
         - ➤ **Choose a DynamoDB event source option**
 
-          - ✅ `Use API category graphql @model backed DynamoDB table(s) in the current Amplify project`
-          - ❌ `Use storage category DynamoDB table configured in the current Amplify project`
-          - ❌ `Provide the ARN of DynamoDB stream directly`
+          - 🟢 `Use API category graphql @model backed DynamoDB table(s) in the current Amplify project`
+          - 🔴 `Use storage category DynamoDB table configured in the current Amplify project`
+          - 🔴 `Provide the ARN of DynamoDB stream directly`
 
-      - ❌ **Amazon Kinesis Stream**
+      - 🔴 **Amazon Kinesis Stream**
 
   - ➤ **Advanced Settings**
 
@@ -728,79 +726,79 @@ to add the necessary configuration.
 
       - ➤ **api**
 
-        - ✅ `Query`
-        - ✅ `Mutation`
-        - ✅ `Subscription`
+        - 🟢 `Query`
+        - 🟢 `Mutation`
+        - 🟢 `Subscription`
 
       - ➤ **auth**
 
-        - ✅ `create`
-        - ✅ `read`
-        - ✅ `update`
-        - ✅ `delete`
+        - 🟢 `create`
+        - 🟢 `read`
+        - 🟢 `update`
+        - 🟢 `delete`
 
-      - ❌ **function**
+      - 🔴 **function**
 
       - ➤ **storage:dynamo**
 
-        - ✅ `create`
-        - ✅ `read`
-        - ✅ `update`
-        - ✅ `delete`
+        - 🟢 `create`
+        - 🟢 `read`
+        - 🟢 `update`
+        - 🟢 `delete`
 
       - ➤ **storage:s3**
 
-        - ✅ `create`
-        - ✅ `read`
-        - ✅ `update`
-        - ✅ `delete`
+        - 🟢 `create`
+        - 🟢 `read`
+        - 🟢 `update`
+        - 🟢 `delete`
 
-      - ❌ function
+      - 🔴 function
 
-    - ❌ **Do you want to invoke this function on a recurring schedule**
-    - ❌ **Do you want to enable Lambda layers for this function**
-    - ✅ **Do you want to configure environment variables for this function**
-    - ⚠️ **Do you want to configure secret values this function can access** (_generate_ ✗ _refactor_ ✔)
+    - 🔴 **Do you want to invoke this function on a recurring schedule**
+    - 🔴 **Do you want to enable Lambda layers for this function**
+    - 🟢 **Do you want to configure environment variables for this function**
+    - 🟡 **Do you want to configure secret values this function can access** (_generate_ ✗ _refactor_ ✔)
     - ➤ **Choose the package manager that you want to use**
 
-      - ✅ `NPM`
-      - ❌ `Yarn`
-      - ❌ `PNPM`
-      - ❌ `Custom Build Command or Script Path`
+      - 🟢 `NPM`
+      - ⚠️ `Yarn`
+      - ⚠️ `PNPM`
+      - 🔴 `Custom Build Command or Script Path`
 
-- ❌ **Lambda layer (shared code & resource used across functions)**
+- 🔴 **Lambda layer (shared code & resource used across functions)**
 
 ## Geo
 
-### `amplify add geo` ❌
+### `amplify add geo` 🔴
 
 ## Interactions
 
-### `amplify add interactions` ❌
+### `amplify add interactions` 🔴
 
 ## Predictions
 
-### `amplify add predictions` ❌
+### `amplify add predictions` 🔴
 
 ## Notifications
 
-### `amplify add notifications` ❌
+### `amplify add notifications` 🔴
 
 ## Analytics
 
-### `amplify add analytics` ❌
+### `amplify add analytics` 🔴
 
 ## Hosting
 
-### `amplify add hosting` ❌
+### `amplify add hosting` 🔴
 
 ## Custom 
 
-### `amplify add custom` ❌
+### `amplify add custom` 🔴
 
 ## Overrides 
 
-### `amplify override <category>` ❌
+### `amplify override <category>` 🔴
 
 # Limitations
 
