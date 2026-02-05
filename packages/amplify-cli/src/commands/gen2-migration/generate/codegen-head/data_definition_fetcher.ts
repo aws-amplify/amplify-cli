@@ -13,6 +13,7 @@ interface Gen1PathConfig {
   permissions?: {
     setting?: 'private' | 'protected' | 'open';
     auth?: string[];
+    groups?: Record<string, string[]>;
   };
   lambdaFunction?: string;
   // Support for User Pool Groups
@@ -204,6 +205,7 @@ export class DataDefinitionFetcher {
    * Gen1 allows flexible method specification:
    * - Explicit: { methods: ['GET', 'POST'] } → ['GET', 'POST']
    * - Permission-based: { permissions: { auth: ['read', 'create'] } } → ['GET', 'POST']
+   * - Group-based: { permissions: { groups: { "Admin": ['read', 'create'] } } } → ['GET', 'POST']
    * - No config: {} → ['GET']
    */
   private extractMethodsFromPath(pathConfig: Gen1PathConfig): string[] {
@@ -214,28 +216,46 @@ export class DataDefinitionFetcher {
 
     // Map auth permissions to HTTP methods if no explicit methods
     if (pathConfig.permissions?.auth && pathConfig.permissions.auth.length > 0) {
-      const methods: string[] = [];
-      pathConfig.permissions.auth.forEach((permission) => {
-        switch (permission) {
-          case 'read':
-            methods.push('GET');
-            break;
-          case 'create':
-            methods.push('POST');
-            break;
-          case 'update':
-            methods.push('PUT');
-            break;
-          case 'delete':
-            methods.push('DELETE');
-            break;
-        }
+      return this.mapPermissionsToMethods(pathConfig.permissions.auth);
+    }
+
+    // Map group permissions to HTTP methods
+    // Group permissions restrict API access to specific Cognito User Pool groups
+    // Example: { "groups": { "Admin": ["create", "read"], "User": ["read"] } }
+    if (pathConfig.permissions?.groups) {
+      const allPermissions = new Set<string>();
+      Object.values(pathConfig.permissions.groups).forEach((permissions) => {
+        permissions.forEach((permission) => allPermissions.add(permission));
       });
-      return methods.length > 0 ? methods : ['GET'];
+      return this.mapPermissionsToMethods(Array.from(allPermissions));
     }
 
     // Default to GET only if no configuration found
     return ['GET'];
+  }
+
+  /**
+   * Maps Gen1 permission strings to HTTP methods.
+   */
+  private mapPermissionsToMethods(permissions: string[]): string[] {
+    const methods: string[] = [];
+    permissions.forEach((permission) => {
+      switch (permission) {
+        case 'read':
+          methods.push('GET');
+          break;
+        case 'create':
+          methods.push('POST');
+          break;
+        case 'update':
+          methods.push('PUT');
+          break;
+        case 'delete':
+          methods.push('DELETE');
+          break;
+      }
+    });
+    return methods.length > 0 ? methods : ['GET'];
   }
 
   /**
