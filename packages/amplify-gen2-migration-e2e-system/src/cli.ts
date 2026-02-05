@@ -13,8 +13,10 @@ import { ConfigurationLoader } from './core/configuration-loader';
 import { EnvironmentDetector } from './core/environment-detector';
 import { AppSelector } from './core/app-selector';
 import { AmplifyInitializer } from './core/amplify-initializer';
+import { CategoryInitializer } from './core/category-initializer';
 import { DirectoryManager } from './utils/directory-manager';
 import { CDKAtmosphereIntegration } from './core/cdk-atmosphere-integration';
+import { amplifyPushWithoutCodegen } from '@aws-amplify/amplify-e2e-core';
 import { LogLevel, CLIOptions, AppConfiguration, EnvironmentType, InitializeAppFromCLIParams } from './types';
 import { generateTimeBasedE2EAmplifyAppName } from './utils/math';
 import path from 'path';
@@ -27,6 +29,7 @@ const configurationLoader = new ConfigurationLoader(logger, fileManager);
 const environmentDetector = new EnvironmentDetector(logger);
 const appSelector = new AppSelector(logger, fileManager);
 const amplifyInitializer = new AmplifyInitializer(logger);
+const categoryInitializer = new CategoryInitializer(logger);
 const directoryManager = new DirectoryManager(logger);
 const cdkAtmosphereIntegration = new CDKAtmosphereIntegration(logger, environmentDetector);
 
@@ -281,7 +284,8 @@ async function showDryRunSummary(selectedApp: string, config?: AppConfiguration)
 
 /**
  * Initialize a single app
- * Copies the source directory to the migration target and runs amplify init
+ * Copies the source directory to the migration target, runs amplify init,
+ * and initializes all configured categories
  */
 async function initializeAppFromCLI(params: InitializeAppFromCLIParams): Promise<void> {
   const { appName, deploymentName, config, migrationTargetPath, envName, profile } = params;
@@ -292,10 +296,6 @@ async function initializeAppFromCLI(params: InitializeAppFromCLIParams): Promise
   const sourceAppPath = appSelector.getAppPath(appName);
   logger.debug(`Source app path: ${sourceAppPath}`, context);
 
-  // Use the generated deployment name for the target directory
-  const targetAppPath = `${migrationTargetPath}/${deploymentName}`;
-
-  logger.debug(`Target app path: ${targetAppPath}`, context);
   logger.debug(`Config app name: ${config.app.name}`, context);
 
   try {
@@ -319,9 +319,38 @@ async function initializeAppFromCLI(params: InitializeAppFromCLIParams): Promise
       envName,
       profile,
     });
+
+    // Step 2: Initialize categories (auth, api, storage, function, etc.)
+    logger.info(`Initializing categories for ${deploymentName}...`, context);
+    const categoryResult = await categoryInitializer.initializeCategories({
+      appPath: targetAppPath,
+      config,
+      deploymentName,
+    });
+
+    // Log category initialization results
+    if (categoryResult.initializedCategories.length > 0) {
+      logger.info(`Successfully initialized categories: ${categoryResult.initializedCategories.join(', ')}`, context);
+    }
+    if (categoryResult.skippedCategories.length > 0) {
+      logger.warn(`Skipped categories: ${categoryResult.skippedCategories.join(', ')}`, context);
+    }
+    if (categoryResult.errors.length > 0) {
+      for (const error of categoryResult.errors) {
+        logger.error(`Category '${error.category}' failed: ${error.error}`, undefined, context);
+      }
+      throw new Error(`Failed to initialize ${categoryResult.errors.length} category(ies)`);
+    }
+
+    // Step 3: Push the initialized app to AWS
+    logger.info(`Pushing ${deploymentName} to AWS...`, context);
+    await amplifyPushWithoutCodegen(targetAppPath);
+    logger.info(`Successfully pushed ${deploymentName} to AWS`, context);
+
+    logger.info(`App ${deploymentName} fully initialized and deployed at ${targetAppPath}`, context);
   } catch (error) {
     logger.error(`Failed to initialize ${appName}`, error as Error, context);
-    process.exit(1);
+    throw error;
   }
 }
 
@@ -336,6 +365,7 @@ process.on('unhandledRejection', (reason) => {
 });
 
 // Run the CLI
+// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 if (require.main === module) {
   main().catch((error) => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
