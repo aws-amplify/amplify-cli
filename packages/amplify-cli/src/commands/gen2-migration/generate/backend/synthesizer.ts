@@ -1503,34 +1503,38 @@ export class BackendSynthesizer {
         );
         nodes.push(restApiDeclaration);
 
-        // Create Lambda integration for REST API
-        // Connects the API Gateway to the Lambda function from Gen1 configuration
-        const lambdaIntegrationDeclaration = factory.createVariableStatement(
-          [],
-          factory.createVariableDeclarationList(
-            [
-              factory.createVariableDeclaration(
-                integrationVarName,
-                undefined,
-                undefined,
-                factory.createNewExpression(factory.createIdentifier('LambdaIntegration'), undefined, [
-                  factory.createPropertyAccessExpression(
-                    factory.createPropertyAccessExpression(
+        // Create Lambda integrations for each unique function used by this REST API
+        const integrationDeclarations = new Map<string, string>();
+        if (restApi.uniqueFunctions) {
+          restApi.uniqueFunctions.forEach((funcName) => {
+            const funcIntegrationVarName = `${funcName}Integration`;
+            integrationDeclarations.set(funcName, funcIntegrationVarName);
+
+            const lambdaIntegrationDeclaration = factory.createVariableStatement(
+              [],
+              factory.createVariableDeclarationList(
+                [
+                  factory.createVariableDeclaration(
+                    funcIntegrationVarName,
+                    undefined,
+                    undefined,
+                    factory.createNewExpression(factory.createIdentifier('LambdaIntegration'), undefined, [
                       factory.createPropertyAccessExpression(
-                        factory.createIdentifier('backend'),
-                        factory.createIdentifier(restApi.functionName),
+                        factory.createPropertyAccessExpression(
+                          factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier(funcName)),
+                          factory.createIdentifier('resources'),
+                        ),
+                        factory.createIdentifier('lambda'),
                       ),
-                      factory.createIdentifier('resources'),
-                    ),
-                    factory.createIdentifier('lambda'),
+                    ]),
                   ),
-                ]),
+                ],
+                ts.NodeFlags.Const,
               ),
-            ],
-            ts.NodeFlags.Const,
-          ),
-        );
-        nodes.push(lambdaIntegrationDeclaration);
+            );
+            nodes.push(lambdaIntegrationDeclaration);
+          });
+        }
 
         // Create reference to existing Gen1 REST API
         // Allows continued access to the original API during migration
@@ -1657,7 +1661,7 @@ export class BackendSynthesizer {
 
           // Build resource chain starting from root
           let resourceExpression: ts.Expression = factory.createPropertyAccessExpression(
-            factory.createIdentifier('restApi'),
+            factory.createIdentifier(apiVarName),
             factory.createIdentifier('root'),
           );
 
@@ -1708,13 +1712,16 @@ export class BackendSynthesizer {
           );
           nodes.push(resourceDeclaration);
 
-          // Add methods without individual auth options (auth is set at resource level)
+          // Get the correct integration for this path's function
+          const pathIntegrationVar = integrationDeclarations.get(path.lambdaFunction) || `${path.lambdaFunction}Integration`;
+
+          // Add methods for this path
           path.methods.forEach((method) => {
             const addMethodCall = factory.createExpressionStatement(
               factory.createCallExpression(
                 factory.createPropertyAccessExpression(factory.createIdentifier(resourceName), factory.createIdentifier('addMethod')),
                 undefined,
-                [factory.createStringLiteral(method), factory.createIdentifier(integrationVarName)],
+                [factory.createStringLiteral(method), factory.createIdentifier(pathIntegrationVar)],
               ),
             );
             nodes.push(addMethodCall);
@@ -1729,7 +1736,7 @@ export class BackendSynthesizer {
                 factory.createObjectLiteralExpression(
                   [
                     factory.createPropertyAssignment('anyMethod', factory.createTrue()),
-                    factory.createPropertyAssignment('defaultIntegration', factory.createIdentifier(integrationVarName)),
+                    factory.createPropertyAssignment('defaultIntegration', factory.createIdentifier(pathIntegrationVar)),
                   ],
                   true,
                 ),
