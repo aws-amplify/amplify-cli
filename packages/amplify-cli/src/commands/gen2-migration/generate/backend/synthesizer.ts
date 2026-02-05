@@ -1641,12 +1641,33 @@ export class BackendSynthesizer {
         );
         nodes.push(attachGen1PolicyCall);
 
+        // Variable name collision prevention for API Gateway resources
+        // Problem: Function imports like 'import { nutritionsecondlog }' conflict with
+        // API resource variables like 'const nutritionsecondlog = api.addResource()'
+        // Solution: Track all used names and generate unique resource variable names
+        // Example: 'nutritionsecondlog' → 'nutritionsecondlogResource' → 'nutritionsecondlogResource2'
+        const usedVariableNames = new Set<string>();
+
+        // Add function names to avoid collisions
+        if (restApi.uniqueFunctions) {
+          restApi.uniqueFunctions.forEach((funcName) => usedVariableNames.add(funcName));
+        }
+
         // Generate resources and methods for each path
         restApi.paths.forEach((path) => {
           const pathSegments = path.path.split('/').filter((segment) => segment && segment !== '{proxy+}');
 
-          // Create resource variable name from path segments
-          const resourceName = pathSegments.join('') || 'root';
+          // Create resource variable name from path segments with collision avoidance
+          const baseResourceName = pathSegments.length > 0 ? pathSegments.join('') : 'root';
+          let resourceName = baseResourceName;
+          let counter = 1;
+
+          // Check for collisions and append suffix if needed
+          while (usedVariableNames.has(resourceName)) {
+            resourceName = `${baseResourceName}Resource${counter > 1 ? counter : ''}`;
+            counter++;
+          }
+          usedVariableNames.add(resourceName);
 
           // Build resource chain starting from root
           let resourceExpression: ts.Expression = factory.createPropertyAccessExpression(
