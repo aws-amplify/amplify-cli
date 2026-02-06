@@ -157,7 +157,7 @@ class TemplateGenerator {
       .map(([logicalId]) => logicalId);
   }
 
-  // Generate templates for selected categories only
+  // Generate templates for selected categories only (Entry point for refactor)
   public async generateSelectedCategories(selectedCategories: string[], customResourceMap?: ResourceMapping[]): Promise<boolean> {
     await fs.mkdir(TEMPLATES_DIR, { recursive: true });
 
@@ -203,17 +203,15 @@ class TemplateGenerator {
   /**
    * Discovers and maps category nested stacks between Gen1 and Gen2 root stacks.
    *
-   * 1. Queries both Gen1 (source) and Gen2 (destination) root stacks for their nested stacks
-   * 2. Matches nested stacks by category (e.g., Gen1's "authXYZ" → Gen2's "authABC")
-   * 3. Populates _categoryStackMap with: category → [sourceStackId, destinationStackId]
+   * Queries both Gen1 (source) and Gen2 (destination) root stacks for their nested stacks
+   * Matches nested stacks by category (e.g., Gen1's "authXYZ" → Gen2's "authABC")
+   * Populates _categoryStackMap with: category → [sourceStackId, destinationStackId]
    *
    *
    * Special handling for auth: Gen1 may have separate stacks for UserPool vs UserPoolGroups,
    * while Gen2 combines them into one stack. The code detects this via stack description metadata.
    *
    * @param isRevert - If true, we're moving resources FROM Gen2 back TO Gen1 (reverse of migration)
-   * TODO: isRevert function is untested. We may want to remove this as an input parameter and instead
-   * move revert to a new function.
    */
   private async parseCategoryStacks(isRevert = false): Promise<void> {
     const sourceStackResourcesResponse = await this.cfnClient.send(
@@ -461,7 +459,9 @@ class TemplateGenerator {
           destinationStackId,
           this.createCategoryTemplateGenerator(sourceStackId, destinationStackId, config.resourcesToRefactor),
         ]);
-      } else if (customResourceMap && this.isCustomResource(category)) {
+      }
+      // Only use the customResourceMap as a fallback, if its not in the TemplateGenerator config
+      else if (customResourceMap && this.isCustomResource(category)) {
         this.categoryTemplateGenerators.push([
           category,
           sourceStackId,
