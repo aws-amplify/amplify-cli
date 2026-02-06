@@ -152,7 +152,7 @@ export const run = async (context: $TSContext) => {
   const implementation: AmplifyMigrationStep = new step.class(logger, envName, appName, appId, stackName, region, context);
 
   if (validationsOnly) {
-    await validate(implementation, rollingBack, logger);
+    await validate(implementation, rollingBack, logger, context);
     return;
   }
 
@@ -176,7 +176,9 @@ export const run = async (context: $TSContext) => {
   printer.info(chalk.bold(chalk.underline('Implications')));
   printer.blankLine();
 
-  for (const implication of rollingBack ? await implementation.rollbackImplications() : await implementation.executeImplications()) {
+  const cachedStep = new CachedAmplifyMigrationStep(step);
+
+  for (const implication of rollingBack ? await cachedStep.rollback() : await cachedStep.execute()) {
     printer.info(`• ${implication}`);
   }
 
@@ -194,19 +196,19 @@ export const run = async (context: $TSContext) => {
   printer.blankLine();
 
   if (!skipValidations) {
-    await validate(implementation, rollingBack, logger);
+    await validate(implementation, rollingBack, logger, context);
     printer.blankLine();
   }
 
   if (rollingBack) {
-    await runRollback(implementation, logger);
+    await runRollback(cachedStep, logger);
     printer.blankLine();
     printer.success('Done');
     return;
   }
 
   try {
-    await runExecute(implementation, logger);
+    await runExecute(cachedStep, logger);
     printer.blankLine();
     printer.success('Done');
     return;
@@ -214,19 +216,27 @@ export const run = async (context: $TSContext) => {
     if (!disableAutoRollback) {
       printer.error(`Execution failed: ${error}`);
       printer.blankLine();
-      await runRollback(implementation, logger);
+      await runRollback(cachedStep, logger);
     }
 
     throw error;
   }
 };
 
-async function validate(step: AmplifyMigrationStep, rollback: boolean, logger: Logger) {
+async function validate(step: AmplifyMigrationStep, rollback: boolean, logger: Logger, context: $TSContext) {
   logger.envelope('Performing validations');
-  if (rollback) {
-    await step.rollbackValidate();
-  } else {
-    await step.executeValidate();
+  try {
+    if (rollback) {
+      await step.rollbackValidate();
+    } else {
+      await step.executeValidate();
+    }
+  } catch (e) {
+    const skipValidationsCommand = `amplify ${context.input.argv.join(' ').trim()} --skip-validations`;
+    throw new AmplifyError('MigrationError', {
+      message: `Validations failed: ${e.message}`,
+      resolution: `Resolve the validation errors or skip them by running '${skipValidationsCommand}'`,
+    });
   }
   logger.envelope('Validations complete');
 }
@@ -237,13 +247,13 @@ async function runOperations(operations: AmplifyMigrationOperation[]) {
   }
 }
 
-async function runRollback(step: AmplifyMigrationStep, logger: Logger) {
+async function runRollback(step: CachedAmplifyMigrationStep, logger: Logger) {
   logger.envelope('Rolling back');
   await runOperations(await step.rollback());
   logger.envelope('Rollback complete');
 }
 
-async function runExecute(step: AmplifyMigrationStep, logger: Logger) {
+async function runExecute(step: CachedAmplifyMigrationStep, logger: Logger) {
   logger.envelope('Executing');
   await runOperations(await step.execute());
   logger.envelope('Execution complete');
@@ -255,9 +265,7 @@ function shiftParams(context) {
   delete context.parameters.third;
   const { subCommands } = context.input;
   if (subCommands && subCommands.length > 1) {
-    if (subCommands.length > 1) {
-      context.parameters.first = subCommands[1];
-    }
+    context.parameters.first = subCommands[1];
     if (subCommands.length > 2) {
       context.parameters.second = subCommands[2];
     }
@@ -273,4 +281,32 @@ function displayHelp(context: $TSContext) {
     Object.entries(STEPS).map(([name, v]) => ({ name, description: v.description })),
   );
   printer.info('');
+}
+
+/**
+ * Convenience class that provides caching to step methods.
+ * Return values are constructed and stored on the first invocation; subsequent invocations return
+ * the cached values.
+ *
+ * This allows our gen2-migration.ts dispatcher to invoke step methods at will and on-demand.
+ */
+class CachedAmplifyMigrationStep {
+  private _executionOperations: AmplifyMigrationOperation[];
+  private _rollbackOperations: AmplifyMigrationOperation[];
+
+  constructor(private readonly step: AmplifyMigrationStep) {}
+
+  public async execute(): Promise<AmplifyMigrationOperation[]> {
+    if (!this._executionOperations) {
+      this._executionOperations = await this.step.execute();
+    }
+    return this._executionOperations;
+  }
+
+  public async rollback(): Promise<AmplifyMigrationOperation[]> {
+    if (!this._rollbackOperations) {
+      this._rollbackOperations = await this.step.rollback();
+    }
+    return this._rollbackOperations;
+  }
 }

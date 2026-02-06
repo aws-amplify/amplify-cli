@@ -107,6 +107,17 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
 
     // note that we don't disable deletion protection on the tables because we don't
     // know what the original value was; to play it safe we leave it untouched.
+    // create logging only operations to let this be known to the user.
+    for (const tableName of await this.dynamoTableNames()) {
+      operations.push({
+        describe: async () => {
+          return [`Preserve deletion protection for table '${tableName}'`];
+        },
+        execute: async () => {
+          return;
+        },
+      });
+    }
 
     operations.push({
       describe: async () => {
