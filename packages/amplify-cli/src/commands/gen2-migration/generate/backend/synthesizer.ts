@@ -871,6 +871,7 @@ export class BackendSynthesizer {
             factory.createIdentifier('LambdaIntegration'),
             factory.createIdentifier('AuthorizationType'),
             factory.createIdentifier('Cors'),
+            factory.createIdentifier('ResponseType'),
           ],
           'aws-cdk-lib/aws-apigateway',
         ),
@@ -1502,6 +1503,55 @@ export class BackendSynthesizer {
           ),
         );
         nodes.push(restApiDeclaration);
+
+        // Add gateway responses for CORS
+        const gatewayResponse4XX = factory.createExpressionStatement(
+          factory.createCallExpression(
+            factory.createPropertyAccessExpression(factory.createIdentifier(apiVarName), factory.createIdentifier('addGatewayResponse')),
+            undefined,
+            [
+              factory.createStringLiteral('Default4XX'),
+              factory.createObjectLiteralExpression([
+                factory.createPropertyAssignment(
+                  'type',
+                  factory.createPropertyAccessExpression(factory.createIdentifier('ResponseType'), factory.createIdentifier('DEFAULT_4XX')),
+                ),
+                factory.createPropertyAssignment(
+                  'responseHeaders',
+                  factory.createObjectLiteralExpression([
+                    factory.createPropertyAssignment('Access-Control-Allow-Origin', factory.createStringLiteral("'*'")),
+                    factory.createPropertyAssignment('Access-Control-Allow-Headers', factory.createStringLiteral("'*'")),
+                  ]),
+                ),
+              ]),
+            ],
+          ),
+        );
+        nodes.push(gatewayResponse4XX);
+
+        const gatewayResponse5XX = factory.createExpressionStatement(
+          factory.createCallExpression(
+            factory.createPropertyAccessExpression(factory.createIdentifier(apiVarName), factory.createIdentifier('addGatewayResponse')),
+            undefined,
+            [
+              factory.createStringLiteral('Default5XX'),
+              factory.createObjectLiteralExpression([
+                factory.createPropertyAssignment(
+                  'type',
+                  factory.createPropertyAccessExpression(factory.createIdentifier('ResponseType'), factory.createIdentifier('DEFAULT_5XX')),
+                ),
+                factory.createPropertyAssignment(
+                  'responseHeaders',
+                  factory.createObjectLiteralExpression([
+                    factory.createPropertyAssignment('Access-Control-Allow-Origin', factory.createStringLiteral("'*'")),
+                    factory.createPropertyAssignment('Access-Control-Allow-Headers', factory.createStringLiteral("'*'")),
+                  ]),
+                ),
+              ]),
+            ],
+          ),
+        );
+        nodes.push(gatewayResponse5XX);
 
         // Create Lambda integrations for each unique function used by this REST API
         const integrationDeclarations = new Map<string, string>();
