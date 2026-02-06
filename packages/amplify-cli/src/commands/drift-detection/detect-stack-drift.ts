@@ -92,15 +92,14 @@ export async function detectStackDrift(
     );
   }
 
-  // Get the drift results, including ALL statuses
+  // Get the drift results
   const driftResults = await cfn.send(
     new DescribeStackResourceDriftsCommand({
       StackName: stackName,
-      StackResourceDriftStatusFilters: ['IN_SYNC', 'MODIFIED', 'DELETED', 'NOT_CHECKED', 'UNKNOWN'],
     }),
   );
 
-  // Filter out known Amplify Auth IdP Deny→Allow changes from property differences BEFORE printing
+  // Filter out known Amplify Auth IdP Deny→Allow changes
   if (driftResults.StackResourceDrifts) {
     driftResults.StackResourceDrifts = driftResults.StackResourceDrifts.map((drift) => {
       // For modified resources, filter out Auth IdP Deny→Allow property changes
@@ -119,67 +118,6 @@ export async function detectStackDrift(
       return drift;
     });
   }
-
-  // Print detailed resource table in verbose mode (AFTER filtering)
-  if (driftResults.StackResourceDrifts && driftResults.StackResourceDrifts.length > 0) {
-    // Count resources by status
-    const statusCounts = {
-      IN_SYNC: 0,
-      MODIFIED: 0,
-      DELETED: 0,
-      NOT_CHECKED: 0,
-      UNKNOWN: 0,
-    };
-
-    // Count the filtered statuses
-    for (const drift of driftResults.StackResourceDrifts) {
-      const status = drift.StackResourceDriftStatus;
-      if (status && status in statusCounts) {
-        statusCounts[status as keyof typeof statusCounts]++;
-      }
-    }
-
-    print.debug('Resource drift status:');
-
-    // Display each resource with its filtered status
-    for (const drift of driftResults.StackResourceDrifts) {
-      const status = drift.StackResourceDriftStatus || 'UNKNOWN';
-      const logicalId = drift.LogicalResourceId || 'Unknown';
-      const physicalId = drift.PhysicalResourceId || 'N/A';
-      const resourceType = drift.ResourceType || 'Unknown';
-
-      let statusDisplay = '';
-      switch (status) {
-        case 'IN_SYNC':
-          statusDisplay = '✓ IN_SYNC';
-          break;
-        case 'MODIFIED':
-          statusDisplay = '✗ MODIFIED';
-          break;
-        case 'DELETED':
-          statusDisplay = '✗ DELETED';
-          break;
-        case 'NOT_CHECKED':
-          statusDisplay = '○ UNCHECKED';
-          break;
-        default:
-          statusDisplay = '? UNKNOWN';
-      }
-
-      print.info(`${statusDisplay} | ${logicalId} | ${physicalId} | ${resourceType}`);
-
-      // Show property differences for MODIFIED resources
-      if (status === 'MODIFIED' && drift.PropertyDifferences && drift.PropertyDifferences.length > 0) {
-        for (const propDiff of drift.PropertyDifferences) {
-          const propPath = propDiff.PropertyPath || 'Unknown';
-          const diffType = propDiff.DifferenceType || 'UNKNOWN';
-          print.debug(`      → ${propPath}: ${diffType}`);
-        }
-      }
-    }
-  }
-
-  print.debug(`detectStackDrift.complete: ${stackName}, ${driftResults.StackResourceDrifts?.length} resources`);
   return driftResults;
 }
 
@@ -206,16 +144,16 @@ function isAmplifyAuthRoleDenyToAllowChange(propDiff: any, print: Print): boolea
       if (expectedJson.Statement && actualJson.Statement && Array.isArray(expectedJson.Statement) && Array.isArray(actualJson.Statement)) {
         // Look for Deny→Allow change in any statement
         for (let i = 0; i < Math.max(expectedJson.Statement.length, actualJson.Statement.length); i++) {
-          const expectedStmt = expectedJson.Statement[i];
-          const actualStmt = actualJson.Statement[i];
+          const expectedStatement = expectedJson.Statement[i];
+          const actualStatement = actualJson.Statement[i];
 
           if (
-            expectedStmt &&
-            actualStmt &&
-            expectedStmt.Effect === 'Deny' &&
-            actualStmt.Effect === 'Allow' &&
-            expectedStmt.Principal?.Federated === 'cognito-identity.amazonaws.com' &&
-            actualStmt.Principal?.Federated === 'cognito-identity.amazonaws.com'
+            expectedStatement &&
+            actualStatement &&
+            expectedStatement.Effect === 'Deny' &&
+            actualStatement.Effect === 'Allow' &&
+            expectedStatement.Principal?.Federated === 'cognito-identity.amazonaws.com' &&
+            actualStatement.Principal?.Federated === 'cognito-identity.amazonaws.com'
           ) {
             return true;
           }
@@ -423,7 +361,3 @@ export async function detectStackDriftRecursive(
     skippedNestedStacks: skippedNestedStacks.length > 0 ? skippedNestedStacks : undefined,
   };
 }
-
-/**
- * Format a reason string, handling undefined/null values
- */
