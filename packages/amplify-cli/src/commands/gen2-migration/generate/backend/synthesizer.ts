@@ -883,6 +883,7 @@ export class BackendSynthesizer {
         ),
       );
       imports.push(this.createImportStatement([factory.createIdentifier('Stack')], 'aws-cdk-lib'));
+      imports.push(this.createImportStatement([factory.createIdentifier('Lazy')], 'aws-cdk-lib'));
     }
 
     // DynamoDB tables generation
@@ -1889,9 +1890,43 @@ export class BackendSynthesizer {
                                   [
                                     factory.createPropertyAssignment(
                                       'endpoint',
-                                      factory.createPropertyAccessExpression(
-                                        factory.createIdentifier(apiVarName),
-                                        factory.createIdentifier('url'),
+                                      factory.createCallExpression(
+                                        factory.createPropertyAccessExpression(
+                                          factory.createIdentifier('Lazy'),
+                                          factory.createIdentifier('string'),
+                                        ),
+                                        undefined,
+                                        [
+                                          factory.createObjectLiteralExpression([
+                                            factory.createPropertyAssignment(
+                                              'produce',
+                                              factory.createArrowFunction(
+                                                undefined,
+                                                undefined,
+                                                [],
+                                                undefined,
+                                                factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
+                                                factory.createCallExpression(
+                                                  factory.createPropertyAccessExpression(
+                                                    factory.createPropertyAccessExpression(
+                                                      factory.createIdentifier(apiVarName),
+                                                      factory.createIdentifier('url'),
+                                                    ),
+                                                    factory.createIdentifier('slice'),
+                                                  ),
+                                                  undefined,
+                                                  [
+                                                    factory.createNumericLiteral('0'),
+                                                    factory.createPrefixUnaryExpression(
+                                                      ts.SyntaxKind.MinusToken,
+                                                      factory.createNumericLiteral('1'),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ]),
+                                        ],
                                       ),
                                     ),
                                     factory.createPropertyAssignment(
