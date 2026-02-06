@@ -203,6 +203,8 @@ export const generateDataSource = async (gen1Env: string, dataDefinition?: DataD
     const apiId = await getApiId(gen1Env);
     if (apiId) {
       tableMappings = createDataSourceMapping(dataDefinition.schema, apiId, gen1Env);
+    } else {
+      throw new Error(`Unable to find AppSync API for environment '${gen1Env}'. Ensure the API exists and is properly tagged.`);
     }
   }
 
