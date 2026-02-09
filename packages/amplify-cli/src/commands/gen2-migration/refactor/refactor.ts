@@ -100,7 +100,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
   private async executeRollback(): Promise<void> {
     const templateGenerator = await this.initializeTemplateGeneratorForRollback();
     this.logger.info('🔧 Executing CloudFormation stack rollback...');
-    await templateGenerator.revert();
+    await templateGenerator.rollback();
     await this.emitUsageAnalytics(this.currentEnvName, true);
   }
 
