@@ -38,7 +38,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
   }
 
   public async rollbackImplications(): Promise<string[]> {
-    throw new Error('Method not implemented.');
+    return ['Move stateful resources from your Gen2 app back to your Gen1 app'];
   }
 
   public async executeValidate(): Promise<void> {
@@ -48,7 +48,8 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
   }
 
   public async rollbackValidate(): Promise<void> {
-    throw new Error('Method not implemented.');
+    // https://github.com/aws-amplify/amplify-cli/issues/14579
+    return;
   }
 
   public async execute(): Promise<AmplifyMigrationOperation[]> {
@@ -76,7 +77,15 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
   }
 
   public async rollback(): Promise<AmplifyMigrationOperation[]> {
-    throw new Error('Not Implemented');
+    return [
+      {
+        describe: async () => ['Move stateful resources from your Gen2 app back to your Gen1 app'],
+        execute: async () => {
+          this.extractParameters();
+          await this.executeRollback();
+        },
+      },
+    ];
   }
 
   private extractParameters(): void {
@@ -86,6 +95,13 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
     if (!this.toStack) {
       throw new AmplifyError('InputValidationError', { message: '--to is required' });
     }
+  }
+
+  private async executeRollback(): Promise<void> {
+    const templateGenerator = await this.initializeTemplateGeneratorForRollback();
+    this.logger.info('🔧 Executing CloudFormation stack rollback...');
+    await templateGenerator.rollback();
+    await this.emitUsageAnalytics(this.currentEnvName, true);
   }
 
   private async processResourceMappings(): Promise<void> {
@@ -179,10 +195,11 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
   }
 
   private async executeStackRefactor(): Promise<void> {
-    // Initialize template generator
+    // Initialize template generator and clients
     const templateGenerator = await this.initializeTemplateGenerator();
 
     // Initialize template generator (parse category stacks for assessment)
+    // Populates _categoryStackMap with: category → [sourceStackId, destinationStackId]
     await templateGenerator.initializeForAssessment();
 
     // Interactive assessment and selection
@@ -213,6 +230,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
     this.logger.info('🔍 Assessing available resources for migration...');
 
     // Assess each category for available resources
+    // Checks the gen1 templates for what resources
     const categoryAssessments = await this.assessCategoryResources(templateGenerator);
 
     if (categoryAssessments.length === 0) {
@@ -238,18 +256,15 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
       this.logger.info('');
     }
 
-    // Prompt user for category selection
+    // Migrate all categories selection
     const availableCategories = categoryAssessments.map((a) => a.category);
-
     const selectionChoice = 'Migrate all categories';
-
     if (selectionChoice === 'Migrate all categories') {
       return availableCategories;
     }
 
     // Individual category selection
     const selectedCategories: string[] = [];
-
     for (const assessment of categoryAssessments) {
       const { category, resourceCount } = assessment;
       const shouldMigrate = await prompter.yesOrNo(`Migrate ${category} category? (${resourceCount} resources)`, true);
@@ -268,7 +283,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
     return selectedCategories;
   }
 
-  // Assess resources in each category
+  // Add all resources that match the categoryGeneratorConfig filters to assesments
   private async assessCategoryResources(templateGenerator: TemplateGenerator): Promise<
     Array<{
       category: string;
@@ -343,6 +358,34 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
       this.rootStackName,
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       this.toStack!,
+      accountId,
+      cfnClient,
+      ssmClient,
+      cognitoIdpClient,
+      this.appId,
+      this.currentEnvName,
+      this.logger,
+      this.region,
+    );
+  }
+
+  private async initializeTemplateGeneratorForRollback(): Promise<TemplateGenerator> {
+    const stsClient = new STSClient({});
+    const callerIdentityResult = await stsClient.send(new GetCallerIdentityCommand({}));
+    const accountId = callerIdentityResult.Account;
+
+    if (!accountId) {
+      throw new Error('Unable to determine AWS account ID');
+    }
+
+    const cfnClient = new CloudFormationClient({});
+    const ssmClient = new SSMClient({});
+    const cognitoIdpClient = new CognitoIdentityProviderClient({});
+
+    // For rollback: Gen2 (toStack) is source, Gen1 (rootStackName) is destination
+    return new TemplateGenerator(
+      this.toStack!,
+      this.rootStackName,
       accountId,
       cfnClient,
       ssmClient,

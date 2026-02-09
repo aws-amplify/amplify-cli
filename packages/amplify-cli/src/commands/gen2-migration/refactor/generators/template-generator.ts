@@ -51,7 +51,7 @@ const AUTH_USER_POOL_GROUP_RESOURCES_TO_REFACTOR = [CFN_AUTH_TYPE.UserPoolGroup]
 const STORAGE_RESOURCES_TO_REFACTOR = [CFN_S3_TYPE.Bucket, CFN_DYNAMODB_TYPE.Table];
 const ANALYTICS_RESOURCES_TO_REFACTOR = [CFN_ANALYTICS_TYPE.Stream];
 
-// The following is only used for revert operation
+// The following is only used for rollback operation
 const GEN1_RESOURCE_TYPE_TO_LOGICAL_RESOURCE_IDS_MAP = new Map<string, string>([
   [CFN_AUTH_TYPE.UserPool.valueOf(), 'UserPool'],
   [CFN_AUTH_TYPE.UserPoolClient.valueOf(), 'UserPoolClientWeb'],
@@ -62,7 +62,7 @@ const GEN1_RESOURCE_TYPE_TO_LOGICAL_RESOURCE_IDS_MAP = new Map<string, string>([
   [CFN_DYNAMODB_TYPE.Table.valueOf(), 'DynamoDBTable'],
   [CFN_ANALYTICS_TYPE.Stream.valueOf(), 'KinesisStream'],
 ]);
-const LOGICAL_IDS_TO_REMOVE_FOR_REVERT_MAP = new Map<CATEGORY, CFN_RESOURCE_TYPES[]>([
+const LOGICAL_IDS_TO_REMOVE_FOR_ROLLBACK_MAP = new Map<CATEGORY, CFN_RESOURCE_TYPES[]>([
   ['auth', AUTH_RESOURCES_TO_REFACTOR],
   ['auth-user-pool-group', AUTH_USER_POOL_GROUP_RESOURCES_TO_REFACTOR],
   ['storage', [CFN_S3_TYPE.Bucket, CFN_DYNAMODB_TYPE.Table]],
@@ -157,7 +157,7 @@ class TemplateGenerator {
       .map(([logicalId]) => logicalId);
   }
 
-  // Generate templates for selected categories only
+  // Generate templates for selected categories only (Entry point for refactor)
   public async generateSelectedCategories(selectedCategories: string[], customResourceMap?: ResourceMapping[]): Promise<boolean> {
     await fs.mkdir(TEMPLATES_DIR, { recursive: true });
 
@@ -195,7 +195,7 @@ class TemplateGenerator {
     return await this.generateCategoryTemplates(false, customResourceMap);
   }
 
-  public async revert() {
+  public async rollback() {
     await this.parseCategoryStacks(true);
     return await this.generateCategoryTemplates(true);
   }
@@ -203,19 +203,17 @@ class TemplateGenerator {
   /**
    * Discovers and maps category nested stacks between Gen1 and Gen2 root stacks.
    *
-   * 1. Queries both Gen1 (source) and Gen2 (destination) root stacks for their nested stacks
-   * 2. Matches nested stacks by category (e.g., Gen1's "authXYZ" → Gen2's "authABC")
-   * 3. Populates _categoryStackMap with: category → [sourceStackId, destinationStackId]
+   * Queries both Gen1 (source) and Gen2 (destination) root stacks for their nested stacks
+   * Matches nested stacks by category (e.g., Gen1's "authXYZ" → Gen2's "authABC")
+   * Populates _categoryStackMap with: category → [sourceStackId, destinationStackId]
    *
    *
    * Special handling for auth: Gen1 may have separate stacks for UserPool vs UserPoolGroups,
    * while Gen2 combines them into one stack. The code detects this via stack description metadata.
    *
-   * @param isRevert - If true, we're moving resources FROM Gen2 back TO Gen1 (reverse of migration)
-   * TODO: isRevert function is untested. We may want to remove this as an input parameter and instead
-   * move revert to a new function.
+   * @param isRollback - If true, we're moving resources FROM Gen2 back TO Gen1 (reverse of migration)
    */
-  private async parseCategoryStacks(isRevert = false): Promise<void> {
+  private async parseCategoryStacks(isRollback = false): Promise<void> {
     const sourceStackResourcesResponse = await this.cfnClient.send(
       new DescribeStackResourcesCommand({
         StackName: this.fromStack,
@@ -259,11 +257,11 @@ class TemplateGenerator {
       // Gen1 can have TWO auth stacks (UserPool/IdentityPool + UserPoolGroups), Gen2 combines them
       let isUserPoolGroupStack = false;
 
-      if (!isRevert && category === 'auth') {
+      if (!isRollback && category === 'auth') {
         // Forward migration: check if this Gen1 auth stack is specifically for UserPoolGroups
         const gen1AuthTypeStack = await this.getGen1AuthTypeStack(sourcePhysicalResourceId);
         isUserPoolGroupStack = gen1AuthTypeStack === 'auth-user-pool-group';
-      } else if (isRevert && category === 'auth') {
+      } else if (isRollback && category === 'auth') {
         // Reverse migration: need to find both auth stacks in destination (Gen1) since Gen2 combined them
         for (const {
           LogicalResourceId: destinationLogicalResourceId,
@@ -292,7 +290,7 @@ class TemplateGenerator {
         sourcePhysicalResourceId,
         destinationPhysicalResourceId,
         isUserPoolGroupStack,
-        isRevert,
+        isRollback,
         userPoolGroupDestinationPhysicalResourceId,
       );
     }
@@ -308,31 +306,33 @@ class TemplateGenerator {
    * @param sourcePhysicalResourceId - The ARN/ID of the source (Gen1) nested stack
    * @param destinationPhysicalResourceId - The ARN/ID of the destination (Gen2) nested stack
    * @param isUserPoolGroupStack - True if this is specifically a UserPoolGroups stack (not main auth)
-   * @param isRevert - True if we're doing a reverse migration (Gen2 → Gen1)
-   * @param userPoolGroupDestinationPhysicalResourceId - For revert: the separate UserPoolGroups stack in Gen1
+   * @param isRollback - True if we're doing a reverse migration (Gen2 → Gen1)
+   * @param userPoolGroupDestinationPhysicalResourceId - For rollback: the separate UserPoolGroups stack in Gen1
    */
   private updateCategoryStackMap(
     category: CATEGORY | string,
     sourcePhysicalResourceId: string,
     destinationPhysicalResourceId: string,
     isUserPoolGroupStack: boolean,
-    isRevert: boolean,
+    isRollback: boolean,
     userPoolGroupDestinationPhysicalResourceId?: string,
   ): void {
-    // For non-UserPoolGroup stacks, or during revert (where we need both mappings), store the main category mapping
+    // For non-UserPoolGroup stacks, or during rollback (where we need both mappings), store the main category mapping
     // Example: 'auth' → [gen1AuthStackId, gen2AuthStackId]
     //          'storage' → [gen1StorageStackId, gen2StorageStackId]
-    if (!isUserPoolGroupStack || isRevert) {
+    if (!isUserPoolGroupStack || isRollback) {
       this.categoryStackMap.set(category, [sourcePhysicalResourceId, destinationPhysicalResourceId]);
     }
 
     // For UserPoolGroup stacks, store a separate mapping under 'auth-user-pool-group'
     // This is needed because Gen1 has a separate stack for groups, but Gen2 combines them
     if (isUserPoolGroupStack) {
-      // During revert: use the separate Gen1 UserPoolGroups stack as destination
+      // During rollback: use the separate Gen1 UserPoolGroups stack as destination
       // During forward migration: use the same Gen2 auth stack (since Gen2 combines them)
       const destinationId =
-        isRevert && userPoolGroupDestinationPhysicalResourceId ? userPoolGroupDestinationPhysicalResourceId : destinationPhysicalResourceId;
+        isRollback && userPoolGroupDestinationPhysicalResourceId
+          ? userPoolGroupDestinationPhysicalResourceId
+          : destinationPhysicalResourceId;
 
       this.categoryStackMap.set('auth-user-pool-group', [sourcePhysicalResourceId, destinationId]);
     }
@@ -461,7 +461,9 @@ class TemplateGenerator {
           destinationStackId,
           this.createCategoryTemplateGenerator(sourceStackId, destinationStackId, config.resourcesToRefactor),
         ]);
-      } else if (customResourceMap && this.isCustomResource(category)) {
+      }
+      // Only use the customResourceMap as a fallback, if its not in the TemplateGenerator config
+      else if (customResourceMap && this.isCustomResource(category)) {
         this.categoryTemplateGenerators.push([
           category,
           sourceStackId,
@@ -512,7 +514,7 @@ class TemplateGenerator {
       .includes(category);
   }
 
-  private async generateCategoryTemplates(isRevert = false, customResourceMap?: ResourceMapping[]) {
+  private async generateCategoryTemplates(isRollback = false, customResourceMap?: ResourceMapping[]) {
     this.initializeCategoryGenerators(customResourceMap);
     let hasOAuthEnabled = false;
     for (const [category, sourceCategoryStackId, destinationCategoryStackId, categoryTemplateGenerator] of this
@@ -557,7 +559,7 @@ class TemplateGenerator {
         sourceTemplateForRefactor = sourceTemplate;
         destinationTemplateForRefactor = destinationTemplate;
         logicalIdMappingForRefactor = logicalIdMapping;
-      } else if (!isRevert) {
+      } else if (!isRollback) {
         const processGen1StackResponse = await this.processGen1Stack(category, categoryTemplateGenerator, sourceCategoryStackId);
         if (!processGen1StackResponse) continue;
         const [newGen1Template, gen1StackParameters] = processGen1StackResponse;
@@ -589,7 +591,7 @@ class TemplateGenerator {
         newSourceTemplate = sourceCategoryTemplate;
         newDestinationTemplate = destinationCategoryTemplate;
         try {
-          const { sourceTemplate, destinationTemplate, logicalIdMapping } = await this.generateRefactorTemplatesForRevert(
+          const { sourceTemplate, destinationTemplate, logicalIdMapping } = await this.generateRefactorTemplatesForRollback(
             newSourceTemplate,
             newDestinationTemplate,
             categoryTemplateGenerator,
@@ -608,33 +610,35 @@ class TemplateGenerator {
       }
 
       this.logger.info(
-        `Moving ${this.getStackCategoryName(category)} resources from ${this.getSourceToDestinationMessage(isRevert)} stack...`,
+        `Moving ${this.getStackCategoryName(category)} resources from ${this.getSourceToDestinationMessage(isRollback)} stack...`,
       );
       const { success, failedRefactorMetadata } = await this.refactorResources(
         logicalIdMappingForRefactor,
         sourceCategoryStackId,
         destinationCategoryStackId,
         category,
-        isRevert,
+        isRollback,
         sourceTemplateForRefactor,
         destinationTemplateForRefactor,
       );
       if (!success) {
         this.logger.info(
           `Moving ${this.getStackCategoryName(category)} resources from ${this.getSourceToDestinationMessage(
-            isRevert,
+            isRollback,
           )} stack failed. Reason: ${failedRefactorMetadata?.reason}. Status: ${failedRefactorMetadata?.status}. RefactorId: ${
             failedRefactorMetadata?.stackRefactorId
           }.`,
         );
         await pollStackForCompletionState(this.cfnClient, destinationCategoryStackId, 30);
-        if (!isRevert && oldDestinationTemplate) {
+        if (!isRollback && oldDestinationTemplate) {
           await this.rollbackGen2Stack(category, destinationCategoryStackId, destinationStackParameters, oldDestinationTemplate);
         }
         return false;
       } else {
         this.logger.info(
-          `Moved ${this.getStackCategoryName(category)} resources from ${this.getSourceToDestinationMessage(isRevert)} stack successfully`,
+          `Moved ${this.getStackCategoryName(category)} resources from ${this.getSourceToDestinationMessage(
+            isRollback,
+          )} stack successfully`,
         );
       }
     }
@@ -646,7 +650,7 @@ class TemplateGenerator {
     sourceCategoryStackId: string,
     destinationCategoryStackId: string,
     category: 'auth' | 'storage' | 'auth-user-pool-group' | string,
-    isRevert: boolean,
+    isRollback: boolean,
     sourceTemplateForRefactor: CFNTemplate,
     destinationTemplateForRefactor: CFNTemplate,
   ) {
@@ -691,7 +695,7 @@ class TemplateGenerator {
     this.logger.info(`Rolled back Gen 2 ${this.getStackCategoryName(category)} stack successfully`);
   }
 
-  private async generateRefactorTemplatesForRevert(
+  private async generateRefactorTemplatesForRollback(
     newSourceTemplate: CFNTemplate,
     newDestinationTemplate: CFNTemplate,
     categoryTemplateGenerator: CategoryTemplateGenerator<CFN_CATEGORY_TYPE>,
@@ -701,7 +705,7 @@ class TemplateGenerator {
     assert(newSourceTemplate.Resources);
     const sourceResourcesToRemove: Map<string, CFNResource> = new Map(
       Object.entries(newSourceTemplate.Resources).filter(([, value]) =>
-        LOGICAL_IDS_TO_REMOVE_FOR_REVERT_MAP.get(category)?.some((resourceToMove) => resourceToMove.valueOf() === value.Type),
+        LOGICAL_IDS_TO_REMOVE_FOR_ROLLBACK_MAP.get(category)?.some((resourceToMove) => resourceToMove.valueOf() === value.Type),
       ),
     );
     if (sourceResourcesToRemove.size === 0) {
@@ -731,16 +735,16 @@ class TemplateGenerator {
       new Map<string, CFNResource>(),
       newSourceTemplateWithDepsResolved,
       newDestinationTemplate,
-      this.buildSourceToDestinationMapForRevert(sourceResourcesToRemove),
+      this.buildSourceToDestinationMapForRollback(sourceResourcesToRemove),
     );
   }
 
-  private getSourceToDestinationMessage(revert: boolean) {
+  private getSourceToDestinationMessage(rollback: boolean) {
     const SOURCE_TO_DESTINATION_STACKS = [GEN1, GEN2];
-    return revert ? SOURCE_TO_DESTINATION_STACKS.reverse().join(SEPARATOR) : SOURCE_TO_DESTINATION_STACKS.join(SEPARATOR);
+    return rollback ? SOURCE_TO_DESTINATION_STACKS.reverse().join(SEPARATOR) : SOURCE_TO_DESTINATION_STACKS.join(SEPARATOR);
   }
 
-  private buildSourceToDestinationMapForRevert(sourceResourcesToRemove: Map<string, CFNResource>): Map<string, string> {
+  private buildSourceToDestinationMapForRollback(sourceResourcesToRemove: Map<string, CFNResource>): Map<string, string> {
     const sourceToDestinationLogicalIdsMap = new Map<string, string>();
     for (const [sourceLogicalId, resource] of sourceResourcesToRemove) {
       if (sourceLogicalId.includes(GEN2_NATIVE_APP_CLIENT)) {

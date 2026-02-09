@@ -62,6 +62,13 @@ class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
     this.gen2ResourcesToRemove = new Map();
   }
 
+  /**
+   * Prepares the Gen1 stack template for resource migration by resolving all dynamic references.
+   *
+   * Before resources can be moved to Gen2, all dynamic CloudFormation references must be
+   * resolved to static values. Otherwise, references pointing to resources that will
+   * be removed would break the stack.
+   */
   public async generateGen1PreProcessTemplate(): Promise<CFNChangeTemplateWithParams> {
     this.logger.debug('generateGen1PreProcessTemplate: Starting Gen1 pre-process template generation');
     this.logger.debug(`Gen1 Stack ID: ${this.gen1StackId}`);

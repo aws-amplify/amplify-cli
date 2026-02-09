@@ -817,7 +817,7 @@ describe('TemplateGenerator', () => {
     return;
   });
 
-  it('should revert resources from Gen2 to Gen1 successfully', async () => {
+  it('should rollback resources from Gen2 to Gen1 successfully', async () => {
     // Act
     const generator = new TemplateGenerator(
       GEN2_ROOT_STACK_NAME,
@@ -831,10 +831,10 @@ describe('TemplateGenerator', () => {
       new Logger('mock', 'mock', 'mock'),
       REGION,
     );
-    await generator.revert();
+    await generator.rollback();
 
     // Assert
-    successfulRevertAssertions();
+    successfulRollbackAssertions();
     // 2 describe stack resources call for each root stack (Gen1, Gen2)
     // 2 describe stacks call for Gen 1 auth related stacks (auth, user pool groups)
     // 1 describe stack resources call for Gen2 auth stack to get physical ids for auth roles
@@ -845,7 +845,7 @@ describe('TemplateGenerator', () => {
     assertStackRefactorCommands('storage', callIndex + 2, false, false, true);
   });
 
-  it('should revert resources from Gen2 to Gen1 successfully, skipping categories that have already been updated previously', async () => {
+  it('should rollback resources from Gen2 to Gen1 successfully, skipping categories that have already been updated previously', async () => {
     const clonedStubGetTemplate = JSON.parse(JSON.stringify(stubReadTemplate));
     delete clonedStubGetTemplate.Resources[GEN2_S3_BUCKET_LOGICAL_ID];
     delete clonedStubGetTemplate.Resources[GEN2_DDB_TABLE_LOGICAL_ID];
@@ -863,10 +863,10 @@ describe('TemplateGenerator', () => {
       new Logger('mock', 'mock', 'mock'),
       REGION,
     );
-    await generator.revert();
+    await generator.rollback();
 
     // Assert
-    successfulRevertAssertions(1);
+    successfulRollbackAssertions(1);
     // 2 describe stack resources call for each root stack (Gen1, Gen2)
     // 2 describe stacks call for Gen 1 auth related stacks (auth, user pool groups)
     // 1 describe stack resources call for Gen2 auth stack to get physical ids for auth roles
@@ -933,7 +933,7 @@ describe('TemplateGenerator', () => {
     );
   }
 
-  function successfulRevertAssertions(numCategoriesToSkipUpdate = 0) {
+  function successfulRollbackAssertions(numCategoriesToSkipUpdate = 0) {
     expect(fs.mkdir).not.toBeCalled();
     expect(mockGenerateGen1PreProcessTemplate).not.toBeCalled();
     expect(mockGenerateGen2ResourceRemovalTemplate).not.toBeCalled();
