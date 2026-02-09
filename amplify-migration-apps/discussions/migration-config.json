@@ -1,0 +1,58 @@
+{
+  "app": {
+    "name": "discussions",
+    "description": "Discussion app with phone authentication and DynamoDB activity logging",
+    "framework": "none"
+  },
+  "categories": {
+    "api": {
+      "type": "GraphQL",
+      "schema": "schema.graphql",
+      "authModes": ["API_KEY"],
+      "customQueries": ["getUserActivity"],
+      "customMutations": ["logUserActivity"]
+    },
+    "auth": {
+      "signInMethods": ["phone"],
+      "socialProviders": []
+    },
+    "storage": {
+      "type": "dynamodb",
+      "tables": [
+        {
+          "name": "activity",
+          "partitionKey": "id",
+          "sortKey": "userId",
+          "gsi": [
+            {
+              "name": "byUserId",
+              "partitionKey": "userId",
+              "sortKey": "timestamp"
+            }
+          ]
+        }
+      ]
+    },
+    "function": {
+      "functions": [
+        {
+          "name": "fetchuseractivity",
+          "runtime": "nodejs",
+          "template": "hello-world"
+        },
+        {
+          "name": "recorduseractivity",
+          "runtime": "nodejs",
+          "template": "lambda-trigger",
+          "trigger": {
+            "type": "dynamodb-stream",
+            "source": ["Topic", "Post", "Comment"]
+          }
+        }
+      ]
+    },
+    "hosting": {
+      "type": "amplify-console"
+    }
+  }
+}
