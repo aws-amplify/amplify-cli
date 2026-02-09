@@ -1,6 +1,7 @@
 /* eslint-disable spellcheck/spell-checker */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { AmplifyMigrationStep } from '../_step';
+import { AmplifyMigrationOperation } from '../_operation';
 import { prompter } from '@aws-amplify/amplify-prompts';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import fs from 'fs-extra';
@@ -33,47 +34,50 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
   private parsedResourceMappings?: ResourceMapping[];
   private isRollback = false;
 
-  public implications(): string[] {
-    if (this.isRollback) {
-      return ['Move stateful resources from your Gen2 app back to your Gen1 app'];
-    }
+  public async executeImplications(): Promise<string[]> {
     return ['Move stateful resources from your Gen1 app to be managed by your Gen2 app'];
   }
 
-  public async validate(): Promise<void> {
-    this.isRollback = this.context.parameters?.options?.rollback ?? false;
-    if (this.isRollback) {
-      return;
-    }
+  public async rollbackImplications(): Promise<string[]> {
+    return ['Move stateful resources from your Gen2 app back to your Gen1 app'];
+  }
+
+  public async executeValidate(): Promise<void> {
     const validations = new AmplifyGen2MigrationValidations(this.logger, this.rootStackName, this.currentEnvName, this.context);
     await validations.validateLockStatus();
     return;
   }
 
-  public async execute(): Promise<void> {
-    // Extract parameters from context (--to, resourceMappings, --rollback)
-    this.extractParameters();
-
-    if (this.isRollback) {
-      await this.executeRollback();
-      return;
-    }
-
-    // Process resource mappings if provided
-    if (this.resourceMappings) {
-      await this.processResourceMappings();
-    }
-
-    if (this.parsedResourceMappings) {
-      this.logger.debug(`📊 Using ${this.parsedResourceMappings.length} custom resource mapping(s)`);
-    }
-
-    // Execute the stack refactoring
-    await this.executeStackRefactor();
+  public async rollbackValidate(): Promise<void> {
+    throw new Error('Method not implemented.');
   }
 
-  public async rollback(): Promise<void> {
-    this.logger.info('Not implemented');
+  public async execute(): Promise<AmplifyMigrationOperation[]> {
+    return [
+      {
+        describe: async () => ['Move stateful resources from your Gen1 app to be managed by your Gen2 app'],
+        execute: async () => {
+          // Extract parameters from context
+          this.extractParameters();
+
+          // Process resource mappings if provided
+          if (this.resourceMappings) {
+            await this.processResourceMappings();
+          }
+
+          if (this.parsedResourceMappings) {
+            this.logger.debug(`📊 Using ${this.parsedResourceMappings.length} custom resource mapping(s)`);
+          }
+
+          // Execute the stack refactoring
+          await this.executeStackRefactor();
+        },
+      },
+    ];
+  }
+
+  public async rollback(): Promise<AmplifyMigrationOperation[]> {
+    throw new Error('Not Implemented');
   }
 
   private extractParameters(): void {

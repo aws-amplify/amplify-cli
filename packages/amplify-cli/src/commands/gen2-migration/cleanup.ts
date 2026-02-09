@@ -1,20 +1,28 @@
 import { AmplifyMigrationStep } from './_step';
-import { printer } from '@aws-amplify/amplify-prompts';
+import { AmplifyMigrationOperation } from './_operation';
 
 export class AmplifyMigrationCleanupStep extends AmplifyMigrationStep {
-  public implications(): string[] {
+  public async executeImplications(): Promise<string[]> {
     throw new Error('Method not implemented.');
   }
 
-  public async validate(): Promise<void> {
-    printer.warn('Not implemented');
+  public async rollbackImplications(): Promise<string[]> {
+    throw new Error('Method not implemented.');
   }
 
-  public async execute(): Promise<void> {
-    printer.warn('Not implemented');
+  public async executeValidate(): Promise<void> {
+    throw new Error('Method not implemented.');
   }
 
-  public async rollback(): Promise<void> {
-    printer.warn('Not implemented');
+  public async rollbackValidate(): Promise<void> {
+    throw new Error('Method not implemented.');
+  }
+
+  public async execute(): Promise<AmplifyMigrationOperation[]> {
+    throw new Error('Method not implemented.');
+  }
+
+  public async rollback(): Promise<AmplifyMigrationOperation[]> {
+    throw new Error('Not Implemented');
   }
 }

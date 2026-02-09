@@ -14,6 +14,7 @@ import execa from 'execa';
 import { Logger } from '../gen2-migration';
 import chalk from 'chalk';
 import { printer } from '@aws-amplify/amplify-prompts';
+import { extractCategory } from './categories';
 
 export class AmplifyGen2MigrationValidations {
   private limiter = new Bottleneck({
@@ -111,7 +112,7 @@ export class AmplifyGen2MigrationValidations {
         }
 
         if (change.ResourceChange.ResourceType === 'AWS::CloudFormation::Stack' && change.ResourceChange.PhysicalResourceId) {
-          const category = this.extractCategory(change.ResourceChange.LogicalResourceId || '');
+          const category = extractCategory(change.ResourceChange.LogicalResourceId || '');
           this.logger.info(`Scanning '${category}'...`);
           const nestedResources = await this.getStatefulResources(
             change.ResourceChange.PhysicalResourceId,
@@ -119,7 +120,7 @@ export class AmplifyGen2MigrationValidations {
           );
           statefulRemoves.push(...nestedResources);
         } else if (STATEFUL_RESOURCES.has(change.ResourceChange.ResourceType)) {
-          const category = this.extractCategory(change.ResourceChange.LogicalResourceId || '');
+          const category = extractCategory(change.ResourceChange.LogicalResourceId || '');
           const physicalId = change.ResourceChange.PhysicalResourceId || 'N/A';
           this.logger.info(`Scanning '${category}' category: found stateful resource "${physicalId}"`);
           statefulRemoves.push({
@@ -200,7 +201,7 @@ export class AmplifyGen2MigrationValidations {
       maxAttempts: 5,
       retryMode: 'adaptive',
     });
-    const parentCategory = parentLogicalId ? this.extractCategory(parentLogicalId) : undefined;
+    const parentCategory = parentLogicalId ? extractCategory(parentLogicalId) : undefined;
 
     let nextToken: string | undefined;
     const nestedStackTasks: Array<{ physicalId: string; logicalId: string | undefined }> = [];
@@ -216,7 +217,7 @@ export class AmplifyGen2MigrationValidations {
             logicalId: resource.LogicalResourceId,
           });
         } else if (resource.ResourceType && STATEFUL_RESOURCES.has(resource.ResourceType)) {
-          const category = parentCategory || this.extractCategory(resource.LogicalResourceId || '');
+          const category = parentCategory || extractCategory(resource.LogicalResourceId || '');
           const physicalId = resource.PhysicalResourceId || 'N/A';
           this.logger.info(`Scanning '${category}' category: found stateful resource "${physicalId}"`);
           statefulResources.push({
@@ -231,7 +232,7 @@ export class AmplifyGen2MigrationValidations {
     const nestedResults = await Promise.all(
       nestedStackTasks.map((task) =>
         this.limiter.schedule(() => {
-          const category = this.extractCategory(task.logicalId || '');
+          const category = extractCategory(task.logicalId || '');
           return this.getStatefulResources(task.physicalId, category !== 'other' ? task.logicalId : parentLogicalId);
         }),
       ),
@@ -239,22 +240,5 @@ export class AmplifyGen2MigrationValidations {
 
     nestedResults.forEach((nested) => statefulResources.push(...nested));
     return statefulResources;
-  }
-
-  private extractCategory(logicalId: string): string {
-    const idLower = logicalId.toLowerCase();
-    if (idLower.includes('auth')) return 'Auth';
-    if (idLower.includes('storage')) return 'Storage';
-    if (idLower.includes('function')) return 'Function';
-    if (idLower.includes('api')) return 'Api';
-    if (idLower.includes('analytics')) return 'Analytics';
-    if (idLower.includes('hosting')) return 'Hosting';
-    if (idLower.includes('notifications')) return 'Notifications';
-    if (idLower.includes('interactions')) return 'Interactions';
-    if (idLower.includes('predictions')) return 'Predictions';
-    if (idLower.includes('deployment') || idLower.includes('infrastructure')) return 'Core Infrastructure';
-    if (idLower.includes('geo')) return 'Geo';
-    if (idLower.includes('custom')) return 'Custom';
-    return 'other';
   }
 }

@@ -46,18 +46,4 @@ export class AmplifyConfigService {
   public getProjectName(): string {
     return stateManager.getProjectName();
   }
-
-  /**
-   * Extract category from logical ID
-   */
-  public extractCategory(logicalId: string): string {
-    const idLower = logicalId.toLowerCase();
-    if (idLower.includes('auth')) return 'auth';
-    if (idLower.includes('storage')) return 'storage';
-    if (idLower.includes('function')) return 'function';
-    if (idLower.includes('api')) return 'api';
-    if (idLower.includes('hosting')) return 'hosting';
-    if (idLower.includes('analytics')) return 'analytics';
-    return 'other';
-  }
 }

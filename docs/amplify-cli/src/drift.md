@@ -6,17 +6,14 @@ Detects discrepancies between deployed AWS resources and expected state across t
 
 ```bash
 amplify drift                           # Run all phases (default: summary format)
-amplify drift --format json             # Machine-readable output
 amplify drift --format tree             # Hierarchical view
-amplify drift --output-file report.json # Save results
 amplify drift --debug                   # Verbose logging
 ```
 
 | Option | Description |
 |--------|-------------|
 | `--debug` | Enable debug output |
-| `--format <type>` | Output format: `tree`, `summary` (default), or `json` |
-| `--output-file <path>` | Save JSON results to file |
+| `--format <type>` | Output format: `tree` or `summary` (default) |
 
 **Exit codes:** `0` = no drift, `1` = drift detected OR any phase skipped/failed (fail-safe principle: uncertainty returns 1)
 
@@ -52,9 +49,7 @@ flowchart TD
     P2 --> DF
     P3 --> DF
     
-    DF --> OUT[Output: tree/summary/JSON]
-    DF --> FS[FileService]
-    FS -->|Save JSON| FILE[Output File]
+    DF --> OUT[Output: tree/summary]
 ```
 
 This diagram shows the deployment flow and where drift can occur between different layers of infrastructure state.
@@ -165,8 +160,7 @@ packages/amplify-cli/src/commands/
         ├── index.ts                   # Service exports
         ├── amplify-config-service.ts  # Config utilities
         ├── cloudformation-service.ts  # AWS API wrapper, S3 sync
-        ├── drift-formatter.ts         # Output formatting
-        └── file-service.ts            # File operations
+        └── drift-formatter.ts         # Output formatting
 ```
 
 ### Components
@@ -180,7 +174,6 @@ packages/amplify-cli/src/commands/
 | CloudFormationService | `services/cloudformation-service.ts` | CloudFormation API interactions and S3 backend sync |
 | AmplifyConfigService | `services/amplify-config-service.ts` | Amplify project configuration and validation |
 | DriftFormatter | `services/drift-formatter.ts` | Processes and formats drift results for display |
-| FileService | `services/file-service.ts` | File I/O operations for saving results |
 
 ### Configuration Discovery
 
@@ -241,7 +234,7 @@ interface LocalDriftResults {
   skipReason?: string;
 }
 
-type DriftDisplayFormat = 'tree' | 'summary' | 'json';
+type DriftDisplayFormat = 'tree' | 'summary';
 ```
 
 ## Output Sample

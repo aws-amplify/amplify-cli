@@ -66,6 +66,7 @@ import assert from 'assert';
 import { CdkFromCfn, KinesisAnalyticsDefinition, AnalyticsCodegenResult } from '../unsupported/cdk-from-cfn';
 import { renderAnalytics, AnalyticsRenderParameters } from '../generators/analytics/index';
 import { CloudFormationClient } from '@aws-sdk/client-cloudformation';
+import { AmplifyClient, GetAppCommand } from '@aws-sdk/client-amplify';
 
 /**
  * Configuration options for Gen 2 rendering pipeline
@@ -88,6 +89,8 @@ export interface Gen2RenderingOptions {
 
   /** CloudFormation client for resolving stack parameters */
   cfnClient?: CloudFormationClient;
+
+  amplifyClient: AmplifyClient;
 
   /** Authentication configuration from Gen 1 project */
   auth?: AuthDefinition;
@@ -238,7 +241,9 @@ export const createGen2Renderer = ({
   backendEnvironmentName,
   rootStackName,
   cfnClient,
+  amplifyClient,
   unsupportedCategories,
+  appId,
   fileWriter = (content, path) => createFileWriter(path)(content),
 }: Readonly<Gen2RenderingOptions>): Renderer => {
   // Create directory structure renderers
@@ -246,21 +251,17 @@ export const createGen2Renderer = ({
   const ensureAmplifyDirectory = new EnsureDirectory(path.join(outputDir, 'amplify'));
   // Generate amplify/package.json with ES module configuration
   const amplifyPackageJson = new JsonRenderer(
-    async () => {
-      // Merge dependencies from all Gen 1 functions
-      const { dependencies: functionDeps, devDependencies: functionDevDeps } = functions?.length
-        ? await mergeAllFunctionDependencies(functions)
-        : { dependencies: {}, devDependencies: {} };
-
-      return { type: 'module', dependencies: functionDeps, devDependencies: functionDevDeps };
-    },
+    async () => ({ type: 'module' }),
     (content) => fileWriter(content, path.join(outputDir, 'amplify', 'package.json')),
   );
+
   // Generate root package.json with Gen 2 dependencies
   const jsonRenderer = new JsonRenderer(
     async () => {
+      const app = await amplifyClient.send(new GetAppCommand({ appId }));
+
       let packageJson: PackageJson = {
-        name: 'my-gen2-app',
+        name: `${app.app.name}-${backendEnvironmentName}-gen2`,
       };
       try {
         const packageJsonContents = await fs.readFile(`./package.json`, { encoding: 'utf-8' });
@@ -269,9 +270,27 @@ export const createGen2Renderer = ({
         // File doesn't exist or is inaccessible. Ignore.
       }
 
+      // Merge dependencies from all Gen 1 functions
+      const { dependencies: functionDeps, devDependencies: functionDevDeps } = functions?.length
+        ? await mergeAllFunctionDependencies(functions)
+        : { dependencies: {}, devDependencies: {} };
+
+      // Merge function dependencies into the package.json
+      const updatedPackageJson = {
+        ...packageJson,
+        dependencies: {
+          ...(packageJson.dependencies || {}),
+          ...functionDeps,
+        },
+        devDependencies: {
+          ...(packageJson.devDependencies || {}),
+          ...functionDevDeps,
+        },
+      };
+
       // Restrict dev dependencies to specific versions based on create-amplify gen2 flow:
       // https://github.com/aws-amplify/amplify-backend/blob/2dab201cb9a222c3b8c396a46c17d661411839ab/packages/create-amplify/src/amplify_project_creator.ts#L15-L24
-      return patchNpmPackageJson(packageJson, {
+      return patchNpmPackageJson(updatedPackageJson, {
         'aws-cdk': '^2',
         'aws-cdk-lib': '^2',
         'ci-info': '^4.3.1',

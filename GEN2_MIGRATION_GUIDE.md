@@ -14,11 +14,11 @@ purposes on environments you can afford to delete.
 --------------
 
 - [Overall Approach](#overall-approach)
+- [Frontend Migration](#frontend-migration)
 - [Prerequisites](#prerequisites)
 - [Assumptions](#assumptions)
 - [Step By Step](#step-by-step)
 - [Feature Coverage](#feature-coverage)
-- [Supported Frameworks](#supported-frameworks)
 - [Limitations](#limitations)
 - [Pre Migration Operations](#pre-migration-operations)
 - [Example Apps](#example-apps)
@@ -31,58 +31,93 @@ purposes on environments you can afford to delete.
 
 ## Overall Approach
 
-Migration to Gen2 is done in a (partial) blue/green deployment approach.
+Migration to Gen2 is done in a (partial) blue/green deployment approach:
 
-1. Amplify CLI will _lock_ your Gen1 environment by attaching a `Deny:*` policy to the root CloudFormation stack. 
-This will intentionally prevent updates during migration.
-2. Amplify CLI will _generate_ the necessary Gen2 definition files based on your deployed Gen1 environment.
-3. You will perform some manual edits on those files. How much exactly varies depending on the app itself.
-4. Generated code will be pushed to a new branch and deployed via the hosting service. Apart from the DynamoDB tables 
-that host your models (see [below](#note-on-dynamodb-model-tables)), all stateful resources (e.g `UserPool`) will be cloned and your 
-Gen2 application will start with empty data for those.
-5. Amplify CLI will _refactor_ (using [CloudFormation Refactor](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stack-refactoring.html)) 
-your underlying CloudFormation stacks such that any Gen1 stateful resource (e.g `UserPool`) 
-will be reused and managed by the new Gen2 deployment.
+1. Generate the necessary Gen2 definition files based on your deployed Gen1 environment.
+2. Deploy the new Gen2 code to create a new environment (in Gen2 they are referred to as branches).
+3. Refactor your underlying CloudFormation stacks such that any Gen1 stateful resource will be managed by the new Gen2 deployment. 
 
-> [!CAUTION]
-> The `refactor` operation is currently not reversible. If it fails or 
-> produces undesired results, you will need to recreate the environment. **Make sure you 
-> run it only on environments you can afford to delete**.
+> [!NOTE]
+> - Not all Gen1 features are natively supported in Gen2; in those cases, the migration tool will generate AWS CDK code to 
+> configure the appropriate resource settings. 
+> - Not everything can be codegenerated, you will need to perform some manual edits as well.
 
-After completing this process you will have 2 functionally equivalent amplify applications that access the same data. 
+An amplify backend environment consists of collection of _Stateless_ and _Statefull_ resources. Each group undergoes 
+a different process during migration.
+
+### Stateless Resources
+
+Stateless resources are ones that don't store any user data. They include:
+
+- AppSync GraphQL APIs & Resolvers
+- API Gateway REST APIs
+- Lambda Functions
+- IAM Roles & Policies
+- ...
+
+Deploying the Gen2 code will create new instances of these resources, which will eventually be used instead of the Gen1 resources. 
+These resources are untouched during the refactoring phase.
+
+### Statefull Resources
+
+Stateful resources are ones that store user data. They include:
+
+- S3 Bucket
+- DynamoDB Table
+- Cognito User Pool
+- Cognito Identity Pool
+- ...
+
+Deploying the Gen2 code will create new empty instances of these resources and connect them to the new stateless resources. 
+This allows you to test your Gen2 application functionality in isolation from the Gen1 environment. Once you are satisfied 
+the Gen2 application works correctly, the refactoring phase will delete them and replace with your Gen1 
+stateful resources. Your Gen2 application will now share and access all the Gen1 data.
+
+> [!NOTE]
+> DynamoDB tables that host your models are not cloned as part of the Gen2 deployment and therefore do not participate in the 
+> refactoring phase. **This means that your Gen2 application will have access to the Gen1 model data immediately after deployment.**
+
+--------------
+
+The following diagram describes the workflow and resource state in every step during migration.
 
 ![](./migration-guide-images/workflow.png)
 
-**Note that you will not be able to continue evolving your Gen1 environment by pushing changes to it, use the new Gen2 app instead.**
+After completing this process you will have 2 functionally equivalent amplify applications that access the same data. Note that 
+you will no longer be able to update your Gen1 environment. To continue evolving your application, push updates to the Gen2 code.
 
-### Note on DynamoDB Model Tables
+## Frontend Migration
 
-DynamoDB tables that host your models are not cloned as part of the Gen2 deployment and therefore don't participate in the `refactor` 
-operation. This means that your Gen2 deployment will immediately have access to the Gen1 data.
+Amplify Gen1 frontends communicate with backend resources via the language specific `amplifyconfiguration` file. For example:
 
-### Note on Other Stateful Resources
+```ts
+import amplifyconfig from './amplifyconfiguration.json';
+Amplify.configure(amplifyconfig);
+```
 
-In addition to DynamoDB model tables, there can be other stateful resources in your app:
+All values in this file (e.g AppSync endpoint URLs, User Pool IDs, etc...) remain valid and active throughout the 
+entire migration process. This means that Gen1 frontends continue to work without any change. The following diagram 
+describes how existing frontend applications interact with your backend resources post migration:
 
-- S3 Bucket (`storage` category)
-- DynamoDB Table (`storage` category)
-- Cognito User Pool (`auth` category)
-- Cognito Identity Pool (`auth` category)
+<img width="320" height="250" src="./migration-guide-images/gen1-frontend-post-migration.png" />
 
-The Gen2 deployment will create new empty instances of these resources. This allows you to test their functionality 
-(e.g user registration) on the Gen2 deployment without impacting your Gen1 app. 
+Once you are satisfied the Gen2 application works correctly, you will publish a new version of 
+your frontend that connects to the Gen2 stateless resources. Note that in Gen2, the connecting file has a different 
+structure and is called `amplify_outputs.json`, you'll need to edit your code. For example:
 
-Once you are satisfied the Gen2 application works correctly, `refactor` will bring these resources as well from your 
-Gen1 app to your Gen2 app. After `refactor`, the new instances are deleted and your Gen2 application shares and **ALL** 
-data with your Gen1 app.
+```ts
+import amplifyconfig from '../amplify_outputs.json';
+Amplify.configure(amplifyconfig);
+```
+
+Amplify client libraries will detect the different structure and adjust itself accordingly; no other changes are required.
+
+<img width="380" height="250" src="./migration-guide-images/two-frontends-post-migration.png" />
 
 ## Prerequisites 
 
 Following are prerequisites the beta version of the tool relies. Some or all will be removed in the stable version.
 
-- Your frontend code is located within the same repository as your backend application.
-- Your frontend code is an NPM (compatible) based app.
-- Your Gen1 environment is deployed via the hosting service.
 - You have a `default` AWS profile configured with an `AdministratorAccess` policy.
 
     `+` _~/.aws/credentials_
@@ -115,7 +150,6 @@ able to adapt them to fit your setup.
 > **Before you begin, determine if your app can be migrated by reviewing:**
 >
 > - [Feature Coverage](#feature-coverage)
-> - [Supported Frameworks](#supported-frameworks)
 > - [Limitations](#limitations)
 > - [Pre Migration Operations](#pre-migration-operations)
 
@@ -165,6 +199,8 @@ perform the following manual edits:
 
 #### Post Generate | Frontend Config
 
+If your frontend is stored within the same repo and consumes the `amplifyconfiguration.json` file created during `amplify push`:
+
 **Edit in `./src/main.tsx` (or equivalent):**
 
 ```diff
@@ -173,7 +209,7 @@ perform the following manual edits:
 ```
 
 This is required because in Gen2 amplify generates an `amplify_outputs.json` file instead of the `amplifyconfiguration.json` file. 
-Note that client side libraries support both files so no additional change is needed.
+Amplify client side libraries support both files so no additional change is needed.
 
 > Note: The `amplify_outputs.json` file **will not** exist on your local file system so you will see a compilation error. 
 Thats ok - it is generated at deploy time in the hosting service.
@@ -353,13 +389,21 @@ Your schema is located in `./amplify/data/resource.ts`.
 
 ### 3. Deploy
 
-To deploy the generated Gen2 application first push the code:
+Deploying the generated Gen2 application is done via [fullstack-branch-deployments](https://docs.amplify.aws/flutter/deploy-and-host/fullstack-branching/branch-deployments/). 
+First, push the code:
 
 ```bash
 git add .
 git commit -m "feat: migrate to gen2"
 git push origin gen2-main
 ```
+
+> [!NOTE]
+> The migration tool generates an `amplify.yml` buildspec file that allows for 
+> branch deployments to deploy Gen2 backend applications even in the absence of a 
+> webapp published via amplify hosting. If you'd like to start using the hosting service to publish your Gen2 webapp, you'll 
+> need to manually add a `frontend` section to this file and provide the necessary configuration to build your webapp. 
+> See [Build specification reference](https://docs.aws.amazon.com/amplify/latest/userguide/yml-specification-syntax.html) for more details.
 
 Next, login to the AWS Amplify console and connect your new branch to the existing application:
 
@@ -377,6 +421,11 @@ however reuse other stateful resources such as user pools.** To grant it access 
 stateful resources, a `refactor` is required.
 
 ### 4. Refactor
+
+> [!CAUTION]
+> The `refactor` operation is currently not reversible. If it fails or 
+> produces undesired results, you will need to recreate the environment. **Make sure you 
+> run it only on environments you can afford to delete**.
 
 Refactoring is the process of updating the underlying CloudFormation stacks of both your Gen1 and 
 Gen2 applications such that all stateful resources are reused across both apps. In order to refactor, 
@@ -401,6 +450,9 @@ And run:
 git checkout main
 npx amplify gen2-migration refactor --to <gen2-root-stack-name>
 ```
+
+> Note: This operations makes use of 
+the [CloudFormation Refactor](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stack-refactoring.html) APIs
 
 #### Post Refactor | S3 Storage
 
@@ -473,15 +525,13 @@ by the CLI setting that configures them.
 
 > **Legend**
 >
-> - ❌ | Unsupported.
-> - ✅ | Fully automated.
-> - ⚠️ | Partially supported. Includes indication whether it lacks support for `generate` or `refactor`.
-
-- If a feature is not supported for `refactor` you will not be able to fully migrate the app. You can however still generate 
-and deploy it to test whether code generation works properly.
-- If a feature is not supported for `generate` you will be able to manually augment the generated code 
-to add the necessary configuration.
-- Unsupported features naturally don't support either command.
+> - 🔴 | Unsupported.
+> - 🟢 | Fully automated.
+> - 🟡 | Partially supported. Includes indication whether it lacks support for `generate` or `refactor`. 
+> If a feature is not supported for `refactor` you will not be able to fully migrate the app. You can however still generate 
+> and deploy it to test whether code generation works properly. If a feature is not supported for `generate` you will be able 
+> to manually augment the generated code to add the necessary configuration.
+> - ⚠️ | Untested. You're welcome to try it out and let us know!
 
 ## Auth
 
@@ -489,98 +539,98 @@ to add the necessary configuration.
 
 - ➤ **How do you want users to be able to sign in**
 
-  - ✅ `Username`
-  - ✅ `Email`
-  - ✅ `Phone Number`
-  - ✅ `Email or Phone Number`
+  - 🟢 `Username`
+  - 🟢 `Email`
+  - 🟢 `Phone Number`
+  - 🟢 `Email or Phone Number`
 
 - ➤ **Select the social providers you want to configure for your user pool**
 
-  - ⚠️ `Facebook` (_generate_ ✔ _refactor_ ✗)
-  - ⚠️ `Google` (_generate_ ✔ _refactor_ ✗)
-  - ❌ `Login With Amazon`
-  - ❌ `Sign in with Apple`
+  - 🟡 `Facebook` (_generate_ ✔ _refactor_ ✗)
+  - 🟡 `Google` (_generate_ ✔ _refactor_ ✗)
+  - 🔴 `Login With Amazon`
+  - 🔴 `Sign in with Apple`
 
 - ➤ **Select the authentication/authorization services that you want to use**
 
-  - ✅ `User Sign-Up, Sign-In, connected with AWS IAM controls`
-  - ❌ `User Sign-Up & Sign-In only`
+  - 🟢 `User Sign-Up, Sign-In, connected with AWS IAM controls`
+  - ⚠️ `User Sign-Up & Sign-In only`
   
 - ➤ **Allow unauthenticated logins**
 
-  - ❌ `Yes`
-  - ✅ `No`
+  - ⚠️ `Yes`
+  - 🟢 `No`
 
-- ❌ **Do you want to enable 3rd party authentication providers in your identity pool**
+- 🔴 **Do you want to enable 3rd party authentication providers in your identity pool**
 
-- ✅ **Do you want to add User Pool Groups**
+- 🟢 **Do you want to add User Pool Groups**
 
-- ❌ **Do you want to add an admin queries API**
+- ⚠️ **Do you want to add an admin queries API**
 
 - ➤ **Multifactor authentication (MFA) user login options**
 
-  - ✅ `OFF`
-  - ❌ `ON`
-  - ❌ `OPTIONAL`
+  - 🟢 `OFF`
+  - ⚠️ `ON`
+  - ⚠️ `OPTIONAL`
 
 - ➤ **Email based user registration/forgot password:**
 
-  - ✅ `Enabled`
-  - ❌ `Disabled`
+  - 🟢 `Enabled`
+  - ⚠️ `Disabled`
 
-- ✅ **Specify an email verification subject**
+- 🟢 **Specify an email verification subject**
 
-- ✅ **Specify an email verification message**
+- 🟢 **Specify an email verification message**
 
-- ❌ **Do you want to override the default password policy for this User Pool**
+- ⚠️ **Do you want to override the default password policy for this User Pool**
 
 - ➤ **What attributes are required for signing up**
 
-  - ❌ `Birthdate (This attribute is not supported by Login With Amazon, Sign in with Apple.)`
-  - ✅ `Email`
-  - ❌ `Family Name (This attribute is not supported by Login With Amazon.)`
-  - ❌ `Middle Name (This attribute is not supported by Google, Login With Amazon, Sign in with Apple.)`
-  - ❌ `Gender (This attribute is not supported by Login With Amazon, Sign in with Apple.)`
-  - ❌ `Locale (This attribute is not supported by Facebook, Google, Sign in with Apple.)`
-  - ❌ `Given Name (This attribute is not supported by Login With Amazon.)`
-  - ❌ `Name`
-  - ❌ `Nickname (This attribute is not supported by Facebook, Google, Login With Amazon, Sign in with Apple.)`
-  - ❌ `Phone Number (This attribute is not supported by Facebook, Login With Amazon, Sign in with Apple.)`
-  - ❌ `Preferred Username (This attribute is not supported by Facebook, Google, Login With Amazon, Sign in with Apple.)`
-  - ❌ `Picture (This attribute is not supported by Login With Amazon, Sign in with Apple.)`
-  - ❌ `Profile (This attribute is not supported by Facebook, Google, Login With Amazon, Sign in with Apple.)`
-  - ❌ `Updated At (This attribute is not supported by Google, Login With Amazon, Sign in with Apple.)`
-  - ❌ `Website (This attribute is not supported by Facebook, Google, Login With Amazon, Sign in with Apple.)`
-  - ❌ `Zone Info (This attribute is not supported by Facebook, Google, Login With Amazon, Sign in with Apple.)`
-  - ❌ `Address (This attribute is not supported by Facebook, Google, Login With Amazon, Sign in with Apple.)`
+  - ⚠️ `Birthdate (This attribute is not supported by Login With Amazon, Sign in with Apple.)`
+  - 🟢 `Email`
+  - ⚠️ `Family Name (This attribute is not supported by Login With Amazon.)`
+  - ⚠️ `Middle Name (This attribute is not supported by Google, Login With Amazon, Sign in with Apple.)`
+  - ⚠️ `Gender (This attribute is not supported by Login With Amazon, Sign in with Apple.)`
+  - ⚠️ `Locale (This attribute is not supported by Facebook, Google, Sign in with Apple.)`
+  - ⚠️ `Given Name (This attribute is not supported by Login With Amazon.)`
+  - ⚠️ `Name`
+  - ⚠️ `Nickname (This attribute is not supported by Facebook, Google, Login With Amazon, Sign in with Apple.)`
+  - ⚠️ `Phone Number (This attribute is not supported by Facebook, Login With Amazon, Sign in with Apple.)`
+  - ⚠️ `Preferred Username (This attribute is not supported by Facebook, Google, Login With Amazon, Sign in with Apple.)`
+  - ⚠️ `Picture (This attribute is not supported by Login With Amazon, Sign in with Apple.)`
+  - ⚠️ `Profile (This attribute is not supported by Facebook, Google, Login With Amazon, Sign in with Apple.)`
+  - ⚠️ `Updated At (This attribute is not supported by Google, Login With Amazon, Sign in with Apple.)`
+  - ⚠️ `Website (This attribute is not supported by Facebook, Google, Login With Amazon, Sign in with Apple.)`
+  - ⚠️ `Zone Info (This attribute is not supported by Facebook, Google, Login With Amazon, Sign in with Apple.)`
+  - ⚠️ `Address (This attribute is not supported by Facebook, Google, Login With Amazon, Sign in with Apple.)`
 
-- ✅ **Specify the app's refresh token expiration period (in days)**
+- 🟢 **Specify the app's refresh token expiration period (in days)**
 
-- ❌ **Do you want to specify the user attributes this app can read and write**
+- ⚠️ **Do you want to specify the user attributes this app can read and write**
 
 - ➤ **Do you want to enable any of the following capabilities**
 
-  - ❌ `Add Google reCaptcha Challenge`
-  - ❌ `Email Verification Link with Redirect`
-  - ❌ `Add User to Group`
-  - ❌ `Email Domain Filtering (denylist)`
-  - ❌ `Email Domain Filtering (allowlist)`
-  - ❌ `Custom Auth Challenge Flow (basic scaffolding - not for production)`
-  - ❌ `Override ID Token Claims`
+  - ⚠️ `Add Google reCaptcha Challenge`
+  - ⚠️ `Email Verification Link with Redirect`
+  - ⚠️ `Add User to Group`
+  - ⚠️ `Email Domain Filtering (denylist)`
+  - 🟢 `Email Domain Filtering (allowlist)`
+  - ⚠️ `Custom Auth Challenge Flow (basic scaffolding - not for production)`
+  - ⚠️ `Override ID Token Claims`
 
-- ❌ **Do you want to use an OAuth flow**
+- ⚠️ **Do you want to use an OAuth flow**
 
 - ➤ **Do you want to configure Lambda Triggers for Cognito**
 
-  - ❌ `Create Auth Challenge`
-  - ❌ `Custom Message`
-  - ❌ `Define Auth Challenge`
-  - ❌ `Post Authentication`
-  - ❌ `Post Confirmation`
-  - ❌ `Pre Authentication`
-  - ✅ `Pre Sign-up`
-  - ❌ `Verify Auth Challenge Response`
-  - ❌ `Pre Token Generation`
+  - ⚠️ `Create Auth Challenge`
+  - ⚠️ `Custom Message`
+  - ⚠️ `Define Auth Challenge`
+  - ⚠️ `Post Authentication`
+  - ⚠️ `Post Confirmation`
+  - ⚠️ `Pre Authentication`
+  - 🟢 `Pre Sign-up`
+  - ⚠️ `Verify Auth Challenge Response`
+  - ⚠️ `Pre Token Generation`
 
 ## Api
 
@@ -590,21 +640,21 @@ to add the necessary configuration.
 
   - ➤ **Default Authorization Type**
 
-    - ✅ `API Key`
-    - ❌ `Amazon Cognito User Pool`
-    - ✅ `IAM`
-    - ❌ `OpenID Connect`
-    - ❌ `Lambda`
+    - 🟢 `API Key`
+    - 🟢 `Amazon Cognito User Pool`
+    - 🟢 `IAM`
+    - 🔴 `OpenID Connect`
+    - 🔴 `Lambda`
 
   - ➤ **Additional Authorization Type**
 
-    - ✅ `API Key`
-    - ✅ `Amazon Cognito User Pool`
-    - ❌ `IAM`
-    - ❌ `OpenID Connect`
-    - ❌ `Lambda`
+    - 🟢 `API Key`
+    - 🟢 `Amazon Cognito User Pool`
+    - 🔴 `IAM`
+    - 🔴 `OpenID Connect`
+    - 🔴 `Lambda`
 
-- ⚠️ **REST** (_generate_ ✗ _refactor_ ✔)
+- 🟡 **REST** (_generate_ ✗ _refactor_ ✔)
 
 ## Storage
 
@@ -614,30 +664,30 @@ to add the necessary configuration.
 
   - **What kind of access do you want for Authenticated users?**
 
-    - ✅ `create/update`
-    - ✅ `read`
-    - ✅ `delete`
+    - 🟢 `create/update`
+    - 🟢 `read`
+    - 🟢 `delete`
 
   - **What kind of access do you want for Guest users?**
 
-    - ✅ `create/update`
-    - ✅ `read`
-    - ✅ `delete`
+    - 🟢 `create/update`
+    - 🟢 `read`
+    - 🟢 `delete`
 
   - **What kind of access do you want for {Group} users**
 
-    - ✅ `create/update`
-    - ✅ `read`
-    - ✅ `delete`
+    - 🟢 `create/update`
+    - 🟢 `read`
+    - 🟢 `delete`
 
-  - ✅ Do you want to add a Lambda Trigger for your S3 Bucket
+  - 🟢 Do you want to add a Lambda Trigger for your S3 Bucket
 
 - ➤ NoSQL Database
 
-  - ✅ `Do you want to add a sort key to your table`
-  - ✅ `Do you want to add global secondary indexes to your table`
-  - ✅ `Do you want to add a sort key to your global secondary index`
-  - ❌ `Do you want to add a Lambda Trigger for your Table`
+  - 🟢 `Do you want to add a sort key to your table`
+  - 🟢 `Do you want to add global secondary indexes to your table`
+  - 🟢 `Do you want to add a sort key to your global secondary index`
+  - 🔴 `Do you want to add a Lambda Trigger for your Table`
 
 ## Function
 
@@ -647,28 +697,28 @@ to add the necessary configuration.
 
   - ➤ Runtime
 
-    - ❌ `.NET 8`
-    - ❌ `Go`
-    - ❌ `Java`
-    - ✅ `NodeJS`
-    - ❌ `Python`
+    - 🔴 `.NET 8`
+    - 🔴 `Go`
+    - 🔴 `Java`
+    - 🟢 `NodeJS`
+    - 🔴 `Python`
 
   - ➤ Choose the function template that you want to use
 
-    - ✅ `Hello world function`
-    - ❌ `CRUD function for Amazon DynamoDB table`
-    - ✅ `Serverless express function`
+    - 🟢 `Hello world function`
+    - ⚠️ `CRUD function for Amazon DynamoDB table`
+    - 🟢 `Serverless express function`
     - ➤ `Lambda Trigger`
 
       - ➤ **Amazon DynamoDB Stream**
 
         - ➤ **Choose a DynamoDB event source option**
 
-          - ✅ `Use API category graphql @model backed DynamoDB table(s) in the current Amplify project`
-          - ❌ `Use storage category DynamoDB table configured in the current Amplify project`
-          - ❌ `Provide the ARN of DynamoDB stream directly`
+          - 🟢 `Use API category graphql @model backed DynamoDB table(s) in the current Amplify project`
+          - 🔴 `Use storage category DynamoDB table configured in the current Amplify project`
+          - 🔴 `Provide the ARN of DynamoDB stream directly`
 
-      - ❌ **Amazon Kinesis Stream**
+      - 🔴 **Amazon Kinesis Stream**
 
   - ➤ **Advanced Settings**
 
@@ -676,91 +726,79 @@ to add the necessary configuration.
 
       - ➤ **api**
 
-        - ✅ `Query`
-        - ✅ `Mutation`
-        - ✅ `Subscription`
+        - 🟢 `Query`
+        - 🟢 `Mutation`
+        - 🟢 `Subscription`
 
       - ➤ **auth**
 
-        - ✅ `create`
-        - ✅ `read`
-        - ✅ `update`
-        - ✅ `delete`
+        - 🟢 `create`
+        - 🟢 `read`
+        - 🟢 `update`
+        - 🟢 `delete`
 
-      - ❌ **function**
+      - 🔴 **function**
 
       - ➤ **storage:dynamo**
 
-        - ✅ `create`
-        - ✅ `read`
-        - ✅ `update`
-        - ✅ `delete`
+        - 🟢 `create`
+        - 🟢 `read`
+        - 🟢 `update`
+        - 🟢 `delete`
 
       - ➤ **storage:s3**
 
-        - ✅ `create`
-        - ✅ `read`
-        - ✅ `update`
-        - ✅ `delete`
+        - 🟢 `create`
+        - 🟢 `read`
+        - 🟢 `update`
+        - 🟢 `delete`
 
-      - ❌ function
+      - 🔴 function
 
-    - ❌ **Do you want to invoke this function on a recurring schedule**
-    - ❌ **Do you want to enable Lambda layers for this function**
-    - ✅ **Do you want to configure environment variables for this function**
-    - ⚠️ **Do you want to configure secret values this function can access** (_generate_ ✗ _refactor_ ✔)
+    - 🔴 **Do you want to invoke this function on a recurring schedule**
+    - 🔴 **Do you want to enable Lambda layers for this function**
+    - 🟢 **Do you want to configure environment variables for this function**
+    - 🟡 **Do you want to configure secret values this function can access** (_generate_ ✗ _refactor_ ✔)
     - ➤ **Choose the package manager that you want to use**
 
-      - ✅ `NPM`
-      - ❌ `Yarn`
-      - ❌ `PNPM`
-      - ❌ `Custom Build Command or Script Path`
+      - 🟢 `NPM`
+      - ⚠️ `Yarn`
+      - ⚠️ `PNPM`
+      - 🔴 `Custom Build Command or Script Path`
 
-- ❌ **Lambda layer (shared code & resource used across functions)**
+- 🔴 **Lambda layer (shared code & resource used across functions)**
 
 ## Geo
 
-### `amplify add geo` ❌
+### `amplify add geo` 🔴
 
 ## Interactions
 
-### `amplify add interactions` ❌
+### `amplify add interactions` 🔴
 
 ## Predictions
 
-### `amplify add predictions` ❌
+### `amplify add predictions` 🔴
 
 ## Notifications
 
-### `amplify add notifications` ❌
+### `amplify add notifications` 🔴
 
 ## Analytics
 
-### `amplify add analytics` ❌
+### `amplify add analytics` 🔴
 
 ## Hosting
 
-### `amplify add hosting` ❌
+### `amplify add hosting` 🔴
 
 ## Custom 
 
-### `amplify add custom` ❌
+### `amplify add custom` 🔴
 
 ## Overrides 
 
-### `amplify override <category>` ❌
-
-# Supported Frameworks
-
-- `React` ✅
-- `NextJS` ✅
-- `Angular` ✅
-- `Vue` ✅
-- `JavaScript` ✅
-- `React Native` ✅
-- `Flutter` ❌
-- `Android` ❌
-- `Swift` ❌
+### `amplify override <category>` 🔴
 
 # Limitations
 

@@ -36,7 +36,7 @@
     "gunzip-maybe": "^1.4.2",
     "hash.js": "^1.1.7",
     "node-fetch": "^2.6.7",
-    "tar": "^6.1.11"
+    "tar": "^7.5.4"
   },
   "berry": {
     "plugins": [

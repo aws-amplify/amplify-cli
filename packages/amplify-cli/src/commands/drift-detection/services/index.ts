@@ -5,5 +5,15 @@
 
 export { CloudFormationService } from './cloudformation-service';
 export { AmplifyConfigService } from './amplify-config-service';
-export { FileService } from './file-service';
-export { DriftFormatter } from './drift-formatter';
+export {
+  type CloudFormationTemplate,
+  type ProcessedDriftData,
+  type StackDriftData,
+  type ResourceCounts,
+  type DriftDisplayFormat,
+  countDrifted,
+  countInSync,
+  countFailed,
+  countUnchecked,
+  formatDriftResults,
+} from './drift-formatter';
