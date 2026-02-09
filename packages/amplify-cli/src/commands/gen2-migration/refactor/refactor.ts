@@ -32,7 +32,6 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
   private toStack?: string;
   private resourceMappings?: string;
   private parsedResourceMappings?: ResourceMapping[];
-  private isRollback = false;
 
   public async executeImplications(): Promise<string[]> {
     return ['Move stateful resources from your Gen1 app to be managed by your Gen2 app'];
@@ -49,7 +48,8 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
   }
 
   public async rollbackValidate(): Promise<void> {
-    throw new Error('Method not implemented.');
+    // https://github.com/aws-amplify/amplify-cli/issues/14579
+    return;
   }
 
   public async execute(): Promise<AmplifyMigrationOperation[]> {
@@ -77,13 +77,20 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
   }
 
   public async rollback(): Promise<AmplifyMigrationOperation[]> {
-    throw new Error('Not Implemented');
+    return [
+      {
+        describe: async () => ['Move stateful resources from your Gen2 app back to your Gen1 app'],
+        execute: async () => {
+          this.extractParameters();
+          await this.executeRollback();
+        },
+      },
+    ];
   }
 
   private extractParameters(): void {
     this.toStack = this.context.parameters?.options?.to;
     this.resourceMappings = this.context.parameters?.options?.resourceMappings;
-    this.isRollback = this.context.parameters?.options?.rollback ?? false;
 
     if (!this.toStack) {
       throw new AmplifyError('InputValidationError', { message: '--to is required' });
