@@ -335,6 +335,7 @@ amplify gen2-migration <step> [options]
 - The `GEN2_MIGRATION_ENVIRONMENT_NAME` environment variable on the Amplify app tracks which environment is being migrated and prevents concurrent migrations.
 - Stateful resources (defined in `STATEFUL_RESOURCES` set) require special handling—the module prevents their deletion and enables deletion protection.
 - The refactor step uses interactive prompts to let users select which categories to migrate.
+- Because rollback functionality is still in development, it is recommended to run refactor with `--no-rollback` to prevent automatic rollbacks if refactor fails.
 - Steps now return arrays of `AmplifyMigrationOperation` objects that describe and execute atomic operations, enabling better visibility and control.
 - The orchestrator displays an operations summary and implications before prompting for user confirmation.
 - Automatic rollback is enabled by default but can be disabled with `--no-rollback`.
