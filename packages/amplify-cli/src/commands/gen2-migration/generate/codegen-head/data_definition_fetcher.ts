@@ -57,6 +57,11 @@ export interface RestApiPath {
   lambdaFunction?: string;
   // Support for User Pool Groups
   userPoolGroups?: string[];
+  // Permission details for IAM policy generation
+  permissions?: {
+    hasAuth?: boolean;
+    groups?: Record<string, string[]>;
+  };
 }
 
 /** Standard CORS configuration for web APIs */
@@ -150,6 +155,12 @@ export class DataDefinitionFetcher {
               userPoolGroups = Object.keys(pathConfig.permissions.groups);
             }
 
+            // Extract permission details for IAM policy generation
+            const permissions = {
+              hasAuth: !!pathConfig.permissions?.auth,
+              groups: pathConfig.permissions?.groups,
+            };
+
             return {
               path: pathName,
               methods: this.extractMethodsFromPath(pathConfig),
@@ -158,6 +169,8 @@ export class DataDefinitionFetcher {
               lambdaFunction: pathConfig.lambdaFunction,
               // Extract User Pool Groups if specified
               userPoolGroups,
+              // Include permission details
+              permissions,
             };
           });
         }
