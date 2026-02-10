@@ -326,8 +326,33 @@ Navigate to the Amplify Console to find the `<gen1-rest-api-id>` and `<gen1-root
 **Edit in `./amplify/function/lognutrition/index.js`:**
 
 ```diff
+- const awsServerlessExpress = require('aws-serverless-express');
+- const app = require('./app');
++ import awsServerlessExpress from 'aws-serverless-express';
++ import app from './app.js';
+```
+
+```diff
 - exports.handler = (event, context) => {
 + export async function handler(event, context) {
+```
+
+**Edit in `./amplify/function/lognutrition/app.js`:**
+
+```diff
+- const express = require('express');
+- const bodyParser = require('body-parser');
+- const awsServerlessExpressMiddleware = require('aws-serverless-express/middleware');
+- const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
+- const { DynamoDBDocumentClient, PutCommand } = require('@aws-sdk/lib-dynamodb');
+- const express = require('express');
+
++ import express from 'express';
++ import bodyParser from 'body-parser';
++ import awsServerlessExpressMiddleware from 'aws-serverless-express/middleware';
++ import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
++ import { DynamoDBDocumentClient, PutCommand } from '@aws-sdk/lib-dynamodb';
++ import crypto from 'crypto';
 ```
 
 **Edit in `./amplify/function/fitnesstrackerd21d4fcdd21d4fcdPreSignup/src/index.js`:**
