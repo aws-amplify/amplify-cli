@@ -144,6 +144,12 @@ export class DataDefinitionFetcher {
             // Parse permission setting correctly: private/protected/open
             const pathAuthType = pathConfig.permissions?.setting || 'open';
 
+            // Extract User Pool Groups from permissions.groups
+            let userPoolGroups: string[] | undefined;
+            if (pathConfig.permissions?.groups) {
+              userPoolGroups = Object.keys(pathConfig.permissions.groups);
+            }
+
             return {
               path: pathName,
               methods: this.extractMethodsFromPath(pathConfig),
@@ -151,7 +157,7 @@ export class DataDefinitionFetcher {
               // Extract the actual Lambda function name for this specific path
               lambdaFunction: pathConfig.lambdaFunction,
               // Extract User Pool Groups if specified
-              userPoolGroups: pathConfig.groupAccess,
+              userPoolGroups,
             };
           });
         }
