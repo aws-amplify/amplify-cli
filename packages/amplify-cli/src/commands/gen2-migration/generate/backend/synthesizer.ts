@@ -1696,8 +1696,11 @@ export class BackendSynthesizer {
         restApi.paths.forEach((path) => {
           const pathSegments = path.path.split('/').filter((segment) => segment && segment !== '{proxy+}');
 
-          // Create resource variable name from path segments
-          const resourceName = pathSegments.join('') || 'root';
+          // Create resource variable name from path segments, avoiding conflicts with function imports
+          let resourceName = pathSegments.join('') || 'root';
+          if (renderArgs.function?.functionNamesAndCategories.has(resourceName)) {
+            resourceName = `${resourceName}Resource`;
+          }
 
           // Build resource chain starting from root
           let resourceExpression: ts.Expression = factory.createPropertyAccessExpression(
