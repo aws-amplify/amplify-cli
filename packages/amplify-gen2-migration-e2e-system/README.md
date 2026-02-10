@@ -1,15 +1,15 @@
 # Amplify Migration System
 
-Comprehensive automation system for migrating AWS Amplify Gen1 applications to Gen2 with support for multiple apps and all Amplify categories.
+Automation system for migrating AWS Amplify Gen1 applications to Gen2 with support for multiple apps and all Amplify categories.
 
 ## Features
 
 ### In-progress
 - **Category Support**: Full support for API, Auth, Storage, Function, and Hosting categories
 - **Reporting**: Detailed logging with progress tracking and report generation
+
 ### Complete
-- **Environment Detection**: Automatic detection of Atmosphere vs Local environments
-- **Flexible Authentication**: Support for AWS profiles and Atmosphere credentials
+- **Flexible Authentication**: Support for AWS profiles and Atmosphere credentials for CI
 - **Configuration-Driven**: JSON-based configuration for each app with API documentation
 
 ## Installation
@@ -114,50 +114,52 @@ The system follows a modular architecture with:
 - **ConfigurationLoader**: Manages app-specific configurations
 - **EnvironmentDetector**: Detects Atmosphere vs Local environments
 - **AppSelector**: Handles app discovery and selection
-- **Logger**: Comprehensive logging with file output
-- **FileManager**: File system operations
+- **Logger**: Formatted logging with file output
+- **FileManager**, **DirectryManager**: File system operations
 
 ## Development
 
 ### Installing
 ```bash
-npm install
+yarn install
 ```
 
-### Building
+### Compiling
 
 ```bash
-npm run build
+yarn build
 ```
 
 ### Testing
 
 ```bash
-npm run test # integration tests
-npm run test:e2e # end-to-end tests (deploys Amplify Apps)
+yarn test # unit tests
+yarn test:integ # integ (atmosphere) validation tests, requires atmosphere setup
+yarn test:e2e # end-to-end tests (deploys Amplify Apps)
 ```
 
 ### Linting
 
 ```bash
-npm run lint
-npm run lint:fix
+yarn lint
+yarn lint:fix
 ```
 
 ## Environment Configuration
 
 ### Environment Detection
 
-The system automatically detects the environment type based on the presence of specific environment variables:
+The system detects the environment type based on the presence of specific environment variables:
 
 **Atmosphere Environment Detection:**
-- Only if BOTH variables are present: `ATMOSPHERE_ENDPOINT`, and `DEFAULT_POOL`
+- Run `migrate` with `--atmsophere`
+- Works only if both variables are present: `ATMOSPHERE_ENDPOINT`, and `DEFAULT_POOL`
 - Environment type: `atmosphere`
 - Uses CDK Atmosphere client for integration tests
-- For runs using the CLI, these variables must be manually set by the operator
+- For runs using the CLI, these variables must be manually set by the operator, to use them in the E2E tests, create a `.gamma.env` file (see below)
 
 **Local Environment Detection:**
-- If ANY of the two atmosphere variables are missing or not set, defaults to `local`
+- Run `migrate` with `--profile`
 - Environment type: `local`
 - Uses AWS profiles from AWS config and credentials files
 
@@ -176,27 +178,12 @@ DEFAULT_POOL=__exp.my-amplify-cli-pool__
 - `.gamma.env` is git-ignored
 - Tests automatically load this file if present, but manual runs require you to set the env vars yourself
 - Both variables must be present for Atmosphere environment detection
-- Missing or incomplete configuration defaults to Local environment
-
-## Environment Support
-
-### Local Environment
-- Uses AWS profiles
-- CDK Atmosphere client optional
-- No `.gamma.env` file required
-
-### Atmosphere Environment
-- Requires `.gamma.env` configuration
-- Automatic credential detection through CDK Atmosphere client
-- Managed credential lifecycle with automatic cleanup
-- Pool-based resource allocation
 
 ## Logging
 
 Logs are written to both console and file:
-- Console: Colored, formatted output with progress indicators
-- File: Structured logs in `./logs/` directory
-- Export: JSON export of all log entries
+- Console: Colored, formatted output
+- File: Structured logs in temp directory
 
 ## Error Handling
 
