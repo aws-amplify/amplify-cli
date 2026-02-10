@@ -326,6 +326,13 @@ Navigate to the Amplify Console to find the `<gen1-rest-api-id>` and `<gen1-root
 **Edit in `./amplify/function/lognutrition/index.js`:**
 
 ```diff
+- const awsServerlessExpress = require('aws-serverless-express');
+- const app = require('./app');
++ import awsServerlessExpress from 'aws-serverless-express';
++ import app from './app.js';
+```
+
+```diff
 - exports.handler = (event, context) => {
 + export async function handler(event, context) {
 ```
