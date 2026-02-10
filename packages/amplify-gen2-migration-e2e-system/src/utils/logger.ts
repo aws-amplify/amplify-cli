@@ -9,7 +9,7 @@ import { ILogger } from '../interfaces';
 import { LogLevel, LogContext, LogEntry } from '../types';
 
 export class Logger implements ILogger {
-  private logLevel: LogLevel = LogLevel.INFO;
+  private logLevel: LogLevel;
   private logFilePath?: string;
 
   constructor(logLevel: LogLevel = LogLevel.INFO) {
