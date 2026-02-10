@@ -448,4 +448,135 @@ describe('BackendSynthesizer', () => {
       expect(source).toMatchSnapshot();
     });
   });
+
+  describe('REST API IAM Policies', () => {
+    it('should generate IAM policies for paths with auth permissions', () => {
+      const renderArgs: BackendRenderParameters = {
+        auth: {
+          importFrom: './auth/resource',
+        },
+        data: {
+          importFrom: './data/resource',
+          restApis: [
+            {
+              apiName: 'nutritionapi',
+              functionName: 'defaultFunction',
+              paths: [
+                {
+                  path: '/nutrition/log',
+                  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+                  authType: 'private',
+                  lambdaFunction: 'lognutrition',
+                  permissions: {
+                    hasAuth: true,
+                  },
+                },
+              ],
+              uniqueFunctions: ['lognutrition'],
+            },
+          ],
+        },
+        function: {
+          importFrom: './function/resource',
+          functionNamesAndCategories: new Map([['lognutrition', 'function']]),
+        },
+      };
+
+      const result = synthesizer.render(renderArgs);
+      const source = printNodeArray(result);
+      expect(source).toMatchSnapshot();
+    });
+
+    it('should generate IAM policies for paths with group permissions', () => {
+      const renderArgs: BackendRenderParameters = {
+        auth: {
+          importFrom: './auth/resource',
+        },
+        data: {
+          importFrom: './data/resource',
+          restApis: [
+            {
+              apiName: 'nutritionapi',
+              functionName: 'defaultFunction',
+              paths: [
+                {
+                  path: '/items',
+                  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+                  authType: 'private',
+                  lambdaFunction: 'nutritionitems',
+                  userPoolGroups: ['Admin'],
+                  permissions: {
+                    groups: {
+                      Admin: ['create', 'read', 'update', 'delete'],
+                    },
+                  },
+                },
+              ],
+              uniqueFunctions: ['nutritionitems'],
+            },
+          ],
+        },
+        function: {
+          importFrom: './function/resource',
+          functionNamesAndCategories: new Map([['nutritionitems', 'function']]),
+        },
+      };
+
+      const result = synthesizer.render(renderArgs);
+      const source = printNodeArray(result);
+      expect(source).toMatchSnapshot();
+    });
+
+    it('should generate IAM policies for both auth and group permissions', () => {
+      const renderArgs: BackendRenderParameters = {
+        auth: {
+          importFrom: './auth/resource',
+        },
+        data: {
+          importFrom: './data/resource',
+          restApis: [
+            {
+              apiName: 'nutritionapi',
+              functionName: 'defaultFunction',
+              paths: [
+                {
+                  path: '/nutrition/log',
+                  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+                  authType: 'private',
+                  lambdaFunction: 'lognutrition',
+                  permissions: {
+                    hasAuth: true,
+                  },
+                },
+                {
+                  path: '/items',
+                  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+                  authType: 'private',
+                  lambdaFunction: 'nutritionitems',
+                  userPoolGroups: ['Admin'],
+                  permissions: {
+                    groups: {
+                      Admin: ['create', 'read', 'update', 'delete'],
+                    },
+                  },
+                },
+              ],
+              uniqueFunctions: ['lognutrition', 'nutritionitems'],
+            },
+          ],
+        },
+        function: {
+          importFrom: './function/resource',
+          functionNamesAndCategories: new Map([
+            ['lognutrition', 'function'],
+            ['nutritionitems', 'function'],
+          ]),
+        },
+      };
+
+      const result = synthesizer.render(renderArgs);
+      const source = printNodeArray(result);
+      expect(source).toMatchSnapshot();
+    });
+  });
 });

@@ -22,3 +22,288 @@ for (const model of ["Comment", "Post", "Topic", "randomTable"]) {
 }
 "
 `;
+
+exports[`BackendSynthesizer REST API IAM Policies should generate IAM policies for both auth and group permissions 1`] = `
+"import { auth } from "./auth/resource";
+import { data } from "./data/resource";
+import { lognutrition } from "./function/lognutrition/resource";
+import { nutritionitems } from "./function/nutritionitems/resource";
+import { RestApi, LambdaIntegration, AuthorizationType, Cors, ResponseType } from "aws-cdk-lib/aws-apigateway";
+import { Policy, PolicyStatement } from "aws-cdk-lib/aws-iam";
+import { Stack } from "aws-cdk-lib";
+import { Lazy } from "aws-cdk-lib";
+import { defineBackend } from "@aws-amplify/backend";
+
+
+const backend = defineBackend({
+    auth,
+    data,
+    lognutrition,
+    nutritionitems
+});
+const branchName = process.env.AWS_BRANCH ?? "sandbox";
+const nutritionapiStack = backend.createStack("rest-api-stack-nutritionapi");
+const nutritionapiApi = new RestApi(nutritionapiStack, "RestApi", {
+    restApiName: \`nutritionapi-\${branchName}\`,
+    defaultCorsPreflightOptions: {
+        allowMethods: Cors.ALL_METHODS,
+        allowOrigins: Cors.ALL_ORIGINS,
+        allowHeaders: Cors.DEFAULT_HEADERS
+    }
+});
+nutritionapiApi.addGatewayResponse("Default4XX", {
+    type: ResponseType.DEFAULT_4XX,
+    responseHeaders: {
+        "Access-Control-Allow-Origin": "'*'",
+        "Access-Control-Allow-Headers": "'*'"
+    }
+});
+nutritionapiApi.addGatewayResponse("Default5XX", {
+    type: ResponseType.DEFAULT_5XX,
+    responseHeaders: {
+        "Access-Control-Allow-Origin": "'*'",
+        "Access-Control-Allow-Headers": "'*'"
+    }
+});
+const lognutritionIntegration = new LambdaIntegration(backend.lognutrition.resources.lambda);
+const nutritionitemsIntegration = new LambdaIntegration(backend.nutritionitems.resources.lambda);
+const gen1nutritionapiApi = RestApi.fromRestApiAttributes(nutritionapiStack, "Gen1nutritionapiApi", {
+    restApiId: "<gen1-nutritionapi-api-id>",
+    rootResourceId: "<gen1-nutritionapi-root-resource-id>"
+});
+const gen1nutritionapiPolicy = new Policy(nutritionapiStack, "Gen1nutritionapiPolicy", {
+    statements: [new PolicyStatement({
+            actions: ["execute-api:Invoke"],
+            resources: [\`\${gen1nutritionapiApi.arnForExecuteApi("*", "/*")}\`]
+        })]
+});
+backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(gen1nutritionapiPolicy);
+const nutritionlog = nutritionapiApi.root.addResource("nutrition").addResource("log", {
+    defaultMethodOptions: {
+        authorizationType: AuthorizationType.IAM
+    }
+});
+nutritionlog.addMethod("GET", lognutritionIntegration);
+nutritionlog.addMethod("POST", lognutritionIntegration);
+nutritionlog.addMethod("PUT", lognutritionIntegration);
+nutritionlog.addMethod("DELETE", lognutritionIntegration);
+nutritionlog.addProxy({
+    anyMethod: true,
+    defaultIntegration: lognutritionIntegration
+});
+const items = nutritionapiApi.root.addResource("items", {
+    defaultMethodOptions: {
+        authorizationType: AuthorizationType.IAM
+    }
+});
+items.addMethod("GET", nutritionitemsIntegration);
+items.addMethod("POST", nutritionitemsIntegration);
+items.addMethod("PUT", nutritionitemsIntegration);
+items.addMethod("DELETE", nutritionitemsIntegration);
+items.addProxy({
+    anyMethod: true,
+    defaultIntegration: nutritionitemsIntegration
+});
+backend.addOutput({
+    custom: {
+        API: {
+            [nutritionapiApi.restApiName]: {
+                endpoint: Lazy.string({ produce: () => nutritionapiApi.url.slice(0, -1) }),
+                region: Stack.of(nutritionapiApi).region,
+                apiName: nutritionapiApi.restApiName
+            }
+        }
+    }
+});
+const nutritionapinutritionlogAuthPolicy = new Policy(nutritionapiStack, "nutritionapinutritionlogAuthPolicy", {
+    statements: [new PolicyStatement({
+            actions: ["execute-api:Invoke"],
+            resources: [nutritionapiApi.arnForExecuteApi("*", "/nutrition/log"), nutritionapiApi.arnForExecuteApi("*", "/nutrition/log/*")]
+        })]
+});
+backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(nutritionapinutritionlogAuthPolicy);
+const nutritionapiitemsAdminPolicy = new Policy(nutritionapiStack, "nutritionapiitemsAdminPolicy", {
+    statements: [new PolicyStatement({
+            actions: ["execute-api:Invoke"],
+            resources: [nutritionapiApi.arnForExecuteApi("*", "/items"), nutritionapiApi.arnForExecuteApi("*", "/items/*")]
+        })]
+});
+backend.auth.resources.groups["Admin"].role.attachInlinePolicy(nutritionapiitemsAdminPolicy);
+backend.lognutrition.resources.cfnResources.cfnFunction.functionName = \`lognutrition-\${branchName}\`;
+backend.nutritionitems.resources.cfnResources.cfnFunction.functionName = \`nutritionitems-\${branchName}\`;
+"
+`;
+
+exports[`BackendSynthesizer REST API IAM Policies should generate IAM policies for paths with auth permissions 1`] = `
+"import { auth } from "./auth/resource";
+import { data } from "./data/resource";
+import { lognutrition } from "./function/lognutrition/resource";
+import { RestApi, LambdaIntegration, AuthorizationType, Cors, ResponseType } from "aws-cdk-lib/aws-apigateway";
+import { Policy, PolicyStatement } from "aws-cdk-lib/aws-iam";
+import { Stack } from "aws-cdk-lib";
+import { Lazy } from "aws-cdk-lib";
+import { defineBackend } from "@aws-amplify/backend";
+
+
+const backend = defineBackend({
+    auth,
+    data,
+    lognutrition
+});
+const branchName = process.env.AWS_BRANCH ?? "sandbox";
+const nutritionapiStack = backend.createStack("rest-api-stack-nutritionapi");
+const nutritionapiApi = new RestApi(nutritionapiStack, "RestApi", {
+    restApiName: \`nutritionapi-\${branchName}\`,
+    defaultCorsPreflightOptions: {
+        allowMethods: Cors.ALL_METHODS,
+        allowOrigins: Cors.ALL_ORIGINS,
+        allowHeaders: Cors.DEFAULT_HEADERS
+    }
+});
+nutritionapiApi.addGatewayResponse("Default4XX", {
+    type: ResponseType.DEFAULT_4XX,
+    responseHeaders: {
+        "Access-Control-Allow-Origin": "'*'",
+        "Access-Control-Allow-Headers": "'*'"
+    }
+});
+nutritionapiApi.addGatewayResponse("Default5XX", {
+    type: ResponseType.DEFAULT_5XX,
+    responseHeaders: {
+        "Access-Control-Allow-Origin": "'*'",
+        "Access-Control-Allow-Headers": "'*'"
+    }
+});
+const lognutritionIntegration = new LambdaIntegration(backend.lognutrition.resources.lambda);
+const gen1nutritionapiApi = RestApi.fromRestApiAttributes(nutritionapiStack, "Gen1nutritionapiApi", {
+    restApiId: "<gen1-nutritionapi-api-id>",
+    rootResourceId: "<gen1-nutritionapi-root-resource-id>"
+});
+const gen1nutritionapiPolicy = new Policy(nutritionapiStack, "Gen1nutritionapiPolicy", {
+    statements: [new PolicyStatement({
+            actions: ["execute-api:Invoke"],
+            resources: [\`\${gen1nutritionapiApi.arnForExecuteApi("*", "/*")}\`]
+        })]
+});
+backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(gen1nutritionapiPolicy);
+const nutritionlog = nutritionapiApi.root.addResource("nutrition").addResource("log", {
+    defaultMethodOptions: {
+        authorizationType: AuthorizationType.IAM
+    }
+});
+nutritionlog.addMethod("GET", lognutritionIntegration);
+nutritionlog.addMethod("POST", lognutritionIntegration);
+nutritionlog.addMethod("PUT", lognutritionIntegration);
+nutritionlog.addMethod("DELETE", lognutritionIntegration);
+nutritionlog.addProxy({
+    anyMethod: true,
+    defaultIntegration: lognutritionIntegration
+});
+backend.addOutput({
+    custom: {
+        API: {
+            [nutritionapiApi.restApiName]: {
+                endpoint: Lazy.string({ produce: () => nutritionapiApi.url.slice(0, -1) }),
+                region: Stack.of(nutritionapiApi).region,
+                apiName: nutritionapiApi.restApiName
+            }
+        }
+    }
+});
+const nutritionapinutritionlogAuthPolicy = new Policy(nutritionapiStack, "nutritionapinutritionlogAuthPolicy", {
+    statements: [new PolicyStatement({
+            actions: ["execute-api:Invoke"],
+            resources: [nutritionapiApi.arnForExecuteApi("*", "/nutrition/log"), nutritionapiApi.arnForExecuteApi("*", "/nutrition/log/*")]
+        })]
+});
+backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(nutritionapinutritionlogAuthPolicy);
+backend.lognutrition.resources.cfnResources.cfnFunction.functionName = \`lognutrition-\${branchName}\`;
+"
+`;
+
+exports[`BackendSynthesizer REST API IAM Policies should generate IAM policies for paths with group permissions 1`] = `
+"import { auth } from "./auth/resource";
+import { data } from "./data/resource";
+import { nutritionitems } from "./function/nutritionitems/resource";
+import { RestApi, LambdaIntegration, AuthorizationType, Cors, ResponseType } from "aws-cdk-lib/aws-apigateway";
+import { Policy, PolicyStatement } from "aws-cdk-lib/aws-iam";
+import { Stack } from "aws-cdk-lib";
+import { Lazy } from "aws-cdk-lib";
+import { defineBackend } from "@aws-amplify/backend";
+
+
+const backend = defineBackend({
+    auth,
+    data,
+    nutritionitems
+});
+const branchName = process.env.AWS_BRANCH ?? "sandbox";
+const nutritionapiStack = backend.createStack("rest-api-stack-nutritionapi");
+const nutritionapiApi = new RestApi(nutritionapiStack, "RestApi", {
+    restApiName: \`nutritionapi-\${branchName}\`,
+    defaultCorsPreflightOptions: {
+        allowMethods: Cors.ALL_METHODS,
+        allowOrigins: Cors.ALL_ORIGINS,
+        allowHeaders: Cors.DEFAULT_HEADERS
+    }
+});
+nutritionapiApi.addGatewayResponse("Default4XX", {
+    type: ResponseType.DEFAULT_4XX,
+    responseHeaders: {
+        "Access-Control-Allow-Origin": "'*'",
+        "Access-Control-Allow-Headers": "'*'"
+    }
+});
+nutritionapiApi.addGatewayResponse("Default5XX", {
+    type: ResponseType.DEFAULT_5XX,
+    responseHeaders: {
+        "Access-Control-Allow-Origin": "'*'",
+        "Access-Control-Allow-Headers": "'*'"
+    }
+});
+const nutritionitemsIntegration = new LambdaIntegration(backend.nutritionitems.resources.lambda);
+const gen1nutritionapiApi = RestApi.fromRestApiAttributes(nutritionapiStack, "Gen1nutritionapiApi", {
+    restApiId: "<gen1-nutritionapi-api-id>",
+    rootResourceId: "<gen1-nutritionapi-root-resource-id>"
+});
+const gen1nutritionapiPolicy = new Policy(nutritionapiStack, "Gen1nutritionapiPolicy", {
+    statements: [new PolicyStatement({
+            actions: ["execute-api:Invoke"],
+            resources: [\`\${gen1nutritionapiApi.arnForExecuteApi("*", "/*")}\`]
+        })]
+});
+backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(gen1nutritionapiPolicy);
+const items = nutritionapiApi.root.addResource("items", {
+    defaultMethodOptions: {
+        authorizationType: AuthorizationType.IAM
+    }
+});
+items.addMethod("GET", nutritionitemsIntegration);
+items.addMethod("POST", nutritionitemsIntegration);
+items.addMethod("PUT", nutritionitemsIntegration);
+items.addMethod("DELETE", nutritionitemsIntegration);
+items.addProxy({
+    anyMethod: true,
+    defaultIntegration: nutritionitemsIntegration
+});
+backend.addOutput({
+    custom: {
+        API: {
+            [nutritionapiApi.restApiName]: {
+                endpoint: Lazy.string({ produce: () => nutritionapiApi.url.slice(0, -1) }),
+                region: Stack.of(nutritionapiApi).region,
+                apiName: nutritionapiApi.restApiName
+            }
+        }
+    }
+});
+const nutritionapiitemsAdminPolicy = new Policy(nutritionapiStack, "nutritionapiitemsAdminPolicy", {
+    statements: [new PolicyStatement({
+            actions: ["execute-api:Invoke"],
+            resources: [nutritionapiApi.arnForExecuteApi("*", "/items"), nutritionapiApi.arnForExecuteApi("*", "/items/*")]
+        })]
+});
+backend.auth.resources.groups["Admin"].role.attachInlinePolicy(nutritionapiitemsAdminPolicy);
+backend.nutritionitems.resources.cfnResources.cfnFunction.functionName = \`nutritionitems-\${branchName}\`;
+"
+`;

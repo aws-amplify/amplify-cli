@@ -2014,6 +2014,183 @@ export class BackendSynthesizer {
         );
         nodes.push(addOutputCall);
       });
+
+      // Generate IAM policies for REST API path permissions
+      renderArgs.data.restApis.forEach((restApi) => {
+        const stackVarName = `${restApi.apiName}Stack`;
+        const apiVarName = `${restApi.apiName}Api`;
+
+        restApi.paths.forEach((path) => {
+          // Generate policy for paths with "auth" array (authenticated users)
+          if (path.permissions?.hasAuth) {
+            const pathPolicyVarName = `${restApi.apiName}${path.path.replace(/[^a-zA-Z0-9]/g, '')}AuthPolicy`;
+
+            const pathPolicyDeclaration = factory.createVariableStatement(
+              [],
+              factory.createVariableDeclarationList(
+                [
+                  factory.createVariableDeclaration(
+                    pathPolicyVarName,
+                    undefined,
+                    undefined,
+                    factory.createNewExpression(factory.createIdentifier('Policy'), undefined, [
+                      factory.createIdentifier(stackVarName),
+                      factory.createStringLiteral(pathPolicyVarName),
+                      factory.createObjectLiteralExpression(
+                        [
+                          factory.createPropertyAssignment(
+                            'statements',
+                            factory.createArrayLiteralExpression([
+                              factory.createNewExpression(factory.createIdentifier('PolicyStatement'), undefined, [
+                                factory.createObjectLiteralExpression(
+                                  [
+                                    factory.createPropertyAssignment(
+                                      'actions',
+                                      factory.createArrayLiteralExpression([factory.createStringLiteral('execute-api:Invoke')]),
+                                    ),
+                                    factory.createPropertyAssignment(
+                                      'resources',
+                                      factory.createArrayLiteralExpression([
+                                        factory.createCallExpression(
+                                          factory.createPropertyAccessExpression(
+                                            factory.createIdentifier(apiVarName),
+                                            factory.createIdentifier('arnForExecuteApi'),
+                                          ),
+                                          undefined,
+                                          [factory.createStringLiteral('*'), factory.createStringLiteral(path.path)],
+                                        ),
+                                        factory.createCallExpression(
+                                          factory.createPropertyAccessExpression(
+                                            factory.createIdentifier(apiVarName),
+                                            factory.createIdentifier('arnForExecuteApi'),
+                                          ),
+                                          undefined,
+                                          [factory.createStringLiteral('*'), factory.createStringLiteral(`${path.path}/*`)],
+                                        ),
+                                      ]),
+                                    ),
+                                  ],
+                                  true,
+                                ),
+                              ]),
+                            ]),
+                          ),
+                        ],
+                        true,
+                      ),
+                    ]),
+                  ),
+                ],
+                ts.NodeFlags.Const,
+              ),
+            );
+            nodes.push(pathPolicyDeclaration);
+
+            // Attach policy to authenticated user IAM role
+            const attachAuthPolicyCall = factory.createExpressionStatement(
+              factory.createCallExpression(
+                factory.createPropertyAccessExpression(
+                  factory.createPropertyAccessExpression(
+                    factory.createIdentifier('backend.auth.resources'),
+                    factory.createIdentifier('authenticatedUserIamRole'),
+                  ),
+                  factory.createIdentifier('attachInlinePolicy'),
+                ),
+                undefined,
+                [factory.createIdentifier(pathPolicyVarName)],
+              ),
+            );
+            nodes.push(attachAuthPolicyCall);
+          }
+
+          // Generate policies for paths with "groups" object
+          if (path.permissions?.groups) {
+            Object.keys(path.permissions.groups).forEach((groupName) => {
+              const groupPolicyVarName = `${restApi.apiName}${path.path.replace(/[^a-zA-Z0-9]/g, '')}${groupName}Policy`;
+
+              const groupPolicyDeclaration = factory.createVariableStatement(
+                [],
+                factory.createVariableDeclarationList(
+                  [
+                    factory.createVariableDeclaration(
+                      groupPolicyVarName,
+                      undefined,
+                      undefined,
+                      factory.createNewExpression(factory.createIdentifier('Policy'), undefined, [
+                        factory.createIdentifier(stackVarName),
+                        factory.createStringLiteral(groupPolicyVarName),
+                        factory.createObjectLiteralExpression(
+                          [
+                            factory.createPropertyAssignment(
+                              'statements',
+                              factory.createArrayLiteralExpression([
+                                factory.createNewExpression(factory.createIdentifier('PolicyStatement'), undefined, [
+                                  factory.createObjectLiteralExpression(
+                                    [
+                                      factory.createPropertyAssignment(
+                                        'actions',
+                                        factory.createArrayLiteralExpression([factory.createStringLiteral('execute-api:Invoke')]),
+                                      ),
+                                      factory.createPropertyAssignment(
+                                        'resources',
+                                        factory.createArrayLiteralExpression([
+                                          factory.createCallExpression(
+                                            factory.createPropertyAccessExpression(
+                                              factory.createIdentifier(apiVarName),
+                                              factory.createIdentifier('arnForExecuteApi'),
+                                            ),
+                                            undefined,
+                                            [factory.createStringLiteral('*'), factory.createStringLiteral(path.path)],
+                                          ),
+                                          factory.createCallExpression(
+                                            factory.createPropertyAccessExpression(
+                                              factory.createIdentifier(apiVarName),
+                                              factory.createIdentifier('arnForExecuteApi'),
+                                            ),
+                                            undefined,
+                                            [factory.createStringLiteral('*'), factory.createStringLiteral(`${path.path}/*`)],
+                                          ),
+                                        ]),
+                                      ),
+                                    ],
+                                    true,
+                                  ),
+                                ]),
+                              ]),
+                            ),
+                          ],
+                          true,
+                        ),
+                      ]),
+                    ),
+                  ],
+                  ts.NodeFlags.Const,
+                ),
+              );
+              nodes.push(groupPolicyDeclaration);
+
+              // Attach policy to group role
+              const attachGroupPolicyCall = factory.createExpressionStatement(
+                factory.createCallExpression(
+                  factory.createPropertyAccessExpression(
+                    factory.createElementAccessExpression(
+                      factory.createPropertyAccessExpression(
+                        factory.createIdentifier('backend.auth.resources'),
+                        factory.createIdentifier('groups'),
+                      ),
+                      factory.createStringLiteral(groupName),
+                    ),
+                    factory.createIdentifier('role.attachInlinePolicy'),
+                  ),
+                  undefined,
+                  [factory.createIdentifier(groupPolicyVarName)],
+                ),
+              );
+              nodes.push(attachGroupPolicyCall);
+            });
+          }
+        });
+      });
     }
     // ========== END: REST API GENERATION ==========
 
