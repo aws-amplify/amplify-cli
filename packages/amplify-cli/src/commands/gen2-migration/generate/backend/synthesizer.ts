@@ -1512,19 +1512,34 @@ export class BackendSynthesizer {
             undefined,
             [
               factory.createStringLiteral('Default4XX'),
-              factory.createObjectLiteralExpression([
-                factory.createPropertyAssignment(
-                  'type',
-                  factory.createPropertyAccessExpression(factory.createIdentifier('ResponseType'), factory.createIdentifier('DEFAULT_4XX')),
-                ),
-                factory.createPropertyAssignment(
-                  'responseHeaders',
-                  factory.createObjectLiteralExpression([
-                    factory.createPropertyAssignment('Access-Control-Allow-Origin', factory.createStringLiteral("'*'")),
-                    factory.createPropertyAssignment('Access-Control-Allow-Headers', factory.createStringLiteral("'*'")),
-                  ]),
-                ),
-              ]),
+              factory.createObjectLiteralExpression(
+                [
+                  factory.createPropertyAssignment(
+                    'type',
+                    factory.createPropertyAccessExpression(
+                      factory.createIdentifier('ResponseType'),
+                      factory.createIdentifier('DEFAULT_4XX'),
+                    ),
+                  ),
+                  factory.createPropertyAssignment(
+                    'responseHeaders',
+                    factory.createObjectLiteralExpression(
+                      [
+                        factory.createPropertyAssignment(
+                          factory.createStringLiteral('Access-Control-Allow-Origin'),
+                          factory.createStringLiteral("'*'"),
+                        ),
+                        factory.createPropertyAssignment(
+                          factory.createStringLiteral('Access-Control-Allow-Headers'),
+                          factory.createStringLiteral("'*'"),
+                        ),
+                      ],
+                      true,
+                    ),
+                  ),
+                ],
+                true,
+              ),
             ],
           ),
         );
@@ -1536,19 +1551,34 @@ export class BackendSynthesizer {
             undefined,
             [
               factory.createStringLiteral('Default5XX'),
-              factory.createObjectLiteralExpression([
-                factory.createPropertyAssignment(
-                  'type',
-                  factory.createPropertyAccessExpression(factory.createIdentifier('ResponseType'), factory.createIdentifier('DEFAULT_5XX')),
-                ),
-                factory.createPropertyAssignment(
-                  'responseHeaders',
-                  factory.createObjectLiteralExpression([
-                    factory.createPropertyAssignment('Access-Control-Allow-Origin', factory.createStringLiteral("'*'")),
-                    factory.createPropertyAssignment('Access-Control-Allow-Headers', factory.createStringLiteral("'*'")),
-                  ]),
-                ),
-              ]),
+              factory.createObjectLiteralExpression(
+                [
+                  factory.createPropertyAssignment(
+                    'type',
+                    factory.createPropertyAccessExpression(
+                      factory.createIdentifier('ResponseType'),
+                      factory.createIdentifier('DEFAULT_5XX'),
+                    ),
+                  ),
+                  factory.createPropertyAssignment(
+                    'responseHeaders',
+                    factory.createObjectLiteralExpression(
+                      [
+                        factory.createPropertyAssignment(
+                          factory.createStringLiteral('Access-Control-Allow-Origin'),
+                          factory.createStringLiteral("'*'"),
+                        ),
+                        factory.createPropertyAssignment(
+                          factory.createStringLiteral('Access-Control-Allow-Headers'),
+                          factory.createStringLiteral("'*'"),
+                        ),
+                      ],
+                      true,
+                    ),
+                  ),
+                ],
+                true,
+              ),
             ],
           ),
         );
