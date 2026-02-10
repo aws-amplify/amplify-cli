@@ -156,10 +156,15 @@ export class DataDefinitionFetcher {
             }
 
             // Extract permission details for IAM policy generation
-            const permissions = {
-              hasAuth: !!pathConfig.permissions?.auth,
-              groups: pathConfig.permissions?.groups,
-            };
+            const permissions: { hasAuth?: boolean; groups?: Record<string, string[]> } = {};
+
+            if (pathConfig.permissions?.auth && pathConfig.permissions.auth.length > 0) {
+              permissions.hasAuth = true;
+            }
+
+            if (pathConfig.permissions?.groups && Object.keys(pathConfig.permissions.groups).length > 0) {
+              permissions.groups = pathConfig.permissions.groups;
+            }
 
             return {
               path: pathName,
@@ -169,8 +174,8 @@ export class DataDefinitionFetcher {
               lambdaFunction: pathConfig.lambdaFunction,
               // Extract User Pool Groups if specified
               userPoolGroups,
-              // Include permission details
-              permissions,
+              // Include permission details only if they exist
+              ...(Object.keys(permissions).length > 0 && { permissions }),
             };
           });
         }
