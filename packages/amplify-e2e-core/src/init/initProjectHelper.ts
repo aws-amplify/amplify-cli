@@ -3,9 +3,43 @@
 /* eslint-disable func-style */
 import { EOL } from 'os';
 import { v4 as uuid } from 'uuid';
+import * as fs from 'fs-extra';
+import * as ini from 'ini';
+import { pathManager } from '@aws-amplify/amplify-cli-core';
 import { nspawn as spawn, getCLIPath, singleSelect, addCircleCITags } from '..';
 import { KEY_DOWN_ARROW } from '../utils';
 import { amplifyRegions } from '../configure';
+
+/**
+ * Gets the index of a profile in the AWS config file.
+ * The Amplify CLI uses the config file order for profile selection.
+ * Config file sections are named "default" or "profile <name>".
+ * @param profileName The name of the profile to find
+ * @returns The index of the profile in the list (0-based), or 0 if not found
+ */
+function getProfileIndex(profileName: string): number {
+  try {
+    const configPath = pathManager.getAWSConfigFilePath();
+
+    const configContents = ini.parse(fs.readFileSync(configPath, 'utf-8'));
+    // Config file uses "default" and "profile <name>" as section names
+    // Extract actual profile names from section names
+    const profiles = Object.keys(configContents).map((section) => {
+      if (section === 'default') {
+        return 'default';
+      }
+      // Remove "profile " prefix if present
+      return section.replace(/^profile\s+/, '');
+    });
+    const index = profiles.indexOf(profileName);
+    if (index === -1) {
+      throw Error(`Profile: ${profileName} not found.`);
+    }
+    return index;
+  } catch (error) {
+    throw Error(`Failed to read config file when getting AWS profile: ${(error as Error).message}`);
+  }
+}
 
 const defaultSettings = {
   name: EOL,
@@ -33,6 +67,7 @@ const defaultSettings = {
 
 export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof defaultSettings>): Promise<void> {
   const s = { ...defaultSettings, ...settings };
+
   let env;
 
   if (s.disableAmplifyAppCreation === true) {
@@ -93,12 +128,19 @@ export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof 
     .sendCarriageReturn();
 
   if (!providerConfigSpecified) {
+    const profileIndex = getProfileIndex(s.profileName);
+
     chain
       .wait('Using default provider  awscloudformation')
       .wait('Select the authentication method you want to use:')
       .sendCarriageReturn()
-      .wait('Please choose the profile you want to use')
-      .sendLine(s.profileName);
+      .wait('Please choose the profile you want to use');
+
+    if (profileIndex > 0) {
+      chain.sendKeyDown(profileIndex);
+    }
+
+    chain.sendCarriageReturn();
   }
 
   if (s.includeUsageDataPrompt) {
@@ -309,9 +351,7 @@ export function initProjectWithAccessKey(
     const chain = spawn(getCLIPath(), ['init'], {
       cwd,
       stripColors: true,
-      env: {
-        CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
-      },
+      env: { CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: s.disableAmplifyAppCreation ? '1' : '0' },
     })
       .wait('Do you want to continue with Amplify Gen 1?')
       .sendYes()
