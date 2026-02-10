@@ -104,6 +104,20 @@ items.addProxy({
     anyMethod: true,
     defaultIntegration: nutritionitemsIntegration
 });
+// /nutrition/log - all authenticated users
+backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(new Policy(nutritionapiStack, "nutritionlogPolicy", {
+    statements: [new PolicyStatement({
+            actions: ["execute-api:Invoke"],
+            resources: [nutritionapiApi.arnForExecuteApi("*", "/nutrition/log"), nutritionapiApi.arnForExecuteApi("*", "/nutrition/log/*")]
+        })]
+}));
+// /items - Admin group only
+backend.auth.resources.groups["Admin"].role.attachInlinePolicy(new Policy(nutritionapiStack, "itemsPolicy", {
+    statements: [new PolicyStatement({
+            actions: ["execute-api:Invoke"],
+            resources: [nutritionapiApi.arnForExecuteApi("*", "/items"), nutritionapiApi.arnForExecuteApi("*", "/items/*")]
+        })]
+}));
 backend.addOutput({
     custom: {
         API: {
@@ -115,20 +129,6 @@ backend.addOutput({
         }
     }
 });
-const nutritionapinutritionlogAuthPolicy = new Policy(nutritionapiStack, "nutritionapinutritionlogAuthPolicy", {
-    statements: [new PolicyStatement({
-            actions: ["execute-api:Invoke"],
-            resources: [nutritionapiApi.arnForExecuteApi("*", "/nutrition/log"), nutritionapiApi.arnForExecuteApi("*", "/nutrition/log/*")]
-        })]
-});
-backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(nutritionapinutritionlogAuthPolicy);
-const nutritionapiitemsAdminPolicy = new Policy(nutritionapiStack, "nutritionapiitemsAdminPolicy", {
-    statements: [new PolicyStatement({
-            actions: ["execute-api:Invoke"],
-            resources: [nutritionapiApi.arnForExecuteApi("*", "/items"), nutritionapiApi.arnForExecuteApi("*", "/items/*")]
-        })]
-});
-backend.auth.resources.groups["Admin"].role.attachInlinePolicy(nutritionapiitemsAdminPolicy);
 backend.lognutrition.resources.cfnResources.cfnFunction.functionName = \`lognutrition-\${branchName}\`;
 backend.nutritionitems.resources.cfnResources.cfnFunction.functionName = \`nutritionitems-\${branchName}\`;
 "
@@ -199,6 +199,13 @@ nutritionlog.addProxy({
     anyMethod: true,
     defaultIntegration: lognutritionIntegration
 });
+// /nutrition/log - all authenticated users
+backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(new Policy(nutritionapiStack, "nutritionlogPolicy", {
+    statements: [new PolicyStatement({
+            actions: ["execute-api:Invoke"],
+            resources: [nutritionapiApi.arnForExecuteApi("*", "/nutrition/log"), nutritionapiApi.arnForExecuteApi("*", "/nutrition/log/*")]
+        })]
+}));
 backend.addOutput({
     custom: {
         API: {
@@ -210,13 +217,6 @@ backend.addOutput({
         }
     }
 });
-const nutritionapinutritionlogAuthPolicy = new Policy(nutritionapiStack, "nutritionapinutritionlogAuthPolicy", {
-    statements: [new PolicyStatement({
-            actions: ["execute-api:Invoke"],
-            resources: [nutritionapiApi.arnForExecuteApi("*", "/nutrition/log"), nutritionapiApi.arnForExecuteApi("*", "/nutrition/log/*")]
-        })]
-});
-backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(nutritionapinutritionlogAuthPolicy);
 backend.lognutrition.resources.cfnResources.cfnFunction.functionName = \`lognutrition-\${branchName}\`;
 "
 `;
@@ -286,6 +286,13 @@ items.addProxy({
     anyMethod: true,
     defaultIntegration: nutritionitemsIntegration
 });
+// /items - Admin group only
+backend.auth.resources.groups["Admin"].role.attachInlinePolicy(new Policy(nutritionapiStack, "itemsPolicy", {
+    statements: [new PolicyStatement({
+            actions: ["execute-api:Invoke"],
+            resources: [nutritionapiApi.arnForExecuteApi("*", "/items"), nutritionapiApi.arnForExecuteApi("*", "/items/*")]
+        })]
+}));
 backend.addOutput({
     custom: {
         API: {
@@ -297,13 +304,6 @@ backend.addOutput({
         }
     }
 });
-const nutritionapiitemsAdminPolicy = new Policy(nutritionapiStack, "nutritionapiitemsAdminPolicy", {
-    statements: [new PolicyStatement({
-            actions: ["execute-api:Invoke"],
-            resources: [nutritionapiApi.arnForExecuteApi("*", "/items"), nutritionapiApi.arnForExecuteApi("*", "/items/*")]
-        })]
-});
-backend.auth.resources.groups["Admin"].role.attachInlinePolicy(nutritionapiitemsAdminPolicy);
 backend.nutritionitems.resources.cfnResources.cfnFunction.functionName = \`nutritionitems-\${branchName}\`;
 "
 `;
