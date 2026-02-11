@@ -158,6 +158,61 @@ You can access the following resource attributes as environment variables from y
 ✔ Do you want to add another path? (y/N) · no
 ```
 
+```console
+amplify add api
+```
+
+```console
+? Select from one of the below mentioned services: REST
+✔ Would you like to add a new path to an existing REST API: (y/N) · no
+✔ Provide a friendly name for your resource to be used as a label for this category in the project: · adminapi
+✔ Provide a path (e.g., /book/{isbn}): · /admin
+✔ Choose a Lambda source · Create a new Lambda function
+? Provide an AWS Lambda function name: admin
+? Choose the runtime that you want to use: NodeJS
+? Choose the function template that you want to use: Serverless ExpressJS function (Integration with API Gateway)
+
+✅ Available advanced settings:
+- Resource access permissions
+- Scheduled recurring invocation
+- Lambda layers configuration
+- Environment variables configuration
+- Secret values configuration
+
+? Do you want to configure advanced settings? Yes
+? Do you want to access other resources in this project from your Lambda function? Yes
+? Select the categories you want this function to have access to. auth
+? Auth has 2 resources in this project. Select the one you would like your Lambda to access app4fitnesstracker1d5522f4
+1d5522f4
+? Select the operations you want to permit on app4fitnesstracker1d5522f41d5522f4 read
+
+You can access the following resource attributes as environment variables from your Lambda function
+        AUTH_APP4FITNESSTRACKER1D5522F41D5522F4_USERPOOLID
+        ENV
+        REGION
+? Do you want to invoke this function on a recurring schedule? No
+? Do you want to enable Lambda layers for this function? No
+? Do you want to configure environment variables for this function? No
+? Do you want to configure secret values this function can access? No
+✔ Choose the package manager that you want to use: · NPM
+? Do you want to edit the local lambda function now? No
+✅ Successfully added resource admin locally.
+
+✅ Next steps:
+Check out sample function code generated in <project-dir>/amplify/backend/function/admin/src
+"amplify function build" builds all of your functions currently in the project
+"amplify mock function <functionName>" runs your function locally
+To access AWS resources outside of this Amplify app, edit the /Users/gandhya/Desktop/app4fitnesstracker/amplify/backend/function/admin/custom-policies.json
+"amplify push" builds all of your local backend resources and provisions them in the cloud
+"amplify publish" builds all of your local backend and front-end resources (if you added hosting category) and provisions them in the cloud
+✅ Succesfully added the Lambda function locally
+✔ Restrict API access? (Y/n) · yes
+✔ Restrict access by: · Individual Groups
+✔ Select groups: · Admin
+✔ What permissions do you want to grant to Admin users? · read
+✔ Do you want to add another path? (y/N) · no
+```
+
 ## Configure
 
 ```console
