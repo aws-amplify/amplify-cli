@@ -1080,9 +1080,9 @@ export class BackendSynthesizer {
 
     imports.push(this.createImportStatement([backendFunctionIdentifier], '@aws-amplify/backend'));
 
-    // Analytics: import { analytics } from './analytics/resource';
+    // Analytics: import { defineAnalytics } from './analytics/resource';
     if (renderArgs.analytics) {
-      const analyticsFunctionIdentifier = factory.createIdentifier('analytics');
+      const analyticsFunctionIdentifier = factory.createIdentifier('defineAnalytics');
       imports.push(this.createImportStatement([analyticsFunctionIdentifier], renderArgs.analytics.importFrom));
     }
 
@@ -1163,10 +1163,21 @@ export class BackendSynthesizer {
       factory.createVariableDeclarationList([backendVariable], ts.NodeFlags.Const),
     );
 
-    // Analytics: call analytics(backend) after defineBackend to create the nested stack
+    // Analytics: const analytics = defineAnalytics(backend) after defineBackend to create the nested stack
     if (renderArgs.analytics) {
-      const analyticsCall = factory.createExpressionStatement(
-        factory.createCallExpression(factory.createIdentifier('analytics'), undefined, [factory.createIdentifier('backend')]),
+      const analyticsCall = factory.createVariableStatement(
+        undefined,
+        factory.createVariableDeclarationList(
+          [
+            factory.createVariableDeclaration(
+              'analytics',
+              undefined,
+              undefined,
+              factory.createCallExpression(factory.createIdentifier('defineAnalytics'), undefined, [factory.createIdentifier('backend')]),
+            ),
+          ],
+          ts.NodeFlags.Const,
+        ),
       );
       nodes.push(analyticsCall);
     }
