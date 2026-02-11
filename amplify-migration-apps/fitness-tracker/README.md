@@ -72,7 +72,12 @@ mages or other content, Analytics, and more)
 ? Do you want to enable 3rd party authentication providers in your identity pool? No
 ? Provide a name for your user pool: (accept default value)
 ? How do you want users to be able to sign in? Username
-? Do you want to add User Pool Groups? No
+? Do you want to add User Pool Groups? Yes
+? Provide a name for your user pool group: Admin
+? Do you want to add another User Pool Group Yes
+? Provide a name for your user pool group: Basic
+? Do you want to add another User Pool Group No
+✔ Sort the user pool groups in order of preference · Admin, Basic
 ? Do you want to add an admin queries API? No
 ? Multifactor authentication (MFA) user login options: OFF
 ? Email based user registration/forgot password: Enabled (Requires per-user email entry at registration)
