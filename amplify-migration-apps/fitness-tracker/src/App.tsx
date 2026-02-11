@@ -962,8 +962,8 @@ const App: React.FC<AppProps> = ({ signOut, user }) => {
         apiName: 'adminapi',
         path: '/admin/users',
       }).response;
-      const data = await response.body.json();
-      setAdminUsers(data.users || []);
+      const data = (await response.body.json()) as any;
+      setAdminUsers(data?.users || []);
       setShowAdminModal(true);
     } catch (error) {
       console.log('Error fetching users:', error);
