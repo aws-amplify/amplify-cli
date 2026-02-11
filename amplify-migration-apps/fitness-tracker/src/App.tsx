@@ -996,7 +996,7 @@ const App: React.FC<AppProps> = ({ signOut, user }) => {
           </div>
           <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
             <Button style={{ ...themedStyles.button, backgroundColor: '#6366f1' }} onClick={fetchAllUsers} disabled={loadingUsers}>
-              {loadingUsers ? '⏳' : '👥'} Admin
+              {loadingUsers ? '⏳' : '👥'} See All Users
             </Button>
             <Button style={themedStyles.button} onClick={signOut}>
               Sign out

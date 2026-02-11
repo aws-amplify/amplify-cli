@@ -158,8 +158,11 @@ You can access the following resource attributes as environment variables from y
 ✔ Choose the package manager that you want to use: · NPM
 ? Do you want to edit the local lambda function now? No
 ✔ Restrict API access? (Y/n) · yes
+✔ Restrict access by: · Both
 ✔ Who should have access? · Authenticated users only
 ✔ What permissions do you want to grant to Authenticated users? · create, read, update, delete
+✔ Select groups: · Admin
+✔ What permissions do you want to grant to Admin users? · create, read, update, delete
 ✔ Do you want to add another path? (y/N) · no
 ```
 
