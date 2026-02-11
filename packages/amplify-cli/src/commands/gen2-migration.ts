@@ -176,7 +176,7 @@ export const run = async (context: $TSContext) => {
   printer.info(chalk.bold(chalk.underline('Implications')));
   printer.blankLine();
 
-  const cachedStep = new CachedAmplifyMigrationStep(step);
+  const cachedStep = new CachedAmplifyMigrationStep(implementation);
 
   for (const implication of rollingBack ? await cachedStep.rollback() : await cachedStep.execute()) {
     printer.info(`• ${implication}`);
