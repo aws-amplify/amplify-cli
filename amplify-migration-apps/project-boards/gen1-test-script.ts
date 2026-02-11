@@ -24,47 +24,6 @@ import { CognitoIdentityProviderClient, SignUpCommand, AdminConfirmSignUpCommand
 Amplify.configure(amplifyconfig);
 
 // ============================================================
-// CREDENTIAL GENERATION HELPERS
-// ============================================================
-
-/**
- * Generates a unique username in the format: ci-test-{timestamp}-{random4hex}
- * The timestamp provides ordering/debugging info, the random hex avoids collisions.
- */
-function generateUsername(): string {
-  const timestamp = Date.now();
-  const randomHex = webcrypto.getRandomValues(new Uint8Array(2));
-  const hex = Array.from(randomHex)
-    .map((b) => b.toString(16).padStart(2, '0'))
-    .join('');
-  return `ci-test-${timestamp}-${hex}`;
-}
-
-/**
- * Generates a password with a fixed prefix ensuring Cognito policy compliance
- * plus 8 random alphanumeric characters for entropy.
- * Format: CiTest1! + 8 random alphanumeric chars
- * The prefix guarantees: uppercase (C), lowercase (i,est), digit (1), special char (!)
- */
-function generatePassword(): string {
-  const prefix = 'CiTest1!';
-  const alphanumeric = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  const randomBytes = webcrypto.getRandomValues(new Uint8Array(8));
-  const suffix = Array.from(randomBytes)
-    .map((b) => alphanumeric[b % alphanumeric.length])
-    .join('');
-  return prefix + suffix;
-}
-
-/**
- * Generates an email address in the format: ci-test-{uniqueId}@test.example.com
- * Uses the same unique component as the username for traceability.
- */
-function generateEmail(uniqueId: string): string {
-  return `ci-test-${uniqueId}@test.example.com`;
-}
-
-// ============================================================
 // TEST USER PROVISIONING
 // ============================================================
 
@@ -80,26 +39,12 @@ async function createTestUser(): Promise<{ username: string; password: string }>
   const clientId = (amplifyconfig as Record<string, unknown>).aws_user_pools_web_client_id as string | undefined;
   const region = (amplifyconfig as Record<string, unknown>).aws_cognito_region as string | undefined;
 
-  // 2. Validate config values are present
-  if (!userPoolId) {
-    console.error('❌ Missing aws_user_pools_id in Amplify configuration');
-    process.exit(1);
-  }
-  if (!clientId) {
-    console.error('❌ Missing aws_user_pools_web_client_id in Amplify configuration');
-    process.exit(1);
-  }
-  if (!region) {
-    console.error('❌ Missing aws_cognito_region in Amplify configuration');
-    process.exit(1);
-  }
-
   try {
     // 3. Generate unique credentials
     // Use email as the username since the User Pool has EMAIL as a username attribute
-    const uniqueId = generateUsername().replace('ci-test-', '');
-    const password = generatePassword();
-    const email = generateEmail(uniqueId);
+    const uniqueId = 'user1';
+    const password = 'Password1!';
+    const email = `${uniqueId}@test.example.com`;
 
     console.log(`\n🔑 Creating test user: ${email}`);
 
