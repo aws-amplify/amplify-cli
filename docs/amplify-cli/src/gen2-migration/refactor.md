@@ -227,8 +227,57 @@ const resourceMapPath = this.resourceMappings.split(FILE_PROTOCOL_PREFIX)[1];
 - Multiple resources of the same type (e.g., multiple DynamoDB tables) are matched arbitrarily by type alone—the mapping may not preserve correct resource correspondence without explicit `--resourceMappings`
 - The `--resourceMappings` CLI option is currently disabled (commented out in code)
 - Auth with OAuth providers is known to be broken—fails on deployment after refactor when trying to replace IdP that already exists
-- The `rollback()` method is not implemented—it only logs 'Not implemented'. Manual intervention required on failure
 - The refactor operation has a 60-minute timeout (300 attempts × 12s)—very large stacks may timeout
+
+## Holding Stack (Gen2 Resource Retention)
+
+During forward migration, Gen2 stateful resources are moved to a temporary "holding stack" instead of being deleted. This preserves test data that customers may have created while testing the Gen2 deployment.
+
+### How It Works
+
+**Forward Migration:**
+1. Gen1 stack is pre-processed (references resolved)
+2. A holding stack is created: `{gen2CategoryStackName}-holding`
+3. Gen2 stateful resources are moved to the holding stack via StackRefactor
+4. Gen1 resources are moved to Gen2 stack via StackRefactor
+
+**Rollback:**
+1. Resources are moved from Gen2 back to Gen1 (existing logic)
+2. If a holding stack exists, resources are restored from holding stack to Gen2
+3. The empty holding stack is deleted
+
+**Cleanup:**
+After successful migration, run `amplify gen2-migration cleanup` to delete any remaining holding stacks.
+
+### Holding Stack Structure
+
+```yaml
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Temporary holding stack for Gen2 migration'
+Metadata:
+  AmplifyMigration:
+    SourceCategoryStack: 'arn:aws:cloudformation:...'
+    Category: 'auth'
+Resources:
+  # Gen2 resources moved here via StackRefactor
+  UserPool:
+    Type: AWS::Cognito::UserPool
+    ...
+```
+
+### Key Design Decisions
+
+- **One holding stack per category**: Matches the per-category refactor flow
+- **Logical IDs preserved**: Gen2 logical IDs are kept in the holding stack, simplifying rollback
+- **Graceful rollback**: If holding stack is missing during rollback, a warning is logged and rollback continues
+- **Standalone stack**: Not nested under Gen1 or Gen2 to avoid CDK interference
+
+### Related Files
+
+| File | Purpose |
+|------|---------|
+| `holding-stack.ts` | Utilities for creating, finding, and deleting holding stacks |
+| `cleanup.ts` | Cleanup command implementation |
 
 ## AI Development Notes
 
@@ -244,7 +293,7 @@ const resourceMapPath = this.resourceMappings.split(FILE_PROTOCOL_PREFIX)[1];
 - The `--to` parameter is required and must point to a valid Gen2 stack name—`InputValidationError` is thrown if missing
 - Resource mappings file must use `file://` protocol prefix (e.g., `file:///path/to/mappings.json`)—relative paths without protocol will fail
 - User pool groups and auth resources are in the same stack in Gen2 but different stacks in Gen1—the module handles this with 'auth-user-pool-group' category
-- Don't assume rollback works—the `rollback()` method is not implemented and only logs a message
+- Holding stacks must be cleaned up after successful migration using `amplify gen2-migration cleanup`
 
 **Testing guidance:**
 Test with deployed Amplify Gen1 projects that have auth and storage categories. Verify the assessment correctly identifies resources to migrate. Test with `--resourceMappings` to verify custom mapping support. Test OAuth migrations with social login providers (Google, Facebook, Sign In With Apple). Verify rollback behavior when refactor fails mid-operation. Test rollback operation (Gen2→Gen1) to ensure bidirectional support works.

@@ -427,6 +427,20 @@ class TemplateGenerator {
     parameters?: Parameter[];
   }> {
     try {
+      // Initialize Gen2 state
+      await categoryTemplateGenerator.initializeGen2State();
+
+      // Move Gen2 resources to holding stack first
+      const resourcesToMove = [...categoryTemplateGenerator.gen2ResourcesToRemove.keys()];
+      if (resourcesToMove.length > 0) {
+        const oldTemplate = categoryTemplateGenerator.gen2Template;
+        assert(oldTemplate);
+        this.logger.info(`Moving Gen2 ${this.getStackCategoryName(category)} resources to holding stack...`);
+        await categoryTemplateGenerator.moveGen2ResourcesToHoldingStack(oldTemplate, resourcesToMove);
+        this.logger.info(`Moved Gen2 ${this.getStackCategoryName(category)} resources to holding stack successfully`);
+      }
+
+      // Original flow: generate removal template and update stack (no-op after holding stack move)
       const { newTemplate, oldTemplate, parameters } = await categoryTemplateGenerator.generateGen2ResourceRemovalTemplate();
 
       this.logger.info(`Updating Gen 2 ${this.getStackCategoryName(category)} stack...`);
@@ -568,6 +582,7 @@ class TemplateGenerator {
         if (category === 'auth' && sourceStackParameters?.find((param) => param.ParameterKey === HOSTED_PROVIDER_META_PARAMETER_NAME)) {
           hasOAuthEnabled = true;
         }
+
         const { newTemplate, oldTemplate, parameters } = await this.processGen2Stack(
           category,
           categoryTemplateGenerator,
@@ -640,6 +655,13 @@ class TemplateGenerator {
             isRollback,
           )} stack successfully`,
         );
+
+        // During rollback, restore Gen2 resources from holding stack if it exists
+        if (isRollback) {
+          this.logger.info(`Restoring Gen2 ${this.getStackCategoryName(category)} resources from holding stack...`);
+          await categoryTemplateGenerator.restoreGen2ResourcesFromHoldingStack();
+          this.logger.info(`Restored Gen2 ${this.getStackCategoryName(category)} resources from holding stack successfully`);
+        }
       }
     }
     return true;
