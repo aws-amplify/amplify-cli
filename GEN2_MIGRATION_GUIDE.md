@@ -427,9 +427,6 @@ stateful resources, a `refactor` is required.
 > produces undesired results, you will need to recreate the environment. **Make sure you 
 > run it only on environments you can afford to delete**.
 
-> [!TIP]
-> Because rollback functionality is still in development, it is recommended to run refactor with `--no-rollback` to prevent automatic rollbacks if refactor fails.
-
 Refactoring is the process of updating the underlying CloudFormation stacks of both your Gen1 and 
 Gen2 applications such that all stateful resources are reused across both apps. In order to refactor, 
 we first need to find the name of the Gen2 root CloudFormation stack:
