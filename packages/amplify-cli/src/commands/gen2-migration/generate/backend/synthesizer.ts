@@ -1425,7 +1425,6 @@ export class BackendSynthesizer {
         // Create unique variable names for multiple REST APIs
         const stackVarName = `${restApi.apiName}Stack`;
         const apiVarName = `${restApi.apiName}Api`;
-        const integrationVarName = `${restApi.apiName}Integration`;
         const gen1ApiVarName = `gen1${restApi.apiName}Api`;
         const gen1PolicyVarName = `gen1${restApi.apiName}Policy`;
         const apiPolicyVarName = `${restApi.apiName}Policy`;
