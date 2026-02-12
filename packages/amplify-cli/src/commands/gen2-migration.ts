@@ -178,7 +178,7 @@ export const run = async (context: $TSContext) => {
 
   const cachedStep = new CachedAmplifyMigrationStep(implementation);
 
-  for (const implication of rollingBack ? await cachedStep.rollback() : await cachedStep.execute()) {
+  for (const implication of rollingBack ? await cachedStep.rollbackImplications() : await cachedStep.executeImplications()) {
     printer.info(`• ${implication}`);
   }
 
@@ -308,5 +308,13 @@ class CachedAmplifyMigrationStep {
       this._rollbackOperations = await this.step.rollback();
     }
     return this._rollbackOperations;
+  }
+
+  public async executeImplications() {
+    return this.step.executeImplications();
+  }
+
+  public async rollbackImplications() {
+    return this.step.rollbackImplications();
   }
 }
