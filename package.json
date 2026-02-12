@@ -100,6 +100,7 @@
     ]
   },
   "devDependencies": {
+    "@aws-sdk/client-cognito-identity-provider": "^3.986.0",
     "@babel/cli": "^7.27.0",
     "@babel/core": "^7.23.2",
     "@babel/plugin-proposal-numeric-separator": "^7.10.4",
