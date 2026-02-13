@@ -2020,7 +2020,7 @@ export class BackendSynthesizer {
                 [
                   factory.createNewExpression(factory.createIdentifier('Policy'), undefined, [
                     factory.createIdentifier(stackVarName),
-                    factory.createStringLiteral(`${path.path.replace(/[^a-zA-Z0-9]/g, '')}Policy`),
+                    factory.createStringLiteral(`${path.path.replace(/[^a-zA-Z0-9]/g, '')}AuthPolicy`),
                     factory.createObjectLiteralExpression(
                       [
                         factory.createPropertyAssignment(
@@ -2102,7 +2102,7 @@ export class BackendSynthesizer {
                   [
                     factory.createNewExpression(factory.createIdentifier('Policy'), undefined, [
                       factory.createIdentifier(stackVarName),
-                      factory.createStringLiteral(`${path.path.replace(/[^a-zA-Z0-9]/g, '')}Policy`),
+                      factory.createStringLiteral(`${path.path.replace(/[^a-zA-Z0-9]/g, '')}${groupName}Policy`),
                       factory.createObjectLiteralExpression(
                         [
                           factory.createPropertyAssignment(
