@@ -778,202 +778,6 @@ export class BackendSynthesizer {
     return name.replace(/-/g, '_');
   }
 
-  // Helper function to create ANY method with CORS headers
-  private createAnyMethodWithCors(resourceName: string, integrationVar: string): ts.ExpressionStatement {
-    return factory.createExpressionStatement(
-      factory.createCallExpression(
-        factory.createPropertyAccessExpression(factory.createIdentifier(resourceName), factory.createIdentifier('addMethod')),
-        undefined,
-        [
-          factory.createStringLiteral('ANY'),
-          factory.createIdentifier(integrationVar),
-          factory.createObjectLiteralExpression(
-            [
-              factory.createPropertyAssignment(
-                'methodResponses',
-                factory.createArrayLiteralExpression([
-                  factory.createObjectLiteralExpression([
-                    factory.createPropertyAssignment('statusCode', factory.createStringLiteral('200')),
-                    factory.createPropertyAssignment(
-                      'responseHeaders',
-                      factory.createObjectLiteralExpression([
-                        factory.createPropertyAssignment(
-                          factory.createStringLiteral('method.response.header.Access-Control-Allow-Origin'),
-                          factory.createTrue(),
-                        ),
-                        factory.createPropertyAssignment(
-                          factory.createStringLiteral('method.response.header.Access-Control-Allow-Headers'),
-                          factory.createTrue(),
-                        ),
-                        factory.createPropertyAssignment(
-                          factory.createStringLiteral('method.response.header.Access-Control-Allow-Methods'),
-                          factory.createTrue(),
-                        ),
-                      ]),
-                    ),
-                  ]),
-                ]),
-              ),
-            ],
-            true,
-          ),
-        ],
-      ),
-    );
-  }
-
-  // Helper function to create integration response with CORS headers
-  private createIntegrationResponse(integrationVar: string): ts.ExpressionStatement {
-    return factory.createExpressionStatement(
-      factory.createCallExpression(
-        factory.createPropertyAccessExpression(
-          factory.createIdentifier(integrationVar),
-          factory.createIdentifier('addIntegrationResponse'),
-        ),
-        undefined,
-        [
-          factory.createObjectLiteralExpression(
-            [
-              factory.createPropertyAssignment('statusCode', factory.createStringLiteral('200')),
-              factory.createPropertyAssignment(
-                'responseParameters',
-                factory.createObjectLiteralExpression([
-                  factory.createPropertyAssignment(
-                    factory.createStringLiteral('method.response.header.Access-Control-Allow-Origin'),
-                    factory.createStringLiteral("'*'"),
-                  ),
-                  factory.createPropertyAssignment(
-                    factory.createStringLiteral('method.response.header.Access-Control-Allow-Headers'),
-                    factory.createStringLiteral("'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'"),
-                  ),
-                  factory.createPropertyAssignment(
-                    factory.createStringLiteral('method.response.header.Access-Control-Allow-Methods'),
-                    factory.createStringLiteral("'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'"),
-                  ),
-                ]),
-              ),
-            ],
-            true,
-          ),
-        ],
-      ),
-    );
-  }
-
-  // Helper function to add proxy with explicit ANY and OPTIONS methods
-  private addProxyWithMethods(resourceName: string, integrationVar: string): ts.ExpressionStatement[] {
-    const proxyResourceVar = `${resourceName}Proxy`;
-
-    // Add proxy resource with anyMethod: false
-    const addProxyCall = factory.createExpressionStatement(
-      factory.createCallExpression(
-        factory.createPropertyAccessExpression(factory.createIdentifier(resourceName), factory.createIdentifier('addProxy')),
-        undefined,
-        [
-          factory.createObjectLiteralExpression(
-            [
-              factory.createPropertyAssignment('anyMethod', factory.createFalse()),
-              factory.createPropertyAssignment('defaultIntegration', factory.createIdentifier(integrationVar)),
-            ],
-            true,
-          ),
-        ],
-      ),
-    );
-
-    // Add ANY method to proxy resource
-    const proxyAnyMethod = factory.createExpressionStatement(
-      factory.createCallExpression(
-        factory.createPropertyAccessExpression(
-          factory.createPropertyAccessExpression(factory.createIdentifier(resourceName), factory.createIdentifier('addProxy')),
-          factory.createIdentifier('addMethod'),
-        ),
-        undefined,
-        [
-          factory.createStringLiteral('ANY'),
-          factory.createIdentifier(integrationVar),
-          factory.createObjectLiteralExpression(
-            [
-              factory.createPropertyAssignment(
-                'methodResponses',
-                factory.createArrayLiteralExpression([
-                  factory.createObjectLiteralExpression([
-                    factory.createPropertyAssignment('statusCode', factory.createStringLiteral('200')),
-                    factory.createPropertyAssignment(
-                      'responseHeaders',
-                      factory.createObjectLiteralExpression([
-                        factory.createPropertyAssignment(
-                          factory.createStringLiteral('method.response.header.Access-Control-Allow-Origin'),
-                          factory.createTrue(),
-                        ),
-                        factory.createPropertyAssignment(
-                          factory.createStringLiteral('method.response.header.Access-Control-Allow-Headers'),
-                          factory.createTrue(),
-                        ),
-                        factory.createPropertyAssignment(
-                          factory.createStringLiteral('method.response.header.Access-Control-Allow-Methods'),
-                          factory.createTrue(),
-                        ),
-                      ]),
-                    ),
-                  ]),
-                ]),
-              ),
-            ],
-            true,
-          ),
-        ],
-      ),
-    );
-
-    // Add OPTIONS method to proxy resource
-    const proxyOptionsMethod = factory.createExpressionStatement(
-      factory.createCallExpression(
-        factory.createPropertyAccessExpression(
-          factory.createPropertyAccessExpression(factory.createIdentifier(resourceName), factory.createIdentifier('addProxy')),
-          factory.createIdentifier('addMethod'),
-        ),
-        undefined,
-        [
-          factory.createStringLiteral('OPTIONS'),
-          factory.createIdentifier(integrationVar),
-          factory.createObjectLiteralExpression(
-            [
-              factory.createPropertyAssignment(
-                'methodResponses',
-                factory.createArrayLiteralExpression([
-                  factory.createObjectLiteralExpression([
-                    factory.createPropertyAssignment('statusCode', factory.createStringLiteral('200')),
-                    factory.createPropertyAssignment(
-                      'responseHeaders',
-                      factory.createObjectLiteralExpression([
-                        factory.createPropertyAssignment(
-                          factory.createStringLiteral('method.response.header.Access-Control-Allow-Origin'),
-                          factory.createTrue(),
-                        ),
-                        factory.createPropertyAssignment(
-                          factory.createStringLiteral('method.response.header.Access-Control-Allow-Headers'),
-                          factory.createTrue(),
-                        ),
-                        factory.createPropertyAssignment(
-                          factory.createStringLiteral('method.response.header.Access-Control-Allow-Methods'),
-                          factory.createTrue(),
-                        ),
-                      ]),
-                    ),
-                  ]),
-                ]),
-              ),
-            ],
-            true,
-          ),
-        ],
-      ),
-    );
-
-    return [addProxyCall, proxyAnyMethod, proxyOptionsMethod];
-  }
-
   render(renderArgs: BackendRenderParameters): NodeArray<Node> {
     const authFunctionIdentifier = factory.createIdentifier('auth');
     const storageFunctionIdentifier = factory.createIdentifier('storage');
@@ -2014,18 +1818,104 @@ export class BackendSynthesizer {
           const pathIntegrationVar = integrationDeclarations.get(path.lambdaFunction) || `${path.lambdaFunction}Integration`;
 
           // Add ANY method with CORS configuration for every API endpoint
-          nodes.push(this.createAnyMethodWithCors(resourceName, pathIntegrationVar));
+          const addAnyMethodCall = factory.createExpressionStatement(
+            factory.createCallExpression(
+              factory.createPropertyAccessExpression(factory.createIdentifier(resourceName), factory.createIdentifier('addMethod')),
+              undefined,
+              [
+                factory.createStringLiteral('ANY'),
+                factory.createIdentifier(pathIntegrationVar),
+                factory.createObjectLiteralExpression(
+                  [
+                    factory.createPropertyAssignment(
+                      'methodResponses',
+                      factory.createArrayLiteralExpression([
+                        factory.createObjectLiteralExpression([
+                          factory.createPropertyAssignment('statusCode', factory.createStringLiteral('200')),
+                          factory.createPropertyAssignment(
+                            'responseHeaders',
+                            factory.createObjectLiteralExpression([
+                              factory.createPropertyAssignment(
+                                factory.createStringLiteral('method.response.header.Access-Control-Allow-Origin'),
+                                factory.createTrue(),
+                              ),
+                              factory.createPropertyAssignment(
+                                factory.createStringLiteral('method.response.header.Access-Control-Allow-Headers'),
+                                factory.createTrue(),
+                              ),
+                              factory.createPropertyAssignment(
+                                factory.createStringLiteral('method.response.header.Access-Control-Allow-Methods'),
+                                factory.createTrue(),
+                              ),
+                            ]),
+                          ),
+                        ]),
+                      ]),
+                    ),
+                  ],
+                  true,
+                ),
+              ],
+            ),
+          );
+          nodes.push(addAnyMethodCall);
 
           // Add integration response with CORS header mappings
-          nodes.push(this.createIntegrationResponse(pathIntegrationVar));
+          const addIntegrationResponseCall = factory.createExpressionStatement(
+            factory.createCallExpression(
+              factory.createPropertyAccessExpression(
+                factory.createIdentifier(pathIntegrationVar),
+                factory.createIdentifier('addIntegrationResponse'),
+              ),
+              undefined,
+              [
+                factory.createObjectLiteralExpression(
+                  [
+                    factory.createPropertyAssignment('statusCode', factory.createStringLiteral('200')),
+                    factory.createPropertyAssignment(
+                      'responseParameters',
+                      factory.createObjectLiteralExpression([
+                        factory.createPropertyAssignment(
+                          factory.createStringLiteral('method.response.header.Access-Control-Allow-Origin'),
+                          factory.createStringLiteral("'*'"),
+                        ),
+                        factory.createPropertyAssignment(
+                          factory.createStringLiteral('method.response.header.Access-Control-Allow-Headers'),
+                          factory.createStringLiteral(
+                            "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+                          ),
+                        ),
+                        factory.createPropertyAssignment(
+                          factory.createStringLiteral('method.response.header.Access-Control-Allow-Methods'),
+                          factory.createStringLiteral("'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'"),
+                        ),
+                      ]),
+                    ),
+                  ],
+                  true,
+                ),
+              ],
+            ),
+          );
+          nodes.push(addIntegrationResponseCall);
 
-          // Add proxy resource with explicit ANY and OPTIONS methods
-          const proxyStatements = this.addProxyWithMethods(resourceName, pathIntegrationVar);
-          nodes.push(...proxyStatements);
-
-          // Add integration responses for proxy methods
-          nodes.push(this.createIntegrationResponse(pathIntegrationVar));
-          nodes.push(this.createIntegrationResponse(pathIntegrationVar));
+          // Add a proxy resource to catch all unmatched sub-paths
+          const addProxyCall = factory.createExpressionStatement(
+            factory.createCallExpression(
+              factory.createPropertyAccessExpression(factory.createIdentifier(resourceName), factory.createIdentifier('addProxy')),
+              undefined,
+              [
+                factory.createObjectLiteralExpression(
+                  [
+                    factory.createPropertyAssignment('anyMethod', factory.createTrue()),
+                    factory.createPropertyAssignment('defaultIntegration', factory.createIdentifier(pathIntegrationVar)),
+                  ],
+                  true,
+                ),
+              ],
+            ),
+          );
+          nodes.push(addProxyCall);
         });
 
         // ===== STEP 10: Create general API policy (only if no path-specific permissions) =====
