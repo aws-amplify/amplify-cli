@@ -1802,17 +1802,15 @@ export class BackendSynthesizer {
           // Get the Lambda integration for this path's function
           const pathIntegrationVar = integrationDeclarations.get(path.lambdaFunction) || `${path.lambdaFunction}Integration`;
 
-          // Add HTTP methods (GET, POST, PUT, DELETE, etc.) to the resource
-          path.methods.forEach((method) => {
-            const addMethodCall = factory.createExpressionStatement(
-              factory.createCallExpression(
-                factory.createPropertyAccessExpression(factory.createIdentifier(resourceName), factory.createIdentifier('addMethod')),
-                undefined,
-                [factory.createStringLiteral(method), factory.createIdentifier(pathIntegrationVar)],
-              ),
-            );
-            nodes.push(addMethodCall);
-          });
+          // Add ANY method by default for every API endpoint
+          const addAnyMethodCall = factory.createExpressionStatement(
+            factory.createCallExpression(
+              factory.createPropertyAccessExpression(factory.createIdentifier(resourceName), factory.createIdentifier('addMethod')),
+              undefined,
+              [factory.createStringLiteral('ANY'), factory.createIdentifier(pathIntegrationVar)],
+            ),
+          );
+          nodes.push(addAnyMethodCall);
 
           // Add a proxy resource to catch all unmatched sub-paths
           const addProxyCall = factory.createExpressionStatement(
