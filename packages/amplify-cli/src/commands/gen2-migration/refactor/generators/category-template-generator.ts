@@ -8,7 +8,7 @@ import {
 } from '@aws-sdk/client-cloudformation';
 import { SSMClient } from '@aws-sdk/client-ssm';
 import { tryRefactorStack } from '../cfn-stack-refactor-updater';
-import { getHoldingStackName, createHoldingStack, findHoldingStack, deleteHoldingStack } from '../holding-stack';
+import { getHoldingStackName, findHoldingStack, deleteHoldingStack } from '../holding-stack';
 import assert from 'node:assert';
 import {
   CFN_AUTH_TYPE,
@@ -471,28 +471,28 @@ class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
       stackResources,
     );
 
-    // Create holding stack
     const holdingStackName = getHoldingStackName(this.gen2StackId);
-    const existingHoldingStack = await findHoldingStack(this.cfnClient, holdingStackName);
-    if (!existingHoldingStack) {
-      this.logger.debug(`Creating holding stack: ${holdingStackName}`);
-      await createHoldingStack(this.cfnClient, holdingStackName, 'migration', this.gen2StackId);
-    } else {
-      this.logger.debug(`Holding stack already exists: ${holdingStackName}`);
-    }
 
-    // Read holding stack template
-    const holdingTemplateResponse = await this.cfnClient.send(
-      new GetTemplateCommand({ StackName: holdingStackName, TemplateStage: 'Original' }),
-    );
-    assert(holdingTemplateResponse.TemplateBody);
-    const holdingTemplate = JSON.parse(holdingTemplateResponse.TemplateBody) as CFNTemplate;
+    // Build holding stack template with moved resources
+    const holdingTemplate: CFNTemplate = {
+      AWSTemplateFormatVersion: '2010-09-09',
+      Description: 'Temporary holding stack for Gen2 migration',
+      Metadata: {
+        AmplifyMigration: {
+          SourceCategoryStack: this.gen2StackId,
+          Category: 'migration',
+        },
+      },
+      Resources: {
+        MigrationPlaceholder: {
+          Type: 'AWS::CloudFormation::WaitConditionHandle',
+          Properties: {},
+        },
+      },
+    };
 
-    // Build templates for refactor
+    // Build gen2 template with resources removed, and holding template with resources added
     const gen2TemplateForRefactor = JSON.parse(JSON.stringify(resolvedGen2Template));
-    const holdingTemplateForRefactor = JSON.parse(JSON.stringify(holdingTemplate));
-
-    // Build resource mappings and move resources
     const resourceMappings: ResourceMapping[] = [];
     resourcesToMove.forEach((logicalResourceId) => {
       this.logger.debug(`Moving resource to holding stack: ${logicalResourceId}`);
@@ -500,20 +500,21 @@ class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
         Source: { StackName: this.gen2StackId, LogicalResourceId: logicalResourceId },
         Destination: { StackName: holdingStackName, LogicalResourceId: logicalResourceId },
       });
-      holdingTemplateForRefactor.Resources[logicalResourceId] = resolvedGen2Template.Resources[logicalResourceId];
+      holdingTemplate.Resources[logicalResourceId] = resolvedGen2Template.Resources[logicalResourceId];
       delete gen2TemplateForRefactor.Resources[logicalResourceId];
     });
 
     this.logger.debug(`Gen2 template resources after move: ${Object.keys(gen2TemplateForRefactor.Resources).length}`);
 
-    // Execute StackRefactor
+    // Single StackRefactor call — CFN creates the holding stack via EnableStackCreation
     this.logger.debug('Executing StackRefactor to move resources to holding stack...');
     const [success, failedRefactorMetadata] = await tryRefactorStack(this.cfnClient, {
       StackDefinitions: [
         { TemplateBody: JSON.stringify(gen2TemplateForRefactor), StackName: this.gen2StackId },
-        { TemplateBody: JSON.stringify(holdingTemplateForRefactor), StackName: holdingStackName },
+        { TemplateBody: JSON.stringify(holdingTemplate), StackName: holdingStackName },
       ],
       ResourceMappings: resourceMappings,
+      EnableStackCreation: true,
     });
 
     if (!success) {
@@ -539,14 +540,7 @@ class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
       return;
     }
 
-    const holdingTemplateResponse = await this.cfnClient.send(
-      new GetTemplateCommand({ StackName: holdingStackName, TemplateStage: 'Original' }),
-    );
-    if (!holdingTemplateResponse.TemplateBody) {
-      this.logger.debug('Could not read holding stack template.');
-      return;
-    }
-    const holdingTemplate = JSON.parse(holdingTemplateResponse.TemplateBody) as CFNTemplate;
+    const holdingTemplate = await this.readTemplate(holdingStackName);
 
     const resourcesToRestore = Object.entries(holdingTemplate.Resources).filter(([logicalId]) => logicalId !== 'MigrationPlaceholder');
 

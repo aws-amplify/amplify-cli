@@ -46,9 +46,10 @@ export interface CFNTemplate {
   Description: string;
   AWSTemplateFormatVersion: string;
   Conditions?: Record<string, CFNConditionFunction>;
+  Metadata?: Record<string, unknown>;
   Resources: Record<string, CFNResource>;
   Parameters?: Record<string, CFNParameter>;
-  Outputs: Record<string, CFNOutput>;
+  Outputs?: Record<string, CFNOutput>;
 }
 
 export interface CFNChangeTemplate {
@@ -142,6 +143,7 @@ export enum CFN_PSEUDO_PARAMETERS_REF {
 
 export enum CFNStackStatus {
   UPDATE_COMPLETE = 'UPDATE_COMPLETE',
+  CREATE_COMPLETE = 'CREATE_COMPLETE',
 }
 
 export type BaseOAuthClient = { ProviderName: string; client_id: string };

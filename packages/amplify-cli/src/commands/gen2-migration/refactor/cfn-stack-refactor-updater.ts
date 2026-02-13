@@ -87,7 +87,10 @@ export async function tryRefactorStack(
   const sourceStackStatus = await pollStackForCompletionState(cfnClient, sourceStackName);
   assert(sourceStackStatus === CFNStackStatus.UPDATE_COMPLETE, `${sourceStackName} was not updated successfully.`);
   const destinationStackStatus = await pollStackForCompletionState(cfnClient, destinationStackName);
-  assert(destinationStackStatus === CFNStackStatus.UPDATE_COMPLETE, `${destinationStackName} was not updated successfully.`);
+  assert(
+    destinationStackStatus === CFNStackStatus.UPDATE_COMPLETE || destinationStackStatus === CFNStackStatus.CREATE_COMPLETE,
+    `${destinationStackName} was not updated successfully.`,
+  );
 
   return [true, undefined];
 }

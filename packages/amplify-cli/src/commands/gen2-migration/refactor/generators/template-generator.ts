@@ -569,6 +569,7 @@ class TemplateGenerator {
         const [newGen1Template, gen1StackParameters] = processGen1StackResponse;
         sourceStackParameters = gen1StackParameters;
         newSourceTemplate = newGen1Template;
+        // never even use params
         if (category === 'auth' && sourceStackParameters?.find((param) => param.ParameterKey === HOSTED_PROVIDER_META_PARAMETER_NAME)) {
           hasOAuthEnabled = true;
         }
