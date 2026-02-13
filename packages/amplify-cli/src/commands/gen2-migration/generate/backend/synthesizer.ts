@@ -1600,7 +1600,7 @@ export class BackendSynthesizer {
         nodes.push(gatewayResponse5XX);
 
         // ===== STEP 5: Create Lambda integrations for each function =====
-        // Each unique function used by this API gets its own integration
+        // Each unique function used by this API gets its own integration with CORS support
         const integrationDeclarations = new Map<string, string>();
         if (restApi.uniqueFunctions) {
           restApi.uniqueFunctions.forEach((funcName) => {
@@ -1622,6 +1622,38 @@ export class BackendSynthesizer {
                           factory.createIdentifier('resources'),
                         ),
                         factory.createIdentifier('lambda'),
+                      ),
+                      factory.createObjectLiteralExpression(
+                        [
+                          factory.createPropertyAssignment(
+                            'integrationResponses',
+                            factory.createArrayLiteralExpression([
+                              factory.createObjectLiteralExpression([
+                                factory.createPropertyAssignment('statusCode', factory.createStringLiteral('200')),
+                                factory.createPropertyAssignment(
+                                  'responseParameters',
+                                  factory.createObjectLiteralExpression([
+                                    factory.createPropertyAssignment(
+                                      factory.createStringLiteral('method.response.header.Access-Control-Allow-Origin'),
+                                      factory.createStringLiteral("'*'"),
+                                    ),
+                                    factory.createPropertyAssignment(
+                                      factory.createStringLiteral('method.response.header.Access-Control-Allow-Headers'),
+                                      factory.createStringLiteral(
+                                        "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+                                      ),
+                                    ),
+                                    factory.createPropertyAssignment(
+                                      factory.createStringLiteral('method.response.header.Access-Control-Allow-Methods'),
+                                      factory.createStringLiteral("'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'"),
+                                    ),
+                                  ]),
+                                ),
+                              ]),
+                            ]),
+                          ),
+                        ],
+                        true,
                       ),
                     ]),
                   ),
@@ -1814,66 +1846,8 @@ export class BackendSynthesizer {
           );
           nodes.push(resourceDeclaration);
 
-          // Create Lambda integration with CORS integration responses
-          const pathIntegrationVar = `${path.lambdaFunction}Integration`;
-          const integrationDeclaration = factory.createVariableStatement(
-            [],
-            factory.createVariableDeclarationList(
-              [
-                factory.createVariableDeclaration(
-                  pathIntegrationVar,
-                  undefined,
-                  undefined,
-                  factory.createNewExpression(factory.createIdentifier('LambdaIntegration'), undefined, [
-                    factory.createPropertyAccessExpression(
-                      factory.createPropertyAccessExpression(
-                        factory.createPropertyAccessExpression(
-                          factory.createIdentifier('backend'),
-                          factory.createIdentifier(path.lambdaFunction),
-                        ),
-                        factory.createIdentifier('resources'),
-                      ),
-                      factory.createIdentifier('lambda'),
-                    ),
-                    factory.createObjectLiteralExpression(
-                      [
-                        factory.createPropertyAssignment(
-                          'integrationResponses',
-                          factory.createArrayLiteralExpression([
-                            factory.createObjectLiteralExpression([
-                              factory.createPropertyAssignment('statusCode', factory.createStringLiteral('200')),
-                              factory.createPropertyAssignment(
-                                'responseParameters',
-                                factory.createObjectLiteralExpression([
-                                  factory.createPropertyAssignment(
-                                    factory.createStringLiteral('method.response.header.Access-Control-Allow-Origin'),
-                                    factory.createStringLiteral("'*'"),
-                                  ),
-                                  factory.createPropertyAssignment(
-                                    factory.createStringLiteral('method.response.header.Access-Control-Allow-Headers'),
-                                    factory.createStringLiteral(
-                                      "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
-                                    ),
-                                  ),
-                                  factory.createPropertyAssignment(
-                                    factory.createStringLiteral('method.response.header.Access-Control-Allow-Methods'),
-                                    factory.createStringLiteral("'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'"),
-                                  ),
-                                ]),
-                              ),
-                            ]),
-                          ]),
-                        ),
-                      ],
-                      true,
-                    ),
-                  ]),
-                ),
-              ],
-              ts.NodeFlags.Const,
-            ),
-          );
-          nodes.push(integrationDeclaration);
+          // Get the Lambda integration for this path's function
+          const pathIntegrationVar = integrationDeclarations.get(path.lambdaFunction) || `${path.lambdaFunction}Integration`;
 
           // Add ANY method with CORS configuration for every API endpoint
           const addAnyMethodCall = factory.createExpressionStatement(
