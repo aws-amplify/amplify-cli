@@ -1492,7 +1492,6 @@ export class BackendSynthesizer {
                           factory.createTemplateSpan(factory.createIdentifier('branchName'), factory.createTemplateTail('')),
                         ]),
                       ),
-                      factory.createPropertyAssignment('defaultCorsPreflightOptions', corsOptions),
                     ],
                     true,
                   ),
@@ -1802,15 +1801,87 @@ export class BackendSynthesizer {
           // Get the Lambda integration for this path's function
           const pathIntegrationVar = integrationDeclarations.get(path.lambdaFunction) || `${path.lambdaFunction}Integration`;
 
-          // Add ANY method by default for every API endpoint
+          // Add ANY method with CORS configuration for every API endpoint
           const addAnyMethodCall = factory.createExpressionStatement(
             factory.createCallExpression(
               factory.createPropertyAccessExpression(factory.createIdentifier(resourceName), factory.createIdentifier('addMethod')),
               undefined,
-              [factory.createStringLiteral('ANY'), factory.createIdentifier(pathIntegrationVar)],
+              [
+                factory.createStringLiteral('ANY'),
+                factory.createIdentifier(pathIntegrationVar),
+                factory.createObjectLiteralExpression(
+                  [
+                    factory.createPropertyAssignment(
+                      'methodResponses',
+                      factory.createArrayLiteralExpression([
+                        factory.createObjectLiteralExpression([
+                          factory.createPropertyAssignment('statusCode', factory.createStringLiteral('200')),
+                          factory.createPropertyAssignment(
+                            'responseHeaders',
+                            factory.createObjectLiteralExpression([
+                              factory.createPropertyAssignment(
+                                factory.createStringLiteral('method.response.header.Access-Control-Allow-Origin'),
+                                factory.createTrue(),
+                              ),
+                              factory.createPropertyAssignment(
+                                factory.createStringLiteral('method.response.header.Access-Control-Allow-Headers'),
+                                factory.createTrue(),
+                              ),
+                              factory.createPropertyAssignment(
+                                factory.createStringLiteral('method.response.header.Access-Control-Allow-Methods'),
+                                factory.createTrue(),
+                              ),
+                            ]),
+                          ),
+                        ]),
+                      ]),
+                    ),
+                  ],
+                  true,
+                ),
+              ],
             ),
           );
           nodes.push(addAnyMethodCall);
+
+          // Add integration response with CORS header mappings
+          const addIntegrationResponseCall = factory.createExpressionStatement(
+            factory.createCallExpression(
+              factory.createPropertyAccessExpression(
+                factory.createIdentifier(pathIntegrationVar),
+                factory.createIdentifier('addIntegrationResponse'),
+              ),
+              undefined,
+              [
+                factory.createObjectLiteralExpression(
+                  [
+                    factory.createPropertyAssignment('statusCode', factory.createStringLiteral('200')),
+                    factory.createPropertyAssignment(
+                      'responseParameters',
+                      factory.createObjectLiteralExpression([
+                        factory.createPropertyAssignment(
+                          factory.createStringLiteral('method.response.header.Access-Control-Allow-Origin'),
+                          factory.createStringLiteral("'*'"),
+                        ),
+                        factory.createPropertyAssignment(
+                          factory.createStringLiteral('method.response.header.Access-Control-Allow-Headers'),
+                          factory.createStringLiteral(
+                            "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+                          ),
+                        ),
+                        factory.createPropertyAssignment(
+                          factory.createStringLiteral('method.response.header.Access-Control-Allow-Methods'),
+                          factory.createStringLiteral("'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'"),
+                        ),
+                      ]),
+                    ),
+                  ],
+                  true,
+                ),
+              ],
+            ),
+          );
+          nodes.push(addIntegrationResponseCall);
 
           // Add a proxy resource to catch all unmatched sub-paths
           const addProxyCall = factory.createExpressionStatement(
