@@ -30,33 +30,49 @@ export interface TestUser {
   phoneNumber?: string;
 }
 
-const TEST_PASSWORD = 'Password1!';
+interface ResolvedAuthConfig {
+  signinIdentifier: SigninIdentifier;
+  signupAttributes: SignupAttribute[];
+}
 
-function resolveAuthConfig(config: AmplifyConfig): { signinIdentifier: SigninIdentifier; signupAttributes: SignupAttribute[] } {
+const TEST_PASSWORD = 'Password1!';
+const TEST_EMAIL = 'user1@test.example.com';
+const TEST_PHONE_NUMBER = '+15551234567';
+const TEST_USERNAME = 'testuser1';
+
+function resolveAuthConfig(config: AmplifyConfig): ResolvedAuthConfig {
   return {
     signinIdentifier: config.signinIdentifier ?? 'email',
     signupAttributes: config.signupAttributes ?? ['email'],
   };
 }
 
-function generateTestEmail(): string {
-  return 'user1@test.example.com';
-}
-
-function generateTestPhoneNumber(): string {
-  return '+15551234567';
-}
-
-function generateTestUsername(): string {
-  return 'testuser1';
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message;
+  }
+  if (typeof error === 'object' && error !== null) {
+    // Handle GraphQL-style errors: { errors: [{ message: "..." }] }
+    if ('errors' in error) {
+      const gqlErrors = (error as { errors: unknown }).errors;
+      if (Array.isArray(gqlErrors) && gqlErrors.length > 0) {
+        const first = gqlErrors[0] as { message?: string };
+        if (typeof first.message === 'string') {
+          return first.message;
+        }
+      }
+    }
+    return JSON.stringify(error, null, 2);
+  }
+  return String(error);
 }
 
 function buildSignUpInput(
-  config: AmplifyConfig,
+  clientId: string,
+  resolved: ResolvedAuthConfig,
   credentials: { email: string; phoneNumber: string; username: string; password: string },
 ): { ClientId: string; Username: string; Password: string; UserAttributes: AttributeType[] } {
-  const { signinIdentifier, signupAttributes } = resolveAuthConfig(config);
-  const clientId = config.aws_user_pools_web_client_id ?? '';
+  const { signinIdentifier, signupAttributes } = resolved;
 
   const identifierValueMap: Record<SigninIdentifier, string> = {
     email: credentials.email,
@@ -71,10 +87,11 @@ function buildSignUpInput(
     username: { Name: 'username', Value: credentials.username },
   };
 
+  // Cognito requires email in UserAttributes even when it's also the Username.
+  // Only phone/username are excluded since Cognito treats them as implicit
+  // when they appear in the Username field.
   const userAttributes: AttributeType[] = signupAttributes
     .filter((attr) => {
-      // When signinIdentifier is phone or username, that value is already
-      // carried in the Username field, so exclude it from UserAttributes.
       if (signinIdentifier === 'phone' && attr === 'phone') return false;
       if (signinIdentifier === 'username' && attr === 'username') return false;
       return true;
@@ -89,7 +106,11 @@ function buildSignUpInput(
   };
 }
 
-export function createTestRunner() {
+export function createTestRunner(): {
+  failures: TestFailure[];
+  runTest: <T>(name: string, testFn: () => Promise<T>) => Promise<T | null>;
+  printSummary: () => void;
+} {
   const failures: TestFailure[] = [];
 
   async function runTest<T>(name: string, testFn: () => Promise<T>): Promise<T | null> {
@@ -97,24 +118,7 @@ export function createTestRunner() {
       const result = await testFn();
       return result;
     } catch (error: unknown) {
-      // Handle different error formats (GraphQL errors, standard errors, objects)
-      let errorMessage: string;
-      const err = error as Record<string, unknown>;
-      const errors = err?.errors as Array<{ message?: string }> | undefined;
-      if (errors?.[0]?.message) {
-        // GraphQL error format
-        errorMessage = errors[0].message;
-      } else if (error instanceof Error) {
-        // Standard Error
-        errorMessage = error.message;
-      } else if (typeof error === 'object' && error !== null) {
-        // Generic object - stringify it
-        errorMessage = JSON.stringify(error, null, 2);
-      } else {
-        errorMessage = String(error);
-      }
-
-      failures.push({ name, error: errorMessage });
+      failures.push({ name, error: getErrorMessage(error) });
       return null;
     }
   }
@@ -144,15 +148,19 @@ export function createTestRunner() {
  * Returns the credentials for the authenticated user.
  */
 export async function createTestUser(config: AmplifyConfig): Promise<TestUser> {
-  const { aws_user_pools_id: userPoolId, aws_cognito_region: region } = config;
-  const { signinIdentifier, signupAttributes } = resolveAuthConfig(config);
+  const { aws_user_pools_id: userPoolId, aws_user_pools_web_client_id: clientId, aws_cognito_region: region } = config;
 
-  const email = generateTestEmail();
-  const phoneNumber = generateTestPhoneNumber();
-  const username = generateTestUsername();
-  const password = TEST_PASSWORD;
+  const resolved = resolveAuthConfig(config);
+  const { signupAttributes } = resolved;
 
-  const signUpInput = buildSignUpInput(config, { email, phoneNumber, username, password });
+  const signUpInput = buildSignUpInput(clientId ?? '', resolved, {
+    email: TEST_EMAIL,
+    phoneNumber: TEST_PHONE_NUMBER,
+    username: TEST_USERNAME,
+    password: TEST_PASSWORD,
+  });
+
+  const signinValue = signUpInput.Username;
 
   console.log(`\n🔑 Creating and authenticating test user: ${signUpInput.Username}`);
 
@@ -163,7 +171,7 @@ export async function createTestUser(config: AmplifyConfig): Promise<TestUser> {
     await cognitoClient.send(new SignUpCommand(signUpInput));
     console.log('✅ SignUp succeeded');
   } catch (error) {
-    console.error('❌ SignUp failed:', error instanceof Error ? error.message : String(error));
+    console.error('❌ SignUp failed:', getErrorMessage(error));
     return process.exit(1);
   }
 
@@ -177,38 +185,31 @@ export async function createTestUser(config: AmplifyConfig): Promise<TestUser> {
     );
     console.log('✅ AdminConfirmSignUp succeeded');
   } catch (error) {
-    console.error('❌ AdminConfirmSignUp failed:', error instanceof Error ? error.message : String(error));
+    console.error('❌ AdminConfirmSignUp failed:', getErrorMessage(error));
     return process.exit(1);
   }
 
   // Step 3: SignIn
-  const identifierValueMap: Record<SigninIdentifier, string> = {
-    email,
-    phone: phoneNumber,
-    username,
-  };
-  const signinValue = identifierValueMap[signinIdentifier];
-
   try {
-    await signIn({ username: signinValue, password });
+    await signIn({ username: signinValue, password: TEST_PASSWORD });
     const currentUser = await getCurrentUser();
     console.log(`✅ Signed in as: ${currentUser.username}`);
   } catch (error) {
-    console.error('❌ SignIn failed:', error instanceof Error ? error.message : String(error));
+    console.error('❌ SignIn failed:', getErrorMessage(error));
     return process.exit(1);
   }
 
   // Build TestUser with fields based on signupAttributes
   const testUser: TestUser = {
     username: signinValue,
-    password,
+    password: TEST_PASSWORD,
   };
 
   if (signupAttributes.includes('email')) {
-    testUser.email = email;
+    testUser.email = TEST_EMAIL;
   }
   if (signupAttributes.includes('phone')) {
-    testUser.phoneNumber = phoneNumber;
+    testUser.phoneNumber = TEST_PHONE_NUMBER;
   }
 
   return testUser;
@@ -220,6 +221,6 @@ export async function signOutUser(): Promise<void> {
     await signOut();
     console.log('✅ Signed out successfully');
   } catch (error) {
-    console.log('❌ Sign out error:', error);
+    console.error('❌ Sign out error:', getErrorMessage(error));
   }
 }
