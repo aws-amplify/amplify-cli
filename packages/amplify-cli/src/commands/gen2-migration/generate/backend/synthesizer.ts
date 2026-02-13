@@ -1726,7 +1726,15 @@ export class BackendSynthesizer {
                         ),
                         factory.createPropertyAssignment(
                           factory.createStringLiteral('Access-Control-Allow-Headers'),
-                          factory.createStringLiteral("'*'"),
+                          factory.createStringLiteral("'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"),
+                        ),
+                        factory.createPropertyAssignment(
+                          factory.createStringLiteral('Access-Control-Allow-Methods'),
+                          factory.createStringLiteral("'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'"),
+                        ),
+                        factory.createPropertyAssignment(
+                          factory.createStringLiteral('Access-Control-Expose-Headers'),
+                          factory.createStringLiteral("'Date,X-Amzn-ErrorType'"),
                         ),
                       ],
                       true,
@@ -1765,7 +1773,15 @@ export class BackendSynthesizer {
                         ),
                         factory.createPropertyAssignment(
                           factory.createStringLiteral('Access-Control-Allow-Headers'),
-                          factory.createStringLiteral("'*'"),
+                          factory.createStringLiteral("'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"),
+                        ),
+                        factory.createPropertyAssignment(
+                          factory.createStringLiteral('Access-Control-Allow-Methods'),
+                          factory.createStringLiteral("'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'"),
+                        ),
+                        factory.createPropertyAssignment(
+                          factory.createStringLiteral('Access-Control-Expose-Headers'),
+                          factory.createStringLiteral("'Date,X-Amzn-ErrorType'"),
                         ),
                       ],
                       true,
