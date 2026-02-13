@@ -426,40 +426,30 @@ class TemplateGenerator {
     oldTemplate: CFNTemplate;
     parameters?: Parameter[];
   }> {
-    try {
-      // Initialize Gen2 state
-      await categoryTemplateGenerator.initializeGen2State();
+    // Initialize Gen2 state — reads template, parameters, identifies stateful resources
+    await categoryTemplateGenerator.initializeGen2State();
 
-      // Move Gen2 resources to holding stack first
-      const resourcesToMove = [...categoryTemplateGenerator.gen2ResourcesToRemove.keys()];
-      if (resourcesToMove.length > 0) {
-        const oldTemplate = categoryTemplateGenerator.gen2Template;
-        assert(oldTemplate);
-        this.logger.info(`Moving Gen2 ${this.getStackCategoryName(category)} resources to holding stack...`);
-        await categoryTemplateGenerator.moveGen2ResourcesToHoldingStack(oldTemplate, resourcesToMove);
-        this.logger.info(`Moved Gen2 ${this.getStackCategoryName(category)} resources to holding stack successfully`);
-      }
+    const oldTemplate = categoryTemplateGenerator.gen2Template;
+    const parameters = categoryTemplateGenerator.gen2StackParameters;
+    assert(oldTemplate);
 
-      // Original flow: generate removal template and update stack (no-op after holding stack move)
-      const { newTemplate, oldTemplate, parameters } = await categoryTemplateGenerator.generateGen2ResourceRemovalTemplate();
-
-      this.logger.info(`Updating Gen 2 ${this.getStackCategoryName(category)} stack...`);
-
-      const gen2StackUpdateStatus = await tryUpdateStack(this.cfnClient, destinationCategoryStackId, parameters ?? [], newTemplate);
-
-      assert(gen2StackUpdateStatus === CFNStackStatus.UPDATE_COMPLETE, `Gen 2 stack is in an invalid state: ${gen2StackUpdateStatus}`);
-      this.logger.info(`Updated Gen 2 ${this.getStackCategoryName(category)} stack successfully`);
-
-      return { newTemplate, oldTemplate, parameters };
-    } catch (e) {
-      if (this.isNoResourcesError(e)) {
-        const currentTemplate = categoryTemplateGenerator.gen2Template;
-        assert(currentTemplate);
-        const parameters = categoryTemplateGenerator.gen2StackParameters;
-        return { newTemplate: currentTemplate, oldTemplate: currentTemplate, parameters };
-      }
-      throw e;
+    // Check if a previous run already moved resources to a holding stack
+    const recoveredTemplate = await categoryTemplateGenerator.recoverFromHoldingStack();
+    if (recoveredTemplate) {
+      this.logger.info(`Recovered Gen2 ${this.getStackCategoryName(category)} state from existing holding stack`);
+      return { newTemplate: recoveredTemplate, oldTemplate, parameters };
     }
+
+    // Move Gen2 stateful resources to holding stack
+    const resourcesToMove = [...categoryTemplateGenerator.gen2ResourcesToRemove.keys()];
+    if (resourcesToMove.length === 0) {
+      throw new Error('No resources to remove in Gen2 stack.');
+    }
+
+    this.logger.info(`Moving Gen2 ${this.getStackCategoryName(category)} resources to holding stack...`);
+    const newTemplate = await categoryTemplateGenerator.moveGen2ResourcesToHoldingStack(oldTemplate, resourcesToMove);
+    this.logger.info(`Moved Gen2 ${this.getStackCategoryName(category)} resources to holding stack successfully`);
+    return { newTemplate, oldTemplate, parameters };
   }
 
   private initializeCategoryGenerators(customResourceMap?: ResourceMapping[]) {

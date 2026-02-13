@@ -279,6 +279,63 @@ Resources:
 | `holding-stack.ts` | Utilities for creating, finding, and deleting holding stacks |
 | `cleanup.ts` | Cleanup command implementation |
 
+## Known Issues — Holding Stack Implementation
+
+### ~~Critical: No recovery from partial failure (resume scenario)~~ FIXED
+
+`recoverFromHoldingStack()` in `CategoryTemplateGenerator` now detects an existing holding stack, populates `gen2ResourcesToRemove` from its contents, and returns the current Gen2 template. `processGen2Stack` calls this before attempting a new holding stack move. The redundant `generateGen2ResourceRemovalTemplate` fallback was removed.
+
+### Critical: Rollback after failed Gen1→Gen2 refactor doesn't restore holding stack
+
+In `template-generator.ts` `generateCategoryTemplates`, when the second StackRefactor (Gen1→Gen2) fails, the code calls `rollbackGen2Stack` with the original Gen2 template. But the Gen2 stack was already modified by the first StackRefactor (resources moved to holding stack). Updating the Gen2 stack with a template that references resources now owned by the holding stack will fail.
+
+**File:** `generators/template-generator.ts` — failure handler in `generateCategoryTemplates`
+
+**Fix:** Call `restoreGen2ResourcesFromHoldingStack()` before `rollbackGen2Stack()`:
+
+```typescript
+if (!isRollback && oldDestinationTemplate) {
+  await categoryTemplateGenerator.restoreGen2ResourcesFromHoldingStack();
+  await this.rollbackGen2Stack(category, destinationCategoryStackId, destinationStackParameters, oldDestinationTemplate);
+}
+```
+
+### ~~Medium: `[object Object]` displayed for implications~~ FIXED
+
+Implications display now calls `executeImplications()` / `rollbackImplications()` instead of `execute()` / `rollback()`.
+
+### Medium: Cleanup matches any stack ending with `-holding` in the account
+
+`findHoldingStacks` in `cleanup.ts` matches ALL stacks ending with `-holding`, not just Amplify migration holding stacks. This could delete unrelated stacks.
+
+**File:** `cleanup.ts` — `findHoldingStacks`
+
+**Fix:** After matching the suffix, read the stack template and verify `Metadata.AmplifyMigration` exists before including it.
+
+### ~~Medium: `deleteHoldingStack` crashes when stack is already gone~~ FIXED
+
+`deleteHoldingStack` now catches "does not exist" from `pollStackForCompletionState` and treats it as successful deletion.
+
+### ~~Low: Redundant fallback to `generateGen2ResourceRemovalTemplate`~~ FIXED
+
+Removed as part of the `processGen2Stack` rewrite. The method now throws directly if no resources are found.
+
+### Low: No stack name length validation
+
+`getHoldingStackName` appends `-holding` (8 chars) without checking the 128-character CloudFormation stack name limit.
+
+**File:** `holding-stack.ts` — `getHoldingStackName`
+
+**Fix:** Validate `stackName.length + HOLDING_STACK_SUFFIX.length <= 128` and throw if exceeded.
+
+### Cosmetic: Misleading rollback log messages
+
+In `generateCategoryTemplates`, the rollback path always logs "Restoring..." and "Restored...successfully" even when no holding stack exists. `restoreGen2ResourcesFromHoldingStack` handles this gracefully (returns early), but the surrounding log messages are misleading.
+
+**File:** `generators/template-generator.ts` — rollback path in `generateCategoryTemplates`
+
+**Fix:** Move log messages inside `restoreGen2ResourcesFromHoldingStack` or check return value.
+
 ## AI Development Notes
 
 **Important considerations:**

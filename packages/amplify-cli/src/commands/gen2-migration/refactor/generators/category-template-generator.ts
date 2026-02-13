@@ -88,14 +88,7 @@ class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
 
     const oldGen1Template = await this.readTemplate(this.gen1StackId);
     this.logger.debug(`Gen1 Template Resources count: ${Object.keys(oldGen1Template.Resources).length}`);
-    this.gen1ResourcesToMove = new Map(
-      Object.entries(oldGen1Template.Resources).filter(([logicalId, value]) => {
-        return (
-          this.resourcesToMovePredicate?.(this.resourcesToMove, [logicalId, value]) ??
-          this.resourcesToMove.some((resourceToMove) => resourceToMove.valueOf() === value.Type)
-        );
-      }),
-    );
+    this.gen1ResourcesToMove = this.filterStatefulResources(oldGen1Template);
     this.logger.debug(`Gen1 Resources to move: ${Array.from(this.gen1ResourcesToMove.keys())}`);
     this.logger.debug(`Gen1 Resources to move count: ${this.gen1ResourcesToMove.size}`);
     this.logger.debug('Gen1 Resources to move details:');
@@ -187,15 +180,55 @@ class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
     this.logger.debug(`Gen2 Template Resources count: ${Object.keys(gen2Template.Resources).length}`);
     this.gen2Template = gen2Template;
 
-    this.gen2ResourcesToRemove = new Map(
-      Object.entries(gen2Template.Resources).filter(([logicalId, value]) => {
+    this.gen2ResourcesToRemove = this.filterStatefulResources(gen2Template);
+    this.logger.debug(`Gen2 stateful resources: ${Array.from(this.gen2ResourcesToRemove.keys())}`);
+  }
+
+  /**
+   * Recovers state from an existing holding stack left by a previous failed run.
+   *
+   * When a prior attempt moved Gen2 resources to the holding stack but crashed before
+   * completing the Gen1→Gen2 refactor, the Gen2 template is missing its stateful resources.
+   * This method detects that scenario, populates gen2ResourcesToRemove from the holding stack
+   * contents, and returns the current Gen2 template (already stripped of those resources).
+   *
+   * @returns the current Gen2 template if recovery occurred, undefined if no holding stack exists
+   */
+  public async recoverFromHoldingStack(): Promise<CFNTemplate | undefined> {
+    const holdingStackName = getHoldingStackName(this.gen2StackId);
+    const holdingStack = await findHoldingStack(this.cfnClient, holdingStackName);
+    if (!holdingStack) {
+      return undefined;
+    }
+
+    this.logger.debug(`Found existing holding stack: ${holdingStackName}, recovering state`);
+
+    const holdingTemplate = await this.readTemplate(holdingStackName);
+    const holdingResources = this.filterStatefulResources(holdingTemplate);
+
+    if (holdingResources.size === 0) {
+      this.logger.debug('Holding stack has no stateful resources, nothing to recover');
+      return undefined;
+    }
+
+    // Populate gen2ResourcesToRemove from the holding stack — this is what
+    // buildGen1ToGen2ResourceLogicalIdMapping needs to build the mapping
+    this.gen2ResourcesToRemove = holdingResources;
+    this.logger.debug(`Recovered gen2ResourcesToRemove from holding stack: ${Array.from(holdingResources.keys())}`);
+
+    assert(this.gen2Template, 'initializeGen2State must be called before recoverFromHoldingStack');
+    return this.gen2Template;
+  }
+
+  private filterStatefulResources(template: CFNTemplate): Map<string, CFNResource> {
+    return new Map(
+      Object.entries(template.Resources).filter(([logicalId, value]) => {
         return (
           this.resourcesToMovePredicate?.(this.resourcesToMove, [logicalId, value]) ??
           this.resourcesToMove.some((resourceToMove) => resourceToMove.valueOf() === value.Type)
         );
       }),
     );
-    this.logger.debug(`Gen2 stateful resources: ${Array.from(this.gen2ResourcesToRemove.keys())}`);
   }
 
   public async generateGen2ResourceRemovalTemplate(): Promise<CFNChangeTemplateWithParams> {
@@ -218,14 +251,7 @@ class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
     this.logger.debug(`Gen2 Template Resources count: ${Object.keys(oldGen2Template.Resources).length}`);
     this.gen2Template = oldGen2Template;
 
-    this.gen2ResourcesToRemove = new Map(
-      Object.entries(oldGen2Template.Resources).filter(([logicalId, value]) => {
-        return (
-          this.resourcesToMovePredicate?.(this.resourcesToMove, [logicalId, value]) ??
-          this.resourcesToMove.some((resourceToMove) => resourceToMove.valueOf() === value.Type)
-        );
-      }),
-    );
+    this.gen2ResourcesToRemove = this.filterStatefulResources(oldGen2Template);
     this.logger.debug(`Gen2 Resources to remove: ${Array.from(this.gen2ResourcesToRemove.keys())}`);
     this.logger.debug(`Gen2 Resources to remove count: ${this.gen2ResourcesToRemove.size}`);
     this.logger.debug('Gen2 Resources to remove details:');

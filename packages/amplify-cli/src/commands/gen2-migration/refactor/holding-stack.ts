@@ -73,6 +73,10 @@ export async function findHoldingStack(cfnClient: CloudFormationClient, stackNam
  * Deletes a holding stack.
  */
 export async function deleteHoldingStack(cfnClient: CloudFormationClient, stackName: string): Promise<void> {
+  const stack = await findHoldingStack(cfnClient, stackName);
+  if (!stack) {
+    return;
+  }
   await cfnClient.send(new DeleteStackCommand({ StackName: stackName }));
   await pollStackForCompletionState(cfnClient, stackName, 60);
 }
