@@ -1814,8 +1814,66 @@ export class BackendSynthesizer {
           );
           nodes.push(resourceDeclaration);
 
-          // Get the Lambda integration for this path's function
-          const pathIntegrationVar = integrationDeclarations.get(path.lambdaFunction) || `${path.lambdaFunction}Integration`;
+          // Create Lambda integration with CORS integration responses
+          const pathIntegrationVar = `${path.lambdaFunction}Integration`;
+          const integrationDeclaration = factory.createVariableStatement(
+            [],
+            factory.createVariableDeclarationList(
+              [
+                factory.createVariableDeclaration(
+                  pathIntegrationVar,
+                  undefined,
+                  undefined,
+                  factory.createNewExpression(factory.createIdentifier('LambdaIntegration'), undefined, [
+                    factory.createPropertyAccessExpression(
+                      factory.createPropertyAccessExpression(
+                        factory.createPropertyAccessExpression(
+                          factory.createIdentifier('backend'),
+                          factory.createIdentifier(path.lambdaFunction),
+                        ),
+                        factory.createIdentifier('resources'),
+                      ),
+                      factory.createIdentifier('lambda'),
+                    ),
+                    factory.createObjectLiteralExpression(
+                      [
+                        factory.createPropertyAssignment(
+                          'integrationResponses',
+                          factory.createArrayLiteralExpression([
+                            factory.createObjectLiteralExpression([
+                              factory.createPropertyAssignment('statusCode', factory.createStringLiteral('200')),
+                              factory.createPropertyAssignment(
+                                'responseParameters',
+                                factory.createObjectLiteralExpression([
+                                  factory.createPropertyAssignment(
+                                    factory.createStringLiteral('method.response.header.Access-Control-Allow-Origin'),
+                                    factory.createStringLiteral("'*'"),
+                                  ),
+                                  factory.createPropertyAssignment(
+                                    factory.createStringLiteral('method.response.header.Access-Control-Allow-Headers'),
+                                    factory.createStringLiteral(
+                                      "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+                                    ),
+                                  ),
+                                  factory.createPropertyAssignment(
+                                    factory.createStringLiteral('method.response.header.Access-Control-Allow-Methods'),
+                                    factory.createStringLiteral("'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'"),
+                                  ),
+                                ]),
+                              ),
+                            ]),
+                          ]),
+                        ),
+                      ],
+                      true,
+                    ),
+                  ]),
+                ),
+              ],
+              ts.NodeFlags.Const,
+            ),
+          );
+          nodes.push(integrationDeclaration);
 
           // Add ANY method with CORS configuration for every API endpoint
           const addAnyMethodCall = factory.createExpressionStatement(
@@ -1833,7 +1891,7 @@ export class BackendSynthesizer {
                         factory.createObjectLiteralExpression([
                           factory.createPropertyAssignment('statusCode', factory.createStringLiteral('200')),
                           factory.createPropertyAssignment(
-                            'responseHeaders',
+                            'responseParameters',
                             factory.createObjectLiteralExpression([
                               factory.createPropertyAssignment(
                                 factory.createStringLiteral('method.response.header.Access-Control-Allow-Origin'),
@@ -1859,45 +1917,6 @@ export class BackendSynthesizer {
             ),
           );
           nodes.push(addAnyMethodCall);
-
-          // Add integration response with CORS header mappings
-          const addIntegrationResponseCall = factory.createExpressionStatement(
-            factory.createCallExpression(
-              factory.createPropertyAccessExpression(
-                factory.createIdentifier(pathIntegrationVar),
-                factory.createIdentifier('addIntegrationResponse'),
-              ),
-              undefined,
-              [
-                factory.createObjectLiteralExpression(
-                  [
-                    factory.createPropertyAssignment('statusCode', factory.createStringLiteral('200')),
-                    factory.createPropertyAssignment(
-                      'responseParameters',
-                      factory.createObjectLiteralExpression([
-                        factory.createPropertyAssignment(
-                          factory.createStringLiteral('method.response.header.Access-Control-Allow-Origin'),
-                          factory.createStringLiteral("'*'"),
-                        ),
-                        factory.createPropertyAssignment(
-                          factory.createStringLiteral('method.response.header.Access-Control-Allow-Headers'),
-                          factory.createStringLiteral(
-                            "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
-                          ),
-                        ),
-                        factory.createPropertyAssignment(
-                          factory.createStringLiteral('method.response.header.Access-Control-Allow-Methods'),
-                          factory.createStringLiteral("'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'"),
-                        ),
-                      ]),
-                    ),
-                  ],
-                  true,
-                ),
-              ],
-            ),
-          );
-          nodes.push(addIntegrationResponseCall);
 
           // Add a proxy resource to catch all unmatched sub-paths
           const addProxyCall = factory.createExpressionStatement(
