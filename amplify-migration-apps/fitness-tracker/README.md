@@ -345,7 +345,7 @@ Navigate to the Amplify Console to find the `<gen1-rest-api-id>` and `<gen1-root
 - const awsServerlessExpressMiddleware = require('aws-serverless-express/middleware');
 - const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
 - const { DynamoDBDocumentClient, PutCommand } = require('@aws-sdk/lib-dynamodb');
-- const express = require('express');
+- const crypto = require('crypto');
 
 + import express from 'express';
 + import bodyParser from 'body-parser';
