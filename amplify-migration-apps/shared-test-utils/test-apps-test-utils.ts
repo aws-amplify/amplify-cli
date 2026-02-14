@@ -20,7 +20,8 @@ export interface AmplifyConfig {
 
 export interface TestFailure {
   name: string;
-  error: string;
+  message: string;
+  stack?: string;
 }
 
 export interface TestUser {
@@ -30,21 +31,16 @@ export interface TestUser {
   phoneNumber?: string;
 }
 
+export interface TestCredentials {
+  email: string;
+  phoneNumber: string;
+  username: string;
+  password: string;
+}
+
 interface ResolvedAuthConfig {
   signinIdentifier: SigninIdentifier;
   signupAttributes: SignupAttribute[];
-}
-
-const TEST_PASSWORD = 'Password1!';
-const TEST_EMAIL = 'user1@test.example.com';
-const TEST_PHONE_NUMBER = '+15551234567';
-const TEST_USERNAME = 'testuser1';
-
-function resolveAuthConfig(config: AmplifyConfig): ResolvedAuthConfig {
-  return {
-    signinIdentifier: config.signinIdentifier ?? 'email',
-    signupAttributes: config.signupAttributes ?? ['email'],
-  };
 }
 
 function getErrorMessage(error: unknown): string {
@@ -87,9 +83,10 @@ function buildSignUpInput(
     username: { Name: 'username', Value: credentials.username },
   };
 
-  // Cognito requires email in UserAttributes even when it's also the Username.
-  // Only phone/username are excluded since Cognito treats them as implicit
-  // when they appear in the Username field.
+  // When phone or username is used as the SignUp Username, Cognito already
+  // associates it with the user, so including it again in UserAttributes
+  // would be redundant. Email is the exception — Cognito requires it in
+  // UserAttributes for verification even when it's also the Username.
   const userAttributes: AttributeType[] = signupAttributes
     .filter((attr) => {
       if (signinIdentifier === 'phone' && attr === 'phone') return false;
@@ -106,59 +103,57 @@ function buildSignUpInput(
   };
 }
 
-export function createTestRunner(): {
-  failures: TestFailure[];
-  runTest: <T>(name: string, testFn: () => Promise<T>) => Promise<T | null>;
-  printSummary: () => void;
-} {
-  const failures: TestFailure[] = [];
+export class TestRunner {
+  readonly failures: TestFailure[] = [];
 
-  async function runTest<T>(name: string, testFn: () => Promise<T>): Promise<T | null> {
+  async runTest<T>(name: string, testFn: () => Promise<T>): Promise<T | null> {
     try {
       const result = await testFn();
       return result;
     } catch (error: unknown) {
-      failures.push({ name, error: getErrorMessage(error) });
+      const stack = error instanceof Error ? error.stack : undefined;
+      this.failures.push({ name, message: getErrorMessage(error), stack });
       return null;
     }
   }
 
-  function printSummary(): void {
+  printSummary(): void {
     console.log('\n' + '='.repeat(50));
     console.log('📊 TEST SUMMARY');
     console.log('='.repeat(50));
 
-    if (failures.length === 0) {
+    if (this.failures.length === 0) {
       console.log('\n✅ All tests passed!');
     } else {
-      console.log(`\n❌ ${failures.length} test(s) failed:\n`);
-      failures.forEach((f) => {
+      console.log(`\n❌ ${this.failures.length} test(s) failed:\n`);
+      this.failures.forEach((f) => {
         console.log(`  • ${f.name}`);
-        console.log(`    Error: ${f.error}\n`);
+        console.log(`    Error: ${f.message}`);
+        if (f.stack) {
+          console.log(`    Stack: ${f.stack}`);
+        }
+        console.log('');
       });
       process.exit(1);
     }
   }
-
-  return { failures, runTest, printSummary };
 }
 
 /**
  * Creates a test user via Cognito signup, admin-confirms them, and signs them in.
  * Returns the credentials for the authenticated user.
  */
-export async function createTestUser(config: AmplifyConfig): Promise<TestUser> {
+export async function createTestUser(config: AmplifyConfig, credentials: TestCredentials): Promise<TestUser> {
   const { aws_user_pools_id: userPoolId, aws_user_pools_web_client_id: clientId, aws_cognito_region: region } = config;
 
-  const resolved = resolveAuthConfig(config);
+  // Apply defaults for backwards compatibility: omitting these fields gives email-only behavior
+  const resolved: ResolvedAuthConfig = {
+    signinIdentifier: config.signinIdentifier ?? 'email',
+    signupAttributes: config.signupAttributes ?? ['email'],
+  };
   const { signupAttributes } = resolved;
 
-  const signUpInput = buildSignUpInput(clientId ?? '', resolved, {
-    email: TEST_EMAIL,
-    phoneNumber: TEST_PHONE_NUMBER,
-    username: TEST_USERNAME,
-    password: TEST_PASSWORD,
-  });
+  const signUpInput = buildSignUpInput(clientId ?? '', resolved, credentials);
 
   const signinValue = signUpInput.Username;
 
@@ -191,7 +186,7 @@ export async function createTestUser(config: AmplifyConfig): Promise<TestUser> {
 
   // Step 3: SignIn
   try {
-    await signIn({ username: signinValue, password: TEST_PASSWORD });
+    await signIn({ username: signinValue, password: credentials.password });
     const currentUser = await getCurrentUser();
     console.log(`✅ Signed in as: ${currentUser.username}`);
   } catch (error) {
@@ -202,14 +197,14 @@ export async function createTestUser(config: AmplifyConfig): Promise<TestUser> {
   // Build TestUser with fields based on signupAttributes
   const testUser: TestUser = {
     username: signinValue,
-    password: TEST_PASSWORD,
+    password: credentials.password,
   };
 
   if (signupAttributes.includes('email')) {
-    testUser.email = TEST_EMAIL;
+    testUser.email = credentials.email;
   }
   if (signupAttributes.includes('phone')) {
-    testUser.phoneNumber = TEST_PHONE_NUMBER;
+    testUser.phoneNumber = credentials.phoneNumber;
   }
 
   return testUser;
