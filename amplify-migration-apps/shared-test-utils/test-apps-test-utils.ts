@@ -1,4 +1,3 @@
-import { signIn, signOut, getCurrentUser } from 'aws-amplify/auth';
 import {
   CognitoIdentityProviderClient,
   SignUpCommand,
@@ -140,13 +139,17 @@ export class TestRunner {
 }
 
 /**
- * Creates a test user via Cognito signup, admin-confirms them, and signs them in.
- * Returns the credentials for the authenticated user.
+ * Provisions a test user via Cognito signup and admin-confirms them.
+ * Does NOT sign in — the caller should handle signIn in its own module scope
+ * so the Amplify auth singleton has the tokens available for API/Storage calls.
+ * Returns the username to use for signIn.
  */
-export async function createTestUser(config: AmplifyConfig, credentials: TestCredentials): Promise<TestUser> {
+export async function provisionTestUser(
+  config: AmplifyConfig,
+  credentials: TestCredentials,
+): Promise<{ signinValue: string; testUser: TestUser }> {
   const { aws_user_pools_id: userPoolId, aws_user_pools_web_client_id: clientId, aws_cognito_region: region } = config;
 
-  // Apply defaults for backwards compatibility: omitting these fields gives email-only behavior
   const resolved: ResolvedAuthConfig = {
     signinIdentifier: config.signinIdentifier ?? 'email',
     signupAttributes: config.signupAttributes ?? ['email'],
@@ -154,10 +157,9 @@ export async function createTestUser(config: AmplifyConfig, credentials: TestCre
   const { signupAttributes } = resolved;
 
   const signUpInput = buildSignUpInput(clientId ?? '', resolved, credentials);
-
   const signinValue = signUpInput.Username;
 
-  console.log(`\n🔑 Creating and authenticating test user: ${signUpInput.Username}`);
+  console.log(`\n🔑 Creating test user: ${signUpInput.Username}`);
 
   const cognitoClient = new CognitoIdentityProviderClient({ region });
 
@@ -184,17 +186,6 @@ export async function createTestUser(config: AmplifyConfig, credentials: TestCre
     return process.exit(1);
   }
 
-  // Step 3: SignIn
-  try {
-    await signIn({ username: signinValue, password: credentials.password });
-    const currentUser = await getCurrentUser();
-    console.log(`✅ Signed in as: ${currentUser.username}`);
-  } catch (error) {
-    console.error('❌ SignIn failed:', getErrorMessage(error));
-    return process.exit(1);
-  }
-
-  // Build TestUser with fields based on signupAttributes
   const testUser: TestUser = {
     username: signinValue,
     password: credentials.password,
@@ -207,15 +198,5 @@ export async function createTestUser(config: AmplifyConfig, credentials: TestCre
     testUser.phoneNumber = credentials.phoneNumber;
   }
 
-  return testUser;
-}
-
-export async function signOutUser(): Promise<void> {
-  console.log('\n🚪 Signing out...');
-  try {
-    await signOut();
-    console.log('✅ Signed out successfully');
-  } catch (error) {
-    console.error('❌ Sign out error:', getErrorMessage(error));
-  }
+  return { signinValue, testUser };
 }
