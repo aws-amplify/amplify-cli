@@ -3,13 +3,14 @@
  *
  * This script tests all functionality for Amplify Gen1:
  * 1. GraphQL Queries (Products, Users, Comments, Low Stock Lambda)
- * 2. GraphQL Mutations (Products, Users, Comments)
- * 3. S3 Storage Operations (Image upload/retrieval)
- * 4. Role-Based Access Control (ADMIN, MANAGER, VIEWER permissions)
+ * 2. Product Mutations (Create, Update, Delete)
+ * 3. User Mutations (Create, Update Role, Delete)
+ * 4. Comment Mutations (Create, Update, Delete)
+ * 5. S3 Storage Operations (Upload, Get URL, Product with Image)
+ * 6. Role-Based Access Control
+ * 7. Business Logic (Filtering, Sorting, Reports)
  *
- * NOTE: Your API uses IAM authorization - all operations require authentication first.
- *
- * IMPORTANT: Update TEST_USER credentials before running tests.
+ * Credentials are provisioned automatically via Cognito SignUp + AdminConfirmSignUp.
  */
 
 // Polyfill crypto for Node.js environment (required for Amplify Auth)
@@ -19,40 +20,17 @@ if (typeof globalThis.crypto === 'undefined') {
 }
 
 import { Amplify } from 'aws-amplify';
-
-// Import Amplify Gen1 configuration
+import { signIn, signOut, getCurrentUser } from 'aws-amplify/auth';
 import amplifyconfig from './src/amplifyconfiguration.json';
+import { TestRunner, provisionTestUser } from '../shared-test-utils/test-apps-test-utils';
+import testCredentials from '../shared-test-utils/test-credentials.json';
+import { createTestFunctions, createTestOrchestrator } from './test-utils';
 
-// Import shared test utilities
-import {
-  createTestRunner,
-  authenticateUser,
-  signOutUser,
-  runQueryTests,
-  runProductMutationTests,
-  runUserMutationTests,
-  runCommentMutationTests,
-  runStorageTests,
-  runRBACTests,
-  runBusinessLogicTests,
-} from './test-utils';
-
-// Configure Amplify with Gen1 config
+// Configure Amplify
 Amplify.configure(amplifyconfig);
 
-// Initialize test runner
-const { runTest, printSummary } = createTestRunner();
-
 // ============================================================
-// CONFIGURATION - Update with your test user credentials
-// ============================================================
-const TEST_USER = {
-  username: 'YOUR_EMAIL@example.com',
-  password: 'YOUR_PASSWORD',
-};
-
-// ============================================================
-// Main Test Runner
+// Main Test Execution
 // ============================================================
 
 async function runAllTests(): Promise<void> {
@@ -65,60 +43,74 @@ async function runAllTests(): Promise<void> {
   console.log('  5. S3 Storage Operations (Upload, Get URL)');
   console.log('  6. Role-Based Access Control');
   console.log('  7. Business Logic (Filtering, Sorting, Reports)');
-  console.log('\n⚠️  NOTE: Your API uses IAM auth - authentication required for ALL operations.');
 
-  // Check credentials
-  if (TEST_USER.username === 'YOUR_EMAIL@example.com') {
-    console.log('\n⚠️  Please update TEST_USER credentials before running!');
-    return;
+  // Provision user via SDK, then sign in here so tokens stay in this module's Amplify scope
+  const { signinValue, testUser } = await provisionTestUser(amplifyconfig, testCredentials);
+
+  // Sign in from this module so the auth tokens are available to api/storage
+  try {
+    await signIn({ username: signinValue, password: testUser.password });
+    const currentUser = await getCurrentUser();
+    console.log(`✅ Signed in as: ${currentUser.username}`);
+  } catch (error: any) {
+    console.error('❌ SignIn has failed:', error.message || error);
+    process.exit(1);
   }
 
-  // MUST authenticate first - your API requires IAM auth for everything
-  const isAuthenticated = await authenticateUser(TEST_USER);
-  if (!isAuthenticated) {
-    console.log('\n❌ Cannot run tests without authentication');
-    console.log('   Please check your TEST_USER credentials.');
-    return;
-  }
+  const runner = new TestRunner();
+  const testFunctions = createTestFunctions();
+  const {
+    runQueryTests,
+    runProductMutationTests,
+    runUserMutationTests,
+    runCommentMutationTests,
+    runStorageTests,
+    runRBACTests,
+    runBusinessLogicTests,
+  } = createTestOrchestrator(testFunctions, runner);
 
   // Part 1: Query tests
-  const { productId: existingProductId } = await runQueryTests(runTest);
+  const { productId: existingProductId } = await runQueryTests();
 
   // Part 2: Product mutations
-  const testProductId = await runProductMutationTests(runTest);
+  const testProductId = await runProductMutationTests();
 
   // Part 3: User mutations
-  await runUserMutationTests(runTest);
+  await runUserMutationTests();
 
   // Part 4: Comment mutations (use test product or existing product)
   const productForComments = testProductId || existingProductId;
   if (productForComments) {
-    await runCommentMutationTests(productForComments, runTest);
+    await runCommentMutationTests(productForComments);
   } else {
     console.log('\n⚠️ Skipping comment tests - no product available');
   }
 
   // Part 5: Storage tests
-  await runStorageTests(runTest);
+  await runStorageTests();
 
   // Part 6: RBAC tests
-  await runRBACTests(runTest);
+  await runRBACTests();
 
   // Part 7: Business logic tests
-  await runBusinessLogicTests(runTest);
+  await runBusinessLogicTests();
 
   // Cleanup: delete test product if created
   if (testProductId) {
     console.log('\n🧹 Cleanup: Deleting test product...');
-    const { testDeleteProduct } = await import('./test-utils');
-    await runTest('deleteProduct_final', () => testDeleteProduct(testProductId));
+    await runner.runTest('deleteProduct_final', () => testFunctions.testDeleteProduct(testProductId));
   }
 
   // Sign out
-  await signOutUser();
+  try {
+    await signOut();
+    console.log('✅ Signed out successfully');
+  } catch (error: any) {
+    console.error('❌ Sign out error:', error.message || error);
+  }
 
-  // Print summary and exit with appropriate code for GitHub Actions
-  printSummary();
+  // Print summary and exit with appropriate code
+  runner.printSummary();
 }
 
 // Run all tests
