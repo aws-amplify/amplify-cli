@@ -13,8 +13,8 @@ export interface AmplifyConfig {
   aws_user_pools_id?: string;
   aws_user_pools_web_client_id?: string;
   aws_cognito_region?: string;
-  signinIdentifier?: SigninIdentifier;
-  signupAttributes?: SignupAttribute[];
+  aws_cognito_username_attributes?: string[];
+  aws_cognito_signup_attributes?: string[];
 }
 
 export interface TestFailure {
@@ -60,6 +60,24 @@ function getErrorMessage(error: unknown): string {
     return JSON.stringify(error, null, 2);
   }
   return String(error);
+}
+
+function resolveSigninIdentifier(config: AmplifyConfig): SigninIdentifier {
+  const usernameAttrs = config.aws_cognito_username_attributes ?? [];
+  if (usernameAttrs.includes('PHONE_NUMBER')) return 'phone';
+  if (usernameAttrs.includes('EMAIL')) return 'email';
+  return 'username';
+}
+
+function resolveSignupAttributes(config: AmplifyConfig): SignupAttribute[] {
+  const cognitoAttrs = config.aws_cognito_signup_attributes ?? [];
+  const mapping: Record<string, SignupAttribute> = {
+    EMAIL: 'email',
+    PHONE_NUMBER: 'phone',
+    USERNAME: 'username',
+  };
+  const mapped = cognitoAttrs.map((attr) => mapping[attr]).filter((a): a is SignupAttribute => a !== undefined);
+  return mapped.length > 0 ? mapped : ['email'];
 }
 
 function buildSignUpInput(
@@ -151,8 +169,8 @@ export async function provisionTestUser(
   const { aws_user_pools_id: userPoolId, aws_user_pools_web_client_id: clientId, aws_cognito_region: region } = config;
 
   const resolved: ResolvedAuthConfig = {
-    signinIdentifier: config.signinIdentifier ?? 'email',
-    signupAttributes: config.signupAttributes ?? ['email'],
+    signinIdentifier: resolveSigninIdentifier(config),
+    signupAttributes: resolveSignupAttributes(config),
   };
   const { signupAttributes } = resolved;
 
