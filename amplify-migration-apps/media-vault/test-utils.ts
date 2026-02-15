@@ -1,53 +1,283 @@
 // test-utils.ts
-export interface TestFailure {
-  name: string;
-  error: string;
-}
+/**
+ * Shared test utilities for Media Vault Gen1 and Gen2 test scripts
+ */
 
-export function createTestRunner() {
-  const failures: TestFailure[] = [];
+import { Amplify } from 'aws-amplify';
+import { generateClient } from 'aws-amplify/api';
+import { fetchAuthSession } from 'aws-amplify/auth';
+import { uploadData } from 'aws-amplify/storage';
+import { readFileSync } from 'fs';
+import { getNote, listNotes, generateThumbnail, addUserToGroup, removeUserFromGroup } from './src/graphql/queries';
+import { createNote, updateNote, deleteNote } from './src/graphql/mutations';
+import { TestRunner } from '../shared-test-utils/test-apps-test-utils';
+import amplifyconfig from './src/amplifyconfiguration.json';
 
-  async function runTest<T>(name: string, testFn: () => Promise<T>): Promise<T | null> {
+// Configure Amplify in this module to ensure api/storage singletons see the config
+Amplify.configure(amplifyconfig);
+
+// ============================================================
+// Shared Test Functions Factory
+// ============================================================
+
+export function createTestFunctions() {
+  // Test data for Lambda functions
+  const TEST_IMAGE_PATH = 'YOUR_TEST_IMAGE_PATH'; // Path to a test image file
+  const TEST_GROUP = 'Admin'; // Group name for user management tests
+
+  function getAuthClient() {
+    return generateClient({ authMode: 'userPool' });
+  }
+
+  function getPublicClient() {
+    return generateClient({ authMode: 'apiKey' });
+  }
+
+  async function getUserSub(): Promise<string | null> {
     try {
-      const result = await testFn();
-      return result;
-    } catch (error: any) {
-      // Handle different error formats (GraphQL errors, standard errors, objects)
-      let errorMessage: string;
-      if (error.errors?.[0]?.message) {
-        // GraphQL error format
-        errorMessage = error.errors[0].message;
-      } else if (error.message) {
-        // Standard Error
-        errorMessage = error.message;
-      } else if (typeof error === 'object') {
-        // Generic object - stringify it
-        errorMessage = JSON.stringify(error, null, 2);
-      } else {
-        errorMessage = String(error);
-      }
-
-      failures.push({ name, error: errorMessage });
+      const session = await fetchAuthSession();
+      return (session.tokens?.idToken?.payload.sub as string) || null;
+    } catch (error) {
+      console.log('❌ Error getting user sub:', error);
       return null;
     }
   }
 
-  function printSummary(): void {
-    console.log('\n' + '='.repeat(50));
-    console.log('📊 TEST SUMMARY');
-    console.log('='.repeat(50));
+  // ============================================================
+  // Query Test Functions - Notes
+  // ============================================================
 
-    if (failures.length === 0) {
-      console.log('\n✅ All tests passed!');
-    } else {
-      console.log(`\n❌ ${failures.length} test(s) failed:\n`);
-      failures.forEach((f) => {
-        console.log(`  • ${f.name}`);
-        console.log(`    Error: ${f.error}\n`);
+  async function testListNotes(): Promise<string | null> {
+    console.log('\n📋 Testing listNotes...');
+    const authClient = getAuthClient();
+    const result = await authClient.graphql({ query: listNotes });
+    const notes = (result as any).data.listNotes.items;
+    console.log(`✅ Found ${notes.length} notes:`);
+    notes.forEach((n: any) => console.log(`   - [${n.id}] ${n.title}${n.content ? ` - ${n.content.substring(0, 50)}...` : ''}`));
+    return notes.length > 0 ? notes[0].id : null;
+  }
+
+  async function testGetNote(id: string): Promise<void> {
+    console.log(`\n🔍 Testing getNote (id: ${id})...`);
+    const authClient = getAuthClient();
+    const result = await authClient.graphql({
+      query: getNote,
+      variables: { id },
+    });
+    const note = (result as any).data.getNote;
+    console.log('✅ Note:', {
+      id: note.id,
+      title: note.title,
+      content: note.content,
+      owner: note.owner,
+      createdAt: note.createdAt,
+    });
+  }
+
+  // ============================================================
+  // Mutation Test Functions - Notes
+  // ============================================================
+
+  async function testCreateNote(): Promise<string | null> {
+    console.log('\n🆕 Testing createNote...');
+    const authClient = getAuthClient();
+    const result = await authClient.graphql({
+      query: createNote,
+      variables: {
+        input: {
+          title: `Test Note ${Date.now()}`,
+          content: 'This is a test note created by the test script. It contains sample content for testing purposes.',
+        },
+      },
+    });
+    const note = (result as any).data.createNote;
+    console.log('✅ Created note:', {
+      id: note.id,
+      title: note.title,
+      content: note.content,
+      owner: note.owner,
+    });
+    return note.id;
+  }
+
+  async function testUpdateNote(noteId: string): Promise<void> {
+    console.log(`\n✏️ Testing updateNote (id: ${noteId})...`);
+    const authClient = getAuthClient();
+    const result = await authClient.graphql({
+      query: updateNote,
+      variables: {
+        input: {
+          id: noteId,
+          title: 'Updated Test Note',
+          content: 'This note was updated by the test script with new content.',
+        },
+      },
+    });
+    const note = (result as any).data.updateNote;
+    console.log('✅ Updated note:', {
+      id: note.id,
+      title: note.title,
+      content: note.content,
+    });
+  }
+
+  async function testDeleteNote(noteId: string): Promise<void> {
+    console.log(`\n🗑️ Testing deleteNote (id: ${noteId})...`);
+    const authClient = getAuthClient();
+    const result = await authClient.graphql({
+      query: deleteNote,
+      variables: { input: { id: noteId } },
+    });
+    const deleted = (result as any).data.deleteNote;
+    console.log('✅ Deleted note:', deleted.title);
+  }
+
+  // ============================================================
+  // Lambda Function Test Functions
+  // ============================================================
+
+  async function testGenerateThumbnail(): Promise<void> {
+    console.log('\n🖼️  Testing generateThumbnail Lambda function...');
+
+    try {
+      // Step 1: Upload a test image to S3
+      console.log('   📤 Uploading test image to S3...');
+      const imageBuffer = readFileSync(TEST_IMAGE_PATH);
+      const key = `media/test-${Date.now()}.jpg`;
+
+      const uploadResult = await uploadData({
+        path: ({ identityId }) => `private/${identityId}/${key}`,
+        data: imageBuffer,
+      }).result;
+
+      console.log(`   ✅ Image uploaded: ${key}`);
+
+      // Step 2: Get the full S3 path from upload result
+      const fullKey = uploadResult.path;
+      console.log(`   🔑 Full S3 key: ${fullKey}`);
+
+      // Step 3: Call the thumbnail generation Lambda
+      console.log('   🎨 Generating thumbnail...');
+      const publicClient = getPublicClient();
+      const result = await publicClient.graphql({
+        query: generateThumbnail,
+        variables: { mediaFileKey: fullKey },
       });
-      process.exit(1);
+      const response = (result as any).data.generateThumbnail;
+      console.log('✅ Thumbnail generation response:', {
+        statusCode: response.statusCode,
+        message: response.message,
+      });
+    } catch (error: any) {
+      if (error.code === 'ENOENT') {
+        console.log('⏭️  Skipping thumbnail test - test image file not found');
+        console.log(`   Please add an image file at: ${TEST_IMAGE_PATH}`);
+        console.log('   Or update TEST_IMAGE_PATH to point to an existing image');
+        return;
+      }
+      throw error;
     }
   }
 
-  return { failures, runTest, printSummary };
+  async function testAddUserToGroup(): Promise<void> {
+    console.log(`\n👥 Testing addUserToGroup Lambda function...`);
+    const userSub = await getUserSub();
+    if (!userSub) {
+      throw new Error('Could not retrieve user sub');
+    }
+
+    const publicClient = getPublicClient();
+    const result = await publicClient.graphql({
+      query: addUserToGroup,
+      variables: {
+        userSub: userSub,
+        group: TEST_GROUP,
+      },
+    });
+    const response = (result as any).data.addUserToGroup;
+    console.log('✅ Add user to group response:', {
+      statusCode: response.statusCode,
+      message: response.message,
+    });
+  }
+
+  async function testRemoveUserFromGroup(): Promise<void> {
+    console.log(`\n👥 Testing removeUserFromGroup Lambda function...`);
+    const userSub = await getUserSub();
+    if (!userSub) {
+      throw new Error('Could not retrieve user sub');
+    }
+
+    const publicClient = getPublicClient();
+    const result = await publicClient.graphql({
+      query: removeUserFromGroup,
+      variables: {
+        userSub: userSub,
+        group: TEST_GROUP,
+      },
+    });
+    const response = (result as any).data.removeUserFromGroup;
+    console.log('✅ Remove user from group response:', {
+      statusCode: response.statusCode,
+      message: response.message,
+    });
+  }
+
+  return {
+    testListNotes,
+    testGetNote,
+    testCreateNote,
+    testUpdateNote,
+    testDeleteNote,
+    testGenerateThumbnail,
+    testAddUserToGroup,
+    testRemoveUserFromGroup,
+  };
+}
+
+// ============================================================
+// Shared Test Orchestration Functions
+// ============================================================
+
+export function createTestOrchestrator(testFunctions: ReturnType<typeof createTestFunctions>, runner: TestRunner) {
+  async function runQueryTests(): Promise<void> {
+    console.log('\n' + '='.repeat(50));
+    console.log('📖 PART 1: Authenticated GraphQL Queries');
+    console.log('='.repeat(50));
+
+    const noteId = await runner.runTest('listNotes', testFunctions.testListNotes);
+    if (noteId) await runner.runTest('getNote', () => testFunctions.testGetNote(noteId));
+  }
+
+  async function runMutationTests(): Promise<void> {
+    console.log('\n' + '='.repeat(50));
+    console.log('✏️ PART 2: Authenticated GraphQL Mutations');
+    console.log('='.repeat(50));
+
+    const noteId = await runner.runTest('createNote', testFunctions.testCreateNote);
+    if (noteId) {
+      await runner.runTest('updateNote', () => testFunctions.testUpdateNote(noteId));
+      await runner.runTest('deleteNote', () => testFunctions.testDeleteNote(noteId));
+    }
+  }
+
+  async function runLambdaFunctionTests(): Promise<void> {
+    console.log('\n' + '='.repeat(50));
+    console.log('⚡ PART 3: Lambda Function Operations');
+    console.log('='.repeat(50));
+
+    console.log('\n💡 Note: These tests require proper setup:');
+    console.log('   - Thumbnail generation requires a valid S3 media file key');
+    console.log('   - User group management requires Admin permissions\n');
+
+    await runner.runTest('generateThumbnail', testFunctions.testGenerateThumbnail);
+    await runner.runTest('addUserToGroup', testFunctions.testAddUserToGroup);
+    await runner.runTest('removeUserFromGroup', testFunctions.testRemoveUserFromGroup);
+  }
+
+  return {
+    runQueryTests,
+    runMutationTests,
+    runLambdaFunctionTests,
+  };
 }
