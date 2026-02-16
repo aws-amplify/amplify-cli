@@ -391,7 +391,6 @@ Navigate to the Amplify Console to find the `<gen1-rest-api-id>` and `<gen1-root
 + export async function handler(event, context) {
 ```
 
-<<<<<<< HEAD
 **Edit in `./amplify/function/lognutrition/app.js`:**
 
 ```diff
@@ -410,8 +409,6 @@ Navigate to the Amplify Console to find the `<gen1-rest-api-id>` and `<gen1-root
 + import crypto from 'crypto';
 ```
 
-**Edit in `./amplify/function/fitnesstrackerd21d4fcdd21d4fcdPreSignup/src/index.js`:**
-=======
 **Edit in `./amplify/function/admin/resource.ts`:**
 
 ```diff
@@ -438,7 +435,6 @@ Navigate to the Amplify Console to find the `<gen1-rest-api-id>` and `<gen1-root
 ```
 
 **Edit in `./amplify/auth/fitnesstrackerd21d4fcdd21d4fcdPreSignup/src/index.js`:**
->>>>>>> 948ebf512 (chore: update README)
 
 > Note: The hash value after `fitnesstracker` changes for each app; you will have a different one.
 
