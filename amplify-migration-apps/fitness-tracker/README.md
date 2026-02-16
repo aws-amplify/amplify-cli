@@ -368,15 +368,6 @@ Navigate to the Amplify Console to find the `<gen1-rest-api-id>` and `<gen1-root
 + backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(gen1RestApiPolicy);
 ```
 
-**Edit in `./amplify/auth/fitnesstrackerd21d4fcdd21d4fcdPreSignup/resource.ts`:**
-
-> Note: The hash value after `fitnesstracker` changes for each app; you will have a different one.
-
-```diff
-- entry: "./index.js",
-+ entry: "./index.js",
-+ resourceGroupName: 'auth',
-```
 
 **Edit in `./amplify/function/lognutrition/resource.ts`:**
 
@@ -429,6 +420,22 @@ Navigate to the Amplify Console to find the `<gen1-rest-api-id>` and `<gen1-root
 + resourceGroupName: 'data',
 ```
 
+**Edit in `./amplify/function/admin/index.js`:**
+
+```diff
+- exports.handler = (event, context) => {
++ export async function handler(event, context) {
+```
+
+**Edit in `./amplify/auth/fitnesstrackerd21d4fcdd21d4fcdPreSignup/resource.ts`:**
+
+> Note: The hash value after `fitnesstracker` changes for each app; you will have a different one.
+
+```diff
+- entry: "./index.js",
++ entry: "./index.js",
++ resourceGroupName: 'auth',
+```
 
 **Edit in `./amplify/auth/fitnesstrackerd21d4fcdd21d4fcdPreSignup/src/index.js`:**
 >>>>>>> 948ebf512 (chore: update README)
