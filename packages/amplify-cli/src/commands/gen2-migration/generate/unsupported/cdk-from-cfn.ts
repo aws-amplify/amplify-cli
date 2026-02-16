@@ -232,6 +232,37 @@ export class CdkFromCfn {
 
     return template;
   }
+
+  // Post-processes generated TypeScript code to fix Fn::FindInMap dictionary lookups.
+  // The cdk-from-cfn library translates CFN Fn::FindInMap into plain dictionary lookups
+  // (e.g., regionMapping[this.region]['locationServiceRegion']) which fail at CDK synth time
+  // because this.region is a CDK Token, not a concrete string.
+  // This method replaces those patterns with cdk.CfnMapping + findInMap() calls that produce
+  // proper Fn::FindInMap intrinsics in the synthesized CloudFormation template.
+  private postTransmute(tsCode: string): string {
+    // Replace dictionary-style Record<string, Record<string, string>> mapping
+    // variable declarations with new cdk.CfnMapping(this, ...) constructor calls.
+    const mappingVarNames: string[] = [];
+    let result = tsCode.replace(
+      /const (\w+):\s*Record<string,\s*Record<string,\s*string>>\s*=\s*\{([\s\S]*?)\n(\s*)\};/g,
+      (_match, varName: string, mappingBody: string, indent: string) => {
+        mappingVarNames.push(varName);
+        const constructId = varName.charAt(0).toUpperCase() + varName.slice(1);
+        return `const ${varName} = new cdk.CfnMapping(this, '${constructId}', {\n${indent}    mapping: {${mappingBody}\n${indent}    },\n${indent}});`;
+      },
+    );
+
+    // Replace all dictionary-style lookups varName[expr]['key']
+    // with varName.findInMap(expr, 'key') for each transformed mapping variable.
+    for (const varName of mappingVarNames) {
+      const lookupRegex = new RegExp(`${varName}\\[([^\\]]+)\\]\\[(['"])([^'"]+)\\2\\]`, 'g');
+      result = result.replace(lookupRegex, (_match, expr: string, quote: string, key: string) => {
+        return `${varName}.findInMap(${expr}, ${quote}${key}${quote})`;
+      });
+    }
+
+    return result;
+  }
 }
 
 async function getCfnTemplateFromS3(s3Url: string): Promise<CFNTemplate> {
