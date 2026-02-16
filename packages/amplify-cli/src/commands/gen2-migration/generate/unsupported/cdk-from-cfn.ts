@@ -37,6 +37,37 @@ export interface AnalyticsCodegenResult {
   streamName: string;
 }
 
+/**
+ * Definition for Geo resource from Gen1 amplify-meta.json
+ */
+export interface GeoResourceDefinition {
+  /** Resource name - set by migration-pipeline.ts from the geo key */
+  name: string;
+  /** Service type */
+  service: 'Map' | 'PlaceIndex' | 'GeofenceCollection';
+  /** Provider metadata containing S3 template URL and logical ID */
+  providerMetadata: {
+    s3TemplateURL: string;
+    logicalId: string;
+  };
+}
+
+/**
+ * Result of geo codegen containing metadata needed for resource.ts generation
+ */
+export interface GeoCodegenResult {
+  /** The class name of the generated construct (extracted from generated code) */
+  constructClassName: string;
+  /** The file name of the generated construct without extension */
+  constructFileName: string;
+  /** The resource name used for construct ID */
+  resourceName: string;
+  /** The geo service type */
+  serviceName: 'Map' | 'PlaceIndex' | 'GeofenceCollection';
+  /** Deployed stack parameters fetched from CloudFormation (key-value pairs) */
+  deployedParameters: Record<string, string>;
+}
+
 export class CdkFromCfn {
   public constructor(
     private readonly dir: string,
