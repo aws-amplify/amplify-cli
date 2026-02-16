@@ -44,25 +44,24 @@ const backend = defineBackend({
 const branchName = process.env.AWS_BRANCH ?? "sandbox";
 const nutritionapiStack = backend.createStack("rest-api-stack-nutritionapi");
 const nutritionapiApi = new RestApi(nutritionapiStack, "RestApi", {
-    restApiName: \`nutritionapi-\${branchName}\`,
-    defaultCorsPreflightOptions: {
-        allowMethods: Cors.ALL_METHODS,
-        allowOrigins: Cors.ALL_ORIGINS,
-        allowHeaders: Cors.DEFAULT_HEADERS
-    }
+    restApiName: \`nutritionapi-\${branchName}\`
 });
 nutritionapiApi.addGatewayResponse("Default4XX", {
     type: ResponseType.DEFAULT_4XX,
     responseHeaders: {
         "Access-Control-Allow-Origin": "'*'",
-        "Access-Control-Allow-Headers": "'*'"
+        "Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+        "Access-Control-Allow-Methods": "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
+        "Access-Control-Expose-Headers": "'Date,X-Amzn-ErrorType'"
     }
 });
 nutritionapiApi.addGatewayResponse("Default5XX", {
     type: ResponseType.DEFAULT_5XX,
     responseHeaders: {
         "Access-Control-Allow-Origin": "'*'",
-        "Access-Control-Allow-Headers": "'*'"
+        "Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+        "Access-Control-Allow-Methods": "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
+        "Access-Control-Expose-Headers": "'Date,X-Amzn-ErrorType'"
     }
 });
 const lognutritionIntegration = new LambdaIntegration(backend.lognutrition.resources.lambda);
@@ -81,12 +80,14 @@ backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(gen1nutrition
 const nutritionlog = nutritionapiApi.root.addResource("nutrition").addResource("log", {
     defaultMethodOptions: {
         authorizationType: AuthorizationType.IAM
+    },
+    defaultCorsPreflightOptions: {
+        allowOrigins: Cors.ALL_ORIGINS,
+        allowMethods: Cors.ALL_METHODS,
+        allowHeaders: ["Content-Type", "X-Amz-Date", "Authorization", "X-Api-Key", "X-Amz-Security-Token", "X-Amz-User-Agent"]
     }
 });
-nutritionlog.addMethod("GET", lognutritionIntegration);
-nutritionlog.addMethod("POST", lognutritionIntegration);
-nutritionlog.addMethod("PUT", lognutritionIntegration);
-nutritionlog.addMethod("DELETE", lognutritionIntegration);
+nutritionlog.addMethod("ANY", lognutritionIntegration);
 nutritionlog.addProxy({
     anyMethod: true,
     defaultIntegration: lognutritionIntegration
@@ -94,25 +95,27 @@ nutritionlog.addProxy({
 const items = nutritionapiApi.root.addResource("items", {
     defaultMethodOptions: {
         authorizationType: AuthorizationType.IAM
+    },
+    defaultCorsPreflightOptions: {
+        allowOrigins: Cors.ALL_ORIGINS,
+        allowMethods: Cors.ALL_METHODS,
+        allowHeaders: ["Content-Type", "X-Amz-Date", "Authorization", "X-Api-Key", "X-Amz-Security-Token", "X-Amz-User-Agent"]
     }
 });
-items.addMethod("GET", nutritionitemsIntegration);
-items.addMethod("POST", nutritionitemsIntegration);
-items.addMethod("PUT", nutritionitemsIntegration);
-items.addMethod("DELETE", nutritionitemsIntegration);
+items.addMethod("ANY", nutritionitemsIntegration);
 items.addProxy({
     anyMethod: true,
     defaultIntegration: nutritionitemsIntegration
 });
 // /nutrition/log - all authenticated users
-backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(new Policy(nutritionapiStack, "nutritionlogPolicy", {
+backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(new Policy(nutritionapiStack, "nutritionlogAuthPolicy", {
     statements: [new PolicyStatement({
             actions: ["execute-api:Invoke"],
             resources: [nutritionapiApi.arnForExecuteApi("*", "/nutrition/log"), nutritionapiApi.arnForExecuteApi("*", "/nutrition/log/*")]
         })]
 }));
 // /items - Admin group only
-backend.auth.resources.groups["Admin"].role.attachInlinePolicy(new Policy(nutritionapiStack, "itemsPolicy", {
+backend.auth.resources.groups["Admin"].role.attachInlinePolicy(new Policy(nutritionapiStack, "itemsAdminPolicy", {
     statements: [new PolicyStatement({
             actions: ["execute-api:Invoke"],
             resources: [nutritionapiApi.arnForExecuteApi("*", "/items"), nutritionapiApi.arnForExecuteApi("*", "/items/*")]
@@ -153,25 +156,24 @@ const backend = defineBackend({
 const branchName = process.env.AWS_BRANCH ?? "sandbox";
 const nutritionapiStack = backend.createStack("rest-api-stack-nutritionapi");
 const nutritionapiApi = new RestApi(nutritionapiStack, "RestApi", {
-    restApiName: \`nutritionapi-\${branchName}\`,
-    defaultCorsPreflightOptions: {
-        allowMethods: Cors.ALL_METHODS,
-        allowOrigins: Cors.ALL_ORIGINS,
-        allowHeaders: Cors.DEFAULT_HEADERS
-    }
+    restApiName: \`nutritionapi-\${branchName}\`
 });
 nutritionapiApi.addGatewayResponse("Default4XX", {
     type: ResponseType.DEFAULT_4XX,
     responseHeaders: {
         "Access-Control-Allow-Origin": "'*'",
-        "Access-Control-Allow-Headers": "'*'"
+        "Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+        "Access-Control-Allow-Methods": "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
+        "Access-Control-Expose-Headers": "'Date,X-Amzn-ErrorType'"
     }
 });
 nutritionapiApi.addGatewayResponse("Default5XX", {
     type: ResponseType.DEFAULT_5XX,
     responseHeaders: {
         "Access-Control-Allow-Origin": "'*'",
-        "Access-Control-Allow-Headers": "'*'"
+        "Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+        "Access-Control-Allow-Methods": "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
+        "Access-Control-Expose-Headers": "'Date,X-Amzn-ErrorType'"
     }
 });
 const lognutritionIntegration = new LambdaIntegration(backend.lognutrition.resources.lambda);
@@ -189,18 +191,20 @@ backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(gen1nutrition
 const nutritionlog = nutritionapiApi.root.addResource("nutrition").addResource("log", {
     defaultMethodOptions: {
         authorizationType: AuthorizationType.IAM
+    },
+    defaultCorsPreflightOptions: {
+        allowOrigins: Cors.ALL_ORIGINS,
+        allowMethods: Cors.ALL_METHODS,
+        allowHeaders: ["Content-Type", "X-Amz-Date", "Authorization", "X-Api-Key", "X-Amz-Security-Token", "X-Amz-User-Agent"]
     }
 });
-nutritionlog.addMethod("GET", lognutritionIntegration);
-nutritionlog.addMethod("POST", lognutritionIntegration);
-nutritionlog.addMethod("PUT", lognutritionIntegration);
-nutritionlog.addMethod("DELETE", lognutritionIntegration);
+nutritionlog.addMethod("ANY", lognutritionIntegration);
 nutritionlog.addProxy({
     anyMethod: true,
     defaultIntegration: lognutritionIntegration
 });
 // /nutrition/log - all authenticated users
-backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(new Policy(nutritionapiStack, "nutritionlogPolicy", {
+backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(new Policy(nutritionapiStack, "nutritionlogAuthPolicy", {
     statements: [new PolicyStatement({
             actions: ["execute-api:Invoke"],
             resources: [nutritionapiApi.arnForExecuteApi("*", "/nutrition/log"), nutritionapiApi.arnForExecuteApi("*", "/nutrition/log/*")]
@@ -240,25 +244,24 @@ const backend = defineBackend({
 const branchName = process.env.AWS_BRANCH ?? "sandbox";
 const nutritionapiStack = backend.createStack("rest-api-stack-nutritionapi");
 const nutritionapiApi = new RestApi(nutritionapiStack, "RestApi", {
-    restApiName: \`nutritionapi-\${branchName}\`,
-    defaultCorsPreflightOptions: {
-        allowMethods: Cors.ALL_METHODS,
-        allowOrigins: Cors.ALL_ORIGINS,
-        allowHeaders: Cors.DEFAULT_HEADERS
-    }
+    restApiName: \`nutritionapi-\${branchName}\`
 });
 nutritionapiApi.addGatewayResponse("Default4XX", {
     type: ResponseType.DEFAULT_4XX,
     responseHeaders: {
         "Access-Control-Allow-Origin": "'*'",
-        "Access-Control-Allow-Headers": "'*'"
+        "Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+        "Access-Control-Allow-Methods": "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
+        "Access-Control-Expose-Headers": "'Date,X-Amzn-ErrorType'"
     }
 });
 nutritionapiApi.addGatewayResponse("Default5XX", {
     type: ResponseType.DEFAULT_5XX,
     responseHeaders: {
         "Access-Control-Allow-Origin": "'*'",
-        "Access-Control-Allow-Headers": "'*'"
+        "Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+        "Access-Control-Allow-Methods": "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
+        "Access-Control-Expose-Headers": "'Date,X-Amzn-ErrorType'"
     }
 });
 const nutritionitemsIntegration = new LambdaIntegration(backend.nutritionitems.resources.lambda);
@@ -276,18 +279,20 @@ backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(gen1nutrition
 const items = nutritionapiApi.root.addResource("items", {
     defaultMethodOptions: {
         authorizationType: AuthorizationType.IAM
+    },
+    defaultCorsPreflightOptions: {
+        allowOrigins: Cors.ALL_ORIGINS,
+        allowMethods: Cors.ALL_METHODS,
+        allowHeaders: ["Content-Type", "X-Amz-Date", "Authorization", "X-Api-Key", "X-Amz-Security-Token", "X-Amz-User-Agent"]
     }
 });
-items.addMethod("GET", nutritionitemsIntegration);
-items.addMethod("POST", nutritionitemsIntegration);
-items.addMethod("PUT", nutritionitemsIntegration);
-items.addMethod("DELETE", nutritionitemsIntegration);
+items.addMethod("ANY", nutritionitemsIntegration);
 items.addProxy({
     anyMethod: true,
     defaultIntegration: nutritionitemsIntegration
 });
 // /items - Admin group only
-backend.auth.resources.groups["Admin"].role.attachInlinePolicy(new Policy(nutritionapiStack, "itemsPolicy", {
+backend.auth.resources.groups["Admin"].role.attachInlinePolicy(new Policy(nutritionapiStack, "itemsAdminPolicy", {
     statements: [new PolicyStatement({
             actions: ["execute-api:Invoke"],
             resources: [nutritionapiApi.arnForExecuteApi("*", "/items"), nutritionapiApi.arnForExecuteApi("*", "/items/*")]
