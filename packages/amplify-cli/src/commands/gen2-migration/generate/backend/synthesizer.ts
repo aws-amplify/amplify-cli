@@ -1623,38 +1623,6 @@ export class BackendSynthesizer {
                         ),
                         factory.createIdentifier('lambda'),
                       ),
-                      factory.createObjectLiteralExpression(
-                        [
-                          factory.createPropertyAssignment(
-                            'integrationResponses',
-                            factory.createArrayLiteralExpression([
-                              factory.createObjectLiteralExpression([
-                                factory.createPropertyAssignment('statusCode', factory.createStringLiteral('200')),
-                                factory.createPropertyAssignment(
-                                  'responseParameters',
-                                  factory.createObjectLiteralExpression([
-                                    factory.createPropertyAssignment(
-                                      factory.createStringLiteral('method.response.header.Access-Control-Allow-Origin'),
-                                      factory.createStringLiteral("'*'"),
-                                    ),
-                                    factory.createPropertyAssignment(
-                                      factory.createStringLiteral('method.response.header.Access-Control-Allow-Headers'),
-                                      factory.createStringLiteral(
-                                        "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
-                                      ),
-                                    ),
-                                    factory.createPropertyAssignment(
-                                      factory.createStringLiteral('method.response.header.Access-Control-Allow-Methods'),
-                                      factory.createStringLiteral("'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'"),
-                                    ),
-                                  ]),
-                                ),
-                              ]),
-                            ]),
-                          ),
-                        ],
-                        true,
-                      ),
                     ]),
                   ),
                 ],
@@ -1804,10 +1772,12 @@ export class BackendSynthesizer {
             const isLastSegment = index === pathSegments.length - 1;
             const resourceArgs: ts.Expression[] = [factory.createStringLiteral(segment)];
 
-            // Add IAM authorization to the final resource if the path requires authentication
-            if (isLastSegment && path.authType === 'private') {
-              const methodOptions = factory.createObjectLiteralExpression(
-                [
+            // Add IAM authorization and CORS preflight options to the final resource
+            if (isLastSegment) {
+              const resourceOptions: ts.PropertyAssignment[] = [];
+
+              if (path.authType === 'private') {
+                resourceOptions.push(
                   factory.createPropertyAssignment(
                     'defaultMethodOptions',
                     factory.createObjectLiteralExpression(
@@ -1823,10 +1793,43 @@ export class BackendSynthesizer {
                       true,
                     ),
                   ),
-                ],
-                true,
+                );
+              }
+
+              resourceOptions.push(
+                factory.createPropertyAssignment(
+                  'defaultCorsPreflightOptions',
+                  factory.createObjectLiteralExpression(
+                    [
+                      factory.createPropertyAssignment(
+                        'allowOrigins',
+                        factory.createPropertyAccessExpression(factory.createIdentifier('Cors'), factory.createIdentifier('ALL_ORIGINS')),
+                      ),
+                      factory.createPropertyAssignment(
+                        'allowMethods',
+                        factory.createPropertyAccessExpression(factory.createIdentifier('Cors'), factory.createIdentifier('ALL_METHODS')),
+                      ),
+                      factory.createPropertyAssignment(
+                        'allowHeaders',
+                        factory.createArrayLiteralExpression([
+                          factory.createStringLiteral('Content-Type'),
+                          factory.createStringLiteral('X-Amz-Date'),
+                          factory.createStringLiteral('Authorization'),
+                          factory.createStringLiteral('X-Api-Key'),
+                          factory.createStringLiteral('X-Amz-Security-Token'),
+                          factory.createStringLiteral('X-Amz-User-Agent'),
+                        ]),
+                      ),
+                    ],
+                    true,
+                  ),
+                ),
               );
-              resourceArgs.push(methodOptions);
+
+              if (resourceOptions.length > 0) {
+                const methodOptions = factory.createObjectLiteralExpression(resourceOptions, true);
+                resourceArgs.push(methodOptions);
+              }
             }
 
             resourceExpression = factory.createCallExpression(
@@ -1849,45 +1852,12 @@ export class BackendSynthesizer {
           // Get the Lambda integration for this path's function
           const pathIntegrationVar = integrationDeclarations.get(path.lambdaFunction) || `${path.lambdaFunction}Integration`;
 
-          // Add ANY method with CORS configuration for every API endpoint
+          // Add ANY method for every API endpoint
           const addAnyMethodCall = factory.createExpressionStatement(
             factory.createCallExpression(
               factory.createPropertyAccessExpression(factory.createIdentifier(resourceName), factory.createIdentifier('addMethod')),
               undefined,
-              [
-                factory.createStringLiteral('ANY'),
-                factory.createIdentifier(pathIntegrationVar),
-                factory.createObjectLiteralExpression(
-                  [
-                    factory.createPropertyAssignment(
-                      'methodResponses',
-                      factory.createArrayLiteralExpression([
-                        factory.createObjectLiteralExpression([
-                          factory.createPropertyAssignment('statusCode', factory.createStringLiteral('200')),
-                          factory.createPropertyAssignment(
-                            'responseParameters',
-                            factory.createObjectLiteralExpression([
-                              factory.createPropertyAssignment(
-                                factory.createStringLiteral('method.response.header.Access-Control-Allow-Origin'),
-                                factory.createTrue(),
-                              ),
-                              factory.createPropertyAssignment(
-                                factory.createStringLiteral('method.response.header.Access-Control-Allow-Headers'),
-                                factory.createTrue(),
-                              ),
-                              factory.createPropertyAssignment(
-                                factory.createStringLiteral('method.response.header.Access-Control-Allow-Methods'),
-                                factory.createTrue(),
-                              ),
-                            ]),
-                          ),
-                        ]),
-                      ]),
-                    ),
-                  ],
-                  true,
-                ),
-              ],
+              [factory.createStringLiteral('ANY'), factory.createIdentifier(pathIntegrationVar)],
             ),
           );
           nodes.push(addAnyMethodCall);
