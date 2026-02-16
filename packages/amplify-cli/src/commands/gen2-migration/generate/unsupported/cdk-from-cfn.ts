@@ -53,20 +53,42 @@ export interface GeoResourceDefinition {
 }
 
 /**
- * Result of geo codegen containing metadata needed for resource.ts generation
+ * Base result fields common to all geo codegen results
  */
-export interface GeoCodegenResult {
+export interface GeoCodegenResultBase {
   /** The class name of the generated construct (extracted from generated code) */
   constructClassName: string;
   /** The file name of the generated construct without extension */
   constructFileName: string;
   /** The resource name used for construct ID */
   resourceName: string;
-  /** The geo service type */
-  serviceName: 'Map' | 'PlaceIndex' | 'GeofenceCollection';
-  /** Deployed stack parameters fetched from CloudFormation (key-value pairs) */
-  deployedParameters: Record<string, string>;
+  /** The full parameter name for the user pool ID prop on the construct */
+  userPoolIdParamName: string;
+  /** Group role parameters with extracted group names */
+  groupRoles: Array<{ paramName: string; groupName: string }>;
+  /** Whether this is the default resource */
+  isDefault: string;
 }
+
+export interface MapCodegenResult extends GeoCodegenResultBase {
+  serviceName: 'Map';
+  mapName: string;
+  mapStyle: string;
+}
+
+export interface PlaceIndexCodegenResult extends GeoCodegenResultBase {
+  serviceName: 'PlaceIndex';
+  indexName: string;
+  dataProvider: string;
+  dataSourceIntendedUse: string;
+}
+
+export interface GeofenceCollectionCodegenResult extends GeoCodegenResultBase {
+  serviceName: 'GeofenceCollection';
+  collectionName: string;
+}
+
+export type GeoCodegenResult = MapCodegenResult | PlaceIndexCodegenResult | GeofenceCollectionCodegenResult;
 
 export class CdkFromCfn {
   public constructor(
