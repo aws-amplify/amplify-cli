@@ -420,8 +420,30 @@ Navigate to the Amplify Console to find the `<gen1-rest-api-id>` and `<gen1-root
 **Edit in `./amplify/function/admin/index.js`:**
 
 ```diff
+- const awsServerlessExpress = require('aws-serverless-express');
+- const app = require('./app');
++ import awsServerlessExpress from 'aws-serverless-express';
++ import app from './app.js';
+```
+
+```diff
 - exports.handler = (event, context) => {
 + export async function handler(event, context) {
+```
+
+**Edit in `./amplify/function/admin/app.js`:**
+
+```diff
+- const express = require('express');
+- const bodyParser = require('body-parser');
+- const awsServerlessExpressMiddleware = require('aws-serverless-express/middleware');
+- const { CognitoIdentityProviderClient, ListUsersCommand } = require('@aws-sdk/client-cognito-identity-provider');
+- module.exports = app;
++ import express from 'express';
++ import bodyParser from 'body-parser';
++ import awsServerlessExpressMiddleware from 'aws-serverless-express/middleware';
++ import { CognitoIdentityProviderClient, ListUsersCommand } from '@aws-sdk/client-cognito-identity-provider';
++ export default app;
 ```
 
 **Edit in `./amplify/auth/fitnesstrackerd21d4fcdd21d4fcdPreSignup/resource.ts`:**
@@ -462,6 +484,11 @@ Navigate to the Amplify Console to find the `<gen1-rest-api-id>` and `<gen1-root
 ```diff
 - apiName: 'nutritionapi',
 + apiName: 'nutritionapi-gen2-main',
+```
+
+```diff
+- apiName: 'adminapi',
++ apiName: 'adminapi-gen2-main',
 ```
 
 **Edit in `./src/main.tsx`:**
