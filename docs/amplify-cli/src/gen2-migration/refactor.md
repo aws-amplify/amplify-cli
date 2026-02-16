@@ -107,7 +107,7 @@ The module supports migrating the following CloudFormation resource types:
 |----------|---------------|
 | `auth` | `AWS::Cognito::UserPool`, `AWS::Cognito::UserPoolClient`, `AWS::Cognito::IdentityPool`, `AWS::Cognito::IdentityPoolRoleAttachment`, `AWS::Cognito::UserPoolDomain` |
 | `auth-user-pool-group` | `AWS::Cognito::UserPoolGroup` |
-| `storage` | `AWS::S3::Bucket` |
+| `storage` | `AWS::S3::Bucket`, `AWS::DynamoDB::Table` |
 
 ## Dependencies
 
@@ -224,7 +224,8 @@ const resourceMapPath = this.resourceMappings.split(FILE_PROTOCOL_PREFIX)[1];
 
 ## Known Limitations
 
-- Storage refactor only supports S3 buckets, not DynamoDB tables—DynamoDB is handled in the 'generate' step via table mappings
+- Multiple resources of the same type (e.g., multiple DynamoDB tables) are matched arbitrarily by type alone—the mapping may not preserve correct resource correspondence without explicit `--resourceMappings`
+- The `--resourceMappings` CLI option is currently disabled (commented out in code)
 - Auth with OAuth providers is known to be broken—fails on deployment after refactor when trying to replace IdP that already exists
 - The `rollback()` method is not implemented—it only logs 'Not implemented'. Manual intervention required on failure
 - The refactor operation has a 60-minute timeout (300 attempts × 12s)—very large stacks may timeout
@@ -236,7 +237,7 @@ const resourceMapPath = this.resourceMappings.split(FILE_PROTOCOL_PREFIX)[1];
 - Four resolver classes must be applied in the correct order: Parameter → Output → Dependency → Condition. The order matters because each resolver depends on previous transformations
 - The logical ID mapping between Gen1 and Gen2 is critical—UserPoolClient has special handling (Web vs Native) and UserPoolGroup uses CDK hash suffixes that must be stripped
 - OAuth migrations require credentials from both Cognito (client_id, client_secret) and SSM (Sign In With Apple private key)—ensure proper IAM permissions
-- The module supports both forward migration (Gen1→Gen2) and revert (Gen2→Gen1) operations, but revert has different logical ID mapping logic
+- The module supports both forward migration (Gen1→Gen2) and rollback (Gen2→Gen1) operations, but rollback has different logical ID mapping logic
 - Category stacks are identified by parsing the root stack's nested stacks and matching logical resource IDs that start with category names (auth, storage)
 
 **Common pitfalls:**
@@ -246,4 +247,4 @@ const resourceMapPath = this.resourceMappings.split(FILE_PROTOCOL_PREFIX)[1];
 - Don't assume rollback works—the `rollback()` method is not implemented and only logs a message
 
 **Testing guidance:**
-Test with deployed Amplify Gen1 projects that have auth and storage categories. Verify the assessment correctly identifies resources to migrate. Test with `--resourceMappings` to verify custom mapping support. Test OAuth migrations with social login providers (Google, Facebook, Sign In With Apple). Verify rollback behavior when refactor fails mid-operation. Test revert operation (Gen2→Gen1) to ensure bidirectional support works.
+Test with deployed Amplify Gen1 projects that have auth and storage categories. Verify the assessment correctly identifies resources to migrate. Test with `--resourceMappings` to verify custom mapping support. Test OAuth migrations with social login providers (Google, Facebook, Sign In With Apple). Verify rollback behavior when refactor fails mid-operation. Test rollback operation (Gen2→Gen1) to ensure bidirectional support works.

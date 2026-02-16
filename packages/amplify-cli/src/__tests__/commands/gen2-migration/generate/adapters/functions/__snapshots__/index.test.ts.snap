@@ -1,0 +1,169 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`getFunctionDefinition auth env variables are removed 1`] = `
+[
+  {
+    "apiPermissions": {
+      "hasMutation": false,
+      "hasQuery": false,
+      "hasSubscription": false,
+    },
+    "category": "function",
+    "entry": "./index.js",
+    "environment": {
+      "Variables": {
+        "SOME_ENV": "some-value",
+      },
+    },
+    "filteredEnvironmentVariables": {
+      "AUTH_MEDIAVAULT_USERPOOLID": "authUserPoolId",
+    },
+    "memoryMB": undefined,
+    "name": "MyFunc",
+    "resourceName": "MyFunc",
+    "runtime": undefined,
+    "schedule": undefined,
+    "timeoutSeconds": undefined,
+  },
+]
+`;
+
+exports[`getFunctionDefinition entry defaults to ./index.js 1`] = `
+[
+  {
+    "apiPermissions": {
+      "hasMutation": false,
+      "hasQuery": false,
+      "hasSubscription": false,
+    },
+    "category": "function",
+    "entry": "./index.js",
+    "environment": undefined,
+    "filteredEnvironmentVariables": {},
+    "memoryMB": undefined,
+    "name": "MyFunc",
+    "resourceName": "MyFunc",
+    "runtime": undefined,
+    "schedule": undefined,
+    "timeoutSeconds": undefined,
+  },
+]
+`;
+
+exports[`getFunctionDefinition entry is derived from Handler 1`] = `
+[
+  {
+    "apiPermissions": {
+      "hasMutation": false,
+      "hasQuery": false,
+      "hasSubscription": false,
+    },
+    "category": "function",
+    "entry": "./index.js",
+    "environment": {
+      "Variables": {
+        "OTHER_ENV_VAR": "some-value",
+      },
+    },
+    "filteredEnvironmentVariables": {
+      "API_MYAPI_GRAPHQLAPIENDPOINTOUTPUT": "https://example.appsync-api.us-east-1.amazonaws.com/graphql",
+      "API_MYAPI_GRAPHQLAPIIDOUTPUT": "abcdefghijklmnopqrstuvwxyz",
+      "API_MYAPI_GRAPHQLAPIKEYOUTPUT": "da2-fakeApiKey123456",
+    },
+    "memoryMB": 128,
+    "name": "myFunction-dev-12345",
+    "resourceName": "myFunction",
+    "runtime": undefined,
+    "schedule": undefined,
+    "timeoutSeconds": 30,
+  },
+]
+`;
+
+exports[`getFunctionDefinition graphql env variables are removed 1`] = `
+[
+  {
+    "apiPermissions": {
+      "hasMutation": false,
+      "hasQuery": false,
+      "hasSubscription": false,
+    },
+    "category": "function",
+    "entry": "./index.js",
+    "environment": {
+      "Variables": {
+        "SOME_ENV": "some-value",
+      },
+    },
+    "filteredEnvironmentVariables": {
+      "API_PRODUCTCATALOG_GRAPHQLAPIENDPOINTOUTPUT": "apidEndpoint",
+      "API_PRODUCTCATALOG_GRAPHQLAPIIDOUTPUT": "apiId",
+      "API_PRODUCTCATALOG_GRAPHQLAPIKEYOUTPUT": "apiKey",
+    },
+    "memoryMB": undefined,
+    "name": "MyFunc",
+    "resourceName": "MyFunc",
+    "runtime": undefined,
+    "schedule": undefined,
+    "timeoutSeconds": undefined,
+  },
+]
+`;
+
+exports[`getFunctionDefinition storage dynamo env variables are removed 1`] = `
+[
+  {
+    "apiPermissions": {
+      "hasMutation": false,
+      "hasQuery": false,
+      "hasSubscription": false,
+    },
+    "category": "function",
+    "entry": "./index.js",
+    "environment": {
+      "Variables": {
+        "SOME_ENV": "some-value",
+      },
+    },
+    "filteredEnvironmentVariables": {
+      "STORAGE_ACTIVITY_ARN": "storageArn",
+      "STORAGE_ACTIVITY_NAME": "storageName",
+      "STORAGE_ACTIVITY_STREAMARN": "storageStreamName",
+    },
+    "memoryMB": undefined,
+    "name": "MyFunc",
+    "resourceName": "MyFunc",
+    "runtime": undefined,
+    "schedule": undefined,
+    "timeoutSeconds": undefined,
+  },
+]
+`;
+
+exports[`getFunctionDefinition storage s3 env variables are removed 1`] = `
+[
+  {
+    "apiPermissions": {
+      "hasMutation": false,
+      "hasQuery": false,
+      "hasSubscription": false,
+    },
+    "category": "function",
+    "entry": "./index.js",
+    "environment": {
+      "Variables": {
+        "SOME_ENV": "some-value",
+      },
+    },
+    "filteredEnvironmentVariables": {
+      "STORAGE_MEDIAVAULT_BUCKETNAME": "storageBucketName",
+    },
+    "memoryMB": undefined,
+    "name": "MyFunc",
+    "resourceName": "MyFunc",
+    "runtime": undefined,
+    "schedule": undefined,
+    "timeoutSeconds": undefined,
+  },
+]
+`;

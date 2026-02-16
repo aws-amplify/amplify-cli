@@ -1,6 +1,7 @@
 /* eslint-disable spellcheck/spell-checker */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { AmplifyMigrationStep } from '../_step';
+import { AmplifyMigrationOperation } from '../_operation';
 import { prompter } from '@aws-amplify/amplify-prompts';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import fs from 'fs-extra';
@@ -9,7 +10,6 @@ import { SSMClient } from '@aws-sdk/client-ssm';
 import { CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-provider';
 import { GetCallerIdentityCommand, STSClient } from '@aws-sdk/client-sts';
 import { AmplifyGen2MigrationValidations } from '../_validations';
-import { stateManager } from '@aws-amplify/amplify-cli-core';
 import { DescribeStacksCommand } from '@aws-sdk/client-cloudformation';
 import { TemplateGenerator } from './generators/template-generator';
 
@@ -33,35 +33,59 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
   private resourceMappings?: string;
   private parsedResourceMappings?: ResourceMapping[];
 
-  public implications(): string[] {
+  public async executeImplications(): Promise<string[]> {
     return ['Move stateful resources from your Gen1 app to be managed by your Gen2 app'];
   }
 
-  public async validate(): Promise<void> {
+  public async rollbackImplications(): Promise<string[]> {
+    return ['Move stateful resources from your Gen2 app back to your Gen1 app'];
+  }
+
+  public async executeValidate(): Promise<void> {
     const validations = new AmplifyGen2MigrationValidations(this.logger, this.rootStackName, this.currentEnvName, this.context);
     await validations.validateLockStatus();
     return;
   }
 
-  public async execute(): Promise<void> {
-    // Extract parameters from context
-    this.extractParameters();
-
-    // Process resource mappings if provided
-    if (this.resourceMappings) {
-      await this.processResourceMappings();
-    }
-
-    if (this.parsedResourceMappings) {
-      this.logger.debug(`📊 Using ${this.parsedResourceMappings.length} custom resource mapping(s)`);
-    }
-
-    // Execute the stack refactoring
-    await this.executeStackRefactor();
+  public async rollbackValidate(): Promise<void> {
+    // https://github.com/aws-amplify/amplify-cli/issues/14579
+    return;
   }
 
-  public async rollback(): Promise<void> {
-    this.logger.info('Not implemented');
+  public async execute(): Promise<AmplifyMigrationOperation[]> {
+    return [
+      {
+        describe: async () => ['Move stateful resources from your Gen1 app to be managed by your Gen2 app'],
+        execute: async () => {
+          // Extract parameters from context
+          this.extractParameters();
+
+          // Process resource mappings if provided
+          if (this.resourceMappings) {
+            await this.processResourceMappings();
+          }
+
+          if (this.parsedResourceMappings) {
+            this.logger.debug(`📊 Using ${this.parsedResourceMappings.length} custom resource mapping(s)`);
+          }
+
+          // Execute the stack refactoring
+          await this.executeStackRefactor();
+        },
+      },
+    ];
+  }
+
+  public async rollback(): Promise<AmplifyMigrationOperation[]> {
+    return [
+      {
+        describe: async () => ['Move stateful resources from your Gen2 app back to your Gen1 app'],
+        execute: async () => {
+          this.extractParameters();
+          await this.executeRollback();
+        },
+      },
+    ];
   }
 
   private extractParameters(): void {
@@ -73,6 +97,13 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
     }
   }
 
+  private async executeRollback(): Promise<void> {
+    const templateGenerator = await this.initializeTemplateGeneratorForRollback();
+    this.logger.info('🔧 Executing CloudFormation stack rollback...');
+    await templateGenerator.rollback();
+    await this.emitUsageAnalytics(this.currentEnvName, true);
+  }
+
   private async processResourceMappings(): Promise<void> {
     if (!this.resourceMappings) return;
 
@@ -80,21 +111,28 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
 
     // Validate file protocol prefix
     if (!this.resourceMappings.startsWith(FILE_PROTOCOL_PREFIX)) {
-      throw new Error(`Resource mappings path must start with ${FILE_PROTOCOL_PREFIX}. ` + 'Example: file:///path/to/mappings.json');
+      throw new AmplifyError('InputValidationError', {
+        message: `Resource mappings path must start with ${FILE_PROTOCOL_PREFIX}`,
+        resolution: `Use the format: ${FILE_PROTOCOL_PREFIX}/path/to/mappings.json`,
+      });
     }
 
     // Extract file path
     const resourceMapPath = this.resourceMappings.split(FILE_PROTOCOL_PREFIX)[1];
     if (!resourceMapPath) {
-      throw new Error(`Invalid resource mappings path. Expected format: ${FILE_PROTOCOL_PREFIX}/path/to/file.json`);
+      throw new AmplifyError('InputValidationError', {
+        message: 'Invalid resource mappings path',
+        resolution: `Use the format: ${FILE_PROTOCOL_PREFIX}/path/to/file.json`,
+      });
     }
 
     // Read and parse the file
     try {
       if (!(await fs.pathExists(resourceMapPath))) {
-        throw new Error(
-          `Resource mappings file not found: ${resourceMapPath}. ` + 'Please ensure the file exists and the path is correct.',
-        );
+        throw new AmplifyError('ResourceDoesNotExistError', {
+          message: `Resource mappings file not found: ${resourceMapPath}`,
+          resolution: 'Ensure the file exists and the path is correct.',
+        });
       }
 
       const fileContent = await fs.readFile(resourceMapPath, 'utf-8');
@@ -104,25 +142,32 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
         this.parsedResourceMappings = JSON.parse(fileContent);
         this.logger.info(`📊 Found ${this.parsedResourceMappings?.length || 0} resource mapping(s)`);
       } catch (parseError) {
-        throw new Error(
-          `Failed to parse JSON from resource mappings file: ${parseError instanceof Error ? parseError.message : 'Invalid JSON format'}`,
-        );
+        throw new AmplifyError('InputValidationError', {
+          message: `Failed to parse JSON from resource mappings file: ${
+            parseError instanceof Error ? parseError.message : 'Invalid JSON format'
+          }`,
+          resolution: 'Ensure the file contains valid JSON.',
+        });
       }
 
       // Validate structure
       if (!Array.isArray(this.parsedResourceMappings) || !this.parsedResourceMappings.every(this.isResourceMappingValid)) {
-        throw new Error(
-          'Invalid resource mappings structure. Each mapping must have Source and Destination objects ' +
-            'with StackName and LogicalResourceId properties.',
-        );
+        throw new AmplifyError('InputValidationError', {
+          message: 'Invalid resource mappings structure',
+          resolution: 'Each mapping must have Source and Destination objects with StackName and LogicalResourceId properties.',
+        });
       }
 
       this.logger.info('✅ Resource mappings validated successfully');
     } catch (error) {
+      if (error instanceof AmplifyError) {
+        throw error;
+      }
       if (error instanceof Error && 'code' in error && error.code === 'ENOENT') {
-        throw new Error(
-          `Resource mappings file not found: ${resourceMapPath}. ` + 'Please ensure the file exists and the path is correct.',
-        );
+        throw new AmplifyError('ResourceDoesNotExistError', {
+          message: `Resource mappings file not found: ${resourceMapPath}`,
+          resolution: 'Ensure the file exists and the path is correct.',
+        });
       }
       throw error;
     }
@@ -150,10 +195,11 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
   }
 
   private async executeStackRefactor(): Promise<void> {
-    // Initialize template generator
-    const [templateGenerator, envName] = await this.initializeTemplateGenerator();
+    // Initialize template generator and clients
+    const templateGenerator = await this.initializeTemplateGenerator();
 
     // Initialize template generator (parse category stacks for assessment)
+    // Populates _categoryStackMap with: category → [sourceStackId, destinationStackId]
     await templateGenerator.initializeForAssessment();
 
     // Interactive assessment and selection
@@ -171,9 +217,9 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
 
     if (success) {
       // Emit usage analytics
-      await this.emitUsageAnalytics(envName, true);
+      await this.emitUsageAnalytics(this.currentEnvName, true);
     } else {
-      await this.emitUsageAnalytics(envName, false);
+      await this.emitUsageAnalytics(this.currentEnvName, false);
       throw new Error('Failed to execute CloudFormation stack refactor');
     }
   }
@@ -184,6 +230,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
     this.logger.info('🔍 Assessing available resources for migration...');
 
     // Assess each category for available resources
+    // Checks the gen1 templates for what resources
     const categoryAssessments = await this.assessCategoryResources(templateGenerator);
 
     if (categoryAssessments.length === 0) {
@@ -209,18 +256,15 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
       this.logger.info('');
     }
 
-    // Prompt user for category selection
+    // Migrate all categories selection
     const availableCategories = categoryAssessments.map((a) => a.category);
-
     const selectionChoice = 'Migrate all categories';
-
     if (selectionChoice === 'Migrate all categories') {
       return availableCategories;
     }
 
     // Individual category selection
     const selectedCategories: string[] = [];
-
     for (const assessment of categoryAssessments) {
       const { category, resourceCount } = assessment;
       const shouldMigrate = await prompter.yesOrNo(`Migrate ${category} category? (${resourceCount} resources)`, true);
@@ -239,7 +283,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
     return selectedCategories;
   }
 
-  // Assess resources in each category
+  // Add all resources that match the categoryGeneratorConfig filters to assesments
   private async assessCategoryResources(templateGenerator: TemplateGenerator): Promise<
     Array<{
       category: string;
@@ -294,7 +338,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
     return assessments;
   }
 
-  private async initializeTemplateGenerator(): Promise<[TemplateGenerator, string]> {
+  private async initializeTemplateGenerator(): Promise<TemplateGenerator> {
     // Get AWS account ID
     const stsClient = new STSClient({});
     const callerIdentityResult = await stsClient.send(new GetCallerIdentityCommand({}));
@@ -304,16 +348,13 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
       throw new Error('Unable to determine AWS account ID');
     }
 
-    const backendEnvironmentName = this.currentEnvName;
-
     // Create AWS service clients
     const cfnClient = new CloudFormationClient({});
     const ssmClient = new SSMClient({});
     const cognitoIdpClient = new CognitoIdentityProviderClient({});
 
     // Create template generator using the real TemplateGenerator implementation
-    const templateGenerator = new TemplateGenerator(
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return new TemplateGenerator(
       this.rootStackName,
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       this.toStack!,
@@ -322,11 +363,38 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
       ssmClient,
       cognitoIdpClient,
       this.appId,
-      backendEnvironmentName,
+      this.currentEnvName,
       this.logger,
+      this.region,
     );
+  }
 
-    return [templateGenerator, backendEnvironmentName];
+  private async initializeTemplateGeneratorForRollback(): Promise<TemplateGenerator> {
+    const stsClient = new STSClient({});
+    const callerIdentityResult = await stsClient.send(new GetCallerIdentityCommand({}));
+    const accountId = callerIdentityResult.Account;
+
+    if (!accountId) {
+      throw new Error('Unable to determine AWS account ID');
+    }
+
+    const cfnClient = new CloudFormationClient({});
+    const ssmClient = new SSMClient({});
+    const cognitoIdpClient = new CognitoIdentityProviderClient({});
+
+    // For rollback: Gen2 (toStack) is source, Gen1 (rootStackName) is destination
+    return new TemplateGenerator(
+      this.toStack!,
+      this.rootStackName,
+      accountId,
+      cfnClient,
+      ssmClient,
+      cognitoIdpClient,
+      this.appId,
+      this.currentEnvName,
+      this.logger,
+      this.region,
+    );
   }
 
   private async emitUsageAnalytics(envName: string, success: boolean): Promise<void> {

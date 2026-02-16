@@ -1,0 +1,24 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`BackendSynthesizer DynamoDB Triggers should generate escape hatches for DynamoDB triggers 1`] = `
+"import { data } from "./data/resource";
+import { recordUserActivity } from "./function/recordUserActivity/resource";
+import { DynamoEventSource } from "aws-cdk-lib/aws-lambda-event-sources";
+import { StartingPosition } from "aws-cdk-lib/aws-lambda";
+import { defineBackend } from "@aws-amplify/backend";
+
+
+const backend = defineBackend({
+    data,
+    recordUserActivity
+});
+const branchName = process.env.AWS_BRANCH ?? "sandbox";
+backend.recordUserActivity.resources.cfnResources.cfnFunction.functionName = \`recordUserActivity-\${branchName}\`;
+for (const model of ["Comment", "Post", "Topic", "randomTable"]) {
+    const table = backend.data.resources.tables[model];
+    backend.recordUserActivity.resources.lambda.addEventSource(new DynamoEventSource(table, { startingPosition: StartingPosition.LATEST }));
+    table.grantStreamRead(backend.recordUserActivity.resources.lambda.role!);
+    table.grantTableListStreams(backend.recordUserActivity.resources.lambda.role!);
+}
+"
+`;

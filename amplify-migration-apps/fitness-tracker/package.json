@@ -1,0 +1,40 @@
+{
+  "name": "fitness-goal-tracker",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "A fitness tracking application to manage workout programs and exercises with progress photos",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "configure": "./configure.sh",
+    "configure-schema": "./configure-schema.sh"
+  },
+  "dependencies": {
+    "@aws-amplify/ui-react": "^6.13.1",
+    "@aws-sdk/client-dynamodb": "^3.969.0",
+    "@aws-sdk/lib-dynamodb": "^3.969.0",
+    "aws-amplify": "^6.15.8",
+    "aws-serverless-express": "^3.3.5",
+    "body-parser": "^1.17.1",
+    "express": "^4.15.2",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "@types/node": "^24.10.1",
+    "@types/react": "^19.2.5",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.1",
+    "eslint": "^9.39.1",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.4.24",
+    "globals": "^16.5.0",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.46.4",
+    "vite": "^7.2.4"
+  }
+}

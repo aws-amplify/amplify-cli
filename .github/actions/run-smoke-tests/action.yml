@@ -39,6 +39,11 @@ runs:
       shell: bash
       run: yarn build-tests
 
+    - name: Fix node-pty permissions
+      if: runner.os == 'macOS'
+      shell: bash
+      run: chmod +x node_modules/node-pty/prebuilds/darwin-*/spawn-helper
+
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@04b98b3f9e85f563fb061be8751a0352327246b0 # v3.0.1
       with:

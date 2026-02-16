@@ -62,6 +62,13 @@ class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
     this.gen2ResourcesToRemove = new Map();
   }
 
+  /**
+   * Prepares the Gen1 stack template for resource migration by resolving all dynamic references.
+   *
+   * Before resources can be moved to Gen2, all dynamic CloudFormation references must be
+   * resolved to static values. Otherwise, references pointing to resources that will
+   * be removed would break the stack.
+   */
   public async generateGen1PreProcessTemplate(): Promise<CFNChangeTemplateWithParams> {
     this.logger.debug('generateGen1PreProcessTemplate: Starting Gen1 pre-process template generation');
     this.logger.debug(`Gen1 Stack ID: ${this.gen1StackId}`);
@@ -121,6 +128,20 @@ class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
 
     this.logger.debug('Resolving Gen1 conditions...');
     const gen1TemplateWithConditionsResolved = new CFNConditionResolver(gen1TemplateWithDepsResolved).resolve(Parameters);
+
+    // CloudFormation requires at least one resource in a stack.
+    // If all resources are being moved, add a placeholder resource now so it exists
+    // in the stack before the refactor operation.
+    const totalResources = Object.keys(oldGen1Template.Resources).length;
+    const resourcesToMoveCount = this.gen1ResourcesToMove.size;
+    if (totalResources === resourcesToMoveCount) {
+      this.logger.debug('All Gen1 resources will be moved, adding placeholder resource to Gen1 stack');
+      gen1TemplateWithConditionsResolved.Resources['MigrationPlaceholder'] = {
+        Type: 'AWS::CloudFormation::WaitConditionHandle',
+        Properties: {},
+      };
+    }
+
     const oAuthProvidersParam = Parameters.find((param) => param.ParameterKey === HOSTED_PROVIDER_META_PARAMETER_NAME);
     if (oAuthProvidersParam) {
       const userPoolId = Outputs.find((op) => op.OutputKey === USER_POOL_ID_OUTPUT_KEY_NAME)?.OutputValue;
