@@ -1451,27 +1451,7 @@ export class BackendSynthesizer {
         );
         nodes.push(restApiStackDeclaration);
 
-        // ===== STEP 2: Configure CORS for cross-origin requests =====
-        // Allow all methods, origins, and headers for maximum compatibility
-        const corsOptions = factory.createObjectLiteralExpression(
-          [
-            factory.createPropertyAssignment(
-              'allowMethods',
-              factory.createPropertyAccessExpression(factory.createIdentifier('Cors'), factory.createIdentifier('ALL_METHODS')),
-            ),
-            factory.createPropertyAssignment(
-              'allowOrigins',
-              factory.createPropertyAccessExpression(factory.createIdentifier('Cors'), factory.createIdentifier('ALL_ORIGINS')),
-            ),
-            factory.createPropertyAssignment(
-              'allowHeaders',
-              factory.createPropertyAccessExpression(factory.createIdentifier('Cors'), factory.createIdentifier('DEFAULT_HEADERS')),
-            ),
-          ],
-          true,
-        );
-
-        // ===== STEP 3: Create new Gen2 REST API Gateway =====
+        // ===== STEP 2: Create new Gen2 REST API Gateway =====
         // This creates the new API Gateway that will replace the Gen1 API
         const restApiDeclaration = factory.createVariableStatement(
           [],
@@ -1503,7 +1483,7 @@ export class BackendSynthesizer {
         );
         nodes.push(restApiDeclaration);
 
-        // ===== STEP 4: Add gateway responses for proper CORS handling =====
+        // ===== STEP 3: Add gateway responses for proper CORS handling =====
         // These ensure CORS headers are returned even for 4XX and 5XX responses
         const gatewayResponse4XX = factory.createExpressionStatement(
           factory.createCallExpression(
@@ -1599,7 +1579,7 @@ export class BackendSynthesizer {
         );
         nodes.push(gatewayResponse5XX);
 
-        // ===== STEP 5: Create Lambda integrations for each function =====
+        // ===== STEP 4: Create Lambda integrations for each function =====
         // Each unique function used by this API gets its own integration with CORS support
         const integrationDeclarations = new Map<string, string>();
         if (restApi.uniqueFunctions) {
@@ -1633,7 +1613,7 @@ export class BackendSynthesizer {
           });
         }
 
-        // ===== STEP 6: Create reference to existing Gen1 REST API =====
+        // ===== STEP 5: Create reference to existing Gen1 REST API =====
         // This allows continued access to the original API during migration
         // Users must replace placeholders with actual Gen1 API Gateway IDs
         const gen1RestApiDeclaration = factory.createVariableStatement(
@@ -1672,7 +1652,7 @@ export class BackendSynthesizer {
         );
         nodes.push(gen1RestApiDeclaration);
 
-        // ===== STEP 7: Create IAM policy for Gen1 REST API access =====
+        // ===== STEP 6: Create IAM policy for Gen1 REST API access =====
         // This grants execute-api:Invoke permission for all methods and resources on the old API
         const gen1RestApiPolicyDeclaration = factory.createVariableStatement(
           [],
@@ -1732,7 +1712,7 @@ export class BackendSynthesizer {
         );
         nodes.push(gen1RestApiPolicyDeclaration);
 
-        // ===== STEP 8: Attach Gen1 policy to authenticated users =====
+        // ===== STEP 7: Attach Gen1 policy to authenticated users =====
         // This enables authenticated users to access the existing Gen1 API during migration
         const attachGen1PolicyCall = factory.createExpressionStatement(
           factory.createCallExpression(
@@ -1749,7 +1729,7 @@ export class BackendSynthesizer {
         );
         nodes.push(attachGen1PolicyCall);
 
-        // ===== STEP 9: Generate API Gateway resources and methods for each path =====
+        // ===== STEP 8: Generate API Gateway resources and methods for each path =====
         // This creates the actual API structure (resources, methods, integrations)
         restApi.paths.forEach((path) => {
           // Parse the path into segments (e.g., "/users/{id}" -> ["users", "{id}"])
@@ -1881,7 +1861,7 @@ export class BackendSynthesizer {
           nodes.push(addProxyCall);
         });
 
-        // ===== STEP 10: Create general API policy (only if no path-specific permissions) =====
+        // ===== STEP 9: Create general API policy (only if no path-specific permissions) =====
         // Check if any paths have specific permission requirements
         const hasPathSpecificPermissions = restApi.paths.some((path) => path.permissions?.hasAuth || path.permissions?.groups);
 
@@ -1962,7 +1942,7 @@ export class BackendSynthesizer {
           nodes.push(attachPolicyCall);
         }
 
-        // ===== STEP 11: Create path-specific IAM policies =====
+        // ===== STEP 10: Create path-specific IAM policies =====
         // Generate fine-grained policies for individual paths with specific permission requirements
         restApi.paths.forEach((path) => {
           // Create policy for paths accessible by all authenticated users
@@ -2124,7 +2104,7 @@ export class BackendSynthesizer {
           }
         });
 
-        // ===== STEP 12: Add API output for client configuration =====
+        // ===== STEP 11: Add API output for client configuration =====
         // This creates the output that client applications use to connect to the API
         const addOutputCall = factory.createExpressionStatement(
           factory.createCallExpression(
