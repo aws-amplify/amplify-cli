@@ -967,7 +967,7 @@ const App: React.FC<AppProps> = ({ signOut, user }) => {
       setShowAdminModal(true);
     } catch (error) {
       console.log('Error fetching users:', error);
-      alert('Failed to fetch users. Make sure you are in the Admin group.');
+      alert(`Failed to fetch users: ${error}.`);
     } finally {
       setLoadingUsers(false);
     }

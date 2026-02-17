@@ -190,9 +190,9 @@ amplify add api
 ? Do you want to configure advanced settings? Yes
 ? Do you want to access other resources in this project from your Lambda function? Yes
 ? Select the categories you want this function to have access to. auth
-? Auth has 2 resources in this project. Select the one you would like your Lambda to access app4fitnesstracker1d5522f4
+? Auth has 2 resources in this project. Select the one you would like your Lambda to access fitnesstrackercdd70e8bcdd70e8b
 1d5522f4
-? Select the operations you want to permit on app4fitnesstracker1d5522f41d5522f4 read
+? Select the operations you want to permit on fitnesstrackercdd70e8bcdd70e8b read
 
 You can access the following resource attributes as environment variables from your Lambda function
         AUTH_APP4FITNESSTRACKER1D5522F41D5522F4_USERPOOLID
@@ -414,7 +414,7 @@ Navigate to the Amplify Console to find the `<gen1-rest-api-id>` and `<gen1-root
 ```diff
 - entry: "./index.js",
 + entry: "./index.js",
-+ resourceGroupName: 'data',
++ resourceGroupName: 'auth',
 ```
 
 **Edit in `./amplify/function/admin/index.js`:**

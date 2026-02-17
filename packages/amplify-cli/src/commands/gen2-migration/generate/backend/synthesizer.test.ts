@@ -449,8 +449,8 @@ describe('BackendSynthesizer', () => {
     });
   });
 
-  describe('REST API IAM Policies', () => {
-    it('should generate IAM policies for paths with auth permissions', () => {
+  describe('REST API', () => {
+    it('auth permissions', () => {
       const renderArgs: BackendRenderParameters = {
         auth: {
           importFrom: './auth/resource',
@@ -487,7 +487,7 @@ describe('BackendSynthesizer', () => {
       expect(source).toMatchSnapshot();
     });
 
-    it('should generate IAM policies for paths with group permissions', () => {
+    it('group permissions', () => {
       const renderArgs: BackendRenderParameters = {
         auth: {
           importFrom: './auth/resource',
