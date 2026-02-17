@@ -42,7 +42,7 @@ export interface AnalyticsCodegenResult {
  */
 export interface GeoResourceDefinition {
   /** Resource name - set by migration-pipeline.ts from the geo key */
-  name: string;
+  name?: string;
   /** Service type */
   service: 'Map' | 'PlaceIndex' | 'GeofenceCollection';
   /** Provider metadata containing S3 template URL and logical ID */
@@ -221,7 +221,7 @@ export class CdkFromCfn {
   }
 
   public async generateGeoL1Code(definition: GeoResourceDefinition): Promise<GeoCodegenResult> {
-    const resourceName = definition.name;
+    const resourceName = definition.name ?? 'geo';
     const constructFileName = `${resourceName}-construct`;
     const filePath = path.join(this.dir, 'amplify', 'geo', resourceName, `${constructFileName}.ts`);
     const templateS3Url = definition.providerMetadata.s3TemplateURL;
