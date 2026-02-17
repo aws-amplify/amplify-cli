@@ -220,6 +220,95 @@ export class CdkFromCfn {
     };
   }
 
+  public async generateGeoL1Code(definition: GeoResourceDefinition): Promise<GeoCodegenResult> {
+    const resourceName = definition.name;
+    const constructFileName = `${resourceName}-construct`;
+    const filePath = path.join(this.dir, 'amplify', 'geo', resourceName, `${constructFileName}.ts`);
+    const templateS3Url = definition.providerMetadata.s3TemplateURL;
+    const template = await getCfnTemplateFromS3(templateS3Url);
+    const nestedStackLogicalId = definition.providerMetadata.logicalId;
+
+    // Fetch deployed stack parameters
+    const parameters = await this.getNestedStackParameters(nestedStackLogicalId);
+
+    // Apply preTransmute (renames env -> branchName, resolves conditions)
+    const finalTemplate = await this.preTransmute(template, nestedStackLogicalId);
+
+    // Generate TypeScript L1 construct code
+    const tsFile = cdk_from_cfn.transmute(JSON.stringify(finalTemplate), 'typescript', nestedStackLogicalId, 'construct');
+
+    // Fix Fn::FindInMap dictionary lookups
+    const fixedTsFile = this.postTransmute(tsFile);
+
+    // Write construct file
+    await fs.mkdir(path.dirname(filePath), { recursive: true });
+    await this.fileWriter(fixedTsFile, filePath);
+
+    // Extract class name from generated code
+    const classNameMatch = fixedTsFile.match(/export class (\w+) extends/);
+    if (!classNameMatch) {
+      throw new Error(`Failed to extract class name from generated construct for geo resource: ${resourceName}`);
+    }
+    const constructClassName = classNameMatch[1];
+
+    // Categorize deployed parameters
+    const paramMap = new Map(
+      parameters
+        .filter(
+          (p): p is { ParameterKey: string; ParameterValue: string } => p.ParameterKey !== undefined && p.ParameterValue !== undefined,
+        )
+        .map((p) => [p.ParameterKey, p.ParameterValue]),
+    );
+
+    let userPoolIdParamName = '';
+    const groupRoles: Array<{ paramName: string; groupName: string }> = [];
+    for (const [key] of paramMap) {
+      if (key.startsWith('auth') && key.endsWith('UserPoolId')) {
+        userPoolIdParamName = key;
+      } else if (key.startsWith('authuserPoolGroups') && key.endsWith('GroupRole')) {
+        const groupName = key.slice('authuserPoolGroups'.length, -'GroupRole'.length);
+        groupRoles.push({ paramName: key, groupName });
+      }
+    }
+
+    const base = {
+      constructClassName,
+      constructFileName,
+      resourceName,
+      userPoolIdParamName,
+      groupRoles,
+      isDefault: paramMap.get('isDefault') ?? 'false',
+    };
+
+    switch (definition.service) {
+      case 'Map':
+        return {
+          ...base,
+          serviceName: 'Map' as const,
+          mapName: paramMap.get('mapName') ?? resourceName,
+          mapStyle: paramMap.get('mapStyle') ?? '',
+        };
+      case 'PlaceIndex':
+        return {
+          ...base,
+          serviceName: 'PlaceIndex' as const,
+          indexName: paramMap.get('indexName') ?? resourceName,
+          dataProvider: paramMap.get('dataProvider') ?? '',
+          dataSourceIntendedUse: paramMap.get('dataSourceIntendedUse') ?? '',
+        };
+      case 'GeofenceCollection':
+        return {
+          ...base,
+          serviceName: 'GeofenceCollection' as const,
+          collectionName: paramMap.get('collectionName') ?? resourceName,
+        };
+      default: {
+        const _exhaustiveCheck: never = definition.service;
+        throw new Error(`Unsupported geo service type: ${_exhaustiveCheck}`);
+      }
+    }
+  }
+
   private async preTransmute(template: CFNTemplate, logicalId: string): Promise<CFNTemplate> {
     // Rename "env" parameter to "branchName"
     if (template.Parameters?.env) {
