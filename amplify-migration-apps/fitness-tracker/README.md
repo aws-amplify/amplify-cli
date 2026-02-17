@@ -74,8 +74,6 @@ mages or other content, Analytics, and more)
 ? How do you want users to be able to sign in? Username
 ? Do you want to add User Pool Groups? Yes
 ? Provide a name for your user pool group: Admin
-? Do you want to add another User Pool Group Yes
-? Provide a name for your user pool group: Basic
 ? Do you want to add another User Pool Group No
 ✔ Sort the user pool groups in order of preference · Admin, Basic
 ? Do you want to add an admin queries API? No
@@ -237,15 +235,21 @@ amplify push
 ┌──────────┬─────────────────────────────────────────┬───────────┬───────────────────┐
 │ Category │ Resource name                           │ Operation │ Provider plugin   │
 ├──────────┼─────────────────────────────────────────┼───────────┼───────────────────┤
-│ Function │ fitnesstracker6d664d176d664d17PreSignup │ Create    │ awscloudformation │
+│ Auth     │ userPoolGroups                          │ Create    │ awscloudformation │
+├──────────┼─────────────────────────────────────────┼───────────┼───────────────────┤
+│ Auth     │ fitnesstrackercdd70e8bcdd70e8b          │ Create    │ awscloudformation │
+├──────────┼─────────────────────────────────────────┼───────────┼───────────────────┤
+│ Function │ fitnesstrackercdd70e8bcdd70e8bPreSignup │ Create    │ awscloudformation │
 ├──────────┼─────────────────────────────────────────┼───────────┼───────────────────┤
 │ Function │ lognutrition                            │ Create    │ awscloudformation │
 ├──────────┼─────────────────────────────────────────┼───────────┼───────────────────┤
-│ Auth     │ fitnesstracker6d664d176d664d17          │ Create    │ awscloudformation │
+│ Function │ admin                                   │ Create    │ awscloudformation │
 ├──────────┼─────────────────────────────────────────┼───────────┼───────────────────┤
 │ Api      │ fitnesstracker                          │ Create    │ awscloudformation │
 ├──────────┼─────────────────────────────────────────┼───────────┼───────────────────┤
 │ Api      │ nutritionapi                            │ Create    │ awscloudformation │
+├──────────┼─────────────────────────────────────────┼───────────┼───────────────────┤
+│ Api      │ adminapi                                │ Create    │ awscloudformation │
 └──────────┴─────────────────────────────────────────┴───────────┴───────────────────┘
 
 ? Are you sure you want to continue? (Y/n) › 
