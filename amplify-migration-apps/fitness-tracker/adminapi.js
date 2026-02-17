@@ -18,7 +18,7 @@ const cognitoClient = new CognitoIdentityProviderClient({ region: process.env.RE
 app.get('/admin/users', async function (req, res) {
   try {
     const command = new ListUsersCommand({
-      UserPoolId: process.env.AUTH_APP4FITNESSTRACKER1D5522F41D5522F4_USERPOOLID,
+      UserPoolId: userPoolId(),
     });
 
     const response = await cognitoClient.send(command);
@@ -42,3 +42,13 @@ app.listen(3000, function () {
 });
 
 module.exports = app;
+
+// lookup to support easily recreating envs since the middle part of the
+// env name changes every time.
+function userPoolId() {
+  const names = Object.keys(process.env).filter((n) => n.startsWith('AUTH_FITNESSTRACKER') && n.endsWith('_USERPOOLID'));
+  if (names.length !== 1) {
+    throw new Error(`Unexpected env names: ${names}`);
+  }
+  return process.env[names[0]];
+}
