@@ -1426,7 +1426,6 @@ export class BackendSynthesizer {
         const apiVarName = `${restApi.apiName}Api`;
         const gen1ApiVarName = `gen1${restApi.apiName}Api`;
         const gen1PolicyVarName = `gen1${restApi.apiName}Policy`;
-        const apiPolicyVarName = `${restApi.apiName}Policy`;
 
         // ===== STEP 1: Create dedicated stack for this REST API =====
         // Each REST API gets its own CloudFormation stack for resource isolation
