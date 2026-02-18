@@ -1802,6 +1802,7 @@ export class BackendSynthesizer {
                           factory.createStringLiteral('X-Amz-User-Agent'),
                         ]),
                       ),
+                      factory.createPropertyAssignment('statusCode', factory.createNumericLiteral('200')),
                     ],
                     true,
                   ),
