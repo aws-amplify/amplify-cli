@@ -1,4 +1,3 @@
-import assert from 'node:assert';
 import { BackendEnvironmentResolver } from './backend_environment_selector';
 import { GeoResourceDefinition } from '../unsupported/cdk-from-cfn';
 import * as path from 'path';
@@ -10,7 +9,12 @@ export class AppGeoDefinitionFetcher {
 
   getDefinition = async (): Promise<Record<string, GeoResourceDefinition> | undefined> => {
     const backendEnvironment = await this.backendEnvironmentResolver.selectBackendEnvironment();
-    assert(backendEnvironment?.stackName);
+    if (!backendEnvironment) {
+      throw new Error('Backend environment not found');
+    }
+    if (!backendEnvironment.stackName) {
+      throw new Error('Stack name is missing from backend environment');
+    }
 
     const currentCloudBackendDirectory = await this.backendFetcher.getCurrentCloudBackend(backendEnvironment.deploymentArtifacts);
     const amplifyMetaPath = path.join(currentCloudBackendDirectory, 'amplify-meta.json');
