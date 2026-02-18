@@ -1713,20 +1713,23 @@ export class BackendSynthesizer {
 
         // ===== STEP 7: Attach Gen1 policy to authenticated users =====
         // This enables authenticated users to access the existing Gen1 API during migration
-        const attachGen1PolicyCall = factory.createExpressionStatement(
-          factory.createCallExpression(
-            factory.createPropertyAccessExpression(
+        // Only attach if the Gen1 API actually required authentication
+        if (restApi.authType && renderArgs.auth) {
+          const attachGen1PolicyCall = factory.createExpressionStatement(
+            factory.createCallExpression(
               factory.createPropertyAccessExpression(
-                factory.createIdentifier('backend.auth.resources'),
-                factory.createIdentifier('authenticatedUserIamRole'),
+                factory.createPropertyAccessExpression(
+                  factory.createIdentifier('backend.auth.resources'),
+                  factory.createIdentifier('authenticatedUserIamRole'),
+                ),
+                factory.createIdentifier('attachInlinePolicy'),
               ),
-              factory.createIdentifier('attachInlinePolicy'),
+              undefined,
+              [factory.createIdentifier(gen1PolicyVarName)],
             ),
-            undefined,
-            [factory.createIdentifier(gen1PolicyVarName)],
-          ),
-        );
-        nodes.push(attachGen1PolicyCall);
+          );
+          nodes.push(attachGen1PolicyCall);
+        }
 
         // ===== STEP 8: Generate API Gateway resources and methods for each path =====
         // This creates the actual API structure (resources, methods, integrations)
