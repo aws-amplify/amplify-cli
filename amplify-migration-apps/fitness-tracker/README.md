@@ -75,7 +75,6 @@ mages or other content, Analytics, and more)
 ? Do you want to add User Pool Groups? Yes
 ? Provide a name for your user pool group: Admin
 ? Do you want to add another User Pool Group No
-✔ Sort the user pool groups in order of preference · Admin, Basic
 ? Do you want to add an admin queries API? No
 ? Multifactor authentication (MFA) user login options: OFF
 ? Email based user registration/forgot password: Enabled (Requires per-user email entry at registration)
