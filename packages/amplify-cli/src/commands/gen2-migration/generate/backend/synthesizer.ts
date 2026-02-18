@@ -1679,19 +1679,23 @@ export class BackendSynthesizer {
                                 factory.createPropertyAssignment(
                                   'resources',
                                   factory.createArrayLiteralExpression([
-                                    factory.createTemplateExpression(factory.createTemplateHead(''), [
-                                      factory.createTemplateSpan(
-                                        factory.createCallExpression(
-                                          factory.createPropertyAccessExpression(
-                                            factory.createIdentifier(gen1ApiVarName),
-                                            factory.createIdentifier('arnForExecuteApi'),
+                                    ...restApi.paths.flatMap((apiPath) =>
+                                      apiPath.methods.map((method) =>
+                                        factory.createTemplateExpression(factory.createTemplateHead(''), [
+                                          factory.createTemplateSpan(
+                                            factory.createCallExpression(
+                                              factory.createPropertyAccessExpression(
+                                                factory.createIdentifier(gen1ApiVarName),
+                                                factory.createIdentifier('arnForExecuteApi'),
+                                              ),
+                                              undefined,
+                                              [factory.createStringLiteral(method), factory.createStringLiteral('/*')],
+                                            ),
+                                            factory.createTemplateTail(''),
                                           ),
-                                          undefined,
-                                          [factory.createStringLiteral('*'), factory.createStringLiteral('/*')],
-                                        ),
-                                        factory.createTemplateTail(''),
+                                        ]),
                                       ),
-                                    ]),
+                                    ),
                                   ]),
                                 ),
                               ],
@@ -1908,22 +1912,24 @@ export class BackendSynthesizer {
                                   factory.createPropertyAssignment(
                                     'resources',
                                     factory.createArrayLiteralExpression([
-                                      factory.createCallExpression(
-                                        factory.createPropertyAccessExpression(
-                                          factory.createIdentifier(apiVarName),
-                                          factory.createIdentifier('arnForExecuteApi'),
+                                      ...path.methods.flatMap((method) => [
+                                        factory.createCallExpression(
+                                          factory.createPropertyAccessExpression(
+                                            factory.createIdentifier(apiVarName),
+                                            factory.createIdentifier('arnForExecuteApi'),
+                                          ),
+                                          undefined,
+                                          [factory.createStringLiteral(method), factory.createStringLiteral(path.path)],
                                         ),
-                                        undefined,
-                                        [factory.createStringLiteral('*'), factory.createStringLiteral(path.path)],
-                                      ),
-                                      factory.createCallExpression(
-                                        factory.createPropertyAccessExpression(
-                                          factory.createIdentifier(apiVarName),
-                                          factory.createIdentifier('arnForExecuteApi'),
+                                        factory.createCallExpression(
+                                          factory.createPropertyAccessExpression(
+                                            factory.createIdentifier(apiVarName),
+                                            factory.createIdentifier('arnForExecuteApi'),
+                                          ),
+                                          undefined,
+                                          [factory.createStringLiteral(method), factory.createStringLiteral(`${path.path}/*`)],
                                         ),
-                                        undefined,
-                                        [factory.createStringLiteral('*'), factory.createStringLiteral(`${path.path}/*`)],
-                                      ),
+                                      ]),
                                     ]),
                                   ),
                                 ],
@@ -1990,22 +1996,24 @@ export class BackendSynthesizer {
                                     factory.createPropertyAssignment(
                                       'resources',
                                       factory.createArrayLiteralExpression([
-                                        factory.createCallExpression(
-                                          factory.createPropertyAccessExpression(
-                                            factory.createIdentifier(apiVarName),
-                                            factory.createIdentifier('arnForExecuteApi'),
+                                        ...path.methods.flatMap((method) => [
+                                          factory.createCallExpression(
+                                            factory.createPropertyAccessExpression(
+                                              factory.createIdentifier(apiVarName),
+                                              factory.createIdentifier('arnForExecuteApi'),
+                                            ),
+                                            undefined,
+                                            [factory.createStringLiteral(method), factory.createStringLiteral(path.path)],
                                           ),
-                                          undefined,
-                                          [factory.createStringLiteral('*'), factory.createStringLiteral(path.path)],
-                                        ),
-                                        factory.createCallExpression(
-                                          factory.createPropertyAccessExpression(
-                                            factory.createIdentifier(apiVarName),
-                                            factory.createIdentifier('arnForExecuteApi'),
+                                          factory.createCallExpression(
+                                            factory.createPropertyAccessExpression(
+                                              factory.createIdentifier(apiVarName),
+                                              factory.createIdentifier('arnForExecuteApi'),
+                                            ),
+                                            undefined,
+                                            [factory.createStringLiteral(method), factory.createStringLiteral(`${path.path}/*`)],
                                           ),
-                                          undefined,
-                                          [factory.createStringLiteral('*'), factory.createStringLiteral(`${path.path}/*`)],
-                                        ),
+                                        ]),
                                       ]),
                                     ),
                                   ],
