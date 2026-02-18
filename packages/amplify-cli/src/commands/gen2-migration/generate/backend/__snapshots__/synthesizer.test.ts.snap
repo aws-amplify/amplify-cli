@@ -69,7 +69,7 @@ const gen1nutritionapiApi = RestApi.fromRestApiAttributes(nutritionapiStack, "Ge
 const gen1nutritionapiPolicy = new Policy(nutritionapiStack, "Gen1nutritionapiPolicy", {
     statements: [new PolicyStatement({
             actions: ["execute-api:Invoke"],
-            resources: [\`\${gen1nutritionapiApi.arnForExecuteApi("*", "/*")}\`]
+            resources: [\`\${gen1nutritionapiApi.arnForExecuteApi("GET", "/*")}\`, \`\${gen1nutritionapiApi.arnForExecuteApi("POST", "/*")}\`, \`\${gen1nutritionapiApi.arnForExecuteApi("PUT", "/*")}\`, \`\${gen1nutritionapiApi.arnForExecuteApi("DELETE", "/*")}\`]
         })]
 });
 const nutritionlog = nutritionapiApi.root.addResource("nutrition").addResource("log", {
@@ -92,7 +92,7 @@ nutritionlog.addProxy({
 backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(new Policy(nutritionapiStack, "nutritionlogAuthPolicy", {
     statements: [new PolicyStatement({
             actions: ["execute-api:Invoke"],
-            resources: [nutritionapiApi.arnForExecuteApi("*", "/nutrition/log"), nutritionapiApi.arnForExecuteApi("*", "/nutrition/log/*")]
+            resources: [nutritionapiApi.arnForExecuteApi("GET", "/nutrition/log"), nutritionapiApi.arnForExecuteApi("GET", "/nutrition/log/*"), nutritionapiApi.arnForExecuteApi("POST", "/nutrition/log"), nutritionapiApi.arnForExecuteApi("POST", "/nutrition/log/*"), nutritionapiApi.arnForExecuteApi("PUT", "/nutrition/log"), nutritionapiApi.arnForExecuteApi("PUT", "/nutrition/log/*"), nutritionapiApi.arnForExecuteApi("DELETE", "/nutrition/log"), nutritionapiApi.arnForExecuteApi("DELETE", "/nutrition/log/*")]
         })]
 }));
 backend.addOutput({
@@ -156,7 +156,7 @@ const gen1nutritionapiApi = RestApi.fromRestApiAttributes(nutritionapiStack, "Ge
 const gen1nutritionapiPolicy = new Policy(nutritionapiStack, "Gen1nutritionapiPolicy", {
     statements: [new PolicyStatement({
             actions: ["execute-api:Invoke"],
-            resources: [\`\${gen1nutritionapiApi.arnForExecuteApi("*", "/*")}\`]
+            resources: [\`\${gen1nutritionapiApi.arnForExecuteApi("GET", "/*")}\`, \`\${gen1nutritionapiApi.arnForExecuteApi("POST", "/*")}\`, \`\${gen1nutritionapiApi.arnForExecuteApi("PUT", "/*")}\`, \`\${gen1nutritionapiApi.arnForExecuteApi("DELETE", "/*")}\`]
         })]
 });
 const items = nutritionapiApi.root.addResource("items", {
@@ -179,7 +179,7 @@ items.addProxy({
 backend.auth.resources.groups["Admin"].role.attachInlinePolicy(new Policy(nutritionapiStack, "itemsAdminPolicy", {
     statements: [new PolicyStatement({
             actions: ["execute-api:Invoke"],
-            resources: [nutritionapiApi.arnForExecuteApi("*", "/items"), nutritionapiApi.arnForExecuteApi("*", "/items/*")]
+            resources: [nutritionapiApi.arnForExecuteApi("GET", "/items"), nutritionapiApi.arnForExecuteApi("GET", "/items/*"), nutritionapiApi.arnForExecuteApi("POST", "/items"), nutritionapiApi.arnForExecuteApi("POST", "/items/*"), nutritionapiApi.arnForExecuteApi("PUT", "/items"), nutritionapiApi.arnForExecuteApi("PUT", "/items/*"), nutritionapiApi.arnForExecuteApi("DELETE", "/items"), nutritionapiApi.arnForExecuteApi("DELETE", "/items/*")]
         })]
 }));
 backend.addOutput({
@@ -246,7 +246,7 @@ const gen1nutritionapiApi = RestApi.fromRestApiAttributes(nutritionapiStack, "Ge
 const gen1nutritionapiPolicy = new Policy(nutritionapiStack, "Gen1nutritionapiPolicy", {
     statements: [new PolicyStatement({
             actions: ["execute-api:Invoke"],
-            resources: [\`\${gen1nutritionapiApi.arnForExecuteApi("*", "/*")}\`]
+            resources: [\`\${gen1nutritionapiApi.arnForExecuteApi("GET", "/*")}\`, \`\${gen1nutritionapiApi.arnForExecuteApi("POST", "/*")}\`, \`\${gen1nutritionapiApi.arnForExecuteApi("PUT", "/*")}\`, \`\${gen1nutritionapiApi.arnForExecuteApi("DELETE", "/*")}\`, \`\${gen1nutritionapiApi.arnForExecuteApi("GET", "/*")}\`, \`\${gen1nutritionapiApi.arnForExecuteApi("POST", "/*")}\`, \`\${gen1nutritionapiApi.arnForExecuteApi("PUT", "/*")}\`, \`\${gen1nutritionapiApi.arnForExecuteApi("DELETE", "/*")}\`]
         })]
 });
 const nutritionlog = nutritionapiApi.root.addResource("nutrition").addResource("log", {
@@ -285,14 +285,14 @@ items.addProxy({
 backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(new Policy(nutritionapiStack, "nutritionlogAuthPolicy", {
     statements: [new PolicyStatement({
             actions: ["execute-api:Invoke"],
-            resources: [nutritionapiApi.arnForExecuteApi("*", "/nutrition/log"), nutritionapiApi.arnForExecuteApi("*", "/nutrition/log/*")]
+            resources: [nutritionapiApi.arnForExecuteApi("GET", "/nutrition/log"), nutritionapiApi.arnForExecuteApi("GET", "/nutrition/log/*"), nutritionapiApi.arnForExecuteApi("POST", "/nutrition/log"), nutritionapiApi.arnForExecuteApi("POST", "/nutrition/log/*"), nutritionapiApi.arnForExecuteApi("PUT", "/nutrition/log"), nutritionapiApi.arnForExecuteApi("PUT", "/nutrition/log/*"), nutritionapiApi.arnForExecuteApi("DELETE", "/nutrition/log"), nutritionapiApi.arnForExecuteApi("DELETE", "/nutrition/log/*")]
         })]
 }));
 // /items - Admin group only
 backend.auth.resources.groups["Admin"].role.attachInlinePolicy(new Policy(nutritionapiStack, "itemsAdminPolicy", {
     statements: [new PolicyStatement({
             actions: ["execute-api:Invoke"],
-            resources: [nutritionapiApi.arnForExecuteApi("*", "/items"), nutritionapiApi.arnForExecuteApi("*", "/items/*")]
+            resources: [nutritionapiApi.arnForExecuteApi("GET", "/items"), nutritionapiApi.arnForExecuteApi("GET", "/items/*"), nutritionapiApi.arnForExecuteApi("POST", "/items"), nutritionapiApi.arnForExecuteApi("POST", "/items/*"), nutritionapiApi.arnForExecuteApi("PUT", "/items"), nutritionapiApi.arnForExecuteApi("PUT", "/items/*"), nutritionapiApi.arnForExecuteApi("DELETE", "/items"), nutritionapiApi.arnForExecuteApi("DELETE", "/items/*")]
         })]
 }));
 backend.addOutput({
