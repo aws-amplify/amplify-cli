@@ -1864,88 +1864,7 @@ export class BackendSynthesizer {
           nodes.push(addProxyCall);
         });
 
-        // ===== STEP 9: Create general API policy (only if no path-specific permissions) =====
-        // Check if any paths have specific permission requirements
-        const hasPathSpecificPermissions = restApi.paths.some((path) => path.permissions?.hasAuth || path.permissions?.groups);
-
-        // Create a general "all authenticated users" policy only if no fine-grained permissions exist
-        if (restApi.authType && renderArgs.auth && !hasPathSpecificPermissions) {
-          const apiPolicyDeclaration = factory.createVariableStatement(
-            [],
-            factory.createVariableDeclarationList(
-              [
-                factory.createVariableDeclaration(
-                  apiPolicyVarName,
-                  undefined,
-                  undefined,
-                  factory.createNewExpression(factory.createIdentifier('Policy'), undefined, [
-                    factory.createIdentifier(stackVarName),
-                    factory.createStringLiteral(`${restApi.apiName}Policy`),
-                    factory.createObjectLiteralExpression(
-                      [
-                        factory.createPropertyAssignment(
-                          'statements',
-                          factory.createArrayLiteralExpression([
-                            factory.createNewExpression(factory.createIdentifier('PolicyStatement'), undefined, [
-                              factory.createObjectLiteralExpression(
-                                [
-                                  factory.createPropertyAssignment(
-                                    'actions',
-                                    factory.createArrayLiteralExpression([factory.createStringLiteral('execute-api:Invoke')]),
-                                  ),
-                                  factory.createPropertyAssignment(
-                                    'resources',
-                                    factory.createArrayLiteralExpression([
-                                      factory.createTemplateExpression(factory.createTemplateHead(''), [
-                                        factory.createTemplateSpan(
-                                          factory.createCallExpression(
-                                            factory.createPropertyAccessExpression(
-                                              factory.createIdentifier(apiVarName),
-                                              factory.createIdentifier('arnForExecuteApi'),
-                                            ),
-                                            undefined,
-                                            [factory.createStringLiteral('*'), factory.createStringLiteral('/*')],
-                                          ),
-                                          factory.createTemplateTail(''),
-                                        ),
-                                      ]),
-                                    ]),
-                                  ),
-                                ],
-                                true,
-                              ),
-                            ]),
-                          ]),
-                        ),
-                      ],
-                      true,
-                    ),
-                  ]),
-                ),
-              ],
-              ts.NodeFlags.Const,
-            ),
-          );
-          nodes.push(apiPolicyDeclaration);
-
-          // Attach policy to authenticated role
-          const attachPolicyCall = factory.createExpressionStatement(
-            factory.createCallExpression(
-              factory.createPropertyAccessExpression(
-                factory.createPropertyAccessExpression(
-                  factory.createIdentifier('backend.auth.resources'),
-                  factory.createIdentifier('authenticatedUserIamRole'),
-                ),
-                factory.createIdentifier('attachInlinePolicy'),
-              ),
-              undefined,
-              [factory.createIdentifier(apiPolicyVarName)],
-            ),
-          );
-          nodes.push(attachPolicyCall);
-        }
-
-        // ===== STEP 10: Create path-specific IAM policies =====
+        // ===== STEP 9: Create path-specific IAM policies =====
         // Generate fine-grained policies for individual paths with specific permission requirements
         restApi.paths.forEach((path) => {
           // Create policy for paths accessible by all authenticated users
@@ -2107,7 +2026,7 @@ export class BackendSynthesizer {
           }
         });
 
-        // ===== STEP 11: Add API output for client configuration =====
+        // ===== STEP 10: Add API output for client configuration =====
         // This creates the output that client applications use to connect to the API
         const addOutputCall = factory.createExpressionStatement(
           factory.createCallExpression(
