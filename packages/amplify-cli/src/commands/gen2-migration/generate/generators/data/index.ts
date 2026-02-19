@@ -6,20 +6,7 @@ import type { AuthorizationModes, DataLoggingOptions } from '@aws-amplify/backen
 import { RestApiDefinition } from '../../codegen-head/data_definition_fetcher';
 export interface AdditionalAuthProvider {
   authenticationType: 'API_KEY' | 'AWS_IAM' | 'OPENID_CONNECT' | 'AMAZON_COGNITO_USER_POOLS' | 'AWS_LAMBDA';
-  lambdaAuthorizerConfig?: {
-    authorizerResultTtlInSeconds?: number;
-    authorizerUri: string;
-    identityValidationExpression?: string;
-  };
-  openIdConnectConfig?: {
-    authTtl?: number;
-    clientId?: string;
-    iatTtl?: number;
-    issuer: string;
-  };
   userPoolConfig?: {
-    appIdClientRegex?: string;
-    awsRegion?: string;
     userPoolId?: string;
   };
 }

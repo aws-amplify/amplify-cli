@@ -636,24 +636,6 @@ export class BackendSynthesizer {
       if (provider.userPoolConfig) {
         const userPoolConfigProps: ts.ObjectLiteralElementLike[] = [];
 
-        if (provider.userPoolConfig.appIdClientRegex) {
-          userPoolConfigProps.push(
-            factory.createPropertyAssignment(
-              factory.createIdentifier('appIdClientRegex'),
-              factory.createStringLiteral(provider.userPoolConfig.appIdClientRegex),
-            ),
-          );
-        }
-
-        if (provider.userPoolConfig.awsRegion) {
-          userPoolConfigProps.push(
-            factory.createPropertyAssignment(
-              factory.createIdentifier('awsRegion'),
-              factory.createPropertyAccessExpression(factory.createIdentifier('backend'), 'auth.resources.userPool.stack.region'),
-            ),
-          );
-        }
-
         // Replace hardcoded userPoolId with backend.auth reference
         if (provider.userPoolConfig.userPoolId) {
           userPoolConfigProps.push(
@@ -671,26 +653,6 @@ export class BackendSynthesizer {
           ),
         );
       }
-
-      // Add other configs if present
-      if (provider.lambdaAuthorizerConfig) {
-        properties.push(
-          factory.createPropertyAssignment(
-            factory.createIdentifier('lambdaAuthorizerConfig'),
-            this.getOverrideValue(provider.lambdaAuthorizerConfig),
-          ),
-        );
-      }
-
-      if (provider.openIdConnectConfig) {
-        properties.push(
-          factory.createPropertyAssignment(
-            factory.createIdentifier('openIdConnectConfig'),
-            this.getOverrideValue(provider.openIdConnectConfig),
-          ),
-        );
-      }
-
       return factory.createObjectLiteralExpression(properties, true);
     });
 
