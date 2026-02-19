@@ -33,6 +33,7 @@ export interface AuthAccess {
   listDevices?: boolean;
   listGroupsForUser?: boolean;
   listUsersInGroup?: boolean;
+  listGroups?: boolean;
   removeUserFromGroup?: boolean;
   resetUserPassword?: boolean;
   setUserMfaPreference?: boolean;
