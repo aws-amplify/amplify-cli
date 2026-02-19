@@ -7,7 +7,7 @@ import { DataDefinition } from '../core/migration-pipeline';
 import { AdditionalAuthProvider } from '../generators/data';
 import { pathManager } from '@aws-amplify/amplify-cli-core';
 
-// Source
+// Source - amplify-category-api/packages/amplify-graphql-transformer-core/src/graphql-api.ts
 interface Gen1AuthConfig {
   defaultAuthentication?: Gen1AuthMode;
   additionalAuthenticationProviders?: Gen1AuthMode[];
