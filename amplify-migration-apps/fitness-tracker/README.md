@@ -72,7 +72,9 @@ mages or other content, Analytics, and more)
 ? Do you want to enable 3rd party authentication providers in your identity pool? No
 ? Provide a name for your user pool: (accept default value)
 ? How do you want users to be able to sign in? Username
-? Do you want to add User Pool Groups? No
+? Do you want to add User Pool Groups? Yes
+? Provide a name for your user pool group: Admin
+? Do you want to add another User Pool Group No
 ? Do you want to add an admin queries API? No
 ? Multifactor authentication (MFA) user login options: OFF
 ? Email based user registration/forgot password: Enabled (Requires per-user email entry at registration)
@@ -153,8 +155,66 @@ You can access the following resource attributes as environment variables from y
 ✔ Choose the package manager that you want to use: · NPM
 ? Do you want to edit the local lambda function now? No
 ✔ Restrict API access? (Y/n) · yes
+✔ Restrict access by: · Both
 ✔ Who should have access? · Authenticated users only
 ✔ What permissions do you want to grant to Authenticated users? · create, read, update, delete
+✔ Select groups: · Admin
+✔ What permissions do you want to grant to Admin users? · create, read, update, delete
+✔ Do you want to add another path? (y/N) · no
+```
+
+```console
+amplify add api
+```
+
+```console
+? Select from one of the below mentioned services: REST
+✔ Would you like to add a new path to an existing REST API: (y/N) · no
+✔ Provide a friendly name for your resource to be used as a label for this category in the project: · adminapi
+✔ Provide a path (e.g., /book/{isbn}): · /admin
+✔ Choose a Lambda source · Create a new Lambda function
+? Provide an AWS Lambda function name: admin
+? Choose the runtime that you want to use: NodeJS
+? Choose the function template that you want to use: Serverless ExpressJS function (Integration with API Gateway)
+
+✅ Available advanced settings:
+- Resource access permissions
+- Scheduled recurring invocation
+- Lambda layers configuration
+- Environment variables configuration
+- Secret values configuration
+
+? Do you want to configure advanced settings? Yes
+? Do you want to access other resources in this project from your Lambda function? Yes
+? Select the categories you want this function to have access to. auth
+? Auth has 2 resources in this project. Select the one you would like your Lambda to access fitnesstrackercdd70e8bcdd70e8b
+1d5522f4
+? Select the operations you want to permit on fitnesstrackercdd70e8bcdd70e8b read
+
+You can access the following resource attributes as environment variables from your Lambda function
+        AUTH_APP4FITNESSTRACKER1D5522F41D5522F4_USERPOOLID
+        ENV
+        REGION
+? Do you want to invoke this function on a recurring schedule? No
+? Do you want to enable Lambda layers for this function? No
+? Do you want to configure environment variables for this function? No
+? Do you want to configure secret values this function can access? No
+✔ Choose the package manager that you want to use: · NPM
+? Do you want to edit the local lambda function now? No
+✅ Successfully added resource admin locally.
+
+✅ Next steps:
+Check out sample function code generated in <project-dir>/amplify/backend/function/admin/src
+"amplify function build" builds all of your functions currently in the project
+"amplify mock function <functionName>" runs your function locally
+To access AWS resources outside of this Amplify app, edit the /Users/gandhya/Desktop/app4fitnesstracker/amplify/backend/function/admin/custom-policies.json
+"amplify push" builds all of your local backend resources and provisions them in the cloud
+"amplify publish" builds all of your local backend and front-end resources (if you added hosting category) and provisions them in the cloud
+✅ Succesfully added the Lambda function locally
+✔ Restrict API access? (Y/n) · yes
+✔ Restrict access by: · Individual Groups
+✔ Select groups: · Admin
+✔ What permissions do you want to grant to Admin users? · read
 ✔ Do you want to add another path? (y/N) · no
 ```
 
@@ -174,15 +234,21 @@ amplify push
 ┌──────────┬─────────────────────────────────────────┬───────────┬───────────────────┐
 │ Category │ Resource name                           │ Operation │ Provider plugin   │
 ├──────────┼─────────────────────────────────────────┼───────────┼───────────────────┤
-│ Function │ fitnesstracker6d664d176d664d17PreSignup │ Create    │ awscloudformation │
+│ Auth     │ userPoolGroups                          │ Create    │ awscloudformation │
+├──────────┼─────────────────────────────────────────┼───────────┼───────────────────┤
+│ Auth     │ fitnesstrackercdd70e8bcdd70e8b          │ Create    │ awscloudformation │
+├──────────┼─────────────────────────────────────────┼───────────┼───────────────────┤
+│ Function │ fitnesstrackercdd70e8bcdd70e8bPreSignup │ Create    │ awscloudformation │
 ├──────────┼─────────────────────────────────────────┼───────────┼───────────────────┤
 │ Function │ lognutrition                            │ Create    │ awscloudformation │
 ├──────────┼─────────────────────────────────────────┼───────────┼───────────────────┤
-│ Auth     │ fitnesstracker6d664d176d664d17          │ Create    │ awscloudformation │
+│ Function │ admin                                   │ Create    │ awscloudformation │
 ├──────────┼─────────────────────────────────────────┼───────────┼───────────────────┤
 │ Api      │ fitnesstracker                          │ Create    │ awscloudformation │
 ├──────────┼─────────────────────────────────────────┼───────────┼───────────────────┤
 │ Api      │ nutritionapi                            │ Create    │ awscloudformation │
+├──────────┼─────────────────────────────────────────┼───────────┼───────────────────┤
+│ Api      │ adminapi                                │ Create    │ awscloudformation │
 └──────────┴─────────────────────────────────────────┴───────────┴───────────────────┘
 
 ? Are you sure you want to continue? (Y/n) › 
@@ -305,15 +371,6 @@ Navigate to the Amplify Console to find the `<gen1-rest-api-id>` and `<gen1-root
 + backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(gen1RestApiPolicy);
 ```
 
-**Edit in `./amplify/auth/fitnesstrackerd21d4fcdd21d4fcdPreSignup/resource.ts`:**
-
-> Note: The hash value after `fitnesstracker` changes for each app; you will have a different one.
-
-```diff
-- entry: "./index.js",
-+ entry: "./index.js",
-+ resourceGroupName: 'auth',
-```
 
 **Edit in `./amplify/function/lognutrition/resource.ts`:**
 
@@ -355,7 +412,54 @@ Navigate to the Amplify Console to find the `<gen1-rest-api-id>` and `<gen1-root
 + import crypto from 'crypto';
 ```
 
-**Edit in `./amplify/function/fitnesstrackerd21d4fcdd21d4fcdPreSignup/src/index.js`:**
+**Edit in `./amplify/function/admin/resource.ts`:**
+
+```diff
+- entry: "./index.js",
++ entry: "./index.js",
++ resourceGroupName: 'auth',
+```
+
+**Edit in `./amplify/function/admin/index.js`:**
+
+```diff
+- const awsServerlessExpress = require('aws-serverless-express');
+- const app = require('./app');
++ import awsServerlessExpress from 'aws-serverless-express';
++ import app from './app.js';
+```
+
+```diff
+- exports.handler = (event, context) => {
++ export async function handler(event, context) {
+```
+
+**Edit in `./amplify/function/admin/app.js`:**
+
+```diff
+- const express = require('express');
+- const bodyParser = require('body-parser');
+- const awsServerlessExpressMiddleware = require('aws-serverless-express/middleware');
+- const { CognitoIdentityProviderClient, ListUsersCommand } = require('@aws-sdk/client-cognito-identity-provider');
+- module.exports = app;
++ import express from 'express';
++ import bodyParser from 'body-parser';
++ import awsServerlessExpressMiddleware from 'aws-serverless-express/middleware';
++ import { CognitoIdentityProviderClient, ListUsersCommand } from '@aws-sdk/client-cognito-identity-provider';
++ export default app;
+```
+
+**Edit in `./amplify/auth/fitnesstrackerd21d4fcdd21d4fcdPreSignup/resource.ts`:**
+
+> Note: The hash value after `fitnesstracker` changes for each app; you will have a different one.
+
+```diff
+- entry: "./index.js",
++ entry: "./index.js",
++ resourceGroupName: 'auth',
+```
+
+**Edit in `./amplify/auth/fitnesstrackerd21d4fcdd21d4fcdPreSignup/src/index.js`:**
 
 > Note: The hash value after `fitnesstracker` changes for each app; you will have a different one.
 
@@ -383,6 +487,11 @@ Navigate to the Amplify Console to find the `<gen1-rest-api-id>` and `<gen1-root
 ```diff
 - apiName: 'nutritionapi',
 + apiName: 'nutritionapi-gen2-main',
+```
+
+```diff
+- apiName: 'adminapi',
++ apiName: 'adminapi-gen2-main',
 ```
 
 **Edit in `./src/main.tsx`:**
