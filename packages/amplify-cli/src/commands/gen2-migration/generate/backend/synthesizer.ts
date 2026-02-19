@@ -62,6 +62,9 @@ export interface BackendRenderParameters {
   analytics?: {
     importFrom: string;
   };
+  geo?: {
+    importFrom: string;
+  };
   customResources?: Map<string, string>;
   unsupportedCategories?: Map<string, string>;
   dynamoTriggers?: DynamoTriggerInfo[];
@@ -1086,6 +1089,12 @@ export class BackendSynthesizer {
       imports.push(this.createImportStatement([analyticsFunctionIdentifier], renderArgs.analytics.importFrom));
     }
 
+    // Geo: import { defineGeo } from './geo/resource';
+    if (renderArgs.geo) {
+      const geoFunctionIdentifier = factory.createIdentifier('defineGeo');
+      imports.push(this.createImportStatement([geoFunctionIdentifier], renderArgs.geo.importFrom));
+    }
+
     // Add CDK imports for REST API if needed
     if (renderArgs.data?.restApis && renderArgs.function) {
       const functionNameCategories = renderArgs.function.functionNamesAndCategories;
@@ -1180,6 +1189,25 @@ export class BackendSynthesizer {
         ),
       );
       nodes.push(analyticsCall);
+    }
+
+    // Geo: const geo = defineGeo(backend)
+    if (renderArgs.geo) {
+      const geoCall = factory.createVariableStatement(
+        undefined,
+        factory.createVariableDeclarationList(
+          [
+            factory.createVariableDeclaration(
+              'geo',
+              undefined,
+              undefined,
+              factory.createCallExpression(factory.createIdentifier('defineGeo'), undefined, [factory.createIdentifier('backend')]),
+            ),
+          ],
+          ts.NodeFlags.Const,
+        ),
+      );
+      nodes.push(geoCall);
     }
 
     // CDK OVERRIDES
