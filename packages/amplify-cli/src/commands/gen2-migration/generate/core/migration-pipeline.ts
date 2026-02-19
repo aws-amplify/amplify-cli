@@ -63,8 +63,15 @@ import { ApiTriggerDetector } from '../adapters/functions/api-trigger-detector';
 
 import { FunctionDefinition, renderFunctions } from '../generators/functions/index';
 import assert from 'assert';
-import { CdkFromCfn, KinesisAnalyticsDefinition, AnalyticsCodegenResult } from '../unsupported/cdk-from-cfn';
+import {
+  CdkFromCfn,
+  KinesisAnalyticsDefinition,
+  AnalyticsCodegenResult,
+  GeoResourceDefinition,
+  GeoCodegenResult,
+} from '../unsupported/cdk-from-cfn';
 import { renderAnalytics, AnalyticsRenderParameters } from '../generators/analytics/index';
+import { renderGeoResource, renderGeo, GeoResourceRenderParameters } from '../generators/geo/index';
 import { CloudFormationClient } from '@aws-sdk/client-cloudformation';
 import { AmplifyClient, GetAppCommand } from '@aws-sdk/client-amplify';
 
@@ -106,6 +113,9 @@ export interface Gen2RenderingOptions {
 
   /** Analytics (Kinesis) definitions from Gen 1 project */
   analytics?: Record<string, KinesisAnalyticsDefinition>;
+
+  /** Geo (Map, PlaceIndex, GeofenceCollection) definitions from Gen 1 project */
+  geo?: Record<string, GeoResourceDefinition>;
 
   /** Custom CloudFormation resources that need manual migration */
   customResources?: Map<string, string>;
@@ -237,6 +247,7 @@ export const createGen2Renderer = ({
   data,
   functions,
   analytics,
+  geo,
   customResources,
   backendEnvironmentName,
   rootStackName,
@@ -375,6 +386,44 @@ export const createGen2Renderer = ({
         console.log('Analytics backed by Pinpoint found, still unsupported');
       }
     }
+  }
+
+  // Process geo resources - create per-resource construct files and resource.ts files
+  if (geo) {
+    const cdkFromCfn = new CdkFromCfn(outputDir, fileWriter, cfnClient, rootStackName);
+    const geoDir = path.join(outputDir, 'amplify', 'geo');
+    renderers.push(new EnsureDirectory(geoDir));
+
+    const allGeoParams: GeoResourceRenderParameters[] = [];
+
+    for (const geoName of Object.keys(geo)) {
+      const geoObj = geo[geoName];
+      geoObj.name = geoName;
+
+      const resourceDir = path.join(geoDir, geoName);
+      renderers.push(new EnsureDirectory(resourceDir));
+
+      renderers.push(
+        new TypescriptNodeArrayRenderer(
+          async () => {
+            const codegenResult: GeoCodegenResult = await cdkFromCfn.generateGeoL1Code(geoObj);
+            allGeoParams.push(codegenResult);
+            return renderGeoResource(codegenResult);
+          },
+          (content) => fileWriter(content, path.join(resourceDir, 'resource.ts')),
+        ),
+      );
+    }
+
+    // Top-level geo/resource.ts aggregator - runs after all per-resource renderers
+    renderers.push(
+      new TypescriptNodeArrayRenderer(
+        async () => renderGeo(allGeoParams),
+        (content) => fileWriter(content, path.join(geoDir, 'resource.ts')),
+      ),
+    );
+
+    backendRenderOptions.geo = { importFrom: './geo/resource' };
   }
 
   // Process Lambda functions - create resource.ts and handler.ts files
@@ -582,4 +631,5 @@ export {
   AttributeMappingRule,
   ServerSideEncryptionConfiguration,
   ReferenceAuth,
+  GeoResourceDefinition,
 };
