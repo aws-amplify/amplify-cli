@@ -7,8 +7,6 @@ import {
   Parameter,
 } from '@aws-sdk/client-cloudformation';
 import { SSMClient } from '@aws-sdk/client-ssm';
-import { tryRefactorStack } from '../cfn-stack-refactor-updater';
-import { getHoldingStackName, findHoldingStack, deleteHoldingStack } from '../holding-stack';
 import assert from 'node:assert';
 import {
   CFN_AUTH_TYPE,
@@ -20,6 +18,8 @@ import {
   CFNTemplate,
   ResourceMapping,
 } from '../types';
+import { findHoldingStack, deleteHoldingStack, getHoldingStackName } from '../holding-stack';
+import { tryRefactorStack } from '../cfn-stack-refactor-updater';
 import CFNConditionResolver from '../resolvers/cfn-condition-resolver';
 import CfnParameterResolver from '../resolvers/cfn-parameter-resolver';
 import CfnOutputResolver from '../resolvers/cfn-output-resolver';
@@ -88,7 +88,14 @@ class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
 
     const oldGen1Template = await this.readTemplate(this.gen1StackId);
     this.logger.debug(`Gen1 Template Resources count: ${Object.keys(oldGen1Template.Resources).length}`);
-    this.gen1ResourcesToMove = this.filterStatefulResources(oldGen1Template);
+    this.gen1ResourcesToMove = new Map(
+      Object.entries(oldGen1Template.Resources).filter(([logicalId, value]) => {
+        return (
+          this.resourcesToMovePredicate?.(this.resourcesToMove, [logicalId, value]) ??
+          this.resourcesToMove.some((resourceToMove) => resourceToMove.valueOf() === value.Type)
+        );
+      }),
+    );
     this.logger.debug(`Gen1 Resources to move: ${Array.from(this.gen1ResourcesToMove.keys())}`);
     this.logger.debug(`Gen1 Resources to move count: ${this.gen1ResourcesToMove.size}`);
     this.logger.debug('Gen1 Resources to move details:');
@@ -161,79 +168,8 @@ class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
     };
   }
 
-  /**
-   * Initializes Gen2 stack state by reading template, parameters, and identifying stateful resources.
-   */
-  public async initializeGen2State(): Promise<void> {
-    this.logger.debug('initializeGen2State: Initializing Gen2 stack state');
-    this.logger.debug(`Gen2 Stack ID: ${this.gen2StackId}`);
-
-    this.gen2DescribeStacksResponse = await this.describeStack(this.gen2StackId);
-    assert(this.gen2DescribeStacksResponse);
-    const { Parameters, Outputs } = this.gen2DescribeStacksResponse;
-    assert(Outputs);
-    this.gen2StackParameters = Parameters;
-    this.logger.debug(`Gen2 Stack Parameters count: ${Parameters?.length ?? 0}`);
-    this.logger.debug(`Gen2 Stack Outputs count: ${Outputs.length}`);
-
-    const gen2Template = await this.readTemplate(this.gen2StackId);
-    this.logger.debug(`Gen2 Template Resources count: ${Object.keys(gen2Template.Resources).length}`);
-    this.gen2Template = gen2Template;
-
-    this.gen2ResourcesToRemove = this.filterStatefulResources(gen2Template);
-    this.logger.debug(`Gen2 stateful resources: ${Array.from(this.gen2ResourcesToRemove.keys())}`);
-  }
-
-  /**
-   * Recovers state from an existing holding stack left by a previous failed run.
-   *
-   * When a prior attempt moved Gen2 resources to the holding stack but crashed before
-   * completing the Gen1→Gen2 refactor, the Gen2 template is missing its stateful resources.
-   * This method detects that scenario, populates gen2ResourcesToRemove from the holding stack
-   * contents, and returns the current Gen2 template (already stripped of those resources).
-   *
-   * @returns the current Gen2 template if recovery occurred, undefined if no holding stack exists
-   */
-  public async recoverFromHoldingStack(): Promise<CFNTemplate | undefined> {
-    const holdingStackName = getHoldingStackName(this.gen2StackId);
-    const holdingStack = await findHoldingStack(this.cfnClient, holdingStackName);
-    if (!holdingStack) {
-      return undefined;
-    }
-
-    this.logger.debug(`Found existing holding stack: ${holdingStackName}, recovering state`);
-
-    const holdingTemplate = await this.readTemplate(holdingStackName);
-    const holdingResources = this.filterStatefulResources(holdingTemplate);
-
-    if (holdingResources.size === 0) {
-      this.logger.debug('Holding stack has no stateful resources, nothing to recover');
-      return undefined;
-    }
-
-    // Populate gen2ResourcesToRemove from the holding stack — this is what
-    // buildGen1ToGen2ResourceLogicalIdMapping needs to build the mapping
-    this.gen2ResourcesToRemove = holdingResources;
-    this.logger.debug(`Recovered gen2ResourcesToRemove from holding stack: ${Array.from(holdingResources.keys())}`);
-
-    assert(this.gen2Template, 'initializeGen2State must be called before recoverFromHoldingStack');
-    return this.gen2Template;
-  }
-
-  private filterStatefulResources(template: CFNTemplate): Map<string, CFNResource> {
-    return new Map(
-      Object.entries(template.Resources).filter(([logicalId, value]) => {
-        return (
-          this.resourcesToMovePredicate?.(this.resourcesToMove, [logicalId, value]) ??
-          this.resourcesToMove.some((resourceToMove) => resourceToMove.valueOf() === value.Type)
-        );
-      }),
-    );
-  }
-
-  public async generateGen2ResourceRemovalTemplate(): Promise<CFNChangeTemplateWithParams> {
-    this.logger.debug('generateGen2ResourceRemovalTemplate: Starting Gen2 resource removal template generation');
-    this.logger.debug(`Gen2 Stack ID: ${this.gen2StackId}`);
+  public async moveGen2ResourcesToHoldingStack(): Promise<CFNChangeTemplateWithParams> {
+    this.logger.debug('moveGen2ResourcesToHoldingStack: Moving Gen2 resources to holding stack');
 
     this.gen2DescribeStacksResponse = await this.describeStack(this.gen2StackId);
     assert(this.gen2DescribeStacksResponse);
@@ -251,7 +187,15 @@ class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
     this.logger.debug(`Gen2 Template Resources count: ${Object.keys(oldGen2Template.Resources).length}`);
     this.gen2Template = oldGen2Template;
 
-    this.gen2ResourcesToRemove = this.filterStatefulResources(oldGen2Template);
+    // TODO: This should  be read from the holding stack instead of the gen 2 template
+    this.gen2ResourcesToRemove = new Map(
+      Object.entries(oldGen2Template.Resources).filter(([logicalId, value]) => {
+        return (
+          this.resourcesToMovePredicate?.(this.resourcesToMove, [logicalId, value]) ??
+          this.resourcesToMove.some((resourceToMove) => resourceToMove.valueOf() === value.Type)
+        );
+      }),
+    );
     this.logger.debug(`Gen2 Resources to remove: ${Array.from(this.gen2ResourcesToRemove.keys())}`);
     this.logger.debug(`Gen2 Resources to remove count: ${this.gen2ResourcesToRemove.size}`);
     this.logger.debug('Gen2 Resources to remove details:');
@@ -267,12 +211,115 @@ class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
     const logicalResourceIds = [...this.gen2ResourcesToRemove.keys()];
 
     this.logger.debug('Removing Gen2 resources from Gen2 stack...');
-    const updatedGen2Template = await this.removeGen2ResourcesFromGen2Stack(oldGen2Template, logicalResourceIds);
+    this.logger.debug(`Resources to remove: ${logicalResourceIds}`);
+    const clonedGen2Template = JSON.parse(JSON.stringify(oldGen2Template));
+    const stackOutputs = this.gen2DescribeStacksResponse?.Outputs;
+    assert(stackOutputs);
+    this.logger.debug(`Stack outputs count: ${stackOutputs.length}`);
+
+    this.logger.debug('Describing Gen2 stack resources...');
+    const stackResources = await this.describeStackResources(this.gen2StackId);
+    this.logger.debug(`Gen2 Stack Resources count: ${stackResources.length}`);
+
+    this.logger.debug('Resolving Gen2 dependencies...');
+    const gen2TemplateWithDepsResolved = new CfnDependencyResolver(clonedGen2Template).resolve(logicalResourceIds);
+
+    this.logger.debug('Resolving Gen2 output references...');
+    const resolvedRefsGen2Template = new CfnOutputResolver(gen2TemplateWithDepsResolved, this.region, this.accountId).resolve(
+      logicalResourceIds,
+      stackOutputs,
+      stackResources,
+    );
+
+    // Extract resolved resources for holding stack before removing them
+    const holdingStackResources: Record<string, CFNResource> = {};
+    for (const logicalId of logicalResourceIds) {
+      holdingStackResources[logicalId] = JSON.parse(JSON.stringify(resolvedRefsGen2Template.Resources[logicalId]));
+    }
+
+    this.logger.debug('Deleting resources from template...');
+    logicalResourceIds.forEach((logicalResourceId) => {
+      this.logger.debug(`Deleting resource: ${logicalResourceId}`);
+      delete resolvedRefsGen2Template.Resources[logicalResourceId];
+    });
+    this.logger.debug(`Gen2 template resources after removal: ${Object.keys(resolvedRefsGen2Template.Resources).length}`);
+    const updatedGen2Template = resolvedRefsGen2Template;
+
+    // Create holding stack and refactor resources into it
+    const holdingStackName = getHoldingStackName(extractStackNameFromId(this.gen2StackId));
+
+    const holdingStackTemplate: CFNTemplate = {
+      AWSTemplateFormatVersion: '2010-09-09',
+      Description: 'Temporary holding stack for Gen2 migration',
+      Resources: {
+        MigrationPlaceholder: { Type: 'AWS::CloudFormation::WaitConditionHandle', Properties: {} },
+        ...holdingStackResources,
+      },
+      Outputs: {},
+    };
+
+    const resourceMappings: ResourceMapping[] = logicalResourceIds.map((id) => ({
+      Source: { StackName: this.gen2StackId, LogicalResourceId: id },
+      Destination: { StackName: holdingStackName, LogicalResourceId: id },
+    }));
+
+    const [success, failedMetadata] = await tryRefactorStack(this.cfnClient, {
+      StackDefinitions: [
+        { TemplateBody: JSON.stringify(updatedGen2Template), StackName: this.gen2StackId },
+        { TemplateBody: JSON.stringify(holdingStackTemplate), StackName: holdingStackName },
+      ],
+      ResourceMappings: resourceMappings,
+      EnableStackCreation: true,
+    });
+    assert(success, `Failed to move Gen2 resources to holding stack: ${failedMetadata?.reason}`);
+
     return {
       oldTemplate: oldGen2Template,
       newTemplate: updatedGen2Template,
       parameters: Parameters,
     };
+  }
+
+  public async restoreGen2ResourcesFromHoldingStack(): Promise<void> {
+    const holdingStackName = getHoldingStackName(extractStackNameFromId(this.gen2StackId));
+    const holdingStack = await findHoldingStack(this.cfnClient, holdingStackName);
+    if (!holdingStack) return;
+
+    const holdingTemplate = await this.readTemplate(holdingStackName);
+    const gen2Template = await this.readTemplate(this.gen2StackId);
+
+    const resourcesToRestore = Object.entries(holdingTemplate.Resources).filter(([id]) => id !== 'MigrationPlaceholder');
+    if (resourcesToRestore.length === 0) {
+      await deleteHoldingStack(this.cfnClient, holdingStackName);
+      return;
+    }
+
+    for (const [logicalId, resource] of resourcesToRestore) {
+      gen2Template.Resources[logicalId] = resource;
+    }
+
+    const emptyHoldingTemplate: CFNTemplate = {
+      AWSTemplateFormatVersion: '2010-09-09',
+      Description: 'Temporary holding stack for Gen2 migration',
+      Resources: { MigrationPlaceholder: { Type: 'AWS::CloudFormation::WaitConditionHandle', Properties: {} } },
+      Outputs: {},
+    };
+
+    const resourceMappings: ResourceMapping[] = resourcesToRestore.map(([logicalId]) => ({
+      Source: { StackName: holdingStackName, LogicalResourceId: logicalId },
+      Destination: { StackName: this.gen2StackId, LogicalResourceId: logicalId },
+    }));
+
+    const [success, failedMetadata] = await tryRefactorStack(this.cfnClient, {
+      StackDefinitions: [
+        { TemplateBody: JSON.stringify(emptyHoldingTemplate), StackName: holdingStackName },
+        { TemplateBody: JSON.stringify(gen2Template), StackName: this.gen2StackId },
+      ],
+      ResourceMappings: resourceMappings,
+    });
+    assert(success, `Failed to restore Gen2 resources from holding stack: ${failedMetadata?.reason}`);
+
+    await deleteHoldingStack(this.cfnClient, holdingStackName);
   }
 
   public generateStackRefactorTemplates(gen1Template: CFNTemplate, gen2Template: CFNTemplate): CFNStackRefactorTemplates {
@@ -406,183 +453,6 @@ class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
     this.logger.debug(`Un-mapped Gen1 resources: ${Array.from(clonedGen1ResourceMap.keys())}`);
     this.logger.debug(`Un-mapped Gen2 resources: ${Array.from(clonedGen2ResourceMap.keys())}`);
     return gen1ToGen2ResourceLogicalIdMapping;
-  }
-
-  private async removeGen2ResourcesFromGen2Stack(gen2Template: CFNTemplate, resourcesToRemove: string[]) {
-    this.logger.debug('removeGen2ResourcesFromGen2Stack: Removing Gen2 resources from Gen2 stack');
-    this.logger.debug(`Resources to remove: ${resourcesToRemove}`);
-    const clonedGen2Template = JSON.parse(JSON.stringify(gen2Template));
-    const stackOutputs = this.gen2DescribeStacksResponse?.Outputs;
-    assert(stackOutputs);
-    this.logger.debug(`Stack outputs count: ${stackOutputs.length}`);
-
-    this.logger.debug('Describing Gen2 stack resources...');
-    const stackResources = await this.describeStackResources(this.gen2StackId);
-    this.logger.debug(`Gen2 Stack Resources count: ${stackResources.length}`);
-
-    this.logger.debug('Resolving Gen2 dependencies...');
-    const gen2TemplateWithDepsResolved = new CfnDependencyResolver(clonedGen2Template).resolve(resourcesToRemove);
-
-    this.logger.debug('Resolving Gen2 output references...');
-    const resolvedRefsGen2Template = new CfnOutputResolver(gen2TemplateWithDepsResolved, this.region, this.accountId).resolve(
-      resourcesToRemove,
-      stackOutputs,
-      stackResources,
-    );
-
-    this.logger.debug('Deleting resources from template...');
-    resourcesToRemove.forEach((logicalResourceId) => {
-      this.logger.debug(`Deleting resource: ${logicalResourceId}`);
-      delete resolvedRefsGen2Template.Resources[logicalResourceId];
-    });
-    this.logger.debug(`Gen2 template resources after removal: ${Object.keys(resolvedRefsGen2Template.Resources).length}`);
-    return resolvedRefsGen2Template;
-  }
-
-  /**
-   * Moves Gen2 stateful resources to a holding stack instead of deleting them.
-   * Follows the same resolution pattern as removeGen2ResourcesFromGen2Stack.
-   */
-  public async moveGen2ResourcesToHoldingStack(gen2Template: CFNTemplate, resourcesToMove: string[]): Promise<CFNTemplate> {
-    this.logger.debug('moveGen2ResourcesToHoldingStack: Moving Gen2 resources to holding stack');
-    this.logger.debug(`Resources to move: ${resourcesToMove}`);
-
-    if (resourcesToMove.length === 0) {
-      this.logger.debug('No resources to move to holding stack');
-      return gen2Template;
-    }
-
-    const clonedGen2Template = JSON.parse(JSON.stringify(gen2Template));
-    const stackOutputs = this.gen2DescribeStacksResponse?.Outputs;
-    assert(stackOutputs);
-    this.logger.debug(`Stack outputs count: ${stackOutputs.length}`);
-
-    this.logger.debug('Describing Gen2 stack resources...');
-    const stackResources = await this.describeStackResources(this.gen2StackId);
-    this.logger.debug(`Gen2 Stack Resources count: ${stackResources.length}`);
-
-    this.logger.debug('Resolving Gen2 dependencies...');
-    const gen2TemplateWithDepsResolved = new CfnDependencyResolver(clonedGen2Template).resolve(resourcesToMove);
-
-    this.logger.debug('Resolving Gen2 output references...');
-    const resolvedGen2Template = new CfnOutputResolver(gen2TemplateWithDepsResolved, this.region, this.accountId).resolve(
-      resourcesToMove,
-      stackOutputs,
-      stackResources,
-    );
-
-    const holdingStackName = getHoldingStackName(this.gen2StackId);
-
-    // Build holding stack template with moved resources
-    const holdingTemplate: CFNTemplate = {
-      AWSTemplateFormatVersion: '2010-09-09',
-      Description: 'Temporary holding stack for Gen2 migration',
-      Metadata: {
-        AmplifyMigration: {
-          SourceCategoryStack: this.gen2StackId,
-          Category: 'migration',
-        },
-      },
-      Resources: {
-        MigrationPlaceholder: {
-          Type: 'AWS::CloudFormation::WaitConditionHandle',
-          Properties: {},
-        },
-      },
-    };
-
-    // Build gen2 template with resources removed, and holding template with resources added
-    const gen2TemplateForRefactor = JSON.parse(JSON.stringify(resolvedGen2Template));
-    const resourceMappings: ResourceMapping[] = [];
-    resourcesToMove.forEach((logicalResourceId) => {
-      this.logger.debug(`Moving resource to holding stack: ${logicalResourceId}`);
-      resourceMappings.push({
-        Source: { StackName: this.gen2StackId, LogicalResourceId: logicalResourceId },
-        Destination: { StackName: holdingStackName, LogicalResourceId: logicalResourceId },
-      });
-      holdingTemplate.Resources[logicalResourceId] = resolvedGen2Template.Resources[logicalResourceId];
-      delete gen2TemplateForRefactor.Resources[logicalResourceId];
-    });
-
-    this.logger.debug(`Gen2 template resources after move: ${Object.keys(gen2TemplateForRefactor.Resources).length}`);
-
-    // Single StackRefactor call — CFN creates the holding stack via EnableStackCreation
-    this.logger.debug('Executing StackRefactor to move resources to holding stack...');
-    const [success, failedRefactorMetadata] = await tryRefactorStack(this.cfnClient, {
-      StackDefinitions: [
-        { TemplateBody: JSON.stringify(gen2TemplateForRefactor), StackName: this.gen2StackId },
-        { TemplateBody: JSON.stringify(holdingTemplate), StackName: holdingStackName },
-      ],
-      ResourceMappings: resourceMappings,
-      EnableStackCreation: true,
-    });
-
-    if (!success) {
-      throw new Error(
-        `Failed to move Gen2 resources to holding stack. Reason: ${failedRefactorMetadata?.reason}. ` +
-          `Status: ${failedRefactorMetadata?.status}. RefactorId: ${failedRefactorMetadata?.stackRefactorId}`,
-      );
-    }
-
-    this.logger.debug('Successfully moved Gen2 resources to holding stack');
-    return gen2TemplateForRefactor;
-  }
-
-  /**
-   * Restores Gen2 resources from holding stack back to Gen2 stack during rollback.
-   */
-  public async restoreGen2ResourcesFromHoldingStack(): Promise<void> {
-    const holdingStackName = getHoldingStackName(this.gen2StackId);
-
-    const holdingStack = await findHoldingStack(this.cfnClient, holdingStackName);
-    if (!holdingStack) {
-      this.logger.debug(`Holding stack ${holdingStackName} not found. Nothing to restore.`);
-      return;
-    }
-
-    const holdingTemplate = await this.readTemplate(holdingStackName);
-
-    const resourcesToRestore = Object.entries(holdingTemplate.Resources).filter(([logicalId]) => logicalId !== 'MigrationPlaceholder');
-
-    if (resourcesToRestore.length === 0) {
-      this.logger.debug('No resources to restore from holding stack.');
-      await deleteHoldingStack(this.cfnClient, holdingStackName);
-      return;
-    }
-
-    const gen2Template = await this.readTemplate(this.gen2StackId);
-
-    const resourceMappings: ResourceMapping[] = resourcesToRestore.map(([logicalId]) => ({
-      Source: { StackName: holdingStackName, LogicalResourceId: logicalId },
-      Destination: { StackName: this.gen2StackId, LogicalResourceId: logicalId },
-    }));
-
-    const holdingTemplateForRefactor = JSON.parse(JSON.stringify(holdingTemplate));
-    const gen2TemplateForRefactor = JSON.parse(JSON.stringify(gen2Template));
-
-    for (const [logicalId, resource] of resourcesToRestore) {
-      delete holdingTemplateForRefactor.Resources[logicalId];
-      gen2TemplateForRefactor.Resources[logicalId] = resource;
-    }
-
-    this.logger.debug('Executing StackRefactor to restore resources from holding stack...');
-    const [success, failedRefactorMetadata] = await tryRefactorStack(this.cfnClient, {
-      StackDefinitions: [
-        { TemplateBody: JSON.stringify(holdingTemplateForRefactor), StackName: holdingStackName },
-        { TemplateBody: JSON.stringify(gen2TemplateForRefactor), StackName: this.gen2StackId },
-      ],
-      ResourceMappings: resourceMappings,
-    });
-
-    if (!success) {
-      throw new Error(
-        `Failed to restore Gen2 resources from holding stack. Reason: ${failedRefactorMetadata?.reason}. ` +
-          `Status: ${failedRefactorMetadata?.status}. RefactorId: ${failedRefactorMetadata?.stackRefactorId}`,
-      );
-    }
-
-    this.logger.debug('Successfully restored Gen2 resources from holding stack');
-    await deleteHoldingStack(this.cfnClient, holdingStackName);
   }
 
   public generateRefactorTemplates(
