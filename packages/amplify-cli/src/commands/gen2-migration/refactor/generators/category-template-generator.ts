@@ -20,6 +20,7 @@ import {
 } from '../types';
 import { findHoldingStack, deleteHoldingStack, getHoldingStackName } from '../holding-stack';
 import { tryRefactorStack } from '../cfn-stack-refactor-updater';
+import { tryUpdateStack } from '../cfn-stack-updater';
 import CFNConditionResolver from '../resolvers/cfn-condition-resolver';
 import CfnParameterResolver from '../resolvers/cfn-parameter-resolver';
 import CfnOutputResolver from '../resolvers/cfn-output-resolver';
@@ -195,6 +196,7 @@ class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
 
     const oldGen2Template = await this.readTemplate(this.gen2StackId);
     this.logger.debug(`Gen2 Template Resources count: ${Object.keys(oldGen2Template.Resources).length}`);
+    this.logger.debug(`Gen2 template (before resolution): ${JSON.stringify(oldGen2Template, null, 2)}`);
     this.gen2Template = oldGen2Template;
 
     // TODO: This should  be read from the holding stack instead of the gen 2 template
@@ -242,6 +244,7 @@ class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
     );
 
     // Extract resolved resources for holding stack before removing them
+    this.logger.debug(`Gen2 template (after resolution): ${JSON.stringify(resolvedRefsGen2Template, null, 2)}`);
     const holdingStackResources: Record<string, CFNResource> = {};
     for (const logicalId of logicalResourceIds) {
       holdingStackResources[logicalId] = JSON.parse(JSON.stringify(resolvedRefsGen2Template.Resources[logicalId]));
@@ -288,21 +291,13 @@ class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
     };
   }
 
-  public async restoreGen2ResourcesFromHoldingStack(): Promise<void> {
-    // During rollback, gen1StackId/gen2StackId are swapped, so the holding stack
-    // (created from the original Gen2 stack name) may be under either ID.
-    const holdingStackNameFromGen2 = getHoldingStackName(extractStackNameFromId(this.gen2StackId));
-    const holdingStackNameFromGen1 = getHoldingStackName(extractStackNameFromId(this.gen1StackId));
-    let holdingStackName = holdingStackNameFromGen2;
-    let holdingStack = await findHoldingStack(this.cfnClient, holdingStackName);
-    if (!holdingStack) {
-      holdingStackName = holdingStackNameFromGen1;
-      holdingStack = await findHoldingStack(this.cfnClient, holdingStackName);
-    }
+  public async restoreGen2ResourcesFromHoldingStack(originalGen2StackId: string): Promise<void> {
+    const holdingStackName = getHoldingStackName(extractStackNameFromId(originalGen2StackId));
+    const holdingStack = await findHoldingStack(this.cfnClient, holdingStackName);
     if (!holdingStack) return;
 
     const holdingTemplate = await this.readTemplate(holdingStackName);
-    const gen2Template = await this.readTemplate(this.gen2StackId);
+    const targetTemplate = await this.readTemplate(originalGen2StackId);
 
     const resourcesToRestore = Object.entries(holdingTemplate.Resources).filter(([id]) => id !== 'MigrationPlaceholder');
     if (resourcesToRestore.length === 0) {
@@ -310,8 +305,19 @@ class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
       return;
     }
 
+    // Add placeholder to holding stack via regular update so the refactor can
+    // move all real resources out without leaving the stack empty.
+    const holdingTemplateWithPlaceholder: CFNTemplate = {
+      ...holdingTemplate,
+      Resources: {
+        MigrationPlaceholder: { Type: 'AWS::CloudFormation::WaitConditionHandle', Properties: {} },
+        ...holdingTemplate.Resources,
+      },
+    };
+    await tryUpdateStack(this.cfnClient, holdingStackName, [], holdingTemplateWithPlaceholder);
+
     for (const [logicalId, resource] of resourcesToRestore) {
-      gen2Template.Resources[logicalId] = resource;
+      targetTemplate.Resources[logicalId] = resource;
     }
 
     const emptyHoldingTemplate: CFNTemplate = {
@@ -323,13 +329,13 @@ class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
 
     const resourceMappings: ResourceMapping[] = resourcesToRestore.map(([logicalId]) => ({
       Source: { StackName: holdingStackName, LogicalResourceId: logicalId },
-      Destination: { StackName: this.gen2StackId, LogicalResourceId: logicalId },
+      Destination: { StackName: originalGen2StackId, LogicalResourceId: logicalId },
     }));
 
     const [success, failedMetadata] = await tryRefactorStack(this.cfnClient, {
       StackDefinitions: [
         { TemplateBody: JSON.stringify(emptyHoldingTemplate), StackName: holdingStackName },
-        { TemplateBody: JSON.stringify(gen2Template), StackName: this.gen2StackId },
+        { TemplateBody: JSON.stringify(targetTemplate), StackName: originalGen2StackId },
       ],
       ResourceMappings: resourceMappings,
     });

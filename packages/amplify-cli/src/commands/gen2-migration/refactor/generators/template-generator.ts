@@ -613,8 +613,9 @@ class TemplateGenerator {
         );
         await pollStackForCompletionState(this.cfnClient, destinationCategoryStackId, 30);
         if (!isRollback) {
+          const originalGen2StackId = destinationCategoryStackId;
           this.logger.info(`Restoring Gen2 ${this.getStackCategoryName(category)} resources from holding stack...`);
-          await categoryTemplateGenerator.restoreGen2ResourcesFromHoldingStack();
+          await categoryTemplateGenerator.restoreGen2ResourcesFromHoldingStack(originalGen2StackId);
           this.logger.info(`Restored Gen2 ${this.getStackCategoryName(category)} resources from holding stack successfully`);
         }
         return false;
@@ -626,8 +627,9 @@ class TemplateGenerator {
         );
 
         if (isRollback) {
+          const originalGen2StackId = sourceCategoryStackId;
           this.logger.info(`Restoring Gen2 ${this.getStackCategoryName(category)} resources from holding stack...`);
-          await categoryTemplateGenerator.restoreGen2ResourcesFromHoldingStack();
+          await categoryTemplateGenerator.restoreGen2ResourcesFromHoldingStack(originalGen2StackId);
           this.logger.info(`Restored Gen2 ${this.getStackCategoryName(category)} resources from holding stack successfully`);
         }
       }
