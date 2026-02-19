@@ -257,38 +257,85 @@ export const generateDataSource = async (gen1Env: string, dataDefinition?: DataD
     const addAuthModeConfig = (provider: any) => {
       switch (provider.authenticationType) {
         case 'API_KEY':
-          if (provider.apiKeyConfig?.apiKeyExpirationDays) {
-            authModeProperties.push(
-              factory.createPropertyAssignment(
-                'apiKeyAuthorizationMode',
-                factory.createObjectLiteralExpression([
-                  factory.createPropertyAssignment(
-                    'expiresInDays',
-                    factory.createNumericLiteral(provider.apiKeyConfig.apiKeyExpirationDays.toString()),
-                  ),
-                ]),
-              ),
-            );
+          if (provider.apiKeyConfig) {
+            const apiKeyProps = [];
+            if (provider.apiKeyConfig.apiKeyExpirationDays) {
+              apiKeyProps.push(
+                factory.createPropertyAssignment(
+                  'expiresInDays',
+                  factory.createNumericLiteral(provider.apiKeyConfig.apiKeyExpirationDays.toString()),
+                ),
+              );
+            }
+            if (provider.apiKeyConfig.description) {
+              apiKeyProps.push(
+                factory.createPropertyAssignment('description', factory.createStringLiteral(provider.apiKeyConfig.description)),
+              );
+            }
+            if (apiKeyProps.length > 0) {
+              authModeProperties.push(
+                factory.createPropertyAssignment('apiKeyAuthorizationMode', factory.createObjectLiteralExpression(apiKeyProps)),
+              );
+            }
           }
           break;
         case 'AWS_LAMBDA':
-          if (provider.ttlSeconds) {
-            authModeProperties.push(
-              factory.createPropertyAssignment(
-                'lambdaAuthorizationMode',
-                factory.createObjectLiteralExpression([
-                  factory.createPropertyAssignment('timeToLiveInSeconds', factory.createNumericLiteral(provider.ttlSeconds.toString())),
-                ]),
-              ),
-            );
+          if (provider.lambdaAuthorizerConfig) {
+            const lambdaProps = [];
+            if (provider.lambdaAuthorizerConfig.lambdaFunction) {
+              lambdaProps.push(
+                factory.createPropertyAssignment('function', factory.createIdentifier(provider.lambdaAuthorizerConfig.lambdaFunction)),
+              );
+            }
+            if (provider.lambdaAuthorizerConfig.ttlSeconds) {
+              lambdaProps.push(
+                factory.createPropertyAssignment(
+                  'timeToLiveInSeconds',
+                  factory.createNumericLiteral(provider.lambdaAuthorizerConfig.ttlSeconds.toString()),
+                ),
+              );
+            }
+            if (lambdaProps.length > 0) {
+              authModeProperties.push(
+                factory.createPropertyAssignment('lambdaAuthorizationMode', factory.createObjectLiteralExpression(lambdaProps)),
+              );
+            }
           }
           break;
         case 'OPENID_CONNECT':
-          if (provider.openIDIssuerURL) {
+          if (provider.openIDConnectConfig?.issuerUrl) {
             const oidcProps = [];
-            oidcProps.push(factory.createPropertyAssignment('oidcIssuerUrl', factory.createStringLiteral(provider.openIDIssuerURL)));
-            if (provider.openIDClientID) {
-              oidcProps.push(factory.createPropertyAssignment('clientId', factory.createStringLiteral(provider.openIDClientID)));
+            // Required properties
+            oidcProps.push(
+              factory.createPropertyAssignment(
+                'oidcProviderName',
+                factory.createStringLiteral(provider.openIDConnectConfig.name || 'DefaultOIDCProvider'),
+              ),
+            );
+            oidcProps.push(
+              factory.createPropertyAssignment('oidcIssuerUrl', factory.createStringLiteral(provider.openIDConnectConfig.issuerUrl)),
+            );
+            // Optional properties
+            if (provider.openIDConnectConfig.clientId) {
+              oidcProps.push(
+                factory.createPropertyAssignment('clientId', factory.createStringLiteral(provider.openIDConnectConfig.clientId)),
+              );
+            }
+            if (provider.openIDConnectConfig.authTTL) {
+              oidcProps.push(
+                factory.createPropertyAssignment(
+                  'tokenExpiryFromAuthInSeconds',
+                  factory.createNumericLiteral(provider.openIDConnectConfig.authTTL.toString()),
+                ),
+              );
+            }
+            if (provider.openIDConnectConfig.iatTTL) {
+              oidcProps.push(
+                factory.createPropertyAssignment(
+                  'tokenExpireFromIssueInSeconds',
+                  factory.createNumericLiteral(provider.openIDConnectConfig.iatTTL.toString()),
+                ),
+              );
             }
             authModeProperties.push(
               factory.createPropertyAssignment('oidcAuthorizationMode', factory.createObjectLiteralExpression(oidcProps)),
