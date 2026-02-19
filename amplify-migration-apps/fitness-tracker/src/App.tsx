@@ -4,7 +4,7 @@
 import { useEffect, useState, useRef } from 'react';
 
 import { generateClient } from 'aws-amplify/api';
-import { post } from 'aws-amplify/api';
+import { post, get } from 'aws-amplify/api';
 
 import { Button, Heading, withAuthenticator } from '@aws-amplify/ui-react';
 import '@aws-amplify/ui-react/styles.css';
@@ -813,6 +813,9 @@ const App: React.FC<AppProps> = ({ signOut, user }) => {
   });
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [showAdminModal, setShowAdminModal] = useState(false);
+  const [adminUsers, setAdminUsers] = useState<any[]>([]);
+  const [loadingUsers, setLoadingUsers] = useState(false);
 
   const themedStyles = getStyles();
 
@@ -952,6 +955,24 @@ const App: React.FC<AppProps> = ({ signOut, user }) => {
     );
   }, [excercises, workoutPrograms]);
 
+  async function fetchAllUsers() {
+    try {
+      setLoadingUsers(true);
+      const response = await get({
+        apiName: 'adminapi',
+        path: '/admin/users',
+      }).response;
+      const data = (await response.body.json()) as any;
+      setAdminUsers(data?.users || []);
+      setShowAdminModal(true);
+    } catch (error) {
+      console.log('Error fetching users:', error);
+      alert(`Failed to fetch users: ${error}.`);
+    } finally {
+      setLoadingUsers(false);
+    }
+  }
+
   return (
     <div style={themedStyles.container}>
       <div style={themedStyles.header}>
@@ -974,6 +995,9 @@ const App: React.FC<AppProps> = ({ signOut, user }) => {
             </Heading>
           </div>
           <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+            <Button style={{ ...themedStyles.button, backgroundColor: '#6366f1' }} onClick={fetchAllUsers} disabled={loadingUsers}>
+              {loadingUsers ? '⏳' : '👥'} See All Users
+            </Button>
             <Button style={themedStyles.button} onClick={signOut}>
               Sign out
             </Button>
@@ -1181,6 +1205,36 @@ const App: React.FC<AppProps> = ({ signOut, user }) => {
           )}
         </div>
       </div>
+
+      {/* Admin Modal */}
+      {showAdminModal && (
+        <div style={themedStyles.modalOverlay} onClick={() => setShowAdminModal(false)}>
+          <div style={themedStyles.modalContent} onClick={(e) => e.stopPropagation()}>
+            <div style={themedStyles.modalHeader}>
+              <h2 style={themedStyles.modalTitle}>👥 All Users ({adminUsers.length})</h2>
+              <button style={themedStyles.modalCloseButton} onClick={() => setShowAdminModal(false)}>
+                ✕
+              </button>
+            </div>
+            <div style={themedStyles.modalBody}>
+              {adminUsers.map((user, index) => (
+                <div key={index} style={themedStyles.activityItem}>
+                  <div style={themedStyles.activityTimestamp}>
+                    {user.username} • {user.status}
+                  </div>
+                  <div style={themedStyles.activityContent}>
+                    📧 {user.email}
+                    <br />
+                    📅 Created: {new Date(user.created).toLocaleDateString()}
+                    <br />
+                    {user.enabled ? '✅ Enabled' : '❌ Disabled'}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

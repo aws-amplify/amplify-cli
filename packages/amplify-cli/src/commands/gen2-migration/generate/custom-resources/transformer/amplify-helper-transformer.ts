@@ -1,20 +1,60 @@
 import * as ts from 'typescript';
 
 export class AmplifyHelperTransformer {
+  // Map Gen1 category names to Gen2 backend property names
+  private static readonly CATEGORY_MAP: Record<string, string> = {
+    function: 'functions',
+    api: 'data',
+    storage: 'storage',
+    auth: 'auth',
+  };
+
+  // Map Gen1 output attributes to Gen2 resource property paths
+  private static readonly ATTRIBUTE_MAP: Record<string, Record<string, string>> = {
+    auth: {
+      UserPoolId: 'userPool.userPoolId',
+      UserPoolArn: 'userPool.userPoolArn',
+      IdentityPoolId: 'identityPool.identityPoolId',
+      AppClientID: 'userPoolClient.userPoolClientId',
+      AppClientIDWeb: 'userPoolClient.userPoolClientId',
+    },
+    api: {
+      GraphQLAPIIdOutput: 'cfnResources.cfnGraphqlApi.attrApiId',
+      GraphQLAPIEndpointOutput: 'cfnResources.cfnGraphqlApi.attrGraphQlUrl',
+      // Note: API key is on CfnApiKey construct, not CfnGraphQLApi
+      GraphQLAPIKeyOutput: 'cfnResources.cfnApiKey.Default.attrApiKey',
+    },
+    storage: {
+      BucketName: 'bucket.bucketName',
+    },
+    function: {
+      Name: 'lambda.functionName',
+      Arn: 'lambda.functionArn',
+      LambdaExecutionRole: 'lambda.role',
+    },
+  };
+
   static transform(sourceFile: ts.SourceFile, projectName?: string): ts.SourceFile {
     // Track variable names that hold AmplifyHelpers.getProjectInfo() result
     const projectInfoVariables = new Set<string>();
     // Track parameter names with AmplifyResourceProps type
     const amplifyResourcePropsParams = new Set<string>();
+    // Track dependencies from addResourceDependency calls
+    const resourceDependencies = new Set<string>();
 
     const transformer = <T extends ts.Node>(context: ts.TransformationContext) => {
       return (node: T) => {
         function visit(node: ts.Node): ts.Node {
-          // Remove AmplifyHelpers import statements
+          // Remove AmplifyHelpers import statements and AmplifyDependentResourcesAttributes import
           if (ts.isImportDeclaration(node)) {
             const moduleSpecifier = node.moduleSpecifier;
-            if (ts.isStringLiteral(moduleSpecifier) && moduleSpecifier.text === '@aws-amplify/cli-extensibility-helper') {
-              return undefined;
+            if (ts.isStringLiteral(moduleSpecifier)) {
+              if (
+                moduleSpecifier.text === '@aws-amplify/cli-extensibility-helper' ||
+                moduleSpecifier.text.includes('amplify-dependent-resources-ref')
+              ) {
+                return undefined;
+              }
             }
           }
 
@@ -57,6 +97,36 @@ export class AmplifyHelperTransformer {
               projectInfoVariables.add(declaration.name.text);
               // Remove this entire variable statement
               return undefined;
+            }
+
+            // Remove AmplifyHelpers.addResourceDependency variable statements
+            if (declaration && declaration.initializer && ts.isCallExpression(declaration.initializer)) {
+              const callExpr = declaration.initializer;
+              const isAddResourceDependency =
+                ts.isPropertyAccessExpression(callExpr.expression) && callExpr.expression.name.text === 'addResourceDependency';
+
+              if (isAddResourceDependency) {
+                // Extract dependencies from the call
+                const args = callExpr.arguments;
+                if (args.length >= 4 && ts.isArrayLiteralExpression(args[3])) {
+                  args[3].elements.forEach((element) => {
+                    if (ts.isObjectLiteralExpression(element)) {
+                      element.properties.forEach((prop) => {
+                        if (
+                          ts.isPropertyAssignment(prop) &&
+                          ts.isIdentifier(prop.name) &&
+                          prop.name.text === 'category' &&
+                          ts.isStringLiteral(prop.initializer)
+                        ) {
+                          resourceDependencies.add(prop.initializer.text);
+                        }
+                      });
+                    }
+                  });
+                }
+                // Remove this entire variable statement
+                return undefined;
+              }
             }
           }
 
@@ -104,6 +174,32 @@ export class AmplifyHelperTransformer {
                 return ts.factory.createStringLiteral('custom');
               }
             }
+
+            // Transform property access like amplifyResources.storage.bucket.bucketName
+            // Only transform the outermost property access (when this node is not part of a larger chain)
+            if (!ts.isPropertyAccessExpression(node.parent)) {
+              const fullAccess = AmplifyHelperTransformer.getPropertyAccessChain(node);
+              const parts = fullAccess.split('.');
+              // Match pattern: amplifyResources.category.resourceName.property (4+ parts)
+              if (parts.length >= 4 && parts[0].includes('amplifyResources')) {
+                const gen1Category = parts[1];
+                const gen2Category = AmplifyHelperTransformer.CATEGORY_MAP[gen1Category] || gen1Category;
+                const resourceName = parts[2];
+                const gen1Attribute = parts[3];
+                const mappedAttribute = AmplifyHelperTransformer.ATTRIBUTE_MAP[gen1Category]?.[gen1Attribute];
+                const gen2Property = mappedAttribute || parts.slice(3).join('.');
+
+                // Functions need resource name preserved: functions.myFunc.resources.lambda.functionArn
+                if (gen1Category === 'function') {
+                  return AmplifyHelperTransformer.createPropertyAccessFromString(
+                    `${gen2Category}.${resourceName}.resources.${gen2Property}`,
+                  );
+                }
+
+                // Other categories: auth.resources.userPool.userPoolId
+                return AmplifyHelperTransformer.createPropertyAccessFromString(`${gen2Category}.resources.${gen2Property}`);
+              }
+            }
           }
 
           // Track constructor parameters with AmplifyResourceProps type
@@ -143,9 +239,24 @@ export class AmplifyHelperTransformer {
             );
           }
 
-          // Transform constructor: remove props and amplifyResourceProps parameters
+          // Transform constructor: add resource dependencies as parameters
           if (ts.isConstructorDeclaration(visitedNode)) {
-            const newParams = visitedNode.parameters.slice(0, 2);
+            const baseParams = visitedNode.parameters.slice(0, 2); // scope, id
+
+            // Add resource dependency parameters with Gen2 naming
+            const resourceParams = Array.from(resourceDependencies).map((gen1Category) => {
+              const gen2Category = AmplifyHelperTransformer.CATEGORY_MAP[gen1Category] || gen1Category;
+              return ts.factory.createParameterDeclaration(
+                undefined,
+                undefined,
+                gen2Category,
+                undefined,
+                ts.factory.createTypeReferenceNode('any'),
+                undefined,
+              );
+            });
+
+            const newParams = [...baseParams, ...resourceParams];
             return ts.factory.updateConstructorDeclaration(visitedNode, visitedNode.modifiers, newParams, visitedNode.body);
           }
 
@@ -233,5 +344,32 @@ export class AmplifyHelperTransformer {
     newStatements.push(...sourceFile.statements.filter((stmt) => !ts.isImportDeclaration(stmt)));
 
     return ts.factory.updateSourceFile(sourceFile, newStatements);
+  }
+
+  private static getPropertyAccessChain(node: ts.PropertyAccessExpression): string {
+    const parts: string[] = [];
+    let current: ts.Node = node;
+
+    while (ts.isPropertyAccessExpression(current)) {
+      parts.unshift(current.name.text);
+      current = current.expression;
+    }
+
+    if (ts.isIdentifier(current)) {
+      parts.unshift(current.text);
+    }
+
+    return parts.join('.');
+  }
+
+  private static createPropertyAccessFromString(accessPath: string): ts.Expression {
+    const parts = accessPath.split('.');
+    let expression: ts.Expression = ts.factory.createIdentifier(parts[0]);
+
+    for (let i = 1; i < parts.length; i++) {
+      expression = ts.factory.createPropertyAccessExpression(expression, parts[i]);
+    }
+
+    return expression;
   }
 }
