@@ -42,6 +42,7 @@ import { printer } from './printer';
 import { format } from './format';
 import ora from 'ora';
 import { AppAnalyticsDefinitionFetcher } from './app_analytics_definition_fetcher';
+import { AppGeoDefinitionFetcher } from './app_geo_definition_fetcher';
 import * as ts from 'typescript';
 import { AmplifyHelperTransformer } from '../custom-resources/transformer/amplify-helper-transformer';
 import { DependencyMerger } from '../custom-resources/generator/dependency-merger';
@@ -65,6 +66,7 @@ interface CodegenCommandParameters {
   storageDefinitionFetcher: AppStorageDefinitionFetcher;
   functionsDefinitionFetcher: AppFunctionsDefinitionFetcher;
   analyticsDefinitionFetcher: AppAnalyticsDefinitionFetcher;
+  geoDefinitionFetcher: AppGeoDefinitionFetcher;
   appId: string;
 }
 
@@ -102,6 +104,7 @@ const generateGen2Code = async ({
   storageDefinitionFetcher,
   functionsDefinitionFetcher,
   analyticsDefinitionFetcher,
+  geoDefinitionFetcher,
   ccbFetcher,
   backendEnvironment,
   appId,
@@ -122,12 +125,16 @@ const generateGen2Code = async ({
   logger.info('Fetching definitions from AWS for category: Analytics');
   const analytics = await analyticsDefinitionFetcher.getDefinition();
 
+  logger.info('Fetching definitions from AWS for category: Geo');
+  const geo = await geoDefinitionFetcher.getDefinition();
+
   logger.debug(`Auth: ${auth ? 'EXISTS' : 'UNDEFINED'}`);
   logger.debug(`Storage: ${storage ? 'EXISTS' : 'UNDEFINED'}`);
   logger.debug(`Data: ${data ? JSON.stringify(data, null, 2) : 'UNDEFINED'}`);
   logger.debug(`Functions: ${functions ? `${functions.length} functions` : 'UNDEFINED'}`);
   logger.debug(`Backend env: ${backendEnvironmentName}`);
   logger.debug(`Analytics: ${analytics ? JSON.stringify(analytics, null, 2) : 'UNDEFINED'}`);
+  logger.debug(`Geo: ${geo ? JSON.stringify(geo, null, 2) : 'UNDEFINED'}`);
 
   const gen2RenderOptions: Gen2RenderingOptions = {
     outputDir: outputDirectory,
@@ -141,6 +148,7 @@ const generateGen2Code = async ({
     data,
     functions,
     analytics,
+    geo,
     customResources: await getCustomResourceMap(ccbFetcher, backendEnvironment),
     unsupportedCategories: await unsupportedCategories(ccbFetcher, backendEnvironment),
   };
@@ -272,7 +280,6 @@ const unsupportedCategories = async (
   const restAPIKey = 'rest api';
   const analyticsKey = 'analytics';
 
-  unsupportedCategories.set('geo', `${urlPrefix}/geo/`);
   unsupportedCategories.set('analytics', `${urlPrefix}/analytics/`);
   unsupportedCategories.set('predictions', `${urlPrefix}/predictions/`);
   unsupportedCategories.set('notifications', `${urlPrefix}/in-app-messaging/`);
@@ -628,6 +635,7 @@ export async function prepare(logger: Logger, appId: string, envName: string, re
       authAnalyzer,
     ),
     analyticsDefinitionFetcher: new AppAnalyticsDefinitionFetcher(backendEnvironmentResolver, new BackendDownloader(s3Client)),
+    geoDefinitionFetcher: new AppGeoDefinitionFetcher(backendEnvironmentResolver, new BackendDownloader(s3Client)),
     analytics: new AppAnalytics(appId),
     logger: logger,
     ccbFetcher,
