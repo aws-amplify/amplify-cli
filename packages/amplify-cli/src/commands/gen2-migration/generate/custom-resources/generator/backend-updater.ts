@@ -24,7 +24,7 @@ export class BackendUpdater {
       const [resourceName, className] = entries[i];
       const deps = resourceDependencies?.get(resourceName) || [];
       imports.push(this.createImport(resourceName, className));
-      instantiations.push(this.createInstantiation(resourceName, className, deps));
+      instantiations.push(this.createInstantiation(resourceName, deps));
     }
 
     const updatedFile = this.injectIntoBackend(sourceFile, imports, instantiations);
@@ -56,7 +56,7 @@ export class BackendUpdater {
     auth: 'auth',
   };
 
-  private createInstantiation(resourceName: string, className: string, dependencies?: string[]): ts.ExpressionStatement {
+  private createInstantiation(resourceName: string, dependencies?: string[]): ts.ExpressionStatement {
     const args: ts.Expression[] = [
       ts.factory.createCallExpression(
         ts.factory.createPropertyAccessExpression(ts.factory.createIdentifier('backend'), 'createStack'),
