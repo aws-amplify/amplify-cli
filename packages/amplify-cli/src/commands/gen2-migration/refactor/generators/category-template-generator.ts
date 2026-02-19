@@ -171,6 +171,16 @@ class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
   public async moveGen2ResourcesToHoldingStack(): Promise<CFNChangeTemplateWithParams> {
     this.logger.debug('moveGen2ResourcesToHoldingStack: Moving Gen2 resources to holding stack');
 
+    // Clean up orphaned holding stack from a previous failed refactor attempt.
+    // The StackRefactor API creates the holding stack during CREATE phase, but if
+    // the refactor fails, the stack is left in REVIEW_IN_PROGRESS with no resources.
+    const holdingStackName = getHoldingStackName(extractStackNameFromId(this.gen2StackId));
+    const existingHoldingStack = await findHoldingStack(this.cfnClient, holdingStackName);
+    if (existingHoldingStack?.StackStatus === 'REVIEW_IN_PROGRESS') {
+      this.logger.info('Found orphaned holding stack in REVIEW_IN_PROGRESS state, deleting before retry...');
+      await deleteHoldingStack(this.cfnClient, holdingStackName);
+    }
+
     this.gen2DescribeStacksResponse = await this.describeStack(this.gen2StackId);
     assert(this.gen2DescribeStacksResponse);
     const { Parameters, Outputs } = this.gen2DescribeStacksResponse;
@@ -246,13 +256,11 @@ class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
     const updatedGen2Template = resolvedRefsGen2Template;
 
     // Create holding stack and refactor resources into it
-    const holdingStackName = getHoldingStackName(extractStackNameFromId(this.gen2StackId));
 
     const holdingStackTemplate: CFNTemplate = {
       AWSTemplateFormatVersion: '2010-09-09',
       Description: 'Temporary holding stack for Gen2 migration',
       Resources: {
-        MigrationPlaceholder: { Type: 'AWS::CloudFormation::WaitConditionHandle', Properties: {} },
         ...holdingStackResources,
       },
       Outputs: {},
@@ -281,8 +289,16 @@ class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
   }
 
   public async restoreGen2ResourcesFromHoldingStack(): Promise<void> {
-    const holdingStackName = getHoldingStackName(extractStackNameFromId(this.gen2StackId));
-    const holdingStack = await findHoldingStack(this.cfnClient, holdingStackName);
+    // During rollback, gen1StackId/gen2StackId are swapped, so the holding stack
+    // (created from the original Gen2 stack name) may be under either ID.
+    const holdingStackNameFromGen2 = getHoldingStackName(extractStackNameFromId(this.gen2StackId));
+    const holdingStackNameFromGen1 = getHoldingStackName(extractStackNameFromId(this.gen1StackId));
+    let holdingStackName = holdingStackNameFromGen2;
+    let holdingStack = await findHoldingStack(this.cfnClient, holdingStackName);
+    if (!holdingStack) {
+      holdingStackName = holdingStackNameFromGen1;
+      holdingStack = await findHoldingStack(this.cfnClient, holdingStackName);
+    }
     if (!holdingStack) return;
 
     const holdingTemplate = await this.readTemplate(holdingStackName);

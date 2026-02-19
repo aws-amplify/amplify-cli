@@ -38,5 +38,13 @@ export async function deleteHoldingStack(cfnClient: CloudFormationClient, stackN
     return;
   }
   await cfnClient.send(new DeleteStackCommand({ StackName: stackName }));
-  await pollStackForCompletionState(cfnClient, stackName, 60);
+  try {
+    await pollStackForCompletionState(cfnClient, stackName, 60);
+  } catch (error: unknown) {
+    // Stack may already be gone
+    if (error instanceof Error && error.message.includes('does not exist')) {
+      return;
+    }
+    throw error;
+  }
 }
