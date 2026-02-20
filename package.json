@@ -7,7 +7,7 @@
     "build-and-verify": "yarn clean && yarn && yarn build && yarn prettier-check && yarn lint-check && yarn verify-api-extract",
     "build-tests-changed": "lerna run build-tests --since dev",
     "build-tests": "lerna run build-tests",
-    "build": "lerna run build",
+    "build": "lerna run build && amplify-migration-apps/typecheck.sh",
     "check-version-conflicts:beta": "yarn ts-node ./scripts/check-version.ts beta",
     "check-version-conflicts:release": "yarn ts-node ./scripts/check-version.ts",
     "clean": "lerna run clean && yarn rimraf tsconfig.tsbuildinfo && lerna clean --yes && yarn rimraf node_modules",
@@ -96,7 +96,11 @@
   },
   "workspaces": {
     "packages": [
-      "packages/*"
+      "packages/*",
+      "amplify-migration-apps/project-boards/_snapshot.expected"
+    ],
+    "nohoist": [
+      "project-boards/**"
     ]
   },
   "devDependencies": {

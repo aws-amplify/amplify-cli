@@ -151,7 +151,6 @@ export class AuthAccessAnalyzer {
    */
   async getFunctionTemplates(): Promise<Map<string, string>> {
     const backendEnvironment = await this.backendEnvironmentResolver.selectBackendEnvironment();
-    assert(backendEnvironment?.deploymentArtifacts);
 
     const currentCloudBackendDirectory = await this.ccbFetcher.getCurrentCloudBackend(backendEnvironment.deploymentArtifacts);
     const amplifyMetaPath = path.join(currentCloudBackendDirectory, 'amplify-meta.json');

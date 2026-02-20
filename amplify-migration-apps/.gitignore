@@ -1,1 +1,5 @@
 **/amplify
+
+# these are used for snapshot testing
+!**/_snapshot.input/**
+!**/_snapshot.expected/**
