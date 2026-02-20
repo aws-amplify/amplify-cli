@@ -329,6 +329,49 @@ export class CdkFromCfn {
 
     updateRefs(template.Resources);
 
+    // Replace Fn::Join patterns that construct group role names from UserPoolId + GroupRole
+    // with direct Ref to the GroupRole parameter. This preserves CDK tokens for cross-stack
+    // dependency tracking. Without this, cdk-from-cfn generates .join('-') which destroys
+    // the token and breaks deployment ordering.
+    // See known-issues.md issue #1 for full details.
+    if (template.Parameters) {
+      const groupRoleParams = Object.keys(template.Parameters).filter(
+        (key) => key.startsWith('authuserPoolGroups') && key.endsWith('GroupRole'),
+      );
+
+      const replaceGroupRoleJoins = (obj: unknown): void => {
+        if (typeof obj !== 'object' || obj === null) return;
+        const record = obj as Record<string, unknown>;
+
+        for (const [key, value] of Object.entries(record)) {
+          if (typeof value === 'object' && value !== null && 'Fn::Join' in value) {
+            const joinValue = value as { 'Fn::Join': [string, unknown[]] };
+            const [separator, parts] = joinValue['Fn::Join'];
+            if (
+              separator === '-' &&
+              Array.isArray(parts) &&
+              parts.length === 2 &&
+              typeof parts[0] === 'object' &&
+              parts[0] !== null &&
+              'Ref' in parts[0] &&
+              typeof parts[1] === 'string' &&
+              parts[1].endsWith('GroupRole')
+            ) {
+              const groupRoleSuffix = parts[1];
+              const matchingParam = groupRoleParams.find((p) => p.endsWith(groupRoleSuffix));
+              if (matchingParam) {
+                record[key] = { Ref: matchingParam };
+              }
+            }
+          } else {
+            replaceGroupRoleJoins(value);
+          }
+        }
+      };
+
+      replaceGroupRoleJoins(template.Resources);
+    }
+
     // Resolve CFN conditions using deployed stack parameters
     // This is critical because cdk-from-cfn generates broken TypeScript for CFN conditions
     // (e.g., `const shouldNotCreateEnvResources = props.env! === 'NONE';` which is invalid syntax)
