@@ -4,13 +4,7 @@ import { GeoResourceRenderParameters } from './index';
 
 const factory = ts.factory;
 
-// Helper: creates `${resourceName}-${branchName}` as a template expression
-const createNameWithBranch = (name: string) =>
-  factory.createTemplateExpression(factory.createTemplateHead(`${name}-`), [
-    factory.createTemplateSpan(factory.createIdentifier('branchName'), factory.createTemplateTail('')),
-  ]);
-
-// Builds the backend.addOutput({ geo: { ... } }) statement
+// Builds the backend.addOutput({ geo: { ... } }) statement using construct output properties
 const buildAddOutputStatement = (resources: GeoResourceRenderParameters[]): ts.ExpressionStatement => {
   const maps = resources.filter((r) => r.serviceName === 'Map');
   const placeIndexes = resources.filter((r) => r.serviceName === 'PlaceIndex');
@@ -18,28 +12,30 @@ const buildAddOutputStatement = (resources: GeoResourceRenderParameters[]): ts.E
 
   const geoProps: ts.ObjectLiteralElementLike[] = [];
 
-  // aws_region: backend.stack.region
+  // aws_region: use the first map's region, or first available resource's region
+  const firstResource = maps[0] ?? placeIndexes[0] ?? geofenceCollections[0];
   geoProps.push(
     factory.createPropertyAssignment(
       factory.createIdentifier('aws_region'),
-      factory.createPropertyAccessExpression(
-        factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier('stack')),
-        factory.createIdentifier('region'),
-      ),
+      factory.createPropertyAccessExpression(factory.createIdentifier(firstResource.resourceName), factory.createIdentifier('region')),
     ),
   );
 
   // maps section
   if (maps.length > 0) {
-    const mapItems = maps.map((m) => {
-      const style = m.serviceName === 'Map' ? m.mapStyle : '';
-      return factory.createPropertyAssignment(
-        factory.createComputedPropertyName(createNameWithBranch(m.resourceName)),
+    const mapItems = maps.map((m) =>
+      factory.createPropertyAssignment(
+        factory.createComputedPropertyName(
+          factory.createPropertyAccessExpression(factory.createIdentifier(m.resourceName), factory.createIdentifier('name')),
+        ),
         factory.createObjectLiteralExpression([
-          factory.createPropertyAssignment(factory.createIdentifier('style'), factory.createStringLiteral(style)),
+          factory.createPropertyAssignment(
+            factory.createIdentifier('style'),
+            factory.createPropertyAccessExpression(factory.createIdentifier(m.resourceName), factory.createIdentifier('style')),
+          ),
         ]),
-      );
-    });
+      ),
+    );
     const defaultMap = maps.find((m) => m.isDefault === 'true') ?? maps[0];
     geoProps.push(
       factory.createPropertyAssignment(
@@ -47,7 +43,10 @@ const buildAddOutputStatement = (resources: GeoResourceRenderParameters[]): ts.E
         factory.createObjectLiteralExpression(
           [
             factory.createPropertyAssignment(factory.createIdentifier('items'), factory.createObjectLiteralExpression(mapItems, true)),
-            factory.createPropertyAssignment(factory.createIdentifier('default'), createNameWithBranch(defaultMap.resourceName)),
+            factory.createPropertyAssignment(
+              factory.createIdentifier('default'),
+              factory.createPropertyAccessExpression(factory.createIdentifier(defaultMap.resourceName), factory.createIdentifier('name')),
+            ),
           ],
           true,
         ),
@@ -57,7 +56,9 @@ const buildAddOutputStatement = (resources: GeoResourceRenderParameters[]): ts.E
 
   // search_indices section
   if (placeIndexes.length > 0) {
-    const indexItems = placeIndexes.map((p) => createNameWithBranch(p.resourceName));
+    const indexItems = placeIndexes.map((p) =>
+      factory.createPropertyAccessExpression(factory.createIdentifier(p.resourceName), factory.createIdentifier('name')),
+    );
     const defaultIndex = placeIndexes.find((p) => p.isDefault === 'true') ?? placeIndexes[0];
     geoProps.push(
       factory.createPropertyAssignment(
@@ -65,7 +66,10 @@ const buildAddOutputStatement = (resources: GeoResourceRenderParameters[]): ts.E
         factory.createObjectLiteralExpression(
           [
             factory.createPropertyAssignment(factory.createIdentifier('items'), factory.createArrayLiteralExpression(indexItems)),
-            factory.createPropertyAssignment(factory.createIdentifier('default'), createNameWithBranch(defaultIndex.resourceName)),
+            factory.createPropertyAssignment(
+              factory.createIdentifier('default'),
+              factory.createPropertyAccessExpression(factory.createIdentifier(defaultIndex.resourceName), factory.createIdentifier('name')),
+            ),
           ],
           true,
         ),
@@ -75,7 +79,9 @@ const buildAddOutputStatement = (resources: GeoResourceRenderParameters[]): ts.E
 
   // geofence_collections section
   if (geofenceCollections.length > 0) {
-    const collectionItems = geofenceCollections.map((g) => createNameWithBranch(g.resourceName));
+    const collectionItems = geofenceCollections.map((g) =>
+      factory.createPropertyAccessExpression(factory.createIdentifier(g.resourceName), factory.createIdentifier('name')),
+    );
     const defaultCollection = geofenceCollections.find((g) => g.isDefault === 'true') ?? geofenceCollections[0];
     geoProps.push(
       factory.createPropertyAssignment(
@@ -83,7 +89,13 @@ const buildAddOutputStatement = (resources: GeoResourceRenderParameters[]): ts.E
         factory.createObjectLiteralExpression(
           [
             factory.createPropertyAssignment(factory.createIdentifier('items'), factory.createArrayLiteralExpression(collectionItems)),
-            factory.createPropertyAssignment(factory.createIdentifier('default'), createNameWithBranch(defaultCollection.resourceName)),
+            factory.createPropertyAssignment(
+              factory.createIdentifier('default'),
+              factory.createPropertyAccessExpression(
+                factory.createIdentifier(defaultCollection.resourceName),
+                factory.createIdentifier('name'),
+              ),
+            ),
           ],
           true,
         ),
@@ -116,27 +128,25 @@ const buildAddOutputStatement = (resources: GeoResourceRenderParameters[]): ts.E
  * import { defineMyGeofence } from './myGeofence/resource';
  * import { Backend } from '@aws-amplify/backend';
  *
- * const branchName = process.env.AWS_BRANCH ?? 'sandbox';
- *
  * export const defineGeo = (backend: Backend<any>) => {
- *   defineMyMap(backend);
- *   defineMySearch(backend);
- *   defineMyGeofence(backend);
+ *   const myMap = defineMyMap(backend);
+ *   const mySearch = defineMySearch(backend);
+ *   const myGeofence = defineMyGeofence(backend);
  *
  *   backend.addOutput({
  *     geo: {
- *       aws_region: backend.stack.region,
+ *       aws_region: myMap.region,
  *       maps: {
- *         items: { [`myMap-${branchName}`]: { style: 'VectorEsriStreets' } },
- *         default: `myMap-${branchName}`,
+ *         items: { [myMap.name]: { style: myMap.style } },
+ *         default: myMap.name,
  *       },
  *       search_indices: {
- *         items: [`mySearch-${branchName}`],
- *         default: `mySearch-${branchName}`,
+ *         items: [mySearch.name],
+ *         default: mySearch.name,
  *       },
  *       geofence_collections: {
- *         items: [`myGeofence-${branchName}`],
- *         default: `myGeofence-${branchName}`,
+ *         items: [myGeofence.name],
+ *         default: myGeofence.name,
  *       },
  *     },
  *   });
@@ -168,34 +178,22 @@ export const renderGeo = (resources: GeoResourceRenderParameters[]): ts.NodeArra
     factory.createStringLiteral('@aws-amplify/backend'),
   );
 
-  // const branchName = process.env.AWS_BRANCH ?? 'sandbox';
-  const branchNameConst = factory.createVariableStatement(
-    undefined,
-    factory.createVariableDeclarationList(
-      [
-        factory.createVariableDeclaration(
-          'branchName',
-          undefined,
-          undefined,
-          factory.createBinaryExpression(
-            factory.createPropertyAccessExpression(
-              factory.createPropertyAccessExpression(factory.createIdentifier('process'), factory.createIdentifier('env')),
-              factory.createIdentifier('AWS_BRANCH'),
-            ),
-            factory.createToken(ts.SyntaxKind.QuestionQuestionToken),
-            factory.createStringLiteral('sandbox'),
-          ),
-        ),
-      ],
-      ts.NodeFlags.Const,
-    ),
-  );
-
-  // Per-resource function calls
-  const functionCalls = resources.map((r) => {
+  // Assign each define* call to a variable using resourceName
+  const functionAssignments = resources.map((r) => {
     const functionName = `define${r.resourceName.charAt(0).toUpperCase()}${r.resourceName.slice(1)}`;
-    return factory.createExpressionStatement(
-      factory.createCallExpression(factory.createIdentifier(functionName), undefined, [factory.createIdentifier('backend')]),
+    return factory.createVariableStatement(
+      undefined,
+      factory.createVariableDeclarationList(
+        [
+          factory.createVariableDeclaration(
+            r.resourceName,
+            undefined,
+            undefined,
+            factory.createCallExpression(factory.createIdentifier(functionName), undefined, [factory.createIdentifier('backend')]),
+          ),
+        ],
+        ts.NodeFlags.Const,
+      ),
     );
   });
 
@@ -216,7 +214,7 @@ export const renderGeo = (resources: GeoResourceRenderParameters[]): ts.NodeArra
     ],
     undefined,
     factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
-    factory.createBlock([...functionCalls, addOutputStatement], true),
+    factory.createBlock([...functionAssignments, addOutputStatement], true),
   );
 
   const exportStatement = factory.createVariableStatement(
@@ -227,12 +225,5 @@ export const renderGeo = (resources: GeoResourceRenderParameters[]): ts.NodeArra
     ),
   );
 
-  return factory.createNodeArray([
-    ...resourceImports,
-    backendImport,
-    newLineIdentifier,
-    branchNameConst,
-    newLineIdentifier,
-    exportStatement,
-  ]);
+  return factory.createNodeArray([...resourceImports, backendImport, newLineIdentifier, exportStatement]);
 };
