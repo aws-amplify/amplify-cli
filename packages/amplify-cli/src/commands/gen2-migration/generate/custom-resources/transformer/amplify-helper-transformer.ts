@@ -39,8 +39,8 @@ export class AmplifyHelperTransformer {
     const projectInfoVariables = new Set<string>();
     // Track parameter names with AmplifyResourceProps type
     const amplifyResourcePropsParams = new Set<string>();
-    // Track dependencies from addResourceDependency calls
-    const resourceDependencies = new Set<string>();
+    // Track whether the resource has any dependencies from addResourceDependency calls
+    let hasDependencies = false;
     // Track variable names assigned from addResourceDependency (e.g., `dependencies`, `deps`)
     const dependencyVariables = new Set<string>();
     // Track identifiers imported from `amplify-dependent-resources-ref` so we can remove calls to them
@@ -95,7 +95,7 @@ export class AmplifyHelperTransformer {
                   return ts.factory.createIdentifier('branchName');
                 }
 
-                // Handle cdk.Fn.ref(dependencies.category.resource.attribute) → Gen2 property access
+                // Handle cdk.Fn.ref(dependencies.category.resource.attribute) → backend.gen2Category.resources.gen2Path
                 if (ts.isPropertyAccessExpression(arg)) {
                   const chain = AmplifyHelperTransformer.getPropertyAccessChain(arg);
                   const parts = chain.split('.');
@@ -107,9 +107,11 @@ export class AmplifyHelperTransformer {
                     const gen2Path = mappedAttr || attribute;
 
                     if (gen1Category === 'function') {
-                      return AmplifyHelperTransformer.createPropertyAccessFromString(`${gen2Category}.${parts[2]}.resources.${gen2Path}`);
+                      return AmplifyHelperTransformer.createPropertyAccessFromString(
+                        `backend.${gen2Category}.${parts[2]}.resources.${gen2Path}`,
+                      );
                     }
-                    return AmplifyHelperTransformer.createPropertyAccessFromString(`${gen2Category}.resources.${gen2Path}`);
+                    return AmplifyHelperTransformer.createPropertyAccessFromString(`backend.${gen2Category}.resources.${gen2Path}`);
                   }
                 }
               }
@@ -145,24 +147,7 @@ export class AmplifyHelperTransformer {
                 if (ts.isIdentifier(declaration.name)) {
                   dependencyVariables.add(declaration.name.text);
                 }
-                // Extract dependencies from the call
-                const args = callExpr.arguments;
-                if (args.length >= 4 && ts.isArrayLiteralExpression(args[3])) {
-                  args[3].elements.forEach((element) => {
-                    if (ts.isObjectLiteralExpression(element)) {
-                      element.properties.forEach((prop) => {
-                        if (
-                          ts.isPropertyAssignment(prop) &&
-                          ts.isIdentifier(prop.name) &&
-                          prop.name.text === 'category' &&
-                          ts.isStringLiteral(prop.initializer)
-                        ) {
-                          resourceDependencies.add(prop.initializer.text);
-                        }
-                      });
-                    }
-                  });
-                }
+                hasDependencies = true;
                 // Remove this entire variable statement
                 return undefined;
               }
@@ -285,15 +270,15 @@ export class AmplifyHelperTransformer {
                 const mappedAttribute = AmplifyHelperTransformer.ATTRIBUTE_MAP[gen1Category]?.[gen1Attribute];
                 const gen2Property = mappedAttribute || parts.slice(3).join('.');
 
-                // Functions need resource name preserved: functions.myFunc.resources.lambda.functionArn
+                // Functions need resource name preserved: backend.functions.myFunc.resources.lambda.functionArn
                 if (gen1Category === 'function') {
                   return AmplifyHelperTransformer.createPropertyAccessFromString(
-                    `${gen2Category}.${resourceName}.resources.${gen2Property}`,
+                    `backend.${gen2Category}.${resourceName}.resources.${gen2Property}`,
                   );
                 }
 
-                // Other categories: auth.resources.userPool.userPoolId
-                return AmplifyHelperTransformer.createPropertyAccessFromString(`${gen2Category}.resources.${gen2Property}`);
+                // Other categories: backend.auth.resources.userPool.userPoolId
+                return AmplifyHelperTransformer.createPropertyAccessFromString(`backend.${gen2Category}.resources.${gen2Property}`);
               }
             }
           }
@@ -353,28 +338,24 @@ export class AmplifyHelperTransformer {
             );
           }
 
-          // Transform constructor: add resource dependencies as parameters
+          // Transform constructor: add backend parameter if resource has dependencies
           if (ts.isConstructorDeclaration(visitedNode)) {
             const baseParams = visitedNode.parameters.slice(0, 2); // scope, id
 
-            // Add resource dependency parameters with Gen2 naming
-            const resourceParams = Array.from(resourceDependencies).map((gen1Category) => {
-              const gen2Category = AmplifyHelperTransformer.CATEGORY_MAP[gen1Category] || gen1Category;
-              return ts.factory.createParameterDeclaration(
+            // Add a single `backend` parameter when the resource has dependencies
+            if (hasDependencies) {
+              const backendParam = ts.factory.createParameterDeclaration(
                 undefined,
                 undefined,
-                gen2Category,
+                'backend',
                 undefined,
-                ts.factory.createTypeReferenceNode('Record', [
-                  ts.factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword),
-                  ts.factory.createKeywordTypeNode(ts.SyntaxKind.UnknownKeyword),
-                ]),
+                ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword),
                 undefined,
               );
-            });
+              baseParams.push(backendParam);
+            }
 
-            const newParams = [...baseParams, ...resourceParams];
-            return ts.factory.updateConstructorDeclaration(visitedNode, visitedNode.modifiers, newParams, visitedNode.body);
+            return ts.factory.updateConstructorDeclaration(visitedNode, visitedNode.modifiers, baseParams, visitedNode.body);
           }
 
           // Transform super() call: remove props argument
