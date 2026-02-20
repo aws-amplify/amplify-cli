@@ -63,6 +63,7 @@ const AUTH_ACTION_MAPPING: Record<string, keyof AuthAccess> = {
   'cognito-idp:AdminUpdateUserAttributes': 'updateUserAttributes',
   'cognito-idp:ListUsers': 'listUsers',
   'cognito-idp:ListUsersInGroup': 'listUsersInGroup',
+  'cognito-idp:ListGroups': 'listGroups',
 
   // Actions that don't have individual permissions - map to grouped
   'cognito-idp:AdminConfirmSignUp': 'manageUsers',
@@ -90,7 +91,16 @@ function extractCognitoActionsFromPolicy(amplifyResourcesPolicy: any): string[] 
 
     for (const action of statementActions) {
       if (typeof action === 'string' && action.startsWith('cognito-idp:')) {
-        if (!actions.includes(action)) {
+        // Expand Gen1 read access wildcards to specific actions
+        if (action === 'cognito-idp:AdminList*') {
+          ['cognito-idp:AdminListDevices', 'cognito-idp:AdminListGroupsForUser'].forEach((a) => {
+            if (!actions.includes(a)) actions.push(a);
+          });
+        } else if (action === 'cognito-idp:List*') {
+          ['cognito-idp:ListUsers', 'cognito-idp:ListUsersInGroup', 'cognito-idp:ListGroups'].forEach((a) => {
+            if (!actions.includes(a)) actions.push(a);
+          });
+        } else if (!actions.includes(action)) {
           actions.push(action);
         }
       }

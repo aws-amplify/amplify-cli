@@ -13,6 +13,7 @@ interface Gen1PathConfig {
   permissions?: {
     setting?: 'private' | 'protected' | 'open';
     auth?: string[];
+    groups?: Record<string, string[]>;
   };
   lambdaFunction?: string;
   // Support for User Pool Groups
@@ -56,6 +57,11 @@ export interface RestApiPath {
   lambdaFunction?: string;
   // Support for User Pool Groups
   userPoolGroups?: string[];
+  // Permission details for IAM policy generation
+  permissions?: {
+    hasAuth?: boolean;
+    groups?: Record<string, string[]>;
+  };
 }
 
 /** Standard CORS configuration for web APIs */
@@ -143,6 +149,23 @@ export class DataDefinitionFetcher {
             // Parse permission setting correctly: private/protected/open
             const pathAuthType = pathConfig.permissions?.setting || 'open';
 
+            // Extract User Pool Groups from permissions.groups
+            let userPoolGroups: string[] | undefined;
+            if (pathConfig.permissions?.groups) {
+              userPoolGroups = Object.keys(pathConfig.permissions.groups);
+            }
+
+            // Extract permission details for IAM policy generation
+            const permissions: { hasAuth?: boolean; groups?: Record<string, string[]> } = {};
+
+            if (pathConfig.permissions?.auth && pathConfig.permissions.auth.length > 0) {
+              permissions.hasAuth = true;
+            }
+
+            if (pathConfig.permissions?.groups && Object.keys(pathConfig.permissions.groups).length > 0) {
+              permissions.groups = pathConfig.permissions.groups;
+            }
+
             return {
               path: pathName,
               methods: this.extractMethodsFromPath(pathConfig),
@@ -150,7 +173,9 @@ export class DataDefinitionFetcher {
               // Extract the actual Lambda function name for this specific path
               lambdaFunction: pathConfig.lambdaFunction,
               // Extract User Pool Groups if specified
-              userPoolGroups: pathConfig.groupAccess,
+              userPoolGroups,
+              // Include permission details only if they exist
+              ...(Object.keys(permissions).length > 0 && { permissions }),
             };
           });
         }
@@ -160,8 +185,12 @@ export class DataDefinitionFetcher {
           corsConfiguration = cliInputs.corsConfiguration;
         }
 
-        // Extract global auth type
-        if (cliInputs.restrictAccess) {
+        // Extract auth type - check both global and path-level auth
+        const hasPathAuth = Object.values(cliInputs.paths || {}).some(
+          (path) => path.permissions?.setting === 'private' || path.permissions?.setting === 'protected',
+        );
+
+        if (cliInputs.restrictAccess || hasPathAuth) {
           authType = cliInputs.authType || 'AWS_IAM';
         }
 
@@ -200,6 +229,7 @@ export class DataDefinitionFetcher {
    * Gen1 allows flexible method specification:
    * - Explicit: { methods: ['GET', 'POST'] } → ['GET', 'POST']
    * - Permission-based: { permissions: { auth: ['read', 'create'] } } → ['GET', 'POST']
+   * - Group-based: { permissions: { groups: { "Admin": ['read', 'create'] } } } → ['GET', 'POST']
    * - No config: {} → ['GET']
    */
   private extractMethodsFromPath(pathConfig: Gen1PathConfig): string[] {
@@ -210,28 +240,46 @@ export class DataDefinitionFetcher {
 
     // Map auth permissions to HTTP methods if no explicit methods
     if (pathConfig.permissions?.auth && pathConfig.permissions.auth.length > 0) {
-      const methods: string[] = [];
-      pathConfig.permissions.auth.forEach((permission) => {
-        switch (permission) {
-          case 'read':
-            methods.push('GET');
-            break;
-          case 'create':
-            methods.push('POST');
-            break;
-          case 'update':
-            methods.push('PUT');
-            break;
-          case 'delete':
-            methods.push('DELETE');
-            break;
-        }
+      return this.mapPermissionsToMethods(pathConfig.permissions.auth);
+    }
+
+    // Map group permissions to HTTP methods
+    // Group permissions restrict API access to specific Cognito User Pool groups
+    // Example: { "groups": { "Admin": ["create", "read"], "User": ["read"] } }
+    if (pathConfig.permissions?.groups) {
+      const allPermissions = new Set<string>();
+      Object.values(pathConfig.permissions.groups).forEach((permissions) => {
+        permissions.forEach((permission) => allPermissions.add(permission));
       });
-      return methods.length > 0 ? methods : ['GET'];
+      return this.mapPermissionsToMethods(Array.from(allPermissions));
     }
 
     // Default to GET only if no configuration found
     return ['GET'];
+  }
+
+  /**
+   * Maps Gen1 permission strings to HTTP methods.
+   */
+  private mapPermissionsToMethods(permissions: string[]): string[] {
+    const methods: string[] = [];
+    permissions.forEach((permission) => {
+      switch (permission) {
+        case 'read':
+          methods.push('GET');
+          break;
+        case 'create':
+          methods.push('POST');
+          break;
+        case 'update':
+          methods.push('PUT');
+          break;
+        case 'delete':
+          methods.push('DELETE');
+          break;
+      }
+    });
+    return methods.length > 0 ? methods : ['GET'];
   }
 
   /**
@@ -372,10 +420,7 @@ export class DataDefinitionFetcher {
 
     // Extract API configuration and schema if APIs exist
     if ('api' in amplifyMeta && Object.keys(amplifyMeta.api).length > 0) {
-      // the current implementation of rest api generates too much incorrect code
-      // so we skip it for now. we provide manual instructions until we get this sorted out.
-      const restApis = [];
-      // const restApis = await this.getRestApis(amplifyMeta.api);
+      const restApis = await this.getRestApis(amplifyMeta.api);
 
       // Check for GraphQL APIs
       const hasGraphQL = Object.values(amplifyMeta.api).some((api: any) => api.service === 'AppSync');

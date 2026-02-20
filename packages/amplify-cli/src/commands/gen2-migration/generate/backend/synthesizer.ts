@@ -865,6 +865,27 @@ export class BackendSynthesizer {
           imports.push(this.createImportStatement([factory.createIdentifier(funcName)], `./function/${funcName}/resource`));
         }
       });
+
+      // Add REST API imports
+      imports.push(
+        this.createImportStatement(
+          [
+            factory.createIdentifier('RestApi'),
+            factory.createIdentifier('LambdaIntegration'),
+            factory.createIdentifier('AuthorizationType'),
+            factory.createIdentifier('Cors'),
+            factory.createIdentifier('ResponseType'),
+          ],
+          'aws-cdk-lib/aws-apigateway',
+        ),
+      );
+      imports.push(
+        this.createImportStatement(
+          [factory.createIdentifier('Policy'), factory.createIdentifier('PolicyStatement')],
+          'aws-cdk-lib/aws-iam',
+        ),
+      );
+      imports.push(this.createImportStatement([factory.createIdentifier('Stack')], 'aws-cdk-lib'));
     }
 
     // DynamoDB tables generation
@@ -1089,6 +1110,7 @@ export class BackendSynthesizer {
       imports.push(this.createImportStatement([analyticsFunctionIdentifier], renderArgs.analytics.importFrom));
     }
 
+<<<<<<< sai/geo-codegen-for-gen2-migration
     // Geo: import { defineGeo } from './geo/resource';
     if (renderArgs.geo) {
       const geoFunctionIdentifier = factory.createIdentifier('defineGeo');
@@ -1144,6 +1166,8 @@ export class BackendSynthesizer {
       }
     }
 
+=======
+>>>>>>> gen2-migration
     if (renderArgs.unsupportedCategories) {
       const categories = renderArgs.unsupportedCategories;
 
@@ -1450,8 +1474,16 @@ export class BackendSynthesizer {
       );
     }
 
-    // Function name escape hatch - set function names with branch suffix
-    if (renderArgs.function) {
+    // ========== START: REST API GENERATION ==========
+    // Generates Gen2 REST API resources from Gen1 API Gateway configurations
+    // This section creates:
+    // 1. New Gen2 REST API with Lambda integration
+    // 2. Reference to existing Gen1 REST API for backward compatibility
+    // 3. IAM policies for authenticated user access
+    // 4. CORS configuration and method routing
+    if (renderArgs.data?.restApis) {
+      // Create branchName variable for environment-specific API naming
+      // This ensures API names are unique per deployment environment
       const branchNameStatement = factory.createVariableStatement(
         [],
         factory.createVariableDeclarationList(
@@ -1467,6 +1499,727 @@ export class BackendSynthesizer {
         ),
       );
       nodes.push(branchNameStatement);
+
+      renderArgs.data.restApis.forEach((restApi) => {
+        // Create unique variable names for multiple REST APIs
+        const stackVarName = `${restApi.apiName}Stack`;
+        const apiVarName = `${restApi.apiName}Api`;
+        const gen1ApiVarName = `gen1${restApi.apiName}Api`;
+        const gen1PolicyVarName = `gen1${restApi.apiName}Policy`;
+
+        // ===== STEP 1: Create dedicated stack for this REST API =====
+        // Each REST API gets its own CloudFormation stack for resource isolation
+        const restApiStackDeclaration = factory.createVariableStatement(
+          [],
+          factory.createVariableDeclarationList(
+            [
+              factory.createVariableDeclaration(
+                stackVarName,
+                undefined,
+                undefined,
+                factory.createCallExpression(
+                  factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier('createStack')),
+                  undefined,
+                  [factory.createStringLiteral(`rest-api-stack-${restApi.apiName}`)],
+                ),
+              ),
+            ],
+            ts.NodeFlags.Const,
+          ),
+        );
+        nodes.push(restApiStackDeclaration);
+
+        // ===== STEP 2: Create new Gen2 REST API Gateway =====
+        // This creates the new API Gateway that will replace the Gen1 API
+        const restApiDeclaration = factory.createVariableStatement(
+          [],
+          factory.createVariableDeclarationList(
+            [
+              factory.createVariableDeclaration(
+                apiVarName,
+                undefined,
+                undefined,
+                factory.createNewExpression(factory.createIdentifier('RestApi'), undefined, [
+                  factory.createIdentifier(stackVarName),
+                  factory.createStringLiteral('RestApi'),
+                  factory.createObjectLiteralExpression(
+                    [
+                      factory.createPropertyAssignment(
+                        'restApiName',
+                        factory.createTemplateExpression(factory.createTemplateHead(`${restApi.apiName}-`), [
+                          factory.createTemplateSpan(factory.createIdentifier('branchName'), factory.createTemplateTail('')),
+                        ]),
+                      ),
+                    ],
+                    true,
+                  ),
+                ]),
+              ),
+            ],
+            ts.NodeFlags.Const,
+          ),
+        );
+        nodes.push(restApiDeclaration);
+
+        // ===== STEP 3: Add gateway responses for proper CORS handling =====
+        // These ensure CORS headers are returned even for 4XX and 5XX responses
+        const gatewayResponse4XX = factory.createExpressionStatement(
+          factory.createCallExpression(
+            factory.createPropertyAccessExpression(factory.createIdentifier(apiVarName), factory.createIdentifier('addGatewayResponse')),
+            undefined,
+            [
+              factory.createStringLiteral('Default4XX'),
+              factory.createObjectLiteralExpression(
+                [
+                  factory.createPropertyAssignment(
+                    'type',
+                    factory.createPropertyAccessExpression(
+                      factory.createIdentifier('ResponseType'),
+                      factory.createIdentifier('DEFAULT_4XX'),
+                    ),
+                  ),
+                  factory.createPropertyAssignment(
+                    'responseHeaders',
+                    factory.createObjectLiteralExpression(
+                      [
+                        factory.createPropertyAssignment(
+                          factory.createStringLiteral('Access-Control-Allow-Origin'),
+                          factory.createStringLiteral("'*'"),
+                        ),
+                        factory.createPropertyAssignment(
+                          factory.createStringLiteral('Access-Control-Allow-Headers'),
+                          factory.createStringLiteral("'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"),
+                        ),
+                        factory.createPropertyAssignment(
+                          factory.createStringLiteral('Access-Control-Allow-Methods'),
+                          factory.createStringLiteral("'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'"),
+                        ),
+                        factory.createPropertyAssignment(
+                          factory.createStringLiteral('Access-Control-Expose-Headers'),
+                          factory.createStringLiteral("'Date,X-Amzn-ErrorType'"),
+                        ),
+                      ],
+                      true,
+                    ),
+                  ),
+                ],
+                true,
+              ),
+            ],
+          ),
+        );
+        nodes.push(gatewayResponse4XX);
+
+        const gatewayResponse5XX = factory.createExpressionStatement(
+          factory.createCallExpression(
+            factory.createPropertyAccessExpression(factory.createIdentifier(apiVarName), factory.createIdentifier('addGatewayResponse')),
+            undefined,
+            [
+              factory.createStringLiteral('Default5XX'),
+              factory.createObjectLiteralExpression(
+                [
+                  factory.createPropertyAssignment(
+                    'type',
+                    factory.createPropertyAccessExpression(
+                      factory.createIdentifier('ResponseType'),
+                      factory.createIdentifier('DEFAULT_5XX'),
+                    ),
+                  ),
+                  factory.createPropertyAssignment(
+                    'responseHeaders',
+                    factory.createObjectLiteralExpression(
+                      [
+                        factory.createPropertyAssignment(
+                          factory.createStringLiteral('Access-Control-Allow-Origin'),
+                          factory.createStringLiteral("'*'"),
+                        ),
+                        factory.createPropertyAssignment(
+                          factory.createStringLiteral('Access-Control-Allow-Headers'),
+                          factory.createStringLiteral("'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"),
+                        ),
+                        factory.createPropertyAssignment(
+                          factory.createStringLiteral('Access-Control-Allow-Methods'),
+                          factory.createStringLiteral("'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'"),
+                        ),
+                        factory.createPropertyAssignment(
+                          factory.createStringLiteral('Access-Control-Expose-Headers'),
+                          factory.createStringLiteral("'Date,X-Amzn-ErrorType'"),
+                        ),
+                      ],
+                      true,
+                    ),
+                  ),
+                ],
+                true,
+              ),
+            ],
+          ),
+        );
+        nodes.push(gatewayResponse5XX);
+
+        // ===== STEP 4: Create Lambda integrations for each function =====
+        // Each unique function used by this API gets its own integration with CORS support
+        const integrationDeclarations = new Map<string, string>();
+        if (restApi.uniqueFunctions) {
+          restApi.uniqueFunctions.forEach((funcName) => {
+            const funcIntegrationVarName = `${funcName}Integration`;
+            integrationDeclarations.set(funcName, funcIntegrationVarName);
+
+            const lambdaIntegrationDeclaration = factory.createVariableStatement(
+              [],
+              factory.createVariableDeclarationList(
+                [
+                  factory.createVariableDeclaration(
+                    funcIntegrationVarName,
+                    undefined,
+                    undefined,
+                    factory.createNewExpression(factory.createIdentifier('LambdaIntegration'), undefined, [
+                      factory.createPropertyAccessExpression(
+                        factory.createPropertyAccessExpression(
+                          factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier(funcName)),
+                          factory.createIdentifier('resources'),
+                        ),
+                        factory.createIdentifier('lambda'),
+                      ),
+                    ]),
+                  ),
+                ],
+                ts.NodeFlags.Const,
+              ),
+            );
+            nodes.push(lambdaIntegrationDeclaration);
+          });
+        }
+
+        // ===== STEP 5: Create reference to existing Gen1 REST API =====
+        // This allows continued access to the original API during migration
+        // Users must replace placeholders with actual Gen1 API Gateway IDs
+        const gen1RestApiDeclaration = factory.createVariableStatement(
+          [],
+          factory.createVariableDeclarationList(
+            [
+              factory.createVariableDeclaration(
+                gen1ApiVarName,
+                undefined,
+                undefined,
+                factory.createCallExpression(
+                  factory.createPropertyAccessExpression(
+                    factory.createIdentifier('RestApi'),
+                    factory.createIdentifier('fromRestApiAttributes'),
+                  ),
+                  undefined,
+                  [
+                    factory.createIdentifier(stackVarName),
+                    factory.createStringLiteral(`Gen1${restApi.apiName}Api`),
+                    factory.createObjectLiteralExpression(
+                      [
+                        factory.createPropertyAssignment('restApiId', factory.createStringLiteral(`<gen1-${restApi.apiName}-api-id>`)),
+                        factory.createPropertyAssignment(
+                          'rootResourceId',
+                          factory.createStringLiteral(`<gen1-${restApi.apiName}-root-resource-id>`),
+                        ),
+                      ],
+                      true,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+            ts.NodeFlags.Const,
+          ),
+        );
+        nodes.push(gen1RestApiDeclaration);
+
+        // ===== STEP 6: Create IAM policy for Gen1 REST API access =====
+        // This grants execute-api:Invoke permission for all methods and resources on the old API
+        const gen1RestApiPolicyDeclaration = factory.createVariableStatement(
+          [],
+          factory.createVariableDeclarationList(
+            [
+              factory.createVariableDeclaration(
+                gen1PolicyVarName,
+                undefined,
+                undefined,
+                factory.createNewExpression(factory.createIdentifier('Policy'), undefined, [
+                  factory.createIdentifier(stackVarName),
+                  factory.createStringLiteral(`Gen1${restApi.apiName}Policy`),
+                  factory.createObjectLiteralExpression(
+                    [
+                      factory.createPropertyAssignment(
+                        'statements',
+                        factory.createArrayLiteralExpression([
+                          factory.createNewExpression(factory.createIdentifier('PolicyStatement'), undefined, [
+                            factory.createObjectLiteralExpression(
+                              [
+                                factory.createPropertyAssignment(
+                                  'actions',
+                                  factory.createArrayLiteralExpression([factory.createStringLiteral('execute-api:Invoke')]),
+                                ),
+                                factory.createPropertyAssignment(
+                                  'resources',
+                                  factory.createArrayLiteralExpression([
+                                    ...restApi.paths.flatMap((apiPath) =>
+                                      apiPath.methods.map((method) =>
+                                        factory.createTemplateExpression(factory.createTemplateHead(''), [
+                                          factory.createTemplateSpan(
+                                            factory.createCallExpression(
+                                              factory.createPropertyAccessExpression(
+                                                factory.createIdentifier(gen1ApiVarName),
+                                                factory.createIdentifier('arnForExecuteApi'),
+                                              ),
+                                              undefined,
+                                              [factory.createStringLiteral(method), factory.createStringLiteral('/*')],
+                                            ),
+                                            factory.createTemplateTail(''),
+                                          ),
+                                        ]),
+                                      ),
+                                    ),
+                                  ]),
+                                ),
+                              ],
+                              true,
+                            ),
+                          ]),
+                        ]),
+                      ),
+                    ],
+                    true,
+                  ),
+                ]),
+              ),
+            ],
+            ts.NodeFlags.Const,
+          ),
+        );
+        nodes.push(gen1RestApiPolicyDeclaration);
+
+        // ===== STEP 7: Attach Gen1 policy to authenticated users =====
+        // This enables authenticated users to access the existing Gen1 API during migration
+        // Only attach if the Gen1 API actually required authentication
+        if (restApi.authType && renderArgs.auth) {
+          const attachGen1PolicyCall = factory.createExpressionStatement(
+            factory.createCallExpression(
+              factory.createPropertyAccessExpression(
+                factory.createPropertyAccessExpression(
+                  factory.createIdentifier('backend.auth.resources'),
+                  factory.createIdentifier('authenticatedUserIamRole'),
+                ),
+                factory.createIdentifier('attachInlinePolicy'),
+              ),
+              undefined,
+              [factory.createIdentifier(gen1PolicyVarName)],
+            ),
+          );
+          nodes.push(attachGen1PolicyCall);
+        }
+
+        // ===== STEP 8: Generate API Gateway resources and methods for each path =====
+        // This creates the actual API structure (resources, methods, integrations)
+        restApi.paths.forEach((path) => {
+          // Parse the path into segments (e.g., "/users/{id}" -> ["users", "{id}"])
+          const pathSegments = path.path.split('/').filter((segment) => segment && segment !== '{proxy+}');
+
+          // Create a unique variable name for this resource, avoiding naming conflicts
+          let resourceName = pathSegments.join('') || 'root';
+          if (renderArgs.function?.functionNamesAndCategories.has(resourceName)) {
+            resourceName = `${resourceName}Resource`;
+          }
+
+          // Build the resource chain starting from the API root
+          let resourceExpression: ts.Expression = factory.createPropertyAccessExpression(
+            factory.createIdentifier(apiVarName),
+            factory.createIdentifier('root'),
+          );
+
+          // Add each path segment as a nested resource
+          pathSegments.forEach((segment, index) => {
+            const isLastSegment = index === pathSegments.length - 1;
+            const resourceArgs: ts.Expression[] = [factory.createStringLiteral(segment)];
+
+            // Add IAM authorization and CORS preflight options to the final resource
+            if (isLastSegment) {
+              const resourceOptions: ts.PropertyAssignment[] = [];
+
+              if (path.authType === 'private') {
+                resourceOptions.push(
+                  factory.createPropertyAssignment(
+                    'defaultMethodOptions',
+                    factory.createObjectLiteralExpression(
+                      [
+                        factory.createPropertyAssignment(
+                          'authorizationType',
+                          factory.createPropertyAccessExpression(
+                            factory.createIdentifier('AuthorizationType'),
+                            factory.createIdentifier('IAM'),
+                          ),
+                        ),
+                      ],
+                      true,
+                    ),
+                  ),
+                );
+              }
+
+              resourceOptions.push(
+                factory.createPropertyAssignment(
+                  'defaultCorsPreflightOptions',
+                  factory.createObjectLiteralExpression(
+                    [
+                      factory.createPropertyAssignment(
+                        'allowOrigins',
+                        factory.createPropertyAccessExpression(factory.createIdentifier('Cors'), factory.createIdentifier('ALL_ORIGINS')),
+                      ),
+                      factory.createPropertyAssignment(
+                        'allowMethods',
+                        factory.createPropertyAccessExpression(factory.createIdentifier('Cors'), factory.createIdentifier('ALL_METHODS')),
+                      ),
+                      factory.createPropertyAssignment(
+                        'allowHeaders',
+                        factory.createArrayLiteralExpression([
+                          factory.createStringLiteral('Content-Type'),
+                          factory.createStringLiteral('X-Amz-Date'),
+                          factory.createStringLiteral('Authorization'),
+                          factory.createStringLiteral('X-Api-Key'),
+                          factory.createStringLiteral('X-Amz-Security-Token'),
+                          factory.createStringLiteral('X-Amz-User-Agent'),
+                        ]),
+                      ),
+                      factory.createPropertyAssignment('statusCode', factory.createNumericLiteral('200')),
+                    ],
+                    true,
+                  ),
+                ),
+              );
+
+              if (resourceOptions.length > 0) {
+                const methodOptions = factory.createObjectLiteralExpression(resourceOptions, true);
+                resourceArgs.push(methodOptions);
+              }
+            }
+
+            resourceExpression = factory.createCallExpression(
+              factory.createPropertyAccessExpression(resourceExpression, factory.createIdentifier('addResource')),
+              undefined,
+              resourceArgs,
+            );
+          });
+
+          // Create the final resource declaration
+          const resourceDeclaration = factory.createVariableStatement(
+            [],
+            factory.createVariableDeclarationList(
+              [factory.createVariableDeclaration(resourceName, undefined, undefined, resourceExpression)],
+              ts.NodeFlags.Const,
+            ),
+          );
+          nodes.push(resourceDeclaration);
+
+          // Get the Lambda integration for this path's function
+          const pathIntegrationVar = integrationDeclarations.get(path.lambdaFunction) || `${path.lambdaFunction}Integration`;
+
+          // Add ANY method for every API endpoint
+          const addAnyMethodCall = factory.createExpressionStatement(
+            factory.createCallExpression(
+              factory.createPropertyAccessExpression(factory.createIdentifier(resourceName), factory.createIdentifier('addMethod')),
+              undefined,
+              [factory.createStringLiteral('ANY'), factory.createIdentifier(pathIntegrationVar)],
+            ),
+          );
+          nodes.push(addAnyMethodCall);
+
+          // Add a proxy resource to catch all unmatched sub-paths
+          const addProxyCall = factory.createExpressionStatement(
+            factory.createCallExpression(
+              factory.createPropertyAccessExpression(factory.createIdentifier(resourceName), factory.createIdentifier('addProxy')),
+              undefined,
+              [
+                factory.createObjectLiteralExpression(
+                  [
+                    factory.createPropertyAssignment('anyMethod', factory.createTrue()),
+                    factory.createPropertyAssignment('defaultIntegration', factory.createIdentifier(pathIntegrationVar)),
+                  ],
+                  true,
+                ),
+              ],
+            ),
+          );
+          nodes.push(addProxyCall);
+        });
+
+        // ===== STEP 9: Create path-specific IAM policies =====
+        // Generate fine-grained policies for individual paths with specific permission requirements
+        restApi.paths.forEach((path) => {
+          // Create policy for paths accessible by all authenticated users
+          if (path.permissions?.hasAuth) {
+            // Add comment for the path
+            const pathComment = factory.createNotEmittedStatement(factory.createStringLiteral(''));
+            ts.addSyntheticLeadingComment(
+              pathComment,
+              ts.SyntaxKind.SingleLineCommentTrivia,
+              ` ${path.path} - all authenticated users`,
+              true,
+            );
+            nodes.push(pathComment);
+
+            const attachAuthPolicyCall = factory.createExpressionStatement(
+              factory.createCallExpression(
+                factory.createPropertyAccessExpression(
+                  factory.createPropertyAccessExpression(
+                    factory.createIdentifier('backend.auth.resources'),
+                    factory.createIdentifier('authenticatedUserIamRole'),
+                  ),
+                  factory.createIdentifier('attachInlinePolicy'),
+                ),
+                undefined,
+                [
+                  factory.createNewExpression(factory.createIdentifier('Policy'), undefined, [
+                    factory.createIdentifier(stackVarName),
+                    factory.createStringLiteral(`${path.path.replace(/[^a-zA-Z0-9]/g, '')}AuthPolicy`),
+                    factory.createObjectLiteralExpression(
+                      [
+                        factory.createPropertyAssignment(
+                          'statements',
+                          factory.createArrayLiteralExpression([
+                            factory.createNewExpression(factory.createIdentifier('PolicyStatement'), undefined, [
+                              factory.createObjectLiteralExpression(
+                                [
+                                  factory.createPropertyAssignment(
+                                    'actions',
+                                    factory.createArrayLiteralExpression([factory.createStringLiteral('execute-api:Invoke')]),
+                                  ),
+                                  factory.createPropertyAssignment(
+                                    'resources',
+                                    factory.createArrayLiteralExpression([
+                                      ...path.methods.flatMap((method) => [
+                                        factory.createCallExpression(
+                                          factory.createPropertyAccessExpression(
+                                            factory.createIdentifier(apiVarName),
+                                            factory.createIdentifier('arnForExecuteApi'),
+                                          ),
+                                          undefined,
+                                          [factory.createStringLiteral(method), factory.createStringLiteral(path.path)],
+                                        ),
+                                        factory.createCallExpression(
+                                          factory.createPropertyAccessExpression(
+                                            factory.createIdentifier(apiVarName),
+                                            factory.createIdentifier('arnForExecuteApi'),
+                                          ),
+                                          undefined,
+                                          [factory.createStringLiteral(method), factory.createStringLiteral(`${path.path}/*`)],
+                                        ),
+                                      ]),
+                                    ]),
+                                  ),
+                                ],
+                                true,
+                              ),
+                            ]),
+                          ]),
+                        ),
+                      ],
+                      true,
+                    ),
+                  ]),
+                ],
+              ),
+            );
+            nodes.push(attachAuthPolicyCall);
+          }
+
+          // Create policies for paths restricted to specific user groups
+          if (path.permissions?.groups) {
+            Object.keys(path.permissions.groups).forEach((groupName) => {
+              // Add comment for the path and group
+              const groupComment = factory.createNotEmittedStatement(factory.createStringLiteral(''));
+              ts.addSyntheticLeadingComment(
+                groupComment,
+                ts.SyntaxKind.SingleLineCommentTrivia,
+                ` ${path.path} - ${groupName} group only`,
+                true,
+              );
+              nodes.push(groupComment);
+
+              const attachGroupPolicyCall = factory.createExpressionStatement(
+                factory.createCallExpression(
+                  factory.createPropertyAccessExpression(
+                    factory.createPropertyAccessExpression(
+                      factory.createElementAccessExpression(
+                        factory.createPropertyAccessExpression(
+                          factory.createIdentifier('backend.auth.resources'),
+                          factory.createIdentifier('groups'),
+                        ),
+                        factory.createStringLiteral(groupName),
+                      ),
+                      factory.createIdentifier('role'),
+                    ),
+                    factory.createIdentifier('attachInlinePolicy'),
+                  ),
+                  undefined,
+                  [
+                    factory.createNewExpression(factory.createIdentifier('Policy'), undefined, [
+                      factory.createIdentifier(stackVarName),
+                      factory.createStringLiteral(`${path.path.replace(/[^a-zA-Z0-9]/g, '')}${groupName}Policy`),
+                      factory.createObjectLiteralExpression(
+                        [
+                          factory.createPropertyAssignment(
+                            'statements',
+                            factory.createArrayLiteralExpression([
+                              factory.createNewExpression(factory.createIdentifier('PolicyStatement'), undefined, [
+                                factory.createObjectLiteralExpression(
+                                  [
+                                    factory.createPropertyAssignment(
+                                      'actions',
+                                      factory.createArrayLiteralExpression([factory.createStringLiteral('execute-api:Invoke')]),
+                                    ),
+                                    factory.createPropertyAssignment(
+                                      'resources',
+                                      factory.createArrayLiteralExpression([
+                                        ...path.methods.flatMap((method) => [
+                                          factory.createCallExpression(
+                                            factory.createPropertyAccessExpression(
+                                              factory.createIdentifier(apiVarName),
+                                              factory.createIdentifier('arnForExecuteApi'),
+                                            ),
+                                            undefined,
+                                            [factory.createStringLiteral(method), factory.createStringLiteral(path.path)],
+                                          ),
+                                          factory.createCallExpression(
+                                            factory.createPropertyAccessExpression(
+                                              factory.createIdentifier(apiVarName),
+                                              factory.createIdentifier('arnForExecuteApi'),
+                                            ),
+                                            undefined,
+                                            [factory.createStringLiteral(method), factory.createStringLiteral(`${path.path}/*`)],
+                                          ),
+                                        ]),
+                                      ]),
+                                    ),
+                                  ],
+                                  true,
+                                ),
+                              ]),
+                            ]),
+                          ),
+                        ],
+                        true,
+                      ),
+                    ]),
+                  ],
+                ),
+              );
+              nodes.push(attachGroupPolicyCall);
+            });
+          }
+        });
+
+        // ===== STEP 10: Add API output for client configuration =====
+        // This creates the output that client applications use to connect to the API
+        const addOutputCall = factory.createExpressionStatement(
+          factory.createCallExpression(
+            factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier('addOutput')),
+            undefined,
+            [
+              factory.createObjectLiteralExpression(
+                [
+                  factory.createPropertyAssignment(
+                    'custom',
+                    factory.createObjectLiteralExpression(
+                      [
+                        factory.createPropertyAssignment(
+                          'API',
+                          factory.createObjectLiteralExpression(
+                            [
+                              factory.createPropertyAssignment(
+                                factory.createComputedPropertyName(
+                                  factory.createPropertyAccessExpression(
+                                    factory.createIdentifier(apiVarName),
+                                    factory.createIdentifier('restApiName'),
+                                  ),
+                                ),
+                                factory.createObjectLiteralExpression(
+                                  [
+                                    factory.createPropertyAssignment(
+                                      'endpoint',
+                                      factory.createCallExpression(
+                                        factory.createPropertyAccessExpression(
+                                          factory.createPropertyAccessExpression(
+                                            factory.createIdentifier(apiVarName),
+                                            factory.createIdentifier('url'),
+                                          ),
+                                          factory.createIdentifier('slice'),
+                                        ),
+                                        undefined,
+                                        [
+                                          factory.createNumericLiteral('0'),
+                                          factory.createPrefixUnaryExpression(ts.SyntaxKind.MinusToken, factory.createNumericLiteral('1')),
+                                        ],
+                                      ),
+                                    ),
+                                    factory.createPropertyAssignment(
+                                      'region',
+                                      factory.createPropertyAccessExpression(
+                                        factory.createCallExpression(
+                                          factory.createPropertyAccessExpression(
+                                            factory.createIdentifier('Stack'),
+                                            factory.createIdentifier('of'),
+                                          ),
+                                          undefined,
+                                          [factory.createIdentifier(apiVarName)],
+                                        ),
+                                        factory.createIdentifier('region'),
+                                      ),
+                                    ),
+                                    factory.createPropertyAssignment(
+                                      'apiName',
+                                      factory.createPropertyAccessExpression(
+                                        factory.createIdentifier(apiVarName),
+                                        factory.createIdentifier('restApiName'),
+                                      ),
+                                    ),
+                                  ],
+                                  true,
+                                ),
+                              ),
+                            ],
+                            true,
+                          ),
+                        ),
+                      ],
+                      true,
+                    ),
+                  ),
+                ],
+                true,
+              ),
+            ],
+          ),
+        );
+        nodes.push(addOutputCall);
+      });
+    }
+    // ========== END: REST API GENERATION ==========
+
+    // Function name escape hatch - set function names with branch suffix
+    if (renderArgs.function) {
+      // Only declare branchName if REST APIs didn't already declare it
+      if (!renderArgs.data?.restApis) {
+        const branchNameStatement = factory.createVariableStatement(
+          [],
+          factory.createVariableDeclarationList(
+            [
+              factory.createVariableDeclaration(
+                'branchName',
+                undefined,
+                undefined,
+                factory.createIdentifier('process.env.AWS_BRANCH ?? "sandbox"'),
+              ),
+            ],
+            ts.NodeFlags.Const,
+          ),
+        );
+        nodes.push(branchNameStatement);
+      }
 
       const functionNameCategories = renderArgs.function.functionNamesAndCategories;
       for (const [functionName] of functionNameCategories) {
@@ -1565,553 +2318,6 @@ export class BackendSynthesizer {
             ),
           );
         }
-      }
-    }
-
-    // Generate REST API infrastructure using CDK constructs
-    // This replaces Gen1's declarative API Gateway config with Gen2's imperative CDK code
-    if (renderArgs.data?.restApis && renderArgs.function) {
-      const functionNameCategories = renderArgs.function.functionNamesAndCategories;
-      const validRestApis = renderArgs.data.restApis.filter((restApi) => functionNameCategories.has(restApi.functionName));
-
-      if (validRestApis.length > 0) {
-        // Create dedicated CDK stack for API resources
-        const apiStackStatement = factory.createVariableStatement(
-          [],
-          factory.createVariableDeclarationList(
-            [
-              factory.createVariableDeclaration(
-                'apiStack',
-                undefined,
-                undefined,
-                factory.createCallExpression(
-                  factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier('createStack')),
-                  undefined,
-                  [factory.createStringLiteral('api-stack')],
-                ),
-              ),
-            ],
-            ts.NodeFlags.Const,
-          ),
-        );
-        nodes.push(apiStackStatement);
-
-        // Check which auth types are used to conditionally create authorizers
-        const hasPrivateAuth = validRestApis.some((restApi) => restApi.paths.some((path) => path.authType === 'private'));
-        const hasProtectedAuth = validRestApis.some((restApi) => restApi.paths.some((path) => path.authType === 'protected'));
-        const hasUserPoolGroups = validRestApis.some((restApi) =>
-          restApi.paths.some((path) => path.userPoolGroups && path.userPoolGroups.length > 0),
-        );
-
-        // Create IAM authorizer only if private endpoints exist
-        if (hasPrivateAuth) {
-          const iamAuthorizerStatement = factory.createVariableStatement(
-            [],
-            factory.createVariableDeclarationList(
-              [
-                factory.createVariableDeclaration(
-                  'iamAuthorizer',
-                  undefined,
-                  undefined,
-                  factory.createNewExpression(factory.createIdentifier('HttpIamAuthorizer'), undefined, []),
-                ),
-              ],
-              ts.NodeFlags.Const,
-            ),
-          );
-          nodes.push(iamAuthorizerStatement);
-        }
-
-        // Create Cognito User Pool authorizer only if protected endpoints exist and auth is configured
-        if (hasProtectedAuth && renderArgs.auth) {
-          const userPoolAuthorizerStatement = factory.createVariableStatement(
-            [],
-            factory.createVariableDeclarationList(
-              [
-                factory.createVariableDeclaration(
-                  'userPoolAuthorizer',
-                  undefined,
-                  undefined,
-                  factory.createNewExpression(factory.createIdentifier('HttpUserPoolAuthorizer'), undefined, [
-                    factory.createStringLiteral('userPoolAuth'),
-                    factory.createPropertyAccessExpression(
-                      factory.createIdentifier('backend.auth.resources'),
-                      factory.createIdentifier('userPool'),
-                    ),
-                    factory.createObjectLiteralExpression([
-                      factory.createPropertyAssignment(
-                        factory.createIdentifier('userPoolClients'),
-                        factory.createArrayLiteralExpression([
-                          factory.createPropertyAccessExpression(
-                            factory.createIdentifier('backend.auth.resources'),
-                            factory.createIdentifier('userPoolClient'),
-                          ),
-                        ]),
-                      ),
-                    ]),
-                  ]),
-                ),
-              ],
-              ts.NodeFlags.Const,
-            ),
-          );
-          nodes.push(userPoolAuthorizerStatement);
-        }
-
-        // Create User Pool Group authorizers for each unique group
-        if (hasUserPoolGroups && renderArgs.auth) {
-          const allGroups = new Set<string>();
-          validRestApis.forEach((restApi) => {
-            restApi.paths.forEach((path) => {
-              if (path.userPoolGroups) {
-                path.userPoolGroups.forEach((group) => allGroups.add(group));
-              }
-            });
-          });
-
-          allGroups.forEach((groupName) => {
-            const groupAuthorizerStatement = factory.createVariableStatement(
-              [],
-              factory.createVariableDeclarationList(
-                [
-                  factory.createVariableDeclaration(
-                    `${groupName}Authorizer`,
-                    undefined,
-                    undefined,
-                    factory.createNewExpression(factory.createIdentifier('HttpUserPoolAuthorizer'), undefined, [
-                      factory.createStringLiteral(`${groupName}Auth`),
-                      factory.createPropertyAccessExpression(
-                        factory.createIdentifier('backend.auth.resources'),
-                        factory.createIdentifier('userPool'),
-                      ),
-                      factory.createObjectLiteralExpression([
-                        factory.createPropertyAssignment(
-                          factory.createIdentifier('userPoolClients'),
-                          factory.createArrayLiteralExpression([
-                            factory.createPropertyAccessExpression(
-                              factory.createIdentifier('backend.auth.resources'),
-                              factory.createIdentifier('userPoolClient'),
-                            ),
-                          ]),
-                        ),
-                        factory.createPropertyAssignment(
-                          factory.createIdentifier('identitySource'),
-                          factory.createArrayLiteralExpression([factory.createStringLiteral('$request.header.Authorization')]),
-                        ),
-                      ]),
-                    ]),
-                  ),
-                ],
-                ts.NodeFlags.Const,
-              ),
-            );
-            nodes.push(groupAuthorizerStatement);
-          });
-        }
-
-        // Create separate HttpApi for each Gen1 REST API
-        const httpApiVariables: string[] = [];
-        validRestApis.forEach((restApi: RestApiDefinition, index: number) => {
-          const httpApiVarName = `httpApi${index > 0 ? index + 1 : ''}`;
-          httpApiVariables.push(httpApiVarName);
-
-          const httpApiStatement = factory.createVariableStatement(
-            [],
-            factory.createVariableDeclarationList(
-              [
-                factory.createVariableDeclaration(
-                  httpApiVarName,
-                  undefined,
-                  undefined,
-                  factory.createNewExpression(factory.createIdentifier('HttpApi'), undefined, [
-                    factory.createIdentifier('apiStack'),
-                    factory.createStringLiteral(`HttpApi${index > 0 ? index + 1 : ''}`),
-                    factory.createObjectLiteralExpression([
-                      factory.createPropertyAssignment(
-                        factory.createIdentifier('apiName'),
-                        factory.createTemplateExpression(factory.createTemplateHead(`${restApi.apiName}-`), [
-                          factory.createTemplateSpan(factory.createIdentifier('branchName'), factory.createTemplateTail('')),
-                        ]),
-                      ),
-                      factory.createPropertyAssignment(factory.createIdentifier('createDefaultStage'), factory.createTrue()),
-                      // Add CORS configuration - use Gen1 settings if available, otherwise secure defaults
-                      factory.createPropertyAssignment(
-                        factory.createIdentifier('corsPreflight'),
-                        factory.createObjectLiteralExpression([
-                          factory.createPropertyAssignment(
-                            factory.createIdentifier('allowMethods'),
-                            factory.createArrayLiteralExpression(
-                              (restApi.corsConfiguration?.allowMethods || ['GET', 'POST', 'PUT', 'DELETE']).map((method) =>
-                                factory.createPropertyAccessExpression(
-                                  factory.createIdentifier('CorsHttpMethod'),
-                                  factory.createIdentifier(method.toUpperCase()),
-                                ),
-                              ),
-                            ),
-                          ),
-                          factory.createPropertyAssignment(
-                            factory.createIdentifier('allowOrigins'),
-                            factory.createArrayLiteralExpression(
-                              (restApi.corsConfiguration?.allowOrigins || ['*']).map((origin) => factory.createStringLiteral(origin)),
-                            ),
-                          ),
-                          factory.createPropertyAssignment(
-                            factory.createIdentifier('allowHeaders'),
-                            factory.createArrayLiteralExpression(
-                              (restApi.corsConfiguration?.allowHeaders || ['content-type', 'authorization']).map((header) =>
-                                factory.createStringLiteral(header),
-                              ),
-                            ),
-                          ),
-                        ]),
-                      ),
-                    ]),
-                  ]),
-                ),
-              ],
-              ts.NodeFlags.Const,
-            ),
-          );
-          nodes.push(httpApiStatement);
-
-          // Generate routes for this specific REST API's paths
-          // Each path maps to the correct Lambda function with proper authorization
-          restApi.paths.forEach((pathConfig) => {
-            // Use the path-specific Lambda function, not the API-level function
-            const pathFunctionName = pathConfig.lambdaFunction || restApi.functionName;
-
-            // Skip if the function doesn't exist in the migration
-            if (!functionNameCategories.has(pathFunctionName)) {
-              return;
-            }
-
-            const routeConfig: ts.ObjectLiteralElementLike[] = [
-              factory.createPropertyAssignment(factory.createIdentifier('path'), factory.createStringLiteral(pathConfig.path)),
-              // Only include HTTP methods that the Gen1 function actually supports
-              factory.createPropertyAssignment(
-                factory.createIdentifier('methods'),
-                factory.createArrayLiteralExpression(
-                  pathConfig.methods.map((method: string) =>
-                    factory.createPropertyAccessExpression(
-                      factory.createIdentifier('HttpMethod'),
-                      factory.createIdentifier(method.toUpperCase()),
-                    ),
-                  ),
-                ),
-              ),
-              // Create unique integration name: {functionName}Integration
-              factory.createPropertyAssignment(
-                factory.createIdentifier('integration'),
-                factory.createNewExpression(factory.createIdentifier('HttpLambdaIntegration'), undefined, [
-                  factory.createStringLiteral(`${pathFunctionName}Integration`),
-                  factory.createPropertyAccessExpression(
-                    factory.createIdentifier(`backend.${pathFunctionName}.resources`),
-                    factory.createIdentifier('lambda'),
-                  ),
-                ]),
-              ),
-            ];
-
-            // Map Gen1 permission settings to Gen2 authorizers:
-            // 'private' -> iamAuthorizer, 'protected' -> userPoolAuthorizer, 'open' -> undefined
-            // User Pool Groups -> create separate routes for each group
-            //
-            // Why separate routes? API Gateway v2 only supports ONE authorizer per route.
-            // Gen1: { path: '/admin', userPoolGroups: ['AdminUsers', 'SuperAdmins'] }
-            // Gen2: Must create separate routes with same path but different authorizers
-            //       API Gateway tries each route until one authorizer succeeds (OR logic)
-            if (pathConfig.userPoolGroups && pathConfig.userPoolGroups.length > 0) {
-              // Create separate route for each group (Gen1 supports multiple groups per path)
-              pathConfig.userPoolGroups.forEach((groupName) => {
-                const groupRouteConfig = [...routeConfig];
-                groupRouteConfig.push(
-                  factory.createPropertyAssignment(
-                    factory.createIdentifier('authorizer'),
-                    factory.createIdentifier(`${groupName}Authorizer`),
-                  ),
-                );
-
-                const addGroupRouteStatement = factory.createExpressionStatement(
-                  factory.createCallExpression(
-                    factory.createPropertyAccessExpression(factory.createIdentifier(httpApiVarName), factory.createIdentifier('addRoutes')),
-                    undefined,
-                    [factory.createObjectLiteralExpression(groupRouteConfig)],
-                  ),
-                );
-                nodes.push(addGroupRouteStatement);
-              });
-            } else if (pathConfig.authType === 'private') {
-              routeConfig.push(
-                factory.createPropertyAssignment(factory.createIdentifier('authorizer'), factory.createIdentifier('iamAuthorizer')),
-              );
-
-              const addRoutesStatement = factory.createExpressionStatement(
-                factory.createCallExpression(
-                  factory.createPropertyAccessExpression(factory.createIdentifier(httpApiVarName), factory.createIdentifier('addRoutes')),
-                  undefined,
-                  [factory.createObjectLiteralExpression(routeConfig)],
-                ),
-              );
-              nodes.push(addRoutesStatement);
-            } else if (pathConfig.authType === 'protected') {
-              routeConfig.push(
-                factory.createPropertyAssignment(factory.createIdentifier('authorizer'), factory.createIdentifier('userPoolAuthorizer')),
-              );
-
-              const addRoutesStatement = factory.createExpressionStatement(
-                factory.createCallExpression(
-                  factory.createPropertyAccessExpression(factory.createIdentifier(httpApiVarName), factory.createIdentifier('addRoutes')),
-                  undefined,
-                  [factory.createObjectLiteralExpression(routeConfig)],
-                ),
-              );
-              nodes.push(addRoutesStatement);
-            } else {
-              // Open access - no authorizer
-              const addRoutesStatement = factory.createExpressionStatement(
-                factory.createCallExpression(
-                  factory.createPropertyAccessExpression(factory.createIdentifier(httpApiVarName), factory.createIdentifier('addRoutes')),
-                  undefined,
-                  [factory.createObjectLiteralExpression(routeConfig)],
-                ),
-              );
-              nodes.push(addRoutesStatement);
-            }
-            // Note: 'open' access requires no authorizer property
-
-            // Generate automatic proxy catch-all routes to match Gen1 behavior
-            //
-            // Why this is needed:
-            // Gen1 automatically creates TWO routes for every path:
-            //   1. /items (exact match for the main resource)
-            //   2. /items/{proxy+} (catch-all for sub-resources like /items/123, /items/abc/def)
-            //
-            // Without the proxy route:
-            //   GET /items → ✅ Works (matches exact route)
-            //   GET /items/123 → ❌ 404 Not Found (no matching route)
-            //
-            // With the proxy route:
-            //   GET /items → ✅ Works (matches exact route)
-            //   GET /items/123 → ✅ Works (matches proxy route, proxy="123")
-            //   POST /items/123/comments → ✅ Works (matches proxy route, proxy="123/comments")
-            //
-            // The Lambda function receives the full path and can handle routing internally
-            // using serverless-express or similar frameworks.
-            //
-            const proxyRouteConfig: ts.ObjectLiteralElementLike[] = [
-              factory.createPropertyAssignment(
-                factory.createIdentifier('path'),
-                factory.createStringLiteral(`${pathConfig.path}/{proxy+}`),
-              ),
-              factory.createPropertyAssignment(
-                factory.createIdentifier('methods'),
-                factory.createArrayLiteralExpression([
-                  factory.createPropertyAccessExpression(factory.createIdentifier('HttpMethod'), factory.createIdentifier('ANY')),
-                ]),
-              ),
-              factory.createPropertyAssignment(
-                factory.createIdentifier('integration'),
-                factory.createNewExpression(factory.createIdentifier('HttpLambdaIntegration'), undefined, [
-                  factory.createStringLiteral(`${pathFunctionName}ProxyIntegration`),
-                  factory.createPropertyAccessExpression(
-                    factory.createIdentifier(`backend.${pathFunctionName}.resources`),
-                    factory.createIdentifier('lambda'),
-                  ),
-                ]),
-              ),
-            ];
-
-            // Apply same authorization to proxy route
-            if (pathConfig.userPoolGroups && pathConfig.userPoolGroups.length > 0) {
-              pathConfig.userPoolGroups.forEach((groupName) => {
-                const groupProxyRouteConfig = [...proxyRouteConfig];
-                groupProxyRouteConfig.push(
-                  factory.createPropertyAssignment(
-                    factory.createIdentifier('authorizer'),
-                    factory.createIdentifier(`${groupName}Authorizer`),
-                  ),
-                );
-
-                const addGroupProxyRouteStatement = factory.createExpressionStatement(
-                  factory.createCallExpression(
-                    factory.createPropertyAccessExpression(factory.createIdentifier(httpApiVarName), factory.createIdentifier('addRoutes')),
-                    undefined,
-                    [factory.createObjectLiteralExpression(groupProxyRouteConfig)],
-                  ),
-                );
-                nodes.push(addGroupProxyRouteStatement);
-              });
-            } else if (pathConfig.authType === 'private') {
-              proxyRouteConfig.push(
-                factory.createPropertyAssignment(factory.createIdentifier('authorizer'), factory.createIdentifier('iamAuthorizer')),
-              );
-
-              const addProxyRoutesStatement = factory.createExpressionStatement(
-                factory.createCallExpression(
-                  factory.createPropertyAccessExpression(factory.createIdentifier(httpApiVarName), factory.createIdentifier('addRoutes')),
-                  undefined,
-                  [factory.createObjectLiteralExpression(proxyRouteConfig)],
-                ),
-              );
-              nodes.push(addProxyRoutesStatement);
-            } else if (pathConfig.authType === 'protected') {
-              proxyRouteConfig.push(
-                factory.createPropertyAssignment(factory.createIdentifier('authorizer'), factory.createIdentifier('userPoolAuthorizer')),
-              );
-
-              const addProxyRoutesStatement = factory.createExpressionStatement(
-                factory.createCallExpression(
-                  factory.createPropertyAccessExpression(factory.createIdentifier(httpApiVarName), factory.createIdentifier('addRoutes')),
-                  undefined,
-                  [factory.createObjectLiteralExpression(proxyRouteConfig)],
-                ),
-              );
-              nodes.push(addProxyRoutesStatement);
-            } else {
-              // Open access - no authorizer
-              const addProxyRoutesStatement = factory.createExpressionStatement(
-                factory.createCallExpression(
-                  factory.createPropertyAccessExpression(factory.createIdentifier(httpApiVarName), factory.createIdentifier('addRoutes')),
-                  undefined,
-                  [factory.createObjectLiteralExpression(proxyRouteConfig)],
-                ),
-              );
-              nodes.push(addProxyRoutesStatement);
-            }
-          });
-        });
-
-        // Create IAM policy covering all HttpApis for Cognito Identity Pool access
-        if (renderArgs.auth) {
-          // Generate ARN resources for all HttpApis with wildcard paths
-          const policyResources = httpApiVariables.map((httpApiVar) =>
-            factory.createTemplateExpression(factory.createTemplateHead(''), [
-              factory.createTemplateSpan(
-                factory.createCallExpression(
-                  factory.createPropertyAccessExpression(
-                    factory.createIdentifier(httpApiVar),
-                    factory.createIdentifier('arnForExecuteApi'),
-                  ),
-                  undefined,
-                  [factory.createStringLiteral('*'), factory.createStringLiteral('/*')],
-                ),
-                factory.createTemplateTail(''),
-              ),
-            ]),
-          );
-
-          const apiPolicyStatement = factory.createVariableStatement(
-            [],
-            factory.createVariableDeclarationList(
-              [
-                factory.createVariableDeclaration(
-                  'apiPolicy',
-                  undefined,
-                  undefined,
-                  factory.createNewExpression(factory.createIdentifier('Policy'), undefined, [
-                    factory.createIdentifier('apiStack'),
-                    factory.createStringLiteral('ApiPolicy'),
-                    factory.createObjectLiteralExpression([
-                      factory.createPropertyAssignment(
-                        factory.createIdentifier('statements'),
-                        factory.createArrayLiteralExpression([
-                          factory.createNewExpression(factory.createIdentifier('PolicyStatement'), undefined, [
-                            factory.createObjectLiteralExpression([
-                              factory.createPropertyAssignment(
-                                factory.createIdentifier('actions'),
-                                factory.createArrayLiteralExpression([factory.createStringLiteral('execute-api:Invoke')]),
-                              ),
-                              factory.createPropertyAssignment(
-                                factory.createIdentifier('resources'),
-                                factory.createArrayLiteralExpression(policyResources),
-                              ),
-                            ]),
-                          ]),
-                        ]),
-                      ),
-                    ]),
-                  ]),
-                ),
-              ],
-              ts.NodeFlags.Const,
-            ),
-          );
-          nodes.push(apiPolicyStatement);
-
-          // Attach policy to both authenticated and unauthenticated IAM roles
-          // This enables Cognito Identity Pool users to call all API endpoints
-          const attachAuthenticatedPolicyStatement = factory.createExpressionStatement(
-            factory.createCallExpression(
-              factory.createPropertyAccessExpression(
-                factory.createIdentifier('backend.auth.resources.authenticatedUserIamRole'),
-                factory.createIdentifier('attachInlinePolicy'),
-              ),
-              undefined,
-              [factory.createIdentifier('apiPolicy')],
-            ),
-          );
-          nodes.push(attachAuthenticatedPolicyStatement);
-
-          const attachUnauthenticatedPolicyStatement = factory.createExpressionStatement(
-            factory.createCallExpression(
-              factory.createPropertyAccessExpression(
-                factory.createIdentifier('backend.auth.resources.unauthenticatedUserIamRole'),
-                factory.createIdentifier('attachInlinePolicy'),
-              ),
-              undefined,
-              [factory.createIdentifier('apiPolicy')],
-            ),
-          );
-          nodes.push(attachUnauthenticatedPolicyStatement);
-        }
-
-        // Generate backend output configuration for all HttpApis
-        // Creates amplify_outputs.json entries for client-side API configuration
-        const apiOutputs = httpApiVariables.map((httpApiVar, index) => {
-          const restApi = validRestApis[index];
-          return factory.createPropertyAssignment(
-            factory.createComputedPropertyName(
-              factory.createNonNullExpression(
-                factory.createPropertyAccessExpression(factory.createIdentifier(httpApiVar), factory.createIdentifier('httpApiName')),
-              ),
-            ),
-            factory.createObjectLiteralExpression([
-              factory.createPropertyAssignment(
-                factory.createIdentifier('endpoint'),
-                factory.createPropertyAccessExpression(factory.createIdentifier(httpApiVar), factory.createIdentifier('url')),
-              ),
-              factory.createPropertyAssignment(
-                factory.createIdentifier('region'),
-                factory.createPropertyAccessExpression(
-                  factory.createCallExpression(
-                    factory.createPropertyAccessExpression(factory.createIdentifier('Stack'), factory.createIdentifier('of')),
-                    undefined,
-                    [factory.createIdentifier(httpApiVar)],
-                  ),
-                  factory.createIdentifier('region'),
-                ),
-              ),
-            ]),
-          );
-        });
-
-        const addOutputStatement = factory.createExpressionStatement(
-          factory.createCallExpression(
-            factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier('addOutput')),
-            undefined,
-            [
-              factory.createObjectLiteralExpression([
-                factory.createPropertyAssignment(
-                  factory.createIdentifier('api'),
-                  factory.createObjectLiteralExpression([
-                    factory.createPropertyAssignment(factory.createIdentifier('REST'), factory.createObjectLiteralExpression(apiOutputs)),
-                  ]),
-                ),
-              ]),
-            ],
-          ),
-        );
-        nodes.push(addOutputStatement);
       }
     }
 
