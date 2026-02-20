@@ -7,7 +7,7 @@ import * as fs from 'fs';
 import { getProject, getTodo, listProjects, listTodos } from './src/graphql/queries';
 import { createProject, updateProject, deleteProject, createTodo, updateTodo, deleteTodo } from './src/graphql/mutations';
 import { ProjectStatus } from './src/API';
-import { TestRunner } from '../shared-test-utils/test-apps-test-utils';
+import { TestRunner } from '../_test-common/test-apps-test-utils';
 import amplifyconfig from './src/amplifyconfiguration.json';
 
 // Configure Amplify in this module to ensure api/storage singletons see the config

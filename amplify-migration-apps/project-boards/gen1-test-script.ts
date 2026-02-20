@@ -18,8 +18,9 @@ if (typeof globalThis.crypto === 'undefined') {
 import { Amplify } from 'aws-amplify';
 import { signIn, signOut, getCurrentUser } from 'aws-amplify/auth';
 import amplifyconfig from './src/amplifyconfiguration.json';
-import { TestRunner, provisionTestUser } from '../shared-test-utils/test-apps-test-utils';
-import testCredentials from '../shared-test-utils/test-credentials.json';
+import { TestRunner } from '../_test-common/test-apps-test-utils';
+import { provisionTestUser } from '../_test-common/signup';
+import testCredentials from '../_test-common/test-credentials.json';
 import { createTestFunctions, createTestOrchestrator } from './test-utils';
 
 // Configure Amplify
