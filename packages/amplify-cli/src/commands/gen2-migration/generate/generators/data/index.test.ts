@@ -31,6 +31,7 @@ describe('Data Category code generation', () => {
     const result = await generateDataSource('main', {});
     assert.strictEqual(result, undefined);
   });
+
   describe('import map', () => {
     it('is rendered', async () => {
       const tableMappings = { Todo: 'my-todo-mapping' };
@@ -58,8 +59,10 @@ describe('Data Category code generation', () => {
     });
   });
 });
+
 describe('authorization modes', () => {
   it('generates API key config', async () => {
+    const tableMappings = { Test: 'test-table-mapping' };
     const authorizationModes = {
       defaultAuthentication: {
         authenticationType: 'API_KEY',
@@ -67,14 +70,14 @@ describe('authorization modes', () => {
       },
     };
     const source = printNodeArray(
-      // Using 'as any' because we're testing with Gen 1 auth format but TypeScript expects Gen 2 AuthorizationModes type
-      await generateDataSource('main', { schema: 'type Test { id: ID! }', authorizationModes: authorizationModes as any }),
+      await generateDataSource('main', { tableMappings, schema: 'type Test { id: ID! }', authorizationModes: authorizationModes as any }),
     );
     assert.match(source, /defaultAuthorizationMode: "apiKey"/);
     assert.match(source, /apiKeyAuthorizationMode: { expiresInDays: 7 }/);
   });
 
   it('generates additional auth providers', async () => {
+    const tableMappings = { Test: 'test-table-mapping' };
     const authorizationModes = {
       defaultAuthentication: { authenticationType: 'AMAZON_COGNITO_USER_POOLS' },
       additionalAuthenticationProviders: [
@@ -85,47 +88,55 @@ describe('authorization modes', () => {
       ],
     };
     const source = printNodeArray(
-      // Using 'as any' because we're testing with Gen 1 auth format but TypeScript expects Gen 2 AuthorizationModes type
-      await generateDataSource('main', { schema: 'type Test { id: ID! }', authorizationModes: authorizationModes as any }),
+      await generateDataSource('main', { tableMappings, schema: 'type Test { id: ID! }', authorizationModes: authorizationModes as any }),
     );
     assert.match(source, /defaultAuthorizationMode: "userPool"/);
     assert.match(source, /apiKeyAuthorizationMode: { expiresInDays: 30 }/);
   });
 
   it('generates user pool default with lambda additional auth', async () => {
+    const tableMappings = { Test: 'test-table-mapping' };
     const authorizationModes = {
       defaultAuthentication: { authenticationType: 'AMAZON_COGNITO_USER_POOLS' },
       additionalAuthenticationProviders: [
         {
           authenticationType: 'AWS_LAMBDA',
-          lambdaFunction: 'graphQlLambdaAuthorizer3703353a',
-          ttlSeconds: 200,
+          lambdaAuthorizerConfig: {
+            lambdaFunction: 'graphQlLambdaAuthorizer3703353a',
+            ttlSeconds: 200,
+          },
         },
       ],
     };
     const source = printNodeArray(
-      await generateDataSource('main', { schema: 'type Test { id: ID! }', authorizationModes: authorizationModes as any }),
+      await generateDataSource('main', { tableMappings, schema: 'type Test { id: ID! }', authorizationModes: authorizationModes as any }),
     );
     assert.match(source, /defaultAuthorizationMode: "userPool"/);
-    assert.match(source, /lambdaAuthorizationMode: { timeToLiveInSeconds: 200 }/);
+    assert.match(source, /lambdaAuthorizationMode: { function: graphQlLambdaAuthorizer3703353a, timeToLiveInSeconds: 200 }/);
   });
 
   it('generates OIDC auth config', async () => {
+    const tableMappings = { Test: 'test-table-mapping' };
     const authorizationModes = {
       defaultAuthentication: { authenticationType: 'AMAZON_COGNITO_USER_POOLS' },
       additionalAuthenticationProviders: [
         {
           authenticationType: 'OPENID_CONNECT',
-          openIDProviderName: 'amazon',
-          openIDIssuerURL: 'https://your-domain.com/',
-          openIDClientID: 'client123',
+          openIDConnectConfig: {
+            name: 'amazon',
+            issuerUrl: 'https://your-domain.com/',
+            clientId: 'client123',
+          },
         },
       ],
     };
     const source = printNodeArray(
-      await generateDataSource('main', { schema: 'type Test { id: ID! }', authorizationModes: authorizationModes as any }),
+      await generateDataSource('main', { tableMappings, schema: 'type Test { id: ID! }', authorizationModes: authorizationModes as any }),
     );
     assert.match(source, /defaultAuthorizationMode: "userPool"/);
-    assert.match(source, /oidcAuthorizationMode: { oidcIssuerUrl: "https:\/\/your-domain\.com\/", clientId: "client123" }/);
+    assert.match(
+      source,
+      /oidcAuthorizationMode: { oidcProviderName: "amazon", oidcIssuerUrl: "https:\/\/your-domain\.com\/", clientId: "client123" }/,
+    );
   });
 });
