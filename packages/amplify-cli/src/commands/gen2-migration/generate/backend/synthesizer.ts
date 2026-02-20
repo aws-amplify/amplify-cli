@@ -1110,64 +1110,12 @@ export class BackendSynthesizer {
       imports.push(this.createImportStatement([analyticsFunctionIdentifier], renderArgs.analytics.importFrom));
     }
 
-<<<<<<< sai/geo-codegen-for-gen2-migration
     // Geo: import { defineGeo } from './geo/resource';
     if (renderArgs.geo) {
       const geoFunctionIdentifier = factory.createIdentifier('defineGeo');
       imports.push(this.createImportStatement([geoFunctionIdentifier], renderArgs.geo.importFrom));
     }
 
-    // Add CDK imports for REST API if needed
-    if (renderArgs.data?.restApis && renderArgs.function) {
-      const functionNameCategories = renderArgs.function.functionNamesAndCategories;
-      const hasRestApis = renderArgs.data.restApis.some((restApi) => functionNameCategories.has(restApi.functionName));
-
-      if (hasRestApis) {
-        imports.push(
-          this.createImportStatement(
-            [factory.createIdentifier('HttpApi'), factory.createIdentifier('HttpMethod'), factory.createIdentifier('CorsHttpMethod')],
-            'aws-cdk-lib/aws-apigatewayv2',
-          ),
-        );
-        imports.push(
-          this.createImportStatement([factory.createIdentifier('HttpLambdaIntegration')], 'aws-cdk-lib/aws-apigatewayv2-integrations'),
-        );
-
-        // Check which auth types are used to conditionally import authorizers
-        const hasPrivateAuth = renderArgs.data.restApis.some((restApi) => restApi.paths.some((path) => path.authType === 'private'));
-        const hasProtectedAuth = renderArgs.data.restApis.some((restApi) => restApi.paths.some((path) => path.authType === 'protected'));
-        const hasUserPoolGroups = renderArgs.data.restApis.some((restApi) =>
-          restApi.paths.some((path) => path.userPoolGroups && path.userPoolGroups.length > 0),
-        );
-
-        // Only import authorizers that are actually needed
-        const authorizerImports = [];
-        if (hasPrivateAuth) {
-          authorizerImports.push(factory.createIdentifier('HttpIamAuthorizer'));
-        }
-        if (hasProtectedAuth && renderArgs.auth) {
-          authorizerImports.push(factory.createIdentifier('HttpUserPoolAuthorizer'));
-        }
-        if (hasUserPoolGroups && renderArgs.auth) {
-          authorizerImports.push(factory.createIdentifier('HttpUserPoolAuthorizer'));
-        }
-
-        if (authorizerImports.length > 0) {
-          imports.push(this.createImportStatement(authorizerImports, 'aws-cdk-lib/aws-apigatewayv2-authorizers'));
-        }
-
-        imports.push(
-          this.createImportStatement(
-            [factory.createIdentifier('Policy'), factory.createIdentifier('PolicyStatement')],
-            'aws-cdk-lib/aws-iam',
-          ),
-        );
-        imports.push(this.createImportStatement([factory.createIdentifier('Stack')], 'aws-cdk-lib'));
-      }
-    }
-
-=======
->>>>>>> gen2-migration
     if (renderArgs.unsupportedCategories) {
       const categories = renderArgs.unsupportedCategories;
 
