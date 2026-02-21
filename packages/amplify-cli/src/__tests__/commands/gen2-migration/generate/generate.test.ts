@@ -54,7 +54,19 @@ test('project boards snapshot', async () => {
 
   const logger = new Logger('generate', 'project-boards', 'main');
   const generate = new AmplifyMigrationGenerateStep(logger, 'main', 'project-boards', '34234', 'stackname', 'us-east-1', {} as any);
-  const gen1AppPath = path.join(__dirname, '..', '..', '..', '..', 'project-boards');
+  const gen1AppPath = path.join(
+    __dirname,
+    '..',
+    '..',
+    '..',
+    '..',
+    '..',
+    '..',
+    '..',
+    'amplify-migration-apps',
+    'project-boards',
+    '_snapshot.input',
+  );
 
   await withTempDir(async () => {
     copyDirSync(gen1AppPath, path.join(process.cwd(), 'project-boards'));
