@@ -33,8 +33,10 @@ import { CloudWatchEventsClient } from '@aws-sdk/client-cloudwatch-events';
 import { compareDirectories } from '../directory-diff';
 import chalk from 'chalk';
 
-jest.setTimeout(60 * 60 * 1000);
-jest.unmock('fs-extra');
+// to allow for debugging
+const TIMEOUT_MINUTES = 60;
+
+jest.setTimeout(60 * 1000 * TIMEOUT_MINUTES);
 
 import { AmplifyMigrationGenerateStep } from '../../../../commands/gen2-migration/generate';
 import { Logger } from '../../../../commands/gen2-migration';
@@ -52,6 +54,28 @@ jest.mock('@aws-amplify/amplify-cli-core', () => {
     },
   };
 });
+jest.unmock('fs-extra');
+
+// beforeEach(() => {
+
+//   // Mock pathManager.findProjectRoot to return the current working directory
+//   jest.mock('@aws-amplify/amplify-cli-core', () => {
+//     const actual = jest.requireActual('@aws-amplify/amplify-cli-core');
+//     return {
+//       ...actual,
+//       pathManager: {
+//         ...actual.pathManager,
+//         findProjectRoot: jest.fn(() => process.cwd()),
+//       },
+//     };
+//   });
+//   jest.unmock('fs-extra');
+
+// })
+
+// afterEach(() => {
+//   jest.resetAllMocks();
+// });
 
 test('project boards snapshot', async () => {
   // mock amplify client
