@@ -186,6 +186,8 @@ test('project boards snapshot', async () => {
     }
 
     console.log(diffReport.join('\n'));
+
+    expect(differences.length).toEqual(0);
   });
 });
 
