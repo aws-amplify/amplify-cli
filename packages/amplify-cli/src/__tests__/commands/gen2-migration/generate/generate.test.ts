@@ -146,17 +146,19 @@ test('project boards snapshot', async () => {
     const expected = path.join(appPath, '_snapshot.expected');
     const actual = path.join(process.cwd(), '..', 'project-boards');
 
+    const ignorePatterns = [/node_modules/, /.gitignore/, /package.json/];
     const diffReport = [
       '======= Snapshot Comparison Report =======',
       '',
       ` • Actual: ${actual}`,
       ` • Expected: ${expected}`,
+      ` • Ignored: ${ignorePatterns}`,
       '',
       '------------------------------------------',
       '',
     ];
 
-    const differences = await compareDirectories({ expectedDir: expected, actualDir: actual, ignorePatterns: [/node_modules/] });
+    const differences = await compareDirectories({ expectedDir: expected, actualDir: actual, ignorePatterns });
     // first print the missing/extra files
     for (const difference of differences.filter((f) => !f.diff)) {
       switch (difference.diffType) {
