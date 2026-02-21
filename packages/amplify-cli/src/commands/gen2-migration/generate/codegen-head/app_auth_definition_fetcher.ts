@@ -148,13 +148,8 @@ export class AppAuthDefinitionFetcher {
     }
 
     const backendEnvironment = await this.backendEnvironmentResolver.selectBackendEnvironment();
-
-    const currentCloudBackendDirectory = await this.ccbFetcher.getCurrentCloudBackend(backendEnvironment.deploymentArtifacts);
-    const amplifyMetaPath = path.join(currentCloudBackendDirectory, 'amplify-meta.json');
-    const amplifyMeta = await this.readJsonFile(amplifyMetaPath);
-    const rootStackName = amplifyMeta.providers.awscloudformation.StackName;
-
-    const stackResources = await this.stackParser.getAllStackResources(rootStackName);
+    assert(backendEnvironment?.stackName);
+    const stackResources = await this.stackParser.getAllStackResources(backendEnvironment.stackName);
     const resourcesByLogicalId = this.stackParser.getResourcesByLogicalId(stackResources);
 
     if (!resourcesByLogicalId['UserPool']) {

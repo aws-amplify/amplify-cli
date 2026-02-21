@@ -5,6 +5,13 @@ import 'aws-sdk-client-mock-jest';
 import { mockClient } from 'aws-sdk-client-mock';
 import { AmplifyClient, GetAppCommand, GetBackendEnvironmentCommand } from '@aws-sdk/client-amplify';
 import { LambdaClient, GetFunctionCommand } from '@aws-sdk/client-lambda';
+import {
+  CloudFormationClient,
+  DescribeStackResourcesOutput,
+  DescribeStackResourcesCommand,
+  DescribeStackResourcesInput,
+  StackResource,
+} from '@aws-sdk/client-cloudformation';
 import { compareDirectories } from '../directory-diff';
 import chalk from 'chalk';
 
@@ -14,6 +21,7 @@ jest.unmock('fs-extra');
 import { AmplifyMigrationGenerateStep } from '../../../../commands/gen2-migration/generate';
 import { Logger } from '../../../../commands/gen2-migration';
 import { BackendDownloader } from '../../../../commands/gen2-migration/generate/codegen-head/backend_downloader';
+import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 
 test('project boards snapshot', async () => {
   // mock amplify client
@@ -56,6 +64,32 @@ test('project boards snapshot', async () => {
   const generate = new AmplifyMigrationGenerateStep(logger, 'main', 'project-boards', '34234', 'stackname', 'us-east-1', {} as any);
   const appPath = path.join(__dirname, '..', '..', '..', '..', '..', '..', '..', 'amplify-migration-apps', 'project-boards');
   const inputPath = path.join(appPath, '_snapshot.input');
+
+  const cfnClientMock = mockClient(CloudFormationClient);
+  cfnClientMock
+    .on(DescribeStackResourcesCommand)
+    .callsFake(async (input: DescribeStackResourcesInput): Promise<DescribeStackResourcesOutput> => {
+      const ccbPath = path.join(inputPath, 'amplify', '#current-cloud-backend');
+      const templatePath = findTemplatePath(input.StackName!, ccbPath);
+
+      const template: any = JSONUtilities.readJson(templatePath);
+
+      const stackResources: StackResource[] = [];
+      for (const logicalId of Object.keys(template.Resources)) {
+        const resource = template.Resources[logicalId];
+        stackResources.push({
+          LogicalResourceId: logicalId,
+
+          // TODO - is this right?
+          PhysicalResourceId: `${input.StackName}/${logicalId}`,
+          ResourceType: resource.Type,
+          Timestamp: new Date(),
+          ResourceStatus: 'UPDATE_COMPLETE',
+        });
+      }
+
+      return { StackResources: stackResources };
+    });
 
   await withTempDir(async () => {
     copyDirSync(inputPath, path.join(process.cwd(), 'project-boards'));
@@ -136,4 +170,48 @@ function copyDirSync(src: string, dest: string): void {
       fs.copyFileSync(srcPath, destPath);
     }
   }
+}
+
+function findTemplatePath(stackName: string, ccbPath: string): string {
+  const parts = stackName.split('/');
+
+  if (parts.length === 1) {
+    return path.join(ccbPath, 'awscloudformation', 'build', 'root-cloudformation-stack.json');
+  }
+
+  if (parts[1].startsWith('auth')) {
+    const authName = parts[1].substring(4);
+    return path.join(ccbPath, 'auth', authName, 'build', `${authName}-cloudformation-template.json`);
+  }
+
+  if (parts[1].startsWith('storage')) {
+    const storageName = parts[1].substring(7);
+    return path.join(ccbPath, 'storage', storageName, 'build', 'cloudformation-template.json');
+  }
+
+  if (parts[1].startsWith('function')) {
+    const functionName = parts[1].substring(8);
+    return path.join(ccbPath, 'function', functionName, `${functionName}-cloudformation-template.json`);
+  }
+
+  if (parts[1].startsWith('api')) {
+    const apiName = parts[1].substring(3);
+
+    if (parts.length === 2) {
+      return path.join(ccbPath, 'api', apiName, 'build', 'cloudformation-template.json');
+    }
+
+    if (parts.length === 3) {
+      let nestedStackName = parts[2];
+      if (nestedStackName === 'CustomResourcesjson') {
+        // why god why
+        nestedStackName = 'CustomResources';
+      }
+      return path.join(ccbPath, 'api', apiName, 'build', 'stacks', `${nestedStackName}.json`);
+    }
+
+    throw new Error(`Unexpected number of parts for stack: ${stackName}`);
+  }
+
+  throw new Error(`Unable to locate template path for stack: ${stackName}`);
 }
