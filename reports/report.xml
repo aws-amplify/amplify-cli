@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="3" failures="1" errors="0" time="15.376">
-  <testsuite name="undefined" errors="0" failures="1" skipped="0" timestamp="2026-02-21T23:14:35" time="15.246" tests="3">
-    <testcase classname=" should pass" name=" should pass" time="0.002">
+<testsuites name="jest tests" tests="3" failures="1" errors="0" time="9.614">
+  <testsuite name="undefined" errors="0" failures="1" skipped="0" timestamp="2026-02-21T23:16:28" time="9.554" tests="3">
+    <testcase classname=" should pass" name=" should pass" time="0.001">
     </testcase>
     <testcase classname=" sets up toBeACloudFormationCommand" name=" sets up toBeACloudFormationCommand" time="0">
     </testcase>
-    <testcase classname=" project boards snapshot" name=" project boards snapshot" time="0.466">
+    <testcase classname=" project boards snapshot" name=" project boards snapshot" time="0.356">
       <failure>Error: expect(received).toEqual(expected) // deep equality
 
 Expected: 0
