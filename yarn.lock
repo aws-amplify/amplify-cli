@@ -1560,6 +1560,7 @@ __metadata:
     nock: ^13.5.0
     node-fetch: ^2.6.7
     ora: ^4.0.3
+    prettier: ^2.8.4
     progress: ^2.0.3
     promise-sequential: ^1.1.1
     semver: ^7.5.4

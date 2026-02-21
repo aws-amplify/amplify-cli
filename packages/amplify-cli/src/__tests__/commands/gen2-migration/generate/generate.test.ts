@@ -12,6 +12,15 @@ import {
   DescribeStackResourcesInput,
   StackResource,
 } from '@aws-sdk/client-cloudformation';
+import {
+  CognitoIdentityProviderClient,
+  DescribeUserPoolClientCommand,
+  DescribeUserPoolCommand,
+  GetUserPoolMfaConfigCommand,
+  ListGroupsCommand,
+  ListIdentityProvidersCommand,
+} from '@aws-sdk/client-cognito-identity-provider';
+import { CognitoIdentityClient, DescribeIdentityPoolCommand } from '@aws-sdk/client-cognito-identity';
 import { compareDirectories } from '../directory-diff';
 import chalk from 'chalk';
 
@@ -90,6 +99,38 @@ test('project boards snapshot', async () => {
 
       return { StackResources: stackResources };
     });
+
+  const mockCognitoIdentityProviderClient = mockClient(CognitoIdentityProviderClient);
+  mockCognitoIdentityProviderClient.on(DescribeUserPoolCommand).resolves({
+    UserPool: {
+      EmailVerificationMessage: 'Your verification code is {####}',
+      EmailVerificationSubject: 'Your verification code',
+      SchemaAttributes: [{ Name: 'email', Required: true, Mutable: true }],
+    },
+  });
+
+  mockCognitoIdentityProviderClient.on(GetUserPoolMfaConfigCommand).resolves({
+    SoftwareTokenMfaConfiguration: {},
+    MfaConfiguration: 'OFF',
+  });
+
+  mockCognitoIdentityProviderClient.on(DescribeUserPoolClientCommand).resolves({
+    UserPoolClient: {},
+  });
+
+  mockCognitoIdentityProviderClient.on(ListIdentityProvidersCommand).resolves({
+    Providers: [],
+  });
+
+  mockCognitoIdentityProviderClient.on(ListGroupsCommand).resolves({
+    Groups: [],
+  });
+
+  const mockCognitoIdentityClient = mockClient(CognitoIdentityClient);
+  mockCognitoIdentityClient.on(DescribeIdentityPoolCommand).resolves({
+    AllowUnauthenticatedIdentities: false,
+    IdentityPoolName: 'name',
+  });
 
   await withTempDir(async () => {
     copyDirSync(inputPath, path.join(process.cwd(), 'project-boards'));

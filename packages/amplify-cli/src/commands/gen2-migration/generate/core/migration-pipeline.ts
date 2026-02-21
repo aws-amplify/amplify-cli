@@ -12,6 +12,7 @@
  * - Type Safety: Provides comprehensive TypeScript interfaces for migration parameters
  */
 
+import * as prettier from 'prettier';
 import path from 'path';
 import fs from 'node:fs/promises';
 import { PackageJson, patchNpmPackageJson } from '../npm_package/renderer';
@@ -121,7 +122,18 @@ export interface Gen2RenderingOptions {
  * @param path - File path to write to
  * @returns Async function that writes content to the file
  */
-const createFileWriter = (path: string) => async (content: string) => fs.writeFile(path, content);
+const createFileWriter = (path: string) => async (content: string) => {
+  if (path.endsWith('.ts')) {
+    const formatted = prettier.format(content, {
+      parser: 'typescript',
+      singleQuote: true,
+      tabWidth: 2,
+    });
+    await fs.writeFile(path, formatted);
+  } else {
+    await fs.writeFile(path, content);
+  }
+};
 
 /**
  * Extracts dependencies from Gen 1 function package.json

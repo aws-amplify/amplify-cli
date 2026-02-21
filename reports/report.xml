@@ -1,28 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="3" failures="1" errors="0" time="10.239">
-  <testsuite name="undefined" errors="0" failures="1" skipped="0" timestamp="2026-02-21T17:48:58" time="10.182" tests="3">
+<testsuites name="jest tests" tests="3" failures="0" errors="0" time="11.384">
+  <testsuite name="undefined" errors="0" failures="0" skipped="0" timestamp="2026-02-21T18:47:40" time="11.331" tests="3">
     <testcase classname=" should pass" name=" should pass" time="0.002">
     </testcase>
     <testcase classname=" sets up toBeACloudFormationCommand" name=" sets up toBeACloudFormationCommand" time="0.001">
     </testcase>
-    <testcase classname=" project boards snapshot" name=" project boards snapshot" time="0.151">
-      <failure>Error: Region is missing
-    at default (/Users/epolon/dev/src/github.com/aws-amplify/amplify-cli/node_modules/@smithy/config-resolver/dist-cjs/index.js:70:15)
-    at /Users/epolon/dev/src/github.com/aws-amplify/amplify-cli/node_modules/@smithy/node-config-provider/dist-cjs/index.js:54:83
-    at /Users/epolon/dev/src/github.com/aws-amplify/amplify-cli/node_modules/@smithy/property-provider/dist-cjs/index.js:50:39
-    at coalesceProvider (/Users/epolon/dev/src/github.com/aws-amplify/amplify-cli/node_modules/@smithy/property-provider/dist-cjs/index.js:76:24)
-    at /Users/epolon/dev/src/github.com/aws-amplify/amplify-cli/node_modules/@smithy/property-provider/dist-cjs/index.js:88:28
-    at region (/Users/epolon/dev/src/github.com/aws-amplify/amplify-cli/node_modules/@smithy/config-resolver/dist-cjs/index.js:107:67)
-    at Object.defaultCognitoIdentityProviderHttpAuthSchemeParametersProvider [as httpAuthSchemeParametersProvider] (/Users/epolon/dev/src/github.com/aws-amplify/amplify-cli/node_modules/@aws-sdk/client-cognito-identity-provider/dist-cjs/auth/httpAuthSchemeProvider.js:9:17)
-    at /Users/epolon/dev/src/github.com/aws-amplify/amplify-cli/node_modules/@smithy/core/dist-cjs/index.js:40:51
-    at /Users/epolon/dev/src/github.com/aws-amplify/amplify-cli/node_modules/@aws-sdk/middleware-logger/dist-cjs/index.js:5:26
-    at AppAuthDefinitionFetcher.getDefinition (/Users/epolon/dev/src/github.com/aws-amplify/amplify-cli/packages/amplify-cli/src/commands/gen2-migration/generate/codegen-head/app_auth_definition_fetcher.ts:159:36)
-    at generateGen2Code (/Users/epolon/dev/src/github.com/aws-amplify/amplify-cli/packages/amplify-cli/src/commands/gen2-migration/generate/codegen-head/command-handlers.ts:111:16)
-    at prepare (/Users/epolon/dev/src/github.com/aws-amplify/amplify-cli/packages/amplify-cli/src/commands/gen2-migration/generate/codegen-head/command-handlers.ts:652:3)
-    at Object.execute (/Users/epolon/dev/src/github.com/aws-amplify/amplify-cli/packages/amplify-cli/src/commands/gen2-migration/generate.ts:71:11)
-    at /Users/epolon/dev/src/github.com/aws-amplify/amplify-cli/packages/amplify-cli/src/__tests__/commands/gen2-migration/generate/generate.test.ts:95:7
-    at withTempDir (/Users/epolon/dev/src/github.com/aws-amplify/amplify-cli/packages/amplify-cli/src/__tests__/commands/gen2-migration/generate/generate.test.ts:149:5)
-    at Object.&lt;anonymous&gt; (/Users/epolon/dev/src/github.com/aws-amplify/amplify-cli/packages/amplify-cli/src/__tests__/commands/gen2-migration/generate/generate.test.ts:87:3)</failure>
+    <testcase classname=" project boards snapshot" name=" project boards snapshot" time="0.288">
     </testcase>
   </testsuite>
 </testsuites>
