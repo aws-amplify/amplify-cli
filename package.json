@@ -94,15 +94,10 @@
     "strip-ansi": "^6.0.0",
     "yargs": "^17.7.2"
   },
-  "workspaces": {
-    "packages": [
-      "packages/*",
-      "amplify-migration-apps/project-boards/_snapshot.expected"
-    ],
-    "nohoist": [
-      "project-boards/**"
-    ]
-  },
+  "workspaces": [
+    "packages/*",
+    "amplify-migration-apps/project-boards/_snapshot.expected"
+  ],
   "devDependencies": {
     "@babel/cli": "^7.27.0",
     "@babel/core": "^7.23.2",

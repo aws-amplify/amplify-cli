@@ -3,6 +3,9 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "installConfig": {
+    "hoistingLimits": "workspaces"
+  },
   "scripts": {
     "dev": "vite",
     "typecheck:backend": "cd amplify && tsc --noEmit",
