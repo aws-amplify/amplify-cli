@@ -12,37 +12,74 @@
       "AmplifyAppId": "dy86y74g3z1fj"
     }
   },
+  "api": {
+    "projectboards": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "UserPoolId"
+          ],
+          "category": "auth",
+          "resourceName": "projectboardsc8c5bcda"
+        }
+      ],
+      "output": {
+        "authConfig": {
+          "additionalAuthenticationProviders": [
+            {
+              "authenticationType": "AMAZON_COGNITO_USER_POOLS",
+              "userPoolConfig": {
+                "userPoolId": "authprojectboardsc8c5bcda"
+              }
+            }
+          ],
+          "defaultAuthentication": {
+            "apiKeyConfig": {
+              "apiKeyExpirationDays": 7
+            },
+            "authenticationType": "API_KEY"
+          }
+        },
+        "GraphQLAPIIdOutput": "n3nft7hnjrbwxiwpb32fcdqfaa",
+        "GraphQLAPIEndpointOutput": "https://kjho46blfjdudjg4hpfiyxl6di.appsync-api.us-east-1.amazonaws.com/graphql",
+        "GraphQLAPIKeyOutput": "da2-ihcpwku6tjh75p2ca7f5g4hpla"
+      },
+      "providerPlugin": "awscloudformation",
+      "service": "AppSync",
+      "lastPushTimeStamp": "2026-02-18T14:54:10.790Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-projectboards-main-1e851-deployment/amplify-cfn-templates/api/cloudformation-template.json",
+        "logicalId": "apiprojectboards"
+      },
+      "lastPushDirHash": "Q31daLCDVDoSmbMccEFd3WZxLk4="
+    }
+  },
   "auth": {
     "projectboardsc8c5bcda": {
-      "service": "Cognito",
-      "providerPlugin": "awscloudformation",
-      "dependsOn": [],
       "customAuth": false,
+      "dependsOn": [],
       "frontendAuthConfig": {
-        "socialProviders": [],
-        "usernameAttributes": [
-          "EMAIL"
-        ],
-        "signupAttributes": [
-          "EMAIL"
-        ],
-        "passwordProtectionSettings": {
-          "passwordPolicyMinLength": 8,
-          "passwordPolicyCharacters": []
-        },
         "mfaConfiguration": "OFF",
         "mfaTypes": [
           "SMS"
+        ],
+        "passwordProtectionSettings": {
+          "passwordPolicyCharacters": [],
+          "passwordPolicyMinLength": 8
+        },
+        "signupAttributes": [
+          "EMAIL"
+        ],
+        "socialProviders": [],
+        "usernameAttributes": [
+          "EMAIL"
         ],
         "verificationMechanisms": [
           "EMAIL"
         ]
       },
-      "providerMetadata": {
-        "s3TemplateURL": "https://s3.amazonaws.com/amplify-projectboards-main-1e851-deployment/amplify-cfn-templates/auth/projectboardsc8c5bcda-cloudformation-template.json",
-        "logicalId": "authprojectboardsc8c5bcda"
-      },
-      "lastPushTimeStamp": "2026-02-17T20:35:15.671Z",
+      "providerPlugin": "awscloudformation",
+      "service": "Cognito",
       "output": {
         "UserPoolId": "us-east-1_u2JZpr8U2",
         "AppClientIDWeb": "31ib29fmt8pit5atkqhu9sqdj6",
@@ -52,66 +89,12 @@
         "IdentityPoolName": "projectboardsc8c5bcda_identitypool_c8c5bcda__main",
         "UserPoolName": "projectboardsc8c5bcda_userpool_c8c5bcda"
       },
+      "lastPushTimeStamp": "2026-02-18T14:54:10.790Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-projectboards-main-1e851-deployment/amplify-cfn-templates/auth/projectboardsc8c5bcda-cloudformation-template.json",
+        "logicalId": "authprojectboardsc8c5bcda"
+      },
       "lastPushDirHash": "hv9KerZSFP00QVEC6wEXLpbfeg0="
-    }
-  },
-  "api": {
-    "projectboards": {
-      "service": "AppSync",
-      "providerPlugin": "awscloudformation",
-      "dependsOn": [
-        {
-          "category": "auth",
-          "resourceName": "projectboardsc8c5bcda",
-          "attributes": [
-            "UserPoolId"
-          ]
-        }
-      ],
-      "output": {
-        "authConfig": {
-          "defaultAuthentication": {
-            "authenticationType": "API_KEY",
-            "apiKeyConfig": {
-              "apiKeyExpirationDays": 7
-            }
-          },
-          "additionalAuthenticationProviders": [
-            {
-              "authenticationType": "AMAZON_COGNITO_USER_POOLS",
-              "userPoolConfig": {
-                "userPoolId": "authprojectboardsc8c5bcda"
-              }
-            }
-          ]
-        },
-        "GraphQLAPIIdOutput": "n3nft7hnjrbwxiwpb32fcdqfaa",
-        "GraphQLAPIEndpointOutput": "https://kjho46blfjdudjg4hpfiyxl6di.appsync-api.us-east-1.amazonaws.com/graphql",
-        "GraphQLAPIKeyOutput": "da2-ihcpwku6tjh75p2ca7f5g4hpla"
-      },
-      "lastPushTimeStamp": "2026-02-17T20:35:15.671Z",
-      "providerMetadata": {
-        "s3TemplateURL": "https://s3.amazonaws.com/amplify-projectboards-main-1e851-deployment/amplify-cfn-templates/api/cloudformation-template.json",
-        "logicalId": "apiprojectboards"
-      },
-      "lastPushDirHash": "Q31daLCDVDoSmbMccEFd3WZxLk4="
-    }
-  },
-  "storage": {
-    "s368401baa": {
-      "service": "S3",
-      "providerPlugin": "awscloudformation",
-      "dependsOn": [],
-      "lastPushTimeStamp": "2026-02-17T20:35:15.671Z",
-      "providerMetadata": {
-        "s3TemplateURL": "https://s3.amazonaws.com/amplify-projectboards-main-1e851-deployment/amplify-cfn-templates/storage/cloudformation-template.json",
-        "logicalId": "storages368401baa"
-      },
-      "output": {
-        "BucketName": "projectboardsfe06adf5e87344b59ef17edd21ee3b3c1e851-main",
-        "Region": "us-east-1"
-      },
-      "lastPushDirHash": "iKl+DhlozVJkY2abECwdqjBKLpQ="
     }
   },
   "function": {
@@ -119,19 +102,6 @@
       "build": true,
       "providerPlugin": "awscloudformation",
       "service": "Lambda",
-      "lastBuildTimeStamp": "2026-02-17T20:30:31.388Z",
-      "lastBuildType": "PROD",
-      "lastPackageTimeStamp": "2026-02-17T20:30:31.443Z",
-      "distZipFilename": "quotegenerator-65333647482b4d4f2f64-build.zip",
-      "s3Bucket": {
-        "deploymentBucketName": "amplify-projectboards-main-1e851-deployment",
-        "s3Key": "amplify-builds/quotegenerator-65333647482b4d4f2f64-build.zip"
-      },
-      "providerMetadata": {
-        "s3TemplateURL": "https://s3.amazonaws.com/amplify-projectboards-main-1e851-deployment/amplify-cfn-templates/function/quotegenerator-cloudformation-template.json",
-        "logicalId": "functionquotegenerator"
-      },
-      "lastPushTimeStamp": "2026-02-17T20:35:15.671Z",
       "output": {
         "LambdaExecutionRoleArn": "arn:aws:iam::185706627232:role/projectboardsLambdaRoled0cb5790-main",
         "Region": "us-east-1",
@@ -139,7 +109,37 @@
         "Name": "quotegenerator-main",
         "LambdaExecutionRole": "projectboardsLambdaRoled0cb5790-main"
       },
+      "lastPushTimeStamp": "2026-02-18T14:54:10.790Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-projectboards-main-1e851-deployment/amplify-cfn-templates/function/quotegenerator-cloudformation-template.json",
+        "logicalId": "functionquotegenerator"
+      },
+      "s3Bucket": {
+        "deploymentBucketName": "amplify-projectboards-main-1e851-deployment",
+        "s3Key": "amplify-builds/quotegenerator-65333647482b4d4f2f64-build.zip"
+      },
+      "lastBuildTimeStamp": "2026-02-18T14:51:37.018Z",
+      "lastBuildType": "PROD",
+      "lastPackageTimeStamp": "2026-02-18T14:51:37.035Z",
+      "distZipFilename": "quotegenerator-65333647482b4d4f2f64-build.zip",
       "lastPushDirHash": "1B403xHmFjiJP2C2qqqoPXlfPTE="
+    }
+  },
+  "storage": {
+    "s368401baa": {
+      "dependsOn": [],
+      "providerPlugin": "awscloudformation",
+      "service": "S3",
+      "output": {
+        "BucketName": "projectboardsfe06adf5e87344b59ef17edd21ee3b3c1e851-main",
+        "Region": "us-east-1"
+      },
+      "lastPushTimeStamp": "2026-02-18T14:54:10.790Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-projectboards-main-1e851-deployment/amplify-cfn-templates/storage/cloudformation-template.json",
+        "logicalId": "storages368401baa"
+      },
+      "lastPushDirHash": "iKl+DhlozVJkY2abECwdqjBKLpQ="
     }
   }
 }
