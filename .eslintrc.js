@@ -218,6 +218,6 @@ module.exports = {
     '/packages/*/API.md',
 
     // Ignore example apps
-    '/amplify-migration-apps/**',
+    '/amplify-migration-apps/',
   ],
 };
