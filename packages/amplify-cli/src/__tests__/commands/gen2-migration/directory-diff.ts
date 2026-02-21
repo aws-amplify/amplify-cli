@@ -8,14 +8,20 @@ interface FileDiff {
   diff?: string;
 }
 
+export interface CompareDirectoriesOptions {
+  readonly actualDir: string;
+  readonly expectedDir: string;
+  readonly ignoreDirs?: string[];
+}
+
 /**
  * Recursively compares two directories and returns formatted diffs.
  */
-export async function compareDirectories(expectedDir: string, actualDir: string): Promise<FileDiff[]> {
+export async function compareDirectories(options: CompareDirectoriesOptions): Promise<FileDiff[]> {
   const differences: FileDiff[] = [];
 
-  const expectedFiles = await getFilesRecursively(expectedDir);
-  const actualFiles = await getFilesRecursively(actualDir);
+  const expectedFiles = await getFilesRecursively(options.expectedDir, '', options.ignoreDirs);
+  const actualFiles = await getFilesRecursively(options.actualDir, '', options.ignoreDirs);
 
   const expectedSet = new Set(expectedFiles);
   const actualSet = new Set(actualFiles);
@@ -37,8 +43,8 @@ export async function compareDirectories(expectedDir: string, actualDir: string)
   // Files in both - compare content
   for (const file of expectedFiles) {
     if (actualSet.has(file)) {
-      const expectedContent = await fs.readFile(path.join(expectedDir, file), 'utf-8');
-      const actualContent = await fs.readFile(path.join(actualDir, file), 'utf-8');
+      const expectedContent = await fs.readFile(path.join(options.expectedDir, file), 'utf-8');
+      const actualContent = await fs.readFile(path.join(options.actualDir, file), 'utf-8');
 
       if (expectedContent !== actualContent) {
         const fileDiff = diff(expectedContent, actualContent, {
@@ -57,17 +63,21 @@ export async function compareDirectories(expectedDir: string, actualDir: string)
   return differences;
 }
 
-async function getFilesRecursively(dir: string, base = ''): Promise<string[]> {
+async function getFilesRecursively(dir: string, base = '', ignore?: string[]): Promise<string[]> {
   const files: string[] = [];
   const entries = await fs.readdir(dir);
 
   for (const name of entries) {
+    const ignored = ignore && ignore.find((i) => name.includes(i));
+    if (ignored) {
+      continue;
+    }
     const relativePath = path.join(base, name);
     const fullPath = path.join(dir, name);
     const stat = await fs.stat(fullPath);
 
     if (stat.isDirectory()) {
-      files.push(...(await getFilesRecursively(fullPath, relativePath)));
+      files.push(...(await getFilesRecursively(fullPath, relativePath, ignore)));
     } else {
       files.push(relativePath);
     }

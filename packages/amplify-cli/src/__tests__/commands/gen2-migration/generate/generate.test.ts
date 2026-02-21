@@ -54,22 +54,11 @@ test('project boards snapshot', async () => {
 
   const logger = new Logger('generate', 'project-boards', 'main');
   const generate = new AmplifyMigrationGenerateStep(logger, 'main', 'project-boards', '34234', 'stackname', 'us-east-1', {} as any);
-  const gen1AppPath = path.join(
-    __dirname,
-    '..',
-    '..',
-    '..',
-    '..',
-    '..',
-    '..',
-    '..',
-    'amplify-migration-apps',
-    'project-boards',
-    '_snapshot.input',
-  );
+  const appPath = path.join(__dirname, '..', '..', '..', '..', '..', '..', '..', 'amplify-migration-apps', 'project-boards');
+  const inputPath = path.join(appPath, '_snapshot.input');
 
   await withTempDir(async () => {
-    copyDirSync(gen1AppPath, path.join(process.cwd(), 'project-boards'));
+    copyDirSync(inputPath, path.join(process.cwd(), 'project-boards'));
 
     process.chdir('project-boards');
     (BackendDownloader as any).ccbDir = path.join('amplify', '#current-cloud-backend');
@@ -79,7 +68,7 @@ test('project boards snapshot', async () => {
       await operation.execute();
     }
 
-    const expected = path.join(__dirname, '__gen2-expected__', 'project-boards');
+    const expected = path.join(appPath, '_snapshot.expected');
     const actual = path.join(process.cwd(), '..', 'project-boards');
 
     const diffReport = [
@@ -92,7 +81,7 @@ test('project boards snapshot', async () => {
       '',
     ];
 
-    const differences = await compareDirectories(expected, actual);
+    const differences = await compareDirectories({ expectedDir: expected, actualDir: actual, ignoreDirs: ['node_modules'] });
     // first print the missing/extra files
     for (const difference of differences.filter((f) => !f.diff)) {
       switch (difference.diffType) {
