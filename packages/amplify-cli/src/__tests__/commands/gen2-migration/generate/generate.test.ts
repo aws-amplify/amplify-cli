@@ -81,7 +81,7 @@ test('project boards snapshot', async () => {
       '',
     ];
 
-    const differences = await compareDirectories({ expectedDir: expected, actualDir: actual, ignoreDirs: ['node_modules'] });
+    const differences = await compareDirectories({ expectedDir: expected, actualDir: actual, ignorePatterns: [/node_modules/] });
     // first print the missing/extra files
     for (const difference of differences.filter((f) => !f.diff)) {
       switch (difference.diffType) {

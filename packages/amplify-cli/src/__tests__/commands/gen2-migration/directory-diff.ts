@@ -11,7 +11,7 @@ interface FileDiff {
 export interface CompareDirectoriesOptions {
   readonly actualDir: string;
   readonly expectedDir: string;
-  readonly ignoreDirs?: string[];
+  readonly ignorePatterns?: RegExp[];
 }
 
 /**
@@ -20,8 +20,8 @@ export interface CompareDirectoriesOptions {
 export async function compareDirectories(options: CompareDirectoriesOptions): Promise<FileDiff[]> {
   const differences: FileDiff[] = [];
 
-  const expectedFiles = await getFilesRecursively(options.expectedDir, '', options.ignoreDirs);
-  const actualFiles = await getFilesRecursively(options.actualDir, '', options.ignoreDirs);
+  const expectedFiles = await getFilesRecursively(options.expectedDir, '', options.ignorePatterns);
+  const actualFiles = await getFilesRecursively(options.actualDir, '', options.ignorePatterns);
 
   const expectedSet = new Set(expectedFiles);
   const actualSet = new Set(actualFiles);
@@ -63,21 +63,21 @@ export async function compareDirectories(options: CompareDirectoriesOptions): Pr
   return differences;
 }
 
-async function getFilesRecursively(dir: string, base = '', ignore?: string[]): Promise<string[]> {
+async function getFilesRecursively(dir: string, base = '', ignorePatterns?: RegExp[]): Promise<string[]> {
   const files: string[] = [];
   const entries = await fs.readdir(dir);
 
   for (const name of entries) {
-    const ignored = ignore && ignore.find((i) => name.includes(i));
-    if (ignored) {
+    const relativePath = path.join(base, name);
+    const isIgnored = ignorePatterns?.some((pattern) => pattern.test(relativePath));
+    if (isIgnored) {
       continue;
     }
-    const relativePath = path.join(base, name);
     const fullPath = path.join(dir, name);
     const stat = await fs.stat(fullPath);
 
     if (stat.isDirectory()) {
-      files.push(...(await getFilesRecursively(fullPath, relativePath, ignore)));
+      files.push(...(await getFilesRecursively(fullPath, relativePath, ignorePatterns)));
     } else {
       files.push(relativePath);
     }
