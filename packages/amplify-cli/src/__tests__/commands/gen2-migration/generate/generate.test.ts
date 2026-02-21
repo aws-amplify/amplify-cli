@@ -4,7 +4,7 @@ import * as path from 'path';
 import 'aws-sdk-client-mock-jest';
 import { mockClient } from 'aws-sdk-client-mock';
 import { AmplifyClient, GetAppCommand, GetBackendEnvironmentCommand } from '@aws-sdk/client-amplify';
-import { LambdaClient, GetFunctionCommand } from '@aws-sdk/client-lambda';
+import { LambdaClient, GetFunctionCommand, GetPolicyCommand } from '@aws-sdk/client-lambda';
 import {
   CloudFormationClient,
   DescribeStackResourcesOutput,
@@ -21,6 +21,15 @@ import {
   ListIdentityProvidersCommand,
 } from '@aws-sdk/client-cognito-identity-provider';
 import { CognitoIdentityClient, DescribeIdentityPoolCommand } from '@aws-sdk/client-cognito-identity';
+import {
+  S3Client,
+  GetBucketNotificationConfigurationCommand,
+  GetBucketAccelerateConfigurationCommand,
+  GetBucketVersioningCommand,
+  GetBucketEncryptionCommand,
+} from '@aws-sdk/client-s3';
+import { AppSyncClient, GetGraphqlApiCommand, ListGraphqlApisCommand } from '@aws-sdk/client-appsync';
+import { CloudWatchEventsClient } from '@aws-sdk/client-cloudwatch-events';
 import { compareDirectories } from '../directory-diff';
 import chalk from 'chalk';
 
@@ -32,6 +41,18 @@ import { Logger } from '../../../../commands/gen2-migration';
 import { BackendDownloader } from '../../../../commands/gen2-migration/generate/codegen-head/backend_downloader';
 import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 
+// Mock pathManager.findProjectRoot to return the current working directory
+jest.mock('@aws-amplify/amplify-cli-core', () => {
+  const actual = jest.requireActual('@aws-amplify/amplify-cli-core');
+  return {
+    ...actual,
+    pathManager: {
+      ...actual.pathManager,
+      findProjectRoot: jest.fn(() => process.cwd()),
+    },
+  };
+});
+
 test('project boards snapshot', async () => {
   // mock amplify client
   const amplifyClientMock = mockClient(AmplifyClient);
@@ -42,6 +63,7 @@ test('project boards snapshot', async () => {
       createTime: new Date(),
       environmentName: 'main',
       updateTime: new Date(),
+      deploymentArtifacts: 'amplify-projectboards-main-1e851-deployment',
     },
   });
   amplifyClientMock.on(GetAppCommand).resolves({
@@ -58,6 +80,8 @@ test('project boards snapshot', async () => {
       defaultDomain: 'domain',
       enableBasicAuth: true,
       enableBranchAutoBuild: false,
+      buildSpec:
+        "version: 1\nbackend:\n  phases:\n    build:\n      commands:\n        - '# Execute Amplify CLI with the helper script'\n        - amplifyPush --simple\nfrontend:\n  phases:\n    preBuild:\n      commands:\n        - npm install\n    build:\n      commands:\n        - npm run build\n  artifacts:\n    baseDirectory: dist\n    files:\n      - '**/*'\n  cache:\n    paths:\n      - node_modules/**/*\n",
     },
   });
 
@@ -66,8 +90,17 @@ test('project boards snapshot', async () => {
     Configuration: {
       FunctionName: 'quotegenerator-main',
       Runtime: 'nodejs22.x',
+      Timeout: 25,
+      MemorySize: 128,
+      Environment: {
+        Variables: {
+          ENV: 'main',
+          REGION: 'us-east-1',
+        },
+      },
     },
   });
+  lambdaClientMock.on(GetPolicyCommand).rejects(new Error('No policy'));
 
   const logger = new Logger('generate', 'project-boards', 'main');
   const generate = new AmplifyMigrationGenerateStep(logger, 'main', 'project-boards', '34234', 'stackname', 'us-east-1', {} as any);
@@ -106,6 +139,17 @@ test('project boards snapshot', async () => {
       EmailVerificationMessage: 'Your verification code is {####}',
       EmailVerificationSubject: 'Your verification code',
       SchemaAttributes: [{ Name: 'email', Required: true, Mutable: true }],
+      UsernameAttributes: ['email'],
+      Policies: {
+        PasswordPolicy: {
+          MinimumLength: 8,
+          RequireUppercase: false,
+          RequireLowercase: false,
+          RequireNumbers: false,
+          RequireSymbols: false,
+          TemporaryPasswordValidityDays: 7,
+        },
+      },
     },
   });
 
@@ -114,8 +158,34 @@ test('project boards snapshot', async () => {
     MfaConfiguration: 'OFF',
   });
 
-  mockCognitoIdentityProviderClient.on(DescribeUserPoolClientCommand).resolves({
-    UserPoolClient: {},
+  mockCognitoIdentityProviderClient.on(DescribeUserPoolClientCommand).callsFake((input) => {
+    // Return different responses based on which client is being queried
+    // The PhysicalResourceId format is "stackName/LogicalId" from the CFN mock
+    // UserPoolClient (native app client) vs UserPoolClientWeb (web client)
+    if (input.ClientId && !input.ClientId.includes('UserPoolClientWeb')) {
+      // Native app client (UserPoolClient) - this is the one used for userPoolClient in auth definition
+      return {
+        UserPoolClient: {
+          ClientId: input.ClientId,
+          RefreshTokenValidity: 30,
+          TokenValidityUnits: { RefreshToken: 'days' },
+          EnableTokenRevocation: true,
+          EnablePropagateAdditionalUserContextData: false,
+          AuthSessionValidity: 3,
+          AllowedOAuthFlowsUserPoolClient: false,
+          // ClientSecret is undefined, so generateSecret: false will be added by the synthesizer
+          // ExplicitAuthFlows is not included to avoid generating authFlows property
+        },
+      };
+    }
+    // Web client (UserPoolClientWeb)
+    return {
+      UserPoolClient: {
+        ClientId: input.ClientId,
+        RefreshTokenValidity: 30,
+        TokenValidityUnits: { RefreshToken: 'days' },
+      },
+    };
   });
 
   mockCognitoIdentityProviderClient.on(ListIdentityProvidersCommand).resolves({
@@ -128,9 +198,65 @@ test('project boards snapshot', async () => {
 
   const mockCognitoIdentityClient = mockClient(CognitoIdentityClient);
   mockCognitoIdentityClient.on(DescribeIdentityPoolCommand).resolves({
-    AllowUnauthenticatedIdentities: false,
-    IdentityPoolName: 'name',
+    AllowUnauthenticatedIdentities: true,
+    IdentityPoolName: 'projectboardsc8c5bcda_identitypool_c8c5bcda__main',
   });
+
+  // Mock S3 client for storage definition fetcher
+  const mockS3Client = mockClient(S3Client);
+  mockS3Client.on(GetBucketNotificationConfigurationCommand).resolves({
+    LambdaFunctionConfigurations: [],
+  });
+  mockS3Client.on(GetBucketAccelerateConfigurationCommand).resolves({
+    Status: undefined,
+  });
+  mockS3Client.on(GetBucketVersioningCommand).resolves({
+    Status: undefined,
+  });
+  mockS3Client.on(GetBucketEncryptionCommand).resolves({
+    ServerSideEncryptionConfiguration: {
+      Rules: [
+        {
+          ApplyServerSideEncryptionByDefault: {
+            SSEAlgorithm: 'AES256',
+          },
+          BucketKeyEnabled: false,
+        },
+      ],
+    },
+  });
+
+  // Mock AppSync client for data definition fetcher
+  const mockAppSyncClient = mockClient(AppSyncClient);
+  mockAppSyncClient.on(GetGraphqlApiCommand).resolves({
+    graphqlApi: {
+      additionalAuthenticationProviders: [
+        {
+          authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+          userPoolConfig: {
+            awsRegion: 'us-east-1',
+            userPoolId: 'us-east-1_u2JZpr8U2',
+          },
+        },
+      ],
+      logConfig: undefined,
+    },
+  });
+  mockAppSyncClient.on(ListGraphqlApisCommand).resolves({
+    graphqlApis: [
+      {
+        apiId: 'n3nft7hnjrbwxiwpb32fcdqfaa',
+        name: 'projectboards',
+        tags: {
+          'user:Stack': 'main',
+          'user:Application': 'projectboards',
+        },
+      },
+    ],
+  });
+
+  // Mock CloudWatch Events client (needed for function definition fetcher)
+  mockClient(CloudWatchEventsClient);
 
   await withTempDir(async () => {
     copyDirSync(inputPath, path.join(process.cwd(), 'project-boards'));
@@ -194,10 +320,8 @@ test('project boards snapshot', async () => {
 async function withTempDir(callback: () => Promise<void>) {
   const cwd = process.cwd();
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'aasd'));
-  console.log(tmpDir);
   process.chdir(tmpDir);
   try {
-    console.log(`cwd: ${tmpDir}`);
     await callback();
   } finally {
     process.chdir(cwd);

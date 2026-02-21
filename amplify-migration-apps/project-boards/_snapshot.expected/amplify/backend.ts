@@ -26,10 +26,10 @@ cfnUserPool.policies = {
 const userPool = backend.auth.resources.userPool;
 userPool.addClient('NativeAppClient', {
   refreshTokenValidity: Duration.days(30),
-  disableOAuth: true,
   enableTokenRevocation: true,
   enablePropagateAdditionalUserContextData: false,
   authSessionValidity: Duration.minutes(3),
+  disableOAuth: true,
   generateSecret: false,
 });
 const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
