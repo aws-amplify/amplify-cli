@@ -11,6 +11,14 @@ import * as cwe from '@aws-sdk/client-cloudwatch-events';
 import { CFN_NESTED_STACK_SEPARATOR, MigrationApp } from './migration-app';
 import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 
+/**
+ * Provides mock AWS SDK clients for migration app testing.
+ *
+ * This class creates mock implementations of various AWS SDK clients that return
+ * responses based on local files in the migration app's `#current-cloud-backend`
+ * directory. This allows tests to run without making actual AWS API calls while
+ * still exercising the migration logic with realistic data.
+ */
 export class MockClients {
   public readonly amplify;
   public readonly cloudformation;
@@ -21,6 +29,11 @@ export class MockClients {
   public readonly appsync;
   public readonly s3;
 
+  /**
+   * Creates mock clients for all supported AWS services.
+   *
+   * @param app - The MigrationApp instance providing access to local app files.
+   */
   constructor(private readonly app: MigrationApp) {
     this.amplify = this.mockAmplify();
     this.cloudformation = this.mockCloudFormation();
@@ -32,6 +45,12 @@ export class MockClients {
     this.s3 = this.mockS3();
   }
 
+  /**
+   * Creates a mock S3 client.
+   *
+   * Returns default/empty responses for bucket configuration commands.
+   * Does not use local files as source of truth - returns static default values.
+   */
   private mockS3() {
     const mock = mockClient(s3.S3Client);
     mock.on(s3.GetBucketNotificationConfigurationCommand).resolves({
@@ -58,6 +77,14 @@ export class MockClients {
     return mock;
   }
 
+  /**
+   * Creates a mock AppSync client.
+   *
+   * Source of truth:
+   * - `amplify-meta.json`: API ID and resource names
+   * - `api/<apiName>/cli-inputs.json`: Authentication configuration (default and additional auth types)
+   * - `auth/<authName>/output`: User pool ID for Cognito auth
+   */
   private mockAppSync() {
     const mock = mockClient(appsync.AppSyncClient);
 
@@ -113,10 +140,22 @@ export class MockClients {
     return mock;
   }
 
+  /**
+   * Creates a mock CloudWatch Events client.
+   *
+   * Returns empty/default responses. Does not use local files as source of truth.
+   */
   private mockCloudWatchEvents() {
     return mockClient(cwe.CloudWatchEventsClient);
   }
 
+  /**
+   * Creates a mock Cognito Identity client.
+   *
+   * Source of truth:
+   * - `auth/<authName>/cli-inputs.json`: `allowUnauthenticatedIdentities` setting
+   * - `amplify-meta.json`: Identity pool name from auth resource output
+   */
   private mockCognitoIdentity() {
     const mock = mockClient(cognito.CognitoIdentityClient);
 
@@ -130,6 +169,14 @@ export class MockClients {
     return mock;
   }
 
+  /**
+   * Creates a mock Cognito Identity Provider (User Pools) client.
+   *
+   * Source of truth:
+   * - `auth/<authName>/cli-inputs.json`: Email verification settings, password policy,
+   *   MFA configuration, refresh token validity
+   * - `auth/<authName>/build/<authName>-cloudformation-template.json`: User pool schema attributes
+   */
   private mockCognitoIdentityProvider() {
     const mock = mockClient(idp.CognitoIdentityProviderClient);
     const authResourceName = this.app.singleResourceName('auth');
@@ -189,6 +236,15 @@ export class MockClients {
     return mock;
   }
 
+  /**
+   * Creates a mock Amplify client.
+   *
+   * Source of truth:
+   * - `amplify-meta.json`: Stack name, deployment bucket, app ID
+   * - `team-provider-info.json`: Environment name
+   *
+   * Note: The `buildSpec` is hardcoded to a typical Amplify build configuration.
+   */
   private mockAmplify() {
     const mock = mockClient(amplify.AmplifyClient);
 
@@ -225,6 +281,17 @@ export class MockClients {
     return mock;
   }
 
+  /**
+   * Creates a mock CloudFormation client.
+   *
+   * Source of truth:
+   * - CloudFormation templates located via `MigrationApp.templatePathForStack()`:
+   *   - Root stack: `awscloudformation/build/root-cloudformation-stack.json`
+   *   - Nested stacks: Category-specific templates (auth, api, function, storage)
+   *
+   * The mock returns stack resources by parsing the template's `Resources` section
+   * and constructing physical resource IDs that encode the stack hierarchy.
+   */
   private mockCloudFormation() {
     const mock = mockClient(cloudformation.CloudFormationClient);
 
@@ -257,6 +324,16 @@ export class MockClients {
     return mock;
   }
 
+  /**
+   * Creates a mock Lambda client.
+   *
+   * Source of truth:
+   * - `function/<functionName>/<functionName>-cloudformation-template.json`: Runtime, timeout,
+   *   and other Lambda configuration from the `LambdaFunction` resource properties
+   * - `amplify-meta.json`: Environment name and region for environment variables
+   *
+   * Note: Function names are expected to follow the Amplify convention: `<resourceName>-<envName>`.
+   */
   private mockLambda() {
     const mock = mockClient(lambda.LambdaClient);
     mock
