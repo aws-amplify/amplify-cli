@@ -1,4 +1,4 @@
-import { prepare } from '../../../../../commands/gen2-migration/generate/codegen-head/command-handlers';
+import { prepare, DependenciesInstaller } from '../../../../../commands/gen2-migration/generate/codegen-head/command-handlers';
 import { MigrationApp } from '../../migration-app';
 
 // high to allow for debugging in the IDE
@@ -11,6 +11,11 @@ jest.setTimeout(60 * 1000 * TIMEOUT_MINUTES);
 // note that this must be declared in the top level since jest will hoist it such that it
 // executes prior to any module loading.
 jest.unmock('fs-extra');
+
+beforeEach(() => {
+  // avoid running npm install during tests
+  jest.spyOn(DependenciesInstaller, 'install').mockResolvedValue();
+});
 
 afterEach(() => {
   jest.restoreAllMocks();

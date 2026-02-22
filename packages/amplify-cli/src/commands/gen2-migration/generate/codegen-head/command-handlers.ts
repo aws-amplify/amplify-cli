@@ -713,10 +713,15 @@ export async function prepare(logger: Logger, appId: string, envName: string, re
   }
 
   logger.info('Installing dependencies');
+  await DependenciesInstaller.install();
+}
 
-  // again weird dependency issues - it takes two times to sync it up fully.
-  // await execa('npm', ['install']);
-  // await execa('npm', ['install']);
+export class DependenciesInstaller {
+  public static async install() {
+    // again weird dependency issues - it takes two times to sync it up fully.
+    await execa('npm', ['install']);
+    await execa('npm', ['install']);
+  }
 }
 
 export async function pathExists(path: string) {
