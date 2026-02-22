@@ -98,6 +98,28 @@ export class MigrationApp {
     (BackendDownloader as any).ccbDir = this.ccbPath;
   }
 
+  /**
+   * Runs a snapshot test for a migration app.
+   *
+   * This method sets up an isolated test environment by copying the app's input snapshot
+   * to a temporary directory, executing the provided callback (which typically performs
+   * the migration), and then comparing the resulting files against the expected snapshot.
+   *
+   * If differences are detected and Jest is running in update mode (`--updateSnapshot`),
+   * the expected snapshot will be automatically updated. Otherwise, the test will fail
+   * and a diff report will be logged.
+   *
+   * @param appName - The name of the migration app (corresponds to a directory under `amplify-migration-apps/`).
+   * @param callback - An async function that receives the `MigrationApp` instance and performs the migration logic to test.
+   *
+   * @example
+   * ```typescript
+   * await MigrationApp.snapshot('my-app', async (app) => {
+   *   // Perform migration operations using app.clients, app.logger, etc.
+   *   await runMigration(app);
+   * });
+   * ```
+   */
   public static async snapshot(appName: string, callback: (app: MigrationApp) => Promise<void>) {
     const cwd = process.cwd();
     const workDir = path.join(fs.mkdtempSync(path.join(os.tmpdir(), path.basename(__filename))), appName);
@@ -122,6 +144,19 @@ export class MigrationApp {
     }
   }
 
+  /**
+   * Compares the contents of an actual directory against the expected snapshot for this app.
+   *
+   * This method performs a recursive diff between the provided directory and the app's
+   * expected snapshot directory, returning a `Snapshot` object that contains the differences
+   * and provides methods for reporting and updating.
+   *
+   * @param actualDir - The directory containing the actual output to compare.
+   * @param ignorePatterns - Optional array of regex patterns for files/directories to exclude from comparison.
+   *                         The `node_modules` pattern is always added automatically.
+   * @returns A `Snapshot` object containing the comparison results, which can be used to
+   *          check for changes, generate reports, or update the expected snapshot.
+   */
   public async compare(actualDir: string, ignorePatterns?: RegExp[]): Promise<Snapshot> {
     const fulleIgnorePatterns = [...(ignorePatterns ?? []), /node_modules/];
     const differences = await diff({ expectedDir: this.expectedPath, actualDir, ignorePatterns: fulleIgnorePatterns });
@@ -135,6 +170,18 @@ export class MigrationApp {
     });
   }
 
+  /**
+   * Resolves the file path to the CloudFormation template for a given stack.
+   *
+   * Stack names can be hierarchical, using `/` as a separator (see `CFN_NESTED_STACK_SEPARATOR`).
+   * The method parses the stack name to determine the category (auth, storage, function, api)
+   * and returns the appropriate template path within the `#current-cloud-backend` directory.
+   *
+   * @param stackName - The CloudFormation stack name, which may include nested stack paths
+   *                    (e.g., `root`, `root/authMyAuth`, `root/apiMyApi/CustomResources`).
+   * @returns The absolute file path to the CloudFormation template JSON file.
+   * @throws Error if the stack name format is unrecognized or the category is unsupported.
+   */
   public templatePathForStack(stackName: string) {
     const parts = stackName.split(CFN_NESTED_STACK_SEPARATOR);
 
@@ -179,6 +226,14 @@ export class MigrationApp {
     throw new Error(`Unable to locate template path for stack: ${stackName}`);
   }
 
+  /**
+   * Reads and returns the parsed CloudFormation template for a specific resource.
+   *
+   * @param resourceName - The amplify friendly name of the resource (e.g., the Lambda function name or API name).
+   * @param category - The Amplify category of the resource (`function`, `api`, or `auth`).
+   * @returns The parsed CloudFormation template as a JSON object.
+   * @throws Error if the category is not recognized.
+   */
   public templateForResource(resourceName: string, category: string) {
     let templatePath;
 
@@ -199,10 +254,28 @@ export class MigrationApp {
     return JSONUtilities.readJson<any>(templatePath);
   }
 
+  /**
+   * Reads and returns the CLI inputs configuration for a specific resource.
+   *
+   * @param resourceName - The amplify friendly name of the resource.
+   * @param category - The Amplify category of the resource (e.g., `function`, `api`, `auth`).
+   * @returns The parsed `cli-inputs.json` content as a JSON object.
+   */
   public cliInputsForResource(resourceName: string, category: string) {
     return JSONUtilities.readJson<any>(path.join(this.ccbPath, category, resourceName, 'cli-inputs.json'));
   }
 
+  /**
+   * Returns the name of the single resource in a given category.
+   *
+   * This is a convenience method for apps that have exactly one resource per category.
+   * It reads the resource names from `team-provider-info.json` and throws if there
+   * is not exactly one resource.
+   *
+   * @param category - The Amplify category (e.g., `function`, `api`, `auth`).
+   * @returns The name of the single resource in the category.
+   * @throws Error if the category contains zero or more than one resource.
+   */
   public singleResourceName(category: string) {
     const resourceNames = Object.keys(this.tpi[this.environmentName]['categories'][category]);
     if (resourceNames.length !== 1) {
