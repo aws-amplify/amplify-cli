@@ -35,7 +35,7 @@ describe('prepare', () => {
       await MigrationApp.with(appName, async (app: MigrationApp) => {
         await prepare(app.logger, app.id, app.environmentName, app.region);
 
-        const snapshot = await app.compare(process.cwd(), [/node_modules/, /package.json/]);
+        const snapshot = await app.compare(process.cwd(), [/node_modules/]);
 
         if (snapshot.changed) {
           console.log(snapshot.report());

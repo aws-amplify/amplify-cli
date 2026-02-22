@@ -5,6 +5,6 @@ export class JsonRenderer implements Renderer {
 
   render = async (): Promise<void> => {
     const packageJson = await this.createJson();
-    await this.writeFile(JSON.stringify(packageJson, null, 2));
+    await this.writeFile(JSON.stringify(packageJson, null, 2) + '\n');
   };
 }
