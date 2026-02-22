@@ -63,28 +63,52 @@ export class MockClients {
 
   private mockAppSync() {
     const mock = mockClient(appsync.AppSyncClient);
-    mock.on(appsync.GetGraphqlApiCommand).resolves({
-      graphqlApi: {
-        additionalAuthenticationProviders: [
-          {
-            authenticationType: 'AMAZON_COGNITO_USER_POOLS',
-            userPoolConfig: {
-              awsRegion: this.app.region,
-              userPoolId: this.app.meta.auth['projectboardsc8c5bcda'].output.UserPoolId,
-            },
+
+    const apiResourceName = this.app.singleResourceName('api');
+    const authResourceName = this.app.singleResourceName('auth');
+    const apiId = this.app.meta.api[apiResourceName].output.GraphQLAPIIdOutput;
+
+    mock
+      .on(appsync.GetGraphqlApiCommand)
+      .callsFake(async (input: appsync.GetGraphqlApiCommandInput): Promise<appsync.GetGraphqlApiCommandOutput> => {
+        const cliInputs = this.app.cliInputsForResource(apiResourceName, 'api');
+        const additionalAuthenticationProviders: appsync.AdditionalAuthenticationProvider[] = [];
+
+        for (const aut of cliInputs.serviceConfiguration.additionalAuthTypes ?? []) {
+          switch (aut.mode) {
+            case 'AMAZON_COGNITO_USER_POOLS':
+              additionalAuthenticationProviders.push({
+                authenticationType: aut.mode,
+                userPoolConfig: {
+                  awsRegion: this.app.region,
+                  userPoolId: this.app.meta.auth[authResourceName].output.UserPoolId,
+                },
+              });
+              break;
+            default:
+              throw new Error(`Unsupported additional auth mode: ${aut.mode}`);
+          }
+        }
+
+        return {
+          graphqlApi: {
+            apiId: input.apiId,
+            authenticationType: cliInputs.serviceConfiguration.defaultAuthType.mode,
+            additionalAuthenticationProviders,
+            logConfig: undefined,
           },
-        ],
-        logConfig: undefined,
-      },
-    });
+          $metadata: {},
+        };
+      });
     mock.on(appsync.ListGraphqlApisCommand).resolves({
       graphqlApis: [
         {
-          apiId: 'n3nft7hnjrbwxiwpb32fcdqfaa',
-          name: 'projectboards',
+          apiId,
+          // this is how amplify names appsync APIs
+          name: `${apiResourceName}-${this.app.environmentName}`,
           tags: {
-            'user:Stack': 'main',
-            'user:Application': 'projectboards',
+            'user:Stack': this.app.environmentName,
+            'user:Application': apiResourceName,
           },
         },
       ],
@@ -99,9 +123,11 @@ export class MockClients {
   private mockCognitoIdentity() {
     const mock = mockClient(cognito.CognitoIdentityClient);
 
+    const authResourceName = this.app.singleResourceName('auth');
+    const authCliInputs = this.app.cliInputsForResource(authResourceName, 'auth');
     mock.on(cognito.DescribeIdentityPoolCommand).resolves({
-      AllowUnauthenticatedIdentities: true,
-      IdentityPoolName: this.app.meta.auth['projectboardsc8c5bcda'].output.IdentityPoolName,
+      AllowUnauthenticatedIdentities: authCliInputs.cognitoConfig.allowUnauthenticatedIdentities,
+      IdentityPoolName: this.app.meta.auth[authResourceName].output.IdentityPoolName,
     });
 
     return mock;
@@ -109,16 +135,18 @@ export class MockClients {
 
   private mockCognitoIdentityProvider() {
     const mock = mockClient(idp.CognitoIdentityProviderClient);
-
+    const authResourceName = this.app.singleResourceName('auth');
+    const authCliInputs = this.app.cliInputsForResource(authResourceName, 'auth');
+    const authTemplate = this.app.templateForResource(authResourceName, 'auth');
     mock.on(idp.DescribeUserPoolCommand).resolves({
       UserPool: {
-        EmailVerificationMessage: 'Your verification code is {####}',
-        EmailVerificationSubject: 'Your verification code',
-        SchemaAttributes: [{ Name: 'email', Required: true, Mutable: true }],
-        UsernameAttributes: ['email'],
+        EmailVerificationMessage: authCliInputs.cognitoConfig.emailVerificationMessage,
+        EmailVerificationSubject: authCliInputs.cognitoConfig.emailVerificationSubject,
+        SchemaAttributes: authTemplate.Resources.UserPool.Properties.Schema,
+        UsernameAttributes: authCliInputs.cognitoConfig.requiredAttributes,
         Policies: {
           PasswordPolicy: {
-            MinimumLength: 8,
+            MinimumLength: authCliInputs.cognitoConfig.passwordPolicyMinLength,
             RequireUppercase: false,
             RequireLowercase: false,
             RequireNumbers: false,
@@ -130,39 +158,28 @@ export class MockClients {
     });
 
     mock.on(idp.GetUserPoolMfaConfigCommand).resolves({
-      SoftwareTokenMfaConfiguration: {},
-      MfaConfiguration: 'OFF',
+      SoftwareTokenMfaConfiguration: { Enabled: false },
+      MfaConfiguration: authCliInputs.cognitoConfig.mfaConfiguration,
     });
 
-    mock.on(idp.DescribeUserPoolClientCommand).callsFake((input) => {
-      // Return different responses based on which client is being queried
-      // The PhysicalResourceId format is "stackName/LogicalId" from the CFN mock
-      // UserPoolClient (native app client) vs UserPoolClientWeb (web client)
-      if (input.ClientId && !input.ClientId.includes('UserPoolClientWeb')) {
-        // Native app client (UserPoolClient) - this is the one used for userPoolClient in auth definition
+    mock
+      .on(idp.DescribeUserPoolClientCommand)
+      .callsFake(async (input: idp.DescribeUserPoolClientCommandInput): Promise<idp.DescribeUserPoolClientCommandOutput> => {
+        const authResourceName = this.app.singleResourceName('auth');
+        const authCliInputs = this.app.cliInputsForResource(authResourceName, 'auth');
         return {
           UserPoolClient: {
             ClientId: input.ClientId,
-            RefreshTokenValidity: 30,
+            RefreshTokenValidity: authCliInputs.cognitoConfig.userpoolClientRefreshTokenValidity,
             TokenValidityUnits: { RefreshToken: 'days' },
             EnableTokenRevocation: true,
             EnablePropagateAdditionalUserContextData: false,
             AuthSessionValidity: 3,
             AllowedOAuthFlowsUserPoolClient: false,
-            // ClientSecret is undefined, so generateSecret: false will be added by the synthesizer
-            // ExplicitAuthFlows is not included to avoid generating authFlows property
           },
+          $metadata: {},
         };
-      }
-      // Web client (UserPoolClientWeb)
-      return {
-        UserPoolClient: {
-          ClientId: input.ClientId,
-          RefreshTokenValidity: 30,
-          TokenValidityUnits: { RefreshToken: 'days' },
-        },
-      };
-    });
+      });
 
     mock.on(idp.ListIdentityProvidersCommand).resolves({
       Providers: [],
@@ -248,23 +265,26 @@ export class MockClients {
     mock
       .on(lambda.GetFunctionCommand)
       .callsFake(async (input: lambda.GetFunctionCommandInput): Promise<lambda.GetFunctionCommandOutput> => {
+        // amplify names function like so: `${resourceName}-${envName}`
+        const resourceName = input.FunctionName!.split('-')[0];
+        const template = this.app.templateForResource(resourceName, 'function');
+
         return {
           Configuration: {
             FunctionName: input.FunctionName,
-            Runtime: 'nodejs22.x',
-            Timeout: 25,
+            Runtime: template.Resources.LambdaFunction.Properties.Runtime,
+            Timeout: template.Resources.LambdaFunction.Properties.Timeout,
             MemorySize: 128,
             Environment: {
               Variables: {
                 ENV: this.app.environmentName,
-                REGION: 'us-east-1',
+                REGION: this.app.region,
               },
             },
           },
           $metadata: {},
         };
       });
-    mock.on(lambda.GetPolicyCommand).rejects(new Error('No policy'));
     return mock;
   }
 

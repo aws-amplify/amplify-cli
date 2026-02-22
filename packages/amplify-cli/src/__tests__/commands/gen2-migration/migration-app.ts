@@ -152,4 +152,36 @@ export class MigrationApp {
 
     return report.join('\n');
   }
+
+  public templateForResource(resourceName: string, category: string) {
+    let templatePath;
+
+    switch (category) {
+      case 'function':
+        templatePath = path.join(this.ccbPath, 'function', resourceName, `${resourceName}-cloudformation-template.json`);
+        break;
+      case 'api':
+        templatePath = path.join(this.ccbPath, 'api', resourceName, 'build', `cloudformation-template.json`);
+        break;
+      case 'auth':
+        templatePath = path.join(this.ccbPath, 'auth', resourceName, 'build', `${resourceName}-cloudformation-template.json`);
+        break;
+      default:
+        throw new Error(`Unrecognized category: ${category}`);
+    }
+
+    return JSONUtilities.readJson<any>(templatePath);
+  }
+
+  public cliInputsForResource(resourceName: string, category: string) {
+    return JSONUtilities.readJson<any>(path.join(this.ccbPath, category, resourceName, 'cli-inputs.json'));
+  }
+
+  public singleResourceName(category: string) {
+    const resourceNames = Object.keys(this.tpi[this.environmentName]['categories'][category]);
+    if (resourceNames.length !== 1) {
+      throw new Error(`Unexpected number of resources for category '${category}': ${resourceNames.join(',')}`);
+    }
+    return resourceNames[0];
+  }
 }
