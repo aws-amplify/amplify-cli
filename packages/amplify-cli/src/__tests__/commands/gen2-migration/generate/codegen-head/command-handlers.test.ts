@@ -37,20 +37,8 @@ describe('prepare', () => {
     test('project-boards', async () => {
       const appName = 'project-boards';
 
-      await MigrationApp.with(appName, async (app: MigrationApp) => {
+      await MigrationApp.snapshot(appName, async (app: MigrationApp) => {
         await prepare(app.logger, app.id, app.environmentName, app.region);
-
-        const snapshot = await app.compare(process.cwd());
-
-        const isUpdatingSnapshots = expect.getState().snapshotState._updateSnapshot === 'all';
-
-        if (snapshot.changed) {
-          console.log(snapshot.report());
-          if (isUpdatingSnapshots) {
-            snapshot.update();
-          }
-        }
-        expect(snapshot.changed).toBeFalsy();
       });
     });
   });

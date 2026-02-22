@@ -98,13 +98,25 @@ export class MigrationApp {
     (BackendDownloader as any).ccbDir = this.ccbPath;
   }
 
-  public static async with(appName: string, callback: (app: MigrationApp) => Promise<void>) {
+  public static async snapshot(appName: string, callback: (app: MigrationApp) => Promise<void>) {
     const cwd = process.cwd();
     const workDir = path.join(fs.mkdtempSync(path.join(os.tmpdir(), path.basename(__filename))), appName);
     copySync(path.join(MIGRATION_APPS_PATH, appName, MIGRATION_APP_INPUT_DIR), workDir);
     process.chdir(workDir);
     try {
-      await callback(new MigrationApp(appName));
+      const app = new MigrationApp(appName);
+      await callback(app);
+
+      const snapshot = await app.compare(process.cwd());
+      const isUpdatingSnapshots = expect.getState().snapshotState._updateSnapshot === 'all';
+
+      if (snapshot.changed) {
+        console.log(snapshot.report());
+        if (isUpdatingSnapshots) {
+          snapshot.update();
+        }
+      }
+      expect(snapshot.changed).toBeFalsy();
     } finally {
       process.chdir(cwd);
     }
