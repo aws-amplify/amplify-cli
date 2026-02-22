@@ -44,18 +44,18 @@ export class MigrationApp {
   public readonly id: string;
 
   /**
-   * Name of the (single) environment in the app.
-   */
-  public readonly environmentName: string;
-
-  /**
    * Region of the app. Taken from `amplify-meta.json`.
    */
   public readonly region: string;
 
   /**
+   * Name of the (single) environment in the app. Taken from `team-provider-info.json`.
+   */
+  public readonly environmentName: string;
+
+  /**
    * Mock SDK clients that return responses based on local information
-   * in the app files. Use this to customize mocks for test specific needs.
+   * in the app files. Use this to further customize mocks for test specific needs.
    */
   public readonly clients: MockClients;
 
