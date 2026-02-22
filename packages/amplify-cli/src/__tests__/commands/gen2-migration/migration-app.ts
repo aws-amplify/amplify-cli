@@ -12,6 +12,8 @@ const MIGRATION_APPS_PATH = path.join(__dirname, '..', '..', '..', '..', '..', '
 const MIGRATION_APP_INPUT_DIR = '_snapshot.input';
 const MIGRATION_APP_EXPECTED_DIR = '_snapshot.expected';
 
+export const CFN_NESTED_STACK_SEPARATOR = '/';
+
 export class MigrationApp {
   /**
    * Path in the repository to the application input directory.
@@ -151,6 +153,50 @@ export class MigrationApp {
     }
 
     return report.join('\n');
+  }
+
+  public templatePathForStack(stackName: string) {
+    const parts = stackName.split(CFN_NESTED_STACK_SEPARATOR);
+
+    if (parts.length === 1) {
+      return path.join(this.ccbPath, 'awscloudformation', 'build', 'root-cloudformation-stack.json');
+    }
+
+    if (parts[1].startsWith('auth')) {
+      const authName = parts[1].substring(4);
+      return path.join(this.ccbPath, 'auth', authName, 'build', `${authName}-cloudformation-template.json`);
+    }
+
+    if (parts[1].startsWith('storage')) {
+      const storageName = parts[1].substring(7);
+      return path.join(this.ccbPath, 'storage', storageName, 'build', 'cloudformation-template.json');
+    }
+
+    if (parts[1].startsWith('function')) {
+      const functionName = parts[1].substring(8);
+      return path.join(this.ccbPath, 'function', functionName, `${functionName}-cloudformation-template.json`);
+    }
+
+    if (parts[1].startsWith('api')) {
+      const apiName = parts[1].substring(3);
+
+      if (parts.length === 2) {
+        return path.join(this.ccbPath, 'api', apiName, 'build', 'cloudformation-template.json');
+      }
+
+      if (parts.length === 3) {
+        let nestedStackName = parts[2];
+        if (nestedStackName === 'CustomResourcesjson') {
+          // why god why
+          nestedStackName = 'CustomResources';
+        }
+        return path.join(this.ccbPath, 'api', apiName, 'build', 'stacks', `${nestedStackName}.json`);
+      }
+
+      throw new Error(`Unexpected number of parts for stack: ${stackName}`);
+    }
+
+    throw new Error(`Unable to locate template path for stack: ${stackName}`);
   }
 
   public templateForResource(resourceName: string, category: string) {

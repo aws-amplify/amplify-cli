@@ -1,6 +1,5 @@
 import 'aws-sdk-client-mock-jest';
 import { mockClient } from 'aws-sdk-client-mock';
-import * as path from 'path';
 import * as amplify from '@aws-sdk/client-amplify';
 import * as lambda from '@aws-sdk/client-lambda';
 import * as cloudformation from '@aws-sdk/client-cloudformation';
@@ -9,10 +8,8 @@ import * as cognito from '@aws-sdk/client-cognito-identity';
 import * as s3 from '@aws-sdk/client-s3';
 import * as appsync from '@aws-sdk/client-appsync';
 import * as cwe from '@aws-sdk/client-cloudwatch-events';
-import { MigrationApp } from './migration-app';
+import { CFN_NESTED_STACK_SEPARATOR, MigrationApp } from './migration-app';
 import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
-
-const CFN_NESTED_STACK_SEPARATOR = '/';
 
 export class MockClients {
   public readonly amplify;
@@ -234,7 +231,7 @@ export class MockClients {
     mock
       .on(cloudformation.DescribeStackResourcesCommand)
       .callsFake(async (input: cloudformation.DescribeStackResourcesInput): Promise<cloudformation.DescribeStackResourcesOutput> => {
-        const templatePath = this.templatePathForStack(input.StackName!, this.app.ccbPath);
+        const templatePath = this.app.templatePathForStack(input.StackName!);
 
         const template: any = JSONUtilities.readJson(templatePath);
         const stackResources: cloudformation.StackResource[] = [];
@@ -286,49 +283,5 @@ export class MockClients {
         };
       });
     return mock;
-  }
-
-  private templatePathForStack(stackName: string, ccbPath: string) {
-    const parts = stackName.split(CFN_NESTED_STACK_SEPARATOR);
-
-    if (parts.length === 1) {
-      return path.join(ccbPath, 'awscloudformation', 'build', 'root-cloudformation-stack.json');
-    }
-
-    if (parts[1].startsWith('auth')) {
-      const authName = parts[1].substring(4);
-      return path.join(ccbPath, 'auth', authName, 'build', `${authName}-cloudformation-template.json`);
-    }
-
-    if (parts[1].startsWith('storage')) {
-      const storageName = parts[1].substring(7);
-      return path.join(ccbPath, 'storage', storageName, 'build', 'cloudformation-template.json');
-    }
-
-    if (parts[1].startsWith('function')) {
-      const functionName = parts[1].substring(8);
-      return path.join(ccbPath, 'function', functionName, `${functionName}-cloudformation-template.json`);
-    }
-
-    if (parts[1].startsWith('api')) {
-      const apiName = parts[1].substring(3);
-
-      if (parts.length === 2) {
-        return path.join(ccbPath, 'api', apiName, 'build', 'cloudformation-template.json');
-      }
-
-      if (parts.length === 3) {
-        let nestedStackName = parts[2];
-        if (nestedStackName === 'CustomResourcesjson') {
-          // why god why
-          nestedStackName = 'CustomResources';
-        }
-        return path.join(ccbPath, 'api', apiName, 'build', 'stacks', `${nestedStackName}.json`);
-      }
-
-      throw new Error(`Unexpected number of parts for stack: ${stackName}`);
-    }
-
-    throw new Error(`Unable to locate template path for stack: ${stackName}`);
   }
 }
