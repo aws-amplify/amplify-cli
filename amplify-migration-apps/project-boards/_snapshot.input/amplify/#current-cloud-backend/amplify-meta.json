@@ -2,14 +2,14 @@
   "providers": {
     "awscloudformation": {
       "AuthRoleName": "amplify-projectboards-main-1e851-authRole",
-      "UnauthRoleArn": "arn:aws:iam::185706627232:role/amplify-projectboards-main-1e851-unauthRole",
-      "AuthRoleArn": "arn:aws:iam::185706627232:role/amplify-projectboards-main-1e851-authRole",
+      "UnauthRoleArn": "arn:aws:iam::123456789012:role/amplify-projectboards-main-1e851-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::123456789012:role/amplify-projectboards-main-1e851-authRole",
       "Region": "us-east-1",
       "DeploymentBucketName": "amplify-projectboards-main-1e851-deployment",
       "UnauthRoleName": "amplify-projectboards-main-1e851-unauthRole",
       "StackName": "amplify-projectboards-main-1e851",
-      "StackId": "arn:aws:cloudformation:us-east-1:185706627232:stack/amplify-projectboards-main-1e851/029682c0-0c3e-11f1-ae8e-0afffb0fdd77",
-      "AmplifyAppId": "dy86y74g3z1fj"
+      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-projectboards-main-1e851/029682c0-0c3e-11f1-ae8e-0afffb0fdd77",
+      "AmplifyAppId": "xxxxxxxxxxxxx"
     }
   },
   "api": {
@@ -42,7 +42,7 @@
         },
         "GraphQLAPIIdOutput": "n3nft7hnjrbwxiwpb32fcdqfaa",
         "GraphQLAPIEndpointOutput": "https://kjho46blfjdudjg4hpfiyxl6di.appsync-api.us-east-1.amazonaws.com/graphql",
-        "GraphQLAPIKeyOutput": "da2-ihcpwku6tjh75p2ca7f5g4hpla"
+        "GraphQLAPIKeyOutput": "da2-fakeapikey00000000000000"
       },
       "providerPlugin": "awscloudformation",
       "service": "AppSync",
@@ -85,7 +85,7 @@
         "AppClientIDWeb": "31ib29fmt8pit5atkqhu9sqdj6",
         "AppClientID": "40m2eail7obsfr3gr3pd1bnm7i",
         "IdentityPoolId": "us-east-1:d5d1f861-3901-4467-9556-daf1290873b8",
-        "UserPoolArn": "arn:aws:cognito-idp:us-east-1:185706627232:userpool/us-east-1_u2JZpr8U2",
+        "UserPoolArn": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_u2JZpr8U2",
         "IdentityPoolName": "projectboardsc8c5bcda_identitypool_c8c5bcda__main",
         "UserPoolName": "projectboardsc8c5bcda_userpool_c8c5bcda"
       },
@@ -103,9 +103,9 @@
       "providerPlugin": "awscloudformation",
       "service": "Lambda",
       "output": {
-        "LambdaExecutionRoleArn": "arn:aws:iam::185706627232:role/projectboardsLambdaRoled0cb5790-main",
+        "LambdaExecutionRoleArn": "arn:aws:iam::123456789012:role/projectboardsLambdaRoled0cb5790-main",
         "Region": "us-east-1",
-        "Arn": "arn:aws:lambda:us-east-1:185706627232:function:quotegenerator-main",
+        "Arn": "arn:aws:lambda:us-east-1:123456789012:function:quotegenerator-main",
         "Name": "quotegenerator-main",
         "LambdaExecutionRole": "projectboardsLambdaRoled0cb5790-main"
       },
