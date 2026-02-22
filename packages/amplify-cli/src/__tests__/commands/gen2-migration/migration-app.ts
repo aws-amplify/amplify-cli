@@ -110,15 +110,16 @@ export class MigrationApp {
     }
   }
 
-  public async compare(actualDir: string, ignorePatterns: RegExp[]): Promise<Snapshot> {
-    const differences = await diff({ expectedDir: this.expectedPath, actualDir, ignorePatterns });
+  public async compare(actualDir: string, ignorePatterns?: RegExp[]): Promise<Snapshot> {
+    const fulleIgnorePatterns = [...(ignorePatterns ?? []), /node_modules/];
+    const differences = await diff({ expectedDir: this.expectedPath, actualDir, ignorePatterns: fulleIgnorePatterns });
     return new Snapshot({
       appName: this.name,
       expectedPath: this.expectedPath,
       inputPath: this.inputPath,
       actualPath: actualDir,
       differences: differences,
-      ignorePatterns,
+      ignorePatterns: fulleIgnorePatterns,
     });
   }
 
