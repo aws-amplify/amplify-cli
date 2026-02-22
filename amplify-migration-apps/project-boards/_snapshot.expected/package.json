@@ -8,7 +8,6 @@
   },
   "scripts": {
     "dev": "vite",
-    "typecheck:backend": "cd amplify && tsc --noEmit",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",

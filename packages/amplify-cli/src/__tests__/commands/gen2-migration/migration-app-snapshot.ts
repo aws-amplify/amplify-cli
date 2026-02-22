@@ -1,4 +1,5 @@
-import { FileDiff } from './directories';
+import { copySync, FileDiff } from './directories';
+import * as fs from 'fs-extra';
 import chalk from 'chalk';
 
 export interface SnapshotProps {
@@ -60,5 +61,10 @@ export class Snapshot {
     }
 
     return report.join('\n');
+  }
+
+  public update() {
+    fs.rmSync(this.props.expectedPath);
+    copySync(this.props.actualPath, this.props.expectedPath);
   }
 }
