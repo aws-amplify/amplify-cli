@@ -408,7 +408,7 @@ export async function updateGitIgnoreForGen2() {
   }
   // remove empty lines
   newGitIgnore = newGitIgnore.replace(/^\s*[\r\n]/gm, '');
-  await fs.writeFile(`${cwd}/.gitignore`, newGitIgnore, { encoding: 'utf-8' });
+  await fs.writeFile(`${cwd}/.gitignore`, `${newGitIgnore}\n`, { encoding: 'utf-8' });
 }
 
 const getCustomResources = async (ccbFetcher: BackendDownloader, backendEnvironment: BackendEnvironment): Promise<string[]> => {
