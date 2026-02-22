@@ -9,6 +9,8 @@ import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import chalk from 'chalk';
 
 const MIGRATION_APPS_PATH = path.join(__dirname, '..', '..', '..', '..', '..', '..', 'amplify-migration-apps');
+const MIGRATION_APP_INPUT_DIR = '_snapshot.input';
+const MIGRATION_APP_EXPECTED_DIR = '_snapshot.expected';
 
 export class MigrationApp {
   /**
@@ -64,8 +66,8 @@ export class MigrationApp {
 
   constructor(name: string) {
     this.name = name;
-    this.inputPath = path.join(MIGRATION_APPS_PATH, this.name, '_snapshot.input');
-    this.expectedPath = path.join(MIGRATION_APPS_PATH, this.name, '_snapshot.expected');
+    this.inputPath = path.join(MIGRATION_APPS_PATH, this.name, MIGRATION_APP_INPUT_DIR);
+    this.expectedPath = path.join(MIGRATION_APPS_PATH, this.name, MIGRATION_APP_EXPECTED_DIR);
 
     const amplifyPath = path.join(this.inputPath, 'amplify');
     const ccbPath = path.join(amplifyPath, '#current-cloud-backend');
@@ -92,7 +94,7 @@ export class MigrationApp {
   public static async with(appName: string, callback: (app: MigrationApp) => Promise<void>) {
     const cwd = process.cwd();
     const workDir = path.join(fs.mkdtempSync(path.join(os.tmpdir(), path.basename(__filename))), appName);
-    copySync(path.join(MIGRATION_APPS_PATH, appName, '_snapshot.input'), workDir);
+    copySync(path.join(MIGRATION_APPS_PATH, appName, MIGRATION_APP_INPUT_DIR), workDir);
     process.chdir(workDir);
     try {
       await callback(new MigrationApp(appName));
