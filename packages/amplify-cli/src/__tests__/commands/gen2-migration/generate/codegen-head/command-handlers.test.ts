@@ -45,15 +45,19 @@ test('project boards snapshot', async () => {
     // this function overrides workdir with the gen2 app.
     await prepare(app.logger, app.id, app.environmentName, app.region);
 
-    const report = app.compare(workDir, [/node_modules/, /.gitignore/, /package.json/]);
-    expect(report).toBeUndefined();
+    const report = await app.compare(workDir, [/node_modules/, /.gitignore/, /package.json/]);
+
+    if (report) {
+      console.log(report);
+      throw new Error('Snapshot changes detected. See above report for details.');
+    }
   });
 });
 
 async function withTempDir(appName: string, callback: (tempDir: string) => Promise<void>) {
   const cwd = process.cwd();
   const workDir = path.join(fs.mkdtempSync(path.join(os.tmpdir(), path.basename(__filename))), appName);
-  copySync(path.join(MIGRATION_APPS_PATH, appName), workDir);
+  copySync(path.join(MIGRATION_APPS_PATH, appName, '_snapshot.input'), workDir);
   process.chdir(workDir);
   try {
     await callback(workDir);
@@ -144,26 +148,24 @@ class App {
       return undefined;
     }
 
-    const diffReport = [
-      '======= Snapshot Comparison Report =======',
+    const report = [
+      '',
+      `----------- Snapshot Report (${this.name}) -----------`,
       '',
       ` • Actual: ${actualDir}`,
       ` • Expected: ${this.expectedPath}`,
       ` • Input: ${this.inputPath}`,
       ` • Ignored: ${ignorePatterns}`,
-      '',
-      '------------------------------------------',
-      '',
     ];
 
     // first print the missing/extra files
     for (const difference of differences.filter((f) => !f.diff)) {
       switch (difference.diffType) {
         case 'missing':
-          diffReport.push(chalk.bold(chalk.red(`(-) ${difference.relativePath} (${difference.diffType})`)));
+          report.push(chalk.bold(chalk.red(`(-) ${difference.relativePath} (${difference.diffType})`)));
           break;
         case 'extra':
-          diffReport.push(chalk.bold(chalk.green(`(+) ${difference.relativePath} (${difference.diffType})`)));
+          report.push(chalk.bold(chalk.green(`(+) ${difference.relativePath} (${difference.diffType})`)));
           break;
         case 'modified':
           // handled separately below
@@ -173,16 +175,16 @@ class App {
       }
     }
 
-    diffReport.push('');
+    report.push('');
 
     // then print the modified files
     for (const difference of differences.filter((f) => f.diff)) {
-      diffReport.push(chalk.bold(chalk.yellow(`(~) ${difference.relativePath} (${difference.diffType})`)));
-      diffReport.push('');
-      diffReport.push(difference.diff!);
+      report.push(chalk.bold(chalk.yellow(`(~) ${difference.relativePath} (${difference.diffType})`)));
+      report.push('');
+      report.push(difference.diff!);
     }
 
-    return diffReport.join('\n');
+    return report.join('\n');
   }
 
   public templatePathForStack(stackName: string) {

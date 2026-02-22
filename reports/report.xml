@@ -1,26 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="3" failures="1" errors="0" time="75.702">
-  <testsuite name="undefined" errors="0" failures="1" skipped="2" timestamp="2026-02-22T03:28:22" time="75.572" tests="3">
-    <testcase classname=" should pass" name=" should pass" time="0">
-      <skipped/>
+<testsuites name="jest tests" tests="3" failures="0" errors="0" time="9.546">
+  <testsuite name="undefined" errors="0" failures="0" skipped="0" timestamp="2026-02-22T04:00:59" time="9.502" tests="3">
+    <testcase classname=" should pass" name=" should pass" time="0.001">
     </testcase>
     <testcase classname=" sets up toBeACloudFormationCommand" name=" sets up toBeACloudFormationCommand" time="0">
-      <skipped/>
     </testcase>
-    <testcase classname=" project boards snapshot" name=" project boards snapshot" time="65.603">
-      <failure>ProjectNotInitializedError: No Amplify backend project files detected within this folder.
-    at projectNotInitializedError (/Users/epolon/dev/src/github.com/aws-amplify/amplify-cli/packages/amplify-cli-core/src/errors/project-not-initialized-error.ts:7:3)
-    at PathManager.constructPath (/Users/epolon/dev/src/github.com/aws-amplify/amplify-cli/packages/amplify-cli-core/src/state-manager/pathManager.ts:288:37)
-    at PathManager.getResourceDirectoryPath (/Users/epolon/dev/src/github.com/aws-amplify/amplify-cli/packages/amplify-cli-core/src/state-manager/pathManager.ts:152:10)
-    at PathManager.getResourceInputsJsonFilePath (/Users/epolon/dev/src/github.com/aws-amplify/amplify-cli/packages/amplify-cli-core/src/state-manager/pathManager.ts:155:20)
-    at StateManager.getResourceInputsJson (/Users/epolon/dev/src/github.com/aws-amplify/amplify-cli/packages/amplify-cli-core/src/state-manager/stateManager.ts:209:34)
-    at getAuthTriggersConnections (/Users/epolon/dev/src/github.com/aws-amplify/amplify-cli/packages/amplify-cli/src/commands/gen2-migration/generate/codegen-head/command-handlers.ts:218:35)
-    at AppAuthDefinitionFetcher.getDefinition (/Users/epolon/dev/src/github.com/aws-amplify/amplify-cli/packages/amplify-cli/src/commands/gen2-migration/generate/codegen-head/app_auth_definition_fetcher.ts:216:36)
-    at generateGen2Code (/Users/epolon/dev/src/github.com/aws-amplify/amplify-cli/packages/amplify-cli/src/commands/gen2-migration/generate/codegen-head/command-handlers.ts:111:16)
-    at prepare (/Users/epolon/dev/src/github.com/aws-amplify/amplify-cli/packages/amplify-cli/src/commands/gen2-migration/generate/codegen-head/command-handlers.ts:652:3)
-    at /Users/epolon/dev/src/github.com/aws-amplify/amplify-cli/packages/amplify-cli/src/__tests__/commands/gen2-migration/generate/codegen-head/command-handlers.test.ts:46:5
-    at withTempDir (/Users/epolon/dev/src/github.com/aws-amplify/amplify-cli/packages/amplify-cli/src/__tests__/commands/gen2-migration/generate/codegen-head/command-handlers.test.ts:59:5)
-    at Object.&lt;anonymous&gt; (/Users/epolon/dev/src/github.com/aws-amplify/amplify-cli/packages/amplify-cli/src/__tests__/commands/gen2-migration/generate/codegen-head/command-handlers.test.ts:44:3)</failure>
+    <testcase classname=" project boards snapshot" name=" project boards snapshot" time="0.321">
     </testcase>
   </testsuite>
 </testsuites>

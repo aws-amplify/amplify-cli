@@ -2,10 +2,10 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import { diff as jestDiff } from 'jest-diff';
 
-interface FileDiff {
-  relativePath: string;
-  diffType: 'missing' | 'extra' | 'modified';
-  diff?: string;
+export interface FileDiff {
+  readonly relativePath: string;
+  readonly diffType: 'missing' | 'extra' | 'modified';
+  readonly diff?: string;
 }
 
 export interface DiffDirectoriesOptions {
