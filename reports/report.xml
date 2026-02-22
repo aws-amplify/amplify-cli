@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="3" failures="0" errors="0" time="9.144">
-  <testsuite name="undefined" errors="0" failures="0" skipped="0" timestamp="2026-02-21T23:24:37" time="9.089" tests="3">
-    <testcase classname=" should pass" name=" should pass" time="0.002">
+<testsuites name="jest tests" tests="3" failures="0" errors="0" time="9.724">
+  <testsuite name="undefined" errors="0" failures="0" skipped="0" timestamp="2026-02-21T23:25:15" time="9.663" tests="3">
+    <testcase classname=" should pass" name=" should pass" time="0.001">
     </testcase>
     <testcase classname=" sets up toBeACloudFormationCommand" name=" sets up toBeACloudFormationCommand" time="0">
     </testcase>
-    <testcase classname=" project boards snapshot" name=" project boards snapshot" time="0.329">
+    <testcase classname=" project boards snapshot" name=" project boards snapshot" time="0.341">
     </testcase>
   </testsuite>
 </testsuites>

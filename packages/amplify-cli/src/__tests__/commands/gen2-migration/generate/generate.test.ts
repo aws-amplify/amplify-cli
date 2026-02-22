@@ -43,39 +43,17 @@ import { Logger } from '../../../../commands/gen2-migration';
 import { BackendDownloader } from '../../../../commands/gen2-migration/generate/codegen-head/backend_downloader';
 import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 
-// Mock pathManager.findProjectRoot to return the current working directory
-jest.mock('@aws-amplify/amplify-cli-core', () => {
-  const actual = jest.requireActual('@aws-amplify/amplify-cli-core');
-  return {
-    ...actual,
-    pathManager: {
-      ...actual.pathManager,
-      findProjectRoot: jest.fn(() => process.cwd()),
-    },
-  };
-});
 jest.unmock('fs-extra');
 
-// beforeEach(() => {
+afterEach(() => {
+  jest.restoreAllMocks();
+  jest.clearAllMocks();
+});
 
-//   // Mock pathManager.findProjectRoot to return the current working directory
-//   jest.mock('@aws-amplify/amplify-cli-core', () => {
-//     const actual = jest.requireActual('@aws-amplify/amplify-cli-core');
-//     return {
-//       ...actual,
-//       pathManager: {
-//         ...actual.pathManager,
-//         findProjectRoot: jest.fn(() => process.cwd()),
-//       },
-//     };
-//   });
-//   jest.unmock('fs-extra');
-
-// })
-
-// afterEach(() => {
-//   jest.resetAllMocks();
-// });
+afterAll(() => {
+  jest.resetModules();
+  jest.mock('fs-extra');
+});
 
 test('project boards snapshot', async () => {
   // mock amplify client
