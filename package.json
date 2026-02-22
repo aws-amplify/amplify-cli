@@ -97,7 +97,8 @@
     "yargs": "^17.7.2"
   },
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "amplify-migration-apps/**/_snapshot.expected"
   ],
   "devDependencies": {
     "@babel/cli": "^7.27.0",
