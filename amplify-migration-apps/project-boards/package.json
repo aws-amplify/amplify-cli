@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "vite",
     "sanitize:input": "cd _snapshot.input && tsx ../../sanitize-backend.ts",
-    "typecheck:expected": "cd _snapshot.expected/amplify && tsc --noEmit",
+    "typecheck:expected": "cd _snapshot.expected/amplify && npx tsc --noEmit",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
