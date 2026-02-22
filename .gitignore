@@ -107,3 +107,5 @@ packages/amplify-environment-parameters/lib/
 
 .nx/cache
 .nx/workspace-data
+
+reports/*.xml
