@@ -35,12 +35,13 @@ describe('prepare', () => {
       await MigrationApp.with(appName, async (app: MigrationApp) => {
         await prepare(app.logger, app.id, app.environmentName, app.region);
 
-        const report = await app.compare(process.cwd(), [/node_modules/, /.gitignore/, /package.json/]);
+        const snapshot = await app.compare(process.cwd(), [/node_modules/, /.gitignore/, /package.json/]);
 
-        if (report) {
-          console.log(report);
-          throw new Error('Snapshot changes detected. See above report for details.');
+        if (snapshot.changed) {
+          console.log(snapshot.report());
         }
+
+        expect(snapshot.changed).toBeFalsy();
       });
     });
   });

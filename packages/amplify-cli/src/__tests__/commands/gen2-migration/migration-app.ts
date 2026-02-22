@@ -1,12 +1,12 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as os from 'os';
-import { MockClients } from './mock-clients';
+import { MockClients } from './migration-app-mock-clients';
 import { diff, copySync } from './directories';
 import { Logger } from '../../../commands/gen2-migration';
 import { BackendDownloader } from '../../../commands/gen2-migration/generate/codegen-head/backend_downloader';
 import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
-import chalk from 'chalk';
+import { Snapshot } from './migration-app-snapshot';
 
 const MIGRATION_APPS_PATH = path.join(__dirname, '..', '..', '..', '..', '..', '..', 'amplify-migration-apps');
 const MIGRATION_APP_INPUT_DIR = '_snapshot.input';
@@ -110,49 +110,16 @@ export class MigrationApp {
     }
   }
 
-  public async compare(actualDir: string, ignorePatterns: RegExp[]): Promise<string | undefined> {
+  public async compare(actualDir: string, ignorePatterns: RegExp[]): Promise<Snapshot> {
     const differences = await diff({ expectedDir: this.expectedPath, actualDir, ignorePatterns });
-    if (differences.length === 0) {
-      return undefined;
-    }
-
-    const report = [
-      '',
-      `----------- Snapshot Report (${this.name}) -----------`,
-      '',
-      ` • Actual: ${actualDir}`,
-      ` • Expected: ${this.expectedPath}`,
-      ` • Input: ${this.inputPath}`,
-      ` • Ignored: ${ignorePatterns}`,
-    ];
-
-    // first print the missing/extra files
-    for (const difference of differences.filter((f) => !f.diff)) {
-      switch (difference.diffType) {
-        case 'missing':
-          report.push(chalk.bold(chalk.red(`(-) ${difference.relativePath} (${difference.diffType})`)));
-          break;
-        case 'extra':
-          report.push(chalk.bold(chalk.green(`(+) ${difference.relativePath} (${difference.diffType})`)));
-          break;
-        case 'modified':
-          // handled separately below
-          break;
-        default:
-          throw new Error(`Unrecognized diff type: ${difference.diffType}`);
-      }
-    }
-
-    report.push('');
-
-    // then print the modified files
-    for (const difference of differences.filter((f) => f.diff)) {
-      report.push(chalk.bold(chalk.yellow(`(~) ${difference.relativePath} (${difference.diffType})`)));
-      report.push('');
-      report.push(difference.diff!);
-    }
-
-    return report.join('\n');
+    return new Snapshot({
+      appName: this.name,
+      expectedPath: this.expectedPath,
+      inputPath: this.inputPath,
+      actualPath: actualDir,
+      differences: differences,
+      ignorePatterns,
+    });
   }
 
   public templatePathForStack(stackName: string) {
