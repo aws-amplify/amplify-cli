@@ -28,24 +28,37 @@ export type PackageJson = {
 
 const withDefault = (version?: string) => version ?? '*';
 
+const sortObjectKeys = <T extends Record<string, string>>(obj: T): T => {
+  return Object.keys(obj)
+    .sort()
+    .reduce((sorted, key) => {
+      sorted[key] = obj[key];
+      return sorted;
+    }, {} as Record<string, string>) as T;
+};
+
 export const patchNpmPackageJson = (packageJson: PackageJson, packageVersions: Partial<AmplifyPackageVersions> = {}): PackageJson => {
+  const devDependencies = sortObjectKeys({
+    ...(packageJson.devDependencies ?? {}),
+    '@aws-amplify/backend': withDefault(packageVersions['@aws-amplify/backend']),
+    '@aws-amplify/backend-cli': withDefault(packageVersions['@aws-amplify/backend-cli']),
+    '@aws-amplify/backend-data': withDefault(packageVersions['@aws-amplify/backend-data']),
+    'aws-cdk': withDefault(packageVersions['aws-cdk']),
+    'aws-cdk-lib': withDefault(packageVersions['aws-cdk-lib']),
+    'ci-info': withDefault(packageVersions['ci-info']),
+    constructs: withDefault(packageVersions.constructs),
+    esbuild: withDefault(packageVersions.esbuild),
+    tsx: withDefault(packageVersions.tsx),
+    '@types/node': withDefault(packageVersions['@types/node']),
+  });
+
+  const dependencies = sortObjectKeys({
+    ...(packageJson.dependencies ?? {}),
+  });
+
   return {
     ...packageJson,
-    devDependencies: {
-      ...(packageJson.devDependencies ?? {}),
-      '@aws-amplify/backend': withDefault(packageVersions['@aws-amplify/backend']),
-      '@aws-amplify/backend-cli': withDefault(packageVersions['@aws-amplify/backend-cli']),
-      '@aws-amplify/backend-data': withDefault(packageVersions['@aws-amplify/backend-data']),
-      'aws-cdk': withDefault(packageVersions['aws-cdk']),
-      'aws-cdk-lib': withDefault(packageVersions['aws-cdk-lib']),
-      'ci-info': withDefault(packageVersions['ci-info']),
-      constructs: withDefault(packageVersions.constructs),
-      esbuild: withDefault(packageVersions.esbuild),
-      tsx: withDefault(packageVersions.tsx),
-      '@types/node': withDefault(packageVersions['@types/node']),
-    },
-    dependencies: {
-      ...(packageJson.dependencies ?? {}),
-    },
+    devDependencies,
+    dependencies,
   };
 };
