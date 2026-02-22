@@ -70,8 +70,6 @@ export class MigrationApp {
     const amplifyPath = path.join(this.inputPath, 'amplify');
     const ccbPath = path.join(amplifyPath, '#current-cloud-backend');
 
-    (BackendDownloader as any).ccbDir = ccbPath;
-
     this.meta = JSONUtilities.readJson(path.join(ccbPath, 'amplify-meta.json'));
     this.tpi = JSONUtilities.readJson(path.join(amplifyPath, 'team-provider-info.json'));
     this.id = this.meta.providers.awscloudformation.AmplifyAppId;
@@ -81,9 +79,14 @@ export class MigrationApp {
     if (environments.length !== 1) {
       throw new Error(`Unexpected number of environments in app ${this.name}: ${environments.length}`);
     }
+
     this.environmentName = environments[0];
     this.clients = new MockClients(this);
     this.logger = new Logger('generate', this.name, this.environmentName);
+
+    // prevents the code from downloading ccb from s3 and instead
+    // point to the local input file.
+    (BackendDownloader as any).ccbDir = ccbPath;
   }
 
   public static async with(appName: string, callback: (app: MigrationApp) => Promise<void>) {
