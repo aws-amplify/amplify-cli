@@ -41,12 +41,10 @@ describe('prepare', () => {
 
         if (snapshot.changed) {
           console.log(snapshot.report());
+          if (isUpdatingSnapshots) {
+            snapshot.update();
+          }
         }
-
-        if (isUpdatingSnapshots) {
-          snapshot.update();
-        }
-
         expect(snapshot.changed).toBeFalsy();
       });
     });

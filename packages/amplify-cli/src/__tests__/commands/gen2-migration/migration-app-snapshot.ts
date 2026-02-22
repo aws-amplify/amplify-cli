@@ -64,6 +64,7 @@ export class Snapshot {
   }
 
   public update() {
+    console.log(`Updating snapshot: ${this.props.expectedPath}`);
     fs.rmSync(this.props.expectedPath, { recursive: true });
     copySync(this.props.actualPath, this.props.expectedPath);
   }
