@@ -24,6 +24,11 @@ export class MigrationApp {
   public readonly expectedPath: string;
 
   /**
+   * Path to the #current-cloud-backend directory inside the local app dir.
+   */
+  public readonly ccbPath: string;
+
+  /**
    * Name of the app.
    */
   public readonly name: string;
@@ -70,9 +75,9 @@ export class MigrationApp {
     this.expectedPath = path.join(MIGRATION_APPS_PATH, this.name, MIGRATION_APP_EXPECTED_DIR);
 
     const amplifyPath = path.join(this.inputPath, 'amplify');
-    const ccbPath = path.join(amplifyPath, '#current-cloud-backend');
+    this.ccbPath = path.join(amplifyPath, '#current-cloud-backend');
 
-    this.meta = JSONUtilities.readJson(path.join(ccbPath, 'amplify-meta.json'));
+    this.meta = JSONUtilities.readJson(path.join(this.ccbPath, 'amplify-meta.json'));
     this.tpi = JSONUtilities.readJson(path.join(amplifyPath, 'team-provider-info.json'));
     this.id = this.meta.providers.awscloudformation.AmplifyAppId;
     this.region = this.meta.providers.awscloudformation.Region;
@@ -88,7 +93,7 @@ export class MigrationApp {
 
     // prevents the code from downloading ccb from s3 and instead
     // point to the local input file.
-    (BackendDownloader as any).ccbDir = ccbPath;
+    (BackendDownloader as any).ccbDir = this.ccbPath;
   }
 
   public static async with(appName: string, callback: (app: MigrationApp) => Promise<void>) {
@@ -146,51 +151,5 @@ export class MigrationApp {
     }
 
     return report.join('\n');
-  }
-
-  public templatePathForStack(stackName: string) {
-    const ccbPath = path.join(this.inputPath, 'amplify', '#current-cloud-backend');
-
-    const parts = stackName.split('/');
-
-    if (parts.length === 1) {
-      return path.join(ccbPath, 'awscloudformation', 'build', 'root-cloudformation-stack.json');
-    }
-
-    if (parts[1].startsWith('auth')) {
-      const authName = parts[1].substring(4);
-      return path.join(ccbPath, 'auth', authName, 'build', `${authName}-cloudformation-template.json`);
-    }
-
-    if (parts[1].startsWith('storage')) {
-      const storageName = parts[1].substring(7);
-      return path.join(ccbPath, 'storage', storageName, 'build', 'cloudformation-template.json');
-    }
-
-    if (parts[1].startsWith('function')) {
-      const functionName = parts[1].substring(8);
-      return path.join(ccbPath, 'function', functionName, `${functionName}-cloudformation-template.json`);
-    }
-
-    if (parts[1].startsWith('api')) {
-      const apiName = parts[1].substring(3);
-
-      if (parts.length === 2) {
-        return path.join(ccbPath, 'api', apiName, 'build', 'cloudformation-template.json');
-      }
-
-      if (parts.length === 3) {
-        let nestedStackName = parts[2];
-        if (nestedStackName === 'CustomResourcesjson') {
-          // why god why
-          nestedStackName = 'CustomResources';
-        }
-        return path.join(ccbPath, 'api', apiName, 'build', 'stacks', `${nestedStackName}.json`);
-      }
-
-      throw new Error(`Unexpected number of parts for stack: ${stackName}`);
-    }
-
-    throw new Error(`Unable to locate template path for stack: ${stackName}`);
   }
 }
