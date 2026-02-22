@@ -1,6 +1,6 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { diff } from 'jest-diff';
+import { diff as jestDiff } from 'jest-diff';
 
 interface FileDiff {
   relativePath: string;
@@ -8,7 +8,7 @@ interface FileDiff {
   diff?: string;
 }
 
-export interface CompareDirectoriesOptions {
+export interface DiffDirectoriesOptions {
   readonly actualDir: string;
   readonly expectedDir: string;
   readonly ignorePatterns?: RegExp[];
@@ -17,7 +17,7 @@ export interface CompareDirectoriesOptions {
 /**
  * Recursively compares two directories and returns formatted diffs.
  */
-export async function compareDirectories(options: CompareDirectoriesOptions): Promise<FileDiff[]> {
+export async function diff(options: DiffDirectoriesOptions): Promise<FileDiff[]> {
   const differences: FileDiff[] = [];
 
   const expectedFiles = await getFilesRecursively(options.expectedDir, '', options.ignorePatterns);
@@ -47,7 +47,7 @@ export async function compareDirectories(options: CompareDirectoriesOptions): Pr
       const actualContent = await fs.readFile(path.join(options.actualDir, file), 'utf-8');
 
       if (expectedContent !== actualContent) {
-        const fileDiff = diff(expectedContent, actualContent, {
+        const fileDiff = jestDiff(expectedContent, actualContent, {
           aAnnotation: 'Expected',
           bAnnotation: 'Actual',
         });
@@ -84,4 +84,17 @@ async function getFilesRecursively(dir: string, base = '', ignorePatterns?: RegE
   }
 
   return files;
+}
+
+export function copySync(src: string, dest: string): void {
+  fs.mkdirSync(dest, { recursive: true });
+  for (const entry of fs.readdirSync(src, { withFileTypes: true })) {
+    const srcPath = path.join(src, entry.name);
+    const destPath = path.join(dest, entry.name);
+    if (entry.isDirectory()) {
+      copySync(srcPath, destPath);
+    } else {
+      fs.copyFileSync(srcPath, destPath);
+    }
+  }
 }
