@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import 'aws-sdk-client-mock-jest';
-import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
+import { mockClient } from 'aws-sdk-client-mock';
 import * as amplify from '@aws-sdk/client-amplify';
 import * as lambda from '@aws-sdk/client-lambda';
 import * as cloudformation from '@aws-sdk/client-cloudformation';
@@ -35,7 +35,7 @@ afterAll(() => {
   jest.mock('fs-extra');
 });
 
-const MIGRATION_APPS_PATH = path.join(__dirname, '..', '..', '..', '..', '..', '..', '..', 'amplify-migration-apps');
+const MIGRATION_APPS_PATH = path.join(__dirname, '..', '..', '..', '..', '..', '..', '..', '..', 'amplify-migration-apps');
 
 test('project boards snapshot', async () => {
   const appName = 'project-boards';
@@ -233,14 +233,14 @@ class App {
 }
 
 class MockClients {
-  public readonly amplify: AwsClientStub<amplify.AmplifyClient>;
-  public readonly cloudformation: AwsClientStub<cloudformation.CloudFormationClient>;
-  public readonly lambda: AwsClientStub<lambda.LambdaClient>;
-  public readonly cognitoIdentityProvider: AwsClientStub<idp.CognitoIdentityProviderClient>;
-  public readonly cognitoIdentity: AwsClientStub<cognito.CognitoIdentityClient>;
-  public readonly cwe: AwsClientStub<cwe.CloudWatchEventsClient>;
-  public readonly appsync: AwsClientStub<appsync.AppSyncClient>;
-  public readonly s3: AwsClientStub<s3.S3Client>;
+  public readonly amplify;
+  public readonly cloudformation;
+  public readonly lambda;
+  public readonly cognitoIdentityProvider;
+  public readonly cognitoIdentity;
+  public readonly cwe;
+  public readonly appsync;
+  public readonly s3;
 
   constructor(private readonly app: App) {
     this.amplify = this.mockAmplify();
