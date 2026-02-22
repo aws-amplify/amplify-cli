@@ -12,19 +12,23 @@ const AMPLIFY_DIR = path.join(__dirname, 'amplify');
  * Sanitizes sensitive values in Amplify project files for safe public commit.
  *
  * Strategy:
- * 1. Extract sensitive values from known reliable sources (team-provider-info.json)
+ * 1. Extract sensitive values from known reliable sources
  * 2. Replace ALL occurrences of those values across all files
  *
  * Targets:
  * - AWS Account IDs (12-digit numbers extracted from ARNs)
  * - AppSync API Keys (da2-* format)
  * - Amplify App IDs
+ * - Cognito User Pool IDs
+ * - GraphQL API IDs
  */
 
 interface SensitiveValues {
   accountIds: Set<string>;
   apiKeys: Set<string>;
   amplifyAppIds: Set<string>;
+  cognitoUserPoolIds: Set<string>;
+  graphqlApiIds: Set<string>;
 }
 
 function extractSensitiveValues(content: string): SensitiveValues {
@@ -32,6 +36,8 @@ function extractSensitiveValues(content: string): SensitiveValues {
     accountIds: new Set(),
     apiKeys: new Set(),
     amplifyAppIds: new Set(),
+    cognitoUserPoolIds: new Set(),
+    graphqlApiIds: new Set(),
   };
 
   // Extract AWS Account IDs from ARNs (12-digit numbers)
@@ -51,6 +57,18 @@ function extractSensitiveValues(content: string): SensitiveValues {
   const amplifyAppIdPattern = /"AmplifyAppId":\s*"([a-z0-9]+)"/g;
   while ((match = amplifyAppIdPattern.exec(content)) !== null) {
     values.amplifyAppIds.add(match[1]);
+  }
+
+  // Extract Cognito User Pool IDs from JSON key (format: us-east-1_XXXXXXXXX)
+  const cognitoUserPoolIdPattern = /"UserPoolId":\s*"([a-z]+-[a-z]+-\d+_[A-Za-z0-9]+)"/g;
+  while ((match = cognitoUserPoolIdPattern.exec(content)) !== null) {
+    values.cognitoUserPoolIds.add(match[1]);
+  }
+
+  // Extract GraphQL API IDs from JSON key
+  const graphqlApiIdPattern = /"GraphQLAPIIdOutput":\s*"([a-z0-9]+)"/g;
+  while ((match = graphqlApiIdPattern.exec(content)) !== null) {
+    values.graphqlApiIds.add(match[1]);
   }
 
   return values;
@@ -87,6 +105,8 @@ function main(): void {
     accountIds: new Set(),
     apiKeys: new Set(),
     amplifyAppIds: new Set(),
+    cognitoUserPoolIds: new Set(),
+    graphqlApiIds: new Set(),
   };
 
   for (const file of files) {
@@ -95,12 +115,16 @@ function main(): void {
     values.accountIds.forEach((v) => allValues.accountIds.add(v));
     values.apiKeys.forEach((v) => allValues.apiKeys.add(v));
     values.amplifyAppIds.forEach((v) => allValues.amplifyAppIds.add(v));
+    values.cognitoUserPoolIds.forEach((v) => allValues.cognitoUserPoolIds.add(v));
+    values.graphqlApiIds.forEach((v) => allValues.graphqlApiIds.add(v));
   }
 
   console.log('Sensitive values found:');
   console.log(`  - AWS Account IDs: ${[...allValues.accountIds].join(', ') || 'none'}`);
   console.log(`  - AppSync API Keys: ${[...allValues.apiKeys].join(', ') || 'none'}`);
   console.log(`  - Amplify App IDs: ${[...allValues.amplifyAppIds].join(', ') || 'none'}`);
+  console.log(`  - Cognito User Pool IDs: ${[...allValues.cognitoUserPoolIds].join(', ') || 'none'}`);
+  console.log(`  - GraphQL API IDs: ${[...allValues.graphqlApiIds].join(', ') || 'none'}`);
   console.log('');
 
   // Phase 2: Replace all occurrences in all files
@@ -133,6 +157,22 @@ function main(): void {
       if (content.includes(appId)) {
         content = content.split(appId).join('xxxxxxxxxxxxx');
         changes.push(`Amplify App ID: ${appId} -> xxxxxxxxxxxxx`);
+      }
+    }
+
+    // Replace Cognito User Pool IDs
+    for (const poolId of allValues.cognitoUserPoolIds) {
+      if (content.includes(poolId)) {
+        content = content.split(poolId).join('us-east-1_XXXXXXXXX');
+        changes.push(`Cognito User Pool ID: ${poolId} -> us-east-1_XXXXXXXXX`);
+      }
+    }
+
+    // Replace GraphQL API IDs
+    for (const apiId of allValues.graphqlApiIds) {
+      if (content.includes(apiId)) {
+        content = content.split(apiId).join('xxxxxxxxxxxxxxxxxxxxxxxxxx');
+        changes.push(`GraphQL API ID: ${apiId} -> xxxxxxxxxxxxxxxxxxxxxxxxxx`);
       }
     }
 

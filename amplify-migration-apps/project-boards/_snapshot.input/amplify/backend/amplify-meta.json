@@ -44,11 +44,11 @@
       },
       "lastPushTimeStamp": "2026-02-17T20:35:15.671Z",
       "output": {
-        "UserPoolId": "us-east-1_u2JZpr8U2",
+        "UserPoolId": "us-east-1_XXXXXXXXX",
         "AppClientIDWeb": "31ib29fmt8pit5atkqhu9sqdj6",
         "AppClientID": "40m2eail7obsfr3gr3pd1bnm7i",
         "IdentityPoolId": "us-east-1:d5d1f861-3901-4467-9556-daf1290873b8",
-        "UserPoolArn": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_u2JZpr8U2",
+        "UserPoolArn": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_XXXXXXXXX",
         "IdentityPoolName": "projectboardsc8c5bcda_identitypool_c8c5bcda__main",
         "UserPoolName": "projectboardsc8c5bcda_userpool_c8c5bcda"
       },
@@ -85,7 +85,7 @@
             }
           ]
         },
-        "GraphQLAPIIdOutput": "n3nft7hnjrbwxiwpb32fcdqfaa",
+        "GraphQLAPIIdOutput": "xxxxxxxxxxxxxxxxxxxxxxxxxx",
         "GraphQLAPIEndpointOutput": "https://kjho46blfjdudjg4hpfiyxl6di.appsync-api.us-east-1.amazonaws.com/graphql",
         "GraphQLAPIKeyOutput": "da2-fakeapikey00000000000000"
       },
