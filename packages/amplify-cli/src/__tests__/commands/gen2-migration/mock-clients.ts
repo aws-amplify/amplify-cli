@@ -66,8 +66,8 @@ export class MockClients {
           {
             authenticationType: 'AMAZON_COGNITO_USER_POOLS',
             userPoolConfig: {
-              awsRegion: 'us-east-1',
-              userPoolId: 'us-east-1_u2JZpr8U2',
+              awsRegion: this.app.region,
+              userPoolId: this.app.meta.auth['projectboardsc8c5bcda'].output.UserPoolId,
             },
           },
         ],
