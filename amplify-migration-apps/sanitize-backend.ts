@@ -93,8 +93,6 @@ function getAllFiles(dir: string): string[] {
 }
 
 function main(): void {
-  console.log(`Scanning directory: ${AMPLIFY_DIR}\n`);
-
   const files = getAllFiles(AMPLIFY_DIR);
 
   // Phase 1: Extract all sensitive values from all files
@@ -116,28 +114,15 @@ function main(): void {
     values.graphqlApiIds.forEach((v) => allValues.graphqlApiIds.add(v));
   }
 
-  console.log('Sensitive values found:');
-  console.log(`  - AWS Account IDs: ${[...allValues.accountIds].join(', ') || 'none'}`);
-  console.log(`  - AppSync API Keys: ${[...allValues.apiKeys].join(', ') || 'none'}`);
-  console.log(`  - Amplify App IDs: ${[...allValues.amplifyAppIds].join(', ') || 'none'}`);
-  console.log(`  - Cognito User Pool IDs: ${[...allValues.cognitoUserPoolIds].join(', ') || 'none'}`);
-  console.log(`  - GraphQL API IDs: ${[...allValues.graphqlApiIds].join(', ') || 'none'}`);
-  console.log('');
-
   // Phase 2: Replace all occurrences in all files
-  let totalReplacements = 0;
-  let filesModified = 0;
-
   for (const file of files) {
     let content = fs.readFileSync(file, 'utf-8');
     const originalContent = content;
-    const changes: string[] = [];
 
     // Replace account IDs
     for (const accountId of allValues.accountIds) {
       if (content.includes(accountId)) {
         content = content.split(accountId).join('123456789012');
-        changes.push(`AWS Account ID: ${accountId} -> 123456789012`);
       }
     }
 
@@ -145,7 +130,6 @@ function main(): void {
     for (const apiKey of allValues.apiKeys) {
       if (content.includes(apiKey)) {
         content = content.split(apiKey).join('da2-fakeapikey00000000000000');
-        changes.push(`AppSync API Key: ${apiKey} -> da2-fakeapikey00000000000000`);
       }
     }
 
@@ -153,7 +137,6 @@ function main(): void {
     for (const appId of allValues.amplifyAppIds) {
       if (content.includes(appId)) {
         content = content.split(appId).join('xxxxxxxxxxxxx');
-        changes.push(`Amplify App ID: ${appId} -> xxxxxxxxxxxxx`);
       }
     }
 
@@ -161,7 +144,6 @@ function main(): void {
     for (const poolId of allValues.cognitoUserPoolIds) {
       if (content.includes(poolId)) {
         content = content.split(poolId).join('us-east-1_XXXXXXXXX');
-        changes.push(`Cognito User Pool ID: ${poolId} -> us-east-1_XXXXXXXXX`);
       }
     }
 
@@ -169,23 +151,14 @@ function main(): void {
     for (const apiId of allValues.graphqlApiIds) {
       if (content.includes(apiId)) {
         content = content.split(apiId).join('xxxxxxxxxxxxxxxxxxxxxxxxxx');
-        changes.push(`GraphQL API ID: ${apiId} -> xxxxxxxxxxxxxxxxxxxxxxxxxx`);
       }
     }
 
     if (content !== originalContent) {
-      const relativePath = path.relative(__dirname, file);
-      console.log(`${relativePath}:`);
-      for (const change of changes) {
-        console.log(`  - ${change}`);
-      }
       fs.writeFileSync(file, content, 'utf-8');
-      totalReplacements += changes.length;
-      filesModified++;
     }
   }
 
-  console.log(`\nSanitization complete. ${totalReplacements} replacements in ${filesModified} files.`);
 }
 
 main();
