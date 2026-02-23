@@ -99,26 +99,19 @@ export class MigrationApp {
   }
 
   /**
-   * Runs a snapshot test for a migration app.
+   * Runs a functions in an isolated app specific environment.
    *
-   * This method sets up an isolated test environment by copying the app's input snapshot
-   * to a temporary directory, executing the provided callback (which typically performs
-   * the migration), and then comparing the resulting files against the expected snapshot.
+   * This method sets up a test environment by copying the app's input snapshot
+   * to a temporary directory and executing the provided callback. The callback
+   * receives a `MigrationApp` instance configured to work within the temporary
+   * directory.
    *
-   * If differences are detected and Jest is running in update mode (`--updateSnapshot`),
-   * the expected snapshot will be automatically updated. Otherwise, the test will fail
-   * and a diff report will be logged.
+   * Note: This method does not perform snapshot comparison. Use the `compare()`
+   * method within the callback to compare results against expected snapshots.
    *
    * @param appName - The name of the migration app (corresponds to a directory under `amplify-migration-apps/`).
    * @param callback - An async function that receives the `MigrationApp` instance and performs the migration logic to test.
    *
-   * @example
-   * ```typescript
-   * await MigrationApp.snapshot('my-app', async (app) => {
-   *   // Perform migration operations using app.clients, app.logger, etc.
-   *   await runMigration(app);
-   * });
-   * ```
    */
   public static async run(appName: string, callback: (app: MigrationApp) => Promise<void>) {
     const cwd = process.cwd();
