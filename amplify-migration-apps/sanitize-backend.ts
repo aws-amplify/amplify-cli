@@ -14,6 +14,7 @@
  * - AWS Account ID (from providers.awscloudformation ARN)
  * - Amplify App ID (from providers.awscloudformation)
  * - Deployment Bucket Name (from providers.awscloudformation)
+ * - Stack Name (from providers.awscloudformation)
  * - Cognito User Pool ID (from auth output)
  * - GraphQL API ID (from api output)
  * - AppSync API Key (from api output)
@@ -29,6 +30,7 @@ interface SensitiveValues {
   accountId: string;
   amplifyAppId: string;
   deploymentBucketName: string;
+  stackName: string;
   cognitoUserPoolId: string | null;
   graphqlApiId: string | null;
   apiKey: string | null;
@@ -59,6 +61,14 @@ function extractDeploymentBucketName(): string {
   return bucketName;
 }
 
+function extractStackName(): string {
+  const stackName = AMPLIFY_META.providers.awscloudformation.StackName;
+  if (!stackName) {
+    throw new Error('Could not extract StackName from amplify-meta.json');
+  }
+  return stackName;
+}
+
 function extractCognitoUserPoolId(): string | null {
   if (!AMPLIFY_META.auth) return null;
   const firstAuthResource = Object.keys(AMPLIFY_META.auth)[0];
@@ -82,6 +92,7 @@ function extractSensitiveValues(): SensitiveValues {
     accountId: extractAccountId(),
     amplifyAppId: extractAmplifyAppId(),
     deploymentBucketName: extractDeploymentBucketName(),
+    stackName: extractStackName(),
     cognitoUserPoolId: extractCognitoUserPoolId(),
     graphqlApiId: extractGraphqlApiId(),
     apiKey: extractApiKey(),
@@ -118,6 +129,7 @@ function main(): void {
     content = content.replaceAll(values.accountId, '123456789012');
     content = content.replaceAll(values.amplifyAppId, 'xxxxxxxxxxxxx');
     content = content.replaceAll(values.deploymentBucketName, 'amplify-xxxxx-deployment');
+    content = content.replaceAll(values.stackName, 'amplify-xxxxx-main-xxxxx');
 
     if (values.cognitoUserPoolId) {
       content = content.replaceAll(values.cognitoUserPoolId, 'us-east-1_XXXXXXXXX');

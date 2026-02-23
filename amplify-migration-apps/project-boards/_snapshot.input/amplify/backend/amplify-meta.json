@@ -1,14 +1,14 @@
 {
   "providers": {
     "awscloudformation": {
-      "AuthRoleName": "amplify-projectboards-main-1e851-authRole",
-      "UnauthRoleArn": "arn:aws:iam::123456789012:role/amplify-projectboards-main-1e851-unauthRole",
-      "AuthRoleArn": "arn:aws:iam::123456789012:role/amplify-projectboards-main-1e851-authRole",
+      "AuthRoleName": "amplify-xxxxx-main-xxxxx-authRole",
+      "UnauthRoleArn": "arn:aws:iam::123456789012:role/amplify-xxxxx-main-xxxxx-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::123456789012:role/amplify-xxxxx-main-xxxxx-authRole",
       "Region": "us-east-1",
       "DeploymentBucketName": "amplify-xxxxx-deployment",
-      "UnauthRoleName": "amplify-projectboards-main-1e851-unauthRole",
-      "StackName": "amplify-projectboards-main-1e851",
-      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-projectboards-main-1e851/029682c0-0c3e-11f1-ae8e-0afffb0fdd77",
+      "UnauthRoleName": "amplify-xxxxx-main-xxxxx-unauthRole",
+      "StackName": "amplify-xxxxx-main-xxxxx",
+      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-xxxxx-main-xxxxx/029682c0-0c3e-11f1-ae8e-0afffb0fdd77",
       "AmplifyAppId": "xxxxxxxxxxxxx"
     }
   },
