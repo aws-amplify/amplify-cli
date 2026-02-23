@@ -36,6 +36,10 @@ test('project-boards snapshot', async () => {
   await testSnapshot('project-boards');
 });
 
+test('project-boards-backend-only snapshot', async () => {
+  await testSnapshot('project-boards-backend-only');
+});
+
 async function testSnapshot(appName: string, customize?: (app: MigrationApp) => Promise<void>) {
   await MigrationApp.run(appName, async (app: MigrationApp) => {
     if (customize) {
