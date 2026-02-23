@@ -14,6 +14,10 @@ const MIGRATION_APP_EXPECTED_DIR = '_snapshot.expected';
 
 export const CFN_NESTED_STACK_SEPARATOR = '/';
 
+export interface AppOptions {
+  readonly buildSpec?: string;
+}
+
 export class MigrationApp {
   /**
    * Path in the repository to the application input directory.
@@ -71,7 +75,13 @@ export class MigrationApp {
    */
   public readonly logger: Logger;
 
-  constructor(name: string) {
+  /**
+   * Custom options for the app, provided by individual tests.
+   */
+  public readonly options: AppOptions;
+
+  constructor(name: string, options: AppOptions = {}) {
+    this.options = options;
     this.name = name;
     this.inputPath = path.join(MIGRATION_APPS_PATH, this.name, MIGRATION_APP_INPUT_DIR);
     this.expectedPath = path.join(MIGRATION_APPS_PATH, this.name, MIGRATION_APP_EXPECTED_DIR);
@@ -113,13 +123,13 @@ export class MigrationApp {
    * @param callback - An async function that receives the `MigrationApp` instance and performs the migration logic to test.
    *
    */
-  public static async run(appName: string, callback: (app: MigrationApp) => Promise<void>) {
+  public static async run(appName: string, callback: (app: MigrationApp) => Promise<void>, appOptions?: AppOptions) {
     const cwd = process.cwd();
     const workDir = path.join(fs.mkdtempSync(path.join(os.tmpdir(), path.basename(__filename))), appName);
     copySync(path.join(MIGRATION_APPS_PATH, appName, MIGRATION_APP_INPUT_DIR), workDir);
     process.chdir(workDir);
     try {
-      const app = new MigrationApp(appName);
+      const app = new MigrationApp(appName, appOptions);
       await callback(app);
     } finally {
       process.chdir(cwd);
