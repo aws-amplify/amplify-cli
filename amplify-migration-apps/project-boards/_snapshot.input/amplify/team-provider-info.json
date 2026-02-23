@@ -5,7 +5,7 @@
       "UnauthRoleArn": "arn:aws:iam::123456789012:role/amplify-projectboards-main-1e851-unauthRole",
       "AuthRoleArn": "arn:aws:iam::123456789012:role/amplify-projectboards-main-1e851-authRole",
       "Region": "us-east-1",
-      "DeploymentBucketName": "amplify-projectboards-main-1e851-deployment",
+      "DeploymentBucketName": "amplify-xxxxx-deployment",
       "UnauthRoleName": "amplify-projectboards-main-1e851-unauthRole",
       "StackName": "amplify-projectboards-main-1e851",
       "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-projectboards-main-1e851/029682c0-0c3e-11f1-ae8e-0afffb0fdd77",
@@ -17,7 +17,7 @@
       },
       "function": {
         "quotegenerator": {
-          "deploymentBucketName": "amplify-projectboards-main-1e851-deployment",
+          "deploymentBucketName": "amplify-xxxxx-deployment",
           "s3Key": "amplify-builds/quotegenerator-65333647482b4d4f2f64-build.zip"
         }
       },

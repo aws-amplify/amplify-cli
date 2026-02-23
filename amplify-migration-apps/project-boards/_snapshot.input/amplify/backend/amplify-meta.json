@@ -5,7 +5,7 @@
       "UnauthRoleArn": "arn:aws:iam::123456789012:role/amplify-projectboards-main-1e851-unauthRole",
       "AuthRoleArn": "arn:aws:iam::123456789012:role/amplify-projectboards-main-1e851-authRole",
       "Region": "us-east-1",
-      "DeploymentBucketName": "amplify-projectboards-main-1e851-deployment",
+      "DeploymentBucketName": "amplify-xxxxx-deployment",
       "UnauthRoleName": "amplify-projectboards-main-1e851-unauthRole",
       "StackName": "amplify-projectboards-main-1e851",
       "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-projectboards-main-1e851/029682c0-0c3e-11f1-ae8e-0afffb0fdd77",
@@ -39,7 +39,7 @@
         ]
       },
       "providerMetadata": {
-        "s3TemplateURL": "https://s3.amazonaws.com/amplify-projectboards-main-1e851-deployment/amplify-cfn-templates/auth/projectboardsc8c5bcda-cloudformation-template.json",
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-xxxxx-deployment/amplify-cfn-templates/auth/projectboardsc8c5bcda-cloudformation-template.json",
         "logicalId": "authprojectboardsc8c5bcda"
       },
       "lastPushTimeStamp": "2026-02-17T20:35:15.671Z",
@@ -91,7 +91,7 @@
       },
       "lastPushTimeStamp": "2026-02-17T20:35:15.671Z",
       "providerMetadata": {
-        "s3TemplateURL": "https://s3.amazonaws.com/amplify-projectboards-main-1e851-deployment/amplify-cfn-templates/api/cloudformation-template.json",
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-xxxxx-deployment/amplify-cfn-templates/api/cloudformation-template.json",
         "logicalId": "apiprojectboards"
       },
       "lastPushDirHash": "Q31daLCDVDoSmbMccEFd3WZxLk4="
@@ -104,7 +104,7 @@
       "dependsOn": [],
       "lastPushTimeStamp": "2026-02-17T20:35:15.671Z",
       "providerMetadata": {
-        "s3TemplateURL": "https://s3.amazonaws.com/amplify-projectboards-main-1e851-deployment/amplify-cfn-templates/storage/cloudformation-template.json",
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-xxxxx-deployment/amplify-cfn-templates/storage/cloudformation-template.json",
         "logicalId": "storages368401baa"
       },
       "output": {
@@ -124,11 +124,11 @@
       "lastPackageTimeStamp": "2026-02-17T20:30:31.443Z",
       "distZipFilename": "quotegenerator-65333647482b4d4f2f64-build.zip",
       "s3Bucket": {
-        "deploymentBucketName": "amplify-projectboards-main-1e851-deployment",
+        "deploymentBucketName": "amplify-xxxxx-deployment",
         "s3Key": "amplify-builds/quotegenerator-65333647482b4d4f2f64-build.zip"
       },
       "providerMetadata": {
-        "s3TemplateURL": "https://s3.amazonaws.com/amplify-projectboards-main-1e851-deployment/amplify-cfn-templates/function/quotegenerator-cloudformation-template.json",
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-xxxxx-deployment/amplify-cfn-templates/function/quotegenerator-cloudformation-template.json",
         "logicalId": "functionquotegenerator"
       },
       "lastPushTimeStamp": "2026-02-17T20:35:15.671Z",
