@@ -1,5 +1,8 @@
 {
   "name": "project-boards-backend-only-main-gen2",
+  "installConfig": {
+    "hoistingLimits": "workspaces"
+  },
   "dependencies": {
     "cli-table3": "0.6.5"
   },
