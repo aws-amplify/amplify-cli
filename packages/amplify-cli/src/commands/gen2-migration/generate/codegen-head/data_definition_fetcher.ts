@@ -6,6 +6,7 @@ import assert from 'node:assert';
 import { DataDefinition } from '../core/migration-pipeline';
 import { AdditionalAuthProvider } from '../generators/data';
 import { pathManager } from '@aws-amplify/amplify-cli-core';
+import { APIGatewayClient, GetResourcesCommand } from '@aws-sdk/client-api-gateway';
 
 /** Configuration for a single path in Gen1 REST API from cli-inputs.json */
 interface Gen1PathConfig {
@@ -36,6 +37,11 @@ interface Gen1ApiObject {
     category: string;
     resourceName: string;
   }>;
+  output?: {
+    ApiId?: string;
+    ApiName?: string;
+    RootUrl?: string;
+  };
 }
 
 /** Processed REST API definition ready for Gen2 migration */
@@ -47,6 +53,8 @@ export interface RestApiDefinition {
   corsConfiguration?: CorsConfiguration;
   // Support for multiple Lambda functions
   uniqueFunctions?: string[];
+  gen1RestApiId?: string;
+  gen1ApiResourceId?: string;
 }
 
 /** Individual path configuration within a REST API */
@@ -209,6 +217,9 @@ export class DataDefinitionFetcher {
           }
         });
 
+        const restApiId = apiObj.output?.ApiId;
+        const rootResourceId = restApiId ? await this.getGen1ApiResourceId(restApiId) : undefined;
+
         restApis.push({
           apiName,
           functionName: defaultFunctionName || 'defaultFunction',
@@ -216,6 +227,8 @@ export class DataDefinitionFetcher {
           authType: authType !== 'NONE' ? authType : undefined,
           corsConfiguration,
           uniqueFunctions: Array.from(uniqueFunctions),
+          gen1RestApiId: restApiId,
+          gen1ApiResourceId: rootResourceId,
         });
       }
     }
@@ -386,6 +399,16 @@ export class DataDefinitionFetcher {
     } catch (error) {
       throw new Error(`Failed to fetch logging config from AWS: ${error.message}`);
     }
+  };
+  /**
+   * Fetches root resource ID from AWS API Gateway
+   */
+  private getGen1ApiResourceId = async (restApiId: string): Promise<string | undefined> => {
+    const client = new APIGatewayClient({});
+    const response = await client.send(new GetResourcesCommand({ restApiId }));
+
+    const rootResource = response.items?.find((resource) => resource.path === '/');
+    return rootResource?.id;
   };
 
   /**

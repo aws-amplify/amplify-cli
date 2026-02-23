@@ -1633,10 +1633,13 @@ export class BackendSynthesizer {
                     factory.createStringLiteral(`Gen1${restApi.apiName}Api`),
                     factory.createObjectLiteralExpression(
                       [
-                        factory.createPropertyAssignment('restApiId', factory.createStringLiteral(`<gen1-${restApi.apiName}-api-id>`)),
+                        factory.createPropertyAssignment(
+                          'restApiId',
+                          factory.createStringLiteral(restApi.gen1RestApiId || `${restApi.apiName}`),
+                        ),
                         factory.createPropertyAssignment(
                           'rootResourceId',
-                          factory.createStringLiteral(`<gen1-${restApi.apiName}-root-resource-id>`),
+                          factory.createStringLiteral(restApi.gen1ApiResourceId || `${restApi.apiName}`),
                         ),
                       ],
                       true,
