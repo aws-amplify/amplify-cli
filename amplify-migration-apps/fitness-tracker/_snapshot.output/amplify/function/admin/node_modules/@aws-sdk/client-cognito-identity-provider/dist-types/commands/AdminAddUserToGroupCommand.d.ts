@@ -1,0 +1,117 @@
+import { Command as $Command } from "@smithy/smithy-client";
+import type { MetadataBearer as __MetadataBearer } from "@smithy/types";
+import type { CognitoIdentityProviderClientResolvedConfig, ServiceInputTypes, ServiceOutputTypes } from "../CognitoIdentityProviderClient";
+import type { AdminAddUserToGroupRequest } from "../models/models_0";
+/**
+ * @public
+ */
+export type { __MetadataBearer };
+export { $Command };
+/**
+ * @public
+ *
+ * The input for {@link AdminAddUserToGroupCommand}.
+ */
+export interface AdminAddUserToGroupCommandInput extends AdminAddUserToGroupRequest {
+}
+/**
+ * @public
+ *
+ * The output of {@link AdminAddUserToGroupCommand}.
+ */
+export interface AdminAddUserToGroupCommandOutput extends __MetadataBearer {
+}
+declare const AdminAddUserToGroupCommand_base: {
+    new (input: AdminAddUserToGroupCommandInput): import("@smithy/smithy-client").CommandImpl<AdminAddUserToGroupCommandInput, AdminAddUserToGroupCommandOutput, CognitoIdentityProviderClientResolvedConfig, ServiceInputTypes, ServiceOutputTypes>;
+    new (input: AdminAddUserToGroupCommandInput): import("@smithy/smithy-client").CommandImpl<AdminAddUserToGroupCommandInput, AdminAddUserToGroupCommandOutput, CognitoIdentityProviderClientResolvedConfig, ServiceInputTypes, ServiceOutputTypes>;
+    getEndpointParameterInstructions(): import("@smithy/middleware-endpoint").EndpointParameterInstructions;
+};
+/**
+ * <p>Adds a user to a group. A user who is in a group can present a preferred-role claim to
+ *             an identity pool, and populates a <code>cognito:groups</code> claim to their access and
+ *             identity tokens.</p>
+ *          <note>
+ *             <p>Amazon Cognito evaluates Identity and Access Management (IAM) policies in requests for this API operation. For
+ *     this operation, you must use IAM credentials to authorize requests, and you must
+ *     grant yourself the corresponding IAM permission in a policy.</p>
+ *             <p class="title">
+ *                <b>Learn more</b>
+ *             </p>
+ *             <ul>
+ *                <li>
+ *                   <p>
+ *                      <a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_aws-signing.html">Signing Amazon Web Services API Requests</a>
+ *                   </p>
+ *                </li>
+ *                <li>
+ *                   <p>
+ *                      <a href="https://docs.aws.amazon.com/cognito/latest/developerguide/user-pools-API-operations.html">Using the Amazon Cognito user pools API and user pool endpoints</a>
+ *                   </p>
+ *                </li>
+ *             </ul>
+ *          </note>
+ * @example
+ * Use a bare-bones client and the command you need to make an API call.
+ * ```javascript
+ * import { CognitoIdentityProviderClient, AdminAddUserToGroupCommand } from "@aws-sdk/client-cognito-identity-provider"; // ES Modules import
+ * // const { CognitoIdentityProviderClient, AdminAddUserToGroupCommand } = require("@aws-sdk/client-cognito-identity-provider"); // CommonJS import
+ * // import type { CognitoIdentityProviderClientConfig } from "@aws-sdk/client-cognito-identity-provider";
+ * const config = {}; // type is CognitoIdentityProviderClientConfig
+ * const client = new CognitoIdentityProviderClient(config);
+ * const input = { // AdminAddUserToGroupRequest
+ *   UserPoolId: "STRING_VALUE", // required
+ *   Username: "STRING_VALUE", // required
+ *   GroupName: "STRING_VALUE", // required
+ * };
+ * const command = new AdminAddUserToGroupCommand(input);
+ * const response = await client.send(command);
+ * // {};
+ *
+ * ```
+ *
+ * @param AdminAddUserToGroupCommandInput - {@link AdminAddUserToGroupCommandInput}
+ * @returns {@link AdminAddUserToGroupCommandOutput}
+ * @see {@link AdminAddUserToGroupCommandInput} for command's `input` shape.
+ * @see {@link AdminAddUserToGroupCommandOutput} for command's `response` shape.
+ * @see {@link CognitoIdentityProviderClientResolvedConfig | config} for CognitoIdentityProviderClient's `config` shape.
+ *
+ * @throws {@link InternalErrorException} (server fault)
+ *  <p>This exception is thrown when Amazon Cognito encounters an internal error.</p>
+ *
+ * @throws {@link InvalidParameterException} (client fault)
+ *  <p>This exception is thrown when the Amazon Cognito service encounters an invalid
+ *             parameter.</p>
+ *
+ * @throws {@link NotAuthorizedException} (client fault)
+ *  <p>This exception is thrown when a user isn't authorized.</p>
+ *
+ * @throws {@link ResourceNotFoundException} (client fault)
+ *  <p>This exception is thrown when the Amazon Cognito service can't find the requested
+ *             resource.</p>
+ *
+ * @throws {@link TooManyRequestsException} (client fault)
+ *  <p>This exception is thrown when the user has made too many requests for a given
+ *             operation.</p>
+ *
+ * @throws {@link UserNotFoundException} (client fault)
+ *  <p>This exception is thrown when a user isn't found.</p>
+ *
+ * @throws {@link CognitoIdentityProviderServiceException}
+ * <p>Base exception class for all service exceptions from CognitoIdentityProvider service.</p>
+ *
+ *
+ * @public
+ */
+export declare class AdminAddUserToGroupCommand extends AdminAddUserToGroupCommand_base {
+    /** @internal type navigation helper, not in runtime. */
+    protected static __types: {
+        api: {
+            input: AdminAddUserToGroupRequest;
+            output: {};
+        };
+        sdk: {
+            input: AdminAddUserToGroupCommandInput;
+            output: AdminAddUserToGroupCommandOutput;
+        };
+    };
+}
