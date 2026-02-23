@@ -32,14 +32,26 @@ afterAll(() => {
   jest.mock('fs-extra');
 });
 
-describe('prepare', () => {
-  describe('migration apps snapshot', () => {
-    test('project-boards', async () => {
-      const appName = 'project-boards';
-
-      await MigrationApp.snapshot(appName, async (app: MigrationApp) => {
-        await prepare(app.logger, app.id, app.environmentName, app.region);
-      });
-    });
-  });
+test('project-boards snapshot', async () => {
+  await testSnapshot('project-boards');
 });
+
+async function testSnapshot(appName: string, customize?: (app: MigrationApp) => Promise<void>) {
+  await MigrationApp.run(appName, async (app: MigrationApp) => {
+    if (customize) {
+      await customize(app);
+    }
+    await prepare(app.logger, app.id, app.environmentName, app.region);
+
+    const snapshot = await app.compare(process.cwd());
+    const isUpdatingSnapshots = expect.getState().snapshotState._updateSnapshot === 'all';
+
+    if (snapshot.changed) {
+      console.log(snapshot.report());
+      if (isUpdatingSnapshots) {
+        snapshot.update();
+      }
+    }
+    expect(snapshot.changed).toBeFalsy();
+  });
+}
