@@ -69,7 +69,7 @@
     "@aws-amplify/plugin-types": "^1.11.1",
     "@aws-cdk/cloudformation-diff": "~2.68.0",
     "@aws-sdk/client-amplify": "^3.919.0",
-    "@aws-sdk/client-api-gateway": "^3.0.0",
+    "@aws-sdk/client-api-gateway": "^3.919.0",
     "@aws-sdk/client-appsync": "^3.919.0",
     "@aws-sdk/client-cloudformation": "^3.919.0",
     "@aws-sdk/client-cloudwatch-events": "^3.919.0",
