@@ -10,9 +10,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "configure": "./configure.sh",
-    "configure-schema": "./configure-schema.sh",
-    "sanitize:input": "cd _snapshot.input && tsx ../../sanitize-backend.ts",
-    "typecheck:expected": "cd _snapshot.expected/amplify && npx tsc --noEmit"
+    "configure-schema": "./configure-schema.sh"
   },
   "dependencies": {
     "@aws-amplify/ui-react": "^6.13.1",

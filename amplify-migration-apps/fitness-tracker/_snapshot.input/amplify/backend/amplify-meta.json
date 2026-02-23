@@ -1,0 +1,194 @@
+{
+  "providers": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-xxxxx-main-xxxxx-authRole",
+      "UnauthRoleArn": "arn:aws:iam::123456789012:role/amplify-xxxxx-main-xxxxx-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::123456789012:role/amplify-xxxxx-main-xxxxx-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-xxxxx-deployment",
+      "UnauthRoleName": "amplify-xxxxx-main-xxxxx-unauthRole",
+      "StackName": "amplify-xxxxx-main-xxxxx",
+      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-xxxxx-main-xxxxx/fb3059a0-1103-11f1-b4bc-12900acd78d7",
+      "AmplifyAppId": "xxxxxxxxxxxxx"
+    }
+  },
+  "api": {
+    "adminapi": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "admin"
+        },
+        {
+          "attributes": [
+            "UserPoolId"
+          ],
+          "category": "auth",
+          "resourceName": "fitnesstracker969d5a9e969d5a9e"
+        },
+        {
+          "attributes": [
+            "AdminGroupRole"
+          ],
+          "category": "auth",
+          "resourceName": "userPoolGroups"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
+    },
+    "fitnesstracker": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "UserPoolId"
+          ],
+          "category": "auth",
+          "resourceName": "fitnesstracker969d5a9e969d5a9e"
+        }
+      ],
+      "output": {
+        "authConfig": {
+          "additionalAuthenticationProviders": [
+            {
+              "apiKeyConfig": {
+                "apiKeyExpirationDate": "2026-03-02T21:32:41.297Z",
+                "apiKeyExpirationDays": 7,
+                "description": "graphql"
+              },
+              "authenticationType": "API_KEY"
+            }
+          ],
+          "defaultAuthentication": {
+            "authenticationType": "AMAZON_COGNITO_USER_POOLS",
+            "userPoolConfig": {
+              "userPoolId": "authfitnesstracker969d5a9e969d5a9e"
+            }
+          }
+        }
+      },
+      "providerPlugin": "awscloudformation",
+      "service": "AppSync"
+    },
+    "nutritionapi": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "lognutrition"
+        },
+        {
+          "attributes": [
+            "UserPoolId"
+          ],
+          "category": "auth",
+          "resourceName": "fitnesstracker969d5a9e969d5a9e"
+        },
+        {
+          "attributes": [
+            "AdminGroupRole"
+          ],
+          "category": "auth",
+          "resourceName": "userPoolGroups"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
+    }
+  },
+  "auth": {
+    "fitnesstracker969d5a9e969d5a9e": {
+      "customAuth": false,
+      "dependsOn": [
+        {
+          "attributes": [
+            "Arn",
+            "Name"
+          ],
+          "category": "function",
+          "resourceName": "fitnesstracker969d5a9e969d5a9ePreSignup",
+          "triggerProvider": "Cognito"
+        }
+      ],
+      "frontendAuthConfig": {
+        "mfaConfiguration": "OFF",
+        "mfaTypes": [
+          "SMS"
+        ],
+        "passwordProtectionSettings": {
+          "passwordPolicyMinLength": 8,
+          "passwordPolicyCharacters": []
+        },
+        "signupAttributes": [
+          "EMAIL"
+        ],
+        "socialProviders": [],
+        "usernameAttributes": [],
+        "verificationMechanisms": [
+          "EMAIL"
+        ]
+      },
+      "providerPlugin": "awscloudformation",
+      "service": "Cognito"
+    },
+    "userPoolGroups": {
+      "dependsOn": [
+        {
+          "category": "auth",
+          "resourceName": "fitnesstracker969d5a9e969d5a9e",
+          "attributes": [
+            "UserPoolId",
+            "AppClientIDWeb",
+            "AppClientID",
+            "IdentityPoolId"
+          ]
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Cognito-UserPool-Groups",
+      "lastPushTimeStamp": "2026-02-23T22:08:03.189Z"
+    }
+  },
+  "function": {
+    "admin": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributes": [
+            "UserPoolId"
+          ],
+          "category": "auth",
+          "resourceName": "fitnesstracker969d5a9e969d5a9e"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "fitnesstracker969d5a9e969d5a9ePreSignup": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "lognutrition": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributes": [
+            "GraphQLAPIIdOutput"
+          ],
+          "category": "api",
+          "resourceName": "fitnesstracker"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    }
+  }
+}

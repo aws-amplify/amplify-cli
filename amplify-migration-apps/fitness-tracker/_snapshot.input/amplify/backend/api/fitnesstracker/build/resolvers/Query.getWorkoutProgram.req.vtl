@@ -1,0 +1,34 @@
+## [Start] Get Request template. **
+#set( $GetRequest = {
+  "version": "2018-05-29",
+  "operation": "Query"
+} )
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $expression = "" )
+  #set( $expressionNames = {} )
+  #set( $expressionValues = {} )
+  #foreach( $item in $ctx.stash.metadata.modelObjectKey.entrySet() )
+    #set( $expression = "$expression#keyCount$velocityCount = :valueCount$velocityCount AND " )
+    $util.qr($expressionNames.put("#keyCount$velocityCount", $item.key))
+    $util.qr($expressionValues.put(":valueCount$velocityCount", $item.value))
+  #end
+  #set( $expression = $expression.replaceAll("AND $", "") )
+  #set( $query = {
+  "expression": $expression,
+  "expressionNames": $expressionNames,
+  "expressionValues": $expressionValues
+} )
+#else
+  #set( $query = {
+  "expression": "id = :id",
+  "expressionValues": {
+      ":id":     $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.id))
+  }
+} )
+#end
+$util.qr($GetRequest.put("query", $query))
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  $util.qr($GetRequest.put("filter", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+#end
+$util.toJson($GetRequest)
+## [End] Get Request template. **
