@@ -56,7 +56,7 @@ export class MigrationApp {
   public readonly region: string;
 
   /**
-   * Name of the (single) environment in the app. Taken from `team-provider-info.json`.
+   * Name of the environments in the app. Taken from `team-provider-info.json`.
    */
   public readonly environmentName: string;
 
