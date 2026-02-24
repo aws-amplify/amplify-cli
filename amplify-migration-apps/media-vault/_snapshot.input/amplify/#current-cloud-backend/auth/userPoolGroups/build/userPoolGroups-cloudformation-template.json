@@ -1,0 +1,173 @@
+{
+  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"Amplify\",\"createdWith\":\"14.2.5\",\"stackType\":\"auth-Cognito-UserPool-Groups\",\"metadata\":{\"whyContinueWithGen1\":\"Prefer not to answer\"}}",
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Parameters": {
+    "env": {
+      "Type": "String"
+    },
+    "AuthRoleArn": {
+      "Type": "String"
+    },
+    "UnauthRoleArn": {
+      "Type": "String"
+    },
+    "authmediavault0eb2b25bUserPoolId": {
+      "Type": "String",
+      "Default": "authmediavault0eb2b25bUserPoolId"
+    },
+    "authmediavault0eb2b25bIdentityPoolId": {
+      "Type": "String",
+      "Default": "authmediavault0eb2b25bIdentityPoolId"
+    },
+    "authmediavault0eb2b25bAppClientID": {
+      "Type": "String",
+      "Default": "authmediavault0eb2b25bAppClientID"
+    },
+    "authmediavault0eb2b25bAppClientIDWeb": {
+      "Type": "String",
+      "Default": "authmediavault0eb2b25bAppClientIDWeb"
+    }
+  },
+  "Conditions": {
+    "ShouldNotCreateEnvResources": {
+      "Fn::Equals": [
+        {
+          "Ref": "env"
+        },
+        "NONE"
+      ]
+    }
+  },
+  "Resources": {
+    "AdminGroup": {
+      "Type": "AWS::Cognito::UserPoolGroup",
+      "Properties": {
+        "Description": "override success",
+        "GroupName": "Admin",
+        "Precedence": 1,
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "AdminGroupRole",
+            "Arn"
+          ]
+        },
+        "UserPoolId": {
+          "Ref": "authmediavault0eb2b25bUserPoolId"
+        }
+      }
+    },
+    "AdminGroupRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Sid": "",
+              "Effect": "Allow",
+              "Principal": {
+                "Federated": "cognito-identity.amazonaws.com"
+              },
+              "Action": "sts:AssumeRoleWithWebIdentity",
+              "Condition": {
+                "StringEquals": {
+                  "cognito-identity.amazonaws.com:aud": {
+                    "Ref": "authmediavault0eb2b25bIdentityPoolId"
+                  }
+                },
+                "ForAnyValue:StringLike": {
+                  "cognito-identity.amazonaws.com:amr": "authenticated"
+                }
+              }
+            }
+          ]
+        },
+        "RoleName": {
+          "Fn::Join": [
+            "",
+            [
+              {
+                "Ref": "authmediavault0eb2b25bUserPoolId"
+              },
+              "-AdminGroupRole"
+            ]
+          ]
+        }
+      }
+    },
+    "BasicGroup": {
+      "Type": "AWS::Cognito::UserPoolGroup",
+      "Properties": {
+        "Description": "override success",
+        "GroupName": "Basic",
+        "Precedence": 2,
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "BasicGroupRole",
+            "Arn"
+          ]
+        },
+        "UserPoolId": {
+          "Ref": "authmediavault0eb2b25bUserPoolId"
+        }
+      }
+    },
+    "BasicGroupRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Sid": "",
+              "Effect": "Allow",
+              "Principal": {
+                "Federated": "cognito-identity.amazonaws.com"
+              },
+              "Action": "sts:AssumeRoleWithWebIdentity",
+              "Condition": {
+                "StringEquals": {
+                  "cognito-identity.amazonaws.com:aud": {
+                    "Ref": "authmediavault0eb2b25bIdentityPoolId"
+                  }
+                },
+                "ForAnyValue:StringLike": {
+                  "cognito-identity.amazonaws.com:amr": "authenticated"
+                }
+              }
+            }
+          ]
+        },
+        "RoleName": {
+          "Fn::Join": [
+            "",
+            [
+              {
+                "Ref": "authmediavault0eb2b25bUserPoolId"
+              },
+              "-BasicGroupRole"
+            ]
+          ]
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "AdminGroupRole": {
+      "Value": {
+        "Fn::GetAtt": [
+          "AdminGroupRole",
+          "Arn"
+        ]
+      }
+    },
+    "BasicGroupRole": {
+      "Value": {
+        "Fn::GetAtt": [
+          "BasicGroupRole",
+          "Arn"
+        ]
+      }
+    }
+  }
+}

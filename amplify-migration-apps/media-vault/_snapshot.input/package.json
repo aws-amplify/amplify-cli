@@ -4,8 +4,6 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "sanitize:input": "cd _snapshot.input && tsx ../../sanitize-backend.ts",
-    "typecheck:expected": "cd _snapshot.expected/amplify && npx tsc --noEmit",
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",

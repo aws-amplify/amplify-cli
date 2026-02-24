@@ -1,0 +1,13 @@
+{
+    "AppSyncApiName": "mediavault",
+    "DynamoDBBillingMode": "PAY_PER_REQUEST",
+    "DynamoDBEnableServerSideEncryption": false,
+    "AuthCognitoUserPoolId": {
+        "Fn::GetAtt": [
+            "authmediavault0eb2b25b",
+            "Outputs.UserPoolId"
+        ]
+    },
+    "S3DeploymentBucket": "amplify-xxxxx-deployment",
+    "S3DeploymentRootKey": "amplify-appsync-files/4454321c9a9da5188b696ef6d9bfa46e4f1540b3"
+}

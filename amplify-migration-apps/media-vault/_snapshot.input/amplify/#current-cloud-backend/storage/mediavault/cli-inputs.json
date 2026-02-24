@@ -1,0 +1,25 @@
+{
+  "resourceName": "mediavault",
+  "policyUUID": "d366d4ff",
+  "bucketName": "mediavault40471086845d4f7baa5271e2a416b533",
+  "storageAccess": "authAndGuest",
+  "guestAccess": [
+    "READ"
+  ],
+  "authAccess": [
+    "CREATE_AND_UPDATE",
+    "READ",
+    "DELETE"
+  ],
+  "triggerFunction": "NONE",
+  "groupAccess": {
+    "Admin": [
+      "CREATE_AND_UPDATE",
+      "READ",
+      "DELETE"
+    ],
+    "Basic": [
+      "READ"
+    ]
+  }
+}

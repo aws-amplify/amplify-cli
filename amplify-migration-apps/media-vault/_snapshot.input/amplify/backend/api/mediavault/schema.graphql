@@ -1,0 +1,26 @@
+type Note @model @auth(rules: [{ allow: owner }, { allow: groups, groups: ["Admin"] }]) {
+  id: ID!
+  title: String!
+  content: String
+}
+
+type Query {
+  generateThumbnail(mediaFileKey: String!): GenerateThumbnailResponse @function(name: "thumbnailgen-${env}") @auth(rules: [{ allow: public }])
+  addUserToGroup(userSub: String!, group: String!): AddUserToGroupResponse @function(name: "addusertogroup-${env}") @auth(rules: [{ allow: public }])
+  removeUserFromGroup(userSub: String!, group: String!): RemoveUserFromGroupResponse @function(name: "removeuserfromgroup-${env}") @auth(rules: [{ allow: public }])
+}
+
+type GenerateThumbnailResponse {
+  statusCode: Int! @auth(rules: [{ allow: public }])
+  message: String! @auth(rules: [{ allow: public }])
+}
+
+type AddUserToGroupResponse {
+  statusCode: Int! @auth(rules: [{ allow: public }])
+  message: String! @auth(rules: [{ allow: public }])
+}
+
+type RemoveUserFromGroupResponse {
+  statusCode: Int! @auth(rules: [{ allow: public }])
+  message: String! @auth(rules: [{ allow: public }])
+}

@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "serviceConfiguration": {
+    "apiName": "mediavault",
+    "serviceName": "AppSync",
+    "defaultAuthType": {
+      "mode": "AMAZON_COGNITO_USER_POOLS",
+      "cognitoUserPoolId": "authmediavault0eb2b25b"
+    },
+    "additionalAuthTypes": [
+      {
+        "mode": "API_KEY",
+        "expirationTime": 100,
+        "apiKeyExpirationDate": "2026-06-03T21:20:50.910Z",
+        "keyDescription": "graphql"
+      }
+    ]
+  }
+}
