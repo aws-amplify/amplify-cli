@@ -256,7 +256,10 @@ export class MigrationApp {
    * @throws Error if the category contains zero or more than one resource.
    */
   public singleResourceName(category: string) {
-    const resourceNames = Object.keys(this.tpi[this.environmentName]['categories'][category]);
+    const allResourceNames = Object.keys(this.tpi[this.environmentName]['categories'][category]);
+    // Filter out known placeholder resources like userPoolGroups
+    const resourceNames = allResourceNames.filter((name) => name !== 'userPoolGroups');
+
     if (resourceNames.length !== 1) {
       throw new Error(`Unexpected number of resources for category '${category}': ${resourceNames.join(',')}`);
     }
