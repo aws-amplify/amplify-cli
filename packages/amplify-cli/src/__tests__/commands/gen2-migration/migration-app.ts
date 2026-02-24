@@ -85,11 +85,8 @@ export class MigrationApp {
     this.region = this.meta.providers.awscloudformation.Region;
 
     const environments = Object.keys(this.tpi);
-    if (environments.length !== 1) {
-      throw new Error(`Unexpected number of environments in app ${this.name}: ${environments.length}`);
-    }
-
-    this.environmentName = environments[0];
+    // We should handle apps with multiple envs
+    this.environmentName = environments.includes('main') ? 'main' : environments[0];
     this.clients = new MockClients(this);
     this.logger = new Logger('generate', this.name, this.environmentName);
 
