@@ -223,11 +223,11 @@ export class MockClients {
           UserPoolClient: {
             ClientId: input.ClientId,
             RefreshTokenValidity: authCliInputs.cognitoConfig.userpoolClientRefreshTokenValidity,
+            AllowedOAuthFlowsUserPoolClient: false,
             TokenValidityUnits: { RefreshToken: 'days' },
             EnableTokenRevocation: true,
             EnablePropagateAdditionalUserContextData: false,
             AuthSessionValidity: 3,
-            AllowedOAuthFlowsUserPoolClient: false,
           },
           $metadata: {},
         };
