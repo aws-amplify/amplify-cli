@@ -1,0 +1,109 @@
+{
+  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"Amplify\",\"createdWith\":\"14.1.0\",\"stackType\":\"auth-Cognito-UserPool-Groups\",\"metadata\":{\"whyContinueWithGen1\":\"Prefer not to answer\"}}",
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Parameters": {
+    "env": {
+      "Type": "String"
+    },
+    "AuthRoleArn": {
+      "Type": "String"
+    },
+    "UnauthRoleArn": {
+      "Type": "String"
+    },
+    "authfitnesstracker969d5a9e969d5a9eUserPoolId": {
+      "Type": "String",
+      "Default": "authfitnesstracker969d5a9e969d5a9eUserPoolId"
+    },
+    "authfitnesstracker969d5a9e969d5a9eIdentityPoolId": {
+      "Type": "String",
+      "Default": "authfitnesstracker969d5a9e969d5a9eIdentityPoolId"
+    },
+    "authfitnesstracker969d5a9e969d5a9eAppClientID": {
+      "Type": "String",
+      "Default": "authfitnesstracker969d5a9e969d5a9eAppClientID"
+    },
+    "authfitnesstracker969d5a9e969d5a9eAppClientIDWeb": {
+      "Type": "String",
+      "Default": "authfitnesstracker969d5a9e969d5a9eAppClientIDWeb"
+    }
+  },
+  "Conditions": {
+    "ShouldNotCreateEnvResources": {
+      "Fn::Equals": [
+        {
+          "Ref": "env"
+        },
+        "NONE"
+      ]
+    }
+  },
+  "Resources": {
+    "AdminGroup": {
+      "Type": "AWS::Cognito::UserPoolGroup",
+      "Properties": {
+        "Description": "override success",
+        "GroupName": "Admin",
+        "Precedence": 1,
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "AdminGroupRole",
+            "Arn"
+          ]
+        },
+        "UserPoolId": {
+          "Ref": "authfitnesstracker969d5a9e969d5a9eUserPoolId"
+        }
+      }
+    },
+    "AdminGroupRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Sid": "",
+              "Effect": "Allow",
+              "Principal": {
+                "Federated": "cognito-identity.amazonaws.com"
+              },
+              "Action": "sts:AssumeRoleWithWebIdentity",
+              "Condition": {
+                "StringEquals": {
+                  "cognito-identity.amazonaws.com:aud": {
+                    "Ref": "authfitnesstracker969d5a9e969d5a9eIdentityPoolId"
+                  }
+                },
+                "ForAnyValue:StringLike": {
+                  "cognito-identity.amazonaws.com:amr": "authenticated"
+                }
+              }
+            }
+          ]
+        },
+        "RoleName": {
+          "Fn::Join": [
+            "",
+            [
+              {
+                "Ref": "authfitnesstracker969d5a9e969d5a9eUserPoolId"
+              },
+              "-AdminGroupRole"
+            ]
+          ]
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "AdminGroupRole": {
+      "Value": {
+        "Fn::GetAtt": [
+          "AdminGroupRole",
+          "Arn"
+        ]
+      }
+    }
+  }
+}

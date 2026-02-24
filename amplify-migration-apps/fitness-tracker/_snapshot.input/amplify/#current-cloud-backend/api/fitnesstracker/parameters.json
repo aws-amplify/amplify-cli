@@ -1,0 +1,11 @@
+{
+  "AppSyncApiName": "fitnesstracker",
+  "DynamoDBBillingMode": "PAY_PER_REQUEST",
+  "DynamoDBEnableServerSideEncryption": false,
+  "AuthCognitoUserPoolId": {
+    "Fn::GetAtt": [
+      "authfitnesstracker969d5a9e969d5a9e",
+      "Outputs.UserPoolId"
+    ]
+  }
+}

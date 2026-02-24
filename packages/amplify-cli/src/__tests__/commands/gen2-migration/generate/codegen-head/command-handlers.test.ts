@@ -44,6 +44,10 @@ test('project-boards-backend-only snapshot', async () => {
   await testSnapshot('project-boards-backend-only');
 });
 
+test('fitness-tracker snapshot', async () => {
+  await testSnapshot('fitness-tracker');
+});
+
 async function testSnapshot(appName: string, appOptions?: AppOptions, customize?: (app: MigrationApp) => Promise<void>) {
   await MigrationApp.run(
     appName,

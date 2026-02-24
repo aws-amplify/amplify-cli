@@ -10,7 +10,9 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "configure": "./configure.sh",
-    "configure-schema": "./configure-schema.sh"
+    "configure-schema": "./configure-schema.sh",
+    "sanitize:input": "cd _snapshot.input && tsx ../../sanitize-backend.ts",
+    "typecheck:expected": "cd _snapshot.expected/amplify && npx tsc --noEmit"
   },
   "dependencies": {
     "@aws-amplify/ui-react": "^6.13.1",
@@ -22,6 +24,9 @@
     "express": "^4.15.2",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
+  },
+  "installConfig": {
+    "hoistingLimits": "workspaces"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
