@@ -40,7 +40,7 @@ test('fitness-tracker snapshot', async () => {
   await testSnapshot('fitness-tracker');
 });
 
-async function testSnapshot(appName: string, customize?: (app: MigrationApp) => Promise<void>) {
+async function testSnapshot(appName: string, appOptions?: AppOptions, customize?: (app: MigrationApp) => Promise<void>) {
   await MigrationApp.run(appName, async (app: MigrationApp) => {
     if (customize) {
       await customize(app);
