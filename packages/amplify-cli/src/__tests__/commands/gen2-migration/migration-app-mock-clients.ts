@@ -110,6 +110,11 @@ export class MockClients {
                 },
               });
               break;
+            case 'API_KEY':
+              additionalAuthenticationProviders.push({
+                authenticationType: aut.mode,
+              });
+              break;
             default:
               throw new Error(`Unsupported additional auth mode: ${aut.mode}`);
           }
@@ -188,7 +193,9 @@ export class MockClients {
         EmailVerificationMessage: authCliInputs.cognitoConfig.emailVerificationMessage,
         EmailVerificationSubject: authCliInputs.cognitoConfig.emailVerificationSubject,
         SchemaAttributes: authTemplate.Resources.UserPool.Properties.Schema,
-        UsernameAttributes: authCliInputs.cognitoConfig.requiredAttributes,
+        UsernameAttributes: (authCliInputs.cognitoConfig.usernameAttributes as string[]).flatMap((attr: string) =>
+          attr.split(',').map((s: string) => s.trim()),
+        ) as idp.UsernameAttributeType[],
         Policies: {
           PasswordPolicy: {
             MinimumLength: authCliInputs.cognitoConfig.passwordPolicyMinLength,
@@ -230,8 +237,12 @@ export class MockClients {
       Providers: [],
     });
 
+    const userPoolGroups = ((authCliInputs.cognitoConfig.userPoolGroupList as string[]) ?? []).map((groupName: string, index: number) => ({
+      GroupName: groupName,
+      Precedence: index + 1,
+    }));
     mock.on(idp.ListGroupsCommand).resolves({
-      Groups: [],
+      Groups: userPoolGroups,
     });
 
     return mock;
@@ -353,6 +364,11 @@ export class MockClients {
               Variables: {
                 ENV: this.app.environmentName,
                 REGION: this.app.region,
+                ...Object.fromEntries(
+                  Object.keys(template.Resources.LambdaFunction.Properties.Environment?.Variables ?? {})
+                    .filter((key: string) => key !== 'ENV' && key !== 'REGION')
+                    .map((key: string) => [key, `mock-${key}`]),
+                ),
               },
             },
           },

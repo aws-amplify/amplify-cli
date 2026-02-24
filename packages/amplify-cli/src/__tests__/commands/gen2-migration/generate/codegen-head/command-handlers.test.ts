@@ -45,7 +45,7 @@ test('project-boards-backend-only snapshot', async () => {
 });
 
 test('media-vault snapshot', async () => {
-  await testSnapshot('media-vault', { buildSpec: BUILDSPEC });
+  await testSnapshot('media-vault');
 });
 
 async function testSnapshot(appName: string, appOptions?: AppOptions, customize?: (app: MigrationApp) => Promise<void>) {
