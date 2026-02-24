@@ -258,6 +258,34 @@ export class MigrationApp {
   }
 
   /**
+   * Returns all resource names for a given category.
+   *
+   * @param category - The Amplify category (e.g., `function`, `api`, `auth`).
+   * @returns An array of resource names in the category.
+   */
+  public resourceNames(category: string): string[] {
+    return Object.keys(this.tpi[this.environmentName]['categories'][category]);
+  }
+
+  /**
+   * Returns the primary auth resource name.
+   *
+   * The primary auth resource is identified as the one that has a `cli-inputs.json`
+   * file. Secondary auth resources (e.g., `userPoolGroups`) do not have this file.
+   *
+   * @returns The name of the primary auth resource.
+   * @throws Error if there is not exactly one primary auth resource.
+   */
+  public primaryAuthResourceName(): string {
+    const authResources = this.resourceNames('auth');
+    const primary = authResources.filter((name) => fs.existsSync(path.join(this.ccbPath, 'auth', name, 'cli-inputs.json')));
+    if (primary.length !== 1) {
+      throw new Error(`Expected exactly one primary auth resource, found: ${primary.join(',')}`);
+    }
+    return primary[0];
+  }
+
+  /**
    * Returns the name of the single resource in a given category.
    *
    * This is a convenience method for apps that have exactly one resource per category.

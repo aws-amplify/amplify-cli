@@ -90,7 +90,7 @@ export class MockClients {
     const mock = mockClient(appsync.AppSyncClient);
 
     const apiResourceName = this.app.singleResourceName('api');
-    const authResourceName = this.app.singleResourceName('auth');
+    const authResourceName = this.app.primaryAuthResourceName();
     const apiId = this.app.meta.api[apiResourceName].output.GraphQLAPIIdOutput;
 
     mock
@@ -160,7 +160,7 @@ export class MockClients {
   private mockCognitoIdentity() {
     const mock = mockClient(cognito.CognitoIdentityClient);
 
-    const authResourceName = this.app.singleResourceName('auth');
+    const authResourceName = this.app.primaryAuthResourceName();
     const authCliInputs = this.app.cliInputsForResource(authResourceName, 'auth');
     mock.on(cognito.DescribeIdentityPoolCommand).resolves({
       AllowUnauthenticatedIdentities: authCliInputs.cognitoConfig.allowUnauthenticatedIdentities,
@@ -180,7 +180,7 @@ export class MockClients {
    */
   private mockCognitoIdentityProvider() {
     const mock = mockClient(idp.CognitoIdentityProviderClient);
-    const authResourceName = this.app.singleResourceName('auth');
+    const authResourceName = this.app.primaryAuthResourceName();
     const authCliInputs = this.app.cliInputsForResource(authResourceName, 'auth');
     const authTemplate = this.app.templateForResource(authResourceName, 'auth');
     mock.on(idp.DescribeUserPoolCommand).resolves({
@@ -210,7 +210,7 @@ export class MockClients {
     mock
       .on(idp.DescribeUserPoolClientCommand)
       .callsFake(async (input: idp.DescribeUserPoolClientCommandInput): Promise<idp.DescribeUserPoolClientCommandOutput> => {
-        const authResourceName = this.app.singleResourceName('auth');
+        const authResourceName = this.app.primaryAuthResourceName();
         const authCliInputs = this.app.cliInputsForResource(authResourceName, 'auth');
         return {
           UserPoolClient: {
