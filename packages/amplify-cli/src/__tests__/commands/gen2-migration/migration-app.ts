@@ -270,6 +270,16 @@ export class MigrationApp {
    */
   public singleResourceName(category: string) {
     const resourceNames = Object.keys(this.tpi[this.environmentName]['categories'][category]);
+
+    // Special handling for auth category: filter out userPoolGroups as it's not a main auth resource
+    if (category === 'auth') {
+      const mainAuthResources = resourceNames.filter((name) => name !== 'userPoolGroups');
+      if (mainAuthResources.length !== 1) {
+        throw new Error(`Unexpected number of main auth resources for category '${category}': ${mainAuthResources.join(',')}`);
+      }
+      return mainAuthResources[0];
+    }
+
     if (resourceNames.length !== 1) {
       throw new Error(`Unexpected number of resources for category '${category}': ${resourceNames.join(',')}`);
     }
