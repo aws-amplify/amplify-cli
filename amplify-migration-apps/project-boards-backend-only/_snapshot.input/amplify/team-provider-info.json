@@ -1,0 +1,32 @@
+{
+  "main": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-xxxxx-main-xxxxx-authRole",
+      "UnauthRoleArn": "arn:aws:iam::123456789012:role/amplify-xxxxx-main-xxxxx-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::123456789012:role/amplify-xxxxx-main-xxxxx-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-xxxxx-deployment",
+      "UnauthRoleName": "amplify-xxxxx-main-xxxxx-unauthRole",
+      "StackName": "amplify-xxxxx-main-xxxxx",
+      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-xxxxx-main-xxxxx/d66b54b0-10fb-11f1-918d-123c460468a9",
+      "AmplifyAppId": "xxxxxxxxxxxxx"
+    },
+    "categories": {
+      "auth": {
+        "backendonly1de78d1b": {}
+      },
+      "function": {
+        "quotegenerator": {
+          "deploymentBucketName": "amplify-xxxxx-deployment",
+          "s3Key": "amplify-builds/quotegenerator-5a63537a55366337386b-build.zip"
+        }
+      },
+      "api": {
+        "backendonly": {}
+      },
+      "storage": {
+        "s397fd7f08": {}
+      }
+    }
+  }
+}

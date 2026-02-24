@@ -1,0 +1,58 @@
+## [Start] Delete Request template. **
+#set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
+#set( $DeleteRequest = {
+  "version": "2018-05-29",
+  "operation": "DeleteItem"
+} )
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $Key = $ctx.stash.metadata.modelObjectKey )
+#else
+  #set( $Key = {
+  "id":   $util.dynamodb.toDynamoDB($args.input.id)
+} )
+#end
+$util.qr($DeleteRequest.put("key", $Key))
+## Begin - key condition **
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
+  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
+    $util.qr($keyConditionExpr.put("keyCondition$velocityCount", {
+  "attributeExists": true
+}))
+    $util.qr($keyConditionExprNames.put("#keyCondition$velocityCount", "$entry.key"))
+  #end
+  $util.qr($ctx.stash.conditions.add($keyConditionExpr))
+#else
+  $util.qr($ctx.stash.conditions.add({
+  "id": {
+      "attributeExists": true
+  }
+}))
+#end
+## End - key condition **
+#if( $args.condition )
+  $util.qr($ctx.stash.conditions.add($args.condition))
+#end
+## Start condition block **
+#if( $ctx.stash.conditions && $ctx.stash.conditions.size() != 0 )
+  #set( $mergedConditions = {
+  "and": $ctx.stash.conditions
+} )
+  #set( $Conditions = $util.parseJson($util.transform.toDynamoDBConditionExpression($mergedConditions)) )
+  #if( $Conditions.expressionValues && $Conditions.expressionValues.size() == 0 )
+    #set( $Conditions = {
+  "expression": $Conditions.expression,
+  "expressionNames": $Conditions.expressionNames
+} )
+  #end
+  ## End condition block **
+#end
+#if( $Conditions )
+  #if( $keyConditionExprNames )
+    $util.qr($Conditions.expressionNames.putAll($keyConditionExprNames))
+  #end
+  $util.qr($DeleteRequest.put("condition", $Conditions))
+#end
+$util.toJson($DeleteRequest)
+## [End] Delete Request template. **

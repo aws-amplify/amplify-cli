@@ -1,0 +1,13 @@
+{
+    "AppSyncApiName": "backendonly",
+    "DynamoDBBillingMode": "PAY_PER_REQUEST",
+    "DynamoDBEnableServerSideEncryption": false,
+    "AuthCognitoUserPoolId": {
+        "Fn::GetAtt": [
+            "authbackendonly1de78d1b",
+            "Outputs.UserPoolId"
+        ]
+    },
+    "S3DeploymentBucket": "amplify-xxxxx-deployment",
+    "S3DeploymentRootKey": "amplify-appsync-files/820ceb42018aa9be6fc353af87d43b6d29ad0a7c"
+}

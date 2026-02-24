@@ -1,0 +1,22 @@
+{
+  "name": "project-boards-backend-only-main-gen2",
+  "installConfig": {
+    "hoistingLimits": "workspaces"
+  },
+  "dependencies": {
+    "cli-table3": "0.6.5"
+  },
+  "devDependencies": {
+    "@aws-amplify/backend": "^1.18.0",
+    "@aws-amplify/backend-cli": "^1.8.0",
+    "@aws-amplify/backend-data": "^1.6.2",
+    "@types/aws-lambda": "^8.10.92",
+    "@types/node": "*",
+    "aws-cdk": "^2",
+    "aws-cdk-lib": "^2",
+    "ci-info": "^4.3.1",
+    "constructs": "^10.0.0",
+    "esbuild": "^0.27.0",
+    "tsx": "^4.20.6"
+  }
+}

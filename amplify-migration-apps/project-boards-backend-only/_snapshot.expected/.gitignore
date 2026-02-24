@@ -1,0 +1,9 @@
+# amplify
+.amplify
+amplify_outputs*
+amplifyconfiguration*
+aws-exports*
+# node_modules
+node_modules
+build
+dist

@@ -28,6 +28,7 @@ export class MockClients {
   public readonly cwe;
   public readonly appsync;
   public readonly s3;
+  public readonly buildSpec?: string;
 
   /**
    * Creates mock clients for all supported AWS services.
@@ -273,8 +274,7 @@ export class MockClients {
         defaultDomain: undefined,
         enableBasicAuth: undefined,
         enableBranchAutoBuild: undefined,
-        buildSpec:
-          "version: 1\nbackend:\n  phases:\n    build:\n      commands:\n        - '# Execute Amplify CLI with the helper script'\n        - amplifyPush --simple\nfrontend:\n  phases:\n    preBuild:\n      commands:\n        - npm install\n    build:\n      commands:\n        - npm run build\n  artifacts:\n    baseDirectory: dist\n    files:\n      - '**/*'\n  cache:\n    paths:\n      - node_modules/**/*\n",
+        buildSpec: this.app.options.buildSpec,
       },
     });
 

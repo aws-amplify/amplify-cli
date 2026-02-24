@@ -1,5 +1,5 @@
 import { prepare, DependenciesInstaller } from '../../../../../commands/gen2-migration/generate/codegen-head/command-handlers';
-import { MigrationApp } from '../../migration-app';
+import { AppOptions, MigrationApp } from '../../migration-app';
 
 // high to allow for debugging in the IDE
 const TIMEOUT_MINUTES = 60;
@@ -32,30 +32,42 @@ afterAll(() => {
   jest.mock('fs-extra');
 });
 
+// standard buildspec for all apps that are published via hosting
+const BUILDSPEC =
+  "version: 1\nbackend:\n  phases:\n    build:\n      commands:\n        - '# Execute Amplify CLI with the helper script'\n        - amplifyPush --simple\nfrontend:\n  phases:\n    preBuild:\n      commands:\n        - npm install\n    build:\n      commands:\n        - npm run build\n  artifacts:\n    baseDirectory: dist\n    files:\n      - '**/*'\n  cache:\n    paths:\n      - node_modules/**/*\n";
+
 test('project-boards snapshot', async () => {
-  await testSnapshot('project-boards');
+  await testSnapshot('project-boards', { buildSpec: BUILDSPEC });
 });
 
 test('fitness-tracker snapshot', async () => {
   await testSnapshot('fitness-tracker');
 });
 
+test('project-boards-backend-only snapshot', async () => {
+  await testSnapshot('project-boards-backend-only');
+});
+
 async function testSnapshot(appName: string, appOptions?: AppOptions, customize?: (app: MigrationApp) => Promise<void>) {
-  await MigrationApp.run(appName, async (app: MigrationApp) => {
-    if (customize) {
-      await customize(app);
-    }
-    await prepare(app.logger, app.id, app.environmentName, app.region);
-
-    const snapshot = await app.compare(process.cwd());
-    const isUpdatingSnapshots = expect.getState().snapshotState._updateSnapshot === 'all';
-
-    if (snapshot.changed) {
-      console.log(snapshot.report());
-      if (isUpdatingSnapshots) {
-        snapshot.update();
+  await MigrationApp.run(
+    appName,
+    async (app: MigrationApp) => {
+      if (customize) {
+        await customize(app);
       }
-    }
-    expect(snapshot.changed).toBeFalsy();
-  });
+      await prepare(app.logger, app.id, app.environmentName, app.region);
+
+      const snapshot = await app.compare(process.cwd());
+      const isUpdatingSnapshots = expect.getState().snapshotState._updateSnapshot === 'all';
+
+      if (snapshot.changed) {
+        console.log(snapshot.report());
+        if (isUpdatingSnapshots) {
+          snapshot.update();
+        }
+      }
+      expect(snapshot.changed).toBeFalsy();
+    },
+    appOptions,
+  );
 }
