@@ -269,7 +269,13 @@ export class MigrationApp {
    * @throws Error if the category contains zero or more than one resource.
    */
   public singleResourceName(category: string) {
-    const resourceNames = Object.keys(this.tpi[this.environmentName]['categories'][category]);
+    // Add error handling for when a category does not exist
+    const categoryResources = this.tpi[this.environmentName]['categories'][category];
+    if (!categoryResources) {
+      throw new Error(`Category '${category}' not found in environment '${this.environmentName}'`);
+    }
+
+    const resourceNames = Object.keys(categoryResources);
 
     // Special handling for auth category: filter out userPoolGroups as it's not a main auth resource
     if (category === 'auth') {
