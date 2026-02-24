@@ -1,0 +1,77 @@
+{
+  "identityPoolName": "fitnesstracker969d5a9e_identitypool_969d5a9e",
+  "allowUnauthenticatedIdentities": false,
+  "resourceNameTruncated": "fitnes969d5a9e",
+  "userPoolName": "fitnesstracker969d5a9e_userpool_969d5a9e",
+  "autoVerifiedAttributes": [
+    "email"
+  ],
+  "mfaConfiguration": "OFF",
+  "mfaTypes": [
+    "SMS Text Message"
+  ],
+  "smsAuthenticationMessage": "Your authentication code is {####}",
+  "smsVerificationMessage": "Your verification code is {####}",
+  "emailVerificationSubject": "Your verification code",
+  "emailVerificationMessage": "Your verification code is {####}",
+  "defaultPasswordPolicy": false,
+  "passwordPolicyMinLength": 8,
+  "passwordPolicyCharacters": [],
+  "requiredAttributes": [
+    "email"
+  ],
+  "aliasAttributes": [],
+  "userpoolClientGenerateSecret": false,
+  "userpoolClientRefreshTokenValidity": 30,
+  "userpoolClientWriteAttributes": [
+    "email"
+  ],
+  "userpoolClientReadAttributes": [
+    "email"
+  ],
+  "userpoolClientLambdaRole": "fitnes969d5a9e_userpoolclient_lambda_role",
+  "userpoolClientSetAttributes": false,
+  "sharedId": "969d5a9e",
+  "resourceName": "fitnesstracker969d5a9e969d5a9e",
+  "authSelections": "identityPoolAndUserPool",
+  "useDefault": "manual",
+  "thirdPartyAuth": false,
+  "userPoolGroups": true,
+  "adminQueries": false,
+  "triggers": "{\"PreSignup\":[\"email-filter-allowlist\"]}",
+  "hostedUI": false,
+  "userPoolGroupList": [
+    "Admin"
+  ],
+  "serviceName": "Cognito",
+  "usernameCaseSensitive": false,
+  "useEnabledMfas": true,
+  "authRoleArn": {
+    "Fn::GetAtt": [
+      "AuthRole",
+      "Arn"
+    ]
+  },
+  "unauthRoleArn": {
+    "Fn::GetAtt": [
+      "UnauthRole",
+      "Arn"
+    ]
+  },
+  "breakCircularDependency": true,
+  "dependsOn": [
+    {
+      "category": "function",
+      "resourceName": "fitnesstracker969d5a9e969d5a9ePreSignup",
+      "triggerProvider": "Cognito",
+      "attributes": [
+        "Arn",
+        "Name"
+      ]
+    }
+  ],
+  "permissions": [],
+  "authTriggerConnections": [
+    "{\"triggerType\":\"PreSignUp\",\"lambdaFunctionName\":\"fitnesstracker969d5a9e969d5a9ePreSignup\"}"
+  ]
+}

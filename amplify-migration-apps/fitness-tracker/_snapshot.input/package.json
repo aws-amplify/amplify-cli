@@ -10,9 +10,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "configure": "./configure.sh",
-    "configure-schema": "./configure-schema.sh",
-    "sanitize:input": "cd _snapshot.input && tsx ../../sanitize-backend.ts",
-    "typecheck:expected": "cd _snapshot.expected/amplify && npx tsc --noEmit"
+    "configure-schema": "./configure-schema.sh"
   },
   "dependencies": {
     "@aws-amplify/ui-react": "^6.13.1",
@@ -23,14 +21,12 @@
     "body-parser": "^1.17.1",
     "express": "^4.15.2",
     "react": "^19.2.0",
-    "react-dom": "^19.2.0"
-  },
-  "installConfig": {
-    "hoistingLimits": "workspaces"
+    "react-dom": "^19.2.0",
+    "@aws-sdk/client-cognito-identity-provider": "^3.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
-    "@types/node": "^24.10.1",
+    "@types/node": "*",
     "@types/react": "^19.2.5",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.1",
@@ -40,6 +36,16 @@
     "globals": "^16.5.0",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.46.4",
-    "vite": "^7.2.4"
+    "vite": "^7.2.4",
+    "@types/aws-lambda": "^8.10.92",
+    "@aws-amplify/backend": "^1.18.0",
+    "@aws-amplify/backend-cli": "^1.8.0",
+    "@aws-amplify/backend-data": "^1.6.2",
+    "aws-cdk": "^2",
+    "aws-cdk-lib": "^2",
+    "ci-info": "^4.3.1",
+    "constructs": "^10.0.0",
+    "esbuild": "^0.27.0",
+    "tsx": "^4.20.6"
   }
 }

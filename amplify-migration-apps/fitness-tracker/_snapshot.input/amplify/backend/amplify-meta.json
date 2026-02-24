@@ -1,0 +1,293 @@
+{
+  "providers": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-xxxxx-main-xxxxx-authRole",
+      "UnauthRoleArn": "arn:aws:iam::123456789012:role/amplify-xxxxx-main-xxxxx-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::123456789012:role/amplify-xxxxx-main-xxxxx-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-xxxxx-deployment",
+      "UnauthRoleName": "amplify-xxxxx-main-xxxxx-unauthRole",
+      "StackName": "amplify-xxxxx-main-xxxxx",
+      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-xxxxx-main-xxxxx/42ee5810-10fe-11f1-8b78-0affe8b1cf09",
+      "AmplifyAppId": "xxxxxxxxxxxxx",
+      "APIGatewayAuthURL": "https://s3.amazonaws.com/amplify-xxxxx-deployment/amplify-cfn-templates/api/APIGatewayAuthStack.json",
+      "AuthTriggerTemplateURL": "https://s3.amazonaws.com/amplify-xxxxx-deployment/amplify-cfn-templates/auth/auth-trigger-cloudformation-template.json"
+    }
+  },
+  "api": {
+    "adminapi": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "admin"
+        },
+        {
+          "attributes": [
+            "UserPoolId"
+          ],
+          "category": "auth",
+          "resourceName": "fitnesstracker969d5a9e969d5a9e"
+        },
+        {
+          "attributes": [
+            "AdminGroupRole"
+          ],
+          "category": "auth",
+          "resourceName": "userPoolGroups"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway",
+      "output": {
+        "ApiName": "adminapi",
+        "RootUrl": "https://ork0ggyoxc.execute-api.us-east-1.amazonaws.com/dev",
+        "ApiId": "ork0ggyoxc"
+      },
+      "lastPushTimeStamp": "2026-02-24T16:05:41.471Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-xxxxx-deployment/amplify-cfn-templates/api/adminapi-cloudformation-template.json",
+        "logicalId": "apiadminapi"
+      }
+    },
+    "fitnesstracker": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "UserPoolId"
+          ],
+          "category": "auth",
+          "resourceName": "fitnesstracker969d5a9e969d5a9e"
+        }
+      ],
+      "output": {
+        "authConfig": {
+          "additionalAuthenticationProviders": [
+            {
+              "apiKeyConfig": {
+                "apiKeyExpirationDate": "2026-03-02T21:32:41.297Z",
+                "apiKeyExpirationDays": 7,
+                "description": "graphql"
+              },
+              "authenticationType": "API_KEY"
+            }
+          ],
+          "defaultAuthentication": {
+            "authenticationType": "AMAZON_COGNITO_USER_POOLS",
+            "userPoolConfig": {
+              "userPoolId": "authfitnesstracker969d5a9e969d5a9e"
+            }
+          }
+        },
+        "GraphQLAPIIdOutput": "w73joljcqzcixbzi7qt65rtie4",
+        "GraphQLAPIEndpointOutput": "https://g3sx74npuzeitlfly2rd32cjee.appsync-api.us-east-1.amazonaws.com/graphql",
+        "GraphQLAPIKeyOutput": "da2-fwduusgjjvfprb3qu7moj6yxtq"
+      },
+      "providerPlugin": "awscloudformation",
+      "service": "AppSync",
+      "lastPushTimeStamp": "2026-02-24T16:05:41.472Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-xxxxx-deployment/amplify-cfn-templates/api/cloudformation-template.json",
+        "logicalId": "apifitnesstracker"
+      }
+    },
+    "nutritionapi": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "lognutrition"
+        },
+        {
+          "attributes": [
+            "UserPoolId"
+          ],
+          "category": "auth",
+          "resourceName": "fitnesstracker969d5a9e969d5a9e"
+        },
+        {
+          "attributes": [
+            "AdminGroupRole"
+          ],
+          "category": "auth",
+          "resourceName": "userPoolGroups"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway",
+      "output": {
+        "ApiName": "nutritionapi",
+        "RootUrl": "https://55iigxjh1f.execute-api.us-east-1.amazonaws.com/dev",
+        "ApiId": "55iigxjh1f"
+      },
+      "lastPushTimeStamp": "2026-02-24T16:05:41.473Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-xxxxx-deployment/amplify-cfn-templates/api/nutritionapi-cloudformation-template.json",
+        "logicalId": "apinutritionapi"
+      }
+    }
+  },
+  "auth": {
+    "fitnesstracker969d5a9e969d5a9e": {
+      "customAuth": false,
+      "dependsOn": [
+        {
+          "attributes": [
+            "Arn",
+            "Name"
+          ],
+          "category": "function",
+          "resourceName": "fitnesstracker969d5a9e969d5a9ePreSignup",
+          "triggerProvider": "Cognito"
+        }
+      ],
+      "frontendAuthConfig": {
+        "mfaConfiguration": "OFF",
+        "mfaTypes": [
+          "SMS"
+        ],
+        "passwordProtectionSettings": {
+          "passwordPolicyMinLength": 8,
+          "passwordPolicyCharacters": []
+        },
+        "signupAttributes": [
+          "EMAIL"
+        ],
+        "socialProviders": [],
+        "usernameAttributes": [],
+        "verificationMechanisms": [
+          "EMAIL"
+        ]
+      },
+      "providerPlugin": "awscloudformation",
+      "service": "Cognito",
+      "output": {
+        "UserPoolId": "us-east-1_XXXXXXXXX",
+        "AppClientIDWeb": "6t3jt2vioiulif3l4eufj8vm5m",
+        "AppClientID": "20c0f2od015qfuhman4l2ibd94",
+        "IdentityPoolId": "us-east-1:0213d197-0393-4f9e-bcce-aec20a8903de",
+        "UserPoolArn": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_XXXXXXXXX",
+        "IdentityPoolName": "fitnesstracker969d5a9e_identitypool_969d5a9e__dev",
+        "UserPoolName": "fitnesstracker969d5a9e_userpool_969d5a9e"
+      },
+      "lastPushTimeStamp": "2026-02-24T16:05:41.475Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-xxxxx-deployment/amplify-cfn-templates/auth/fitnesstracker969d5a9e969d5a9e-cloudformation-template.json",
+        "logicalId": "authfitnesstracker969d5a9e969d5a9e"
+      }
+    },
+    "userPoolGroups": {
+      "dependsOn": [
+        {
+          "category": "auth",
+          "resourceName": "fitnesstracker969d5a9e969d5a9e",
+          "attributes": [
+            "UserPoolId",
+            "AppClientIDWeb",
+            "AppClientID",
+            "IdentityPoolId"
+          ]
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Cognito-UserPool-Groups",
+      "output": {
+        "AdminGroupRole": "arn:aws:iam::123456789012:role/us-east-1_XXXXXXXXX-AdminGroupRole"
+      },
+      "lastPushTimeStamp": "2026-02-24T16:05:42.793Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-xxxxx-deployment/amplify-cfn-templates/auth/userPoolGroups-cloudformation-template.json",
+        "logicalId": "authuserPoolGroups"
+      }
+    }
+  },
+  "function": {
+    "admin": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributes": [
+            "UserPoolId"
+          ],
+          "category": "auth",
+          "resourceName": "fitnesstracker969d5a9e969d5a9e"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda",
+      "output": {
+        "LambdaExecutionRoleArn": "arn:aws:iam::123456789012:role/fitnesstrackerLambdaRole9b2fd584-dev",
+        "Region": "us-east-1",
+        "Arn": "arn:aws:lambda:us-east-1:123456789012:function:admin-dev",
+        "Name": "admin-dev",
+        "LambdaExecutionRole": "fitnesstrackerLambdaRole9b2fd584-dev"
+      },
+      "lastPushTimeStamp": "2026-02-24T16:05:41.477Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-xxxxx-deployment/amplify-cfn-templates/function/admin-cloudformation-template.json",
+        "logicalId": "functionadmin"
+      },
+      "s3Bucket": {
+        "deploymentBucketName": "amplify-xxxxx-deployment",
+        "s3Key": "amplify-builds/admin-6d6c6265736b64726673-build.zip"
+      }
+    },
+    "fitnesstracker969d5a9e969d5a9ePreSignup": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda",
+      "output": {
+        "LambdaExecutionRoleArn": "arn:aws:iam::123456789012:role/fitnesstracker969d5a9e969d5a9ePreSignup-dev",
+        "Region": "us-east-1",
+        "Arn": "arn:aws:lambda:us-east-1:123456789012:function:fitnesstracker969d5a9e969d5a9ePreSignup-dev",
+        "Name": "fitnesstracker969d5a9e969d5a9ePreSignup-dev",
+        "LambdaExecutionRole": "fitnesstracker969d5a9e969d5a9ePreSignup-dev"
+      },
+      "lastPushTimeStamp": "2026-02-24T16:05:41.478Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-xxxxx-deployment/amplify-cfn-templates/function/fitnesstracker969d5a9e969d5a9ePreSignup-cloudformation-template.json",
+        "logicalId": "functionfitnesstracker969d5a9e969d5a9ePreSignup"
+      },
+      "s3Bucket": {
+        "deploymentBucketName": "amplify-xxxxx-deployment",
+        "s3Key": "amplify-builds/fitnesstracker969d5a9e969d5a9ePreSignup-4f76723338724d786f63-build.zip"
+      }
+    },
+    "lognutrition": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributes": [
+            "GraphQLAPIIdOutput"
+          ],
+          "category": "api",
+          "resourceName": "fitnesstracker"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda",
+      "output": {
+        "LambdaExecutionRoleArn": "arn:aws:iam::123456789012:role/fitnesstrackerLambdaRolea2a20c9a-dev",
+        "Region": "us-east-1",
+        "Arn": "arn:aws:lambda:us-east-1:123456789012:function:lognutrition-dev",
+        "Name": "lognutrition-dev",
+        "LambdaExecutionRole": "fitnesstrackerLambdaRolea2a20c9a-dev"
+      },
+      "lastPushTimeStamp": "2026-02-24T16:05:41.479Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-xxxxx-deployment/amplify-cfn-templates/function/lognutrition-cloudformation-template.json",
+        "logicalId": "functionlognutrition"
+      },
+      "s3Bucket": {
+        "deploymentBucketName": "amplify-xxxxx-deployment",
+        "s3Key": "amplify-builds/lognutrition-66666d2f516838687269-build.zip"
+      }
+    }
+  }
+}

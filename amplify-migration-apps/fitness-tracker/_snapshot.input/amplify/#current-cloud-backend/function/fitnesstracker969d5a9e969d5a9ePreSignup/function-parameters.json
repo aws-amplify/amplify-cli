@@ -1,0 +1,16 @@
+{
+  "trigger": true,
+  "modules": [
+    "email-filter-allowlist"
+  ],
+  "parentResource": "fitnesstracker969d5a9e969d5a9e",
+  "functionName": "fitnesstracker969d5a9e969d5a9ePreSignup",
+  "resourceName": "fitnesstracker969d5a9e969d5a9ePreSignup",
+  "parentStack": "auth",
+  "triggerEnvs": "[]",
+  "triggerDir": "/snapshot/amplify-cli/build/node_modules/@aws-amplify/amplify-category-auth/provider-utils/awscloudformation/triggers/PreSignup",
+  "triggerTemplate": "PreSignup.json.ejs",
+  "triggerEventPath": "PreSignup.event.json",
+  "roleName": "fitnesstracker969d5a9e969d5a9ePreSignup",
+  "skipEdit": true
+}

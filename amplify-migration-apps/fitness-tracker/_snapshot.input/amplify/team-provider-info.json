@@ -1,0 +1,38 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-xxxxx-main-xxxxx-authRole",
+      "UnauthRoleArn": "arn:aws:iam::123456789012:role/amplify-xxxxx-main-xxxxx-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::123456789012:role/amplify-xxxxx-main-xxxxx-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-xxxxx-deployment",
+      "UnauthRoleName": "amplify-xxxxx-main-xxxxx-unauthRole",
+      "StackName": "amplify-xxxxx-main-xxxxx",
+      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-xxxxx-main-xxxxx/42ee5810-10fe-11f1-8b78-0affe8b1cf09",
+      "AmplifyAppId": "xxxxxxxxxxxxx",
+      "APIGatewayAuthURL": "https://s3.amazonaws.com/amplify-xxxxx-deployment/amplify-cfn-templates/api/APIGatewayAuthStack.json",
+      "AuthTriggerTemplateURL": "https://s3.amazonaws.com/amplify-xxxxx-deployment/amplify-cfn-templates/auth/auth-trigger-cloudformation-template.json"
+    },
+    "categories": {
+      "function": {
+        "fitnesstracker969d5a9e969d5a9ePreSignup": {
+          "DOMAINALLOWLIST": "amazon.com",
+          "deploymentBucketName": "amplify-xxxxx-deployment",
+          "s3Key": "amplify-builds/fitnesstracker969d5a9e969d5a9ePreSignup-4f76723338724d786f63-build.zip"
+        },
+        "admin": {
+          "deploymentBucketName": "amplify-xxxxx-deployment",
+          "s3Key": "amplify-builds/admin-6d6c6265736b64726673-build.zip"
+        },
+        "lognutrition": {
+          "deploymentBucketName": "amplify-xxxxx-deployment",
+          "s3Key": "amplify-builds/lognutrition-66666d2f516838687269-build.zip"
+        }
+      },
+      "auth": {
+        "fitnesstracker969d5a9e969d5a9e": {},
+        "userPoolGroups": {}
+      }
+    }
+  }
+}
