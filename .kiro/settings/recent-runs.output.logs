@@ -1,0 +1,829 @@
+paceben@842f57472008 discussions-nobucket % ../amplify-cli/packages/amplify-cli/bin/amplify gen2-migration refactor --debug --no-rollback --to amplify-d366j4av0q64qm-gen2nobtwo-branch-091698cbf4
+
+(node:27255) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+You are about to execute 'refactor' on environment 'd366j4av0q64qm/nobtwo'.
+
+Operations Summary
+
+• Move stateful resources from your Gen1 app to be managed by your Gen2 app
+
+Implications
+
+🛑 this.step.execute is not a function
+
+Resolution: Please report this issue at https://github.com/aws-amplify/amplify-cli/issues and include the project identifier from: 'amplify diagnose --send-report'
+Learn more at: https://docs.amplify.aws/cli/project/troubleshooting/
+
+UnknownFault: this.step.execute is not a function
+    at genericErrorToAmplifyException (/Users/paceben/test-apps/amplify-cli/packages/amplify-cli/lib/amplify-exception-handler.js:129:49)
+    at handleException (/Users/paceben/test-apps/amplify-cli/packages/amplify-cli/lib/amplify-exception-handler.js:28:28)
+    at process.<anonymous> (/Users/paceben/test-apps/amplify-cli/packages/amplify-cli/lib/index.js:62:93)
+    at process.emit (node:events:508:28)
+    at process._fatalException (node:internal/process/execution:159:25)
+
+this.step.execute is not a function
+TypeError: this.step.execute is not a function
+    at CachedAmplifyMigrationStep.execute (/Users/paceben/test-apps/amplify-cli/packages/amplify-cli/lib/commands/gen2-migration.js:236:57)
+    at Object.run (/Users/paceben/test-apps/amplify-cli/packages/amplify-cli/lib/commands/gen2-migration.js:139:92)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async Object.executeAmplifyCommand (/Users/paceben/test-apps/amplify-cli/packages/amplify-cli/lib/index.js:203:9)
+    at async executePluginModuleCommand (/Users/paceben/test-apps/amplify-cli/packages/amplify-cli/lib/execution-manager.js:149:5)
+    at async executeCommand (/Users/paceben/test-apps/amplify-cli/packages/amplify-cli/lib/execution-manager.js:47:9)
+    at async Object.run (/Users/paceben/test-apps/amplify-cli/packages/amplify-cli/lib/index.js:131:5)
+paceben@842f57472008 discussions-nobucket % ../amplify-cli/packages/amplify-cli/bin/amplify gen2-migration refactor --debug --no-rollback --to amplify-d366j4av0q64qm-gen2nobtwo-branch-091698cbf4
+
+(node:38095) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+You are about to execute 'refactor' on environment 'd366j4av0q64qm/nobtwo'.
+
+Operations Summary
+
+• Move stateful resources from your Gen1 app to be managed by your Gen2 app
+
+Implications
+
+• [object Object]
+
+(You can rollback this command by running: 'amplify gen2-migration refactor --rollback')
+
+✔ Do you want to continue? (y/N) · yes
+
+[2026-02-11T23:12:19.924Z] [refactor] [discussionsnobucket/nobtwo] → Performing validations
+[2026-02-11T23:12:19.926Z] [refactor] [discussionsnobucket/nobtwo] • Inspecting stack policy for amplify-discussionsnobucket-nobtwo-ba8b6
+[2026-02-11T23:12:20.034Z] [refactor] [discussionsnobucket/nobtwo] • Stack amplify-discussionsnobucket-nobtwo-ba8b6 is locked ✔
+[2026-02-11T23:12:20.034Z] [refactor] [discussionsnobucket/nobtwo] → Validations complete
+
+[2026-02-11T23:12:20.034Z] [refactor] [discussionsnobucket/nobtwo] → Executing
+[2026-02-11T23:12:20.497Z] [refactor] [discussionsnobucket/nobtwo] • 
+[2026-02-11T23:12:20.497Z] [refactor] [discussionsnobucket/nobtwo] • 🔍 Assessing available resources for migration...
+[2026-02-11T23:12:20.594Z] [refactor] [discussionsnobucket/nobtwo] • 
+[2026-02-11T23:12:20.594Z] [refactor] [discussionsnobucket/nobtwo] • 📊 Migration Assessment Results:
+[2026-02-11T23:12:20.594Z] [refactor] [discussionsnobucket/nobtwo] • 
+[2026-02-11T23:12:20.594Z] [refactor] [discussionsnobucket/nobtwo] • 🔹 AUTH Category:
+[2026-02-11T23:12:20.594Z] [refactor] [discussionsnobucket/nobtwo] •    • Resources to migrate: 5
+[2026-02-11T23:12:20.594Z] [refactor] [discussionsnobucket/nobtwo] •    • Resource types: AWS::Cognito::UserPool, AWS::Cognito::UserPoolClient, AWS::Cognito::IdentityPool, AWS::Cognito::IdentityPoolRoleAttachment
+[2026-02-11T23:12:20.594Z] [refactor] [discussionsnobucket/nobtwo] •    • Source stack: arn:aws:cloudformation:us-east-1:360321814051:stack/amplify-discussionsnobucket-nobtwo-ba8b6-authdiscussionsnobucket88aec07b88aec07b-RWBLS12F5OED/1f5729b0-006c-11f1-bbc6-0eda3b51d88f
+[2026-02-11T23:12:20.594Z] [refactor] [discussionsnobucket/nobtwo] • 
+[2026-02-11T23:12:20.594Z] [refactor] [discussionsnobucket/nobtwo] • 🔹 STORAGE Category:
+[2026-02-11T23:12:20.594Z] [refactor] [discussionsnobucket/nobtwo] •    • Resources to migrate: 1
+[2026-02-11T23:12:20.594Z] [refactor] [discussionsnobucket/nobtwo] •    • Resource types: AWS::DynamoDB::Table
+[2026-02-11T23:12:20.594Z] [refactor] [discussionsnobucket/nobtwo] •    • Source stack: arn:aws:cloudformation:us-east-1:360321814051:stack/amplify-discussionsnobucket-nobtwo-ba8b6-storageactivity-M1CVFDPW759E/148deeb0-006c-11f1-9f5f-0afffb7187cf
+[2026-02-11T23:12:20.594Z] [refactor] [discussionsnobucket/nobtwo] • 
+[2026-02-11T23:12:20.594Z] [refactor] [discussionsnobucket/nobtwo] • 🔧 Executing CloudFormation stack refactor...
+[2026-02-11T23:12:20.595Z] [refactor] [discussionsnobucket/nobtwo] • 📋 Selected categories: auth, storage
+[2026-02-11T23:12:20.596Z] [refactor] [discussionsnobucket/nobtwo] · generateGen1PreProcessTemplate: Starting Gen1 pre-process template generation
+[2026-02-11T23:12:20.596Z] [refactor] [discussionsnobucket/nobtwo] · Gen1 Stack ID: arn:aws:cloudformation:us-east-1:360321814051:stack/amplify-discussionsnobucket-nobtwo-ba8b6-authdiscussionsnobucket88aec07b88aec07b-RWBLS12F5OED/1f5729b0-006c-11f1-bbc6-0eda3b51d88f
+[2026-02-11T23:12:20.625Z] [refactor] [discussionsnobucket/nobtwo] · Gen1 Stack Parameters count: 41
+[2026-02-11T23:12:20.625Z] [refactor] [discussionsnobucket/nobtwo] · Gen1 Stack Parameters: [
+  {
+    "ParameterKey": "usernameAttributes",
+    "ParameterValue": "phone_number"
+  },
+  {
+    "ParameterKey": "authRoleArn",
+    "ParameterValue": "arn:aws:iam::360321814051:role/amplify-discussionsnobucket-nobtwo-ba8b6-authRole"
+  },
+  {
+    "ParameterKey": "autoVerifiedAttributes",
+    "ParameterValue": "email"
+  },
+  {
+    "ParameterKey": "allowUnauthenticatedIdentities",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "hostedUI",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "smsVerificationMessage",
+    "ParameterValue": "Your verification code is {####}"
+  },
+  {
+    "ParameterKey": "userpoolClientReadAttributes",
+    "ParameterValue": "email"
+  },
+  {
+    "ParameterKey": "breakCircularDependency",
+    "ParameterValue": "true"
+  },
+  {
+    "ParameterKey": "mfaTypes",
+    "ParameterValue": "SMS Text Message"
+  },
+  {
+    "ParameterKey": "emailVerificationSubject",
+    "ParameterValue": "Verification"
+  },
+  {
+    "ParameterKey": "sharedId",
+    "ParameterValue": "88aec07b"
+  },
+  {
+    "ParameterKey": "useDefault",
+    "ParameterValue": "manual"
+  },
+  {
+    "ParameterKey": "userpoolClientGenerateSecret",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "mfaConfiguration",
+    "ParameterValue": "OFF"
+  },
+  {
+    "ParameterKey": "identityPoolName",
+    "ParameterValue": "discussionsnobucket88aec07b_identitypool_88aec07b"
+  },
+  {
+    "ParameterKey": "thirdPartyAuth",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "userPoolGroupList",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "authSelections",
+    "ParameterValue": "identityPoolAndUserPool"
+  },
+  {
+    "ParameterKey": "adminQueries",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "resourceNameTruncated",
+    "ParameterValue": "discus88aec07b"
+  },
+  {
+    "ParameterKey": "userPoolGroups",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "smsAuthenticationMessage",
+    "ParameterValue": "Your authentication code is {####}"
+  },
+  {
+    "ParameterKey": "passwordPolicyMinLength",
+    "ParameterValue": "8"
+  },
+  {
+    "ParameterKey": "userPoolName",
+    "ParameterValue": "discussionsnobucket88aec07b_userpool_88aec07b"
+  },
+  {
+    "ParameterKey": "userpoolClientWriteAttributes",
+    "ParameterValue": "email"
+  },
+  {
+    "ParameterKey": "dependsOn",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "useEnabledMfas",
+    "ParameterValue": "true"
+  },
+  {
+    "ParameterKey": "usernameCaseSensitive",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "resourceName",
+    "ParameterValue": "discussionsnobucket88aec07b88aec07b"
+  },
+  {
+    "ParameterKey": "env",
+    "ParameterValue": "nobtwo"
+  },
+  {
+    "ParameterKey": "triggers",
+    "ParameterValue": "{}"
+  },
+  {
+    "ParameterKey": "serviceName",
+    "ParameterValue": "Cognito"
+  },
+  {
+    "ParameterKey": "emailVerificationMessage",
+    "ParameterValue": "Your verification code is {####}"
+  },
+  {
+    "ParameterKey": "userpoolClientRefreshTokenValidity",
+    "ParameterValue": "120"
+  },
+  {
+    "ParameterKey": "userpoolClientSetAttributes",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "unauthRoleArn",
+    "ParameterValue": "arn:aws:iam::360321814051:role/amplify-discussionsnobucket-nobtwo-ba8b6-unauthRole"
+  },
+  {
+    "ParameterKey": "requiredAttributes",
+    "ParameterValue": "email,phone_number"
+  },
+  {
+    "ParameterKey": "passwordPolicyCharacters",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "aliasAttributes",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "userpoolClientLambdaRole",
+    "ParameterValue": "discus88aec07b_userpoolclient_lambda_role"
+  },
+  {
+    "ParameterKey": "defaultPasswordPolicy",
+    "ParameterValue": "false"
+  }
+]
+[2026-02-11T23:12:20.625Z] [refactor] [discussionsnobucket/nobtwo] · Gen1 Stack Outputs count: 8
+[2026-02-11T23:12:20.625Z] [refactor] [discussionsnobucket/nobtwo] · Gen1 Stack Outputs: [
+  {
+    "OutputKey": "CreatedSNSRole",
+    "OutputValue": "arn:aws:iam::360321814051:role/sns88aec07bba8b6-nobtwo",
+    "Description": "role arn"
+  },
+  {
+    "OutputKey": "UserPoolId",
+    "OutputValue": "us-east-1_gQTghN5kD",
+    "Description": "Id for the user pool"
+  },
+  {
+    "OutputKey": "AppClientIDWeb",
+    "OutputValue": "4fk8n82aii4puep25dd8309u8a",
+    "Description": "The user pool app client id for web"
+  },
+  {
+    "OutputKey": "AppClientID",
+    "OutputValue": "11sjalk7i5t9kprvr2t6ta1pia",
+    "Description": "The user pool app client id"
+  },
+  {
+    "OutputKey": "IdentityPoolId",
+    "OutputValue": "us-east-1:7994f1f0-3e15-4964-809b-7c684a7a9f0a",
+    "Description": "Id for the identity pool"
+  },
+  {
+    "OutputKey": "UserPoolArn",
+    "OutputValue": "arn:aws:cognito-idp:us-east-1:360321814051:userpool/us-east-1_gQTghN5kD",
+    "Description": "Arn for the user pool"
+  },
+  {
+    "OutputKey": "IdentityPoolName",
+    "OutputValue": "discussionsnobucket88aec07b_identitypool_88aec07b__nobtwo"
+  },
+  {
+    "OutputKey": "UserPoolName",
+    "OutputValue": "discussionsnobucket88aec07b_userpool_88aec07b"
+  }
+]
+[2026-02-11T23:12:20.654Z] [refactor] [discussionsnobucket/nobtwo] · Gen1 Template Resources count: 7
+[2026-02-11T23:12:20.655Z] [refactor] [discussionsnobucket/nobtwo] · Gen1 Resources to move: UserPool,UserPoolClientWeb,UserPoolClient,IdentityPool,IdentityPoolRoleMap
+[2026-02-11T23:12:20.655Z] [refactor] [discussionsnobucket/nobtwo] · Gen1 Resources to move count: 5
+[2026-02-11T23:12:20.655Z] [refactor] [discussionsnobucket/nobtwo] · Gen1 Resources to move details:
+[2026-02-11T23:12:20.655Z] [refactor] [discussionsnobucket/nobtwo] ·    - UserPool: Type=AWS::Cognito::UserPool
+[2026-02-11T23:12:20.655Z] [refactor] [discussionsnobucket/nobtwo] ·      DependsOn: ["SNSRole"]
+[2026-02-11T23:12:20.655Z] [refactor] [discussionsnobucket/nobtwo] ·    - UserPoolClientWeb: Type=AWS::Cognito::UserPoolClient
+[2026-02-11T23:12:20.655Z] [refactor] [discussionsnobucket/nobtwo] ·      DependsOn: ["UserPool"]
+[2026-02-11T23:12:20.655Z] [refactor] [discussionsnobucket/nobtwo] ·    - UserPoolClient: Type=AWS::Cognito::UserPoolClient
+[2026-02-11T23:12:20.655Z] [refactor] [discussionsnobucket/nobtwo] ·      DependsOn: ["UserPool"]
+[2026-02-11T23:12:20.655Z] [refactor] [discussionsnobucket/nobtwo] ·    - IdentityPool: Type=AWS::Cognito::IdentityPool
+[2026-02-11T23:12:20.655Z] [refactor] [discussionsnobucket/nobtwo] ·    - IdentityPoolRoleMap: Type=AWS::Cognito::IdentityPoolRoleAttachment
+[2026-02-11T23:12:20.655Z] [refactor] [discussionsnobucket/nobtwo] ·      DependsOn: ["IdentityPool"]
+[2026-02-11T23:12:20.655Z] [refactor] [discussionsnobucket/nobtwo] · Resolving Gen1 parameters...
+[2026-02-11T23:12:20.656Z] [refactor] [discussionsnobucket/nobtwo] · Describing Gen1 stack resources...
+[2026-02-11T23:12:20.706Z] [refactor] [discussionsnobucket/nobtwo] · Gen1 Stack Resources count: 7
+[2026-02-11T23:12:20.706Z] [refactor] [discussionsnobucket/nobtwo] · Resolving Gen1 outputs...
+[2026-02-11T23:12:20.707Z] [refactor] [discussionsnobucket/nobtwo] · Resolving Gen1 dependencies...
+[2026-02-11T23:12:20.707Z] [refactor] [discussionsnobucket/nobtwo] · Resolving Gen1 conditions...
+[2026-02-11T23:12:20.708Z] [refactor] [discussionsnobucket/nobtwo] • Updating Gen 1 auth stack...
+[2026-02-11T23:12:46.205Z] [refactor] [discussionsnobucket/nobtwo] • Updated Gen 1 auth stack successfully
+[2026-02-11T23:12:46.206Z] [refactor] [discussionsnobucket/nobtwo] · initializeGen2State: Initializing Gen2 stack state
+[2026-02-11T23:12:46.206Z] [refactor] [discussionsnobucket/nobtwo] · Gen2 Stack ID: arn:aws:cloudformation:us-east-1:360321814051:stack/amplify-d366j4av0q64qm-gen2nobtwo-branch-091698cbf4-auth179371D7-10UOXHN38GEBR/50158c90-0071-11f1-ad51-123f20f98773
+[2026-02-11T23:12:46.247Z] [refactor] [discussionsnobucket/nobtwo] · Gen2 Stack Parameters count: 0
+[2026-02-11T23:12:46.247Z] [refactor] [discussionsnobucket/nobtwo] · Gen2 Stack Outputs count: 5
+[2026-02-11T23:12:46.275Z] [refactor] [discussionsnobucket/nobtwo] · Gen2 Template Resources count: 8
+[2026-02-11T23:12:46.275Z] [refactor] [discussionsnobucket/nobtwo] · Gen2 stateful resources: amplifyAuthUserPool4BA7F805,amplifyAuthUserPoolNativeAppClient79534448,amplifyAuthUserPoolAppClient2626C6F8,amplifyAuthIdentityPool3FDE84CC,amplifyAuthIdentityPoolRoleAttachment045F17C8
+[2026-02-11T23:12:46.276Z] [refactor] [discussionsnobucket/nobtwo] • Moving Gen2 auth resources to holding stack...
+[2026-02-11T23:12:46.276Z] [refactor] [discussionsnobucket/nobtwo] · moveGen2ResourcesToHoldingStack: Moving Gen2 resources to holding stack
+[2026-02-11T23:12:46.276Z] [refactor] [discussionsnobucket/nobtwo] · Resources to move: amplifyAuthUserPool4BA7F805,amplifyAuthUserPoolNativeAppClient79534448,amplifyAuthUserPoolAppClient2626C6F8,amplifyAuthIdentityPool3FDE84CC,amplifyAuthIdentityPoolRoleAttachment045F17C8
+[2026-02-11T23:12:46.276Z] [refactor] [discussionsnobucket/nobtwo] · Stack outputs count: 5
+[2026-02-11T23:12:46.276Z] [refactor] [discussionsnobucket/nobtwo] · Describing Gen2 stack resources...
+[2026-02-11T23:12:46.324Z] [refactor] [discussionsnobucket/nobtwo] · Gen2 Stack Resources count: 8
+[2026-02-11T23:12:46.324Z] [refactor] [discussionsnobucket/nobtwo] · Resolving Gen2 dependencies...
+[2026-02-11T23:12:46.324Z] [refactor] [discussionsnobucket/nobtwo] · Resolving Gen2 output references...
+[2026-02-11T23:12:46.354Z] [refactor] [discussionsnobucket/nobtwo] · Creating holding stack: amplify-d366j4av0q64qm-gen2nobtwo-branch-091698cbf4-auth179371D7-10UOXHN38GEBR-holding
+[2026-02-11T23:12:51.670Z] [refactor] [discussionsnobucket/nobtwo] · Moving resource to holding stack: amplifyAuthUserPool4BA7F805
+[2026-02-11T23:12:51.671Z] [refactor] [discussionsnobucket/nobtwo] · Moving resource to holding stack: amplifyAuthUserPoolNativeAppClient79534448
+[2026-02-11T23:12:51.671Z] [refactor] [discussionsnobucket/nobtwo] · Moving resource to holding stack: amplifyAuthUserPoolAppClient2626C6F8
+[2026-02-11T23:12:51.671Z] [refactor] [discussionsnobucket/nobtwo] · Moving resource to holding stack: amplifyAuthIdentityPool3FDE84CC
+[2026-02-11T23:12:51.671Z] [refactor] [discussionsnobucket/nobtwo] · Moving resource to holding stack: amplifyAuthIdentityPoolRoleAttachment045F17C8
+[2026-02-11T23:12:51.671Z] [refactor] [discussionsnobucket/nobtwo] · Gen2 template resources after move: 3
+[2026-02-11T23:12:51.671Z] [refactor] [discussionsnobucket/nobtwo] · Executing StackRefactor to move resources to holding stack...
+[2026-02-11T23:14:23.150Z] [refactor] [discussionsnobucket/nobtwo] · Successfully moved Gen2 resources to holding stack
+[2026-02-11T23:14:23.150Z] [refactor] [discussionsnobucket/nobtwo] • Moved Gen2 auth resources to holding stack successfully
+[2026-02-11T23:14:23.150Z] [refactor] [discussionsnobucket/nobtwo] · generateGen2ResourceRemovalTemplate: Starting Gen2 resource removal template generation
+[2026-02-11T23:14:23.150Z] [refactor] [discussionsnobucket/nobtwo] · Gen2 Stack ID: arn:aws:cloudformation:us-east-1:360321814051:stack/amplify-d366j4av0q64qm-gen2nobtwo-branch-091698cbf4-auth179371D7-10UOXHN38GEBR/50158c90-0071-11f1-ad51-123f20f98773
+[2026-02-11T23:14:23.186Z] [refactor] [discussionsnobucket/nobtwo] · Gen2 Stack Parameters count: 0
+[2026-02-11T23:14:23.186Z] [refactor] [discussionsnobucket/nobtwo] · Gen2 Stack Outputs count: 5
+[2026-02-11T23:14:23.186Z] [refactor] [discussionsnobucket/nobtwo] · Gen2 Stack Outputs: [
+  {
+    "OutputKey": "amplifyd366j4av0q64qmgen2nobtwobranch091698cbf4authamplifyAuthunauthenticatedUserRole10CEBC7CRef",
+    "OutputValue": "amplify-d366j4av0q64qm-ge-amplifyAuthunauthenticate-hAg6uLrhC5Xf"
+  },
+  {
+    "OutputKey": "amplifyd366j4av0q64qmgen2nobtwobranch091698cbf4authamplifyAuthIdentityPool73DAFD79Ref",
+    "OutputValue": "us-east-1:92d779b6-db1c-45ae-91b1-5df8e370c582"
+  },
+  {
+    "OutputKey": "amplifyd366j4av0q64qmgen2nobtwobranch091698cbf4authamplifyAuthauthenticatedUserRoleF876D38ERef",
+    "OutputValue": "amplify-d366j4av0q64qm-ge-amplifyAuthauthenticatedU-sQ4iANz7ozHN"
+  },
+  {
+    "OutputKey": "amplifyd366j4av0q64qmgen2nobtwobranch091698cbf4authamplifyAuthUserPool6373799BRef",
+    "OutputValue": "us-east-1_McJJLxECl"
+  },
+  {
+    "OutputKey": "amplifyd366j4av0q64qmgen2nobtwobranch091698cbf4authamplifyAuthUserPoolAppClient23EF1C12Ref",
+    "OutputValue": "4h5jqs0got17k920hh36h3ept8"
+  }
+]
+[2026-02-11T23:14:23.215Z] [refactor] [discussionsnobucket/nobtwo] · Gen2 Template Resources count: 3
+[2026-02-11T23:14:23.215Z] [refactor] [discussionsnobucket/nobtwo] · Gen2 Resources to remove: 
+[2026-02-11T23:14:23.215Z] [refactor] [discussionsnobucket/nobtwo] · Gen2 Resources to remove count: 0
+[2026-02-11T23:14:23.215Z] [refactor] [discussionsnobucket/nobtwo] · Gen2 Resources to remove details:
+[2026-02-11T23:14:23.216Z] [refactor] [discussionsnobucket/nobtwo] · generateRefactorTemplates: Starting refactor template generation
+[2026-02-11T23:14:23.216Z] [refactor] [discussionsnobucket/nobtwo] · Gen1 resources to move: UserPool,UserPoolClientWeb,UserPoolClient,IdentityPool,IdentityPoolRoleMap
+[2026-02-11T23:14:23.216Z] [refactor] [discussionsnobucket/nobtwo] · Gen2 resources to remove: 
+[2026-02-11T23:14:23.216Z] [refactor] [discussionsnobucket/nobtwo] · Gen1 logical resource IDs: UserPool,UserPoolClientWeb,UserPoolClient,IdentityPool,IdentityPoolRoleMap
+[2026-02-11T23:14:23.216Z] [refactor] [discussionsnobucket/nobtwo] · Building resource mapping...
+[2026-02-11T23:14:23.216Z] [refactor] [discussionsnobucket/nobtwo] · buildGen1ToGen2ResourceLogicalIdMapping: Building resource mapping
+[2026-02-11T23:14:23.216Z] [refactor] [discussionsnobucket/nobtwo] · Gen1 resources: UserPool,UserPoolClientWeb,UserPoolClient,IdentityPool,IdentityPoolRoleMap
+[2026-02-11T23:14:23.216Z] [refactor] [discussionsnobucket/nobtwo] · Gen2 resources: 
+[2026-02-11T23:14:23.216Z] [refactor] [discussionsnobucket/nobtwo] · [DEBUG] Processing Gen1 resource: UserPool (Type: AWS::Cognito::UserPool)
+[2026-02-11T23:14:23.216Z] [refactor] [discussionsnobucket/nobtwo] · [DEBUG] Processing Gen1 resource: UserPoolClientWeb (Type: AWS::Cognito::UserPoolClient)
+[2026-02-11T23:14:23.216Z] [refactor] [discussionsnobucket/nobtwo] · [DEBUG] Processing Gen1 resource: UserPoolClient (Type: AWS::Cognito::UserPoolClient)
+[2026-02-11T23:14:23.216Z] [refactor] [discussionsnobucket/nobtwo] · [DEBUG] Processing Gen1 resource: IdentityPool (Type: AWS::Cognito::IdentityPool)
+[2026-02-11T23:14:23.216Z] [refactor] [discussionsnobucket/nobtwo] · [DEBUG] Processing Gen1 resource: IdentityPoolRoleMap (Type: AWS::Cognito::IdentityPoolRoleAttachment)
+[2026-02-11T23:14:23.216Z] [refactor] [discussionsnobucket/nobtwo] · Final resource mapping: 
+[2026-02-11T23:14:23.216Z] [refactor] [discussionsnobucket/nobtwo] · Un-mapped Gen1 resources: UserPool,UserPoolClientWeb,UserPoolClient,IdentityPool,IdentityPoolRoleMap
+[2026-02-11T23:14:23.216Z] [refactor] [discussionsnobucket/nobtwo] · Un-mapped Gen2 resources: 
+[2026-02-11T23:14:23.216Z] [refactor] [discussionsnobucket/nobtwo] · Cloning templates...
+[2026-02-11T23:14:23.216Z] [refactor] [discussionsnobucket/nobtwo] · Cloned Gen1 template resources: 7
+[2026-02-11T23:14:23.216Z] [refactor] [discussionsnobucket/nobtwo] · Cloned Gen2 template resources: 3
+[2026-02-11T23:14:23.216Z] [refactor] [discussionsnobucket/nobtwo] · Adding Gen1 resources to Gen2 stack...
+[2026-02-11T23:14:23.216Z] [refactor] [discussionsnobucket/nobtwo] · addGen1ResourcesToGen2Stack: Adding Gen1 resources to Gen2 stack
+[2026-02-11T23:14:23.216Z] [refactor] [discussionsnobucket/nobtwo] · Resources to add: UserPool,UserPoolClientWeb,UserPoolClient,IdentityPool,IdentityPoolRoleMap
+[2026-02-11T23:14:23.216Z] [refactor] [discussionsnobucket/nobtwo] · Resource mapping: 
+🛑 The expression evaluated to a falsy value:
+
+  (gen2ResourceLogicalId)
+
+
+Resolution: Please report this issue at https://github.com/aws-amplify/amplify-cli/issues and include the project identifier from: 'amplify diagnose --send-report'
+Learn more at: https://docs.amplify.aws/cli/project/troubleshooting/
+
+UnknownNodeJSFault: The expression evaluated to a falsy value:
+
+  (gen2ResourceLogicalId)
+
+    at nodeErrorToAmplifyException (/Users/paceben/test-apps/amplify-cli/packages/amplify-cli/lib/amplify-exception-handler.js:147:12)
+    at handleException (/Users/paceben/test-apps/amplify-cli/packages/amplify-cli/lib/amplify-exception-handler.js:25:28)
+    at process.<anonymous> (/Users/paceben/test-apps/amplify-cli/packages/amplify-cli/lib/index.js:62:93)
+    at process.emit (node:events:508:28)
+    at process._fatalException (node:internal/process/execution:159:25)
+
+The expression evaluated to a falsy value:
+
+  (gen2ResourceLogicalId)
+
+AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+
+  (gen2ResourceLogicalId)
+
+    at CategoryTemplateGenerator.addGen1ResourcesToGen2Stack (/Users/paceben/test-apps/amplify-cli/packages/amplify-cli/lib/commands/gen2-migration/refactor/generators/category-template-generator.js:224:39)
+    at CategoryTemplateGenerator.generateRefactorTemplates (/Users/paceben/test-apps/amplify-cli/packages/amplify-cli/lib/commands/gen2-migration/refactor/generators/category-template-generator.js:433:46)
+    at CategoryTemplateGenerator.generateStackRefactorTemplates (/Users/paceben/test-apps/amplify-cli/packages/amplify-cli/lib/commands/gen2-migration/refactor/generators/category-template-generator.js:181:21)
+    at TemplateGenerator.generateCategoryTemplates (/Users/paceben/test-apps/amplify-cli/packages/amplify-cli/lib/commands/gen2-migration/refactor/generators/template-generator.js:410:109)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async TemplateGenerator.generateSelectedCategories (/Users/paceben/test-apps/amplify-cli/packages/amplify-cli/lib/commands/gen2-migration/refactor/generators/template-generator.js:186:28)
+    at async AmplifyMigrationRefactorStep.executeStackRefactor (/Users/paceben/test-apps/amplify-cli/packages/amplify-cli/lib/commands/gen2-migration/refactor/refactor.js:162:25)
+    at async Object.execute (/Users/paceben/test-apps/amplify-cli/packages/amplify-cli/lib/commands/gen2-migration/refactor/refactor.js:46:21)
+    at async runOperations (/Users/paceben/test-apps/amplify-cli/packages/amplify-cli/lib/commands/gen2-migration.js:198:9)
+    at async runExecute (/Users/paceben/test-apps/amplify-cli/packages/amplify-cli/lib/commands/gen2-migration.js:208:5)
+    at async Object.run (/Users/paceben/test-apps/amplify-cli/packages/amplify-cli/lib/commands/gen2-migration.js:162:9)
+    at async Object.executeAmplifyCommand (/Users/paceben/test-apps/amplify-cli/packages/amplify-cli/lib/index.js:203:9)
+    at async executePluginModuleCommand (/Users/paceben/test-apps/amplify-cli/packages/amplify-cli/lib/execution-manager.js:149:5)
+    at async executeCommand (/Users/paceben/test-apps/amplify-cli/packages/amplify-cli/lib/execution-manager.js:47:9)
+    at async Object.run (/Users/paceben/test-apps/amplify-cli/packages/amplify-cli/lib/index.js:131:5)
+paceben@842f57472008 discussions-nobucket % ../amplify-cli/packages/amplify-cli/bin/amplify gen2-migration refactor --debug --no-rollback --to amplify-d366j4av0q64qm-gen2nobtwo-branch-091698cbf4
+
+(node:60437) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+You are about to execute 'refactor' on environment 'd366j4av0q64qm/nobtwo'.
+
+Operations Summary
+
+• Move stateful resources from your Gen1 app to be managed by your Gen2 app
+
+Implications
+
+• [object Object]
+
+(You can rollback this command by running: 'amplify gen2-migration refactor --rollback')
+
+✔ Do you want to continue? (y/N) · yes
+
+[2026-02-11T23:22:54.579Z] [refactor] [discussionsnobucket/nobtwo] → Performing validations
+[2026-02-11T23:22:54.581Z] [refactor] [discussionsnobucket/nobtwo] • Inspecting stack policy for amplify-discussionsnobucket-nobtwo-ba8b6
+[2026-02-11T23:22:54.681Z] [refactor] [discussionsnobucket/nobtwo] • Stack amplify-discussionsnobucket-nobtwo-ba8b6 is locked ✔
+[2026-02-11T23:22:54.681Z] [refactor] [discussionsnobucket/nobtwo] → Validations complete
+
+[2026-02-11T23:22:54.681Z] [refactor] [discussionsnobucket/nobtwo] → Executing
+[2026-02-11T23:22:55.154Z] [refactor] [discussionsnobucket/nobtwo] • 
+[2026-02-11T23:22:55.154Z] [refactor] [discussionsnobucket/nobtwo] • 🔍 Assessing available resources for migration...
+[2026-02-11T23:22:55.254Z] [refactor] [discussionsnobucket/nobtwo] • 
+[2026-02-11T23:22:55.254Z] [refactor] [discussionsnobucket/nobtwo] • 📊 Migration Assessment Results:
+[2026-02-11T23:22:55.254Z] [refactor] [discussionsnobucket/nobtwo] • 
+[2026-02-11T23:22:55.254Z] [refactor] [discussionsnobucket/nobtwo] • 🔹 AUTH Category:
+[2026-02-11T23:22:55.254Z] [refactor] [discussionsnobucket/nobtwo] •    • Resources to migrate: 5
+[2026-02-11T23:22:55.254Z] [refactor] [discussionsnobucket/nobtwo] •    • Resource types: AWS::Cognito::UserPool, AWS::Cognito::UserPoolClient, AWS::Cognito::IdentityPool, AWS::Cognito::IdentityPoolRoleAttachment
+[2026-02-11T23:22:55.254Z] [refactor] [discussionsnobucket/nobtwo] •    • Source stack: arn:aws:cloudformation:us-east-1:360321814051:stack/amplify-discussionsnobucket-nobtwo-ba8b6-authdiscussionsnobucket88aec07b88aec07b-RWBLS12F5OED/1f5729b0-006c-11f1-bbc6-0eda3b51d88f
+[2026-02-11T23:22:55.254Z] [refactor] [discussionsnobucket/nobtwo] • 
+[2026-02-11T23:22:55.254Z] [refactor] [discussionsnobucket/nobtwo] • 🔹 STORAGE Category:
+[2026-02-11T23:22:55.254Z] [refactor] [discussionsnobucket/nobtwo] •    • Resources to migrate: 1
+[2026-02-11T23:22:55.254Z] [refactor] [discussionsnobucket/nobtwo] •    • Resource types: AWS::DynamoDB::Table
+[2026-02-11T23:22:55.254Z] [refactor] [discussionsnobucket/nobtwo] •    • Source stack: arn:aws:cloudformation:us-east-1:360321814051:stack/amplify-discussionsnobucket-nobtwo-ba8b6-storageactivity-M1CVFDPW759E/148deeb0-006c-11f1-9f5f-0afffb7187cf
+[2026-02-11T23:22:55.254Z] [refactor] [discussionsnobucket/nobtwo] • 
+[2026-02-11T23:22:55.254Z] [refactor] [discussionsnobucket/nobtwo] • 🔧 Executing CloudFormation stack refactor...
+[2026-02-11T23:22:55.254Z] [refactor] [discussionsnobucket/nobtwo] • 📋 Selected categories: auth, storage
+[2026-02-11T23:22:55.255Z] [refactor] [discussionsnobucket/nobtwo] · generateGen1PreProcessTemplate: Starting Gen1 pre-process template generation
+[2026-02-11T23:22:55.255Z] [refactor] [discussionsnobucket/nobtwo] · Gen1 Stack ID: arn:aws:cloudformation:us-east-1:360321814051:stack/amplify-discussionsnobucket-nobtwo-ba8b6-authdiscussionsnobucket88aec07b88aec07b-RWBLS12F5OED/1f5729b0-006c-11f1-bbc6-0eda3b51d88f
+[2026-02-11T23:22:55.289Z] [refactor] [discussionsnobucket/nobtwo] · Gen1 Stack Parameters count: 41
+[2026-02-11T23:22:55.289Z] [refactor] [discussionsnobucket/nobtwo] · Gen1 Stack Parameters: [
+  {
+    "ParameterKey": "usernameAttributes",
+    "ParameterValue": "phone_number"
+  },
+  {
+    "ParameterKey": "authRoleArn",
+    "ParameterValue": "arn:aws:iam::360321814051:role/amplify-discussionsnobucket-nobtwo-ba8b6-authRole"
+  },
+  {
+    "ParameterKey": "autoVerifiedAttributes",
+    "ParameterValue": "email"
+  },
+  {
+    "ParameterKey": "allowUnauthenticatedIdentities",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "hostedUI",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "smsVerificationMessage",
+    "ParameterValue": "Your verification code is {####}"
+  },
+  {
+    "ParameterKey": "userpoolClientReadAttributes",
+    "ParameterValue": "email"
+  },
+  {
+    "ParameterKey": "breakCircularDependency",
+    "ParameterValue": "true"
+  },
+  {
+    "ParameterKey": "mfaTypes",
+    "ParameterValue": "SMS Text Message"
+  },
+  {
+    "ParameterKey": "emailVerificationSubject",
+    "ParameterValue": "Verification"
+  },
+  {
+    "ParameterKey": "sharedId",
+    "ParameterValue": "88aec07b"
+  },
+  {
+    "ParameterKey": "useDefault",
+    "ParameterValue": "manual"
+  },
+  {
+    "ParameterKey": "userpoolClientGenerateSecret",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "mfaConfiguration",
+    "ParameterValue": "OFF"
+  },
+  {
+    "ParameterKey": "identityPoolName",
+    "ParameterValue": "discussionsnobucket88aec07b_identitypool_88aec07b"
+  },
+  {
+    "ParameterKey": "thirdPartyAuth",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "userPoolGroupList",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "authSelections",
+    "ParameterValue": "identityPoolAndUserPool"
+  },
+  {
+    "ParameterKey": "adminQueries",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "resourceNameTruncated",
+    "ParameterValue": "discus88aec07b"
+  },
+  {
+    "ParameterKey": "userPoolGroups",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "smsAuthenticationMessage",
+    "ParameterValue": "Your authentication code is {####}"
+  },
+  {
+    "ParameterKey": "passwordPolicyMinLength",
+    "ParameterValue": "8"
+  },
+  {
+    "ParameterKey": "userPoolName",
+    "ParameterValue": "discussionsnobucket88aec07b_userpool_88aec07b"
+  },
+  {
+    "ParameterKey": "userpoolClientWriteAttributes",
+    "ParameterValue": "email"
+  },
+  {
+    "ParameterKey": "dependsOn",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "useEnabledMfas",
+    "ParameterValue": "true"
+  },
+  {
+    "ParameterKey": "usernameCaseSensitive",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "resourceName",
+    "ParameterValue": "discussionsnobucket88aec07b88aec07b"
+  },
+  {
+    "ParameterKey": "env",
+    "ParameterValue": "nobtwo"
+  },
+  {
+    "ParameterKey": "triggers",
+    "ParameterValue": "{}"
+  },
+  {
+    "ParameterKey": "serviceName",
+    "ParameterValue": "Cognito"
+  },
+  {
+    "ParameterKey": "emailVerificationMessage",
+    "ParameterValue": "Your verification code is {####}"
+  },
+  {
+    "ParameterKey": "userpoolClientRefreshTokenValidity",
+    "ParameterValue": "120"
+  },
+  {
+    "ParameterKey": "userpoolClientSetAttributes",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "unauthRoleArn",
+    "ParameterValue": "arn:aws:iam::360321814051:role/amplify-discussionsnobucket-nobtwo-ba8b6-unauthRole"
+  },
+  {
+    "ParameterKey": "requiredAttributes",
+    "ParameterValue": "email,phone_number"
+  },
+  {
+    "ParameterKey": "passwordPolicyCharacters",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "aliasAttributes",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "userpoolClientLambdaRole",
+    "ParameterValue": "discus88aec07b_userpoolclient_lambda_role"
+  },
+  {
+    "ParameterKey": "defaultPasswordPolicy",
+    "ParameterValue": "false"
+  }
+]
+[2026-02-11T23:22:55.290Z] [refactor] [discussionsnobucket/nobtwo] · Gen1 Stack Outputs count: 8
+[2026-02-11T23:22:55.290Z] [refactor] [discussionsnobucket/nobtwo] · Gen1 Stack Outputs: [
+  {
+    "OutputKey": "CreatedSNSRole",
+    "OutputValue": "arn:aws:iam::360321814051:role/sns88aec07bba8b6-nobtwo",
+    "Description": "role arn"
+  },
+  {
+    "OutputKey": "UserPoolId",
+    "OutputValue": "us-east-1_gQTghN5kD",
+    "Description": "Id for the user pool"
+  },
+  {
+    "OutputKey": "AppClientIDWeb",
+    "OutputValue": "4fk8n82aii4puep25dd8309u8a",
+    "Description": "The user pool app client id for web"
+  },
+  {
+    "OutputKey": "AppClientID",
+    "OutputValue": "11sjalk7i5t9kprvr2t6ta1pia",
+    "Description": "The user pool app client id"
+  },
+  {
+    "OutputKey": "IdentityPoolId",
+    "OutputValue": "us-east-1:7994f1f0-3e15-4964-809b-7c684a7a9f0a",
+    "Description": "Id for the identity pool"
+  },
+  {
+    "OutputKey": "UserPoolArn",
+    "OutputValue": "arn:aws:cognito-idp:us-east-1:360321814051:userpool/us-east-1_gQTghN5kD",
+    "Description": "Arn for the user pool"
+  },
+  {
+    "OutputKey": "IdentityPoolName",
+    "OutputValue": "discussionsnobucket88aec07b_identitypool_88aec07b__nobtwo"
+  },
+  {
+    "OutputKey": "UserPoolName",
+    "OutputValue": "discussionsnobucket88aec07b_userpool_88aec07b"
+  }
+]
+[2026-02-11T23:22:55.323Z] [refactor] [discussionsnobucket/nobtwo] · Gen1 Template Resources count: 7
+[2026-02-11T23:22:55.323Z] [refactor] [discussionsnobucket/nobtwo] · Gen1 Resources to move: UserPool,UserPoolClientWeb,UserPoolClient,IdentityPool,IdentityPoolRoleMap
+[2026-02-11T23:22:55.323Z] [refactor] [discussionsnobucket/nobtwo] · Gen1 Resources to move count: 5
+[2026-02-11T23:22:55.323Z] [refactor] [discussionsnobucket/nobtwo] · Gen1 Resources to move details:
+[2026-02-11T23:22:55.323Z] [refactor] [discussionsnobucket/nobtwo] ·    - UserPool: Type=AWS::Cognito::UserPool
+[2026-02-11T23:22:55.324Z] [refactor] [discussionsnobucket/nobtwo] ·      DependsOn: []
+[2026-02-11T23:22:55.324Z] [refactor] [discussionsnobucket/nobtwo] ·    - UserPoolClientWeb: Type=AWS::Cognito::UserPoolClient
+[2026-02-11T23:22:55.324Z] [refactor] [discussionsnobucket/nobtwo] ·      DependsOn: ["UserPool"]
+[2026-02-11T23:22:55.324Z] [refactor] [discussionsnobucket/nobtwo] ·    - UserPoolClient: Type=AWS::Cognito::UserPoolClient
+[2026-02-11T23:22:55.324Z] [refactor] [discussionsnobucket/nobtwo] ·      DependsOn: ["UserPool"]
+[2026-02-11T23:22:55.324Z] [refactor] [discussionsnobucket/nobtwo] ·    - IdentityPool: Type=AWS::Cognito::IdentityPool
+[2026-02-11T23:22:55.324Z] [refactor] [discussionsnobucket/nobtwo] ·    - IdentityPoolRoleMap: Type=AWS::Cognito::IdentityPoolRoleAttachment
+[2026-02-11T23:22:55.324Z] [refactor] [discussionsnobucket/nobtwo] ·      DependsOn: ["IdentityPool"]
+[2026-02-11T23:22:55.324Z] [refactor] [discussionsnobucket/nobtwo] · Resolving Gen1 parameters...
+[2026-02-11T23:22:55.325Z] [refactor] [discussionsnobucket/nobtwo] · Describing Gen1 stack resources...
+[2026-02-11T23:22:55.386Z] [refactor] [discussionsnobucket/nobtwo] · Gen1 Stack Resources count: 7
+[2026-02-11T23:22:55.386Z] [refactor] [discussionsnobucket/nobtwo] · Resolving Gen1 outputs...
+[2026-02-11T23:22:55.387Z] [refactor] [discussionsnobucket/nobtwo] · Resolving Gen1 dependencies...
+[2026-02-11T23:22:55.387Z] [refactor] [discussionsnobucket/nobtwo] · Resolving Gen1 conditions...
+[2026-02-11T23:22:55.387Z] [refactor] [discussionsnobucket/nobtwo] • Updating Gen 1 auth stack...
+[2026-02-11T23:22:55.493Z] [refactor] [discussionsnobucket/nobtwo] • Updated Gen 1 auth stack successfully
+[2026-02-11T23:22:55.493Z] [refactor] [discussionsnobucket/nobtwo] · initializeGen2State: Initializing Gen2 stack state
+[2026-02-11T23:22:55.494Z] [refactor] [discussionsnobucket/nobtwo] · Gen2 Stack ID: arn:aws:cloudformation:us-east-1:360321814051:stack/amplify-d366j4av0q64qm-gen2nobtwo-branch-091698cbf4-auth179371D7-10UOXHN38GEBR/50158c90-0071-11f1-ad51-123f20f98773
+[2026-02-11T23:22:55.525Z] [refactor] [discussionsnobucket/nobtwo] · Gen2 Stack Parameters count: 0
+[2026-02-11T23:22:55.525Z] [refactor] [discussionsnobucket/nobtwo] · Gen2 Stack Outputs count: 5
+[2026-02-11T23:22:55.551Z] [refactor] [discussionsnobucket/nobtwo] · Gen2 Template Resources count: 3
+[2026-02-11T23:22:55.551Z] [refactor] [discussionsnobucket/nobtwo] · Gen2 stateful resources: 
+[2026-02-11T23:22:55.552Z] [refactor] [discussionsnobucket/nobtwo] · generateGen2ResourceRemovalTemplate: Starting Gen2 resource removal template generation
+[2026-02-11T23:22:55.552Z] [refactor] [discussionsnobucket/nobtwo] · Gen2 Stack ID: arn:aws:cloudformation:us-east-1:360321814051:stack/amplify-d366j4av0q64qm-gen2nobtwo-branch-091698cbf4-auth179371D7-10UOXHN38GEBR/50158c90-0071-11f1-ad51-123f20f98773
+[2026-02-11T23:22:55.577Z] [refactor] [discussionsnobucket/nobtwo] · Gen2 Stack Parameters count: 0
+[2026-02-11T23:22:55.577Z] [refactor] [discussionsnobucket/nobtwo] · Gen2 Stack Outputs count: 5
+[2026-02-11T23:22:55.577Z] [refactor] [discussionsnobucket/nobtwo] · Gen2 Stack Outputs: [
+  {
+    "OutputKey": "amplifyd366j4av0q64qmgen2nobtwobranch091698cbf4authamplifyAuthunauthenticatedUserRole10CEBC7CRef",
+    "OutputValue": "amplify-d366j4av0q64qm-ge-amplifyAuthunauthenticate-hAg6uLrhC5Xf"
+  },
+  {
+    "OutputKey": "amplifyd366j4av0q64qmgen2nobtwobranch091698cbf4authamplifyAuthIdentityPool73DAFD79Ref",
+    "OutputValue": "us-east-1:92d779b6-db1c-45ae-91b1-5df8e370c582"
+  },
+  {
+    "OutputKey": "amplifyd366j4av0q64qmgen2nobtwobranch091698cbf4authamplifyAuthauthenticatedUserRoleF876D38ERef",
+    "OutputValue": "amplify-d366j4av0q64qm-ge-amplifyAuthauthenticatedU-sQ4iANz7ozHN"
+  },
+  {
+    "OutputKey": "amplifyd366j4av0q64qmgen2nobtwobranch091698cbf4authamplifyAuthUserPool6373799BRef",
+    "OutputValue": "us-east-1_McJJLxECl"
+  },
+  {
+    "OutputKey": "amplifyd366j4av0q64qmgen2nobtwobranch091698cbf4authamplifyAuthUserPoolAppClient23EF1C12Ref",
+    "OutputValue": "4h5jqs0got17k920hh36h3ept8"
+  }
+]
+[2026-02-11T23:22:55.623Z] [refactor] [discussionsnobucket/nobtwo] · Gen2 Template Resources count: 3
+[2026-02-11T23:22:55.624Z] [refactor] [discussionsnobucket/nobtwo] · Gen2 Resources to remove: 
+[2026-02-11T23:22:55.624Z] [refactor] [discussionsnobucket/nobtwo] · Gen2 Resources to remove count: 0
+[2026-02-11T23:22:55.624Z] [refactor] [discussionsnobucket/nobtwo] · Gen2 Resources to remove details:
+[2026-02-11T23:22:55.624Z] [refactor] [discussionsnobucket/nobtwo] · generateRefactorTemplates: Starting refactor template generation
+[2026-02-11T23:22:55.624Z] [refactor] [discussionsnobucket/nobtwo] · Gen1 resources to move: UserPool,UserPoolClientWeb,UserPoolClient,IdentityPool,IdentityPoolRoleMap
+[2026-02-11T23:22:55.624Z] [refactor] [discussionsnobucket/nobtwo] · Gen2 resources to remove: 
+[2026-02-11T23:22:55.624Z] [refactor] [discussionsnobucket/nobtwo] · Gen1 logical resource IDs: UserPool,UserPoolClientWeb,UserPoolClient,IdentityPool,IdentityPoolRoleMap
+[2026-02-11T23:22:55.624Z] [refactor] [discussionsnobucket/nobtwo] · Building resource mapping...
+[2026-02-11T23:22:55.624Z] [refactor] [discussionsnobucket/nobtwo] · buildGen1ToGen2ResourceLogicalIdMapping: Building resource mapping
+[2026-02-11T23:22:55.624Z] [refactor] [discussionsnobucket/nobtwo] · Gen1 resources: UserPool,UserPoolClientWeb,UserPoolClient,IdentityPool,IdentityPoolRoleMap
+[2026-02-11T23:22:55.624Z] [refactor] [discussionsnobucket/nobtwo] · Gen2 resources: 
+[2026-02-11T23:22:55.624Z] [refactor] [discussionsnobucket/nobtwo] · [DEBUG] Processing Gen1 resource: UserPool (Type: AWS::Cognito::UserPool)
+[2026-02-11T23:22:55.624Z] [refactor] [discussionsnobucket/nobtwo] · [DEBUG] Processing Gen1 resource: UserPoolClientWeb (Type: AWS::Cognito::UserPoolClient)
+[2026-02-11T23:22:55.624Z] [refactor] [discussionsnobucket/nobtwo] · [DEBUG] Processing Gen1 resource: UserPoolClient (Type: AWS::Cognito::UserPoolClient)
+[2026-02-11T23:22:55.624Z] [refactor] [discussionsnobucket/nobtwo] · [DEBUG] Processing Gen1 resource: IdentityPool (Type: AWS::Cognito::IdentityPool)
+[2026-02-11T23:22:55.625Z] [refactor] [discussionsnobucket/nobtwo] · [DEBUG] Processing Gen1 resource: IdentityPoolRoleMap (Type: AWS::Cognito::IdentityPoolRoleAttachment)
+[2026-02-11T23:22:55.625Z] [refactor] [discussionsnobucket/nobtwo] · Final resource mapping: 
+[2026-02-11T23:22:55.625Z] [refactor] [discussionsnobucket/nobtwo] · Un-mapped Gen1 resources: UserPool,UserPoolClientWeb,UserPoolClient,IdentityPool,IdentityPoolRoleMap
+[2026-02-11T23:22:55.625Z] [refactor] [discussionsnobucket/nobtwo] · Un-mapped Gen2 resources: 
+[2026-02-11T23:22:55.625Z] [refactor] [discussionsnobucket/nobtwo] · Cloning templates...
+[2026-02-11T23:22:55.625Z] [refactor] [discussionsnobucket/nobtwo] · Cloned Gen1 template resources: 7
+[2026-02-11T23:22:55.625Z] [refactor] [discussionsnobucket/nobtwo] · Cloned Gen2 template resources: 3
+[2026-02-11T23:22:55.625Z] [refactor] [discussionsnobucket/nobtwo] · Adding Gen1 resources to Gen2 stack...
+[2026-02-11T23:22:55.625Z] [refactor] [discussionsnobucket/nobtwo] · addGen1ResourcesToGen2Stack: Adding Gen1 resources to Gen2 stack
+[2026-02-11T23:22:55.625Z] [refactor] [discussionsnobucket/nobtwo] · Resources to add: UserPool,UserPoolClientWeb,UserPoolClient,IdentityPool,IdentityPoolRoleMap
+[2026-02-11T23:22:55.625Z] [refactor] [discussionsnobucket/nobtwo] · Resource mapping: 
+🛑 The expression evaluated to a falsy value:
+
+  (gen2ResourceLogicalId)
+
+
+Resolution: Please report this issue at https://github.com/aws-amplify/amplify-cli/issues and include the project identifier from: 'amplify diagnose --send-report'
+Learn more at: https://docs.amplify.aws/cli/project/troubleshooting/
+
+UnknownNodeJSFault: The expression evaluated to a falsy value:
+
+  (gen2ResourceLogicalId)
+
+    at nodeErrorToAmplifyException (/Users/paceben/test-apps/amplify-cli/packages/amplify-cli/lib/amplify-exception-handler.js:147:12)
+    at handleException (/Users/paceben/test-apps/amplify-cli/packages/amplify-cli/lib/amplify-exception-handler.js:25:28)
+    at process.<anonymous> (/Users/paceben/test-apps/amplify-cli/packages/amplify-cli/lib/index.js:62:93)
+    at process.emit (node:events:508:28)
+    at process._fatalException (node:internal/process/execution:159:25)
+
+The expression evaluated to a falsy value:
+
+  (gen2ResourceLogicalId)
+
+AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+
+  (gen2ResourceLogicalId)
+
+    at CategoryTemplateGenerator.addGen1ResourcesToGen2Stack (/Users/paceben/test-apps/amplify-cli/packages/amplify-cli/lib/commands/gen2-migration/refactor/generators/category-template-generator.js:224:39)
+    at CategoryTemplateGenerator.generateRefactorTemplates (/Users/paceben/test-apps/amplify-cli/packages/amplify-cli/lib/commands/gen2-migration/refactor/generators/category-template-generator.js:433:46)
+    at CategoryTemplateGenerator.generateStackRefactorTemplates (/Users/paceben/test-apps/amplify-cli/packages/amplify-cli/lib/commands/gen2-migration/refactor/generators/category-template-generator.js:181:21)
+    at TemplateGenerator.generateCategoryTemplates (/Users/paceben/test-apps/amplify-cli/packages/amplify-cli/lib/commands/gen2-migration/refactor/generators/template-generator.js:413:109)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async TemplateGenerator.generateSelectedCategories (/Users/paceben/test-apps/amplify-cli/packages/amplify-cli/lib/commands/gen2-migration/refactor/generators/template-generator.js:186:28)
+    at async AmplifyMigrationRefactorStep.executeStackRefactor (/Users/paceben/test-apps/amplify-cli/packages/amplify-cli/lib/commands/gen2-migration/refactor/refactor.js:162:25)
+    at async Object.execute (/Users/paceben/test-apps/amplify-cli/packages/amplify-cli/lib/commands/gen2-migration/refactor/refactor.js:46:21)
+    at async runOperations (/Users/paceben/test-apps/amplify-cli/packages/amplify-cli/lib/commands/gen2-migration.js:198:9)
+    at async runExecute (/Users/paceben/test-apps/amplify-cli/packages/amplify-cli/lib/commands/gen2-migration.js:208:5)
+    at async Object.run (/Users/paceben/test-apps/amplify-cli/packages/amplify-cli/lib/commands/gen2-migration.js:162:9)
+    at async Object.executeAmplifyCommand (/Users/paceben/test-apps/amplify-cli/packages/amplify-cli/lib/index.js:203:9)
+    at async executePluginModuleCommand (/Users/paceben/test-apps/amplify-cli/packages/amplify-cli/lib/execution-manager.js:149:5)
+    at async executeCommand (/Users/paceben/test-apps/amplify-cli/packages/amplify-cli/lib/execution-manager.js:47:9)
+    at async Object.run (/Users/paceben/test-apps/amplify-cli/packages/amplify-cli/lib/index.js:131:5)
+paceben@842f57472008 discussions-nobucket % ../amplify-cli/packages/amplify-cli/bin/amplify gen2-migration cleanup                             
+(node:62478) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+You are about to execute 'cleanup' on environment 'd366j4av0q64qm/nobtwo'.
+
+Operations Summary
+
+• Delete holding stack: amplify-d366j4av0q64qm-gen2nobtwo-branch-091698cbf4-auth179371D7-10UOXHN38GEBR-holding
+
+Implications
+
+• [object Object]
+
+(You can rollback this command by running: 'amplify gen2-migration cleanup --rollback')
+
+✔ Do you want to continue? (y/N) · yes
+
+[2026-02-11T23:24:13.559Z] [cleanup] [discussionsnobucket/nobtwo] → Performing validations
+[2026-02-11T23:24:13.559Z] [cleanup] [discussionsnobucket/nobtwo] → Validations complete
+
+[2026-02-11T23:24:13.559Z] [cleanup] [discussionsnobucket/nobtwo] → Executing
+[2026-02-11T23:24:13.559Z] [cleanup] [discussionsnobucket/nobtwo] • Deleting holding stack: amplify-d366j4av0q64qm-gen2nobtwo-branch-091698cbf4-auth179371D7-10UOXHN38GEBR-holding
+🛑 Execution failed: ValidationError: Stack with id amplify-d366j4av0q64qm-gen2nobtwo-branch-091698cbf4-auth179371D7-10UOXHN38GEBR-holding does not exist
+
+[2026-02-11T23:24:18.827Z] [cleanup] [discussionsnobucket/nobtwo] → Rolling back
+🛑 Cleanup cannot be rolled back
+
+Resolution: Please report this issue at https://github.com/aws-amplify/amplify-cli/issues and include the project identifier from: 'amplify diagnose --send-report'
+Learn more at: https://docs.amplify.aws/cli/project/troubleshooting/
+paceben@842f57472008 discussions-nobucket %  
