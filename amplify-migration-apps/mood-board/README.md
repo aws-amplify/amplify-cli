@@ -320,9 +320,18 @@ npx amplify gen2-migration generate
 +     new aws_iam.PolicyStatement({
 +         actions: [
 +             "kinesis:ListShards",
-+             "kinesis:GetShardIterator",
++             "kinesis:ListShards",
++             "kinesis:ListStreams",
++             "kinesis:ListStreamConsumers",
++             "kinesis:DescribeStream",
++             "kinesis:DescribeStreamSummary",
++             "kinesis:DescribeStreamConsumer",
 +             "kinesis:GetRecords",
-+             "kinesis:DescribeStream"
++             "kinesis:GetShardIterator",
++             "kinesis:SubscribeToShard",
++             "kinesis:DescribeLimits",
++             "kinesis:ListTagsForStream",
++             "kinesis:SubscribeToShard"
 +         ],
 +         resources: [analytics.kinesisStreamArn]
 +     })
@@ -330,7 +339,7 @@ npx amplify gen2-migration generate
 ```
 
 ```diff
-+ backend.moodBoardKinesisReader.addEnvironment("ANALYTICS_MOODBOARDDEMOKINESIS_KINESISSTREAMARN",analytics.kinesisStreamArn)
++ backend.moodBoardKinesisReader.addEnvironment("ANALYTICS_MOODBOARDKINESIS_KINESISSTREAMARN",analytics.kinesisStreamArn)
 ```
 
 ```console
