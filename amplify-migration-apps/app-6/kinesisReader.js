@@ -8,26 +8,18 @@ const { KinesisClient, ListShardsCommand, GetShardIteratorCommand, GetRecordsCom
 
 const kinesis = new KinesisClient({ region: process.env.REGION });
 
-// Extract stream name from ARN
-function getStreamName(arn) {
-  // ARN format: arn:aws:kinesis:region:account:stream/stream-name
-  const parts = arn.split('/');
-  return parts[parts.length - 1];
-}
-
 exports.handler = async (event) => {
   console.log('EVENT:', JSON.stringify(event));
 
   const streamArn = process.env.ANALYTICS_MOODBOARDKINESIS_KINESISSTREAMARN;
-  const streamName = getStreamName(streamArn);
 
-  console.log('Reading from stream:', streamName);
+  console.log('Reading from stream ARN:', streamArn);
 
   try {
     // 1. List shards
     const shardsResponse = await kinesis.send(
       new ListShardsCommand({
-        StreamName: streamName,
+        StreamARN: streamArn,
       }),
     );
 
@@ -41,7 +33,7 @@ exports.handler = async (event) => {
     // 2. Get shard iterator (read latest records)
     const iteratorResponse = await kinesis.send(
       new GetShardIteratorCommand({
-        StreamName: streamName,
+        StreamARN: streamArn,
         ShardId: shardId,
         ShardIteratorType: 'TRIM_HORIZON',
       }),
@@ -97,7 +89,7 @@ exports.handler = async (event) => {
     });
 
     return {
-      streamName,
+      streamArn,
       shardId,
       events,
     };
@@ -105,7 +97,7 @@ exports.handler = async (event) => {
     console.error('Error reading from Kinesis:', error);
     return {
       error: error.message,
-      streamName,
+      streamArn,
     };
   }
 };
