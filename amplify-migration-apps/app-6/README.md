@@ -292,7 +292,6 @@ npx amplify gen2-migration generate
 
 ```diff
 - environment: { ANALYTICS_MOODBOARDKINESIS_KINESISSTREAMARN: "arn:aws:kinesis:us-east-1:014148916658:stream/moodboardKinesis-main", ENV: `${branchName}`, REGION: "us-east-1" },
-+ environment: { ANALYTICS_MOODBOARDKINESIS_KINESISSTREAMARN: "arn:aws:kinesis:us-east-1:014148916658:stream/moodboardKinesis-gen2-main", ENV: `${branchName}`, REGION: "us-east-1" },
 ```
 
 **Edit in `./src/main.tsx`:**
@@ -375,12 +374,6 @@ git checkout gen2-main
 ```diff
 - const STREAM_NAME = 'moodboardKinesis-gen2-main';
 + const STREAM_NAME = 'moodboardKinesis-main';
-```
-**Edit in `./amplify/function/moodboardKinesisReader/resource.ts`**
-
-```diff
-- environment: { ANALYTICS_MOODBOARDKINESIS_KINESISSTREAMARN: "arn:aws:kinesis:us-east-1:014148916658:stream/moodboardKinesis-gen2-main", ENV: `${branchName}`, REGION: "us-east-1" },
-+ environment: { ANALYTICS_MOODBOARDKINESIS_KINESISSTREAMARN: "arn:aws:kinesis:us-east-1:014148916658:stream/moodboardKinesis-main", ENV: `${branchName}`, REGION: "us-east-1" },
 ```
 
 ```console
