@@ -3,7 +3,7 @@ import { generateClient } from 'aws-amplify/api';
 import { record } from 'aws-amplify/analytics/kinesis';
 import { getRandomEmoji, getKinesisEvents } from '../graphql/queries';
 
-const STREAM_NAME = 'moodboardfinalKinesis-main';
+const STREAM_NAME = 'moodBoardKinesis-main';
 
 type KinesisEvent = {
   data: string | null;
@@ -13,6 +13,7 @@ type KinesisEvent = {
 
 type KinesisResponse = {
   streamName: string | null;
+  streamArn: string | null;
   shardId: string | null;
   events: KinesisEvent[] | null;
   error: string | null;
@@ -88,7 +89,7 @@ export default function SurpriseMeButton() {
       {kinesisData && (
         <div className="kinesis-events-panel">
           <div className="kinesis-events-header">
-            <span>📊 Kinesis Stream: {kinesisData.streamName}</span>
+            <span>📊 Kinesis Stream: {kinesisData.streamName ?? kinesisData.streamArn?.split('/').pop()}</span>
             <button className="panel-close" onClick={() => setKinesisData(null)}>
               ×
             </button>
