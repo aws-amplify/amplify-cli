@@ -110,6 +110,16 @@ export class MockClients {
                 },
               });
               break;
+            case 'API_KEY':
+              additionalAuthenticationProviders.push({
+                authenticationType: aut.mode,
+              });
+              break;
+            case 'AWS_IAM':
+              additionalAuthenticationProviders.push({
+                authenticationType: aut.mode,
+              });
+              break;
             default:
               throw new Error(`Unsupported additional auth mode: ${aut.mode}`);
           }

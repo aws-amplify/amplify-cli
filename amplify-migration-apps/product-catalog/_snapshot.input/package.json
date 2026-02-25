@@ -5,8 +5,6 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "sanitize:input": "cd _snapshot.input && tsx ../../sanitize-backend.ts",
-    "typecheck:expected": "cd _snapshot.expected/amplify && npx tsc --noEmit",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
@@ -19,6 +17,10 @@
     "react-dom": "^19.2.0"
   },
   "devDependencies": {
+    "@aws-crypto/sha256-js": "^2.0.1",
+    "@aws-sdk/credential-provider-node": "^3.76.0",
+    "@aws-sdk/protocol-http": "^3.58.0",
+    "@aws-sdk/signature-v4": "^3.58.0",
     "@eslint/js": "^9.39.1",
     "@types/node": "^24.10.1",
     "@types/react": "^19.2.5",

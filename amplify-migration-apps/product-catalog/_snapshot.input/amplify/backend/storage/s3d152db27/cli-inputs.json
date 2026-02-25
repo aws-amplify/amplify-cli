@@ -1,0 +1,14 @@
+{
+  "resourceName": "s3d152db27",
+  "policyUUID": "d152db27",
+  "bucketName": "productcatalogd4ffc6fd926f4285b3a12edc8e7c883e",
+  "storageAccess": "auth",
+  "guestAccess": [],
+  "authAccess": [
+    "CREATE_AND_UPDATE",
+    "READ",
+    "DELETE"
+  ],
+  "triggerFunction": "S3Trigger22536b88",
+  "groupAccess": {}
+}
