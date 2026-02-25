@@ -1,5 +1,7 @@
 # Mood Board App (Amplify Gen1)
 
+![](./images/app.png)
+
 A visual board app for capturing ideas and inspiration. Each Board can hold multiple Mood Items, 
 each of which has a title, image, and optional description. The app features a "Surprise Me" 
 button that returns random emojis and tracks clicks via Kinesis analytics.
