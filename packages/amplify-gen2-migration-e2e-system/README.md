@@ -1,21 +1,51 @@
-# Amplify Migration System
+# Amplify Gen 2 Migration E2E System
 
 Automation system for migrating AWS Amplify Gen1 applications to Gen2 with support for multiple apps and all Amplify categories.
 
 ## Features
 
 ### In-progress
-- **Category Support**: Full support for API, Auth, Storage, Function, and Hosting categories
-- **Reporting**: Detailed logging with progress tracking and report generation
+- Gen 2 migration tool commands
+- Test scripts to validate Gen 1 (pre-refactor and post-refactor) and Gen 2 stacks
 
 ### Complete
-- **Flexible Authentication**: Support for AWS profiles and Atmosphere credentials for CI
+- **Category Support**: Full support for API, Auth, Storage, Function, and Hosting categories
+- **Environment Detection**: Automatic detection of Atmosphere vs Local environments
+- **Flexible Authentication**: Support for AWS profiles and Atmosphere credentials
 - **Configuration-Driven**: JSON-based configuration for each app with API documentation
 
-## Installation
+## Installation and build
 
-```bash
-cd amplify-cli # monorepo root
+You may choose to build the entire monorepo, or just a few key components.
+
+### Entire monorepo
+Go to the monorepo root and run:
+```shell
+yarn install
+yarn build
+```
+
+### Individual packages
+
+If you know how to do this with a one-liner with Lerna, let me know!
+
+Build the CLI if using the development binary. If you do not, this tool will look for the global installation of Amplify CLI from your `PATH`.
+```shell
+cd packages/amplify-cli
+yarn install
+yarn build
+```
+
+Build the Amplify E2E Core package.
+```shell
+cd packages/amplify-gen2-migration-e2e-system
+yarn install
+yarn build
+```
+
+Build the Amplify Gen2 Migration E2E System
+```shell
+cd packages/amplify-gen2-migration-e2e-system
 yarn install
 yarn build
 ```
@@ -24,16 +54,17 @@ yarn build
 
 ### Basic Usage
 
-```bash
+```shell
 
-# Migrate an app
-yarn run migrate --app discussions --profile default
+# set AMPLIFY_PATH to your development Amplify CLI
+# if you do not set this, the next command will use the global installation of amplify
+export AMPLIFY_PATH={YOUR_WORKPLACE}/amplify-cli/.bin/amplify-dev
 
-# With debug output
-yarn run migrate --app discussions --profile default --verbose
+# Migrate an app (Project Boards) using the default profile
+npx tsx src/cli.ts --app project-boards --profile default
 
-# Dry run (show what would be done)
-yarn run migrate --dry-run --app discussions --profile default
+# Dry run (show what would be done, don't deploy any resources)
+npx tsx src/cli.ts --dry-run --app discussions --profile default
 ```
 
 ### CLI Options
@@ -48,10 +79,10 @@ yarn run migrate --dry-run --app discussions --profile default
 
 ```bash
 # List all available apps
-npm run migrate --list-apps
+npx tsx src/cli.ts --list-apps
 
 # Migrate app with verbose logging
-npm run migrate --app media-vault --verbose
+npx tsx src/cli.ts --app media-vault --verbose
 ```
 
 ## Configuration
