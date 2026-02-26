@@ -34,6 +34,7 @@ jest.useFakeTimers();
 
 const mockCfnClientSendMock = jest.fn();
 const mockGenerateGen1PreProcessTemplate = jest.fn();
+const mockGenerateGen2PreProcessTemplate = jest.fn();
 const mockMoveGen2ResourcesToHoldingStack = jest.fn();
 const mockRestoreGen2ResourcesFromHoldingStack = jest.fn();
 const mockGenerateStackRefactorTemplates = jest.fn();
@@ -349,6 +350,11 @@ const stubReadTemplate: CFNTemplate = {
 };
 const stubCategoryTemplateGenerator = {
   generateGen1PreProcessTemplate: mockGenerateGen1PreProcessTemplate.mockReturnValue({
+    oldTemplate: {},
+    newTemplate: {},
+    parameters: [],
+  }),
+  generateGen2PreProcessTemplate: mockGenerateGen2PreProcessTemplate.mockReturnValue({
     oldTemplate: {},
     newTemplate: {},
     parameters: [],
@@ -732,8 +738,8 @@ describe('TemplateGenerator', () => {
       REGION,
     );
     await generator.generate();
-    const numCFNOperationsBeforeGen2StackUpdate = 5;
-    assertRollbackRefactor('auth', numCFNOperationsBeforeGen2StackUpdate + 1, true);
+    const numCFNOperationsBeforeRefactor = 7;
+    assertRollbackRefactor('auth', numCFNOperationsBeforeRefactor + 1, true);
   });
 
   it('should rollback gen2 stack when execute stack refactor fails', async () => {
@@ -772,8 +778,8 @@ describe('TemplateGenerator', () => {
       REGION,
     );
     await generator.generate();
-    const numCFNOperationsBeforeGen2StackUpdate = 5;
-    assertRollbackRefactor('auth', numCFNOperationsBeforeGen2StackUpdate + 1, false, true);
+    const numCFNOperationsBeforeRefactor = 7;
+    assertRollbackRefactor('auth', numCFNOperationsBeforeRefactor + 1, false, true);
   });
 
   it('should fail after all poll attempts have exhausted during create stack refactor', async () => {
@@ -880,6 +886,7 @@ describe('TemplateGenerator', () => {
   function successfulTemplateGenerationAssertions(numCategoriesToSkipUpdate = 0) {
     expect(fs.mkdir).toBeCalledTimes(1);
     expect(mockGenerateGen1PreProcessTemplate).toBeCalledTimes(NUM_CATEGORIES_TO_REFACTOR);
+    expect(mockGenerateGen2PreProcessTemplate).toBeCalledTimes(NUM_CATEGORIES_TO_REFACTOR - numCategoriesToSkipUpdate);
     expect(mockMoveGen2ResourcesToHoldingStack).toBeCalledTimes(NUM_CATEGORIES_TO_REFACTOR - numCategoriesToSkipUpdate);
     expect(mockGenerateStackRefactorTemplates).toBeCalledTimes(NUM_CATEGORIES_TO_REFACTOR - numCategoriesToSkipUpdate);
     expect(CategoryTemplateGenerator).toBeCalledTimes(3);
@@ -939,6 +946,7 @@ describe('TemplateGenerator', () => {
   function successfulRollbackAssertions(numCategoriesToSkipUpdate = 0) {
     expect(fs.mkdir).not.toBeCalled();
     expect(mockGenerateGen1PreProcessTemplate).not.toBeCalled();
+    expect(mockGenerateGen2PreProcessTemplate).not.toBeCalled();
     expect(mockMoveGen2ResourcesToHoldingStack).not.toBeCalled();
     expect(mockGenerateRefactorTemplates).toBeCalledTimes(NUM_CATEGORIES_TO_REFACTOR - numCategoriesToSkipUpdate);
     expect(CategoryTemplateGenerator).toBeCalledTimes(NUM_CATEGORIES_TO_REFACTOR);
@@ -998,6 +1006,7 @@ describe('TemplateGenerator', () => {
   function successfulCustomResourcesAssertions() {
     expect(fs.mkdir).toBeCalledTimes(1);
     expect(mockGenerateGen1PreProcessTemplate).toBeCalledTimes(4);
+    expect(mockGenerateGen2PreProcessTemplate).toBeCalledTimes(4);
     expect(mockMoveGen2ResourcesToHoldingStack).toBeCalledTimes(4);
     expect(mockGenerateStackRefactorTemplates).toBeCalledTimes(3);
     expect(CategoryTemplateGenerator).toBeCalledTimes(4);
@@ -1128,7 +1137,26 @@ describe('TemplateGenerator', () => {
       );
     }
     updateStackCallIndex += updateStackCallIndexInterval;
-    // moveGen2ResourcesToHoldingStack is mocked, so no gen2 UpdateStack call
+    // Gen2 UpdateStack (from processGen2Stack)
+    expect(mockCfnClientSendMock.mock.calls[updateStackCallIndex]).toBeACloudFormationCommand(
+      {
+        StackName: getStackId(GEN2_ROOT_STACK_NAME, category),
+        Capabilities: ['CAPABILITY_NAMED_IAM'],
+        Parameters: [],
+        TemplateBody: JSON.stringify({}),
+        Tags: [],
+      },
+      UpdateStackCommand,
+    );
+    if (!skipUpdate) {
+      expect(mockCfnClientSendMock.mock.calls[updateStackCallIndex + 1]).toBeACloudFormationCommand(
+        {
+          StackName: getStackId(GEN2_ROOT_STACK_NAME, category),
+        },
+        DescribeStacksCommand,
+      );
+    }
+    updateStackCallIndex += updateStackCallIndexInterval;
     return assertStackRefactorCommands(category, updateStackCallIndex);
   }
 
@@ -1206,7 +1234,7 @@ describe('TemplateGenerator', () => {
   }
 
   function assertRollbackRefactor(category: CATEGORY, callIndex: number, onCreateRefactorFailed = false, onExecuteRefactorFailed = false) {
-    // moveGen2ResourcesToHoldingStack is mocked, so refactor commands start directly
+    // generateGen2PreProcessTemplate and moveGen2ResourcesToHoldingStack are mocked, so refactor commands start directly
     callIndex = assertStackRefactorCommands(category, callIndex, onCreateRefactorFailed, onExecuteRefactorFailed);
     // After failed refactor, pollStackForCompletionState is called on the destination stack
     expect(mockCfnClientSendMock.mock.calls[++callIndex]).toBeACloudFormationCommand(

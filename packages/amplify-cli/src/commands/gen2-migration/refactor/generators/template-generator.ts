@@ -420,14 +420,24 @@ class TemplateGenerator {
   private async processGen2Stack(
     category: string,
     categoryTemplateGenerator: CategoryTemplateGenerator<CFN_CATEGORY_TYPE>,
+    destinationCategoryStackId: string,
   ): Promise<{ newTemplate: CFNTemplate }> {
     try {
-      this.logger.info(`Moving Gen2 ${this.getStackCategoryName(category)} resources to holding stack...`);
+      // Resolve gen 2 template
+      const { newTemplate, parameters: gen2StackParameters } = await categoryTemplateGenerator.generateGen2PreProcessTemplate();
+      assert(gen2StackParameters);
+      this.logger.info(`Updating Gen 2 ${this.getStackCategoryName(category)} stack...`);
 
-      const { newTemplate } = await categoryTemplateGenerator.moveGen2ResourcesToHoldingStack();
+      const gen2StackUpdateStatus = await tryUpdateStack(this.cfnClient, destinationCategoryStackId, gen2StackParameters, newTemplate);
+      assert(gen2StackUpdateStatus === CFNStackStatus.UPDATE_COMPLETE, `Gen 2 stack is in an invalid state: ${gen2StackUpdateStatus}`);
+      this.logger.info(`Updated Gen 2 ${this.getStackCategoryName(category)} stack successfully`);
+
+      // Move gen 2 resources to holding stack
+      this.logger.info(`Moving Gen2 ${this.getStackCategoryName(category)} resources to holding stack...`);
+      const { newTemplate: updatedGen2Template } = await categoryTemplateGenerator.moveGen2ResourcesToHoldingStack(newTemplate);
       this.logger.info(`Moved Gen2 ${this.getStackCategoryName(category)} resources to holding stack successfully`);
 
-      return { newTemplate };
+      return { newTemplate: updatedGen2Template };
     } catch (e) {
       if (this.isNoResourcesError(e)) {
         const currentTemplate = categoryTemplateGenerator.gen2Template;
@@ -522,7 +532,7 @@ class TemplateGenerator {
         const [newGen1Template] = processGen1StackResponse;
         newSourceTemplate = newGen1Template;
 
-        const { newTemplate } = await this.processGen2Stack(category, categoryTemplateGenerator);
+        const { newTemplate } = await this.processGen2Stack(category, categoryTemplateGenerator, destinationCategoryStackId);
         newDestinationTemplate = newTemplate;
 
         const sourceToDestinationMap = new Map<string, string>();
@@ -556,7 +566,7 @@ class TemplateGenerator {
         if (category === 'auth' && sourceStackParameters?.find((param) => param.ParameterKey === HOSTED_PROVIDER_META_PARAMETER_NAME)) {
           hasOAuthEnabled = true;
         }
-        const { newTemplate } = await this.processGen2Stack(category, categoryTemplateGenerator);
+        const { newTemplate } = await this.processGen2Stack(category, categoryTemplateGenerator, destinationCategoryStackId);
         newDestinationTemplate = newTemplate;
         const { sourceTemplate, destinationTemplate, logicalIdMapping } = categoryTemplateGenerator.generateStackRefactorTemplates(
           newSourceTemplate,
