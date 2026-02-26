@@ -47,7 +47,7 @@ const sleep = (ms: number): Promise<void> => new Promise((resolve) => setTimeout
 const authenticate = () => {
   try {
     execSync(
-      'source ./scripts/.env && ada cred update --profile=AmplifyE2EProd --account=$E2E_ACCOUNT_PROD --role=CodebuildDeveloper --provider=isengard --once',
+      'source ./scripts/.env && ada cred update --profile=AmplifyE2EProd --account=$E2E_ACCOUNT_PROD --role=CodeBuildE2E --provider=isengard --once',
       { shell: '/bin/bash' },
     );
   } catch (error) {
