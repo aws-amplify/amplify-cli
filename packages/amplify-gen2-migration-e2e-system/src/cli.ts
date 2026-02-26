@@ -16,11 +16,12 @@ import { AmplifyInitializer } from './core/amplify-initializer';
 import { CategoryInitializer } from './core/category-initializer';
 import { DirectoryManager } from './utils/directory-manager';
 import { CDKAtmosphereIntegration } from './core/cdk-atmosphere-integration';
-import { amplifyPushWithoutCodegen } from '@aws-amplify/amplify-e2e-core';
+import execa from 'execa';
 import { LogLevel, CLIOptions, AppConfiguration, EnvironmentType, InitializeAppFromCLIParams } from './types';
 import { generateTimeBasedE2EAmplifyAppName } from './utils/math';
 import path from 'path';
 import os from 'os';
+import fs from 'fs';
 
 // Initialize core components
 const logger = new Logger(LogLevel.INFO);
@@ -283,6 +284,44 @@ async function showDryRunSummary(selectedApp: string, config?: AppConfiguration)
 }
 
 /**
+ * Get the path to the amplify CLI binary.
+ * Checks AMPLIFY_PATH env var first, then falls back to 'amplify' in PATH.
+ */
+function getAmplifyCliPath(): string {
+  const amplifyPath = process.env.AMPLIFY_PATH;
+  if (amplifyPath && fs.existsSync(amplifyPath)) {
+    return amplifyPath;
+  }
+  return process.platform === 'win32' ? 'amplify.exe' : 'amplify';
+}
+
+/**
+ * Spawn the amplify CLI directly to run amplify push --yes.
+ *
+ * Uses AMPLIFY_PATH env var if set, otherwise
+ * falls back to amplify in PATH.
+ */
+async function amplifyPush(targetAppPath: string): Promise<void> {
+  const amplifyPath = getAmplifyCliPath();
+  logger.info(`Using amplify CLI at: ${amplifyPath}`);
+  const originalCwd = process.cwd();
+
+  process.chdir(targetAppPath);
+  try {
+    const result = await execa(amplifyPath, ['push', '--yes', '--debug'], {
+      cwd: targetAppPath,
+      // stdio: 'inherit',
+    });
+
+    if (result.exitCode !== 0) {
+      throw new Error(`amplify push failed with exit code ${result.exitCode}`);
+    }
+  } finally {
+    process.chdir(originalCwd);
+  }
+}
+
+/**
  * Initialize a single app
  * Copies the source directory to the migration target, runs amplify init,
  * and initializes all configured categories
@@ -344,7 +383,7 @@ async function initializeAppFromCLI(params: InitializeAppFromCLIParams): Promise
 
     // Step 3: Push the initialized app to AWS
     logger.info(`Pushing ${deploymentName} to AWS...`, context);
-    await amplifyPushWithoutCodegen(targetAppPath);
+    await amplifyPush(targetAppPath);
     logger.info(`Successfully pushed ${deploymentName} to AWS`, context);
 
     logger.info(`App ${deploymentName} fully initialized and deployed at ${targetAppPath}`, context);
