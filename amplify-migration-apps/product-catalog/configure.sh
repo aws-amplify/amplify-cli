@@ -10,3 +10,4 @@ cp -f lowstockproducts.package.json ./amplify/backend/function/lowstockproducts/
 cp -f onimageuploaded.js ./amplify/backend/function/${s3_trigger_function_name}/src/index.js
 cp -f onimageuploaded.package.json ./amplify/backend/function/${s3_trigger_function_name}/src/package.json
 cp -f custom-roles.json ./amplify/backend/api/productcatalog/custom-roles.json
+cp -f Query.listProducts.res.vtl ./amplify/backend/api/productcatalog/resolvers/Query.listProducts.res.vtl

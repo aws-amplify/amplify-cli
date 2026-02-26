@@ -1175,9 +1175,34 @@ function App({ signOut, user }: AppProps) {
                         </Text>
                       </View>
                       {product.price && (
-                        <Text fontSize="2xl" fontWeight="800" color="#10b981">
-                          ${product.price}
-                        </Text>
+                        <View textAlign="right">
+                          {(product as any).discountedPrice && (
+                            <>
+                              <Text fontSize="xs" color="#64748b" style={{ textDecoration: 'line-through' }}>
+                                ${product.price.toFixed(2)}
+                              </Text>
+                              <Text fontSize="2xl" fontWeight="800" color="#10b981">
+                                ${(product as any).discountedPrice.toFixed(2)}
+                              </Text>
+                              <Badge
+                                style={{
+                                  backgroundColor: '#fef3c7',
+                                  color: '#92400e',
+                                  fontWeight: '600',
+                                  fontSize: '10px',
+                                  padding: '0.15rem 0.5rem',
+                                }}
+                              >
+                                Save ${(product as any).savings.toFixed(2)}
+                              </Badge>
+                            </>
+                          )}
+                          {!(product as any).discountedPrice && (
+                            <Text fontSize="2xl" fontWeight="800" color="#10b981">
+                              ${product.price}
+                            </Text>
+                          )}
+                        </View>
                       )}
                     </Flex>
 

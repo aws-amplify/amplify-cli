@@ -1,0 +1,11 @@
+## Add 10% discount to all products
+#foreach($item in $ctx.result.items)
+  #if($item.price)
+    #set($discount = $item.price * 0.10)
+    #set($discountedPrice = $item.price - $discount)
+    $util.qr($item.put("discountedPrice", $discountedPrice))
+    $util.qr($item.put("savings", $discount))
+  #end
+#end
+
+$util.toJson($ctx.result)
