@@ -10,14 +10,13 @@ function authenticate {
     account_number=$1
     role_name=$2
     profile_name=$3
-    echo Authenticating terminal...
-    if [[ -n $USE_FIDO_KEY ]] ; then
-      mwinit -s -f
-    else
-      mwinit
-    fi
     echo Loading account credentials for Account $account_number with Role: $role_name...
-    ada cred update --profile="${profile_name}" --account="${account_number}" --role=${role_name} --provider=isengard --once
+    if ! ada cred update --profile="${profile_name}" --account="${account_number}" --role=${role_name} --provider=isengard --once; then
+        echo ""
+        echo "❌ Failed to authenticate with ada."
+        echo "Please run 'mwinit' (or 'mwinit -s -f' if using FIDO key) and try again."
+        exit 1
+    fi
     aws configure set region us-east-1 --profile $profile_name
 }
 function triggerProjectBatch {
