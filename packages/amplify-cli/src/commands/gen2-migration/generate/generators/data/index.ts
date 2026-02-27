@@ -24,25 +24,6 @@ export interface AdditionalAuthProvider {
   };
 }
 
-/**
- * Checks if GraphQL API has resolvers directory with VTL files and copies them
- */
-const copyResolvers = (): boolean => {
-  const rootDir = pathManager.findProjectRoot();
-  const projectName = getProjectName();
-
-  const resolversPath = path.join(rootDir, 'amplify', 'backend', 'api', projectName, 'resolvers');
-  if (!fs.existsSync(resolversPath)) return false;
-
-  const files = fs.readdirSync(resolversPath);
-  if (!files.some((file) => file.endsWith('.vtl'))) return false;
-
-  const targetPath = path.join(rootDir, 'amplify', 'data', 'resolvers');
-  fs.mkdirSync(path.dirname(targetPath), { recursive: true });
-  fs.cpSync(resolversPath, targetPath, { recursive: true });
-  return true;
-};
-
 const factory = ts.factory;
 
 /**
@@ -78,7 +59,7 @@ const extractModelsFromSchema = (schema: string): string[] => {
   return models;
 };
 
-const getProjectName = (): string | undefined => {
+export const getProjectName = (): string | undefined => {
   try {
     const fs = require('fs');
     const path = require('path');
@@ -171,14 +152,6 @@ export const generateDataSource = async (gen1Env: string, dataDefinition?: DataD
   // Return undefined if no schema and no REST APIs
   if (!dataDefinition.schema && (!dataDefinition.restApis || dataDefinition.restApis.length === 0)) {
     return undefined;
-  }
-
-  // Handle resolver copying if GraphQL API exists
-  if (dataDefinition.schema) {
-    const resolversCopied = copyResolvers();
-    if (resolversCopied) {
-      dataDefinition.resolvers = { hasResolvers: true };
-    }
   }
   // Properties for the defineData() function call
   const dataRenderProperties: ObjectLiteralElementLike[] = [];

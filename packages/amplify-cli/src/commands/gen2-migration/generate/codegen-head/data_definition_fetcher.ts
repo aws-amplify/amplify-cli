@@ -4,7 +4,7 @@ import glob from 'glob';
 import assert from 'node:assert';
 
 import { DataDefinition } from '../core/migration-pipeline';
-import { AdditionalAuthProvider } from '../generators/data';
+import { AdditionalAuthProvider, ResolverConfig, getProjectName } from '../generators/data';
 import { pathManager } from '@aws-amplify/amplify-cli-core';
 
 // Source - amplify-category-api/packages/amplify-graphql-transformer-core/src/graphql-api.ts
@@ -129,6 +129,29 @@ export class DataDefinitionFetcher {
    * @param ccbFetcher - Downloads current cloud backend artifacts
    */
   constructor(private backendEnvironmentResolver: BackendEnvironmentResolver, private ccbFetcher: BackendDownloader) {}
+
+  /**
+   * Checks if GraphQL API has resolvers directory with VTL files and copies them
+   */
+  private copyResolvers = (): boolean => {
+    const rootDir = pathManager.findProjectRoot();
+    const projectName = getProjectName();
+
+    const resolversPath = path.join(rootDir, 'amplify', 'backend', 'api', projectName, 'resolvers');
+
+    if (!require('fs').existsSync(resolversPath)) return false;
+
+    const files = require('fs').readdirSync(resolversPath);
+
+    if (!files.some((file: string) => file.endsWith('.vtl'))) return false;
+
+    const targetPath = path.join(rootDir, 'amplify', 'data', 'resolvers');
+
+    require('fs').mkdirSync(path.dirname(targetPath), { recursive: true });
+    require('fs').cpSync(resolversPath, targetPath, { recursive: true });
+
+    return true;
+  };
 
   /**
    * Reads and parses a JSON file.
@@ -462,6 +485,10 @@ export class DataDefinitionFetcher {
         const additionalAuthProviders = apiId ? await this.getAdditionalAuthProvidersFromConsole(apiId) : [];
         const logging = apiId ? await this.getLoggingConfigFromConsole(apiId) : undefined;
 
+        // Handle resolver copying
+        const resolversCopied = this.copyResolvers();
+        const resolvers: ResolverConfig | undefined = resolversCopied ? { hasResolvers: true } : undefined;
+
         return {
           tableMappings: undefined,
           schema,
@@ -469,6 +496,7 @@ export class DataDefinitionFetcher {
           additionalAuthProviders: additionalAuthProviders.length > 0 ? additionalAuthProviders : undefined,
           logging,
           restApis: restApis.length > 0 ? restApis : undefined,
+          resolvers,
         };
       }
 
