@@ -2416,7 +2416,7 @@ export class BackendSynthesizer {
       });
     }
 
-    // Generate resolver override escape hatches if resolvers exist
+    // Override resolver templates from data/resolvers folder
     if (renderArgs.data?.hasResolvers) {
       // Add required imports for resolver overrides
       imports.push(this.createImportStatement([factory.createIdentifier('readdirSync'), factory.createIdentifier('readFileSync')], 'fs'));
@@ -2444,7 +2444,7 @@ export class BackendSynthesizer {
       );
       nodes.push(dirnameStatement);
 
-      // Generate resolver override logic
+      // Get resolvers directory path
       const resolversDirStatement = factory.createVariableStatement(
         [],
         factory.createVariableDeclarationList(
@@ -2464,6 +2464,7 @@ export class BackendSynthesizer {
       );
       nodes.push(resolversDirStatement);
 
+      // Filter for .res.vtl files
       const resolverFilesStatement = factory.createVariableStatement(
         [],
         factory.createVariableDeclarationList(
@@ -2502,7 +2503,7 @@ export class BackendSynthesizer {
       );
       nodes.push(resolverFilesStatement);
 
-      // Generate for loop to process resolver files
+      // Process each resolver file
       const forOfStatement = factory.createForOfStatement(
         undefined,
         factory.createVariableDeclarationList(
@@ -2512,7 +2513,7 @@ export class BackendSynthesizer {
         factory.createIdentifier('resolverFiles'),
         factory.createBlock(
           [
-            // Parse file name
+            // Extract type and field names from filename (e.g., Query.listProducts.res.vtl)
             factory.createVariableStatement(
               [],
               factory.createVariableDeclarationList(
@@ -2541,7 +2542,7 @@ export class BackendSynthesizer {
                 ts.NodeFlags.Const,
               ),
             ),
-            // Generate function ID
+            // Build pipeline function ID (e.g., QueryListProductsDataResolverFn)
             factory.createVariableStatement(
               [],
               factory.createVariableDeclarationList(
@@ -2587,7 +2588,7 @@ export class BackendSynthesizer {
                 ts.NodeFlags.Const,
               ),
             ),
-            // Get pipeline function
+            // Get the pipeline function configuration
             factory.createVariableStatement(
               [],
               factory.createVariableDeclarationList(
@@ -2608,12 +2609,12 @@ export class BackendSynthesizer {
                 ts.NodeFlags.Const,
               ),
             ),
-            // If statement to check if pipeline function exists
+            // Override the response mapping template if pipeline function exists
             factory.createIfStatement(
               factory.createIdentifier('pipelineFunction'),
               factory.createBlock(
                 [
-                  // Read template file
+                  // Read the VTL template content
                   factory.createVariableStatement(
                     [],
                     factory.createVariableDeclarationList(
@@ -2634,7 +2635,7 @@ export class BackendSynthesizer {
                       ts.NodeFlags.Const,
                     ),
                   ),
-                  // Clear S3 location
+                  // Clear the S3 template location to use inline template
                   factory.createExpressionStatement(
                     factory.createBinaryExpression(
                       factory.createPropertyAccessExpression(
@@ -2645,7 +2646,7 @@ export class BackendSynthesizer {
                       factory.createIdentifier('undefined'),
                     ),
                   ),
-                  // Set inline template
+                  // Set the inline response mapping template
                   factory.createExpressionStatement(
                     factory.createBinaryExpression(
                       factory.createPropertyAccessExpression(
