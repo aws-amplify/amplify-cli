@@ -1,0 +1,76 @@
+{
+  "app": {
+    "name": "finance-tracker",
+    "description": "Personal finance tracker with transaction management, financial summaries, budget alerts, and monthly report emails",
+    "framework": "react"
+  },
+  "categories": {
+    "api": {
+      "type": "GraphQL",
+      "schema": "schema.graphql",
+      "authModes": ["API_KEY"],
+      "models": ["Transaction", "Budget", "FinancialSummary"],
+      "customQueries": ["calculateFinancialSummary"],
+      "customMutations": ["sendMonthlyReport", "sendBudgetAlert"]
+    },
+    "auth": {
+      "signInMethods": ["email"],
+      "mfa": "OFF",
+      "identityPool": true,
+      "allowUnauthenticatedIdentities": true,
+      "socialProviders": []
+    },
+    "storage": {
+      "buckets": [
+        {
+          "name": "s361d53dc0",
+          "access": ["auth", "guest"],
+          "authAccess": ["CREATE_AND_UPDATE", "READ", "DELETE"],
+          "guestAccess": ["READ"],
+          "triggers": []
+        }
+      ]
+    },
+    "function": {
+      "functions": [
+        {
+          "name": "financetrackere30b1453",
+          "runtime": "nodejs",
+          "template": "hello-world",
+          "resolverFor": ["calculateFinancialSummary", "sendMonthlyReport", "sendBudgetAlert"],
+          "customResourceAccess": ["customfinance"],
+          "customPolicies": {
+            "sns": ["Publish", "ListTopics", "CreateTopic", "Subscribe"],
+            "dynamodb": ["Scan", "Query", "GetItem"],
+            "sts": ["GetCallerIdentity"]
+          },
+          "environmentVariables": {
+            "BUDGET_ALERT_TOPIC_ARN": "from customfinance CloudFormation export",
+            "MONTHLY_REPORT_TOPIC_ARN": "from customfinance CloudFormation export",
+            "API_FINANCETRACKER_TRANSACTIONTABLE_NAME": "Transaction-{apiId}-{env}"
+          }
+        }
+      ]
+    },
+    "custom": {
+      "resources": [
+        {
+          "name": "customfinance",
+          "type": "AWS CDK",
+          "description": "SNS topics for budget alerts and monthly reports",
+          "dependsOn": ["api:financetracker", "auth:financetrackerb192a2d4", "storage:s361d53dc0"],
+          "outputs": ["BudgetAlertTopicArn", "MonthlyReportTopicArn"]
+        },
+        {
+          "name": "custom2",
+          "type": "AWS CDK",
+          "description": "SQS queue for finance processing",
+          "outputs": ["QueueArn", "QueueUrl"]
+        }
+      ]
+    },
+    "hosting": {
+      "type": "amplify-console"
+    }
+  }
+}
