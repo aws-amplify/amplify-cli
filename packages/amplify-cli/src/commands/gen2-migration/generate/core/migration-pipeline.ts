@@ -129,7 +129,14 @@ const copyResolverFiles = (outputDir: string): Renderer => ({
     const targetPath = path.join(outputDir, 'amplify', 'data', 'resolvers');
 
     if (require('fs').existsSync(resolversPath)) {
-      require('fs').cpSync(resolversPath, targetPath, { recursive: true });
+      const files = require('fs').readdirSync(resolversPath);
+      const vtlFiles = files.filter((file: string) => file.endsWith('.vtl'));
+
+      for (const file of vtlFiles) {
+        const srcFile = path.join(resolversPath, file);
+        const destFile = path.join(targetPath, file);
+        require('fs').copyFileSync(srcFile, destFile);
+      }
     }
   },
 });
