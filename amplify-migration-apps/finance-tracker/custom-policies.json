@@ -1,0 +1,32 @@
+[
+  {
+    "Action": [
+      "sns:Publish",
+      "sns:ListTopics",
+      "sns:CreateTopic",
+      "sns:Subscribe"
+    ],
+    "Resource": ["*"]
+  },
+  {
+    "Action": [
+      "dynamodb:Scan",
+      "dynamodb:Query",
+      "dynamodb:GetItem"
+    ],
+    "Resource": [
+      {
+        "Fn::Sub": [
+          "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/Transaction-*",
+          {}
+        ]
+      }
+    ]
+  },
+  {
+    "Action": [
+      "sts:GetCallerIdentity"
+    ],
+    "Resource": ["*"]
+  }
+]
