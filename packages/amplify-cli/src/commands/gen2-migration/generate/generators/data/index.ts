@@ -30,7 +30,6 @@ export interface AdditionalAuthProvider {
 const copyResolvers = (): boolean => {
   const rootDir = pathManager.findProjectRoot();
   const projectName = getProjectName();
-  if (!projectName) return false;
 
   const resolversPath = path.join(rootDir, 'amplify', 'backend', 'api', projectName, 'resolvers');
   if (!fs.existsSync(resolversPath)) return false;
