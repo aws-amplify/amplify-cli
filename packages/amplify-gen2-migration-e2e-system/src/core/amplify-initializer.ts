@@ -111,12 +111,17 @@ export class AmplifyInitializer implements IAppInitializer {
     return { valid: true };
   }
 
+  generateRandomEnvName(): string {
+    const length = Math.floor(Math.random() * 9) + 2;
+    return Array.from({ length }, () => String.fromCharCode(97 + Math.floor(Math.random() * 26))).join('');
+  }
+
   private buildInitSettings(options: BuildInitSettingsOptions): Partial<AmplifyInitSettings> {
     const { config, deploymentName, profile, envName } = options;
 
     const settings = {
       name: deploymentName,
-      envName: envName ?? 'main', // Default environment name
+      envName: envName ?? this.generateRandomEnvName(), // Random environment name
       editor: 'Visual Studio Code',
       framework: config.app.framework ?? 'react',
       srcDir: 'src',
@@ -131,7 +136,7 @@ export class AmplifyInitializer implements IAppInitializer {
     const context: LogContext = { appName: deploymentName, operation: 'buildInitSettings' };
     this.logger.debug(`Built init settings for ${deploymentName} (config: ${config.app.name}):`, context);
     this.logger.debug(`- Name: ${settings.name}`, context);
-    this.logger.debug(`- Environment: ${settings.envName}`, context);
+    this.logger.info(`Using Amplify environment name: ${settings.envName}`, context);
     this.logger.debug(`- Using default selections for editor, framework, etc.`, context);
 
     return settings;

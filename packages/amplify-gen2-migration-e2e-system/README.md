@@ -73,6 +73,7 @@ npx tsx src/cli.ts --dry-run --app discussions --profile default
 - `--dry-run, -d`: Show what would be done without executing
 - `--verbose, -v`: Enable verbose logging
 - `--profile`: AWS profile to use
+- `--envName`: Amplify Gen1 environment name to create (defaults to a random 2-10 character lowercase string)
 - `--list-apps, -l`: List available apps and exit
 
 ### Examples
