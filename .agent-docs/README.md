@@ -12,19 +12,24 @@ This directory contains documentation and workflows for AI agents working in thi
 This infrastructure is adapted from [amplify-category-api](https://github.com/aws-amplify/amplify-category-api) with the following customizations for amplify-cli-gen1:
 
 ### Profile Names
+
 - **amplify-category-api**: Uses `AmplifyAPIE2EProd`
 - **amplify-cli-gen1**: Uses `AmplifyE2EProd`
 
 ### Batch ID Format
+
 - **amplify-category-api**: `amplify-category-api-e2e-workflow:{UUID}`
 - **amplify-cli-gen1**: `amplify-cli-e2e-workflow:{UUID}`
 
 ### Repository Structure
+
 - **amplify-category-api**: Focuses on GraphQL transformers and API category
 - **amplify-cli-gen1**: Covers all CLI categories and commands
 
 ### Common Patterns
+
 Both repos share:
+
 - E2E test management with auto-retry
 - Dependabot alert checking
 - Smart retry logic (skips build/test/lint jobs)
