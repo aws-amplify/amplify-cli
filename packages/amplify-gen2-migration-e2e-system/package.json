@@ -16,8 +16,7 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "lint": "eslint src/**/*.ts",
-    "lint:fix": "eslint src/**/*.ts --fix",
-    "test-script": "ts-node src/test-script.ts"
+    "lint:fix": "eslint src/**/*.ts --fix"
   },
   "dependencies": {
     "@aws-amplify/amplify-e2e-core": "workspace:^",
@@ -47,8 +46,7 @@
     "node-fetch": "^2.7.0",
     "ts-jest": "^29.0.0",
     "ts-node": "^10.4.0",
-    "typescript": "^4.9.5",
-    "tsx": "*"
+    "typescript": "^4.9.5"
   },
   "keywords": [
     "amplify",
