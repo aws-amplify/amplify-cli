@@ -4,6 +4,11 @@ import { AppSyncClient, paginateListGraphqlApis } from '@aws-sdk/client-appsync'
 import type { ConstructFactory, AmplifyFunction } from '@aws-amplify/plugin-types';
 import type { AuthorizationModes, DataLoggingOptions } from '@aws-amplify/backend-data';
 import { RestApiDefinition } from '../../codegen-head/data_definition_fetcher';
+
+import fs from 'fs';
+import path from 'path';
+import { pathManager } from '@aws-amplify/amplify-cli-core';
+
 /**
  * Resolver configuration for GraphQL API
  */
@@ -18,6 +23,26 @@ export interface AdditionalAuthProvider {
     userPoolId?: string;
   };
 }
+
+/**
+ * Checks if GraphQL API has resolvers directory with VTL files and copies them
+ */
+const copyResolvers = (): boolean => {
+  const rootDir = pathManager.findProjectRoot();
+  const projectName = getProjectName();
+  if (!projectName) return false;
+
+  const resolversPath = path.join(rootDir, 'amplify', 'backend', 'api', projectName, 'resolvers');
+  if (!fs.existsSync(resolversPath)) return false;
+
+  const files = fs.readdirSync(resolversPath);
+  if (!files.some((file) => file.endsWith('.vtl'))) return false;
+
+  const targetPath = path.join(rootDir, 'amplify', 'data', 'resolvers');
+  fs.mkdirSync(path.dirname(targetPath), { recursive: true });
+  fs.cpSync(resolversPath, targetPath, { recursive: true });
+  return true;
+};
 
 const factory = ts.factory;
 
@@ -151,7 +176,7 @@ export const generateDataSource = async (gen1Env: string, dataDefinition?: DataD
 
   // Handle resolver copying if GraphQL API exists
   if (dataDefinition.schema) {
-    const resolversCopied = handleResolversCopy();
+    const resolversCopied = copyResolvers();
     if (resolversCopied) {
       dataDefinition.resolvers = { hasResolvers: true };
     }
