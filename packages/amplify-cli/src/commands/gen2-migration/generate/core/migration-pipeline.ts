@@ -497,6 +497,7 @@ export const createGen2Renderer = ({
       importFrom: './data/resource',
       additionalAuthProviders: data.additionalAuthProviders,
       restApis: data.restApis,
+      hasResolvers: data.resolvers?.hasResolvers,
     };
   }
 

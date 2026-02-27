@@ -28,6 +28,7 @@ export interface BackendRenderParameters {
     importFrom: string;
     additionalAuthProviders?: AdditionalAuthProvider[];
     restApis?: RestApiDefinition[];
+    hasResolvers?: boolean;
   };
   auth?: {
     importFrom: string;

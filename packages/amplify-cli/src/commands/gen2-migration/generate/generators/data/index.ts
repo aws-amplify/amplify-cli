@@ -4,6 +4,14 @@ import { AppSyncClient, paginateListGraphqlApis } from '@aws-sdk/client-appsync'
 import type { ConstructFactory, AmplifyFunction } from '@aws-amplify/plugin-types';
 import type { AuthorizationModes, DataLoggingOptions } from '@aws-amplify/backend-data';
 import { RestApiDefinition } from '../../codegen-head/data_definition_fetcher';
+/**
+ * Resolver configuration for GraphQL API
+ */
+export interface ResolverConfig {
+  /** Whether resolvers directory was found and copied */
+  hasResolvers: boolean;
+}
+
 export interface AdditionalAuthProvider {
   authenticationType: 'API_KEY' | 'AWS_IAM' | 'OPENID_CONNECT' | 'AMAZON_COGNITO_USER_POOLS' | 'AWS_LAMBDA';
   userPoolConfig?: {
@@ -102,6 +110,8 @@ export type DataDefinition = {
   logging?: DataLoggingOptions;
   /* REST API definitions */
   restApis?: RestApiDefinition[];
+  /* Resolver configuration */
+  resolvers?: ResolverConfig;
 };
 
 /** Key name for the migrated table mappings property in the generated data resource */
@@ -137,6 +147,14 @@ export const generateDataSource = async (gen1Env: string, dataDefinition?: DataD
   // Return undefined if no schema and no REST APIs
   if (!dataDefinition.schema && (!dataDefinition.restApis || dataDefinition.restApis.length === 0)) {
     return undefined;
+  }
+
+  // Handle resolver copying if GraphQL API exists
+  if (dataDefinition.schema) {
+    const resolversCopied = handleResolversCopy();
+    if (resolversCopied) {
+      dataDefinition.resolvers = { hasResolvers: true };
+    }
   }
   // Properties for the defineData() function call
   const dataRenderProperties: ObjectLiteralElementLike[] = [];
