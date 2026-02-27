@@ -3,7 +3,6 @@ import { $TSContext, AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { AmplifyMigrationStep } from './gen2-migration/_step';
 import { AmplifyMigrationOperation } from './gen2-migration/_operation';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
-import { AmplifyMigrationCleanupStep } from './gen2-migration/cleanup';
 import { AmplifyMigrationDecommissionStep } from './gen2-migration/decommission';
 import { AmplifyMigrationGenerateStep } from './gen2-migration/generate';
 import { AmplifyMigrationLockStep } from './gen2-migration/lock';
@@ -14,10 +13,6 @@ import { AmplifyClient, GetAppCommand } from '@aws-sdk/client-amplify';
 import chalk from 'chalk';
 
 const STEPS = {
-  cleanup: {
-    class: AmplifyMigrationCleanupStep,
-    description: 'Not Implemented',
-  },
   clone: {
     class: AmplifyMigrationCloneStep,
     description: 'Not Implemented',

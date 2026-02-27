@@ -7,10 +7,13 @@ import {
   DescribeChangeSetCommand,
   DeleteChangeSetCommand,
   DescribeChangeSetOutput,
+  paginateListStacks,
+  StackStatus,
   waitUntilChangeSetCreateComplete,
 } from '@aws-sdk/client-cloudformation';
 import { removeEnvFromCloud } from '../../extensions/amplify-helpers/remove-env-from-cloud';
 import { invokeDeleteEnvParamsFromService } from '../../extensions/amplify-helpers/invoke-delete-env-params';
+import { deleteHoldingStack, HOLDING_STACK_SUFFIX } from './refactor/holding-stack';
 
 export class AmplifyMigrationDecommissionStep extends AmplifyMigrationStep {
   public async executeImplications(): Promise<string[]> {
@@ -35,31 +38,64 @@ export class AmplifyMigrationDecommissionStep extends AmplifyMigrationStep {
   }
 
   public async execute(): Promise<AmplifyMigrationOperation[]> {
-    return [
-      {
-        describe: async () => {
-          return ['Delete the Gen1 environment'];
-        },
+    const cfnClient = new CloudFormationClient({ region: this.region });
+    const holdingStacks = await this.findHoldingStacks(cfnClient);
+
+    const operations: AmplifyMigrationOperation[] = [];
+
+    for (const stackName of holdingStacks) {
+      operations.push({
+        describe: async () => [`Delete holding stack: ${stackName}`],
         execute: async () => {
-          this.logger.info(`Starting decommission of environment: ${this.currentEnvName}`);
-
-          this.logger.info('Preparing to delete Gen1 resources...');
-
-          this.logger.info('Deleting Gen1 resources from the cloud. This will take a few minutes.');
-          await removeEnvFromCloud(this.context, this.currentEnvName, true);
-
-          this.logger.info('Cleaning up SSM parameters...');
-          await invokeDeleteEnvParamsFromService(this.context, this.currentEnvName);
-
-          this.logger.info('Successfully decommissioned Gen1 environment from the cloud');
-          this.logger.info(`Environment '${this.currentEnvName}' has been completely removed from AWS`);
+          this.logger.info(`Deleting holding stack: ${stackName}`);
+          await deleteHoldingStack(cfnClient, stackName);
+          this.logger.info(`Deleted holding stack: ${stackName}`);
         },
+      });
+    }
+
+    operations.push({
+      describe: async () => ['Delete the Gen1 environment'],
+      execute: async () => {
+        this.logger.info(`Starting decommission of environment: ${this.currentEnvName}`);
+        this.logger.info('Preparing to delete Gen1 resources...');
+        this.logger.info('Deleting Gen1 resources from the cloud. This will take a few minutes.');
+        await removeEnvFromCloud(this.context, this.currentEnvName, true);
+        this.logger.info('Cleaning up SSM parameters...');
+        await invokeDeleteEnvParamsFromService(this.context, this.currentEnvName);
+        this.logger.info('Successfully decommissioned Gen1 environment from the cloud');
+        this.logger.info(`Environment '${this.currentEnvName}' has been completely removed from AWS`);
       },
-    ];
+    });
+
+    return operations;
   }
 
   public async rollback(): Promise<AmplifyMigrationOperation[]> {
     throw new Error('Not Implemented');
+  }
+
+  private async findHoldingStacks(cfnClient: CloudFormationClient): Promise<string[]> {
+    const holdingStacks: string[] = [];
+    const paginator = paginateListStacks(
+      { client: cfnClient },
+      {
+        StackStatusFilter: [
+          StackStatus.CREATE_COMPLETE,
+          StackStatus.UPDATE_COMPLETE,
+          StackStatus.ROLLBACK_COMPLETE,
+          StackStatus.REVIEW_IN_PROGRESS,
+        ],
+      },
+    );
+    for await (const page of paginator) {
+      for (const stack of page.StackSummaries ?? []) {
+        if (stack.StackName?.endsWith(HOLDING_STACK_SUFFIX) && stack.StackName.includes(this.appId)) {
+          holdingStacks.push(stack.StackName);
+        }
+      }
+    }
+    return holdingStacks;
   }
 
   private async createChangeSet(): Promise<DescribeChangeSetOutput> {
