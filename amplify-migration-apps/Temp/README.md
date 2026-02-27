@@ -87,9 +87,9 @@ What do you want to do? Walkthrough all the auth configurations
  Do you want to add User Pool Groups? Yes
 ? Select any user pool groups you want to delete: 
 ? Do you want to add another User Pool Group Yes
-? Provide a name for your user pool group: storeLocatorDemoAdmin
+? Provide a name for your user pool group: storeLocatorAdmin
 ? Do you want to add another User Pool Group No
-✔ Sort the user pool groups in order of preference · storeLocatorDemoAdmin
+✔ Sort the user pool groups in order of preference · storeLocatorAdmin
  Do you want to add an admin queries API? No
  Multifactor authentication (MFA) user login options: OFF
  Email based user registration/forgot password: Enabled (Requires per-user email entry at registration)
@@ -103,7 +103,7 @@ What do you want to do? Walkthrough all the auth configurations
 ? Do you want to configure Lambda Triggers for Cognito? Yes
 ? Which triggers do you want to enable for Cognito Post Confirmation
 ? What functionality do you want to use for Post Confirmation Add User To Group
-✔ Enter the name of the group to which users will be added. · storeLocatorDemoAdmin
+✔ Enter the name of the group to which users will be added. · storeLocatorAdmin
 ```
 
 ### Geo - Map
@@ -119,6 +119,7 @@ amplify add geo
 ✔ Provide a name for the Map: · storeLocatorMap
 ✔ Restrict access by? · Both
 ✔ Who can access this Map? · Authorized and Guest users
+Must pick at least 1 of 1 options. Selecting all options [storeLocatorAdmin]
 Available advanced settings:
 - Map style & Map data provider (default: Streets provided by Esri)
 
@@ -166,19 +167,21 @@ amplify push
 ```console
     Current Environment: main
     
-┌──────────┬──────────────────────┬───────────┬───────────────────┐
-│ Category │ Resource name        │ Operation │ Provider plugin   │
-├──────────┼──────────────────────┼───────────┼───────────────────┤
-│ Auth     │ userPoolGroups       │ Create    │ awscloudformation │
-├──────────┼──────────────────────┼───────────┼───────────────────┤
-│ Geo      │ storeLocatorGeofence │ Create    │ awscloudformation │
-├──────────┼──────────────────────┼───────────┼───────────────────┤
-│ Auth     │ storelocator5d63c487 │ Create    │ awscloudformation │
-├──────────┼──────────────────────┼───────────┼───────────────────┤
-│ Geo      │ storeLocatorMap      │ Create    │ awscloudformation │
-├──────────┼──────────────────────┼───────────┼───────────────────┤
-│ Geo      │ storeLocatorSearch   │ Create    │ awscloudformation │
-└──────────┴──────────────────────┴───────────┴───────────────────┘
+┌──────────┬──────────────────────────────────────────┬───────────┬───────────────────┐
+│ Category │ Resource name                            │ Operation │ Provider plugin   │
+├──────────┼──────────────────────────────────────────┼───────────┼───────────────────┤
+│ Auth     │ storelocatorcff4360f                     │ Create    │ awscloudformation │
+├──────────┼──────────────────────────────────────────┼───────────┼───────────────────┤
+│ Geo      │ storeLocatorMap                          │ Create    │ awscloudformation │
+├──────────┼──────────────────────────────────────────┼───────────┼───────────────────┤
+│ Auth     │ userPoolGroups                           │ Create    │ awscloudformation │
+├──────────┼──────────────────────────────────────────┼───────────┼───────────────────┤
+│ Function │ storelocatorcff4360fPostConfirmation     │ Create    │ awscloudformation │
+├──────────┼──────────────────────────────────────────┼───────────┼───────────────────┤
+│ Geo      │ storeLocatorGeofence                     │ Create    │ awscloudformation │
+├──────────┼──────────────────────────────────────────┼───────────┼───────────────────┤
+│ Geo      │ storeLocatorSearch                       │ Create    │ awscloudformation │
+└──────────┴──────────────────────────────────────────┴───────────┴───────────────────┘
 
 ✔ Are you sure you want to continue? (Y/n) · yes
 ```
@@ -206,7 +209,7 @@ Wait for the deployment to finish successfully.
 > Based on https://github.com/aws-amplify/amplify-cli/blob/gen2-migration/GEN2_MIGRATION_GUIDE.md
 
 > [!WARNING]
-> Migration is not fully supported for this app because the geo cateogry doesn't support refactoring yet.
+> Migration is not fully supported for this app because the geo category doesn't support refactoring yet.
 > This guide ends at the `generate` step.
 
 First install the experimental amplify CLI package that provides the migration commands.
@@ -246,4 +249,4 @@ Now connect the `gen2-main` branch to the hosting service:
 
 Wait for the deployment to finish successfully.
 
-**The guide ends here because the geo cateogry doesn't support refactoring yet.**
+**The guide ends here because the geo category doesn't support refactoring yet.**
