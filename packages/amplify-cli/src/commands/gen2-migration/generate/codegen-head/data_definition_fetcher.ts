@@ -6,6 +6,10 @@ import assert from 'node:assert';
 import { DataDefinition } from '../core/migration-pipeline';
 import { AdditionalAuthProvider, getProjectName } from '../generators/data';
 import { pathManager } from '@aws-amplify/amplify-cli-core';
+import { BackendEnvironmentResolver } from './backend_environment_selector';
+import { BackendDownloader } from './backend_downloader';
+import { fileOrDirectoryExists } from './directory_exists';
+import { AppSyncClient, GetGraphqlApiCommand } from '@aws-sdk/client-appsync';
 
 // Source - amplify-category-api/packages/amplify-graphql-transformer-core/src/graphql-api.ts
 interface Gen1AuthConfig {
@@ -107,12 +111,6 @@ export interface CorsConfiguration {
 export interface ResolverConfig {
   hasResolvers: boolean;
 }
-
-import { BackendEnvironmentResolver } from './backend_environment_selector';
-import { BackendDownloader } from './backend_downloader';
-import { fileOrDirectoryExists } from './directory_exists';
-import { AppSyncClient, GetGraphqlApiCommand } from '@aws-sdk/client-appsync';
-import { hasRestParameter } from 'typescript';
 
 /**
  * Fetches and processes data definitions from Amplify Gen1 projects for migration to Gen2.
