@@ -4,7 +4,7 @@ import glob from 'glob';
 import assert from 'node:assert';
 
 import { DataDefinition } from '../core/migration-pipeline';
-import { AdditionalAuthProvider, ResolverConfig, getProjectName } from '../generators/data';
+import { AdditionalAuthProvider, getProjectName } from '../generators/data';
 import { pathManager } from '@aws-amplify/amplify-cli-core';
 
 // Source - amplify-category-api/packages/amplify-graphql-transformer-core/src/graphql-api.ts
@@ -101,6 +101,11 @@ export interface CorsConfiguration {
   allowOrigins?: string[];
   exposeHeaders?: string[];
   maxAge?: number;
+}
+
+// Add locally in the fetcher
+export interface ResolverConfig {
+  hasResolvers: boolean;
 }
 
 import { BackendEnvironmentResolver } from './backend_environment_selector';

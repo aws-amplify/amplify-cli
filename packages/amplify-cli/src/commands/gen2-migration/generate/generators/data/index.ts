@@ -3,19 +3,7 @@ import { renderResourceTsFile } from '../../resource/resource';
 import { AppSyncClient, paginateListGraphqlApis } from '@aws-sdk/client-appsync';
 import type { ConstructFactory, AmplifyFunction } from '@aws-amplify/plugin-types';
 import type { AuthorizationModes, DataLoggingOptions } from '@aws-amplify/backend-data';
-import { RestApiDefinition } from '../../codegen-head/data_definition_fetcher';
-
-import fs from 'fs';
-import path from 'path';
-import { pathManager } from '@aws-amplify/amplify-cli-core';
-
-/**
- * Resolver configuration for GraphQL API
- */
-export interface ResolverConfig {
-  /** Whether resolvers directory was found and copied */
-  hasResolvers: boolean;
-}
+import { RestApiDefinition, ResolverConfig } from '../../codegen-head/data_definition_fetcher';
 
 export interface AdditionalAuthProvider {
   authenticationType: 'API_KEY' | 'AWS_IAM' | 'OPENID_CONNECT' | 'AMAZON_COGNITO_USER_POOLS' | 'AWS_LAMBDA';
