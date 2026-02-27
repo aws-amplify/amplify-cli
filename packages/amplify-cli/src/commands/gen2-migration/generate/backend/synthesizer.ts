@@ -2423,6 +2423,9 @@ export class BackendSynthesizer {
       imports.push(this.createImportStatement([factory.createIdentifier('join'), factory.createIdentifier('dirname')], 'path'));
       imports.push(this.createImportStatement([factory.createIdentifier('fileURLToPath')], 'url'));
 
+      const blankLine = ts.factory.createExpressionStatement(ts.factory.createIdentifier(''));
+      nodes.push(blankLine);
+
       // Generate __dirname equivalent for ES modules
       const dirnameStatement = factory.createVariableStatement(
         [],

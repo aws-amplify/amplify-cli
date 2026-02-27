@@ -112,6 +112,7 @@ import { BackendEnvironmentResolver } from './backend_environment_selector';
 import { BackendDownloader } from './backend_downloader';
 import { fileOrDirectoryExists } from './directory_exists';
 import { AppSyncClient, GetGraphqlApiCommand } from '@aws-sdk/client-appsync';
+import { hasRestParameter } from 'typescript';
 
 /**
  * Fetches and processes data definitions from Amplify Gen1 projects for migration to Gen2.
@@ -136,9 +137,9 @@ export class DataDefinitionFetcher {
   constructor(private backendEnvironmentResolver: BackendEnvironmentResolver, private ccbFetcher: BackendDownloader) {}
 
   /**
-   * Checks if GraphQL API has resolvers directory with VTL files and copies them
+   * Checks if GraphQL API has resolvers directory with VTL files
    */
-  private copyResolvers = (): boolean => {
+  private hasResolvers = (): boolean => {
     const rootDir = pathManager.findProjectRoot();
     const projectName = getProjectName();
 
@@ -148,14 +149,7 @@ export class DataDefinitionFetcher {
 
     const files = require('fs').readdirSync(resolversPath);
 
-    if (!files.some((file: string) => file.endsWith('.vtl'))) return false;
-
-    const targetPath = path.join(rootDir, 'amplify', 'data', 'resolvers');
-
-    require('fs').mkdirSync(path.dirname(targetPath), { recursive: true });
-    require('fs').cpSync(resolversPath, targetPath, { recursive: true });
-
-    return true;
+    return files.some((file: string) => file.endsWith('.vtl'));
   };
 
   /**
@@ -490,9 +484,9 @@ export class DataDefinitionFetcher {
         const additionalAuthProviders = apiId ? await this.getAdditionalAuthProvidersFromConsole(apiId) : [];
         const logging = apiId ? await this.getLoggingConfigFromConsole(apiId) : undefined;
 
-        // Handle resolver copying
-        const resolversCopied = this.copyResolvers();
-        const resolvers: ResolverConfig | undefined = resolversCopied ? { hasResolvers: true } : undefined;
+        // Handle resolver checking
+        const hasResolvers = this.hasResolvers();
+        const resolvers: ResolverConfig | undefined = hasResolvers ? { hasResolvers: true } : undefined;
 
         return {
           tableMappings: undefined,
