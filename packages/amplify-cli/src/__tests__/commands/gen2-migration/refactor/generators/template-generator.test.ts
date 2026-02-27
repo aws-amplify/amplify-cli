@@ -1171,6 +1171,7 @@ describe('TemplateGenerator', () => {
     const destinationStackName = isRevert ? getStackId(GEN1_ROOT_STACK_NAME, category) : getStackId(GEN2_ROOT_STACK_NAME, category);
     expect(mockCfnClientSendMock.mock.calls[callIndex]).toBeACloudFormationCommand(
       {
+        Description: `Move [ResourceA] from ${sourceStackName.split('/')[1]} to ${destinationStackName.split('/')[1]}`,
         ResourceMappings: [
           {
             Source: {
