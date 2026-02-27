@@ -199,7 +199,7 @@ async function main(): Promise<void> {
 
     try {
       await initializeAppFromCLI({ appName: selectedApp, deploymentName, config, migrationTargetPath, envName: options.envName, profile });
-      logger.info('Stopping before category processing as per current implementation scope');
+      // TODO: migration
     } finally {
       // Cleanup atmosphere profile if we created one
       if (isAtmosphereEnv) {
