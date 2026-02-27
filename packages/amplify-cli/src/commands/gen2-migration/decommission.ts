@@ -7,7 +7,7 @@ import {
   DescribeChangeSetCommand,
   DeleteChangeSetCommand,
   DescribeChangeSetOutput,
-  ListStacksCommand,
+  paginateListStacks,
   StackStatus,
   waitUntilChangeSetCreateComplete,
 } from '@aws-sdk/client-cloudformation';
@@ -43,15 +43,13 @@ export class AmplifyMigrationDecommissionStep extends AmplifyMigrationStep {
 
     const operations: AmplifyMigrationOperation[] = [];
 
-    if (holdingStacks.length > 0) {
+    for (const stackName of holdingStacks) {
       operations.push({
-        describe: async () => holdingStacks.map((name) => `Delete holding stack: ${name}`),
+        describe: async () => [`Delete holding stack: ${stackName}`],
         execute: async () => {
-          for (const stackName of holdingStacks) {
-            this.logger.info(`Deleting holding stack: ${stackName}`);
-            await deleteHoldingStack(cfnClient, stackName);
-            this.logger.info(`Deleted holding stack: ${stackName}`);
-          }
+          this.logger.info(`Deleting holding stack: ${stackName}`);
+          await deleteHoldingStack(cfnClient, stackName);
+          this.logger.info(`Deleted holding stack: ${stackName}`);
         },
       });
     }
@@ -79,21 +77,17 @@ export class AmplifyMigrationDecommissionStep extends AmplifyMigrationStep {
 
   private async findHoldingStacks(cfnClient: CloudFormationClient): Promise<string[]> {
     const holdingStacks: string[] = [];
-    let nextToken: string | undefined;
-    do {
-      const response = await cfnClient.send(
-        new ListStacksCommand({
-          NextToken: nextToken,
-          StackStatusFilter: [StackStatus.CREATE_COMPLETE, StackStatus.UPDATE_COMPLETE, StackStatus.ROLLBACK_COMPLETE],
-        }),
-      );
-      for (const stack of response.StackSummaries ?? []) {
+    const paginator = paginateListStacks(
+      { client: cfnClient },
+      { StackStatusFilter: [StackStatus.CREATE_COMPLETE, StackStatus.UPDATE_COMPLETE, StackStatus.ROLLBACK_COMPLETE] },
+    );
+    for await (const page of paginator) {
+      for (const stack of page.StackSummaries ?? []) {
         if (stack.StackName?.endsWith(HOLDING_STACK_SUFFIX) && stack.StackName.includes(this.appId)) {
           holdingStacks.push(stack.StackName);
         }
       }
-      nextToken = response.NextToken;
-    } while (nextToken);
+    }
     return holdingStacks;
   }
 

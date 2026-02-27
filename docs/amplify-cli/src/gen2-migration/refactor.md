@@ -23,28 +23,28 @@ flowchart TD
     subgraph Orchestration
         AMRS["AmplifyMigrationRefactorStep"]
     end
-    
+
     subgraph "Template Generation"
         TG["TemplateGenerator"]
         CTG["CategoryTemplateGenerator"]
     end
-    
+
     subgraph "Resolvers"
         PR["CfnParameterResolver"]
         OR["CfnOutputResolver"]
         DR["CfnDependencyResolver"]
         CR["CFNConditionResolver"]
     end
-    
+
     subgraph "Stack Operations"
         CSU["cfn-stack-updater"]
         CSRU["cfn-stack-refactor-updater"]
     end
-    
+
     subgraph "OAuth Support"
         OVR["oauth-values-retriever"]
     end
-    
+
     AMRS -->|"orchestrates"| TG
     TG -->|"per category"| CTG
     CTG -->|"1. resolve params"| PR
@@ -56,18 +56,18 @@ flowchart TD
     CTG -->|"auth with OAuth"| OVR
 ```
 
-| Component | File | Purpose |
-|-----------|------|---------|
-| `AmplifyMigrationRefactorStep` | `refactor.ts` | Main orchestrator implementing `AmplifyMigrationStep` interface. Handles parameter extraction, resource mapping validation, interactive category selection, and delegates to TemplateGenerator for execution. |
-| `TemplateGenerator` (internal) | `generators/template-generator.ts` | Core engine that parses category stacks from Gen1/Gen2 root stacks, initializes CategoryTemplateGenerators for each category, and coordinates the refactor process across categories. |
-| `CategoryTemplateGenerator` (internal) | `generators/category-template-generator.ts` | Category-specific template processor that generates pre-processed templates for Gen1 and Gen2 stacks, builds logical ID mappings between stacks, and produces final refactor templates. |
-| `CfnParameterResolver` (internal) | `resolvers/cfn-parameter-resolver.ts` | Resolves CloudFormation `Ref` expressions for parameters by substituting actual values. Handles `CommaDelimitedList` and `List<Number>` types, and `AWS::StackName` pseudo-parameter. |
-| `CFNConditionResolver` | `resolvers/cfn-condition-resolver.ts` | Evaluates CloudFormation conditions (`Fn::Equals`, `Fn::Not`, `Fn::Or`, `Fn::And`) and resolves `Fn::If` expressions in resource properties. Removes resources with unmet conditions. |
-| `CfnDependencyResolver` | `resolvers/cfn-dependency-resolver.ts` | Adjusts `DependsOn` relationships for resources being refactored. Ensures resources moving to Gen2 only depend on other moving resources. |
-| `CfnOutputResolver` | `resolvers/cfn-output-resolver.ts` | Resolves `Ref` and `Fn::GetAtt` expressions using stack outputs and physical resource IDs. Constructs ARNs for S3, Cognito, IAM, SQS, and Lambda resources. |
-| `cfn-stack-updater` | `cfn-stack-updater.ts` | CloudFormation stack update utilities with polling for completion state. Handles 'no updates' scenarios gracefully. |
-| `cfn-stack-refactor-updater` | `cfn-stack-refactor-updater.ts` | CloudFormation stack refactor execution using `CreateStackRefactor` and `ExecuteStackRefactor` APIs. Polls for completion and validates both source and destination stack states. |
-| `oauth-values-retriever` | `oauth-values-retriever.ts` | Retrieves OAuth provider credentials from Cognito (client_id, client_secret) and SSM (Sign In With Apple private key) for auth migrations with social login. |
+| Component                              | File                                        | Purpose                                                                                                                                                                                                       |
+| -------------------------------------- | ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `AmplifyMigrationRefactorStep`         | `refactor.ts`                               | Main orchestrator implementing `AmplifyMigrationStep` interface. Handles parameter extraction, resource mapping validation, interactive category selection, and delegates to TemplateGenerator for execution. |
+| `TemplateGenerator` (internal)         | `generators/template-generator.ts`          | Core engine that parses category stacks from Gen1/Gen2 root stacks, initializes CategoryTemplateGenerators for each category, and coordinates the refactor process across categories.                         |
+| `CategoryTemplateGenerator` (internal) | `generators/category-template-generator.ts` | Category-specific template processor that generates pre-processed templates for Gen1 and Gen2 stacks, builds logical ID mappings between stacks, and produces final refactor templates.                       |
+| `CfnParameterResolver` (internal)      | `resolvers/cfn-parameter-resolver.ts`       | Resolves CloudFormation `Ref` expressions for parameters by substituting actual values. Handles `CommaDelimitedList` and `List<Number>` types, and `AWS::StackName` pseudo-parameter.                         |
+| `CFNConditionResolver`                 | `resolvers/cfn-condition-resolver.ts`       | Evaluates CloudFormation conditions (`Fn::Equals`, `Fn::Not`, `Fn::Or`, `Fn::And`) and resolves `Fn::If` expressions in resource properties. Removes resources with unmet conditions.                         |
+| `CfnDependencyResolver`                | `resolvers/cfn-dependency-resolver.ts`      | Adjusts `DependsOn` relationships for resources being refactored. Ensures resources moving to Gen2 only depend on other moving resources.                                                                     |
+| `CfnOutputResolver`                    | `resolvers/cfn-output-resolver.ts`          | Resolves `Ref` and `Fn::GetAtt` expressions using stack outputs and physical resource IDs. Constructs ARNs for S3, Cognito, IAM, SQS, and Lambda resources.                                                   |
+| `cfn-stack-updater`                    | `cfn-stack-updater.ts`                      | CloudFormation stack update utilities with polling for completion state. Handles 'no updates' scenarios gracefully.                                                                                           |
+| `cfn-stack-refactor-updater`           | `cfn-stack-refactor-updater.ts`             | CloudFormation stack refactor execution using `CreateStackRefactor` and `ExecuteStackRefactor` APIs. Polls for completion and validates both source and destination stack states.                             |
+| `oauth-values-retriever`               | `oauth-values-retriever.ts`                 | Retrieves OAuth provider credentials from Cognito (client_id, client_secret) and SSM (Sign In With Apple private key) for auth migrations with social login.                                                  |
 
 ## Interface
 
@@ -79,39 +79,40 @@ The refactor step is invoked as part of the gen2-migration workflow:
 amplify gen2-migration refactor --to <gen2-stack-name> [--resourceMappings file:///path/to/mappings.json]
 ```
 
-| Option | Description |
-|--------|-------------|
-| `--to <stack>` | Required. Target Gen2 stack name for resource migration. |
+| Option                      | Description                                                             |
+| --------------------------- | ----------------------------------------------------------------------- |
+| `--to <stack>`              | Required. Target Gen2 stack name for resource migration.                |
 | `--resourceMappings <file>` | Optional. Custom resource mappings file with `file://` protocol prefix. |
 
 ### Exports
 
-| Export | Type | Signature | Description |
-|--------|------|-----------|-------------|
-| `AmplifyMigrationRefactorStep` | class | `validate(): Promise<void>; execute(): Promise<void>; rollback(): Promise<void>; implications(): string[]` | Main entry point implementing the `AmplifyMigrationStep` interface. |
-| `TemplateGenerator` | class | `initializeForAssessment(): Promise<void>; getStackTemplate(stackId): Promise<CFNTemplate>; getResourcesToMigrate(template, category): string[]; generateSelectedCategories(categories, resourceMap?): Promise<boolean>` | Core template generation engine. |
-| `CategoryTemplateGenerator` | class | `generateGen1PreProcessTemplate(): Promise<CFNChangeTemplateWithParams>; generateGen2PreProcessTemplate(): Promise<CFNChangeTemplateWithParams>; moveGen2ResourcesToHoldingStack(resolvedGen2Template: CFNTemplate): Promise<CFNChangeTemplateWithParams>; generateRefactorTemplates(...): CFNStackRefactorTemplates` | Category-specific template generator. |
-| `tryRefactorStack` | function | `async (cfnClient, input, attempts?): Promise<[boolean, FailedRefactorResponse \| undefined]>` | Executes CloudFormation stack refactor operation with polling. |
-| `tryUpdateStack` | function | `async (cfnClient, stackName, parameters, templateBody, attempts?): Promise<string>` | Updates a CloudFormation stack with given template. |
-| `CfnParameterResolver` | class | `resolve(parameters: Parameter[]): CFNTemplate` | Resolves CloudFormation parameter references. |
-| `CFNConditionResolver` | class | `resolve(parameters: Parameter[]): CFNTemplate` | Resolves CloudFormation conditions. |
-| `CfnDependencyResolver` | class | `resolve(resourcesToRefactor: string[]): CFNTemplate` | Resolves DependsOn relationships. |
-| `CfnOutputResolver` | class | `resolve(logicalResourceIds, stackOutputs, stackResources): CFNTemplate` | Resolves Ref and Fn::GetAtt references. |
-| `retrieveOAuthValues` | function | `async (params: RetrieveOAuthValuesParameters): Promise<OAuthClient[]>` | Retrieves OAuth provider credentials from Cognito and SSM. |
+| Export                         | Type     | Signature                                                                                                                                                                                                                                                                                                             | Description                                                         |
+| ------------------------------ | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| `AmplifyMigrationRefactorStep` | class    | `validate(): Promise<void>; execute(): Promise<void>; rollback(): Promise<void>; implications(): string[]`                                                                                                                                                                                                            | Main entry point implementing the `AmplifyMigrationStep` interface. |
+| `TemplateGenerator`            | class    | `initializeForAssessment(): Promise<void>; getStackTemplate(stackId): Promise<CFNTemplate>; getResourcesToMigrate(template, category): string[]; generateSelectedCategories(categories, resourceMap?): Promise<boolean>`                                                                                              | Core template generation engine.                                    |
+| `CategoryTemplateGenerator`    | class    | `generateGen1PreProcessTemplate(): Promise<CFNChangeTemplateWithParams>; generateGen2PreProcessTemplate(): Promise<CFNChangeTemplateWithParams>; moveGen2ResourcesToHoldingStack(resolvedGen2Template: CFNTemplate): Promise<CFNChangeTemplateWithParams>; generateRefactorTemplates(...): CFNStackRefactorTemplates` | Category-specific template generator.                               |
+| `tryRefactorStack`             | function | `async (cfnClient, input, attempts?): Promise<[boolean, FailedRefactorResponse \| undefined]>`                                                                                                                                                                                                                        | Executes CloudFormation stack refactor operation with polling.      |
+| `tryUpdateStack`               | function | `async (cfnClient, stackName, parameters, templateBody, attempts?): Promise<string>`                                                                                                                                                                                                                                  | Updates a CloudFormation stack with given template.                 |
+| `CfnParameterResolver`         | class    | `resolve(parameters: Parameter[]): CFNTemplate`                                                                                                                                                                                                                                                                       | Resolves CloudFormation parameter references.                       |
+| `CFNConditionResolver`         | class    | `resolve(parameters: Parameter[]): CFNTemplate`                                                                                                                                                                                                                                                                       | Resolves CloudFormation conditions.                                 |
+| `CfnDependencyResolver`        | class    | `resolve(resourcesToRefactor: string[]): CFNTemplate`                                                                                                                                                                                                                                                                 | Resolves DependsOn relationships.                                   |
+| `CfnOutputResolver`            | class    | `resolve(logicalResourceIds, stackOutputs, stackResources): CFNTemplate`                                                                                                                                                                                                                                              | Resolves Ref and Fn::GetAtt references.                             |
+| `retrieveOAuthValues`          | function | `async (params: RetrieveOAuthValuesParameters): Promise<OAuthClient[]>`                                                                                                                                                                                                                                               | Retrieves OAuth provider credentials from Cognito and SSM.          |
 
 ### Supported Resource Types
 
 The module supports migrating the following CloudFormation resource types:
 
-| Category | Resource Types |
-|----------|---------------|
-| `auth` | `AWS::Cognito::UserPool`, `AWS::Cognito::UserPoolClient`, `AWS::Cognito::IdentityPool`, `AWS::Cognito::IdentityPoolRoleAttachment`, `AWS::Cognito::UserPoolDomain` |
-| `auth-user-pool-group` | `AWS::Cognito::UserPoolGroup` |
-| `storage` | `AWS::S3::Bucket`, `AWS::DynamoDB::Table` |
+| Category               | Resource Types                                                                                                                                                     |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `auth`                 | `AWS::Cognito::UserPool`, `AWS::Cognito::UserPoolClient`, `AWS::Cognito::IdentityPool`, `AWS::Cognito::IdentityPoolRoleAttachment`, `AWS::Cognito::UserPoolDomain` |
+| `auth-user-pool-group` | `AWS::Cognito::UserPoolGroup`                                                                                                                                      |
+| `storage`              | `AWS::S3::Bucket`, `AWS::DynamoDB::Table`                                                                                                                          |
 
 ## Dependencies
 
 **Internal:**
+
 - `gen2-migration-core` — `AmplifyMigrationStep` base class, `Logger` class, `AmplifyGen2MigrationValidations` for lock status validation
 
 **External:**
@@ -135,14 +136,14 @@ Four resolver classes are applied sequentially to transform CloudFormation templ
 
 ```typescript
 // Order: Parameter → Output → Dependency → Condition
-const gen1ParametersResolvedTemplate = new CfnParameterResolver(oldGen1Template, stackName)
-  .resolve(Parameters);
-const gen1TemplateWithOutputsResolved = new CfnOutputResolver(gen1ParametersResolvedTemplate, region, accountId)
-  .resolve(logicalResourceIds, Outputs, stackResources);
-const gen1TemplateWithDepsResolved = new CfnDependencyResolver(gen1TemplateWithOutputsResolved)
-  .resolve(logicalResourceIds);
-const gen1TemplateWithConditionsResolved = new CFNConditionResolver(gen1TemplateWithDepsResolved)
-  .resolve(Parameters);
+const gen1ParametersResolvedTemplate = new CfnParameterResolver(oldGen1Template, stackName).resolve(Parameters);
+const gen1TemplateWithOutputsResolved = new CfnOutputResolver(gen1ParametersResolvedTemplate, region, accountId).resolve(
+  logicalResourceIds,
+  Outputs,
+  stackResources,
+);
+const gen1TemplateWithDepsResolved = new CfnDependencyResolver(gen1TemplateWithOutputsResolved).resolve(logicalResourceIds);
+const gen1TemplateWithConditionsResolved = new CFNConditionResolver(gen1TemplateWithDepsResolved).resolve(Parameters);
 ```
 
 ### Logical ID Mapping
@@ -236,18 +237,20 @@ During forward migration, Gen2 stateful resources are moved to a temporary "hold
 ### How It Works
 
 **Forward Migration:**
+
 1. Gen1 stack is pre-processed (references resolved)
 2. A holding stack is created: `{gen2CategoryStackName}-holding`
 3. Gen2 stateful resources are moved to the holding stack via StackRefactor
 4. Gen1 resources are moved to Gen2 stack via StackRefactor
 
 **Rollback:**
+
 1. Resources are moved from Gen2 back to Gen1 (existing logic)
 2. If a holding stack exists, resources are restored from holding stack to Gen2
 3. The empty holding stack is deleted
 
-**Cleanup:**
-After successful migration, run `amplify gen2-migration cleanup` to delete any remaining holding stacks.
+**Decommission:**
+After successful migration, run `amplify gen2-migration decommission` to delete any remaining holding stacks.
 
 ### Holding Stack Structure
 
@@ -274,71 +277,15 @@ Resources:
 
 ### Related Files
 
-| File | Purpose |
-|------|---------|
+| File               | Purpose                                                      |
+| ------------------ | ------------------------------------------------------------ |
 | `holding-stack.ts` | Utilities for creating, finding, and deleting holding stacks |
-| `cleanup.ts` | Cleanup command implementation |
-
-## Known Issues — Holding Stack Implementation
-
-### ~~Critical: No recovery from partial failure (resume scenario)~~ FIXED
-
-`recoverFromHoldingStack()` in `CategoryTemplateGenerator` now detects an existing holding stack, populates `gen2ResourcesToRemove` from its contents, and returns the current Gen2 template. `processGen2Stack` calls this before attempting a new holding stack move. The redundant `generateGen2ResourceRemovalTemplate` fallback was removed.
-
-### Critical: Rollback after failed Gen1→Gen2 refactor doesn't restore holding stack
-
-In `template-generator.ts` `generateCategoryTemplates`, when the second StackRefactor (Gen1→Gen2) fails, the code calls `rollbackGen2Stack` with the original Gen2 template. But the Gen2 stack was already modified by the first StackRefactor (resources moved to holding stack). Updating the Gen2 stack with a template that references resources now owned by the holding stack will fail.
-
-**File:** `generators/template-generator.ts` — failure handler in `generateCategoryTemplates`
-
-**Fix:** Call `restoreGen2ResourcesFromHoldingStack()` before `rollbackGen2Stack()`:
-
-```typescript
-if (!isRollback && oldDestinationTemplate) {
-  await categoryTemplateGenerator.restoreGen2ResourcesFromHoldingStack();
-  await this.rollbackGen2Stack(category, destinationCategoryStackId, destinationStackParameters, oldDestinationTemplate);
-}
-```
-
-### ~~Medium: `[object Object]` displayed for implications~~ FIXED
-
-Implications display now calls `executeImplications()` / `rollbackImplications()` instead of `execute()` / `rollback()`.
-
-### Medium: Cleanup matches any stack ending with `-holding` in the account
-
-`findHoldingStacks` in `cleanup.ts` matches ALL stacks ending with `-holding`, not just Amplify migration holding stacks. This could delete unrelated stacks.
-
-**File:** `cleanup.ts` — `findHoldingStacks`
-
-**Fix:** After matching the suffix, read the stack template and verify `Metadata.AmplifyMigration` exists before including it.
-
-### ~~Medium: `deleteHoldingStack` crashes when stack is already gone~~ FIXED
-
-`deleteHoldingStack` now catches "does not exist" from `pollStackForCompletionState` and treats it as successful deletion.
-
-### ~~Low: Redundant fallback to `generateGen2ResourceRemovalTemplate`~~ FIXED
-
-Removed as part of the `processGen2Stack` rewrite. The method now throws directly if no resources are found.
-
-### Low: No stack name length validation
-
-`getHoldingStackName` appends `-holding` (8 chars) without checking the 128-character CloudFormation stack name limit.
-
-**File:** `holding-stack.ts` — `getHoldingStackName`
-
-**Fix:** Validate `stackName.length + HOLDING_STACK_SUFFIX.length <= 128` and throw if exceeded.
-
-### Cosmetic: Misleading rollback log messages
-
-In `generateCategoryTemplates`, the rollback path always logs "Restoring..." and "Restored...successfully" even when no holding stack exists. `restoreGen2ResourcesFromHoldingStack` handles this gracefully (returns early), but the surrounding log messages are misleading.
-
-**File:** `generators/template-generator.ts` — rollback path in `generateCategoryTemplates`
-
-**Fix:** Move log messages inside `restoreGen2ResourcesFromHoldingStack` or check return value.
+| `decommission.ts`  | Decommission command implementation                          |
 
 ## AI Development Notes
 
 **Important considerations:**
+
 - The module uses CloudFormation's StackRefactor API which atomically moves resources between stacks—this is a relatively new AWS feature and may have limitations not documented here
 - Four resolver classes must be applied in the correct order: Parameter → Output → Dependency → Condition. The order matters because each resolver depends on previous transformations
 - The logical ID mapping between Gen1 and Gen2 is critical—UserPoolClient has special handling (Web vs Native) and UserPoolGroup uses CDK hash suffixes that must be stripped
@@ -347,10 +294,11 @@ In `generateCategoryTemplates`, the rollback path always logs "Restoring..." and
 - Category stacks are identified by parsing the root stack's nested stacks and matching logical resource IDs that start with category names (auth, storage)
 
 **Common pitfalls:**
+
 - The `--to` parameter is required and must point to a valid Gen2 stack name—`InputValidationError` is thrown if missing
 - Resource mappings file must use `file://` protocol prefix (e.g., `file:///path/to/mappings.json`)—relative paths without protocol will fail
 - User pool groups and auth resources are in the same stack in Gen2 but different stacks in Gen1—the module handles this with 'auth-user-pool-group' category
-- Holding stacks must be cleaned up after successful migration using `amplify gen2-migration cleanup`
+- Holding stacks must be cleaned up after successful migration using `amplify gen2-migration decommission`
 
 **Testing guidance:**
 Test with deployed Amplify Gen1 projects that have auth and storage categories. Verify the assessment correctly identifies resources to migrate. Test with `--resourceMappings` to verify custom mapping support. Test OAuth migrations with social login providers (Google, Facebook, Sign In With Apple). Verify rollback behavior when refactor fails mid-operation. Test rollback operation (Gen2→Gen1) to ensure bidirectional support works.

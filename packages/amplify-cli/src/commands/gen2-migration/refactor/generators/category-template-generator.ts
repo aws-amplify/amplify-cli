@@ -33,6 +33,7 @@ import { Logger } from '../../../gen2-migration';
 export const HOSTED_PROVIDER_META_PARAMETER_NAME = 'hostedUIProviderMeta';
 const HOSTED_PROVIDER_CREDENTIALS_PARAMETER_NAME = 'hostedUIProviderCreds';
 const USER_POOL_ID_OUTPUT_KEY_NAME = 'UserPoolId';
+const MIGRATION_PLACEHOLDER_LOGICAL_ID = 'MigrationPlaceholder';
 const GEN1_WEB_APP_CLIENT = 'UserPoolClientWeb';
 const GEN2_NATIVE_APP_CLIENT = 'UserPoolNativeAppClient';
 const RESOURCE_TYPES_WITH_MULTIPLE_RESOURCES = [
@@ -140,7 +141,7 @@ class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
     const resourcesToMoveCount = this.gen1ResourcesToMove.size;
     if (totalResources === resourcesToMoveCount) {
       this.logger.debug('All Gen1 resources will be moved, adding placeholder resource to Gen1 stack');
-      gen1TemplateWithConditionsResolved.Resources['MigrationPlaceholder'] = {
+      gen1TemplateWithConditionsResolved.Resources[MIGRATION_PLACEHOLDER_LOGICAL_ID] = {
         Type: 'AWS::CloudFormation::WaitConditionHandle',
         Properties: {},
       };
@@ -266,7 +267,7 @@ class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
     // Extract resolved resources for holding stack before removing them
     const holdingStackResources: Record<string, CFNResource> = {};
     for (const logicalId of logicalResourceIds) {
-      holdingStackResources[logicalId] = JSON.parse(JSON.stringify(resolvedGen2Template.Resources[logicalId]));
+      holdingStackResources[logicalId] = resolvedGen2Template.Resources[logicalId];
     }
 
     this.logger.debug('Deleting resources from template...');
@@ -316,7 +317,7 @@ class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
     const holdingTemplate = await this.readTemplate(holdingStackName);
     const targetTemplate = await this.readTemplate(originalGen2StackId);
 
-    const resourcesToRestore = Object.entries(holdingTemplate.Resources).filter(([id]) => id !== 'MigrationPlaceholder');
+    const resourcesToRestore = Object.entries(holdingTemplate.Resources).filter(([id]) => id !== MIGRATION_PLACEHOLDER_LOGICAL_ID);
     if (resourcesToRestore.length === 0) {
       await deleteHoldingStack(this.cfnClient, holdingStackName);
       return;
@@ -327,7 +328,7 @@ class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
     const holdingTemplateWithPlaceholder: CFNTemplate = {
       ...holdingTemplate,
       Resources: {
-        MigrationPlaceholder: { Type: 'AWS::CloudFormation::WaitConditionHandle', Properties: {} },
+        [MIGRATION_PLACEHOLDER_LOGICAL_ID]: { Type: 'AWS::CloudFormation::WaitConditionHandle', Properties: {} },
         ...holdingTemplate.Resources,
       },
     };
@@ -340,7 +341,7 @@ class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
     const emptyHoldingTemplate: CFNTemplate = {
       AWSTemplateFormatVersion: '2010-09-09',
       Description: 'Temporary holding stack for Gen2 migration',
-      Resources: { MigrationPlaceholder: { Type: 'AWS::CloudFormation::WaitConditionHandle', Properties: {} } },
+      Resources: { [MIGRATION_PLACEHOLDER_LOGICAL_ID]: { Type: 'AWS::CloudFormation::WaitConditionHandle', Properties: {} } },
       Outputs: {},
     };
 
