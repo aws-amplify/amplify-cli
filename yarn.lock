@@ -1270,7 +1270,7 @@ __metadata:
     amplify-python-function-runtime-provider: 2.4.54
     aws-cdk-lib: ~2.189.1
     bottleneck: 2.19.5
-    cdk-from-cfn: ^0.271.0
+    cdk-from-cfn: ^0.286.0
     chalk: ^4.1.1
     ci-info: ^3.8.0
     cli-table3: ^0.6.0
@@ -22172,13 +22172,6 @@ __metadata:
   version: 0.236.0
   resolution: "cdk-from-cfn@npm:0.236.0"
   checksum: 5603d74e4ac1dcb217d93d9860a50a519a32502bc180f6a6b0023220578f52236cdfe4fe85da6d0950de7df7bf2f6f811e50ad386b38fe901ff1a3dadf977a99
-  languageName: node
-  linkType: hard
-
-"cdk-from-cfn@npm:^0.271.0":
-  version: 0.271.0
-  resolution: "cdk-from-cfn@npm:0.271.0"
-  checksum: dc7812dadc7808139138565e26bf321c65d9d07b73bd2cdad0aa70f7d02f9cced25214756b949ed389eac96ef47fdfed37bea4de24bec6331b0f8fcc2d859a7f
   languageName: node
   linkType: hard
 
