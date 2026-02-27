@@ -61,7 +61,8 @@ describe('AmplifyInitializer', () => {
       console.log(`⚙️  Generated settings:`, JSON.stringify(settings, null, 2));
 
       expect(settings.name).toBe(deploymentName);
-      expect(settings.envName).toBe('main');
+      // envName should be a random 2-10 character lowercase string when not provided
+      expect(settings.envName).toMatch(/^[a-z]{2,10}$/);
       expect(settings.framework).toBe('react');
       expect(settings.editor).toBe('Visual Studio Code');
       expect(settings.srcDir).toBe('src');
@@ -110,18 +111,23 @@ describe('AmplifyInitializer', () => {
 
       console.log(`⏰ Test completed in ${duration}ms`);
 
-      expect(initJSProjectWithProfile).toHaveBeenCalledWith(appPath, {
-        name: 'mytestapp',
-        envName: 'main',
-        editor: 'Visual Studio Code',
-        framework: 'react',
-        srcDir: 'src',
-        distDir: 'dist',
-        buildCmd: 'npm run build',
-        startCmd: 'npm run start',
-        profileName: 'test-profile',
-        disableAmplifyAppCreation: false,
-      });
+      expect(initJSProjectWithProfile).toHaveBeenCalledWith(
+        appPath,
+        expect.objectContaining({
+          name: 'mytestapp',
+          editor: 'Visual Studio Code',
+          framework: 'react',
+          srcDir: 'src',
+          distDir: 'dist',
+          buildCmd: 'npm run build',
+          startCmd: 'npm run start',
+          profileName: 'test-profile',
+          disableAmplifyAppCreation: false,
+        }),
+      );
+      // Verify envName is a valid random string
+      const callArgs = (initJSProjectWithProfile as jest.Mock).mock.calls[0][1];
+      expect(callArgs.envName).toMatch(/^[a-z]{2,10}$/);
 
       console.log('✅ initializeApp test passed');
     });
