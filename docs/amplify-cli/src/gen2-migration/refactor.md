@@ -239,7 +239,7 @@ During forward migration, Gen2 stateful resources are moved to a temporary "hold
 **Forward Migration:**
 
 1. Gen1 stack is pre-processed (references resolved)
-2. A holding stack is created: `{gen2CategoryStackName}-holding`
+2. A holding stack is created: `{gen2CategoryStackPrefix}-{cfnHashSuffix}-holding` (the CloudFormation hash suffix after the last dash is preserved for uniqueness; the prefix is truncated if the name would exceed 128 characters)
 3. Gen2 stateful resources are moved to the holding stack via StackRefactor
 4. Gen1 resources are moved to Gen2 stack via StackRefactor
 

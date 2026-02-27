@@ -12,12 +12,16 @@ const MAX_STACK_NAME_LENGTH = 128;
 
 /**
  * Derives the holding stack name from a Gen2 category stack ID.
- * If the resulting name would exceed 128 characters, the stack ID is truncated.
+ * Preserves the CloudFormation hash suffix (part after the last dash) for uniqueness.
+ * If the resulting name would exceed 128 characters, the prefix is truncated.
  */
 export function getHoldingStackName(gen2CategoryStackId: string): string {
-  const maxPrefixLength = MAX_STACK_NAME_LENGTH - HOLDING_STACK_SUFFIX.length;
-  const truncatedStackId = gen2CategoryStackId.substring(0, maxPrefixLength);
-  return `${truncatedStackId}${HOLDING_STACK_SUFFIX}`;
+  const lastDashIndex = gen2CategoryStackId.lastIndexOf('-');
+  const prefix = gen2CategoryStackId.substring(0, lastDashIndex);
+  const hashSuffix = gen2CategoryStackId.substring(lastDashIndex);
+  const tail = `${hashSuffix}${HOLDING_STACK_SUFFIX}`;
+  const maxPrefixLength = MAX_STACK_NAME_LENGTH - tail.length;
+  return `${prefix.substring(0, maxPrefixLength)}${tail}`;
 }
 
 /**

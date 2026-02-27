@@ -79,7 +79,14 @@ export class AmplifyMigrationDecommissionStep extends AmplifyMigrationStep {
     const holdingStacks: string[] = [];
     const paginator = paginateListStacks(
       { client: cfnClient },
-      { StackStatusFilter: [StackStatus.CREATE_COMPLETE, StackStatus.UPDATE_COMPLETE, StackStatus.ROLLBACK_COMPLETE] },
+      {
+        StackStatusFilter: [
+          StackStatus.CREATE_COMPLETE,
+          StackStatus.UPDATE_COMPLETE,
+          StackStatus.ROLLBACK_COMPLETE,
+          StackStatus.REVIEW_IN_PROGRESS,
+        ],
+      },
     );
     for await (const page of paginator) {
       for (const stack of page.StackSummaries ?? []) {
