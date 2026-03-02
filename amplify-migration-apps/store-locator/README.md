@@ -303,9 +303,8 @@ The Gen1 dynamic `require(`./${name}`)` doesn't work with esbuild bundling in th
 ```
 
 ```diff
-+
 + // Grant Cognito permissions to the PostConfirmation Lambda
-+ // Mirrors the Gen1 AuthTriggerCustomLambdaStack - separate stack to avoid circular dependency
++ // Mirrors the Gen1 AuthTriggerCustomLambdaStack
 + const authTriggerStack = backend.createStack("AuthTriggerCustomLambdaStack");
 + new iam.Policy(authTriggerStack, "AddToGroupCognito", {
 +     roles: [backend.storelocatordemocff4360fPostConfirmation.resources.lambda.role!],
