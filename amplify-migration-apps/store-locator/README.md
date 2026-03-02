@@ -296,27 +296,21 @@ The Gen1 dynamic `require(`./${name}`)` doesn't work with esbuild bundling in th
 + export const handler = async (event) => {
 ```
 
-**Edit in `./amplify/backend.ts`:**
+**Edit in `./amplify/auth/resource.ts`:**
 
 ```diff
-+ import * as iam from "aws-cdk-lib/aws-iam";
-```
-
-```diff
-+ // Grant Cognito permissions to the PostConfirmation Lambda
-+ // Mirrors the Gen1 AuthTriggerCustomLambdaStack
-+ const authTriggerStack = backend.createStack("AuthTriggerCustomLambdaStack");
-+ new iam.Policy(authTriggerStack, "AddToGroupCognito", {
-+     roles: [backend.storelocatordemocff4360fPostConfirmation.resources.lambda.role!],
-+     statements: [new iam.PolicyStatement({
-+         actions: [
-+             "cognito-idp:AdminAddUserToGroup",
-+             "cognito-idp:GetGroup",
-+             "cognito-idp:CreateGroup",
-+         ],
-+         resources: [backend.auth.resources.userPool.userPoolArn],
-+     })],
-+ });
+-  triggers: {
+-      postConfirmation: storelocatordemocff4360fPostConfirmation
+-  },
++ triggers: {
++      postConfirmation: storelocatordemocff4360fPostConfirmation
++  },
++ access: (allow) => [
++     allow.resource(storelocatordemocff4360fPostConfirmation).to([
++         "addUserToGroup",
++         "manageGroups",
++     ]),
++ ],
 ```
 
 Now connect the `gen2-main` branch to the hosting service:
