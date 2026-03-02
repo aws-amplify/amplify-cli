@@ -425,7 +425,6 @@ class TemplateGenerator {
     try {
       // Resolve gen 2 template
       const { newTemplate, parameters: gen2StackParameters } = await categoryTemplateGenerator.generateGen2PreProcessTemplate();
-      assert(gen2StackParameters);
       this.logger.info(`Updating Gen 2 ${this.getStackCategoryName(category)} stack...`);
 
       const gen2StackUpdateStatus = await tryUpdateStack(this.cfnClient, destinationCategoryStackId, gen2StackParameters, newTemplate);

@@ -3,7 +3,7 @@ import {
   DeleteStackCommand,
   DescribeStacksCommand,
   Stack,
-  StackNotFoundException,
+  CloudFormationServiceException,
 } from '@aws-sdk/client-cloudformation';
 import { pollStackForCompletionState } from './cfn-stack-updater';
 
@@ -36,7 +36,7 @@ export async function findHoldingStack(cfnClient: CloudFormationClient, stackNam
     }
     return null;
   } catch (error: unknown) {
-    if (error instanceof StackNotFoundException) {
+    if (error instanceof CloudFormationServiceException && error.name === 'ValidationError' && error.message?.includes('does not exist')) {
       return null;
     }
     throw error;
@@ -51,7 +51,7 @@ export async function deleteHoldingStack(cfnClient: CloudFormationClient, stackN
     await cfnClient.send(new DeleteStackCommand({ StackName: stackName }));
     await pollStackForCompletionState(cfnClient, stackName, 60);
   } catch (error: unknown) {
-    if (error instanceof StackNotFoundException) {
+    if (error instanceof CloudFormationServiceException && error.name === 'ValidationError' && error.message?.includes('does not exist')) {
       return;
     }
     throw error;
