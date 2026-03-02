@@ -1,5 +1,6 @@
 # Store Locator (Amplify Gen1)
 
+![](./images/app.png)
 
 A store locator app that displays store locations on an interactive map powered by AWS Amplify Geo and Amazon Location Service. It uses Maps for rendering store locations, Place Index (Location Search) for address search, and Geofence Collections for users to define virtual perimeters around store areas.
 
@@ -70,7 +71,7 @@ amplify add auth
  Do you want to configure advanced settings? No, I am done.
 ```
 
-Create Cognito user pool groups for Geofences
+Create Cognito user pool groups for Geofences and add post confirmation lambda trigger to add users to the group
 
 ```console
 amplify update auth
@@ -79,10 +80,30 @@ amplify update auth
 ```console
 Please note that certain attributes may not be overwritten if you choose to use defaults settings.
 Using service: Cognito, provided by: awscloudformation
- What do you want to do? Create or update Cognito user pool groups
+What do you want to do? Walkthrough all the auth configurations
+ Select the authentication/authorization services that you want to use: User Sign-Up, Sign-In, connected with AWS IAM controls (Enables per-user Storage features for images or other content, Analytics, and more)
+ Allow unauthenticated logins? (Provides scoped down permissions that you can control via AWS IAM) No
+ Do you want to enable 3rd party authentication providers in your identity pool? No
+ Do you want to add User Pool Groups? Yes
+? Select any user pool groups you want to delete: 
+? Do you want to add another User Pool Group Yes
 ? Provide a name for your user pool group: storeLocatorAdmin
 ? Do you want to add another User Pool Group No
 ✔ Sort the user pool groups in order of preference · storeLocatorAdmin
+ Do you want to add an admin queries API? No
+ Multifactor authentication (MFA) user login options: OFF
+ Email based user registration/forgot password: Enabled (Requires per-user email entry at registration)
+ Specify an email verification subject: Your verification code
+ Specify an email verification message: Your verification code is {####}
+ Do you want to override the default password policy for this User Pool? No
+ Specify the app's refresh token expiration period (in days): 100
+ Do you want to specify the user attributes this app can read and write? No
+ Do you want to enable any of the following capabilities? Add User to Group
+ Do you want to use an OAuth flow? No
+? Do you want to configure Lambda Triggers for Cognito? Yes
+? Which triggers do you want to enable for Cognito Post Confirmation
+? What functionality do you want to use for Post Confirmation Add User To Group
+✔ Enter the name of the group to which users will be added. · storeLocatorAdmin
 ```
 
 ### Geo - Map
@@ -98,6 +119,7 @@ amplify add geo
 ✔ Provide a name for the Map: · storeLocatorMap
 ✔ Restrict access by? · Both
 ✔ Who can access this Map? · Authorized and Guest users
+Must pick at least 1 of 1 options. Selecting all options [storeLocatorAdmin]
 Available advanced settings:
 - Map style & Map data provider (default: Streets provided by Esri)
 
@@ -145,19 +167,21 @@ amplify push
 ```console
     Current Environment: main
     
-┌──────────┬──────────────────────┬───────────┬───────────────────┐
-│ Category │ Resource name        │ Operation │ Provider plugin   │
-├──────────┼──────────────────────┼───────────┼───────────────────┤
-│ Auth     │ userPoolGroups       │ Create    │ awscloudformation │
-├──────────┼──────────────────────┼───────────┼───────────────────┤
-│ Geo      │ storeLocatorGeofence │ Create    │ awscloudformation │
-├──────────┼──────────────────────┼───────────┼───────────────────┤
-│ Auth     │ storelocator5d63c487 │ Create    │ awscloudformation │
-├──────────┼──────────────────────┼───────────┼───────────────────┤
-│ Geo      │ storeLocatorMap      │ Create    │ awscloudformation │
-├──────────┼──────────────────────┼───────────┼───────────────────┤
-│ Geo      │ storeLocatorSearch   │ Create    │ awscloudformation │
-└──────────┴──────────────────────┴───────────┴───────────────────┘
+┌──────────┬──────────────────────────────────────────┬───────────┬───────────────────┐
+│ Category │ Resource name                            │ Operation │ Provider plugin   │
+├──────────┼──────────────────────────────────────────┼───────────┼───────────────────┤
+│ Auth     │ storelocatorcff4360f                     │ Create    │ awscloudformation │
+├──────────┼──────────────────────────────────────────┼───────────┼───────────────────┤
+│ Geo      │ storeLocatorMap                          │ Create    │ awscloudformation │
+├──────────┼──────────────────────────────────────────┼───────────┼───────────────────┤
+│ Auth     │ userPoolGroups                           │ Create    │ awscloudformation │
+├──────────┼──────────────────────────────────────────┼───────────┼───────────────────┤
+│ Function │ storelocatorcff4360fPostConfirmation     │ Create    │ awscloudformation │
+├──────────┼──────────────────────────────────────────┼───────────┼───────────────────┤
+│ Geo      │ storeLocatorGeofence                     │ Create    │ awscloudformation │
+├──────────┼──────────────────────────────────────────┼───────────┼───────────────────┤
+│ Geo      │ storeLocatorSearch                       │ Create    │ awscloudformation │
+└──────────┴──────────────────────────────────────────┴───────────┴───────────────────┘
 
 ✔ Are you sure you want to continue? (Y/n) · yes
 ```
@@ -185,7 +209,7 @@ Wait for the deployment to finish successfully.
 > Based on https://github.com/aws-amplify/amplify-cli/blob/gen2-migration/GEN2_MIGRATION_GUIDE.md
 
 > [!WARNING]
-> Migration is not fully supported for this app because the geo cateogry doesn't support refactoring yet.
+> Migration is not fully supported for this app because the geo category doesn't support refactoring yet.
 > This guide ends at the `generate` step.
 
 First install the experimental amplify CLI package that provides the migration commands.
@@ -218,6 +242,85 @@ git commit -m "feat: migrate to gen2"
 git push origin gen2-main
 ```
 
+### Fix PostConfirmation Lambda for Gen2 ESM Bundling
+
+**Edit in `./amplify/auth/storelocatordemocff4360fPostConfirmation/resource.ts`:**
+
+```diff
+- memoryMB: 128,
+- runtime: 22
++ memoryMB: 512,
++ runtime: 22,
++ resourceGroupName: 'auth'
+```
+
+**Edit in `./amplify/auth/storelocatordemocff4360fPostConfirmation/index.js`:**
+
+The Gen1 dynamic `require(`./${name}`)` doesn't work with esbuild bundling in the Amplify build pipeline (`Module not found in bundle: ./add-to-group`). Replace with a static import:
+
+```diff
+- const moduleNames = process.env.MODULES.split(',');
+- /**
+-  * The array of imported modules.
+-  */
+- const modules = moduleNames.map((name) => require(`./${name}`));
++ import * as addToGroup from './add-to-group';
++
++ const modules = [addToGroup];
+```
+
+```diff
+- exports.handler = async (event, context) => {
++ export async function handler(event, context) {
+```
+
+**Edit in `./amplify/auth/storelocatordemocff4360fPostConfirmation/add-to-group.js`:**
+
+```diff
+- const {
+-   CognitoIdentityProviderClient,
+-   AdminAddUserToGroupCommand,
+-   GetGroupCommand,
+-   CreateGroupCommand,
+- } = require('@aws-sdk/client-cognito-identity-provider');
++ import {
++   CognitoIdentityProviderClient,
++   AdminAddUserToGroupCommand,
++   GetGroupCommand,
++   CreateGroupCommand,
++ } from '@aws-sdk/client-cognito-identity-provider';
+```
+
+```diff
+- exports.handler = async (event) => {
++ export const handler = async (event) => {
+```
+
+**Edit in `./amplify/backend.ts`:**
+
+```diff
++ import * as iam from "aws-cdk-lib/aws-iam";
+```
+
+```diff
+  backend.storelocatordemocff4360fPostConfirmation.resources.cfnResources.cfnFunction.functionName = `storelocatordemocff4360fPostConfirmation-${branchName}`;
++
++ // Grant Cognito permissions to the PostConfirmation Lambda
++ // Mirrors the Gen1 AuthTriggerCustomLambdaStack - separate stack to avoid circular dependency
++ const authTriggerStack = backend.createStack("AuthTriggerCustomLambdaStack");
++ new iam.Policy(authTriggerStack, "AddToGroupCognito", {
++     roles: [backend.storelocatordemocff4360fPostConfirmation.resources.lambda.role!],
++     statements: [new iam.PolicyStatement({
++         actions: [
++             "cognito-idp:AdminAddUserToGroup",
++             "cognito-idp:GetGroup",
++             "cognito-idp:CreateGroup",
++         ],
++         resources: [backend.auth.resources.userPool.userPoolArn],
++     })],
++ });
+```
+
 Now connect the `gen2-main` branch to the hosting service:
 
 ![](./images/add-gen2-main-branch.png)
@@ -225,4 +328,4 @@ Now connect the `gen2-main` branch to the hosting service:
 
 Wait for the deployment to finish successfully.
 
-**The guide ends here because the geo cateogry doesn't support refactoring yet.**
+**The guide ends here because the geo category doesn't support refactoring yet.**
