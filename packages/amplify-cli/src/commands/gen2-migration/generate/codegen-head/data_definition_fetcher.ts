@@ -405,10 +405,16 @@ export class DataDefinitionFetcher {
    */
   private getGen1ApiResourceId = async (restApiId: string): Promise<string | undefined> => {
     const client = new APIGatewayClient({});
-    const response = await client.send(new GetResourcesCommand({ restApiId }));
+    let position: string | undefined;
 
-    const rootResource = response.items?.find((resource) => resource.path === '/');
-    return rootResource?.id;
+    do {
+      const response = await client.send(new GetResourcesCommand({ restApiId, position }));
+      const rootResource = response.items?.find((resource) => resource.path === '/');
+      if (rootResource) return rootResource.id;
+      position = response.position;
+    } while (position);
+
+    return undefined;
   };
 
   /**
