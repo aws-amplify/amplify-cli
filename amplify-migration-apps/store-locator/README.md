@@ -58,52 +58,41 @@ https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html
 
 ### Auth
 
-Cognito-based auth using email. Required for Geo permissions.
+Cognito-based auth using email. Create Cognito user pool groups for Geofences and add post confirmation lambda trigger to add users to the group.
 
 ```console
 amplify add auth
 ```
 
 ```console
- Do you want to use the default authentication and security configuration? Default configuration
- Warning: you will not be able to edit these selections.
- How do you want users to be able to sign in? Email
- Do you want to configure advanced settings? No, I am done.
-```
-
-Create Cognito user pool groups for Geofences and add post confirmation lambda trigger to add users to the group
-
-```console
-amplify update auth
-```
-
-```console
-Please note that certain attributes may not be overwritten if you choose to use defaults settings.
-Using service: Cognito, provided by: awscloudformation
-What do you want to do? Walkthrough all the auth configurations
- Select the authentication/authorization services that you want to use: User Sign-Up, Sign-In, connected with AWS IAM controls (Enables per-user Storage features for images or other content, Analytics, and more)
- Allow unauthenticated logins? (Provides scoped down permissions that you can control via AWS IAM) No
- Do you want to enable 3rd party authentication providers in your identity pool? No
- Do you want to add User Pool Groups? Yes
-? Select any user pool groups you want to delete: 
-? Do you want to add another User Pool Group Yes
+? Do you want to use the default authentication and security configuration? Manual configuration
+? Select the authentication/authorization services that you want to use: User Sign-Up, Sign-In, connected with AWS IAM controls (Enables per-user Storage features for i
+mages or other content, Analytics, and more)
+? Provide a friendly name for your resource that will be used to label this category in the project: (accept default value)
+? Enter a name for your identity pool. (accept default value)
+? Allow unauthenticated logins? (Provides scoped down permissions that you can control via AWS IAM) No
+? Do you want to enable 3rd party authentication providers in your identity pool? No
+? Provide a name for your user pool: (accept default value)
+? How do you want users to be able to sign in? Email
+? Do you want to add User Pool Groups? Yes
 ? Provide a name for your user pool group: storeLocatorAdmin
 ? Do you want to add another User Pool Group No
-✔ Sort the user pool groups in order of preference · storeLocatorAdmin
- Do you want to add an admin queries API? No
- Multifactor authentication (MFA) user login options: OFF
- Email based user registration/forgot password: Enabled (Requires per-user email entry at registration)
- Specify an email verification subject: Your verification code
- Specify an email verification message: Your verification code is {####}
- Do you want to override the default password policy for this User Pool? No
- Specify the app's refresh token expiration period (in days): 100
- Do you want to specify the user attributes this app can read and write? No
- Do you want to enable any of the following capabilities? Add User to Group
- Do you want to use an OAuth flow? No
+? Sort the user pool groups in order of preference · storeLocatorAdmin
+? Do you want to add an admin queries API? No
+? Multifactor authentication (MFA) user login options: OFF
+? Email based user registration/forgot password: Enabled (Requires per-user email entry at registration)
+? Specify an email verification subject: Your verification code
+? Specify an email verification message: Your verification code is {####}
+? Do you want to override the default password policy for this User Pool? No
+? What attributes are required for signing up? Email
+? Specify the app's refresh token expiration period (in days): 100
+? Do you want to specify the user attributes this app can read and write? No
+? Do you want to enable any of the following capabilities? Add User to Group
+? Do you want to use an OAuth flow? No
 ? Do you want to configure Lambda Triggers for Cognito? Yes
 ? Which triggers do you want to enable for Cognito Post Confirmation
 ? What functionality do you want to use for Post Confirmation Add User To Group
-✔ Enter the name of the group to which users will be added. · storeLocatorAdmin
+? Enter the name of the group to which users will be added. · storeLocatorAdmin
 ```
 
 ### Geo - Map
@@ -242,9 +231,7 @@ git commit -m "feat: migrate to gen2"
 git push origin gen2-main
 ```
 
-### Fix PostConfirmation Lambda for Gen2 ESM Bundling
-
-**Edit in `./amplify/auth/storelocatordemocff4360fPostConfirmation/resource.ts`:**
+**Edit in `./amplify/auth/storelocatorcff4360fPostConfirmation/resource.ts`:**
 
 ```diff
 - memoryMB: 128,
@@ -254,7 +241,7 @@ git push origin gen2-main
 + resourceGroupName: 'auth'
 ```
 
-**Edit in `./amplify/auth/storelocatordemocff4360fPostConfirmation/index.js`:**
+**Edit in `./amplify/auth/storelocatorcff4360fPostConfirmation/index.js`:**
 
 The Gen1 dynamic `require(`./${name}`)` doesn't work with esbuild bundling in the Amplify build pipeline (`Module not found in bundle: ./add-to-group`). Replace with a static import:
 
@@ -274,7 +261,7 @@ The Gen1 dynamic `require(`./${name}`)` doesn't work with esbuild bundling in th
 + export async function handler(event, context) {
 ```
 
-**Edit in `./amplify/auth/storelocatordemocff4360fPostConfirmation/add-to-group.js`:**
+**Edit in `./amplify/auth/storelocatorcff4360fPostConfirmation/add-to-group.js`:**
 
 ```diff
 - const {
@@ -300,13 +287,13 @@ The Gen1 dynamic `require(`./${name}`)` doesn't work with esbuild bundling in th
 
 ```diff
 -  triggers: {
--      postConfirmation: storelocatordemocff4360fPostConfirmation
+-      postConfirmation: storelocatorcff4360fPostConfirmation
 -  },
 + triggers: {
-+      postConfirmation: storelocatordemocff4360fPostConfirmation
++      postConfirmation: storelocatorcff4360fPostConfirmation
 +  },
 + access: (allow) => [
-+     allow.resource(storelocatordemocff4360fPostConfirmation).to([
++     allow.resource(storelocatorcff4360fPostConfirmation).to([
 +         "addUserToGroup",
 +         "manageGroups",
 +     ]),
