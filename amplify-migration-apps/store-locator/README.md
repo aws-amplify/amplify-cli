@@ -303,7 +303,6 @@ The Gen1 dynamic `require(`./${name}`)` doesn't work with esbuild bundling in th
 ```
 
 ```diff
-  backend.storelocatordemocff4360fPostConfirmation.resources.cfnResources.cfnFunction.functionName = `storelocatordemocff4360fPostConfirmation-${branchName}`;
 +
 + // Grant Cognito permissions to the PostConfirmation Lambda
 + // Mirrors the Gen1 AuthTriggerCustomLambdaStack - separate stack to avoid circular dependency
