@@ -5,15 +5,13 @@
 	AUTH_FINANCETRACKERB192A2D4_USERPOOLID
 	ENV
 	REGION
-Amplify Params - DO NOT EDIT */ const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
+Amplify Params - DO NOT EDIT */ const { DynamoDBClient, ListTablesCommand } = require('@aws-sdk/client-dynamodb');
 const { DynamoDBDocumentClient, ScanCommand } = require('@aws-sdk/lib-dynamodb');
 const { SNSClient, PublishCommand, SubscribeCommand } = require('@aws-sdk/client-sns');
-const { STSClient, GetCallerIdentityCommand } = require('@aws-sdk/client-sts');
 
 const dynamoClient = new DynamoDBClient({});
 const dynamodb = DynamoDBDocumentClient.from(dynamoClient);
 const sns = new SNSClient({});
-const sts = new STSClient({});
 
 /**
  * AppSync GraphQL resolver for calculating financial summary and sending notifications
@@ -87,11 +85,9 @@ async function calculateSummaryFromDB() {
     console.log('Table name has NONE, need to find actual table');
     // The GraphQL API ID should be in the request headers or we can query DynamoDB to list tables
     // For now, let's try to list all tables and find the Transaction table
-    const { DynamoDBClient, ListTablesCommand } = require('@aws-sdk/client-dynamodb');
-    const dynamoClientForList = new DynamoDBClient({});
 
     try {
-      const listResult = await dynamoClientForList.send(new ListTablesCommand({}));
+      const listResult = await dynamoClient.send(new ListTablesCommand({}));
       console.log('Available tables:', JSON.stringify(listResult.TableNames, null, 2));
 
       // Find the Transaction table
@@ -109,11 +105,6 @@ async function calculateSummaryFromDB() {
   }
 
   console.log('Final table name:', tableName);
-
-  if (!tableName) {
-    console.error('Transaction table name not configured');
-    throw new Error('Transaction table name not configured');
-  }
 
   try {
     // Scan all transactions from DynamoDB
@@ -359,12 +350,6 @@ Finance Tracker Team`,
       message: `Failed to send alert: ${error.message}`,
     };
   }
-}
-
-// Helper function to get AWS account ID from STS
-async function getAccountId() {
-  const identity = await sts.send(new GetCallerIdentityCommand({}));
-  return identity.Account;
 }
 
 // Helper function to subscribe an email to an existing SNS topic
