@@ -1,5 +1,7 @@
 # Finance Tracker (Amplify Gen1)
 
+![](./images/app.png)
+
 A personal finance tracking application built with Amplify Gen1, featuring authentication,
 GraphQL API, Lambda functions, S3 storage, DynamoDB, and CDK custom resources.
 
@@ -268,6 +270,10 @@ git push origin main
 
 Next, accept all default values and follow the getting started wizard to connect your repo and branch. Wait for the deployment to finish successfully.
 
+![](./images/hosting-get-started.png)
+![](./images/add-main-branch.png)
+![](./images/deploying-main-branch.png)
+
 ## Migrating to Gen2
 
 > Based on https://github.com/aws-amplify/amplify-cli/blob/gen2-migration/GEN2_MIGRATION_GUIDE.md
@@ -289,17 +295,157 @@ git checkout -b gen2-main
 npx amplify gen2-migration generate
 ```
 
+### Post-Generate Changes
+
+After running `gen2-migration generate`, the following manual changes are needed to get the Gen2 branch to deploy successfully.
+
+#### 1. Lambda Function: Add `package.json`
+
+Create `amplify/function/financetrackere30b1453/package.json` with AWS SDK v3 dependencies:
+
+```json
+{
+  "name": "financetrackere30b1453",
+  "version": "1.0.0",
+  "type": "module",
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.821.0",
+    "@aws-sdk/lib-dynamodb": "^3.821.0",
+    "@aws-sdk/client-sns": "^3.821.0",
+    "@aws-sdk/client-sts": "^3.821.0"
+  }
+}
+```
+
+#### 2. Lambda Handler: Convert to ESM
+
+In `amplify/function/financetrackere30b1453/handler.ts`, convert CommonJS to ESM syntax:
+
+- Change `require()` calls to `import` statements:
+
+```diff
+-const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
+-const { DynamoDBDocumentClient, ScanCommand } = require('@aws-sdk/lib-dynamodb');
+-const { SNSClient, PublishCommand, CreateTopicCommand, SubscribeCommand } = require('@aws-sdk/client-sns');
+-const { STSClient, GetCallerIdentityCommand } = require('@aws-sdk/client-sts');
++import { DynamoDBClient, ListTablesCommand } from '@aws-sdk/client-dynamodb';
++import { DynamoDBDocumentClient, ScanCommand } from '@aws-sdk/lib-dynamodb';
++import { SNSClient, PublishCommand, CreateTopicCommand, SubscribeCommand } from '@aws-sdk/client-sns';
++import { STSClient, GetCallerIdentityCommand } from '@aws-sdk/client-sts';
+```
+
+- Change `exports.handler` to `export const handler`:
+
+```diff
+-exports.handler = async (event) => {
++export const handler = async (event) => {
+```
+
+- Remove the inline `require` for `ListTablesCommand` in `calculateSummaryFromDB()` (it's now imported at the top level):
+
+```diff
+-    const { DynamoDBClient, ListTablesCommand } = require('@aws-sdk/client-dynamodb');
+```
+
+#### 3. Lambda `resource.ts`: Add ESM Bundling and `resourceGroupName`
+
+In `amplify/function/financetrackere30b1453/resource.ts`:
+
+- Add ESM bundling configuration with external AWS SDK
+- Add `resourceGroupName: "data"`
+
+```diff
+ export const financetrackere30b1453 = defineFunction({
+   ...
+-  runtime: 22
++  bundling: {
++    format: "esm",
++    minify: false,
++    esbuildArgs: { "--external:@aws-sdk/*": "" }
++  },
++  environment: { ... },
++  runtime: 22,
++  resourceGroupName: "data"
+ });
+```
+
+#### 4. Root `package.json`: Add AWS SDK Dependencies
+
+Add the AWS SDK v3 packages to the project root `package.json` dependencies:
+
+```json
+"@aws-sdk/client-dynamodb": "^3.821.0",
+"@aws-sdk/lib-dynamodb": "^3.821.0",
+"@aws-sdk/client-sns": "^3.821.0",
+"@aws-sdk/client-sts": "^3.821.0"
+```
+
+Then run `npm install` to update `package-lock.json`.
+
+#### 5. Data Resource: Switch Default Auth to `userPool`
+
+In `amplify/data/resource.ts`, change the default authorization mode from API key to user pool:
+
+```diff
+ authorizationModes: {
+-  defaultAuthorizationMode: "apiKey",
+-  apiKeyAuthorizationMode: { expiresInDays: 100 },
+-  userPoolAuthorizationMode: { }
++  defaultAuthorizationMode: "userPool",
++  apiKeyAuthorizationMode: { expiresInDays: 100 }
+ },
+```
+
+#### 6. Frontend `App.tsx`: Add `authMode: 'userPool'` to GraphQL Calls
+
+In `src/App.tsx`, add `authMode: 'userPool'` to all `client.graphql()` calls:
+
+```diff
+-const result: any = await client.graphql({ query: listTransactions });
++const result: any = await client.graphql({
++  query: listTransactions,
++  authMode: 'userPool'
++});
+```
+
+```diff
+ await client.graphql({
+   query: createTransaction,
+   variables: { input },
++  authMode: 'userPool'
+ });
+```
+
+```diff
+-const result: any = await client.graphql({ query: calculateFinancialSummaryQuery
++const result: any = await client.graphql({
++  query: calculateFinancialSummaryQuery,
++  authMode: 'userPool'
+ });
+```
+
+```diff
+ const result: any = await client.graphql({
+   query: sendMonthlyReportMutation,
+-  variables: { email: userEmail }
++  variables: { email: userEmail },
++  authMode: 'userPool'
+ });
+```
+
+---
+
+Commit and push the changes:
+
 ```console
 git add .
 git commit -m "feat: migrate to gen2"
 git push origin gen2-main
 ```
 
-Now connect the `gen2-main` branch to the hosting service and wait for the deployment to finish successfully. Next, locate the root stack of the Gen2 branch:
+Now connect the `gen2-main` branch to the hosting service and wait for the deployment to finish successfully.
 
-```console
-git checkout main
-npx amplify gen2-migration refactor --to <gen2-stack-name>
-```
+![](./images/add-gen2-main-branch.png)
+![](./images/deploying-gen2-main-branch.png)
 
-Redeploy the gen2 environment to regenerate the outputs file and wait for the deployment to finish successfully.
+> **Note:** The `gen2-migration refactor` command is not currently supported for this app.
