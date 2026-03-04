@@ -1,15 +1,14 @@
-# _test-common
+# \_test-common
 
 Shared test utilities for the Amplify migration test apps. These helpers handle Cognito user provisioning, test execution, and common type definitions used across all apps in `amplify-migration-apps/`.
 
 ## Files
 
-| File | Description |
-|------|-------------|
-| `test-apps-test-utils.ts` | Shared type definitions (`AmplifyConfig`, `TestUser`, `TestCredentials`, etc.) and barrel re-exports for backwards compatibility. |
-| `signup.ts` | `provisionTestUser` — creates a test user via `AdminCreateUser` and sets a permanent password. Supports email, phone, and username signin patterns. Works even when self-signup is disabled on the user pool. |
-| `runner.ts` | `TestRunner` class — runs async test functions, collects failures, and prints a summary. |
-| `test-credentials.json` | Static test credentials (email, phone, username, password) consumed by test scripts. |
+| File                      | Description                                                                                                                                                                                                                                             |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `test-apps-test-utils.ts` | Shared type definitions (`AmplifyConfig`, `TestUser`, `TestCredentials`, etc.) and barrel re-exports for backwards compatibility.                                                                                                                       |
+| `signup.ts`               | `provisionTestUser` — creates a test user via `AdminCreateUser` and sets a permanent password. Generates unique credentials dynamically. Supports email, phone, and username signin patterns. Works even when self-signup is disabled on the user pool. |
+| `runner.ts`               | `TestRunner` class — runs async test functions, collects failures, and prints a summary.                                                                                                                                                                |
 
 ## Usage
 

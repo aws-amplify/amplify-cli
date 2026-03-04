@@ -4,7 +4,8 @@ import {
   AdminSetUserPasswordCommand,
   type AttributeType,
 } from '@aws-sdk/client-cognito-identity-provider';
-import type { AmplifyConfig, SigninIdentifier, SignupAttribute, TestCredentials, TestUser } from './test-apps-test-utils';
+import { randomBytes } from 'crypto';
+import type { AmplifyConfig, SigninIdentifier, SignupAttribute, TestUser } from './test-apps-test-utils';
 
 interface ResolvedAuthConfig {
   signinIdentifier: SigninIdentifier;
@@ -46,24 +47,46 @@ function resolveSignupAttributes(signupAttributes: string[]): SignupAttribute[] 
   return mapped.length > 0 ? mapped : ['email'];
 }
 
+interface GeneratedCredentials {
+  email?: string;
+  phoneNumber?: string;
+  username?: string;
+  password: string;
+}
+
+/**
+ * Generates only the credentials required by the resolved auth config.
+ * The union of signupAttributes and signinIdentifier determines which
+ * identity fields are needed. Password is always generated.
+ */
+function generateCredentials(resolved: ResolvedAuthConfig): GeneratedCredentials {
+  const needed = new Set<SignupAttribute | SigninIdentifier>([...resolved.signupAttributes, resolved.signinIdentifier]);
+  return {
+    email: needed.has('email') ? generateTestEmail() : undefined,
+    phoneNumber: needed.has('phone') ? generateTestPhoneNumber() : undefined,
+    username: needed.has('username') ? generateTestUsername() : undefined,
+    password: generateTestPassword(),
+  };
+}
+
 function buildAdminCreateUserInput(
   userPoolId: string,
   resolved: ResolvedAuthConfig,
-  credentials: { email: string; phoneNumber: string; username: string; password: string },
+  credentials: GeneratedCredentials,
 ): { UserPoolId: string; Username: string; TemporaryPassword: string; UserAttributes: AttributeType[]; MessageAction: 'SUPPRESS' } {
   const { signinIdentifier, signupAttributes } = resolved;
 
-  const identifierValueMap: Record<SigninIdentifier, string> = {
+  const identifierValueMap: Record<SigninIdentifier, string | undefined> = {
     email: credentials.email,
     phone: credentials.phoneNumber,
     username: credentials.username,
   };
-  const username = identifierValueMap[signinIdentifier];
+  const username = identifierValueMap[signinIdentifier] ?? '';
 
-  const attributeMap: Record<SignupAttribute, AttributeType> = {
-    email: { Name: 'email', Value: credentials.email },
-    phone: { Name: 'phone_number', Value: credentials.phoneNumber },
-    username: { Name: 'username', Value: credentials.username },
+  const attributeMap: Record<SignupAttribute, AttributeType | undefined> = {
+    email: credentials.email ? { Name: 'email', Value: credentials.email } : undefined,
+    phone: credentials.phoneNumber ? { Name: 'phone_number', Value: credentials.phoneNumber } : undefined,
+    username: credentials.username ? { Name: 'username', Value: credentials.username } : undefined,
   };
 
   // When phone or username is used as the Username, Cognito already
@@ -76,13 +99,14 @@ function buildAdminCreateUserInput(
       if (signinIdentifier === 'username' && attr === 'username') return false;
       return true;
     })
-    .map((attr) => attributeMap[attr]);
+    .map((attr) => attributeMap[attr])
+    .filter((a): a is AttributeType => a !== undefined);
 
   // Mark email/phone as verified so the user can sign in immediately
-  if (signupAttributes.includes('email')) {
+  if (credentials.email) {
     userAttributes.push({ Name: 'email_verified', Value: 'true' });
   }
-  if (signupAttributes.includes('phone')) {
+  if (credentials.phoneNumber) {
     userAttributes.push({ Name: 'phone_number_verified', Value: 'true' });
   }
 
@@ -96,23 +120,48 @@ function buildAdminCreateUserInput(
 }
 
 /**
+ * Generates a unique random suffix for test credentials.
+ */
+function randomSuffix(): string {
+  return randomBytes(4).toString('hex');
+}
+
+function generateTestEmail(): string {
+  return `testuser-${randomSuffix()}@test.example.com`;
+}
+
+function generateTestPhoneNumber(): string {
+  // Generate a random 7-digit number for the local part
+  const local = Math.floor(1000000 + Math.random() * 9000000);
+  return `+1555${local}`;
+}
+
+function generateTestUsername(): string {
+  return `testuser-${randomSuffix()}`;
+}
+
+function generateTestPassword(): string {
+  // Meets Cognito default policy: uppercase, lowercase, digit, special, 8+ chars
+  return `Test${randomSuffix()}!Aa1`;
+}
+
+/**
  * Provisions a test user via AdminCreateUser and sets a permanent password.
  * Uses admin APIs so it works even when self-signup is disabled on the user pool.
+ * Generates unique credentials dynamically for each invocation.
  * Does NOT sign in — the caller should handle signIn in its own module scope
  * so the Amplify auth singleton has the tokens available for API/Storage calls.
  * Returns the username to use for signIn.
  */
-export async function provisionTestUser(
-  config: AmplifyConfig,
-  credentials: TestCredentials,
-): Promise<{ signinValue: string; testUser: TestUser }> {
+export async function provisionTestUser(config: AmplifyConfig): Promise<{ signinValue: string; testUser: TestUser }> {
   const { aws_user_pools_id: userPoolId, aws_cognito_region: region } = config;
 
   const resolved: ResolvedAuthConfig = {
     signinIdentifier: resolveSigninIdentifier(config.aws_cognito_username_attributes ?? []),
     signupAttributes: resolveSignupAttributes(config.aws_cognito_signup_attributes ?? []),
   };
-  const { signupAttributes } = resolved;
+
+  const credentials = generateCredentials(resolved);
 
   const createUserInput = buildAdminCreateUserInput(userPoolId ?? '', resolved, credentials);
   const signinValue = createUserInput.Username;
@@ -149,14 +198,9 @@ export async function provisionTestUser(
   const testUser: TestUser = {
     username: signinValue,
     password: credentials.password,
+    ...(credentials.email !== undefined && { email: credentials.email }),
+    ...(credentials.phoneNumber !== undefined && { phoneNumber: credentials.phoneNumber }),
   };
-
-  if (signupAttributes.includes('email')) {
-    testUser.email = credentials.email;
-  }
-  if (signupAttributes.includes('phone')) {
-    testUser.phoneNumber = credentials.phoneNumber;
-  }
 
   return { signinValue, testUser };
 }

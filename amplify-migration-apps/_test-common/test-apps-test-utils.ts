@@ -17,13 +17,6 @@ export interface TestUser {
   phoneNumber?: string;
 }
 
-export interface TestCredentials {
-  email: string;
-  phoneNumber: string;
-  username: string;
-  password: string;
-}
-
 // Re-export runner and signup for backwards compatibility
 export { TestRunner, type TestFailure } from './runner';
 export { provisionTestUser } from './signup';
