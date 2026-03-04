@@ -31,7 +31,7 @@ export class AmplifyGen2MigrationValidations {
 
   public async validateDrift(): Promise<void> {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const code = await new AmplifyDriftDetector(this.context, this.logger).detect({ format: 'tree' });
+    const code = await new AmplifyDriftDetector(this.context, this.logger).detect();
     if (code !== 0) {
       throw new AmplifyError('MigrationError', {
         message: 'Drift detected',

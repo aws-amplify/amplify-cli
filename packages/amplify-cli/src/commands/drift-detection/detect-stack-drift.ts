@@ -12,7 +12,6 @@ import {
   type DescribeStackDriftDetectionStatusCommandOutput,
 } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
-import chalk from 'chalk';
 import type { Print } from '../drift';
 
 /**
@@ -43,6 +42,16 @@ export interface CloudFormationDriftResults {
    * List of nested stacks that were skipped due to errors
    */
   skippedNestedStacks?: string[];
+
+  /**
+   * Root stack drift detection ID for console tracking
+   */
+  driftDetectionId: string;
+
+  /**
+   * Per-stack drift detection IDs (keyed by logical resource ID)
+   */
+  stackDriftDetectionIds: Map<string, string>;
 }
 
 /**
@@ -70,7 +79,7 @@ export async function detectStackDrift(
   cfn: CloudFormationClient,
   stackName: string,
   print: Print,
-): Promise<DescribeStackResourceDriftsCommandOutput> {
+): Promise<{ drifts: DescribeStackResourceDriftsCommandOutput; driftDetectionId: string }> {
   // Start drift detection
   print.debug(`detectStackDrift: ${stackName}`);
   const driftDetection = await cfn.send(
@@ -118,7 +127,7 @@ export async function detectStackDrift(
       return drift;
     });
   }
-  return driftResults;
+  return { drifts: driftResults, driftDetectionId: driftDetection.StackDriftDetectionId! };
 }
 
 /**
@@ -243,7 +252,7 @@ export async function detectStackDriftRecursive(
   print.debug(`detectStackDriftRecursive: ${stackName} (level ${level})`);
 
   // Detect drift on the current stack
-  const currentStackDrifts = await detectStackDrift(cfn, stackName, print);
+  const { drifts: currentStackDrifts, driftDetectionId: currentDriftDetectionId } = await detectStackDrift(cfn, stackName, print);
 
   // Get all resources in the current stack to find nested stacks
   const stackResources = await cfn.send(
@@ -256,13 +265,14 @@ export async function detectStackDriftRecursive(
   const nestedStacks = stackResources.StackResources?.filter((resource) => resource.ResourceType === 'AWS::CloudFormation::Stack') || [];
 
   if (nestedStacks.length > 0) {
-    print.info(`Found ${chalk.yellow(nestedStacks.length)} nested stack(s)`);
+    print.debug(`Found ${nestedStacks.length} nested stack(s)`);
   }
 
   // Initialize results
   const nestedStackDrifts = new Map<string, DescribeStackResourceDriftsCommandOutput>();
   const nestedStackPhysicalIds = new Map<string, string>();
   const skippedNestedStacks: string[] = [];
+  const stackDriftDetectionIds = new Map<string, string>();
 
   // Process each nested stack recursively
   for (const nestedStack of nestedStacks) {
@@ -277,7 +287,7 @@ export async function detectStackDriftRecursive(
     }
 
     try {
-      print.info(`Checking drift for nested stack: ${chalk.yellow(nestedStack.LogicalResourceId)}`);
+      print.debug(`Checking drift for nested stack: ${nestedStack.LogicalResourceId}`);
 
       // Extract stack name from PhysicalResourceId
       // Handle both ARN format and direct stack names
@@ -319,6 +329,9 @@ export async function detectStackDriftRecursive(
       // Store the direct drift results for this nested stack
       nestedStackDrifts.set(nestedStack.LogicalResourceId, nestedResults.rootStackDrifts);
 
+      // Store the drift detection ID for this nested stack
+      stackDriftDetectionIds.set(nestedStack.LogicalResourceId, nestedResults.driftDetectionId);
+
       // Merge the nested stack's nested results into our results
       nestedResults.nestedStackDrifts.forEach((value, key) => {
         // Prefix the key with the parent stack's logical ID for clarity
@@ -330,6 +343,12 @@ export async function detectStackDriftRecursive(
       nestedResults.nestedStackPhysicalIds.forEach((value, key) => {
         const fullKey = `${nestedStack.LogicalResourceId}/${key}`;
         nestedStackPhysicalIds.set(fullKey, value);
+      });
+
+      // Merge nested stack's drift detection IDs
+      nestedResults.stackDriftDetectionIds.forEach((value, key) => {
+        const fullKey = `${nestedStack.LogicalResourceId}/${key}`;
+        stackDriftDetectionIds.set(fullKey, value);
       });
 
       print.debug(
@@ -359,5 +378,7 @@ export async function detectStackDriftRecursive(
     nestedStackDrifts,
     nestedStackPhysicalIds,
     skippedNestedStacks: skippedNestedStacks.length > 0 ? skippedNestedStacks : undefined,
+    driftDetectionId: currentDriftDetectionId,
+    stackDriftDetectionIds,
   };
 }

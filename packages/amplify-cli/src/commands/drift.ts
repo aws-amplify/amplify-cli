@@ -7,7 +7,7 @@ import { $TSContext, AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { CloudFormationClient } from '@aws-sdk/client-cloudformation';
 import chalk from 'chalk';
-import { detectStackDriftRecursive, type CloudFormationDriftResults, type DriftDisplayFormat } from './drift-detection';
+import { detectStackDriftRecursive, type CloudFormationDriftResults } from './drift-detection';
 import { detectLocalDrift, type LocalDriftResults } from './drift-detection/detect-local-drift';
 import { detectTemplateDrift, type TemplateDriftResults } from './drift-detection/detect-template-drift';
 import {
@@ -39,20 +39,14 @@ export interface Print {
  */
 interface DriftOptions {
   debug?: boolean;
-  format?: 'tree' | 'summary';
 }
 
 /**
  * Executes the drift detection command
  */
 export const run = async (context: $TSContext): Promise<void> => {
-  const options: DriftOptions = {
-    debug: context.parameters?.options?.debug || false,
-    format: context.parameters?.options?.format || 'summary',
-  };
-
   const detector = new AmplifyDriftDetector(context);
-  const exitCode = await detector.detect(options);
+  const exitCode = await detector.detect();
 
   if (exitCode !== 0) {
     process.exitCode = exitCode;
@@ -73,7 +67,6 @@ export class AmplifyDriftDetector {
     // Store options from context for later use
     this.options = {
       debug: context.parameters?.options?.debug || false,
-      format: context.parameters?.options?.format || 'summary',
     };
 
     if (!print) {
@@ -100,7 +93,7 @@ export class AmplifyDriftDetector {
    * Detect drift for the current Amplify project
    * Orchestrates the drift detection process using services
    */
-  public async detect(options: DriftOptions = {}): Promise<number> {
+  public async detect(): Promise<number> {
     // Validate Amplify project exists and is initialized
     this.configService.validateAmplifyProject();
     this.printer.debug('Amplify project validated');
@@ -130,12 +123,11 @@ export class AmplifyDriftDetector {
     // Start drift detection
     // Sync cloud backend from S3 before running any phases
     this.printer.debug('Syncing cloud backend from S3...');
-    this.printer.info('Fetching current backend state from S3...');
     const syncSuccess = await this.cfnService.syncCloudBackendFromS3(this.context);
 
     // Phase 1: Detect CloudFormation drift recursively (doesn't depend on S3 sync)
     this.printer.debug('Starting Phase 1: CloudFormation drift detection');
-    this.printer.info(`Checking drift for root stack: ${chalk.yellow(stackName)}`);
+    this.printer.debug(`Checking drift for root stack: ${stackName}`);
     const phase1Results = await detectStackDriftRecursive(cfn, stackName, this.printer);
     this.printer.debug(`Phase 1 complete: ${phase1Results.totalDrifted} drifted resources detected`);
 
@@ -159,12 +151,12 @@ export class AmplifyDriftDetector {
       this.printer.debug('S3 sync completed successfully');
 
       this.printer.debug('Starting Phase 2: Template drift detection');
-      this.printer.info('Checking for template drift using changesets...');
+      this.printer.debug('Checking for template drift using changesets...');
       phase2Results = await detectTemplateDrift(stackName, this.printer, cfn);
       this.printer.debug(`Phase 2 complete: totalDrifted=${phase2Results.totalDrifted}`);
 
       this.printer.debug('Starting Phase 3: Local drift detection');
-      this.printer.info('Checking local files vs cloud backend...');
+      this.printer.debug('Checking local files vs cloud backend...');
       phase3Results = await detectLocalDrift(this.context);
       this.printer.debug(`Phase 3 complete: totalDrifted=${phase3Results.totalDrifted}`);
     }
@@ -175,9 +167,9 @@ export class AmplifyDriftDetector {
     this.printer.debug('Processing and formatting results');
     const processedData = await this.processData(cfn, stackName, projectName, phase1Results, phase2Results, phase3Results);
 
-    this.displayResults(options, processedData);
+    this.displayResults(processedData);
 
-    // 11. Check for errors during detection - including Phase 1 nested stack skips
+    // Check for errors during detection - including Phase 1 nested stack skips
     const hasPhase1Errors = Boolean(phase1Results.skippedNestedStacks && phase1Results.skippedNestedStacks.length > 0);
     const hasAnyErrors = hasPhase1Errors || phase2Results.skipped || phase3Results.skipped;
 
@@ -228,19 +220,12 @@ export class AmplifyDriftDetector {
   }
 
   /**
-   * Display results based on format option
+   * Display drift detection results
    */
-  private displayResults(options: DriftOptions, data: ProcessedDriftData): void {
-    const format = options.format === 'summary' || options.format === 'tree' ? options.format : 'summary';
-    if (format !== options.format) printer.warn(`Unknown format: ${options.format}. Using summary format.`);
-
-    const output = formatDriftResults(data, format);
-    printer.info(output.summaryDashboard);
-    if (output.treeView) printer.info(output.treeView);
-    if (output.detailedChanges) printer.info(output.detailedChanges);
-    if (output.categoryBreakdown) printer.info(output.categoryBreakdown);
-    if (output.phase2Output) printer.info(output.phase2Output);
-    if (output.phase3Output) printer.info(output.phase3Output);
+  private displayResults(data: ProcessedDriftData): void {
+    const output = formatDriftResults(data);
+    this.printer.info(output.summaryDashboard);
+    if (output.categoryView !== undefined) this.printer.info(output.categoryView);
   }
 
   /**
@@ -310,6 +295,9 @@ export class AmplifyDriftDetector {
       summary: { totalStacks: 1 + nestedStacks.length, totalDrifted: phase1Results.totalDrifted, totalInSync, totalUnchecked, totalFailed },
       phase2Results,
       phase3Results,
+      driftDetectionId: phase1Results.driftDetectionId,
+      stackDriftDetectionIds: phase1Results.stackDriftDetectionIds,
+      changeSetId: phase2Results.changeSetId,
     };
   }
 }

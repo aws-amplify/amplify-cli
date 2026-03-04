@@ -17,6 +17,7 @@ export interface TemplateDriftResults {
   changes: ChangeSetChange[];
   skipped: boolean;
   skipReason?: string;
+  changeSetId?: string;
 }
 
 interface ChangeSetChange {
@@ -194,6 +195,10 @@ export async function detectTemplateDrift(stackName: string, print: Print, cfn: 
       }
 
       const result = await analyzeChangeSet(cfn, changeSet, print);
+      // Capture the changeset ARN for console tracking
+      if (changeSet.ChangeSetId) {
+        result.changeSetId = changeSet.ChangeSetId;
+      }
       return result;
     } finally {
       try {
