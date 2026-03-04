@@ -1175,34 +1175,9 @@ function App({ signOut, user }: AppProps) {
                         </Text>
                       </View>
                       {product.price && (
-                        <View textAlign="right">
-                          {(product as any).discountedPrice && (
-                            <>
-                              <Text fontSize="xs" color="#64748b" style={{ textDecoration: 'line-through' }}>
-                                ${product.price.toFixed(2)}
-                              </Text>
-                              <Text fontSize="2xl" fontWeight="800" color="#10b981">
-                                ${(product as any).discountedPrice.toFixed(2)}
-                              </Text>
-                              <Badge
-                                style={{
-                                  backgroundColor: '#fef3c7',
-                                  color: '#92400e',
-                                  fontWeight: '600',
-                                  fontSize: '10px',
-                                  padding: '0.15rem 0.5rem',
-                                }}
-                              >
-                                Save ${(product as any).savings.toFixed(2)}
-                              </Badge>
-                            </>
-                          )}
-                          {!(product as any).discountedPrice && (
-                            <Text fontSize="2xl" fontWeight="800" color="#10b981">
-                              ${product.price}
-                            </Text>
-                          )}
-                        </View>
+                        <Text fontSize="2xl" fontWeight="800" color="#10b981">
+                          ${product.price}
+                        </Text>
                       )}
                     </Flex>
 
@@ -1233,17 +1208,40 @@ function App({ signOut, user }: AppProps) {
                           {product.brand}
                         </Badge>
                       )}
-                      {product.stock !== undefined && product.stock !== null && (
+                      {(product as any).stockStatus && (
                         <Badge
                           style={{
-                            backgroundColor: (product.stock || 0) > 0 ? '#dcfce7' : '#fef3c7',
-                            color: (product.stock || 0) > 0 ? '#166534' : '#92400e',
+                            backgroundColor:
+                              (product as any).stockStatus === 'OUT_OF_STOCK'
+                                ? '#fef2f2'
+                                : (product as any).stockStatus === 'LOW_STOCK'
+                                ? '#fef3c7'
+                                : '#dcfce7',
+                            color:
+                              (product as any).stockStatus === 'OUT_OF_STOCK'
+                                ? '#dc2626'
+                                : (product as any).stockStatus === 'LOW_STOCK'
+                                ? '#92400e'
+                                : '#166534',
                             fontWeight: '600',
                             borderRadius: '6px',
                             padding: '0.25rem 0.75rem',
                           }}
                         >
-                          {(product.stock || 0) > 0 ? `${product.stock} in stock` : 'Out of stock'}
+                          {(product as any).stockStatus.replace('_', ' ')}
+                        </Badge>
+                      )}
+                      {(product as any).totalValue && (
+                        <Badge
+                          style={{
+                            backgroundColor: '#f0f9ff',
+                            color: '#0369a1',
+                            fontWeight: '600',
+                            borderRadius: '6px',
+                            padding: '0.25rem 0.75rem',
+                          }}
+                        >
+                          Total: ${(product as any).totalValue}
                         </Badge>
                       )}
                     </Flex>

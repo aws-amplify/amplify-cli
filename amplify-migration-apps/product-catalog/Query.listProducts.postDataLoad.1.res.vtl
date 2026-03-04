@@ -1,0 +1,14 @@
+#set($items = $ctx.prev.result.items)
+#foreach($item in $items)
+  #set($stock = 0)
+  #if($item.stock)
+    #set($stock = $item.stock)
+  #end
+  #set($price = 0)
+  #if($item.price)
+    #set($price = $item.price)
+  #end
+  #set($total = $price * $stock)
+  $util.qr($item.put("totalValue", $total))
+#end
+$util.toJson($ctx.prev.result)

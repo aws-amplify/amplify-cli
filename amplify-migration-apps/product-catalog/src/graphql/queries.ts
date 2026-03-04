@@ -57,6 +57,7 @@ export const listProducts = /* GraphQL */ `query ListProducts(
       savings
       createdAt
       updatedAt
+      totalValue
       __typename
     }
     nextToken

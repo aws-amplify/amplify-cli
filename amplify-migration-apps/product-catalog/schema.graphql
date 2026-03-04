@@ -27,11 +27,10 @@ type Product @model @auth(rules: [{ allow: private, provider: iam }]) {
   images: [String]
   createdBy: String
   updatedBy: String
-  discountedPrice: Float
-  savings: Float
   createdAt: AWSDateTime!
   updatedAt: AWSDateTime!
   comments: [Comment] @hasMany(indexName: "byProduct", fields: ["id"])
+  totalValue: Float
 }
 
 type Comment @model @auth(rules: [{ allow: private, provider: iam }, { allow: owner, ownerField: "authorId" }]) {

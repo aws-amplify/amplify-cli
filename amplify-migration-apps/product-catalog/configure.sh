@@ -11,3 +11,4 @@ cp -f onimageuploaded.js ./amplify/backend/function/${s3_trigger_function_name}/
 cp -f onimageuploaded.package.json ./amplify/backend/function/${s3_trigger_function_name}/src/package.json
 cp -f custom-roles.json ./amplify/backend/api/productcatalog/custom-roles.json
 cp -f Query.listProducts.res.vtl ./amplify/backend/api/productcatalog/resolvers/Query.listProducts.res.vtl
+cp -f Query.listProducts.postDataLoad.1.res.vtl ./amplify/backend/api/productcatalog/resolvers/Query.listProducts.postDataLoad.1.res.vtl
