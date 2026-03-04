@@ -16,6 +16,7 @@ const ENV_VAR_PATTERNS = {
   'STORAGE_.*_STREAMARN': '{table}.tableStreamArn!',
   'STORAGE_.*_BUCKETNAME': 'storage.resources.bucket.bucketName',
   'FUNCTION_.*_NAME': '{function}.resources.lambda.functionName',
+  'ANALYTICS_.*_KINESISSTREAMARN': 'analytics.kinesisStreamArn',
 };
 
 /**
@@ -76,6 +77,11 @@ export function generateLambdaEnvVars(functionName: string, envVars: Record<stri
             path = path.replace('{function}', functionMatch[1].toLowerCase());
             // Functions use backend reference, not direct reference
           }
+        }
+
+        // Analytics variables use direct CDK construct references (not backend. prefixed)
+        if (envVar.startsWith('ANALYTICS_')) {
+          isDirect = true;
         }
 
         let expression: ts.Expression;
