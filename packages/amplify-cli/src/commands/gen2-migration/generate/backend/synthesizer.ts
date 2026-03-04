@@ -21,7 +21,7 @@ import { RestApiDefinition } from '../codegen-head/data_definition_fetcher';
 import { generateLambdaEnvVars } from '../generators/functions/lambda_env_generator';
 import { DynamoTriggerInfo } from '../adapters/functions/api-trigger-detector';
 import { DataModelTableAccess } from '../codegen-head/data_model_access_parser';
-import { FunctionKinesisAccess } from '../adapters/analytics/analytics_access';
+import { FunctionKinesisAccess } from '../codegen-head/kinesis_cfn_access_parser';
 
 const factory = ts.factory;
 export interface BackendRenderParameters {

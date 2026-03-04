@@ -60,7 +60,7 @@ import {
 import { DataDefinition, DataTableMapping, generateDataSource } from '../generators/data/index';
 import { DataModelTableAccess } from '../codegen-head/data_model_access_parser';
 import { ApiTriggerDetector } from '../adapters/functions/api-trigger-detector';
-import { extractFunctionKinesisAccess } from '../adapters/analytics/analytics_access';
+import { extractFunctionKinesisAccess } from '../codegen-head/kinesis_cfn_access_parser';
 
 import { FunctionDefinition, renderFunctions } from '../generators/functions/index';
 import assert from 'assert';
