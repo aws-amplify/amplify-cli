@@ -25,7 +25,7 @@ import {
 } from './src/graphql/mutations';
 
 import { UserRole } from './src/API';
-import { TestRunner } from '../shared-test-utils/test-apps-test-utils';
+import { TestRunner } from '../_test-common/test-apps-test-utils';
 import amplifyconfig from './src/amplifyconfiguration.json';
 
 // Configure Amplify in this module to ensure api/storage singletons see the config
@@ -221,7 +221,6 @@ export function createTestFunctions() {
     console.log('✅ Deleted product:', deleted.engword);
   }
 
-
   // ============================================================
   // PART 3: User Mutation Tests
   // ============================================================
@@ -347,7 +346,6 @@ export function createTestFunctions() {
     console.log('✅ Deleted comment:', deleted.content?.substring(0, 30) + '...');
   }
 
-
   // ============================================================
   // PART 5: S3 Storage Operations Tests
   // ============================================================
@@ -457,7 +455,6 @@ export function createTestFunctions() {
     console.log('✅ Full product with image creation complete!');
     return { productId: product.id, imageKey };
   }
-
 
   // ============================================================
   // PART 6: Role-Based Access Control Tests
@@ -585,7 +582,6 @@ export function createTestFunctions() {
   };
 }
 
-
 // ============================================================
 // Shared Test Orchestration Functions
 // ============================================================
@@ -663,7 +659,10 @@ export function createTestOrchestrator(testFunctions: ReturnType<typeof createTe
     }
 
     // Test full product creation with image
-    const { productId, imageKey: newImageKey } = (await runner.runTest('createProductWithImage', testFunctions.testCreateProductWithImage)) || {
+    const { productId, imageKey: newImageKey } = (await runner.runTest(
+      'createProductWithImage',
+      testFunctions.testCreateProductWithImage,
+    )) || {
       productId: null,
       imageKey: null,
     };

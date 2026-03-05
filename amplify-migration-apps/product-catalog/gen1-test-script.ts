@@ -22,8 +22,8 @@ if (typeof globalThis.crypto === 'undefined') {
 import { Amplify } from 'aws-amplify';
 import { signIn, signOut, getCurrentUser } from 'aws-amplify/auth';
 import amplifyconfig from './src/amplifyconfiguration.json';
-import { TestRunner, provisionTestUser } from '../shared-test-utils/test-apps-test-utils';
-import testCredentials from '../shared-test-utils/test-credentials.json';
+import { TestRunner } from '../_test-common/test-apps-test-utils';
+import { provisionTestUser } from '../_test-common/signup';
 import { createTestFunctions, createTestOrchestrator } from './test-utils';
 
 // Configure Amplify
@@ -45,7 +45,7 @@ async function runAllTests(): Promise<void> {
   console.log('  7. Business Logic (Filtering, Sorting, Reports)');
 
   // Provision user via SDK, then sign in here so tokens stay in this module's Amplify scope
-  const { signinValue, testUser } = await provisionTestUser(amplifyconfig, testCredentials);
+  const { signinValue, testUser } = await provisionTestUser(amplifyconfig);
 
   // Sign in from this module so the auth tokens are available to api/storage
   try {
