@@ -8,7 +8,6 @@ import type { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { AmplifyError, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import type { CloudFormationTemplate } from './drift-formatter';
 import type { Print } from '../../drift';
 
 // Import the CloudFormation class from the provider
@@ -63,7 +62,7 @@ export class CloudFormationService {
   /**
    * Get stack template from CloudFormation
    */
-  public async getStackTemplate(client: CloudFormationClient, stackName: string): Promise<CloudFormationTemplate> {
+  public async getStackTemplate(client: CloudFormationClient, stackName: string): Promise<Record<string, unknown>> {
     const response = await client.send(
       new GetTemplateCommand({
         StackName: stackName,

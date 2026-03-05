@@ -5,71 +5,12 @@
  */
 
 import type { StackResourceDrift, PropertyDifference } from '@aws-sdk/client-cloudformation';
-import { StackResourceDriftStatus } from '@aws-sdk/client-cloudformation';
+import { StackResourceDriftStatus, ChangeAction } from '@aws-sdk/client-cloudformation';
 import chalk from 'chalk';
 import type { LocalDriftResults } from '../detect-local-drift';
-import type { TemplateDriftResults } from '../detect-template-drift';
+import type { TemplateDriftResults, ResourceChangeWithNested } from '../detect-template-drift';
+import { type StackDriftNode, type CloudFormationDriftResults, type DriftSummary, isDrifted } from '../detect-stack-drift';
 import { extractCategory } from '../../gen2-migration/categories';
-
-// Types for Phase 2 changeset formatting (subset of fields used by the formatter)
-interface ChangeSetChange {
-  logicalResourceId: string;
-  resourceType: string;
-  action: string;
-  nestedChanges?: ChangeSetChange[];
-}
-
-// CloudFormation template - only Resources field is used
-export type CloudFormationTemplate = { Resources?: Record<string, unknown> };
-
-/**
- * Resource count structure
- */
-export interface ResourceCounts {
-  drifted: number;
-  inSync: number;
-  unchecked: number;
-  failed: number;
-}
-
-/**
- * Per-stack drift data with pre-computed counts
- */
-export interface StackDriftData {
-  logicalId: string;
-  physicalName: string;
-  category: string;
-  drifts: StackResourceDrift[];
-  template: CloudFormationTemplate;
-  counts: ResourceCounts;
-}
-
-/**
- * Summary counts across all stacks
- */
-export interface DriftSummary {
-  totalStacks: number;
-  totalDrifted: number;
-  totalInSync: number;
-  totalUnchecked: number;
-  totalFailed: number;
-}
-
-/**
- * Complete processed drift data for formatting
- */
-export interface ProcessedDriftData {
-  projectName: string;
-  rootStackName: string;
-  root: StackDriftData;
-  nestedStacks: StackDriftData[];
-  summary: DriftSummary;
-  phase2Results: TemplateDriftResults | null;
-  phase3Results: LocalDriftResults | null;
-  driftDetectionId?: string;
-  stackDriftDetectionIds?: Map<string, string>;
-  changeSetId?: string;
-}
 
 // Display constants
 const DISPLAY_CONSTANTS = {
@@ -77,36 +18,8 @@ const DISPLAY_CONSTANTS = {
   TITLE_PADDING: 19,
 } as const;
 
-/** Check if a resource drift indicates actual drift (MODIFIED or DELETED) */
-const isDrifted = (d: StackResourceDrift): boolean =>
-  d.StackResourceDriftStatus === StackResourceDriftStatus.MODIFIED || d.StackResourceDriftStatus === StackResourceDriftStatus.DELETED;
-
-/** Count resources with MODIFIED or DELETED status */
-export function countDrifted(drifts: StackResourceDrift[]): number {
-  return drifts.filter(isDrifted).length;
-}
-
-export function countInSync(drifts: StackResourceDrift[]): number {
-  return drifts.filter((d) => d.StackResourceDriftStatus === StackResourceDriftStatus.IN_SYNC).length;
-}
-
-export function countUnchecked(drifts: StackResourceDrift[], template: CloudFormationTemplate): number {
-  const checkedResourceIds = new Set(drifts.map((d) => d.LogicalResourceId));
-  const allResourceIds = Object.keys(template.Resources || {});
-  const notInResults = allResourceIds.filter((id) => !checkedResourceIds.has(id)).length;
-  const notChecked = drifts.filter((d) => d.StackResourceDriftStatus === StackResourceDriftStatus.NOT_CHECKED).length;
-  return notInResults + notChecked;
-}
-
-export function countFailed(drifts: StackResourceDrift[]): number {
-  return drifts.filter((d) => d.StackResourceDriftStatus === StackResourceDriftStatus.UNKNOWN).length;
-}
-
 /** Create the summary dashboard box with drift statistics */
-export function createSummaryDashboard(data: ProcessedDriftData): string {
-  const projectName = data.projectName;
-  const summary = data.summary;
-
+export function createSummaryDashboard(summary: DriftSummary, projectName: string): string {
   const border = '─'.repeat(DISPLAY_CONSTANTS.BORDER_WIDTH);
   let dashboard = '';
 
@@ -172,8 +85,9 @@ interface CategoryDrift {
   cfDriftStacks: Array<{
     logicalId: string;
     driftedResources: StackResourceDrift[];
+    driftDetectionId: string;
   }>;
-  templateChanges: ChangeSetChange[];
+  templateChanges: ResourceChangeWithNested[];
   hasLocalDrift: boolean;
 }
 
@@ -190,25 +104,38 @@ function colorResourceLine(symbol: string, line: string): string {
 /**
  * Get action symbol for changeset resource changes (Add/Remove/Modify)
  */
-function getActionSymbol(action: string): string {
-  if (action === 'Add') return '+';
-  if (action === 'Remove') return '-';
+function getActionSymbol(action: ChangeAction | undefined): string {
+  if (action === ChangeAction.Add) return '+';
+  if (action === ChangeAction.Remove) return '-';
   return '~';
 }
 
 /**
  * Get the drift status symbol for CF drift resources
  */
-function getCFDriftSymbol(status: string | undefined): string {
-  if (status === 'MODIFIED') return '~';
-  if (status === 'DELETED') return '-';
+function getCFDriftSymbol(status: StackResourceDriftStatus | undefined): string {
+  if (status === StackResourceDriftStatus.MODIFIED) return '~';
+  if (status === StackResourceDriftStatus.DELETED) return '-';
   return '?';
+}
+
+/**
+ * Flatten a StackDriftNode tree into a flat list (root + all descendants)
+ */
+function flattenTree(node: StackDriftNode, result: StackDriftNode[] = []): StackDriftNode[] {
+  result.push(node);
+  for (const child of node.children) flattenTree(child, result);
+  return result;
 }
 
 /**
  * Collect all categories that have drift across all 3 phases
  */
-function collectDriftCategories(data: ProcessedDriftData): Map<string, CategoryDrift> {
+function collectDriftCategories(
+  phase1: CloudFormationDriftResults,
+  phase2: TemplateDriftResults,
+  phase3: LocalDriftResults,
+): Map<string, CategoryDrift> {
   const categories = new Map<string, CategoryDrift>();
 
   const ensureCategory = (name: string): CategoryDrift => {
@@ -218,43 +145,35 @@ function collectDriftCategories(data: ProcessedDriftData): Map<string, CategoryD
     return categories.get(name)!;
   };
 
-  // Phase 1: CF Drift - group nested stacks by category
-  for (const stack of data.nestedStacks) {
-    const categoryName = extractCategory(stack.category || stack.logicalId);
-    const driftedResources = stack.drifts.filter(isDrifted);
+  // Phase 1: CF Drift — flatten tree and iterate uniformly
+  const allNodes = flattenTree(phase1.root);
+  for (const node of allNodes) {
+    const driftedResources = node.drifts.filter(isDrifted);
     if (driftedResources.length > 0) {
+      const categoryName = node.category;
       const cat = ensureCategory(categoryName);
       cat.cfDriftStacks.push({
-        logicalId: stack.logicalId,
+        logicalId: node.logicalId,
         driftedResources,
+        driftDetectionId: node.driftDetectionId,
       });
     }
   }
 
-  // Also check root stack CF drift
-  const rootDrifted = data.root.drifts.filter(isDrifted);
-  if (rootDrifted.length > 0) {
-    const cat = ensureCategory('Core Infrastructure');
-    cat.cfDriftStacks.push({
-      logicalId: 'ROOT',
-      driftedResources: rootDrifted,
-    });
-  }
-
   // Phase 2: Template Drift - map changeset changes to categories
-  if (data.phase2Results && !data.phase2Results.skipped && data.phase2Results.changes.length > 0) {
-    for (const change of data.phase2Results.changes) {
-      // For nested stack changes, extract category from logicalResourceId
-      if (change.resourceType === 'AWS::CloudFormation::Stack' && change.nestedChanges && change.nestedChanges.length > 0) {
-        const categoryName = extractCategory(change.logicalResourceId);
+  if (!phase2.skipped && phase2.changes.length > 0) {
+    for (const change of phase2.changes) {
+      // For nested stack changes, extract category from LogicalResourceId
+      if (change.ResourceType === 'AWS::CloudFormation::Stack' && change.nestedChanges && change.nestedChanges.length > 0) {
+        const categoryName = extractCategory(change.LogicalResourceId);
         const cat = ensureCategory(categoryName);
         // Add the nested changes under this category
         for (const nestedChange of change.nestedChanges) {
           cat.templateChanges.push(nestedChange);
         }
       } else {
-        // Direct resource change - try to map via logicalResourceId
-        const categoryName = extractCategory(change.logicalResourceId);
+        // Direct resource change - try to map via LogicalResourceId
+        const categoryName = extractCategory(change.LogicalResourceId);
         const cat = ensureCategory(categoryName);
         cat.templateChanges.push(change);
       }
@@ -262,11 +181,11 @@ function collectDriftCategories(data: ProcessedDriftData): Map<string, CategoryD
   }
 
   // Phase 3: Local Drift - map by category
-  if (data.phase3Results && !data.phase3Results.skipped && data.phase3Results.totalDrifted > 0) {
+  if (!phase3.skipped && phase3.totalDrifted > 0) {
     const allResources = [
-      ...(data.phase3Results.resourcesToBeCreated || []),
-      ...(data.phase3Results.resourcesToBeUpdated || []),
-      ...(data.phase3Results.resourcesToBeDeleted || []),
+      ...(phase3.resourcesToBeCreated || []),
+      ...(phase3.resourcesToBeUpdated || []),
+      ...(phase3.resourcesToBeDeleted || []),
     ];
 
     for (const resource of allResources) {
@@ -282,11 +201,7 @@ function collectDriftCategories(data: ProcessedDriftData): Map<string, CategoryD
 /**
  * Format CloudFormation drift resources for a category
  */
-function formatCFDriftForCategory(
-  stacks: CategoryDrift['cfDriftStacks'],
-  stackDriftDetectionIds?: Map<string, string>,
-  driftDetectionId?: string,
-): string {
+function formatCFDriftForCategory(stacks: CategoryDrift['cfDriftStacks']): string {
   let output = `  CloudFormation Drift: Deployed resources do not match templates\n`;
 
   for (const stack of stacks) {
@@ -301,23 +216,18 @@ function formatCFDriftForCategory(
       output += `    ${colorResourceLine(symbol, line)}\n`;
 
       // Show property differences for MODIFIED resources
-      if (drift.StackResourceDriftStatus === 'MODIFIED' && drift.PropertyDifferences && drift.PropertyDifferences.length > 0) {
+      if (
+        drift.StackResourceDriftStatus === StackResourceDriftStatus.MODIFIED &&
+        drift.PropertyDifferences &&
+        drift.PropertyDifferences.length > 0
+      ) {
         output += formatPropertyDiffs(drift.PropertyDifferences);
       }
     }
-  }
 
-  // Show drift detection ID
-  // Use the most relevant drift detection ID for this category
-  let relevantDriftId = driftDetectionId;
-  if (stackDriftDetectionIds && stacks.length > 0) {
-    const firstStackId = stacks[0].logicalId;
-    if (firstStackId !== 'ROOT' && stackDriftDetectionIds.has(firstStackId)) {
-      relevantDriftId = stackDriftDetectionIds.get(firstStackId);
+    if (stack.driftDetectionId) {
+      output += `    Drift Id: ${stack.driftDetectionId}\n`;
     }
-  }
-  if (relevantDriftId) {
-    output += `    Drift Id: ${relevantDriftId}\n`;
   }
 
   return output;
@@ -343,13 +253,13 @@ function formatPropertyDiffs(differences: PropertyDifference[]): string {
 /**
  * Format template drift changes for a category
  */
-function formatTemplateDriftForCategory(changes: ChangeSetChange[], changeSetId?: string): string {
+function formatTemplateDriftForCategory(changes: ResourceChangeWithNested[], changeSetId?: string): string {
   let output = `  Template Drift: S3 and deployed templates differ\n`;
 
   for (const change of changes) {
-    const symbol = getActionSymbol(change.action);
-    const resourceType = change.resourceType || 'Unknown';
-    const logicalId = change.logicalResourceId || 'Unknown';
+    const symbol = getActionSymbol(change.Action);
+    const resourceType = change.ResourceType || 'Unknown';
+    const logicalId = change.LogicalResourceId || 'Unknown';
     const line = `${symbol} ${resourceType}  (${logicalId})`;
 
     output += `    ${colorResourceLine(symbol, line)}\n`;
@@ -373,12 +283,18 @@ function formatLocalDriftForCategory(): string {
  * Create unified category view — the main output function
  * Groups all drift types by category
  */
-export function createUnifiedCategoryView(data: ProcessedDriftData): string | undefined {
-  const categories = collectDriftCategories(data);
+export function createUnifiedCategoryView(
+  phase1: CloudFormationDriftResults,
+  phase2: TemplateDriftResults,
+  phase3: LocalDriftResults,
+): string | undefined {
+  const categories = collectDriftCategories(phase1, phase2, phase3);
 
   if (categories.size === 0) {
     return undefined;
   }
+
+  const changeSetId = phase2.changeSetId;
 
   let output = '\n';
 
@@ -388,12 +304,12 @@ export function createUnifiedCategoryView(data: ProcessedDriftData): string | un
 
     // CloudFormation Drift
     if (drift.cfDriftStacks.length > 0) {
-      output += formatCFDriftForCategory(drift.cfDriftStacks, data.stackDriftDetectionIds, data.driftDetectionId);
+      output += formatCFDriftForCategory(drift.cfDriftStacks);
     }
 
     // Template Drift
     if (drift.templateChanges.length > 0) {
-      output += formatTemplateDriftForCategory(drift.templateChanges, data.changeSetId);
+      output += formatTemplateDriftForCategory(drift.templateChanges, changeSetId);
     }
 
     // Local Drift
@@ -411,9 +327,14 @@ export function createUnifiedCategoryView(data: ProcessedDriftData): string | un
  * Format drift results into display strings
  * Returns summary dashboard and category view
  */
-export function formatDriftResults(data: ProcessedDriftData) {
-  const summaryDashboard = createSummaryDashboard(data);
-  const categoryView = createUnifiedCategoryView(data);
+export function formatDriftResults(
+  phase1: CloudFormationDriftResults,
+  phase2: TemplateDriftResults,
+  phase3: LocalDriftResults,
+  projectName: string,
+): { summaryDashboard: string; categoryView: string | undefined } {
+  const summaryDashboard = createSummaryDashboard(phase1.summary, projectName);
+  const categoryView = createUnifiedCategoryView(phase1, phase2, phase3);
 
   return {
     summaryDashboard,

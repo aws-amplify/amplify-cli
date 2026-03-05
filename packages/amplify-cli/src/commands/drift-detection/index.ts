@@ -3,7 +3,18 @@
  * Based on AWS CDK CLI drift detection implementation
  */
 
-export { detectStackDrift, detectStackDriftRecursive, type CloudFormationDriftResults } from './detect-stack-drift';
+export {
+  detectStackDrift,
+  detectStackDriftRecursive,
+  type CloudFormationDriftResults,
+  type StackDriftNode,
+  type ResourceCounts,
+  type DriftSummary,
+  countDrifted,
+  countInSync,
+  countUnchecked,
+  countFailed,
+} from './detect-stack-drift';
 export { detectLocalDrift, type LocalDriftResults, type ResourceInfo } from './detect-local-drift';
 export { detectTemplateDrift, type TemplateDriftResults } from './detect-template-drift';
 export { formatDriftResults } from './services/drift-formatter';

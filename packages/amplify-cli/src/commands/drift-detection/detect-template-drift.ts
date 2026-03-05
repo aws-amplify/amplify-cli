@@ -7,34 +7,22 @@ import {
   DeleteChangeSetCommand,
   DescribeStacksCommand,
   waitUntilChangeSetCreateComplete,
+  type ResourceChange,
 } from '@aws-sdk/client-cloudformation';
 import fs from 'fs-extra';
 import * as path from 'path';
 import type { Print } from '../drift';
 
+export interface ResourceChangeWithNested extends ResourceChange {
+  nestedChanges?: ResourceChangeWithNested[];
+}
+
 export interface TemplateDriftResults {
   totalDrifted: number;
-  changes: ChangeSetChange[];
+  changes: ResourceChangeWithNested[];
   skipped: boolean;
   skipReason?: string;
   changeSetId?: string;
-}
-
-interface ChangeSetChange {
-  logicalResourceId: string;
-  resourceType: string;
-  action: string;
-  replacement: boolean;
-  details?: ChangeDetail[];
-  nestedChanges?: ChangeSetChange[]; // Add nested changes support
-}
-
-interface ChangeDetail {
-  attribute?: string;
-  name?: string;
-  changeSource?: string;
-  evaluation?: string;
-  requiresRecreation?: string;
 }
 
 /**
@@ -272,25 +260,7 @@ async function analyzeChangeSet(
     }
 
     const rc = change.ResourceChange;
-    const changeInfo: ChangeSetChange = {
-      logicalResourceId: rc.LogicalResourceId,
-      resourceType: rc.ResourceType,
-      action: rc.Action,
-      replacement: rc.Replacement === 'True',
-      details: [],
-      nestedChanges: [], // Add nested changes array
-    };
-
-    // Extract details
-    if (rc.Details) {
-      for (const detail of rc.Details) {
-        changeInfo.details?.push({
-          name: detail.Target?.Name,
-          changeSource: detail.ChangeSource,
-          requiresRecreation: detail.Target?.RequiresRecreation,
-        });
-      }
-    }
+    const changeInfo: ResourceChangeWithNested = { ...rc };
 
     // Check if this is a nested stack with its own changeset
     if (rc.ResourceType === 'AWS::CloudFormation::Stack' && rc.ChangeSetId) {

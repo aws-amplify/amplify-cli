@@ -5,24 +5,11 @@
 
 import { $TSContext, AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
-import { CloudFormationClient } from '@aws-sdk/client-cloudformation';
 import chalk from 'chalk';
 import { detectStackDriftRecursive, type CloudFormationDriftResults } from './drift-detection';
 import { detectLocalDrift, type LocalDriftResults } from './drift-detection/detect-local-drift';
 import { detectTemplateDrift, type TemplateDriftResults } from './drift-detection/detect-template-drift';
-import {
-  CloudFormationService,
-  AmplifyConfigService,
-  type CloudFormationTemplate,
-  type ProcessedDriftData,
-  type StackDriftData,
-  countDrifted,
-  countInSync,
-  countFailed,
-  countUnchecked,
-  formatDriftResults,
-} from './drift-detection/services';
-import { extractCategory } from './gen2-migration/categories';
+import { CloudFormationService, AmplifyConfigService, formatDriftResults } from './drift-detection/services';
 
 /**
  * Print interface for consistent logging across drift detection
@@ -129,7 +116,7 @@ export class AmplifyDriftDetector {
     this.printer.debug('Starting Phase 1: CloudFormation drift detection');
     this.printer.debug(`Checking drift for root stack: ${stackName}`);
     const phase1Results = await detectStackDriftRecursive(cfn, stackName, this.printer);
-    this.printer.debug(`Phase 1 complete: ${phase1Results.totalDrifted} drifted resources detected`);
+    this.printer.debug(`Phase 1 complete: ${phase1Results.summary.totalDrifted} drifted resources detected`);
 
     // Initialize phase results with skipped status if sync fails
     let phase2Results: TemplateDriftResults = {
@@ -163,29 +150,26 @@ export class AmplifyDriftDetector {
 
     this.printer.info(chalk.green('Drift detection completed\n'));
 
-    // Process results with the formatter
-    this.printer.debug('Processing and formatting results');
-    const processedData = await this.processData(cfn, stackName, projectName, phase1Results, phase2Results, phase3Results);
+    // Display results directly
+    this.printer.debug('Formatting results');
+    this.displayResults(phase1Results, phase2Results, phase3Results, projectName);
 
-    this.displayResults(processedData);
-
-    // Check for errors during detection - including Phase 1 nested stack skips
-    const hasPhase1Errors = Boolean(phase1Results.skippedNestedStacks && phase1Results.skippedNestedStacks.length > 0);
-    const hasAnyErrors = hasPhase1Errors || phase2Results.skipped || phase3Results.skipped;
+    // Check for errors during detection
+    const hasAnyErrors = phase1Results.incomplete || phase2Results.skipped || phase3Results.skipped;
 
     // Debug: Print final error state variables
     this.printer.debug('Error states:');
-    this.printer.debug(`Phase 1 errors: ${hasPhase1Errors}`);
-    this.printer.debug(`Phase 2 errors: ${phase2Results.skipped}`);
-    this.printer.debug(`Phase 3 errors: ${phase3Results.skipped}`);
+    this.printer.debug(`Phase 1 incomplete: ${phase1Results.incomplete}`);
+    this.printer.debug(`Phase 2 skipped: ${phase2Results.skipped}`);
+    this.printer.debug(`Phase 3 skipped: ${phase3Results.skipped}`);
 
     if (hasAnyErrors) {
       this.printer.warn(chalk.yellow('Drift detection encountered errors:'));
-      if (hasPhase1Errors) {
+      if (phase1Results.incomplete) {
         this.printer.warn(
-          chalk.yellow(`• CloudFormation drift check incomplete - ${phase1Results.skippedNestedStacks.length} nested stack(s) skipped`),
+          chalk.yellow(`• CloudFormation drift check incomplete - ${phase1Results.skippedStacks.length} nested stack(s) skipped`),
         );
-        for (const skippedStack of phase1Results.skippedNestedStacks) {
+        for (const skippedStack of phase1Results.skippedStacks) {
           this.printer.debug(`    - ${skippedStack}`);
         }
       }
@@ -198,9 +182,9 @@ export class AmplifyDriftDetector {
     }
 
     // Aggregate drift counts from all phases
-    const totalDriftCount = phase1Results.totalDrifted + phase2Results.totalDrifted + phase3Results.totalDrifted;
+    const totalDriftCount = phase1Results.summary.totalDrifted + phase2Results.totalDrifted + phase3Results.totalDrifted;
     this.printer.debug('Drift count breakdown by phase:');
-    this.printer.debug(`Phase 1 (CloudFormation): ${phase1Results.totalDrifted}`);
+    this.printer.debug(`Phase 1 (CloudFormation): ${phase1Results.summary.totalDrifted}`);
     this.printer.debug(`Phase 2 (Template):       ${phase2Results.totalDrifted}`);
     this.printer.debug(`Phase 3 (Local):          ${phase3Results.totalDrifted}`);
     this.printer.debug(`Total:                    ${totalDriftCount}`);
@@ -222,82 +206,14 @@ export class AmplifyDriftDetector {
   /**
    * Display drift detection results
    */
-  private displayResults(data: ProcessedDriftData): void {
-    const output = formatDriftResults(data);
+  private displayResults(
+    phase1: CloudFormationDriftResults,
+    phase2: TemplateDriftResults,
+    phase3: LocalDriftResults,
+    projectName: string,
+  ): void {
+    const output = formatDriftResults(phase1, phase2, phase3, projectName);
     this.printer.info(output.summaryDashboard);
     if (output.categoryView !== undefined) this.printer.info(output.categoryView);
-  }
-
-  /**
-   * Process drift detection results into ProcessedDriftData
-   */
-  private async processData(
-    cfn: CloudFormationClient,
-    stackName: string,
-    projectName: string,
-    phase1Results: CloudFormationDriftResults,
-    phase2Results: TemplateDriftResults,
-    phase3Results: LocalDriftResults,
-  ): Promise<ProcessedDriftData> {
-    const rootTemplate = await this.cfnService.getStackTemplate(cfn, stackName);
-
-    // Fetch all nested stack templates
-    const nestedTemplates = new Map<string, CloudFormationTemplate>();
-    for (const [logicalId] of phase1Results.nestedStackDrifts.entries()) {
-      const physicalName = phase1Results.nestedStackPhysicalIds.get(logicalId) || logicalId;
-      nestedTemplates.set(logicalId, await this.cfnService.getStackTemplate(cfn, physicalName));
-    }
-
-    // Build root counts
-    const rootDrifts = phase1Results.rootStackDrifts.StackResourceDrifts || [];
-    const rootCounts = {
-      drifted: countDrifted(rootDrifts),
-      inSync: countInSync(rootDrifts),
-      unchecked: countUnchecked(rootDrifts, rootTemplate),
-      failed: countFailed(rootDrifts),
-    };
-
-    // Build nested stacks data
-    const nestedStacks: StackDriftData[] = [];
-    let totalInSync = rootCounts.inSync;
-    let totalUnchecked = rootCounts.unchecked;
-    let totalFailed = rootCounts.failed;
-
-    for (const [logicalId, nestedDrift] of phase1Results.nestedStackDrifts.entries()) {
-      if (!nestedDrift.StackResourceDrifts) continue;
-      const physicalName = phase1Results.nestedStackPhysicalIds.get(logicalId) || logicalId;
-      const template = nestedTemplates.get(logicalId) || {};
-      const drifts = nestedDrift.StackResourceDrifts;
-      const counts = {
-        drifted: countDrifted(drifts),
-        inSync: countInSync(drifts),
-        unchecked: countUnchecked(drifts, template),
-        failed: countFailed(drifts),
-      };
-      totalInSync += counts.inSync;
-      totalUnchecked += counts.unchecked;
-      totalFailed += counts.failed;
-      nestedStacks.push({ logicalId, physicalName, category: extractCategory(logicalId), drifts, template, counts });
-    }
-
-    return {
-      projectName,
-      rootStackName: stackName,
-      root: {
-        logicalId: stackName,
-        physicalName: stackName,
-        category: 'root',
-        drifts: rootDrifts,
-        template: rootTemplate,
-        counts: rootCounts,
-      },
-      nestedStacks,
-      summary: { totalStacks: 1 + nestedStacks.length, totalDrifted: phase1Results.totalDrifted, totalInSync, totalUnchecked, totalFailed },
-      phase2Results,
-      phase3Results,
-      driftDetectionId: phase1Results.driftDetectionId,
-      stackDriftDetectionIds: phase1Results.stackDriftDetectionIds,
-      changeSetId: phase2Results.changeSetId,
-    };
   }
 }
