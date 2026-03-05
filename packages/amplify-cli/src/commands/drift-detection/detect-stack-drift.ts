@@ -354,7 +354,7 @@ async function buildDriftNode(
         `buildDriftNode.nested: ${nested.LogicalResourceId}, ${childNode.drifts.length} direct resources, ${childNode.children.length} sub-stacks`,
       );
     } catch (error: any) {
-      print.warning(`Failed to check drift for nested stack ${nested.LogicalResourceId}: ${error.message}`);
+      print.warn(`Failed to check drift for nested stack ${nested.LogicalResourceId}: ${error.message}`);
       skippedChildren.push(nested.LogicalResourceId);
     }
   }

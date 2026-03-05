@@ -18,7 +18,6 @@ export interface Print {
   info: (msg: string) => void;
   debug: (msg: string) => void;
   warn: (msg: string) => void;
-  warning: (msg: string) => void;
 }
 
 /**
@@ -60,7 +59,6 @@ export class AmplifyDriftDetector {
       // Default printer with grey for debug
       this.printer = {
         info: (message: string) => printer.info(message),
-        warning: (message: string) => printer.warn(message),
         warn: (message: string) => printer.warn(message),
         debug: (message: string) => {
           if (this.options.debug) {
