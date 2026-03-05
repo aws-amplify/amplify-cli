@@ -12,6 +12,10 @@ import type { TemplateDriftResults, ResourceChangeWithNested } from '../detect-t
 import { type StackDriftNode, type CloudFormationDriftResults, type DriftSummary, isDrifted } from '../detect-stack-drift';
 import { extractCategory } from '../../gen2-migration/categories';
 
+/** Strip ANSI escape codes to get actual text length */
+// eslint-disable-next-line no-control-regex
+const stripAnsi = (str: string): string => str.replace(/\u001b\[[0-9;]*m/g, '');
+
 // Display constants
 const DISPLAY_CONSTANTS = {
   BORDER_WIDTH: 61,
@@ -66,12 +70,6 @@ export function createSummaryDashboard(summary: DriftSummary, projectName: strin
 
 /** Format a single line in the dashboard box with proper padding */
 function formatDashboardLine(label: string, value: string): string {
-  // Strip ANSI codes to get actual text length
-  const stripAnsi = (str: string): string => {
-    // eslint-disable-next-line no-control-regex
-    return str.replace(/\u001b\[[0-9;]*m/g, '');
-  };
-
   const actualValueLength = stripAnsi(value).length;
 
   // Calculate padding: border width - "│ " (2) - label - ": " (2) - value length - "│" (1)

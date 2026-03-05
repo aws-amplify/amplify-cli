@@ -263,7 +263,7 @@ async function analyzeChangeSet(
     const changeInfo: ResourceChangeWithNested = { ...rc };
 
     // Check if this is a nested stack with its own changeset
-    if (rc.ResourceType === 'AWS::CloudFormation::Stack' && rc.ChangeSetId) {
+    if (rc.ResourceType === 'AWS::CloudFormation::Stack' && rc.ChangeSetId && rc.PhysicalResourceId) {
       try {
         // Extract stack name and changeset name from ARNs using parseArn utility
         const stackName = extractStackNameFromArn(rc.PhysicalResourceId);
