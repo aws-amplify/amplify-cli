@@ -5,7 +5,10 @@
 
 import { $TSContext, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
 import fs from 'fs-extra';
-import { getResourceStatus } from '../../extensions/amplify-helpers/resource-status-data';
+
+// Lazy require — resource-status-data transitively imports amplify-provider-awscloudformation
+// which has top-level side effects (FeatureFlags.getNumber) that crash in test environments.
+// This is the established pattern in this codebase (see amplify-toolkit.ts).
 
 /**
  * Local drift detection results (Phase 3)
@@ -64,6 +67,7 @@ export async function detectLocalDrift(context: $TSContext): Promise<LocalDriftR
 
     // Use existing status logic to compare local vs cloud backend
     // Note: The cloud backend has already been synced from S3
+    const { getResourceStatus } = require('../../extensions/amplify-helpers/resource-status-data');
     const statusResults = await getResourceStatus();
 
     const { resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeDeleted, resourcesToBeSynced } = statusResults;
