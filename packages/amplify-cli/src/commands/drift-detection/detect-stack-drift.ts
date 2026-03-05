@@ -75,11 +75,15 @@ export function countInSync(drifts: StackResourceDrift[]): number {
   return drifts.filter((d) => d.StackResourceDriftStatus === StackResourceDriftStatus.IN_SYNC).length;
 }
 
-export function countUnchecked(drifts: StackResourceDrift[], template: Record<string, unknown>): number {
+export function countUnchecked(
+  drifts: StackResourceDrift[],
+  template: Record<string, unknown>,
+  nestedStackIds: Set<string> = new Set(),
+): number {
   const checkedResourceIds = new Set(drifts.map((d) => d.LogicalResourceId));
   const resources = (template.Resources ?? {}) as Record<string, unknown>;
   const allResourceIds = Object.keys(resources);
-  const notInResults = allResourceIds.filter((id) => !checkedResourceIds.has(id)).length;
+  const notInResults = allResourceIds.filter((id) => !checkedResourceIds.has(id) && !nestedStackIds.has(id)).length;
   const notChecked = drifts.filter((d) => d.StackResourceDriftStatus === StackResourceDriftStatus.NOT_CHECKED).length;
   return notInResults + notChecked;
 }
@@ -314,17 +318,18 @@ async function buildDriftNode(
     category = parentCategory;
   }
 
+  // Find nested stacks (needed before counting so we can exclude them from unchecked)
+  const stackResources = await cfn.send(new DescribeStackResourcesCommand({ StackName: physicalName }));
+  const nestedStacks = stackResources.StackResources?.filter((resource) => resource.ResourceType === 'AWS::CloudFormation::Stack') || [];
+  const nestedStackIds = new Set(nestedStacks.map((s) => s.LogicalResourceId).filter(Boolean) as string[]);
+
   // Compute counts
   const counts: ResourceCounts = {
     drifted: countDrifted(drifts),
     inSync: countInSync(drifts),
-    unchecked: countUnchecked(drifts, template),
+    unchecked: countUnchecked(drifts, template, nestedStackIds),
     failed: countFailed(drifts),
   };
-
-  // Find nested stacks
-  const stackResources = await cfn.send(new DescribeStackResourcesCommand({ StackName: physicalName }));
-  const nestedStacks = stackResources.StackResources?.filter((resource) => resource.ResourceType === 'AWS::CloudFormation::Stack') || [];
 
   if (nestedStacks.length > 0) {
     print.debug(`Found ${nestedStacks.length} nested stack(s) in ${logicalId}`);

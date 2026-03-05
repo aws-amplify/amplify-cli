@@ -16,5 +16,5 @@ export {
   countFailed,
 } from './detect-stack-drift';
 export { detectLocalDrift, type LocalDriftResults, type ResourceInfo } from './detect-local-drift';
-export { detectTemplateDrift, type TemplateDriftResults } from './detect-template-drift';
+export { detectTemplateDrift, type TemplateDriftResults, type ResourceChangeWithNested } from './detect-template-drift';
 export { formatDriftResults } from './services/drift-formatter';

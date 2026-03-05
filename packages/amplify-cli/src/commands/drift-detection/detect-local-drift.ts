@@ -4,6 +4,8 @@
  */
 
 import { $TSContext, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
+import fs from 'fs-extra';
+import { getResourceStatus } from '../../extensions/amplify-helpers/resource-status-data';
 
 /**
  * Local drift detection results (Phase 3)
@@ -52,7 +54,7 @@ export async function detectLocalDrift(context: $TSContext): Promise<LocalDriftR
 
     // Check if we have a cloud backend to compare against
     const currentCloudBackendDir = pathManager.getCurrentCloudBackendDirPath();
-    if (!currentCloudBackendDir || !require('fs-extra').existsSync(currentCloudBackendDir)) {
+    if (!currentCloudBackendDir || !fs.existsSync(currentCloudBackendDir)) {
       return {
         totalDrifted: 0,
         skipped: true,
@@ -62,8 +64,6 @@ export async function detectLocalDrift(context: $TSContext): Promise<LocalDriftR
 
     // Use existing status logic to compare local vs cloud backend
     // Note: The cloud backend has already been synced from S3
-    const { getResourceStatus } = require('../../extensions/amplify-helpers/resource-status-data');
-
     const statusResults = await getResourceStatus();
 
     const { resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeDeleted, resourcesToBeSynced } = statusResults;

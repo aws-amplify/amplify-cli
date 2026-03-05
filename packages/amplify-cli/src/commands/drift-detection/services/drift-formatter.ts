@@ -238,10 +238,10 @@ function formatPropertyDiffs(differences: PropertyDifference[]): string {
   let output = '';
   for (const propDiff of differences) {
     output += `      Property: ${propDiff.PropertyPath}\n`;
-    if (propDiff.ActualValue) {
+    if (propDiff.ActualValue != null) {
       output += `        ${chalk.green(`+ "${propDiff.ActualValue}"`)}\n`;
     }
-    if (propDiff.ExpectedValue) {
+    if (propDiff.ExpectedValue != null) {
       output += `        ${chalk.red(`- "${propDiff.ExpectedValue}"`)}\n`;
     }
   }
