@@ -11,7 +11,6 @@ import {
   GetTemplateCommand,
   StackResourceDriftStatus,
   type StackResourceDrift,
-  type DescribeStackResourceDriftsCommandOutput,
   type DescribeStackDriftDetectionStatusCommandOutput,
 } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
@@ -131,7 +130,7 @@ export async function detectStackDrift(
   cfn: CloudFormationClient,
   stackName: string,
   print: Print,
-): Promise<{ drifts: DescribeStackResourceDriftsCommandOutput; driftDetectionId: string }> {
+): Promise<{ drifts: StackResourceDrift[]; driftDetectionId: string }> {
   // Start drift detection
   print.debug(`detectStackDrift: ${stackName}`);
   const driftDetection = await cfn.send(
@@ -153,37 +152,41 @@ export async function detectStackDrift(
     );
   }
 
-  // Get the drift results
-  const driftResults = await cfn.send(
-    new DescribeStackResourceDriftsCommand({
-      StackName: stackName,
-    }),
-  );
+  // Get the drift results (paginated — max 100 per page)
+  const allDrifts: StackResourceDrift[] = [];
+  let nextToken: string | undefined;
+
+  do {
+    const page = await cfn.send(
+      new DescribeStackResourceDriftsCommand({
+        StackName: stackName,
+        MaxResults: 100,
+        NextToken: nextToken,
+      }),
+    );
+    if (page.StackResourceDrifts) allDrifts.push(...page.StackResourceDrifts);
+    nextToken = page.NextToken;
+  } while (nextToken);
 
   // Filter out known Amplify Auth IdP Deny→Allow changes
-  if (driftResults.StackResourceDrifts) {
-    driftResults.StackResourceDrifts = driftResults.StackResourceDrifts.map((drift) => {
-      // For modified resources, filter out Auth IdP Deny→Allow property changes
-      if (
-        drift.StackResourceDriftStatus === StackResourceDriftStatus.MODIFIED &&
-        drift.PropertyDifferences &&
-        drift.PropertyDifferences.length > 0
-      ) {
-        // Filter out Auth IdP changes from property differences
-        drift.PropertyDifferences = drift.PropertyDifferences.filter((propDiff) => {
-          return !isAmplifyAuthRoleDenyToAllowChange(propDiff, print);
-        });
+  const filteredDrifts = allDrifts.map((drift) => {
+    if (
+      drift.StackResourceDriftStatus === StackResourceDriftStatus.MODIFIED &&
+      drift.PropertyDifferences &&
+      drift.PropertyDifferences.length > 0
+    ) {
+      drift.PropertyDifferences = drift.PropertyDifferences.filter((propDiff) => {
+        return !isAmplifyAuthRoleDenyToAllowChange(propDiff, print);
+      });
 
-        // If all property differences were filtered out, change status to IN_SYNC
-        if (drift.PropertyDifferences.length === 0) {
-          drift.StackResourceDriftStatus = StackResourceDriftStatus.IN_SYNC;
-        }
+      if (drift.PropertyDifferences.length === 0) {
+        drift.StackResourceDriftStatus = StackResourceDriftStatus.IN_SYNC;
       }
+    }
+    return drift;
+  });
 
-      return drift;
-    });
-  }
-  return { drifts: driftResults, driftDetectionId: driftDetection.StackDriftDetectionId! };
+  return { drifts: filteredDrifts, driftDetectionId: driftDetection.StackDriftDetectionId! };
 }
 
 /**
@@ -298,8 +301,7 @@ async function buildDriftNode(
   parentCategory?: string,
 ): Promise<StackDriftNode> {
   // Detect drift on this stack
-  const { drifts: driftOutput, driftDetectionId } = await detectStackDrift(cfn, physicalName, print);
-  const drifts = driftOutput.StackResourceDrifts || [];
+  const { drifts, driftDetectionId } = await detectStackDrift(cfn, physicalName, print);
 
   // Fetch template
   const templateResponse = await cfn.send(new GetTemplateCommand({ StackName: physicalName, TemplateStage: 'Original' }));
