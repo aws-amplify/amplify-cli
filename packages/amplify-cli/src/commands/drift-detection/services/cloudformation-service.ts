@@ -10,13 +10,10 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import type { Print } from '../../drift';
 
-// Import the CloudFormation class from the provider
-const CloudFormation = require('@aws-amplify/amplify-provider-awscloudformation/lib/aws-utils/aws-cfn');
-
-// Import S3 utilities for backend sync
+import CloudFormation from '@aws-amplify/amplify-provider-awscloudformation/lib/aws-utils/aws-cfn';
 import { downloadZip, extractZip } from '@aws-amplify/amplify-provider-awscloudformation/lib/zip-util';
 import { S3 } from '@aws-amplify/amplify-provider-awscloudformation/lib/aws-utils/aws-s3';
-const { S3BackendZipFileName } = require('@aws-amplify/amplify-provider-awscloudformation/lib/constants');
+import { S3BackendZipFileName } from '@aws-amplify/amplify-provider-awscloudformation/lib/constants';
 
 /**
  * Service for CloudFormation operations
@@ -59,18 +56,6 @@ export class CloudFormationService {
     }
   }
 
-  /**
-   * Get stack template from CloudFormation
-   */
-  public async getStackTemplate(client: CloudFormationClient, stackName: string): Promise<Record<string, unknown>> {
-    const response = await client.send(
-      new GetTemplateCommand({
-        StackName: stackName,
-        TemplateStage: 'Original',
-      }),
-    );
-    return JSON.parse(response.TemplateBody!);
-  }
 
   /**
    * Sync the #current-cloud-backend directory with fresh data from S3
