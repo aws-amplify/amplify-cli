@@ -11,6 +11,7 @@ import {
   GetTemplateCommand,
   StackResourceDriftStatus,
   type StackResourceDrift,
+  type PropertyDifference,
   type DescribeStackDriftDetectionStatusCommandOutput,
 } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
@@ -192,7 +193,7 @@ export async function detectStackDrift(
 /**
  * Check if a property difference is an Amplify auth role Deny→Allow change (intended drift)
  */
-function isAmplifyAuthRoleDenyToAllowChange(propDiff: any, print: Print): boolean {
+function isAmplifyAuthRoleDenyToAllowChange(propDiff: PropertyDifference, print: Print): boolean {
   // Check if this is an AssumeRolePolicyDocument change
   if (!propDiff.PropertyPath || !propDiff.PropertyPath.includes('AssumeRolePolicyDocument')) {
     return false;
