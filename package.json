@@ -163,7 +163,8 @@
   "packageManager": "yarn@3.5.0",
   "resolutions": {
     "cross-fetch": "^2.2.6",
-    "fast-xml-parser": "^4.4.1",
+    "basic-ftp": ">=5.2.0",
+    "fast-xml-parser": "~4.5.4",
     "glob-parent": "^6.0.2",
     "got": "^11.8.5",
     "istanbul/async": "^2.6.4",
