@@ -163,7 +163,7 @@ export class ApiGatewayAuthStack extends cdk.Stack {
         // Initial size of 104 for version, statement, etc.
         options.policyDocSize = 104 + policySizeIncrease;
         ++options.roleCount;
-        options.managedPolicy = createManagedPolicy(this, `${namePrefix}${options.roleCount}`, roleName as unknown as string);
+        options.managedPolicy = createManagedPolicy(this, `${namePrefix}${options.roleCount}`, roleName.valueAsString);
       }
 
       options.managedPolicy.policyDocument.Statement[0].Resource.push(
