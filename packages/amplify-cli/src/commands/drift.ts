@@ -4,7 +4,7 @@
  */
 
 import { $TSContext, AmplifyError } from '@aws-amplify/amplify-cli-core';
-import { printer } from '@aws-amplify/amplify-prompts';
+import { printer, AmplifySpinner } from '@aws-amplify/amplify-prompts';
 import chalk from 'chalk';
 import { detectStackDriftRecursive, type CloudFormationDriftResults } from './drift-detection';
 import { detectLocalDrift, type LocalDriftResults } from './drift-detection/detect-local-drift';
@@ -48,6 +48,9 @@ export class AmplifyDriftDetector {
   private readonly configService: AmplifyConfigService;
   private readonly printer: Print;
   private readonly options: DriftOptions;
+  private readonly spinner = new AmplifySpinner();
+  private spinnerText = '';
+  private spinnerActive = false;
 
   constructor(private readonly context: $TSContext, print?: Print) {
     // Store options from context for later use
@@ -55,23 +58,52 @@ export class AmplifyDriftDetector {
       debug: context.parameters?.options?.debug || false,
     };
 
-    if (!print) {
-      // Default printer with grey for debug
-      this.printer = {
-        info: (message: string) => printer.info(message),
-        warn: (message: string) => printer.warn(message),
-        debug: (message: string) => {
-          if (this.options.debug) {
-            printer.debug(chalk.gray(message));
-          }
-        },
-      };
-    } else {
-      this.printer = print;
-    }
+    const basePrint: Print = print ?? {
+      info: (message: string) => printer.info(message),
+      warn: (message: string) => printer.warn(message),
+      debug: (message: string) => {
+        if (this.options.debug) {
+          printer.debug(chalk.gray(message));
+        }
+      },
+    };
+
+    // Wrap each method to pause/resume spinner so output never collides
+    this.printer = {
+      info: (msg: string) => this.withSpinnerPaused(() => basePrint.info(msg)),
+      debug: (msg: string) => this.withSpinnerPaused(() => basePrint.debug(msg)),
+      warn: (msg: string) => this.withSpinnerPaused(() => basePrint.warn(msg)),
+    };
 
     this.cfnService = new CloudFormationService(this.printer);
     this.configService = new AmplifyConfigService();
+  }
+
+  private withSpinnerPaused(fn: () => void): void {
+    if (this.spinnerActive) {
+      this.spinner.stop();
+      fn();
+      this.spinner.start(this.spinnerText);
+    } else {
+      fn();
+    }
+  }
+
+  private startSpinner(text: string): void {
+    this.spinnerText = text;
+    this.spinnerActive = true;
+    this.spinner.start(text);
+  }
+
+  private updateSpinner(text: string): void {
+    this.spinnerText = text;
+    this.spinner.resetMessage(text);
+  }
+
+  private stopSpinner(text?: string): void {
+    this.spinnerActive = false;
+    this.spinner.stop(text);
+    this.spinnerText = '';
   }
 
   /**
@@ -88,8 +120,7 @@ export class AmplifyDriftDetector {
     this.context.amplify.constructExeInfo(this.context);
     const stackName = this.configService.getRootStackName();
     const projectName = this.configService.getProjectName();
-    this.printer.debug(`Stack: ${stackName}, Project: ${projectName}`);
-    this.printer.info('');
+    this.printer.debug(`Root Stack: ${stackName}`);
     this.printer.info(chalk.cyan.bold(`Started Drift Detection for Project: ${projectName}`));
     this.printer.debug('Phase 1: CloudFormation drift \nPhase 2: Template changes \nPhase 3: Local vs cloud files\n');
 
@@ -105,18 +136,8 @@ export class AmplifyDriftDetector {
       });
     }
 
-    // Start drift detection
-    // Sync cloud backend from S3 before running any phases
-    this.printer.debug('Syncing cloud backend from S3...');
-    const syncSuccess = await this.cfnService.syncCloudBackendFromS3(this.context);
-
-    // Phase 1: Detect CloudFormation drift recursively (doesn't depend on S3 sync)
-    this.printer.debug('Starting Phase 1: CloudFormation drift detection');
-    this.printer.debug(`Checking drift for root stack: ${stackName}`);
-    const phase1Results = await detectStackDriftRecursive(cfn, stackName, this.printer);
-    this.printer.debug(`Phase 1 complete: ${phase1Results.summary.totalDrifted} drifted resources detected`);
-
-    // Initialize phase results with skipped status if sync fails
+    // Start drift detection phases with spinner
+    let phase1Results: CloudFormationDriftResults;
     let phase2Results: TemplateDriftResults = {
       totalDrifted: 0,
       changes: [],
@@ -129,67 +150,61 @@ export class AmplifyDriftDetector {
       skipReason: 'S3 backend sync failed - cannot compare local vs cloud',
     };
 
-    if (!syncSuccess) {
-      this.printer.warn(chalk.yellow('S3 sync failed - Phase 2 and Phase 3 will be skipped'));
-      this.printer.debug('S3 sync skipped or failed - cannot run Phase 2 and Phase 3 without accurate cloud backend');
-    } else {
-      this.printer.debug('S3 sync completed successfully');
+    try {
+      // Sync cloud backend from S3 before running any phases
+      this.startSpinner('Syncing cloud backend from S3...');
+      const syncSuccess = await this.cfnService.syncCloudBackendFromS3(this.context);
 
-      this.printer.debug('Starting Phase 2: Template drift detection');
-      this.printer.debug('Checking for template drift using changesets...');
-      phase2Results = await detectTemplateDrift(stackName, this.printer, cfn);
-      this.printer.debug(`Phase 2 complete: totalDrifted=${phase2Results.totalDrifted}`);
+      // Phase 1: Detect CloudFormation drift recursively
+      this.updateSpinner('Detecting CloudFormation drift...');
+      phase1Results = await detectStackDriftRecursive(cfn, stackName, this.printer);
+      this.printer.debug(`Phase 1 complete: ${phase1Results.summary.totalDrifted} drifted resources detected`);
 
-      this.printer.debug('Starting Phase 3: Local drift detection');
-      this.printer.debug('Checking local files vs cloud backend...');
-      phase3Results = await detectLocalDrift(this.context);
-      this.printer.debug(`Phase 3 complete: totalDrifted=${phase3Results.totalDrifted}`);
+      if (!syncSuccess) {
+        this.printer.warn(chalk.yellow('Cloud backend sync failed - template drift and local drift will be skipped'));
+      } else {
+        this.printer.debug('S3 sync completed successfully');
+
+        // Phase 2: Template drift detection
+        this.updateSpinner('Analyzing template changes...');
+        this.printer.debug('Checking for template drift using changesets...');
+        phase2Results = await detectTemplateDrift(stackName, this.printer, cfn);
+        this.printer.debug(`template drift totalDrifted=${phase2Results.totalDrifted}`);
+
+        // Phase 3: Local drift detection
+        this.updateSpinner('Checking local changes...');
+        this.printer.debug('Checking local files vs cloud backend...');
+        phase3Results = await detectLocalDrift(this.context);
+        this.printer.debug(`local drift totalDrifted=${phase3Results.totalDrifted}`);
+      }
+
+      this.stopSpinner('Drift detection completed');
+    } catch (error) {
+      this.stopSpinner();
+      throw error;
     }
 
-    this.printer.info(chalk.green('Drift detection completed\n'));
-
-    // Display results directly
-    this.printer.debug('Formatting results');
     this.displayResults(phase1Results, phase2Results, phase3Results, projectName);
 
-    // Check for errors during detection
+    const totalDriftCount = phase1Results.summary.totalDrifted + phase2Results.totalDrifted + phase3Results.totalDrifted;
     const hasAnyErrors = phase1Results.incomplete || phase2Results.skipped || phase3Results.skipped;
-
-    // Debug: Print final error state variables
-    this.printer.debug('Error states:');
-    this.printer.debug(`Phase 1 incomplete: ${phase1Results.incomplete}`);
-    this.printer.debug(`Phase 2 skipped: ${phase2Results.skipped}`);
-    this.printer.debug(`Phase 3 skipped: ${phase3Results.skipped}`);
 
     if (hasAnyErrors) {
       this.printer.warn(chalk.yellow('Drift detection encountered errors:'));
       if (phase1Results.incomplete) {
         this.printer.warn(
-          chalk.yellow(`• CloudFormation drift check incomplete - ${phase1Results.skippedStacks.length} nested stack(s) skipped`),
+          chalk.yellow(`CloudFormation drift check incomplete - ${phase1Results.skippedStacks.length} nested stack(s) skipped`),
         );
         for (const skippedStack of phase1Results.skippedStacks) {
-          this.printer.debug(`    - ${skippedStack}`);
+          this.printer.debug(`  - ${skippedStack}`);
         }
       }
       if (phase2Results.skipped) {
-        this.printer.warn(chalk.yellow(`• Template drift error: ${phase2Results.skipReason}`));
+        this.printer.warn(chalk.yellow(`Template drift error: ${phase2Results.skipReason}`));
       }
       if (phase3Results.skipped) {
-        this.printer.warn(chalk.yellow(`• Local drift error: ${phase3Results.skipReason}`));
+        this.printer.warn(chalk.yellow(`Local drift error: ${phase3Results.skipReason}`));
       }
-    }
-
-    // Aggregate drift counts from all phases
-    const totalDriftCount = phase1Results.summary.totalDrifted + phase2Results.totalDrifted + phase3Results.totalDrifted;
-    this.printer.debug('Drift count breakdown by phase:');
-    this.printer.debug(`Phase 1 (CloudFormation): ${phase1Results.summary.totalDrifted}`);
-    this.printer.debug(`Phase 2 (Template):       ${phase2Results.totalDrifted}`);
-    this.printer.debug(`Phase 3 (Local):          ${phase3Results.totalDrifted}`);
-    this.printer.debug(`Total:                    ${totalDriftCount}`);
-
-    // Return exit code - return 1 if any drift detected OR if any phase had errors/skips (uncertainty)
-    // Fail-safe principle: any uncertainty means we cannot guarantee no drift
-    if (hasAnyErrors) {
       this.printer.debug('Exit code 1: Incomplete drift detection - cannot guarantee no drift');
       return 1;
     }
@@ -197,7 +212,6 @@ export class AmplifyDriftDetector {
       this.printer.debug(`Exit code 1: ${totalDriftCount} drift(s) detected across all phases`);
       return 1;
     }
-    this.printer.debug('Exit code 0: No drift detected in any phase');
     return 0;
   }
 

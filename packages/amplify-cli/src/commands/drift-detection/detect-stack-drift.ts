@@ -286,7 +286,7 @@ async function waitForDriftDetection(
     }
 
     if (Date.now() > checkIn) {
-      print.info('Waiting for drift detection to complete...');
+      print.debug('Waiting for drift detection to complete...');
       checkIn = Date.now() + timeBetweenOutputs;
     }
 
