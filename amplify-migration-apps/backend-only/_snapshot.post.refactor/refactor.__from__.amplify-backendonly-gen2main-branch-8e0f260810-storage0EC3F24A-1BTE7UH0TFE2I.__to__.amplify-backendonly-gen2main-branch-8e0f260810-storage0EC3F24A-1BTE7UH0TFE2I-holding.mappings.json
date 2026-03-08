@@ -1,0 +1,12 @@
+[
+  {
+    "Source": {
+      "StackName": "amplify-backendonly-gen2main-branch-8e0f260810-storage0EC3F24A-1BTE7UH0TFE2I",
+      "LogicalResourceId": "backendonlycb1a13ab81664ecaa7d015068ab2d0165e0fagen2mainBucket50DDE738"
+    },
+    "Destination": {
+      "StackName": "amplify-backendonly-gen2main-branch-8e0f260810-storage0EC3F24A-1BTE7UH0TFE2I-holding",
+      "LogicalResourceId": "backendonlycb1a13ab81664ecaa7d015068ab2d0165e0fagen2mainBucket50DDE738"
+    }
+  }
+]

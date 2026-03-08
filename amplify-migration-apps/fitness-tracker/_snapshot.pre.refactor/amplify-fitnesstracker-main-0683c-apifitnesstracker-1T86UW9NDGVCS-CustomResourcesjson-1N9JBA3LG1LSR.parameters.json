@@ -1,0 +1,22 @@
+[
+  {
+    "ParameterKey": "S3DeploymentBucket",
+    "ParameterValue": "amplify-fitnesstracker-main-0683c-deployment"
+  },
+  {
+    "ParameterKey": "AppSyncApiId",
+    "ParameterValue": "2aikutabnvbuhlzmh4mvkg3eji"
+  },
+  {
+    "ParameterKey": "env",
+    "ParameterValue": "main"
+  },
+  {
+    "ParameterKey": "S3DeploymentRootKey",
+    "ParameterValue": "amplify-appsync-files/96fdcde6a80859ead18d697e115cb9bd809fa98a"
+  },
+  {
+    "ParameterKey": "AppSyncApiName",
+    "ParameterValue": "fitnesstracker"
+  }
+]

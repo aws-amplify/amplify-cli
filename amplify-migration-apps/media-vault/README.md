@@ -401,12 +401,6 @@ npx amplify gen2-migration generate
 + branchName: "gen2-main"
 ```
 
-```diff
-- defaultAuthorizationMode: "userPool"
-+ defaultAuthorizationMode: "userPool",
-+ apiKeyAuthorizationMode: { expiresInDays: 100 }
-```
-
 **Edit in `./amplify/auth/resource.ts`:**
 
 ```diff
@@ -458,10 +452,6 @@ npx amplify gen2-migration generate
 
 - logoutUrls: ["https://main.d1086iitvfyy6.amplifyapp.com/"],
 + logoutUrls: ["https://main.d1086iitvfyy6.amplifyapp.com/", `https://${branchName}.d1086iitvfyy6.amplifyapp.com/`],
-```
-
-```diff
-- flows: ["code"],
 ```
 
 **Edit in `./amplify/function/addusertogroup/index.js`:**

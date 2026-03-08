@@ -479,7 +479,17 @@ export class BackendSynthesizer {
               this.oAuthFlag = true;
               objectLiterals.push(this.createOAuthObjectExpression(object, gen2PropertyMap));
             } else if (key != 'CallbackURLs' && key != 'LogoutURLs' && key != 'AllowedOAuthScopes') {
-              objectLiterals.push(this.createListPropertyAssignment(mappedProperty, value));
+              if (this.oAuthFlag && key == 'AllowedOAuthFlows') {
+                // When the oAuth block already includes flows, emit this as a commented-out property
+                objectLiterals.push(
+                  factory.createPropertyAssignment(
+                    factory.createIdentifier('// ' + mappedProperty),
+                    factory.createArrayLiteralExpression(value.map((attribute: string) => factory.createStringLiteral(attribute, true))),
+                  ),
+                );
+              } else {
+                objectLiterals.push(this.createListPropertyAssignment(mappedProperty, value));
+              }
             }
           }
         } else if (typeof value == 'object' && value !== null) {
@@ -1595,8 +1605,11 @@ export class BackendSynthesizer {
                     factory.createStringLiteral(`Gen1${restApi.apiName}Api`),
                     factory.createObjectLiteralExpression(
                       [
-                        factory.createPropertyAssignment('restApiId', factory.createStringLiteral(restApi.gen1RestApiId)),
-                        factory.createPropertyAssignment('rootResourceId', factory.createStringLiteral(restApi.gen1ApiResourceId)),
+                        factory.createPropertyAssignment('restApiId', factory.createStringLiteral(`<gen1-${restApi.apiName}-api-id>`)),
+                        factory.createPropertyAssignment(
+                          'rootResourceId',
+                          factory.createStringLiteral(`<gen1-${restApi.apiName}-root-resource-id>`),
+                        ),
                       ],
                       true,
                     ),

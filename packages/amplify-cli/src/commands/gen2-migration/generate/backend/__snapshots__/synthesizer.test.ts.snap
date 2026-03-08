@@ -63,8 +63,8 @@ nutritionapiApi.addGatewayResponse("Default5XX", {
 });
 const lognutritionIntegration = new LambdaIntegration(backend.lognutrition.resources.lambda);
 const gen1nutritionapiApi = RestApi.fromRestApiAttributes(nutritionapiStack, "Gen1nutritionapiApi", {
-    restApiId: "test-api-id",
-    rootResourceId: "test-root-resource-id"
+    restApiId: "<gen1-nutritionapi-api-id>",
+    rootResourceId: "<gen1-nutritionapi-root-resource-id>"
 });
 const gen1nutritionapiPolicy = new Policy(nutritionapiStack, "Gen1nutritionapiPolicy", {
     statements: [new PolicyStatement({
@@ -150,8 +150,8 @@ nutritionapiApi.addGatewayResponse("Default5XX", {
 });
 const nutritionitemsIntegration = new LambdaIntegration(backend.nutritionitems.resources.lambda);
 const gen1nutritionapiApi = RestApi.fromRestApiAttributes(nutritionapiStack, "Gen1nutritionapiApi", {
-    restApiId: "test-api-id",
-    rootResourceId: "test-root-resource-id"
+    restApiId: "<gen1-nutritionapi-api-id>",
+    rootResourceId: "<gen1-nutritionapi-root-resource-id>"
 });
 const gen1nutritionapiPolicy = new Policy(nutritionapiStack, "Gen1nutritionapiPolicy", {
     statements: [new PolicyStatement({
@@ -240,8 +240,8 @@ nutritionapiApi.addGatewayResponse("Default5XX", {
 const lognutritionIntegration = new LambdaIntegration(backend.lognutrition.resources.lambda);
 const nutritionitemsIntegration = new LambdaIntegration(backend.nutritionitems.resources.lambda);
 const gen1nutritionapiApi = RestApi.fromRestApiAttributes(nutritionapiStack, "Gen1nutritionapiApi", {
-    restApiId: "test-api-id",
-    rootResourceId: "test-root-resource-id"
+    restApiId: "<gen1-nutritionapi-api-id>",
+    rootResourceId: "<gen1-nutritionapi-root-resource-id>"
 });
 const gen1nutritionapiPolicy = new Policy(nutritionapiStack, "Gen1nutritionapiPolicy", {
     statements: [new PolicyStatement({
