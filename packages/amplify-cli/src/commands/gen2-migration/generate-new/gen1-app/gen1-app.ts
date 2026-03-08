@@ -1,9 +1,7 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
-import assert from 'node:assert';
 import { BackendEnvironment, GetBackendEnvironmentCommand } from '@aws-sdk/client-amplify';
 import {
-  CognitoIdentityProviderClient,
   DescribeUserPoolCommand,
   DescribeUserPoolClientCommand,
   ListIdentityProvidersCommand,
@@ -18,7 +16,7 @@ import {
   SoftwareTokenMfaConfigType,
   LambdaConfigType,
 } from '@aws-sdk/client-cognito-identity-provider';
-import { DescribeIdentityPoolCommand, GetIdentityPoolRolesCommand } from '@aws-sdk/client-cognito-identity';
+import { DescribeIdentityPoolCommand } from '@aws-sdk/client-cognito-identity';
 import { GetFunctionCommand, GetPolicyCommand, FunctionConfiguration } from '@aws-sdk/client-lambda';
 import { DescribeRuleCommand } from '@aws-sdk/client-cloudwatch-events';
 import {
@@ -28,91 +26,126 @@ import {
   GetBucketEncryptionCommand,
 } from '@aws-sdk/client-s3';
 import { StackResource } from '@aws-sdk/client-cloudformation';
-import { $TSMeta, JSONUtilities, stateManager } from '@aws-amplify/amplify-cli-core';
+import { $TSMeta, JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import { AwsClients } from './aws-clients';
 import { AmplifyStackParser } from '../../generate/codegen-head/amplify_stack_parser';
 import { BackendDownloader } from '../../generate/codegen-head/backend_downloader';
 import { fileOrDirectoryExists } from '../../generate/codegen-head/directory_exists';
 
+/** Constructor options for Gen1App. */
+interface Gen1AppOptions {
+  readonly appId: string;
+  readonly region: string;
+  readonly envName: string;
+  readonly clients: AwsClients;
+}
+
+/** MFA configuration from Cognito. */
+interface MfaConfig {
+  readonly mfaConfig?: UserPoolMfaType;
+  readonly totpConfig?: SoftwareTokenMfaConfigType;
+}
+
+/** Identity pool configuration. */
+interface IdentityPoolInfo {
+  readonly guestLogin?: boolean;
+  readonly identityPoolName?: string;
+}
+
 /**
  * Lazy-loading, caching facade for all Gen1 app state.
  *
  * Every generator receives this facade. Each `fetch*` method calls AWS
- * on first invocation and caches the result. Synchronous properties are
- * initialized from local files in the constructor.
- *
- * Returns raw SDK types or parsed file contents directly — no custom
- * intermediate interfaces. Easy to mock: stub only the methods your
- * test needs.
+ * on first invocation and caches the result. Returns raw SDK types
+ * directly — no custom intermediate interfaces.
  */
 export class Gen1App {
-  public readonly appId: string;
-  public readonly region: string;
-  public readonly envName: string;
+  readonly appId: string;
+  readonly region: string;
+  readonly envName: string;
+  readonly clients: AwsClients;
+  readonly stackParser: AmplifyStackParser;
+  readonly backendDownloader: BackendDownloader;
 
-  private readonly clients: AwsClients;
-  private readonly stackParser: AmplifyStackParser;
-  private readonly ccbFetcher: BackendDownloader;
+  private cachedBackendEnv: BackendEnvironment | undefined;
+  private cachedCcbDir: string | undefined;
+  private cachedMeta: $TSMeta | undefined;
+  private cachedStackResources: StackResource[] | undefined;
+  private cachedResourcesByLogicalId: Record<string, StackResource> | undefined;
+  private cachedUserPool: UserPoolType | undefined | null;
+  private cachedMfaConfig: MfaConfig | undefined;
+  private cachedWebClient: UserPoolClientType | undefined | null;
+  private cachedUserPoolClient: UserPoolClientType | undefined | null;
+  private cachedIdentityProviders: IdentityProviderType[] | undefined;
+  private cachedIdentityGroups: GroupType[] | undefined;
+  private cachedIdentityPool: IdentityPoolInfo | undefined | null;
+  private readonly cachedFunctionConfigs = new Map<string, FunctionConfiguration>();
 
-  // Cached values
-  private backendEnv: BackendEnvironment | undefined;
-  private ccbDir: string | undefined;
-  private amplifyMeta: $TSMeta | undefined;
-  private stackResources: StackResource[] | undefined;
-  private resourcesByLogicalId: Record<string, StackResource> | undefined;
-
-  constructor(opts: {
-    readonly appId: string;
-    readonly region: string;
-    readonly envName: string;
-    readonly clients: AwsClients;
-  }) {
+  constructor(opts: Gen1AppOptions) {
     this.appId = opts.appId;
     this.region = opts.region;
     this.envName = opts.envName;
     this.clients = opts.clients;
     this.stackParser = new AmplifyStackParser(opts.clients.cloudFormation);
-    this.ccbFetcher = new BackendDownloader(opts.clients.s3);
+    this.backendDownloader = new BackendDownloader(opts.clients.s3);
   }
 
   // ── Backend environment ──────────────────────────────────────────
 
   /** Resolves and caches the backend environment. */
   async fetchBackendEnvironment(): Promise<BackendEnvironment> {
-    if (this.backendEnv) return this.backendEnv;
+    if (this.cachedBackendEnv) return this.cachedBackendEnv;
     const { backendEnvironment } = await this.clients.amplify.send(
       new GetBackendEnvironmentCommand({
         appId: this.appId,
         environmentName: this.envName,
       }),
     );
-    assert(backendEnvironment, 'No backend environment found');
-    this.backendEnv = backendEnvironment;
+    if (!backendEnvironment) {
+      throw new Error(`No backend environment found for app ${this.appId}, env ${this.envName}`);
+    }
+    this.cachedBackendEnv = backendEnvironment;
     return backendEnvironment;
+  }
+
+  /** Returns the root stack name from the backend environment. */
+  async fetchRootStackName(): Promise<string> {
+    const env = await this.fetchBackendEnvironment();
+    if (!env.stackName) {
+      throw new Error('Backend environment has no stack name');
+    }
+    return env.stackName;
   }
 
   // ── Current cloud backend ────────────────────────────────────────
 
   /** Downloads and caches the current cloud backend zip from S3. */
   async fetchCloudBackendDir(): Promise<string> {
-    if (this.ccbDir) return this.ccbDir;
+    if (this.cachedCcbDir) return this.cachedCcbDir;
     const env = await this.fetchBackendEnvironment();
-    this.ccbDir = await this.ccbFetcher.getCurrentCloudBackend(env.deploymentArtifacts!);
-    return this.ccbDir;
+    if (!env.deploymentArtifacts) {
+      throw new Error('Backend environment has no deployment artifacts');
+    }
+    this.cachedCcbDir = await this.backendDownloader.getCurrentCloudBackend(env.deploymentArtifacts);
+    return this.cachedCcbDir;
   }
 
   // ── amplify-meta.json ────────────────────────────────────────────
 
   /** Reads and caches amplify-meta.json from the cloud backend. */
   async fetchMeta(): Promise<$TSMeta> {
-    if (this.amplifyMeta) return this.amplifyMeta;
+    if (this.cachedMeta) return this.cachedMeta;
     const ccbDir = await this.fetchCloudBackendDir();
     const metaPath = path.join(ccbDir, 'amplify-meta.json');
     if (!(await fileOrDirectoryExists(metaPath))) {
       throw new Error('Could not find amplify-meta.json');
     }
-    this.amplifyMeta = JSONUtilities.readJson<$TSMeta>(metaPath, { throwIfNotExist: true })!;
-    return this.amplifyMeta;
+    const meta = JSONUtilities.readJson<$TSMeta>(metaPath, { throwIfNotExist: true });
+    if (!meta) {
+      throw new Error('Failed to parse amplify-meta.json');
+    }
+    this.cachedMeta = meta;
+    return meta;
   }
 
   /** Returns the category block from amplify-meta.json, or undefined. */
@@ -129,31 +162,28 @@ export class Gen1App {
 
   /** Fetches and caches all stack resources from the root stack. */
   async fetchAllStackResources(): Promise<StackResource[]> {
-    if (this.stackResources) return this.stackResources;
-    const env = await this.fetchBackendEnvironment();
-    assert(env.stackName, 'Backend environment has no stack name');
-    this.stackResources = await this.stackParser.getAllStackResources(env.stackName);
-    return this.stackResources;
+    if (this.cachedStackResources) return this.cachedStackResources;
+    const stackName = await this.fetchRootStackName();
+    this.cachedStackResources = await this.stackParser.getAllStackResources(stackName);
+    return this.cachedStackResources;
   }
 
   /** Returns stack resources indexed by LogicalResourceId. */
   async fetchResourcesByLogicalId(): Promise<Record<string, StackResource>> {
-    if (this.resourcesByLogicalId) return this.resourcesByLogicalId;
+    if (this.cachedResourcesByLogicalId) return this.cachedResourcesByLogicalId;
     const resources = await this.fetchAllStackResources();
-    this.resourcesByLogicalId = this.stackParser.getResourcesByLogicalId(resources);
-    return this.resourcesByLogicalId;
+    this.cachedResourcesByLogicalId = this.stackParser.getResourcesByLogicalId(resources);
+    return this.cachedResourcesByLogicalId;
   }
 
   // ── Auth (Cognito) ──────────────────────────────────────────────
 
-  private userPoolCache: UserPoolType | undefined | null;
-
   /** Fetches the Cognito User Pool. Returns undefined if no UserPool resource exists. */
   async fetchUserPool(): Promise<UserPoolType | undefined> {
-    if (this.userPoolCache !== undefined) return this.userPoolCache ?? undefined;
+    if (this.cachedUserPool !== undefined) return this.cachedUserPool ?? undefined;
     const resources = await this.fetchResourcesByLogicalId();
     if (!resources['UserPool']) {
-      this.userPoolCache = null;
+      this.cachedUserPool = null;
       return undefined;
     }
     const { UserPool } = await this.clients.cognitoIdentityProvider.send(
@@ -161,15 +191,13 @@ export class Gen1App {
         UserPoolId: resources['UserPool'].PhysicalResourceId,
       }),
     );
-    this.userPoolCache = UserPool ?? null;
-    return this.userPoolCache ?? undefined;
+    this.cachedUserPool = UserPool ?? null;
+    return this.cachedUserPool ?? undefined;
   }
 
-  private mfaConfigCache: { mfaConfig?: UserPoolMfaType; totpConfig?: SoftwareTokenMfaConfigType } | undefined;
-
   /** Fetches MFA configuration for the user pool. */
-  async fetchMfaConfig(): Promise<{ mfaConfig?: UserPoolMfaType; totpConfig?: SoftwareTokenMfaConfigType } | undefined> {
-    if (this.mfaConfigCache) return this.mfaConfigCache;
+  async fetchMfaConfig(): Promise<MfaConfig | undefined> {
+    if (this.cachedMfaConfig) return this.cachedMfaConfig;
     const resources = await this.fetchResourcesByLogicalId();
     if (!resources['UserPool']) return undefined;
     const result = await this.clients.cognitoIdentityProvider.send(
@@ -177,32 +205,37 @@ export class Gen1App {
         UserPoolId: resources['UserPool'].PhysicalResourceId,
       }),
     );
-    this.mfaConfigCache = {
+    this.cachedMfaConfig = {
       mfaConfig: result.MfaConfiguration,
       totpConfig: result.SoftwareTokenMfaConfiguration,
     };
-    return this.mfaConfigCache;
+    return this.cachedMfaConfig;
   }
-
-  private webClientCache: UserPoolClientType | undefined | null;
 
   /** Fetches the web user pool client. */
-  async fetchWebClient(): Promise<User
-serPoolClientWeb'].PhysicalResourceId,
+  async fetchWebClient(): Promise<UserPoolClientType | undefined> {
+    if (this.cachedWebClient !== undefined) return this.cachedWebClient ?? undefined;
+    const resources = await this.fetchResourcesByLogicalId();
+    if (!resources['UserPool'] || !resources['UserPoolClientWeb']) {
+      this.cachedWebClient = null;
+      return undefined;
+    }
+    const { UserPoolClient } = await this.clients.cognitoIdentityProvider.send(
+      new DescribeUserPoolClientCommand({
+        UserPoolId: resources['UserPool'].PhysicalResourceId,
+        ClientId: resources['UserPoolClientWeb'].PhysicalResourceId,
       }),
     );
-    this.webClientCache = UserPoolClient ?? null;
-    return this.webClientCache ?? undefined;
+    this.cachedWebClient = UserPoolClient ?? null;
+    return this.cachedWebClient ?? undefined;
   }
-
-  private userPoolClientCache: UserPoolClientType | undefined | null;
 
   /** Fetches the non-web user pool client. */
   async fetchUserPoolClient(): Promise<UserPoolClientType | undefined> {
-    if (this.userPoolClientCache !== undefined) return this.userPoolClientCache ?? undefined;
+    if (this.cachedUserPoolClient !== undefined) return this.cachedUserPoolClient ?? undefined;
     const resources = await this.fetchResourcesByLogicalId();
     if (!resources['UserPool'] || !resources['UserPoolClient']) {
-      this.userPoolClientCache = null;
+      this.cachedUserPoolClient = null;
       return undefined;
     }
     const { UserPoolClient } = await this.clients.cognitoIdentityProvider.send(
@@ -211,24 +244,20 @@ serPoolClientWeb'].PhysicalResourceId,
         ClientId: resources['UserPoolClient'].PhysicalResourceId,
       }),
     );
-    this.userPoolClientCache = UserPoolClient ?? null;
-    return this.userPoolClientCache ?? undefined;
+    this.cachedUserPoolClient = UserPoolClient ?? null;
+    return this.cachedUserPoolClient ?? undefined;
   }
 
-  private identityProvidersCache: IdentityProviderType[] | undefined;
-
-  /** Fetches identity provider summaries for the user pool. */
+  /** Fetches identity provider details for the user pool. */
   async fetchIdentityProviders(): Promise<IdentityProviderType[]> {
-    if (this.identityProvidersCache) return this.identityProvidersCache;
+    if (this.cachedIdentityProviders) return this.cachedIdentityProviders;
     const resources = await this.fetchResourcesByLogicalId();
     if (!resources['UserPool']) {
-      this.identityProvidersCache = [];
+      this.cachedIdentityProviders = [];
       return [];
     }
     const userPoolId = resources['UserPool'].PhysicalResourceId;
-    const { Providers } = await this.clients.cognitoIdentityProvider.send(
-      new ListIdentityProvidersCommand({ UserPoolId: userPoolId }),
-    );
+    const { Providers } = await this.clients.cognitoIdentityProvider.send(new ListIdentityProvidersCommand({ UserPoolId: userPoolId }));
     const details: IdentityProviderType[] = [];
     for (const provider of Providers ?? []) {
       const { IdentityProvider } = await this.clients.cognitoIdentityProvider.send(
@@ -239,44 +268,43 @@ serPoolClientWeb'].PhysicalResourceId,
       );
       if (IdentityProvider) details.push(IdentityProvider);
     }
-    this.identityProvidersCache = details;
+    this.cachedIdentityProviders = details;
     return details;
   }
 
-  private identityGroupsCache: GroupType[] | undefined;
-
   /** Fetches user pool groups. */
   async fetchIdentityGroups(): Promise<GroupType[]> {
-    if (this.identityGroupsCache) return this.identityGroupsCache;
+    if (this.cachedIdentityGroups) return this.cachedIdentityGroups;
     const resources = await this.fetchResourcesByLogicalId();
     if (!resources['UserPool']) {
-      this.identityGroupsCache = [];
+      this.cachedIdentityGroups = [];
       return [];
     }
     const { Groups } = await this.clients.cognitoIdentityProvider.send(
       new ListGroupsCommand({ UserPoolId: resources['UserPool'].PhysicalResourceId }),
     );
-    this.identityGroupsCache = Groups ?? [];
-    return this.identityGroupsCache;
+    this.cachedIdentityGroups = Groups ?? [];
+    return this.cachedIdentityGroups;
   }
 
-  private identityPoolCache: { guestLogin?: boolean; identityPoolName?: string } | undefined;
-
   /** Fetches identity pool configuration (guest login, pool name). */
-  async fetchIdentityPool(): Promise<{ guestLogin?: boolean; identityPoolName?: string } | undefined> {
-    if (this.identityPoolCache) return this.identityPoolCache;
+  async fetchIdentityPool(): Promise<IdentityPoolInfo | undefined> {
+    if (this.cachedIdentityPool !== undefined) return this.cachedIdentityPool ?? undefined;
     const resources = await this.fetchResourcesByLogicalId();
-    if (!resources['IdentityPool']) return undefined;
+    if (!resources['IdentityPool']) {
+      this.cachedIdentityPool = null;
+      return undefined;
+    }
     const result = await this.clients.cognitoIdentity.send(
       new DescribeIdentityPoolCommand({
         IdentityPoolId: resources['IdentityPool'].PhysicalResourceId,
       }),
     );
-    this.identityPoolCache = {
+    this.cachedIdentityPool = {
       guestLogin: result.AllowUnauthenticatedIdentities,
       identityPoolName: result.IdentityPoolName,
     };
-    return this.identityPoolCache;
+    return this.cachedIdentityPool;
   }
 
   // ── Auth trigger connections ─────────────────────────────────────
@@ -294,9 +322,10 @@ serPoolClientWeb'].PhysicalResourceId,
         const contents = await fs.readFile(triggerFilePath, { encoding: 'utf8' });
         const cliInputs = JSON.parse(contents);
         if (cliInputs?.cognitoConfig?.triggers) {
-          const triggers = typeof cliInputs.cognitoConfig.triggers === 'string'
-            ? JSON.parse(cliInputs.cognitoConfig.triggers)
-            : cliInputs.cognitoConfig.triggers;
+          const triggers =
+            typeof cliInputs.cognitoConfig.triggers === 'string'
+              ? JSON.parse(cliInputs.cognitoConfig.triggers)
+              : cliInputs.cognitoConfig.triggers;
           const connections: Partial<Record<keyof LambdaConfigType, string>> = {};
           for (const [triggerName, functionNames] of Object.entries(triggers)) {
             const fns = functionNames as string[];
@@ -313,17 +342,13 @@ serPoolClientWeb'].PhysicalResourceId,
 
   // ── Functions (Lambda) ──────────────────────────────────────────
 
-  private functionConfigsCache: Map<string, FunctionConfiguration> = new Map();
-
   /** Fetches a Lambda function configuration by its deployed name. */
   async fetchFunctionConfig(deployedName: string): Promise<FunctionConfiguration | undefined> {
-    if (this.functionConfigsCache.has(deployedName)) return this.functionConfigsCache.get(deployedName);
+    if (this.cachedFunctionConfigs.has(deployedName)) return this.cachedFunctionConfigs.get(deployedName);
     try {
-      const result = await this.clients.lambda.send(
-        new GetFunctionCommand({ FunctionName: deployedName }),
-      );
+      const result = await this.clients.lambda.send(new GetFunctionCommand({ FunctionName: deployedName }));
       const config = result.Configuration ?? undefined;
-      if (config) this.functionConfigsCache.set(deployedName, config);
+      if (config) this.cachedFunctionConfigs.set(deployedName, config);
       return config;
     } catch {
       return undefined;
@@ -333,20 +358,16 @@ serPoolClientWeb'].PhysicalResourceId,
   /** Fetches the CloudWatch schedule expression for a Lambda function. */
   async fetchFunctionSchedule(deployedName: string): Promise<string | undefined> {
     try {
-      const policyResponse = await this.clients.lambda.send(
-        new GetPolicyCommand({ FunctionName: deployedName }),
-      );
+      const policyResponse = await this.clients.lambda.send(new GetPolicyCommand({ FunctionName: deployedName }));
       const policy = JSON.parse(policyResponse.Policy ?? '{}');
-      const ruleName = policy.Statement?.find(
-        (s: { Condition?: { ArnLike?: { 'AWS:SourceArn'?: string } } }) =>
-          s.Condition?.ArnLike?.['AWS:SourceArn']?.includes('rule/'),
-      )?.Condition.ArnLike['AWS:SourceArn'].split('/').pop();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const ruleName = policy.Statement?.find((s: any) => s.Condition?.ArnLike?.['AWS:SourceArn']?.includes('rule/'))
+        ?.Condition.ArnLike['AWS:SourceArn'].split('/')
+        .pop();
 
       if (!ruleName) return undefined;
 
-      const ruleResponse = await this.clients.cloudWatchEvents.send(
-        new DescribeRuleCommand({ Name: ruleName }),
-      );
+      const ruleResponse = await this.clients.cloudWatchEvents.send(new DescribeRuleCommand({ Name: ruleName }));
       return ruleResponse.ScheduleExpression;
     } catch {
       return undefined;
@@ -357,32 +378,24 @@ serPoolClientWeb'].PhysicalResourceId,
 
   /** Fetches S3 bucket notification configuration. */
   async fetchBucketNotifications(bucketName: string) {
-    return this.clients.s3.send(
-      new GetBucketNotificationConfigurationCommand({ Bucket: bucketName }),
-    );
+    return this.clients.s3.send(new GetBucketNotificationConfigurationCommand({ Bucket: bucketName }));
   }
 
-  /** Fetches S3 bucket accelerate configuration. */
+  /** Fetches S3 bucket accelerate status. */
   async fetchBucketAccelerate(bucketName: string) {
-    const { Status } = await this.clients.s3.send(
-      new GetBucketAccelerateConfigurationCommand({ Bucket: bucketName }),
-    );
+    const { Status } = await this.clients.s3.send(new GetBucketAccelerateConfigurationCommand({ Bucket: bucketName }));
     return Status;
   }
 
-  /** Fetches S3 bucket versioning configuration. */
+  /** Fetches S3 bucket versioning status. */
   async fetchBucketVersioning(bucketName: string) {
-    const { Status } = await this.clients.s3.send(
-      new GetBucketVersioningCommand({ Bucket: bucketName }),
-    );
+    const { Status } = await this.clients.s3.send(new GetBucketVersioningCommand({ Bucket: bucketName }));
     return Status;
   }
 
   /** Fetches S3 bucket encryption configuration. */
   async fetchBucketEncryption(bucketName: string) {
-    const { ServerSideEncryptionConfiguration } = await this.clients.s3.send(
-      new GetBucketEncryptionCommand({ Bucket: bucketName }),
-    );
+    const { ServerSideEncryptionConfiguration } = await this.clients.s3.send(new GetBucketEncryptionCommand({ Bucket: bucketName }));
     return ServerSideEncryptionConfiguration;
   }
 
@@ -409,29 +422,5 @@ serPoolClientWeb'].PhysicalResourceId,
   async cloudBackendPathExists(relativePath: string): Promise<boolean> {
     const ccbDir = await this.fetchCloudBackendDir();
     return fileOrDirectoryExists(path.join(ccbDir, relativePath));
-  }
-
-  // ── Utility accessors ───────────────────────────────────────────
-
-  /** Returns the root stack name from the backend environment. */
-  async fetchRootStackName(): Promise<string> {
-    const env = await this.fetchBackendEnvironment();
-    assert(env.stackName, 'Backend environment has no stack name');
-    return env.stackName;
-  }
-
-  /** Returns the AmplifyStackParser for advanced stack queries. */
-  get amplifyStackParser(): AmplifyStackParser {
-    return this.stackParser;
-  }
-
-  /** Returns the raw AWS clients for advanced use cases. */
-  get awsClients(): AwsClients {
-    return this.clients;
-  }
-
-  /** Returns the BackendDownloader for custom resource access. */
-  get backendDownloader(): BackendDownloader {
-    return this.ccbFetcher;
   }
 }

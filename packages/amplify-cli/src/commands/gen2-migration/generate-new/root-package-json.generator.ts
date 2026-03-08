@@ -9,8 +9,7 @@ import { patchNpmPackageJson, PackageJson } from '../generate/npm_package/render
  * root package.json with Gen2 TypeScript dependencies.
  *
  * Category generators call `addDependency()` and `addDevDependency()`
- * during their `plan()` phase. When this generator's `plan()` runs,
- * it merges everything into the existing or new package.json.
+ * during their `plan()` phase.
  */
 export class RootPackageJsonGenerator implements Generator {
   private readonly dependencies: Record<string, string> = {};
@@ -46,10 +45,9 @@ export class RootPackageJsonGenerator implements Generator {
       {
         describe: async () => [`Generate ${packageJsonPath}`],
         execute: async () => {
-          // Try to read existing package.json
-          let packageJson: PackageJson = {
-            name: this.appName && this.envName ? `${this.appName}-${this.envName}-gen2` : 'amplify-gen2',
-          };
+          const defaultName = this.appName && this.envName ? `${this.appName}-${this.envName}-gen2` : 'amplify-gen2';
+
+          let packageJson: PackageJson = { name: defaultName };
           try {
             const existing = await fs.readFile('./package.json', { encoding: 'utf-8' });
             packageJson = JSON.parse(existing);
@@ -57,7 +55,6 @@ export class RootPackageJsonGenerator implements Generator {
             // File doesn't exist or is inaccessible. Use default.
           }
 
-          // Merge accumulated dependencies
           const merged: PackageJson = {
             ...packageJson,
             dependencies: {
@@ -70,7 +67,6 @@ export class RootPackageJsonGenerator implements Generator {
             },
           };
 
-          // Apply standard Gen2 dev dependency versions
           const patched = patchNpmPackageJson(merged, {
             'aws-cdk': '^2',
             'aws-cdk-lib': '^2',

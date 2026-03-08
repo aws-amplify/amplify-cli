@@ -17,7 +17,7 @@ const factory = ts.factory;
  * a single `backend.ts` file.
  */
 export class BackendGenerator implements Generator {
-  private readonly imports: Array<{ source: string; identifiers: string[] }> = [];
+  private readonly imports: Array<{ readonly source: string; readonly identifiers: string[] }> = [];
   private readonly defineBackendProperties: ts.ObjectLiteralElementLike[] = [];
   private readonly postDefineStatements: ts.Statement[] = [];
   private readonly outputDir: string;
@@ -26,10 +26,7 @@ export class BackendGenerator implements Generator {
     this.outputDir = outputDir;
   }
 
-  /**
-   * Adds an import statement to backend.ts.
-   * Multiple calls with the same source merge identifiers.
-   */
+  /** Adds an import to backend.ts. Merges identifiers for the same source. */
   addImport(source: string, identifiers: string[]): void {
     const existing = this.imports.find((i) => i.source === source);
     if (existing) {
@@ -43,18 +40,12 @@ export class BackendGenerator implements Generator {
     }
   }
 
-  /**
-   * Adds a property to the `defineBackend({ ... })` call.
-   * Typically a shorthand property like `auth` or a function name.
-   */
+  /** Adds a property to the `defineBackend({ ... })` call. */
   addDefineBackendProperty(property: ts.ObjectLiteralElementLike): void {
     this.defineBackendProperties.push(property);
   }
 
-  /**
-   * Adds a statement after the `defineBackend()` call.
-   * Used for CDK overrides, escape hatches, etc.
-   */
+  /** Adds a statement after the `defineBackend()` call (overrides, escape hatches). */
   addStatement(statement: ts.Statement): void {
     this.postDefineStatements.push(statement);
   }
@@ -68,7 +59,6 @@ export class BackendGenerator implements Generator {
         execute: async () => {
           const nodes: ts.Node[] = [];
 
-          // Emit all import statements
           for (const imp of this.imports) {
             nodes.push(createImportDeclaration(imp.source, imp.identifiers));
           }
@@ -89,11 +79,10 @@ export class BackendGenerator implements Generator {
           );
           nodes.push(backendDecl);
 
-          // All post-define statements (overrides, escape hatches)
           nodes.push(...this.postDefineStatements);
 
           const nodeArray = factory.createNodeArray(nodes as ts.Statement[]);
-          const content = await printNodes(nodeArray);
+          const content = printNodes(nodeArray);
 
           await fs.mkdir(path.dirname(backendTsPath), { recursive: true });
           await fs.writeFile(backendTsPath, content, 'utf-8');
