@@ -546,18 +546,24 @@ flowchart TD
 
 ### Phased Execution
 
-**Execution notes:** Each phase should be delegated to a `general-task-execution` sub-agent with a prompt that references this document (`REFACTOR_ISSUES.md`) and the specific phase. The sub-agent has access to all tools and can read this document for full context. Wait for each phase to complete and review its output before starting the next. Use `context-gatherer` at the start of each phase to re-orient on the current state of the codebase.
+**Execution notes:** Each phase should be delegated to a `general-task-execution` sub-agent with a prompt that references this document (`REFACTORING_REFACTOR.md`) and the specific phase. The sub-agent has access to all tools and can read this document for full context. Wait for each phase to complete and review its output before starting the next. Use `context-gatherer` at the start of each phase to re-orient on the current state of the codebase.
 
-**Testing strategy:** The old code and its unit tests remain intact through Phases 1–2. In Phase 3, when the entry point switches to the new code, validate against e2e snapshot tests. In Phase 4, write unit tests for the new classes that cover the same ground as the old tests — don't port them mechanically, but ensure equivalent coverage. Delete the old tests along with the old code.
+**Work style:** Prefer large, cohesive refactoring changes over small incremental ones — don't waste time validating intermediate states you may end up discarding. Do not run `yarn test`, `jest`, or any test command for incremental validation during a phase.
+
+**Exit criteria (all phases):** `yarn build && yarn test` in the `amplify-cli` package must pass before moving on to the next phase.
 
 **Phase 1 — Foundation**
 Create a new `refactor-new/` directory alongside the existing `refactor/` directory. Build the foundation: `AmplifyMigrationOperation` (with `validate()`), `Refactorer` interface, `AwsClients`, `Gen1Env`, `Gen2Branch`, abstract `CategoryRefactorer`, `ForwardCategoryRefactorer`, and `RollbackCategoryRefactorer`. Port the four resolvers, converting JSON string replacement to tree-walking and replacing `assert()` with `AmplifyError`. The old `refactor/` directory remains intact as reference throughout. Stop for review.
 
+The old code and its unit tests remain intact and must continue to pass. No new tests are needed for this phase since the new code has no entry point yet.
+
 **Phase 2 — Migrate category/service refactorers**
 One category at a time, create the forward and rollback refactorer classes (e.g., `S3ForwardRefactorer`, `S3RollbackRefactorer`). Copy over and restructure the relevant logic from the old code — resource type lists, logical ID mapping, category-specific concerns like OAuth. The old code stays untouched as reference. Stop for review after each category. Code does not need to compile at this stage.
 
+Same as Phase 1 — the old tests must still pass. No new tests yet since the new code is not wired in.
+
 **Phase 3 — Switch over**
-Once all refactorers are complete in `refactor-new/`, update `refactor.ts` (the `AmplifyMigrationRefactorStep` entry point) to use the new infrastructure. Run all existing tests against the new code and iterate until they pass.
+Once all refactorers are complete in `refactor-new/`, update `refactor.ts` (the `AmplifyMigrationRefactorStep` entry point) to use the new infrastructure. All existing tests must pass against the new code paths, including the e2e snapshot tests. Iterate until green.
 
 **Phase 4 — Cleanup**
-Once all tests pass, delete the old `refactor/` directory and rename `refactor-new/` to `refactor/`.
+Once all tests pass, delete the old `refactor/` directory and rename `refactor-new/` to `refactor/`. Write unit tests for the new classes that cover the same ground as the old tests — don't port them mechanically, but ensure equivalent coverage. Delete the old tests along with the old code.
