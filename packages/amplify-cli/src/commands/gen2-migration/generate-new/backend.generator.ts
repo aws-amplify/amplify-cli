@@ -1,0 +1,113 @@
+import ts from 'typescript';
+import path from 'node:path';
+import fs from 'node:fs/promises';
+import { Generator } from './generator';
+import { AmplifyMigrationOperation } from '../_operation';
+import { printNodes } from './ts-writer';
+
+const factory = ts.factory;
+
+/**
+ * Accumulates imports, statements, and defineBackend properties from
+ * category generators, then writes the final `backend.ts` file.
+ *
+ * Category generators call `addImport()`, `addStatement()`, and
+ * `addDefineBackendProperty()` during their `plan()` phase. When
+ * `BackendGenerator.plan()` runs last, it assembles everything into
+ * a single `backend.ts` file.
+ */
+export class BackendGenerator implements Generator {
+  private readonly imports: Array<{ source: string; identifiers: string[] }> = [];
+  private readonly defineBackendProperties: ts.ObjectLiteralElementLike[] = [];
+  private readonly postDefineStatements: ts.Statement[] = [];
+  private readonly outputDir: string;
+
+  constructor(outputDir: string) {
+    this.outputDir = outputDir;
+  }
+
+  /**
+   * Adds an import statement to backend.ts.
+   * Multiple calls with the same source merge identifiers.
+   */
+  addImport(source: string, identifiers: string[]): void {
+    const existing = this.imports.find((i) => i.source === source);
+    if (existing) {
+      for (const id of identifiers) {
+        if (!existing.identifiers.includes(id)) {
+          existing.identifiers.push(id);
+        }
+      }
+    } else {
+      this.imports.push({ source, identifiers: [...identifiers] });
+    }
+  }
+
+  /**
+   * Adds a property to the `defineBackend({ ... })` call.
+   * Typically a shorthand property like `auth` or a function name.
+   */
+  addDefineBackendProperty(property: ts.ObjectLiteralElementLike): void {
+    this.defineBackendProperties.push(property);
+  }
+
+  /**
+   * Adds a statement after the `defineBackend()` call.
+   * Used for CDK overrides, escape hatches, etc.
+   */
+  addStatement(statement: ts.Statement): void {
+    this.postDefineStatements.push(statement);
+  }
+
+  async plan(): Promise<AmplifyMigrationOperation[]> {
+    const backendTsPath = path.join(this.outputDir, 'amplify', 'backend.ts');
+
+    return [
+      {
+        describe: async () => [`Generate ${backendTsPath}`],
+        execute: async () => {
+          const nodes: ts.Node[] = [];
+
+          // Emit all import statements
+          for (const imp of this.imports) {
+            nodes.push(createImportDeclaration(imp.source, imp.identifiers));
+          }
+
+          // Always import defineBackend
+          nodes.push(createImportDeclaration('@aws-amplify/backend', ['defineBackend']));
+
+          // const backend = defineBackend({ auth, data, storage, ... })
+          const callExpr = factory.createCallExpression(factory.createIdentifier('defineBackend'), undefined, [
+            factory.createObjectLiteralExpression(this.defineBackendProperties, true),
+          ]);
+          const backendDecl = factory.createVariableStatement(
+            [],
+            factory.createVariableDeclarationList(
+              [factory.createVariableDeclaration('backend', undefined, undefined, callExpr)],
+              ts.NodeFlags.Const,
+            ),
+          );
+          nodes.push(backendDecl);
+
+          // All post-define statements (overrides, escape hatches)
+          nodes.push(...this.postDefineStatements);
+
+          const nodeArray = factory.createNodeArray(nodes as ts.Statement[]);
+          const content = await printNodes(nodeArray);
+
+          await fs.mkdir(path.dirname(backendTsPath), { recursive: true });
+          await fs.writeFile(backendTsPath, content, 'utf-8');
+        },
+      },
+    ];
+  }
+}
+
+function createImportDeclaration(source: string, identifiers: string[]): ts.ImportDeclaration {
+  const importSpecifiers = identifiers.map((id) => factory.createImportSpecifier(false, undefined, factory.createIdentifier(id)));
+  return factory.createImportDeclaration(
+    undefined,
+    factory.createImportClause(false, undefined, factory.createNamedImports(importSpecifiers)),
+    factory.createStringLiteral(source),
+  );
+}

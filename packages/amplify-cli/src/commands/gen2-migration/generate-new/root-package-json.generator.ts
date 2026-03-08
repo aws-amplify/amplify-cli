@@ -1,0 +1,93 @@
+import path from 'node:path';
+import fs from 'node:fs/promises';
+import { Generator } from './generator';
+import { AmplifyMigrationOperation } from '../_operation';
+import { patchNpmPackageJson, PackageJson } from '../generate/npm_package/renderer';
+
+/**
+ * Accumulates dependencies from category generators and writes the
+ * root package.json with Gen2 TypeScript dependencies.
+ *
+ * Category generators call `addDependency()` and `addDevDependency()`
+ * during their `plan()` phase. When this generator's `plan()` runs,
+ * it merges everything into the existing or new package.json.
+ */
+export class RootPackageJsonGenerator implements Generator {
+  private readonly dependencies: Record<string, string> = {};
+  private readonly devDependencies: Record<string, string> = {};
+  private readonly outputDir: string;
+  private appName: string | undefined;
+  private envName: string | undefined;
+
+  constructor(outputDir: string) {
+    this.outputDir = outputDir;
+  }
+
+  /** Sets the app name and env name for the package.json name field. */
+  setAppInfo(appName: string, envName: string): void {
+    this.appName = appName;
+    this.envName = envName;
+  }
+
+  /** Adds a runtime dependency. */
+  addDependency(name: string, version: string): void {
+    this.dependencies[name] = version;
+  }
+
+  /** Adds a dev dependency. */
+  addDevDependency(name: string, version: string): void {
+    this.devDependencies[name] = version;
+  }
+
+  async plan(): Promise<AmplifyMigrationOperation[]> {
+    const packageJsonPath = path.join(this.outputDir, 'package.json');
+
+    return [
+      {
+        describe: async () => [`Generate ${packageJsonPath}`],
+        execute: async () => {
+          // Try to read existing package.json
+          let packageJson: PackageJson = {
+            name: this.appName && this.envName ? `${this.appName}-${this.envName}-gen2` : 'amplify-gen2',
+          };
+          try {
+            const existing = await fs.readFile('./package.json', { encoding: 'utf-8' });
+            packageJson = JSON.parse(existing);
+          } catch {
+            // File doesn't exist or is inaccessible. Use default.
+          }
+
+          // Merge accumulated dependencies
+          const merged: PackageJson = {
+            ...packageJson,
+            dependencies: {
+              ...(packageJson.dependencies ?? {}),
+              ...this.dependencies,
+            },
+            devDependencies: {
+              ...(packageJson.devDependencies ?? {}),
+              ...this.devDependencies,
+            },
+          };
+
+          // Apply standard Gen2 dev dependency versions
+          const patched = patchNpmPackageJson(merged, {
+            'aws-cdk': '^2',
+            'aws-cdk-lib': '^2',
+            'ci-info': '^4.3.1',
+            constructs: '^10.0.0',
+            '@types/node': '*',
+            '@aws-amplify/backend': '^1.18.0',
+            '@aws-amplify/backend-cli': '^1.8.0',
+            '@aws-amplify/backend-data': '^1.6.2',
+            tsx: '^4.20.6',
+            esbuild: '^0.27.0',
+          });
+
+          await fs.mkdir(path.dirname(packageJsonPath), { recursive: true });
+          await fs.writeFile(packageJsonPath, JSON.stringify(patched, null, 2), 'utf-8');
+        },
+      },
+    ];
+  }
+}
