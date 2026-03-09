@@ -299,15 +299,29 @@ Deeply nested interfaces (`config.auth.providers[0].settings.oauth.scopes`) are 
 
 ## Error Handling
 
-### 16. Only return fallbacks for valid input states
+### 16. Only return fallbacks or branch for valid states
 
-The question to ask before returning `null`, a default, or swallowing an error is: does this condition represent a valid state the caller is expected to handle, or does it mean something is broken?
+The question to ask before returning `null`, adding an `if` guard, or swallowing an error is: does this condition represent a valid state the caller is expected to handle, or does it mean something is broken?
 
 If a function checks whether an optional resource exists (e.g., a cache entry that may or may not have been created by a previous step), returning `null` is correct — the caller has a real decision to make based on that absence.
 
-But if the resource _must_ exist because a previous step created it and the program can't continue without it, returning `null` hides a bug behind a fallback. The caller either ignores the null (and crashes later with a confusing error far from the source) or adds a null check that throws anyway — but now the error is one level removed from where the actual problem was discovered.
+But if the resource _must_ exist because a previous step created it and the program can't continue without it, returning `null` hides a bug behind a fallback. The same applies to `if` guards that silently skip work when a value is absent — if the code path can only be reached when the value exists, the guard hides a bug instead of surfacing it.
 
-**Instead:** Throw immediately with a clear error at the point where you detect the problem. Only return a fallback when the absence is a valid input state that the caller is designed to handle. Don't push failures downstream by returning null/undefined and hoping someone else deals with it.
+**Instead:** Throw immediately with a clear error at the point where you detect the problem. Only return a fallback or add a guard when the absence is a valid input state that the caller is designed to handle.
+
+```typescript
+// Bad — silently skips if apiId is missing, but we only reach
+// this code because we found an AppSync API entry
+if (apiId) {
+  const response = await client.send(new GetGraphqlApiCommand({ apiId }));
+}
+
+// Good — fail fast if the invariant is violated
+if (!apiId) {
+  throw new Error(`AppSync API '${apiName}' has no GraphQLAPIIdOutput`);
+}
+const response = await client.send(new GetGraphqlApiCommand({ apiId }));
+```
 
 ---
 
@@ -543,58 +557,7 @@ export class MyService {
 
 ---
 
-### 34. Rendering functions must be pure
-
-A function whose job is to produce output (TypeScript AST, JSON, file content) must not make network calls, read from disk, or mutate external state. If it needs data that requires I/O, the caller must resolve that data first and pass it in as a required parameter.
-
-The test: can you call the function in a unit test without mocking any I/O? If not, it's doing too much.
-
-```typescript
-// Bad — rendering function makes an AWS call to resolve table mappings
-async function renderDataResource(schema: string, envName: string) {
-  const apiId = await findApiId(envName); // AWS call inside a renderer
-  const mappings = buildMappings(schema, apiId);
-  return buildAst(schema, mappings);
-}
-
-// Good — caller resolves the data, renderer just renders
-function renderDataResource(schema: string, tableMappings: Record<string, string>) {
-  return buildAst(schema, tableMappings);
-}
-```
-
----
-
-### 35. Treat impossible states as errors, not branches
-
-If a code path can only be reached when a value exists (because earlier logic guarantees it), don't write an `if` guard that silently skips the work. That hides bugs — if the value is unexpectedly absent, you want to know immediately, not silently produce incomplete output.
-
-```typescript
-// Bad — silently skips if apiId is missing, but we only reach
-// this code because we found an AppSync API entry
-if (apiId) {
-  const response = await client.send(new GetGraphqlApiCommand({ apiId }));
-  // ...
-}
-
-// Good — fail fast if the invariant is violated
-if (!apiId) {
-  throw new Error(`AppSync API '${apiName}' has no GraphQLAPIIdOutput`);
-}
-const response = await client.send(new GetGraphqlApiCommand({ apiId }));
-```
-
----
-
-### 36. Separate data fetching from data transformation
-
-A generator (or any orchestrator) should have two distinct phases: fetch the data, then transform it. Don't interleave AWS calls with AST construction or file writing. This makes each phase independently testable and keeps the transformation logic pure.
-
-When a class needs both phases, use a Generator + Renderer pair: the Generator fetches data and calls the Renderer, which is a pure object that produces output from the data it receives.
-
----
-
-### 37. Known values belong in the constructor
+### 34. Known values belong in the constructor
 
 If a value is known at construction time and doesn't change, pass it to the constructor — not to every method that needs it. This avoids threading the same value through multiple call sites and makes the dependency explicit.
 
@@ -610,7 +573,7 @@ renderer.render({ schema, tableMappings });
 
 ---
 
-### 38. Don't use dynamic import expressions for types
+### 35. Don't use dynamic import expressions for types
 
 Inline `import('some-package').SomeType` expressions in type positions make the code harder to read and create implicit dependencies that aren't visible in the import block. If the type comes from untyped JSON, use `any` explicitly. If you need the type, add a proper import at the top of the file.
 
