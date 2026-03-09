@@ -17,7 +17,7 @@ const factory = ts.factory;
  * a single `backend.ts` file.
  */
 export class BackendGenerator implements Generator {
-  private readonly imports: Array<{ readonly source: string; readonly identifiers: string[] }> = [];
+  private readonly imports: Array<{ readonly source: string; identifiers: string[] }> = [];
   private readonly defineBackendProperties: ts.ObjectLiteralElementLike[] = [];
   private readonly postDefineStatements: ts.Statement[] = [];
   private readonly outputDir: string;

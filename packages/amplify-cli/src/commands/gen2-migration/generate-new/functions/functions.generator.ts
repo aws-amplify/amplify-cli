@@ -107,9 +107,7 @@ export class FunctionsGenerator implements Generator {
     }
 
     // Contribute env var escape hatches to backend.ts
-    const functionsWithFilteredEnvVars = resolvedFunctions.filter(
-      (f) => Object.keys(f.filteredEnvironmentVariables).length > 0,
-    );
+    const functionsWithFilteredEnvVars = resolvedFunctions.filter((f) => Object.keys(f.filteredEnvironmentVariables).length > 0);
     if (functionsWithFilteredEnvVars.length > 0) {
       operations.push({
         describe: async () => ['Generate function environment variable escape hatches in backend.ts'],
@@ -162,10 +160,7 @@ export class FunctionsGenerator implements Generator {
     };
   }
 
-  private async resolveFunctions(
-    functionCategory: Record<string, unknown>,
-    categoryMap: Map<string, string>,
-  ): Promise<ResolvedFunction[]> {
+  private async resolveFunctions(functionCategory: Record<string, unknown>, categoryMap: Map<string, string>): Promise<ResolvedFunction[]> {
     const resolved: ResolvedFunction[] = [];
 
     for (const [resourceName, resourceValue] of Object.entries(functionCategory)) {
@@ -214,8 +209,24 @@ export class FunctionsGenerator implements Generator {
     const categoryMap = new Map<string, string>();
     const auth = meta.auth as Record<string, Record<string, unknown>> | undefined;
     const storage = meta.storage as Record<string, Record<string, unknown>> | undefined;
-    const functions = meta.function as Record<string, Record<string, unkno
-ageResource of Object.values(storage)) {
+    const functions = meta.function as Record<string, Record<string, unknown>> | undefined;
+
+    // Auth triggers (auth depends on function)
+    if (auth) {
+      for (const authResource of Object.values(auth)) {
+        if (authResource.dependsOn) {
+          for (const dep of authResource.dependsOn as Array<{ category: string; resourceName: string }>) {
+            if (dep.category === 'function') {
+              categoryMap.set(dep.resourceName, 'auth');
+            }
+          }
+        }
+      }
+    }
+
+    // Storage triggers (storage depends on function)
+    if (storage) {
+      for (const storageResource of Object.values(storage)) {
         if (storageResource.dependsOn) {
           for (const dep of storageResource.dependsOn as Array<{ category: string; resourceName: string }>) {
             if (dep.category === 'function') {
@@ -277,10 +288,7 @@ function extractFilePathFromHandler(handler: string): string {
  * Filters environment variables that reference other Amplify resources.
  * Moves them from envVars to filteredEnvVars.
  */
-function filterResourceEnvVars(
-  envVars: Record<string, string>,
-  filteredEnvVars: Record<string, string>,
-): void {
+function filterResourceEnvVars(envVars: Record<string, string>, filteredEnvVars: Record<string, string>): void {
   for (const variable of Object.keys(envVars)) {
     let shouldFilter = false;
 
@@ -331,9 +339,7 @@ function generateLambdaEnvVars(functionName: string, envVars: Record<string, str
         }
       }
 
-      const expression = isDirect
-        ? buildDirectExpression(resolvedPath)
-        : buildBackendExpression(resolvedPath);
+      const expression = isDirect ? buildDirectExpression(resolvedPath) : buildBackendExpression(resolvedPath);
 
       statements.push(
         factory.createExpressionStatement(

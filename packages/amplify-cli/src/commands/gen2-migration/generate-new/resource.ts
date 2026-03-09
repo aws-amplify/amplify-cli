@@ -1,6 +1,9 @@
 import ts from 'typescript';
 import { newLineIdentifier } from './ts-factory-utils';
 const factory = ts.factory;
+/**
+ * Parameters for rendering a single-export resource.ts file.
+ */
 export type ResourceTsParameters = {
   readonly additionalImportedBackendIdentifiers?: Record<string, Set<string>>;
   readonly backendFunctionConstruct: string;
@@ -9,7 +12,10 @@ export type ResourceTsParameters = {
   readonly postImportStatements?: ts.Node[];
   readonly postExportStatements?: ts.Node[];
 };
-// Creates ts file with imports / exports
+/**
+ * Renders a resource.ts file with imports, a single exported const,
+ * and optional pre/post statements.
+ */
 export function renderResourceTsFile({
   additionalImportedBackendIdentifiers = {},
   backendFunctionConstruct,
@@ -36,6 +42,9 @@ export function renderResourceTsFile({
   ]);
 }
 
+/**
+ * Parameters for rendering a multi-export resource.ts file (functions).
+ */
 export type ResourceTsParametersList = {
   readonly additionalImportedBackendIdentifiers?: Record<string, Set<string>>;
   readonly backendFunctionConstruct: string;
@@ -45,6 +54,10 @@ export type ResourceTsParametersList = {
   readonly postExportStatements?: ts.Node[];
 };
 
+/**
+ * Renders a resource.ts file with imports and multiple exported
+ * defineFunction() calls (one per Lambda function).
+ */
 export function renderResourceTsFilesForFunction({
   additionalImportedBackendIdentifiers = {},
   backendFunctionConstruct,

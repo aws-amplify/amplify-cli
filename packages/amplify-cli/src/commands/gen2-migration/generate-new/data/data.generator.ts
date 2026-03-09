@@ -1,7 +1,7 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import ts from 'typescript';
-import { GetGraphqlApiCommand, GraphqlApi } from '@aws-sdk/client-appsync';
+import { GraphqlApi } from '@aws-sdk/client-appsync';
 import { Generator } from '../generator';
 import { AmplifyMigrationOperation } from '../../_operation';
 import { BackendGenerator } from '../backend.generator';
@@ -58,11 +58,10 @@ export class DataGenerator implements Generator {
 
     const tableMappings = createTableMappings(schema, apiId, this.gen1App.envName);
 
-    const appSyncResponse = await this.gen1App.clients.appSync.send(new GetGraphqlApiCommand({ apiId }));
-    if (!appSyncResponse.graphqlApi) {
+    const graphqlApi = await this.gen1App.aws.fetchGraphqlApi(apiId);
+    if (!graphqlApi) {
       throw new Error(`AppSync API '${apiId}' not found`);
     }
-    const graphqlApi = appSyncResponse.graphqlApi;
 
     const authorizationModes = output?.authConfig;
     if (authorizationModes && graphqlApi.additionalAuthenticationProviders?.length) {

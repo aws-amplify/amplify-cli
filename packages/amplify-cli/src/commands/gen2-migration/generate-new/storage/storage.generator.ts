@@ -1,7 +1,6 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import ts from 'typescript';
-import { DescribeTableCommand } from '@aws-sdk/client-dynamodb';
 import type { BucketAccelerateStatus, BucketVersioningStatus, ServerSideEncryptionConfiguration } from '@aws-sdk/client-s3';
 import { Generator } from '../generator';
 import { AmplifyMigrationOperation } from '../../_operation';
@@ -565,8 +564,10 @@ export class StorageGenerator implements Generator {
     const output = storageMeta.output as Record<string, string> | undefined;
     const actualTableName = output?.Name || storageName;
 
-    const describeResult = await this.gen1App.clients.dynamoDB.send(new DescribeTableCommand({ TableName: actualTableName }));
-    const table = describeResult.Table!;
+    const table = await this.gen1App.aws.fetchTableDescription(actualTableName);
+    if (!table) {
+      throw new Error(`DynamoDB table '${actualTableName}' not found`);
+    }
 
     const partitionKey: DynamoDBAttribute = {
       name: table.KeySchema!.find((k) => k.KeyType === 'HASH')!.AttributeName!,

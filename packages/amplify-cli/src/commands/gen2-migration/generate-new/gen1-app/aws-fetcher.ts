@@ -12,7 +12,7 @@ import {
   UserPoolMfaType,
   SoftwareTokenMfaConfigType,
 } from '@aws-sdk/client-cognito-identity-provider';
-import { DescribeIdentityPoolCommand } from '@aws-sdk/client-cognito-identity';
+import { DescribeIdentityPoolCommand, GetIdentityPoolRolesCommand } from '@aws-sdk/client-cognito-identity';
 import { GetFunctionCommand, GetPolicyCommand, FunctionConfiguration } from '@aws-sdk/client-lambda';
 import { DescribeRuleCommand } from '@aws-sdk/client-cloudwatch-events';
 import {
@@ -22,6 +22,8 @@ import {
   GetBucketEncryptionCommand,
 } from '@aws-sdk/client-s3';
 import { DescribeStackResourcesCommand, StackResource } from '@aws-sdk/client-cloudformation';
+import { GetGraphqlApiCommand, GraphqlApi } from '@aws-sdk/client-appsync';
+import { DescribeTableCommand, TableDescription } from '@aws-sdk/client-dynamodb';
 import { AwsClients } from './aws-clients';
 
 /**
@@ -308,5 +310,50 @@ export class AwsFetcher {
   public async fetchBucketEncryption(bucketName: string) {
     const { ServerSideEncryptionConfiguration } = await this.clients.s3.send(new GetBucketEncryptionCommand({ Bucket: bucketName }));
     return ServerSideEncryptionConfiguration;
+  }
+
+  // ── AppSync (GraphQL) ──────────────────────────────────────────
+
+  /**
+   * Fetches an AppSync GraphQL API by ID.
+   */
+  public async fetchGraphqlApi(apiId: string): Promise<GraphqlApi | undefined> {
+    const { graphqlApi } = await this.clients.appSync.send(new GetGraphqlApiCommand({ apiId }));
+    return graphqlApi;
+  }
+
+  // ── Cognito Identity (roles) ───────────────────────────────────
+
+  /**
+   * Fetches the IAM roles associated with an identity pool.
+   */
+  public async fetchIdentityPoolRoles(identityPoolId: string): Promise<{ authenticated?: string; unauthenticated?: string } | undefined> {
+    const { Roles } = await this.clients.cognitoIdentity.send(new GetIdentityPoolRolesCommand({ IdentityPoolId: identityPoolId }));
+    if (!Roles) return undefined;
+    return { authenticated: Roles.authenticated, unauthenticated: Roles.unauthenticated };
+  }
+
+  // ── DynamoDB ───────────────────────────────────────────────────
+
+  /**
+   * Fetches a DynamoDB table description by name.
+   */
+  public async fetchTableDescription(tableName: string): Promise<TableDescription | undefined> {
+    const { Table } = await this.clients.dynamoDB.send(new DescribeTableCommand({ TableName: tableName }));
+    return Table;
+  }
+
+  /**
+   * Fetches user pool groups by user pool ID, returning a name→ARN map.
+   */
+  public async fetchGroupsByUserPoolId(userPoolId: string): Promise<Record<string, string> | undefined> {
+    const { Groups } = await this.clients.cognitoIdentityProvider.send(new ListGroupsCommand({ UserPoolId: userPoolId }));
+    if (!Groups || Groups.length === 0) return undefined;
+    return Groups.reduce((acc: Record<string, string>, { GroupName, RoleArn }) => {
+      if (GroupName && RoleArn) {
+        acc[GroupName] = RoleArn;
+      }
+      return acc;
+    }, {});
   }
 }

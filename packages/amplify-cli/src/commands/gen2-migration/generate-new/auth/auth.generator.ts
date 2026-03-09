@@ -1,13 +1,11 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import ts from 'typescript';
-import { GetIdentityPoolRolesCommand } from '@aws-sdk/client-cognito-identity';
 import {
   GroupType,
   IdentityProviderType,
   IdentityProviderTypeType,
   LambdaConfigType,
-  ListGroupsCommand,
   PasswordPolicyType,
   ProviderDescription,
   SchemaAttributeType,
@@ -189,7 +187,7 @@ export class AuthGenerator implements Generator {
   /**
    * Adds auth imports and CDK overrides to backend.ts.
    */
-  private contributeToBackend(auth: AuthDefinition): void {
+  private contributeToBackend(_auth: AuthDefinition): void {
     const authIdentifier = factory.createIdentifier('auth');
     this.backendGenerator.addImport('./auth/resource', ['auth']);
     this.backendGenerator.addDefineBackendProperty(factory.createShorthandPropertyAssignment(authIdentifier));
@@ -219,8 +217,8 @@ export class AuthGenerator implements Generator {
       throw new Error('No user pool or identity pool found for import.');
     }
 
-    const roles = await this.fetchIdentityPoolRoles(identityPoolId);
-    const groups = await this.fetchUserPoolGroups(userPoolId);
+    const roles = identityPoolId ? await this.gen1App.aws.fetchIdentityPoolRoles(identityPoolId) : undefined;
+    const groups = userPoolId ? await this.gen1App.aws.fetchGroupsByUserPoolId(userPoolId) : undefined;
 
     return {
       referenceAuth: {
@@ -232,33 +230,6 @@ export class AuthGenerator implements Generator {
         groups,
       },
     };
-  }
-
-  private async fetchIdentityPoolRoles(
-    identityPoolId: string | undefined,
-  ): Promise<{ authenticated?: string; unauthenticated?: string } | undefined> {
-    if (!identityPoolId) return undefined;
-
-    const { Roles } = await this.gen1App.clients.cognitoIdentity.send(new GetIdentityPoolRolesCommand({ IdentityPoolId: identityPoolId }));
-
-    if (!Roles) return undefined;
-
-    return { authenticated: Roles.authenticated, unauthenticated: Roles.unauthenticated };
-  }
-
-  private async fetchUserPoolGroups(userPoolId: string | undefined): Promise<Record<string, string> | undefined> {
-    if (!userPoolId) return undefined;
-
-    const { Groups } = await this.gen1App.clients.cognitoIdentityProvider.send(new ListGroupsCommand({ UserPoolId: userPoolId }));
-
-    if (!Groups || Groups.length === 0) return undefined;
-
-    return Groups.reduce((acc: Record<string, string>, { GroupName, RoleArn }) => {
-      if (GroupName && RoleArn) {
-        acc[GroupName] = RoleArn;
-      }
-      return acc;
-    }, {});
   }
 }
 
@@ -357,9 +328,7 @@ function getEmailConfig(userPool: UserPoolType): EmailOptions {
   };
 }
 
-function getStandardUserAttributes(
-  signupAttributes: SchemaAttributeType[] | undefined,
-): StandardAttributes {
+function getStandardUserAttributes(signupAttributes: SchemaAttributeType[] | undefined): StandardAttributes {
   return (
     signupAttributes?.reduce((standardAttributes: StandardAttributes, attribute: SchemaAttributeType) => {
       const standardAttribute: StandardAttribute = {
@@ -409,8 +378,18 @@ function getGroups(identityGroups?: GroupType[]): string[] {
   }
   return identityGroups
     .filter((group) => group.Precedence !== undefined)
-    .sort((a, b)
-const field of scopeFields) {
+    .sort((a, b) => (a.Precedence || 0) - (b.Precedence || 0))
+    .map((group) => group.GroupName)
+    .filter((groupName): groupName is string => groupName !== undefined);
+}
+
+function getScopes(scopes: string[]): Scope[] {
+  return scopes.filter((scope): scope is Scope => ['phone', 'email', 'openid', 'profile', 'aws.cognito.signin.user.admin'].includes(scope));
+}
+
+function getProviderSpecificScopes(providerDetails: Record<string, string>): string[] {
+  const scopeFields = ['authorized_scopes', 'scope', 'scopes'];
+  for (const field of scopeFields) {
     if (providerDetails[field]) {
       return providerDetails[field].split(/[\s,]+/).filter((scope) => scope.length > 0);
     }
@@ -458,9 +437,7 @@ function getAuthTriggers(
     }, {} as Partial<Record<AuthTriggerEvents, Lambda>>);
 }
 
-function filterAttributeMapping(
-  attributeMapping: Record<string, string>,
-): Record<string, string> {
+function filterAttributeMapping(attributeMapping: Record<string, string>): Record<string, string> {
   return Object.fromEntries(
     Object.entries(attributeMapping)
       .filter(([key]) => Object.keys(MAPPED_USER_ATTRIBUTE_NAME).includes(key))
