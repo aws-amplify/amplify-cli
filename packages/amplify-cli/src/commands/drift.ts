@@ -159,15 +159,20 @@ export class AmplifyDriftDetector {
     const categoryView = createUnifiedCategoryView(phase1Results, phase2Results, phase3Results);
     if (categoryView) {
       this.printer.info(categoryView);
+    }
+
+    // Summary line
+    const totalDriftCount = phase1Results.summary.totalDrifted + phase2Results.totalDrifted + phase3Results.totalDrifted;
+    if (totalDriftCount > 0) {
+      this.printer.info(chalk.yellow(`${totalDriftCount} drifted resource(s) found`));
     } else {
       this.printer.info(chalk.green('No drift detected'));
     }
 
-    const totalDriftCount = phase1Results.summary.totalDrifted + phase2Results.totalDrifted + phase3Results.totalDrifted;
     const hasAnyErrors = phase1Results.incomplete || phase2Results.skipped || phase3Results.skipped;
 
     if (hasAnyErrors) {
-      this.printer.warn(chalk.yellow('Drift detection encountered errors:'));
+      this.printer.warn(chalk.yellow('Drift detection encountered errors, results may be incomplete:'));
       if (phase1Results.incomplete) {
         this.printer.warn(
           chalk.yellow(`CloudFormation drift check incomplete - ${phase1Results.skippedStacks.length} nested stack(s) skipped`),
