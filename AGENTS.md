@@ -52,4 +52,14 @@ Verify your changes by following these guidelines:
   Otherwise, ask the user if they want to commit or keep going.
 - Before you actually commit, provide a (very) concise summary of changes to the user and ask for confirmation to commit.
 
+### 5. PR Body
+
+When asked to create a PR body, write it to `.pr-body.ai-generated.md` and follow these guidelines:
+
+- Use the PR template in `.github/PULL_REQUEST_TEMPLATE.md` as the structure.
+- Focus on **why** the change is being made and **what** it accomplishes, not the implementation details that are obvious from the diff.
+- Do not repeat information that already exists in README files included in the PR — link to them instead.
+- Do not go overboard on technical details. A reviewer can read the code.
+- Keep it concise and scannable.
+
 **ALWAYS FOLLOW THESE RULES WHEN YOU WORK IN THIS PROJECT**
