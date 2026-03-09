@@ -10,6 +10,7 @@ import { BackendEnvironmentResolver } from './backend_environment_selector';
 import { BackendDownloader } from './backend_downloader';
 import { fileOrDirectoryExists } from './directory_exists';
 import { AppSyncClient, GetGraphqlApiCommand } from '@aws-sdk/client-appsync';
+import { APIGatewayClient, GetResourcesCommand } from '@aws-sdk/client-api-gateway';
 
 // Source - amplify-category-api/packages/amplify-graphql-transformer-core/src/graphql-api.ts
 interface Gen1AuthConfig {
@@ -69,6 +70,11 @@ interface Gen1ApiObject {
     category: string;
     resourceName: string;
   }>;
+  output?: {
+    ApiId?: string;
+    ApiName?: string;
+    RootUrl?: string;
+  };
 }
 
 /** Processed REST API definition ready for Gen2 migration */
@@ -80,6 +86,8 @@ export interface RestApiDefinition {
   corsConfiguration?: CorsConfiguration;
   // Support for multiple Lambda functions
   uniqueFunctions?: string[];
+  gen1RestApiId?: string;
+  gen1ApiResourceId?: string;
 }
 
 /** Individual path configuration within a REST API */
@@ -258,6 +266,9 @@ export class DataDefinitionFetcher {
           }
         });
 
+        const restApiId = apiObj.output?.ApiId;
+        const rootResourceId = restApiId ? await this.getGen1ApiResourceId(restApiId) : undefined;
+
         restApis.push({
           apiName,
           functionName: defaultFunctionName || 'defaultFunction',
@@ -265,6 +276,8 @@ export class DataDefinitionFetcher {
           authType: authType !== 'NONE' ? authType : undefined,
           corsConfiguration,
           uniqueFunctions: Array.from(uniqueFunctions),
+          gen1RestApiId: restApiId,
+          gen1ApiResourceId: rootResourceId,
         });
       }
     }
@@ -435,6 +448,22 @@ export class DataDefinitionFetcher {
     } catch (error) {
       throw new Error(`Failed to fetch logging config from AWS: ${error.message}`);
     }
+  };
+  /**
+   * Fetches root resource ID from AWS API Gateway
+   */
+  private getGen1ApiResourceId = async (restApiId: string): Promise<string | undefined> => {
+    const client = new APIGatewayClient({});
+    let position: string | undefined;
+
+    do {
+      const response = await client.send(new GetResourcesCommand({ restApiId, position }));
+      const rootResource = response.items?.find((resource) => resource.path === '/');
+      if (rootResource) return rootResource.id;
+      position = response.position;
+    } while (position);
+
+    return undefined;
   };
 
   /**
