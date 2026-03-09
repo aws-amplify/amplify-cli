@@ -1,7 +1,0 @@
-{
-  "tableName": "activity",
-  "partitionKeyName": "id",
-  "partitionKeyType": "S",
-  "sortKeyName": "userId",
-  "sortKeyType": "S"
-}

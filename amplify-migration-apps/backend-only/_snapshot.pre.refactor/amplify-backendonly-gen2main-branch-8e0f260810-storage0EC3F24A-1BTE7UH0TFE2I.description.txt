@@ -1,1 +1,0 @@
-{"createdOn":"Linux","createdBy":"AmplifyPipelineDeploy","createdWith":"1.4.3","stackType":"storage-S3","metadata":{}}
