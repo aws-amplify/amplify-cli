@@ -21,34 +21,45 @@ interface RenderDefineDataOptions {
 const migratedAmplifyGen1DynamoDbTableMappingsKeyName = 'migratedAmplifyGen1DynamoDbTableMappings';
 
 /**
+ * Replaces `${env}` references in the schema with `${branchName}` and
+ * returns the transformed schema plus any AST statements needed before
+ * the schema variable declaration (e.g. the branchName const).
+ */
+function prepareSchema(raw: string): { schema: string; preSchemaStatements: ts.Node[] } {
+  if (!raw.includes('${env}')) {
+    return { schema: raw, preSchemaStatements: [] };
+  }
+
+  const branchNameStatement = factory.createVariableStatement(
+    [],
+    factory.createVariableDeclarationList(
+      [
+        factory.createVariableDeclaration(
+          'branchName',
+          undefined,
+          undefined,
+          factory.createIdentifier('process.env.AWS_BRANCH ?? "sandbox"'),
+        ),
+      ],
+      ts.NodeFlags.Const,
+    ),
+  );
+
+  return {
+    schema: raw.replaceAll('${env}', '${branchName}'),
+    preSchemaStatements: [branchNameStatement],
+  };
+}
+
+/**
  * Generates TypeScript AST nodes for an Amplify Gen 2 data resource.
  * Pure rendering function — no AWS calls, no side effects.
  */
 export function renderDefineData(opts: RenderDefineDataOptions): ts.NodeArray<ts.Node> {
-  let schema = opts.schema;
+  const { schema, preSchemaStatements } = prepareSchema(opts.schema);
   const dataRenderProperties: ObjectLiteralElementLike[] = [];
   const namedImports: Record<string, Set<string>> = { '@aws-amplify/backend': new Set() };
   namedImports['@aws-amplify/backend'].add('defineData');
-  const schemaStatements: ts.Node[] = [];
-
-  if (schema.includes('${env}')) {
-    const branchNameStatement = factory.createVariableStatement(
-      [],
-      factory.createVariableDeclarationList(
-        [
-          factory.createVariableDeclaration(
-            'branchName',
-            undefined,
-            undefined,
-            factory.createIdentifier('process.env.AWS_BRANCH ?? "sandbox"'),
-          ),
-        ],
-        ts.NodeFlags.Const,
-      ),
-    );
-    schemaStatements.push(branchNameStatement);
-    schema = schema.replaceAll('${env}', '${branchName}');
-  }
 
   const schemaVariableDeclaration = factory.createVariableDeclaration(
     'schema',
@@ -56,9 +67,10 @@ export function renderDefineData(opts: RenderDefineDataOptions): ts.NodeArray<ts
     undefined,
     factory.createIdentifier('`' + schema + '`'),
   );
-  schemaStatements.push(
+  const schemaStatements: ts.Node[] = [
+    ...preSchemaStatements,
     factory.createVariableStatement([], factory.createVariableDeclarationList([schemaVariableDeclaration], ts.NodeFlags.Const)),
-  );
+  ];
 
   // Table mappings
   const tableMappingProperties: ObjectLiteralElementLike[] = [];
