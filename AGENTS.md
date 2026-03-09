@@ -51,6 +51,7 @@ Verify your changes by following these guidelines:
   change you were asked to do. Apply your judgment, if the diff is still fairly small just keep going.
   Otherwise, ask the user if they want to commit or keep going.
 - Before you actually commit, provide a (very) concise summary of changes to the user and ask for confirmation to commit.
+- **Before committing**, review your own diff (`git diff --cached`) against [CODING_GUIDELINES](./CODING_GUIDELINES.md). Look for violations you may have introduced — unnecessary optionality, missing visibility modifiers, `assert()` usage, single-line JSDoc on public members, missing `readonly`, dead imports, etc. Fix any violations before committing. Do not rely on the user to catch these.
 
 ## Collaboration Style
 
