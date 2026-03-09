@@ -6,6 +6,7 @@ import { CognitoIdentityClient } from '@aws-sdk/client-cognito-identity';
 import { S3Client } from '@aws-sdk/client-s3';
 import { LambdaClient } from '@aws-sdk/client-lambda';
 import { CloudWatchEventsClient } from '@aws-sdk/client-cloudwatch-events';
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 
 /**
  * Single instantiation point for all AWS SDK clients used during Gen1 app introspection.
@@ -19,6 +20,7 @@ export interface AwsClients {
   readonly s3: S3Client;
   readonly lambda: LambdaClient;
   readonly cloudWatchEvents: CloudWatchEventsClient;
+  readonly dynamoDB: DynamoDBClient;
 }
 
 /**
@@ -34,5 +36,6 @@ export function createAwsClients(region: string): AwsClients {
     s3: new S3Client(),
     lambda: new LambdaClient({ region }),
     cloudWatchEvents: new CloudWatchEventsClient(),
+    dynamoDB: new DynamoDBClient(),
   };
 }
