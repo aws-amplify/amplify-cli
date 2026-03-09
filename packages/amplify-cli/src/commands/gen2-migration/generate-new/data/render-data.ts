@@ -9,7 +9,7 @@ const factory = ts.factory;
  */
 export type DataTableMapping = Record<string, string>;
 
-interface GenerateDataSourceOptions {
+interface RenderDefineDataOptions {
   readonly envName: string;
   readonly schema: string;
   readonly tableMappings: DataTableMapping;
@@ -24,7 +24,7 @@ const migratedAmplifyGen1DynamoDbTableMappingsKeyName = 'migratedAmplifyGen1Dyna
  * Generates TypeScript AST nodes for an Amplify Gen 2 data resource.
  * Pure rendering function — no AWS calls, no side effects.
  */
-export function generateDataSource(opts: GenerateDataSourceOptions): ts.NodeArray<ts.Node> {
+export function renderDefineData(opts: RenderDefineDataOptions): ts.NodeArray<ts.Node> {
   let schema = opts.schema;
   const dataRenderProperties: ObjectLiteralElementLike[] = [];
   const namedImports: Record<string, Set<string>> = { '@aws-amplify/backend': new Set() };

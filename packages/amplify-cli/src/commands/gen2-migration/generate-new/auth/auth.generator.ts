@@ -7,7 +7,7 @@ import { BackendGenerator } from '../backend.generator';
 import { Gen1App } from '../gen1-app/gen1-app';
 import { printNodes } from '../ts-writer';
 
-import { AuthDefinition, renderAuthNode } from './render-auth';
+import { AuthDefinition, renderDefineAuth } from './render-auth';
 import { getAuthDefinition } from './auth-adapter';
 import { FunctionDefinition } from './function-types';
 
@@ -95,7 +95,7 @@ export class AuthGenerator implements Generator {
       {
         describe: async () => ['Generate auth/resource.ts (reference auth)'],
         execute: async () => {
-          const nodes = renderAuthNode(authDefinition, this.functions, new Map());
+          const nodes = renderDefineAuth(authDefinition, this.functions, new Map());
           const content = printNodes(nodes);
 
           await fs.mkdir(authDir, { recursive: true });
@@ -124,7 +124,7 @@ export class AuthGenerator implements Generator {
       {
         describe: async () => ['Generate auth/resource.ts'],
         execute: async () => {
-          const nodes = renderAuthNode(authDefinition, this.functions, functionCategories);
+          const nodes = renderDefineAuth(authDefinition, this.functions, functionCategories);
           let content = printNodes(nodes);
 
           // Post-process: fix generated code patterns

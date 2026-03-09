@@ -517,7 +517,7 @@ function createSecretErrorStatements(secretVariables: string[]): ts.Node[] {
   );
 }
 
-export function renderAuthNode(
+export function renderDefineAuth(
   definition: AuthDefinition,
   functions?: FunctionDefinition[],
   functionCategories?: Map<string, string>,

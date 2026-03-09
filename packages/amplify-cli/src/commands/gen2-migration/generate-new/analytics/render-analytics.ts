@@ -22,7 +22,7 @@ export interface AnalyticsRenderParameters {
 /**
  * Renders the analytics resource.ts file that creates a NestedStack for Kinesis analytics.
  */
-export const renderAnalytics = (params: AnalyticsRenderParameters): ts.NodeArray<ts.Node> => {
+export const renderDefineAnalytics = (params: AnalyticsRenderParameters): ts.NodeArray<ts.Node> => {
   const { constructClassName, constructFileName, resourceName, shardCount, streamName } = params;
 
   // Import statement: import { constructClassName } from './constructFileName';

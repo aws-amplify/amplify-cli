@@ -7,7 +7,7 @@ import { BackendGenerator } from '../backend.generator';
 import { Gen1App } from '../gen1-app/gen1-app';
 import { printNodes } from '../ts-writer';
 
-import { renderAnalytics, AnalyticsRenderParameters } from './render-analytics';
+import { renderDefineAnalytics, AnalyticsRenderParameters } from './render-analytics';
 import { CdkFromCfn, KinesisAnalyticsDefinition, AnalyticsCodegenResult } from './cdk-from-cfn';
 
 const factory = ts.factory;
@@ -69,7 +69,7 @@ export class AnalyticsGenerator implements Generator {
             streamName: codegenResult.streamName,
           };
 
-          const nodes = renderAnalytics(analyticsParams);
+          const nodes = renderDefineAnalytics(analyticsParams);
           const content = printNodes(nodes);
 
           await fs.mkdir(analyticsDir, { recursive: true });

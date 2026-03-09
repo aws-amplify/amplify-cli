@@ -8,7 +8,7 @@ import { AmplifyMigrationOperation } from '../../_operation';
 import { BackendGenerator } from '../backend.generator';
 import { Gen1App } from '../gen1-app/gen1-app';
 import { printNodes } from '../ts-writer';
-import { generateDataSource, DataTableMapping } from './render-data';
+import { renderDefineData, DataTableMapping } from './render-data';
 
 const factory = ts.factory;
 
@@ -91,7 +91,7 @@ export class DataGenerator implements Generator {
       {
         describe: async () => ['Generate data/resource.ts'],
         execute: async () => {
-          const nodes = generateDataSource({
+          const nodes = renderDefineData({
             envName,
             schema,
             tableMappings,
