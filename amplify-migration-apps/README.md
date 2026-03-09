@@ -22,16 +22,21 @@ Each app directory follows this layout:
 
 ```
 <app-name>/
-├── amplify/                          # Standard Amplify Gen1 project structure
 ├── _snapshot.pre.generate/           # Input for `gen2-migration generate` test (Gen1 app state)
 ├── _snapshot.post.generate/          # Expected output of `gen2-migration generate`
 ├── _snapshot.pre.refactor/           # Input for `gen2-migration refactor` test (CFN templates)
 ├── _snapshot.post.refactor/          # Expected output of `gen2-migration refactor`
+├── src/                              # Frontend source code (not present in backend-only apps)
 ├── .gitignore                        # Git ignore rules
 ├── package.json                      # Standard NodeJS based manifest
 ├── README.md                         # Deployment and migration instructions
-└── ...                               # Frontend source code, configs, etc.
+└── ...                               # App-specific source files (schema, configs, etc.)
 ```
+
+The Gen1 Amplify project structure (the `amplify/` directory) lives inside
+`_snapshot.pre.generate/`, not at the top level. The top level only contains
+snapshot directories, the app manifest, and any source files needed for
+deployment (e.g., `schema.graphql`, `configure.sh`).
 
 > Some apps don't have `_snapshot.post.refactor/` because refactor doesn't work
 > for them yet.
