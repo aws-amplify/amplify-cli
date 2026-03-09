@@ -21,6 +21,7 @@ import {
   GetBucketVersioningCommand,
   GetBucketEncryptionCommand,
 } from '@aws-sdk/client-s3';
+import { DescribeStackResourcesCommand, StackResource } from '@aws-sdk/client-cloudformation';
 import { AwsClients } from './aws-clients';
 
 /**
@@ -56,9 +57,59 @@ export class AwsFetcher {
   private cachedIdentityGroups: GroupType[] | undefined;
   private cachedIdentityPool: IdentityPoolInfo | undefined | null;
   private readonly cachedFunctionConfigs = new Map<string, FunctionConfiguration>();
+  private cachedStackResources: StackResource[] | undefined;
+  private cachedResourcesByLogicalId: Record<string, StackResource> | undefined;
 
   public constructor(clients: AwsClients) {
     this.clients = clients;
+  }
+
+  // ── CloudFormation ──────────────────────────────────────────────
+
+  /**
+   * Walks the nested CloudFormation stack tree starting from the root stack,
+   * collecting all leaf (non-stack) resources into a flat list.
+   */
+  public async fetchAllStackResources(rootStackName: string): Promise<StackResource[]> {
+    if (this.cachedStackResources) return this.cachedStackResources;
+    const resources: StackResource[] = [];
+    const stackQueue = [rootStackName];
+    while (stackQueue.length) {
+      const currentStackName = stackQueue.shift()!;
+      const { StackResources: stackResources } = await this.clients.cloudFormation.send(
+        new DescribeStackResourcesCommand({ StackName: currentStackName }),
+      );
+      if (!stackResources) {
+        throw new Error(`No stack resources found for stack ${currentStackName}`);
+      }
+      for (const r of stackResources) {
+        if (r.ResourceType === 'AWS::CloudFormation::Stack') {
+          if (!r.PhysicalResourceId) {
+            throw new Error('Nested stack resource does not have a physical resource id');
+          }
+          stackQueue.push(r.PhysicalResourceId);
+        } else {
+          resources.push(r);
+        }
+      }
+    }
+    this.cachedStackResources = resources;
+    return resources;
+  }
+
+  /**
+   * Returns stack resources indexed by LogicalResourceId.
+   */
+  public async fetchResourcesByLogicalId(rootStackName: string): Promise<Record<string, StackResource>> {
+    if (this.cachedResourcesByLogicalId) return this.cachedResourcesByLogicalId;
+    const resources = await this.fetchAllStackResources(rootStackName);
+    this.cachedResourcesByLogicalId = resources.reduce((acc, curr) => {
+      if (curr.LogicalResourceId) {
+        acc[curr.LogicalResourceId] = curr;
+      }
+      return acc;
+    }, {} as Record<string, StackResource>);
+    return this.cachedResourcesByLogicalId;
   }
 
   // ── Auth (Cognito) ──────────────────────────────────────────────

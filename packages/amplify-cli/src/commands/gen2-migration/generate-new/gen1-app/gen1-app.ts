@@ -6,7 +6,6 @@ import { StackResource } from '@aws-sdk/client-cloudformation';
 import { $TSMeta, JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import { AwsClients } from './aws-clients';
 import { AwsFetcher } from './aws-fetcher';
-import { AmplifyStackParser } from './amplify-stack-parser';
 import { BackendDownloader } from './backend-downloader';
 import { fileOrDirectoryExists } from './file-exists';
 
@@ -34,7 +33,6 @@ export class Gen1App {
   public readonly region: string;
   public readonly envName: string;
   public readonly clients: AwsClients;
-  public readonly stackParser: AmplifyStackParser;
   public readonly backendDownloader: BackendDownloader;
   /**
    * AWS SDK fetcher for all remote resource introspection.
@@ -44,15 +42,12 @@ export class Gen1App {
   private cachedBackendEnv: BackendEnvironment | undefined;
   private cachedCcbDir: string | undefined;
   private cachedMeta: $TSMeta | undefined;
-  private cachedStackResources: StackResource[] | undefined;
-  private cachedResourcesByLogicalId: Record<string, StackResource> | undefined;
 
   public constructor(opts: Gen1AppOptions) {
     this.appId = opts.appId;
     this.region = opts.region;
     this.envName = opts.envName;
     this.clients = opts.clients;
-    this.stackParser = new AmplifyStackParser(opts.clients.cloudFormation);
     this.backendDownloader = new BackendDownloader(opts.clients.s3);
     this.aws = new AwsFetcher(opts.clients);
   }
@@ -135,23 +130,19 @@ export class Gen1App {
   // ── CloudFormation stack resources ───────────────────────────────
 
   /**
-   * Fetches and caches all stack resources from the root stack.
+   * Fetches and caches all leaf stack resources from the root stack.
    */
   public async fetchAllStackResources(): Promise<StackResource[]> {
-    if (this.cachedStackResources) return this.cachedStackResources;
     const stackName = await this.fetchRootStackName();
-    this.cachedStackResources = await this.stackParser.getAllStackResources(stackName);
-    return this.cachedStackResources;
+    return this.aws.fetchAllStackResources(stackName);
   }
 
   /**
    * Returns stack resources indexed by LogicalResourceId.
    */
   public async fetchResourcesByLogicalId(): Promise<Record<string, StackResource>> {
-    if (this.cachedResourcesByLogicalId) return this.cachedResourcesByLogicalId;
-    const resources = await this.fetchAllStackResources();
-    this.cachedResourcesByLogicalId = this.stackParser.getResourcesByLogicalId(resources);
-    return this.cachedResourcesByLogicalId;
+    const stackName = await this.fetchRootStackName();
+    return this.aws.fetchResourcesByLogicalId(stackName);
   }
 
   // ── Auth trigger connections (local file reading) ────────────────
