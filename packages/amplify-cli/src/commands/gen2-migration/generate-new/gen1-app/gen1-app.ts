@@ -10,7 +10,9 @@ import { AmplifyStackParser } from './amplify-stack-parser';
 import { BackendDownloader } from './backend-downloader';
 import { fileOrDirectoryExists } from './file-exists';
 
-/** Constructor options for Gen1App. */
+/**
+ * Constructor options for Gen1App.
+ */
 interface Gen1AppOptions {
   readonly appId: string;
   readonly region: string;
@@ -34,6 +36,9 @@ export class Gen1App {
   public readonly clients: AwsClients;
   public readonly stackParser: AmplifyStackParser;
   public readonly backendDownloader: BackendDownloader;
+  /**
+   * AWS SDK fetcher for all remote resource introspection.
+   */
   public readonly aws: AwsFetcher;
 
   private cachedBackendEnv: BackendEnvironment | undefined;
@@ -54,7 +59,9 @@ export class Gen1App {
 
   // ── Backend environment ──────────────────────────────────────────
 
-  /** Resolves and caches the backend environment. */
+  /**
+   * Resolves and caches the backend environment.
+   */
   public async fetchBackendEnvironment(): Promise<BackendEnvironment> {
     if (this.cachedBackendEnv) return this.cachedBackendEnv;
     const { backendEnvironment } = await this.clients.amplify.send(
@@ -67,7 +74,9 @@ export class Gen1App {
     return backendEnvironment;
   }
 
-  /** Returns the root stack name from the backend environment. */
+  /**
+   * Returns the root stack name from the backend environment.
+   */
   public async fetchRootStackName(): Promise<string> {
     const env = await this.fetchBackendEnvironment();
     if (!env.stackName) {
@@ -78,7 +87,9 @@ export class Gen1App {
 
   // ── Current cloud backend (local files from S3) ──────────────────
 
-  /** Downloads and caches the current cloud backend zip from S3. */
+  /**
+   * Downloads and caches the current cloud backend zip from S3.
+   */
   public async fetchCloudBackendDir(): Promise<string> {
     if (this.cachedCcbDir) return this.cachedCcbDir;
     const env = await this.fetchBackendEnvironment();
@@ -91,7 +102,9 @@ export class Gen1App {
 
   // ── amplify-meta.json ────────────────────────────────────────────
 
-  /** Reads and caches amplify-meta.json from the cloud backend. */
+  /**
+   * Reads and caches amplify-meta.json from the cloud backend.
+   */
   public async fetchMeta(): Promise<$TSMeta> {
     if (this.cachedMeta) return this.cachedMeta;
     const ccbDir = await this.fetchCloudBackendDir();
@@ -107,7 +120,9 @@ export class Gen1App {
     return meta;
   }
 
-  /** Returns the category block from amplify-meta.json, or undefined. */
+  /**
+   * Returns the category block from amplify-meta.json, or undefined.
+   */
   public async fetchMetaCategory(category: string): Promise<Record<string, unknown> | undefined> {
     const meta = await this.fetchMeta();
     const block = (meta as Record<string, unknown>)[category];
@@ -119,7 +134,9 @@ export class Gen1App {
 
   // ── CloudFormation stack resources ───────────────────────────────
 
-  /** Fetches and caches all stack resources from the root stack. */
+  /**
+   * Fetches and caches all stack resources from the root stack.
+   */
   public async fetchAllStackResources(): Promise<StackResource[]> {
     if (this.cachedStackResources) return this.cachedStackResources;
     const stackName = await this.fetchRootStackName();
@@ -127,7 +144,9 @@ export class Gen1App {
     return this.cachedStackResources;
   }
 
-  /** Returns stack resources indexed by LogicalResourceId. */
+  /**
+   * Returns stack resources indexed by LogicalResourceId.
+   */
   public async fetchResourcesByLogicalId(): Promise<Record<string, StackResource>> {
     if (this.cachedResourcesByLogicalId) return this.cachedResourcesByLogicalId;
     const resources = await this.fetchAllStackResources();
@@ -137,7 +156,9 @@ export class Gen1App {
 
   // ── Auth trigger connections (local file reading) ────────────────
 
-  /** Reads auth trigger connections from the cloud backend cli-inputs.json. */
+  /**
+   * Reads auth trigger connections from the cloud backend cli-inputs.json.
+   */
   public async fetchAuthTriggerConnections(): Promise<Partial<Record<keyof LambdaConfigType, string>> | undefined> {
     const ccbDir = await this.fetchCloudBackendDir();
     const meta = await this.fetchMeta();
@@ -170,7 +191,9 @@ export class Gen1App {
 
   // ── Cloud backend file reading ──────────────────────────────────
 
-  /** Reads a JSON file from the cloud backend directory. */
+  /**
+   * Reads a JSON file from the cloud backend directory.
+   */
   public async readCloudBackendJson<T>(relativePath: string): Promise<T | undefined> {
     const ccbDir = await this.fetchCloudBackendDir();
     const filePath = path.join(ccbDir, relativePath);
@@ -179,7 +202,9 @@ export class Gen1App {
     return JSON.parse(contents) as T;
   }
 
-  /** Reads a text file from the cloud backend directory. */
+  /**
+   * Reads a text file from the cloud backend directory.
+   */
   public async readCloudBackendFile(relativePath: string): Promise<string | undefined> {
     const ccbDir = await this.fetchCloudBackendDir();
     const filePath = path.join(ccbDir, relativePath);
@@ -187,7 +212,9 @@ export class Gen1App {
     return fs.readFile(filePath, { encoding: 'utf8' });
   }
 
-  /** Checks if a path exists in the cloud backend directory. */
+  /**
+   * Checks if a path exists in the cloud backend directory.
+   */
   public async cloudBackendPathExists(relativePath: string): Promise<boolean> {
     const ccbDir = await this.fetchCloudBackendDir();
     return fileOrDirectoryExists(path.join(ccbDir, relativePath));

@@ -8,7 +8,9 @@ import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 
 import { fileOrDirectoryExists } from './file-exists';
 
-/** Downloads and caches the current cloud backend from S3. */
+/**
+ * Downloads and caches the current cloud backend from S3.
+ */
 export class BackendDownloader {
   private static ccbDir: string | undefined;
   private static readonly CURRENT_CLOUD_BACKEND = 'current-cloud-backend';

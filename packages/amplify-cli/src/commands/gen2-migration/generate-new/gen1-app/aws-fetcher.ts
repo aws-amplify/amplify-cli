@@ -23,13 +23,17 @@ import {
 } from '@aws-sdk/client-s3';
 import { AwsClients } from './aws-clients';
 
-/** MFA configuration from Cognito. */
+/**
+ * MFA configuration from Cognito.
+ */
 export interface MfaConfig {
   readonly mfaConfig?: UserPoolMfaType;
   readonly totpConfig?: SoftwareTokenMfaConfigType;
 }
 
-/** Identity pool configuration. */
+/**
+ * Identity pool configuration.
+ */
 export interface IdentityPoolInfo {
   readonly guestLogin?: boolean;
   readonly identityPoolName?: string;
@@ -59,7 +63,9 @@ export class AwsFetcher {
 
   // ── Auth (Cognito) ──────────────────────────────────────────────
 
-  /** Fetches the Cognito User Pool. Returns undefined if no UserPool resource exists. */
+  /**
+   * Fetches the Cognito User Pool. Returns undefined if no UserPool resource exists.
+   */
   public async fetchUserPool(resources: Record<string, { PhysicalResourceId?: string }>): Promise<UserPoolType | undefined> {
     if (this.cachedUserPool !== undefined) return this.cachedUserPool ?? undefined;
     if (!resources['UserPool']) {
@@ -73,7 +79,9 @@ export class AwsFetcher {
     return this.cachedUserPool ?? undefined;
   }
 
-  /** Fetches MFA configuration for the user pool. */
+  /**
+   * Fetches MFA configuration for the user pool.
+   */
   public async fetchMfaConfig(resources: Record<string, { PhysicalResourceId?: string }>): Promise<MfaConfig | undefined> {
     if (this.cachedMfaConfig) return this.cachedMfaConfig;
     if (!resources['UserPool']) return undefined;
@@ -87,7 +95,9 @@ export class AwsFetcher {
     return this.cachedMfaConfig;
   }
 
-  /** Fetches the web user pool client. */
+  /**
+   * Fetches the web user pool client.
+   */
   public async fetchWebClient(resources: Record<string, { PhysicalResourceId?: string }>): Promise<UserPoolClientType | undefined> {
     if (this.cachedWebClient !== undefined) return this.cachedWebClient ?? undefined;
     if (!resources['UserPool'] || !resources['UserPoolClientWeb']) {
@@ -104,7 +114,9 @@ export class AwsFetcher {
     return this.cachedWebClient ?? undefined;
   }
 
-  /** Fetches the non-web user pool client. */
+  /**
+   * Fetches the non-web user pool client.
+   */
   public async fetchUserPoolClient(resources: Record<string, { PhysicalResourceId?: string }>): Promise<UserPoolClientType | undefined> {
     if (this.cachedUserPoolClient !== undefined) return this.cachedUserPoolClient ?? undefined;
     if (!resources['UserPool'] || !resources['UserPoolClient']) {
@@ -121,7 +133,9 @@ export class AwsFetcher {
     return this.cachedUserPoolClient ?? undefined;
   }
 
-  /** Fetches identity provider details for the user pool. */
+  /**
+   * Fetches identity provider details for the user pool.
+   */
   public async fetchIdentityProviders(resources: Record<string, { PhysicalResourceId?: string }>): Promise<IdentityProviderType[]> {
     if (this.cachedIdentityProviders) return this.cachedIdentityProviders;
     if (!resources['UserPool']) {
@@ -141,7 +155,9 @@ export class AwsFetcher {
     return details;
   }
 
-  /** Fetches user pool groups. */
+  /**
+   * Fetches user pool groups.
+   */
   public async fetchIdentityGroups(resources: Record<string, { PhysicalResourceId?: string }>): Promise<GroupType[]> {
     if (this.cachedIdentityGroups) return this.cachedIdentityGroups;
     if (!resources['UserPool']) {
@@ -155,7 +171,9 @@ export class AwsFetcher {
     return this.cachedIdentityGroups;
   }
 
-  /** Fetches identity pool configuration. */
+  /**
+   * Fetches identity pool configuration.
+   */
   public async fetchIdentityPool(resources: Record<string, { PhysicalResourceId?: string }>): Promise<IdentityPoolInfo | undefined> {
     if (this.cachedIdentityPool !== undefined) return this.cachedIdentityPool ?? undefined;
     if (!resources['IdentityPool']) {
@@ -174,7 +192,9 @@ export class AwsFetcher {
 
   // ── Functions (Lambda) ──────────────────────────────────────────
 
-  /** Fetches a Lambda function configuration by its deployed name. */
+  /**
+   * Fetches a Lambda function configuration by its deployed name.
+   */
   public async fetchFunctionConfig(deployedName: string): Promise<FunctionConfiguration | undefined> {
     if (this.cachedFunctionConfigs.has(deployedName)) return this.cachedFunctionConfigs.get(deployedName);
     try {
@@ -187,7 +207,9 @@ export class AwsFetcher {
     }
   }
 
-  /** Fetches the CloudWatch schedule expression for a Lambda function. */
+  /**
+   * Fetches the CloudWatch schedule expression for a Lambda function.
+   */
   public async fetchFunctionSchedule(deployedName: string): Promise<string | undefined> {
     try {
       const policyResponse = await this.clients.lambda.send(new GetPolicyCommand({ FunctionName: deployedName }));
@@ -206,24 +228,32 @@ export class AwsFetcher {
 
   // ── Storage (S3) ────────────────────────────────────────────────
 
-  /** Fetches S3 bucket notification configuration. */
+  /**
+   * Fetches S3 bucket notification configuration.
+   */
   public async fetchBucketNotifications(bucketName: string) {
     return this.clients.s3.send(new GetBucketNotificationConfigurationCommand({ Bucket: bucketName }));
   }
 
-  /** Fetches S3 bucket accelerate status. */
+  /**
+   * Fetches S3 bucket accelerate status.
+   */
   public async fetchBucketAccelerate(bucketName: string) {
     const { Status } = await this.clients.s3.send(new GetBucketAccelerateConfigurationCommand({ Bucket: bucketName }));
     return Status;
   }
 
-  /** Fetches S3 bucket versioning status. */
+  /**
+   * Fetches S3 bucket versioning status.
+   */
   public async fetchBucketVersioning(bucketName: string) {
     const { Status } = await this.clients.s3.send(new GetBucketVersioningCommand({ Bucket: bucketName }));
     return Status;
   }
 
-  /** Fetches S3 bucket encryption configuration. */
+  /**
+   * Fetches S3 bucket encryption configuration.
+   */
   public async fetchBucketEncryption(bucketName: string) {
     const { ServerSideEncryptionConfiguration } = await this.clients.s3.send(new GetBucketEncryptionCommand({ Bucket: bucketName }));
     return ServerSideEncryptionConfiguration;

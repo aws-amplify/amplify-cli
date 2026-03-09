@@ -22,18 +22,24 @@ export class RootPackageJsonGenerator implements Generator {
     this.outputDir = outputDir;
   }
 
-  /** Sets the app name and env name for the package.json name field. */
+  /**
+   * Sets the app name and env name for the package.json name field.
+   */
   public setAppInfo(appName: string, envName: string): void {
     this.appName = appName;
     this.envName = envName;
   }
 
-  /** Adds a runtime dependency. */
+  /**
+   * Adds a runtime dependency.
+   */
   public addDependency(name: string, version: string): void {
     this.dependencies[name] = version;
   }
 
-  /** Adds a dev dependency. */
+  /**
+   * Adds a dev dependency.
+   */
   public addDevDependency(name: string, version: string): void {
     this.devDependencies[name] = version;
   }

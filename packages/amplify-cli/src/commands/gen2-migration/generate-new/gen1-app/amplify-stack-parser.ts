@@ -9,7 +9,9 @@ import {
 export type AmplifyStackTypes = 'authStack' | 'dataStack' | 'storageStack' | 'rootStack';
 export type AmplifyStacks = Partial<Record<AmplifyStackTypes, Stack>>;
 
-/** Parses Amplify CloudFormation stacks to extract resource information. */
+/**
+ * Parses Amplify CloudFormation stacks to extract resource information.
+ */
 export class AmplifyStackParser {
   private static readonly CFN_STACK_RESOURCE_TYPE = 'AWS::CloudFormation::Stack';
 

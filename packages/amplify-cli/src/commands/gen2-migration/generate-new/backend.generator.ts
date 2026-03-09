@@ -26,7 +26,9 @@ export class BackendGenerator implements Generator {
     this.outputDir = outputDir;
   }
 
-  /** Adds an import to backend.ts. Merges identifiers for the same source. */
+  /**
+   * Adds an import to backend.ts. Merges identifiers for the same source.
+   */
   public addImport(source: string, identifiers: string[]): void {
     const existing = this.imports.find((i) => i.source === source);
     if (existing) {
@@ -40,12 +42,16 @@ export class BackendGenerator implements Generator {
     }
   }
 
-  /** Adds a property to the `defineBackend({ ... })` call. */
+  /**
+   * Adds a property to the `defineBackend({ ... })` call.
+   */
   public addDefineBackendProperty(property: ts.ObjectLiteralElementLike): void {
     this.defineBackendProperties.push(property);
   }
 
-  /** Adds a statement after the `defineBackend()` call (overrides, escape hatches). */
+  /**
+   * Adds a statement after the `defineBackend()` call (overrides, escape hatches).
+   */
   public addStatement(statement: ts.Statement): void {
     this.postDefineStatements.push(statement);
   }

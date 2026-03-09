@@ -1,4 +1,6 @@
-/** Dev dependencies required by Gen2 Amplify projects. */
+/**
+ * Dev dependencies required by Gen2 Amplify projects.
+ */
 export type AmplifyDevDependencies = {
   readonly '@aws-amplify/backend': string;
   readonly '@aws-amplify/backend-cli': string;
@@ -13,7 +15,9 @@ export type AmplifyDevDependencies = {
   readonly '@types/node': string;
 };
 
-/** Runtime dependencies for Gen2 Amplify projects. */
+/**
+ * Runtime dependencies for Gen2 Amplify projects.
+ */
 export type AmplifyDependencies = {
   readonly 'aws-amplify': string;
 };
@@ -43,7 +47,9 @@ function sortObjectKeys<T extends Record<string, string>>(obj: T): T {
     }, {} as Record<string, string>) as T;
 }
 
-/** Patches a package.json with Gen2 Amplify dev dependencies. */
+/**
+ * Patches a package.json with Gen2 Amplify dev dependencies.
+ */
 export function patchNpmPackageJson(packageJson: PackageJson, packageVersions: Partial<AmplifyPackageVersions> = {}): PackageJson {
   const devDependencies = sortObjectKeys({
     ...(packageJson.devDependencies ?? {}),

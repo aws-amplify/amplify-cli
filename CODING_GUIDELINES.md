@@ -493,3 +493,50 @@ The test: read the full chain aloud. If it sounds like something a developer wou
 Every class method and property should have an explicit `public`, `private`, or `protected` modifier. Omitting the modifier forces the reader to remember that TypeScript defaults to `public` — and more importantly, it makes intent ambiguous: did the author mean for this to be public, or did they just forget?
 
 **Instead:** Always write the modifier. `public` signals "this is part of the contract," `private` signals "this is an implementation detail." The explicitness costs nothing and removes guesswork.
+
+---
+
+### 32. Use multi-line JSDoc comments for public members
+
+Document public methods, properties, and exported declarations with multi-line JSDoc comments. Always use the multi-line format — even for single sentences:
+
+```typescript
+// Bad — single-line JSDoc
+/** Resolves the backend environment. */
+public async fetchBackendEnvironment(): Promise<BackendEnvironment> { ... }
+
+// Good — multi-line JSDoc
+/**
+ * Resolves and caches the backend environment.
+ */
+public async fetchBackendEnvironment(): Promise<BackendEnvironment> { ... }
+```
+
+The multi-line format is visually distinct from code, scales naturally when you add `@param` or `@returns` tags later, and reads consistently regardless of comment length. Reserve `//` for inline implementation notes, eslint/tsc directives, and TODOs.
+
+---
+
+### 33. Add a blank line after documented class members
+
+When a class property has a JSDoc comment, add a blank line after the property declaration to visually separate it from the next member. Undocumented properties can remain consecutive.
+
+```typescript
+// Bad — documented property jammed against the next one
+export class MyService {
+  /**
+   * The AWS region for this service.
+   */
+  public readonly region: string;
+  private cachedResult: string | undefined;
+}
+
+// Good — blank line after the documented property
+export class MyService {
+  /**
+   * The AWS region for this service.
+   */
+  public readonly region: string;
+
+  private cachedResult: string | undefined;
+}
+```
