@@ -7,9 +7,9 @@ import { AmplifyMigrationOperation } from '../_operation';
  * Writes amplify/package.json with ES module configuration.
  */
 export class BackendPackageJsonGenerator implements Generator {
-  constructor(private readonly outputDir: string) {}
+  public constructor(private readonly outputDir: string) {}
 
-  async plan(): Promise<AmplifyMigrationOperation[]> {
+  public async plan(): Promise<AmplifyMigrationOperation[]> {
     const filePath = path.join(this.outputDir, 'amplify', 'package.json');
     return [
       {

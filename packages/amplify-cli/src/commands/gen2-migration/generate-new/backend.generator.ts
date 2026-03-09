@@ -22,12 +22,12 @@ export class BackendGenerator implements Generator {
   private readonly postDefineStatements: ts.Statement[] = [];
   private readonly outputDir: string;
 
-  constructor(outputDir: string) {
+  public constructor(outputDir: string) {
     this.outputDir = outputDir;
   }
 
   /** Adds an import to backend.ts. Merges identifiers for the same source. */
-  addImport(source: string, identifiers: string[]): void {
+  public addImport(source: string, identifiers: string[]): void {
     const existing = this.imports.find((i) => i.source === source);
     if (existing) {
       for (const id of identifiers) {
@@ -41,16 +41,16 @@ export class BackendGenerator implements Generator {
   }
 
   /** Adds a property to the `defineBackend({ ... })` call. */
-  addDefineBackendProperty(property: ts.ObjectLiteralElementLike): void {
+  public addDefineBackendProperty(property: ts.ObjectLiteralElementLike): void {
     this.defineBackendProperties.push(property);
   }
 
   /** Adds a statement after the `defineBackend()` call (overrides, escape hatches). */
-  addStatement(statement: ts.Statement): void {
+  public addStatement(statement: ts.Statement): void {
     this.postDefineStatements.push(statement);
   }
 
-  async plan(): Promise<AmplifyMigrationOperation[]> {
+  public async plan(): Promise<AmplifyMigrationOperation[]> {
     const backendTsPath = path.join(this.outputDir, 'amplify', 'backend.ts');
 
     return [

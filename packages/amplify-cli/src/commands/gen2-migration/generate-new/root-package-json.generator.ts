@@ -2,7 +2,7 @@ import path from 'node:path';
 import fs from 'node:fs/promises';
 import { Generator } from './generator';
 import { AmplifyMigrationOperation } from '../_operation';
-import { patchNpmPackageJson, PackageJson } from '../generate/npm_package/renderer';
+import { patchNpmPackageJson, PackageJson } from './package-json-patch';
 
 /**
  * Accumulates dependencies from category generators and writes the
@@ -18,27 +18,27 @@ export class RootPackageJsonGenerator implements Generator {
   private appName: string | undefined;
   private envName: string | undefined;
 
-  constructor(outputDir: string) {
+  public constructor(outputDir: string) {
     this.outputDir = outputDir;
   }
 
   /** Sets the app name and env name for the package.json name field. */
-  setAppInfo(appName: string, envName: string): void {
+  public setAppInfo(appName: string, envName: string): void {
     this.appName = appName;
     this.envName = envName;
   }
 
   /** Adds a runtime dependency. */
-  addDependency(name: string, version: string): void {
+  public addDependency(name: string, version: string): void {
     this.dependencies[name] = version;
   }
 
   /** Adds a dev dependency. */
-  addDevDependency(name: string, version: string): void {
+  public addDevDependency(name: string, version: string): void {
     this.devDependencies[name] = version;
   }
 
-  async plan(): Promise<AmplifyMigrationOperation[]> {
+  public async plan(): Promise<AmplifyMigrationOperation[]> {
     const packageJsonPath = path.join(this.outputDir, 'package.json');
 
     return [

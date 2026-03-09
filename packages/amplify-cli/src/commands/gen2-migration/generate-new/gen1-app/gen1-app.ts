@@ -28,9 +28,9 @@ import {
 import { StackResource } from '@aws-sdk/client-cloudformation';
 import { $TSMeta, JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import { AwsClients } from './aws-clients';
-import { AmplifyStackParser } from '../../generate/codegen-head/amplify_stack_parser';
-import { BackendDownloader } from '../../generate/codegen-head/backend_downloader';
-import { fileOrDirectoryExists } from '../../generate/codegen-head/directory_exists';
+import { AmplifyStackParser } from './amplify-stack-parser';
+import { BackendDownloader } from './backend-downloader';
+import { fileOrDirectoryExists } from './file-exists';
 
 /** Constructor options for Gen1App. */
 interface Gen1AppOptions {
@@ -60,12 +60,12 @@ interface IdentityPoolInfo {
  * directly — no custom intermediate interfaces.
  */
 export class Gen1App {
-  readonly appId: string;
-  readonly region: string;
-  readonly envName: string;
-  readonly clients: AwsClients;
-  readonly stackParser: AmplifyStackParser;
-  readonly backendDownloader: BackendDownloader;
+  public readonly appId: string;
+  public readonly region: string;
+  public readonly envName: string;
+  public readonly clients: AwsClients;
+  public readonly stackParser: AmplifyStackParser;
+  public readonly backendDownloader: BackendDownloader;
 
   private cachedBackendEnv: BackendEnvironment | undefined;
   private cachedCcbDir: string | undefined;
@@ -81,7 +81,7 @@ export class Gen1App {
   private cachedIdentityPool: IdentityPoolInfo | undefined | null;
   private readonly cachedFunctionConfigs = new Map<string, FunctionConfiguration>();
 
-  constructor(opts: Gen1AppOptions) {
+  public constructor(opts: Gen1AppOptions) {
     this.appId = opts.appId;
     this.region = opts.region;
     this.envName = opts.envName;
@@ -93,7 +93,7 @@ export class Gen1App {
   // ── Backend environment ──────────────────────────────────────────
 
   /** Resolves and caches the backend environment. */
-  async fetchBackendEnvironment(): Promise<BackendEnvironment> {
+  public async fetchBackendEnvironment(): Promise<BackendEnvironment> {
     if (this.cachedBackendEnv) return this.cachedBackendEnv;
     const { backendEnvironment } = await this.clients.amplify.send(
       new GetBackendEnvironmentCommand({
@@ -109,7 +109,7 @@ export class Gen1App {
   }
 
   /** Returns the root stack name from the backend environment. */
-  async fetchRootStackName(): Promise<string> {
+  public async fetchRootStackName(): Promise<string> {
     const env = await this.fetchBackendEnvironment();
     if (!env.stackName) {
       throw new Error('Backend environment has no stack name');
@@ -120,7 +120,7 @@ export class Gen1App {
   // ── Current cloud backend ────────────────────────────────────────
 
   /** Downloads and caches the current cloud backend zip from S3. */
-  async fetchCloudBackendDir(): Promise<string> {
+  public async fetchCloudBackendDir(): Promise<string> {
     if (this.cachedCcbDir) return this.cachedCcbDir;
     const env = await this.fetchBackendEnvironment();
     if (!env.deploymentArtifacts) {
@@ -133,7 +133,7 @@ export class Gen1App {
   // ── amplify-meta.json ────────────────────────────────────────────
 
   /** Reads and caches amplify-meta.json from the cloud backend. */
-  async fetchMeta(): Promise<$TSMeta> {
+  public async fetchMeta(): Promise<$TSMeta> {
     if (this.cachedMeta) return this.cachedMeta;
     const ccbDir = await this.fetchCloudBackendDir();
     const metaPath = path.join(ccbDir, 'amplify-meta.json');
@@ -149,7 +149,7 @@ export class Gen1App {
   }
 
   /** Returns the category block from amplify-meta.json, or undefined. */
-  async fetchMetaCategory(category: string): Promise<Record<string, unknown> | undefined> {
+  public async fetchMetaCategory(category: string): Promise<Record<string, unknown> | undefined> {
     const meta = await this.fetchMeta();
     const block = (meta as Record<string, unknown>)[category];
     if (block && typeof block === 'object' && Object.keys(block as object).length > 0) {
@@ -161,7 +161,7 @@ export class Gen1App {
   // ── CloudFormation stack resources ───────────────────────────────
 
   /** Fetches and caches all stack resources from the root stack. */
-  async fetchAllStackResources(): Promise<StackResource[]> {
+  public async fetchAllStackResources(): Promise<StackResource[]> {
     if (this.cachedStackResources) return this.cachedStackResources;
     const stackName = await this.fetchRootStackName();
     this.cachedStackResources = await this.stackParser.getAllStackResources(stackName);
@@ -169,7 +169,7 @@ export class Gen1App {
   }
 
   /** Returns stack resources indexed by LogicalResourceId. */
-  async fetchResourcesByLogicalId(): Promise<Record<string, StackResource>> {
+  public async fetchResourcesByLogicalId(): Promise<Record<string, StackResource>> {
     if (this.cachedResourcesByLogicalId) return this.cachedResourcesByLogicalId;
     const resources = await this.fetchAllStackResources();
     this.cachedResourcesByLogicalId = this.stackParser.getResourcesByLogicalId(resources);
@@ -179,7 +179,7 @@ export class Gen1App {
   // ── Auth (Cognito) ──────────────────────────────────────────────
 
   /** Fetches the Cognito User Pool. Returns undefined if no UserPool resource exists. */
-  async fetchUserPool(): Promise<UserPoolType | undefined> {
+  public async fetchUserPool(): Promise<UserPoolType | undefined> {
     if (this.cachedUserPool !== undefined) return this.cachedUserPool ?? undefined;
     const resources = await this.fetchResourcesByLogicalId();
     if (!resources['UserPool']) {
@@ -196,7 +196,7 @@ export class Gen1App {
   }
 
   /** Fetches MFA configuration for the user pool. */
-  async fetchMfaConfig(): Promise<MfaConfig | undefined> {
+  public async fetchMfaConfig(): Promise<MfaConfig | undefined> {
     if (this.cachedMfaConfig) return this.cachedMfaConfig;
     const resources = await this.fetchResourcesByLogicalId();
     if (!resources['UserPool']) return undefined;
@@ -213,7 +213,7 @@ export class Gen1App {
   }
 
   /** Fetches the web user pool client. */
-  async fetchWebClient(): Promise<UserPoolClientType | undefined> {
+  public async fetchWebClient(): Promise<UserPoolClientType | undefined> {
     if (this.cachedWebClient !== undefined) return this.cachedWebClient ?? undefined;
     const resources = await this.fetchResourcesByLogicalId();
     if (!resources['UserPool'] || !resources['UserPoolClientWeb']) {
@@ -231,7 +231,7 @@ export class Gen1App {
   }
 
   /** Fetches the non-web user pool client. */
-  async fetchUserPoolClient(): Promise<UserPoolClientType | undefined> {
+  public async fetchUserPoolClient(): Promise<UserPoolClientType | undefined> {
     if (this.cachedUserPoolClient !== undefined) return this.cachedUserPoolClient ?? undefined;
     const resources = await this.fetchResourcesByLogicalId();
     if (!resources['UserPool'] || !resources['UserPoolClient']) {
@@ -249,7 +249,7 @@ export class Gen1App {
   }
 
   /** Fetches identity provider details for the user pool. */
-  async fetchIdentityProviders(): Promise<IdentityProviderType[]> {
+  public async fetchIdentityProviders(): Promise<IdentityProviderType[]> {
     if (this.cachedIdentityProviders) return this.cachedIdentityProviders;
     const resources = await this.fetchResourcesByLogicalId();
     if (!resources['UserPool']) {
@@ -273,7 +273,7 @@ export class Gen1App {
   }
 
   /** Fetches user pool groups. */
-  async fetchIdentityGroups(): Promise<GroupType[]> {
+  public async fetchIdentityGroups(): Promise<GroupType[]> {
     if (this.cachedIdentityGroups) return this.cachedIdentityGroups;
     const resources = await this.fetchResourcesByLogicalId();
     if (!resources['UserPool']) {
@@ -288,7 +288,7 @@ export class Gen1App {
   }
 
   /** Fetches identity pool configuration (guest login, pool name). */
-  async fetchIdentityPool(): Promise<IdentityPoolInfo | undefined> {
+  public async fetchIdentityPool(): Promise<IdentityPoolInfo | undefined> {
     if (this.cachedIdentityPool !== undefined) return this.cachedIdentityPool ?? undefined;
     const resources = await this.fetchResourcesByLogicalId();
     if (!resources['IdentityPool']) {
@@ -310,7 +310,7 @@ export class Gen1App {
   // ── Auth trigger connections ─────────────────────────────────────
 
   /** Reads auth trigger connections from the cloud backend. */
-  async fetchAuthTriggerConnections(): Promise<Partial<Record<keyof LambdaConfigType, string>> | undefined> {
+  public async fetchAuthTriggerConnections(): Promise<Partial<Record<keyof LambdaConfigType, string>> | undefined> {
     const ccbDir = await this.fetchCloudBackendDir();
     const meta = await this.fetchMeta();
     const authCategory = meta.auth;
@@ -343,7 +343,7 @@ export class Gen1App {
   // ── Functions (Lambda) ──────────────────────────────────────────
 
   /** Fetches a Lambda function configuration by its deployed name. */
-  async fetchFunctionConfig(deployedName: string): Promise<FunctionConfiguration | undefined> {
+  public async fetchFunctionConfig(deployedName: string): Promise<FunctionConfiguration | undefined> {
     if (this.cachedFunctionConfigs.has(deployedName)) return this.cachedFunctionConfigs.get(deployedName);
     try {
       const result = await this.clients.lambda.send(new GetFunctionCommand({ FunctionName: deployedName }));
@@ -356,7 +356,7 @@ export class Gen1App {
   }
 
   /** Fetches the CloudWatch schedule expression for a Lambda function. */
-  async fetchFunctionSchedule(deployedName: string): Promise<string | undefined> {
+  public async fetchFunctionSchedule(deployedName: string): Promise<string | undefined> {
     try {
       const policyResponse = await this.clients.lambda.send(new GetPolicyCommand({ FunctionName: deployedName }));
       const policy = JSON.parse(policyResponse.Policy ?? '{}');
@@ -377,24 +377,24 @@ export class Gen1App {
   // ── Storage (S3) ────────────────────────────────────────────────
 
   /** Fetches S3 bucket notification configuration. */
-  async fetchBucketNotifications(bucketName: string) {
+  public async fetchBucketNotifications(bucketName: string) {
     return this.clients.s3.send(new GetBucketNotificationConfigurationCommand({ Bucket: bucketName }));
   }
 
   /** Fetches S3 bucket accelerate status. */
-  async fetchBucketAccelerate(bucketName: string) {
+  public async fetchBucketAccelerate(bucketName: string) {
     const { Status } = await this.clients.s3.send(new GetBucketAccelerateConfigurationCommand({ Bucket: bucketName }));
     return Status;
   }
 
   /** Fetches S3 bucket versioning status. */
-  async fetchBucketVersioning(bucketName: string) {
+  public async fetchBucketVersioning(bucketName: string) {
     const { Status } = await this.clients.s3.send(new GetBucketVersioningCommand({ Bucket: bucketName }));
     return Status;
   }
 
   /** Fetches S3 bucket encryption configuration. */
-  async fetchBucketEncryption(bucketName: string) {
+  public async fetchBucketEncryption(bucketName: string) {
     const { ServerSideEncryptionConfiguration } = await this.clients.s3.send(new GetBucketEncryptionCommand({ Bucket: bucketName }));
     return ServerSideEncryptionConfiguration;
   }
@@ -402,7 +402,7 @@ export class Gen1App {
   // ── Cloud backend file reading ──────────────────────────────────
 
   /** Reads a JSON file from the cloud backend directory. */
-  async readCloudBackendJson<T>(relativePath: string): Promise<T | undefined> {
+  public async readCloudBackendJson<T>(relativePath: string): Promise<T | undefined> {
     const ccbDir = await this.fetchCloudBackendDir();
     const filePath = path.join(ccbDir, relativePath);
     if (!(await fileOrDirectoryExists(filePath))) return undefined;
@@ -411,7 +411,7 @@ export class Gen1App {
   }
 
   /** Reads a text file from the cloud backend directory. */
-  async readCloudBackendFile(relativePath: string): Promise<string | undefined> {
+  public async readCloudBackendFile(relativePath: string): Promise<string | undefined> {
     const ccbDir = await this.fetchCloudBackendDir();
     const filePath = path.join(ccbDir, relativePath);
     if (!(await fileOrDirectoryExists(filePath))) return undefined;
@@ -419,7 +419,7 @@ export class Gen1App {
   }
 
   /** Checks if a path exists in the cloud backend directory. */
-  async cloudBackendPathExists(relativePath: string): Promise<boolean> {
+  public async cloudBackendPathExists(relativePath: string): Promise<boolean> {
     const ccbDir = await this.fetchCloudBackendDir();
     return fileOrDirectoryExists(path.join(ccbDir, relativePath));
   }

@@ -303,6 +303,8 @@ flowchart TD
 
 **Work style:** Prefer large, cohesive refactoring changes over small incremental ones — don't waste time validating intermediate states you may end up discarding. Do not run `yarn test`, `jest`, or any test command for incremental validation during a phase.
 
+**No imports from old code:** Code in `generate-new/` must NOT import from the old `generate/` directory. If you need a utility or class that exists in the old code, duplicate it into `generate-new/`. This ensures `generate-new/` is fully self-contained and the old `generate/` directory can be cleanly deleted in Phase 4 without breaking anything.
+
 **Exit criteria (all phases):** `yarn build && yarn test` in the `amplify-cli` package must pass before moving on to the next phase.
 
 **Phase 1 — Foundation**

@@ -9,7 +9,7 @@ const GEN2_GITIGNORE_ENTRIES = ['.amplify', 'amplify_outputs*', 'amplifyconfigur
  * Updates .gitignore with Gen2-specific entries.
  */
 export class GitIgnoreGenerator implements Generator {
-  async plan(): Promise<AmplifyMigrationOperation[]> {
+  public async plan(): Promise<AmplifyMigrationOperation[]> {
     return [
       {
         describe: async () => ['Update .gitignore with Gen2 entries'],

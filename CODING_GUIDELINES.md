@@ -459,3 +459,13 @@ A function that only calls another function with the same (or trivially derived)
 If you validate that `x` is defined at the top of a function, every subsequent `if (x)` on the same binding is noise. It signals the reader that `x` might still be null when it can't be.
 
 **Instead:** Validate once, early. Use a type guard or assertion that narrows the type for the rest of the scope. If the value genuinely could become null later, that's a design problem — fix the data flow. See also point 9a for the structural solution to this problem.
+
+---
+
+## Style
+
+### 30. Use explicit visibility modifiers on class members
+
+Every class method and property should have an explicit `public`, `private`, or `protected` modifier. Omitting the modifier forces the reader to remember that TypeScript defaults to `public` — and more importantly, it makes intent ambiguous: did the author mean for this to be public, or did they just forget?
+
+**Instead:** Always write the modifier. `public` signals "this is part of the contract," `private` signals "this is an implementation detail." The explicitness costs nothing and removes guesswork.

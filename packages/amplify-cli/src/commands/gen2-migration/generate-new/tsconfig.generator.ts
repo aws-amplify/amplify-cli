@@ -7,9 +7,9 @@ import { AmplifyMigrationOperation } from '../_operation';
  * Writes amplify/tsconfig.json with Gen2 TypeScript configuration.
  */
 export class TsConfigGenerator implements Generator {
-  constructor(private readonly outputDir: string) {}
+  public constructor(private readonly outputDir: string) {}
 
-  async plan(): Promise<AmplifyMigrationOperation[]> {
+  public async plan(): Promise<AmplifyMigrationOperation[]> {
     const filePath = path.join(this.outputDir, 'amplify', 'tsconfig.json');
     return [
       {

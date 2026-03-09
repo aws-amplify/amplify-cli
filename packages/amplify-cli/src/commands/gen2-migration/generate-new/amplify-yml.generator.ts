@@ -17,12 +17,12 @@ export class AmplifyYmlGenerator implements Generator {
   private readonly amplifyClient: AmplifyClient;
   private readonly appId: string;
 
-  constructor(amplifyClient: AmplifyClient, appId: string) {
+  public constructor(amplifyClient: AmplifyClient, appId: string) {
     this.amplifyClient = amplifyClient;
     this.appId = appId;
   }
 
-  async plan(): Promise<AmplifyMigrationOperation[]> {
+  public async plan(): Promise<AmplifyMigrationOperation[]> {
     return [
       {
         describe: async () => ['Update amplify.yml with Gen2 build commands'],
