@@ -1,9 +1,9 @@
 import ts from 'typescript';
 import path from 'node:path';
 import fs from 'node:fs/promises';
-import { Generator } from './generator';
-import { AmplifyMigrationOperation } from '../_operation';
-import { printNodes } from './ts-writer';
+import { Generator } from '../generator';
+import { AmplifyMigrationOperation } from '../../_operation';
+import { printNodes } from '../ts-writer';
 
 const factory = ts.factory;
 

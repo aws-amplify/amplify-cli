@@ -1,6 +1,6 @@
 import ts from 'typescript';
-import { RestApiDefinition, RestApiPath } from '../gen1-app/gen1-app';
-import { createBranchNameDeclaration } from '../ts-factory-utils';
+import { RestApiDefinition, RestApiPath } from '../../input/gen1-app';
+import { createBranchNameDeclaration } from '../../ts-factory-utils';
 
 const factory = ts.factory;
 

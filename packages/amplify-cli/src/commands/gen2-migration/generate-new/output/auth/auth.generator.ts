@@ -14,11 +14,11 @@ import {
   UserPoolMfaType,
   UserPoolType,
 } from '@aws-sdk/client-cognito-identity-provider';
-import { Generator } from '../generator';
-import { AmplifyMigrationOperation } from '../../_operation';
+import { Generator } from '../../generator';
+import { AmplifyMigrationOperation } from '../../../_operation';
 import { BackendGenerator } from '../backend.generator';
-import { Gen1App } from '../gen1-app/gen1-app';
-import { printNodes } from '../ts-writer';
+import { Gen1App } from '../../input/gen1-app';
+import { printNodes } from '../../ts-writer';
 import {
   Attribute,
   AttributeMappingRule,

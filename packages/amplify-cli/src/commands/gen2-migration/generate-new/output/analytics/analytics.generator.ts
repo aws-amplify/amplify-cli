@@ -1,11 +1,11 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import ts from 'typescript';
-import { Generator } from '../generator';
-import { AmplifyMigrationOperation } from '../../_operation';
+import { Generator } from '../../generator';
+import { AmplifyMigrationOperation } from '../../../_operation';
 import { BackendGenerator } from '../backend.generator';
-import { Gen1App } from '../gen1-app/gen1-app';
-import { printNodes } from '../ts-writer';
+import { Gen1App } from '../../input/gen1-app';
+import { printNodes } from '../../ts-writer';
 import { AnalyticsRenderer } from './analytics.renderer';
 import { KinesisCfnConverter, KinesisAnalyticsDefinition } from './kinesis-cfn-converter';
 

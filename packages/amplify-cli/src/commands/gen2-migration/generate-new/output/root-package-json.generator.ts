@@ -1,8 +1,8 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
-import { Generator } from './generator';
-import { AmplifyMigrationOperation } from '../_operation';
-import { patchNpmPackageJson, PackageJson } from './package-json-patch';
+import { Generator } from '../generator';
+import { AmplifyMigrationOperation } from '../../_operation';
+import { patchNpmPackageJson, PackageJson } from '../package-json-patch';
 
 /**
  * Accumulates dependencies from category generators and writes the

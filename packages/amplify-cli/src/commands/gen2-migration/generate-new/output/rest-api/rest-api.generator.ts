@@ -1,8 +1,8 @@
 import ts from 'typescript';
-import { Generator } from '../generator';
-import { AmplifyMigrationOperation } from '../../_operation';
+import { Generator } from '../../generator';
+import { AmplifyMigrationOperation } from '../../../_operation';
 import { BackendGenerator } from '../backend.generator';
-import { Gen1App, RestApiDefinition } from '../gen1-app/gen1-app';
+import { Gen1App, RestApiDefinition } from '../../input/gen1-app';
 import { RestApiRenderer } from './rest-api.renderer';
 
 const factory = ts.factory;

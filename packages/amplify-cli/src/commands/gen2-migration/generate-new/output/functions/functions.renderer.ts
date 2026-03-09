@@ -1,6 +1,6 @@
 import ts, { ObjectLiteralElementLike } from 'typescript';
-import { renderResourceTsFile } from '../resource';
-import { createBranchNameDeclaration } from '../ts-factory-utils';
+import { renderResourceTsFile } from '../../resource';
+import { createBranchNameDeclaration } from '../../ts-factory-utils';
 
 const factory = ts.factory;
 

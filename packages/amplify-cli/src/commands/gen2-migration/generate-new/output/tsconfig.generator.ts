@@ -1,7 +1,7 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
-import { Generator } from './generator';
-import { AmplifyMigrationOperation } from '../_operation';
+import { Generator } from '../generator';
+import { AmplifyMigrationOperation } from '../../_operation';
 
 /**
  * Writes amplify/tsconfig.json with Gen2 TypeScript configuration.

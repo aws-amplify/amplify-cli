@@ -1,5 +1,5 @@
 import ts from 'typescript';
-import { newLineIdentifier } from '../ts-factory-utils';
+import { newLineIdentifier } from '../../ts-factory-utils';
 
 const factory = ts.factory;
 

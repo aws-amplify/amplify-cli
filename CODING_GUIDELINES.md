@@ -588,3 +588,28 @@ export class MyService {
   private cachedResult: string | undefined;
 }
 ```
+
+---
+
+### 36. Sibling directories should represent the same level of abstraction
+
+When directories sit at the same level in the file tree, they should represent the same kind of thing. If one directory is a category (`auth/`, `storage/`, `data/`) and another is infrastructure (`gen1-app/`, `utils/`), the infrastructure directory looks like a category to anyone scanning the tree. This creates confusion about what the directory contains and how it relates to its siblings.
+
+```
+// Bad — gen1-app looks like a category alongside auth and storage
+generate/
+  gen1-app/       ← infrastructure, not a category
+  auth/           ← category
+  storage/        ← category
+  data/           ← category
+
+// Good — input vs output is a clear conceptual split
+generate/
+  input/          ← where Gen1 state comes from
+  output/         ← what Gen2 code we produce
+    auth/
+    storage/
+    data/
+```
+
+The test: if you showed someone just the directory names at a given level, could they guess the organizing principle? `auth, storage, data, gen1-app` fails — three are categories and one isn't. `input, output` passes — both describe a role in the pipeline.

@@ -1,6 +1,6 @@
 import ts, { CallExpression, ObjectLiteralElementLike } from 'typescript';
-import { renderResourceTsFile } from '../resource';
-import { createBranchNameDeclaration } from '../ts-factory-utils';
+import { renderResourceTsFile } from '../../resource';
+import { createBranchNameDeclaration } from '../../ts-factory-utils';
 
 const factory = ts.factory;
 
@@ -48,7 +48,7 @@ export interface RenderDefineStorageOptions {
  * Renders a defineStorage() resource.ts file from Gen1 S3 configuration.
  * Pure — no AWS calls, no side effects.
  */
-export class StorageRenderer {
+export class S3Renderer {
   private readonly envName: string;
 
   public constructor(envName: string) {

@@ -2,11 +2,11 @@ import path from 'node:path';
 import fs from 'node:fs/promises';
 import ts from 'typescript';
 import { pathManager } from '@aws-amplify/amplify-cli-core';
-import { Generator } from '../generator';
-import { AmplifyMigrationOperation } from '../../_operation';
+import { Generator } from '../../generator';
+import { AmplifyMigrationOperation } from '../../../_operation';
 import { BackendGenerator } from '../backend.generator';
 import { RootPackageJsonGenerator } from '../root-package-json.generator';
-import { Gen1App } from '../gen1-app/gen1-app';
+import { Gen1App } from '../../input/gen1-app';
 import { AmplifyHelperTransformer } from './amplify-helper-transformer';
 
 const CUSTOM_DIR = 'custom';

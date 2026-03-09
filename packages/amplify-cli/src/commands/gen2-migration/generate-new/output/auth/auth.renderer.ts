@@ -3,7 +3,7 @@
 import ts, { PropertyAssignment } from 'typescript';
 import { PasswordPolicyType, UserPoolClientType } from '@aws-sdk/client-cognito-identity-provider';
 import type { EnvironmentResponse, Runtime } from '@aws-sdk/client-lambda';
-import { renderResourceTsFile } from '../resource';
+import { renderResourceTsFile } from '../../resource';
 
 /**
  * Represents a Lambda function trigger source.
