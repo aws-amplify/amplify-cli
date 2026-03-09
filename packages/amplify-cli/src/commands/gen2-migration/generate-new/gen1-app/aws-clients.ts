@@ -1,4 +1,5 @@
 import { AmplifyClient } from '@aws-sdk/client-amplify';
+import { AppSyncClient } from '@aws-sdk/client-appsync';
 import { CloudFormationClient } from '@aws-sdk/client-cloudformation';
 import { CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-provider';
 import { CognitoIdentityClient } from '@aws-sdk/client-cognito-identity';
@@ -11,6 +12,7 @@ import { CloudWatchEventsClient } from '@aws-sdk/client-cloudwatch-events';
  */
 export interface AwsClients {
   readonly amplify: AmplifyClient;
+  readonly appSync: AppSyncClient;
   readonly cloudFormation: CloudFormationClient;
   readonly cognitoIdentityProvider: CognitoIdentityProviderClient;
   readonly cognitoIdentity: CognitoIdentityClient;
@@ -25,6 +27,7 @@ export interface AwsClients {
 export function createAwsClients(region: string): AwsClients {
   return {
     amplify: new AmplifyClient(),
+    appSync: new AppSyncClient(),
     cloudFormation: new CloudFormationClient(),
     cognitoIdentityProvider: new CognitoIdentityProviderClient(),
     cognitoIdentity: new CognitoIdentityClient(),

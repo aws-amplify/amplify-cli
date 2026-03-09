@@ -1,18 +1,7 @@
-// Data generator rendering - creates Gen 2 data TypeScript files
-// Duplicated from generate/generators/data/index.ts for generate-new/ self-containment
 import ts, { ObjectLiteralElementLike } from 'typescript';
 import { renderResourceTsFile } from '../resource';
 import { AppSyncClient, paginateListGraphqlApis } from '@aws-sdk/client-appsync';
-import type { ConstructFactory, AmplifyFunction } from '@aws-amplify/plugin-types';
 import type { AuthorizationModes, DataLoggingOptions } from '@aws-amplify/backend-data';
-import { RestApiDefinition } from './data-definition-fetcher';
-
-export interface AdditionalAuthProvider {
-  authenticationType: 'API_KEY' | 'AWS_IAM' | 'OPENID_CONNECT' | 'AMAZON_COGNITO_USER_POOLS' | 'AWS_LAMBDA';
-  userPoolConfig?: {
-    userPoolId?: string;
-  };
-}
 
 const factory = ts.factory;
 
@@ -22,17 +11,15 @@ const factory = ts.factory;
 export type DataTableMapping = Record<string, string>;
 
 /**
- * Configuration for generating Amplify Gen 2 data resources from Gen 1 projects.
+ * Options for generating the data resource TypeScript AST.
  */
-export type DataDefinition = {
-  tableMappings?: DataTableMapping | undefined;
-  schema?: string;
-  authorizationModes?: AuthorizationModes;
-  additionalAuthProviders?: AdditionalAuthProvider[];
-  functions?: Record<string, ConstructFactory<AmplifyFunction>>;
-  logging?: DataLoggingOptions;
-  restApis?: RestApiDefinition[];
-};
+interface GenerateDataSourceOptions {
+  readonly envName: string;
+  readonly schema?: string;
+  readonly authorizationModes?: AuthorizationModes;
+  readonly logging?: DataLoggingOptions;
+  readonly tableMappings?: DataTableMapping;
+}
 
 const createDataSourceMapping = (schema: string, apiId: string, envName: string): Record<string, string> => {
   const models = extractModelsFromSchema(schema);
@@ -101,61 +88,56 @@ const migratedAmplifyGen1DynamoDbTableMappingsKeyName = 'migratedAmplifyGen1Dyna
 /**
  * Generates TypeScript AST nodes for an Amplify Gen 2 data resource configuration.
  */
-export const generateDataSource = async (gen1Env: string, dataDefinition?: DataDefinition): Promise<ts.NodeArray<ts.Node> | undefined> => {
-  if (!dataDefinition) {
+export async function generateDataSource(opts: GenerateDataSourceOptions): Promise<ts.NodeArray<ts.Node> | undefined> {
+  if (!opts.schema) {
     return undefined;
   }
 
-  if (!dataDefinition.schema && (!dataDefinition.restApis || dataDefinition.restApis.length === 0)) {
-    return undefined;
-  }
-
+  let schema = opts.schema;
   const dataRenderProperties: ObjectLiteralElementLike[] = [];
   const namedImports: Record<string, Set<string>> = { '@aws-amplify/backend': new Set() };
   namedImports['@aws-amplify/backend'].add('defineData');
   const schemaStatements: ts.Node[] = [];
 
-  if (dataDefinition && dataDefinition.schema) {
-    if (dataDefinition.schema.includes('${env}')) {
-      const branchNameStatement = factory.createVariableStatement(
-        [],
-        factory.createVariableDeclarationList(
-          [
-            factory.createVariableDeclaration(
-              'branchName',
-              undefined,
-              undefined,
-              factory.createIdentifier('process.env.AWS_BRANCH ?? "sandbox"'),
-            ),
-          ],
-          ts.NodeFlags.Const,
-        ),
-      );
-      schemaStatements.push(branchNameStatement);
-      dataDefinition.schema = dataDefinition.schema.replaceAll('${env}', '${branchName}');
-    }
-
-    const schemaVariableDeclaration = factory.createVariableDeclaration(
-      'schema',
-      undefined,
-      undefined,
-      factory.createIdentifier('`' + dataDefinition.schema + '`'),
-    );
-    const schemaStatementAssignment = factory.createVariableStatement(
+  if (schema.includes('${env}')) {
+    const branchNameStatement = factory.createVariableStatement(
       [],
-      factory.createVariableDeclarationList([schemaVariableDeclaration], ts.NodeFlags.Const),
+      factory.createVariableDeclarationList(
+        [
+          factory.createVariableDeclaration(
+            'branchName',
+            undefined,
+            undefined,
+            factory.createIdentifier('process.env.AWS_BRANCH ?? "sandbox"'),
+          ),
+        ],
+        ts.NodeFlags.Const,
+      ),
     );
-    schemaStatements.push(schemaStatementAssignment);
+    schemaStatements.push(branchNameStatement);
+    schema = schema.replaceAll('${env}', '${branchName}');
   }
 
-  let tableMappings = dataDefinition?.tableMappings;
+  const schemaVariableDeclaration = factory.createVariableDeclaration(
+    'schema',
+    undefined,
+    undefined,
+    factory.createIdentifier('`' + schema + '`'),
+  );
+  const schemaStatementAssignment = factory.createVariableStatement(
+    [],
+    factory.createVariableDeclarationList([schemaVariableDeclaration], ts.NodeFlags.Const),
+  );
+  schemaStatements.push(schemaStatementAssignment);
 
-  if (!tableMappings && dataDefinition?.schema) {
-    const apiId = await getApiId(gen1Env);
+  let tableMappings = opts.tableMappings;
+
+  if (!tableMappings) {
+    const apiId = await getApiId(opts.envName);
     if (apiId) {
-      tableMappings = createDataSourceMapping(dataDefinition.schema, apiId, gen1Env);
+      tableMappings = createDataSourceMapping(schema, apiId, opts.envName);
     } else {
-      throw new Error(`Unable to find AppSync API for environment '${gen1Env}'. Ensure the API exists and is properly tagged.`);
+      throw new Error(`Unable to find AppSync API for environment '${opts.envName}'. Ensure the API exists and is properly tagged.`);
     }
   }
 
@@ -169,7 +151,7 @@ export const generateDataSource = async (gen1Env: string, dataDefinition?: DataD
     }
 
     const branchNameExpression = ts.addSyntheticLeadingComment(
-      factory.createPropertyAssignment('branchName', factory.createStringLiteral(gen1Env)),
+      factory.createPropertyAssignment('branchName', factory.createStringLiteral(opts.envName)),
       ts.SyntaxKind.SingleLineCommentTrivia,
       'The "branchname" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables',
       true,
@@ -191,8 +173,9 @@ export const generateDataSource = async (gen1Env: string, dataDefinition?: DataD
   }
 
   // Add authorization modes if available
-  if (dataDefinition?.authorizationModes) {
-    const gen1AuthModes = dataDefinition.authorizationModes as any;
+  if (opts.authorizationModes) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const gen1AuthModes = opts.authorizationModes as any;
     const authModeProperties: ObjectLiteralElementLike[] = [];
 
     const authModeMap: Record<string, string> = {
@@ -203,6 +186,7 @@ export const generateDataSource = async (gen1Env: string, dataDefinition?: DataD
       OPENID_CONNECT: 'oidc',
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const addAuthModeConfig = (provider: any) => {
       switch (provider.authenticationType) {
         case 'API_KEY':
@@ -312,11 +296,11 @@ export const generateDataSource = async (gen1Env: string, dataDefinition?: DataD
   }
 
   // Add logging configuration if available
-  if (dataDefinition?.logging) {
-    if (dataDefinition.logging === true) {
+  if (opts.logging) {
+    if (opts.logging === true) {
       dataRenderProperties.push(factory.createPropertyAssignment('logging', factory.createTrue()));
-    } else if (typeof dataDefinition.logging === 'object') {
-      const loggingConfig = dataDefinition.logging;
+    } else if (typeof opts.logging === 'object') {
+      const loggingConfig = opts.logging;
       const loggingProperties: ObjectLiteralElementLike[] = [];
 
       if (loggingConfig.fieldLogLevel !== undefined) {
@@ -343,9 +327,7 @@ export const generateDataSource = async (gen1Env: string, dataDefinition?: DataD
   }
 
   // Add schema reference to the data configuration
-  if (dataDefinition?.schema) {
-    dataRenderProperties.push(factory.createShorthandPropertyAssignment(factory.createIdentifier('schema')));
-  }
+  dataRenderProperties.push(factory.createShorthandPropertyAssignment(factory.createIdentifier('schema')));
 
   // Generate the complete TypeScript file with imports, schema, and data export
   return renderResourceTsFile({
@@ -355,4 +337,4 @@ export const generateDataSource = async (gen1Env: string, dataDefinition?: DataD
     postImportStatements: schemaStatements,
     additionalImportedBackendIdentifiers: namedImports,
   });
-};
+}
