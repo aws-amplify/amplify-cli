@@ -1,0 +1,231 @@
+import {
+  DescribeUserPoolCommand,
+  DescribeUserPoolClientCommand,
+  ListIdentityProvidersCommand,
+  ListGroupsCommand,
+  DescribeIdentityProviderCommand,
+  GetUserPoolMfaConfigCommand,
+  UserPoolType,
+  UserPoolClientType,
+  GroupType,
+  IdentityProviderType,
+  UserPoolMfaType,
+  SoftwareTokenMfaConfigType,
+} from '@aws-sdk/client-cognito-identity-provider';
+import { DescribeIdentityPoolCommand } from '@aws-sdk/client-cognito-identity';
+import { GetFunctionCommand, GetPolicyCommand, FunctionConfiguration } from '@aws-sdk/client-lambda';
+import { DescribeRuleCommand } from '@aws-sdk/client-cloudwatch-events';
+import {
+  GetBucketNotificationConfigurationCommand,
+  GetBucketAccelerateConfigurationCommand,
+  GetBucketVersioningCommand,
+  GetBucketEncryptionCommand,
+} from '@aws-sdk/client-s3';
+import { AwsClients } from './aws-clients';
+
+/** MFA configuration from Cognito. */
+export interface MfaConfig {
+  readonly mfaConfig?: UserPoolMfaType;
+  readonly totpConfig?: SoftwareTokenMfaConfigType;
+}
+
+/** Identity pool configuration. */
+export interface IdentityPoolInfo {
+  readonly guestLogin?: boolean;
+  readonly identityPoolName?: string;
+}
+
+/**
+ * Encapsulates all AWS SDK calls needed during Gen1 app introspection.
+ *
+ * Each method makes a single SDK call and returns the raw SDK response type.
+ * Results are cached where the same resource is likely to be queried multiple
+ * times. Easy to mock in tests: replace this class with a stub.
+ */
+export class AwsFetcher {
+  private readonly clients: AwsClients;
+  private cachedUserPool: UserPoolType | undefined | null;
+  private cachedMfaConfig: MfaConfig | undefined;
+  private cachedWebClient: UserPoolClientType | undefined | null;
+  private cachedUserPoolClient: UserPoolClientType | undefined | null;
+  private cachedIdentityProviders: IdentityProviderType[] | undefined;
+  private cachedIdentityGroups: GroupType[] | undefined;
+  private cachedIdentityPool: IdentityPoolInfo | undefined | null;
+  private readonly cachedFunctionConfigs = new Map<string, FunctionConfiguration>();
+
+  public constructor(clients: AwsClients) {
+    this.clients = clients;
+  }
+
+  // ── Auth (Cognito) ──────────────────────────────────────────────
+
+  /** Fetches the Cognito User Pool. Returns undefined if no UserPool resource exists. */
+  public async fetchUserPool(resources: Record<string, { PhysicalResourceId?: string }>): Promise<UserPoolType | undefined> {
+    if (this.cachedUserPool !== undefined) return this.cachedUserPool ?? undefined;
+    if (!resources['UserPool']) {
+      this.cachedUserPool = null;
+      return undefined;
+    }
+    const { UserPool } = await this.clients.cognitoIdentityProvider.send(
+      new DescribeUserPoolCommand({ UserPoolId: resources['UserPool'].PhysicalResourceId }),
+    );
+    this.cachedUserPool = UserPool ?? null;
+    return this.cachedUserPool ?? undefined;
+  }
+
+  /** Fetches MFA configuration for the user pool. */
+  public async fetchMfaConfig(resources: Record<string, { PhysicalResourceId?: string }>): Promise<MfaConfig | undefined> {
+    if (this.cachedMfaConfig) return this.cachedMfaConfig;
+    if (!resources['UserPool']) return undefined;
+    const result = await this.clients.cognitoIdentityProvider.send(
+      new GetUserPoolMfaConfigCommand({ UserPoolId: resources['UserPool'].PhysicalResourceId }),
+    );
+    this.cachedMfaConfig = {
+      mfaConfig: result.MfaConfiguration,
+      totpConfig: result.SoftwareTokenMfaConfiguration,
+    };
+    return this.cachedMfaConfig;
+  }
+
+  /** Fetches the web user pool client. */
+  public async fetchWebClient(resources: Record<string, { PhysicalResourceId?: string }>): Promise<UserPoolClientType | undefined> {
+    if (this.cachedWebClient !== undefined) return this.cachedWebClient ?? undefined;
+    if (!resources['UserPool'] || !resources['UserPoolClientWeb']) {
+      this.cachedWebClient = null;
+      return undefined;
+    }
+    const { UserPoolClient } = await this.clients.cognitoIdentityProvider.send(
+      new DescribeUserPoolClientCommand({
+        UserPoolId: resources['UserPool'].PhysicalResourceId,
+        ClientId: resources['UserPoolClientWeb'].PhysicalResourceId,
+      }),
+    );
+    this.cachedWebClient = UserPoolClient ?? null;
+    return this.cachedWebClient ?? undefined;
+  }
+
+  /** Fetches the non-web user pool client. */
+  public async fetchUserPoolClient(resources: Record<string, { PhysicalResourceId?: string }>): Promise<UserPoolClientType | undefined> {
+    if (this.cachedUserPoolClient !== undefined) return this.cachedUserPoolClient ?? undefined;
+    if (!resources['UserPool'] || !resources['UserPoolClient']) {
+      this.cachedUserPoolClient = null;
+      return undefined;
+    }
+    const { UserPoolClient } = await this.clients.cognitoIdentityProvider.send(
+      new DescribeUserPoolClientCommand({
+        UserPoolId: resources['UserPool'].PhysicalResourceId,
+        ClientId: resources['UserPoolClient'].PhysicalResourceId,
+      }),
+    );
+    this.cachedUserPoolClient = UserPoolClient ?? null;
+    return this.cachedUserPoolClient ?? undefined;
+  }
+
+  /** Fetches identity provider details for the user pool. */
+  public async fetchIdentityProviders(resources: Record<string, { PhysicalResourceId?: string }>): Promise<IdentityProviderType[]> {
+    if (this.cachedIdentityProviders) return this.cachedIdentityProviders;
+    if (!resources['UserPool']) {
+      this.cachedIdentityProviders = [];
+      return [];
+    }
+    const userPoolId = resources['UserPool'].PhysicalResourceId;
+    const { Providers } = await this.clients.cognitoIdentityProvider.send(new ListIdentityProvidersCommand({ UserPoolId: userPoolId }));
+    const details: IdentityProviderType[] = [];
+    for (const provider of Providers ?? []) {
+      const { IdentityProvider } = await this.clients.cognitoIdentityProvider.send(
+        new DescribeIdentityProviderCommand({ UserPoolId: userPoolId, ProviderName: provider.ProviderName }),
+      );
+      if (IdentityProvider) details.push(IdentityProvider);
+    }
+    this.cachedIdentityProviders = details;
+    return details;
+  }
+
+  /** Fetches user pool groups. */
+  public async fetchIdentityGroups(resources: Record<string, { PhysicalResourceId?: string }>): Promise<GroupType[]> {
+    if (this.cachedIdentityGroups) return this.cachedIdentityGroups;
+    if (!resources['UserPool']) {
+      this.cachedIdentityGroups = [];
+      return [];
+    }
+    const { Groups } = await this.clients.cognitoIdentityProvider.send(
+      new ListGroupsCommand({ UserPoolId: resources['UserPool'].PhysicalResourceId }),
+    );
+    this.cachedIdentityGroups = Groups ?? [];
+    return this.cachedIdentityGroups;
+  }
+
+  /** Fetches identity pool configuration. */
+  public async fetchIdentityPool(resources: Record<string, { PhysicalResourceId?: string }>): Promise<IdentityPoolInfo | undefined> {
+    if (this.cachedIdentityPool !== undefined) return this.cachedIdentityPool ?? undefined;
+    if (!resources['IdentityPool']) {
+      this.cachedIdentityPool = null;
+      return undefined;
+    }
+    const result = await this.clients.cognitoIdentity.send(
+      new DescribeIdentityPoolCommand({ IdentityPoolId: resources['IdentityPool'].PhysicalResourceId }),
+    );
+    this.cachedIdentityPool = {
+      guestLogin: result.AllowUnauthenticatedIdentities,
+      identityPoolName: result.IdentityPoolName,
+    };
+    return this.cachedIdentityPool;
+  }
+
+  // ── Functions (Lambda) ──────────────────────────────────────────
+
+  /** Fetches a Lambda function configuration by its deployed name. */
+  public async fetchFunctionConfig(deployedName: string): Promise<FunctionConfiguration | undefined> {
+    if (this.cachedFunctionConfigs.has(deployedName)) return this.cachedFunctionConfigs.get(deployedName);
+    try {
+      const result = await this.clients.lambda.send(new GetFunctionCommand({ FunctionName: deployedName }));
+      const config = result.Configuration ?? undefined;
+      if (config) this.cachedFunctionConfigs.set(deployedName, config);
+      return config;
+    } catch {
+      return undefined;
+    }
+  }
+
+  /** Fetches the CloudWatch schedule expression for a Lambda function. */
+  public async fetchFunctionSchedule(deployedName: string): Promise<string | undefined> {
+    try {
+      const policyResponse = await this.clients.lambda.send(new GetPolicyCommand({ FunctionName: deployedName }));
+      const policy = JSON.parse(policyResponse.Policy ?? '{}');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const ruleName = policy.Statement?.find((s: any) => s.Condition?.ArnLike?.['AWS:SourceArn']?.includes('rule/'))
+        ?.Condition.ArnLike['AWS:SourceArn'].split('/')
+        .pop();
+      if (!ruleName) return undefined;
+      const ruleResponse = await this.clients.cloudWatchEvents.send(new DescribeRuleCommand({ Name: ruleName }));
+      return ruleResponse.ScheduleExpression;
+    } catch {
+      return undefined;
+    }
+  }
+
+  // ── Storage (S3) ────────────────────────────────────────────────
+
+  /** Fetches S3 bucket notification configuration. */
+  public async fetchBucketNotifications(bucketName: string) {
+    return this.clients.s3.send(new GetBucketNotificationConfigurationCommand({ Bucket: bucketName }));
+  }
+
+  /** Fetches S3 bucket accelerate status. */
+  public async fetchBucketAccelerate(bucketName: string) {
+    const { Status } = await this.clients.s3.send(new GetBucketAccelerateConfigurationCommand({ Bucket: bucketName }));
+    return Status;
+  }
+
+  /** Fetches S3 bucket versioning status. */
+  public async fetchBucketVersioning(bucketName: string) {
+    const { Status } = await this.clients.s3.send(new GetBucketVersioningCommand({ Bucket: bucketName }));
+    return Status;
+  }
+
+  /** Fetches S3 bucket encryption configuration. */
+  public async fetchBucketEncryption(bucketName: string) {
+    const { ServerSideEncryptionConfiguration } = await this.clients.s3.send(new GetBucketEncryptionCommand({ Bucket: bucketName }));
+    return ServerSideEncryptionConfiguration;
+  }
+}
