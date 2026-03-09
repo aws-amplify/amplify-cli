@@ -2,9 +2,31 @@
 // Duplicated from generate/generators/auth/index.ts for generate-new/ self-containment
 import ts, { PropertyAssignment } from 'typescript';
 import { PasswordPolicyType, UserPoolClientType } from '@aws-sdk/client-cognito-identity-provider';
+import type { EnvironmentResponse, Runtime } from '@aws-sdk/client-lambda';
 import { renderResourceTsFile } from '../resource';
-import { createTriggersProperty, Lambda } from './lambda';
-import { FunctionDefinition } from './function-types';
+
+/**
+ * Represents a Lambda function trigger source.
+ */
+export type Lambda = {
+  readonly source: string;
+};
+
+/**
+ * Creates a TypeScript AST property assignment for auth Lambda triggers.
+ */
+function createTriggersProperty(triggers: Record<string, Lambda>): PropertyAssignment {
+  return factory.createPropertyAssignment(
+    factory.createIdentifier('triggers'),
+    factory.createObjectLiteralExpression(
+      Object.entries(triggers).map(([key, value]) => {
+        const functionName = value.source.split('/')[3];
+        return factory.createPropertyAssignment(factory.createIdentifier(key), factory.createIdentifier(functionName));
+      }),
+      true,
+    ),
+  );
+}
 
 /** OAuth 2.0 scopes supported by Cognito User Pools */
 export type Scope = 'phone' | 'email' | 'openid' | 'profile' | 'aws.cognito.signin.user.admin';
@@ -160,6 +182,107 @@ export type ReferenceAuth = {
   userPoolClientId?: string;
   groups?: Record<string, string>;
 };
+
+/**
+ * Auth access permissions for a Lambda function.
+ */
+export interface AuthAccess {
+  readonly manageUsers?: boolean;
+  readonly manageGroups?: boolean;
+  readonly manageGroupMembership?: boolean;
+  readonly manageUserDevices?: boolean;
+  readonly managePasswordRecovery?: boolean;
+  readonly addUserToGroup?: boolean;
+  readonly createUser?: boolean;
+  readonly deleteUser?: boolean;
+  readonly deleteUserAttributes?: boolean;
+  readonly disableUser?: boolean;
+  readonly enableUser?: boolean;
+  readonly forgetDevice?: boolean;
+  readonly getDevice?: boolean;
+  readonly getUser?: boolean;
+  readonly listUsers?: boolean;
+  readonly listDevices?: boolean;
+  readonly listGroupsForUser?: boolean;
+  readonly listUsersInGroup?: boolean;
+  readonly listGroups?: boolean;
+  readonly removeUserFromGroup?: boolean;
+  readonly resetUserPassword?: boolean;
+  readonly setUserMfaPreference?: boolean;
+  readonly setUserPassword?: boolean;
+  readonly setUserSettings?: boolean;
+  readonly updateDeviceStatus?: boolean;
+  readonly updateUserAttributes?: boolean;
+}
+
+/**
+ * Represents a function definition extracted from a Gen1 project.
+ */
+export interface FunctionDefinition {
+  /**
+   * The Amplify category this function belongs to.
+   */
+  readonly category?: string;
+
+  /**
+   * The entry point file path for the function.
+   */
+  readonly entry?: string;
+
+  /**
+   * The AWS Lambda function name.
+   */
+  readonly name?: string;
+
+  /**
+   * Maximum execution time in seconds.
+   */
+  readonly timeoutSeconds?: number;
+
+  /**
+   * Memory allocation in MB.
+   */
+  readonly memoryMB?: number;
+
+  /**
+   * Environment variables configuration from AWS Lambda.
+   */
+  readonly environment?: EnvironmentResponse;
+
+  /**
+   * Environment variables filtered out by adapters.
+   */
+  readonly filteredEnvironmentVariables?: Record<string, string>;
+
+  /**
+   * AWS Lambda runtime.
+   */
+  readonly runtime?: Runtime | string;
+
+  /**
+   * The Amplify resource name.
+   */
+  readonly resourceName?: string;
+
+  /**
+   * CloudWatch Events schedule expression.
+   */
+  readonly schedule?: string;
+
+  /**
+   * Auth access permissions for this function.
+   */
+  readonly authAccess?: AuthAccess;
+
+  /**
+   * Specific API permissions detected from CloudFormation analysis.
+   */
+  readonly apiPermissions?: {
+    readonly hasQuery: boolean;
+    readonly hasMutation: boolean;
+    readonly hasSubscription: boolean;
+  };
+}
 
 /**
  * Complete authentication configuration definition.

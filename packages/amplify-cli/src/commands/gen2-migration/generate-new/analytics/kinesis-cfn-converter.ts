@@ -7,14 +7,22 @@ import { CloudFormationClient, DescribeStackResourcesCommand, DescribeStacksComm
 import CFNConditionResolver from '../../refactor/resolvers/cfn-condition-resolver';
 
 /**
- * Definition for Kinesis Analytics resource from Gen1 amplify-meta.json
+ * Definition for Kinesis Analytics resource from Gen1 amplify-meta.json.
  */
 export interface KinesisAnalyticsDefinition {
-  /** Resource name - set by migration-pipeline.ts from the analytics key */
+  /**
+   * Resource name — set by the analytics generator from the meta key.
+   */
   name?: string;
-  /** Service type - Kinesis or Pinpoint */
+
+  /**
+   * Service type — Kinesis or Pinpoint.
+   */
   readonly service: 'Kinesis' | 'Pinpoint';
-  /** Provider metadata containing S3 template URL and logical ID */
+
+  /**
+   * Provider metadata containing S3 template URL and logical ID.
+   */
   readonly providerMetadata: {
     readonly s3TemplateURL: string;
     readonly logicalId: string;
@@ -22,32 +30,109 @@ export interface KinesisAnalyticsDefinition {
 }
 
 /**
- * Result of analytics codegen containing metadata needed for resource.ts generation
+ * Result of analytics codegen containing metadata needed for resource.ts generation.
  */
 export interface AnalyticsCodegenResult {
-  /** The class name of the generated construct (extracted from generated code) */
+  /**
+   * The class name of the generated construct (extracted from generated code).
+   */
   readonly constructClassName: string;
-  /** The file name of the generated construct without extension */
+
+  /**
+   * The file name of the generated construct without extension.
+   */
   readonly constructFileName: string;
-  /** The resource name used for construct ID and props */
+
+  /**
+   * The resource name used for construct ID and props.
+   */
   readonly resourceName: string;
-  /** The number of shards for the Kinesis stream */
+
+  /**
+   * The number of shards for the Kinesis stream.
+   */
   readonly shardCount: number;
-  /** The actual deployed Kinesis stream name from Gen1 */
+
+  /**
+   * The actual deployed Kinesis stream name from Gen1.
+   */
   readonly streamName: string;
 }
 
-export class CdkFromCfn {
+/**
+ * Converts Kinesis CloudFormation templates to CDK constructs using cdk-from-cfn.
+ *
+ * Fetches the nested stack's CFN template from S3, resolves conditions
+ * using deployed stack parameters, and runs the cdk-from-cfn transmuter
+ * to produce a TypeScript CDK construct file.
+ */
+export class KinesisCfnConverter {
+  private readonly dir: string;
+  private readonly fileWriter: (content: string, filePath: string) => Promise<void>;
+  private readonly cfnClient?: CloudFormationClient;
+  private readonly rootStackName?: string;
+  private readonly s3Client: S3Client;
+
   public constructor(
-    private readonly dir: string,
-    private readonly fileWriter: (content: string, filePath: string) => Promise<void>,
-    private readonly cfnClient?: CloudFormationClient,
-    private readonly rootStackName?: string,
-  ) {}
+    dir: string,
+    fileWriter: (content: string, filePath: string) => Promise<void>,
+    s3Client: S3Client,
+    cfnClient?: CloudFormationClient,
+    rootStackName?: string,
+  ) {
+    this.dir = dir;
+    this.fileWriter = fileWriter;
+    this.s3Client = s3Client;
+    this.cfnClient = cfnClient;
+    this.rootStackName = rootStackName;
+  }
 
   /**
-   * Gets the physical stack name for a nested stack by looking up its physical resource ID
-   * from the root stack.
+   * Converts a Kinesis analytics CloudFormation template to a CDK L1 construct.
+   *
+   * Downloads the template from S3, resolves CFN conditions using deployed
+   * parameters, runs cdk-from-cfn, and writes the generated construct file.
+   */
+  public async generateKinesisAnalyticsL1Code(definition: KinesisAnalyticsDefinition): Promise<AnalyticsCodegenResult> {
+    const resourceName = definition.name ?? 'kinesis';
+    const constructFileName = `${resourceName}-construct`;
+    const filePath = path.join(this.dir, 'amplify', 'analytics', `${constructFileName}.ts`);
+    const templateS3Url = definition.providerMetadata.s3TemplateURL;
+    const template = await getCfnTemplateFromS3(templateS3Url, this.s3Client);
+    const nestedStackLogicalId = definition.providerMetadata.logicalId;
+
+    const parameters = await this.getNestedStackParameters(nestedStackLogicalId);
+    const shardCountParam = parameters.find((p) => p.ParameterKey === 'kinesisStreamShardCount');
+    if (!shardCountParam?.ParameterValue) {
+      throw new Error(`kinesisStreamShardCount parameter not found for nested stack with logical ID: ${nestedStackLogicalId}`);
+    }
+    const shardCount = parseInt(shardCountParam.ParameterValue, 10);
+
+    const streamName = await this.getNestedStackResourcePhysicalId(nestedStackLogicalId, 'KinesisStream');
+    if (!streamName) {
+      throw new Error(`Could not find physical stream name for KinesisStream in nested stack: ${nestedStackLogicalId}`);
+    }
+
+    const finalTemplate = await this.preTransmute(template, nestedStackLogicalId);
+    const tsFile = cdk_from_cfn.transmute(JSON.stringify(finalTemplate), 'typescript', nestedStackLogicalId, 'construct');
+    await fs.mkdir(path.dirname(filePath), { recursive: true });
+    await this.fileWriter(tsFile, filePath);
+
+    const classNameMatch = tsFile.match(/export class (\w+) extends/);
+    const constructClassName = classNameMatch ? classNameMatch[1] : `analytics${resourceName}`;
+
+    return {
+      constructClassName,
+      constructFileName,
+      resourceName,
+      shardCount,
+      streamName,
+    };
+  }
+
+  /**
+   * Gets the physical stack name for a nested stack by looking up its
+   * physical resource ID from the root stack.
    */
   private async getNestedStackPhysicalName(logicalId: string): Promise<string | undefined> {
     if (!this.cfnClient || !this.rootStackName) {
@@ -70,8 +155,8 @@ export class CdkFromCfn {
   }
 
   /**
-   * Gets the parameters for a nested stack by looking up its physical resource ID
-   * from the root stack and then describing that stack.
+   * Gets the parameters for a nested stack by resolving its physical
+   * resource ID from the root stack and then describing that stack.
    */
   private async getNestedStackParameters(logicalId: string): Promise<Parameter[]> {
     if (!this.cfnClient || !this.rootStackName) {
@@ -85,7 +170,6 @@ export class CdkFromCfn {
         return [];
       }
 
-      // Describe the nested stack to get its parameters
       const describeStacksResponse = await this.cfnClient.send(
         new DescribeStacksCommand({
           StackName: nestedStackName,
@@ -127,54 +211,12 @@ export class CdkFromCfn {
     }
   }
 
-  public async generateKinesisAnalyticsL1Code(definition: KinesisAnalyticsDefinition): Promise<AnalyticsCodegenResult> {
-    const resourceName = definition.name ?? 'kinesis';
-    const constructFileName = `${resourceName}-construct`;
-    const filePath = path.join(this.dir, 'amplify', 'analytics', `${constructFileName}.ts`);
-    const templateS3Url = definition.providerMetadata.s3TemplateURL;
-    const template = await getCfnTemplateFromS3(templateS3Url);
-    const nestedStackLogicalId = definition.providerMetadata.logicalId;
-
-    // Get shardCount from deployed stack parameters
-    const parameters = await this.getNestedStackParameters(nestedStackLogicalId);
-    const shardCountParam = parameters.find((p) => p.ParameterKey === 'kinesisStreamShardCount');
-    if (!shardCountParam?.ParameterValue) {
-      throw new Error(`kinesisStreamShardCount parameter not found for nested stack with logical ID: ${nestedStackLogicalId}`);
-    }
-    const shardCount = parseInt(shardCountParam.ParameterValue, 10);
-
-    // Get the actual deployed Kinesis stream name (physical resource ID)
-    const streamName = await this.getNestedStackResourcePhysicalId(nestedStackLogicalId, 'KinesisStream');
-    if (!streamName) {
-      throw new Error(`Could not find physical stream name for KinesisStream in nested stack: ${nestedStackLogicalId}`);
-    }
-
-    const finalTemplate = await this.preTransmute(template, nestedStackLogicalId);
-    const tsFile = cdk_from_cfn.transmute(JSON.stringify(finalTemplate), 'typescript', nestedStackLogicalId, 'construct');
-    await fs.mkdir(path.dirname(filePath), { recursive: true });
-    await this.fileWriter(tsFile, filePath);
-
-    // Extract the class name from the generated code
-    const classNameMatch = tsFile.match(/export class (\w+) extends/);
-    const constructClassName = classNameMatch ? classNameMatch[1] : `analytics${resourceName}`;
-
-    return {
-      constructClassName,
-      constructFileName,
-      resourceName,
-      shardCount,
-      streamName,
-    };
-  }
-
   private async preTransmute(template: CFNTemplate, logicalId: string): Promise<CFNTemplate> {
-    // Rename "env" parameter to "branchName"
     if (template.Parameters?.env) {
       template.Parameters['branchName'] = template.Parameters.env;
       delete template.Parameters.env;
     }
 
-    // Update all Ref references from "env" to "branchName"
     const updateRefs = (obj: unknown): void => {
       if (typeof obj === 'object' && obj !== null) {
         const record = obj as Record<string, unknown>;
@@ -187,7 +229,6 @@ export class CdkFromCfn {
 
     updateRefs(template.Resources);
 
-    // Resolve CFN conditions using deployed stack parameters
     const parameters = await this.getNestedStackParameters(logicalId);
     if (parameters.length > 0) {
       const resolved = new CFNConditionResolver(template).resolve(parameters);
@@ -199,25 +240,25 @@ export class CdkFromCfn {
   }
 }
 
-async function getCfnTemplateFromS3(s3Url: string): Promise<CFNTemplate> {
+/**
+ * Downloads a CloudFormation template from S3 given its URL.
+ */
+async function getCfnTemplateFromS3(s3Url: string, s3Client: S3Client): Promise<CFNTemplate> {
   const url = new URL(s3Url);
   let bucket: string;
   let key: string;
 
-  // Check if virtual-hosted style (bucket in hostname)
   const virtualHostMatch = url.hostname.match(/^(.+)\.s3[.-].*\.amazonaws\.com$/);
 
   if (virtualHostMatch) {
     bucket = virtualHostMatch[1];
-    key = url.pathname.slice(1); // remove leading '/'
+    key = url.pathname.slice(1);
   } else {
-    // Path-style: https://s3.region.amazonaws.com/bucket/key/path
     const splitPath = url.pathname.split('/');
     bucket = splitPath[1];
     key = splitPath.slice(2).join('/');
   }
 
-  const s3Client = new S3Client({});
   const response = await s3Client.send(new GetObjectCommand({ Bucket: bucket, Key: key }));
   if (!response.Body) {
     throw new Error(`Failed to retrieve S3 object: ${s3Url}`);

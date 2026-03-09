@@ -7,7 +7,7 @@ import { BackendGenerator } from '../backend.generator';
 import { Gen1App } from '../gen1-app/gen1-app';
 import { printNodes } from '../ts-writer';
 import { AnalyticsRenderer } from './analytics.renderer';
-import { CdkFromCfn, KinesisAnalyticsDefinition, AnalyticsCodegenResult } from './cdk-from-cfn';
+import { KinesisCfnConverter, KinesisAnalyticsDefinition } from './kinesis-cfn-converter';
 
 const factory = ts.factory;
 
@@ -61,9 +61,15 @@ export class AnalyticsGenerator implements Generator {
       operations.push({
         describe: async () => [`Generate analytics/${resourceName}/resource.ts`],
         execute: async () => {
-          const cdkFromCfn = new CdkFromCfn(this.outputDir, fileWriter, this.gen1App.clients.cloudFormation, rootStackName);
+          const kinesisCfnConverter = new KinesisCfnConverter(
+            this.outputDir,
+            fileWriter,
+            this.gen1App.clients.s3,
+            this.gen1App.clients.cloudFormation,
+            rootStackName,
+          );
 
-          const codegenResult: AnalyticsCodegenResult = await cdkFromCfn.generateKinesisAnalyticsL1Code(namedDefinition);
+          const codegenResult = await kinesisCfnConverter.generateKinesisAnalyticsL1Code(namedDefinition);
 
           const nodes = this.defineAnalytics.render({
             constructClassName: codegenResult.constructClassName,

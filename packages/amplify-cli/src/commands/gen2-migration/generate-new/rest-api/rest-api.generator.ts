@@ -2,7 +2,6 @@ import { Generator } from '../generator';
 import { AmplifyMigrationOperation } from '../../_operation';
 import { BackendGenerator } from '../backend.generator';
 import { Gen1App } from '../gen1-app/gen1-app';
-import { readRestApis, RestApiDefinition } from './rest-api-reader';
 
 /**
  * Generates REST API (API Gateway) resources and contributes CDK
@@ -36,7 +35,7 @@ export class RestApiGenerator implements Generator {
       return [];
     }
 
-    const restApis = await readRestApis(apiCategory);
+    const restApis = await this.gen1App.fetchRestApiConfigs(apiCategory);
     if (restApis.length === 0) {
       return [];
     }

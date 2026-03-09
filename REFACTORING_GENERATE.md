@@ -167,7 +167,7 @@ generate/
 
   analytics/
     analytics.generator.ts   # Produces analytics/resource.ts + backend.ts contributions
-    cdk-from-cfn.ts          # Kinesis CFN-to-CDK conversion
+    kinesis-cfn-converter.ts # Kinesis CFN-to-CDK conversion
 
   custom-resources/
     custom.generator.ts      # Copies/transforms custom CDK stacks
