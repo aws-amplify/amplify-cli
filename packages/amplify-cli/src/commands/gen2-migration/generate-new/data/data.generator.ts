@@ -7,12 +7,9 @@ import { BackendGenerator } from '../backend.generator';
 import { Gen1App } from '../gen1-app/gen1-app';
 import { printNodes } from '../ts-writer';
 
-// Phase 2-3: Import rendering and fetching functions from old code.
-// These are pure functions or self-contained fetchers that will move
-// into generate-new/ when we rename the directory in Phase 4.
-import { DataDefinition, generateDataSource } from '../../generate/generators/data/index';
-import { DataDefinitionFetcher } from '../../generate/codegen-head/data_definition_fetcher';
-import { BackendEnvironmentResolver } from '../../generate/codegen-head/backend_environment_selector';
+import { generateDataSource } from './render-data';
+import { DataDefinitionFetcher } from './data-definition-fetcher';
+import { BackendEnvironmentResolver } from './backend-environment-selector';
 
 const factory = ts.factory;
 

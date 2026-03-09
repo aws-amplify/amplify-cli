@@ -7,11 +7,8 @@ import { BackendGenerator } from '../backend.generator';
 import { Gen1App } from '../gen1-app/gen1-app';
 import { printNodes } from '../ts-writer';
 
-// Phase 2-3: Import rendering functions from old code. These are pure
-// functions (no side effects, no state). They will move into generate-new/
-// when we rename the directory in Phase 4.
-import { renderAnalytics, AnalyticsRenderParameters } from '../../generate/generators/analytics/index';
-import { CdkFromCfn, KinesisAnalyticsDefinition, AnalyticsCodegenResult } from '../../generate/unsupported/cdk-from-cfn';
+import { renderAnalytics, AnalyticsRenderParameters } from './render-analytics';
+import { CdkFromCfn, KinesisAnalyticsDefinition, AnalyticsCodegenResult } from './cdk-from-cfn';
 
 const factory = ts.factory;
 

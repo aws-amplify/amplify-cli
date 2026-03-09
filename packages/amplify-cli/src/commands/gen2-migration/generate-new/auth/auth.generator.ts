@@ -7,11 +7,9 @@ import { BackendGenerator } from '../backend.generator';
 import { Gen1App } from '../gen1-app/gen1-app';
 import { printNodes } from '../ts-writer';
 
-// Phase 2-3: Import rendering and adapter functions from old code.
-// These are pure functions that will move into generate-new/ in Phase 4.
-import { AuthDefinition, renderAuthNode } from '../../generate/generators/auth/index';
-import { getAuthDefinition } from '../../generate/adapters/auth/index';
-import { FunctionDefinition } from '../../generate/generators/functions/index';
+import { AuthDefinition, renderAuthNode } from './render-auth';
+import { getAuthDefinition } from './auth-adapter';
+import { FunctionDefinition } from './function-types';
 
 const factory = ts.factory;
 
