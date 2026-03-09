@@ -1,7 +1,7 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import ts from 'typescript';
-import { GetGraphqlApiCommand } from '@aws-sdk/client-appsync';
+import { GetGraphqlApiCommand, GraphqlApi } from '@aws-sdk/client-appsync';
 import { Generator } from '../generator';
 import { AmplifyMigrationOperation } from '../../_operation';
 import { BackendGenerator } from '../backend.generator';
@@ -30,7 +30,7 @@ export class DataGenerator implements Generator {
     this.gen1App = gen1App;
     this.backendGenerator = backendGenerator;
     this.outputDir = outputDir;
-    this.renderer = new DataRenderer();
+    this.renderer = new DataRenderer(gen1App.envName);
   }
 
   /**
@@ -51,7 +51,6 @@ export class DataGenerator implements Generator {
     const schema = await this.gen1App.fetchGraphQLSchema(apiName);
     const output = (apiMeta as Record<string, unknown>).output as Record<string, any>;
     const apiId = output?.GraphQLAPIIdOutput as string;
-    const authorizationModes = output?.authConfig;
 
     if (!apiId) {
       throw new Error(`AppSync API '${apiName}' has no GraphQLAPIIdOutput in amplify-meta.json`);
@@ -60,40 +59,29 @@ export class DataGenerator implements Generator {
     const tableMappings = createTableMappings(schema, apiId, this.gen1App.envName);
 
     const appSyncResponse = await this.gen1App.clients.appSync.send(new GetGraphqlApiCommand({ apiId }));
+    if (!appSyncResponse.graphqlApi) {
+      throw new Error(`AppSync API '${apiId}' not found`);
+    }
+    const graphqlApi = appSyncResponse.graphqlApi;
 
-    if (appSyncResponse.graphqlApi?.additionalAuthenticationProviders?.length) {
-      const additionalProviders = appSyncResponse.graphqlApi.additionalAuthenticationProviders.map((provider) => ({
+    const authorizationModes = output?.authConfig;
+    if (authorizationModes && graphqlApi.additionalAuthenticationProviders?.length) {
+      authorizationModes.additionalAuthenticationProviders = graphqlApi.additionalAuthenticationProviders.map((provider) => ({
         authenticationType: provider.authenticationType,
         ...(provider.lambdaAuthorizerConfig && { lambdaAuthorizerConfig: provider.lambdaAuthorizerConfig }),
         ...(provider.openIDConnectConfig && { openIdConnectConfig: provider.openIDConnectConfig }),
         ...(provider.userPoolConfig && { userPoolConfig: provider.userPoolConfig }),
       }));
-
-      if (authorizationModes && typeof authorizationModes === 'object') {
-        authorizationModes.additionalAuthenticationProviders = additionalProviders;
-      }
     }
 
-    let logging: any;
-    const logConfig = appSyncResponse.graphqlApi?.logConfig;
-    if (logConfig?.fieldLogLevel && logConfig.fieldLogLevel !== 'NONE') {
-      logging = {
-        fieldLogLevel: logConfig.fieldLogLevel.toLowerCase(),
-        ...(logConfig.excludeVerboseContent !== undefined && {
-          excludeVerboseContent: logConfig.excludeVerboseContent,
-        }),
-      };
-    }
-
+    const logging = extractLoggingConfig(graphqlApi);
     const dataDir = path.join(this.outputDir, 'amplify', 'data');
-    const envName = this.gen1App.envName;
 
     return [
       {
         describe: async () => ['Generate data/resource.ts'],
         execute: async () => {
           const nodes = this.renderer.render({
-            envName,
             schema,
             tableMappings,
             authorizationModes,
@@ -110,6 +98,19 @@ export class DataGenerator implements Generator {
       },
     ];
   }
+}
+
+function extractLoggingConfig(graphqlApi: GraphqlApi): any {
+  const logConfig = graphqlApi.logConfig;
+  if (!logConfig?.fieldLogLevel || logConfig.fieldLogLevel === 'NONE') {
+    return undefined;
+  }
+  return {
+    fieldLogLevel: logConfig.fieldLogLevel.toLowerCase(),
+    ...(logConfig.excludeVerboseContent !== undefined && {
+      excludeVerboseContent: logConfig.excludeVerboseContent,
+    }),
+  };
 }
 
 function createTableMappings(schema: string, apiId: string, envName: string): DataTableMapping {

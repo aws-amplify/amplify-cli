@@ -1,6 +1,5 @@
 import ts, { ObjectLiteralElementLike } from 'typescript';
 import { renderResourceTsFile } from '../resource';
-import type { AuthorizationModes, DataLoggingOptions } from '@aws-amplify/backend-data';
 
 const factory = ts.factory;
 
@@ -13,11 +12,10 @@ export type DataTableMapping = Record<string, string>;
  * Options for rendering a defineData() resource file.
  */
 export interface RenderDefineDataOptions {
-  readonly envName: string;
   readonly schema: string;
   readonly tableMappings: DataTableMapping;
-  readonly authorizationModes?: AuthorizationModes;
-  readonly logging?: DataLoggingOptions;
+  readonly authorizationModes?: any;
+  readonly logging?: any;
 }
 
 const MIGRATED_TABLE_MAPPINGS_KEY = 'migratedAmplifyGen1DynamoDbTableMappings';
@@ -35,10 +33,15 @@ const AUTH_MODE_MAP: Record<string, string> = {
  * Pure — no AWS calls, no side effects.
  */
 export class DataRenderer {
+  private readonly envName: string;
   private readonly namedImports: Record<string, Set<string>> = {
     '@aws-amplify/backend': new Set(['defineData']),
   };
   private readonly properties: ObjectLiteralElementLike[] = [];
+
+  public constructor(envName: string) {
+    this.envName = envName;
+  }
 
   /**
    * Produces the complete TypeScript AST for data/resource.ts.
@@ -48,7 +51,7 @@ export class DataRenderer {
 
     const { schema, preSchemaStatements } = this.prepareSchema(opts.schema);
 
-    this.renderTableMappings(opts.tableMappings, opts.envName);
+    this.renderTableMappings(opts.tableMappings);
     this.renderAuthorizationModes(opts.authorizationModes);
     this.renderLogging(opts.logging);
 
@@ -95,14 +98,14 @@ export class DataRenderer {
     };
   }
 
-  private renderTableMappings(tableMappings: DataTableMapping, envName: string): void {
+  private renderTableMappings(tableMappings: DataTableMapping): void {
     const mappingProps: ObjectLiteralElementLike[] = [];
     for (const [tableName, tableId] of Object.entries(tableMappings)) {
       mappingProps.push(factory.createPropertyAssignment(factory.createIdentifier(tableName), factory.createStringLiteral(tableId)));
     }
 
     const branchNameProp = ts.addSyntheticLeadingComment(
-      factory.createPropertyAssignment('branchName', factory.createStringLiteral(envName)),
+      factory.createPropertyAssignment('branchName', factory.createStringLiteral(this.envName)),
       ts.SyntaxKind.SingleLineCommentTrivia,
       'The "branchname" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables',
       true,
@@ -118,11 +121,11 @@ export class DataRenderer {
     this.properties.push(factory.createPropertyAssignment(MIGRATED_TABLE_MAPPINGS_KEY, factory.createArrayLiteralExpression([envMapping])));
   }
 
-  private renderAuthorizationModes(authorizationModes?: AuthorizationModes): void {
+  private renderAuthorizationModes(authorizationModes?: any): void {
     if (!authorizationModes) return;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const gen1AuthModes = authorizationModes as any;
+    const gen1AuthModes = authorizationModes;
     const authModeProperties: ObjectLiteralElementLike[] = [];
 
     if (gen1AuthModes.defaultAuthentication?.authenticationType) {
@@ -219,7 +222,7 @@ export class DataRenderer {
     target.push(factory.createPropertyAssignment('oidcAuthorizationMode', factory.createObjectLiteralExpression(props)));
   }
 
-  private renderLogging(logging?: DataLoggingOptions): void {
+  private renderLogging(logging?: any): void {
     if (!logging) return;
 
     if (logging === true) {
@@ -248,11 +251,4 @@ export class DataRenderer {
       this.properties.push(factory.createPropertyAssignment('logging', factory.createObjectLiteralExpression(props)));
     }
   }
-}
-
-/**
- * Convenience function that creates a DataRenderer and calls render().
- */
-export function renderDefineData(opts: RenderDefineDataOptions): ts.NodeArray<ts.Node> {
-  return new DataRenderer().render(opts);
 }

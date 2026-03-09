@@ -540,3 +540,88 @@ export class MyService {
   private cachedResult: string | undefined;
 }
 ```
+
+---
+
+### 34. Rendering functions must be pure
+
+A function whose job is to produce output (TypeScript AST, JSON, file content) must not make network calls, read from disk, or mutate external state. If it needs data that requires I/O, the caller must resolve that data first and pass it in as a required parameter.
+
+The test: can you call the function in a unit test without mocking any I/O? If not, it's doing too much.
+
+```typescript
+// Bad — rendering function makes an AWS call to resolve table mappings
+async function renderDataResource(schema: string, envName: string) {
+  const apiId = await findApiId(envName); // AWS call inside a renderer
+  const mappings = buildMappings(schema, apiId);
+  return buildAst(schema, mappings);
+}
+
+// Good — caller resolves the data, renderer just renders
+function renderDataResource(schema: string, tableMappings: Record<string, string>) {
+  return buildAst(schema, tableMappings);
+}
+```
+
+---
+
+### 35. Treat impossible states as errors, not branches
+
+If a code path can only be reached when a value exists (because earlier logic guarantees it), don't write an `if` guard that silently skips the work. That hides bugs — if the value is unexpectedly absent, you want to know immediately, not silently produce incomplete output.
+
+```typescript
+// Bad — silently skips if apiId is missing, but we only reach
+// this code because we found an AppSync API entry
+if (apiId) {
+  const response = await client.send(new GetGraphqlApiCommand({ apiId }));
+  // ...
+}
+
+// Good — fail fast if the invariant is violated
+if (!apiId) {
+  throw new Error(`AppSync API '${apiName}' has no GraphQLAPIIdOutput`);
+}
+const response = await client.send(new GetGraphqlApiCommand({ apiId }));
+```
+
+---
+
+### 36. Separate data fetching from data transformation
+
+A generator (or any orchestrator) should have two distinct phases: fetch the data, then transform it. Don't interleave AWS calls with AST construction or file writing. This makes each phase independently testable and keeps the transformation logic pure.
+
+When a class needs both phases, use a Generator + Renderer pair: the Generator fetches data and calls the Renderer, which is a pure object that produces output from the data it receives.
+
+---
+
+### 37. Known values belong in the constructor
+
+If a value is known at construction time and doesn't change, pass it to the constructor — not to every method that needs it. This avoids threading the same value through multiple call sites and makes the dependency explicit.
+
+```typescript
+// Bad — envName passed to render() even though it's known at construction
+const renderer = new DataRenderer();
+renderer.render({ envName, schema, tableMappings });
+
+// Good — envName set once in the constructor
+const renderer = new DataRenderer(envName);
+renderer.render({ schema, tableMappings });
+```
+
+---
+
+### 38. Don't use dynamic import expressions for types
+
+Inline `import('some-package').SomeType` expressions in type positions make the code harder to read and create implicit dependencies that aren't visible in the import block. If the type comes from untyped JSON, use `any` explicitly. If you need the type, add a proper import at the top of the file.
+
+```typescript
+// Bad — dynamic import expression buried in a function call
+const nodes = renderer.render({
+  authorizationModes: authModes as import('@aws-amplify/backend-data').AuthorizationModes,
+});
+
+// Good — if the data is untyped JSON, say so
+const nodes = renderer.render({
+  authorizationModes: authModes, // any — from amplify-meta.json
+});
+```
