@@ -3,7 +3,8 @@ import { renderResourceTsFile } from '../../resource/resource';
 import { AppSyncClient, paginateListGraphqlApis } from '@aws-sdk/client-appsync';
 import type { ConstructFactory, AmplifyFunction } from '@aws-amplify/plugin-types';
 import type { AuthorizationModes, DataLoggingOptions } from '@aws-amplify/backend-data';
-import { RestApiDefinition } from '../../codegen-head/data_definition_fetcher';
+import { RestApiDefinition, ResolverConfig } from '../../codegen-head/data_definition_fetcher';
+
 export interface AdditionalAuthProvider {
   authenticationType: 'API_KEY' | 'AWS_IAM' | 'OPENID_CONNECT' | 'AMAZON_COGNITO_USER_POOLS' | 'AWS_LAMBDA';
   userPoolConfig?: {
@@ -46,7 +47,7 @@ const extractModelsFromSchema = (schema: string): string[] => {
   return models;
 };
 
-const getProjectName = (): string | undefined => {
+export const getProjectName = (): string | undefined => {
   try {
     const fs = require('fs');
     const path = require('path');
@@ -102,6 +103,8 @@ export type DataDefinition = {
   logging?: DataLoggingOptions;
   /* REST API definitions */
   restApis?: RestApiDefinition[];
+  /* Resolver configuration */
+  resolvers?: ResolverConfig;
 };
 
 /** Key name for the migrated table mappings property in the generated data resource */

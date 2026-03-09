@@ -4,8 +4,12 @@ import glob from 'glob';
 import assert from 'node:assert';
 
 import { DataDefinition } from '../core/migration-pipeline';
-import { AdditionalAuthProvider } from '../generators/data';
+import { AdditionalAuthProvider, getProjectName } from '../generators/data';
 import { pathManager } from '@aws-amplify/amplify-cli-core';
+import { BackendEnvironmentResolver } from './backend_environment_selector';
+import { BackendDownloader } from './backend_downloader';
+import { fileOrDirectoryExists } from './directory_exists';
+import { AppSyncClient, GetGraphqlApiCommand } from '@aws-sdk/client-appsync';
 import { APIGatewayClient, GetResourcesCommand } from '@aws-sdk/client-api-gateway';
 
 // Source - amplify-category-api/packages/amplify-graphql-transformer-core/src/graphql-api.ts
@@ -111,10 +115,10 @@ export interface CorsConfiguration {
   maxAge?: number;
 }
 
-import { BackendEnvironmentResolver } from './backend_environment_selector';
-import { BackendDownloader } from './backend_downloader';
-import { fileOrDirectoryExists } from './directory_exists';
-import { AppSyncClient, GetGraphqlApiCommand } from '@aws-sdk/client-appsync';
+// Add locally in the fetcher
+export interface ResolverConfig {
+  hasResolvers: boolean;
+}
 
 /**
  * Fetches and processes data definitions from Amplify Gen1 projects for migration to Gen2.
@@ -137,6 +141,22 @@ export class DataDefinitionFetcher {
    * @param ccbFetcher - Downloads current cloud backend artifacts
    */
   constructor(private backendEnvironmentResolver: BackendEnvironmentResolver, private ccbFetcher: BackendDownloader) {}
+
+  /**
+   * Checks if GraphQL API has resolvers directory with VTL files
+   */
+  private hasResolvers = (): boolean => {
+    const rootDir = pathManager.findProjectRoot();
+    const projectName = getProjectName();
+
+    const resolversPath = path.join(rootDir, 'amplify', 'backend', 'api', projectName, 'resolvers');
+
+    if (!require('fs').existsSync(resolversPath)) return false;
+
+    const files = require('fs').readdirSync(resolversPath);
+
+    return files.some((file: string) => file.endsWith('.vtl'));
+  };
 
   /**
    * Reads and parses a JSON file.
@@ -491,6 +511,10 @@ export class DataDefinitionFetcher {
         const additionalAuthProviders = apiId ? await this.getAdditionalAuthProvidersFromConsole(apiId) : [];
         const logging = apiId ? await this.getLoggingConfigFromConsole(apiId) : undefined;
 
+        // Handle resolver checking
+        const hasResolvers = this.hasResolvers();
+        const resolvers: ResolverConfig | undefined = hasResolvers ? { hasResolvers: true } : undefined;
+
         return {
           tableMappings: undefined,
           schema,
@@ -498,6 +522,7 @@ export class DataDefinitionFetcher {
           additionalAuthProviders: additionalAuthProviders.length > 0 ? additionalAuthProviders : undefined,
           logging,
           restApis: restApis.length > 0 ? restApis : undefined,
+          resolvers,
         };
       }
 

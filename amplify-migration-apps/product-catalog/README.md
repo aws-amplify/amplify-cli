@@ -344,6 +344,18 @@ On the AppSync AWS Console, locate the ID of Gen1 API, it will be named `product
 + export async function handler(event) {
 ```
 
+```diff
+- const crypto = require('@aws-crypto/sha256-js');
+- const { defaultProvider } = require('@aws-sdk/credential-provider-node');
+- const { SignatureV4 } = require('@aws-sdk/signature-v4');
+- const { HttpRequest } = require('@aws-sdk/protocol-http');
+- const Sha256 = crypto.Sha256;
++ import { Sha256 } from '@aws-crypto/sha256-js';
++ import { defaultProvider } from '@aws-sdk/credential-provider-node';
++ import { SignatureV4 } from '@aws-sdk/signature-v4';
++ import { HttpRequest } from '@aws-sdk/protocol-http';
+```
+
 **Edit in `./src/main.tsx`:**
 
 ```diff

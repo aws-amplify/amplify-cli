@@ -58,8 +58,10 @@ import {
 } from '../generators/storage';
 
 import { DataDefinition, DataTableMapping, generateDataSource } from '../generators/data/index';
+import { getProjectName } from '../generators/data';
 import { DataModelTableAccess } from '../codegen-head/data_model_access_parser';
 import { ApiTriggerDetector } from '../adapters/functions/api-trigger-detector';
+import { pathManager } from '@aws-amplify/amplify-cli-core';
 
 import { FunctionDefinition, renderFunctions } from '../generators/functions/index';
 import assert from 'assert';
@@ -116,6 +118,29 @@ export interface Gen2RenderingOptions {
   /** Custom file writer function for testing or alternative output methods */
   fileWriter?: (content: string, path: string) => Promise<void>;
 }
+/**
+ * Copies resolver files from Gen1 to Gen2 structure
+ */
+const copyResolverFiles = (outputDir: string): Renderer => ({
+  render: async () => {
+    const rootDir = pathManager.findProjectRoot();
+    const projectName = getProjectName();
+    const resolversPath = path.join(rootDir, 'amplify', 'backend', 'api', projectName, 'resolvers');
+    const targetPath = path.join(outputDir, 'amplify', 'data', 'resolvers');
+
+    if (require('fs').existsSync(resolversPath)) {
+      const files = require('fs').readdirSync(resolversPath);
+      const vtlFiles = files.filter((file: string) => file.endsWith('.vtl'));
+
+      for (const file of vtlFiles) {
+        const srcFile = path.join(resolversPath, file);
+        const destFile = path.join(targetPath, file);
+        require('fs').copyFileSync(srcFile, destFile);
+      }
+    }
+  },
+});
+
 /**
  * Creates a file writer function for the specified path
  * @param path - File path to write to
@@ -487,6 +512,10 @@ export const createGen2Renderer = ({
   // Process data (GraphQL/DynamoDB) configuration - only if table mappings exist for the environment
   if (data) {
     renderers.push(new EnsureDirectory(path.join(outputDir, 'amplify', 'data')));
+    if (data.resolvers?.hasResolvers) {
+      renderers.push(new EnsureDirectory(path.join(outputDir, 'amplify', 'data', 'resolvers')));
+      renderers.push(copyResolverFiles(outputDir));
+    }
     renderers.push(
       new TypescriptNodeArrayRenderer(
         async () => generateDataSource(backendEnvironmentName, data),
@@ -497,6 +526,7 @@ export const createGen2Renderer = ({
       importFrom: './data/resource',
       additionalAuthProviders: data.additionalAuthProviders,
       restApis: data.restApis,
+      hasResolvers: data.resolvers?.hasResolvers,
     };
   }
 

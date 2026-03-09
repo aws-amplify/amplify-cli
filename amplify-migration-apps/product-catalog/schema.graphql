@@ -4,10 +4,7 @@ enum UserRole {
   VIEWER
 }
 
-type User @model @auth(rules: [
-  { allow: private, provider: iam },
-  { allow: owner, ownerField: "id" }
-]) {
+type User @model @auth(rules: [{ allow: private, provider: iam }, { allow: owner, ownerField: "id" }]) {
   id: ID!
   email: String!
   name: String!
@@ -30,15 +27,14 @@ type Product @model @auth(rules: [{ allow: private, provider: iam }]) {
   images: [String]
   createdBy: String
   updatedBy: String
+  discountedPrice: Float
+  savings: Float
   createdAt: AWSDateTime!
   updatedAt: AWSDateTime!
   comments: [Comment] @hasMany(indexName: "byProduct", fields: ["id"])
 }
 
-type Comment @model @auth(rules: [
-  { allow: private, provider: iam },
-  { allow: owner, ownerField: "authorId" }
-]) {
+type Comment @model @auth(rules: [{ allow: private, provider: iam }, { allow: owner, ownerField: "authorId" }]) {
   id: ID!
   productId: ID! @index(name: "byProduct")
   authorId: String!
@@ -59,8 +55,7 @@ type LowStockResponse {
 }
 
 type Query {
-  checkLowStock: LowStockResponse @function(name: "lowstockproducts-${env}") @auth(rules: [
-    { allow: private, provider: iam },
-    { allow: public, provider: apiKey }
-  ])
+  checkLowStock: LowStockResponse
+    @function(name: "lowstockproducts-${env}")
+    @auth(rules: [{ allow: private, provider: iam }, { allow: public, provider: apiKey }])
 }

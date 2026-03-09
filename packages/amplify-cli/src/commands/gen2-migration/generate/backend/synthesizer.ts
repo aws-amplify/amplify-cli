@@ -28,6 +28,7 @@ export interface BackendRenderParameters {
     importFrom: string;
     additionalAuthProviders?: AdditionalAuthProvider[];
     restApis?: RestApiDefinition[];
+    hasResolvers?: boolean;
   };
   auth?: {
     importFrom: string;
@@ -2410,6 +2411,258 @@ export class BackendSynthesizer {
           nodes.push(forStatement);
         }
       });
+    }
+
+    // Override resolver templates from data/resolvers folder
+    if (renderArgs.data?.hasResolvers) {
+      // Add required imports for resolver overrides
+      imports.push(this.createImportStatement([factory.createIdentifier('readdirSync'), factory.createIdentifier('readFileSync')], 'fs'));
+      imports.push(this.createImportStatement([factory.createIdentifier('join'), factory.createIdentifier('dirname')], 'path'));
+      imports.push(this.createImportStatement([factory.createIdentifier('fileURLToPath')], 'url'));
+
+      // Generate __dirname equivalent for ES modules
+      const dirnameStatement = factory.createVariableStatement(
+        [],
+        factory.createVariableDeclarationList(
+          [
+            factory.createVariableDeclaration(
+              '__dirname',
+              undefined,
+              undefined,
+              factory.createCallExpression(factory.createIdentifier('dirname'), undefined, [
+                factory.createCallExpression(factory.createIdentifier('fileURLToPath'), undefined, [
+                  factory.createPropertyAccessExpression(factory.createIdentifier('import'), factory.createIdentifier('meta.url')),
+                ]),
+              ]),
+            ),
+          ],
+          ts.NodeFlags.Const,
+        ),
+      );
+      nodes.push(dirnameStatement);
+
+      // Get resolvers directory path
+      const resolversDirStatement = factory.createVariableStatement(
+        [],
+        factory.createVariableDeclarationList(
+          [
+            factory.createVariableDeclaration(
+              'resolversDir',
+              undefined,
+              undefined,
+              factory.createCallExpression(factory.createIdentifier('join'), undefined, [
+                factory.createIdentifier('__dirname'),
+                factory.createStringLiteral('data/resolvers'),
+              ]),
+            ),
+          ],
+          ts.NodeFlags.Const,
+        ),
+      );
+      nodes.push(resolversDirStatement);
+
+      // Filter for .res.vtl files
+      const resolverFilesStatement = factory.createVariableStatement(
+        [],
+        factory.createVariableDeclarationList(
+          [
+            factory.createVariableDeclaration(
+              'resolverFiles',
+              undefined,
+              undefined,
+              factory.createCallExpression(
+                factory.createPropertyAccessExpression(
+                  factory.createCallExpression(factory.createIdentifier('readdirSync'), undefined, [
+                    factory.createIdentifier('resolversDir'),
+                  ]),
+                  factory.createIdentifier('filter'),
+                ),
+                undefined,
+                [
+                  factory.createArrowFunction(
+                    undefined,
+                    undefined,
+                    [factory.createParameterDeclaration(undefined, undefined, factory.createIdentifier('f'))],
+                    undefined,
+                    factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
+                    factory.createCallExpression(
+                      factory.createPropertyAccessExpression(factory.createIdentifier('f'), factory.createIdentifier('endsWith')),
+                      undefined,
+                      [factory.createStringLiteral('.res.vtl')],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+          ts.NodeFlags.Const,
+        ),
+      );
+      nodes.push(resolverFilesStatement);
+
+      // Process each resolver file
+      const forOfStatement = factory.createForOfStatement(
+        undefined,
+        factory.createVariableDeclarationList(
+          [factory.createVariableDeclaration('file', undefined, undefined, undefined)],
+          ts.NodeFlags.Const,
+        ),
+        factory.createIdentifier('resolverFiles'),
+        factory.createBlock(
+          [
+            // Extract type and field names from filename (e.g., Query.listProducts.res.vtl)
+            factory.createVariableStatement(
+              [],
+              factory.createVariableDeclarationList(
+                [
+                  factory.createVariableDeclaration(
+                    factory.createArrayBindingPattern([
+                      factory.createBindingElement(undefined, undefined, 'typeName'),
+                      factory.createBindingElement(undefined, undefined, 'fieldName'),
+                    ]),
+                    undefined,
+                    undefined,
+                    factory.createCallExpression(
+                      factory.createPropertyAccessExpression(
+                        factory.createCallExpression(
+                          factory.createPropertyAccessExpression(factory.createIdentifier('file'), factory.createIdentifier('replace')),
+                          undefined,
+                          [factory.createStringLiteral('.res.vtl'), factory.createStringLiteral('')],
+                        ),
+                        factory.createIdentifier('split'),
+                      ),
+                      undefined,
+                      [factory.createStringLiteral('.')],
+                    ),
+                  ),
+                ],
+                ts.NodeFlags.Const,
+              ),
+            ),
+            // Build pipeline function ID (e.g., QueryListProductsDataResolverFn)
+            factory.createVariableStatement(
+              [],
+              factory.createVariableDeclarationList(
+                [
+                  factory.createVariableDeclaration(
+                    'functionId',
+                    undefined,
+                    undefined,
+                    factory.createTemplateExpression(factory.createTemplateHead(''), [
+                      factory.createTemplateSpan(factory.createIdentifier('typeName'), factory.createTemplateMiddle('')),
+                      factory.createTemplateSpan(
+                        factory.createBinaryExpression(
+                          factory.createCallExpression(
+                            factory.createPropertyAccessExpression(
+                              factory.createCallExpression(
+                                factory.createPropertyAccessExpression(
+                                  factory.createIdentifier('fieldName'),
+                                  factory.createIdentifier('charAt'),
+                                ),
+                                undefined,
+                                [factory.createNumericLiteral('0')],
+                              ),
+                              factory.createIdentifier('toUpperCase'),
+                            ),
+                            undefined,
+                            [],
+                          ),
+                          factory.createToken(ts.SyntaxKind.PlusToken),
+                          factory.createCallExpression(
+                            factory.createPropertyAccessExpression(
+                              factory.createIdentifier('fieldName'),
+                              factory.createIdentifier('slice'),
+                            ),
+                            undefined,
+                            [factory.createNumericLiteral('1')],
+                          ),
+                        ),
+                        factory.createTemplateTail('DataResolverFn'),
+                      ),
+                    ]),
+                  ),
+                ],
+                ts.NodeFlags.Const,
+              ),
+            ),
+            // Get the pipeline function configuration
+            factory.createVariableStatement(
+              [],
+              factory.createVariableDeclarationList(
+                [
+                  factory.createVariableDeclaration(
+                    'pipelineFunction',
+                    undefined,
+                    undefined,
+                    factory.createElementAccessExpression(
+                      factory.createPropertyAccessExpression(
+                        factory.createIdentifier('backend.data.resources.cfnResources'),
+                        factory.createIdentifier('cfnFunctionConfigurations'),
+                      ),
+                      factory.createIdentifier('functionId'),
+                    ),
+                  ),
+                ],
+                ts.NodeFlags.Const,
+              ),
+            ),
+            // Override the response mapping template if pipeline function exists
+            factory.createIfStatement(
+              factory.createIdentifier('pipelineFunction'),
+              factory.createBlock(
+                [
+                  // Read the VTL template content
+                  factory.createVariableStatement(
+                    [],
+                    factory.createVariableDeclarationList(
+                      [
+                        factory.createVariableDeclaration(
+                          'template',
+                          undefined,
+                          undefined,
+                          factory.createCallExpression(factory.createIdentifier('readFileSync'), undefined, [
+                            factory.createCallExpression(factory.createIdentifier('join'), undefined, [
+                              factory.createIdentifier('resolversDir'),
+                              factory.createIdentifier('file'),
+                            ]),
+                            factory.createStringLiteral('utf8'),
+                          ]),
+                        ),
+                      ],
+                      ts.NodeFlags.Const,
+                    ),
+                  ),
+                  // Clear the S3 template location to use inline template
+                  factory.createExpressionStatement(
+                    factory.createBinaryExpression(
+                      factory.createPropertyAccessExpression(
+                        factory.createIdentifier('pipelineFunction'),
+                        factory.createIdentifier('responseMappingTemplateS3Location'),
+                      ),
+                      factory.createToken(ts.SyntaxKind.EqualsToken),
+                      factory.createIdentifier('undefined'),
+                    ),
+                  ),
+                  // Set the inline response mapping template
+                  factory.createExpressionStatement(
+                    factory.createBinaryExpression(
+                      factory.createPropertyAccessExpression(
+                        factory.createIdentifier('pipelineFunction'),
+                        factory.createIdentifier('responseMappingTemplate'),
+                      ),
+                      factory.createToken(ts.SyntaxKind.EqualsToken),
+                      factory.createIdentifier('template'),
+                    ),
+                  ),
+                ],
+                true,
+              ),
+            ),
+          ],
+          true,
+        ),
+      );
+      nodes.push(forOfStatement);
     }
 
     // returns backend.ts file

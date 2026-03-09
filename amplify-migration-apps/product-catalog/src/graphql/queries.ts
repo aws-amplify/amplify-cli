@@ -53,6 +53,8 @@ export const listProducts = /* GraphQL */ `query ListProducts(
       images
       createdBy
       updatedBy
+      discountedPrice
+      savings
       createdAt
       updatedAt
       __typename
