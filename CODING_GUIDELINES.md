@@ -464,7 +464,31 @@ If you validate that `x` is defined at the top of a function, every subsequent `
 
 ## Style
 
-### 30. Use explicit visibility modifiers on class members
+### 30. Call chains should read like English
+
+When you chain property access and method calls, the result should read as a short, natural phrase — not stutter or repeat context the reader already has. Each segment of the chain should add new information.
+
+```typescript
+// Bad — "fetcher" repeats what the reader already knows from the class name
+gen1App.fetcher.fetchUserPool(resources);
+gen1App.authDefinitionFetcher.getDefinition();
+
+// Good — reads like a sentence: "from the gen1 app's AWS [layer], fetch the user pool"
+gen1App.aws.fetchUserPool(resources);
+gen1App.meta.auth;
+
+// Bad — stutters on "storage"
+storageService.getStorageBucket();
+
+// Good
+storageService.getBucket();
+```
+
+The test: read the full chain aloud. If it sounds like something a developer would say to a colleague ("get the user pool from the gen1 app's AWS client"), the naming is right. If it sounds robotic or redundant ("use the gen1 app's fetcher to fetch the user pool"), rename until the stutter disappears.
+
+---
+
+### 31. Use explicit visibility modifiers on class members
 
 Every class method and property should have an explicit `public`, `private`, or `protected` modifier. Omitting the modifier forces the reader to remember that TypeScript defaults to `public` — and more importantly, it makes intent ambiguous: did the author mean for this to be public, or did they just forget?
 

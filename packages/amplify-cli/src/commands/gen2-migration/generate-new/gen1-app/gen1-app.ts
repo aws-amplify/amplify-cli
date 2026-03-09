@@ -34,7 +34,7 @@ export class Gen1App {
   public readonly clients: AwsClients;
   public readonly stackParser: AmplifyStackParser;
   public readonly backendDownloader: BackendDownloader;
-  public readonly fetcher: AwsFetcher;
+  public readonly aws: AwsFetcher;
 
   private cachedBackendEnv: BackendEnvironment | undefined;
   private cachedCcbDir: string | undefined;
@@ -49,7 +49,7 @@ export class Gen1App {
     this.clients = opts.clients;
     this.stackParser = new AmplifyStackParser(opts.clients.cloudFormation);
     this.backendDownloader = new BackendDownloader(opts.clients.s3);
-    this.fetcher = new AwsFetcher(opts.clients);
+    this.aws = new AwsFetcher(opts.clients);
   }
 
   // ── Backend environment ──────────────────────────────────────────
