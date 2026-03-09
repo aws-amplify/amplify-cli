@@ -130,7 +130,7 @@ export class AmplifyDriftDetector {
       // Phase 1: Detect CloudFormation drift recursively
       this.updateSpinner('Detecting CloudFormation drift...');
       phase1Results = await detectStackDriftRecursive(cfn, stackName, this.printer);
-      this.printer.debug(`Phase 1 complete: ${phase1Results.summary.totalDrifted} drifted resources detected`);
+      this.printer.debug(`Phase 1 complete: ${phase1Results.totalDrifted} drifted resources detected`);
 
       if (!syncSuccess) {
         this.printer.warn(chalk.yellow('Cloud backend sync failed - template drift and local drift will be skipped'));
@@ -162,7 +162,7 @@ export class AmplifyDriftDetector {
     }
 
     // Summary line
-    const totalDriftCount = phase1Results.summary.totalDrifted + phase2Results.totalDrifted + phase3Results.totalDrifted;
+    const totalDriftCount = phase1Results.totalDrifted + phase2Results.totalDrifted + phase3Results.totalDrifted;
     if (totalDriftCount > 0) {
       this.printer.info(chalk.yellow(`${totalDriftCount} drifted resource(s) found`));
     } else {

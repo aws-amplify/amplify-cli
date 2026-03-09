@@ -8,7 +8,6 @@ import {
   DescribeStackDriftDetectionStatusCommand,
   DescribeStackResourcesCommand,
   paginateDescribeStackResourceDrifts,
-  GetTemplateCommand,
   StackResourceDriftStatus,
   type StackResourceDrift,
   type PropertyDifference,
@@ -19,45 +18,23 @@ import { extractCategory } from '../gen2-migration/categories';
 import type { Printer } from '@aws-amplify/amplify-prompts';
 
 /**
- * Resource count structure
- */
-export interface ResourceCounts {
-  drifted: number;
-  inSync: number;
-  unchecked: number;
-  failed: number;
-}
-
-/**
- * Summary counts across all stacks
- */
-export interface DriftSummary {
-  totalStacks: number;
-  totalDrifted: number;
-  totalInSync: number;
-  totalUnchecked: number;
-  totalFailed: number;
-}
-
-/**
  * Enriched drift tree node — one per stack (root or nested)
  */
 export interface StackDriftNode {
   logicalId: string;
   category: string;
   drifts: StackResourceDrift[];
-  counts: ResourceCounts;
   driftDetectionId: string;
   children: StackDriftNode[];
   skippedChildren?: string[];
 }
 
 /**
- * CloudFormation drift results — enriched tree + aggregate summary
+ * CloudFormation drift results — enriched tree + total drifted count
  */
 export interface CloudFormationDriftResults {
   root: StackDriftNode;
-  summary: DriftSummary;
+  totalDrifted: number;
   skippedStacks: string[];
   incomplete: boolean;
 }
@@ -66,52 +43,15 @@ export interface CloudFormationDriftResults {
 export const isDrifted = (d: StackResourceDrift): boolean =>
   d.StackResourceDriftStatus === StackResourceDriftStatus.MODIFIED || d.StackResourceDriftStatus === StackResourceDriftStatus.DELETED;
 
-/** Count resources with MODIFIED or DELETED status */
-export function countDrifted(drifts: StackResourceDrift[]): number {
-  return drifts.filter(isDrifted).length;
-}
-
-export function countInSync(drifts: StackResourceDrift[]): number {
-  return drifts.filter((d) => d.StackResourceDriftStatus === StackResourceDriftStatus.IN_SYNC).length;
-}
-
-export function countUnchecked(
-  drifts: StackResourceDrift[],
-  template: Record<string, unknown>,
-  nestedStackIds: Set<string> = new Set(),
-): number {
-  const checkedResourceIds = new Set(drifts.map((d) => d.LogicalResourceId));
-  const resources = (template.Resources ?? {}) as Record<string, unknown>;
-  const allResourceIds = Object.keys(resources);
-  const notInResults = allResourceIds.filter((id) => !checkedResourceIds.has(id) && !nestedStackIds.has(id)).length;
-  const notChecked = drifts.filter((d) => d.StackResourceDriftStatus === StackResourceDriftStatus.NOT_CHECKED).length;
-  return notInResults + notChecked;
-}
-
-export function countFailed(drifts: StackResourceDrift[]): number {
-  return drifts.filter((d) => d.StackResourceDriftStatus === StackResourceDriftStatus.UNKNOWN).length;
-}
-
 /**
- * Recursively compute aggregate summary counts from a drift tree
+ * Recursively count total drifted resources across the entire tree
  */
-function computeSummary(node: StackDriftNode): DriftSummary {
-  let totalStacks = 1;
-  let totalDrifted = node.counts.drifted;
-  let totalInSync = node.counts.inSync;
-  let totalUnchecked = node.counts.unchecked;
-  let totalFailed = node.counts.failed;
-
+function countTotalDrifted(node: StackDriftNode): number {
+  let total = node.drifts.filter(isDrifted).length;
   for (const child of node.children) {
-    const childSummary = computeSummary(child);
-    totalStacks += childSummary.totalStacks;
-    totalDrifted += childSummary.totalDrifted;
-    totalInSync += childSummary.totalInSync;
-    totalUnchecked += childSummary.totalUnchecked;
-    totalFailed += childSummary.totalFailed;
+    total += countTotalDrifted(child);
   }
-
-  return { totalStacks, totalDrifted, totalInSync, totalUnchecked, totalFailed };
+  return total;
 }
 
 /**
@@ -299,28 +239,15 @@ async function buildDriftNode(
   // Detect drift on this stack
   const { drifts, driftDetectionId } = await detectStackDrift(cfn, physicalName, print);
 
-  // Fetch template
-  const templateResponse = await cfn.send(new GetTemplateCommand({ StackName: physicalName, TemplateStage: 'Original' }));
-  const template: Record<string, unknown> = JSON.parse(templateResponse.TemplateBody!);
-
   // Compute category
   let category = extractCategory(logicalId);
   if (category === 'Other' && parentCategory) {
     category = parentCategory;
   }
 
-  // Find nested stacks (needed before counting so we can exclude them from unchecked)
+  // Find nested stacks
   const stackResources = await cfn.send(new DescribeStackResourcesCommand({ StackName: physicalName }));
   const nestedStacks = stackResources.StackResources?.filter((resource) => resource.ResourceType === 'AWS::CloudFormation::Stack') || [];
-  const nestedStackIds = new Set(nestedStacks.map((s) => s.LogicalResourceId).filter(Boolean) as string[]);
-
-  // Compute counts
-  const counts: ResourceCounts = {
-    drifted: countDrifted(drifts),
-    inSync: countInSync(drifts),
-    unchecked: countUnchecked(drifts, template, nestedStackIds),
-    failed: countFailed(drifts),
-  };
 
   if (nestedStacks.length > 0) {
     print.debug(`Found ${nestedStacks.length} nested stack(s) in ${logicalId}`);
@@ -354,7 +281,6 @@ async function buildDriftNode(
     logicalId,
     category,
     drifts,
-    counts,
     driftDetectionId,
     children,
     skippedChildren: skippedChildren.length > 0 ? skippedChildren : undefined,
@@ -384,10 +310,10 @@ export async function detectStackDriftRecursive(
   // Override root category to 'Core Infrastructure'
   root.category = 'Core Infrastructure';
 
-  const summary = computeSummary(root);
+  const totalDrifted = countTotalDrifted(root);
   const skippedStacks = collectSkippedStacks(root);
 
-  print.debug(`detectStackDriftRecursive.complete: ${stackName}, ${summary.totalDrifted} total drifted resources`);
+  print.debug(`detectStackDriftRecursive.complete: ${stackName}, ${totalDrifted} total drifted resources`);
 
-  return { root, summary, skippedStacks, incomplete: skippedStacks.length > 0 };
+  return { root, totalDrifted, skippedStacks, incomplete: skippedStacks.length > 0 };
 }
