@@ -8,7 +8,7 @@ import type { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { AmplifyError, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import type { Print } from '../../drift';
+import type { Printer } from '@aws-amplify/amplify-prompts';
 
 import CloudFormation from '@aws-amplify/amplify-provider-awscloudformation/lib/aws-utils/aws-cfn';
 import { downloadZip, extractZip } from '@aws-amplify/amplify-provider-awscloudformation/lib/zip-util';
@@ -19,7 +19,7 @@ import { S3BackendZipFileName } from '@aws-amplify/amplify-provider-awscloudform
  * Service for CloudFormation operations
  */
 export class CloudFormationService {
-  constructor(private readonly print: Print) {}
+  constructor(private readonly print: Printer) {}
   /**
    * Get CloudFormation client
    * Uses the standard Amplify CloudFormation class for proper configuration
@@ -55,7 +55,6 @@ export class CloudFormationService {
       );
     }
   }
-
 
   /**
    * Sync the #current-cloud-backend directory with fresh data from S3

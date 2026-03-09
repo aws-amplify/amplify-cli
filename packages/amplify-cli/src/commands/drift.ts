@@ -4,28 +4,12 @@
  */
 
 import { $TSContext, AmplifyError } from '@aws-amplify/amplify-cli-core';
-import { printer, AmplifySpinner } from '@aws-amplify/amplify-prompts';
+import { printer, AmplifySpinner, type Printer, isDebug } from '@aws-amplify/amplify-prompts';
 import chalk from 'chalk';
 import { detectStackDriftRecursive, type CloudFormationDriftResults } from './drift-detection';
 import { detectLocalDrift, type LocalDriftResults } from './drift-detection/detect-local-drift';
 import { detectTemplateDrift, type TemplateDriftResults } from './drift-detection/detect-template-drift';
-import { CloudFormationService, AmplifyConfigService, formatDriftResults } from './drift-detection/services';
-
-/**
- * Print interface for consistent logging across drift detection
- */
-export interface Print {
-  info: (msg: string) => void;
-  debug: (msg: string) => void;
-  warn: (msg: string) => void;
-}
-
-/**
- * Command options
- */
-interface DriftOptions {
-  debug?: boolean;
-}
+import { CloudFormationService, AmplifyConfigService, createUnifiedCategoryView } from './drift-detection/services';
 
 /**
  * Executes the drift detection command
@@ -46,32 +30,20 @@ export const run = async (context: $TSContext): Promise<void> => {
 export class AmplifyDriftDetector {
   private readonly cfnService: CloudFormationService;
   private readonly configService: AmplifyConfigService;
-  private readonly printer: Print;
-  private readonly options: DriftOptions;
+  private readonly printer: Printer;
   private readonly spinner = new AmplifySpinner();
   private spinnerText = '';
   private spinnerActive = false;
 
-  constructor(private readonly context: $TSContext, print?: Print) {
-    // Store options from context for later use
-    this.options = {
-      debug: context.parameters?.options?.debug || false,
-    };
-
-    const basePrint: Print = print ?? {
-      info: (message: string) => printer.info(message),
-      warn: (message: string) => printer.warn(message),
-      debug: (message: string) => {
-        if (this.options.debug) {
-          printer.debug(chalk.gray(message));
-        }
-      },
-    };
-
+  constructor(private readonly context: $TSContext, basePrint: Pick<Printer, 'info' | 'debug' | 'warn'> = printer) {
     // Wrap each method to pause/resume spinner so output never collides
     this.printer = {
+      ...printer,
       info: (msg: string) => this.withSpinnerPaused(() => basePrint.info(msg)),
-      debug: (msg: string) => this.withSpinnerPaused(() => basePrint.debug(msg)),
+      debug: (msg: string) => {
+        if (!isDebug) return;
+        this.withSpinnerPaused(() => basePrint.debug(msg));
+      },
       warn: (msg: string) => this.withSpinnerPaused(() => basePrint.warn(msg)),
     };
 
@@ -184,7 +156,12 @@ export class AmplifyDriftDetector {
       throw error;
     }
 
-    this.displayResults(phase1Results, phase2Results, phase3Results, projectName);
+    const categoryView = createUnifiedCategoryView(phase1Results, phase2Results, phase3Results);
+    if (categoryView) {
+      this.printer.info(categoryView);
+    } else {
+      this.printer.info(chalk.green('No drift detected'));
+    }
 
     const totalDriftCount = phase1Results.summary.totalDrifted + phase2Results.totalDrifted + phase3Results.totalDrifted;
     const hasAnyErrors = phase1Results.incomplete || phase2Results.skipped || phase3Results.skipped;
@@ -213,19 +190,5 @@ export class AmplifyDriftDetector {
       return 1;
     }
     return 0;
-  }
-
-  /**
-   * Display drift detection results
-   */
-  private displayResults(
-    phase1: CloudFormationDriftResults,
-    phase2: TemplateDriftResults,
-    phase3: LocalDriftResults,
-    projectName: string,
-  ): void {
-    const output = formatDriftResults(phase1, phase2, phase3, projectName);
-    this.printer.info(output.summaryDashboard);
-    if (output.categoryView !== undefined) this.printer.info(output.categoryView);
   }
 }

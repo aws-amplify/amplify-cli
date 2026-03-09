@@ -5,4 +5,4 @@
 
 export { CloudFormationService } from './cloudformation-service';
 export { AmplifyConfigService } from './amplify-config-service';
-export { formatDriftResults } from './drift-formatter';
+export { createUnifiedCategoryView } from './drift-formatter';

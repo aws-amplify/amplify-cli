@@ -16,7 +16,7 @@ import {
 } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { extractCategory } from '../gen2-migration/categories';
-import type { Print } from '../drift';
+import type { Printer } from '@aws-amplify/amplify-prompts';
 
 /**
  * Resource count structure
@@ -134,7 +134,7 @@ function collectSkippedStacks(node: StackDriftNode, result: string[] = []): stri
 export async function detectStackDrift(
   cfn: CloudFormationClient,
   stackName: string,
-  print: Print,
+  print: Printer,
 ): Promise<{ drifts: StackResourceDrift[]; driftDetectionId: string }> {
   // Start drift detection
   print.debug(`detectStackDrift: ${stackName}`);
@@ -197,7 +197,7 @@ export async function detectStackDrift(
 /**
  * Check if a property difference is an Amplify auth role Deny→Allow change (intended drift)
  */
-function isAmplifyAuthRoleDenyToAllowChange(propDiff: PropertyDifference, print: Print): boolean {
+function isAmplifyAuthRoleDenyToAllowChange(propDiff: PropertyDifference, print: Printer): boolean {
   // Check if this is an AssumeRolePolicyDocument change
   if (!propDiff.PropertyPath || !propDiff.PropertyPath.includes('AssumeRolePolicyDocument')) {
     return false;
@@ -250,7 +250,7 @@ function isAmplifyAuthRoleDenyToAllowChange(propDiff: PropertyDifference, print:
 async function waitForDriftDetection(
   cfn: CloudFormationClient,
   driftDetectionId: string,
-  print: Print,
+  print: Printer,
 ): Promise<DescribeStackDriftDetectionStatusCommandOutput | undefined> {
   const maxWaitForDrift = 300_000; // 5 minutes max
   const timeBetweenOutputs = 10_000; // User feedback every 10 seconds
@@ -302,7 +302,7 @@ async function buildDriftNode(
   cfn: CloudFormationClient,
   physicalName: string,
   logicalId: string,
-  print: Print,
+  print: Printer,
   parentCategory?: string,
 ): Promise<StackDriftNode> {
   // Detect drift on this stack
@@ -384,7 +384,7 @@ async function buildDriftNode(
 export async function detectStackDriftRecursive(
   cfn: CloudFormationClient,
   stackName: string,
-  print: Print,
+  print: Printer,
 ): Promise<CloudFormationDriftResults> {
   print.debug(`detectStackDriftRecursive: ${stackName}`);
 

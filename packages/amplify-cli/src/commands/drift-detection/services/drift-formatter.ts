@@ -9,75 +9,8 @@ import { StackResourceDriftStatus, ChangeAction } from '@aws-sdk/client-cloudfor
 import chalk from 'chalk';
 import type { LocalDriftResults } from '../detect-local-drift';
 import type { TemplateDriftResults, ResourceChangeWithNested } from '../detect-template-drift';
-import { type StackDriftNode, type CloudFormationDriftResults, type DriftSummary, isDrifted } from '../detect-stack-drift';
+import { type StackDriftNode, type CloudFormationDriftResults, isDrifted } from '../detect-stack-drift';
 import { extractCategory } from '../../gen2-migration/categories';
-
-/** Strip ANSI escape codes to get actual text length */
-// eslint-disable-next-line no-control-regex
-const stripAnsi = (str: string): string => str.replace(/\u001b\[[0-9;]*m/g, '');
-
-// Display constants
-const DISPLAY_CONSTANTS = {
-  BORDER_WIDTH: 61,
-  TITLE_PADDING: 19,
-} as const;
-
-/** Create the summary dashboard box with drift statistics */
-export function createSummaryDashboard(summary: DriftSummary, projectName: string): string {
-  const border = '─'.repeat(DISPLAY_CONSTANTS.BORDER_WIDTH);
-  let dashboard = '';
-
-  dashboard += `┌${border}┐\n`;
-  dashboard += `│${' '.repeat(DISPLAY_CONSTANTS.TITLE_PADDING)}DRIFT DETECTION SUMMARY${' '.repeat(DISPLAY_CONSTANTS.TITLE_PADDING)}│\n`;
-  dashboard += `├${border}┤\n`;
-
-  // Project name
-  dashboard += formatDashboardLine('Project', chalk.bold(projectName));
-
-  // Total stacks
-  dashboard += formatDashboardLine('Total Stacks Checked', chalk.bold(String(summary.totalStacks)));
-
-  // Resources with drift
-  const driftedColor = summary.totalDrifted > 0 ? chalk.red : chalk.green;
-  dashboard += formatDashboardLine('Resources with Drift', driftedColor(String(summary.totalDrifted)));
-
-  // Resources in sync
-  dashboard += formatDashboardLine('Resources in Sync', chalk.green(String(summary.totalInSync)));
-
-  // Unchecked resources
-  dashboard += formatDashboardLine('Unchecked Resources', chalk.gray(String(summary.totalUnchecked)));
-
-  // Failed checks (if any)
-  if (summary.totalFailed > 0) {
-    dashboard += formatDashboardLine('Failed Drift Checks', chalk.yellow(String(summary.totalFailed)));
-  }
-
-  dashboard += `└${border}┘`;
-
-  // Warning message for failed checks
-  if (summary.totalFailed > 0) {
-    dashboard +=
-      '\n' +
-      chalk.yellow(
-        `WARNING: Drift detection failed for ${summary.totalFailed} resource(s).\n` +
-          `This may be due to insufficient permissions or AWS API issues.\n` +
-          `Run with --debug to see which resources failed.`,
-      );
-  }
-
-  return dashboard;
-}
-
-/** Format a single line in the dashboard box with proper padding */
-function formatDashboardLine(label: string, value: string): string {
-  const actualValueLength = stripAnsi(value).length;
-
-  // Calculate padding: border width - "│ " (2) - label - ": " (2) - value length - "│" (1)
-  const usedLength = 2 + label.length + 2 + actualValueLength + 1;
-  const padding = DISPLAY_CONSTANTS.BORDER_WIDTH + 2 - usedLength;
-
-  return `│ ${label}: ${value}${' '.repeat(Math.max(0, padding))}│\n`;
-}
 
 interface CategoryDrift {
   cfDriftStacks: Array<{
@@ -319,23 +252,4 @@ export function createUnifiedCategoryView(
   }
 
   return output;
-}
-
-/**
- * Format drift results into display strings
- * Returns summary dashboard and category view
- */
-export function formatDriftResults(
-  phase1: CloudFormationDriftResults,
-  phase2: TemplateDriftResults,
-  phase3: LocalDriftResults,
-  projectName: string,
-): { summaryDashboard: string; categoryView: string | undefined } {
-  const summaryDashboard = createSummaryDashboard(phase1.summary, projectName);
-  const categoryView = createUnifiedCategoryView(phase1, phase2, phase3);
-
-  return {
-    summaryDashboard,
-    categoryView,
-  };
 }

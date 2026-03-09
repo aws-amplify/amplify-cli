@@ -11,7 +11,7 @@ import {
 } from '@aws-sdk/client-cloudformation';
 import fs from 'fs-extra';
 import * as path from 'path';
-import type { Print } from '../drift';
+import type { Printer } from '@aws-amplify/amplify-prompts';
 
 export interface ResourceChangeWithNested extends ResourceChange {
   nestedChanges?: ResourceChangeWithNested[];
@@ -55,7 +55,7 @@ function extractChangeSetNameFromArn(changeSetArn: string): string {
  * @param print - Logging interface
  * @param cfn - CloudFormation client
  */
-export async function detectTemplateDrift(stackName: string, print: Print, cfn: CloudFormationClient): Promise<TemplateDriftResults> {
+export async function detectTemplateDrift(stackName: string, print: Printer, cfn: CloudFormationClient): Promise<TemplateDriftResults> {
   try {
     // Check prerequisites
     const currentCloudBackendPath = pathManager.getCurrentCloudBackendDirPath();
@@ -216,7 +216,7 @@ export async function detectTemplateDrift(stackName: string, print: Print, cfn: 
 async function analyzeChangeSet(
   cfn: CloudFormationClient,
   changeSet: DescribeChangeSetCommandOutput,
-  print: Print,
+  print: Printer,
 ): Promise<TemplateDriftResults> {
   const result: TemplateDriftResults = {
     totalDrifted: 0,
