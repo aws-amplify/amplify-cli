@@ -1,7 +1,11 @@
+import ts from 'typescript';
 import { Generator } from '../generator';
 import { AmplifyMigrationOperation } from '../../_operation';
 import { BackendGenerator } from '../backend.generator';
-import { Gen1App } from '../gen1-app/gen1-app';
+import { Gen1App, RestApiDefinition } from '../gen1-app/gen1-app';
+import { RestApiRenderer } from './rest-api.renderer';
+
+const factory = ts.factory;
 
 /**
  * Generates REST API (API Gateway) resources and contributes CDK
@@ -20,10 +24,14 @@ import { Gen1App } from '../gen1-app/gen1-app';
 export class RestApiGenerator implements Generator {
   private readonly gen1App: Gen1App;
   private readonly backendGenerator: BackendGenerator;
+  private readonly defineRestApi: RestApiRenderer;
+  private readonly functionNames: ReadonlySet<string>;
 
-  public constructor(gen1App: Gen1App, backendGenerator: BackendGenerator) {
+  public constructor(gen1App: Gen1App, backendGenerator: BackendGenerator, hasAuth: boolean, functionNames: ReadonlySet<string>) {
     this.gen1App = gen1App;
     this.backendGenerator = backendGenerator;
+    this.functionNames = functionNames;
+    this.defineRestApi = new RestApiRenderer(hasAuth, functionNames);
   }
 
   /**
@@ -44,27 +52,51 @@ export class RestApiGenerator implements Generator {
       {
         describe: async () => restApis.map((api) => `Generate REST API CDK constructs for ${api.apiName}`),
         execute: async () => {
-          // REST API CDK imports
-          this.backendGenerator.addImport('aws-cdk-lib/aws-apigateway', [
-            'RestApi',
-            'LambdaIntegration',
-            'AuthorizationType',
-            'Cors',
-            'ResponseType',
-          ]);
-          this.backendGenerator.addImport('aws-cdk-lib/aws-iam', ['Policy', 'PolicyStatement']);
-          this.backendGenerator.addImport('aws-cdk-lib', ['Stack']);
+          this.addRestApiImports();
+          this.addFunctionImports(restApis);
 
-          // The actual CDK statement generation for REST APIs is complex
-          // (stacks, gateway responses, Lambda integrations, IAM policies,
-          // resource trees, proxy routes). This will be migrated from
-          // BackendSynthesizer.render() in Phase 3 when we wire everything
-          // together and can validate against snapshot tests.
-          //
-          // For now, the REST API definitions are available via readRestApis()
-          // and the imports are registered with BackendGenerator.
+          const statements = this.defineRestApi.render(restApis);
+          for (const statement of statements) {
+            this.backendGenerator.addStatement(statement);
+          }
         },
       },
     ];
+  }
+
+  private addRestApiImports(): void {
+    this.backendGenerator.addImport('aws-cdk-lib/aws-apigateway', [
+      'RestApi',
+      'LambdaIntegration',
+      'AuthorizationType',
+      'Cors',
+      'ResponseType',
+    ]);
+    this.backendGenerator.addImport('aws-cdk-lib/aws-iam', ['Policy', 'PolicyStatement']);
+    this.backendGenerator.addImport('aws-cdk-lib', ['Stack']);
+  }
+
+  /**
+   * Adds function imports and defineBackend properties for unique
+   * functions used by REST APIs that aren't already registered
+   * by the main function generator.
+   */
+  private addFunctionImports(restApis: readonly RestApiDefinition[]): void {
+    const allUniqueFunctions = new Set<string>();
+    for (const restApi of restApis) {
+      if (restApi.uniqueFunctions) {
+        for (const funcName of restApi.uniqueFunctions) {
+          allUniqueFunctions.add(funcName);
+        }
+      }
+    }
+
+    for (const funcName of allUniqueFunctions) {
+      if (this.functionNames.has(funcName)) {
+        continue;
+      }
+      this.backendGenerator.addImport(`./function/${funcName}/resource`, [funcName]);
+      this.backendGenerator.addDefineBackendProperty(factory.createShorthandPropertyAssignment(factory.createIdentifier(funcName)));
+    }
   }
 }
