@@ -297,9 +297,25 @@ Deeply nested interfaces (`config.auth.providers[0].settings.oauth.scopes`) are 
 
 ---
 
+### 16. Known values belong in the constructor
+
+If a value is known at construction time and doesn't change, pass it to the constructor — not to every method that needs it. This avoids threading the same value through multiple call sites and makes the dependency explicit.
+
+```typescript
+// Bad — envName passed to render() even though it's known at construction
+const renderer = new DataRenderer();
+renderer.render({ envName, schema, tableMappings });
+
+// Good — envName set once in the constructor
+const renderer = new DataRenderer(envName);
+renderer.render({ schema, tableMappings });
+```
+
+---
+
 ## Error Handling
 
-### 16. Only return fallbacks or branch for valid states
+### 17. Only return fallbacks or branch for valid states
 
 The question to ask before returning `null`, adding an `if` guard, or swallowing an error is: does this condition represent a valid state the caller is expected to handle, or does it mean something is broken?
 
@@ -325,7 +341,7 @@ const response = await client.send(new GetGraphqlApiCommand({ apiId }));
 
 ---
 
-### 17. Don't use `assert()` in production code
+### 18. Don't use `assert()` in production code
 
 `assert` from `node:assert` throws a generic `AssertionError` with no user-facing context. It's a debugging tool, not an error-handling strategy.
 
@@ -335,7 +351,7 @@ const response = await client.send(new GetGraphqlApiCommand({ apiId }));
 
 ## Control Flow & Logic
 
-### 18. Don't branch on the same condition multiple times
+### 19. Don't branch on the same condition multiple times
 
 Multiple `if (type === 'X')` blocks scattered across a function indicate the logic should be consolidated or polymorphic.
 
@@ -345,7 +361,7 @@ Scattered branching means: adding a new case requires hunting every branch point
 
 ---
 
-### 19. Don't compute the same derived value more than once
+### 20. Don't compute the same derived value more than once
 
 If multiple call sites independently read the same file, call the same API, or derive the same value from raw data, you're paying the cost multiple times and creating multiple places that can diverge if the logic changes.
 
@@ -353,7 +369,7 @@ If multiple call sites independently read the same file, call the same API, or d
 
 ---
 
-### 20. Don't accept optional predicates as input
+### 21. Don't accept optional predicates as input
 
 Accepting an optional predicate callback to customize filtering or branching behavior creates multiple problems:
 
@@ -367,7 +383,7 @@ Second, the existence of a predicate often indicates a missing abstraction. The 
 
 ## Function Design
 
-### 21. Use object parameters for functions with multiple arguments
+### 22. Use object parameters for functions with multiple arguments
 
 A function with many positional arguments is hard to call correctly — the caller has to remember the exact order, and swapping two arguments of the same type is a silent bug.
 
@@ -375,7 +391,7 @@ A function with many positional arguments is hard to call correctly — the call
 
 ---
 
-### 22. Minimize argument count
+### 23. Minimize argument count
 
 Related to the above. High argument counts are a code smell indicating the function is doing too much or its dependencies aren't properly grouped.
 
@@ -383,7 +399,7 @@ Related to the above. High argument counts are a code smell indicating the funct
 
 ---
 
-### 23. Don't use classes when static methods suffice
+### 24. Don't use classes when static methods suffice
 
 If a class has no mutable state and its methods don't reference `this` beyond constructor-injected dependencies, it may be a function in disguise.
 
@@ -397,7 +413,7 @@ But if the call site already has all the information needed for both constructio
 
 ## Code Hygiene
 
-### 24. Minimize code duplication
+### 25. Minimize code duplication
 
 When non-trivial logic is repeated in multiple places, a bug fix or behavior change requires updating every copy — miss one and you have an inconsistency. Extract the shared logic into a clearly named function or utility class.
 
@@ -405,7 +421,7 @@ When non-trivial logic is repeated in multiple places, a bug fix or behavior cha
 
 ---
 
-### 25. Don't define the same constant twice
+### 26. Don't define the same constant twice
 
 If two constants in different parts of the code contain the same list of values (e.g., one for forward processing and one for rollback), and one changes without the other, you get a silent bug.
 
@@ -413,7 +429,7 @@ If two constants in different parts of the code contain the same list of values 
 
 ---
 
-### 26. Don't use string replacement on JSON
+### 27. Don't use string replacement on JSON
 
 Converting an object to a JSON string, running regex replacements on it, and parsing it back is fragile. A value that happens to match the regex pattern as a literal string would be incorrectly replaced.
 
@@ -452,7 +468,7 @@ const resolved = resolveRefs(template, paramMap);
 
 ---
 
-### 27. Remove dead code
+### 28. Remove dead code
 
 Unused functions, unreachable branches, and commented-out code are noise. If a function has a comment saying "this never gets used," that's a clear signal.
 
@@ -460,7 +476,7 @@ Unused functions, unreachable branches, and commented-out code are noise. If a f
 
 ---
 
-### 28. Minimize indirection
+### 29. Minimize indirection
 
 A function that only calls another function with the same (or trivially derived) arguments adds a layer of indirection without adding value.
 
@@ -468,7 +484,7 @@ A function that only calls another function with the same (or trivially derived)
 
 ---
 
-### 29. Don't null-check the same value repeatedly
+### 30. Don't null-check the same value repeatedly
 
 If you validate that `x` is defined at the top of a function, every subsequent `if (x)` on the same binding is noise. It signals the reader that `x` might still be null when it can't be.
 
@@ -476,9 +492,27 @@ If you validate that `x` is defined at the top of a function, every subsequent `
 
 ---
 
+### 31. Don't use dynamic import expressions for types
+
+Inline `import('some-package').SomeType` expressions in type positions make the code harder to read and create implicit dependencies that aren't visible in the import block. If the type comes from untyped JSON, use `any` explicitly. If you need the type, add a proper import at the top of the file.
+
+```typescript
+// Bad — dynamic import expression buried in a function call
+const nodes = renderer.render({
+  authorizationModes: authModes as import('@aws-amplify/backend-data').AuthorizationModes,
+});
+
+// Good — if the data is untyped JSON, say so
+const nodes = renderer.render({
+  authorizationModes: authModes, // any — from amplify-meta.json
+});
+```
+
+---
+
 ## Style
 
-### 30. Call chains should read like English
+### 32. Call chains should read like English
 
 When you chain property access and method calls, the result should read as a short, natural phrase — not stutter or repeat context the reader already has. Each segment of the chain should add new information.
 
@@ -502,7 +536,7 @@ The test: read the full chain aloud. If it sounds like something a developer wou
 
 ---
 
-### 31. Use explicit visibility modifiers on class members
+### 33. Use explicit visibility modifiers on class members
 
 Every class method and property should have an explicit `public`, `private`, or `protected` modifier. Omitting the modifier forces the reader to remember that TypeScript defaults to `public` — and more importantly, it makes intent ambiguous: did the author mean for this to be public, or did they just forget?
 
@@ -510,7 +544,7 @@ Every class method and property should have an explicit `public`, `private`, or 
 
 ---
 
-### 32. Use multi-line JSDoc comments for public members
+### 34. Use multi-line JSDoc comments for public members
 
 Document public methods, properties, and exported declarations with multi-line JSDoc comments. Always use the multi-line format — even for single sentences:
 
@@ -530,7 +564,7 @@ The multi-line format is visually distinct from code, scales naturally when you 
 
 ---
 
-### 33. Add a blank line after documented class members
+### 35. Add a blank line after documented class members
 
 When a class property has a JSDoc comment, add a blank line after the property declaration to visually separate it from the next member. Undocumented properties can remain consecutive.
 
@@ -553,38 +587,4 @@ export class MyService {
 
   private cachedResult: string | undefined;
 }
-```
-
----
-
-### 34. Known values belong in the constructor
-
-If a value is known at construction time and doesn't change, pass it to the constructor — not to every method that needs it. This avoids threading the same value through multiple call sites and makes the dependency explicit.
-
-```typescript
-// Bad — envName passed to render() even though it's known at construction
-const renderer = new DataRenderer();
-renderer.render({ envName, schema, tableMappings });
-
-// Good — envName set once in the constructor
-const renderer = new DataRenderer(envName);
-renderer.render({ schema, tableMappings });
-```
-
----
-
-### 35. Don't use dynamic import expressions for types
-
-Inline `import('some-package').SomeType` expressions in type positions make the code harder to read and create implicit dependencies that aren't visible in the import block. If the type comes from untyped JSON, use `any` explicitly. If you need the type, add a proper import at the top of the file.
-
-```typescript
-// Bad — dynamic import expression buried in a function call
-const nodes = renderer.render({
-  authorizationModes: authModes as import('@aws-amplify/backend-data').AuthorizationModes,
-});
-
-// Good — if the data is untyped JSON, say so
-const nodes = renderer.render({
-  authorizationModes: authModes, // any — from amplify-meta.json
-});
 ```
