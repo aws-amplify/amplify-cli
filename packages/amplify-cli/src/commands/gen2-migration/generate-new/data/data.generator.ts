@@ -24,13 +24,13 @@ export class DataGenerator implements Generator {
   private readonly gen1App: Gen1App;
   private readonly backendGenerator: BackendGenerator;
   private readonly outputDir: string;
-  private readonly renderer: DataRenderer;
+  private readonly defineData: DataRenderer;
 
   public constructor(gen1App: Gen1App, backendGenerator: BackendGenerator, outputDir: string) {
     this.gen1App = gen1App;
     this.backendGenerator = backendGenerator;
     this.outputDir = outputDir;
-    this.renderer = new DataRenderer(gen1App.envName);
+    this.defineData = new DataRenderer(gen1App.envName);
   }
 
   /**
@@ -81,7 +81,7 @@ export class DataGenerator implements Generator {
       {
         describe: async () => ['Generate data/resource.ts'],
         execute: async () => {
-          const nodes = this.renderer.render({
+          const nodes = this.defineData.render({
             schema,
             tableMappings,
             authorizationModes,

@@ -6,8 +6,7 @@ import { AmplifyMigrationOperation } from '../../_operation';
 import { BackendGenerator } from '../backend.generator';
 import { Gen1App } from '../gen1-app/gen1-app';
 import { printNodes } from '../ts-writer';
-
-import { renderDefineAnalytics, AnalyticsRenderParameters } from './render-analytics';
+import { AnalyticsRenderer } from './analytics.renderer';
 import { CdkFromCfn, KinesisAnalyticsDefinition, AnalyticsCodegenResult } from './cdk-from-cfn';
 
 const factory = ts.factory;
@@ -24,13 +23,18 @@ export class AnalyticsGenerator implements Generator {
   private readonly gen1App: Gen1App;
   private readonly backendGenerator: BackendGenerator;
   private readonly outputDir: string;
+  private readonly defineAnalytics: AnalyticsRenderer;
 
   public constructor(gen1App: Gen1App, backendGenerator: BackendGenerator, outputDir: string) {
     this.gen1App = gen1App;
     this.backendGenerator = backendGenerator;
     this.outputDir = outputDir;
+    this.defineAnalytics = new AnalyticsRenderer();
   }
 
+  /**
+   * Plans the Kinesis analytics generation operations.
+   */
   public async plan(): Promise<AmplifyMigrationOperation[]> {
     const meta = await this.gen1App.fetchMeta();
     const analyticsCategory = meta.analytics as Record<string, KinesisAnalyticsDefinition> | undefined;
@@ -47,7 +51,7 @@ export class AnalyticsGenerator implements Generator {
         continue;
       }
 
-      definition.name = resourceName;
+      const namedDefinition: KinesisAnalyticsDefinition = { ...definition, name: resourceName };
 
       const fileWriter = async (content: string, filePath: string) => {
         await fs.mkdir(path.dirname(filePath), { recursive: true });
@@ -59,17 +63,16 @@ export class AnalyticsGenerator implements Generator {
         execute: async () => {
           const cdkFromCfn = new CdkFromCfn(this.outputDir, fileWriter, this.gen1App.clients.cloudFormation, rootStackName);
 
-          const codegenResult: AnalyticsCodegenResult = await cdkFromCfn.generateKinesisAnalyticsL1Code(definition);
+          const codegenResult: AnalyticsCodegenResult = await cdkFromCfn.generateKinesisAnalyticsL1Code(namedDefinition);
 
-          const analyticsParams: AnalyticsRenderParameters = {
+          const nodes = this.defineAnalytics.render({
             constructClassName: codegenResult.constructClassName,
             constructFileName: codegenResult.constructFileName,
             resourceName: codegenResult.resourceName,
             shardCount: codegenResult.shardCount,
             streamName: codegenResult.streamName,
-          };
+          });
 
-          const nodes = renderDefineAnalytics(analyticsParams);
           const content = printNodes(nodes);
 
           await fs.mkdir(analyticsDir, { recursive: true });

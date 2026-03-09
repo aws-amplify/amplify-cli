@@ -1,13 +1,14 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import ts from 'typescript';
+import { GetIdentityPoolRolesCommand } from '@aws-sdk/client-cognito-identity';
+import { ListGroupsCommand } from '@aws-sdk/client-cognito-identity-provider';
 import { Generator } from '../generator';
 import { AmplifyMigrationOperation } from '../../_operation';
 import { BackendGenerator } from '../backend.generator';
 import { Gen1App } from '../gen1-app/gen1-app';
 import { printNodes } from '../ts-writer';
-
-import { AuthDefinition, renderDefineAuth } from './render-auth';
+import { AuthDefinition, AuthRenderer } from './auth.renderer';
 import { getAuthDefinition } from './auth-adapter';
 import { FunctionDefinition } from './function-types';
 
@@ -27,14 +28,19 @@ export class AuthGenerator implements Generator {
   private readonly backendGenerator: BackendGenerator;
   private readonly outputDir: string;
   private readonly functions: FunctionDefinition[] | undefined;
+  private readonly defineAuth: AuthRenderer;
 
   public constructor(gen1App: Gen1App, backendGenerator: BackendGenerator, outputDir: string, functions?: FunctionDefinition[]) {
     this.gen1App = gen1App;
     this.backendGenerator = backendGenerator;
     this.outputDir = outputDir;
     this.functions = functions;
+    this.defineAuth = new AuthRenderer();
   }
 
+  /**
+   * Plans the auth generation operations.
+   */
   public async plan(): Promise<AmplifyMigrationOperation[]> {
     const authCategory = await this.gen1App.fetchMetaCategory('auth');
     if (!authCategory) {
@@ -95,7 +101,11 @@ export class AuthGenerator implements Generator {
       {
         describe: async () => ['Generate auth/resource.ts (reference auth)'],
         execute: async () => {
-          const nodes = renderDefineAuth(authDefinition, this.functions, new Map());
+          const nodes = this.defineAuth.render({
+            definition: authDefinition,
+            functions: this.functions,
+            functionCategories: new Map(),
+          });
           const content = printNodes(nodes);
 
           await fs.mkdir(authDir, { recursive: true });
@@ -124,7 +134,11 @@ export class AuthGenerator implements Generator {
       {
         describe: async () => ['Generate auth/resource.ts'],
         execute: async () => {
-          const nodes = renderDefineAuth(authDefinition, this.functions, functionCategories);
+          const nodes = this.defineAuth.render({
+            definition: authDefinition,
+            functions: this.functions,
+            functionCategories,
+          });
           let content = printNodes(nodes);
 
           // Post-process: fix generated code patterns
@@ -165,51 +179,53 @@ export class AuthGenerator implements Generator {
     if (!isImported) return undefined;
 
     const firstAuth = Object.values(authCategory)[0] as any;
-    const userPoolId = firstAuth?.output?.UserPoolId;
-    const userPoolClientId = firstAuth?.output?.AppClientIDWeb;
-    const identityPoolId = firstAuth?.output?.IdentityPoolId;
+    const userPoolId = firstAuth?.output?.UserPoolId as string | undefined;
+    const userPoolClientId = firstAuth?.output?.AppClientIDWeb as string | undefined;
+    const identityPoolId = firstAuth?.output?.IdentityPoolId as string | undefined;
 
     if (!userPoolId && !userPoolClientId && !identityPoolId) {
       throw new Error('No user pool or identity pool found for import.');
     }
 
-    let authRoleArn: string | undefined;
-    let unauthRoleArn: string | undefined;
-    let groups: Record<string, string> | undefined;
-
-    if (identityPoolId) {
-      const { GetIdentityPoolRolesCommand } = await import('@aws-sdk/client-cognito-identity');
-      const { Roles } = await this.gen1App.clients.cognitoIdentity.send(
-        new GetIdentityPoolRolesCommand({ IdentityPoolId: identityPoolId }),
-      );
-      if (Roles) {
-        authRoleArn = Roles.authenticated;
-        unauthRoleArn = Roles.unauthenticated;
-      }
-    }
-
-    if (userPoolId) {
-      const { ListGroupsCommand } = await import('@aws-sdk/client-cognito-identity-provider');
-      const { Groups } = await this.gen1App.clients.cognitoIdentityProvider.send(new ListGroupsCommand({ UserPoolId: userPoolId }));
-      if (Groups && Groups.length > 0) {
-        groups = Groups.reduce((acc: Record<string, string>, { GroupName, RoleArn }) => {
-          if (GroupName && RoleArn) {
-            acc[GroupName] = RoleArn;
-          }
-          return acc;
-        }, {});
-      }
-    }
+    const roles = await this.fetchIdentityPoolRoles(identityPoolId);
+    const groups = await this.fetchUserPoolGroups(userPoolId);
 
     return {
       referenceAuth: {
         userPoolId,
         userPoolClientId,
         identityPoolId,
-        unauthRoleArn,
-        authRoleArn,
+        unauthRoleArn: roles?.unauthenticated,
+        authRoleArn: roles?.authenticated,
         groups,
       },
     };
+  }
+
+  private async fetchIdentityPoolRoles(
+    identityPoolId: string | undefined,
+  ): Promise<{ authenticated?: string; unauthenticated?: string } | undefined> {
+    if (!identityPoolId) return undefined;
+
+    const { Roles } = await this.gen1App.clients.cognitoIdentity.send(new GetIdentityPoolRolesCommand({ IdentityPoolId: identityPoolId }));
+
+    if (!Roles) return undefined;
+
+    return { authenticated: Roles.authenticated, unauthenticated: Roles.unauthenticated };
+  }
+
+  private async fetchUserPoolGroups(userPoolId: string | undefined): Promise<Record<string, string> | undefined> {
+    if (!userPoolId) return undefined;
+
+    const { Groups } = await this.gen1App.clients.cognitoIdentityProvider.send(new ListGroupsCommand({ UserPoolId: userPoolId }));
+
+    if (!Groups || Groups.length === 0) return undefined;
+
+    return Groups.reduce((acc: Record<string, string>, { GroupName, RoleArn }) => {
+      if (GroupName && RoleArn) {
+        acc[GroupName] = RoleArn;
+      }
+      return acc;
+    }, {});
   }
 }

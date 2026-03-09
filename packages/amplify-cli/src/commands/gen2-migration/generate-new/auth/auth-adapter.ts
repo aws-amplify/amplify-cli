@@ -18,7 +18,7 @@ import {
   Scope,
   AttributeMappingRule,
   ReferenceAuth,
-} from './render-auth';
+} from './auth.renderer';
 import { Lambda } from './lambda';
 import {
   LambdaConfigType,
