@@ -163,7 +163,7 @@
   "packageManager": "yarn@3.5.0",
   "resolutions": {
     "cross-fetch": "^2.2.6",
-    "fast-xml-parser": "^4.4.1",
+    "fast-xml-parser": "~4.5.4",
     "glob-parent": "^6.0.2",
     "got": "^11.8.5",
     "istanbul/async": "^2.6.4",
@@ -180,6 +180,7 @@
     "tar": "^6.2.1",
     "ejs": "^3.1.10",
     "form-data": "^4.0.4",
-    "node-gyp": "^12.1.0"
+    "node-gyp": "^12.1.0",
+    "rollup": "2.80.0"
   }
 }
