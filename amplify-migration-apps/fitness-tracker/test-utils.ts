@@ -19,7 +19,7 @@ import {
   deleteMeal,
 } from './src/graphql/mutations';
 import { WorkoutProgramStatus } from './src/API';
-import { TestRunner } from '../shared-test-utils/test-apps-test-utils';
+import { TestRunner } from '../_test-common/test-apps-test-utils';
 import amplifyconfig from './src/amplifyconfiguration.json';
 
 // Configure Amplify in this module to ensure api singletons see the config
@@ -47,7 +47,6 @@ export function createTestFunctions() {
     programs.forEach((p: any) => console.log(`   - [${p.id}] ${p.title} (${p.status})${p.deadline ? ` - Due: ${p.deadline}` : ''}`));
     return programs.length > 0 ? programs[0].id : null;
   }
-
 
   async function testListExercises(): Promise<string | null> {
     console.log('\n💪 Testing listExercises...');
@@ -172,7 +171,6 @@ export function createTestFunctions() {
     const deleted = (result as any).data.deleteWorkoutProgram;
     console.log('✅ Deleted workout program:', deleted.title);
   }
-
 
   // ============================================================
   // Mutation Test Functions - Exercises
@@ -310,8 +308,6 @@ export function createTestFunctions() {
     testDeleteMeal,
   };
 }
-
-
 
 // ============================================================
 // Shared Test Orchestration Functions
