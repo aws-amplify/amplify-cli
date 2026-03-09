@@ -15,7 +15,7 @@ export type DataTableMapping = Record<string, string>;
  */
 interface GenerateDataSourceOptions {
   readonly envName: string;
-  readonly schema?: string;
+  readonly schema: string;
   readonly authorizationModes?: AuthorizationModes;
   readonly logging?: DataLoggingOptions;
   readonly tableMappings?: DataTableMapping;
@@ -88,11 +88,7 @@ const migratedAmplifyGen1DynamoDbTableMappingsKeyName = 'migratedAmplifyGen1Dyna
 /**
  * Generates TypeScript AST nodes for an Amplify Gen 2 data resource configuration.
  */
-export async function generateDataSource(opts: GenerateDataSourceOptions): Promise<ts.NodeArray<ts.Node> | undefined> {
-  if (!opts.schema) {
-    return undefined;
-  }
-
+export async function generateDataSource(opts: GenerateDataSourceOptions): Promise<ts.NodeArray<ts.Node>> {
   let schema = opts.schema;
   const dataRenderProperties: ObjectLiteralElementLike[] = [];
   const namedImports: Record<string, Set<string>> = { '@aws-amplify/backend': new Set() };

@@ -1,7 +1,6 @@
 // Auth generator - creates Gen 2 auth TypeScript files
 // Duplicated from generate/generators/auth/index.ts for generate-new/ self-containment
 import ts, { PropertyAssignment } from 'typescript';
-import assert from 'node:assert';
 import { PasswordPolicyType, UserPoolClientType } from '@aws-sdk/client-cognito-identity-provider';
 import { renderResourceTsFile } from '../resource';
 import { createTriggersProperty, Lambda } from './lambda';
@@ -596,10 +595,7 @@ export function renderAuthNode(
     );
   }
 
-  const hasFunctions = definition.lambdaTriggers && Object.keys(definition.lambdaTriggers).length > 0;
-
-  if (hasFunctions) {
-    assert(definition.lambdaTriggers);
+  if (definition.lambdaTriggers && Object.keys(definition.lambdaTriggers).length > 0) {
     defineAuthProperties.push(createTriggersProperty(definition.lambdaTriggers));
 
     for (const value of Object.values(definition.lambdaTriggers)) {

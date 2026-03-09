@@ -93,7 +93,6 @@ export class DataGenerator implements Generator {
             authorizationModes: authorizationModes as import('@aws-amplify/backend-data').AuthorizationModes | undefined,
             logging: logging as import('@aws-amplify/backend-data').DataLoggingOptions | undefined,
           });
-          if (!nodes) return;
 
           const content = printNodes(nodes);
           await fs.mkdir(dataDir, { recursive: true });
