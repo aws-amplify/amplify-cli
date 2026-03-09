@@ -6,8 +6,8 @@ import {
   CloudFormationClient,
   DetectStackDriftCommand,
   DescribeStackDriftDetectionStatusCommand,
-  DescribeStackResourceDriftsCommand,
   DescribeStackResourcesCommand,
+  paginateDescribeStackResourceDrifts,
   GetTemplateCommand,
   StackResourceDriftStatus,
   type StackResourceDrift,
@@ -157,21 +157,12 @@ export async function detectStackDrift(
     );
   }
 
-  // Get the drift results (paginated — max 100 per page)
+  // Get the drift results (paginated)
   const allDrifts: StackResourceDrift[] = [];
-  let nextToken: string | undefined;
-
-  do {
-    const page = await cfn.send(
-      new DescribeStackResourceDriftsCommand({
-        StackName: stackName,
-        MaxResults: 100,
-        NextToken: nextToken,
-      }),
-    );
+  const paginator = paginateDescribeStackResourceDrifts({ client: cfn, pageSize: 100 }, { StackName: stackName });
+  for await (const page of paginator) {
     if (page.StackResourceDrifts) allDrifts.push(...page.StackResourceDrifts);
-    nextToken = page.NextToken;
-  } while (nextToken);
+  }
 
   // Filter out known Amplify Auth IdP Deny→Allow changes
   const filteredDrifts = allDrifts.map((drift) => {
