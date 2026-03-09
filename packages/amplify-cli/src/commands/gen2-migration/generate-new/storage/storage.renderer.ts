@@ -1,5 +1,6 @@
 import ts, { CallExpression, ObjectLiteralElementLike } from 'typescript';
 import { renderResourceTsFile } from '../resource';
+import { createBranchNameDeclaration } from '../ts-factory-utils';
 
 const factory = ts.factory;
 
@@ -62,20 +63,7 @@ export class StorageRenderer {
     const namedImports: Record<string, Set<string>> = { '@aws-amplify/backend': new Set(['defineStorage']) };
     const postImportStatements: ts.Node[] = [];
 
-    const branchNameStatement = factory.createVariableStatement(
-      [],
-      factory.createVariableDeclarationList(
-        [
-          factory.createVariableDeclaration(
-            'branchName',
-            undefined,
-            undefined,
-            factory.createIdentifier('process.env.AWS_BRANCH ?? "sandbox"'),
-          ),
-        ],
-        ts.NodeFlags.Const,
-      ),
-    );
+    const branchNameStatement = createBranchNameDeclaration();
     postImportStatements.push(branchNameStatement);
 
     this.renderName(propertyAssignments, opts.storageIdentifier);

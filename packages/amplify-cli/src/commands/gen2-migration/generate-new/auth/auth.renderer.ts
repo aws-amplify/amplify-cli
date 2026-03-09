@@ -28,26 +28,34 @@ function createTriggersProperty(triggers: Record<string, Lambda>): PropertyAssig
   );
 }
 
-/** OAuth 2.0 scopes supported by Cognito User Pools */
+/**
+ * OAuth 2.0 scopes supported by Cognito User Pools
+ */
 export type Scope = 'phone' | 'email' | 'openid' | 'profile' | 'aws.cognito.signin.user.admin';
 
-/** Configuration for standard Cognito user attributes */
+/**
+ * Configuration for standard Cognito user attributes
+ */
 export type StandardAttribute = {
   readonly mutable?: boolean;
   readonly required?: boolean;
 };
 
-/** Configuration for custom user attributes with validation constraints */
+/**
+ * Configuration for custom user attributes with validation constraints
+ */
 export type CustomAttribute = {
   readonly dataType: string | undefined;
   readonly mutable?: boolean;
-  minLen?: number;
-  maxLen?: number;
-  min?: number;
-  max?: number;
+  readonly minLen?: number;
+  readonly maxLen?: number;
+  readonly min?: number;
+  readonly max?: number;
 };
 
-/** Standard user attributes supported by Cognito User Pools */
+/**
+ * Standard user attributes supported by Cognito User Pools
+ */
 export type Attribute =
   | 'address'
   | 'birthdate'
@@ -67,100 +75,133 @@ export type Attribute =
   | 'lastUpdateTime'
   | 'website';
 
-/** Maps standard attributes to external provider attribute names */
+/**
+ * Maps standard attributes to external provider attribute names
+ */
 export type AttributeMappingRule = Record<Attribute, string>;
 
-/** Email sending account configuration for Cognito */
+/**
+ * Email sending account configuration for Cognito
+ */
 export type SendingAccount = 'COGNITO_DEFAULT' | 'DEVELOPER';
 
-/** Multi-factor authentication configuration modes */
+/**
+ * Multi-factor authentication configuration modes
+ */
 export type UserPoolMfaConfig = 'OFF' | 'REQUIRED' | 'OPTIONAL';
 
-/** Type-safe paths for password policy overrides */
+/**
+ * Type-safe paths for password policy overrides
+ */
 export type PasswordPolicyPath = `Policies.PasswordPolicy.${keyof PasswordPolicyType}`;
 
-/** CloudFormation policy overrides for User Pool configuration */
+/**
+ * CloudFormation policy overrides for User Pool configuration
+ */
 export type PolicyOverrides = Partial<Record<PasswordPolicyPath | string, string | boolean | number | string[]>>;
 
-/** Email verification message customization */
+/**
+ * Email verification message customization
+ */
 export type EmailOptions = {
-  emailVerificationBody: string;
-  emailVerificationSubject: string;
+  readonly emailVerificationBody: string;
+  readonly emailVerificationSubject: string;
 };
 
-/** Collection of standard user attributes with their configurations */
+/**
+ * Collection of standard user attributes with their configurations
+ */
 export type StandardAttributes = Partial<Record<Attribute, StandardAttribute>>;
-/** Collection of custom user attributes with their configurations */
+/**
+ * Collection of custom user attributes with their configurations
+ */
 export type CustomAttributes = Partial<Record<`custom:${string}`, CustomAttribute>>;
 
-/** User group name */
+/**
+ * User group name
+ */
 export type Group = string;
 
-/** SAML metadata configuration options */
+/**
+ * SAML metadata configuration options
+ */
 export type MetadataOptions = {
-  metadataContent: string;
-  metadataType: 'URL' | 'FILE';
+  readonly metadataContent: string;
+  readonly metadataType: 'URL' | 'FILE';
 };
 
-/** SAML identity provider configuration */
+/**
+ * SAML identity provider configuration
+ */
 export type SamlOptions = {
-  name?: string;
-  metadata: MetadataOptions;
-  attributeMapping?: AttributeMappingRule;
+  readonly name?: string;
+  readonly metadata: MetadataOptions;
+  readonly attributeMapping?: AttributeMappingRule;
 };
 
-/** OpenID Connect endpoint URLs */
+/**
+ * OpenID Connect endpoint URLs
+ */
 export type OidcEndPoints = {
-  authorization?: string;
-  token?: string;
-  userInfo?: string;
-  jwksUri?: string;
+  readonly authorization?: string;
+  readonly token?: string;
+  readonly userInfo?: string;
+  readonly jwksUri?: string;
 };
 
-/** OpenID Connect identity provider configuration */
+/**
+ * OpenID Connect identity provider configuration
+ */
 export type OidcOptions = {
-  issuerUrl: string;
-  name?: string;
-  endpoints?: OidcEndPoints;
-  attributeMapping?: AttributeMappingRule;
+  readonly issuerUrl: string;
+  readonly name?: string;
+  readonly endpoints?: OidcEndPoints;
+  readonly attributeMapping?: AttributeMappingRule;
 };
 
-/** Comprehensive login configuration options */
+/**
+ * Comprehensive login configuration options
+ */
 export type LoginOptions = {
-  email?: boolean;
-  phone?: boolean;
-  emailOptions?: Partial<EmailOptions>;
-  googleLogin?: boolean;
-  amazonLogin?: boolean;
-  appleLogin?: boolean;
-  facebookLogin?: boolean;
-  oidcLogin?: OidcOptions[];
-  samlLogin?: SamlOptions;
-  googleAttributes?: AttributeMappingRule;
-  amazonAttributes?: AttributeMappingRule;
-  appleAttributes?: AttributeMappingRule;
-  facebookAttributes?: AttributeMappingRule;
-  callbackURLs?: string[];
-  logoutURLs?: string[];
-  scopes?: Scope[];
-  googleScopes?: string[];
-  facebookScopes?: string[];
-  amazonScopes?: string[];
-  appleScopes?: string[];
-  [key: string]: boolean | Partial<EmailOptions> | string[] | Scope[] | OidcOptions[] | SamlOptions | AttributeMappingRule | undefined;
+  readonly email?: boolean;
+  readonly phone?: boolean;
+  readonly emailOptions?: Partial<EmailOptions>;
+  readonly googleLogin?: boolean;
+  readonly amazonLogin?: boolean;
+  readonly appleLogin?: boolean;
+  readonly facebookLogin?: boolean;
+  readonly oidcLogin?: OidcOptions[];
+  readonly samlLogin?: SamlOptions;
+  readonly googleAttributes?: AttributeMappingRule;
+  readonly amazonAttributes?: AttributeMappingRule;
+  readonly appleAttributes?: AttributeMappingRule;
+  readonly facebookAttributes?: AttributeMappingRule;
+  readonly callbackURLs?: string[];
+  readonly logoutURLs?: string[];
+  readonly scopes?: Scope[];
+  readonly googleScopes?: string[];
+  readonly facebookScopes?: string[];
+  readonly amazonScopes?: string[];
+  readonly appleScopes?: string[];
 };
 
-/** Multi-factor authentication configuration */
+/**
+ * Multi-factor authentication configuration
+ */
 export type MultifactorOptions = {
-  mode: UserPoolMfaConfig;
-  totp?: boolean;
-  sms?: boolean;
+  readonly mode: UserPoolMfaConfig;
+  readonly totp?: boolean;
+  readonly sms?: boolean;
 };
 
-/** Lambda triggers for Cognito User Pool events */
+/**
+ * Lambda triggers for Cognito User Pool events
+ */
 export type AuthLambdaTriggers = Record<AuthTriggerEvents, Lambda>;
 
-/** Cognito User Pool Lambda trigger event types */
+/**
+ * Cognito User Pool Lambda trigger event types
+ */
 export type AuthTriggerEvents =
   | 'createAuthChallenge'
   | 'customMessage'
@@ -173,14 +214,16 @@ export type AuthTriggerEvents =
   | 'userMigration'
   | 'verifyAuthChallengeResponse';
 
-/** Configuration for referencing existing auth resources */
+/**
+ * Configuration for referencing existing auth resources
+ */
 export type ReferenceAuth = {
-  userPoolId?: string;
-  identityPoolId?: string;
-  authRoleArn?: string;
-  unauthRoleArn?: string;
-  userPoolClientId?: string;
-  groups?: Record<string, string>;
+  readonly userPoolId?: string;
+  readonly identityPoolId?: string;
+  readonly authRoleArn?: string;
+  readonly unauthRoleArn?: string;
+  readonly userPoolClientId?: string;
+  readonly groups?: Record<string, string>;
 };
 
 /**
@@ -288,20 +331,20 @@ export interface FunctionDefinition {
  * Complete authentication configuration definition.
  */
 export interface AuthDefinition {
-  loginOptions?: LoginOptions;
-  groups?: Group[];
-  mfa?: MultifactorOptions;
-  standardUserAttributes?: StandardAttributes;
-  customUserAttributes?: CustomAttributes;
-  userPoolOverrides?: PolicyOverrides;
-  lambdaTriggers?: Partial<AuthLambdaTriggers>;
-  guestLogin?: boolean;
-  identityPoolName?: string;
-  oAuthFlows?: string[];
-  readAttributes?: string[];
-  writeAttributes?: string[];
-  referenceAuth?: ReferenceAuth;
-  userPoolClient?: UserPoolClientType;
+  readonly loginOptions?: LoginOptions;
+  readonly groups?: Group[];
+  readonly mfa?: MultifactorOptions;
+  readonly standardUserAttributes?: StandardAttributes;
+  readonly customUserAttributes?: CustomAttributes;
+  readonly userPoolOverrides?: PolicyOverrides;
+  readonly lambdaTriggers?: Partial<AuthLambdaTriggers>;
+  readonly guestLogin?: boolean;
+  readonly identityPoolName?: string;
+  readonly oAuthFlows?: string[];
+  readonly readAttributes?: string[];
+  readonly writeAttributes?: string[];
+  readonly referenceAuth?: ReferenceAuth;
+  readonly userPoolClient?: UserPoolClientType;
 }
 
 /**

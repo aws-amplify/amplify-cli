@@ -6,6 +6,7 @@ import { AmplifyMigrationOperation } from '../../_operation';
 import { BackendGenerator } from '../backend.generator';
 import { Gen1App } from '../gen1-app/gen1-app';
 import { printNodes } from '../ts-writer';
+import { pathManager } from '@aws-amplify/amplify-cli-core';
 import { FunctionsRenderer, RenderDefineFunctionOptions } from './functions.renderer';
 
 const factory = ts.factory;
@@ -242,7 +243,6 @@ ageResource of Object.values(storage)) {
   }
 
   private async copyFunctionSource(resourceName: string, destDir: string): Promise<void> {
-    const { pathManager } = await import('@aws-amplify/amplify-cli-core');
     const rootDir = pathManager.findProjectRoot();
     if (!rootDir) return;
 

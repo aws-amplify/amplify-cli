@@ -1,10 +1,9 @@
 import * as path from 'path';
 import * as fs from 'fs/promises';
 import * as cdk_from_cfn from 'cdk-from-cfn';
-import { CFNTemplate } from '../../refactor/types';
+import CFNConditionResolver, { CFNTemplate } from './cfn-condition-resolver';
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { CloudFormationClient, DescribeStackResourcesCommand, DescribeStacksCommand, Parameter } from '@aws-sdk/client-cloudformation';
-import CFNConditionResolver from '../../refactor/resolvers/cfn-condition-resolver';
 
 /**
  * Definition for Kinesis Analytics resource from Gen1 amplify-meta.json.
@@ -133,6 +132,8 @@ export class KinesisCfnConverter {
   /**
    * Gets the physical stack name for a nested stack by looking up its
    * physical resource ID from the root stack.
+   *
+   * Returns undefined if the CFN client is unavailable or the lookup fails.
    */
   private async getNestedStackPhysicalName(logicalId: string): Promise<string | undefined> {
     if (!this.cfnClient || !this.rootStackName) {
@@ -148,8 +149,8 @@ export class KinesisCfnConverter {
       );
 
       return describeResourcesResponse.StackResources?.[0]?.PhysicalResourceId;
-    } catch (error) {
-      console.log(`Error getting nested stack physical name: ${error}`);
+    } catch {
+      // SDK errors are non-fatal — callers handle the undefined return.
       return undefined;
     }
   }
@@ -157,6 +158,8 @@ export class KinesisCfnConverter {
   /**
    * Gets the parameters for a nested stack by resolving its physical
    * resource ID from the root stack and then describing that stack.
+   *
+   * Returns an empty array if the CFN client is unavailable or the lookup fails.
    */
   private async getNestedStackParameters(logicalId: string): Promise<Parameter[]> {
     if (!this.cfnClient || !this.rootStackName) {
@@ -166,7 +169,6 @@ export class KinesisCfnConverter {
     try {
       const nestedStackName = await this.getNestedStackPhysicalName(logicalId);
       if (!nestedStackName) {
-        console.log(`Could not find physical resource ID for nested stack: ${logicalId}`);
         return [];
       }
 
@@ -177,14 +179,16 @@ export class KinesisCfnConverter {
       );
 
       return describeStacksResponse.Stacks?.[0]?.Parameters ?? [];
-    } catch (error) {
-      console.log(`Error getting nested stack parameters: ${error}`);
+    } catch {
+      // SDK errors are non-fatal — callers handle the empty return.
       return [];
     }
   }
 
   /**
    * Gets the physical resource ID of a resource within a nested stack.
+   *
+   * Returns undefined if the CFN client is unavailable or the lookup fails.
    */
   private async getNestedStackResourcePhysicalId(nestedStackLogicalId: string, resourceLogicalId: string): Promise<string | undefined> {
     if (!this.cfnClient || !this.rootStackName) {
@@ -205,16 +209,18 @@ export class KinesisCfnConverter {
       );
 
       return describeResourcesResponse.StackResources?.[0]?.PhysicalResourceId;
-    } catch (error) {
-      console.log(`Error getting nested stack resource physical ID: ${error}`);
+    } catch {
+      // SDK errors are non-fatal — callers handle the undefined return.
       return undefined;
     }
   }
 
   private async preTransmute(template: CFNTemplate, logicalId: string): Promise<CFNTemplate> {
-    if (template.Parameters?.env) {
-      template.Parameters['branchName'] = template.Parameters.env;
-      delete template.Parameters.env;
+    const result: CFNTemplate = JSON.parse(JSON.stringify(template));
+
+    if (result.Parameters?.env) {
+      result.Parameters['branchName'] = result.Parameters.env;
+      delete result.Parameters.env;
     }
 
     const updateRefs = (obj: unknown): void => {
@@ -227,16 +233,16 @@ export class KinesisCfnConverter {
       }
     };
 
-    updateRefs(template.Resources);
+    updateRefs(result.Resources);
 
     const parameters = await this.getNestedStackParameters(logicalId);
     if (parameters.length > 0) {
-      const resolved = new CFNConditionResolver(template).resolve(parameters);
+      const resolved = new CFNConditionResolver(result).resolve(parameters);
       delete resolved.Conditions;
       return resolved;
     }
 
-    return template;
+    return result;
   }
 }
 

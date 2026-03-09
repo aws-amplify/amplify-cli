@@ -1,5 +1,6 @@
 import ts from 'typescript';
 import { RestApiDefinition, RestApiPath } from '../gen1-app/gen1-app';
+import { createBranchNameDeclaration } from '../ts-factory-utils';
 
 const factory = ts.factory;
 
@@ -57,20 +58,7 @@ export class RestApiRenderer {
   }
 
   private renderBranchName(): ts.Statement {
-    return factory.createVariableStatement(
-      [],
-      factory.createVariableDeclarationList(
-        [
-          factory.createVariableDeclaration(
-            'branchName',
-            undefined,
-            undefined,
-            factory.createIdentifier('process.env.AWS_BRANCH ?? "sandbox"'),
-          ),
-        ],
-        ts.NodeFlags.Const,
-      ),
-    );
+    return createBranchNameDeclaration();
   }
 
   private renderStack(restApi: RestApiDefinition, stackVarName: string): ts.Statement {

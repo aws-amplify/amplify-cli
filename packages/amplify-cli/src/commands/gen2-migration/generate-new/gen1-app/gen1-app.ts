@@ -72,8 +72,13 @@ export class Gen1App {
   public readonly appId: string;
   public readonly region: string;
   public readonly envName: string;
+  /**
+   * AWS SDK clients — exposed because generators need direct access
+   * to service clients not yet wrapped by {@link AwsFetcher}.
+   */
   public readonly clients: AwsClients;
-  public readonly backendDownloader: BackendDownloader;
+
+  private readonly backendDownloader: BackendDownloader;
   /**
    * AWS SDK fetcher for all remote resource introspection.
    */
@@ -312,69 +317,17 @@ export class Gen1App {
       if (apiObj.service !== 'API Gateway') continue;
 
       const cliInputsPath = path.join(rootDir, 'amplify', 'backend', 'api', apiName, 'cli-inputs.json');
-      const cliInputs = JSON.parse(await fs.readFile(cliInputsPath, 'utf8')) as {
-        paths?: Record<
-          string,
-          {
-            methods?: string[];
-            permissions?: {
-              setting?: 'private' | 'protected' | 'open';
-              auth?: string[];
-              groups?: Record<string, string[]>;
-            };
-            lambdaFunction?: string;
-            restrictAccess?: boolean;
-            groupAccess?: string[];
-          }
-        >;
-        corsConfiguration?: CorsConfiguration;
-        restrictAccess?: boolean;
-        authType?: string;
-      };
+      const cliInputs = JSON.parse(await fs.readFile(cliInputsPath, 'utf8')) as RestApiCliInputs;
 
-      const paths = cliInputs.paths
-        ? Object.entries(cliInputs.paths).map(([pathName, pathConfig]) => {
-            const pathAuthType = pathConfig.permissions?.setting || 'open';
-
-            const userPoolGroups = pathConfig.permissions?.groups ? Object.keys(pathConfig.permissions.groups) : undefined;
-
-            const permissions: { hasAuth?: boolean; groups?: Record<string, string[]> } = {};
-            if (pathConfig.permissions?.auth && pathConfig.permissions.auth.length > 0) {
-              permissions.hasAuth = true;
-            }
-            if (pathConfig.permissions?.groups && Object.keys(pathConfig.permissions.groups).length > 0) {
-              permissions.groups = pathConfig.permissions.groups;
-            }
-
-            return {
-              path: pathName,
-              methods: extractMethodsFromPath(pathConfig),
-              authType: pathAuthType,
-              lambdaFunction: pathConfig.lambdaFunction,
-              userPoolGroups,
-              ...(Object.keys(permissions).length > 0 && { permissions }),
-            };
-          })
-        : [{ path: '/{proxy+}', methods: ['ANY'], lambdaFunction: undefined as string | undefined }];
+      const paths = cliInputs.paths ? parseRestApiPaths(cliInputs.paths) : [{ path: '/{proxy+}', methods: ['ANY'] }];
 
       const hasPathAuth = Object.values(cliInputs.paths || {}).some(
         (p) => p.permissions?.setting === 'private' || p.permissions?.setting === 'protected',
       );
-
       const authType = cliInputs.restrictAccess || hasPathAuth ? cliInputs.authType || 'AWS_IAM' : undefined;
 
       const dependsOn = (apiObj.dependsOn ?? []) as Array<{ category: string; resourceName: string }>;
       const defaultFunctionName = dependsOn.find((dep) => dep.category === 'function')?.resourceName;
-
-      const uniqueFunctions = new Set<string>();
-      if (defaultFunctionName) {
-        uniqueFunctions.add(defaultFunctionName);
-      }
-      for (const p of paths) {
-        if (p.lambdaFunction) {
-          uniqueFunctions.add(p.lambdaFunction);
-        }
-      }
 
       restApis.push({
         apiName,
@@ -382,12 +335,68 @@ export class Gen1App {
         paths,
         authType,
         corsConfiguration: cliInputs.corsConfiguration,
-        uniqueFunctions: Array.from(uniqueFunctions),
+        uniqueFunctions: collectUniqueFunctions(paths, defaultFunctionName),
       });
     }
 
     return restApis;
   }
+}
+
+interface RestApiCliInputs {
+  readonly paths?: Record<string, RestApiPathConfig>;
+  readonly corsConfiguration?: CorsConfiguration;
+  readonly restrictAccess?: boolean;
+  readonly authType?: string;
+}
+
+interface RestApiPathConfig {
+  readonly methods?: string[];
+  readonly permissions?: {
+    readonly setting?: 'private' | 'protected' | 'open';
+    readonly auth?: string[];
+    readonly groups?: Record<string, string[]>;
+  };
+  readonly lambdaFunction?: string;
+  readonly restrictAccess?: boolean;
+  readonly groupAccess?: string[];
+}
+
+function parseRestApiPaths(paths: Record<string, RestApiPathConfig>): RestApiPath[] {
+  return Object.entries(paths).map(([pathName, pathConfig]) => {
+    const pathAuthType = pathConfig.permissions?.setting || 'open';
+    const userPoolGroups = pathConfig.permissions?.groups ? Object.keys(pathConfig.permissions.groups) : undefined;
+
+    const permissions: { hasAuth?: boolean; groups?: Record<string, string[]> } = {};
+    if (pathConfig.permissions?.auth && pathConfig.permissions.auth.length > 0) {
+      permissions.hasAuth = true;
+    }
+    if (pathConfig.permissions?.groups && Object.keys(pathConfig.permissions.groups).length > 0) {
+      permissions.groups = pathConfig.permissions.groups;
+    }
+
+    return {
+      path: pathName,
+      methods: extractMethodsFromPath(pathConfig),
+      authType: pathAuthType,
+      lambdaFunction: pathConfig.lambdaFunction,
+      userPoolGroups,
+      ...(Object.keys(permissions).length > 0 && { permissions }),
+    };
+  });
+}
+
+function collectUniqueFunctions(paths: readonly RestApiPath[], defaultFunctionName?: string): string[] {
+  const uniqueFunctions = new Set<string>();
+  if (defaultFunctionName) {
+    uniqueFunctions.add(defaultFunctionName);
+  }
+  for (const p of paths) {
+    if (p.lambdaFunction) {
+      uniqueFunctions.add(p.lambdaFunction);
+    }
+  }
+  return Array.from(uniqueFunctions);
 }
 
 function extractMethodsFromPath(pathConfig: {

@@ -12,10 +12,10 @@ import { fileOrDirectoryExists } from './file-exists';
  * Downloads and caches the current cloud backend from S3.
  */
 export class BackendDownloader {
-  private static ccbDir: string | undefined;
+  private ccbDir: string | undefined;
   private static readonly CURRENT_CLOUD_BACKEND = 'current-cloud-backend';
 
-  constructor(private readonly s3Client: S3Client) {}
+  public constructor(private readonly s3Client: S3Client) {}
 
   private async makeTempDirectory(): Promise<string> {
     const tmpDir = os.tmpdir();
@@ -24,8 +24,8 @@ export class BackendDownloader {
   }
 
   public async getCurrentCloudBackend(bucket: string): Promise<string> {
-    if (BackendDownloader.ccbDir && (await fileOrDirectoryExists(BackendDownloader.ccbDir))) {
-      return BackendDownloader.ccbDir;
+    if (this.ccbDir && (await fileOrDirectoryExists(this.ccbDir))) {
+      return this.ccbDir;
     }
     const tmpDir = await this.makeTempDirectory();
     const ccbZippedFilename = `#${BackendDownloader.CURRENT_CLOUD_BACKEND}.zip`;
@@ -48,7 +48,7 @@ export class BackendDownloader {
       path: path.join(tmpDir, BackendDownloader.CURRENT_CLOUD_BACKEND),
     });
     const ccbDir = path.join(tmpDir, BackendDownloader.CURRENT_CLOUD_BACKEND);
-    BackendDownloader.ccbDir = ccbDir;
+    this.ccbDir = ccbDir;
     return ccbDir;
   }
 }

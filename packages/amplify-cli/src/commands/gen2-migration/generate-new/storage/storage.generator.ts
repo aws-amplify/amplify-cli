@@ -61,6 +61,7 @@ interface StorageCLIInputsJSON {
   readonly triggerFunction?: string;
   readonly groupAccess?: Record<string, CLIV1Permission[]>;
 }
+
 const PERMISSION_MAP: Record<CLIV1Permission, Permission[]> = {
   READ: ['read'],
   DELETE: ['delete'],
@@ -161,8 +162,22 @@ export class StorageGenerator implements Generator {
 
     const triggers = this.extractStorageTriggers(notifications);
     const accessPatterns = this.buildAccessPatterns(cliInputs, functionNames);
-    const storageD
-join(storageDir, 'resource.ts'), content, 'utf-8');
+    const storageDir = path.join(this.outputDir, 'amplify', 'storage');
+    const storageIdentifier = cliInputs.bucketName || storageName;
+
+    return {
+      describe: async () => ['Generate storage/resource.ts'],
+      execute: async () => {
+        const nodes = this.defineStorage.render({
+          storageIdentifier,
+          accessPatterns,
+          triggers,
+          functionNamesAndCategories: this.functionNamesAndCategories,
+        });
+
+        const content = printNodes(nodes);
+        await fs.mkdir(storageDir, { recursive: true });
+        await fs.writeFile(path.join(storageDir, 'resource.ts'), content, 'utf-8');
 
         // Contribute to backend.ts
         this.backendGenerator.addImport('./storage/resource', ['storage']);
@@ -223,7 +238,10 @@ join(storageDir, 'resource.ts'), content, 'utf-8');
       this.backendGenerator.addStatement(
         factory.createExpressionStatement(
           factory.createAssignment(
-            factory.createPropertyAccessExpression(factory.createIdentifier('s3Bucket'), factory.createIdentifier('accelerateConfiguration')),
+            factory.createPropertyAccessExpression(
+              factory.createIdentifier('s3Bucket'),
+              factory.createIdentifier('accelerateConfiguration'),
+            ),
             factory.createObjectLiteralExpression(
               [factory.createPropertyAssignment('accelerationStatus', factory.createStringLiteral(accelerateStatus))],
               false,
@@ -272,18 +290,12 @@ join(storageDir, 'resource.ts'), content, 'utf-8');
           );
         }
         sseProps.push(
-          factory.createPropertyAssignment(
-            'serverSideEncryptionByDefault',
-            factory.createObjectLiteralExpression(sseDefaultProps, true),
-          ),
+          factory.createPropertyAssignment('serverSideEncryptionByDefault', factory.createObjectLiteralExpression(sseDefaultProps, true)),
         );
       }
       if (rule.BucketKeyEnabled !== undefined) {
         sseProps.push(
-          factory.createPropertyAssignment(
-            'bucketKeyEnabled',
-            rule.BucketKeyEnabled ? factory.createTrue() : factory.createFalse(),
-          ),
+          factory.createPropertyAssignment('bucketKeyEnabled', rule.BucketKeyEnabled ? factory.createTrue() : factory.createFalse()),
         );
       }
 
@@ -306,10 +318,7 @@ join(storageDir, 'resource.ts'), content, 'utf-8');
     }
   }
 
-  private planDynamoDBBackendContributions(
-    dynamoTables: DynamoDBTableDefinition[],
-    hasS3Bucket: boolean,
-  ): AmplifyMigrationOperation {
+  private planDynamoDBBackendContributions(dynamoTables: DynamoDBTableDefinition[], hasS3Bucket: boolean): AmplifyMigrationOperation {
     return {
       describe: async () => ['Generate DynamoDB table constructs in backend.ts'],
       execute: async () => {
@@ -356,7 +365,10 @@ join(storageDir, 'resource.ts'), content, 'utf-8');
           factory.createPropertyAssignment('name', factory.createStringLiteral(table.partitionKey.name)),
           factory.createPropertyAssignment(
             'type',
-            factory.createPropertyAccessExpression(factory.createIdentifier('AttributeType'), factory.createIdentifier(table.partitionKey.type)),
+            factory.createPropertyAccessExpression(
+              factory.createIdentifier('AttributeType'),
+              factory.createIdentifier(table.partitionKey.type),
+            ),
           ),
         ]),
       ),
@@ -378,7 +390,10 @@ join(storageDir, 'resource.ts'), content, 'utf-8');
       tableProps.push(
         factory.createPropertyAssignment(
           'stream',
-          factory.createPropertyAccessExpression(factory.createIdentifier('StreamViewType'), factory.createIdentifier(table.streamViewType)),
+          factory.createPropertyAccessExpression(
+            factory.createIdentifier('StreamViewType'),
+            factory.createIdentifier(table.streamViewType),
+          ),
         ),
       );
     }
@@ -391,7 +406,10 @@ join(storageDir, 'resource.ts'), content, 'utf-8');
             factory.createPropertyAssignment('name', factory.createStringLiteral(table.sortKey.name)),
             factory.createPropertyAssignment(
               'type',
-              factory.createPropertyAccessExpression(factory.createIdentifier('AttributeType'), factory.createIdentifier(table.sortKey.type)),
+              factory.createPropertyAccessExpression(
+                factory.createIdentifier('AttributeType'),
+                factory.createIdentifier(table.sortKey.type),
+              ),
             ),
           ]),
         ),
@@ -487,7 +505,10 @@ join(storageDir, 'resource.ts'), content, 'utf-8');
         this.backendGenerator.addStatement(
           factory.createExpressionStatement(
             factory.createCallExpression(
-              factory.createPropertyAccessExpression(factory.createIdentifier(sanitizedName), factory.createIdentifier('addGlobalSecondaryIndex')),
+              factory.createPropertyAccessExpression(
+                factory.createIdentifier(sanitizedName),
+                factory.createIdentifier('addGlobalSecondaryIndex'),
+              ),
               undefined,
               [factory.createObjectLiteralExpression(gsiProps)],
             ),
@@ -520,13 +541,10 @@ join(storageDir, 'resource.ts'), content, 'utf-8');
   private buildAccessPatterns(cliInputs: StorageCLIInputsJSON, functionNames: string[]): AccessPatterns {
     let groups: AccessPatterns['groups'] | undefined;
     if (cliInputs.groupAccess && Object.keys(cliInputs.groupAccess).length > 0) {
-      groups = Object.entries(cliInputs.groupAccess).reduce(
-        (acc, [key, value]) => {
-          acc[key] = value.flatMap((p) => PERMISSION_MAP[p]);
-          return acc;
-        },
-        {} as Record<string, Permission[]>,
-      );
+      groups = Object.entries(cliInputs.groupAccess).reduce((acc, [key, value]) => {
+        acc[key] = value.flatMap((p) => PERMISSION_MAP[p]);
+        return acc;
+      }, {} as Record<string, Permission[]>);
     }
 
     const accessPatterns: AccessPatterns = {
@@ -543,24 +561,18 @@ join(storageDir, 'resource.ts'), content, 'utf-8');
     return accessPatterns;
   }
 
-  private async fetchDynamoDBTable(
-    storageName: string,
-    storageMeta: Record<string, unknown>,
-  ): Promise<DynamoDBTableDefinition> {
+  private async fetchDynamoDBTable(storageName: string, storageMeta: Record<string, unknown>): Promise<DynamoDBTableDefinition> {
     const output = storageMeta.output as Record<string, string> | undefined;
     const actualTableName = output?.Name || storageName;
 
-    const describeResult = await this.gen1App.clients.dynamoDB.send(
-      new DescribeTableCommand({ TableName: actualTableName }),
-    );
+    const describeResult = await this.gen1App.clients.dynamoDB.send(new DescribeTableCommand({ TableName: actualTableName }));
     const table = describeResult.Table!;
 
     const partitionKey: DynamoDBAttribute = {
       name: table.KeySchema!.find((k) => k.KeyType === 'HASH')!.AttributeName!,
       type: mapAttributeType(
-        table.AttributeDefinitions!.find(
-          (a) => a.AttributeName === table.KeySchema!.find((k) => k.KeyType === 'HASH')!.AttributeName,
-        )!.AttributeType!,
+        table.AttributeDefinitions!.find((a) => a.AttributeName === table.KeySchema!.find((k) => k.KeyType === 'HASH')!.AttributeName)!
+          .AttributeType!,
       ),
     };
 
@@ -569,9 +581,7 @@ join(storageDir, 'resource.ts'), content, 'utf-8');
     if (sortKeySchema) {
       sortKey = {
         name: sortKeySchema.AttributeName!,
-        type: mapAttributeType(
-          table.AttributeDefinitions!.find((a) => a.AttributeName === sortKeySchema.AttributeName)!.AttributeType!,
-        ),
+        type: mapAttributeType(table.AttributeDefinitions!.find((a) => a.AttributeName === sortKeySchema.AttributeName)!.AttributeType!),
       };
     }
 
@@ -583,9 +593,8 @@ join(storageDir, 'resource.ts'), content, 'utf-8');
           partitionKey: {
             name: gsi.KeySchema!.find((k) => k.KeyType === 'HASH')!.AttributeName!,
             type: mapAttributeType(
-              table.AttributeDefinitions!.find(
-                (a) => a.AttributeName === gsi.KeySchema!.find((k) => k.KeyType === 'HASH')!.AttributeName,
-              )!.AttributeType!,
+              table.AttributeDefinitions!.find((a) => a.AttributeName === gsi.KeySchema!.find((k) => k.KeyType === 'HASH')!.AttributeName)!
+                .AttributeType!,
             ),
           },
           ...(gsi.KeySchema!.find((k) => k.KeyType === 'RANGE') && {

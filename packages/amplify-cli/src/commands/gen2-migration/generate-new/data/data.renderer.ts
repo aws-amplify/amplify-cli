@@ -1,5 +1,6 @@
 import ts, { ObjectLiteralElementLike } from 'typescript';
 import { renderResourceTsFile } from '../resource';
+import { createBranchNameDeclaration } from '../ts-factory-utils';
 
 const factory = ts.factory;
 
@@ -34,10 +35,6 @@ const AUTH_MODE_MAP: Record<string, string> = {
  */
 export class DataRenderer {
   private readonly envName: string;
-  private readonly namedImports: Record<string, Set<string>> = {
-    '@aws-amplify/backend': new Set(['defineData']),
-  };
-  private readonly properties: ObjectLiteralElementLike[] = [];
 
   public constructor(envName: string) {
     this.envName = envName;
@@ -47,15 +44,18 @@ export class DataRenderer {
    * Produces the complete TypeScript AST for data/resource.ts.
    */
   public render(opts: RenderDefineDataOptions): ts.NodeArray<ts.Node> {
-    this.properties.length = 0;
+    const properties: ObjectLiteralElementLike[] = [];
+    const namedImports: Record<string, Set<string>> = {
+      '@aws-amplify/backend': new Set(['defineData']),
+    };
 
     const { schema, preSchemaStatements } = this.prepareSchema(opts.schema);
 
-    this.renderTableMappings(opts.tableMappings);
-    this.renderAuthorizationModes(opts.authorizationModes);
-    this.renderLogging(opts.logging);
+    this.renderTableMappings(properties, opts.tableMappings);
+    this.renderAuthorizationModes(properties, opts.authorizationModes);
+    this.renderLogging(properties, opts.logging);
 
-    this.properties.push(factory.createShorthandPropertyAssignment(factory.createIdentifier('schema')));
+    properties.push(factory.createShorthandPropertyAssignment(factory.createIdentifier('schema')));
 
     const schemaVarDecl = factory.createVariableDeclaration('schema', undefined, undefined, factory.createIdentifier('`' + schema + '`'));
     const schemaStatements: ts.Node[] = [
@@ -65,10 +65,10 @@ export class DataRenderer {
 
     return renderResourceTsFile({
       exportedVariableName: factory.createIdentifier('data'),
-      functionCallParameter: factory.createObjectLiteralExpression(this.properties, true),
+      functionCallParameter: factory.createObjectLiteralExpression(properties, true),
       backendFunctionConstruct: 'defineData',
       postImportStatements: schemaStatements,
-      additionalImportedBackendIdentifiers: this.namedImports,
+      additionalImportedBackendIdentifiers: namedImports,
     });
   }
 
@@ -77,20 +77,7 @@ export class DataRenderer {
       return { schema: raw, preSchemaStatements: [] };
     }
 
-    const branchNameStatement = factory.createVariableStatement(
-      [],
-      factory.createVariableDeclarationList(
-        [
-          factory.createVariableDeclaration(
-            'branchName',
-            undefined,
-            undefined,
-            factory.createIdentifier('process.env.AWS_BRANCH ?? "sandbox"'),
-          ),
-        ],
-        ts.NodeFlags.Const,
-      ),
-    );
+    const branchNameStatement = createBranchNameDeclaration();
 
     return {
       schema: raw.replaceAll('${env}', '${branchName}'),
@@ -98,7 +85,7 @@ export class DataRenderer {
     };
   }
 
-  private renderTableMappings(tableMappings: DataTableMapping): void {
+  private renderTableMappings(properties: ObjectLiteralElementLike[], tableMappings: DataTableMapping): void {
     const mappingProps: ObjectLiteralElementLike[] = [];
     for (const [tableName, tableId] of Object.entries(tableMappings)) {
       mappingProps.push(factory.createPropertyAssignment(factory.createIdentifier(tableName), factory.createStringLiteral(tableId)));
@@ -118,10 +105,10 @@ export class DataRenderer {
 
     const envMapping = factory.createObjectLiteralExpression([branchNameProp, modelMappingProp], true);
 
-    this.properties.push(factory.createPropertyAssignment(MIGRATED_TABLE_MAPPINGS_KEY, factory.createArrayLiteralExpression([envMapping])));
+    properties.push(factory.createPropertyAssignment(MIGRATED_TABLE_MAPPINGS_KEY, factory.createArrayLiteralExpression([envMapping])));
   }
 
-  private renderAuthorizationModes(authorizationModes?: any): void {
+  private renderAuthorizationModes(properties: ObjectLiteralElementLike[], authorizationModes?: any): void {
     if (!authorizationModes) return;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -145,7 +132,7 @@ export class DataRenderer {
     }
 
     if (authModeProperties.length > 0) {
-      this.properties.push(
+      properties.push(
         factory.createPropertyAssignment('authorizationModes', factory.createObjectLiteralExpression(authModeProperties, true)),
       );
     }
@@ -222,11 +209,11 @@ export class DataRenderer {
     target.push(factory.createPropertyAssignment('oidcAuthorizationMode', factory.createObjectLiteralExpression(props)));
   }
 
-  private renderLogging(logging?: any): void {
+  private renderLogging(properties: ObjectLiteralElementLike[], logging?: any): void {
     if (!logging) return;
 
     if (logging === true) {
-      this.properties.push(factory.createPropertyAssignment('logging', factory.createTrue()));
+      properties.push(factory.createPropertyAssignment('logging', factory.createTrue()));
       return;
     }
 
@@ -248,7 +235,7 @@ export class DataRenderer {
       props.push(factory.createPropertyAssignment('retention', factory.createStringLiteral(logging.retention)));
     }
     if (props.length > 0) {
-      this.properties.push(factory.createPropertyAssignment('logging', factory.createObjectLiteralExpression(props)));
+      properties.push(factory.createPropertyAssignment('logging', factory.createObjectLiteralExpression(props)));
     }
   }
 }

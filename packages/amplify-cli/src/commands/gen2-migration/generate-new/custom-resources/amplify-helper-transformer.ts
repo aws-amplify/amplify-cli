@@ -34,7 +34,7 @@ export class AmplifyHelperTransformer {
     },
   };
 
-  static transform(sourceFile: ts.SourceFile, projectName?: string): ts.SourceFile {
+  public static transform(sourceFile: ts.SourceFile, projectName?: string): ts.SourceFile {
     // Track variable names that hold AmplifyHelpers.getProjectInfo() result
     const projectInfoVariables = new Set<string>();
     // Track parameter names with AmplifyResourceProps type
@@ -276,7 +276,7 @@ export class AmplifyHelperTransformer {
     return result.transformed[0] as ts.SourceFile;
   }
 
-  static addBranchNameVariable(sourceFile: ts.SourceFile, projectName?: string): ts.SourceFile {
+  public static addBranchNameVariable(sourceFile: ts.SourceFile, projectName?: string): ts.SourceFile {
     // Check if branchName declaration already exists
     const hasBranchName = sourceFile.statements.some(
       (stmt) =>

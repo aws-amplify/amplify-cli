@@ -2,12 +2,12 @@ import ts from 'typescript';
 import { newLineIdentifier } from './ts-factory-utils';
 const factory = ts.factory;
 export type ResourceTsParameters = {
-  additionalImportedBackendIdentifiers?: Record<string, Set<string>>;
-  backendFunctionConstruct: string;
-  functionCallParameter: ts.ObjectLiteralExpression;
-  exportedVariableName: ts.Identifier;
-  postImportStatements?: ts.Node[];
-  postExportStatements?: ts.Node[];
+  readonly additionalImportedBackendIdentifiers?: Record<string, Set<string>>;
+  readonly backendFunctionConstruct: string;
+  readonly functionCallParameter: ts.ObjectLiteralExpression;
+  readonly exportedVariableName: ts.Identifier;
+  readonly postImportStatements?: ts.Node[];
+  readonly postExportStatements?: ts.Node[];
 };
 // Creates ts file with imports / exports
 export function renderResourceTsFile({
@@ -37,12 +37,12 @@ export function renderResourceTsFile({
 }
 
 export type ResourceTsParametersList = {
-  additionalImportedBackendIdentifiers?: Record<string, Set<string>>;
-  backendFunctionConstruct: string;
-  functionCallParameter: ts.ObjectLiteralExpression[];
-  exportedVariableName: ts.Identifier[];
-  postImportStatements?: ts.Node[];
-  postExportStatements?: ts.Node[];
+  readonly additionalImportedBackendIdentifiers?: Record<string, Set<string>>;
+  readonly backendFunctionConstruct: string;
+  readonly functionCallParameter: ts.ObjectLiteralExpression[];
+  readonly exportedVariableName: ts.Identifier[];
+  readonly postImportStatements?: ts.Node[];
+  readonly postExportStatements?: ts.Node[];
 };
 
 export function renderResourceTsFilesForFunction({
@@ -91,8 +91,7 @@ function renderExportStatementsForFunctions(
   exportedVariableName: ts.Identifier[],
 ) {
   const exportStatementList: ts.VariableStatement[] = [];
-  let i = 0;
-  for (const functionCallParam of functionCallParameter) {
+  for (const [i, functionCallParam] of functionCallParameter.entries()) {
     const backendFunctionIdentifier = factory.createIdentifier(backendFunctionConstruct);
     const functionCall = factory.createCallExpression(backendFunctionIdentifier, undefined, [functionCallParam]);
     const exportedVariable = factory.createVariableDeclaration(exportedVariableName[i], undefined, undefined, functionCall);
@@ -108,7 +107,6 @@ function renderExportStatementsForFunctions(
         true,
       ),
     );
-    i++;
   }
 
   return exportStatementList;

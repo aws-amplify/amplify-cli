@@ -15,17 +15,11 @@ export class RootPackageJsonGenerator implements Generator {
   private readonly dependencies: Record<string, string> = {};
   private readonly devDependencies: Record<string, string> = {};
   private readonly outputDir: string;
-  private appName: string | undefined;
-  private envName: string | undefined;
+  private readonly appName: string | undefined;
+  private readonly envName: string | undefined;
 
-  public constructor(outputDir: string) {
+  public constructor(outputDir: string, appName?: string, envName?: string) {
     this.outputDir = outputDir;
-  }
-
-  /**
-   * Sets the app name and env name for the package.json name field.
-   */
-  public setAppInfo(appName: string, envName: string): void {
     this.appName = appName;
     this.envName = envName;
   }

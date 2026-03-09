@@ -1,5 +1,6 @@
 import ts, { ObjectLiteralElementLike } from 'typescript';
 import { renderResourceTsFile } from '../resource';
+import { createBranchNameDeclaration } from '../ts-factory-utils';
 
 const factory = ts.factory;
 
@@ -32,20 +33,7 @@ export class FunctionsRenderer {
     const postImportStatements: ts.Node[] = [];
     const properties: ObjectLiteralElementLike[] = [];
 
-    const branchNameStatement = factory.createVariableStatement(
-      [],
-      factory.createVariableDeclarationList(
-        [
-          factory.createVariableDeclaration(
-            'branchName',
-            undefined,
-            undefined,
-            factory.createIdentifier('process.env.AWS_BRANCH ?? "sandbox"'),
-          ),
-        ],
-        ts.NodeFlags.Const,
-      ),
-    );
+    const branchNameStatement = createBranchNameDeclaration();
     postImportStatements.push(branchNameStatement);
 
     // entry
