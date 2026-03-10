@@ -142,6 +142,7 @@ export enum CFN_PSEUDO_PARAMETERS_REF {
 
 export enum CFNStackStatus {
   UPDATE_COMPLETE = 'UPDATE_COMPLETE',
+  CREATE_COMPLETE = 'CREATE_COMPLETE',
 }
 
 export type BaseOAuthClient = { ProviderName: string; client_id: string };

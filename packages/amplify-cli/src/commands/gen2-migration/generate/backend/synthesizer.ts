@@ -21,6 +21,7 @@ import { RestApiDefinition } from '../codegen-head/data_definition_fetcher';
 import { generateLambdaEnvVars } from '../generators/functions/lambda_env_generator';
 import { DynamoTriggerInfo } from '../adapters/functions/api-trigger-detector';
 import { DataModelTableAccess } from '../codegen-head/data_model_access_parser';
+import { FunctionKinesisAccess } from '../codegen-head/kinesis_cfn_access_parser';
 
 const factory = ts.factory;
 export interface BackendRenderParameters {
@@ -61,6 +62,7 @@ export interface BackendRenderParameters {
   };
   analytics?: {
     importFrom: string;
+    functionsWithKinesisAccess?: FunctionKinesisAccess[];
   };
   geo?: {
     importFrom: string;
@@ -639,24 +641,6 @@ export class BackendSynthesizer {
       if (provider.userPoolConfig) {
         const userPoolConfigProps: ts.ObjectLiteralElementLike[] = [];
 
-        if (provider.userPoolConfig.appIdClientRegex) {
-          userPoolConfigProps.push(
-            factory.createPropertyAssignment(
-              factory.createIdentifier('appIdClientRegex'),
-              factory.createStringLiteral(provider.userPoolConfig.appIdClientRegex),
-            ),
-          );
-        }
-
-        if (provider.userPoolConfig.awsRegion) {
-          userPoolConfigProps.push(
-            factory.createPropertyAssignment(
-              factory.createIdentifier('awsRegion'),
-              factory.createPropertyAccessExpression(factory.createIdentifier('backend'), 'auth.resources.userPool.stack.region'),
-            ),
-          );
-        }
-
         // Replace hardcoded userPoolId with backend.auth reference
         if (provider.userPoolConfig.userPoolId) {
           userPoolConfigProps.push(
@@ -674,26 +658,6 @@ export class BackendSynthesizer {
           ),
         );
       }
-
-      // Add other configs if present
-      if (provider.lambdaAuthorizerConfig) {
-        properties.push(
-          factory.createPropertyAssignment(
-            factory.createIdentifier('lambdaAuthorizerConfig'),
-            this.getOverrideValue(provider.lambdaAuthorizerConfig),
-          ),
-        );
-      }
-
-      if (provider.openIdConnectConfig) {
-        properties.push(
-          factory.createPropertyAssignment(
-            factory.createIdentifier('openIdConnectConfig'),
-            this.getOverrideValue(provider.openIdConnectConfig),
-          ),
-        );
-      }
-
       return factory.createObjectLiteralExpression(properties, true);
     });
 
@@ -1116,6 +1080,11 @@ export class BackendSynthesizer {
       imports.push(this.createImportStatement([geoFunctionIdentifier], renderArgs.geo.importFrom));
     }
 
+    // Kinesis access: import { aws_iam } from 'aws-cdk-lib';
+    if (renderArgs.analytics?.functionsWithKinesisAccess?.length) {
+      imports.push(this.createImportStatement([factory.createIdentifier('aws_iam')], 'aws-cdk-lib'));
+    }
+
     if (renderArgs.unsupportedCategories) {
       const categories = renderArgs.unsupportedCategories;
 
@@ -1180,6 +1149,63 @@ export class BackendSynthesizer {
         ),
       );
       nodes.push(geoCall);
+    }
+
+    // Kinesis access: generate addToRolePolicy() for each function with Kinesis access
+    if (renderArgs.analytics?.functionsWithKinesisAccess?.length) {
+      for (const access of renderArgs.analytics.functionsWithKinesisAccess) {
+        // backend.functionName.resources.lambda.addToRolePolicy(
+        //   new aws_iam.PolicyStatement({
+        //     actions: [...],
+        //     resources: [analytics.kinesisStreamArn],
+        //   })
+        // );
+        const addToRolePolicyCall = factory.createExpressionStatement(
+          factory.createCallExpression(
+            factory.createPropertyAccessExpression(
+              factory.createPropertyAccessExpression(
+                factory.createPropertyAccessExpression(
+                  factory.createPropertyAccessExpression(
+                    factory.createIdentifier('backend'),
+                    factory.createIdentifier(access.functionName),
+                  ),
+                  factory.createIdentifier('resources'),
+                ),
+                factory.createIdentifier('lambda'),
+              ),
+              factory.createIdentifier('addToRolePolicy'),
+            ),
+            undefined,
+            [
+              factory.createNewExpression(
+                factory.createPropertyAccessExpression(factory.createIdentifier('aws_iam'), factory.createIdentifier('PolicyStatement')),
+                undefined,
+                [
+                  factory.createObjectLiteralExpression(
+                    [
+                      factory.createPropertyAssignment(
+                        'actions',
+                        factory.createArrayLiteralExpression(access.actions.map((action) => factory.createStringLiteral(action))),
+                      ),
+                      factory.createPropertyAssignment(
+                        'resources',
+                        factory.createArrayLiteralExpression([
+                          factory.createPropertyAccessExpression(
+                            factory.createIdentifier('analytics'),
+                            factory.createIdentifier('kinesisStreamArn'),
+                          ),
+                        ]),
+                      ),
+                    ],
+                    true,
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+        nodes.push(addToRolePolicyCall);
+      }
     }
 
     // CDK OVERRIDES
@@ -1661,11 +1687,8 @@ export class BackendSynthesizer {
                     factory.createStringLiteral(`Gen1${restApi.apiName}Api`),
                     factory.createObjectLiteralExpression(
                       [
-                        factory.createPropertyAssignment('restApiId', factory.createStringLiteral(`<gen1-${restApi.apiName}-api-id>`)),
-                        factory.createPropertyAssignment(
-                          'rootResourceId',
-                          factory.createStringLiteral(`<gen1-${restApi.apiName}-root-resource-id>`),
-                        ),
+                        factory.createPropertyAssignment('restApiId', factory.createStringLiteral(restApi.gen1RestApiId)),
+                        factory.createPropertyAssignment('rootResourceId', factory.createStringLiteral(restApi.gen1ApiResourceId)),
                       ],
                       true,
                     ),

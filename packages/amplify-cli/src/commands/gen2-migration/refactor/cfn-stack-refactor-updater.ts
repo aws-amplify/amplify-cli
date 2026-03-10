@@ -11,6 +11,7 @@ import {
 import assert from 'node:assert';
 import { CFNStackStatus, FailedRefactorResponse } from './types';
 import { pollStackForCompletionState } from './cfn-stack-updater';
+import extractStackNameFromId from './utils';
 
 const POLL_ATTEMPTS = 300;
 const POLL_INTERVAL_MS = 12000;
@@ -29,6 +30,8 @@ export async function tryRefactorStack(
   createStackRefactorCommandInput: CreateStackRefactorCommandInput,
   attempts = POLL_ATTEMPTS,
 ): Promise<[boolean, FailedRefactorResponse | undefined]> {
+  createStackRefactorCommandInput.Description = buildRefactorDescription(createStackRefactorCommandInput);
+
   const { StackRefactorId } = await cfnClient.send(new CreateStackRefactorCommand(createStackRefactorCommandInput));
   assert(StackRefactorId);
   let describeStackRefactorResponse = await pollStackRefactorForCompletionState(
@@ -87,9 +90,24 @@ export async function tryRefactorStack(
   const sourceStackStatus = await pollStackForCompletionState(cfnClient, sourceStackName);
   assert(sourceStackStatus === CFNStackStatus.UPDATE_COMPLETE, `${sourceStackName} was not updated successfully.`);
   const destinationStackStatus = await pollStackForCompletionState(cfnClient, destinationStackName);
-  assert(destinationStackStatus === CFNStackStatus.UPDATE_COMPLETE, `${destinationStackName} was not updated successfully.`);
+  assert(
+    destinationStackStatus === CFNStackStatus.UPDATE_COMPLETE || destinationStackStatus === CFNStackStatus.CREATE_COMPLETE,
+    `${destinationStackName} was not updated successfully.`,
+  );
 
   return [true, undefined];
+}
+
+function resolveStackName(stackNameOrArn: string | undefined): string {
+  if (!stackNameOrArn) return 'unknown';
+  return stackNameOrArn.startsWith('arn:') ? extractStackNameFromId(stackNameOrArn) : stackNameOrArn;
+}
+
+function buildRefactorDescription(input: CreateStackRefactorCommandInput): string {
+  const logicalIds = input.ResourceMappings?.map((m) => m.Source?.LogicalResourceId).join(', ');
+  const source = resolveStackName(input.StackDefinitions?.[0]?.StackName);
+  const dest = resolveStackName(input.StackDefinitions?.[1]?.StackName);
+  return `Move [${logicalIds}] from ${source} to ${dest}`;
 }
 
 /**

@@ -10,7 +10,7 @@ This is a TypeScript monorepo (Yarn 3 + Lerna) for AWS Amplify CLI Gen1.
 
 __Research Stage__
 
-1. Start by delegating a context-gatherer sub agent to identify the relevant files to this issue. The sub agent must report both the files relevant to the issue, and the docs files relevant to the issue, as well as any additional context necessary to the issue.
+1. Start by delegating to the `context-gatherer` agent (defined in `.kiro/agents/context-gatherer.json`) to identify the relevant files to this issue. The sub agent must report both the files relevant to the issue, and the docs files relevant to the issue, as well as any additional context necessary to the issue.
 
 **Before changing code you MUST first reference the relevant docs/ files** Documentation is organized under `docs/` in the same path as the code it references:
 - For example `packages/amplify-cli/src/commands/drift.ts`: `docs/amplify-cli/drift.md`

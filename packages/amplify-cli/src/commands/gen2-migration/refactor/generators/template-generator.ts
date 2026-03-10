@@ -421,28 +421,27 @@ class TemplateGenerator {
     category: string,
     categoryTemplateGenerator: CategoryTemplateGenerator<CFN_CATEGORY_TYPE>,
     destinationCategoryStackId: string,
-  ): Promise<{
-    newTemplate: CFNTemplate;
-    oldTemplate: CFNTemplate;
-    parameters?: Parameter[];
-  }> {
+  ): Promise<{ newTemplate: CFNTemplate }> {
     try {
-      const { newTemplate, oldTemplate, parameters } = await categoryTemplateGenerator.generateGen2ResourceRemovalTemplate();
-
+      // Resolve gen 2 template
+      const { newTemplate, parameters: gen2StackParameters } = await categoryTemplateGenerator.generateGen2PreProcessTemplate();
       this.logger.info(`Updating Gen 2 ${this.getStackCategoryName(category)} stack...`);
 
-      const gen2StackUpdateStatus = await tryUpdateStack(this.cfnClient, destinationCategoryStackId, parameters ?? [], newTemplate);
-
+      const gen2StackUpdateStatus = await tryUpdateStack(this.cfnClient, destinationCategoryStackId, gen2StackParameters, newTemplate);
       assert(gen2StackUpdateStatus === CFNStackStatus.UPDATE_COMPLETE, `Gen 2 stack is in an invalid state: ${gen2StackUpdateStatus}`);
       this.logger.info(`Updated Gen 2 ${this.getStackCategoryName(category)} stack successfully`);
 
-      return { newTemplate, oldTemplate, parameters };
+      // Move gen 2 resources to holding stack
+      this.logger.info(`Moving Gen2 ${this.getStackCategoryName(category)} resources to holding stack...`);
+      const { newTemplate: updatedGen2Template } = await categoryTemplateGenerator.moveGen2ResourcesToHoldingStack(newTemplate);
+      this.logger.info(`Moved Gen2 ${this.getStackCategoryName(category)} resources to holding stack successfully`);
+
+      return { newTemplate: updatedGen2Template };
     } catch (e) {
       if (this.isNoResourcesError(e)) {
         const currentTemplate = categoryTemplateGenerator.gen2Template;
         assert(currentTemplate);
-        const parameters = categoryTemplateGenerator.gen2StackParameters;
-        return { newTemplate: currentTemplate, oldTemplate: currentTemplate, parameters };
+        return { newTemplate: currentTemplate };
       }
       throw e;
     }
@@ -521,9 +520,7 @@ class TemplateGenerator {
       .categoryTemplateGenerators) {
       let newSourceTemplate: CFNTemplate | undefined;
       let newDestinationTemplate: CFNTemplate | undefined;
-      let oldDestinationTemplate: CFNTemplate | undefined;
       let sourceStackParameters: Parameter[] | undefined;
-      let destinationStackParameters: Parameter[] | undefined;
       let sourceTemplateForRefactor: CFNTemplate | undefined;
       let destinationTemplateForRefactor: CFNTemplate | undefined;
       let logicalIdMappingForRefactor: Map<string, string> | undefined;
@@ -568,14 +565,8 @@ class TemplateGenerator {
         if (category === 'auth' && sourceStackParameters?.find((param) => param.ParameterKey === HOSTED_PROVIDER_META_PARAMETER_NAME)) {
           hasOAuthEnabled = true;
         }
-        const { newTemplate, oldTemplate, parameters } = await this.processGen2Stack(
-          category,
-          categoryTemplateGenerator,
-          destinationCategoryStackId,
-        );
+        const { newTemplate } = await this.processGen2Stack(category, categoryTemplateGenerator, destinationCategoryStackId);
         newDestinationTemplate = newTemplate;
-        oldDestinationTemplate = oldTemplate;
-        destinationStackParameters = parameters;
         const { sourceTemplate, destinationTemplate, logicalIdMapping } = categoryTemplateGenerator.generateStackRefactorTemplates(
           newSourceTemplate,
           newDestinationTemplate,
@@ -630,8 +621,11 @@ class TemplateGenerator {
           }.`,
         );
         await pollStackForCompletionState(this.cfnClient, destinationCategoryStackId, 30);
-        if (!isRollback && oldDestinationTemplate) {
-          await this.rollbackGen2Stack(category, destinationCategoryStackId, destinationStackParameters, oldDestinationTemplate);
+        if (!isRollback) {
+          const originalGen2StackId = destinationCategoryStackId;
+          this.logger.info(`Restoring Gen2 ${this.getStackCategoryName(category)} resources from holding stack...`);
+          await categoryTemplateGenerator.restoreGen2ResourcesFromHoldingStack(originalGen2StackId);
+          this.logger.info(`Restored Gen2 ${this.getStackCategoryName(category)} resources from holding stack successfully`);
         }
         return false;
       } else {
@@ -640,6 +634,13 @@ class TemplateGenerator {
             isRollback,
           )} stack successfully`,
         );
+
+        if (isRollback) {
+          const originalGen2StackId = sourceCategoryStackId;
+          this.logger.info(`Restoring Gen2 ${this.getStackCategoryName(category)} resources from holding stack...`);
+          await categoryTemplateGenerator.restoreGen2ResourcesFromHoldingStack(originalGen2StackId);
+          this.logger.info(`Restored Gen2 ${this.getStackCategoryName(category)} resources from holding stack successfully`);
+        }
       }
     }
     return true;
@@ -681,18 +682,6 @@ class TemplateGenerator {
       ResourceMappings: resourceMappings,
     });
     return { success, failedRefactorMetadata };
-  }
-
-  private async rollbackGen2Stack(
-    category: CATEGORY,
-    gen2CategoryStackId: string,
-    gen2StackParameters: Parameter[] | undefined,
-    oldGen2Template: CFNTemplate,
-  ) {
-    this.logger.info(`Rolling back Gen 2 ${this.getStackCategoryName(category)} stack...`);
-    const gen2StackUpdateStatus = await tryUpdateStack(this.cfnClient, gen2CategoryStackId, gen2StackParameters ?? [], oldGen2Template);
-    assert(gen2StackUpdateStatus === CFNStackStatus.UPDATE_COMPLETE, `Gen 2 Stack is in a failed state: ${gen2StackUpdateStatus}.`);
-    this.logger.info(`Rolled back Gen 2 ${this.getStackCategoryName(category)} stack successfully`);
   }
 
   private async generateRefactorTemplatesForRollback(

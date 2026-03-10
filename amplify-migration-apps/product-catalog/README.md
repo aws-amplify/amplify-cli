@@ -30,7 +30,7 @@ Note: It is recommended to run this command from the root of your app directory
 The following configuration will be applied:
 
 Project information
-| Name: projectboards
+| Name: productcatalog
 | Environment: dev
 | Default editor: Visual Studio Code
 | App type: javascript
