@@ -85,6 +85,25 @@ export class S3Mock {
       .on(s3.GetBucketEncryptionCommand)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .callsFake(async (input: s3.GetBucketEncryptionCommandInput): Promise<s3.GetBucketEncryptionCommandOutput> => {
+        const stackName = this.app.clients.cloudformation.stackNameForResource(input.Bucket!);
+        const templatePath = this.app.templatePathForStack(stackName);
+        const template = JSONUtilities.readJson<any>(templatePath);
+
+        const encryptionConfig = template.Resources.S3Bucket?.Properties?.BucketEncryption;
+        if (encryptionConfig) {
+          return {
+            ServerSideEncryptionConfiguration: {
+              Rules: encryptionConfig.ServerSideEncryptionConfiguration.map((rule: any) => ({
+                ApplyServerSideEncryptionByDefault: {
+                  SSEAlgorithm: rule.ServerSideEncryptionByDefault?.SSEAlgorithm ?? 'AES256',
+                },
+                BucketKeyEnabled: rule.BucketKeyEnabled ?? false,
+              })),
+            },
+            $metadata: {},
+          };
+        }
+
         return {
           ServerSideEncryptionConfiguration: {
             Rules: [
@@ -114,14 +133,17 @@ export class S3Mock {
       if (category) {
         const categoryDir = path.join(this.app.ccbPath, category);
         if (fs.existsSync(categoryDir)) {
-          // Search resource subdirectories for the template file
+          const candidates: string[] = [];
           for (const resourceDir of fs.readdirSync(categoryDir)) {
             const candidate = path.join(categoryDir, resourceDir, templateFileName);
             if (fs.existsSync(candidate)) {
-              localPath = candidate;
-              break;
+              candidates.push(candidate);
             }
           }
+          if (candidates.length > 1) {
+            throw new Error(`S3 GetObject mock: multiple candidates found for key '${input.Key}': ${candidates.join(', ')}`);
+          }
+          localPath = candidates[0];
         }
       }
 

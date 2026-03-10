@@ -39,8 +39,8 @@ export class AppSyncMock {
     this.mock
       .on(appsync.GetGraphqlApiCommand)
       .callsFake(async (input: appsync.GetGraphqlApiCommandInput): Promise<appsync.GetGraphqlApiCommandOutput> => {
-        const apiResourceName = this.app.singleResourceName('api');
-        const authResourceName = this.app.singleResourceName('auth');
+        const apiResourceName = this.app.singleResourceName('api', 'AppSync');
+        const authResourceName = this.app.singleResourceName('auth', 'Cognito');
         const cliInputs = this.app.cliInputsForResource(apiResourceName, 'api');
         const additionalAuthenticationProviders: appsync.AdditionalAuthenticationProvider[] = [];
 
@@ -82,7 +82,7 @@ export class AppSyncMock {
       .on(appsync.ListGraphqlApisCommand)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .callsFake(async (input: appsync.ListGraphqlApisCommandInput): Promise<appsync.ListGraphqlApisCommandOutput> => {
-        const apiResourceName = this.app.singleResourceName('api');
+        const apiResourceName = this.app.singleResourceName('api', 'AppSync');
         const apiId = this.app.meta.api[apiResourceName].output.GraphQLAPIIdOutput;
         return {
           graphqlApis: [

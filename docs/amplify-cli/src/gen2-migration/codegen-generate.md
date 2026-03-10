@@ -72,6 +72,8 @@ flowchart TD
 | `DataDefinitionFetcher` | `src/codegen-head/data_definition_fetcher.ts` | Extracts GraphQL schema from Gen1 project structure (single file or schema folder) and API authorization modes |
 | `AppStorageDefinitionFetcher` | `src/codegen-head/app_storage_definition_fetcher.ts` | Fetches S3 bucket configuration including triggers, acceleration, versioning, and encryption settings |
 | `AppFunctionsDefinitionFetcher` | `src/codegen-head/app_functions_definition_fetcher.ts` | Fetches Lambda function configurations and CloudWatch Events schedules, maps functions to trigger categories |
+| `KinesisCloudFormationAccessParser` | `src/codegen-head/kinesis_cfn_access_parser.ts` | Parses Kinesis IAM permissions from function CloudFormation templates (`AmplifyResourcesPolicy`) |
+| `extractFunctionKinesisAccess` | `src/adapters/analytics/analytics_access.ts` | Aggregates per-function Kinesis access by iterating function CFN templates and collecting `kinesis:*` actions |
 | `renderAuthNode` | `src/generators/auth/index.ts` | Generates TypeScript AST for `defineAuth()` or `referenceAuth()` calls |
 | `generateDataSource` | `src/generators/data/index.ts` | Generates TypeScript AST for `defineData()` with schema, table mappings, and authorization modes |
 | `renderStorage` | `src/generators/storage/index.ts` | Generates TypeScript AST for `defineStorage()` with access patterns and triggers |

@@ -61,6 +61,7 @@ import {
 import { DataDefinition, DataTableMapping, generateDataSource } from '../generators/data/index';
 import { DataModelTableAccess } from '../codegen-head/data_model_access_parser';
 import { ApiTriggerDetector } from '../adapters/functions/api-trigger-detector';
+import { extractFunctionKinesisAccess } from '../codegen-head/kinesis_cfn_access_parser';
 
 import { FunctionDefinition, renderFunctions } from '../generators/functions/index';
 import assert from 'assert';
@@ -546,6 +547,14 @@ export const createGen2Renderer = ({
   // Handle DynamoDB triggers
   if (dynamoTriggers && dynamoTriggers.length > 0) {
     backendRenderOptions.dynamoTriggers = dynamoTriggers;
+  }
+
+  // Extract Kinesis access for functions and attach to analytics render options
+  if (analytics && functionNames.length > 0) {
+    const functionsWithKinesisAccess = extractFunctionKinesisAccess(functionNames);
+    if (functionsWithKinesisAccess.length > 0 && backendRenderOptions.analytics) {
+      backendRenderOptions.analytics.functionsWithKinesisAccess = functionsWithKinesisAccess;
+    }
   }
 
   // Generate the main backend.ts file that imports and combines all resources

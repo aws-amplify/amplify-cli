@@ -48,6 +48,11 @@ const getStackId = (stackName: string, category: CATEGORY) => {
   return `arn:aws:cloudformation:${REGION}:${ACCOUNT_ID}:stack/${stackName}-${resolvedCategory}/12345`;
 };
 
+/** Extracts the stack name portion from an ARN, matching the production extractStackNameFromId behavior. */
+const getStackName = (stackName: string, category: CATEGORY) => {
+  return getStackId(stackName, category).split('/')[1];
+};
+
 const NUM_CATEGORIES_TO_REFACTOR = 3;
 const ACCOUNT_ID = 'TEST_ACCOUNT_ID';
 const GEN1_ROOT_STACK_NAME = 'amplify-gen1-dev-12345';
@@ -1169,6 +1174,10 @@ describe('TemplateGenerator', () => {
   ) {
     const sourceStackName = isRevert ? getStackId(GEN2_ROOT_STACK_NAME, category) : getStackId(GEN1_ROOT_STACK_NAME, category);
     const destinationStackName = isRevert ? getStackId(GEN1_ROOT_STACK_NAME, category) : getStackId(GEN2_ROOT_STACK_NAME, category);
+    const sourceStackNameExtracted = isRevert ? getStackName(GEN2_ROOT_STACK_NAME, category) : getStackName(GEN1_ROOT_STACK_NAME, category);
+    const destinationStackNameExtracted = isRevert
+      ? getStackName(GEN1_ROOT_STACK_NAME, category)
+      : getStackName(GEN2_ROOT_STACK_NAME, category);
     expect(mockCfnClientSendMock.mock.calls[callIndex]).toBeACloudFormationCommand(
       {
         Description: `Move [ResourceA] from ${sourceStackName.split('/')[1]} to ${destinationStackName.split('/')[1]}`,
@@ -1176,11 +1185,11 @@ describe('TemplateGenerator', () => {
           {
             Source: {
               LogicalResourceId: 'ResourceA',
-              StackName: sourceStackName,
+              StackName: sourceStackNameExtracted,
             },
             Destination: {
               LogicalResourceId: 'ResourceB',
-              StackName: destinationStackName,
+              StackName: destinationStackNameExtracted,
             },
           },
         ],

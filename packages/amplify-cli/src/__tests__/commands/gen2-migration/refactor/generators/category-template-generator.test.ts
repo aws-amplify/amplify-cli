@@ -1,4 +1,12 @@
 import CategoryTemplateGenerator from '../../../../../commands/gen2-migration/refactor/generators/category-template-generator';
+
+// Mock snap module to avoid filesystem writes during tests
+jest.mock('../../../../../commands/gen2-migration/refactor/snap', () => ({
+  preUpdateStack: jest.fn(),
+  preRefactorStack: jest.fn(),
+  OUTPUT_DIRECTORY: '.amplify/refactor.operations',
+}));
+
 import {
   CFN_AUTH_TYPE,
   CFN_PSEUDO_PARAMETERS_REF,

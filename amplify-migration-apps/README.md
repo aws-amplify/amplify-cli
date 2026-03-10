@@ -248,6 +248,13 @@ npx tsx snapshot.ts post.refactor fitness-tracker /path/to/deployed/fitness-trac
     npx tsx snapshot.ts post.refactor <app-name> /path/to/deployed/<app-name>
     ```
 
+5. Run the sanitize script to replace sensitive values with placeholders:
+
+    ```console
+    cd amplify-migration-apps/<app-name>
+    npm run sanitize
+    ```
+
 ## Snapshot Testing
 
 Each migration app should have two corresponding snapshot tests that verify the expected output of our two main commands:
