@@ -1,4 +1,5 @@
 import path from 'node:path';
+import os from 'node:os';
 import fs from 'node:fs/promises';
 import execa from 'execa';
 import { Logger } from '../../gen2-migration';
@@ -21,7 +22,6 @@ import { AnalyticsGenerator } from './output/analytics/analytics.generator';
 import { CustomResourcesGenerator } from './output/custom-resources/custom.generator';
 import { fileOrDirectoryExists } from './input/file-exists';
 
-const TEMP_GEN_2_OUTPUT_DIR = 'amplify-gen2';
 const AMPLIFY_DIR = 'amplify';
 
 /**
@@ -36,7 +36,7 @@ export async function prepareNew(logger: Logger, appId: string, envName: string,
   const gen1App = new Gen1App({ appId, region, envName, clients });
   const meta = await gen1App.fetchMeta();
 
-  const outputDir = TEMP_GEN_2_OUTPUT_DIR;
+  const outputDir = await fs.mkdtemp(path.join(os.tmpdir(), 'amplify-gen2-'));
   const backendGenerator = new BackendGenerator(outputDir);
   const packageJsonGenerator = new RootPackageJsonGenerator(outputDir);
 
@@ -92,9 +92,9 @@ export async function prepareNew(logger: Logger, appId: string, envName: string,
       const cwd = process.cwd();
       logger.info(`Overriding local 'amplify' folder`);
       await fs.rm(AMPLIFY_DIR, { recursive: true });
-      await fs.rename(`${TEMP_GEN_2_OUTPUT_DIR}/amplify`, `${cwd}/amplify`);
-      await fs.rename(`${TEMP_GEN_2_OUTPUT_DIR}/package.json`, `${cwd}/package.json`);
-      await fs.rm(TEMP_GEN_2_OUTPUT_DIR, { recursive: true });
+      await fs.rename(path.join(outputDir, 'amplify'), path.join(cwd, 'amplify'));
+      await fs.rename(path.join(outputDir, 'package.json'), path.join(cwd, 'package.json'));
+      await fs.rm(outputDir, { recursive: true });
 
       const packageLockPath = path.join(cwd, 'package-lock.json');
       const nodeModulesPath = path.join(cwd, 'node_modules');
