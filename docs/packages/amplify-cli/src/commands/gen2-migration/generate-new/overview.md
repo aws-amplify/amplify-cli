@@ -174,14 +174,3 @@ flowchart TD
     STEP -->|"collect plan() from all generators"| OPS["operations: AmplifyMigrationOperation array"]
     OPS -->|return to| DISP["Parent dispatcher: describe then execute"]
 ```
-
-## File Map
-
-| File                    | Role                                                                                        |
-| ----------------------- | ------------------------------------------------------------------------------------------- |
-| `prepare.ts`            | Orchestrator — instantiates generators, returns operations                                  |
-| `generator.ts`          | `Generator` interface — `plan(): Promise<AmplifyMigrationOperation[]>`                      |
-| `ts-factory-utils.ts`   | Shared AST builders: `constDecl`, `propAccess`, `constFromBackend`, `assignProp`, `jsValue` |
-| `ts-writer.ts`          | Prints AST nodes to formatted TypeScript strings via prettier                               |
-| `resource.ts`           | Shared `renderResourceTsFile()` for generating `resource.ts` files with imports + export    |
-| `package-json-patch.ts` | Patches package.json with Gen2 dev dependencies                                             |
