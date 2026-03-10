@@ -84,43 +84,52 @@ Each generator receives `Gen1App`, `BackendGenerator`, the output directory, and
 
 ```mermaid
 flowchart TD
-    STEP["generate.ts → prepareNew()"] -->|Create| G1[Gen1App]
+    STEP["generate.ts - prepareNew()"] -->|Create| G1[Gen1App]
     STEP -->|Create| BG[BackendGenerator]
     STEP -->|Create| PKG[RootPackageJsonGenerator]
 
-    STEP -->|"Read meta, iterate resources<br/>by category + service type"| GENS["Per-resource generators"]
+    STEP -->|Read meta, dispatch by service| GENS["Per-resource generators"]
 
     GENS --> AUTH["AuthGenerator"]
     GENS --> S3["S3Generator"]
-    GENS --> DYNAMO["DynamoDBGenerator ×N"]
+    GENS --> DYNAMO["DynamoDBGenerator xN"]
     GENS --> DATA["DataGenerator"]
-    GENS --> REST["RestApiGenerator ×N"]
-    GENS --> KINESIS["AnalyticsKinesisGenerator ×N"]
-    GENS --> CUSTOM["CustomResourceGenerator ×N"]
-    GENS --> FUNC["FunctionGenerator ×N"]
+    GENS --> REST["RestApiGenerator xN"]
+    GENS --> KINESIS["AnalyticsKinesisGenerator xN"]
+    GENS --> CUSTOM["CustomResourceGenerator xN"]
+    GENS --> FUNC["FunctionGenerator xN"]
 
     AUTH -->|writes| AUTH_F["amplify/auth/resource.ts"]
     S3 -->|writes| S3_F["amplify/storage/resource.ts"]
     DATA -->|writes| DATA_F["amplify/data/resource.ts"]
-    FUNC -->|writes| FUNC_F["amplify/{category}/{name}/resource.ts"]
+    FUNC -->|writes| FUNC_F["amplify/category/name/resource.ts"]
     KINESIS -->|writes| KIN_F["amplify/analytics/resource.ts"]
-    CUSTOM -->|writes| CUST_F["amplify/custom/{name}/resource.ts"]
+    CUSTOM -->|writes| CUST_F["amplify/custom/name/resource.ts"]
 
-    AUTH & S3 & DYNAMO & DATA & REST & KINESIS & CUSTOM & FUNC -->|contribute| BG
-    FUNC & CUSTOM -->|contribute deps| PKG
+    AUTH -->|contribute| BG
+    S3 -->|contribute| BG
+    DYNAMO -->|contribute| BG
+    DATA -->|contribute| BG
+    REST -->|contribute| BG
+    KINESIS -->|contribute| BG
+    CUSTOM -->|contribute| BG
+    FUNC -->|contribute| BG
+
+    FUNC -->|contribute deps| PKG
+    CUSTOM -->|contribute deps| PKG
 
     BG -->|writes last| BACK_F["amplify/backend.ts"]
     PKG -->|writes| PKG_F["package.json"]
 
     STEP -->|Create| INFRA["Infrastructure generators"]
-    INFRA --> BPKG["BackendPackageJsonGenerator → amplify/package.json"]
-    INFRA --> TSC["TsConfigGenerator → amplify/tsconfig.json"]
-    INFRA --> YML["AmplifyYmlGenerator → amplify.yml"]
-    INFRA --> GIT["GitIgnoreGenerator → .gitignore"]
+    INFRA --> BPKG["BackendPackageJsonGenerator"]
+    INFRA --> TSC["TsConfigGenerator"]
+    INFRA --> YML["AmplifyYmlGenerator"]
+    INFRA --> GIT["GitIgnoreGenerator"]
 
     STEP -->|append| FINAL["Final operation: replace amplify/ + npm install"]
-    STEP -->|return| OPS["AmplifyMigrationOperation[]"]
-    OPS -->|to| DISP["Parent dispatcher: describe → confirm → execute"]
+    STEP -->|return| OPS["AmplifyMigrationOperation array"]
+    OPS -->|to| DISP["Parent dispatcher: describe, confirm, execute"]
 ```
 
 ## Refactoring Requirements
