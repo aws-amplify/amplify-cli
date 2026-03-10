@@ -87,6 +87,10 @@ flowchart TD
     STEP["prepareNew()"] -->|create| G1[Gen1App]
     STEP -->|create| BG[BackendGenerator]
     STEP -->|create| PKG[RootPackageJsonGenerator]
+    STEP -->|create| BPKG[BackendPackageJsonGenerator]
+    STEP -->|create| TSC[TsConfigGenerator]
+    STEP -->|create| YML[AmplifyYmlGenerator]
+    STEP -->|create| GIT[GitIgnoreGenerator]
 
     STEP -->|read meta, dispatch by service| CAT["CategoryGenerator per resource"]
 
@@ -97,13 +101,8 @@ flowchart TD
     BG -->|writes last| BACK["amplify/backend.ts"]
     PKG -->|writes| PKGF["package.json"]
 
-    STEP -->|create| BPKG[BackendPackageJsonGenerator]
-    STEP -->|create| TSC[TsConfigGenerator]
-    STEP -->|create| YML[AmplifyYmlGenerator]
-    STEP -->|create| GIT[GitIgnoreGenerator]
-
-    STEP -->|return| OPS["AmplifyMigrationOperation array"]
-    OPS -->|to| DISP["Parent dispatcher"]
+    STEP -->|"collect plan() from all generators"| OPS["operations: AmplifyMigrationOperation array"]
+    OPS -->|return to| DISP["Parent dispatcher: describe then execute"]
 ```
 
 ## Refactoring Requirements
