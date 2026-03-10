@@ -75,21 +75,28 @@ export class FunctionGenerator implements Generator {
   }
 
   /**
-   * Resolves this function's config and returns a flat array of operations.
+   * Resolves this function's config and returns a single operation
+   * that generates resource.ts, copies source files, and contributes
+   * all backend.ts statements (imports, overrides, grants, triggers).
    */
   public async plan(): Promise<AmplifyMigrationOperation[]> {
     const func = await this.resolve();
-
     await this.mergeFunctionDependencies(func);
+    const triggerModels = await this.detectDynamoTriggerModels(func);
 
-    const operations: AmplifyMigrationOperation[] = [this.planResource(func), this.planOverrides(func), this.planGrants(func)];
-
-    const triggerOp = await this.planTrigger(func);
-    if (triggerOp) {
-      operations.push(triggerOp);
-    }
-
-    return operations;
+    return [
+      {
+        describe: async () => [`Generate ${func.category}/${func.resourceName}`],
+        execute: async () => {
+          await this.generateResource(func);
+          this.contributeOverrides(func);
+          this.contributeGrants(func);
+          if (triggerModels.length > 0) {
+            this.contributeDynamoTrigger(func.resourceName, triggerModels);
+          }
+        },
+      },
+    ];
   }
 
   /**
@@ -148,86 +155,51 @@ export class FunctionGenerator implements Generator {
   }
 
   /**
-   * Creates the resource.ts generation + source copy + backend.ts import operation.
+   * Generates resource.ts, copies source files, and registers the
+   * function import + defineBackend property in backend.ts.
    */
-  private planResource(func: ResolvedFunction): AmplifyMigrationOperation {
+  private async generateResource(func: ResolvedFunction): Promise<void> {
     const dirPath = path.join(this.outputDir, 'amplify', func.category, func.resourceName);
-
-    return {
-      describe: async () => [`Generate ${func.category}/${func.resourceName}/resource.ts`],
-      execute: async () => {
-        const renderOpts: RenderDefineFunctionOptions = {
-          resourceName: func.resourceName,
-          entry: func.entry,
-          name: func.deployedName,
-          timeoutSeconds: func.timeoutSeconds,
-          memoryMB: func.memoryMB,
-          runtime: func.runtime,
-          schedule: func.schedule,
-          environment: func.environment,
-        };
-
-        const nodes = this.renderer.render(renderOpts);
-        const content = printNodes(nodes);
-
-        await fs.mkdir(dirPath, { recursive: true });
-        await fs.writeFile(path.join(dirPath, 'resource.ts'), content, 'utf-8');
-
-        // Copy Gen1 function source files
-        await this.copyFunctionSource(func.resourceName, dirPath);
-
-        // Contribute to backend.ts
-        this.backendGenerator.addImport(`./${func.category}/${func.resourceName}/resource`, [func.resourceName]);
-        this.backendGenerator.addDefineBackendProperty(
-          factory.createShorthandPropertyAssignment(factory.createIdentifier(func.resourceName)),
-        );
-      },
+    const renderOpts: RenderDefineFunctionOptions = {
+      resourceName: func.resourceName,
+      entry: func.entry,
+      name: func.deployedName,
+      timeoutSeconds: func.timeoutSeconds,
+      memoryMB: func.memoryMB,
+      runtime: func.runtime,
+      schedule: func.schedule,
+      environment: func.environment,
     };
+
+    const nodes = this.renderer.render(renderOpts);
+    const content = printNodes(nodes);
+
+    await fs.mkdir(dirPath, { recursive: true });
+    await fs.writeFile(path.join(dirPath, 'resource.ts'), content, 'utf-8');
+    await this.copyFunctionSource(func.resourceName, dirPath);
+
+    this.backendGenerator.addImport(`./${func.category}/${func.resourceName}/resource`, [func.resourceName]);
+    this.backendGenerator.addDefineBackendProperty(factory.createShorthandPropertyAssignment(factory.createIdentifier(func.resourceName)));
   }
 
   /**
-   * Creates the name override + env var escape hatch operation.
+   * Contributes function name override and env var escape hatches to backend.ts.
    */
-  private planOverrides(func: ResolvedFunction): AmplifyMigrationOperation {
-    return {
-      describe: async () => [`Generate function name override and env var escape hatches for ${func.resourceName}`],
-      execute: async () => {
-        this.backendGenerator.ensureBranchName();
-        this.backendGenerator.addStatement(createFunctionNameOverride(func.resourceName));
-        for (const hatch of func.escapeHatches) {
-          this.backendGenerator.addStatement(createAddEnvironmentCall(func.resourceName, hatch));
-        }
-      },
-    };
+  private contributeOverrides(func: ResolvedFunction): void {
+    this.backendGenerator.ensureBranchName();
+    this.backendGenerator.addStatement(createFunctionNameOverride(func.resourceName));
+    for (const hatch of func.escapeHatches) {
+      this.backendGenerator.addStatement(createAddEnvironmentCall(func.resourceName, hatch));
+    }
   }
 
   /**
-   * Creates the table grants + graphql grants operation.
+   * Contributes DynamoDB table grants and GraphQL API grants to backend.ts.
    */
-  private planGrants(func: ResolvedFunction): AmplifyMigrationOperation {
-    return {
-      describe: async () => [`Generate DynamoDB table grants and GraphQL API grants for ${func.resourceName}`],
-      execute: async () => {
-        this.contributeTableGrants(func);
-        this.contributeStorageTableGrants(func);
-        this.contributeGraphqlApiGrants(func);
-      },
-    };
-  }
-
-  /**
-   * Creates the DynamoDB trigger operation if this function has triggers.
-   */
-  private async planTrigger(func: ResolvedFunction): Promise<AmplifyMigrationOperation | undefined> {
-    const models = await this.detectDynamoTriggerModels(func);
-    if (models.length === 0) return undefined;
-
-    return {
-      describe: async () => [`Generate DynamoDB stream event source mappings for ${func.resourceName}`],
-      execute: async () => {
-        this.contributeDynamoTrigger(func.resourceName, models);
-      },
-    };
+  private contributeGrants(func: ResolvedFunction): void {
+    this.contributeTableGrants(func);
+    this.contributeStorageTableGrants(func);
+    this.contributeGraphqlApiGrants(func);
   }
 
   private async copyFunctionSource(resourceName: string, destDir: string): Promise<void> {
