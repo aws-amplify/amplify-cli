@@ -530,16 +530,16 @@ export class MigrationApp {
    * only need the primary resource.
    *
    * @param category - The Amplify category (e.g., `"auth"`, `"api"`, `"function"`, `"storage"`).
+   * @param service - The Amplify service type to filter by (e.g., `"Cognito"`, `"AppSync"`).
    * @returns The name of the single resource in the category.
    * @throws Error if the category contains zero or more than one resource after filtering.
    */
-  public singleResourceName(category: string, service?: string) {
+  public singleResourceName(category: string, service: string) {
     let resourceNames = Object.keys(this.tpi[this.environmentName]['categories'][category]);
 
-    if (service && resourceNames.length > 1) {
+    if (resourceNames.length > 1) {
       resourceNames = resourceNames.filter((name) => {
-        const meta = (this.meta as any)[category]?.[name];
-        return meta?.service === service;
+        return this.meta[category]?.[name]?.service === service;
       });
     }
 

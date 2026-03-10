@@ -32,7 +32,7 @@ export class CognitoIdentityMock {
       .on(cognito.DescribeIdentityPoolCommand)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .callsFake(async (input: cognito.DescribeIdentityPoolCommandInput): Promise<cognito.DescribeIdentityPoolCommandOutput> => {
-        const authResourceName = this.app.singleResourceName('auth');
+        const authResourceName = this.app.singleResourceName('auth', 'Cognito');
         const authCliInputs = this.app.cliInputsForResource(authResourceName, 'auth');
 
         return {
