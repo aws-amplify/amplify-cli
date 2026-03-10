@@ -23,6 +23,7 @@ export class BackendGenerator implements Generator {
   private readonly earlyStatements: ts.Statement[] = [];
   private readonly outputDir: string;
   private hasBranchName = false;
+  private hasStorageStack = false;
 
   public constructor(outputDir: string) {
     this.outputDir = outputDir;
@@ -89,6 +90,38 @@ export class BackendGenerator implements Generator {
       ),
     );
     this.postDefineStatements.push(branchNameDecl);
+  }
+
+  /**
+   * Ensures the `storageStack` variable is declared exactly once in backend.ts.
+   * Multiple DynamoDB generators share the same stack. When an S3 storage
+   * resource exists, the stack is reused from `backend.storage.stack`;
+   * otherwise a new stack is created.
+   */
+  public ensureStorageStack(hasS3Bucket: boolean): void {
+    if (this.hasStorageStack) return;
+    this.hasStorageStack = true;
+
+    const stackExpression = hasS3Bucket
+      ? factory.createPropertyAccessExpression(
+          factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier('storage')),
+          factory.createIdentifier('stack'),
+        )
+      : factory.createCallExpression(
+          factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier('createStack')),
+          undefined,
+          [factory.createStringLiteral('storage')],
+        );
+
+    this.earlyStatements.push(
+      factory.createVariableStatement(
+        [],
+        factory.createVariableDeclarationList(
+          [factory.createVariableDeclaration('storageStack', undefined, undefined, stackExpression)],
+          ts.NodeFlags.Const,
+        ),
+      ),
+    );
   }
 
   public async plan(): Promise<AmplifyMigrationOperation[]> {

@@ -5,48 +5,47 @@ import { Gen1App } from '../../input/gen1-app';
 import { DynamoDBRenderer, DynamoDBTableDefinition } from './dynamodb.renderer';
 
 /**
- * Generates DynamoDB table constructs and contributes them to backend.ts.
+ * Generates a single DynamoDB table construct and contributes it to backend.ts.
  *
- * For each DynamoDB resource in the Gen1 storage category, fetches the
- * table definition via DescribeTable and renders CDK Table constructs
- * (with GSIs) into backend.ts.
+ * Fetches the table definition via DescribeTable and renders a CDK Table
+ * construct (with GSIs) as an early statement in backend.ts. The shared
+ * `storageStack` declaration is emitted once via BackendGenerator.ensureStorageStack().
  */
 export class DynamoDBGenerator implements Generator {
   private readonly gen1App: Gen1App;
   private readonly backendGenerator: BackendGenerator;
+  private readonly resourceName: string;
   private readonly renderer: DynamoDBRenderer;
 
-  public constructor(gen1App: Gen1App, backendGenerator: BackendGenerator) {
+  public constructor(gen1App: Gen1App, backendGenerator: BackendGenerator, resourceName: string) {
     this.gen1App = gen1App;
     this.backendGenerator = backendGenerator;
+    this.resourceName = resourceName;
     this.renderer = new DynamoDBRenderer();
   }
 
   /**
-   * Plans the DynamoDB table generation operations.
+   * Plans the DynamoDB table generation operation.
    */
   public async plan(): Promise<AmplifyMigrationOperation[]> {
     const storageCategory = await this.gen1App.fetchMetaCategory('storage');
     if (!storageCategory) return [];
 
-    const dynamoEntries = Object.entries(storageCategory).filter(([, value]) => (value as Record<string, unknown>).service === 'DynamoDB');
-    if (dynamoEntries.length === 0) return [];
+    const resourceMeta = storageCategory[this.resourceName] as Record<string, unknown> | undefined;
+    if (!resourceMeta) return [];
 
+    const table = await this.fetchTable(resourceMeta);
     const hasS3Bucket = Object.values(storageCategory).some((v) => (v as Record<string, unknown>).service === 'S3');
-
-    const tables: DynamoDBTableDefinition[] = [];
-    for (const [storageName, storageValue] of dynamoEntries) {
-      tables.push(await this.fetchTable(storageName, storageValue as Record<string, unknown>));
-    }
 
     return [
       {
-        describe: async () => ['Generate DynamoDB table constructs in backend.ts'],
+        describe: async () => [`Generate DynamoDB table ${this.resourceName} in backend.ts`],
         execute: async () => {
           const imports = this.renderer.requiredImports();
           this.backendGenerator.addImport(imports.source, imports.identifiers);
+          this.backendGenerator.ensureStorageStack(hasS3Bucket);
 
-          const statements = this.renderer.render({ tables, hasS3Bucket });
+          const statements = this.renderer.renderTable(table);
           for (const stmt of statements) {
             this.backendGenerator.addEarlyStatement(stmt);
           }
@@ -55,9 +54,9 @@ export class DynamoDBGenerator implements Generator {
     ];
   }
 
-  private async fetchTable(storageName: string, storageMeta: Record<string, unknown>): Promise<DynamoDBTableDefinition> {
+  private async fetchTable(storageMeta: Record<string, unknown>): Promise<DynamoDBTableDefinition> {
     const output = storageMeta.output as Record<string, string> | undefined;
-    const actualTableName = output?.Name || storageName;
+    const actualTableName = output?.Name || this.resourceName;
 
     const table = await this.gen1App.aws.fetchTableDescription(actualTableName);
     if (!table) {

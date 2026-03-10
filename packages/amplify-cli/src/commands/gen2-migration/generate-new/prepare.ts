@@ -49,22 +49,24 @@ export async function prepareNew(logger: Logger, appId: string, envName: string,
 
   if (meta.storage) {
     const storageCategory = meta.storage as Record<string, Record<string, unknown>>;
-    const hasS3 = Object.values(storageCategory).some((v) => v.service === 'S3');
-    const hasDynamo = Object.values(storageCategory).some((v) => v.service === 'DynamoDB');
-
-    if (hasS3) {
-      generators.push(new S3Generator(gen1App, backendGenerator, outputDir));
-    }
-    // DynamoDB generator handles all DynamoDB tables in a single operation
-    // because they share a CDK stack declaration.
-    if (hasDynamo) {
-      generators.push(new DynamoDBGenerator(gen1App, backendGenerator));
+    for (const [resourceName, resourceMeta] of Object.entries(storageCategory)) {
+      if (resourceMeta.service === 'S3') {
+        generators.push(new S3Generator(gen1App, backendGenerator, outputDir));
+      } else if (resourceMeta.service === 'DynamoDB') {
+        generators.push(new DynamoDBGenerator(gen1App, backendGenerator, resourceName));
+      }
     }
   }
 
   if (meta.api) {
-    generators.push(new DataGenerator(gen1App, backendGenerator, outputDir));
-    generators.push(new RestApiGenerator(gen1App, backendGenerator));
+    const apiCategory = meta.api as Record<string, Record<string, unknown>>;
+    for (const [resourceName, resourceMeta] of Object.entries(apiCategory)) {
+      if (resourceMeta.service === 'AppSync') {
+        generators.push(new DataGenerator(gen1App, backendGenerator, outputDir));
+      } else if (resourceMeta.service === 'API Gateway') {
+        generators.push(new RestApiGenerator(gen1App, backendGenerator, resourceName));
+      }
+    }
   }
 
   if (meta.analytics) {

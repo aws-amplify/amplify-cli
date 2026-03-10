@@ -21,35 +21,32 @@ export class RestApiRenderer {
   }
 
   /**
-   * Renders all REST API CDK statements for backend.ts.
+   * Renders CDK statements for a single REST API in backend.ts.
    */
-  public render(restApis: readonly RestApiDefinition[]): ts.Statement[] {
+  public renderApi(restApi: RestApiDefinition): ts.Statement[] {
     const statements: ts.Statement[] = [];
+    const stackVarName = `${restApi.apiName}Stack`;
+    const apiVarName = `${restApi.apiName}Api`;
+    const gen1ApiVarName = `gen1${restApi.apiName}Api`;
+    const gen1PolicyVarName = `gen1${restApi.apiName}Policy`;
 
-    for (const restApi of restApis) {
-      const stackVarName = `${restApi.apiName}Stack`;
-      const apiVarName = `${restApi.apiName}Api`;
-      const gen1ApiVarName = `gen1${restApi.apiName}Api`;
-      const gen1PolicyVarName = `gen1${restApi.apiName}Policy`;
+    statements.push(this.renderStack(restApi, stackVarName));
+    statements.push(this.renderRestApiConstruct(restApi, stackVarName, apiVarName));
+    statements.push(...this.renderGatewayResponses(apiVarName));
 
-      statements.push(this.renderStack(restApi, stackVarName));
-      statements.push(this.renderApi(restApi, stackVarName, apiVarName));
-      statements.push(...this.renderGatewayResponses(apiVarName));
+    const integrations = this.renderLambdaIntegrations(restApi);
+    statements.push(...integrations.statements);
 
-      const integrations = this.renderLambdaIntegrations(restApi);
-      statements.push(...integrations.statements);
+    statements.push(this.renderGen1ApiReference(restApi, stackVarName, gen1ApiVarName));
+    statements.push(this.renderGen1Policy(restApi, stackVarName, gen1ApiVarName, gen1PolicyVarName));
 
-      statements.push(this.renderGen1ApiReference(restApi, stackVarName, gen1ApiVarName));
-      statements.push(this.renderGen1Policy(restApi, stackVarName, gen1ApiVarName, gen1PolicyVarName));
-
-      if (restApi.authType && this.hasAuth) {
-        statements.push(this.renderGen1PolicyAttachment(gen1PolicyVarName));
-      }
-
-      statements.push(...this.renderPaths(restApi, apiVarName, integrations.map));
-      statements.push(...this.renderPathPolicies(restApi, apiVarName, stackVarName));
-      statements.push(this.renderOutput(apiVarName));
+    if (restApi.authType && this.hasAuth) {
+      statements.push(this.renderGen1PolicyAttachment(gen1PolicyVarName));
     }
+
+    statements.push(...this.renderPaths(restApi, apiVarName, integrations.map));
+    statements.push(...this.renderPathPolicies(restApi, apiVarName, stackVarName));
+    statements.push(this.renderOutput(apiVarName));
 
     return statements;
   }
@@ -75,7 +72,7 @@ export class RestApiRenderer {
     );
   }
 
-  private renderApi(restApi: RestApiDefinition, stackVarName: string, apiVarName: string): ts.Statement {
+  private renderRestApiConstruct(restApi: RestApiDefinition, stackVarName: string, apiVarName: string): ts.Statement {
     return factory.createVariableStatement(
       [],
       factory.createVariableDeclarationList(

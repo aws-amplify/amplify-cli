@@ -35,34 +35,10 @@ export interface DynamoDBTableDefinition {
 }
 
 /**
- * Options for rendering DynamoDB table constructs in backend.ts.
- */
-export interface RenderDynamoDBOptions {
-  readonly tables: DynamoDBTableDefinition[];
-  readonly hasS3Bucket: boolean;
-}
-
-/**
  * Renders CDK Table constructs for DynamoDB resources in backend.ts.
  * Pure — no AWS calls, no side effects.
  */
 export class DynamoDBRenderer {
-  /**
-   * Produces CDK import declarations and Table construct statements
-   * for all DynamoDB tables, to be added to backend.ts.
-   */
-  public render(opts: RenderDynamoDBOptions): ts.Statement[] {
-    const statements: ts.Statement[] = [];
-
-    statements.push(this.renderStackDeclaration(opts.hasS3Bucket));
-
-    for (const table of opts.tables) {
-      statements.push(...this.renderTable(table));
-    }
-
-    return statements;
-  }
-
   /**
    * Returns the CDK import identifiers needed for DynamoDB tables.
    */
@@ -73,28 +49,10 @@ export class DynamoDBRenderer {
     };
   }
 
-  private renderStackDeclaration(hasS3Bucket: boolean): ts.Statement {
-    const stackExpression = hasS3Bucket
-      ? factory.createPropertyAccessExpression(
-          factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier('storage')),
-          factory.createIdentifier('stack'),
-        )
-      : factory.createCallExpression(
-          factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier('createStack')),
-          undefined,
-          [factory.createStringLiteral('storage')],
-        );
-
-    return factory.createVariableStatement(
-      [],
-      factory.createVariableDeclarationList(
-        [factory.createVariableDeclaration('storageStack', undefined, undefined, stackExpression)],
-        ts.NodeFlags.Const,
-      ),
-    );
-  }
-
-  private renderTable(table: DynamoDBTableDefinition): ts.Statement[] {
+  /**
+   * Produces CDK Table construct statements for a single DynamoDB table.
+   */
+  public renderTable(table: DynamoDBTableDefinition): ts.Statement[] {
     const statements: ts.Statement[] = [];
     const baseTableName = table.tableName.replace(/-[^-]+$/, '');
     const sanitizedName = sanitizeVariableName(baseTableName);
