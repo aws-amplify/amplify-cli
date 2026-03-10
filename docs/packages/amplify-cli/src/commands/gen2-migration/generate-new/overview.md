@@ -73,14 +73,37 @@ Each generator receives `Gen1App`, `BackendGenerator`, the output directory, and
 
 ## Design Principles
 
-- **Generators are per-resource** — one generator per resource entry in `amplify-meta.json`
-- **Orchestrator does zero data derivation** — reads meta keys/service types, delegates everything else to generators via `Gen1App`
-- **All generators access Gen1 state through `Gen1App`** — lazy, cached, mockable facade
-- **Category generators contribute to `backend.ts` through `BackendGenerator`** — `BackendGenerator` assembles `backend.ts` when its own `plan()` runs last
-- **Each generator is self-contained** — no cross-category logic in the orchestrator
-- **Adding a new category requires only creating the generator** + one line in the orchestrator
-- **Operations are returned, not executed** — `prepareNew()` returns `AmplifyMigrationOperation[]` to the parent dispatcher for describe, confirm, execute
-- **Renderers are pure** — no AWS calls, no side effects, no `Gen1App` dependency
+### Generators are per-resource
+
+Each resource entry in `amplify-meta.json` gets its own generator instance. The orchestrator iterates category keys and service types, creating one concrete generator per resource (e.g., one `S3Generator` for the S3 bucket, one `FunctionGenerator` per Lambda). This keeps each generator focused on a single resource and avoids shared mutable state between resources in the same category.
+
+### Orchestrator does zero data derivation
+
+`prepareNew()` reads `amplify-meta.json` top-level keys and dispatches by service type — that's it. All data fetching, transformation, and rendering logic lives in the generators themselves, accessed through `Gen1App`. The orchestrator is a thin loop that creates generators and collects their operations.
+
+### All generators access Gen1 state through Gen1App
+
+`Gen1App` is a lazy-loading, caching facade over AWS SDK calls and local file reads. Every generator receives it and queries only what it needs. Results are cached so multiple generators reading the same data (e.g., `amplify-meta.json`) don't duplicate API calls. In tests, stub only the methods your generator actually calls.
+
+### Category generators contribute to backend.ts through BackendGenerator
+
+No centralized synthesizer knows about every category. Instead, each category generator calls `addImport()`, `addStatement()`, and `addDefineBackendProperty()` on `BackendGenerator` during its own `plan()` execution. `BackendGenerator` runs last and assembles the accumulated contributions into a single `backend.ts` file with sorted imports and properties.
+
+### Each generator is self-contained
+
+A generator owns all logic for its category — both the `resource.ts` file and its `backend.ts` contributions. No cross-category logic lives in the orchestrator or in other generators. For example, the auth generator handles user pool overrides, identity pool config, and provider setup without any help from the storage or data generators.
+
+### Adding a new category requires only creating the generator
+
+A new category generator plugs in with one line in `prepareNew()` to instantiate it. No existing generators need modification, no shared interfaces need extending, no central switch statement needs a new case.
+
+### Operations are returned, not executed
+
+`prepareNew()` returns `AmplifyMigrationOperation[]` to the parent dispatcher. Each operation co-locates a `describe()` (what it will do) and an `execute()` (how to do it). The dispatcher shows all descriptions to the user, prompts for confirmation, then executes sequentially. This enables dry-run support without any generator-level changes.
+
+### Renderers are pure
+
+Renderer classes (`AuthRenderer`, `DataRenderer`, `S3Renderer`, etc.) produce TypeScript AST nodes from typed input — no AWS calls, no file I/O, no `Gen1App` dependency. This makes them trivially testable: pass in options, get back AST nodes, print and assert.
 
 ## Execution Flow
 
