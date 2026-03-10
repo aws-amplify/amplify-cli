@@ -1,4 +1,5 @@
-import ts, { CallExpression, ObjectLiteralElementLike } from 'typescript';
+import ts, { CallExpression } from 'typescript';
+import { Gen1App } from '../../input/gen1-app';
 import { renderResourceTsFile } from '../../resource';
 import { createBranchNameDeclaration } from '../../ts-factory-utils';
 
@@ -41,7 +42,6 @@ export interface RenderDefineStorageOptions {
   readonly storageIdentifier: string;
   readonly accessPatterns?: AccessPatterns;
   readonly triggers?: Partial<Record<StorageTriggerEvent, Lambda>>;
-  readonly functionNamesAndCategories?: Map<string, string>;
 }
 
 /**
@@ -50,15 +50,17 @@ export interface RenderDefineStorageOptions {
  */
 export class S3Renderer {
   private readonly envName: string;
+  private readonly gen1App: Gen1App;
 
-  public constructor(envName: string) {
+  public constructor(envName: string, gen1App: Gen1App) {
     this.envName = envName;
+    this.gen1App = gen1App;
   }
 
   /**
    * Produces the complete TypeScript AST for storage/resource.ts.
    */
-  public render(opts: RenderDefineStorageOptions): ts.NodeArray<ts.Node> {
+  public async render(opts: RenderDefineStorageOptions): Promise<ts.NodeArray<ts.Node>> {
     const propertyAssignments: ts.PropertyAssignment[] = [];
     const namedImports: Record<string, Set<string>> = { '@aws-amplify/backend': new Set(['defineStorage']) };
     const postImportStatements: ts.Node[] = [];
@@ -67,8 +69,8 @@ export class S3Renderer {
     postImportStatements.push(branchNameStatement);
 
     this.renderName(propertyAssignments, opts.storageIdentifier);
-    this.renderAccessPatterns(propertyAssignments, namedImports, postImportStatements, opts);
-    this.renderTriggers(propertyAssignments, namedImports, opts);
+    await this.renderAccessPatterns(propertyAssignments, namedImports, postImportStatements, opts);
+    await this.renderTriggers(propertyAssignments, namedImports, opts);
 
     return renderResourceTsFile({
       backendFunctionConstruct: 'defineStorage',
@@ -88,20 +90,21 @@ export class S3Renderer {
     target.push(factory.createPropertyAssignment(factory.createIdentifier('name'), nameExpression));
   }
 
-  private renderAccessPatterns(
+  private async renderAccessPatterns(
     target: ts.PropertyAssignment[],
     namedImports: Record<string, Set<string>>,
     postImportStatements: ts.Node[],
     opts: RenderDefineStorageOptions,
-  ): void {
+  ): Promise<void> {
     if (!opts.accessPatterns) return;
 
     target.push(this.buildAccessProperty(opts.accessPatterns));
 
     // Add function imports for function access patterns
     if (opts.accessPatterns.functions && opts.accessPatterns.functions.length > 0) {
+      const functionCategoryMap = await this.gen1App.fetchFunctionCategoryMap();
       for (const functionAccess of opts.accessPatterns.functions) {
-        const functionCategory = opts.functionNamesAndCategories?.get(functionAccess.functionName) || 'function';
+        const functionCategory = functionCategoryMap.get(functionAccess.functionName) || 'function';
         const functionImportPath = `../${functionCategory}/${functionAccess.functionName}/resource`;
         if (!namedImports[functionImportPath]) {
           namedImports[functionImportPath] = new Set();
@@ -125,13 +128,15 @@ export class S3Renderer {
     }
   }
 
-  private renderTriggers(
+  private async renderTriggers(
     target: ts.PropertyAssignment[],
     namedImports: Record<string, Set<string>>,
     opts: RenderDefineStorageOptions,
-  ): void {
+  ): Promise<void> {
     const triggers = opts.triggers;
     if (!triggers || Object.keys(triggers).length === 0) return;
+
+    const functionCategoryMap = await this.gen1App.fetchFunctionCategoryMap();
 
     const triggerProps = Object.entries(triggers).map(([key, value]) => {
       const functionName = value.source.split('/')[3];
@@ -141,7 +146,7 @@ export class S3Renderer {
 
     for (const value of Object.values(triggers)) {
       const functionName = value.source.split('/')[3];
-      const functionCategory = opts.functionNamesAndCategories?.get(functionName) || 'function';
+      const functionCategory = functionCategoryMap.get(functionName) || 'function';
       const functionImportPath =
         functionCategory === 'storage' ? `./${functionName}/resource` : `../${functionCategory}/${functionName}/resource`;
       if (!namedImports[functionImportPath]) {

@@ -16,8 +16,6 @@ export interface RenderDefineFunctionOptions {
   readonly runtime?: string;
   readonly schedule?: string;
   readonly environment?: Record<string, string>;
-  readonly appId?: string;
-  readonly backendEnvironmentName?: string;
 }
 
 /**
@@ -25,6 +23,13 @@ export interface RenderDefineFunctionOptions {
  * Pure — no AWS calls, no side effects.
  */
 export class FunctionsRenderer {
+  private readonly appId: string;
+  private readonly backendEnvironmentName: string;
+
+  public constructor(appId: string, backendEnvironmentName: string) {
+    this.appId = appId;
+    this.backendEnvironmentName = backendEnvironmentName;
+  }
   /**
    * Produces the complete TypeScript AST for a function's resource.ts.
    */
@@ -88,12 +93,7 @@ export class FunctionsRenderer {
 
     const envProps = Object.entries(opts.environment).map(([key, value]) => {
       // Handle API_KEY secrets stored in SSM Parameter Store
-      if (
-        key === 'API_KEY' &&
-        opts.appId &&
-        opts.backendEnvironmentName &&
-        value.startsWith(`/amplify/${opts.appId}/${opts.backendEnvironmentName}`)
-      ) {
+      if (key === 'API_KEY' && value.startsWith(`/amplify/${this.appId}/${this.backendEnvironmentName}`)) {
         namedImports['@aws-amplify/backend'].add('secret');
         return factory.createPropertyAssignment(
           key,

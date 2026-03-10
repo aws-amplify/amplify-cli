@@ -48,19 +48,12 @@ export class S3Generator implements Generator {
   private readonly backendGenerator: BackendGenerator;
   private readonly outputDir: string;
   private readonly defineStorage: S3Renderer;
-  private readonly functionNamesAndCategories: Map<string, string>;
 
-  public constructor(
-    gen1App: Gen1App,
-    backendGenerator: BackendGenerator,
-    outputDir: string,
-    functionNamesAndCategories: Map<string, string>,
-  ) {
+  public constructor(gen1App: Gen1App, backendGenerator: BackendGenerator, outputDir: string) {
     this.gen1App = gen1App;
     this.backendGenerator = backendGenerator;
     this.outputDir = outputDir;
-    this.defineStorage = new S3Renderer(gen1App.envName);
-    this.functionNamesAndCategories = functionNamesAndCategories;
+    this.defineStorage = new S3Renderer(gen1App.envName, gen1App);
   }
 
   /**
@@ -112,11 +105,10 @@ export class S3Generator implements Generator {
     return {
       describe: async () => ['Generate storage/resource.ts'],
       execute: async () => {
-        const nodes = this.defineStorage.render({
+        const nodes = await this.defineStorage.render({
           storageIdentifier,
           accessPatterns,
           triggers,
-          functionNamesAndCategories: this.functionNamesAndCategories,
         });
 
         const content = printNodes(nodes);

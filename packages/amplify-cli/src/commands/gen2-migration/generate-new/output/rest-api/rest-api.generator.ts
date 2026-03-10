@@ -24,20 +24,12 @@ const factory = ts.factory;
 export class RestApiGenerator implements Generator {
   private readonly gen1App: Gen1App;
   private readonly backendGenerator: BackendGenerator;
-  private readonly defineRestApi: RestApiRenderer;
-  private readonly functionNamesAndCategories: ReadonlyMap<string, string>;
+  private readonly hasAuth: boolean;
 
-  public constructor(
-    gen1App: Gen1App,
-    backendGenerator: BackendGenerator,
-    hasAuth: boolean,
-    functionNamesAndCategories: ReadonlyMap<string, string>,
-  ) {
+  public constructor(gen1App: Gen1App, backendGenerator: BackendGenerator, hasAuth: boolean) {
     this.gen1App = gen1App;
     this.backendGenerator = backendGenerator;
-    this.functionNamesAndCategories = functionNamesAndCategories;
-    // Renderer receives the set of function names; the map's keys provide this.
-    this.defineRestApi = new RestApiRenderer(hasAuth, new Set(functionNamesAndCategories.keys()));
+    this.hasAuth = hasAuth;
   }
 
   /**
@@ -54,15 +46,18 @@ export class RestApiGenerator implements Generator {
       return [];
     }
 
+    const functionNames = await this.gen1App.fetchFunctionNames();
+    const defineRestApi = new RestApiRenderer(this.hasAuth, functionNames);
+
     return [
       {
         describe: async () => restApis.map((api) => `Generate REST API CDK constructs for ${api.apiName}`),
         execute: async () => {
           this.addRestApiImports();
-          this.addFunctionImports(restApis);
+          await this.addFunctionImports(restApis);
 
           this.backendGenerator.ensureBranchName();
-          const statements = this.defineRestApi.render(restApis);
+          const statements = defineRestApi.render(restApis);
           for (const statement of statements) {
             this.backendGenerator.addStatement(statement);
           }
@@ -88,7 +83,7 @@ export class RestApiGenerator implements Generator {
    * functions used by REST APIs that aren't already registered
    * by the main function generator.
    */
-  private addFunctionImports(restApis: readonly RestApiDefinition[]): void {
+  private async addFunctionImports(restApis: readonly RestApiDefinition[]): Promise<void> {
     const allUniqueFunctions = new Set<string>();
     for (const restApi of restApis) {
       if (restApi.uniqueFunctions) {
@@ -98,8 +93,9 @@ export class RestApiGenerator implements Generator {
       }
     }
 
+    const functionNames = await this.gen1App.fetchFunctionNames();
     for (const funcName of allUniqueFunctions) {
-      if (this.functionNamesAndCategories.has(funcName)) {
+      if (functionNames.has(funcName)) {
         continue;
       }
       this.backendGenerator.addImport(`./function/${funcName}/resource`, [funcName]);

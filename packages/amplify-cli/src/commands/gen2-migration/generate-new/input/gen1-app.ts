@@ -88,6 +88,8 @@ export class Gen1App {
   private cachedBackendEnv: BackendEnvironment | undefined;
   private cachedCcbDir: string | undefined;
   private cachedMeta: $TSMeta | undefined;
+  private cachedFunctionCategoryMap: ReadonlyMap<string, string> | undefined;
+  private cachedFunctionNames: ReadonlySet<string> | undefined;
 
   public constructor(opts: Gen1AppOptions) {
     this.appId = opts.appId;
@@ -171,6 +173,81 @@ export class Gen1App {
       return block as Record<string, unknown>;
     }
     return undefined;
+  }
+
+  // ── Function metadata ──────────────────────────────────────────
+
+  /**
+   * Returns a map of function resource names to their effective category
+   * (auth, storage, or function), derived from dependsOn relationships
+   * in amplify-meta.json.
+   *
+   * A function's category is determined by which other category depends
+   * on it (auth triggers → 'auth', storage triggers → 'storage') or
+   * which category it depends on (function depends on storage → 'storage').
+   * Functions with no cross-category dependencies default to 'function'.
+   */
+  public async fetchFunctionCategoryMap(): Promise<ReadonlyMap<string, string>> {
+    if (this.cachedFunctionCategoryMap) return this.cachedFunctionCategoryMap;
+
+    const meta = await this.fetchMeta();
+    const categoryMap = new Map<string, string>();
+    const auth = meta.auth as Record<string, Record<string, unknown>> | undefined;
+    const storage = meta.storage as Record<string, Record<string, unknown>> | undefined;
+    const functions = meta.function as Record<string, Record<string, unknown>> | undefined;
+
+    // Auth triggers (auth depends on function)
+    if (auth) {
+      for (const authResource of Object.values(auth)) {
+        if (authResource.dependsOn) {
+          for (const dep of authResource.dependsOn as Array<{ category: string; resourceName: string }>) {
+            if (dep.category === 'function') {
+              categoryMap.set(dep.resourceName, 'auth');
+            }
+          }
+        }
+      }
+    }
+
+    // Storage triggers (storage depends on function)
+    if (storage) {
+      for (const storageResource of Object.values(storage)) {
+        if (storageResource.dependsOn) {
+          for (const dep of storageResource.dependsOn as Array<{ category: string; resourceName: string }>) {
+            if (dep.category === 'function') {
+              categoryMap.set(dep.resourceName, 'storage');
+            }
+          }
+        }
+      }
+    }
+
+    // DynamoDB stream triggers (function depends on storage)
+    if (functions) {
+      for (const [funcName, funcResource] of Object.entries(functions)) {
+        if (funcResource.dependsOn) {
+          for (const dep of funcResource.dependsOn as Array<{ category: string; resourceName: string }>) {
+            if (dep.category === 'storage') {
+              categoryMap.set(funcName, 'storage');
+            }
+          }
+        }
+      }
+    }
+
+    this.cachedFunctionCategoryMap = categoryMap;
+    return categoryMap;
+  }
+
+  /**
+   * Returns the set of all function resource names from amplify-meta.json.
+   */
+  public async fetchFunctionNames(): Promise<ReadonlySet<string>> {
+    if (this.cachedFunctionNames) return this.cachedFunctionNames;
+
+    const meta = await this.fetchMeta();
+    this.cachedFunctionNames = new Set(Object.keys((meta.function as object) ?? {}));
+    return this.cachedFunctionNames;
   }
 
   // ── Local project files ─────────────────────────────────────────

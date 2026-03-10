@@ -16,11 +16,9 @@ import { AuthGenerator } from './output/auth/auth.generator';
 import { DataGenerator } from './output/data/data.generator';
 import { RestApiGenerator } from './output/rest-api/rest-api.generator';
 import { StorageGenerator } from './output/storage/storage.generator';
-import { FunctionsGenerator } from './output/functions/functions.generator';
+import { FunctionGenerator, FunctionOperations } from './output/functions/functions.generator';
 import { AnalyticsGenerator } from './output/analytics/analytics.generator';
 import { CustomResourcesGenerator } from './output/custom-resources/custom.generator';
-import { AuthAccess, FunctionDefinition } from './output/auth/auth.renderer';
-import { parseAuthAccessFromTemplate } from './input/auth-access-analyzer';
 
 const TEMP_GEN_2_OUTPUT_DIR = 'amplify-gen2';
 const AMPLIFY_DIR = 'amplify';
@@ -49,20 +47,22 @@ export async function prepareNew(logger: Logger, appId: string, envName: string,
 
   const generators: Generator[] = [];
 
-  // FunctionsGenerator.plan() must run first to populate functionNamesAndCategories,
-  // which AuthGenerator and StorageGenerator depend on. But its operations are
-  // added after auth and data so that imports appear in the correct order.
-  const functionNamesAndCategories = new Map<string, string>();
-  let functionOperations: AmplifyMigrationOperation[] = [];
+  // FunctionGenerator.plan() must run first so that gen1App caches the
+  // function category map, which AuthGenerator and StorageGenerator depend on.
+  // But its operations are added after auth and data so that imports appear
+  // in the correct order.
+  const functionPlans: FunctionOperations[] = [];
   if (meta.function) {
-    const functionsGenerator = new FunctionsGenerator(
-      gen1App,
-      backendGenerator,
-      outputDir,
-      functionNamesAndCategories,
-      packageJsonGenerator,
-    );
-    functionOperations = await functionsGenerator.plan();
+    const functionCategory = meta.function as Record<string, Record<string, unknown>>;
+    const categoryMap = await gen1App.fetchFunctionCategoryMap();
+    for (const [resourceName, resourceMeta] of Object.entries(functionCategory)) {
+      const category = categoryMap.get(resourceName) || 'function';
+      const gen = new FunctionGenerator(gen1App, backendGenerator, packageJsonGenerator, outputDir, resourceName, resourceMeta, category);
+      const ops = await gen.plan();
+      if (ops) {
+        functionPlans.push(ops);
+      }
+    }
   }
 
   // Auth operations are split: the first generates auth/resource.ts and
@@ -70,8 +70,7 @@ export async function prepareNew(logger: Logger, appId: string, envName: string,
   // after storage so they appear in the correct position in backend.ts.
   let lateAuthOperations: AmplifyMigrationOperation[] = [];
   if (meta.auth) {
-    const functions = await buildFunctionDefinitions(gen1App);
-    const authGenerator = new AuthGenerator(gen1App, backendGenerator, outputDir, functions);
+    const authGenerator = new AuthGenerator(gen1App, backendGenerator, outputDir);
     const authOps = await authGenerator.plan();
     if (authOps.length > 0) {
       generators.push({ plan: async () => [authOps[0]] });
@@ -81,7 +80,7 @@ export async function prepareNew(logger: Logger, appId: string, envName: string,
 
   let storageGenerator: Generator | undefined;
   if (meta.storage) {
-    storageGenerator = new StorageGenerator(gen1App, backendGenerator, outputDir, functionNamesAndCategories);
+    storageGenerator = new StorageGenerator(gen1App, backendGenerator, outputDir);
     generators.push(storageGenerator);
   }
 
@@ -96,7 +95,7 @@ export async function prepareNew(logger: Logger, appId: string, envName: string,
     }
     if (hasApiGateway) {
       const hasAuth = meta.auth !== undefined;
-      generators.push(new RestApiGenerator(gen1App, backendGenerator, hasAuth, functionNamesAndCategories));
+      generators.push(new RestApiGenerator(gen1App, backendGenerator, hasAuth));
     }
   }
 
@@ -118,15 +117,25 @@ export async function prepareNew(logger: Logger, appId: string, envName: string,
   generators.push(new GitIgnoreGenerator());
 
   // Collect all operations. Function operations (pre-collected from
-  // FunctionsGenerator.plan()) are inserted after category generators
-  // but before infrastructure generators so that function imports and
-  // defineBackend properties appear in the correct position.
+  // per-function FunctionGenerator.plan() calls) are inserted after
+  // category generators but before infrastructure generators so that
+  // function imports and defineBackend properties appear in the correct
+  // position. Operations are grouped across functions to preserve the
+  // backend.ts statement ordering that snapshot tests expect.
   const operations: AmplifyMigrationOperation[] = [];
   let lateAuthInserted = false;
   for (const generator of generators) {
-    // Insert function operations right before BackendGenerator runs.
-    if (generator === backendGenerator && functionOperations.length > 0) {
-      operations.push(...functionOperations);
+    // Insert function operations right before BackendGenerator runs,
+    // grouped by operation type across all functions.
+    if (generator === backendGenerator && functionPlans.length > 0) {
+      operations.push(...functionPlans.map((p) => p.resourceOp));
+      operations.push(...functionPlans.map((p) => p.overridesOp));
+      operations.push(...functionPlans.map((p) => p.grantsOp));
+      for (const plan of functionPlans) {
+        if (plan.triggerOp) {
+          operations.push(plan.triggerOp);
+        }
+      }
     }
     // Insert late auth operations (provider setup) before BackendGenerator
     // if they haven't been inserted after storage already.
@@ -170,65 +179,6 @@ export async function prepareNew(logger: Logger, appId: string, envName: string,
 
   logger.info('Installing dependencies');
   await DependenciesInstaller.install();
-}
-
-/**
- * Builds FunctionDefinition[] from the Gen1 app's function category
- * for use by AuthGenerator (auth trigger access).
- */
-async function buildFunctionDefinitions(gen1App: Gen1App): Promise<FunctionDefinition[]> {
-  const functionCategory = await gen1App.fetchMetaCategory('function');
-  if (!functionCategory) return [];
-
-  const definitions: FunctionDefinition[] = [];
-  for (const [resourceName, resourceValue] of Object.entries(functionCategory)) {
-    const resourceMeta = resourceValue as Record<string, unknown>;
-    const output = resourceMeta.output as Record<string, string> | undefined;
-    const deployedName = output?.Name;
-    if (!deployedName) continue;
-
-    const config = await gen1App.aws.fetchFunctionConfig(deployedName);
-
-    // Parse auth access from the function's CloudFormation template
-    const authAccess = await readAuthAccessFromCloudBackend(gen1App, resourceName);
-
-    definitions.push({
-      resourceName,
-      name: deployedName,
-      category: 'function',
-      entry: config?.Handler ? extractFilePathFromHandler(config.Handler) : undefined,
-      timeoutSeconds: config?.Timeout,
-      memoryMB: config?.MemorySize,
-      runtime: config?.Runtime,
-      environment: config?.Environment,
-      authAccess,
-    });
-  }
-  return definitions;
-}
-
-/**
- * Reads a function's CloudFormation template from the cloud backend
- * and extracts Cognito auth access permissions.
- */
-async function readAuthAccessFromCloudBackend(gen1App: Gen1App, resourceName: string): Promise<AuthAccess | undefined> {
-  const templatePath = `function/${resourceName}/${resourceName}-cloudformation-template.json`;
-  const templateContent = await gen1App.readCloudBackendFile(templatePath);
-  if (!templateContent) return undefined;
-
-  const authAccess = parseAuthAccessFromTemplate(templateContent) as AuthAccess;
-  return Object.keys(authAccess).length > 0 ? authAccess : undefined;
-}
-
-/**
- * Extracts the file path from an AWS Lambda handler string.
- */
-function extractFilePathFromHandler(handler: string): string {
-  const lastDotIndex = handler.lastIndexOf('.');
-  if (lastDotIndex === -1) {
-    return `./${handler}.js`;
-  }
-  return `./${handler.substring(0, lastDotIndex)}.js`;
 }
 
 /**

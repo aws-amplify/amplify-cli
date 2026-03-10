@@ -17,18 +17,11 @@ export class StorageGenerator implements Generator {
   private readonly gen1App: Gen1App;
   private readonly backendGenerator: BackendGenerator;
   private readonly outputDir: string;
-  private readonly functionNamesAndCategories: Map<string, string>;
 
-  public constructor(
-    gen1App: Gen1App,
-    backendGenerator: BackendGenerator,
-    outputDir: string,
-    functionNamesAndCategories: Map<string, string>,
-  ) {
+  public constructor(gen1App: Gen1App, backendGenerator: BackendGenerator, outputDir: string) {
     this.gen1App = gen1App;
     this.backendGenerator = backendGenerator;
     this.outputDir = outputDir;
-    this.functionNamesAndCategories = functionNamesAndCategories;
   }
 
   /**
@@ -44,7 +37,7 @@ export class StorageGenerator implements Generator {
     const operations: AmplifyMigrationOperation[] = [];
 
     if (hasS3) {
-      const s3Gen = new S3Generator(this.gen1App, this.backendGenerator, this.outputDir, this.functionNamesAndCategories);
+      const s3Gen = new S3Generator(this.gen1App, this.backendGenerator, this.outputDir);
       operations.push(...(await s3Gen.plan()));
     }
 

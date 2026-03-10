@@ -1,7 +1,6 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import ts from 'typescript';
-import { Generator } from '../../generator';
 import { AmplifyMigrationOperation } from '../../../_operation';
 import { BackendGenerator } from '../backend.generator';
 import { Gen1App } from '../../input/gen1-app';
@@ -49,118 +48,126 @@ interface ResolvedFunction {
   readonly dynamoActions: string[];
   readonly graphqlApiPermissions: { readonly hasMutation: boolean; readonly hasQuery: boolean };
 }
+
 /**
- * Generates Lambda function resources and contributes to backend.ts.
+ * Grouped operations returned by a single FunctionGenerator.
  *
- * For each function in the Gen1 app:
+ * Callers collect these from multiple generators and flatten them
+ * in group order (all resourceOps, then all overridesOps, etc.)
+ * to preserve the backend.ts statement ordering that snapshot
+ * tests expect.
+ */
+export interface FunctionOperations {
+  readonly resourceOp: AmplifyMigrationOperation;
+  readonly overridesOp: AmplifyMigrationOperation;
+  readonly grantsOp: AmplifyMigrationOperation;
+  readonly triggerOp?: AmplifyMigrationOperation;
+}
+
+/**
+ * Generates Lambda function resources and contributes to backend.ts
+ * for a single Gen1 function.
+ *
  * 1. Fetches Lambda config via Gen1App.aws.fetchFunctionConfig()
  * 2. Fetches CloudWatch schedules via Gen1App.aws.fetchFunctionSchedule()
- * 3. Identifies trigger relationships (auth, storage, scheduled)
- * 4. Generates amplify/{category}/{name}/resource.ts with defineFunction()
- * 5. Copies Gen1 function source files
- * 6. Contributes function imports, name overrides, env var escape hatches to backend.ts
+ * 3. Generates amplify/{category}/{name}/resource.ts with defineFunction()
+ * 4. Copies Gen1 function source files
+ * 5. Contributes function imports, name overrides, env var escape hatches,
+ *    table grants, graphql grants, and dynamo triggers to backend.ts
  */
-export class FunctionsGenerator implements Generator {
+export class FunctionGenerator {
   private readonly gen1App: Gen1App;
   private readonly backendGenerator: BackendGenerator;
-  private readonly outputDir: string;
-  private readonly defineFunction: FunctionsRenderer;
-  private readonly functionNamesAndCategories: Map<string, string>;
   private readonly packageJsonGenerator: RootPackageJsonGenerator;
+  private readonly outputDir: string;
+  private readonly resourceName: string;
+  private readonly resourceMeta: Record<string, unknown>;
+  private readonly category: string;
+  private readonly renderer: FunctionsRenderer;
 
   public constructor(
     gen1App: Gen1App,
     backendGenerator: BackendGenerator,
-    outputDir: string,
-    functionNamesAndCategories: Map<string, string>,
     packageJsonGenerator: RootPackageJsonGenerator,
+    outputDir: string,
+    resourceName: string,
+    resourceMeta: Record<string, unknown>,
+    category: string,
   ) {
     this.gen1App = gen1App;
     this.backendGenerator = backendGenerator;
-    this.outputDir = outputDir;
-    this.defineFunction = new FunctionsRenderer();
-    this.functionNamesAndCategories = functionNamesAndCategories;
     this.packageJsonGenerator = packageJsonGenerator;
+    this.outputDir = outputDir;
+    this.resourceName = resourceName;
+    this.resourceMeta = resourceMeta;
+    this.category = category;
+    this.renderer = new FunctionsRenderer(gen1App.appId, gen1App.envName);
   }
 
   /**
-   * Plans the function generation operations.
+   * Resolves this function's config and returns grouped operations.
    */
-  public async plan(): Promise<AmplifyMigrationOperation[]> {
-    const functionCategory = await this.gen1App.fetchMetaCategory('function');
-    if (!functionCategory) {
-      return [];
-    }
+  public async plan(): Promise<FunctionOperations | undefined> {
+    const func = await this.resolve();
+    if (!func) return undefined;
 
-    const meta = await this.gen1App.fetchMeta();
-    const categoryMap = this.buildCategoryMap(meta);
-    const resolvedFunctions = await this.resolveFunctions(functionCategory, categoryMap);
+    await this.mergeFunctionDependencies(func);
 
-    if (resolvedFunctions.length === 0) {
-      return [];
-    }
+    const resourceOp = this.planResource(func);
+    const overridesOp = this.planOverrides(func);
+    const grantsOp = this.planGrants(func);
+    const triggerOp = await this.planTrigger(func);
 
-    // Populate the shared functionNamesAndCategories map
-    for (const func of resolvedFunctions) {
-      this.functionNamesAndCategories.set(func.resourceName, func.category);
-    }
-
-    // Merge function dependencies into root package.json
-    await this.mergeFunctionDependencies(resolvedFunctions);
-
-    const operations: AmplifyMigrationOperation[] = [];
-
-    for (const func of resolvedFunctions) {
-      operations.push(this.planFunction(func));
-    }
-
-    // Contribute function name overrides and env var escape hatches to backend.ts,
-    // interleaved per function (name override + env vars for each function).
-    operations.push({
-      describe: async () => ['Generate function name overrides and env var escape hatches in backend.ts'],
-      execute: async () => {
-        this.backendGenerator.ensureBranchName();
-        for (const func of resolvedFunctions) {
-          this.backendGenerator.addStatement(createFunctionNameOverride(func.resourceName));
-          if (Object.keys(func.filteredEnvironmentVariables).length > 0) {
-            const statements = generateLambdaEnvVars(func.resourceName, func.filteredEnvironmentVariables);
-            for (const stmt of statements) {
-              this.backendGenerator.addStatement(stmt);
-            }
-          }
-        }
-      },
-    });
-
-    // Contribute DynamoDB table grants and GraphQL API grants to backend.ts
-    operations.push({
-      describe: async () => ['Generate DynamoDB table grants and GraphQL API grants in backend.ts'],
-      execute: async () => {
-        for (const func of resolvedFunctions) {
-          this.contributeTableGrants(func);
-        }
-        this.contributeStorageTableGrants(resolvedFunctions);
-        for (const func of resolvedFunctions) {
-          this.contributeGraphqlApiGrants(func);
-        }
-      },
-    });
-
-    // Detect and contribute DynamoDB stream event sources
-    const dynamoTriggers = await this.detectDynamoTriggers(resolvedFunctions);
-    if (dynamoTriggers.length > 0) {
-      operations.push({
-        describe: async () => ['Generate DynamoDB stream event source mappings in backend.ts'],
-        execute: async () => {
-          this.contributeDynamoTriggers(dynamoTriggers);
-        },
-      });
-    }
-
-    return operations;
+    return { resourceOp, overridesOp, grantsOp, triggerOp };
   }
 
-  private planFunction(func: ResolvedFunction): AmplifyMigrationOperation {
+  /**
+   * Resolves this function's deployed config from AWS.
+   */
+  private async resolve(): Promise<ResolvedFunction | undefined> {
+    const output = this.resourceMeta.output as Record<string, string> | undefined;
+    const deployedName = output?.Name;
+    if (!deployedName) return undefined;
+
+    const config = await this.gen1App.aws.fetchFunctionConfig(deployedName);
+    if (!config) return undefined;
+
+    const runtime = config.Runtime;
+    if (runtime && !runtime.startsWith('nodejs')) {
+      throw new Error(`Function '${deployedName}' uses unsupported runtime '${runtime}'. Gen 2 migration only supports Node.js functions.`);
+    }
+
+    const schedule = await this.gen1App.aws.fetchFunctionSchedule(deployedName);
+    const entry = extractFilePathFromHandler(config.Handler ?? 'index.js');
+
+    // Filter environment variables that reference other Amplify resources
+    const envVars = { ...(config.Environment?.Variables ?? {}) };
+    const filteredEnvVars: Record<string, string> = {};
+    filterResourceEnvVars(envVars, filteredEnvVars);
+
+    // Extract DynamoDB actions and GraphQL API permissions from the function's CloudFormation template
+    const { dynamoActions, graphqlApiPermissions } = await this.extractCfnPermissions();
+
+    return {
+      resourceName: this.resourceName,
+      category: this.category,
+      entry,
+      deployedName,
+      timeoutSeconds: config.Timeout,
+      memoryMB: config.MemorySize,
+      runtime,
+      schedule,
+      environment: Object.keys(envVars).length > 0 ? envVars : undefined,
+      filteredEnvironmentVariables: filteredEnvVars,
+      dynamoActions,
+      graphqlApiPermissions,
+    };
+  }
+
+  /**
+   * Creates the resource.ts generation + source copy + backend.ts import operation.
+   */
+  private planResource(func: ResolvedFunction): AmplifyMigrationOperation {
     const dirPath = path.join(this.outputDir, 'amplify', func.category, func.resourceName);
 
     return {
@@ -177,7 +184,7 @@ export class FunctionsGenerator implements Generator {
           environment: func.environment,
         };
 
-        const nodes = this.defineFunction.render(renderOpts);
+        const nodes = this.renderer.render(renderOpts);
         const content = printNodes(nodes);
 
         await fs.mkdir(dirPath, { recursive: true });
@@ -195,102 +202,52 @@ export class FunctionsGenerator implements Generator {
     };
   }
 
-  private async resolveFunctions(functionCategory: Record<string, unknown>, categoryMap: Map<string, string>): Promise<ResolvedFunction[]> {
-    const resolved: ResolvedFunction[] = [];
-
-    for (const [resourceName, resourceValue] of Object.entries(functionCategory)) {
-      const resourceMeta = resourceValue as Record<string, unknown>;
-      const output = resourceMeta.output as Record<string, string> | undefined;
-      const deployedName = output?.Name;
-      if (!deployedName) continue;
-
-      const config = await this.gen1App.aws.fetchFunctionConfig(deployedName);
-      if (!config) continue;
-
-      const runtime = config.Runtime;
-      if (runtime && !runtime.startsWith('nodejs')) {
-        throw new Error(
-          `Function '${deployedName}' uses unsupported runtime '${runtime}'. Gen 2 migration only supports Node.js functions.`,
-        );
-      }
-
-      const schedule = await this.gen1App.aws.fetchFunctionSchedule(deployedName);
-      const category = categoryMap.get(resourceName) || 'function';
-      const entry = extractFilePathFromHandler(config.Handler ?? 'index.js');
-
-      // Filter environment variables that reference other Amplify resources
-      const envVars = { ...(config.Environment?.Variables ?? {}) };
-      const filteredEnvVars: Record<string, string> = {};
-      filterResourceEnvVars(envVars, filteredEnvVars);
-
-      // Extract DynamoDB actions and GraphQL API permissions from the function's CloudFormation template
-      const { dynamoActions, graphqlApiPermissions } = await this.extractCfnPermissions(resourceName);
-
-      resolved.push({
-        resourceName,
-        category,
-        entry,
-        deployedName,
-        timeoutSeconds: config.Timeout,
-        memoryMB: config.MemorySize,
-        runtime,
-        schedule,
-        environment: Object.keys(envVars).length > 0 ? envVars : undefined,
-        filteredEnvironmentVariables: filteredEnvVars,
-        dynamoActions,
-        graphqlApiPermissions,
-      });
-    }
-
-    return resolved;
+  /**
+   * Creates the name override + env var escape hatch operation.
+   */
+  private planOverrides(func: ResolvedFunction): AmplifyMigrationOperation {
+    return {
+      describe: async () => [`Generate function name override and env var escape hatches for ${func.resourceName}`],
+      execute: async () => {
+        this.backendGenerator.ensureBranchName();
+        this.backendGenerator.addStatement(createFunctionNameOverride(func.resourceName));
+        if (Object.keys(func.filteredEnvironmentVariables).length > 0) {
+          const statements = generateLambdaEnvVars(func.resourceName, func.filteredEnvironmentVariables);
+          for (const stmt of statements) {
+            this.backendGenerator.addStatement(stmt);
+          }
+        }
+      },
+    };
   }
 
-  private buildCategoryMap(meta: Record<string, unknown>): Map<string, string> {
-    const categoryMap = new Map<string, string>();
-    const auth = meta.auth as Record<string, Record<string, unknown>> | undefined;
-    const storage = meta.storage as Record<string, Record<string, unknown>> | undefined;
-    const functions = meta.function as Record<string, Record<string, unknown>> | undefined;
+  /**
+   * Creates the table grants + graphql grants operation.
+   */
+  private planGrants(func: ResolvedFunction): AmplifyMigrationOperation {
+    return {
+      describe: async () => [`Generate DynamoDB table grants and GraphQL API grants for ${func.resourceName}`],
+      execute: async () => {
+        this.contributeTableGrants(func);
+        this.contributeStorageTableGrants(func);
+        this.contributeGraphqlApiGrants(func);
+      },
+    };
+  }
 
-    // Auth triggers (auth depends on function)
-    if (auth) {
-      for (const authResource of Object.values(auth)) {
-        if (authResource.dependsOn) {
-          for (const dep of authResource.dependsOn as Array<{ category: string; resourceName: string }>) {
-            if (dep.category === 'function') {
-              categoryMap.set(dep.resourceName, 'auth');
-            }
-          }
-        }
-      }
-    }
+  /**
+   * Creates the DynamoDB trigger operation if this function has triggers.
+   */
+  private async planTrigger(func: ResolvedFunction): Promise<AmplifyMigrationOperation | undefined> {
+    const models = await this.detectDynamoTriggerModels(func);
+    if (models.length === 0) return undefined;
 
-    // Storage triggers (storage depends on function)
-    if (storage) {
-      for (const storageResource of Object.values(storage)) {
-        if (storageResource.dependsOn) {
-          for (const dep of storageResource.dependsOn as Array<{ category: string; resourceName: string }>) {
-            if (dep.category === 'function') {
-              categoryMap.set(dep.resourceName, 'storage');
-            }
-          }
-        }
-      }
-    }
-
-    // DynamoDB stream triggers (function depends on storage)
-    if (functions) {
-      for (const [funcName, funcResource] of Object.entries(functions)) {
-        if (funcResource.dependsOn) {
-          for (const dep of funcResource.dependsOn as Array<{ category: string; resourceName: string }>) {
-            if (dep.category === 'storage') {
-              categoryMap.set(funcName, 'storage');
-            }
-          }
-        }
-      }
-    }
-
-    return categoryMap;
+    return {
+      describe: async () => [`Generate DynamoDB stream event source mappings for ${func.resourceName}`],
+      execute: async () => {
+        this.contributeDynamoTrigger(func.resourceName, models);
+      },
+    };
   }
 
   private async copyFunctionSource(resourceName: string, destDir: string): Promise<void> {
@@ -316,37 +273,31 @@ export class FunctionsGenerator implements Generator {
   }
 
   /**
-   * Reads each function's package.json and merges dependencies into the root package.json.
+   * Reads this function's package.json and merges dependencies into the root package.json.
    */
-  private async mergeFunctionDependencies(resolvedFunctions: ResolvedFunction[]): Promise<void> {
-    for (const func of resolvedFunctions) {
-      const packageJsonPath = path.join('amplify', 'backend', 'function', func.resourceName, 'src', 'package.json');
-      try {
-        const content = await fs.readFile(packageJsonPath, 'utf-8');
-        const pkg = JSON.parse(content);
-        if (pkg.dependencies) {
-          for (const [name, version] of Object.entries(pkg.dependencies)) {
-            this.packageJsonGenerator.addDependency(name, version as string);
-          }
+  private async mergeFunctionDependencies(func: ResolvedFunction): Promise<void> {
+    const packageJsonPath = path.join('amplify', 'backend', 'function', func.resourceName, 'src', 'package.json');
+    try {
+      const content = await fs.readFile(packageJsonPath, 'utf-8');
+      const pkg = JSON.parse(content);
+      if (pkg.dependencies) {
+        for (const [name, version] of Object.entries(pkg.dependencies)) {
+          this.packageJsonGenerator.addDependency(name, version as string);
         }
-        if (pkg.devDependencies) {
-          for (const [name, version] of Object.entries(pkg.devDependencies)) {
-            this.packageJsonGenerator.addDevDependency(name, version as string);
-          }
-        }
-      } catch {
-        // No package.json for this function
       }
+      if (pkg.devDependencies) {
+        for (const [name, version] of Object.entries(pkg.devDependencies)) {
+          this.packageJsonGenerator.addDevDependency(name, version as string);
+        }
+      }
+    } catch {
+      // No package.json for this function
     }
   }
 
   /**
-   * Generates DynamoDB table grant statements for functions that access
-   * AppSync-managed tables (detected via API_*TABLE_* env vars).
-   */
-  /**
-   * Generates DynamoDB table grant statements for functions that access
-   * AppSync-managed tables (detected via API_*TABLE_* env vars).
+   * Generates DynamoDB table grant statements for this function
+   * accessing AppSync-managed tables (detected via API_*TABLE_* env vars).
    */
   private contributeTableGrants(func: ResolvedFunction): void {
     if (func.dynamoActions.length === 0) return;
@@ -395,8 +346,8 @@ export class FunctionsGenerator implements Generator {
   }
 
   /**
-   * Generates GraphQL API grant statements for functions that have
-   * AppSync mutation or query permissions.
+   * Generates GraphQL API grant statements for this function when it
+   * has AppSync mutation or query permissions.
    */
   private contributeGraphqlApiGrants(func: ResolvedFunction): void {
     const { hasMutation, hasQuery } = func.graphqlApiPermissions;
@@ -447,10 +398,11 @@ export class FunctionsGenerator implements Generator {
    * Reads the function's CloudFormation template from the cloud backend
    * and extracts DynamoDB IAM actions and GraphQL API permissions.
    */
-  private async extractCfnPermissions(
-    resourceName: string,
-  ): Promise<{ dynamoActions: string[]; graphqlApiPermissions: { hasMutation: boolean; hasQuery: boolean } }> {
-    const templatePath = `function/${resourceName}/${resourceName}-cloudformation-template.json`;
+  private async extractCfnPermissions(): Promise<{
+    dynamoActions: string[];
+    graphqlApiPermissions: { hasMutation: boolean; hasQuery: boolean };
+  }> {
+    const templatePath = `function/${this.resourceName}/${this.resourceName}-cloudformation-template.json`;
     const content = await this.gen1App.readCloudBackendFile(templatePath);
     if (!content) return { dynamoActions: [], graphqlApiPermissions: { hasMutation: false, hasQuery: false } };
 
@@ -490,217 +442,183 @@ export class FunctionsGenerator implements Generator {
   }
 
   /**
-   * Generates grant statements for functions that access standalone
-   * DynamoDB tables (STORAGE_ env vars). Uses the CDK construct
-   * variable name (e.g. `activity`) rather than backend.data.resources.
+   * Generates grant statements for this function accessing standalone
+   * DynamoDB tables (STORAGE_ env vars).
    */
-  private contributeStorageTableGrants(resolvedFunctions: ResolvedFunction[]): void {
-    // Group functions by storage table, merging their DynamoDB actions
-    const tableGrants = new Map<string, Map<string, string[]>>();
+  private contributeStorageTableGrants(func: ResolvedFunction): void {
+    if (func.dynamoActions.length === 0) return;
 
-    for (const func of resolvedFunctions) {
-      if (func.dynamoActions.length === 0) continue;
+    const storageEnvVars = Object.keys(func.filteredEnvironmentVariables).filter(
+      (key) => key.startsWith('STORAGE_') && !key.endsWith('BUCKETNAME'),
+    );
+    if (storageEnvVars.length === 0) return;
 
-      const storageEnvVars = Object.keys(func.filteredEnvironmentVariables).filter(
-        (key) => key.startsWith('STORAGE_') && !key.endsWith('BUCKETNAME'),
-      );
-      if (storageEnvVars.length === 0) continue;
-
-      // Extract the table variable name from STORAGE_ env vars
-      const tableNames = new Set<string>();
-      for (const envVar of storageEnvVars) {
-        const match = envVar.match(/STORAGE_(.+?)_(ARN|NAME|STREAMARN)$/);
-        if (match) {
-          tableNames.add(match[1].toLowerCase());
-        }
-      }
-
-      for (const tableName of tableNames) {
-        if (!tableGrants.has(tableName)) {
-          tableGrants.set(tableName, new Map());
-        }
-        const funcMap = tableGrants.get(tableName)!;
-        const existing = funcMap.get(func.resourceName) ?? [];
-        const merged = [...new Set([...existing, ...func.dynamoActions])];
-        funcMap.set(func.resourceName, merged);
+    // Extract the table variable name from STORAGE_ env vars
+    const tableNames = new Set<string>();
+    for (const envVar of storageEnvVars) {
+      const match = envVar.match(/STORAGE_(.+?)_(ARN|NAME|STREAMARN)$/);
+      if (match) {
+        tableNames.add(match[1].toLowerCase());
       }
     }
 
-    for (const [tableName, funcMap] of tableGrants) {
-      for (const [funcName, actions] of funcMap) {
-        const grantCall = factory.createExpressionStatement(
-          factory.createCallExpression(
-            factory.createPropertyAccessExpression(factory.createIdentifier(tableName), factory.createIdentifier('grant')),
-            undefined,
-            [
+    for (const tableName of tableNames) {
+      const grantCall = factory.createExpressionStatement(
+        factory.createCallExpression(
+          factory.createPropertyAccessExpression(factory.createIdentifier(tableName), factory.createIdentifier('grant')),
+          undefined,
+          [
+            factory.createPropertyAccessExpression(
               factory.createPropertyAccessExpression(
-                factory.createPropertyAccessExpression(
-                  factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier(funcName)),
-                  factory.createIdentifier('resources'),
-                ),
-                factory.createIdentifier('lambda'),
+                factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier(func.resourceName)),
+                factory.createIdentifier('resources'),
               ),
-              ...actions.map((action) => factory.createStringLiteral(action)),
-            ],
-          ),
-        );
-        this.backendGenerator.addStatement(grantCall);
-      }
+              factory.createIdentifier('lambda'),
+            ),
+            ...func.dynamoActions.map((action) => factory.createStringLiteral(action)),
+          ],
+        ),
+      );
+      this.backendGenerator.addStatement(grantCall);
     }
   }
 
   /**
-   * Detects functions that have DynamoDB stream triggers by reading
-   * their CloudFormation templates for EventSourceMapping resources.
+   * Detects DynamoDB stream trigger models for this function by reading
+   * its CloudFormation template for EventSourceMapping resources.
    */
-  private async detectDynamoTriggers(
-    resolvedFunctions: ResolvedFunction[],
-  ): Promise<Array<{ readonly functionName: string; readonly models: string[] }>> {
-    const triggers: Array<{ readonly functionName: string; readonly models: string[] }> = [];
+  private async detectDynamoTriggerModels(func: ResolvedFunction): Promise<string[]> {
+    const templatePath = `function/${func.resourceName}/${func.resourceName}-cloudformation-template.json`;
+    const templateContent = await this.gen1App.readCloudBackendFile(templatePath);
+    if (!templateContent) return [];
 
-    for (const func of resolvedFunctions) {
-      const templatePath = `function/${func.resourceName}/${func.resourceName}-cloudformation-template.json`;
-      const templateContent = await this.gen1App.readCloudBackendFile(templatePath);
-      if (!templateContent) continue;
+    const template = JSON.parse(templateContent);
+    const models: string[] = [];
 
-      const template = JSON.parse(templateContent);
-      const models: string[] = [];
+    for (const resource of Object.values(template.Resources ?? {})) {
+      const res = resource as Record<string, unknown>;
+      if (res.Type !== 'AWS::Lambda::EventSourceMapping') continue;
 
-      for (const resource of Object.values(template.Resources ?? {})) {
-        const res = resource as Record<string, unknown>;
-        if (res.Type !== 'AWS::Lambda::EventSourceMapping') continue;
+      const props = res.Properties as Record<string, unknown> | undefined;
+      const eventSourceArn = props?.EventSourceArn as Record<string, unknown> | undefined;
+      const fnImportValue = eventSourceArn?.['Fn::ImportValue'] as Record<string, string> | undefined;
+      const fnSub = fnImportValue?.['Fn::Sub'];
+      if (!fnSub) continue;
 
-        const props = res.Properties as Record<string, unknown> | undefined;
-        const eventSourceArn = props?.EventSourceArn as Record<string, unknown> | undefined;
-        const fnImportValue = eventSourceArn?.['Fn::ImportValue'] as Record<string, string> | undefined;
-        const fnSub = fnImportValue?.['Fn::Sub'];
-        if (!fnSub) continue;
-
-        const match = fnSub.match(/:GetAtt:(\w+)Table:StreamArn/);
-        if (match) {
-          models.push(match[1]);
-        }
-      }
-
-      if (models.length > 0) {
-        triggers.push({ functionName: func.resourceName, models });
+      const match = fnSub.match(/:GetAtt:(\w+)Table:StreamArn/);
+      if (match) {
+        models.push(match[1]);
       }
     }
 
-    return triggers;
+    return models;
   }
 
   /**
-   * Generates DynamoDB stream event source code: a for-of loop that
-   * adds DynamoEventSource to each triggered model's table.
+   * Generates DynamoDB stream event source code for this function.
    */
-  private contributeDynamoTriggers(triggers: ReadonlyArray<{ readonly functionName: string; readonly models: string[] }>): void {
+  private contributeDynamoTrigger(functionName: string, models: string[]): void {
     this.backendGenerator.addImport('aws-cdk-lib/aws-lambda-event-sources', ['DynamoEventSource']);
     this.backendGenerator.addImport('aws-cdk-lib/aws-lambda', ['StartingPosition']);
 
-    for (const trigger of triggers) {
-      const forStatement = factory.createForOfStatement(
-        undefined,
-        factory.createVariableDeclarationList(
-          [factory.createVariableDeclaration('model', undefined, undefined, undefined)],
-          ts.NodeFlags.Const,
-        ),
-        factory.createArrayLiteralExpression(trigger.models.map((model) => factory.createStringLiteral(model))),
-        factory.createBlock(
-          [
-            // const table = backend.data.resources.tables[model];
-            factory.createVariableStatement(
-              [],
-              factory.createVariableDeclarationList(
-                [
-                  factory.createVariableDeclaration(
-                    'table',
-                    undefined,
-                    undefined,
-                    factory.createElementAccessExpression(
-                      factory.createPropertyAccessExpression(
-                        factory.createIdentifier('backend.data.resources'),
-                        factory.createIdentifier('tables'),
-                      ),
-                      factory.createIdentifier('model'),
-                    ),
-                  ),
-                ],
-                ts.NodeFlags.Const,
-              ),
-            ),
-            // backend.functionName.resources.lambda.addEventSource(new DynamoEventSource(table, { startingPosition: StartingPosition.LATEST }))
-            factory.createExpressionStatement(
-              factory.createCallExpression(
-                factory.createPropertyAccessExpression(
-                  factory.createPropertyAccessExpression(
-                    factory.createIdentifier(`backend.${trigger.functionName}.resources`),
-                    factory.createIdentifier('lambda'),
-                  ),
-                  factory.createIdentifier('addEventSource'),
-                ),
-                undefined,
-                [
-                  factory.createNewExpression(factory.createIdentifier('DynamoEventSource'), undefined, [
-                    factory.createIdentifier('table'),
-                    factory.createObjectLiteralExpression([
-                      factory.createPropertyAssignment(
-                        'startingPosition',
-                        factory.createPropertyAccessExpression(
-                          factory.createIdentifier('StartingPosition'),
-                          factory.createIdentifier('LATEST'),
-                        ),
-                      ),
-                    ]),
-                  ]),
-                ],
-              ),
-            ),
-            // table.grantStreamRead(backend.functionName.resources.lambda.role!)
-            factory.createExpressionStatement(
-              factory.createCallExpression(
-                factory.createPropertyAccessExpression(factory.createIdentifier('table'), factory.createIdentifier('grantStreamRead')),
-                undefined,
-                [
-                  factory.createNonNullExpression(
+    const forStatement = factory.createForOfStatement(
+      undefined,
+      factory.createVariableDeclarationList(
+        [factory.createVariableDeclaration('model', undefined, undefined, undefined)],
+        ts.NodeFlags.Const,
+      ),
+      factory.createArrayLiteralExpression(models.map((model) => factory.createStringLiteral(model))),
+      factory.createBlock(
+        [
+          // const table = backend.data.resources.tables[model];
+          factory.createVariableStatement(
+            [],
+            factory.createVariableDeclarationList(
+              [
+                factory.createVariableDeclaration(
+                  'table',
+                  undefined,
+                  undefined,
+                  factory.createElementAccessExpression(
                     factory.createPropertyAccessExpression(
-                      factory.createIdentifier(`backend.${trigger.functionName}.resources.lambda`),
-                      factory.createIdentifier('role'),
+                      factory.createIdentifier('backend.data.resources'),
+                      factory.createIdentifier('tables'),
                     ),
+                    factory.createIdentifier('model'),
                   ),
-                ],
-              ),
+                ),
+              ],
+              ts.NodeFlags.Const,
             ),
-            // table.grantTableListStreams(backend.functionName.resources.lambda.role!)
-            factory.createExpressionStatement(
-              factory.createCallExpression(
+          ),
+          // backend.functionName.resources.lambda.addEventSource(...)
+          factory.createExpressionStatement(
+            factory.createCallExpression(
+              factory.createPropertyAccessExpression(
                 factory.createPropertyAccessExpression(
+                  factory.createIdentifier(`backend.${functionName}.resources`),
+                  factory.createIdentifier('lambda'),
+                ),
+                factory.createIdentifier('addEventSource'),
+              ),
+              undefined,
+              [
+                factory.createNewExpression(factory.createIdentifier('DynamoEventSource'), undefined, [
                   factory.createIdentifier('table'),
-                  factory.createIdentifier('grantTableListStreams'),
-                ),
-                undefined,
-                [
-                  factory.createNonNullExpression(
-                    factory.createPropertyAccessExpression(
-                      factory.createIdentifier(`backend.${trigger.functionName}.resources.lambda`),
-                      factory.createIdentifier('role'),
+                  factory.createObjectLiteralExpression([
+                    factory.createPropertyAssignment(
+                      'startingPosition',
+                      factory.createPropertyAccessExpression(
+                        factory.createIdentifier('StartingPosition'),
+                        factory.createIdentifier('LATEST'),
+                      ),
                     ),
-                  ),
-                ],
-              ),
+                  ]),
+                ]),
+              ],
             ),
-          ],
-          true,
-        ),
-      );
-      this.backendGenerator.addStatement(forStatement);
-    }
+          ),
+          // table.grantStreamRead(backend.functionName.resources.lambda.role!)
+          factory.createExpressionStatement(
+            factory.createCallExpression(
+              factory.createPropertyAccessExpression(factory.createIdentifier('table'), factory.createIdentifier('grantStreamRead')),
+              undefined,
+              [
+                factory.createNonNullExpression(
+                  factory.createPropertyAccessExpression(
+                    factory.createIdentifier(`backend.${functionName}.resources.lambda`),
+                    factory.createIdentifier('role'),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // table.grantTableListStreams(backend.functionName.resources.lambda.role!)
+          factory.createExpressionStatement(
+            factory.createCallExpression(
+              factory.createPropertyAccessExpression(factory.createIdentifier('table'), factory.createIdentifier('grantTableListStreams')),
+              undefined,
+              [
+                factory.createNonNullExpression(
+                  factory.createPropertyAccessExpression(
+                    factory.createIdentifier(`backend.${functionName}.resources.lambda`),
+                    factory.createIdentifier('role'),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+        true,
+      ),
+    );
+    this.backendGenerator.addStatement(forStatement);
   }
 }
 
 /**
  * Extracts the file path from an AWS Lambda handler string.
- * 'index.handler' → './index.js', 'src/handler.myFunction' → './src/handler.js'
+ * 'index.handler' -> './index.js', 'src/handler.myFunction' -> './src/handler.js'
  */
 function extractFilePathFromHandler(handler: string): string {
   const lastDotIndex = handler.lastIndexOf('.');
@@ -715,7 +633,7 @@ function extractFilePathFromHandler(handler: string): string {
  * Moves them from envVars to filteredEnvVars.
  *
  * Iterates by suffix first, then by env var, so the insertion order in
- * filteredEnvVars follows the suffix order — matching the old code's
+ * filteredEnvVars follows the suffix order -- matching the old code's
  * behavior and the expected snapshot output.
  */
 function filterResourceEnvVars(envVars: Record<string, string>, filteredEnvVars: Record<string, string>): void {

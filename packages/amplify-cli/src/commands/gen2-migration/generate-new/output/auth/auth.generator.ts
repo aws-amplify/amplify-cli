@@ -22,6 +22,7 @@ import { printNodes } from '../../ts-writer';
 import {
   Attribute,
   AttributeMappingRule,
+  AuthAccess,
   AuthDefinition,
   AuthRenderer,
   AuthTriggerEvents,
@@ -42,6 +43,8 @@ import {
   StandardAttributes,
 } from './auth.renderer';
 
+import { parseAuthAccessFromTemplate } from '../../input/auth-access-analyzer';
+
 const factory = ts.factory;
 
 /**
@@ -57,14 +60,12 @@ export class AuthGenerator implements Generator {
   private readonly gen1App: Gen1App;
   private readonly backendGenerator: BackendGenerator;
   private readonly outputDir: string;
-  private readonly functions: FunctionDefinition[] | undefined;
   private readonly defineAuth: AuthRenderer;
 
-  public constructor(gen1App: Gen1App, backendGenerator: BackendGenerator, outputDir: string, functions?: FunctionDefinition[]) {
+  public constructor(gen1App: Gen1App, backendGenerator: BackendGenerator, outputDir: string) {
     this.gen1App = gen1App;
     this.backendGenerator = backendGenerator;
     this.outputDir = outputDir;
-    this.functions = functions;
     this.defineAuth = new AuthRenderer();
   }
 
@@ -82,6 +83,9 @@ export class AuthGenerator implements Generator {
     if (referenceAuth) {
       return this.planReferenceAuth(referenceAuth);
     }
+
+    // Build function definitions for auth trigger access
+    const functions = await this.buildFunctionDefinitions();
 
     // Standard auth: fetch all Cognito resources
     const resources = await this.gen1App.fetchResourcesByLogicalId();
@@ -121,7 +125,7 @@ export class AuthGenerator implements Generator {
       userPoolClient,
     });
 
-    return this.planStandardAuth(authDefinition);
+    return this.planStandardAuth(authDefinition, functions);
   }
 
   private planReferenceAuth(authDefinition: AuthDefinition): AmplifyMigrationOperation[] {
@@ -133,7 +137,7 @@ export class AuthGenerator implements Generator {
         execute: async () => {
           const nodes = this.defineAuth.render({
             definition: authDefinition,
-            functions: this.functions,
+            functions: undefined,
             functionCategories: new Map(),
           });
           const content = printNodes(nodes);
@@ -147,16 +151,14 @@ export class AuthGenerator implements Generator {
     ];
   }
 
-  private planStandardAuth(authDefinition: AuthDefinition): AmplifyMigrationOperation[] {
+  private planStandardAuth(authDefinition: AuthDefinition, functions: FunctionDefinition[]): AmplifyMigrationOperation[] {
     const authDir = path.join(this.outputDir, 'amplify', 'auth');
 
     // Build function category map for correct import paths in resource.ts
     const functionCategories = new Map<string, string>();
-    if (this.functions) {
-      for (const func of this.functions) {
-        if (func.resourceName && func.category) {
-          functionCategories.set(func.resourceName, func.category);
-        }
+    for (const func of functions) {
+      if (func.resourceName && func.category) {
+        functionCategories.set(func.resourceName, func.category);
       }
     }
 
@@ -166,7 +168,7 @@ export class AuthGenerator implements Generator {
         execute: async () => {
           const nodes = this.defineAuth.render({
             definition: authDefinition,
-            functions: this.functions,
+            functions,
             functionCategories,
           });
           let content = printNodes(nodes);
@@ -683,6 +685,66 @@ export class AuthGenerator implements Generator {
       },
     };
   }
+
+  /**
+   * Builds FunctionDefinition[] from the Gen1 app's function category
+   * for use by the auth renderer (auth trigger access).
+   */
+  private async buildFunctionDefinitions(): Promise<FunctionDefinition[]> {
+    const functionCategory = await this.gen1App.fetchMetaCategory('function');
+    if (!functionCategory) return [];
+
+    const definitions: FunctionDefinition[] = [];
+    for (const [resourceName, resourceValue] of Object.entries(functionCategory)) {
+      const resourceMeta = resourceValue as Record<string, unknown>;
+      const output = resourceMeta.output as Record<string, string> | undefined;
+      const deployedName = output?.Name;
+      if (!deployedName) continue;
+
+      const config = await this.gen1App.aws.fetchFunctionConfig(deployedName);
+
+      // Parse auth access from the function's CloudFormation template
+      const authAccess = await this.readAuthAccessFromCloudBackend(resourceName);
+
+      definitions.push({
+        resourceName,
+        name: deployedName,
+        category: 'function',
+        entry: config?.Handler ? extractFilePathFromHandler(config.Handler) : undefined,
+        timeoutSeconds: config?.Timeout,
+        memoryMB: config?.MemorySize,
+        runtime: config?.Runtime,
+        environment: config?.Environment,
+        authAccess,
+      });
+    }
+    return definitions;
+  }
+
+  /**
+   * Reads a function's CloudFormation template from the cloud backend
+   * and extracts Cognito auth access permissions.
+   */
+  private async readAuthAccessFromCloudBackend(resourceName: string): Promise<AuthAccess | undefined> {
+    const templatePath = `function/${resourceName}/${resourceName}-cloudformation-template.json`;
+    const templateContent = await this.gen1App.readCloudBackendFile(templatePath);
+    if (!templateContent) return undefined;
+
+    const authAccess = parseAuthAccessFromTemplate(templateContent) as AuthAccess;
+    return Object.keys(authAccess).length > 0 ? authAccess : undefined;
+  }
+}
+
+/**
+ * Extracts the file path from an AWS Lambda handler string.
+ * 'index.handler' → './index.js', 'src/handler.myFunction' → './src/handler.js'
+ */
+function extractFilePathFromHandler(handler: string): string {
+  const lastDotIndex = handler.lastIndexOf('.');
+  if (lastDotIndex === -1) {
+    return `./${handler}.js`;
+  }
+  return `./${handler.substring(0, lastDotIndex)}.js`;
 }
 
 // ── Auth adapter functions ─────────────────────────────────────────
