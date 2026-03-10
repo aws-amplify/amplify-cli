@@ -8,12 +8,10 @@ import { CloudFormationClient, DescribeStackResourcesCommand, DescribeStacksComm
 /**
  * Definition for Kinesis Analytics resource from Gen1 amplify-meta.json.
  */
-export interface KinesisAnalyticsDefinition {
-  /**
-   * Resource name — set by the analytics generator from the meta key.
-   */
-  name?: string;
-
+/**
+ * Raw Kinesis analytics entry from Gen1 amplify-meta.json (no name field).
+ */
+export interface KinesisAnalyticsMetaEntry {
   /**
    * Service type — Kinesis or Pinpoint.
    */
@@ -26,6 +24,16 @@ export interface KinesisAnalyticsDefinition {
     readonly s3TemplateURL: string;
     readonly logicalId: string;
   };
+}
+
+/**
+ * Resolved Kinesis analytics definition with name from the meta key.
+ */
+export interface KinesisAnalyticsDefinition extends KinesisAnalyticsMetaEntry {
+  /**
+   * Resource name from the amplify-meta.json key.
+   */
+  readonly name: string;
 }
 
 /**
@@ -93,7 +101,7 @@ export class KinesisCfnConverter {
    * parameters, runs cdk-from-cfn, and writes the generated construct file.
    */
   public async generateKinesisAnalyticsL1Code(definition: KinesisAnalyticsDefinition): Promise<AnalyticsCodegenResult> {
-    const resourceName = definition.name ?? 'kinesis';
+    const resourceName = definition.name;
     const constructFileName = `${resourceName}-construct`;
     const filePath = path.join(this.dir, 'amplify', 'analytics', `${constructFileName}.ts`);
     const templateS3Url = definition.providerMetadata.s3TemplateURL;

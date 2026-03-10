@@ -464,8 +464,21 @@ function getAuthDefinition({
     identityProviders.forEach((provider) => {
       const loginWithProperty = MAP_IDENTITY_PROVIDER[provider?.ProviderType as keyof typeof MAP_IDENTITY_PROVIDER];
       if (loginWithProperty !== undefined) {
-        const loginProperty = loginWithProperty[0];
-        (loginWith[loginProperty as keyof LoginOptions] as boolean) = true;
+        const loginProperty = loginWithProperty[0] as keyof LoginOptions;
+        switch (loginProperty) {
+          case 'googleLogin':
+            loginWith.googleLogin = true;
+            break;
+          case 'amazonLogin':
+            loginWith.amazonLogin = true;
+            break;
+          case 'appleLogin':
+            loginWith.appleLogin = true;
+            break;
+          case 'facebookLogin':
+            loginWith.facebookLogin = true;
+            break;
+        }
       }
     });
   }
@@ -505,27 +518,44 @@ function getAuthDefinition({
         if (AttributeMapping) samlOptions.attributeMapping = filterAttributeMapping(AttributeMapping) as AttributeMappingRule;
       } else {
         if (AttributeMapping) {
-          const attributeOption = MAP_IDENTITY_PROVIDER[provider?.ProviderType as keyof typeof MAP_IDENTITY_PROVIDER][1];
-          loginWith[attributeOption] = filterAttributeMapping(AttributeMapping);
+          const filteredMapping = filterAttributeMapping(AttributeMapping) as AttributeMappingRule;
+          const attributeProperty = MAP_IDENTITY_PROVIDER[provider?.ProviderType as keyof typeof MAP_IDENTITY_PROVIDER]?.[1];
+          switch (attributeProperty) {
+            case 'googleAttributes':
+              loginWith.googleAttributes = filteredMapping;
+              break;
+            case 'amazonAttributes':
+              loginWith.amazonAttributes = filteredMapping;
+              break;
+            case 'appleAttributes':
+              loginWith.appleAttributes = filteredMapping;
+              break;
+            case 'facebookAttributes':
+              loginWith.facebookAttributes = filteredMapping;
+              break;
+          }
         }
 
         if (ProviderDetails) {
           const providerScopes = getProviderSpecificScopes(ProviderDetails);
           if (providerScopes.length > 0) {
-            const scopePropertyMap: Record<string, string> = {
-              [IdentityProviderTypeType.Google]: 'googleScopes',
-              [IdentityProviderTypeType.Facebook]: 'facebookScopes',
-              [IdentityProviderTypeType.LoginWithAmazon]: 'amazonScopes',
-              [IdentityProviderTypeType.SignInWithApple]: 'appleScopes',
-            };
+            const mappedScopes = providerScopes
+              .map((scope) => (scope === 'public_profile' ? 'profile' : scope))
+              .filter((scope) => ['phone', 'email', 'openid', 'profile', 'aws.cognito.signin.user.admin'].includes(scope));
 
-            const scopeProperty = scopePropertyMap[ProviderType as keyof typeof scopePropertyMap];
-            if (scopeProperty) {
-              const mappedScopes = providerScopes
-                .map((scope) => (scope === 'public_profile' ? 'profile' : scope))
-                .filter((scope) => ['phone', 'email', 'openid', 'profile', 'aws.cognito.signin.user.admin'].includes(scope));
-
-              loginWith[scopeProperty] = mappedScopes;
+            switch (ProviderType) {
+              case IdentityProviderTypeType.Google:
+                loginWith.googleScopes = mappedScopes;
+                break;
+              case IdentityProviderTypeType.Facebook:
+                loginWith.facebookScopes = mappedScopes;
+                break;
+              case IdentityProviderTypeType.LoginWithAmazon:
+                loginWith.amazonScopes = mappedScopes;
+                break;
+              case IdentityProviderTypeType.SignInWithApple:
+                loginWith.appleScopes = mappedScopes;
+                break;
             }
           }
         }

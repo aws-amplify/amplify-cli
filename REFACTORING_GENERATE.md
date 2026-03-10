@@ -318,7 +318,7 @@ One category at a time, create the new generator in `generate-new/` (e.g., `auth
 Same as Phase 1 — the old tests must still pass. No new tests yet since the new code is not wired in.
 
 **Phase 3 — Switch over**
-Once all generators are complete in `generate-new/`, update `generate.ts` (the `AmplifyMigrationGenerateStep` entry point) to use the new generator infrastructure instead of the old `prepare()` function. All existing tests must pass against the new code paths, including the e2e snapshot tests. Iterate until green.
+Once all generators are complete in `generate-new/`, update `generate.ts` (the `AmplifyMigrationGenerateStep` entry point) to use the new generator infrastructure instead of the old `prepare()` function. Use `command-handlers.test.ts` (the snapshot tests) as the sole validation mechanism — these tests exercise the full generate pipeline end-to-end and compare output against known-good snapshots. Don't run or worry about the other unit tests in this phase; they test the old code's internal classes which are being replaced. Iterate until the snapshot tests are green.
 
 **Phase 4 — Cleanup**
 Once all tests pass, delete the old `generate/` directory and rename `generate-new/` to `generate/`. Write unit tests for the new classes that cover the same ground as the old tests — don't port them mechanically, but ensure equivalent coverage. Delete the old tests along with the old code.

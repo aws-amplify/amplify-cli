@@ -24,6 +24,7 @@ import {
 import { DescribeStackResourcesCommand, StackResource } from '@aws-sdk/client-cloudformation';
 import { GetGraphqlApiCommand, GraphqlApi } from '@aws-sdk/client-appsync';
 import { DescribeTableCommand, TableDescription } from '@aws-sdk/client-dynamodb';
+import { GetAppCommand } from '@aws-sdk/client-amplify';
 import { AwsClients } from './aws-clients';
 
 /**
@@ -355,5 +356,15 @@ export class AwsFetcher {
       }
       return acc;
     }, {});
+  }
+
+  // ── Amplify App ────────────────────────────────────────────────
+
+  /**
+   * Fetches the buildspec for an Amplify app.
+   */
+  public async fetchAppBuildSpec(appId: string): Promise<string | undefined> {
+    const { app } = await this.clients.amplify.send(new GetAppCommand({ appId }));
+    return app?.buildSpec;
   }
 }

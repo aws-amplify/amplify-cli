@@ -7,7 +7,7 @@ import { BackendGenerator } from '../backend.generator';
 import { Gen1App } from '../../input/gen1-app';
 import { printNodes } from '../../ts-writer';
 import { AnalyticsRenderer } from './analytics.renderer';
-import { KinesisCfnConverter, KinesisAnalyticsDefinition } from './kinesis-cfn-converter';
+import { KinesisCfnConverter, KinesisAnalyticsDefinition, KinesisAnalyticsMetaEntry } from './kinesis-cfn-converter';
 
 const factory = ts.factory;
 
@@ -37,7 +37,7 @@ export class AnalyticsGenerator implements Generator {
    */
   public async plan(): Promise<AmplifyMigrationOperation[]> {
     const meta = await this.gen1App.fetchMeta();
-    const analyticsCategory = meta.analytics as Record<string, KinesisAnalyticsDefinition> | undefined;
+    const analyticsCategory = meta.analytics as Record<string, KinesisAnalyticsMetaEntry> | undefined;
     if (!analyticsCategory || Object.keys(analyticsCategory).length === 0) {
       return [];
     }

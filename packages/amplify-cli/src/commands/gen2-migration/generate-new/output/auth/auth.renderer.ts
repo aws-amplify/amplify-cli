@@ -187,7 +187,6 @@ export type LoginOptions = {
   facebookScopes?: string[];
   amazonScopes?: string[];
   appleScopes?: string[];
-  [key: string]: unknown;
 };
 
 /**

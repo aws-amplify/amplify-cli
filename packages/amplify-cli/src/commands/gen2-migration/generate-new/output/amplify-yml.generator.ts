@@ -2,7 +2,7 @@ import path from 'node:path';
 import fs from 'node:fs/promises';
 import { Generator } from '../generator';
 import { AmplifyMigrationOperation } from '../../_operation';
-import { AmplifyClient, GetAppCommand } from '@aws-sdk/client-amplify';
+import { Gen1App } from '../input/gen1-app';
 
 const GEN1_COMMAND = '- amplifyPush --simple';
 const GEN2_INSTALL_COMMAND = '- npm ci --cache .npm --prefer-offline';
@@ -14,21 +14,21 @@ const GEN2_REPLACE_STRING = `${GEN2_INSTALL_COMMAND}\n${' '.repeat(8)}${GEN2_COM
  * with Gen2 pipeline-deploy commands.
  */
 export class AmplifyYmlGenerator implements Generator {
-  private readonly amplifyClient: AmplifyClient;
-  private readonly appId: string;
+  private readonly gen1App: Gen1App;
 
-  public constructor(amplifyClient: AmplifyClient, appId: string) {
-    this.amplifyClient = amplifyClient;
-    this.appId = appId;
+  public constructor(gen1App: Gen1App) {
+    this.gen1App = gen1App;
   }
 
+  /**
+   * Plans the amplify.yml update operation.
+   */
   public async plan(): Promise<AmplifyMigrationOperation[]> {
     return [
       {
         describe: async () => ['Update amplify.yml with Gen2 build commands'],
         execute: async () => {
-          const app = await this.amplifyClient.send(new GetAppCommand({ appId: this.appId }));
-          const buildSpec = app?.app?.buildSpec;
+          const buildSpec = await this.gen1App.aws.fetchAppBuildSpec(this.gen1App.appId);
           if (!buildSpec) return;
 
           const amplifyYmlPath = path.join(process.cwd(), 'amplify.yml');

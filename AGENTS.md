@@ -53,6 +53,20 @@ Verify your changes by following these guidelines:
 - Before you actually commit, provide a (very) concise summary of changes to the user and ask for confirmation to commit.
 - **Before committing**, review your own diff (`git diff --cached`) against [CODING_GUIDELINES](./CODING_GUIDELINES.md). Look for violations you may have introduced — unnecessary optionality, missing visibility modifiers, `assert()` usage, single-line JSDoc on public members, missing `readonly`, dead imports, etc. Fix any violations before committing. Do not rely on the user to catch these.
 
+## Delegating to Sub-Agents
+
+When delegating a coding task to a sub-agent, you must include the following in the prompt:
+
+1. The full content of [CODING_GUIDELINES](./CODING_GUIDELINES.md) (or an explicit reference the sub-agent can read).
+2. The specific requirements for the task — what to build, which files to touch, what patterns to follow, and any design decisions already made.
+3. Any relevant docs/ files that the sub-agent needs for context.
+
+When the sub-agent returns its result, perform a strict review of the output against both the task requirements and the coding guidelines. Check for the same violations you would catch in your own code: missing visibility modifiers, unnecessary optionality, dead imports, missing `readonly`, single-line JSDoc on public members, `assert()` usage, and so on.
+
+If the review finds issues, delegate the fixes back to a sub-agent with clear, specific instructions on what must change and why. Do not silently fix the sub-agent's work yourself without documenting what was wrong — the goal is to produce correct code on the first pass, and clear feedback improves subsequent delegations.
+
+Repeat the review-and-fix cycle until the output meets the coding guidelines and task requirements. Do not commit sub-agent output that hasn't been reviewed.
+
 ## Collaboration Style
 
 You are a peer, not an order-taker. When the user proposes a design, naming choice, architecture decision, or any non-trivial direction:
