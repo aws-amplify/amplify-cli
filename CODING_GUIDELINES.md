@@ -1,12 +1,12 @@
 # General Coding Guidelines — Expanded
 
-These guidelines target problematic coding patterns observed in this project. Each point is explained with rationale and alternatives. Points are ordered by severity — architectural issues first, code hygiene last.
+These guidelines target problematic coding patterns observed in this project. Each guideline is explained with rationale and alternatives. Guidelines are ordered by severity — architectural issues first, code hygiene last.
 
 ---
 
 ## Architecture & Structure
 
-### 1. Avoid god classes and god modules
+### Avoid god classes and god modules
 
 A god class is one that accumulates responsibilities because it already has all the context — it's convenient to add "one more method" rather than extract a new component. The symptom: you can't describe what the class does in one sentence without using "and." A long constructor with many dependencies is another signal — each dependency represents a responsibility the class has absorbed.
 
@@ -16,7 +16,7 @@ The distinction that matters: a top-level orchestrator that coordinates multiple
 
 ---
 
-### 2. Every layer boundary must justify its existence
+### Every layer boundary must justify its existence
 
 Don't introduce separate layers (with their own interfaces) unless each layer is expected to change independently. Every boundary between layers that reshapes data from one interface into another is a place where a property can be misnamed, dropped, or subtly transformed. The more layers the data passes through, the harder it is to trace a value back to its source of truth.
 
@@ -80,7 +80,7 @@ function generateAuthResource(userPool: UserPoolResponse['UserPool']): string {
 
 ---
 
-### 3. Keep files small and focused
+### Keep files small and focused
 
 When a single file grows to hundreds of lines and mixes multiple responsibilities (e.g., data transformation, API calls, orchestration, and error recovery), it becomes hard to understand, test, and modify.
 
@@ -88,7 +88,7 @@ When a single file grows to hundreds of lines and mixes multiple responsibilitie
 
 ---
 
-### 4. Name things accurately
+### Name things accurately
 
 If a folder is called `generators/` but the files inside it orchestrate API calls, manage lifecycle operations, execute side effects, and handle rollbacks, the name is misleading. "Generators" implies pure data transformation.
 
@@ -96,7 +96,7 @@ If a folder is called `generators/` but the files inside it orchestrate API call
 
 ---
 
-### 5. Centralize external API calls per service
+### Centralize external API calls per service
 
 When calls to the same external service are scattered across multiple files and classes, it's hard to audit what the module does, add cross-cutting concerns (logging, retries, dry-run mode), or understand the full surface area of external interactions.
 
@@ -108,18 +108,18 @@ Scattered client usage also risks inconsistent instantiation. For example, if AP
 
 ## Mutability & State Management
 
-### 6. Minimize mutability
+### Minimize mutability
 
 Mutable state makes code hard to reason through. When a property can be reassigned anywhere in the call hierarchy, you can't know what value it holds at any given point without tracing every code path that touches it. Worse, a function may operate on assumptions about the data it received, but if that data is mutated after the function starts executing — by a callback, an async operation, or a downstream call — those assumptions silently become invalid.
 
 This applies at every level:
 
 - Interface properties and class fields should be `readonly`. Omitting `readonly` requires a clear, documented justification for why mutation is necessary. "Convenience" is not a justification.
-- Local variables should be `const` — see point 7 for details.
+- Local variables should be `const` — see "Prefer `const` over `let`" for details.
 
 ---
 
-### 7. Prefer `const` over `let`
+### Prefer `const` over `let`
 
 Avoid `let` when the code can be restructured to use `const` instead. Even when `let` is technically correct (the variable is reassigned), the reassignment pattern itself is often the problem — it usually means branching logic is being used to populate variables that are consumed later, making it hard to reason about what values they hold at any given point.
 
@@ -164,7 +164,7 @@ For simpler cases, ternary expressions or extracting a small function with early
 
 ## Interface Design
 
-### 8. Every property in an interface should belong to the concept it's named after
+### Every property in an interface should belong to the concept it's named after
 
 Name the interface after what it represents, then make sure every property actually belongs to that concept. If you find yourself adding a property that doesn't fit the name, either the property is in the wrong place or the name is wrong.
 
@@ -174,11 +174,11 @@ A common symptom: you need to thread some data to a downstream function, and the
 
 ---
 
-### 9. Minimize optional properties
+### Minimize optional properties
 
 Excessive optionality pushes validation burden onto every consumer. Each `?` is a branch the caller must handle.
 
-### 9a. Optional at the boundary, required downstream
+### Optional at the boundary, required downstream
 
 A property that can genuinely be absent should only be optional in the interface closest to the input boundary — the entry point that first receives the data. That entry point does the validation or branching, and every subsequent consumer receives an interface where the property is required.
 
@@ -209,9 +209,9 @@ function sendWelcomeEmail(user: ValidatedUser) {
 }
 ```
 
-This is the structural solution to the problem described in point 29 (don't null-check the same value repeatedly). If you keep a property optional all the way through the call chain, every consumer is forced to re-validate it. Narrowing the type at the boundary eliminates that repeated checking by design.
+This is the structural solution to the problem described in "Don't null-check the same value repeatedly." If you keep a property optional all the way through the call chain, every consumer is forced to re-validate it. Narrowing the type at the boundary eliminates that repeated checking by design.
 
-### 9b. Use separate interfaces or discriminated unions for grouped optionality
+### Use separate interfaces or discriminated unions for grouped optionality
 
 When a group of properties are always present together or always absent together, that's a sign you're modeling two different things with one type. Split them.
 
@@ -245,7 +245,7 @@ With the union, the compiler enforces that `emailAddress` is only accessed when 
 
 ---
 
-### 10. Don't represent the same information twice
+### Don't represent the same information twice
 
 If the same piece of data exists in two places — as two properties on an interface, as a property and a separate function argument, or as a stored field and a derivable value — you've created a consistency hazard. When one changes and the other doesn't, you get a silent bug.
 
@@ -255,7 +255,7 @@ A common form: a function accepts an `app` object that has a `.name` property, a
 
 ---
 
-### 11. Don't add interface properties or function arguments that nobody reads
+### Don't add interface properties or function arguments that nobody reads
 
 Dead inputs — whether interface properties or function arguments — mislead the reader into thinking they affect behavior. They add noise to call sites, make refactoring harder (you have to trace them to confirm they're unused), and invite cargo-cult copying where future code passes the value "just in case."
 
@@ -263,7 +263,7 @@ Dead inputs — whether interface properties or function arguments — mislead t
 
 ---
 
-### 12. Don't reinvent interfaces that already exist
+### Don't reinvent interfaces that already exist
 
 Before defining a new interface, check the codebase, `node_modules`, and SDK documentation. Duplicating a shape that already exists in `@aws-sdk/*` or `@aws-amplify/*` creates drift — your copy goes stale while the real one evolves.
 
@@ -271,7 +271,7 @@ Before defining a new interface, check the codebase, `node_modules`, and SDK doc
 
 ---
 
-### 13. Don't use catch-all `types.ts` files
+### Don't use catch-all `types.ts` files
 
 Catch-all type files tend to accumulate unrelated interfaces over time, becoming a dumping ground that's hard to navigate and reason about. They also create artificial coupling — every file that imports from `types.ts` now depends on a module that contains types for completely unrelated concerns.
 
@@ -281,7 +281,7 @@ If two files need the same type, ask why they're separate. Either they're operat
 
 ---
 
-### 14. Avoid `type X = SomeEnum | string`
+### Avoid `type X = SomeEnum | string`
 
 A union with `string` defeats the purpose of the enum. If a type is defined as `EnumValue.A | EnumValue.B | string`, any string is valid — the enum members add no type safety.
 
@@ -289,7 +289,7 @@ A union with `string` defeats the purpose of the enum. If a type is defined as `
 
 ---
 
-### 15. Minimize nested interfaces
+### Minimize nested interfaces
 
 Deeply nested interfaces (`config.auth.providers[0].settings.oauth.scopes`) are hard to construct, hard to test, and hard to read.
 
@@ -297,7 +297,7 @@ Deeply nested interfaces (`config.auth.providers[0].settings.oauth.scopes`) are 
 
 ---
 
-### 16. Known values belong in the constructor
+### Known values belong in the constructor
 
 If a value is known at construction time and doesn't change, pass it to the constructor — not to every method that needs it. This avoids threading the same value through multiple call sites and makes the dependency explicit.
 
@@ -315,7 +315,7 @@ renderer.render({ schema, tableMappings });
 
 ## Error Handling
 
-### 17. Only return fallbacks or branch for valid states
+### Only return fallbacks or branch for valid states
 
 The question to ask before returning `null`, adding an `if` guard, or swallowing an error is: does this condition represent a valid state the caller is expected to handle, or does it mean something is broken?
 
@@ -341,7 +341,7 @@ const response = await client.send(new GetGraphqlApiCommand({ apiId }));
 
 ---
 
-### 18. Don't use `assert()` in production code
+### Don't use `assert()` in production code
 
 `assert` from `node:assert` throws a generic `AssertionError` with no user-facing context. It's a debugging tool, not an error-handling strategy.
 
@@ -351,7 +351,7 @@ const response = await client.send(new GetGraphqlApiCommand({ apiId }));
 
 ## Control Flow & Logic
 
-### 19. Don't branch on the same condition multiple times
+### Don't branch on the same condition multiple times
 
 Multiple `if (type === 'X')` blocks scattered across a function indicate the logic should be consolidated or polymorphic.
 
@@ -361,7 +361,7 @@ Scattered branching means: adding a new case requires hunting every branch point
 
 ---
 
-### 20. Don't compute the same derived value more than once
+### Don't compute the same derived value more than once
 
 If multiple call sites independently read the same file, call the same API, or derive the same value from raw data, you're paying the cost multiple times and creating multiple places that can diverge if the logic changes.
 
@@ -369,7 +369,7 @@ If multiple call sites independently read the same file, call the same API, or d
 
 ---
 
-### 21. Don't accept optional predicates as input
+### Don't accept optional predicates as input
 
 Accepting an optional predicate callback to customize filtering or branching behavior creates multiple problems:
 
@@ -383,15 +383,15 @@ Second, the existence of a predicate often indicates a missing abstraction. The 
 
 ## Function Design
 
-### 22. Use object parameters for functions with multiple arguments
+### Use object parameters for functions with multiple arguments
 
 A function with many positional arguments is hard to call correctly — the caller has to remember the exact order, and swapping two arguments of the same type is a silent bug.
 
-**Instead:** Accept a single object parameter with named fields. The interface for this object should be private (not exported) and defined alongside the function that consumes it — not in a shared types file. This keeps the contract co-located with its only consumer (see also point 13).
+**Instead:** Accept a single object parameter with named fields. The interface for this object should be private (not exported) and defined alongside the function that consumes it — not in a shared types file (see "Don't use catch-all `types.ts` files"). This keeps the contract co-located with its only consumer.
 
 ---
 
-### 23. Minimize argument count
+### Minimize argument count
 
 Related to the above. High argument counts are a code smell indicating the function is doing too much or its dependencies aren't properly grouped.
 
@@ -399,7 +399,7 @@ Related to the above. High argument counts are a code smell indicating the funct
 
 ---
 
-### 24. Don't use classes when static methods suffice
+### Don't use classes when static methods suffice
 
 If a class has no mutable state and its methods don't reference `this` beyond constructor-injected dependencies, it may be a function in disguise.
 
@@ -413,7 +413,7 @@ But if the call site already has all the information needed for both constructio
 
 ## Code Hygiene
 
-### 25. Minimize code duplication
+### Minimize code duplication
 
 When non-trivial logic is repeated in multiple places, a bug fix or behavior change requires updating every copy — miss one and you have an inconsistency. Extract the shared logic into a clearly named function or utility class.
 
@@ -421,7 +421,7 @@ When non-trivial logic is repeated in multiple places, a bug fix or behavior cha
 
 ---
 
-### 26. Don't define the same constant twice
+### Don't define the same constant twice
 
 If two constants in different parts of the code contain the same list of values (e.g., one for forward processing and one for rollback), and one changes without the other, you get a silent bug.
 
@@ -429,7 +429,7 @@ If two constants in different parts of the code contain the same list of values 
 
 ---
 
-### 27. Don't use string replacement on JSON
+### Don't use string replacement on JSON
 
 Converting an object to a JSON string, running regex replacements on it, and parsing it back is fragile. A value that happens to match the regex pattern as a literal string would be incorrectly replaced.
 
@@ -468,7 +468,7 @@ const resolved = resolveRefs(template, paramMap);
 
 ---
 
-### 28. Remove dead code
+### Remove dead code
 
 Unused functions, unreachable branches, and commented-out code are noise. If a function has a comment saying "this never gets used," that's a clear signal.
 
@@ -476,7 +476,7 @@ Unused functions, unreachable branches, and commented-out code are noise. If a f
 
 ---
 
-### 29. Minimize indirection
+### Minimize indirection
 
 A function that only calls another function with the same (or trivially derived) arguments adds a layer of indirection without adding value.
 
@@ -484,15 +484,15 @@ A function that only calls another function with the same (or trivially derived)
 
 ---
 
-### 30. Don't null-check the same value repeatedly
+### Don't null-check the same value repeatedly
 
 If you validate that `x` is defined at the top of a function, every subsequent `if (x)` on the same binding is noise. It signals the reader that `x` might still be null when it can't be.
 
-**Instead:** Validate once, early. Use a type guard or assertion that narrows the type for the rest of the scope. If the value genuinely could become null later, that's a design problem — fix the data flow. See also point 9a for the structural solution to this problem.
+**Instead:** Validate once, early. Use a type guard or assertion that narrows the type for the rest of the scope. If the value genuinely could become null later, that's a design problem — fix the data flow. See also "Optional at the boundary, required downstream" for the structural solution to this problem.
 
 ---
 
-### 31. Don't use dynamic import expressions for types
+### Don't use dynamic import expressions for types
 
 Inline `import('some-package').SomeType` expressions in type positions make the code harder to read and create implicit dependencies that aren't visible in the import block. If the type comes from untyped JSON, use `any` explicitly. If you need the type, add a proper import at the top of the file.
 
@@ -512,7 +512,7 @@ const nodes = renderer.render({
 
 ## Style
 
-### 32. Call chains should read like English
+### Call chains should read like English
 
 When you chain property access and method calls, the result should read as a short, natural phrase — not stutter or repeat context the reader already has. Each segment of the chain should add new information.
 
@@ -536,7 +536,7 @@ The test: read the full chain aloud. If it sounds like something a developer wou
 
 ---
 
-### 33. Use explicit visibility modifiers on class members
+### Use explicit visibility modifiers on class members
 
 Every class method and property should have an explicit `public`, `private`, or `protected` modifier. Omitting the modifier forces the reader to remember that TypeScript defaults to `public` — and more importantly, it makes intent ambiguous: did the author mean for this to be public, or did they just forget?
 
@@ -544,7 +544,7 @@ Every class method and property should have an explicit `public`, `private`, or 
 
 ---
 
-### 34. Use multi-line JSDoc comments for public members
+### Use multi-line JSDoc comments for public members
 
 Document public methods, properties, and exported declarations with multi-line JSDoc comments. Always use the multi-line format — even for single sentences:
 
@@ -564,7 +564,7 @@ The multi-line format is visually distinct from code, scales naturally when you 
 
 ---
 
-### 35. Add a blank line after documented class members
+### Add a blank line after documented class members
 
 When a class property has a JSDoc comment, add a blank line after the property declaration to visually separate it from the next member. Undocumented properties can remain consecutive.
 
@@ -591,25 +591,26 @@ export class MyService {
 
 ---
 
-### 36. Sibling directories should represent the same level of abstraction
+### Sibling directories should represent the same kind of thing
 
-When directories sit at the same level in the file tree, they should represent the same kind of thing. If one directory is a category (`auth/`, `storage/`, `data/`) and another is infrastructure (`gen1-app/`, `utils/`), the infrastructure directory looks like a category to anyone scanning the tree. This creates confusion about what the directory contains and how it relates to its siblings.
+Directories at the same level in the tree should share an organizing principle. When most siblings are feature modules and one is a utility or infrastructure concern, the odd one out looks like a feature to anyone scanning the tree.
 
 ```
-// Bad — gen1-app looks like a category alongside auth and storage
-generate/
-  gen1-app/       ← infrastructure, not a category
-  auth/           ← category
-  storage/        ← category
-  data/           ← category
+// Bad — "database" is infrastructure, not a feature
+src/
+  database/       ← infrastructure
+  users/          ← feature
+  orders/         ← feature
+  products/       ← feature
 
-// Good — input vs output is a clear conceptual split
-generate/
-  input/          ← where Gen1 state comes from
-  output/         ← what Gen2 code we produce
-    auth/
-    storage/
-    data/
+// Good — clear separation by role
+src/
+  infra/
+    database/
+  features/
+    users/
+    orders/
+    products/
 ```
 
-The test: if you showed someone just the directory names at a given level, could they guess the organizing principle? `auth, storage, data, gen1-app` fails — three are categories and one isn't. `input, output` passes — both describe a role in the pipeline.
+The test: read just the directory names at one level. If you can't guess the organizing principle without opening them, the structure is misleading.

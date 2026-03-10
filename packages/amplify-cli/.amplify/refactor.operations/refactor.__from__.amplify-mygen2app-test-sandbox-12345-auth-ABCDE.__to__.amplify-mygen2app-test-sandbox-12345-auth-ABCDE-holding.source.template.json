@@ -1,0 +1,16 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Test template",
+  "Outputs": {
+    "UserPoolId": {
+      "Description": "User pool id",
+      "Value": "userPoolId"
+    }
+  },
+  "Resources": {
+    "AuthRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {}
+    }
+  }
+}

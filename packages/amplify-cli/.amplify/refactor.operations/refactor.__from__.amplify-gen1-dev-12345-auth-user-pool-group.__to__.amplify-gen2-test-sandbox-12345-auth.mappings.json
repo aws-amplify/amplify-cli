@@ -1,0 +1,12 @@
+[
+  {
+    "Source": {
+      "StackName": "amplify-gen1-dev-12345-auth-user-pool-group",
+      "LogicalResourceId": "ResourceA"
+    },
+    "Destination": {
+      "StackName": "amplify-gen2-test-sandbox-12345-auth",
+      "LogicalResourceId": "ResourceB"
+    }
+  }
+]

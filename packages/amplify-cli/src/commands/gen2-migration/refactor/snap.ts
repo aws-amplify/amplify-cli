@@ -31,7 +31,7 @@ function extractStackName(nameOrArn: string) {
 
 function makeDirectory(dir: string) {
   if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir);
+    fs.mkdirSync(dir, { recursive: true });
   }
 }
 

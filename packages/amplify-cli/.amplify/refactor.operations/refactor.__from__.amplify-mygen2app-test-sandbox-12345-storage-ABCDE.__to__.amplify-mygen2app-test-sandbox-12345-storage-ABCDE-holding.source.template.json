@@ -1,0 +1,42 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Test template",
+  "Parameters": {
+    "Environment": {
+      "Type": "String",
+      "Description": "Environment"
+    },
+    "hostedUIProviderMeta": {
+      "Type": "String",
+      "Description": "HostedUIProviderMeta"
+    },
+    "hostedUIProviderCreds": {
+      "Type": "String",
+      "Description": "HostedUIProviderCreds",
+      "NoEcho": true
+    }
+  },
+  "Outputs": {
+    "BucketNameOutputRef": {
+      "Description": "Bucket name",
+      "Value": "my-test-bucket-dev"
+    }
+  },
+  "Resources": {
+    "MyS3BucketPolicy": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyName": "MyS3BucketPolicy",
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": "s3:GetObject",
+              "Resource": "arn:aws:s3:::my-test-bucket-dev"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

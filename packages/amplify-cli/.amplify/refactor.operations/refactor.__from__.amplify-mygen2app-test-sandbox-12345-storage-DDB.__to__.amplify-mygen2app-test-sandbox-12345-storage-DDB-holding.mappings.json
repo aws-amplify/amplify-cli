@@ -1,0 +1,12 @@
+[
+  {
+    "Source": {
+      "StackName": "amplify-mygen2app-test-sandbox-12345-storage-DDB",
+      "LogicalResourceId": "Gen2DynamoDBTable"
+    },
+    "Destination": {
+      "StackName": "amplify-mygen2app-test-sandbox-12345-storage-DDB-holding",
+      "LogicalResourceId": "Gen2DynamoDBTable"
+    }
+  }
+]
