@@ -27,7 +27,6 @@ generate-new/
 │   ├── tsconfig.generator.ts
 │   ├── amplify-yml.generator.ts
 │   └── gitignore.generator.ts
-├── prepare.ts                          Orchestrator entry point
 ├── generator.ts                        Generator interface
 ├── resource.ts                         Shared resource.ts renderer
 ├── ts-writer.ts                        AST printer (prettier)
@@ -37,7 +36,7 @@ generate-new/
 
 ### `generate-new/` (root)
 
-The root contains the orchestrator (`prepare.ts`), the `Generator` interface, and shared utilities used across both input and output layers. `prepare.ts` is the entry point — it reads `amplify-meta.json`, instantiates generators, collects their operations, and returns them. The utilities (`ts-writer.ts`, `ts-factory-utils.ts`, `resource.ts`) provide common AST construction and printing that all renderers share.
+The root contains the `Generator` interface and shared utilities used across both input and output layers. The orchestration logic (`prepare()`) lives in the parent `generate.ts` alongside `AmplifyMigrationGenerateStep`. The utilities (`ts-writer.ts`, `ts-factory-utils.ts`, `resource.ts`) provide common AST construction and printing that all renderers share.
 
 ### `input/`
 
@@ -55,7 +54,7 @@ The pipeline has three layers:
 
 - **Output** (`output/`) — Per-resource generators produce `AmplifyMigrationOperation[]`. Each generator has a renderer (pure AST construction) and a generator (orchestration + backend.ts contributions). Generators contribute imports, statements, and properties to `BackendGenerator`, which assembles `backend.ts` last.
 
-- **Orchestrator** (`prepare.ts`) — Reads `amplify-meta.json` category keys and service types, instantiates one generator per resource, collects all operations, and appends a final operation for folder replacement + npm install. Returns operations to the parent dispatcher for user confirmation.
+- **Orchestrator** (`generate.ts`) — Reads `amplify-meta.json` category keys and service types, instantiates one generator per resource, collects all operations, and appends a final operation for folder replacement + npm install. Returns operations to the parent dispatcher for user confirmation.
 
 ## Key Abstractions
 
@@ -154,7 +153,7 @@ Renderer classes (`AuthRenderer`, `DataRenderer`, `S3Renderer`, etc.) produce Ty
 
 ```mermaid
 flowchart TD
-    STEP["prepareNew()"] -->|create| G1[Gen1App]
+    STEP["prepare()"] -->|create| G1[Gen1App]
     STEP -->|create| BG[BackendGenerator]
     STEP -->|create| PKG[RootPackageJsonGenerator]
     STEP -->|create| BPKG[BackendPackageJsonGenerator]

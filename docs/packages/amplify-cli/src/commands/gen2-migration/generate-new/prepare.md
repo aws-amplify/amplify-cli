@@ -1,10 +1,10 @@
-# prepare.ts — Orchestrator
+# prepare.md — Orchestrator
 
-Entry point for the generate pipeline. Assembles all generators and returns the full list of migration operations.
+The orchestration logic lives in `generate.ts` as the `prepare()` function, called by `AmplifyMigrationGenerateStep.execute()`.
 
 ## How It Works
 
-`prepareNew(logger, appId, envName, region)` performs the following:
+`prepare(logger, appId, envName, region)` performs the following:
 
 1. Creates `AwsClients`, `Gen1App`, `BackendGenerator`, and `RootPackageJsonGenerator`
 2. Reads `amplify-meta.json` via `Gen1App.fetchMeta()`
@@ -19,7 +19,8 @@ Returns the full operations array to the parent dispatcher for describe → conf
 
 ## Relationship to Other Components
 
-- Called by `AmplifyMigrationGenerateStep.execute()` in `generate.ts`
+- `AmplifyMigrationGenerateStep.execute()` delegates to `prepare()` in the same module (`generate.ts`)
 - Creates and owns `Gen1App`, `BackendGenerator`, and `RootPackageJsonGenerator` — passes them to category generators
 - All generators write to a temp directory (`outputDir`); the post-generation operation moves the result into the project
 - `DependenciesInstaller` handles `npm install` with retry
+- Snapshot tests import `prepare` directly from `generate.ts` to bypass the step lifecycle

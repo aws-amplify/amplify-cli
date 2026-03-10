@@ -1,5 +1,5 @@
 import 'aws-sdk-client-mock-jest';
-import { prepareNew, DependenciesInstaller } from '../../../../../commands/gen2-migration/generate-new/prepare';
+import { prepare, DependenciesInstaller } from '../../../../../commands/gen2-migration/generate';
 import { MigrationAppOptions, MigrationApp } from '../../_framework/app';
 
 // high to allow for debugging in the IDE
@@ -72,7 +72,7 @@ async function testSnapshot(appName: string, appOptions?: MigrationAppOptions, c
       if (customize) {
         await customize(app);
       }
-      const operations = await prepareNew(app.logger, app.id, app.environmentName, app.region);
+      const operations = await prepare(app.logger, app.id, app.environmentName, app.region);
       for (const operation of operations) {
         await operation.execute();
       }
