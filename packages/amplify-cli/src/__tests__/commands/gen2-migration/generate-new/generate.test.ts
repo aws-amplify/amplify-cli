@@ -1,6 +1,6 @@
 import 'aws-sdk-client-mock-jest';
-import { AmplifyMigrationGenerateStep, DependenciesInstaller } from '../../../../../commands/gen2-migration/generate';
-import { MigrationAppOptions, MigrationApp } from '../../_framework/app';
+import { AmplifyMigrationGenerateStep, DependenciesInstaller } from '../../../../commands/gen2-migration/generate';
+import { MigrationAppOptions, MigrationApp } from '../_framework/app';
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
 
 // high to allow for debugging in the IDE
