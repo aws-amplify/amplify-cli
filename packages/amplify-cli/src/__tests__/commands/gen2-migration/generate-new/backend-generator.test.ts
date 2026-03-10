@@ -152,7 +152,7 @@ describe('BackendGenerator', () => {
       const gen = new BackendGenerator(outputDir);
       const ops = await gen.plan();
       const descriptions = await ops[0].describe();
-      expect(descriptions[0]).toContain('backend.ts');
+      expect(descriptions[0]).toBe('Generate amplify/backend.ts');
     });
 
     it('writes backend.ts with defineBackend call', () => {

@@ -16,7 +16,7 @@ export class TsConfigGenerator implements Generator {
     const filePath = path.join(this.outputDir, 'amplify', 'tsconfig.json');
     return [
       {
-        describe: async () => [`Generate ${filePath}`],
+        describe: async () => ['Generate amplify/tsconfig.json'],
         execute: async () => {
           const tsconfig = {
             compilerOptions: {

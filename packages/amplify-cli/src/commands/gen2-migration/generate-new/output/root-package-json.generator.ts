@@ -42,7 +42,7 @@ export class RootPackageJsonGenerator implements Generator {
 
     return [
       {
-        describe: async () => [`Generate ${packageJsonPath}`],
+        describe: async () => ['Update package.json with Gen2 dependencies'],
         execute: async () => {
           const defaultName = 'amplify-gen2';
 

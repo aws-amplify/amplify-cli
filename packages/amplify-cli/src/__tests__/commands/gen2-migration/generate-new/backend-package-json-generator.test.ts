@@ -44,6 +44,6 @@ describe('BackendPackageJsonGenerator', () => {
     const gen = new BackendPackageJsonGenerator(outputDir);
     const ops = await gen.plan();
     const descriptions = await ops[0].describe();
-    expect(descriptions[0]).toContain('package.json');
+    expect(descriptions[0]).toBe('Generate amplify/package.json');
   });
 });
