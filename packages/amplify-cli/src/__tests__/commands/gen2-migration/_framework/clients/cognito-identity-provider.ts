@@ -189,12 +189,9 @@ export class CognitoIdentityProviderMock {
         const nativeClientProps = template.Resources.UserPoolClient?.Properties;
         const supportedIdentityProviders: string[] | undefined = nativeClientProps?.SupportedIdentityProviders;
 
-        const innerAuthResourceName = this.app.singleResourceName('auth', 'Cognito');
-        const innerAuthCliInputs = this.app.cliInputsForResource(innerAuthResourceName, 'auth');
-
         const baseClient: idp.UserPoolClientType = {
           ClientId: input.ClientId,
-          RefreshTokenValidity: Number(innerAuthCliInputs.cognitoConfig.userpoolClientRefreshTokenValidity),
+          RefreshTokenValidity: Number(authCliInputs.cognitoConfig.userpoolClientRefreshTokenValidity),
           TokenValidityUnits: { RefreshToken: 'days' },
           EnableTokenRevocation: true,
           EnablePropagateAdditionalUserContextData: false,
