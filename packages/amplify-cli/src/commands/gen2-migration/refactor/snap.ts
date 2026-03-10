@@ -27,7 +27,7 @@ export async function preRefactorStack(input: CreateStackRefactorCommandInput) {
 
 function makeDirectory(dir: string) {
   if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir);
+    fs.mkdirSync(dir, { recursive: true });
   }
 }
 

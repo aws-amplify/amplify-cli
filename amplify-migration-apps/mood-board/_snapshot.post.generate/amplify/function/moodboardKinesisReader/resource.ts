@@ -7,11 +7,6 @@ export const moodboardKinesisReader = defineFunction({
   name: `moodboardKinesisReader-${branchName}`,
   timeoutSeconds: 25,
   memoryMB: 128,
-  environment: {
-    ENV: `${branchName}`,
-    REGION: 'us-east-1',
-    ANALYTICS_MOODBOARDKINESIS_KINESISSTREAMARN:
-      'arn:aws:kinesis:us-east-1:123456789012:stream/moodboardKinesis-main',
-  },
+  environment: { ENV: `${branchName}`, REGION: 'us-east-1' },
   runtime: 22,
 });
