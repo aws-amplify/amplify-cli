@@ -6,33 +6,33 @@ Code generation pipeline that transforms Gen1 Amplify projects into Gen2 TypeScr
 
 ```
 generate-new/
-  input/                          # Gen1 app state (AWS + local files)
-    gen1-app.ts                   # Facade — lazy-loading, caching access
-    aws-fetcher.ts                # All AWS SDK calls, cached
-    aws-clients.ts                # Client factory interface
-    backend-downloader.ts         # S3 zip download + extraction
-    auth-access-analyzer.ts       # CFN policy parser for Cognito permissions
-    file-exists.ts                # File existence utility
-  output/                         # Generators and renderers
-    auth/                         # Auth category
-    data/                         # AppSync/GraphQL category
-    storage/                      # S3 + DynamoDB category
-    functions/                    # Lambda category
-    analytics/                    # Kinesis category
-    rest-api/                     # API Gateway category
-    custom-resources/             # Custom CDK stacks
-    backend.generator.ts          # Accumulates backend.ts contributions
-    root-package-json.generator.ts
-    backend-package-json.generator.ts
-    tsconfig.generator.ts
-    amplify-yml.generator.ts
-    gitignore.generator.ts
-  prepare.ts                      # Orchestrator entry point
-  generator.ts                    # Generator interface
-  resource.ts                     # Shared resource.ts renderer
-  ts-writer.ts                    # AST printer (prettier)
-  ts-factory-utils.ts             # Shared AST builder helpers
-  package-json-patch.ts           # Gen2 dev dependency patching
+├── input/                              Gen1 app state (AWS + local files)
+│   ├── gen1-app.ts                     Facade — lazy-loading, caching access
+│   ├── aws-fetcher.ts                  All AWS SDK calls, cached
+│   ├── aws-clients.ts                  Client factory interface
+│   ├── backend-downloader.ts           S3 zip download + extraction
+│   ├── auth-access-analyzer.ts         CFN policy parser for Cognito permissions
+│   └── file-exists.ts                  File existence utility
+├── output/                             Generators and renderers
+│   ├── auth/                           Auth category
+│   ├── data/                           AppSync/GraphQL category
+│   ├── storage/                        S3 + DynamoDB category
+│   ├── functions/                      Lambda category
+│   ├── analytics/                      Kinesis category
+│   ├── rest-api/                       API Gateway category
+│   ├── custom-resources/               Custom CDK stacks
+│   ├── backend.generator.ts            Accumulates backend.ts contributions
+│   ├── root-package-json.generator.ts
+│   ├── backend-package-json.generator.ts
+│   ├── tsconfig.generator.ts
+│   ├── amplify-yml.generator.ts
+│   └── gitignore.generator.ts
+├── prepare.ts                          Orchestrator entry point
+├── generator.ts                        Generator interface
+├── resource.ts                         Shared resource.ts renderer
+├── ts-writer.ts                        AST printer (prettier)
+├── ts-factory-utils.ts                 Shared AST builder helpers
+└── package-json-patch.ts               Gen2 dev dependency patching
 ```
 
 ### `generate-new/` (root)
