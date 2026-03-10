@@ -123,7 +123,16 @@ export class KinesisCfnConverter {
     const finalTemplate = await this.preTransmute(template, nestedStackLogicalId);
     const tsFile = cdk_from_cfn.transmute(JSON.stringify(finalTemplate), 'typescript', nestedStackLogicalId, 'construct');
     await fs.mkdir(path.dirname(filePath), { recursive: true });
-    await this.fileWriter(tsFile, filePath);
+
+    // Format with prettier to match the expected output style (printWidth: 80)
+    const prettier = await import('prettier');
+    const formatted = prettier.format(tsFile, {
+      parser: 'typescript',
+      singleQuote: true,
+      tabWidth: 2,
+      printWidth: 80,
+    });
+    await this.fileWriter(formatted, filePath);
 
     const classNameMatch = tsFile.match(/export class (\w+) extends/);
     const constructClassName = classNameMatch ? classNameMatch[1] : `analytics${resourceName}`;

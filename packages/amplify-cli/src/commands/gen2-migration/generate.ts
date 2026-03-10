@@ -1,6 +1,6 @@
 import { AmplifyMigrationStep } from './_step';
 import { AmplifyMigrationOperation } from './_operation';
-import { prepare, pathExists } from './generate/codegen-head/command-handlers';
+import { prepareNew, pathExists } from './generate-new/prepare';
 import { AmplifyGen2MigrationValidations } from './_validations';
 import * as path from 'path';
 
@@ -68,7 +68,7 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
       {
         describe: async () => descriptions,
         execute: async () => {
-          await prepare(this.logger, this.appId, this.currentEnvName, this.region);
+          await prepareNew(this.logger, this.appId, this.currentEnvName, this.region);
         },
       },
     ];

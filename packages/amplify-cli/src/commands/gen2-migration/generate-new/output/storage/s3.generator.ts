@@ -107,7 +107,7 @@ export class S3Generator implements Generator {
     const triggers = this.extractTriggers(notifications);
     const accessPatterns = this.buildAccessPatterns(cliInputs, functionNames);
     const storageDir = path.join(this.outputDir, 'amplify', 'storage');
-    const storageIdentifier = cliInputs.bucketName || storageName;
+    const storageIdentifier = bucketName;
 
     return {
       describe: async () => ['Generate storage/resource.ts'],
@@ -286,10 +286,59 @@ export class S3Generator implements Generator {
       }, {} as Record<string, Permission[]>);
     }
 
+    const functions = this.extractFunctionS3Access(functionNames);
+
     return {
       guest: cliInputs.guestAccess.flatMap((p) => PERMISSION_MAP[p]),
       auth: cliInputs.authAccess.flatMap((p) => PERMISSION_MAP[p]),
       groups,
+      functions: functions.length > 0 ? functions : undefined,
     };
+  }
+
+  /**
+   * Reads each function's CloudFormation template and extracts S3
+   * permissions, mapping them to Gen2 access patterns.
+   */
+  private extractFunctionS3Access(functionNames: string[]): Array<{ functionName: string; permissions: Permission[] }> {
+    const S3_ACTION_TO_PERMISSION: Record<string, Permission> = {
+      's3:GetObject': 'read',
+      's3:PutObject': 'write',
+      's3:DeleteObject': 'delete',
+      's3:ListBucket': 'read',
+    };
+
+    const result: Array<{ functionName: string; permissions: Permission[] }> = [];
+
+    for (const functionName of functionNames) {
+      const templatePath = path.join('amplify', 'backend', 'function', functionName, `${functionName}-cloudformation-template.json`);
+      try {
+        const content = require('fs').readFileSync(templatePath, 'utf-8');
+        const template = JSON.parse(content);
+        const policy = template.Resources?.AmplifyResourcesPolicy;
+        if (!policy || policy.Type !== 'AWS::IAM::Policy') continue;
+
+        const statements = policy.Properties?.PolicyDocument?.Statement ?? [];
+        const permissions = new Set<Permission>();
+
+        for (const stmt of Array.isArray(statements) ? statements : [statements]) {
+          if (stmt.Effect !== 'Allow') continue;
+          const actions = Array.isArray(stmt.Action) ? stmt.Action : [stmt.Action];
+          for (const action of actions) {
+            if (typeof action === 'string' && S3_ACTION_TO_PERMISSION[action]) {
+              permissions.add(S3_ACTION_TO_PERMISSION[action]);
+            }
+          }
+        }
+
+        if (permissions.size > 0) {
+          result.push({ functionName, permissions: Array.from(permissions) });
+        }
+      } catch {
+        // Template not found or unreadable
+      }
+    }
+
+    return result;
   }
 }

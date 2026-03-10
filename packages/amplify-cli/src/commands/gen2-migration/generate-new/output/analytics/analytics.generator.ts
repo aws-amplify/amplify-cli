@@ -86,7 +86,7 @@ export class AnalyticsGenerator implements Generator {
 
           // Contribute to backend.ts
           this.backendGenerator.addImport('./analytics/resource', ['defineAnalytics']);
-          this.backendGenerator.addStatement(
+          this.backendGenerator.addEarlyStatement(
             factory.createVariableStatement(
               undefined,
               factory.createVariableDeclarationList(

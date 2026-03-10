@@ -253,11 +253,12 @@ export class Gen1App {
               ? JSON.parse(cliInputs.cognitoConfig.triggers)
               : cliInputs.cognitoConfig.triggers;
           const connections: Partial<Record<keyof LambdaConfigType, string>> = {};
-          for (const [triggerName, functionNames] of Object.entries(triggers)) {
-            const fns = functionNames as string[];
-            if (fns.length > 0) {
-              connections[triggerName as keyof LambdaConfigType] = fns[0];
-            }
+          for (const [triggerName] of Object.entries(triggers)) {
+            // Normalize trigger name casing: Gen1 uses "PreSignup" but Cognito uses "PreSignUp"
+            const cognitoTriggerName = triggerName === 'PreSignup' ? 'PreSignUp' : triggerName;
+            // Function name follows Gen1 convention: {authResourceName}{triggerName}
+            const functionName = `${resourceName}${triggerName}`;
+            connections[cognitoTriggerName as keyof LambdaConfigType] = path.join('amplify', 'backend', 'function', functionName, 'src');
           }
           return Object.keys(connections).length > 0 ? connections : undefined;
         }

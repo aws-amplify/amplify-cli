@@ -1,5 +1,6 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
+import * as yaml from 'yaml';
 import { Generator } from '../generator';
 import { AmplifyMigrationOperation } from '../../_operation';
 import { Gen1App } from '../input/gen1-app';
@@ -12,6 +13,9 @@ const GEN2_REPLACE_STRING = `${GEN2_INSTALL_COMMAND}\n${' '.repeat(8)}${GEN2_COM
 /**
  * Updates or creates the amplify.yml buildspec to replace Gen1 commands
  * with Gen2 pipeline-deploy commands.
+ *
+ * Parses the YAML and re-serializes it (normalizing quote style) before
+ * performing the Gen1→Gen2 command substitution.
  */
 export class AmplifyYmlGenerator implements Generator {
   private readonly gen1App: Gen1App;
@@ -28,19 +32,58 @@ export class AmplifyYmlGenerator implements Generator {
       {
         describe: async () => ['Update amplify.yml with Gen2 build commands'],
         execute: async () => {
-          const buildSpec = await this.gen1App.aws.fetchAppBuildSpec(this.gen1App.appId);
-          if (!buildSpec) return;
-
           const amplifyYmlPath = path.join(process.cwd(), 'amplify.yml');
+          let parsed: unknown;
+          let fromExistingSource = false;
+
           try {
             const existing = await fs.readFile(amplifyYmlPath, 'utf-8');
-            const updated = existing.replace(GEN1_COMMAND, GEN2_REPLACE_STRING);
-            await fs.writeFile(amplifyYmlPath, updated, 'utf-8');
+            parsed = yaml.parse(existing);
+            fromExistingSource = true;
           } catch {
-            // File doesn't exist — write the updated buildspec
-            const updatedBuildSpec = buildSpec.replace(GEN1_COMMAND, GEN2_REPLACE_STRING);
-            await fs.writeFile(amplifyYmlPath, updatedBuildSpec, 'utf-8');
+            // File doesn't exist — try the remote buildspec
+            const buildSpec = await this.gen1App.aws.fetchAppBuildSpec(this.gen1App.appId);
+            if (buildSpec) {
+              parsed = yaml.parse(buildSpec);
+              fromExistingSource = true;
+            }
           }
+
+          if (!parsed) {
+            // No local file and no remote buildspec — create a default
+            // backend-only spec with Gen2 commands already in place.
+            parsed = {
+              version: 1,
+              backend: {
+                phases: {
+                  build: {
+                    commands: [
+                      '# Execute Amplify CLI with the helper script',
+                      'npm ci --cache .npm --prefer-offline',
+                      'npx ampx pipeline-deploy --branch $AWS_BRANCH --app-id $AWS_APP_ID',
+                    ],
+                  },
+                },
+              },
+              frontend: {
+                phases: {
+                  build: {
+                    commands: ['mkdir dist', 'touch dist/index.html'],
+                  },
+                },
+                artifacts: {
+                  baseDirectory: 'dist',
+                  files: ['**/*'],
+                },
+              },
+            };
+          }
+
+          let content = yaml.stringify(parsed);
+          if (fromExistingSource) {
+            content = content.replace(new RegExp(GEN1_COMMAND, 'g'), GEN2_REPLACE_STRING);
+          }
+          await fs.writeFile(amplifyYmlPath, content, 'utf-8');
         },
       },
     ];

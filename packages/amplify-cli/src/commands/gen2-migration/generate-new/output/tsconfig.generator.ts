@@ -31,7 +31,10 @@ export class TsConfigGenerator implements Generator {
             },
           };
           await fs.mkdir(path.dirname(filePath), { recursive: true });
-          await fs.writeFile(filePath, JSON.stringify(tsconfig, null, 2), 'utf-8');
+          const json = JSON.stringify(tsconfig, null, 2);
+          // Collapse single-element arrays to one line for readability
+          const collapsed = json.replace(/\[\s*\n\s*"([^"]+)"\s*\n\s*\]/g, '["$1"]');
+          await fs.writeFile(filePath, collapsed + '\n', 'utf-8');
         },
       },
     ];

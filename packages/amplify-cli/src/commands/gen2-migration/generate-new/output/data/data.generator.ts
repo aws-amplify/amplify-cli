@@ -25,12 +25,14 @@ export class DataGenerator implements Generator {
   private readonly backendGenerator: BackendGenerator;
   private readonly outputDir: string;
   private readonly defineData: DataRenderer;
+  private readonly hasAuth: boolean;
 
-  public constructor(gen1App: Gen1App, backendGenerator: BackendGenerator, outputDir: string) {
+  public constructor(gen1App: Gen1App, backendGenerator: BackendGenerator, outputDir: string, hasAuth: boolean) {
     this.gen1App = gen1App;
     this.backendGenerator = backendGenerator;
     this.outputDir = outputDir;
     this.defineData = new DataRenderer(gen1App.envName);
+    this.hasAuth = hasAuth;
   }
 
   /**
@@ -64,14 +66,12 @@ export class DataGenerator implements Generator {
     }
 
     const authorizationModes = output?.authConfig;
-    if (authorizationModes && graphqlApi.additionalAuthenticationProviders?.length) {
-      authorizationModes.additionalAuthenticationProviders = graphqlApi.additionalAuthenticationProviders.map((provider) => ({
-        authenticationType: provider.authenticationType,
-        ...(provider.lambdaAuthorizerConfig && { lambdaAuthorizerConfig: provider.lambdaAuthorizerConfig }),
-        ...(provider.openIDConnectConfig && { openIdConnectConfig: provider.openIDConnectConfig }),
-        ...(provider.userPoolConfig && { userPoolConfig: provider.userPoolConfig }),
-      }));
-    }
+    const additionalAuthProviders = graphqlApi.additionalAuthenticationProviders?.map((provider) => ({
+      authenticationType: provider.authenticationType,
+      ...(provider.lambdaAuthorizerConfig && { lambdaAuthorizerConfig: provider.lambdaAuthorizerConfig }),
+      ...(provider.openIDConnectConfig && { openIdConnectConfig: provider.openIDConnectConfig }),
+      ...(provider.userPoolConfig && { userPoolConfig: provider.userPoolConfig }),
+    }));
 
     const logging = extractLoggingConfig(graphqlApi);
     const dataDir = path.join(this.outputDir, 'amplify', 'data');
@@ -93,9 +93,90 @@ export class DataGenerator implements Generator {
 
           this.backendGenerator.addImport('./data/resource', ['data']);
           this.backendGenerator.addDefineBackendProperty(factory.createShorthandPropertyAssignment(factory.createIdentifier('data')));
+
+          // Add additional auth providers override to backend.ts
+          if (additionalAuthProviders && additionalAuthProviders.length > 0 && this.hasAuth) {
+            this.contributeAdditionalAuthProviders(additionalAuthProviders);
+          }
         },
       },
     ];
+  }
+
+  /**
+   * Contributes additional auth provider overrides to backend.ts.
+   * Generates: `cfnGraphqlApi.additionalAuthenticationProviders = [...]`
+   */
+  private contributeAdditionalAuthProviders(providers: Array<Record<string, unknown>>): void {
+    // const cfnGraphqlApi = backend.data.resources.cfnResources.cfnGraphqlApi;
+    const cfnGraphqlApiDecl = factory.createVariableStatement(
+      [],
+      factory.createVariableDeclarationList(
+        [
+          factory.createVariableDeclaration(
+            'cfnGraphqlApi',
+            undefined,
+            undefined,
+            factory.createPropertyAccessExpression(
+              factory.createPropertyAccessExpression(
+                factory.createPropertyAccessExpression(
+                  factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier('data')),
+                  factory.createIdentifier('resources'),
+                ),
+                factory.createIdentifier('cfnResources'),
+              ),
+              factory.createIdentifier('cfnGraphqlApi'),
+            ),
+          ),
+        ],
+        ts.NodeFlags.Const,
+      ),
+    );
+    this.backendGenerator.addStatement(cfnGraphqlApiDecl);
+
+    // cfnGraphqlApi.additionalAuthenticationProviders = [{ authenticationType: '...' }, ...]
+    const providerElements = providers.map((provider) => {
+      const props: ts.PropertyAssignment[] = [];
+      if (provider.authenticationType) {
+        props.push(
+          factory.createPropertyAssignment('authenticationType', factory.createStringLiteral(provider.authenticationType as string)),
+        );
+      }
+      if (provider.userPoolConfig) {
+        const userPoolConfig = provider.userPoolConfig as Record<string, unknown>;
+        const userPoolConfigProps: ts.PropertyAssignment[] = [];
+        if (userPoolConfig.userPoolId) {
+          userPoolConfigProps.push(
+            factory.createPropertyAssignment(
+              'userPoolId',
+              factory.createPropertyAccessExpression(
+                factory.createPropertyAccessExpression(
+                  factory.createPropertyAccessExpression(
+                    factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier('auth')),
+                    factory.createIdentifier('resources'),
+                  ),
+                  factory.createIdentifier('userPool'),
+                ),
+                factory.createIdentifier('userPoolId'),
+              ),
+            ),
+          );
+        }
+        props.push(factory.createPropertyAssignment('userPoolConfig', factory.createObjectLiteralExpression(userPoolConfigProps, true)));
+      }
+      return factory.createObjectLiteralExpression(props, true);
+    });
+
+    const assignment = factory.createExpressionStatement(
+      factory.createAssignment(
+        factory.createPropertyAccessExpression(
+          factory.createIdentifier('cfnGraphqlApi'),
+          factory.createIdentifier('additionalAuthenticationProviders'),
+        ),
+        factory.createArrayLiteralExpression(providerElements, true),
+      ),
+    );
+    this.backendGenerator.addStatement(assignment);
   }
 }
 

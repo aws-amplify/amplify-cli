@@ -16,7 +16,7 @@ export class BackendPackageJsonGenerator implements Generator {
         describe: async () => [`Generate ${filePath}`],
         execute: async () => {
           await fs.mkdir(path.dirname(filePath), { recursive: true });
-          await fs.writeFile(filePath, JSON.stringify({ type: 'module' }, null, 2), 'utf-8');
+          await fs.writeFile(filePath, JSON.stringify({ type: 'module' }, null, 2) + '\n', 'utf-8');
         },
       },
     ];

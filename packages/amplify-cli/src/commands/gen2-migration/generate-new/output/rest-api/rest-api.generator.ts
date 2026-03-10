@@ -25,13 +25,19 @@ export class RestApiGenerator implements Generator {
   private readonly gen1App: Gen1App;
   private readonly backendGenerator: BackendGenerator;
   private readonly defineRestApi: RestApiRenderer;
-  private readonly functionNames: ReadonlySet<string>;
+  private readonly functionNamesAndCategories: ReadonlyMap<string, string>;
 
-  public constructor(gen1App: Gen1App, backendGenerator: BackendGenerator, hasAuth: boolean, functionNames: ReadonlySet<string>) {
+  public constructor(
+    gen1App: Gen1App,
+    backendGenerator: BackendGenerator,
+    hasAuth: boolean,
+    functionNamesAndCategories: ReadonlyMap<string, string>,
+  ) {
     this.gen1App = gen1App;
     this.backendGenerator = backendGenerator;
-    this.functionNames = functionNames;
-    this.defineRestApi = new RestApiRenderer(hasAuth, functionNames);
+    this.functionNamesAndCategories = functionNamesAndCategories;
+    // Renderer receives the set of function names; the map's keys provide this.
+    this.defineRestApi = new RestApiRenderer(hasAuth, new Set(functionNamesAndCategories.keys()));
   }
 
   /**
@@ -55,6 +61,7 @@ export class RestApiGenerator implements Generator {
           this.addRestApiImports();
           this.addFunctionImports(restApis);
 
+          this.backendGenerator.ensureBranchName();
           const statements = this.defineRestApi.render(restApis);
           for (const statement of statements) {
             this.backendGenerator.addStatement(statement);
@@ -92,7 +99,7 @@ export class RestApiGenerator implements Generator {
     }
 
     for (const funcName of allUniqueFunctions) {
-      if (this.functionNames.has(funcName)) {
+      if (this.functionNamesAndCategories.has(funcName)) {
         continue;
       }
       this.backendGenerator.addImport(`./function/${funcName}/resource`, [funcName]);

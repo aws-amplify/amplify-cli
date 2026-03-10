@@ -6,7 +6,7 @@ import { AmplifyMigrationOperation } from '../../_operation';
 const GEN2_GITIGNORE_ENTRIES = ['.amplify', 'amplify_outputs*', 'amplifyconfiguration*', 'aws-exports*', 'node_modules', 'build', 'dist'];
 
 /**
- * Updates .gitignore with Gen2-specific entries.
+ * Updates .gitignore: removes the Gen1 amplify block and adds Gen2 entries.
  */
 export class GitIgnoreGenerator implements Generator {
   public async plan(): Promise<AmplifyMigrationOperation[]> {
@@ -22,14 +22,23 @@ export class GitIgnoreGenerator implements Generator {
             // File doesn't exist yet
           }
 
-          const lines = content.split('\n');
-          const toAdd = GEN2_GITIGNORE_ENTRIES.filter((entry) => !lines.includes(entry));
+          // Remove Gen1 amplify-do-not-edit block
+          const gen1BlockRegex = /#amplify-do-not-edit-begin[\s\S]*#amplify-do-not-edit-end/g;
+          content = content.replace(gen1BlockRegex, '');
 
-          if (toAdd.length > 0) {
-            const suffix = content.endsWith('\n') ? '' : '\n';
-            const updated = content + suffix + toAdd.join('\n') + '\n';
-            await fs.writeFile(gitignorePath, updated, 'utf-8');
+          // Add Gen2 entries
+          if (!content.includes('.amplify')) {
+            content = `${content}\n# amplify\n.amplify`;
           }
+          for (const entry of GEN2_GITIGNORE_ENTRIES.slice(1)) {
+            if (!content.includes(entry)) {
+              content = `${content}\n${entry}`;
+            }
+          }
+
+          // Remove empty lines and write
+          content = content.replace(/^\s*[\r\n]/gm, '');
+          await fs.writeFile(gitignorePath, `${content}\n`, 'utf-8');
         },
       },
     ];

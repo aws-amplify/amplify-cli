@@ -81,7 +81,7 @@ export class RootPackageJsonGenerator implements Generator {
           });
 
           await fs.mkdir(path.dirname(packageJsonPath), { recursive: true });
-          await fs.writeFile(packageJsonPath, JSON.stringify(patched, null, 2), 'utf-8');
+          await fs.writeFile(packageJsonPath, JSON.stringify(patched, null, 2) + '\n', 'utf-8');
         },
       },
     ];

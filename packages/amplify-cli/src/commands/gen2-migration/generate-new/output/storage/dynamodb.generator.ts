@@ -48,7 +48,7 @@ export class DynamoDBGenerator implements Generator {
 
           const statements = this.defineTable.render({ tables, hasS3Bucket: this.hasS3Bucket });
           for (const stmt of statements) {
-            this.backendGenerator.addStatement(stmt);
+            this.backendGenerator.addEarlyStatement(stmt);
           }
         },
       },

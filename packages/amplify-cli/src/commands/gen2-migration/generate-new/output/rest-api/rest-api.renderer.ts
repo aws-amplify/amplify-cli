@@ -1,6 +1,5 @@
 import ts from 'typescript';
 import { RestApiDefinition, RestApiPath } from '../../input/gen1-app';
-import { createBranchNameDeclaration } from '../../ts-factory-utils';
 
 const factory = ts.factory;
 
@@ -26,8 +25,6 @@ export class RestApiRenderer {
    */
   public render(restApis: readonly RestApiDefinition[]): ts.Statement[] {
     const statements: ts.Statement[] = [];
-
-    statements.push(this.renderBranchName());
 
     for (const restApi of restApis) {
       const stackVarName = `${restApi.apiName}Stack`;
@@ -55,10 +52,6 @@ export class RestApiRenderer {
     }
 
     return statements;
-  }
-
-  private renderBranchName(): ts.Statement {
-    return createBranchNameDeclaration();
   }
 
   private renderStack(restApi: RestApiDefinition, stackVarName: string): ts.Statement {
