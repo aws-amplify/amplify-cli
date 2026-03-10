@@ -3,7 +3,6 @@ import * as lambda from '@aws-sdk/client-lambda';
 import { MigrationApp } from '../app';
 import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import path from 'path';
-// import { FunctionEnvValueCfnResolver } from '../resolvers/function-env-value-cfn-resolver';
 
 /**
  * Mock for the AWS Lambda service client (`@aws-sdk/client-lambda`).
@@ -61,7 +60,6 @@ export class LambdaMock {
           path.join(this.app.ccbPath, 'function', resourceName, 'function-parameters.json'),
         );
         const secrets = (parameters?.secretNames ?? []) as string[];
-        // const cfnResolver = new FunctionEnvValueCfnResolver(this.app, input.FunctionName!);
 
         for (const key of Object.keys(envVariables)) {
           const value = envVariables[key];

@@ -36,24 +36,11 @@ export class S3Mock {
 
   constructor(private readonly app: MigrationApp) {
     this.mock = mockClient(s3.S3Client);
-    this.mockGetBucketNotificationConfigurationDefault();
     this.mockGetBucketAccelerateConfiguration();
     this.mockGetBucketVersioning();
     this.mockGetBucketEncryption();
     this.mockGetObject();
     this.mockGetBucketNotificationConfiguration();
-  }
-
-  private mockGetBucketNotificationConfigurationDefault() {
-    this.mock.on(s3.GetBucketNotificationConfigurationCommand).callsFake(
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      async (input: s3.GetBucketNotificationConfigurationCommandInput): Promise<s3.GetBucketNotificationConfigurationCommandOutput> => {
-        return {
-          LambdaFunctionConfigurations: [],
-          $metadata: {},
-        };
-      },
-    );
   }
 
   private mockGetBucketAccelerateConfiguration() {
