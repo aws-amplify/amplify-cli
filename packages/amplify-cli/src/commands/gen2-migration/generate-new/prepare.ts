@@ -42,20 +42,12 @@ export async function prepareNew(logger: Logger, appId: string, envName: string,
 
   const generators: Generator[] = [];
 
-  let authProviderSetup: Generator | undefined;
   if (meta.auth) {
-    const authGenerator = new AuthGenerator(gen1App, backendGenerator, outputDir);
-    generators.push(authGenerator);
-    authProviderSetup = await authGenerator.planProviderSetup();
+    generators.push(new AuthGenerator(gen1App, backendGenerator, outputDir));
   }
 
   if (meta.storage) {
     generators.push(new StorageGenerator(gen1App, backendGenerator, outputDir));
-  }
-
-  // Provider setup must appear after storage overrides in backend.ts.
-  if (authProviderSetup) {
-    generators.push(authProviderSetup);
   }
 
   if (meta.api) {

@@ -163,6 +163,10 @@ export class AuthGenerator implements Generator {
       }
     }
 
+    const hasIdentityProviders =
+      authDefinition.userPoolClient?.SupportedIdentityProviders !== undefined &&
+      authDefinition.userPoolClient.SupportedIdentityProviders.length > 0;
+
     return [
       {
         describe: async () => ['Generate auth/resource.ts'],
@@ -182,48 +186,13 @@ export class AuthGenerator implements Generator {
           await fs.writeFile(path.join(authDir, 'resource.ts'), content, 'utf-8');
 
           this.contributeToBackend(authDefinition);
+
+          if (hasIdentityProviders) {
+            this.contributeProviderSetup();
+          }
         },
       },
     ];
-  }
-
-  /**
-   * Returns a generator for identity provider setup code that must
-   * run after storage overrides in backend.ts, or undefined if the
-   * auth config has no identity providers.
-   *
-   * The orchestrator should insert this generator after storage.
-   */
-  public async planProviderSetup(): Promise<Generator | undefined> {
-    const authCategory = await this.gen1App.fetchMetaCategory('auth');
-    if (!authCategory) return undefined;
-
-    const isImported = Object.values(authCategory).some(
-      (value) =>
-        typeof value === 'object' &&
-        value !== null &&
-        'serviceType' in value &&
-        (value as Record<string, unknown>).serviceType === 'imported',
-    );
-    if (isImported) return undefined;
-
-    const resources = await this.gen1App.fetchResourcesByLogicalId();
-    const userPoolClient = await this.gen1App.aws.fetchUserPoolClient(resources);
-    const hasIdentityProviders =
-      userPoolClient?.SupportedIdentityProviders !== undefined && userPoolClient.SupportedIdentityProviders.length > 0;
-
-    if (!hasIdentityProviders) return undefined;
-
-    return {
-      plan: async () => [
-        {
-          describe: async () => ['Generate identity provider setup in backend.ts'],
-          execute: async () => {
-            this.contributeProviderSetup();
-          },
-        },
-      ],
-    };
   }
 
   /**
