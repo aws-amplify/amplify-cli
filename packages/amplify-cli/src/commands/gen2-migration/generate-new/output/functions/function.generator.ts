@@ -8,7 +8,7 @@ import { Gen1App } from '../../input/gen1-app';
 import { printNodes } from '../../ts-writer';
 import { FunctionRenderer, RenderDefineFunctionOptions } from './function.renderer';
 import { RootPackageJsonGenerator } from '../root-package-json.generator';
-import { extractFilePathFromHandler } from '../../ts-factory-utils';
+import { extractFilePathFromHandler, propAccess, constDecl } from '../../ts-factory-utils';
 
 const factory = ts.factory;
 
@@ -681,11 +681,7 @@ function createAddEnvironmentCall(functionName: string, hatch: EnvVarEscapeHatch
  * Builds `backend.a.b.c` from path segments.
  */
 function backendPath(...segments: string[]): ts.Expression {
-  let expr: ts.Expression = factory.createIdentifier('backend');
-  for (const segment of segments) {
-    expr = factory.createPropertyAccessExpression(expr, factory.createIdentifier(segment));
-  }
-  return expr;
+  return propAccess('backend', ...segments);
 }
 
 /**
@@ -707,7 +703,7 @@ function backendTableProp(tableName: string, property: string): ts.Expression {
  * Builds `varName.property` (no `backend.` prefix — for standalone DynamoDB tables).
  */
 function directProp(varName: string, property: string): ts.Expression {
-  return factory.createPropertyAccessExpression(factory.createIdentifier(varName), factory.createIdentifier(property));
+  return propAccess(varName, property);
 }
 
 /**

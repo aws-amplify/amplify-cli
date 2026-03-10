@@ -44,7 +44,7 @@ import {
 } from './auth.renderer';
 
 import { parseAuthAccessFromTemplate } from '../../input/auth-access-analyzer';
-import { extractFilePathFromHandler } from '../../ts-factory-utils';
+import { extractFilePathFromHandler, constFromBackend, assignProp, jsValue } from '../../ts-factory-utils';
 
 const factory = ts.factory;
 
@@ -221,7 +221,7 @@ export class AuthGenerator implements Generator {
 
     // cfnUserPoolClient override for OAuth flows (must come before addClient)
     if (auth.oAuthFlows) {
-      this.backendGenerator.addStatement(createConstFromBackendPath('cfnUserPoolClient', 'auth.resources.cfnResources.cfnUserPoolClient'));
+      this.backendGenerator.addStatement(constFromBackend('cfnUserPoolClient', 'auth', 'resources', 'cfnResources', 'cfnUserPoolClient'));
       this.backendGenerator.addStatement(createPropertyAssignment('cfnUserPoolClient', 'allowedOAuthFlows', auth.oAuthFlows));
     }
 
@@ -1084,62 +1084,15 @@ function getAuthDefinition({
 }
 
 // ── Backend.ts helper functions ────────────────────────────────────
+// Promoted to ts-factory-utils.ts: constFromBackend, assignProp, jsValue.
+// The aliases below keep the auth-generator call sites unchanged.
+const createConstFromBackendPath = (varName: string, propertyPath: string): ts.VariableStatement =>
+  constFromBackend(varName, ...propertyPath.split('.'));
 
-/**
- * Creates `const {varName} = backend.{path};`
- */
-function createConstFromBackendPath(varName: string, propertyPath: string): ts.VariableStatement {
-  const parts = propertyPath.split('.');
-  let expr: ts.Expression = factory.createIdentifier('backend');
-  for (const part of parts) {
-    expr = factory.createPropertyAccessExpression(expr, factory.createIdentifier(part));
-  }
-  return factory.createVariableStatement(
-    [],
-    factory.createVariableDeclarationList([factory.createVariableDeclaration(varName, undefined, undefined, expr)], ts.NodeFlags.Const),
-  );
-}
-
-/**
- * Creates `{varName}.{property} = {value};`
- */
-function createPropertyAssignment(
+const createPropertyAssignment = (
   varName: string,
   property: string,
   value: number | string | boolean | string[] | object | undefined,
-): ts.ExpressionStatement {
-  return factory.createExpressionStatement(
-    factory.createAssignment(
-      factory.createPropertyAccessExpression(factory.createIdentifier(varName), factory.createIdentifier(property)),
-      getOverrideValue(value),
-    ),
-  );
-}
+): ts.ExpressionStatement => assignProp(varName, property, value);
 
-/**
- * Converts a JS value to a TypeScript AST expression.
- */
-function getOverrideValue(value: number | string | boolean | string[] | object | undefined): ts.Expression {
-  if (value === undefined) {
-    return factory.createIdentifier('undefined');
-  }
-  if (typeof value === 'boolean') {
-    return value ? factory.createTrue() : factory.createFalse();
-  }
-  if (typeof value === 'number') {
-    return factory.createNumericLiteral(value);
-  }
-  if (typeof value === 'string') {
-    return factory.createStringLiteral(value);
-  }
-  if (Array.isArray(value)) {
-    return factory.createArrayLiteralExpression(value.map((v) => factory.createStringLiteral(v)));
-  }
-  if (typeof value === 'object') {
-    const props = Object.entries(value).map(([key, val]) =>
-      factory.createPropertyAssignment(key, getOverrideValue(val as number | string | boolean | string[] | object | undefined)),
-    );
-    return factory.createObjectLiteralExpression(props, true);
-  }
-  return factory.createIdentifier('undefined');
-}
+const getOverrideValue = jsValue;

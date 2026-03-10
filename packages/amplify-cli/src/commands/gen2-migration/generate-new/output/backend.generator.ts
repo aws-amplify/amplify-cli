@@ -4,6 +4,7 @@ import fs from 'node:fs/promises';
 import { Generator } from '../generator';
 import { AmplifyMigrationOperation } from '../../_operation';
 import { printNodes } from '../ts-writer';
+import { constDecl, propAccess } from '../ts-factory-utils';
 
 const factory = ts.factory;
 
@@ -75,21 +76,7 @@ export class BackendGenerator implements Generator {
   public ensureBranchName(): void {
     if (this.hasBranchName) return;
     this.hasBranchName = true;
-    const branchNameDecl = factory.createVariableStatement(
-      [],
-      factory.createVariableDeclarationList(
-        [
-          factory.createVariableDeclaration(
-            'branchName',
-            undefined,
-            undefined,
-            factory.createIdentifier('process.env.AWS_BRANCH ?? "sandbox"'),
-          ),
-        ],
-        ts.NodeFlags.Const,
-      ),
-    );
-    this.postDefineStatements.push(branchNameDecl);
+    this.postDefineStatements.push(constDecl('branchName', factory.createIdentifier('process.env.AWS_BRANCH ?? "sandbox"')));
   }
 
   /**
@@ -103,25 +90,12 @@ export class BackendGenerator implements Generator {
     this.hasStorageStack = true;
 
     const stackExpression = hasS3Bucket
-      ? factory.createPropertyAccessExpression(
-          factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier('storage')),
-          factory.createIdentifier('stack'),
-        )
-      : factory.createCallExpression(
-          factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier('createStack')),
-          undefined,
-          [factory.createStringLiteral('storage')],
-        );
+      ? propAccess('backend', 'storage', 'stack')
+      : factory.createCallExpression(propAccess('backend', 'createStack') as ts.PropertyAccessExpression, undefined, [
+          factory.createStringLiteral('storage'),
+        ]);
 
-    this.earlyStatements.push(
-      factory.createVariableStatement(
-        [],
-        factory.createVariableDeclarationList(
-          [factory.createVariableDeclaration('storageStack', undefined, undefined, stackExpression)],
-          ts.NodeFlags.Const,
-        ),
-      ),
-    );
+    this.earlyStatements.push(constDecl('storageStack', stackExpression));
   }
 
   /**
@@ -166,14 +140,7 @@ export class BackendGenerator implements Generator {
           const callExpr = factory.createCallExpression(factory.createIdentifier('defineBackend'), undefined, [
             factory.createObjectLiteralExpression(sortedProperties, true),
           ]);
-          const backendDecl = factory.createVariableStatement(
-            [],
-            factory.createVariableDeclarationList(
-              [factory.createVariableDeclaration('backend', undefined, undefined, callExpr)],
-              ts.NodeFlags.Const,
-            ),
-          );
-          nodes.push(backendDecl);
+          nodes.push(constDecl('backend', callExpr));
 
           nodes.push(...this.earlyStatements);
           nodes.push(...this.postDefineStatements);
