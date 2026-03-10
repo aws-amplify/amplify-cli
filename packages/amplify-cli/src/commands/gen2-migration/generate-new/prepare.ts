@@ -48,29 +48,20 @@ export async function prepareNew(logger: Logger, appId: string, envName: string,
 
   const generators: Generator[] = [];
 
-  // Auth is split into two phases: the first generates auth/resource.ts
-  // and contributes auth overrides to backend.ts. The second (provider
-  // setup) must appear after storage overrides in backend.ts. We insert
-  // it at the right point in the generator list.
-  let providerSetupGenerator: Generator | undefined;
+  let authProviderSetup: Generator | undefined;
   if (meta.auth) {
     const authGenerator = new AuthGenerator(gen1App, backendGenerator, outputDir);
-    const authOps = await authGenerator.plan();
-    if (authOps.length > 0) {
-      generators.push({ plan: async () => [authOps[0]] });
-    }
-    if (authOps.length > 1) {
-      providerSetupGenerator = { plan: async () => authOps.slice(1) };
-    }
+    generators.push(authGenerator);
+    authProviderSetup = await authGenerator.planProviderSetup();
   }
 
   if (meta.storage) {
     generators.push(new StorageGenerator(gen1App, backendGenerator, outputDir));
   }
 
-  // Provider setup runs after storage overrides.
-  if (providerSetupGenerator) {
-    generators.push(providerSetupGenerator);
+  // Provider setup must appear after storage overrides in backend.ts.
+  if (authProviderSetup) {
+    generators.push(authProviderSetup);
   }
 
   if (meta.api) {
@@ -87,8 +78,8 @@ export async function prepareNew(logger: Logger, appId: string, envName: string,
   }
 
   if (meta.function) {
-    const functionCategory = meta.function as Record<string, unknown>;
-    for (const resourceName of Object.keys(functionCategory)) {
+    const functionNames = await gen1App.fetchFunctionNames();
+    for (const resourceName of functionNames) {
       generators.push(new FunctionGenerator(gen1App, backendGenerator, packageJsonGenerator, outputDir, resourceName));
     }
   }
