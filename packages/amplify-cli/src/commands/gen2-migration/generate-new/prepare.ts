@@ -47,34 +47,28 @@ export async function prepareNew(logger: Logger, appId: string, envName: string,
     generators.push(new AuthGenerator(gen1App, backendGenerator, outputDir));
   }
 
-  if (meta.storage) {
-    const storageCategory = meta.storage as Record<string, Record<string, unknown>>;
-    for (const [resourceName, resourceMeta] of Object.entries(storageCategory)) {
-      if (resourceMeta.service === 'S3') {
-        generators.push(new S3Generator(gen1App, backendGenerator, outputDir));
-      } else if (resourceMeta.service === 'DynamoDB') {
-        generators.push(new DynamoDBGenerator(gen1App, backendGenerator, resourceName));
-      }
+  const storageCategory = (meta.storage ?? {}) as Record<string, Record<string, unknown>>;
+  for (const [resourceName, resourceMeta] of Object.entries(storageCategory)) {
+    if (resourceMeta.service === 'S3') {
+      generators.push(new S3Generator(gen1App, backendGenerator, outputDir));
+    } else if (resourceMeta.service === 'DynamoDB') {
+      generators.push(new DynamoDBGenerator(gen1App, backendGenerator, resourceName));
     }
   }
 
-  if (meta.api) {
-    const apiCategory = meta.api as Record<string, Record<string, unknown>>;
-    for (const [resourceName, resourceMeta] of Object.entries(apiCategory)) {
-      if (resourceMeta.service === 'AppSync') {
-        generators.push(new DataGenerator(gen1App, backendGenerator, outputDir));
-      } else if (resourceMeta.service === 'API Gateway') {
-        generators.push(new RestApiGenerator(gen1App, backendGenerator, resourceName));
-      }
+  const apiCategory = (meta.api ?? {}) as Record<string, Record<string, unknown>>;
+  for (const [resourceName, resourceMeta] of Object.entries(apiCategory)) {
+    if (resourceMeta.service === 'AppSync') {
+      generators.push(new DataGenerator(gen1App, backendGenerator, outputDir));
+    } else if (resourceMeta.service === 'API Gateway') {
+      generators.push(new RestApiGenerator(gen1App, backendGenerator, resourceName));
     }
   }
 
-  if (meta.analytics) {
-    const analyticsCategory = meta.analytics as Record<string, Record<string, unknown>>;
-    for (const [resourceName, resourceMeta] of Object.entries(analyticsCategory)) {
-      if (resourceMeta.service === 'Kinesis') {
-        generators.push(new AnalyticsGenerator(gen1App, backendGenerator, outputDir, resourceName));
-      }
+  const analyticsCategory = (meta.analytics ?? {}) as Record<string, Record<string, unknown>>;
+  for (const [resourceName, resourceMeta] of Object.entries(analyticsCategory)) {
+    if (resourceMeta.service === 'Kinesis') {
+      generators.push(new AnalyticsGenerator(gen1App, backendGenerator, outputDir, resourceName));
     }
   }
 
@@ -82,11 +76,9 @@ export async function prepareNew(logger: Logger, appId: string, envName: string,
     generators.push(new CustomResourcesGenerator(gen1App, backendGenerator, packageJsonGenerator, outputDir));
   }
 
-  if (meta.function) {
-    const functionNames = await gen1App.fetchFunctionNames();
-    for (const resourceName of functionNames) {
-      generators.push(new FunctionGenerator(gen1App, backendGenerator, packageJsonGenerator, outputDir, resourceName));
-    }
+  const functionNames = await gen1App.fetchFunctionNames();
+  for (const resourceName of functionNames) {
+    generators.push(new FunctionGenerator(gen1App, backendGenerator, packageJsonGenerator, outputDir, resourceName));
   }
 
   // Infrastructure generators run last — BackendGenerator accumulates
