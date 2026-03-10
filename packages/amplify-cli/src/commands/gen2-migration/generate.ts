@@ -5,7 +5,6 @@ import execa from 'execa';
 import { AmplifyMigrationStep } from './_step';
 import { AmplifyMigrationOperation } from './_operation';
 import { AmplifyGen2MigrationValidations } from './_validations';
-import { Logger } from '../gen2-migration';
 import { createAwsClients } from './generate-new/input/aws-clients';
 import { Gen1App } from './generate-new/input/gen1-app';
 import { Generator } from './generate-new/generator';
@@ -55,132 +54,121 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
    * can display descriptions to the user before confirmation.
    */
   public async execute(): Promise<AmplifyMigrationOperation[]> {
-    return prepare(this.logger, this.appId, this.currentEnvName, this.region);
+    const clients = createAwsClients(this.region);
+    const gen1App = new Gen1App({ appId: this.appId, region: this.region, envName: this.currentEnvName, clients });
+    const meta = await gen1App.fetchMeta();
+
+    const outputDir = await fs.mkdtemp(path.join(os.tmpdir(), 'amplify-gen2-'));
+    const backendGenerator = new BackendGenerator(outputDir);
+    const packageJsonGenerator = new RootPackageJsonGenerator(outputDir);
+
+    const generators: Generator[] = [];
+
+    if (meta.auth) {
+      generators.push(new AuthGenerator(gen1App, backendGenerator, outputDir));
+    }
+
+    const storageCategory = (meta.storage ?? {}) as Record<string, Record<string, unknown>>;
+    for (const [resourceName, resourceMeta] of Object.entries(storageCategory)) {
+      if (resourceMeta.service === 'S3') {
+        generators.push(new S3Generator(gen1App, backendGenerator, outputDir));
+      } else if (resourceMeta.service === 'DynamoDB') {
+        generators.push(new DynamoDBGenerator(gen1App, backendGenerator, resourceName));
+      }
+    }
+
+    const apiCategory = (meta.api ?? {}) as Record<string, Record<string, unknown>>;
+    for (const [resourceName, resourceMeta] of Object.entries(apiCategory)) {
+      if (resourceMeta.service === 'AppSync') {
+        generators.push(new DataGenerator(gen1App, backendGenerator, outputDir));
+      } else if (resourceMeta.service === 'API Gateway') {
+        generators.push(new RestApiGenerator(gen1App, backendGenerator, resourceName));
+      }
+    }
+
+    const analyticsCategory = (meta.analytics ?? {}) as Record<string, Record<string, unknown>>;
+    for (const [resourceName, resourceMeta] of Object.entries(analyticsCategory)) {
+      if (resourceMeta.service === 'Kinesis') {
+        generators.push(new AnalyticsKinesisGenerator(gen1App, backendGenerator, outputDir, resourceName));
+      }
+    }
+
+    const customCategory = (meta.custom ?? {}) as Record<string, Record<string, unknown>>;
+    for (const resourceName of Object.keys(customCategory)) {
+      generators.push(new CustomResourceGenerator(gen1App, backendGenerator, packageJsonGenerator, outputDir, resourceName));
+    }
+
+    const functionNames = await gen1App.fetchFunctionNames();
+    for (const resourceName of functionNames) {
+      generators.push(new FunctionGenerator(gen1App, backendGenerator, packageJsonGenerator, outputDir, resourceName));
+    }
+
+    // Infrastructure generators run last — BackendGenerator accumulates
+    // contributions from all category generators above.
+    generators.push(backendGenerator);
+    generators.push(packageJsonGenerator);
+    generators.push(new BackendPackageJsonGenerator(outputDir));
+    generators.push(new TsConfigGenerator(outputDir));
+    generators.push(new AmplifyYmlGenerator(gen1App));
+    generators.push(new GitIgnoreGenerator());
+
+    // No-op operation shown first so the user sees "Delete amplify/" at the top.
+    // The actual deletion happens in the post-generation operation below.
+    const operations: AmplifyMigrationOperation[] = [
+      {
+        describe: async () => ['Delete amplify/'],
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        execute: async () => {},
+      },
+    ];
+
+    // Collect all operations from generators in order.
+    for (const generator of generators) {
+      operations.push(...(await generator.plan()));
+    }
+
+    // Post-generation: replace local amplify folder.
+    operations.push({
+      describe: async () => [],
+      execute: async () => {
+        const cwd = process.cwd();
+        this.logger.info('Deleting amplify/');
+        await fs.rm(AMPLIFY_DIR, { recursive: true });
+        await fs.rename(path.join(outputDir, 'amplify'), path.join(cwd, 'amplify'));
+        await fs.rename(path.join(outputDir, 'package.json'), path.join(cwd, 'package.json'));
+        await fs.rm(outputDir, { recursive: true });
+      },
+    });
+
+    // Post-generation: reinstall dependencies.
+    operations.push({
+      describe: async () => ['Install Gen2 dependencies'],
+      execute: async () => {
+        const cwd = process.cwd();
+        const packageLockPath = path.join(cwd, 'package-lock.json');
+        const nodeModulesPath = path.join(cwd, 'node_modules');
+
+        if (await fileOrDirectoryExists(packageLockPath)) {
+          this.logger.info('Deleting package-lock.json');
+          await fs.rm(packageLockPath, { recursive: true });
+        }
+
+        if (await fileOrDirectoryExists(nodeModulesPath)) {
+          this.logger.info('Deleting node_modules');
+          await fs.rm(nodeModulesPath, { recursive: true });
+        }
+
+        this.logger.info('Installing dependencies');
+        await DependenciesInstaller.install();
+      },
+    });
+
+    return operations;
   }
 
   public async rollback(): Promise<AmplifyMigrationOperation[]> {
     throw new Error('Not Implemented');
   }
-}
-
-/**
- * Assembles all category generators based on the Gen1 app's
- * amplify-meta.json and returns the full list of migration operations.
- *
- * Exported for snapshot tests that call the orchestration directly
- * without constructing the full AmplifyMigrationStep lifecycle.
- */
-export async function prepare(logger: Logger, appId: string, envName: string, region: string): Promise<AmplifyMigrationOperation[]> {
-  const clients = createAwsClients(region);
-  const gen1App = new Gen1App({ appId, region, envName, clients });
-  const meta = await gen1App.fetchMeta();
-
-  const outputDir = await fs.mkdtemp(path.join(os.tmpdir(), 'amplify-gen2-'));
-  const backendGenerator = new BackendGenerator(outputDir);
-  const packageJsonGenerator = new RootPackageJsonGenerator(outputDir);
-
-  const generators: Generator[] = [];
-
-  if (meta.auth) {
-    generators.push(new AuthGenerator(gen1App, backendGenerator, outputDir));
-  }
-
-  const storageCategory = (meta.storage ?? {}) as Record<string, Record<string, unknown>>;
-  for (const [resourceName, resourceMeta] of Object.entries(storageCategory)) {
-    if (resourceMeta.service === 'S3') {
-      generators.push(new S3Generator(gen1App, backendGenerator, outputDir));
-    } else if (resourceMeta.service === 'DynamoDB') {
-      generators.push(new DynamoDBGenerator(gen1App, backendGenerator, resourceName));
-    }
-  }
-
-  const apiCategory = (meta.api ?? {}) as Record<string, Record<string, unknown>>;
-  for (const [resourceName, resourceMeta] of Object.entries(apiCategory)) {
-    if (resourceMeta.service === 'AppSync') {
-      generators.push(new DataGenerator(gen1App, backendGenerator, outputDir));
-    } else if (resourceMeta.service === 'API Gateway') {
-      generators.push(new RestApiGenerator(gen1App, backendGenerator, resourceName));
-    }
-  }
-
-  const analyticsCategory = (meta.analytics ?? {}) as Record<string, Record<string, unknown>>;
-  for (const [resourceName, resourceMeta] of Object.entries(analyticsCategory)) {
-    if (resourceMeta.service === 'Kinesis') {
-      generators.push(new AnalyticsKinesisGenerator(gen1App, backendGenerator, outputDir, resourceName));
-    }
-  }
-
-  const customCategory = (meta.custom ?? {}) as Record<string, Record<string, unknown>>;
-  for (const resourceName of Object.keys(customCategory)) {
-    generators.push(new CustomResourceGenerator(gen1App, backendGenerator, packageJsonGenerator, outputDir, resourceName));
-  }
-
-  const functionNames = await gen1App.fetchFunctionNames();
-  for (const resourceName of functionNames) {
-    generators.push(new FunctionGenerator(gen1App, backendGenerator, packageJsonGenerator, outputDir, resourceName));
-  }
-
-  // Infrastructure generators run last — BackendGenerator accumulates
-  // contributions from all category generators above.
-  generators.push(backendGenerator);
-  generators.push(packageJsonGenerator);
-  generators.push(new BackendPackageJsonGenerator(outputDir));
-  generators.push(new TsConfigGenerator(outputDir));
-  generators.push(new AmplifyYmlGenerator(gen1App));
-  generators.push(new GitIgnoreGenerator());
-
-  // No-op operation shown first so the user sees "Delete amplify/" at the top.
-  // The actual deletion happens in the post-generation operation below.
-  const operations: AmplifyMigrationOperation[] = [
-    {
-      describe: async () => ['Delete amplify/'],
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
-      execute: async () => {},
-    },
-  ];
-
-  // Collect all operations from generators in order.
-  for (const generator of generators) {
-    operations.push(...(await generator.plan()));
-  }
-
-  // Post-generation: replace local amplify folder.
-  operations.push({
-    describe: async () => [],
-    execute: async () => {
-      const cwd = process.cwd();
-      logger.info('Deleting amplify/');
-      await fs.rm(AMPLIFY_DIR, { recursive: true });
-      await fs.rename(path.join(outputDir, 'amplify'), path.join(cwd, 'amplify'));
-      await fs.rename(path.join(outputDir, 'package.json'), path.join(cwd, 'package.json'));
-      await fs.rm(outputDir, { recursive: true });
-    },
-  });
-
-  // Post-generation: reinstall dependencies.
-  operations.push({
-    describe: async () => ['Install Gen2 dependencies'],
-    execute: async () => {
-      const cwd = process.cwd();
-      const packageLockPath = path.join(cwd, 'package-lock.json');
-      const nodeModulesPath = path.join(cwd, 'node_modules');
-
-      if (await fileOrDirectoryExists(packageLockPath)) {
-        logger.info('Deleting package-lock.json');
-        await fs.rm(packageLockPath, { recursive: true });
-      }
-
-      if (await fileOrDirectoryExists(nodeModulesPath)) {
-        logger.info('Deleting node_modules');
-        await fs.rm(nodeModulesPath, { recursive: true });
-      }
-
-      logger.info('Installing dependencies');
-      await DependenciesInstaller.install();
-    },
-  });
-
-  return operations;
 }
 
 /**
