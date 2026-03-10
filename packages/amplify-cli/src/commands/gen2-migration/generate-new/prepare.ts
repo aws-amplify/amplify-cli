@@ -40,10 +40,6 @@ export async function prepareNew(logger: Logger, appId: string, envName: string,
   const backendGenerator = new BackendGenerator(outputDir);
   const packageJsonGenerator = new RootPackageJsonGenerator(outputDir);
 
-  // Pre-fetch all stack resources so that mock clients can resolve
-  // physical resource IDs (e.g., Lambda function names → stack names).
-  await gen1App.fetchAllStackResources();
-
   const generators: Generator[] = [];
 
   let authProviderSetup: Generator | undefined;
