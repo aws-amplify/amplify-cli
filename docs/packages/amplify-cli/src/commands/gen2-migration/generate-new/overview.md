@@ -71,14 +71,16 @@ class BackendGenerator implements Generator {
 
 Each generator receives `Gen1App`, `BackendGenerator`, the output directory, and a resource name. It writes its `resource.ts` and contributes to `BackendGenerator` and `RootPackageJsonGenerator`.
 
-## Design Rules
+## Design Principles
 
-1. **Generators are per-resource** — one generator per resource entry in `amplify-meta.json`
-2. **Orchestrator does zero data derivation** — reads meta keys/service types, delegates everything else to generators via `Gen1App`
-3. **BackendGenerator accumulates** — category generators contribute; `BackendGenerator` assembles `backend.ts` when its own `plan()` runs last
-4. **Operations are returned, not executed** — `prepareNew()` returns `AmplifyMigrationOperation[]` to the parent dispatcher for describe → confirm → execute
-5. **No imports from old code** — `generate-new/` is fully self-contained
-6. **Renderers are pure** — no AWS calls, no side effects, no `Gen1App` dependency
+- **Generators are per-resource** — one generator per resource entry in `amplify-meta.json`
+- **Orchestrator does zero data derivation** — reads meta keys/service types, delegates everything else to generators via `Gen1App`
+- **All generators access Gen1 state through `Gen1App`** — lazy, cached, mockable facade
+- **Category generators contribute to `backend.ts` through `BackendGenerator`** — `BackendGenerator` assembles `backend.ts` when its own `plan()` runs last
+- **Each generator is self-contained** — no cross-category logic in the orchestrator
+- **Adding a new category requires only creating the generator** + one line in the orchestrator
+- **Operations are returned, not executed** — `prepareNew()` returns `AmplifyMigrationOperation[]` to the parent dispatcher for describe, confirm, execute
+- **Renderers are pure** — no AWS calls, no side effects, no `Gen1App` dependency
 
 ## Execution Flow
 
@@ -104,16 +106,6 @@ flowchart TD
     STEP -->|"collect plan() from all generators"| OPS["operations: AmplifyMigrationOperation array"]
     OPS -->|return to| DISP["Parent dispatcher: describe then execute"]
 ```
-
-## Design Principles
-
-These principles drove the design. See `REFACTORING_GENERATE.md` for full details.
-
-- **R1** — All generators access Gen1 app info through `Gen1App` facade (lazy, cached, mockable)
-- **R2** — Category generators contribute to `backend.ts` through `BackendGenerator`
-- **R3** — Adding a new category requires only creating the generator + one line in the orchestrator
-- **R4** — Each generator is self-contained — no cross-category logic in the orchestrator
-- **R5** — Generators support dry run via `plan()` returning describable operations
 
 ## File Map
 
