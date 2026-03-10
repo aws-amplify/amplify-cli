@@ -62,12 +62,12 @@ userPool.addClient('NativeAppClient', {
 const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 backend.fetchuseractivity.resources.cfnResources.cfnFunction.functionName = `fetchuseractivity-${branchName}`;
 backend.fetchuseractivity.addEnvironment(
-  'STORAGE_ACTIVITY_ARN',
-  activity.tableArn
-);
-backend.fetchuseractivity.addEnvironment(
   'STORAGE_ACTIVITY_STREAMARN',
   activity.tableStreamArn!
+);
+backend.fetchuseractivity.addEnvironment(
+  'STORAGE_ACTIVITY_ARN',
+  activity.tableArn
 );
 backend.fetchuseractivity.addEnvironment(
   'STORAGE_ACTIVITY_NAME',
@@ -85,12 +85,12 @@ activity.grant(
 );
 backend.recorduseractivity.resources.cfnResources.cfnFunction.functionName = `recorduseractivity-${branchName}`;
 backend.recorduseractivity.addEnvironment(
-  'STORAGE_ACTIVITY_ARN',
-  activity.tableArn
-);
-backend.recorduseractivity.addEnvironment(
   'STORAGE_ACTIVITY_STREAMARN',
   activity.tableStreamArn!
+);
+backend.recorduseractivity.addEnvironment(
+  'STORAGE_ACTIVITY_ARN',
+  activity.tableArn
 );
 backend.recorduseractivity.addEnvironment(
   'STORAGE_ACTIVITY_NAME',

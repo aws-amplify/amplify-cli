@@ -11,26 +11,15 @@ import { RootPackageJsonGenerator } from '../root-package-json.generator';
 
 const factory = ts.factory;
 
-// Maps Gen1 environment variable patterns to Gen2 backend resource paths
-const ENV_VAR_PATTERNS: Record<string, string> = {
-  'API_.*_GRAPHQLAPIENDPOINTOUTPUT': 'data.graphqlUrl',
-  'API_.*_GRAPHQLAPIIDOUTPUT': 'data.apiId',
-  'API_.*_GRAPHQLAPIKEYOUTPUT': 'data.apiKey!',
-  'API_.*TABLE_ARN': 'data.resources.tables[{table}].tableArn',
-  'API_.*TABLE_NAME': 'data.resources.tables[{table}].tableName',
-  'AUTH_.*_USERPOOLID': 'auth.resources.userPool.userPoolId',
-  'STORAGE_.*_ARN': '{table}.tableArn',
-  'STORAGE_.*_NAME': '{table}.tableName',
-  'STORAGE_.*_STREAMARN': '{table}.tableStreamArn!',
-  'STORAGE_.*_BUCKETNAME': 'storage.resources.bucket.bucketName',
-  'FUNCTION_.*_NAME': '{function}.resources.lambda.functionName',
-};
-
-// Env var suffixes that should be filtered out and handled as escape hatches
-const FILTERED_ENV_SUFFIXES = ['GRAPHQLAPIKEYOUTPUT', 'GRAPHQLAPIENDPOINTOUTPUT', 'GRAPHQLAPIIDOUTPUT', 'TABLE_ARN', 'TABLE_NAME'];
-
-const STORAGE_ENV_SUFFIXES = ['ARN', 'NAME', 'STREAMARN', 'BUCKETNAME'];
-const AUTH_ENV_SUFFIXES = ['USERPOOLID'];
+/**
+ * An environment variable that references a Gen2 backend resource.
+ * The expression is the TypeScript AST node for the value argument
+ * of `backend.functionName.addEnvironment(name, expression)`.
+ */
+interface EnvVarEscapeHatch {
+  readonly name: string;
+  readonly expression: ts.Expression;
+}
 
 /**
  * Resolved function definition combining local metadata and AWS config.
@@ -45,7 +34,7 @@ interface ResolvedFunction {
   readonly runtime?: string;
   readonly schedule?: string;
   readonly environment?: Record<string, string>;
-  readonly filteredEnvironmentVariables: Record<string, string>;
+  readonly escapeHatches: readonly EnvVarEscapeHatch[];
   readonly dynamoActions: string[];
   readonly graphqlApiPermissions: { readonly hasMutation: boolean; readonly hasQuery: boolean };
 }
@@ -134,10 +123,9 @@ export class FunctionGenerator implements Generator {
     const schedule = await this.gen1App.aws.fetchFunctionSchedule(deployedName);
     const entry = extractFilePathFromHandler(config.Handler ?? 'index.js');
 
-    // Filter environment variables that reference other Amplify resources
-    const envVars = { ...(config.Environment?.Variables ?? {}) };
-    const filteredEnvVars: Record<string, string> = {};
-    filterResourceEnvVars(envVars, filteredEnvVars);
+    // Classify environment variables: retained ones stay in defineFunction(),
+    // escape hatches become addEnvironment() calls in backend.ts.
+    const { retained, escapeHatches } = classifyEnvVars(config.Environment?.Variables ?? {});
 
     // Extract DynamoDB actions and GraphQL API permissions from the function's CloudFormation template
     const { dynamoActions, graphqlApiPermissions } = await this.extractCfnPermissions();
@@ -151,8 +139,8 @@ export class FunctionGenerator implements Generator {
       memoryMB: config.MemorySize,
       runtime,
       schedule,
-      environment: Object.keys(envVars).length > 0 ? envVars : undefined,
-      filteredEnvironmentVariables: filteredEnvVars,
+      environment: Object.keys(retained).length > 0 ? retained : undefined,
+      escapeHatches,
       dynamoActions,
       graphqlApiPermissions,
     };
@@ -205,11 +193,8 @@ export class FunctionGenerator implements Generator {
       execute: async () => {
         this.backendGenerator.ensureBranchName();
         this.backendGenerator.addStatement(createFunctionNameOverride(func.resourceName));
-        if (Object.keys(func.filteredEnvironmentVariables).length > 0) {
-          const statements = generateLambdaEnvVars(func.resourceName, func.filteredEnvironmentVariables);
-          for (const stmt of statements) {
-            this.backendGenerator.addStatement(stmt);
-          }
+        for (const hatch of func.escapeHatches) {
+          this.backendGenerator.addStatement(createAddEnvironmentCall(func.resourceName, hatch));
         }
       },
     };
@@ -296,15 +281,15 @@ export class FunctionGenerator implements Generator {
   private contributeTableGrants(func: ResolvedFunction): void {
     if (func.dynamoActions.length === 0) return;
 
-    const tableEnvVars = Object.keys(func.filteredEnvironmentVariables).filter((key) => key.startsWith('API_') && key.includes('TABLE_'));
-    if (tableEnvVars.length === 0) return;
-
-    // Extract unique table names from env vars
+    // Extract unique table names from escape hatches that reference API tables
     const tableNames = new Set<string>();
-    for (const envVar of tableEnvVars) {
-      const tableName = extractTableName(envVar);
-      if (tableName) tableNames.add(tableName);
+    for (const hatch of func.escapeHatches) {
+      if (hatch.name.startsWith('API_') && hatch.name.includes('TABLE_')) {
+        const tableName = extractTableName(hatch.name);
+        if (tableName) tableNames.add(tableName);
+      }
     }
+    if (tableNames.size === 0) return;
 
     for (const tableName of tableNames) {
       const grantCall = factory.createExpressionStatement(
@@ -442,19 +427,16 @@ export class FunctionGenerator implements Generator {
   private contributeStorageTableGrants(func: ResolvedFunction): void {
     if (func.dynamoActions.length === 0) return;
 
-    const storageEnvVars = Object.keys(func.filteredEnvironmentVariables).filter(
-      (key) => key.startsWith('STORAGE_') && !key.endsWith('BUCKETNAME'),
-    );
-    if (storageEnvVars.length === 0) return;
-
-    // Extract the table variable name from STORAGE_ env vars
+    // Extract the table variable name from STORAGE_ escape hatches (excluding S3 bucket)
     const tableNames = new Set<string>();
-    for (const envVar of storageEnvVars) {
-      const match = envVar.match(/STORAGE_(.+?)_(ARN|NAME|STREAMARN)$/);
+    for (const hatch of func.escapeHatches) {
+      if (!hatch.name.startsWith('STORAGE_') || hatch.name.endsWith('BUCKETNAME')) continue;
+      const match = hatch.name.match(/STORAGE_(.+?)_(ARN|NAME|STREAMARN)$/);
       if (match) {
         tableNames.add(match[1].toLowerCase());
       }
     }
+    if (tableNames.size === 0) return;
 
     for (const tableName of tableNames) {
       const grantCall = factory.createExpressionStatement(
@@ -623,141 +605,179 @@ function extractFilePathFromHandler(handler: string): string {
 }
 
 /**
- * Filters environment variables that reference other Amplify resources.
- * Moves them from envVars to filteredEnvVars.
+ * Classifies Lambda environment variables into two groups:
+ * - retained: stay in the defineFunction() environment block
+ * - escapeHatches: become addEnvironment() calls in backend.ts
  *
- * Iterates by suffix first, then by env var, so the insertion order in
- * filteredEnvVars follows the suffix order -- matching the old code's
- * behavior and the expected snapshot output.
+ * Each escape hatch carries the pre-built AST expression for the Gen2
+ * resource it references. The ordering within escapeHatches follows
+ * suffix order within each prefix group (API_, STORAGE_, AUTH_) to
+ * produce deterministic output.
  */
-function filterResourceEnvVars(envVars: Record<string, string>, filteredEnvVars: Record<string, string>): void {
-  const suffixGroups: ReadonlyArray<{ readonly prefix: string; readonly suffixes: readonly string[] }> = [
-    { prefix: 'API_', suffixes: FILTERED_ENV_SUFFIXES },
-    { prefix: 'STORAGE_', suffixes: STORAGE_ENV_SUFFIXES },
-    { prefix: 'AUTH_', suffixes: AUTH_ENV_SUFFIXES },
+function classifyEnvVars(variables: Record<string, string>): {
+  readonly retained: Record<string, string>;
+  readonly escapeHatches: readonly EnvVarEscapeHatch[];
+} {
+  const retained: Record<string, string> = {};
+  const escapeHatches: EnvVarEscapeHatch[] = [];
+
+  // Collect escape hatches in suffix order within each prefix group.
+  // This produces deterministic output matching the expected snapshots.
+  const suffixGroups: ReadonlyArray<{
+    readonly prefix: string;
+    readonly suffixes: ReadonlyArray<{ readonly suffix: string; readonly build: (envVar: string) => ts.Expression }>;
+  }> = [
+    {
+      prefix: 'API_',
+      suffixes: [
+        { suffix: '_GRAPHQLAPIKEYOUTPUT', build: () => nonNull(backendPath('data', 'apiKey')) },
+        { suffix: '_GRAPHQLAPIENDPOINTOUTPUT', build: () => backendPath('data', 'graphqlUrl') },
+        { suffix: '_GRAPHQLAPIIDOUTPUT', build: () => backendPath('data', 'apiId') },
+        {
+          suffix: 'TABLE_ARN',
+          build: (envVar) => backendTableProp(extractTableName(envVar) ?? 'unknown', 'tableArn'),
+        },
+        {
+          suffix: 'TABLE_NAME',
+          build: (envVar) => backendTableProp(extractTableName(envVar) ?? 'unknown', 'tableName'),
+        },
+      ],
+    },
+    {
+      // Longer suffixes first: _STREAMARN before _ARN, _BUCKETNAME before _NAME.
+      // This prevents _STREAMARN from incorrectly matching the _ARN suffix.
+      prefix: 'STORAGE_',
+      suffixes: [
+        { suffix: '_STREAMARN', build: (envVar) => nonNull(directProp(extractStorageVarName(envVar), 'tableStreamArn')) },
+        { suffix: '_BUCKETNAME', build: () => backendPath('storage', 'resources', 'bucket', 'bucketName') },
+        { suffix: '_ARN', build: (envVar) => directProp(extractStorageVarName(envVar), 'tableArn') },
+        { suffix: '_NAME', build: (envVar) => directProp(extractStorageVarName(envVar), 'tableName') },
+      ],
+    },
+    {
+      prefix: 'AUTH_',
+      suffixes: [{ suffix: '_USERPOOLID', build: () => backendPath('auth', 'resources', 'userPool', 'userPoolId') }],
+    },
+    {
+      prefix: 'FUNCTION_',
+      suffixes: [
+        {
+          suffix: '_NAME',
+          build: (envVar) => {
+            const match = envVar.match(/FUNCTION_(.+?)_NAME/);
+            const funcName = match ? match[1].toLowerCase() : 'unknown';
+            return backendPath(funcName, 'resources', 'lambda', 'functionName');
+          },
+        },
+      ],
+    },
   ];
 
+  // Build escape hatches preserving suffix order within each prefix group.
+  // The `classified` set prevents double-matching (e.g., _STREAMARN already
+  // matched won't re-match _ARN).
+  const classified = new Set<string>();
   for (const { prefix, suffixes } of suffixGroups) {
-    for (const suffix of suffixes) {
-      for (const variable of Object.keys(envVars)) {
-        if (variable.startsWith(prefix) && variable.endsWith(suffix)) {
-          filteredEnvVars[variable] = envVars[variable];
-          delete envVars[variable];
+    for (const { suffix, build } of suffixes) {
+      for (const envVar of Object.keys(variables)) {
+        if (envVar.startsWith(prefix) && envVar.endsWith(suffix) && !classified.has(envVar)) {
+          escapeHatches.push({ name: envVar, expression: build(envVar) });
+          classified.add(envVar);
         }
       }
     }
   }
+
+  // Everything not classified is retained in defineFunction()
+  for (const [key, value] of Object.entries(variables)) {
+    if (!classified.has(key)) {
+      retained[key] = value;
+    }
+  }
+
+  return { retained, escapeHatches };
 }
 
 /**
- * Generates escape hatch statements for Lambda function environment variables.
- * Creates backend.functionName.addEnvironment() calls for Gen1 env vars
- * that reference other Amplify resources.
+ * Creates `backend.functionName.addEnvironment(name, expression)`.
  */
-function generateLambdaEnvVars(functionName: string, envVars: Record<string, string>): ts.ExpressionStatement[] {
-  const statements: ts.ExpressionStatement[] = [];
-
-  for (const envVar of Object.keys(envVars)) {
-    for (const [pattern, backendPath] of Object.entries(ENV_VAR_PATTERNS)) {
-      if (!new RegExp(`^${pattern}$`).test(envVar)) continue;
-
-      let resolvedPath = backendPath;
-      let isDirect = false;
-
-      // Extract table name from environment variable for DynamoDB resources
-      if (resolvedPath.includes('{table}')) {
-        const tableName = extractTableName(envVar);
-        if (tableName) {
-          resolvedPath = resolvedPath.replace('{table}', tableName);
-          isDirect = envVar.startsWith('STORAGE_');
-        }
-      }
-
-      // Extract function name from environment variable
-      if (resolvedPath.includes('{function}')) {
-        const funcMatch = envVar.match(/FUNCTION_(.+?)_NAME/);
-        if (funcMatch) {
-          resolvedPath = resolvedPath.replace('{function}', funcMatch[1].toLowerCase());
-        }
-      }
-
-      const expression = isDirect ? buildDirectExpression(resolvedPath) : buildBackendExpression(resolvedPath);
-
-      statements.push(
-        factory.createExpressionStatement(
-          factory.createCallExpression(
-            factory.createPropertyAccessExpression(
-              factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier(functionName)),
-              factory.createIdentifier('addEnvironment'),
-            ),
-            undefined,
-            [factory.createStringLiteral(envVar), expression],
-          ),
-        ),
-      );
-      break;
-    }
-  }
-
-  return statements;
+function createAddEnvironmentCall(functionName: string, hatch: EnvVarEscapeHatch): ts.ExpressionStatement {
+  return factory.createExpressionStatement(
+    factory.createCallExpression(
+      factory.createPropertyAccessExpression(
+        factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier(functionName)),
+        factory.createIdentifier('addEnvironment'),
+      ),
+      undefined,
+      [factory.createStringLiteral(hatch.name), hatch.expression],
+    ),
+  );
 }
 
+// ── AST expression builders for env var escape hatches ──────────────
+
+/**
+ * Builds `backend.a.b.c` from path segments.
+ */
+function backendPath(...segments: string[]): ts.Expression {
+  let expr: ts.Expression = factory.createIdentifier('backend');
+  for (const segment of segments) {
+    expr = factory.createPropertyAccessExpression(expr, factory.createIdentifier(segment));
+  }
+  return expr;
+}
+
+/**
+ * Builds `backend.data.resources.tables['tableName'].property`.
+ */
+function backendTableProp(tableName: string, property: string): ts.Expression {
+  const tables = factory.createPropertyAccessExpression(
+    factory.createPropertyAccessExpression(
+      factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier('data')),
+      factory.createIdentifier('resources'),
+    ),
+    factory.createIdentifier('tables'),
+  );
+  const indexed = factory.createElementAccessExpression(tables, factory.createStringLiteral(tableName));
+  return factory.createPropertyAccessExpression(indexed, factory.createIdentifier(property));
+}
+
+/**
+ * Builds `varName.property` (no `backend.` prefix — for standalone DynamoDB tables).
+ */
+function directProp(varName: string, property: string): ts.Expression {
+  return factory.createPropertyAccessExpression(factory.createIdentifier(varName), factory.createIdentifier(property));
+}
+
+/**
+ * Wraps an expression with TypeScript non-null assertion (`expr!`).
+ */
+function nonNull(expr: ts.Expression): ts.Expression {
+  return factory.createNonNullExpression(expr);
+}
+
+/**
+ * Extracts the table name from an API_*TABLE_* env var.
+ * 'API_MYAPI_MEALTABLE_ARN' → 'Meal'
+ */
 function extractTableName(envVar: string): string | undefined {
-  if (envVar.startsWith('API_') && envVar.includes('TABLE_')) {
-    const match = envVar.match(/API_.*_(.+?)TABLE_/);
-    if (match) {
-      const raw = match[1];
-      return raw.charAt(0).toUpperCase() + raw.slice(1).toLowerCase();
-    }
-  } else if (envVar.startsWith('STORAGE_')) {
-    const storageMatch = envVar.match(/STORAGE_(.+?)TABLE_/);
-    if (storageMatch) return storageMatch[1].toLowerCase();
-    const fallbackMatch = envVar.match(/STORAGE_(.+?)_/);
-    if (fallbackMatch) return fallbackMatch[1].toLowerCase();
-  }
-  return undefined;
+  const match = envVar.match(/API_.*_(.+?)TABLE_/);
+  if (!match) return undefined;
+  const raw = match[1];
+  return raw.charAt(0).toUpperCase() + raw.slice(1).toLowerCase();
 }
 
-function buildDirectExpression(pathStr: string): ts.Expression {
-  const parts = pathStr.split('.');
-  let expression: ts.Expression = factory.createIdentifier(parts[0]);
-  for (let i = 1; i < parts.length; i++) {
-    const part = parts[i];
-    if (part.endsWith('!')) {
-      expression = factory.createNonNullExpression(
-        factory.createPropertyAccessExpression(expression, factory.createIdentifier(part.slice(0, -1))),
-      );
-    } else {
-      expression = factory.createPropertyAccessExpression(expression, factory.createIdentifier(part));
-    }
-  }
-  return expression;
-}
-
-function buildBackendExpression(pathStr: string): ts.Expression {
-  const parts = ['backend', ...pathStr.split('.')];
-  let expression: ts.Expression = factory.createIdentifier(parts[0]);
-  for (let i = 1; i < parts.length; i++) {
-    const part = parts[i];
-    if (part.endsWith('!')) {
-      expression = factory.createNonNullExpression(
-        factory.createPropertyAccessExpression(expression, factory.createIdentifier(part.slice(0, -1))),
-      );
-    } else if (part.includes('[') && part.includes(']')) {
-      const bracketMatch = part.match(/(.+?)\[(.+?)\](.*)/);
-      if (bracketMatch) {
-        const [, beforeBracket, insideBracket, afterBracket] = bracketMatch;
-        expression = factory.createPropertyAccessExpression(expression, factory.createIdentifier(beforeBracket));
-        expression = factory.createElementAccessExpression(expression, factory.createStringLiteral(insideBracket));
-        if (afterBracket) {
-          expression = factory.createPropertyAccessExpression(expression, factory.createIdentifier(afterBracket));
-        }
-      }
-    } else {
-      expression = factory.createPropertyAccessExpression(expression, factory.createIdentifier(part));
-    }
-  }
-  return expression;
+/**
+ * Extracts the lowercase variable name from a STORAGE_* env var.
+ * 'STORAGE_ACTIVITY_ARN' → 'activity'
+ * 'STORAGE_ACTIVITYTABLE_NAME' → 'activity' (strips TABLE suffix)
+ */
+function extractStorageVarName(envVar: string): string {
+  const tableMatch = envVar.match(/STORAGE_(.+?)TABLE_/);
+  if (tableMatch) return tableMatch[1].toLowerCase();
+  const fallbackMatch = envVar.match(/STORAGE_(.+?)_/);
+  if (fallbackMatch) return fallbackMatch[1].toLowerCase();
+  return 'unknown';
 }
 
 /**
