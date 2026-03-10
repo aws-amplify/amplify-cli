@@ -21,33 +21,33 @@ import type { Printer } from '@aws-amplify/amplify-prompts';
  * Enriched drift tree node — one per stack (root or nested)
  */
 export interface StackDriftNode {
-  logicalId: string;
-  category: string;
-  drifts: StackResourceDrift[];
-  driftDetectionId: string;
-  children: StackDriftNode[];
-  skippedChildren?: string[];
+  readonly logicalId: string;
+  readonly category: string;
+  readonly drifts: StackResourceDrift[];
+  readonly driftDetectionId: string;
+  readonly children: StackDriftNode[];
+  readonly skippedChildren?: string[];
 }
 
 /**
  * CloudFormation drift results — enriched tree + total drifted count
  */
 export interface CloudFormationDriftResults {
-  root: StackDriftNode;
-  totalDrifted: number;
-  skippedStacks: string[];
-  incomplete: boolean;
+  readonly root: StackDriftNode;
+  readonly totalDrifted: number;
+  readonly skippedStacks: string[];
+  readonly incomplete: boolean;
 }
 
 /** Check if a resource drift indicates actual drift (MODIFIED or DELETED) */
-export const isDrifted = (d: StackResourceDrift): boolean =>
+const isDrifted = (d: StackResourceDrift): boolean =>
   d.StackResourceDriftStatus === StackResourceDriftStatus.MODIFIED || d.StackResourceDriftStatus === StackResourceDriftStatus.DELETED;
 
 /**
  * Recursively count total drifted resources across the entire tree
  */
 function countTotalDrifted(node: StackDriftNode): number {
-  let total = node.drifts.filter(isDrifted).length;
+  let total = node.drifts.length;
   for (const child of node.children) {
     total += countTotalDrifted(child);
   }
@@ -232,17 +232,23 @@ async function waitForDriftDetection(
 async function buildDriftNode(
   cfn: CloudFormationClient,
   physicalName: string,
-  logicalId: string,
+  logicalId: string | null,
   print: Printer,
   parentCategory?: string,
 ): Promise<StackDriftNode> {
-  // Detect drift on this stack
-  const { drifts, driftDetectionId } = await detectStackDrift(cfn, physicalName, print);
+  // Detect drift on this stack — filter to only drifted resources (MODIFIED/DELETED)
+  const { drifts: allDrifts, driftDetectionId } = await detectStackDrift(cfn, physicalName, print);
+  const drifts = allDrifts.filter(isDrifted);
 
-  // Compute category
-  let category = extractCategory(logicalId);
-  if (category === 'Other' && parentCategory) {
-    category = parentCategory;
+  // Compute category — root stack (null logicalId) is always 'Core Infrastructure'
+  let category: string;
+  if (logicalId === null) {
+    category = 'Core Infrastructure';
+  } else {
+    category = extractCategory(logicalId);
+    if (category === 'Other' && parentCategory) {
+      category = parentCategory;
+    }
   }
 
   // Find nested stacks
@@ -250,7 +256,7 @@ async function buildDriftNode(
   const nestedStacks = stackResources.StackResources?.filter((resource) => resource.ResourceType === 'AWS::CloudFormation::Stack') || [];
 
   if (nestedStacks.length > 0) {
-    print.debug(`Found ${nestedStacks.length} nested stack(s) in ${logicalId}`);
+    print.debug(`Found ${nestedStacks.length} nested stack(s) in ${logicalId ?? physicalName}`);
   }
 
   const children: StackDriftNode[] = [];
@@ -278,7 +284,7 @@ async function buildDriftNode(
   }
 
   return {
-    logicalId,
+    logicalId: logicalId ?? physicalName,
     category,
     drifts,
     driftDetectionId,
@@ -305,10 +311,7 @@ export async function detectStackDriftRecursive(
 ): Promise<CloudFormationDriftResults> {
   print.debug(`detectStackDriftRecursive: ${stackName}`);
 
-  const root = await buildDriftNode(cfn, stackName, stackName, print);
-
-  // Override root category to 'Core Infrastructure'
-  root.category = 'Core Infrastructure';
+  const root = await buildDriftNode(cfn, stackName, null, print);
 
   const totalDrifted = countTotalDrifted(root);
   const skippedStacks = collectSkippedStacks(root);

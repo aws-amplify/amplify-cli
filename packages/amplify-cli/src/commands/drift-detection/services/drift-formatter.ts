@@ -9,7 +9,7 @@ import { StackResourceDriftStatus, ChangeAction } from '@aws-sdk/client-cloudfor
 import chalk from 'chalk';
 import type { LocalDriftResults } from '../detect-local-drift';
 import type { TemplateDriftResults, ResourceChangeWithNested } from '../detect-template-drift';
-import { type StackDriftNode, type CloudFormationDriftResults, isDrifted } from '../detect-stack-drift';
+import { type StackDriftNode, type CloudFormationDriftResults } from '../detect-stack-drift';
 import { extractCategory } from '../../gen2-migration/categories';
 
 interface CategoryDrift {
@@ -79,13 +79,12 @@ function collectDriftCategories(
   // Phase 1: CF Drift — flatten tree and iterate uniformly
   const allNodes = flattenTree(phase1.root);
   for (const node of allNodes) {
-    const driftedResources = node.drifts.filter(isDrifted);
-    if (driftedResources.length > 0) {
+    if (node.drifts.length > 0) {
       const categoryName = node.category;
       const cat = ensureCategory(categoryName);
       cat.cfDriftStacks.push({
         logicalId: node.logicalId,
-        driftedResources,
+        driftedResources: node.drifts,
         driftDetectionId: node.driftDetectionId,
       });
     }
@@ -219,9 +218,9 @@ export function createUnifiedCategoryView(
   phase2: TemplateDriftResults,
   phase3: LocalDriftResults,
 ): string | undefined {
-  const categories = collectDriftCategories(phase1, phase2, phase3);
+  const driftedCategories = collectDriftCategories(phase1, phase2, phase3);
 
-  if (categories.size === 0) {
+  if (driftedCategories.size === 0) {
     return undefined;
   }
 
@@ -229,7 +228,7 @@ export function createUnifiedCategoryView(
 
   let output = '\n';
 
-  for (const [categoryName, drift] of categories) {
+  for (const [categoryName, drift] of driftedCategories) {
     // Category header: bold uppercase
     output += chalk.bold(categoryName.toUpperCase()) + '\n';
 

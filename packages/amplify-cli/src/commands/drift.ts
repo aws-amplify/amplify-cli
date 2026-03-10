@@ -38,13 +38,15 @@ export class AmplifyDriftDetector {
   constructor(private readonly context: $TSContext, basePrint: Pick<Printer, 'info' | 'debug' | 'warn'> = printer) {
     // Wrap each method to pause/resume spinner so output never collides
     this.printer = {
-      ...printer,
       info: (msg: string) => this.withSpinnerPaused(() => basePrint.info(msg)),
       debug: (msg: string) => {
         if (!isDebug) return;
         this.withSpinnerPaused(() => basePrint.debug(msg));
       },
       warn: (msg: string) => this.withSpinnerPaused(() => basePrint.warn(msg)),
+      blankLine: () => this.withSpinnerPaused(() => printer.blankLine()),
+      success: (msg: string) => this.withSpinnerPaused(() => printer.success(msg)),
+      error: (msg: string) => this.withSpinnerPaused(() => printer.error(msg)),
     };
 
     this.cfnService = new CloudFormationService(this.printer);
@@ -63,16 +65,18 @@ export class AmplifyDriftDetector {
 
   private startSpinner(text: string): void {
     this.spinnerText = text;
+    if (isDebug) return;
     this.spinnerActive = true;
     this.spinner.start(text);
   }
 
   private updateSpinner(text: string): void {
     this.spinnerText = text;
-    this.spinner.resetMessage(text);
+    if (this.spinnerActive) this.spinner.resetMessage(text);
   }
 
   private stopSpinner(text?: string): void {
+    if (!this.spinnerActive) return;
     this.spinnerActive = false;
     this.spinner.stop(text);
     this.spinnerText = '';
@@ -110,17 +114,8 @@ export class AmplifyDriftDetector {
 
     // Start drift detection phases with spinner
     let phase1Results: CloudFormationDriftResults;
-    let phase2Results: TemplateDriftResults = {
-      totalDrifted: 0,
-      changes: [],
-      skipped: true,
-      skipReason: 'S3 backend sync failed - cannot compare templates',
-    };
-    let phase3Results: LocalDriftResults = {
-      totalDrifted: 0,
-      skipped: true,
-      skipReason: 'S3 backend sync failed - cannot compare local vs cloud',
-    };
+    let phase2Results: TemplateDriftResults;
+    let phase3Results: LocalDriftResults;
 
     try {
       // Sync cloud backend from S3 before running any phases
@@ -133,6 +128,17 @@ export class AmplifyDriftDetector {
       this.printer.debug(`Phase 1 complete: ${phase1Results.totalDrifted} drifted resources detected`);
 
       if (!syncSuccess) {
+        phase2Results = {
+          totalDrifted: 0,
+          changes: [],
+          skipped: true,
+          skipReason: 'S3 backend sync failed - cannot compare templates',
+        };
+        phase3Results = {
+          totalDrifted: 0,
+          skipped: true,
+          skipReason: 'S3 backend sync failed - cannot compare local vs cloud',
+        };
         this.printer.warn(chalk.yellow('Cloud backend sync failed - template drift and local drift will be skipped'));
       } else {
         this.printer.debug('S3 sync completed successfully');
@@ -156,15 +162,10 @@ export class AmplifyDriftDetector {
       throw error;
     }
 
-    const categoryView = createUnifiedCategoryView(phase1Results, phase2Results, phase3Results);
-    if (categoryView) {
-      this.printer.info(categoryView);
-    }
-
-    // Summary line
-    const totalDriftCount = phase1Results.totalDrifted + phase2Results.totalDrifted + phase3Results.totalDrifted;
-    if (totalDriftCount > 0) {
-      this.printer.info(chalk.yellow(`${totalDriftCount} drifted resource(s) found`));
+    const driftReport = createUnifiedCategoryView(phase1Results, phase2Results, phase3Results);
+    if (driftReport) {
+      this.printer.info(driftReport);
+      this.printer.info(chalk.yellow('Drift detected'));
     } else {
       this.printer.info(chalk.green('No drift detected'));
     }
@@ -190,8 +191,8 @@ export class AmplifyDriftDetector {
       this.printer.debug('Exit code 1: Incomplete drift detection - cannot guarantee no drift');
       return 1;
     }
-    if (totalDriftCount > 0) {
-      this.printer.debug(`Exit code 1: ${totalDriftCount} drift(s) detected across all phases`);
+    if (driftReport) {
+      this.printer.debug('Exit code 1: drift detected across phases');
       return 1;
     }
     return 0;
