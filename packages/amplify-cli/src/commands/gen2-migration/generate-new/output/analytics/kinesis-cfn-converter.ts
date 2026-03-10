@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as fs from 'fs/promises';
 import * as cdk_from_cfn from 'cdk-from-cfn';
-import CFNConditionResolver, { CFNTemplate } from './cfn-condition-resolver';
+import CFNConditionResolver from './cfn-condition-resolver';
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { CloudFormationClient, DescribeStackResourcesCommand, DescribeStacksCommand, Parameter } from '@aws-sdk/client-cloudformation';
 
@@ -229,8 +229,9 @@ export class KinesisCfnConverter {
     }
   }
 
-  private async preTransmute(template: CFNTemplate, logicalId: string): Promise<CFNTemplate> {
-    const result: CFNTemplate = JSON.parse(JSON.stringify(template));
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private async preTransmute(template: any, logicalId: string): Promise<any> {
+    const result = JSON.parse(JSON.stringify(template));
 
     if (result.Parameters?.env) {
       result.Parameters['branchName'] = result.Parameters.env;
@@ -263,7 +264,8 @@ export class KinesisCfnConverter {
 /**
  * Downloads a CloudFormation template from S3 given its URL.
  */
-async function getCfnTemplateFromS3(s3Url: string, s3Client: S3Client): Promise<CFNTemplate> {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function getCfnTemplateFromS3(s3Url: string, s3Client: S3Client): Promise<any> {
   const url = new URL(s3Url);
   let bucket: string;
   let key: string;
@@ -283,5 +285,5 @@ async function getCfnTemplateFromS3(s3Url: string, s3Client: S3Client): Promise<
   if (!response.Body) {
     throw new Error(`Failed to retrieve S3 object: ${s3Url}`);
   }
-  return JSON.parse(await response.Body.transformToString()) as CFNTemplate;
+  return JSON.parse(await response.Body.transformToString());
 }
