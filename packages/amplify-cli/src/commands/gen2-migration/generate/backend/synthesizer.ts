@@ -21,6 +21,7 @@ import { RestApiDefinition } from '../codegen-head/data_definition_fetcher';
 import { generateLambdaEnvVars } from '../generators/functions/lambda_env_generator';
 import { DynamoTriggerInfo } from '../adapters/functions/api-trigger-detector';
 import { DataModelTableAccess } from '../codegen-head/data_model_access_parser';
+import { FunctionKinesisAccess } from '../codegen-head/kinesis_cfn_access_parser';
 
 const factory = ts.factory;
 export interface BackendRenderParameters {
@@ -61,6 +62,7 @@ export interface BackendRenderParameters {
   };
   analytics?: {
     importFrom: string;
+    functionsWithKinesisAccess?: FunctionKinesisAccess[];
   };
   customResources?: Map<string, string>;
   unsupportedCategories?: Map<string, string>;
@@ -1069,6 +1071,11 @@ export class BackendSynthesizer {
       imports.push(this.createImportStatement([analyticsFunctionIdentifier], renderArgs.analytics.importFrom));
     }
 
+    // Kinesis access: import { aws_iam } from 'aws-cdk-lib';
+    if (renderArgs.analytics?.functionsWithKinesisAccess?.length) {
+      imports.push(this.createImportStatement([factory.createIdentifier('aws_iam')], 'aws-cdk-lib'));
+    }
+
     if (renderArgs.unsupportedCategories) {
       const categories = renderArgs.unsupportedCategories;
 
@@ -1114,6 +1121,63 @@ export class BackendSynthesizer {
         ),
       );
       nodes.push(analyticsCall);
+    }
+
+    // Kinesis access: generate addToRolePolicy() for each function with Kinesis access
+    if (renderArgs.analytics?.functionsWithKinesisAccess?.length) {
+      for (const access of renderArgs.analytics.functionsWithKinesisAccess) {
+        // backend.functionName.resources.lambda.addToRolePolicy(
+        //   new aws_iam.PolicyStatement({
+        //     actions: [...],
+        //     resources: [analytics.kinesisStreamArn],
+        //   })
+        // );
+        const addToRolePolicyCall = factory.createExpressionStatement(
+          factory.createCallExpression(
+            factory.createPropertyAccessExpression(
+              factory.createPropertyAccessExpression(
+                factory.createPropertyAccessExpression(
+                  factory.createPropertyAccessExpression(
+                    factory.createIdentifier('backend'),
+                    factory.createIdentifier(access.functionName),
+                  ),
+                  factory.createIdentifier('resources'),
+                ),
+                factory.createIdentifier('lambda'),
+              ),
+              factory.createIdentifier('addToRolePolicy'),
+            ),
+            undefined,
+            [
+              factory.createNewExpression(
+                factory.createPropertyAccessExpression(factory.createIdentifier('aws_iam'), factory.createIdentifier('PolicyStatement')),
+                undefined,
+                [
+                  factory.createObjectLiteralExpression(
+                    [
+                      factory.createPropertyAssignment(
+                        'actions',
+                        factory.createArrayLiteralExpression(access.actions.map((action) => factory.createStringLiteral(action))),
+                      ),
+                      factory.createPropertyAssignment(
+                        'resources',
+                        factory.createArrayLiteralExpression([
+                          factory.createPropertyAccessExpression(
+                            factory.createIdentifier('analytics'),
+                            factory.createIdentifier('kinesisStreamArn'),
+                          ),
+                        ]),
+                      ),
+                    ],
+                    true,
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+        nodes.push(addToRolePolicyCall);
+      }
     }
 
     // CDK OVERRIDES

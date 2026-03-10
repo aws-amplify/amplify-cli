@@ -105,6 +105,16 @@ export const getFunctionDefinition = (
       }
     }
 
+    // analytics kinesis access env variables
+    for (const envSuffix of ['KINESISSTREAMARN']) {
+      for (const variable of Object.keys(configuration.Environment?.Variables ?? {})) {
+        if (variable.startsWith('ANALYTICS_') && variable.endsWith(envSuffix)) {
+          filteredEnvVars[variable] = configuration.Environment?.Variables?.[variable] ?? '';
+          delete configuration.Environment?.Variables[variable];
+        }
+      }
+    }
+
     funcDef.environment = configuration?.Environment;
     funcDef.filteredEnvironmentVariables = filteredEnvVars;
     funcDef.runtime = configuration?.Runtime;
