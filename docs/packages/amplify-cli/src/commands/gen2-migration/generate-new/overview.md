@@ -12,13 +12,126 @@ The pipeline has three layers:
 
 - **Orchestrator** (`prepare.ts`) — Reads `amplify-meta.json` category keys and service types, instantiates one generator per resource, collects all operations, and appends a final operation for folder replacement + npm install. Returns operations to the parent dispatcher for user confirmation.
 
-## Key Design Rules
+## Key Abstractions
 
-- Generators are per-resource (one `FunctionGenerator` per Lambda, one `DynamoDBGenerator` per table, etc.)
-- The orchestrator does zero data derivation — it reads meta keys/service types and delegates everything else to generators via `Gen1App`
-- `BackendGenerator` accumulates contributions from all generators and writes `backend.ts` when its own `plan()` runs last
-- `prepareNew()` returns operations, doesn't execute them — the parent dispatcher handles describe → confirm → execute
-- `generate-new/` has no imports from the old `generate/` directory
+**Generator interface** — Every generator implements this. Returns `AmplifyMigrationOperation[]` from `plan()`, reusing the existing operation interface that co-locates `describe()` and `execute()`.
+
+```typescript
+interface Generator {
+  plan(): Promise<AmplifyMigrationOperation[]>;
+}
+```
+
+**Gen1App** — Lazy-loading facade passed to every generator. Each `fetch*` method calls AWS on first invocation and caches the result. AWS SDK calls are delegated to `AwsFetcher`. Local file reads are handled directly. Easy to mock: stub only the methods your test needs.
+
+```typescript
+class Gen1App {
+  public readonly appId: string;
+  public readonly region: string;
+  public readonly envName: string;
+  public readonly clients: AwsClients;
+  public readonly aws: AwsFetcher;
+
+  public fetchMeta(): Promise<$TSMeta>;
+  public fetchMetaCategory(category: string): Promise<Record<string, unknown> | undefined>;
+  public fetchFunctionNames(): Promise<ReadonlySet<string>>;
+  public fetchFunctionCategoryMap(): Promise<ReadonlyMap<string, string>>;
+  public fetchGraphQLSchema(apiName: string): Promise<string>;
+  public fetchRestApiConfigs(apiCategory: Record<string, unknown>): Promise<RestApiDefinition[]>;
+  // ... other lazy-loading, cached methods
+}
+```
+
+**BackendGenerator** — Implements `Generator`. Other generators call `addImport()`, `addStatement()`, etc. during their execution. When run last, it writes `backend.ts` from the accumulated content.
+
+```typescript
+class BackendGenerator implements Generator {
+  public addImport(source: string, identifiers: string[]): void;
+  public addDefineBackendProperty(property: ts.ObjectLiteralElementLike): void;
+  public addStatement(statement: ts.Statement): void;
+  public addEarlyStatement(statement: ts.Statement): void;
+  public ensureBranchName(): void;
+  public ensureStorageStack(hasS3Bucket: boolean): void;
+  public plan(): Promise<AmplifyMigrationOperation[]>;
+}
+```
+
+**Per-resource generators** — The orchestrator reads `amplify-meta.json` and creates one concrete generator per resource, dispatched by service type:
+
+| Category  | Service     | Generator                         |
+| --------- | ----------- | --------------------------------- |
+| auth      | Cognito     | `AuthGenerator` (one per project) |
+| storage   | S3          | `S3Generator`                     |
+| storage   | DynamoDB    | `DynamoDBGenerator`               |
+| api       | AppSync     | `DataGenerator`                   |
+| api       | API Gateway | `RestApiGenerator`                |
+| analytics | Kinesis     | `AnalyticsKinesisGenerator`       |
+| custom    | any         | `CustomResourceGenerator`         |
+| function  | any         | `FunctionGenerator`               |
+
+Each generator receives `Gen1App`, `BackendGenerator`, the output directory, and a resource name. It writes its `resource.ts` and contributes to `BackendGenerator` and `RootPackageJsonGenerator`.
+
+## Design Rules
+
+1. **Generators are per-resource** — one generator per resource entry in `amplify-meta.json`
+2. **Orchestrator does zero data derivation** — reads meta keys/service types, delegates everything else to generators via `Gen1App`
+3. **BackendGenerator accumulates** — category generators contribute; `BackendGenerator` assembles `backend.ts` when its own `plan()` runs last
+4. **Operations are returned, not executed** — `prepareNew()` returns `AmplifyMigrationOperation[]` to the parent dispatcher for describe → confirm → execute
+5. **No imports from old code** — `generate-new/` is fully self-contained
+6. **Renderers are pure** — no AWS calls, no side effects, no `Gen1App` dependency
+
+## Execution Flow
+
+```mermaid
+flowchart TD
+    STEP["generate.ts → prepareNew()"] -->|Create| G1[Gen1App]
+    STEP -->|Create| BG[BackendGenerator]
+    STEP -->|Create| PKG[RootPackageJsonGenerator]
+
+    STEP -->|"Read meta, iterate resources<br/>by category + service type"| GENS["Per-resource generators"]
+
+    GENS --> AUTH["AuthGenerator"]
+    GENS --> S3["S3Generator"]
+    GENS --> DYNAMO["DynamoDBGenerator ×N"]
+    GENS --> DATA["DataGenerator"]
+    GENS --> REST["RestApiGenerator ×N"]
+    GENS --> KINESIS["AnalyticsKinesisGenerator ×N"]
+    GENS --> CUSTOM["CustomResourceGenerator ×N"]
+    GENS --> FUNC["FunctionGenerator ×N"]
+
+    AUTH -->|writes| AUTH_F["amplify/auth/resource.ts"]
+    S3 -->|writes| S3_F["amplify/storage/resource.ts"]
+    DATA -->|writes| DATA_F["amplify/data/resource.ts"]
+    FUNC -->|writes| FUNC_F["amplify/{category}/{name}/resource.ts"]
+    KINESIS -->|writes| KIN_F["amplify/analytics/resource.ts"]
+    CUSTOM -->|writes| CUST_F["amplify/custom/{name}/resource.ts"]
+
+    AUTH & S3 & DYNAMO & DATA & REST & KINESIS & CUSTOM & FUNC -->|contribute| BG
+    FUNC & CUSTOM -->|contribute deps| PKG
+
+    BG -->|writes last| BACK_F["amplify/backend.ts"]
+    PKG -->|writes| PKG_F["package.json"]
+
+    STEP -->|Create| INFRA["Infrastructure generators"]
+    INFRA --> BPKG["BackendPackageJsonGenerator → amplify/package.json"]
+    INFRA --> TSC["TsConfigGenerator → amplify/tsconfig.json"]
+    INFRA --> YML["AmplifyYmlGenerator → amplify.yml"]
+    INFRA --> GIT["GitIgnoreGenerator → .gitignore"]
+
+    STEP -->|append| FINAL["Final operation: replace amplify/ + npm install"]
+    STEP -->|return| OPS["AmplifyMigrationOperation[]"]
+    OPS -->|to| DISP["Parent dispatcher: describe → confirm → execute"]
+```
+
+## Refactoring Requirements
+
+These requirements drove the design. See `REFACTORING_GENERATE.md` for full details.
+
+- **R1** — All generators access Gen1 app info through `Gen1App` facade (lazy, cached, mockable)
+- **R2** — Category generators contribute to `backend.ts` through `BackendGenerator`
+- **R3** — Adding a new category requires only creating the generator + one line in the orchestrator
+- **R4** — Each generator is self-contained — no cross-category logic in the orchestrator
+- **R5** — Generators support dry run via `plan()` returning describable operations
 
 ## File Map
 
