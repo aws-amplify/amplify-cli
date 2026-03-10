@@ -18,7 +18,7 @@ const factory = ts.factory;
  * generates analytics/resource.ts, and adds the analytics import
  * and call to backend.ts.
  */
-export class AnalyticsGenerator implements Generator {
+export class AnalyticsKinesisGenerator implements Generator {
   private readonly gen1App: Gen1App;
   private readonly backendGenerator: BackendGenerator;
   private readonly outputDir: string;

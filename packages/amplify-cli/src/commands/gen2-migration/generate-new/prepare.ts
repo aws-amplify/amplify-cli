@@ -19,7 +19,7 @@ import { RestApiGenerator } from './output/rest-api/rest-api.generator';
 import { S3Generator } from './output/storage/s3.generator';
 import { DynamoDBGenerator } from './output/storage/dynamodb.generator';
 import { FunctionGenerator } from './output/functions/function.generator';
-import { AnalyticsGenerator } from './output/analytics/analytics.generator';
+import { AnalyticsKinesisGenerator } from './output/analytics/analytics.generator';
 import { CustomResourceGenerator } from './output/custom-resources/custom.generator';
 import { fileOrDirectoryExists } from './input/file-exists';
 
@@ -68,7 +68,7 @@ export async function prepareNew(logger: Logger, appId: string, envName: string,
   const analyticsCategory = (meta.analytics ?? {}) as Record<string, Record<string, unknown>>;
   for (const [resourceName, resourceMeta] of Object.entries(analyticsCategory)) {
     if (resourceMeta.service === 'Kinesis') {
-      generators.push(new AnalyticsGenerator(gen1App, backendGenerator, outputDir, resourceName));
+      generators.push(new AnalyticsKinesisGenerator(gen1App, backendGenerator, outputDir, resourceName));
     }
   }
 
