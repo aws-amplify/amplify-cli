@@ -7,15 +7,29 @@ const factory = ts.factory;
  * Options for rendering an analytics resource.ts file.
  */
 export interface RenderDefineAnalyticsOptions {
-  /** The class name of the generated construct (e.g., 'analyticstodoprojectKinesis') */
+  /**
+   * The class name of the generated construct (e.g., 'analyticstodoprojectKinesis').
+   */
   readonly constructClassName: string;
-  /** The file name of the generated construct without extension (e.g., 'todoprojectKinesis-construct') */
+
+  /**
+   * The file name of the generated construct without extension (e.g., 'todoprojectKinesis-construct').
+   */
   readonly constructFileName: string;
-  /** The resource name used for construct ID and props (e.g., 'todoprojectKinesis') */
+
+  /**
+   * The resource name used for construct ID and props (e.g., 'todoprojectKinesis').
+   */
   readonly resourceName: string;
-  /** The number of shards for the Kinesis stream */
+
+  /**
+   * The number of shards for the Kinesis stream.
+   */
   readonly shardCount: number;
-  /** The actual deployed Kinesis stream name from Gen1 */
+
+  /**
+   * The actual deployed Kinesis stream name from Gen1.
+   */
   readonly streamName: string;
 }
 

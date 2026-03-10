@@ -6,9 +6,6 @@ import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { CloudFormationClient, DescribeStackResourcesCommand, DescribeStacksCommand, Parameter } from '@aws-sdk/client-cloudformation';
 
 /**
- * Definition for Kinesis Analytics resource from Gen1 amplify-meta.json.
- */
-/**
  * Raw Kinesis analytics entry from Gen1 amplify-meta.json (no name field).
  */
 export interface KinesisAnalyticsMetaEntry {

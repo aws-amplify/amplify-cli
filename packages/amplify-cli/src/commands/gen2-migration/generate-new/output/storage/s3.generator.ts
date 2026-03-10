@@ -105,7 +105,7 @@ export class S3Generator implements Generator {
     ]);
 
     const triggers = this.extractTriggers(notifications);
-    const accessPatterns = this.buildAccessPatterns(cliInputs, functionNames);
+    const accessPatterns = await this.buildAccessPatterns(cliInputs, functionNames);
     const storageDir = path.join(this.outputDir, 'amplify', 'storage');
     const storageIdentifier = bucketName;
 
@@ -277,7 +277,7 @@ export class S3Generator implements Generator {
     return triggers;
   }
 
-  private buildAccessPatterns(cliInputs: StorageCLIInputsJSON, functionNames: string[]): AccessPatterns {
+  private async buildAccessPatterns(cliInputs: StorageCLIInputsJSON, functionNames: string[]): Promise<AccessPatterns> {
     let groups: AccessPatterns['groups'] | undefined;
     if (cliInputs.groupAccess && Object.keys(cliInputs.groupAccess).length > 0) {
       groups = Object.entries(cliInputs.groupAccess).reduce((acc, [key, value]) => {
@@ -286,7 +286,7 @@ export class S3Generator implements Generator {
       }, {} as Record<string, Permission[]>);
     }
 
-    const functions = this.extractFunctionS3Access(functionNames);
+    const functions = await this.extractFunctionS3Access(functionNames);
 
     return {
       guest: cliInputs.guestAccess.flatMap((p) => PERMISSION_MAP[p]),
@@ -297,23 +297,27 @@ export class S3Generator implements Generator {
   }
 
   /**
-   * Reads each function's CloudFormation template and extracts S3
-   * permissions, mapping them to Gen2 access patterns.
+   * Reads each function's CloudFormation template from the cloud backend
+   * and extracts S3 permissions, mapping them to Gen2 access patterns.
    */
-  private extractFunctionS3Access(functionNames: string[]): Array<{ functionName: string; permissions: Permission[] }> {
-    const S3_ACTION_TO_PERMISSION: Record<string, Permission> = {
+  private async extractFunctionS3Access(
+    functionNames: string[],
+  ): Promise<Array<{ readonly functionName: string; readonly permissions: Permission[] }>> {
+    const S3_ACTION_TO_PERMISSION: Readonly<Record<string, Permission>> = {
       's3:GetObject': 'read',
       's3:PutObject': 'write',
       's3:DeleteObject': 'delete',
       's3:ListBucket': 'read',
     };
 
-    const result: Array<{ functionName: string; permissions: Permission[] }> = [];
+    const result: Array<{ readonly functionName: string; readonly permissions: Permission[] }> = [];
 
     for (const functionName of functionNames) {
-      const templatePath = path.join('amplify', 'backend', 'function', functionName, `${functionName}-cloudformation-template.json`);
+      const templatePath = `function/${functionName}/${functionName}-cloudformation-template.json`;
+      const content = await this.gen1App.readCloudBackendFile(templatePath);
+      if (!content) continue;
+
       try {
-        const content = require('fs').readFileSync(templatePath, 'utf-8');
         const template = JSON.parse(content);
         const policy = template.Resources?.AmplifyResourcesPolicy;
         if (!policy || policy.Type !== 'AWS::IAM::Policy') continue;
@@ -335,7 +339,7 @@ export class S3Generator implements Generator {
           result.push({ functionName, permissions: Array.from(permissions) });
         }
       } catch {
-        // Template not found or unreadable
+        // Template parse error — skip this function
       }
     }
 

@@ -20,6 +20,7 @@ import { FunctionsGenerator } from './output/functions/functions.generator';
 import { AnalyticsGenerator } from './output/analytics/analytics.generator';
 import { CustomResourcesGenerator } from './output/custom-resources/custom.generator';
 import { AuthAccess, FunctionDefinition } from './output/auth/auth.renderer';
+import { parseAuthAccessFromTemplate } from './input/auth-access-analyzer';
 
 const TEMP_GEN_2_OUTPUT_DIR = 'amplify-gen2';
 const AMPLIFY_DIR = 'amplify';
@@ -215,7 +216,6 @@ async function readAuthAccessFromCloudBackend(gen1App: Gen1App, resourceName: st
   const templateContent = await gen1App.readCloudBackendFile(templatePath);
   if (!templateContent) return undefined;
 
-  const { parseAuthAccessFromTemplate } = await import('../generate/codegen-head/auth_access_analyzer');
   const authAccess = parseAuthAccessFromTemplate(templateContent) as AuthAccess;
   return Object.keys(authAccess).length > 0 ? authAccess : undefined;
 }
