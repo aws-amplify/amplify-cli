@@ -9,6 +9,9 @@ import { AmplifyMigrationOperation } from '../../_operation';
 export class TsConfigGenerator implements Generator {
   public constructor(private readonly outputDir: string) {}
 
+  /**
+   * Plans the tsconfig.json generation operation.
+   */
   public async plan(): Promise<AmplifyMigrationOperation[]> {
     const filePath = path.join(this.outputDir, 'amplify', 'tsconfig.json');
     return [

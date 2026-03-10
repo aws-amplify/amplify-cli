@@ -34,6 +34,9 @@ export class AmplifyHelperTransformer {
     },
   };
 
+  /**
+   * Transforms Gen1 AmplifyHelpers patterns to Gen2 equivalents via AST rewriting.
+   */
   public static transform(sourceFile: ts.SourceFile, projectName?: string): ts.SourceFile {
     // Track variable names that hold AmplifyHelpers.getProjectInfo() result
     const projectInfoVariables = new Set<string>();
@@ -276,6 +279,9 @@ export class AmplifyHelperTransformer {
     return result.transformed[0] as ts.SourceFile;
   }
 
+  /**
+   * Inserts branchName and projectName variable declarations after imports.
+   */
   public static addBranchNameVariable(sourceFile: ts.SourceFile, projectName?: string): ts.SourceFile {
     // Check if branchName declaration already exists
     const hasBranchName = sourceFile.statements.some(

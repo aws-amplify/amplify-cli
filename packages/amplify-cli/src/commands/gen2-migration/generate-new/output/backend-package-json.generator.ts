@@ -9,6 +9,9 @@ import { AmplifyMigrationOperation } from '../../_operation';
 export class BackendPackageJsonGenerator implements Generator {
   public constructor(private readonly outputDir: string) {}
 
+  /**
+   * Plans the amplify/package.json generation operation.
+   */
   public async plan(): Promise<AmplifyMigrationOperation[]> {
     const filePath = path.join(this.outputDir, 'amplify', 'package.json');
     return [

@@ -124,6 +124,9 @@ export class BackendGenerator implements Generator {
     );
   }
 
+  /**
+   * Assembles all accumulated imports, properties, and statements into backend.ts.
+   */
   public async plan(): Promise<AmplifyMigrationOperation[]> {
     const backendTsPath = path.join(this.outputDir, 'amplify', 'backend.ts');
 

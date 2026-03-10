@@ -69,9 +69,21 @@ export interface RestApiDefinition {
  * AWS calls, or override local-reading methods for file-based state.
  */
 export class Gen1App {
+  /**
+   * The Amplify app ID.
+   */
   public readonly appId: string;
+
+  /**
+   * The AWS region.
+   */
   public readonly region: string;
+
+  /**
+   * The backend environment name.
+   */
   public readonly envName: string;
+
   /**
    * AWS SDK clients — exposed because generators need direct access
    * to service clients not yet wrapped by {@link AwsFetcher}.

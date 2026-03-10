@@ -9,6 +9,9 @@ const GEN2_GITIGNORE_ENTRIES = ['.amplify', 'amplify_outputs*', 'amplifyconfigur
  * Updates .gitignore: removes the Gen1 amplify block and adds Gen2 entries.
  */
 export class GitIgnoreGenerator implements Generator {
+  /**
+   * Plans the .gitignore update operation.
+   */
   public async plan(): Promise<AmplifyMigrationOperation[]> {
     return [
       {

@@ -31,6 +31,9 @@ export default class CFNConditionResolver {
     this.conditions = template.Conditions;
   }
 
+  /**
+   * Resolves all conditions and returns a new template with unmet-condition resources removed.
+   */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public resolve(parameters: Parameter[]): any {
     if (!this.conditions || Object.keys(this.conditions).length === 0) return this.template;

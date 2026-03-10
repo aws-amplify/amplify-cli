@@ -34,6 +34,9 @@ export class RootPackageJsonGenerator implements Generator {
     this.devDependencies[name] = version;
   }
 
+  /**
+   * Plans the root package.json generation operation.
+   */
   public async plan(): Promise<AmplifyMigrationOperation[]> {
     const packageJsonPath = path.join(this.outputDir, 'package.json');
 

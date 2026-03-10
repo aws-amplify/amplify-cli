@@ -23,6 +23,9 @@ export class BackendDownloader {
     return fs.mkdtemp(`${tmpDir}${sep}`);
   }
 
+  /**
+   * Downloads and extracts the current cloud backend zip from S3.
+   */
   public async getCurrentCloudBackend(bucket: string): Promise<string> {
     if (BackendDownloader.ccbDir && (await fileOrDirectoryExists(BackendDownloader.ccbDir))) {
       return BackendDownloader.ccbDir;
