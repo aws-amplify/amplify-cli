@@ -1,26 +1,9 @@
 import { AmplifyMigrationStep } from './_step';
 import { AmplifyMigrationOperation } from './_operation';
-import { prepareNew, pathExists } from './generate-new/prepare';
+import { prepareNew } from './generate-new/prepare';
 import { AmplifyGen2MigrationValidations } from './_validations';
-import * as path from 'path';
 
 export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
-  private readonly packageJsonPath = path.join(process.cwd(), 'package.json');
-  private readonly nodeModulesPath = path.join(process.cwd(), 'node_modules');
-  private readonly packageLockPath = path.join(process.cwd(), 'package-lock.json');
-
-  public async packageJsonExists(): Promise<boolean> {
-    return await pathExists(this.packageJsonPath);
-  }
-
-  public async nodeModulesExists(): Promise<boolean> {
-    return await pathExists(this.nodeModulesPath);
-  }
-
-  public async packageLockExists(): Promise<boolean> {
-    return await pathExists(this.packageLockPath);
-  }
-
   public async executeImplications(): Promise<string[]> {
     return ['TODO'];
   }
@@ -40,38 +23,13 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
     throw new Error('Method not implemented.');
   }
 
+  /**
+   * Returns the full list of migration operations from all generators.
+   * The parent dispatcher displays descriptions and prompts for
+   * confirmation before executing them sequentially.
+   */
   public async execute(): Promise<AmplifyMigrationOperation[]> {
-    const descriptions: string[] = [];
-
-    if (await this.packageJsonExists()) {
-      descriptions.push(`Add Gen2 TypeScript dependencies to ${this.packageJsonPath}`);
-    } else {
-      descriptions.push(`Create ${this.packageJsonPath} with Gen2 TypeScript dependencies`);
-    }
-
-    if (await this.packageLockExists()) {
-      descriptions.push(`Regenerate ${this.packageLockPath}`);
-    } else {
-      descriptions.push(`Create ${this.packageLockPath}`);
-    }
-
-    if (await this.nodeModulesExists()) {
-      descriptions.push(`Recreate ${this.nodeModulesPath}`);
-    } else {
-      descriptions.push(`Create ${this.nodeModulesPath}`);
-    }
-
-    descriptions.push(`Replace your local 'amplify' folder with corresponding Gen2 TypeScript definition files`);
-    descriptions.push(`Install Gen2 dependencies`);
-
-    return [
-      {
-        describe: async () => descriptions,
-        execute: async () => {
-          await prepareNew(this.logger, this.appId, this.currentEnvName, this.region);
-        },
-      },
-    ];
+    return prepareNew(this.logger, this.appId, this.currentEnvName, this.region);
   }
 
   public async rollback(): Promise<AmplifyMigrationOperation[]> {

@@ -25,15 +25,13 @@ const TEMP_GEN_2_OUTPUT_DIR = 'amplify-gen2';
 const AMPLIFY_DIR = 'amplify';
 
 /**
- * Orchestrates the full Gen2 code generation pipeline using the new
- * generator infrastructure. Replaces the old `prepare()` function.
+ * Assembles all category generators based on the Gen1 app's
+ * amplify-meta.json and returns the full list of migration operations.
  *
- * Creates all category generators based on what exists in the Gen1
- * app's amplify-meta.json, collects their operations, executes them
- * sequentially, then replaces the local amplify folder with the
- * generated output and reinstalls npm dependencies.
+ * Operations are returned — not executed — so the parent dispatcher
+ * can display descriptions to the user before confirmation.
  */
-export async function prepareNew(logger: Logger, appId: string, envName: string, region: string): Promise<void> {
+export async function prepareNew(logger: Logger, appId: string, envName: string, region: string): Promise<AmplifyMigrationOperation[]> {
   const clients = createAwsClients(region);
   const gen1App = new Gen1App({ appId, region, envName, clients });
   const meta = await gen1App.fetchMeta();
@@ -99,40 +97,36 @@ export async function prepareNew(logger: Logger, appId: string, envName: string,
     operations.push(...(await generator.plan()));
   }
 
-  for (const operation of operations) {
-    await operation.execute();
-  }
+  // Post-generation: replace local amplify folder and reinstall deps.
+  operations.push({
+    describe: async () => ["Replace local 'amplify' folder with generated Gen2 output", 'Install Gen2 dependencies'],
+    execute: async () => {
+      const cwd = process.cwd();
+      logger.info(`Overriding local 'amplify' folder`);
+      await fs.rm(AMPLIFY_DIR, { recursive: true });
+      await fs.rename(`${TEMP_GEN_2_OUTPUT_DIR}/amplify`, `${cwd}/amplify`);
+      await fs.rename(`${TEMP_GEN_2_OUTPUT_DIR}/package.json`, `${cwd}/package.json`);
+      await fs.rm(TEMP_GEN_2_OUTPUT_DIR, { recursive: true });
 
-  // Post-generation: replace local amplify folder with generated output
-  const cwd = process.cwd();
-  logger.info(`Overriding local 'amplify' folder`);
-  await fs.rm(AMPLIFY_DIR, { recursive: true });
-  await fs.rename(`${TEMP_GEN_2_OUTPUT_DIR}/amplify`, `${cwd}/amplify`);
-  await fs.rename(`${TEMP_GEN_2_OUTPUT_DIR}/package.json`, `${cwd}/package.json`);
-  await fs.rm(TEMP_GEN_2_OUTPUT_DIR, { recursive: true });
+      const packageLockPath = path.join(cwd, 'package-lock.json');
+      const nodeModulesPath = path.join(cwd, 'node_modules');
 
-  const packageLockPath = path.join(cwd, 'package-lock.json');
-  const nodeModulesPath = path.join(cwd, 'node_modules');
+      if (await fileOrDirectoryExists(packageLockPath)) {
+        logger.info('Deleting package-lock.json');
+        await fs.rm(packageLockPath, { recursive: true });
+      }
 
-  if (await fileOrDirectoryExists(packageLockPath)) {
-    logger.info('Deleting package-lock.json');
-    await fs.rm(packageLockPath, { recursive: true });
-  }
+      if (await fileOrDirectoryExists(nodeModulesPath)) {
+        logger.info('Deleting node_modules');
+        await fs.rm(nodeModulesPath, { recursive: true });
+      }
 
-  if (await fileOrDirectoryExists(nodeModulesPath)) {
-    logger.info('Deleting node_modules');
-    await fs.rm(nodeModulesPath, { recursive: true });
-  }
+      logger.info('Installing dependencies');
+      await DependenciesInstaller.install();
+    },
+  });
 
-  logger.info('Installing dependencies');
-  await DependenciesInstaller.install();
-}
-
-/**
- * Checks if a file or directory exists at the given path.
- */
-export async function pathExists(targetPath: string): Promise<boolean> {
-  return fileOrDirectoryExists(targetPath);
+  return operations;
 }
 
 /**
