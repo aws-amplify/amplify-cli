@@ -105,9 +105,9 @@ flowchart TD
     OPS -->|return to| DISP["Parent dispatcher: describe then execute"]
 ```
 
-## Refactoring Requirements
+## Design Principles
 
-These requirements drove the design. See `REFACTORING_GENERATE.md` for full details.
+These principles drove the design. See `REFACTORING_GENERATE.md` for full details.
 
 - **R1** — All generators access Gen1 app info through `Gen1App` facade (lazy, cached, mockable)
 - **R2** — Category generators contribute to `backend.ts` through `BackendGenerator`
