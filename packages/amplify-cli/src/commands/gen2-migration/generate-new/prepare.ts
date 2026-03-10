@@ -19,7 +19,7 @@ import { RestApiGenerator } from './output/rest-api/rest-api.generator';
 import { S3Generator } from './output/storage/s3.generator';
 import { DynamoDBGenerator } from './output/storage/dynamodb.generator';
 import { FunctionGenerator } from './output/functions/function.generator';
-import { AnalyticsKinesisGenerator } from './output/analytics/analytics.generator';
+import { AnalyticsKinesisGenerator } from './output/analytics/kinesis.generator';
 import { CustomResourceGenerator } from './output/custom-resources/custom.generator';
 import { fileOrDirectoryExists } from './input/file-exists';
 
