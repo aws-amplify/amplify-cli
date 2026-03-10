@@ -13,73 +13,71 @@ const CUSTOM_DIR = 'custom';
 const TYPES_DIR = 'types';
 const AMPLIFY_DIR = 'amplify';
 const BACKEND_DIR = 'backend';
-const FILTER_FILES = ['package.json', 'yarn.lock'];
+const FILTER_FILES = new Set(['package.json', 'yarn.lock']);
 const BUILD_ARTIFACTS = ['build', 'node_modules', '.npmrc', 'yarn.lock', 'tsconfig.json'];
 
+const CATEGORY_MAP: Readonly<Record<string, string>> = {
+  function: 'functions',
+  api: 'data',
+  storage: 'storage',
+  auth: 'auth',
+};
+
 /**
- * Generates custom resource files and contributes to backend.ts.
+ * Generates a single custom resource and contributes to backend.ts.
  *
- * For each custom resource in the Gen1 app:
  * 1. Copies the custom resource directory (excluding package.json, yarn.lock)
- * 2. Transforms cdk-stack.ts using AmplifyHelperTransformer (Gen1 → Gen2 patterns)
+ * 2. Transforms cdk-stack.ts using AmplifyHelperTransformer (Gen1 → Gen2)
  * 3. Renames cdk-stack.ts to resource.ts
  * 4. Removes build artifacts
  * 5. Merges custom resource dependencies into root package.json
- * 6. Contributes custom resource imports and stack creation to backend.ts
+ * 6. Contributes import and stack creation to backend.ts
  */
-export class CustomResourcesGenerator implements Generator {
+export class CustomResourceGenerator implements Generator {
   private readonly gen1App: Gen1App;
   private readonly backendGenerator: BackendGenerator;
   private readonly packageJsonGenerator: RootPackageJsonGenerator;
   private readonly outputDir: string;
+  private readonly resourceName: string;
 
   public constructor(
     gen1App: Gen1App,
     backendGenerator: BackendGenerator,
     packageJsonGenerator: RootPackageJsonGenerator,
     outputDir: string,
+    resourceName: string,
   ) {
     this.gen1App = gen1App;
     this.backendGenerator = backendGenerator;
     this.packageJsonGenerator = packageJsonGenerator;
     this.outputDir = outputDir;
+    this.resourceName = resourceName;
   }
 
   /**
-   * Plans the custom resource generation operations.
+   * Plans the custom resource generation operation.
    */
   public async plan(): Promise<AmplifyMigrationOperation[]> {
-    const customCategory = await this.gen1App.fetchMetaCategory(CUSTOM_DIR);
-    if (!customCategory) {
-      return [];
-    }
-
-    const customResourceNames = Object.keys(customCategory);
-    if (customResourceNames.length === 0) {
-      return [];
-    }
-
     const rootDir = pathManager.findProjectRoot();
     if (!rootDir) {
       throw new Error('Could not find Amplify project root');
     }
 
-    const sourceCustomPath = path.join(rootDir, AMPLIFY_DIR, BACKEND_DIR, CUSTOM_DIR);
-    const destCustomPath = path.join(this.outputDir, AMPLIFY_DIR, CUSTOM_DIR);
+    const sourceResourcePath = path.join(rootDir, AMPLIFY_DIR, BACKEND_DIR, CUSTOM_DIR, this.resourceName);
+    const destResourcePath = path.join(this.outputDir, AMPLIFY_DIR, CUSTOM_DIR, this.resourceName);
 
     return [
       {
-        describe: async () => [`Migrate ${customResourceNames.length} custom resource(s)`],
+        describe: async () => [`Migrate custom resource ${this.resourceName}`],
         execute: async () => {
-          await fs.mkdir(destCustomPath, { recursive: true });
-
-          // Copy custom resources (excluding filtered files)
-          await fs.cp(sourceCustomPath, destCustomPath, {
+          // Copy resource directory (excluding filtered files)
+          await fs.mkdir(destResourcePath, { recursive: true });
+          await fs.cp(sourceResourcePath, destResourcePath, {
             recursive: true,
-            filter: (src) => !FILTER_FILES.includes(path.basename(src)),
+            filter: (src) => !FILTER_FILES.has(path.basename(src)),
           });
 
-          // Copy types directory if it exists
+          // Copy types directory if it exists (idempotent — multiple generators may do this)
           const sourceTypesPath = path.join(rootDir, AMPLIFY_DIR, BACKEND_DIR, TYPES_DIR);
           const destTypesPath = path.join(this.outputDir, AMPLIFY_DIR, TYPES_DIR);
           try {
@@ -89,214 +87,185 @@ export class CustomResourcesGenerator implements Generator {
             // Types directory may not exist
           }
 
-          // Extract dependencies before transformation
-          const resourceDependencies = await extractResourceDependencies(customResourceNames, sourceCustomPath);
-
-          // Read project name for transformer
           const projectName = await readProjectName(rootDir);
+          const className = await extractClassName(sourceResourcePath);
+          const dependencies = await extractDependencies(sourceResourcePath);
 
-          // Build custom resource map (name → className)
-          const customResourceMap = await buildCustomResourceMap(customResourceNames, sourceCustomPath);
+          await transformResource(destResourcePath, projectName);
+          await removeBuildArtifacts(destResourcePath);
+          await renameCdkStack(destResourcePath);
 
-          // Transform each custom resource
-          await transformCustomResources(customResourceNames, destCustomPath, projectName);
-
-          // Remove build artifacts
-          await removeBuildArtifacts(customResourceNames, destCustomPath);
-
-          // Rename cdk-stack.ts → resource.ts
-          await renameCdkStackFiles(customResourceNames, destCustomPath);
-
-          // Merge dependencies from custom resources into root package.json
-          await this.mergeCustomDependencies(customResourceNames, sourceCustomPath);
-
-          // Contribute to backend.ts
-          this.contributeToBackend(customResourceMap, resourceDependencies);
+          await this.mergeDependencies(sourceResourcePath);
+          this.contributeToBackend(className, dependencies);
         },
       },
     ];
   }
 
-  private async mergeCustomDependencies(resourceNames: string[], sourceCustomPath: string): Promise<void> {
-    for (const resourceName of resourceNames) {
-      const pkgJsonPath = path.join(sourceCustomPath, resourceName, 'package.json');
-      try {
-        const content = await fs.readFile(pkgJsonPath, 'utf-8');
-        const pkg = JSON.parse(content) as { dependencies?: Record<string, string>; devDependencies?: Record<string, string> };
-        if (pkg.dependencies) {
-          for (const [name, version] of Object.entries(pkg.dependencies)) {
-            this.packageJsonGenerator.addDependency(name, version);
-          }
-        }
-        if (pkg.devDependencies) {
-          for (const [name, version] of Object.entries(pkg.devDependencies)) {
-            this.packageJsonGenerator.addDevDependency(name, version);
-          }
-        }
-      } catch {
-        // package.json may not exist for this resource
-      }
-    }
-  }
-
-  private contributeToBackend(customResourceMap: Map<string, string>, resourceDependencies: Map<string, string[]>): void {
-    const categoryMap: Record<string, string> = {
-      function: 'functions',
-      api: 'data',
-      storage: 'storage',
-      auth: 'auth',
-    };
-
-    for (const [resourceName, className] of customResourceMap) {
-      // Import: import { ClassName as resourceName } from './custom/resourceName/resource';
-      this.backendGenerator.addImport(`./custom/${resourceName}/resource`, [className]);
-
-      // Instantiation: new ClassName(backend.createStack('resourceName'), 'resourceName', ...deps)
-      const deps = resourceDependencies.get(resourceName) || [];
-      const args: ts.Expression[] = [
-        ts.factory.createCallExpression(
-          ts.factory.createPropertyAccessExpression(ts.factory.createIdentifier('backend'), 'createStack'),
-          undefined,
-          [ts.factory.createStringLiteral(resourceName)],
-        ),
-        ts.factory.createStringLiteral(resourceName),
-      ];
-
-      for (const dep of deps) {
-        const gen2Name = categoryMap[dep] || dep;
-        args.push(ts.factory.createPropertyAccessExpression(ts.factory.createIdentifier('backend'), gen2Name));
-      }
-
-      this.backendGenerator.addStatement(
-        ts.factory.createExpressionStatement(ts.factory.createNewExpression(ts.factory.createIdentifier(className), undefined, args)),
-      );
-    }
-  }
-}
-
-async function extractResourceDependencies(resourceNames: string[], sourceCustomPath: string): Promise<Map<string, string[]>> {
-  const resourceDependencies = new Map<string, string[]>();
-
-  for (const resource of resourceNames) {
-    const cdkStackFilePath = path.join(sourceCustomPath, resource, 'cdk-stack.ts');
+  /**
+   * Merges this resource's package.json dependencies into the root package.json.
+   */
+  private async mergeDependencies(sourceResourcePath: string): Promise<void> {
+    const pkgJsonPath = path.join(sourceResourcePath, 'package.json');
     try {
-      const content = await fs.readFile(cdkStackFilePath, { encoding: 'utf-8' });
-      const dependencies: string[] = [];
-
-      const dependencyRegex = /AmplifyHelpers\.addResourceDependency\s*\([^,]+,[^,]+,[^,]+,\s*\[([^\]]+)\]/g;
-      let match;
-      while ((match = dependencyRegex.exec(content)) !== null) {
-        const categoryRegex = /category:\s*['"]([^'"]+)['"]/g;
-        let categoryMatch;
-        while ((categoryMatch = categoryRegex.exec(match[1])) !== null) {
-          if (!dependencies.includes(categoryMatch[1])) {
-            dependencies.push(categoryMatch[1]);
-          }
+      const content = await fs.readFile(pkgJsonPath, 'utf-8');
+      const pkg = JSON.parse(content) as { dependencies?: Record<string, string>; devDependencies?: Record<string, string> };
+      if (pkg.dependencies) {
+        for (const [name, version] of Object.entries(pkg.dependencies)) {
+          this.packageJsonGenerator.addDependency(name, version);
         }
       }
-
-      if (dependencies.length > 0) {
-        resourceDependencies.set(resource, dependencies);
+      if (pkg.devDependencies) {
+        for (const [name, version] of Object.entries(pkg.devDependencies)) {
+          this.packageJsonGenerator.addDevDependency(name, version);
+        }
       }
     } catch {
-      // Skip if file can't be read
+      // package.json may not exist
     }
   }
 
-  return resourceDependencies;
+  /**
+   * Contributes import and instantiation for this custom resource to backend.ts.
+   */
+  private contributeToBackend(className: string | undefined, dependencies: string[]): void {
+    if (!className) return;
+
+    this.backendGenerator.addImport(`./custom/${this.resourceName}/resource`, [className]);
+
+    const args: ts.Expression[] = [
+      ts.factory.createCallExpression(
+        ts.factory.createPropertyAccessExpression(ts.factory.createIdentifier('backend'), 'createStack'),
+        undefined,
+        [ts.factory.createStringLiteral(this.resourceName)],
+      ),
+      ts.factory.createStringLiteral(this.resourceName),
+    ];
+
+    for (const dep of dependencies) {
+      const gen2Name = CATEGORY_MAP[dep] || dep;
+      args.push(ts.factory.createPropertyAccessExpression(ts.factory.createIdentifier('backend'), gen2Name));
+    }
+
+    this.backendGenerator.addStatement(
+      ts.factory.createExpressionStatement(ts.factory.createNewExpression(ts.factory.createIdentifier(className), undefined, args)),
+    );
+  }
 }
 
-async function buildCustomResourceMap(resourceNames: string[], sourceCustomPath: string): Promise<Map<string, string>> {
-  const map = new Map<string, string>();
+/**
+ * Extracts the exported class name from a cdk-stack.ts file.
+ */
+async function extractClassName(sourceResourcePath: string): Promise<string | undefined> {
+  const cdkStackFilePath = path.join(sourceResourcePath, 'cdk-stack.ts');
+  try {
+    const content = await fs.readFile(cdkStackFilePath, { encoding: 'utf-8' });
+    return content.match(/export class (\w+)/)?.[1];
+  } catch {
+    return undefined;
+  }
+}
 
-  for (const resource of resourceNames) {
-    const cdkStackFilePath = path.join(sourceCustomPath, resource, 'cdk-stack.ts');
-    try {
-      const content = await fs.readFile(cdkStackFilePath, { encoding: 'utf-8' });
-      const className = content.match(/export class (\w+)/)?.[1];
-      if (className) {
-        map.set(resource, className);
+/**
+ * Extracts category dependencies from AmplifyHelpers.addResourceDependency calls.
+ */
+async function extractDependencies(sourceResourcePath: string): Promise<string[]> {
+  const cdkStackFilePath = path.join(sourceResourcePath, 'cdk-stack.ts');
+  try {
+    const content = await fs.readFile(cdkStackFilePath, { encoding: 'utf-8' });
+    const dependencies: string[] = [];
+
+    const dependencyRegex = /AmplifyHelpers\.addResourceDependency\s*\([^,]+,[^,]+,[^,]+,\s*\[([^\]]+)\]/g;
+    let match: RegExpExecArray | null;
+    while ((match = dependencyRegex.exec(content)) !== null) {
+      const categoryRegex = /category:\s*['"]([^'"]+)['"]/g;
+      let categoryMatch: RegExpExecArray | null;
+      while ((categoryMatch = categoryRegex.exec(match[1])) !== null) {
+        if (!dependencies.includes(categoryMatch[1])) {
+          dependencies.push(categoryMatch[1]);
+        }
       }
-    } catch {
-      // Skip if file can't be read
+    }
+
+    return dependencies;
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * Transforms a single custom resource's cdk-stack.ts (Gen1 → Gen2 patterns).
+ */
+async function transformResource(destResourcePath: string, projectName: string | undefined): Promise<void> {
+  const cdkStackFilePath = path.join(destResourcePath, 'cdk-stack.ts');
+  let content = await fs.readFile(cdkStackFilePath, { encoding: 'utf-8' });
+
+  // Add Construct import if not present
+  if (!content.includes("from 'constructs'")) {
+    const importRegex = /(import.*from.*['"]; ?\s*\n)/g;
+    let lastImportMatch: RegExpExecArray | null = null;
+    let regexMatch: RegExpExecArray | null;
+    while ((regexMatch = importRegex.exec(content)) !== null) {
+      lastImportMatch = regexMatch;
+    }
+
+    if (lastImportMatch) {
+      const insertIndex = lastImportMatch.index + lastImportMatch[0].length;
+      content = content.slice(0, insertIndex) + "import { Construct } from 'constructs';\n" + content.slice(insertIndex);
+    } else {
+      content = "import { Construct } from 'constructs';\n" + content;
     }
   }
 
-  return map;
-}
-
-async function transformCustomResources(resourceNames: string[], destCustomPath: string, projectName: string | undefined): Promise<void> {
-  for (const resource of resourceNames) {
-    const cdkStackFilePath = path.join(destCustomPath, resource, 'cdk-stack.ts');
-    try {
-      let content = await fs.readFile(cdkStackFilePath, { encoding: 'utf-8' });
-
-      // Add Construct import if not present
-      if (!content.includes("from 'constructs'")) {
-        const importRegex = /(import.*from.*['"]; ?\s*\n)/g;
-        let lastImportMatch: RegExpExecArray | null = null;
-        let regexMatch;
-        while ((regexMatch = importRegex.exec(content)) !== null) {
-          lastImportMatch = regexMatch;
-        }
-
-        if (lastImportMatch) {
-          const insertIndex = lastImportMatch.index + lastImportMatch[0].length;
-          content = content.slice(0, insertIndex) + "import { Construct } from 'constructs';\n" + content.slice(insertIndex);
-        } else {
-          content = "import { Construct } from 'constructs';\n" + content;
-        }
-      }
-
-      // Replace CfnParameter for env with default value
-      content = content.replace(
-        /new cdk\.CfnParameter\(this, ['"]env['"], {[\s\S]*?}\);/,
-        `new cdk.CfnParameter(this, "env", {
+  // Replace CfnParameter for env with default value
+  content = content.replace(
+    /new cdk\.CfnParameter\(this, ['"]env['"], {[\s\S]*?}\);/,
+    `new cdk.CfnParameter(this, "env", {
                 type: "String",
                 description: "Current Amplify CLI env name",
                 default: \`\${branchName}\`
               });`,
-      );
+  );
 
-      // Apply AST-based transformations
-      const sourceFile = ts.createSourceFile(cdkStackFilePath, content, ts.ScriptTarget.Latest, true);
-      const transformedFile = AmplifyHelperTransformer.transform(sourceFile, projectName);
-      const transformedWithBranchName = AmplifyHelperTransformer.addBranchNameVariable(transformedFile, projectName);
-      const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
-      content = printer.printFile(transformedWithBranchName);
+  // Apply AST-based transformations
+  const sourceFile = ts.createSourceFile(cdkStackFilePath, content, ts.ScriptTarget.Latest, true);
+  const transformedFile = AmplifyHelperTransformer.transform(sourceFile, projectName);
+  const transformedWithBranchName = AmplifyHelperTransformer.addBranchNameVariable(transformedFile, projectName);
+  const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
+  content = printer.printFile(transformedWithBranchName);
 
-      await fs.writeFile(cdkStackFilePath, content, { encoding: 'utf-8' });
-    } catch (error) {
-      throw new Error(`Error transforming custom resource ${resource}`, { cause: error });
-    }
-  }
+  await fs.writeFile(cdkStackFilePath, content, { encoding: 'utf-8' });
 }
 
-async function removeBuildArtifacts(resourceNames: string[], destCustomPath: string): Promise<void> {
-  for (const resource of resourceNames) {
-    const resourceDir = path.join(destCustomPath, resource);
-    for (const artifact of BUILD_ARTIFACTS) {
-      try {
-        await fs.rm(path.join(resourceDir, artifact), { recursive: true, force: true });
-      } catch {
-        // Artifact doesn't exist
-      }
-    }
-  }
-}
-
-async function renameCdkStackFiles(resourceNames: string[], destCustomPath: string): Promise<void> {
-  for (const resource of resourceNames) {
-    const cdkStackPath = path.join(destCustomPath, resource, 'cdk-stack.ts');
-    const resourceFilePath = path.join(destCustomPath, resource, 'resource.ts');
+/**
+ * Removes build artifacts from a custom resource directory.
+ */
+async function removeBuildArtifacts(destResourcePath: string): Promise<void> {
+  for (const artifact of BUILD_ARTIFACTS) {
     try {
-      await fs.rename(cdkStackPath, resourceFilePath);
+      await fs.rm(path.join(destResourcePath, artifact), { recursive: true, force: true });
     } catch {
-      // cdk-stack.ts doesn't exist
+      // Artifact doesn't exist
     }
   }
 }
 
+/**
+ * Renames cdk-stack.ts to resource.ts.
+ */
+async function renameCdkStack(destResourcePath: string): Promise<void> {
+  const cdkStackPath = path.join(destResourcePath, 'cdk-stack.ts');
+  const resourceFilePath = path.join(destResourcePath, 'resource.ts');
+  try {
+    await fs.rename(cdkStackPath, resourceFilePath);
+  } catch {
+    // cdk-stack.ts doesn't exist
+  }
+}
+
+/**
+ * Reads the project name from amplify/.config/project-config.json.
+ */
 async function readProjectName(rootDir: string): Promise<string | undefined> {
   try {
     const projectConfigPath = path.join(rootDir, AMPLIFY_DIR, '.config', 'project-config.json');

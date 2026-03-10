@@ -20,7 +20,7 @@ import { S3Generator } from './output/storage/s3.generator';
 import { DynamoDBGenerator } from './output/storage/dynamodb.generator';
 import { FunctionGenerator } from './output/functions/function.generator';
 import { AnalyticsGenerator } from './output/analytics/analytics.generator';
-import { CustomResourcesGenerator } from './output/custom-resources/custom.generator';
+import { CustomResourceGenerator } from './output/custom-resources/custom.generator';
 import { fileOrDirectoryExists } from './input/file-exists';
 
 const AMPLIFY_DIR = 'amplify';
@@ -72,8 +72,9 @@ export async function prepareNew(logger: Logger, appId: string, envName: string,
     }
   }
 
-  if (meta.custom) {
-    generators.push(new CustomResourcesGenerator(gen1App, backendGenerator, packageJsonGenerator, outputDir));
+  const customCategory = (meta.custom ?? {}) as Record<string, Record<string, unknown>>;
+  for (const resourceName of Object.keys(customCategory)) {
+    generators.push(new CustomResourceGenerator(gen1App, backendGenerator, packageJsonGenerator, outputDir, resourceName));
   }
 
   const functionNames = await gen1App.fetchFunctionNames();
