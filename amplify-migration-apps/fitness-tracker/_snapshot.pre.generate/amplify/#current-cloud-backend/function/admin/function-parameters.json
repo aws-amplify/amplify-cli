@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "auth": {
+      "fitnesstracker6b0fc1196b0fc119": [
+        "read"
+      ]
+    }
+  },
+  "lambdaLayers": []
+}

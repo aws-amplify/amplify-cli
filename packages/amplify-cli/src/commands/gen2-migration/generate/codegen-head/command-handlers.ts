@@ -408,7 +408,7 @@ export async function updateGitIgnoreForGen2() {
   }
   // remove empty lines
   newGitIgnore = newGitIgnore.replace(/^\s*[\r\n]/gm, '');
-  await fs.writeFile(`${cwd}/.gitignore`, newGitIgnore, { encoding: 'utf-8' });
+  await fs.writeFile(`${cwd}/.gitignore`, `${newGitIgnore}\n`, { encoding: 'utf-8' });
 }
 
 const getCustomResources = async (ccbFetcher: BackendDownloader, backendEnvironment: BackendEnvironment): Promise<string[]> => {
@@ -713,10 +713,15 @@ export async function prepare(logger: Logger, appId: string, envName: string, re
   }
 
   logger.info('Installing dependencies');
+  await DependenciesInstaller.install();
+}
 
-  // again weird dependency issues - it takes two times to sync it up fully.
-  await execa('npm', ['install']);
-  await execa('npm', ['install']);
+export class DependenciesInstaller {
+  public static async install() {
+    // again weird dependency issues - it takes two times to sync it up fully.
+    await execa('npm', ['install']);
+    await execa('npm', ['install']);
+  }
 }
 
 export async function pathExists(path: string) {

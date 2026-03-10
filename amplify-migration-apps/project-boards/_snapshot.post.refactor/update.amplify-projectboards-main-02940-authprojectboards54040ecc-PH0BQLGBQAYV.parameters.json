@@ -1,0 +1,146 @@
+[
+  {
+    "ParameterKey": "usernameAttributes",
+    "ParameterValue": "email"
+  },
+  {
+    "ParameterKey": "authRoleArn",
+    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-projectboards-main-02940-authRole"
+  },
+  {
+    "ParameterKey": "autoVerifiedAttributes",
+    "ParameterValue": "email"
+  },
+  {
+    "ParameterKey": "allowUnauthenticatedIdentities",
+    "ParameterValue": "true"
+  },
+  {
+    "ParameterKey": "smsVerificationMessage",
+    "ParameterValue": "Your verification code is {####}"
+  },
+  {
+    "ParameterKey": "userpoolClientReadAttributes",
+    "ParameterValue": "email"
+  },
+  {
+    "ParameterKey": "breakCircularDependency",
+    "ParameterValue": "true"
+  },
+  {
+    "ParameterKey": "mfaTypes",
+    "ParameterValue": "SMS Text Message"
+  },
+  {
+    "ParameterKey": "emailVerificationSubject",
+    "ParameterValue": "Your verification code"
+  },
+  {
+    "ParameterKey": "sharedId",
+    "ParameterValue": "54040ecc"
+  },
+  {
+    "ParameterKey": "useDefault",
+    "ParameterValue": "default"
+  },
+  {
+    "ParameterKey": "userpoolClientGenerateSecret",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "mfaConfiguration",
+    "ParameterValue": "OFF"
+  },
+  {
+    "ParameterKey": "identityPoolName",
+    "ParameterValue": "projectboards54040ecc_identitypool_54040ecc"
+  },
+  {
+    "ParameterKey": "userPoolGroupList",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "authSelections",
+    "ParameterValue": "identityPoolAndUserPool"
+  },
+  {
+    "ParameterKey": "resourceNameTruncated",
+    "ParameterValue": "projec54040ecc"
+  },
+  {
+    "ParameterKey": "smsAuthenticationMessage",
+    "ParameterValue": "Your authentication code is {####}"
+  },
+  {
+    "ParameterKey": "passwordPolicyMinLength",
+    "ParameterValue": "8"
+  },
+  {
+    "ParameterKey": "userPoolName",
+    "ParameterValue": "projectboards54040ecc_userpool_54040ecc"
+  },
+  {
+    "ParameterKey": "userpoolClientWriteAttributes",
+    "ParameterValue": "email"
+  },
+  {
+    "ParameterKey": "dependsOn",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "useEnabledMfas",
+    "ParameterValue": "true"
+  },
+  {
+    "ParameterKey": "usernameCaseSensitive",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "resourceName",
+    "ParameterValue": "projectboards54040ecc"
+  },
+  {
+    "ParameterKey": "env",
+    "ParameterValue": "main"
+  },
+  {
+    "ParameterKey": "serviceName",
+    "ParameterValue": "Cognito"
+  },
+  {
+    "ParameterKey": "emailVerificationMessage",
+    "ParameterValue": "Your verification code is {####}"
+  },
+  {
+    "ParameterKey": "userpoolClientRefreshTokenValidity",
+    "ParameterValue": "30"
+  },
+  {
+    "ParameterKey": "userpoolClientSetAttributes",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "unauthRoleArn",
+    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-projectboards-main-02940-unauthRole"
+  },
+  {
+    "ParameterKey": "requiredAttributes",
+    "ParameterValue": "email"
+  },
+  {
+    "ParameterKey": "passwordPolicyCharacters",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "aliasAttributes",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "userpoolClientLambdaRole",
+    "ParameterValue": "projec54040ecc_userpoolclient_lambda_role"
+  },
+  {
+    "ParameterKey": "defaultPasswordPolicy",
+    "ParameterValue": "false"
+  }
+]

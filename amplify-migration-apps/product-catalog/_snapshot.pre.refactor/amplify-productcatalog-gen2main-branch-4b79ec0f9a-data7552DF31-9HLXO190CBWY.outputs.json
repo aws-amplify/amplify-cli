@@ -1,0 +1,18 @@
+[
+  {
+    "OutputKey": "amplifyproductcataloggen2mainbranch4b79ec0f9adataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiBE3458598DestinationBucketArn",
+    "OutputValue": "arn:aws:s3:::amplify-productcatalog-ge-amplifydataamplifycodege-ng0qcpijfecm"
+  },
+  {
+    "OutputKey": "amplifyproductcataloggen2mainbranch4b79ec0f9adataamplifyDataGraphQLAPI1717433CGraphQLUrl",
+    "OutputValue": "https://ezubvwgxara45chr4bilqahity.appsync-api.us-east-1.amazonaws.com/graphql"
+  },
+  {
+    "OutputKey": "amplifyproductcataloggen2mainbranch4b79ec0f9adataamplifyDataGraphQLAPI1717433CApiId",
+    "OutputValue": "3afyqracmndnzmjr344badj4ja"
+  },
+  {
+    "OutputKey": "amplifyproductcataloggen2mainbranch4b79ec0f9adataamplifyDataGraphQLAPIDefaultApiKeyDA6BE9EAApiKey",
+    "OutputValue": "da2-kk7yuee625g6jdpnt5zi37yyxq"
+  }
+]

@@ -30,6 +30,7 @@ import CfnOutputResolver from '../resolvers/cfn-output-resolver';
 import CfnDependencyResolver from '../resolvers/cfn-dependency-resolver';
 import CfnParameterResolver from '../resolvers/cfn-parameter-resolver';
 import { Logger } from '../../../gen2-migration';
+import extractStackNameFromId from '../utils';
 
 const CFN_RESOURCE_STACK_TYPE = 'AWS::CloudFormation::Stack';
 const GEN2_AMPLIFY_AUTH_LOGICAL_ID_PREFIX = 'amplifyAuth';
@@ -659,11 +660,11 @@ class TemplateGenerator {
     for (const [sourceLogicalId, destinationLogicalId] of logicalIdMappingForRefactor) {
       resourceMappings.push({
         Source: {
-          StackName: sourceCategoryStackId,
+          StackName: extractStackNameFromId(sourceCategoryStackId),
           LogicalResourceId: sourceLogicalId,
         },
         Destination: {
-          StackName: destinationCategoryStackId,
+          StackName: extractStackNameFromId(destinationCategoryStackId),
           LogicalResourceId: destinationLogicalId,
         },
       });

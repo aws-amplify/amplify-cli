@@ -1,0 +1,14 @@
+[
+  {
+    "OutputKey": "GetAttUserTableName",
+    "OutputValue": "User-3oy6oxkj6ffojmc2upd52ftdsq-main",
+    "Description": "Your DynamoDB table name.",
+    "ExportName": "3afyqracmndnzmjr344badj4ja:GetAtt:UserTable:Name"
+  },
+  {
+    "OutputKey": "GetAttUserTableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/User-3oy6oxkj6ffojmc2upd52ftdsq-main/stream/2026-03-07T14:15:18.466",
+    "Description": "Your DynamoDB table StreamArn.",
+    "ExportName": "3afyqracmndnzmjr344badj4ja:GetAtt:UserTable:StreamArn"
+  }
+]

@@ -1,0 +1,20 @@
+[
+  {
+    "OutputKey": "GraphQLAPIIdOutput",
+    "OutputValue": "2aikutabnvbuhlzmh4mvkg3eji",
+    "Description": "Your GraphQL API ID.",
+    "ExportName": "amplify-fitnesstracker-main-0683c-apifitnesstracker-1T86UW9NDGVCS:GraphQLApiId"
+  },
+  {
+    "OutputKey": "GraphQLAPIEndpointOutput",
+    "OutputValue": "https://azg6sgrevzehjmrpkcghyncvci.appsync-api.us-east-1.amazonaws.com/graphql",
+    "Description": "Your GraphQL API endpoint.",
+    "ExportName": "amplify-fitnesstracker-main-0683c-apifitnesstracker-1T86UW9NDGVCS:GraphQLApiEndpoint"
+  },
+  {
+    "OutputKey": "GraphQLAPIKeyOutput",
+    "OutputValue": "da2-fakeapikey00000000000000",
+    "Description": "Your GraphQL API ID.",
+    "ExportName": "amplify-fitnesstracker-main-0683c-apifitnesstracker-1T86UW9NDGVCS:GraphQLApiKey"
+  }
+]

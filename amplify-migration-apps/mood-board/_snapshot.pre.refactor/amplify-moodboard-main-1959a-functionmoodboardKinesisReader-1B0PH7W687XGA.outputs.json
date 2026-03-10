@@ -1,0 +1,22 @@
+[
+  {
+    "OutputKey": "LambdaExecutionRoleArn",
+    "OutputValue": "arn:aws:iam::123456789012:role/moodboardLambdaRole1f55eecd-main"
+  },
+  {
+    "OutputKey": "Region",
+    "OutputValue": "us-east-1"
+  },
+  {
+    "OutputKey": "Arn",
+    "OutputValue": "arn:aws:lambda:us-east-1:123456789012:function:moodboardKinesisReader-main"
+  },
+  {
+    "OutputKey": "Name",
+    "OutputValue": "moodboardKinesisReader-main"
+  },
+  {
+    "OutputKey": "LambdaExecutionRole",
+    "OutputValue": "moodboardLambdaRole1f55eecd-main"
+  }
+]

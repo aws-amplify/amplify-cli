@@ -1,0 +1,1 @@
+{"createdOn":"Linux","createdBy":"AmplifyPipelineDeploy","createdWith":"1.11.1","stackType":"auth-Cognito","metadata":{}}

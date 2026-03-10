@@ -1,0 +1,1 @@
+$util.toJson($ctx.prev.result)

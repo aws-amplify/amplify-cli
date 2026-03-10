@@ -1,0 +1,20 @@
+## [Start] Parse owner field auth for Get. **
+#if( $util.isList($ctx.source.id) )
+  #set( $ownerEntitiesList = [] )
+  #set( $id = $ctx.source.id )
+  #foreach( $entities in $id )
+    #set( $ownerEntities = $entities.split("::") )
+    #set( $ownerEntitiesLastIdx = $ownerEntities.size() - 1 )
+    #set( $ownerEntitiesLast = $ownerEntities[$ownerEntitiesLastIdx] )
+    $util.qr($ownerEntitiesList.add($ownerEntitiesLast))
+  #end
+  $util.qr($ctx.source.id.put($ownerEntitiesList))
+  $util.toJson($ownerEntitiesList)
+#else
+  #set( $ownerEntities = $ctx.source.id.split("::") )
+  #set( $ownerEntitiesLastIdx = $ownerEntities.size() - 1 )
+  #set( $ownerEntitiesLast = $ownerEntities[$ownerEntitiesLastIdx] )
+  $util.qr($ctx.source.put("id", $ownerEntitiesLast))
+  $util.toJson($ctx.source.id)
+#end
+## [End] Parse owner field auth for Get. **

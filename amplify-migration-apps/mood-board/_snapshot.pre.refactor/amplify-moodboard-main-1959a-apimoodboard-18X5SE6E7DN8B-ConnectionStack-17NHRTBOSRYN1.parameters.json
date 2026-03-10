@@ -1,0 +1,34 @@
+[
+  {
+    "ParameterKey": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
+    "ParameterValue": "amplify-appsync-files/f7ab9fca95eecad3a59047fb5fd92dfef9d55ad4"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackBoardNestedStackBoardNestedStackResource9E449E87OutputstransformerrootstackBoardBoardDataSource99BFC69FName",
+    "ParameterValue": "BoardTable"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name",
+    "ParameterValue": "NONE_DS"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+    "ParameterValue": "vsozkn3hbzdjppzyf7xtf2f4sy"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackBoardNestedStackBoardNestedStackResource9E449E87OutputstransformerrootstackBoardBoardTable30788E07Ref",
+    "ParameterValue": "Board-vsozkn3hbzdjppzyf7xtf2f4sy-main"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackMoodItemNestedStackMoodItemNestedStackResource1C28E2A1OutputstransformerrootstackMoodItemMoodItemTable5135EED9Ref",
+    "ParameterValue": "MoodItem-vsozkn3hbzdjppzyf7xtf2f4sy-main"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
+    "ParameterValue": "amplify-moodboard-main-1959a-deployment"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackMoodItemNestedStackMoodItemNestedStackResource1C28E2A1OutputstransformerrootstackMoodItemMoodItemDataSource0777FF0CName",
+    "ParameterValue": "MoodItemTable"
+  }
+]
