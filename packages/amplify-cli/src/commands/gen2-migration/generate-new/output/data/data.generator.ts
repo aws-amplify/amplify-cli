@@ -25,14 +25,12 @@ export class DataGenerator implements Generator {
   private readonly backendGenerator: BackendGenerator;
   private readonly outputDir: string;
   private readonly defineData: DataRenderer;
-  private readonly hasAuth: boolean;
 
-  public constructor(gen1App: Gen1App, backendGenerator: BackendGenerator, outputDir: string, hasAuth: boolean) {
+  public constructor(gen1App: Gen1App, backendGenerator: BackendGenerator, outputDir: string) {
     this.gen1App = gen1App;
     this.backendGenerator = backendGenerator;
     this.outputDir = outputDir;
     this.defineData = new DataRenderer(gen1App.envName);
-    this.hasAuth = hasAuth;
   }
 
   /**
@@ -75,6 +73,7 @@ export class DataGenerator implements Generator {
 
     const logging = extractLoggingConfig(graphqlApi);
     const dataDir = path.join(this.outputDir, 'amplify', 'data');
+    const hasAuth = (await this.gen1App.fetchMetaCategory('auth')) !== undefined;
 
     return [
       {
@@ -95,7 +94,7 @@ export class DataGenerator implements Generator {
           this.backendGenerator.addDefineBackendProperty(factory.createShorthandPropertyAssignment(factory.createIdentifier('data')));
 
           // Add additional auth providers override to backend.ts
-          if (additionalAuthProviders && additionalAuthProviders.length > 0 && this.hasAuth) {
+          if (additionalAuthProviders && additionalAuthProviders.length > 0 && hasAuth) {
             this.contributeAdditionalAuthProviders(additionalAuthProviders);
           }
         },

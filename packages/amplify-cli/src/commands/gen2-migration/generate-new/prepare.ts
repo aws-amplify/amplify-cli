@@ -73,18 +73,9 @@ export async function prepareNew(logger: Logger, appId: string, envName: string,
     generators.push(providerSetupGenerator);
   }
 
-  const hasAuth = meta.auth !== undefined;
   if (meta.api) {
-    const apiCategory = meta.api as Record<string, Record<string, unknown>>;
-    const hasAppSync = Object.values(apiCategory).some((v) => v.service === 'AppSync');
-    const hasApiGateway = Object.values(apiCategory).some((v) => v.service === 'API Gateway');
-
-    if (hasAppSync) {
-      generators.push(new DataGenerator(gen1App, backendGenerator, outputDir, hasAuth));
-    }
-    if (hasApiGateway) {
-      generators.push(new RestApiGenerator(gen1App, backendGenerator, hasAuth));
-    }
+    generators.push(new DataGenerator(gen1App, backendGenerator, outputDir));
+    generators.push(new RestApiGenerator(gen1App, backendGenerator));
   }
 
   if (meta.analytics) {

@@ -24,12 +24,10 @@ const factory = ts.factory;
 export class RestApiGenerator implements Generator {
   private readonly gen1App: Gen1App;
   private readonly backendGenerator: BackendGenerator;
-  private readonly hasAuth: boolean;
 
-  public constructor(gen1App: Gen1App, backendGenerator: BackendGenerator, hasAuth: boolean) {
+  public constructor(gen1App: Gen1App, backendGenerator: BackendGenerator) {
     this.gen1App = gen1App;
     this.backendGenerator = backendGenerator;
-    this.hasAuth = hasAuth;
   }
 
   /**
@@ -47,7 +45,8 @@ export class RestApiGenerator implements Generator {
     }
 
     const functionNames = await this.gen1App.fetchFunctionNames();
-    const defineRestApi = new RestApiRenderer(this.hasAuth, functionNames);
+    const hasAuth = (await this.gen1App.fetchMetaCategory('auth')) !== undefined;
+    const defineRestApi = new RestApiRenderer(hasAuth, functionNames);
 
     return [
       {
