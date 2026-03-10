@@ -104,7 +104,7 @@ export class S3Generator implements Generator {
     const storageIdentifier = bucketName;
 
     return {
-      describe: async () => ['Generate storage/resource.ts'],
+      describe: async () => ['Generate amplify/storage/resource.ts'],
       execute: async () => {
         const nodes = await this.defineStorage.render({
           storageIdentifier,

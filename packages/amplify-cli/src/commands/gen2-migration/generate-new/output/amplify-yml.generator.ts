@@ -4,6 +4,7 @@ import * as yaml from 'yaml';
 import { Generator } from '../generator';
 import { AmplifyMigrationOperation } from '../../_operation';
 import { Gen1App } from '../input/gen1-app';
+import { fileOrDirectoryExists } from '../input/file-exists';
 
 const GEN1_COMMAND = '- amplifyPush --simple';
 const GEN2_INSTALL_COMMAND = '- npm ci --cache .npm --prefer-offline';
@@ -28,19 +29,21 @@ export class AmplifyYmlGenerator implements Generator {
    * Plans the amplify.yml update operation.
    */
   public async plan(): Promise<AmplifyMigrationOperation[]> {
+    const amplifyYmlPath = path.join(process.cwd(), 'amplify.yml');
+    const localFileExists = await fileOrDirectoryExists(amplifyYmlPath);
+
     return [
       {
-        describe: async () => ['Update amplify.yml with Gen2 build commands'],
+        describe: async () => [localFileExists ? 'Update amplify.yml with Gen2 build commands' : 'Generate amplify.yml'],
         execute: async () => {
-          const amplifyYmlPath = path.join(process.cwd(), 'amplify.yml');
           let parsed: unknown;
           let fromExistingSource = false;
 
-          try {
+          if (localFileExists) {
             const existing = await fs.readFile(amplifyYmlPath, 'utf-8');
             parsed = yaml.parse(existing);
             fromExistingSource = true;
-          } catch {
+          } else {
             // File doesn't exist — try the remote buildspec
             const buildSpec = await this.gen1App.aws.fetchAppBuildSpec(this.gen1App.appId);
             if (buildSpec) {

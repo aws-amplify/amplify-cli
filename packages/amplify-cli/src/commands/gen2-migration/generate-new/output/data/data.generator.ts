@@ -77,7 +77,7 @@ export class DataGenerator implements Generator {
 
     return [
       {
-        describe: async () => ['Generate data/resource.ts'],
+        describe: async () => ['Generate amplify/data/resource.ts'],
         execute: async () => {
           const nodes = this.defineData.render({
             schema,

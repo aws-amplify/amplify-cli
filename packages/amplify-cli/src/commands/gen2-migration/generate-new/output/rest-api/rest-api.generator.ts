@@ -44,7 +44,7 @@ export class RestApiGenerator implements Generator {
 
     return [
       {
-        describe: async () => [`Generate REST API ${restApi.apiName}`],
+        describe: async () => [`Generate REST API ${restApi.apiName} in amplify/backend.ts`],
         execute: async () => {
           this.addRestApiImports();
           this.addFunctionImports(restApi, functionNames);

@@ -68,7 +68,7 @@ export class CustomResourceGenerator implements Generator {
 
     return [
       {
-        describe: async () => [`Migrate custom resource ${this.resourceName}`],
+        describe: async () => [`Migrate amplify/custom/${this.resourceName}/resource.ts`],
         execute: async () => {
           // Copy resource directory (excluding filtered files)
           await fs.mkdir(destResourcePath, { recursive: true });

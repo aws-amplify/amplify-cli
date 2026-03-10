@@ -134,7 +134,7 @@ export class AuthGenerator implements Generator {
 
     return [
       {
-        describe: async () => ['Generate auth/resource.ts (reference auth)'],
+        describe: async () => ['Generate amplify/auth/resource.ts (reference auth)'],
         execute: async () => {
           const nodes = this.defineAuth.render({
             definition: authDefinition,
@@ -169,7 +169,7 @@ export class AuthGenerator implements Generator {
 
     return [
       {
-        describe: async () => ['Generate auth/resource.ts'],
+        describe: async () => ['Generate amplify/auth/resource.ts'],
         execute: async () => {
           const nodes = this.defineAuth.render({
             definition: authDefinition,

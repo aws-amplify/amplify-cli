@@ -54,7 +54,7 @@ export class AnalyticsKinesisGenerator implements Generator {
 
     return [
       {
-        describe: async () => [`Generate analytics/${this.resourceName}`],
+        describe: async () => [`Generate amplify/analytics/${this.resourceName}/resource.ts`],
         execute: async () => {
           const fileWriter = async (content: string, filePath: string) => {
             await fs.mkdir(path.dirname(filePath), { recursive: true });

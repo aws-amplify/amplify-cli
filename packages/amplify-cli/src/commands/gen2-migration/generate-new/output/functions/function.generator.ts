@@ -86,7 +86,7 @@ export class FunctionGenerator implements Generator {
 
     return [
       {
-        describe: async () => [`Generate ${func.category}/${func.resourceName}/resource.ts`],
+        describe: async () => [`Generate amplify/${func.category}/${func.resourceName}/resource.ts`],
         execute: async () => {
           await this.generateResource(func);
           this.contributeOverrides(func);
