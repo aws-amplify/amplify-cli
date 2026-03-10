@@ -301,9 +301,9 @@ flowchart TD
 
 **Execution notes:** Each phase should be delegated to a `general-task-execution` sub-agent with a prompt that references this document (`REFACTORING_GENERATE.md`) and the specific phase. The sub-agent has access to all tools and can read this document for full context. Wait for each phase to complete and review its output before starting the next. Use `context-gatherer` at the start of each phase to re-orient on the current state of the codebase.
 
-**Work style:** Prefer large, cohesive refactoring changes over small incremental ones — don't waste time validating intermediate states you may end up discarding. Do not run `yarn test`, `jest`, or any test command for incremental validation during a phase.
+**Work style:** Prefer large, cohesive refactoring changes over small incremental ones — don't waste time validating intermediate states you may end up discarding. Do not run `yarn test`, `jest`, or any test command for incremental validation during a phase. Commit freely as you work — no need to check in with the user before committing. Use your judgment on commit granularity.
 
-**No imports from old code:** Code in `generate-new/` must NOT import from the old `generate/` directory. If you need a utility or class that exists in the old code, duplicate it into `generate-new/`. This ensures `generate-new/` is fully self-contained and the old `generate/` directory can be cleanly deleted in Phase 4 without breaking anything.
+**No imports from old code:** Code in `generate-new/` must NOT import from the old `generate/` directory. If you need a utility or class that exists in the old code, duplicate it into `generate-new/`. This ensures `generate-new/` is fully self-contained and the old `generate/` directory can be cleanly deleted in Phase 5 without breaking anything.
 
 **Exit criteria (all phases):** `yarn build && yarn test` in the `amplify-cli` package must pass before moving on to the next phase.
 
@@ -320,5 +320,30 @@ Same as Phase 1 — the old tests must still pass. No new tests yet since the ne
 **Phase 3 — Switch over**
 Once all generators are complete in `generate-new/`, update `generate.ts` (the `AmplifyMigrationGenerateStep` entry point) to use the new generator infrastructure instead of the old `prepare()` function. Use `command-handlers.test.ts` (the snapshot tests) as the sole validation mechanism — these tests exercise the full generate pipeline end-to-end and compare output against known-good snapshots. Don't run or worry about the other unit tests in this phase; they test the old code's internal classes which are being replaced. Iterate until the snapshot tests are green.
 
-**Phase 4 — Cleanup**
+The snapshot test framework (MigrationApp, mocks, test harness) must not be modified. Only the import path for `prepare` should change to point at the new implementation. Minor test file changes are allowed only with clear justification.
+
+**Phase 4 — Review & simplify**
+All snapshot tests pass. Phase 3 was implementation-driven — decisions were made to match expected output, and code was added under time pressure. This phase steps back and reviews the result against the coding guidelines, the design in this document, and the refactoring requirements (R1–R5).
+
+Specifically:
+
+1. **Coding guidelines audit.** Read every file in `generate-new/` against `CODING_GUIDELINES.md`. Look for violations introduced during Phase 3: missing visibility modifiers, unnecessary optionality, dead imports, missing `readonly`, single-line JSDoc on public members, `assert()` usage, mutable state that should be `const`, repeated derived values, catch-all error handling, etc.
+
+2. **Design alignment.** Compare the actual code against the target directory structure and key abstractions described above. Flag any deviations — files that don't belong, abstractions that leaked, responsibilities that ended up in the wrong place. For example: does `prepare.ts` contain logic that should live in a generator? Does `BackendGenerator.earlyStatements` violate the design's intent? Are there cross-category dependencies that shouldn't exist?
+
+3. **Requirement check.** Verify each requirement (R1–R5) is met:
+
+   - R1: Do all generators access Gen1 app info through `Gen1App`? Or did Phase 3 introduce direct file reads or SDK calls outside the facade?
+   - R2: Do category generators contribute to `backend.ts` through `BackendGenerator`? Or did workarounds bypass it?
+   - R3: Can a new category be added without modifying existing generators? Or did Phase 3 introduce coupling?
+   - R4: Is each category generator self-contained? Or did cross-category logic creep in (e.g., functions generator knowing about auth, storage generator reading function templates)?
+   - R5: Do generators support dry run via `plan()` returning describable operations?
+
+4. **Simplification pass.** Remove anything that was added as a workaround but can now be done more cleanly. Collapse unnecessary indirection. Inline trivial helpers. Merge files that are too small to justify their existence. Reduce the surface area.
+
+5. **No imports from old code.** Verify that `generate-new/` has no imports from `generate/`. If Phase 3 introduced any (e.g., `auth_access_analyzer`), duplicate the needed logic or refactor it out.
+
+Exit criteria: all snapshot tests still pass, the code is clean against coding guidelines, and the design matches the intent of this document. Stop for review.
+
+**Phase 5 — Cleanup**
 Once all tests pass, delete the old `generate/` directory and rename `generate-new/` to `generate/`. Write unit tests for the new classes that cover the same ground as the old tests — don't port them mechanically, but ensure equivalent coverage. Delete the old tests along with the old code.
