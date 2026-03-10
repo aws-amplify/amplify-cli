@@ -214,6 +214,95 @@ The following were reviewed and intentionally left as-is:
 
 ---
 
+## Session 5 — Phase 4 (Implementation Simplification)
+
+### Session Overview
+
+Continued Phase 4: questioned implementation methods inherited
+from the old code and simplified where constraints no longer
+exist.
+
+### Commits
+
+1. **`9a66344` — Replace ENV_VAR_PATTERNS regex pipeline**
+
+   Replaced the regex-match → placeholder-substitution →
+   string-to-AST pipeline with `classifyEnvVars()`, which
+   does a single-pass suffix-based dispatch that builds AST
+   nodes directly. Removed ENV_VAR_PATTERNS, FILTERED_ENV_SUFFIXES,
+   STORAGE_ENV_SUFFIXES, AUTH_ENV_SUFFIXES, filterResourceEnvVars,
+   generateLambdaEnvVars, buildBackendExpression,
+   buildDirectExpression. Added classifyEnvVars,
+   createAddEnvironmentCall, backendPath, backendTableProp,
+   directProp, nonNull, extractStorageVarName. Changed
+   ResolvedFunction.filteredEnvironmentVariables to
+   escapeHatches: readonly EnvVarEscapeHatch[].
+
+2. **`b9ab5ae` — Simplify backend.generator and prepare.ts**
+
+   BackendGenerator.addImport() now merges identifiers into
+   existing entries instead of creating duplicates. Extracted
+   import sorting into standalone importOrder() function.
+   Simplified prepare.ts: replaced mutable
+   lateAuthOperations/lateAuthInserted tracking with a
+   synthetic lateAuthGenerator inserted at the right position.
+   Replaced duplicate pathExists() with delegation to
+   fileOrDirectoryExists(). Removed dead constructor params
+   from RootPackageJsonGenerator.
+
+### Key Design Decisions
+
+**ENV_VAR_PATTERNS was unnecessary indirection.** The old code
+encoded backend.ts paths as regex patterns because the function
+generator didn't have direct access to BackendGenerator. Now
+each FunctionGenerator has BackendGenerator directly, so the
+env var → Gen2 expression mapping can be done with direct AST
+construction per suffix, not regex matching + placeholder
+substitution + string-to-AST conversion.
+
+**Import merging eliminates sorting complexity.** The old
+addImport() created separate entries for the same source,
+requiring the sorting logic to distinguish between e.g.
+aws-cdk-lib with Duration vs aws-cdk-lib with Stack. Merging
+into a single entry per source makes sorting trivial.
+
+**lateAuthOperations replaced with generator ordering.** Instead
+of tracking mutable state (lateAuthInserted boolean) and
+conditionally interleaving operations during collection, the
+late auth operations are wrapped as a synthetic generator and
+inserted at the right position in the generators list.
+
+### What Was Reviewed and Left As-Is
+
+- **AuthDefinition intermediate type** — justified as a
+  rendering contract. The adapter normalizes SDK types once,
+  the renderer consumes a clean interface. Removing it would
+  scatter SDK knowledge through the renderer.
+- **CLIV1Permission mapping in s3.generator.ts** — simple,
+  clean, 3 entries. No simplification needed.
+- **extractFunctionS3Access CFN parsing** — necessary for
+  detecting S3 permissions. Same pattern as extractCfnPermissions
+  in function.generator.ts but for different action types.
+  Duplication between independent modules is acceptable per
+  coding guidelines.
+- **earlyStatements in BackendGenerator** — 4 lines, used in
+  one place (DynamoDB tables). Alternatives add more complexity.
+- **contributeProviderSetup verbosity** — inherent to TS
+  compiler API. The code pattern is fixed (doesn't vary per
+  app), but mixing raw strings with AST construction would be
+  inconsistent.
+- **Post-processing regex in auth.generator.ts** — cosmetic
+  fixes for generated code. Fixing at the AST level would be
+  complex for marginal benefit.
+- **Infrastructure generators** (amplify-yml, gitignore,
+  tsconfig, backend-package-json) — all clean and minimal.
+- **REST API renderer** — complex but inherently so (CDK
+  construct generation for API Gateway).
+- **Analytics/Kinesis converter** — complex but inherently so
+  (CFN-to-CDK conversion).
+
+---
+
 ## Next Session Prompt
 
 Copy everything below the line into the chat to continue.
@@ -222,39 +311,14 @@ Copy everything below the line into the chat to continue.
 
 We're refactoring the `generate` command in the Amplify CLI
 Gen1→Gen2 migration tool, following `REFACTORING_GENERATE.md`.
-We completed Phases 1–3 and the structural part of Phase 4.
-All 7 snapshot tests pass.
+We completed Phases 1–4. All 7 snapshot tests pass.
 
-Continue Phase 4 — implementation simplification. Up until now
-we restructured and remodeled the code without changing how
-things are implemented. Now question the implementation methods
-inherited from the old code and find ways to simplify.
-
-The old code had constraints we no longer have. For example,
-`ENV_VAR_PATTERNS` in `function.generator.ts` exists because
-the old code's function generation didn't have direct access
-to `BackendGenerator` — it had to encode backend.ts paths as
-string patterns and resolve them later. Now each
-`FunctionGenerator` has `BackendGenerator` directly. Are the
-patterns still needed, or can the env var escape hatches be
-generated more directly?
-
-Look at every file in `generate-new/` with fresh eyes. For
-each piece of logic, ask: "Was this written this way because
-of a constraint that no longer exists?" Focus on:
-
-- `function.generator.ts` — ENV_VAR_PATTERNS, the
-  filterResourceEnvVars/generateLambdaEnvVars pipeline, the
-  extractTableName regex parsing
-- `auth.generator.ts` — the massive getAuthDefinition adapter
-  function and all its helpers. Is the AuthDefinition
-  intermediate type still justified?
-- `backend.generator.ts` — the import sorting logic, the
-  earlyStatements mechanism
-- `s3.generator.ts` — the CLIV1Permission mapping, the
-  extractFunctionS3Access CFN template parsing
-- Any other patterns that look like workarounds for
-  constraints we've removed
+Continue to Phase 5 — Cleanup. Delete the old `generate/`
+directory and rename `generate-new/` to `generate/`. Write
+unit tests for the new classes that cover the same ground as
+the old tests — don't port them mechanically, but ensure
+equivalent coverage. Delete the old tests along with the old
+code.
 
 Test command:
 
@@ -262,6 +326,3 @@ Test command:
 cd packages/amplify-cli
 npx jest --testPathPattern="command-handlers.test" --no-coverage
 ```
-
-Remember to delegate to sub-agents for large context discovery
-so you don't fill up your context window too quickly.
