@@ -548,7 +548,9 @@ flowchart TD
 
 **Execution notes:** Each phase should be delegated to a `general-task-execution` sub-agent with a prompt that references this document (`REFACTORING_REFACTOR.md`) and the specific phase. The sub-agent has access to all tools and can read this document for full context. Wait for each phase to complete and review its output before starting the next. Use `context-gatherer` at the start of each phase to re-orient on the current state of the codebase.
 
-**Work style:** Prefer large, cohesive refactoring changes over small incremental ones — don't waste time validating intermediate states you may end up discarding. Do not run `yarn test`, `jest`, or any test command for incremental validation during a phase.
+**Work style:** Prefer large, cohesive refactoring changes over small incremental ones — don't waste time validating intermediate states you may end up discarding. Do not run `yarn test`, `jest`, or any test command for incremental validation during a phase. Commit freely as you work — no need to check in with the user before committing. Use your judgment on commit granularity.
+
+**No imports from old code:** Code in `refactor-new/` must NOT import from the old `refactor/` directory. If you need a utility or class that exists in the old code, duplicate it into `refactor-new/`. This ensures `refactor-new/` is fully self-contained and the old `refactor/` directory can be cleanly deleted later without breaking anything.
 
 **Exit criteria (all phases):** `yarn build && yarn test` in the `amplify-cli` package must pass before moving on to the next phase.
 
@@ -565,5 +567,18 @@ Same as Phase 1 — the old tests must still pass. No new tests yet since the ne
 **Phase 3 — Switch over**
 Once all refactorers are complete in `refactor-new/`, update `refactor.ts` (the `AmplifyMigrationRefactorStep` entry point) to use the new infrastructure. All existing tests must pass against the new code paths, including the e2e snapshot tests. Iterate until green.
 
-**Phase 4 — Cleanup**
-Once all tests pass, delete the old `refactor/` directory and rename `refactor-new/` to `refactor/`. Write unit tests for the new classes that cover the same ground as the old tests — don't port them mechanically, but ensure equivalent coverage. Delete the old tests along with the old code.
+**Phase 4 — Review & simplify**
+All tests pass. Phase 3 was implementation-driven. This phase steps back and reviews the result against the coding guidelines, the design in this document, and the refactoring requirements (R1–R8). Audit for: coding guideline violations, design deviations, requirement compliance, unnecessary complexity, dead code, missing JSDoc. Simplify where constraints from the old code no longer apply.
+
+Exit criteria: all tests still pass, the code is clean against coding guidelines, and the design matches the intent of this document. Stop for review.
+
+**Phase 5 — Unit tests**
+Write unit tests for the new classes in `refactor-new/`. Test individual components (refactorers, resolvers, Gen1Env, Gen2Branch) in isolation. Don't port old tests mechanically — write tests that cover the same ground with the new architecture. The old `refactor/` directory and its tests remain intact. The old code stays as reference for future refactoring passes.
+
+Exit criteria: all existing tests still pass, new unit tests pass, old tests still pass.
+
+**Phase 6 — Merge**
+Merge the branch. The old `refactor/` directory stays in the codebase but is no longer wired (`refactor.ts` imports from `refactor-new/`). This keeps the PR focused on the new code.
+
+**Phase 7 — Delete old code**
+In a separate PR: delete the old `refactor/` directory and its tests. Rename `refactor-new/` to `refactor/`. Update all import paths. This is a clean deletion PR with no logic changes.

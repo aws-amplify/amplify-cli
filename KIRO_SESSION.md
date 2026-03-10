@@ -303,6 +303,173 @@ inserted at the right position in the generators list.
 
 ---
 
+---
+
+## Session 6 — Phase 4 Continued (Deep Simplification + R1–R5 Compliance)
+
+### Session Overview
+
+Continued Phase 4 with a focus on implementation simplification
+and strict compliance with refactoring requirements R1–R5.
+16 commits across code quality, architecture, and design.
+
+### Commits (chronological)
+
+1. **Implementation simplification** — Deduplicated
+   `extractFilePathFromHandler` into `ts-factory-utils.ts`.
+   Made `S3Renderer` pure (removed `Gen1App` dependency,
+   `functionCategoryMap` passed via render options). Made auth
+   renderer types fully `readonly` (`LoginOptions`,
+   `MultifactorOptions`, `SamlOptions`, `OidcOptions`,
+   `CustomAttribute`). Refactored `getAuthDefinition` and
+   `getMfaConfiguration` to build objects immutably. Removed
+   `as any` casts in `buildReferenceAuth`. Added `readonly` to
+   `BackendGenerator.imports` identifiers field.
+
+2. **R3/R4 compliance** — `DataGenerator` and `RestApiGenerator`
+   now resolve `hasAuth` from `Gen1App.fetchMetaCategory('auth')`
+   instead of receiving it from the orchestrator. Orchestrator
+   no longer dispatches `meta.api` by service type.
+
+3. **Consolidate function operations** — `FunctionGenerator`
+   returns 1 operation per function instead of 3–4. The
+   `planResource`, `planOverrides`, `planGrants`, `planTrigger`
+   methods replaced with `generateResource`,
+   `contributeOverrides`, `contributeGrants` called from a
+   single operation.
+
+4. **Strict R3/R4 — no data derivation in orchestrator** —
+   Auth operation splitting moved inside `AuthGenerator` via
+   `planProviderSetup()` method. Function resource names
+   fetched via `gen1App.fetchFunctionNames()` instead of
+   inline `Object.keys()` cast.
+
+5. **Surface operations to parent dispatcher** — `prepareNew()`
+   returns `AmplifyMigrationOperation[]` instead of executing
+   internally. `generate.ts` reduced to thin delegation. Users
+   now see real per-category operation descriptions before
+   confirmation.
+
+6. **Remove redundant eager fetchAllStackResources** —
+   `AwsFetcher` caches results; the eager pre-fetch was
+   unnecessary.
+
+7. **Merge auth provider setup into single operation** —
+   Provider setup code doesn't reference storage variables.
+   The ordering constraint was inherited without justification.
+   `planProviderSetup()` removed. Auth is now a single
+   operation like every other generator. Updated media-vault
+   snapshot.
+
+8. **Use OS temp directory** — Replaced hardcoded
+   `'amplify-gen2'` with `fs.mkdtemp()` in OS temp dir.
+
+9. **Per-resource generators** — `AnalyticsGenerator` →
+   per-resource `AnalyticsKinesisGenerator`. `StorageGenerator`
+   dispatcher deleted; orchestrator creates `S3Generator` and
+   `DynamoDBGenerator` directly. `DynamoDBGenerator` resolves
+   `hasS3Bucket` internally. `BackendGenerator.ensureStorageStack()`
+   added for shared stack declaration.
+
+10. **Per-resource DynamoDB and REST API** — `DynamoDBGenerator`
+    now per-resource. `RestApiRenderer.render()` → `renderApi()`
+    for single API. Inner loops removed from both.
+
+11. **Remove redundant if-checks** — Categories that iterate
+    resources default to `?? {}` — empty object means no-op loop.
+
+12. **Per-resource CustomResourceGenerator** — Renamed from
+    `CustomResourcesGenerator`. All batch helpers replaced with
+    single-resource equivalents.
+
+13. **Rename analytics files** — `analytics.generator.ts` →
+    `kinesis.generator.ts`, `analytics.renderer.ts` →
+    `kinesis.renderer.ts`, class → `AnalyticsKinesisGenerator`.
+
+14. **Remove fake type interfaces from cfn-condition-resolver** —
+    `CFNTemplate`, `CFNResource`, `CFNParameter`, etc. were
+    applied to unvalidated `JSON.parse()` output. Replaced with
+    explicit `any`. Kept only `CFNFunction` enum.
+
+15. **Add JSDoc to all public members** — 39 additions across
+    9 files.
+
+16. **Extract shared TS AST builders** — `constDecl()`,
+    `propAccess()`, `constFromBackend()`, `assignProp()`,
+    `jsValue()` in `ts-factory-utils.ts`. Replaced duplicate
+    implementations in auth.generator.ts, function.generator.ts,
+    and backend.generator.ts.
+
+### Key Design Decisions
+
+**Auth provider setup ordering was unjustified.** The provider
+setup code references `backend.auth.stack` and `userPoolClient`
+— neither depends on storage variables. The post-storage
+ordering was inherited from the old code. Merging it into auth's
+single operation simplified the orchestrator significantly and
+fully satisfied R4.
+
+**Orchestrator does zero data derivation.** It reads `meta`
+category keys and service types to decide which generators to
+create. All other logic (hasAuth, hasS3Bucket, function names,
+resource metadata) is resolved by generators via Gen1App.
+
+**Per-resource generators are the default pattern.** Functions,
+DynamoDB tables, REST APIs, analytics resources, and custom
+resources each get one generator per resource. DynamoDB shares
+a `storageStack` declaration via `BackendGenerator.ensureStorageStack()`.
+
+**prepareNew returns operations, doesn't execute them.** The
+parent dispatcher displays descriptions and prompts for
+confirmation before executing. This is the correct contract
+per the `AmplifyMigrationOperation` interface.
+
+**Fake type interfaces provide no safety.** `CFNTemplate` et al.
+were applied to `JSON.parse()` output with zero validation.
+Honest `any` with eslint-disable comments is more truthful.
+
+**TS factory abstraction has diminishing returns.** The shared
+utilities cover repeating patterns (const declarations, property
+access chains, assignment statements). The remaining `ts.factory`
+calls are category-specific AST construction that doesn't
+benefit from further abstraction.
+
+### What I Got Right
+
+- Identified that `hasAuth` threading violated R3 and proposed
+  the fix (generators query Gen1App directly)
+- Recognized the auth provider setup ordering was unjustified
+  when the user questioned it
+- Proposed `ensureStorageStack` pattern (like `ensureBranchName`)
+  for shared DynamoDB stack declaration
+- Correctly identified that `CFNTemplate` interfaces were fake
+  type safety over `JSON.parse()` output
+
+### Where I Needed Steering
+
+- Initially tried `addLateStatement` for auth provider setup
+  ordering — failed because the expected output has a specific
+  interleaving that can't be achieved with priority buckets
+- Kept `CustomResourcesGenerator` as batch initially — user
+  correctly pushed for per-resource pattern
+- Kept `DynamoDBGenerator` as batch initially — user pushed
+  for per-resource with shared stack via `ensureStorageStack`
+- Tried to type `RenderDefineDataOptions` fields as
+  `Record<string, unknown>` — too strict for internal `any`
+  usage, reverted to honest `any`
+- Initially defended `CFNTemplate` interfaces — user correctly
+  pointed out they provide zero guarantees over `JSON.parse()`
+
+### Final State
+
+All 9 snapshot tests pass. The orchestrator is flat and uniform.
+Every category generator is per-resource (except auth which is
+per-category). No cross-category dependencies. No data derivation
+in the orchestrator. All public members have JSDoc. Shared AST
+utilities extracted.
+
+---
+
 ## Next Session Prompt
 
 Copy everything below the line into the chat to continue.
@@ -311,14 +478,14 @@ Copy everything below the line into the chat to continue.
 
 We're refactoring the `generate` command in the Amplify CLI
 Gen1→Gen2 migration tool, following `REFACTORING_GENERATE.md`.
-We completed Phases 1–4. All 7 snapshot tests pass.
+We completed Phases 1–4. All 9 snapshot tests pass.
 
-Continue to Phase 5 — Cleanup. Delete the old `generate/`
-directory and rename `generate-new/` to `generate/`. Write
-unit tests for the new classes that cover the same ground as
-the old tests — don't port them mechanically, but ensure
-equivalent coverage. Delete the old tests along with the old
-code.
+Continue to Phase 5 — Unit tests. Write unit tests for the
+new classes in `generate-new/`. Test individual components
+(generators, renderers, Gen1App, BackendGenerator) in
+isolation. Don't port old tests mechanically — write tests
+that cover the same ground with the new architecture. The old
+`generate/` directory and its tests remain intact.
 
 Test command:
 

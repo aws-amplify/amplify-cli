@@ -345,5 +345,13 @@ Specifically:
 
 Exit criteria: all snapshot tests still pass, the code is clean against coding guidelines, and the design matches the intent of this document. Stop for review.
 
-**Phase 5 — Cleanup**
-Once all tests pass, delete the old `generate/` directory and rename `generate-new/` to `generate/`. Write unit tests for the new classes that cover the same ground as the old tests — don't port them mechanically, but ensure equivalent coverage. Delete the old tests along with the old code.
+**Phase 5 — Unit tests**
+Write unit tests for the new classes in `generate-new/`. Test individual components (generators, renderers, Gen1App, BackendGenerator) in isolation. Don't port old tests mechanically — write tests that cover the same ground with the new architecture. The old `generate/` directory and its tests remain intact. The old code stays as reference for future refactoring passes.
+
+Exit criteria: all snapshot tests still pass, new unit tests pass, old tests still pass.
+
+**Phase 6 — Merge**
+Merge the branch. The old `generate/` directory stays in the codebase but is no longer wired (generate.ts imports from `generate-new/`). This keeps the PR focused on the new code.
+
+**Phase 7 — Delete old code**
+In a separate PR: delete the old `generate/` directory and its tests. Rename `generate-new/` to `generate/`. Update all import paths. This is a clean deletion PR with no logic changes.
