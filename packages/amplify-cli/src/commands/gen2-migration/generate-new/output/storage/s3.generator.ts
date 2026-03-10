@@ -53,7 +53,7 @@ export class S3Generator implements Generator {
     this.gen1App = gen1App;
     this.backendGenerator = backendGenerator;
     this.outputDir = outputDir;
-    this.defineStorage = new S3Renderer(gen1App.envName, gen1App);
+    this.defineStorage = new S3Renderer(gen1App.envName);
   }
 
   /**
@@ -99,6 +99,7 @@ export class S3Generator implements Generator {
 
     const triggers = this.extractTriggers(notifications);
     const accessPatterns = await this.buildAccessPatterns(cliInputs, functionNames);
+    const functionCategoryMap = await this.gen1App.fetchFunctionCategoryMap();
     const storageDir = path.join(this.outputDir, 'amplify', 'storage');
     const storageIdentifier = bucketName;
 
@@ -109,6 +110,7 @@ export class S3Generator implements Generator {
           storageIdentifier,
           accessPatterns,
           triggers,
+          functionCategoryMap,
         });
 
         const content = printNodes(nodes);

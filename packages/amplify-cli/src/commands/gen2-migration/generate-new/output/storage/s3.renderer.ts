@@ -1,5 +1,4 @@
 import ts, { CallExpression } from 'typescript';
-import { Gen1App } from '../../input/gen1-app';
 import { renderResourceTsFile } from '../../resource';
 import { createBranchNameDeclaration } from '../../ts-factory-utils';
 
@@ -42,19 +41,18 @@ export interface RenderDefineStorageOptions {
   readonly storageIdentifier: string;
   readonly accessPatterns?: AccessPatterns;
   readonly triggers?: Partial<Record<StorageTriggerEvent, Lambda>>;
+  readonly functionCategoryMap: ReadonlyMap<string, string>;
 }
 
 /**
  * Renders a defineStorage() resource.ts file from Gen1 S3 configuration.
- * Looks up function categories from Gen1App for import path resolution.
+ * Pure — no AWS calls, no side effects.
  */
 export class S3Renderer {
   private readonly envName: string;
-  private readonly gen1App: Gen1App;
 
-  public constructor(envName: string, gen1App: Gen1App) {
+  public constructor(envName: string) {
     this.envName = envName;
-    this.gen1App = gen1App;
   }
 
   /**
@@ -102,9 +100,8 @@ export class S3Renderer {
 
     // Add function imports for function access patterns
     if (opts.accessPatterns.functions && opts.accessPatterns.functions.length > 0) {
-      const functionCategoryMap = await this.gen1App.fetchFunctionCategoryMap();
       for (const functionAccess of opts.accessPatterns.functions) {
-        const functionCategory = functionCategoryMap.get(functionAccess.functionName) || 'function';
+        const functionCategory = opts.functionCategoryMap.get(functionAccess.functionName) || 'function';
         const functionImportPath = `../${functionCategory}/${functionAccess.functionName}/resource`;
         if (!namedImports[functionImportPath]) {
           namedImports[functionImportPath] = new Set();
@@ -136,8 +133,6 @@ export class S3Renderer {
     const triggers = opts.triggers;
     if (!triggers || Object.keys(triggers).length === 0) return;
 
-    const functionCategoryMap = await this.gen1App.fetchFunctionCategoryMap();
-
     const triggerProps = Object.entries(triggers).map(([key, value]) => {
       const functionName = value.source.split('/')[3];
       return factory.createPropertyAssignment(factory.createIdentifier(key), factory.createIdentifier(functionName));
@@ -146,7 +141,7 @@ export class S3Renderer {
 
     for (const value of Object.values(triggers)) {
       const functionName = value.source.split('/')[3];
-      const functionCategory = functionCategoryMap.get(functionName) || 'function';
+      const functionCategory = opts.functionCategoryMap.get(functionName) || 'function';
       const functionImportPath =
         functionCategory === 'storage' ? `./${functionName}/resource` : `../${functionCategory}/${functionName}/resource`;
       if (!namedImports[functionImportPath]) {

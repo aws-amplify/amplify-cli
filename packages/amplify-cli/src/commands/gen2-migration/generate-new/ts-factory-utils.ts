@@ -23,3 +23,15 @@ export function createBranchNameDeclaration(): ts.VariableStatement {
     ),
   );
 }
+
+/**
+ * Extracts the file path from an AWS Lambda handler string.
+ * 'index.handler' → './index.js', 'src/handler.myFunction' → './src/handler.js'
+ */
+export function extractFilePathFromHandler(handler: string): string {
+  const lastDotIndex = handler.lastIndexOf('.');
+  if (lastDotIndex === -1) {
+    return `./${handler}.js`;
+  }
+  return `./${handler.substring(0, lastDotIndex)}.js`;
+}

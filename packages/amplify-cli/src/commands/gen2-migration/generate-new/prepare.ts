@@ -48,12 +48,11 @@ export async function prepareNew(logger: Logger, appId: string, envName: string,
 
   const generators: Generator[] = [];
 
-  // Auth operations are split: the first generates auth/resource.ts and
-  // contributes auth overrides. Late operations (provider setup) must run
-  // after storage overrides so they appear in the correct position in
-  // backend.ts. We wrap the late operations as a synthetic generator and
-  // insert it at the right point in the generator list.
-  let lateAuthGenerator: Generator | undefined;
+  // Auth is split into two phases: the first generates auth/resource.ts
+  // and contributes auth overrides to backend.ts. The second (provider
+  // setup) must appear after storage overrides in backend.ts. We insert
+  // it at the right point in the generator list.
+  let providerSetupGenerator: Generator | undefined;
   if (meta.auth) {
     const authGenerator = new AuthGenerator(gen1App, backendGenerator, outputDir);
     const authOps = await authGenerator.plan();
@@ -61,7 +60,7 @@ export async function prepareNew(logger: Logger, appId: string, envName: string,
       generators.push({ plan: async () => [authOps[0]] });
     }
     if (authOps.length > 1) {
-      lateAuthGenerator = { plan: async () => authOps.slice(1) };
+      providerSetupGenerator = { plan: async () => authOps.slice(1) };
     }
   }
 
@@ -69,9 +68,9 @@ export async function prepareNew(logger: Logger, appId: string, envName: string,
     generators.push(new StorageGenerator(gen1App, backendGenerator, outputDir));
   }
 
-  // Late auth operations (provider setup) run after storage.
-  if (lateAuthGenerator) {
-    generators.push(lateAuthGenerator);
+  // Provider setup runs after storage overrides.
+  if (providerSetupGenerator) {
+    generators.push(providerSetupGenerator);
   }
 
   const hasAuth = meta.auth !== undefined;

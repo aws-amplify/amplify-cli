@@ -15,7 +15,9 @@ export type DataTableMapping = Record<string, string>;
 export interface RenderDefineDataOptions {
   readonly schema: string;
   readonly tableMappings: DataTableMapping;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped JSON from amplify-meta.json authConfig
   readonly authorizationModes?: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped JSON from AppSync logConfig
   readonly logging?: any;
 }
 

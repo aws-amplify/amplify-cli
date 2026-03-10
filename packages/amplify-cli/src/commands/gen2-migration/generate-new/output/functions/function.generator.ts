@@ -8,6 +8,7 @@ import { Gen1App } from '../../input/gen1-app';
 import { printNodes } from '../../ts-writer';
 import { FunctionRenderer, RenderDefineFunctionOptions } from './function.renderer';
 import { RootPackageJsonGenerator } from '../root-package-json.generator';
+import { extractFilePathFromHandler } from '../../ts-factory-utils';
 
 const factory = ts.factory;
 
@@ -590,18 +591,6 @@ export class FunctionGenerator implements Generator {
     );
     this.backendGenerator.addStatement(forStatement);
   }
-}
-
-/**
- * Extracts the file path from an AWS Lambda handler string.
- * 'index.handler' -> './index.js', 'src/handler.myFunction' -> './src/handler.js'
- */
-function extractFilePathFromHandler(handler: string): string {
-  const lastDotIndex = handler.lastIndexOf('.');
-  if (lastDotIndex === -1) {
-    return `./${handler}.js`;
-  }
-  return `./${handler.substring(0, lastDotIndex)}.js`;
 }
 
 /**

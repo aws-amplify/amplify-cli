@@ -41,15 +41,14 @@ export type StandardAttribute = {
 
 /**
  * Configuration for custom user attributes with validation constraints.
- * Not readonly — built incrementally by getCustomUserAttributes().
  */
 export type CustomAttribute = {
   readonly dataType: string | undefined;
   readonly mutable?: boolean;
-  minLen?: number;
-  maxLen?: number;
-  min?: number;
-  max?: number;
+  readonly minLen?: number;
+  readonly maxLen?: number;
+  readonly min?: number;
+  readonly max?: number;
 };
 
 /**
@@ -131,12 +130,11 @@ export type MetadataOptions = {
 
 /**
  * SAML identity provider configuration.
- * Not readonly — built incrementally by getAuthDefinition().
  */
 export type SamlOptions = {
-  name?: string;
+  readonly name?: string;
   readonly metadata: MetadataOptions;
-  attributeMapping?: AttributeMappingRule;
+  readonly attributeMapping?: AttributeMappingRule;
 };
 
 /**
@@ -151,50 +149,47 @@ export type OidcEndPoints = {
 
 /**
  * OpenID Connect identity provider configuration.
- * Not readonly — built incrementally by getAuthDefinition().
  */
 export type OidcOptions = {
   readonly issuerUrl: string;
-  name?: string;
-  endpoints?: OidcEndPoints;
-  attributeMapping?: AttributeMappingRule;
+  readonly name?: string;
+  readonly endpoints?: OidcEndPoints;
+  readonly attributeMapping?: AttributeMappingRule;
 };
 
 /**
  * Comprehensive login configuration options.
- * Not readonly — built incrementally by getAuthDefinition().
  */
 export type LoginOptions = {
-  email?: boolean;
-  phone?: boolean;
-  emailOptions?: Partial<EmailOptions>;
-  googleLogin?: boolean;
-  amazonLogin?: boolean;
-  appleLogin?: boolean;
-  facebookLogin?: boolean;
-  oidcLogin?: OidcOptions[];
-  samlLogin?: SamlOptions;
-  googleAttributes?: AttributeMappingRule;
-  amazonAttributes?: AttributeMappingRule;
-  appleAttributes?: AttributeMappingRule;
-  facebookAttributes?: AttributeMappingRule;
-  callbackURLs?: string[];
-  logoutURLs?: string[];
-  scopes?: Scope[];
-  googleScopes?: string[];
-  facebookScopes?: string[];
-  amazonScopes?: string[];
-  appleScopes?: string[];
+  readonly email?: boolean;
+  readonly phone?: boolean;
+  readonly emailOptions?: Partial<EmailOptions>;
+  readonly googleLogin?: boolean;
+  readonly amazonLogin?: boolean;
+  readonly appleLogin?: boolean;
+  readonly facebookLogin?: boolean;
+  readonly oidcLogin?: OidcOptions[];
+  readonly samlLogin?: SamlOptions;
+  readonly googleAttributes?: AttributeMappingRule;
+  readonly amazonAttributes?: AttributeMappingRule;
+  readonly appleAttributes?: AttributeMappingRule;
+  readonly facebookAttributes?: AttributeMappingRule;
+  readonly callbackURLs?: string[];
+  readonly logoutURLs?: string[];
+  readonly scopes?: Scope[];
+  readonly googleScopes?: string[];
+  readonly facebookScopes?: string[];
+  readonly amazonScopes?: string[];
+  readonly appleScopes?: string[];
 };
 
 /**
  * Multi-factor authentication configuration.
- * Not readonly — built incrementally by getMfaConfiguration().
  */
 export type MultifactorOptions = {
-  mode: UserPoolMfaConfig;
-  totp?: boolean;
-  sms?: boolean;
+  readonly mode: UserPoolMfaConfig;
+  readonly totp?: boolean;
+  readonly sms?: boolean;
 };
 
 /**

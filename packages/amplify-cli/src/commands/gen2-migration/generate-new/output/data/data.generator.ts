@@ -180,6 +180,7 @@ export class DataGenerator implements Generator {
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped JSON from AppSync logConfig
 function extractLoggingConfig(graphqlApi: GraphqlApi): any {
   const logConfig = graphqlApi.logConfig;
   if (!logConfig?.fieldLogLevel || logConfig.fieldLogLevel === 'NONE') {

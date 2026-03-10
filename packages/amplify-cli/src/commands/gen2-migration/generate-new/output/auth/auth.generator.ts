@@ -44,6 +44,7 @@ import {
 } from './auth.renderer';
 
 import { parseAuthAccessFromTemplate } from '../../input/auth-access-analyzer';
+import { extractFilePathFromHandler } from '../../ts-factory-utils';
 
 const factory = ts.factory;
 
@@ -162,6 +163,10 @@ export class AuthGenerator implements Generator {
       }
     }
 
+    const hasIdentityProviders =
+      authDefinition.userPoolClient?.SupportedIdentityProviders !== undefined &&
+      authDefinition.userPoolClient.SupportedIdentityProviders.length > 0;
+
     const operations: AmplifyMigrationOperation[] = [
       {
         describe: async () => ['Generate auth/resource.ts'],
@@ -185,12 +190,8 @@ export class AuthGenerator implements Generator {
       },
     ];
 
-    // Provider setup code must appear after storage overrides in backend.ts.
-    // Return it as a separate operation so prepare.ts can order it correctly.
-    const hasIdentityProviders =
-      authDefinition.userPoolClient?.SupportedIdentityProviders !== undefined &&
-      authDefinition.userPoolClient.SupportedIdentityProviders.length > 0;
-
+    // Provider setup must appear after storage overrides in backend.ts.
+    // Returned as a separate operation so the orchestrator can order it.
     if (hasIdentityProviders) {
       operations.push({
         describe: async () => ['Generate identity provider setup code in backend.ts'],
@@ -658,14 +659,19 @@ export class AuthGenerator implements Generator {
    */
   private async buildReferenceAuth(authCategory: Record<string, unknown>): Promise<AuthDefinition | undefined> {
     const isImported = Object.values(authCategory).some(
-      (value) => typeof value === 'object' && value !== null && 'serviceType' in value && (value as any).serviceType === 'imported',
+      (value) =>
+        typeof value === 'object' &&
+        value !== null &&
+        'serviceType' in value &&
+        (value as Record<string, unknown>).serviceType === 'imported',
     );
     if (!isImported) return undefined;
 
-    const firstAuth = Object.values(authCategory)[0] as any;
-    const userPoolId = firstAuth?.output?.UserPoolId as string | undefined;
-    const userPoolClientId = firstAuth?.output?.AppClientIDWeb as string | undefined;
-    const identityPoolId = firstAuth?.output?.IdentityPoolId as string | undefined;
+    const firstAuth = Object.values(authCategory)[0] as Record<string, unknown>;
+    const output = firstAuth?.output as Record<string, string> | undefined;
+    const userPoolId = output?.UserPoolId;
+    const userPoolClientId = output?.AppClientIDWeb;
+    const identityPoolId = output?.IdentityPoolId;
 
     if (!userPoolId && !userPoolClientId && !identityPoolId) {
       throw new Error('No user pool or identity pool found for import.');
@@ -733,18 +739,6 @@ export class AuthGenerator implements Generator {
     const authAccess = parseAuthAccessFromTemplate(templateContent) as AuthAccess;
     return Object.keys(authAccess).length > 0 ? authAccess : undefined;
   }
-}
-
-/**
- * Extracts the file path from an AWS Lambda handler string.
- * 'index.handler' → './index.js', 'src/handler.myFunction' → './src/handler.js'
- */
-function extractFilePathFromHandler(handler: string): string {
-  const lastDotIndex = handler.lastIndexOf('.');
-  if (lastDotIndex === -1) {
-    return `./${handler}.js`;
-  }
-  return `./${handler.substring(0, lastDotIndex)}.js`;
 }
 
 // ── Auth adapter functions ─────────────────────────────────────────
@@ -822,17 +816,13 @@ function getUserPoolOverrides(userPool: UserPoolType): Partial<PolicyOverrides> 
 }
 
 function getMfaConfiguration(mfaConfig?: UserPoolMfaType, totpConfig?: SoftwareTokenMfaConfigType): MultifactorOptions {
-  const multifactor: MultifactorOptions = { mode: 'OFF' };
   if (mfaConfig === 'ON') {
-    multifactor.mode = 'REQUIRED';
-    multifactor.sms = true;
-    multifactor.totp = totpConfig?.Enabled ?? false;
-  } else if (mfaConfig === 'OPTIONAL') {
-    multifactor.mode = 'OPTIONAL';
-    multifactor.sms = true;
-    multifactor.totp = totpConfig?.Enabled ?? false;
+    return { mode: 'REQUIRED', sms: true, totp: totpConfig?.Enabled ?? false };
   }
-  return multifactor;
+  if (mfaConfig === 'OPTIONAL') {
+    return { mode: 'OPTIONAL', sms: true, totp: totpConfig?.Enabled ?? false };
+  }
+  return { mode: 'OFF' };
 }
 
 function getEmailConfig(userPool: UserPoolType): EmailOptions {
@@ -864,18 +854,22 @@ function getCustomUserAttributes(signupAttributes: SchemaAttributeType[] | undef
   return (
     signupAttributes?.reduce((customAttributes: CustomAttributes, attribute: SchemaAttributeType) => {
       if (attribute.Name !== undefined && attribute.Name.startsWith('custom:')) {
+        const constraints =
+          attribute.NumberAttributeConstraints && Object.keys(attribute.NumberAttributeConstraints).length > 0
+            ? { min: Number(attribute.NumberAttributeConstraints.MinValue), max: Number(attribute.NumberAttributeConstraints.MaxValue) }
+            : attribute.StringAttributeConstraints && Object.keys(attribute.StringAttributeConstraints).length > 0
+            ? {
+                minLen: Number(attribute.StringAttributeConstraints.MinLength),
+                maxLen: Number(attribute.StringAttributeConstraints.MaxLength),
+              }
+            : {};
+
         const customAttribute: CustomAttribute = {
           mutable: attribute.Mutable,
           dataType: attribute.AttributeDataType,
+          ...constraints,
         };
 
-        if (attribute.NumberAttributeConstraints && Object.keys(attribute.NumberAttributeConstraints).length > 0) {
-          customAttribute.min = Number(attribute.NumberAttributeConstraints.MinValue);
-          customAttribute.max = Number(attribute.NumberAttributeConstraints.MaxValue);
-        } else if (attribute.StringAttributeConstraints && Object.keys(attribute.StringAttributeConstraints).length > 0) {
-          customAttribute.minLen = Number(attribute.StringAttributeConstraints.MinLength);
-          customAttribute.maxLen = Number(attribute.StringAttributeConstraints.MaxLength);
-        }
         return {
           ...customAttributes,
           [attribute.Name]: customAttribute,
@@ -972,134 +966,122 @@ function getAuthDefinition({
   totpConfig,
   userPoolClient,
 }: AuthSynthesizerOptions): AuthDefinition {
-  const loginWith: LoginOptions = { email: true };
+  // Collect login flags from identity providers
+  let googleLogin = false;
+  let amazonLogin = false;
+  let appleLogin = false;
+  let facebookLogin = false;
 
   if (identityProviders !== undefined) {
-    identityProviders.forEach((provider) => {
+    for (const provider of identityProviders) {
       const loginWithProperty = MAP_IDENTITY_PROVIDER[provider?.ProviderType as keyof typeof MAP_IDENTITY_PROVIDER];
       if (loginWithProperty !== undefined) {
-        const loginProperty = loginWithProperty[0] as keyof LoginOptions;
-        switch (loginProperty) {
-          case 'googleLogin':
-            loginWith.googleLogin = true;
-            break;
-          case 'amazonLogin':
-            loginWith.amazonLogin = true;
-            break;
-          case 'appleLogin':
-            loginWith.appleLogin = true;
-            break;
-          case 'facebookLogin':
-            loginWith.facebookLogin = true;
-            break;
-        }
+        const loginProperty = loginWithProperty[0];
+        if (loginProperty === 'googleLogin') googleLogin = true;
+        else if (loginProperty === 'amazonLogin') amazonLogin = true;
+        else if (loginProperty === 'appleLogin') appleLogin = true;
+        else if (loginProperty === 'facebookLogin') facebookLogin = true;
       }
-    });
+    }
   }
+
+  // Collect OIDC/SAML providers, attribute mappings, and scopes
+  let oidcLogin: OidcOptions[] = [];
+  let samlLogin: SamlOptions | undefined;
+  let googleAttributes: AttributeMappingRule | undefined;
+  let amazonAttributes: AttributeMappingRule | undefined;
+  let appleAttributes: AttributeMappingRule | undefined;
+  let facebookAttributes: AttributeMappingRule | undefined;
+  let googleScopes: string[] | undefined;
+  let facebookScopes: string[] | undefined;
+  let amazonScopes: string[] | undefined;
+  let appleScopes: string[] | undefined;
 
   if (identityProvidersDetails) {
     const oidcOptions: OidcOptions[] = [];
-    let samlOptions: SamlOptions | undefined;
 
     for (const provider of identityProvidersDetails) {
       const { ProviderType, ProviderName, ProviderDetails, AttributeMapping } = provider;
 
       if (ProviderType === IdentityProviderTypeType.OIDC && ProviderDetails) {
         const { oidc_issuer, authorize_url, token_url, attributes_url, jwks_uri } = ProviderDetails;
-        const oidcOption: OidcOptions = {
+        const endpoints =
+          authorize_url && token_url && attributes_url && jwks_uri
+            ? { authorization: authorize_url, token: token_url, userInfo: attributes_url, jwksUri: jwks_uri }
+            : undefined;
+        oidcOptions.push({
           issuerUrl: oidc_issuer,
-        };
-        if (ProviderName) oidcOption.name = ProviderName;
-        if (authorize_url && token_url && attributes_url && jwks_uri) {
-          oidcOption.endpoints = {
-            authorization: authorize_url,
-            token: token_url,
-            userInfo: attributes_url,
-            jwksUri: jwks_uri,
-          };
-        }
-        if (AttributeMapping) oidcOption.attributeMapping = filterAttributeMapping(AttributeMapping) as AttributeMappingRule;
-        oidcOptions.push(oidcOption);
+          ...(ProviderName && { name: ProviderName }),
+          ...(endpoints && { endpoints }),
+          ...(AttributeMapping && { attributeMapping: filterAttributeMapping(AttributeMapping) as AttributeMappingRule }),
+        });
       } else if (ProviderType === IdentityProviderTypeType.SAML && ProviderDetails) {
         const { metadataURL, metadataContent } = ProviderDetails;
-        samlOptions = {
+        samlLogin = {
           metadata: {
             metadataContent: metadataURL || metadataContent,
             metadataType: metadataURL ? 'URL' : 'FILE',
           },
+          ...(ProviderName && { name: ProviderName }),
+          ...(AttributeMapping && { attributeMapping: filterAttributeMapping(AttributeMapping) as AttributeMappingRule }),
         };
-        if (ProviderName) samlOptions.name = ProviderName;
-        if (AttributeMapping) samlOptions.attributeMapping = filterAttributeMapping(AttributeMapping) as AttributeMappingRule;
       } else {
         if (AttributeMapping) {
           const filteredMapping = filterAttributeMapping(AttributeMapping) as AttributeMappingRule;
           const attributeProperty = MAP_IDENTITY_PROVIDER[provider?.ProviderType as keyof typeof MAP_IDENTITY_PROVIDER]?.[1];
-          switch (attributeProperty) {
-            case 'googleAttributes':
-              loginWith.googleAttributes = filteredMapping;
-              break;
-            case 'amazonAttributes':
-              loginWith.amazonAttributes = filteredMapping;
-              break;
-            case 'appleAttributes':
-              loginWith.appleAttributes = filteredMapping;
-              break;
-            case 'facebookAttributes':
-              loginWith.facebookAttributes = filteredMapping;
-              break;
-          }
+          if (attributeProperty === 'googleAttributes') googleAttributes = filteredMapping;
+          else if (attributeProperty === 'amazonAttributes') amazonAttributes = filteredMapping;
+          else if (attributeProperty === 'appleAttributes') appleAttributes = filteredMapping;
+          else if (attributeProperty === 'facebookAttributes') facebookAttributes = filteredMapping;
         }
 
         if (ProviderDetails) {
-          const providerScopes = getProviderSpecificScopes(ProviderDetails);
-          if (providerScopes.length > 0) {
-            const mappedScopes = providerScopes
+          const providerSpecificScopes = getProviderSpecificScopes(ProviderDetails);
+          if (providerSpecificScopes.length > 0) {
+            const mappedScopes = providerSpecificScopes
               .map((scope) => (scope === 'public_profile' ? 'profile' : scope))
               .filter((scope) => ['phone', 'email', 'openid', 'profile', 'aws.cognito.signin.user.admin'].includes(scope));
 
-            switch (ProviderType) {
-              case IdentityProviderTypeType.Google:
-                loginWith.googleScopes = mappedScopes;
-                break;
-              case IdentityProviderTypeType.Facebook:
-                loginWith.facebookScopes = mappedScopes;
-                break;
-              case IdentityProviderTypeType.LoginWithAmazon:
-                loginWith.amazonScopes = mappedScopes;
-                break;
-              case IdentityProviderTypeType.SignInWithApple:
-                loginWith.appleScopes = mappedScopes;
-                break;
-            }
+            if (ProviderType === IdentityProviderTypeType.Google) googleScopes = mappedScopes;
+            else if (ProviderType === IdentityProviderTypeType.Facebook) facebookScopes = mappedScopes;
+            else if (ProviderType === IdentityProviderTypeType.LoginWithAmazon) amazonScopes = mappedScopes;
+            else if (ProviderType === IdentityProviderTypeType.SignInWithApple) appleScopes = mappedScopes;
           }
         }
       }
     }
-    loginWith.oidcLogin = oidcOptions;
-    loginWith.samlLogin = samlOptions;
+    oidcLogin = oidcOptions;
   }
 
-  if (userPool.EmailVerificationMessage || userPool.EmailVerificationSubject) {
-    loginWith.emailOptions = getEmailConfig(userPool);
-  }
-  if (webClient?.CallbackURLs) {
-    loginWith.callbackURLs = webClient.CallbackURLs;
-  }
-  if (webClient?.LogoutURLs) {
-    loginWith.logoutURLs = webClient.LogoutURLs;
-  }
-  if (webClient?.AllowedOAuthScopes) {
-    loginWith.scopes = getScopes(webClient.AllowedOAuthScopes);
-  }
+  const loginWith: LoginOptions = {
+    email: true,
+    ...(googleLogin && { googleLogin }),
+    ...(amazonLogin && { amazonLogin }),
+    ...(appleLogin && { appleLogin }),
+    ...(facebookLogin && { facebookLogin }),
+    ...(oidcLogin.length > 0 && { oidcLogin }),
+    ...(samlLogin && { samlLogin }),
+    ...(googleAttributes && { googleAttributes }),
+    ...(amazonAttributes && { amazonAttributes }),
+    ...(appleAttributes && { appleAttributes }),
+    ...(facebookAttributes && { facebookAttributes }),
+    ...(googleScopes && { googleScopes }),
+    ...(facebookScopes && { facebookScopes }),
+    ...(amazonScopes && { amazonScopes }),
+    ...(appleScopes && { appleScopes }),
+    ...((userPool.EmailVerificationMessage || userPool.EmailVerificationSubject) && { emailOptions: getEmailConfig(userPool) }),
+    ...(webClient?.CallbackURLs && { callbackURLs: webClient.CallbackURLs }),
+    ...(webClient?.LogoutURLs && { logoutURLs: webClient.LogoutURLs }),
+    ...(webClient?.AllowedOAuthScopes && { scopes: getScopes(webClient.AllowedOAuthScopes) }),
+  };
 
-  const userPoolOverrides = getUserPoolOverrides(userPool);
   return {
     loginOptions: loginWith,
     mfa: getMfaConfiguration(mfaConfig, totpConfig),
     standardUserAttributes: getStandardUserAttributes(userPool.SchemaAttributes),
     customUserAttributes: getCustomUserAttributes(userPool.SchemaAttributes),
     groups: getGroups(identityGroups),
-    userPoolOverrides,
+    userPoolOverrides: getUserPoolOverrides(userPool),
     lambdaTriggers: getAuthTriggers(userPool.LambdaConfig ?? {}, authTriggerConnections ?? {}),
     guestLogin,
     identityPoolName,
