@@ -481,7 +481,17 @@ export class BackendSynthesizer {
               this.oAuthFlag = true;
               objectLiterals.push(this.createOAuthObjectExpression(object, gen2PropertyMap));
             } else if (key != 'CallbackURLs' && key != 'LogoutURLs' && key != 'AllowedOAuthScopes') {
-              objectLiterals.push(this.createListPropertyAssignment(mappedProperty, value));
+              if (this.oAuthFlag && key == 'AllowedOAuthFlows') {
+                // When the oAuth block already includes flows, emit this as a commented-out property
+                objectLiterals.push(
+                  factory.createPropertyAssignment(
+                    factory.createIdentifier('// ' + mappedProperty),
+                    factory.createArrayLiteralExpression(value.map((attribute: string) => factory.createStringLiteral(attribute, true))),
+                  ),
+                );
+              } else {
+                objectLiterals.push(this.createListPropertyAssignment(mappedProperty, value));
+              }
             }
           }
         } else if (typeof value == 'object' && value !== null) {

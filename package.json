@@ -6,8 +6,10 @@
     "addwords": "node ./scripts/add-to-dict.js",
     "build-and-verify": "yarn clean && yarn && yarn build && yarn prettier-check && yarn lint-check && yarn verify-api-extract",
     "build-tests-changed": "lerna run build-tests --since dev",
+    "sanitize-migration-apps": "echo TODO",
+    "typecheck-migration-apps": "echo TODO",
     "build-tests": "lerna run build-tests",
-    "build": "lerna run build",
+    "build": "lerna run build && yarn typecheck-migration-apps",
     "check-version-conflicts:beta": "yarn ts-node ./scripts/check-version.ts beta",
     "check-version-conflicts:release": "yarn ts-node ./scripts/check-version.ts",
     "clean": "lerna run clean && yarn rimraf tsconfig.tsbuildinfo && lerna clean --yes && yarn rimraf node_modules",
@@ -94,11 +96,10 @@
     "strip-ansi": "^6.0.0",
     "yargs": "^17.7.2"
   },
-  "workspaces": {
-    "packages": [
-      "packages/*"
-    ]
-  },
+  "workspaces": [
+    "packages/*",
+    "amplify-migration-apps/**/_snapshot.post.generate"
+  ],
   "devDependencies": {
     "@babel/cli": "^7.27.0",
     "@babel/core": "^7.23.2",
@@ -152,6 +153,7 @@
     "rimraf": "^6.0.1",
     "ts-jest": "^29.0.0",
     "ts-node": "^10.4.0",
+    "tsx": "^4.21.0",
     "typescript": "^4.9.5"
   },
   "berry": {

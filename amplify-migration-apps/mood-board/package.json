@@ -1,13 +1,18 @@
 {
-  "name": "mood-board-app",
+  "name": "@amplify-migration-apps/mood-board-app",
   "private": true,
   "version": "0.0.1",
   "type": "module",
+  "installConfig": {
+    "hoistingLimits": "workspaces"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "configure": "./configure.sh"
+    "configure": "./configure.sh",
+    "sanitize": "tsx ../sanitize.ts",
+    "typecheck": "cd _snapshot.post.generate/amplify && npx tsc --noEmit"
   },
   "dependencies": {
     "@aws-amplify/ui-react": "^6.10.1",

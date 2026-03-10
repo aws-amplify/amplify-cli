@@ -122,7 +122,7 @@ amplify add function
 
 ```console
 ? Select which capability you want to add: Lambda function (serverless function)
-? Provide an AWS Lambda function name: quotegenerator
+? Provide an AWS Lambda function name: quotegeneratorbe
 ? Choose the runtime that you want to use: NodeJS
 ? Choose the function template that you want to use: Hello World
 
@@ -164,6 +164,14 @@ amplify push
 
 ✔ Are you sure you want to continue? (Y/n) · yes
 ? Do you want to generate code for your newly created GraphQL API No
+```
+
+## Commit
+
+```console
+git add .
+git commit -m "feat: gen1"
+git push origin main
 ```
 
 ## Migrating to Gen2

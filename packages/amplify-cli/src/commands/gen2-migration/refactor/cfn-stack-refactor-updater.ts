@@ -12,6 +12,7 @@ import assert from 'node:assert';
 import { CFNStackStatus, FailedRefactorResponse } from './types';
 import { pollStackForCompletionState } from './cfn-stack-updater';
 import extractStackNameFromId from './utils';
+import * as snap from './snap';
 
 const POLL_ATTEMPTS = 300;
 const POLL_INTERVAL_MS = 12000;
@@ -32,6 +33,7 @@ export async function tryRefactorStack(
 ): Promise<[boolean, FailedRefactorResponse | undefined]> {
   createStackRefactorCommandInput.Description = buildRefactorDescription(createStackRefactorCommandInput);
 
+  await snap.preRefactorStack(createStackRefactorCommandInput);
   const { StackRefactorId } = await cfnClient.send(new CreateStackRefactorCommand(createStackRefactorCommandInput));
   assert(StackRefactorId);
   let describeStackRefactorResponse = await pollStackRefactorForCompletionState(

@@ -1,14 +1,19 @@
 {
-  "name": "media-vault",
+  "name": "@amplify-migration-apps/media-vault",
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "installConfig": {
+    "hoistingLimits": "workspaces"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "configure": "./configure.sh"
+    "configure": "./configure.sh",
+    "sanitize": "tsx ../sanitize.ts",
+    "typecheck": "cd _snapshot.post.generate/amplify && npx tsc --noEmit"
   },
   "dependencies": {
     "@aws-amplify/storage": "^6.10.1",
