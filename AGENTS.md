@@ -22,8 +22,11 @@ same path as the code it references. For example
 
 ### 2. Implementation Stage
 
-Make the necessary code changes and follow the guidelines in [CODING_GUIDELINES](./CODING_GUIDELINES.md).
-For incremental validation, run `jest` commands directly and filter for the relevant tests.
+Make the necessary code changes following these guidelines:
+
+- **CRITICAL: NO 'any' types allowed.** TypeScript strict mode is enforced throughout the project.
+- Use absolute imports for cross-package dependencies (`@aws-amplify/...`) and relative imports within the same package.
+- For incremental validation, run `jest` commands directly and filter for the relevant tests.
 
 ### 3. Verification Stage
 
@@ -44,8 +47,18 @@ Verify your changes by following these guidelines:
   work prefixed with a "Prompt: " after a single line consisting of '---'. Make sure there are no empty lines before or after this line.
   Word wrap all paragraphs at 72 columns including the prompt. For the author of the commit, use the configured username in git with
   ' (AI)' appended and the user email. For example, `git commit --author="John Doe (AI) <john@bigco.com>" -m "docs: update configuration guide"`.
-  To avoid issues with multi-line commit messages, always create a `commit-msg.txt` file and commit
-  with `-F` (delete the `commit-msg.txt` file afterwards).
+  To avoid issues with multi-line commit messages, use a heredoc:
+
+  ```bash
+  git commit --author="John Doe (AI) <john@bigco.com>" -m "$(cat <<'EOF'
+  feat(scope): subject line
+
+  Body paragraph.
+  ---
+  Prompt: the user prompt
+  EOF
+  )"
+  ```
 
 - Since this repo has a commit hook that takes quite a long time to run, don't immediately commit every
   change you were asked to do. Apply your judgment, if the diff is still fairly small just keep going.
@@ -61,5 +74,15 @@ When asked to create a PR body, write it to `.pr-body.ai-generated.md` and follo
 - Do not repeat information that already exists in README files included in the PR — link to them instead.
 - Do not go overboard on technical details. A reviewer can read the code.
 - Keep it concise and scannable.
+
+## GitHub CLI
+
+The `gh` CLI is available for interacting with GitHub (PRs, issues, review comments, etc.).
+Use `gh --help` and `gh <command> --help` to dynamically discover available commands and options.
+Common examples:
+
+- `gh pr view <number>` — view PR details
+- `gh pr view <number> --comments` — view PR comments
+- `gh api repos/{owner}/{repo}/pulls/{number}/reviews` — fetch review data via the API
 
 **ALWAYS FOLLOW THESE RULES WHEN YOU WORK IN THIS PROJECT**

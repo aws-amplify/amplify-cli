@@ -180,25 +180,11 @@ async function getFilesRecursively(dir: string, base = '', ignorePatterns?: RegE
  */
 export function copySync(options: CopySyncOptions): void {
   const { src, dest, ignorePatterns } = options;
-  const stat = fs.statSync(src);
-  if (stat.isFile()) {
-    fs.mkdirSync(path.dirname(dest), { recursive: true });
-    fs.copyFileSync(src, dest);
-    return;
-  }
-  fs.mkdirSync(dest, { recursive: true });
-  for (const entry of fs.readdirSync(src, { withFileTypes: true })) {
-    const relativePath = entry.name;
-    const isIgnored = ignorePatterns?.some((pattern) => pattern.test(relativePath));
-    if (isIgnored) {
-      continue;
-    }
-    const srcPath = path.join(src, entry.name);
-    const destPath = path.join(dest, entry.name);
-    if (entry.isDirectory()) {
-      copySync({ src: srcPath, dest: destPath, ignorePatterns });
-    } else {
-      fs.copyFileSync(srcPath, destPath);
-    }
-  }
+  const filter = ignorePatterns
+    ? (srcPath: string) => {
+        const name = path.basename(srcPath);
+        return !ignorePatterns.some((pattern) => pattern.test(name));
+      }
+    : undefined;
+  fs.copySync(src, dest, { filter });
 }

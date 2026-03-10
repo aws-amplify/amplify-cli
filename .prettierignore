@@ -19,7 +19,6 @@ packages/amplify-environment-parameters/src/schemas/BackendParameters.schema.jso
 packages/amplify-nodejs-function-runtime-provider/src/__tests__/utils/handlerWithSyntaxError.js
 packages/amplify-velocity-template/src/parse/velocity.yy
 packages/amplify-frontend-ios/tests/sample**
-amplify-migration-apps/**
 
 # Exceptions:
 !packages/amplify-category-hosting/lib

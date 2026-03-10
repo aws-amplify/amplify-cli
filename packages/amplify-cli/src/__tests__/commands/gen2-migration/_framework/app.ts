@@ -533,24 +533,13 @@ export class MigrationApp {
    * @returns The name of the single resource in the category.
    * @throws Error if the category contains zero or more than one resource after filtering.
    */
-  public singleResourceName(category: string) {
+  public singleResourceName(category: string, service?: string) {
     let resourceNames = Object.keys(this.tpi[this.environmentName]['categories'][category]);
 
-    // When the category is 'auth', filter to only the primary Cognito resource
-    // by excluding auxiliary resources like userPoolGroups (service: 'Cognito-UserPool-Groups').
-    if (category === 'auth' && resourceNames.length > 1) {
+    if (service && resourceNames.length > 1) {
       resourceNames = resourceNames.filter((name) => {
-        const meta = this.meta.auth?.[name];
-        return meta?.service === 'Cognito';
-      });
-    }
-
-    // When the category is 'api', filter to only AppSync APIs
-    // by excluding API Gateway resources.
-    if (category === 'api' && resourceNames.length > 1) {
-      resourceNames = resourceNames.filter((name) => {
-        const meta = this.meta.api?.[name];
-        return meta?.service === 'AppSync';
+        const meta = (this.meta as any)[category]?.[name];
+        return meta?.service === service;
       });
     }
 

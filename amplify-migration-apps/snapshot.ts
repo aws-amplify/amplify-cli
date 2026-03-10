@@ -2,11 +2,7 @@
 
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import {
-  AmplifyClient,
-  paginateListApps,
-  App,
-} from '@aws-sdk/client-amplify';
+import { AmplifyClient, paginateListApps, App } from '@aws-sdk/client-amplify';
 import {
   CloudFormationClient,
   DescribeStacksCommand,
@@ -86,11 +82,7 @@ async function findAppByName(appName: string): Promise<App> {
 
 const cfnClient = new CloudFormationClient({});
 
-const ACTIVE_STATUSES = [
-  StackStatus.CREATE_COMPLETE,
-  StackStatus.UPDATE_COMPLETE,
-  StackStatus.UPDATE_ROLLBACK_COMPLETE,
-];
+const ACTIVE_STATUSES = [StackStatus.CREATE_COMPLETE, StackStatus.UPDATE_COMPLETE, StackStatus.UPDATE_ROLLBACK_COMPLETE];
 
 async function findStackByPattern(pattern: RegExp): Promise<string> {
   for await (const page of paginateListStacks({ client: cfnClient }, { StackStatusFilter: ACTIVE_STATUSES })) {
@@ -136,7 +128,7 @@ function stackNameFromArn(arnOrName: string): string {
   return arnOrName;
 }
 
-async function downloadRecursive(stackNameOrArn: string, targetDir: string, appId: string, appName: string): Promise<void> { 
+async function downloadRecursive(stackNameOrArn: string, targetDir: string, appId: string, appName: string): Promise<void> {
   const stackName = stackNameFromArn(stackNameOrArn);
 
   const template = await fetchTemplate(stackName);
@@ -164,10 +156,11 @@ async function downloadRecursive(stackNameOrArn: string, targetDir: string, appI
 // Snapshot capture functions
 // ---------------------------------------------------------------------------
 
-async function capturePreRefactor(appName: string): Promise<void> {
-  const app = await findAppByName(appName.replaceAll('-', ''));
-  const gen2RootStack = await findGen2RootStack(app.appId!, 'gen2-main');
-  const gen1RootStack = await findGen1RootStack(app.name!, 'main');
+async function capturePreRefactor(appName: string, amplifyAppName?: string, gen2Branch?: string, gen1Env?: string): Promise<void> {
+  const resolvedAppName = amplifyAppName ?? appName.replaceAll('-', '');
+  const app = await findAppByName(resolvedAppName);
+  const gen2RootStack = await findGen2RootStack(app.appId!, gen2Branch ?? 'gen2-main');
+  const gen1RootStack = await findGen1RootStack(app.name!, gen1Env ?? 'main');
 
   const targetDir = path.resolve(path.join(__dirname, appName, '_snapshot.pre.refactor'));
   resetDir(targetDir);
@@ -213,15 +206,21 @@ async function capturePostGenerate(appName: string, deployedAppPath: string): Pr
 // ---------------------------------------------------------------------------
 
 function usage(): never {
-  console.error(`Usage: npx tsx snapshot.ts <step> <app-name> [deployed-app-path]
+  console.error(`Usage: npx tsx snapshot.ts <step> <app-name> [deployed-app-path] [amplify-app-name] [gen2-branch] [gen1-env]
 
-Steps: ${STEPS.join(', ')}`);
+Steps: ${STEPS.join(', ')}
+
+  app-name:          Directory name under amplify-migration-apps/
+  deployed-app-path: Path to the deployed app (required for pre/post.generate and post.refactor)
+  amplify-app-name:  Actual Amplify app name if different from app-name (default: app-name without dashes)
+  gen2-branch:       Gen2 branch name (default: gen2-main)
+  gen1-env:          Gen1 environment name (default: main)`);
 
   process.exit(1);
 }
 
 async function main(): Promise<void> {
-  const [snapshot, appName, deployedAppPath] = process.argv.slice(2);
+  const [snapshot, appName, deployedAppPath, amplifyAppName, gen2Branch, gen1Env] = process.argv.slice(2);
 
   if (!snapshot || !STEPS.includes(snapshot as Step) || !appName) {
     usage();
@@ -237,7 +236,7 @@ async function main(): Promise<void> {
       await capturePostGenerate(appName, deployedAppPath);
       break;
     case 'pre.refactor':
-      await capturePreRefactor(appName);
+      await capturePreRefactor(appName, amplifyAppName, gen2Branch, gen1Env);
       break;
     case 'post.refactor':
       if (!deployedAppPath) usage();
