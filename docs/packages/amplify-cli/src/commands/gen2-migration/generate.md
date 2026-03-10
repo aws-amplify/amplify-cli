@@ -123,7 +123,7 @@ Each resource entry in `amplify-meta.json` gets its own generator instance. The 
 
 ### Orchestrator does zero data derivation
 
-`prepareNew()` reads `amplify-meta.json` top-level keys and dispatches by service type — that's it. All data fetching, transformation, and rendering logic lives in the generators themselves, accessed through `Gen1App`. The orchestrator is a thin loop that creates generators and collects their operations.
+`execute()` reads `amplify-meta.json` top-level keys and dispatches by service type — that's it. All data fetching, transformation, and rendering logic lives in the generators themselves, accessed through `Gen1App`. The orchestrator is a thin loop that creates generators and collects their operations.
 
 ### All generators access Gen1 state through Gen1App
 
@@ -139,11 +139,11 @@ A generator owns all logic for its category — both the `resource.ts` file and 
 
 ### Adding a new category requires only creating the generator
 
-A new category generator plugs in with one line in `prepareNew()` to instantiate it. No existing generators need modification, no shared interfaces need extending, no central switch statement needs a new case.
+A new category generator plugs in with one line in `execute()` to instantiate it. No existing generators need modification, no shared interfaces need extending, no central switch statement needs a new case.
 
 ### Operations are returned, not executed
 
-`prepareNew()` returns `AmplifyMigrationOperation[]` to the parent dispatcher. Each operation co-locates a `describe()` (what it will do) and an `execute()` (how to do it). The dispatcher shows all descriptions to the user, prompts for confirmation, then executes sequentially. This enables dry-run support without any generator-level changes.
+`execute()` returns `AmplifyMigrationOperation[]` to the parent dispatcher. Each operation co-locates a `describe()` (what it will do) and an `execute()` (how to do it). The dispatcher shows all descriptions to the user, prompts for confirmation, then executes sequentially. This enables dry-run support without any generator-level changes.
 
 ### Renderers are pure
 

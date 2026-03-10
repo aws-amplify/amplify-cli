@@ -18,4 +18,4 @@ Most generators return a single operation. The interface allows multiple operati
 
 - Implemented by every generator: category generators, `BackendGenerator`, `RootPackageJsonGenerator`, and all infrastructure generators
 - `AmplifyMigrationOperation` is defined in `_operation.ts` (the parent migration framework)
-- The orchestrator (`prepare.ts`) iterates generators and calls `plan()` on each
+- The orchestrator (`AmplifyMigrationGenerateStep.execute()`) iterates generators and calls `plan()` on each
