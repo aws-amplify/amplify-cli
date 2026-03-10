@@ -14,14 +14,12 @@ import { DynamoDBRenderer, DynamoDBTableDefinition } from './dynamodb.renderer';
 export class DynamoDBGenerator implements Generator {
   private readonly gen1App: Gen1App;
   private readonly backendGenerator: BackendGenerator;
-  private readonly defineTable: DynamoDBRenderer;
-  private readonly hasS3Bucket: boolean;
+  private readonly renderer: DynamoDBRenderer;
 
-  public constructor(gen1App: Gen1App, backendGenerator: BackendGenerator, hasS3Bucket: boolean) {
+  public constructor(gen1App: Gen1App, backendGenerator: BackendGenerator) {
     this.gen1App = gen1App;
     this.backendGenerator = backendGenerator;
-    this.defineTable = new DynamoDBRenderer();
-    this.hasS3Bucket = hasS3Bucket;
+    this.renderer = new DynamoDBRenderer();
   }
 
   /**
@@ -34,6 +32,8 @@ export class DynamoDBGenerator implements Generator {
     const dynamoEntries = Object.entries(storageCategory).filter(([, value]) => (value as Record<string, unknown>).service === 'DynamoDB');
     if (dynamoEntries.length === 0) return [];
 
+    const hasS3Bucket = Object.values(storageCategory).some((v) => (v as Record<string, unknown>).service === 'S3');
+
     const tables: DynamoDBTableDefinition[] = [];
     for (const [storageName, storageValue] of dynamoEntries) {
       tables.push(await this.fetchTable(storageName, storageValue as Record<string, unknown>));
@@ -43,10 +43,10 @@ export class DynamoDBGenerator implements Generator {
       {
         describe: async () => ['Generate DynamoDB table constructs in backend.ts'],
         execute: async () => {
-          const imports = this.defineTable.requiredImports();
+          const imports = this.renderer.requiredImports();
           this.backendGenerator.addImport(imports.source, imports.identifiers);
 
-          const statements = this.defineTable.render({ tables, hasS3Bucket: this.hasS3Bucket });
+          const statements = this.renderer.render({ tables, hasS3Bucket });
           for (const stmt of statements) {
             this.backendGenerator.addEarlyStatement(stmt);
           }

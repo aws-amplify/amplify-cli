@@ -16,7 +16,8 @@ import { GitIgnoreGenerator } from './output/gitignore.generator';
 import { AuthGenerator } from './output/auth/auth.generator';
 import { DataGenerator } from './output/data/data.generator';
 import { RestApiGenerator } from './output/rest-api/rest-api.generator';
-import { StorageGenerator } from './output/storage/storage.generator';
+import { S3Generator } from './output/storage/s3.generator';
+import { DynamoDBGenerator } from './output/storage/dynamodb.generator';
 import { FunctionGenerator } from './output/functions/function.generator';
 import { AnalyticsGenerator } from './output/analytics/analytics.generator';
 import { CustomResourcesGenerator } from './output/custom-resources/custom.generator';
@@ -47,7 +48,18 @@ export async function prepareNew(logger: Logger, appId: string, envName: string,
   }
 
   if (meta.storage) {
-    generators.push(new StorageGenerator(gen1App, backendGenerator, outputDir));
+    const storageCategory = meta.storage as Record<string, Record<string, unknown>>;
+    const hasS3 = Object.values(storageCategory).some((v) => v.service === 'S3');
+    const hasDynamo = Object.values(storageCategory).some((v) => v.service === 'DynamoDB');
+
+    if (hasS3) {
+      generators.push(new S3Generator(gen1App, backendGenerator, outputDir));
+    }
+    // DynamoDB generator handles all DynamoDB tables in a single operation
+    // because they share a CDK stack declaration.
+    if (hasDynamo) {
+      generators.push(new DynamoDBGenerator(gen1App, backendGenerator));
+    }
   }
 
   if (meta.api) {
@@ -56,7 +68,12 @@ export async function prepareNew(logger: Logger, appId: string, envName: string,
   }
 
   if (meta.analytics) {
-    generators.push(new AnalyticsGenerator(gen1App, backendGenerator, outputDir));
+    const analyticsCategory = meta.analytics as Record<string, Record<string, unknown>>;
+    for (const [resourceName, resourceMeta] of Object.entries(analyticsCategory)) {
+      if (resourceMeta.service === 'Kinesis') {
+        generators.push(new AnalyticsGenerator(gen1App, backendGenerator, outputDir, resourceName));
+      }
+    }
   }
 
   if (meta.custom) {

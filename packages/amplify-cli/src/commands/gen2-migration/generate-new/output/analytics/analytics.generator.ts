@@ -7,60 +7,60 @@ import { BackendGenerator } from '../backend.generator';
 import { Gen1App } from '../../input/gen1-app';
 import { printNodes } from '../../ts-writer';
 import { AnalyticsRenderer } from './analytics.renderer';
-import { KinesisCfnConverter, KinesisAnalyticsDefinition, KinesisAnalyticsMetaEntry } from './kinesis-cfn-converter';
+import { KinesisCfnConverter, KinesisAnalyticsDefinition } from './kinesis-cfn-converter';
 
 const factory = ts.factory;
 
 /**
- * Generates analytics resource files and contributes to backend.ts.
+ * Generates a single Kinesis analytics resource and contributes to backend.ts.
  *
- * For each Kinesis analytics resource in the Gen1 app, this generator:
- * 1. Converts the CloudFormation template to CDK using cdk-from-cfn
- * 2. Generates an analytics/resource.ts with a defineAnalytics function
- * 3. Adds the analytics import and call to backend.ts
+ * Converts the CloudFormation template to CDK using cdk-from-cfn,
+ * generates analytics/resource.ts, and adds the analytics import
+ * and call to backend.ts.
  */
 export class AnalyticsGenerator implements Generator {
   private readonly gen1App: Gen1App;
   private readonly backendGenerator: BackendGenerator;
   private readonly outputDir: string;
-  private readonly defineAnalytics: AnalyticsRenderer;
+  private readonly resourceName: string;
+  private readonly renderer: AnalyticsRenderer;
 
-  public constructor(gen1App: Gen1App, backendGenerator: BackendGenerator, outputDir: string) {
+  public constructor(gen1App: Gen1App, backendGenerator: BackendGenerator, outputDir: string, resourceName: string) {
     this.gen1App = gen1App;
     this.backendGenerator = backendGenerator;
     this.outputDir = outputDir;
-    this.defineAnalytics = new AnalyticsRenderer();
+    this.resourceName = resourceName;
+    this.renderer = new AnalyticsRenderer();
   }
 
   /**
-   * Plans the Kinesis analytics generation operations.
+   * Plans the Kinesis analytics generation operation.
    */
   public async plan(): Promise<AmplifyMigrationOperation[]> {
-    const meta = await this.gen1App.fetchMeta();
-    const analyticsCategory = meta.analytics as Record<string, KinesisAnalyticsMetaEntry> | undefined;
-    if (!analyticsCategory || Object.keys(analyticsCategory).length === 0) {
-      return [];
-    }
+    const analyticsCategory = await this.gen1App.fetchMetaCategory('analytics');
+    if (!analyticsCategory) return [];
 
-    const operations: AmplifyMigrationOperation[] = [];
+    const resourceMeta = analyticsCategory[this.resourceName] as Record<string, unknown> | undefined;
+    if (!resourceMeta) return [];
+
     const rootStackName = await this.gen1App.fetchRootStackName();
     const analyticsDir = path.join(this.outputDir, 'amplify', 'analytics');
 
-    for (const [resourceName, definition] of Object.entries(analyticsCategory)) {
-      if (definition.service !== 'Kinesis') {
-        continue;
-      }
+    const definition: KinesisAnalyticsDefinition = {
+      name: this.resourceName,
+      service: 'Kinesis',
+      providerMetadata: resourceMeta.providerMetadata as KinesisAnalyticsDefinition['providerMetadata'],
+    };
 
-      const namedDefinition: KinesisAnalyticsDefinition = { ...definition, name: resourceName };
-
-      const fileWriter = async (content: string, filePath: string) => {
-        await fs.mkdir(path.dirname(filePath), { recursive: true });
-        await fs.writeFile(filePath, content, 'utf-8');
-      };
-
-      operations.push({
-        describe: async () => [`Generate analytics/${resourceName}/resource.ts`],
+    return [
+      {
+        describe: async () => [`Generate analytics/${this.resourceName}`],
         execute: async () => {
+          const fileWriter = async (content: string, filePath: string) => {
+            await fs.mkdir(path.dirname(filePath), { recursive: true });
+            await fs.writeFile(filePath, content, 'utf-8');
+          };
+
           const kinesisCfnConverter = new KinesisCfnConverter(
             this.outputDir,
             fileWriter,
@@ -69,9 +69,9 @@ export class AnalyticsGenerator implements Generator {
             rootStackName,
           );
 
-          const codegenResult = await kinesisCfnConverter.generateKinesisAnalyticsL1Code(namedDefinition);
+          const codegenResult = await kinesisCfnConverter.generateKinesisAnalyticsL1Code(definition);
 
-          const nodes = this.defineAnalytics.render({
+          const nodes = this.renderer.render({
             constructClassName: codegenResult.constructClassName,
             constructFileName: codegenResult.constructFileName,
             resourceName: codegenResult.resourceName,
@@ -84,7 +84,6 @@ export class AnalyticsGenerator implements Generator {
           await fs.mkdir(analyticsDir, { recursive: true });
           await fs.writeFile(path.join(analyticsDir, 'resource.ts'), content, 'utf-8');
 
-          // Contribute to backend.ts
           this.backendGenerator.addImport('./analytics/resource', ['defineAnalytics']);
           this.backendGenerator.addEarlyStatement(
             factory.createVariableStatement(
@@ -105,9 +104,7 @@ export class AnalyticsGenerator implements Generator {
             ),
           );
         },
-      });
-    }
-
-    return operations;
+      },
+    ];
   }
 }
