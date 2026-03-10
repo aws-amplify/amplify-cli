@@ -1236,6 +1236,7 @@ __metadata:
     "@aws-amplify/plugin-types": ^1.11.1
     "@aws-cdk/cloudformation-diff": ~2.68.0
     "@aws-sdk/client-amplify": ^3.919.0
+    "@aws-sdk/client-api-gateway": ^3.919.0
     "@aws-sdk/client-appsync": ^3.919.0
     "@aws-sdk/client-cloudformation": ^3.919.0
     "@aws-sdk/client-cloudwatch-events": ^3.624.0
@@ -17525,12 +17526,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@smithy/types@npm:4.12.0":
-  version: 4.12.0
-  resolution: "@smithy/types@npm:4.12.0"
+"@smithy/types@npm:^3.3.0, @smithy/types@npm:^3.5.0, @smithy/types@npm:^3.6.0, @smithy/types@npm:^3.7.2":
+  version: 3.7.2
+  resolution: "@smithy/types@npm:3.7.2"
   dependencies:
     tslib: ^2.6.2
-  checksum: ac81de3f24b43e52a5089279bced4ff04a853e0bdc80143a234e79f7f40cbd61d85497b08a252265570b4637a3cf265cf85a7a09e5f194937fe30706498640b7
+  checksum: 4bf4674c922c092f9c92b482b074163ceea199e82466ccd4414c4cd9651f67757456414f969e9997371250e112778b636115727b5af53324334300f328069293
+  languageName: node
+  linkType: hard
+
+"@smithy/types@npm:^4.1.0, @smithy/types@npm:^4.12.0, @smithy/types@npm:^4.6.0, @smithy/types@npm:^4.8.0, @smithy/types@npm:^4.9.0":
+  version: 4.13.0
+  resolution: "@smithy/types@npm:4.13.0"
+  dependencies:
+    tslib: ^2.6.2
+  checksum: c6d8ab088214089e1e1b9bb3e1305fdaac0b0802b1772a6326821a671bc1a4fcd00c492928db455a022281f5a60471f0560402a74e0e4a0824ee8cb2163c0b73
   languageName: node
   linkType: hard
 
