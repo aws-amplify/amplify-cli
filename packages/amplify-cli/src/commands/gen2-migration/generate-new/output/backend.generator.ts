@@ -29,15 +29,16 @@ export class BackendGenerator implements Generator {
   }
 
   /**
-   * Adds an import to backend.ts. Does not merge — each call adds a separate import declaration.
-   * Duplicate source+identifier combinations are silently ignored.
+   * Adds named imports to backend.ts, merging identifiers into an
+   * existing entry when the source module already has one.
    */
   public addImport(source: string, identifiers: string[]): void {
     const existing = this.imports.find((i) => i.source === source);
     if (existing) {
-      const newIds = identifiers.filter((id) => !existing.identifiers.includes(id));
-      if (newIds.length > 0) {
-        this.imports.push({ source, identifiers: [...newIds] });
+      for (const id of identifiers) {
+        if (!existing.identifiers.includes(id)) {
+          existing.identifiers.push(id);
+        }
       }
     } else {
       this.imports.push({ source, identifiers: [...identifiers] });
@@ -99,32 +100,11 @@ export class BackendGenerator implements Generator {
         execute: async () => {
           const nodes: ts.Node[] = [];
 
-          // Sort imports to match expected output order:
-          // 1. Category resource imports (./auth/resource, ./data/resource, ./storage/resource)
-          // 2. Function/trigger imports (./auth/*/resource, ./function/*/resource, ./storage/*/resource)
-          // 3. CDK sub-module imports for constructs (aws-cdk-lib/aws-dynamodb, aws-cdk-lib/aws-lambda-*)
-          // 4. @aws-amplify/backend (defineBackend)
-          // 5. CDK root imports containing Duration (aws-cdk-lib)
-          // 6. CDK sub-module imports for auth (aws-cdk-lib/aws-cognito) — after Duration
-          // 7. Analytics imports (./analytics/*)
+          // Sort imports: relative resource imports first (auth, data, storage,
+          // then other resources), then CDK sub-modules, then @aws-amplify/backend,
+          // then analytics, then CDK root, then CDK cognito.
           this.addImport('@aws-amplify/backend', ['defineBackend']);
-          const sortedImports = [...this.imports].sort((a, b) => {
-            const order = (imp: { readonly source: string; identifiers: string[] }): number => {
-              const s = imp.source;
-              if (s === './auth/resource') return 0;
-              if (s === './data/resource') return 1;
-              if (s === './storage/resource') return 2;
-              if (s.startsWith('./') && s.endsWith('/resource') && !s.startsWith('./analytics')) return 3;
-              if (s.startsWith('aws-cdk-lib/') && s !== 'aws-cdk-lib/aws-cognito') return 4;
-              if (s === '@aws-amplify/backend') return 5;
-              if (s.startsWith('./analytics')) return 5.5;
-              if (s === 'aws-cdk-lib' && imp.identifiers.includes('Duration')) return 6;
-              if (s === 'aws-cdk-lib' && !imp.identifiers.includes('Duration')) return 4.5;
-              if (s === 'aws-cdk-lib/aws-cognito') return 7;
-              return 4.5;
-            };
-            return order(a) - order(b);
-          });
+          const sortedImports = [...this.imports].sort((a, b) => importOrder(a.source) - importOrder(b.source));
 
           for (const imp of sortedImports) {
             nodes.push(createImportDeclaration(imp.source, imp.identifiers));
@@ -199,4 +179,29 @@ function createImportDeclaration(source: string, identifiers: string[]): ts.Impo
     factory.createImportClause(false, undefined, factory.createNamedImports(importSpecifiers)),
     factory.createStringLiteral(source),
   );
+}
+
+/**
+ * Returns a numeric sort key for import source paths.
+ *
+ * Groups:
+ * 0 — category resource imports (./auth/resource, ./data/resource, ./storage/resource)
+ * 1 — other relative resource imports (nested resource paths)
+ * 2 — CDK sub-module imports except aws-cognito
+ * 3 — @aws-amplify/backend
+ * 4 — analytics imports
+ * 5 — CDK root (aws-cdk-lib)
+ * 6 — aws-cdk-lib/aws-cognito (after Duration so OAuth types appear last)
+ */
+function importOrder(source: string): number {
+  if (source === './auth/resource') return 0;
+  if (source === './data/resource') return 0.1;
+  if (source === './storage/resource') return 0.2;
+  if (source.startsWith('./') && source.endsWith('/resource') && !source.startsWith('./analytics')) return 1;
+  if (source.startsWith('aws-cdk-lib/') && source !== 'aws-cdk-lib/aws-cognito') return 2;
+  if (source === '@aws-amplify/backend') return 3;
+  if (source.startsWith('./analytics')) return 4;
+  if (source === 'aws-cdk-lib') return 5;
+  if (source === 'aws-cdk-lib/aws-cognito') return 6;
+  return 2.5;
 }

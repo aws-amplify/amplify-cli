@@ -15,13 +15,9 @@ export class RootPackageJsonGenerator implements Generator {
   private readonly dependencies: Record<string, string> = {};
   private readonly devDependencies: Record<string, string> = {};
   private readonly outputDir: string;
-  private readonly appName: string | undefined;
-  private readonly envName: string | undefined;
 
-  public constructor(outputDir: string, appName?: string, envName?: string) {
+  public constructor(outputDir: string) {
     this.outputDir = outputDir;
-    this.appName = appName;
-    this.envName = envName;
   }
 
   /**
@@ -45,7 +41,7 @@ export class RootPackageJsonGenerator implements Generator {
       {
         describe: async () => [`Generate ${packageJsonPath}`],
         execute: async () => {
-          const defaultName = this.appName && this.envName ? `${this.appName}-${this.envName}-gen2` : 'amplify-gen2';
+          const defaultName = 'amplify-gen2';
 
           let packageJson: PackageJson = { name: defaultName };
           try {

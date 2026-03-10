@@ -19,6 +19,7 @@ import { StorageGenerator } from './output/storage/storage.generator';
 import { FunctionGenerator } from './output/functions/function.generator';
 import { AnalyticsGenerator } from './output/analytics/analytics.generator';
 import { CustomResourcesGenerator } from './output/custom-resources/custom.generator';
+import { fileOrDirectoryExists } from './input/file-exists';
 
 const TEMP_GEN_2_OUTPUT_DIR = 'amplify-gen2';
 const AMPLIFY_DIR = 'amplify';
@@ -49,34 +50,40 @@ export async function prepareNew(logger: Logger, appId: string, envName: string,
 
   // Auth operations are split: the first generates auth/resource.ts and
   // contributes auth overrides. Late operations (provider setup) must run
-  // after storage so they appear in the correct position in backend.ts.
-  let lateAuthOperations: AmplifyMigrationOperation[] = [];
+  // after storage overrides so they appear in the correct position in
+  // backend.ts. We wrap the late operations as a synthetic generator and
+  // insert it at the right point in the generator list.
+  let lateAuthGenerator: Generator | undefined;
   if (meta.auth) {
     const authGenerator = new AuthGenerator(gen1App, backendGenerator, outputDir);
     const authOps = await authGenerator.plan();
     if (authOps.length > 0) {
       generators.push({ plan: async () => [authOps[0]] });
     }
-    lateAuthOperations = authOps.slice(1);
+    if (authOps.length > 1) {
+      lateAuthGenerator = { plan: async () => authOps.slice(1) };
+    }
   }
 
-  let storageGenerator: Generator | undefined;
   if (meta.storage) {
-    storageGenerator = new StorageGenerator(gen1App, backendGenerator, outputDir);
-    generators.push(storageGenerator);
+    generators.push(new StorageGenerator(gen1App, backendGenerator, outputDir));
   }
 
+  // Late auth operations (provider setup) run after storage.
+  if (lateAuthGenerator) {
+    generators.push(lateAuthGenerator);
+  }
+
+  const hasAuth = meta.auth !== undefined;
   if (meta.api) {
     const apiCategory = meta.api as Record<string, Record<string, unknown>>;
     const hasAppSync = Object.values(apiCategory).some((v) => v.service === 'AppSync');
     const hasApiGateway = Object.values(apiCategory).some((v) => v.service === 'API Gateway');
 
     if (hasAppSync) {
-      const hasAuth = meta.auth !== undefined;
       generators.push(new DataGenerator(gen1App, backendGenerator, outputDir, hasAuth));
     }
     if (hasApiGateway) {
-      const hasAuth = meta.auth !== undefined;
       generators.push(new RestApiGenerator(gen1App, backendGenerator, hasAuth));
     }
   }
@@ -107,21 +114,8 @@ export async function prepareNew(logger: Logger, appId: string, envName: string,
 
   // Collect all operations from generators in order.
   const operations: AmplifyMigrationOperation[] = [];
-  let lateAuthInserted = false;
   for (const generator of generators) {
-    // Insert late auth operations (provider setup) before BackendGenerator
-    // if they haven't been inserted after storage already.
-    if (generator === backendGenerator && !lateAuthInserted && lateAuthOperations.length > 0) {
-      operations.push(...lateAuthOperations);
-      lateAuthInserted = true;
-    }
     operations.push(...(await generator.plan()));
-    // Insert late auth operations (provider setup) after storage so they
-    // appear in the correct position in backend.ts.
-    if (generator === storageGenerator && lateAuthOperations.length > 0) {
-      operations.push(...lateAuthOperations);
-      lateAuthInserted = true;
-    }
   }
 
   for (const operation of operations) {
@@ -139,12 +133,12 @@ export async function prepareNew(logger: Logger, appId: string, envName: string,
   const packageLockPath = path.join(cwd, 'package-lock.json');
   const nodeModulesPath = path.join(cwd, 'node_modules');
 
-  if (await pathExists(packageLockPath)) {
+  if (await fileOrDirectoryExists(packageLockPath)) {
     logger.info('Deleting package-lock.json');
     await fs.rm(packageLockPath, { recursive: true });
   }
 
-  if (await pathExists(nodeModulesPath)) {
+  if (await fileOrDirectoryExists(nodeModulesPath)) {
     logger.info('Deleting node_modules');
     await fs.rm(nodeModulesPath, { recursive: true });
   }
@@ -157,15 +151,7 @@ export async function prepareNew(logger: Logger, appId: string, envName: string,
  * Checks if a file or directory exists at the given path.
  */
 export async function pathExists(targetPath: string): Promise<boolean> {
-  try {
-    await fs.stat(targetPath);
-    return true;
-  } catch (error) {
-    if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
-      return false;
-    }
-    throw error;
-  }
+  return fileOrDirectoryExists(targetPath);
 }
 
 /**

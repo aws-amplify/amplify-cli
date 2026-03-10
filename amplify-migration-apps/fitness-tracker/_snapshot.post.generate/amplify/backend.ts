@@ -11,9 +11,8 @@ import {
   ResponseType,
 } from 'aws-cdk-lib/aws-apigateway';
 import { Policy, PolicyStatement } from 'aws-cdk-lib/aws-iam';
-import { Stack } from 'aws-cdk-lib';
 import { defineBackend } from '@aws-amplify/backend';
-import { Duration } from 'aws-cdk-lib';
+import { Duration, Stack } from 'aws-cdk-lib';
 
 const backend = defineBackend({
   auth,
