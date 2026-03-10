@@ -8,6 +8,7 @@ import unzipper from 'unzipper';
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 
 import { fileOrDirectoryExists } from './directory_exists';
+import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 
 export class BackendDownloader {
   constructor(private s3Client: S3Client) {}
@@ -19,9 +20,12 @@ export class BackendDownloader {
     const { sep } = path;
     return await fs.mkdtemp(`${tmpDir}${sep}`);
   };
-  getCurrentCloudBackend = async (bucket: string): Promise<string> => {
+  getCurrentCloudBackend = async (bucket?: string): Promise<string> => {
     if (BackendDownloader.ccbDir && (await fileOrDirectoryExists(BackendDownloader.ccbDir))) {
       return BackendDownloader.ccbDir;
+    }
+    if (bucket) {
+      throw new AmplifyError('MigrationError', { message: `bucket must be provided when backend downloaded is not initialized` });
     }
     const tmpDir = await this.makeTempDirectory();
     const ccbZippedFilename = `#${BackendDownloader.CURRENT_CLOUD_BACKEND}.zip`;
