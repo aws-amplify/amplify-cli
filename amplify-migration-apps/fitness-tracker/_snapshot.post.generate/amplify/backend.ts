@@ -289,11 +289,6 @@ backend.lognutrition.addEnvironment(
   'API_FITNESSTRACKER_MEALTABLE_NAME',
   backend.data.resources.tables['Meal'].tableName
 );
-backend.admin.resources.cfnResources.cfnFunction.functionName = `admin-${branchName}`;
-backend.admin.addEnvironment(
-  'AUTH_FITNESSTRACKER6B0FC1196B0FC119_USERPOOLID',
-  backend.auth.resources.userPool.userPoolId
-);
 backend.data.resources.tables['Meal'].grant(
   backend.lognutrition.resources.lambda,
   'dynamodb:Put*',
@@ -312,4 +307,9 @@ backend.data.resources.tables['Meal'].grant(
   'dynamodb:PartiQLUpdate',
   'dynamodb:Delete*',
   'dynamodb:PartiQLDelete'
+);
+backend.admin.resources.cfnResources.cfnFunction.functionName = `admin-${branchName}`;
+backend.admin.addEnvironment(
+  'AUTH_FITNESSTRACKER6B0FC1196B0FC119_USERPOOLID',
+  backend.auth.resources.userPool.userPoolId
 );

@@ -22,7 +22,7 @@ export interface RenderDefineFunctionOptions {
  * Renders defineFunction() resource.ts files from Gen1 Lambda configuration.
  * Pure — no AWS calls, no side effects.
  */
-export class FunctionsRenderer {
+export class FunctionRenderer {
   private readonly appId: string;
   private readonly backendEnvironmentName: string;
 
@@ -30,6 +30,7 @@ export class FunctionsRenderer {
     this.appId = appId;
     this.backendEnvironmentName = backendEnvironmentName;
   }
+
   /**
    * Produces the complete TypeScript AST for a function's resource.ts.
    */

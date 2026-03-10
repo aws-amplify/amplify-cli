@@ -16,7 +16,7 @@ import { AuthGenerator } from './output/auth/auth.generator';
 import { DataGenerator } from './output/data/data.generator';
 import { RestApiGenerator } from './output/rest-api/rest-api.generator';
 import { StorageGenerator } from './output/storage/storage.generator';
-import { FunctionGenerator, FunctionOperations } from './output/functions/functions.generator';
+import { FunctionGenerator } from './output/functions/function.generator';
 import { AnalyticsGenerator } from './output/analytics/analytics.generator';
 import { CustomResourcesGenerator } from './output/custom-resources/custom.generator';
 
@@ -46,24 +46,6 @@ export async function prepareNew(logger: Logger, appId: string, envName: string,
   await gen1App.fetchAllStackResources();
 
   const generators: Generator[] = [];
-
-  // FunctionGenerator.plan() must run first so that gen1App caches the
-  // function category map, which AuthGenerator and StorageGenerator depend on.
-  // But its operations are added after auth and data so that imports appear
-  // in the correct order.
-  const functionPlans: FunctionOperations[] = [];
-  if (meta.function) {
-    const functionCategory = meta.function as Record<string, Record<string, unknown>>;
-    const categoryMap = await gen1App.fetchFunctionCategoryMap();
-    for (const [resourceName, resourceMeta] of Object.entries(functionCategory)) {
-      const category = categoryMap.get(resourceName) || 'function';
-      const gen = new FunctionGenerator(gen1App, backendGenerator, packageJsonGenerator, outputDir, resourceName, resourceMeta, category);
-      const ops = await gen.plan();
-      if (ops) {
-        functionPlans.push(ops);
-      }
-    }
-  }
 
   // Auth operations are split: the first generates auth/resource.ts and
   // contributes auth overrides. Late operations (provider setup) must run
@@ -107,6 +89,13 @@ export async function prepareNew(logger: Logger, appId: string, envName: string,
     generators.push(new CustomResourcesGenerator(gen1App, backendGenerator, packageJsonGenerator, outputDir));
   }
 
+  if (meta.function) {
+    const functionCategory = meta.function as Record<string, unknown>;
+    for (const resourceName of Object.keys(functionCategory)) {
+      generators.push(new FunctionGenerator(gen1App, backendGenerator, packageJsonGenerator, outputDir, resourceName));
+    }
+  }
+
   // Infrastructure generators run last — BackendGenerator accumulates
   // contributions from all category generators above.
   generators.push(backendGenerator);
@@ -116,27 +105,10 @@ export async function prepareNew(logger: Logger, appId: string, envName: string,
   generators.push(new AmplifyYmlGenerator(gen1App));
   generators.push(new GitIgnoreGenerator());
 
-  // Collect all operations. Function operations (pre-collected from
-  // per-function FunctionGenerator.plan() calls) are inserted after
-  // category generators but before infrastructure generators so that
-  // function imports and defineBackend properties appear in the correct
-  // position. Operations are grouped across functions to preserve the
-  // backend.ts statement ordering that snapshot tests expect.
+  // Collect all operations from generators in order.
   const operations: AmplifyMigrationOperation[] = [];
   let lateAuthInserted = false;
   for (const generator of generators) {
-    // Insert function operations right before BackendGenerator runs,
-    // grouped by operation type across all functions.
-    if (generator === backendGenerator && functionPlans.length > 0) {
-      operations.push(...functionPlans.map((p) => p.resourceOp));
-      operations.push(...functionPlans.map((p) => p.overridesOp));
-      operations.push(...functionPlans.map((p) => p.grantsOp));
-      for (const plan of functionPlans) {
-        if (plan.triggerOp) {
-          operations.push(plan.triggerOp);
-        }
-      }
-    }
     // Insert late auth operations (provider setup) before BackendGenerator
     // if they haven't been inserted after storage already.
     if (generator === backendGenerator && !lateAuthInserted && lateAuthOperations.length > 0) {

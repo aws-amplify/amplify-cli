@@ -1,5 +1,3 @@
-// Auth generator - creates Gen 2 auth TypeScript files
-// Duplicated from generate/generators/auth/index.ts for generate-new/ self-containment
 import ts, { PropertyAssignment } from 'typescript';
 import { PasswordPolicyType, UserPoolClientType } from '@aws-sdk/client-cognito-identity-provider';
 import type { EnvironmentResponse, Runtime } from '@aws-sdk/client-lambda';

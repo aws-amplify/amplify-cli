@@ -2,10 +2,11 @@ import path from 'node:path';
 import fs from 'node:fs/promises';
 import ts from 'typescript';
 import { AmplifyMigrationOperation } from '../../../_operation';
+import { Generator } from '../../generator';
 import { BackendGenerator } from '../backend.generator';
 import { Gen1App } from '../../input/gen1-app';
 import { printNodes } from '../../ts-writer';
-import { FunctionsRenderer, RenderDefineFunctionOptions } from './functions.renderer';
+import { FunctionRenderer, RenderDefineFunctionOptions } from './function.renderer';
 import { RootPackageJsonGenerator } from '../root-package-json.generator';
 
 const factory = ts.factory;
@@ -50,21 +51,6 @@ interface ResolvedFunction {
 }
 
 /**
- * Grouped operations returned by a single FunctionGenerator.
- *
- * Callers collect these from multiple generators and flatten them
- * in group order (all resourceOps, then all overridesOps, etc.)
- * to preserve the backend.ts statement ordering that snapshot
- * tests expect.
- */
-export interface FunctionOperations {
-  readonly resourceOp: AmplifyMigrationOperation;
-  readonly overridesOp: AmplifyMigrationOperation;
-  readonly grantsOp: AmplifyMigrationOperation;
-  readonly triggerOp?: AmplifyMigrationOperation;
-}
-
-/**
  * Generates Lambda function resources and contributes to backend.ts
  * for a single Gen1 function.
  *
@@ -75,15 +61,13 @@ export interface FunctionOperations {
  * 5. Contributes function imports, name overrides, env var escape hatches,
  *    table grants, graphql grants, and dynamo triggers to backend.ts
  */
-export class FunctionGenerator {
+export class FunctionGenerator implements Generator {
   private readonly gen1App: Gen1App;
   private readonly backendGenerator: BackendGenerator;
   private readonly packageJsonGenerator: RootPackageJsonGenerator;
   private readonly outputDir: string;
   private readonly resourceName: string;
-  private readonly resourceMeta: Record<string, unknown>;
-  private readonly category: string;
-  private readonly renderer: FunctionsRenderer;
+  private readonly renderer: FunctionRenderer;
 
   public constructor(
     gen1App: Gen1App,
@@ -91,46 +75,56 @@ export class FunctionGenerator {
     packageJsonGenerator: RootPackageJsonGenerator,
     outputDir: string,
     resourceName: string,
-    resourceMeta: Record<string, unknown>,
-    category: string,
   ) {
     this.gen1App = gen1App;
     this.backendGenerator = backendGenerator;
     this.packageJsonGenerator = packageJsonGenerator;
     this.outputDir = outputDir;
     this.resourceName = resourceName;
-    this.resourceMeta = resourceMeta;
-    this.category = category;
-    this.renderer = new FunctionsRenderer(gen1App.appId, gen1App.envName);
+    this.renderer = new FunctionRenderer(gen1App.appId, gen1App.envName);
   }
 
   /**
-   * Resolves this function's config and returns grouped operations.
+   * Resolves this function's config and returns a flat array of operations.
    */
-  public async plan(): Promise<FunctionOperations | undefined> {
+  public async plan(): Promise<AmplifyMigrationOperation[]> {
     const func = await this.resolve();
-    if (!func) return undefined;
 
     await this.mergeFunctionDependencies(func);
 
-    const resourceOp = this.planResource(func);
-    const overridesOp = this.planOverrides(func);
-    const grantsOp = this.planGrants(func);
-    const triggerOp = await this.planTrigger(func);
+    const operations: AmplifyMigrationOperation[] = [this.planResource(func), this.planOverrides(func), this.planGrants(func)];
 
-    return { resourceOp, overridesOp, grantsOp, triggerOp };
+    const triggerOp = await this.planTrigger(func);
+    if (triggerOp) {
+      operations.push(triggerOp);
+    }
+
+    return operations;
   }
 
   /**
    * Resolves this function's deployed config from AWS.
    */
-  private async resolve(): Promise<ResolvedFunction | undefined> {
-    const output = this.resourceMeta.output as Record<string, string> | undefined;
+  private async resolve(): Promise<ResolvedFunction> {
+    const functionCategory = await this.gen1App.fetchMetaCategory('function');
+    if (!functionCategory || !functionCategory[this.resourceName]) {
+      throw new Error(`Function '${this.resourceName}' not found in amplify-meta.json`);
+    }
+
+    const resourceMeta = functionCategory[this.resourceName] as Record<string, unknown>;
+    const output = resourceMeta.output as Record<string, string> | undefined;
     const deployedName = output?.Name;
-    if (!deployedName) return undefined;
+    if (!deployedName) {
+      throw new Error(`Function '${this.resourceName}' has no deployed name in amplify-meta.json output`);
+    }
 
     const config = await this.gen1App.aws.fetchFunctionConfig(deployedName);
-    if (!config) return undefined;
+    if (!config) {
+      throw new Error(`Lambda function '${deployedName}' not found`);
+    }
+
+    const categoryMap = await this.gen1App.fetchFunctionCategoryMap();
+    const category = categoryMap.get(this.resourceName) || 'function';
 
     const runtime = config.Runtime;
     if (runtime && !runtime.startsWith('nodejs')) {
@@ -150,7 +144,7 @@ export class FunctionGenerator {
 
     return {
       resourceName: this.resourceName,
-      category: this.category,
+      category,
       entry,
       deployedName,
       timeoutSeconds: config.Timeout,

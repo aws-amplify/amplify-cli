@@ -73,6 +73,16 @@ backend.fetchuseractivity.addEnvironment(
   'STORAGE_ACTIVITY_NAME',
   activity.tableName
 );
+activity.grant(
+  backend.fetchuseractivity.resources.lambda,
+  'dynamodb:Get*',
+  'dynamodb:BatchGetItem',
+  'dynamodb:List*',
+  'dynamodb:Describe*',
+  'dynamodb:Scan',
+  'dynamodb:Query',
+  'dynamodb:PartiQLSelect'
+);
 backend.recorduseractivity.resources.cfnResources.cfnFunction.functionName = `recorduseractivity-${branchName}`;
 backend.recorduseractivity.addEnvironment(
   'STORAGE_ACTIVITY_ARN',
@@ -85,16 +95,6 @@ backend.recorduseractivity.addEnvironment(
 backend.recorduseractivity.addEnvironment(
   'STORAGE_ACTIVITY_NAME',
   activity.tableName
-);
-activity.grant(
-  backend.fetchuseractivity.resources.lambda,
-  'dynamodb:Get*',
-  'dynamodb:BatchGetItem',
-  'dynamodb:List*',
-  'dynamodb:Describe*',
-  'dynamodb:Scan',
-  'dynamodb:Query',
-  'dynamodb:PartiQLSelect'
 );
 activity.grant(
   backend.recorduseractivity.resources.lambda,

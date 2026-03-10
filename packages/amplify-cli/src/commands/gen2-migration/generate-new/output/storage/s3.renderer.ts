@@ -46,7 +46,7 @@ export interface RenderDefineStorageOptions {
 
 /**
  * Renders a defineStorage() resource.ts file from Gen1 S3 configuration.
- * Pure — no AWS calls, no side effects.
+ * Looks up function categories from Gen1App for import path resolution.
  */
 export class S3Renderer {
   private readonly envName: string;
