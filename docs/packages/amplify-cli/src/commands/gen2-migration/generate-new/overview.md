@@ -2,6 +2,51 @@
 
 Code generation pipeline that transforms Gen1 Amplify projects into Gen2 TypeScript resource definitions. Fetches live AWS resource configurations and local project files, then generates a complete `amplify/` directory with `resource.ts` files, `backend.ts`, and supporting config files.
 
+## Directory Structure
+
+```
+generate-new/
+  input/                          # Gen1 app state (AWS + local files)
+    gen1-app.ts                   # Facade — lazy-loading, caching access
+    aws-fetcher.ts                # All AWS SDK calls, cached
+    aws-clients.ts                # Client factory interface
+    backend-downloader.ts         # S3 zip download + extraction
+    auth-access-analyzer.ts       # CFN policy parser for Cognito permissions
+    file-exists.ts                # File existence utility
+  output/                         # Generators and renderers
+    auth/                         # Auth category
+    data/                         # AppSync/GraphQL category
+    storage/                      # S3 + DynamoDB category
+    functions/                    # Lambda category
+    analytics/                    # Kinesis category
+    rest-api/                     # API Gateway category
+    custom-resources/             # Custom CDK stacks
+    backend.generator.ts          # Accumulates backend.ts contributions
+    root-package-json.generator.ts
+    backend-package-json.generator.ts
+    tsconfig.generator.ts
+    amplify-yml.generator.ts
+    gitignore.generator.ts
+  prepare.ts                      # Orchestrator entry point
+  generator.ts                    # Generator interface
+  resource.ts                     # Shared resource.ts renderer
+  ts-writer.ts                    # AST printer (prettier)
+  ts-factory-utils.ts             # Shared AST builder helpers
+  package-json-patch.ts           # Gen2 dev dependency patching
+```
+
+### `generate-new/` (root)
+
+The root contains the orchestrator (`prepare.ts`), the `Generator` interface, and shared utilities used across both input and output layers. `prepare.ts` is the entry point — it reads `amplify-meta.json`, instantiates generators, collects their operations, and returns them. The utilities (`ts-writer.ts`, `ts-factory-utils.ts`, `resource.ts`) provide common AST construction and printing that all renderers share.
+
+### `input/`
+
+Everything needed to read Gen1 app state. `Gen1App` is the facade that generators interact with — it delegates AWS SDK calls to `AwsFetcher` and local file reads to `BackendDownloader`. Each fetch method caches its result so multiple generators querying the same data don't duplicate work. `auth-access-analyzer.ts` is a specialized parser that extracts Cognito permissions from CloudFormation templates for the function generator.
+
+### `output/`
+
+All generators and renderers. Each category subdirectory (`auth/`, `data/`, `storage/`, etc.) contains a generator (orchestration, `Gen1App` queries, `BackendGenerator` contributions) and a renderer (pure AST construction from typed options). The root of `output/` holds infrastructure generators that don't have renderers — they write simple config files directly (`backend.ts`, `package.json`, `tsconfig.json`, `amplify.yml`, `.gitignore`).
+
 ## Architecture
 
 The pipeline has three layers:
