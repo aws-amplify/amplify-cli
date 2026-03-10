@@ -31,6 +31,16 @@ jest.mock('@aws-sdk/client-dynamodb', () => ({
     },
   })),
 }));
+jest.mock('@aws-sdk/client-cognito-identity-provider', () => ({
+  ...jest.requireActual('@aws-sdk/client-cognito-identity-provider'),
+  CognitoIdentityProviderClient: jest.fn().mockImplementation(() => ({ send: jest.fn() })),
+}));
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
+  ...jest.requireActual('@aws-amplify/amplify-cli-core'),
+  stateManager: {
+    getMeta: jest.fn().mockReturnValue({ auth: {} }),
+  },
+}));
 
 describe('AmplifyMigrationLockStep', () => {
   let lockStep: AmplifyMigrationLockStep;
