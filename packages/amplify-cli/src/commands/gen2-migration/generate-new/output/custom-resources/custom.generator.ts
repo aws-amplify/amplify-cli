@@ -16,13 +16,6 @@ const BACKEND_DIR = 'backend';
 const FILTER_FILES = new Set(['package.json', 'yarn.lock']);
 const BUILD_ARTIFACTS = ['build', 'node_modules', '.npmrc', 'yarn.lock', 'tsconfig.json'];
 
-const CATEGORY_MAP: Readonly<Record<string, string>> = {
-  function: 'functions',
-  api: 'data',
-  storage: 'storage',
-  auth: 'auth',
-};
-
 /**
  * Generates a single custom resource and contributes to backend.ts.
  *
@@ -142,9 +135,9 @@ export class CustomResourceGenerator implements Generator {
       ts.factory.createStringLiteral(this.resourceName),
     ];
 
-    for (const dep of dependencies) {
-      const gen2Name = CATEGORY_MAP[dep] || dep;
-      args.push(ts.factory.createPropertyAccessExpression(ts.factory.createIdentifier('backend'), gen2Name));
+    // Pass the backend object when the resource has dependencies
+    if (dependencies.length > 0) {
+      args.push(ts.factory.createIdentifier('backend'));
     }
 
     this.backendGenerator.addStatement(

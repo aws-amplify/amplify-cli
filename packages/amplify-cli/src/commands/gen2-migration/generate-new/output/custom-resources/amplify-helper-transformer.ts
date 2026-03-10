@@ -42,30 +42,44 @@ export class AmplifyHelperTransformer {
     const projectInfoVariables = new Set<string>();
     // Track parameter names with AmplifyResourceProps type
     const amplifyResourcePropsParams = new Set<string>();
-    // Track dependencies from addResourceDependency calls
-    const resourceDependencies = new Set<string>();
+    // Track whether the resource has any dependencies from addResourceDependency calls
+    let hasDependencies = false;
+    // Track variable names assigned from addResourceDependency (e.g., `dependencies`, `deps`)
+    const dependencyVariables = new Set<string>();
+    // Track identifiers imported from `amplify-dependent-resources-ref` so we can remove calls to them
+    const removedModuleIdentifiers = new Set<string>();
 
     const transformer = <T extends ts.Node>(context: ts.TransformationContext) => {
       return (node: T) => {
         function visit(node: ts.Node): ts.Node {
-          // Remove AmplifyHelpers import statements and AmplifyDependentResourcesAttributes import
+          // Remove import statements for amplify-dependent-resources-ref and cli-extensibility-helper
           if (ts.isImportDeclaration(node)) {
             const moduleSpecifier = node.moduleSpecifier;
             if (ts.isStringLiteral(moduleSpecifier)) {
-              if (
-                moduleSpecifier.text === '@aws-amplify/cli-extensibility-helper' ||
-                moduleSpecifier.text.includes('amplify-dependent-resources-ref')
-              ) {
+              if (moduleSpecifier.text.includes('amplify-dependent-resources-ref')) {
+                // Track imported identifiers so we can remove variable declarations that call them
+                if (node.importClause) {
+                  if (node.importClause.name && ts.isIdentifier(node.importClause.name)) {
+                    removedModuleIdentifiers.add(node.importClause.name.text);
+                  }
+                  if (node.importClause.namedBindings && ts.isNamedImports(node.importClause.namedBindings)) {
+                    for (const specifier of node.importClause.namedBindings.elements) {
+                      removedModuleIdentifiers.add(specifier.name.text);
+                    }
+                  }
+                }
+                return undefined;
+              }
+              if (moduleSpecifier.text === '@aws-amplify/cli-extensibility-helper') {
                 return undefined;
               }
             }
           }
 
-          // Transform *.Fn.ref('env') and Fn.ref('env') calls
+          // Transform *.Fn.ref('env') and Fn.ref('env') calls, and dependency property access refs
           if (ts.isCallExpression(node)) {
             const expression = node.expression;
             if (ts.isPropertyAccessExpression(expression) && ts.isIdentifier(expression.name) && expression.name.text === 'ref') {
-              // Check if it's *.Fn.ref or Fn.ref
               const isCdkFnRef =
                 ts.isPropertyAccessExpression(expression.expression) &&
                 ts.isIdentifier(expression.expression.name) &&
@@ -73,13 +87,33 @@ export class AmplifyHelperTransformer {
 
               const isFnRef = ts.isIdentifier(expression.expression) && expression.expression.text === 'Fn';
 
-              if (
-                (isCdkFnRef || isFnRef) &&
-                node.arguments.length === 1 &&
-                ts.isStringLiteral(node.arguments[0]) &&
-                node.arguments[0].text === 'env'
-              ) {
-                return ts.factory.createIdentifier('branchName');
+              if ((isCdkFnRef || isFnRef) && node.arguments.length === 1) {
+                const arg = node.arguments[0];
+
+                // Handle cdk.Fn.ref('env') → branchName
+                if (ts.isStringLiteral(arg) && arg.text === 'env') {
+                  return ts.factory.createIdentifier('branchName');
+                }
+
+                // Handle cdk.Fn.ref(dependencies.category.resource.attribute) → backend.gen2Category.resources.gen2Path
+                if (ts.isPropertyAccessExpression(arg)) {
+                  const chain = AmplifyHelperTransformer.getPropertyAccessChain(arg);
+                  const parts = chain.split('.');
+                  if (parts.length >= 4 && dependencyVariables.has(parts[0])) {
+                    const gen1Category = parts[1];
+                    const gen2Category = AmplifyHelperTransformer.CATEGORY_MAP[gen1Category] || gen1Category;
+                    const attribute = parts[3];
+                    const mappedAttr = AmplifyHelperTransformer.ATTRIBUTE_MAP[gen1Category]?.[attribute];
+                    const gen2Path = mappedAttr || attribute;
+
+                    if (gen1Category === 'function') {
+                      return AmplifyHelperTransformer.createPropertyAccessFromString(
+                        `backend.${gen2Category}.${parts[2]}.resources.${gen2Path}`,
+                      );
+                    }
+                    return AmplifyHelperTransformer.createPropertyAccessFromString(`backend.${gen2Category}.resources.${gen2Path}`);
+                  }
+                }
               }
             }
           }
@@ -98,7 +132,6 @@ export class AmplifyHelperTransformer {
               ts.isIdentifier(declaration.name)
             ) {
               projectInfoVariables.add(declaration.name.text);
-              // Remove this entire variable statement
               return undefined;
             }
 
@@ -109,26 +142,65 @@ export class AmplifyHelperTransformer {
                 ts.isPropertyAccessExpression(callExpr.expression) && callExpr.expression.name.text === 'addResourceDependency';
 
               if (isAddResourceDependency) {
-                // Extract dependencies from the call
-                const args = callExpr.arguments;
-                if (args.length >= 4 && ts.isArrayLiteralExpression(args[3])) {
-                  args[3].elements.forEach((element) => {
-                    if (ts.isObjectLiteralExpression(element)) {
-                      element.properties.forEach((prop) => {
-                        if (
-                          ts.isPropertyAssignment(prop) &&
-                          ts.isIdentifier(prop.name) &&
-                          prop.name.text === 'category' &&
-                          ts.isStringLiteral(prop.initializer)
-                        ) {
-                          resourceDependencies.add(prop.initializer.text);
-                        }
-                      });
-                    }
-                  });
+                if (ts.isIdentifier(declaration.name)) {
+                  dependencyVariables.add(declaration.name.text);
                 }
-                // Remove this entire variable statement
+                hasDependencies = true;
                 return undefined;
+              }
+            }
+
+            // Remove `const envParam = new cdk.CfnParameter(this, 'env', ...)` variable statements
+            if (declaration && declaration.initializer && ts.isNewExpression(declaration.initializer)) {
+              const newExpr = declaration.initializer;
+              const exprText = newExpr.expression;
+              const isCfnParameter =
+                (ts.isPropertyAccessExpression(exprText) && exprText.name.text === 'CfnParameter') ||
+                (ts.isIdentifier(exprText) && exprText.text === 'CfnParameter');
+
+              if (isCfnParameter && newExpr.arguments && newExpr.arguments.length >= 2) {
+                const secondArg = newExpr.arguments[1];
+                if (ts.isStringLiteral(secondArg) && secondArg.text === 'env') {
+                  return undefined;
+                }
+              }
+            }
+
+            // Remove variable declarations with AmplifyDependentResourcesAttributes type annotation
+            if (declaration && declaration.type && ts.isTypeReferenceNode(declaration.type)) {
+              const typeName = declaration.type.typeName;
+              if (ts.isIdentifier(typeName) && typeName.text === 'AmplifyDependentResourcesAttributes') {
+                return undefined;
+              }
+            }
+
+            // Remove variable declarations whose initializer calls a function imported from amplify-dependent-resources-ref
+            if (
+              declaration &&
+              declaration.initializer &&
+              ts.isCallExpression(declaration.initializer) &&
+              ts.isIdentifier(declaration.initializer.expression) &&
+              removedModuleIdentifiers.has(declaration.initializer.expression.text)
+            ) {
+              return undefined;
+            }
+
+            // Strip `as AmplifyDependentResourcesAttributes` type assertions while preserving the variable
+            if (declaration && declaration.initializer && ts.isAsExpression(declaration.initializer)) {
+              const asExpr = declaration.initializer;
+              if (ts.isTypeReferenceNode(asExpr.type)) {
+                const typeName = asExpr.type.typeName;
+                if (ts.isIdentifier(typeName) && typeName.text === 'AmplifyDependentResourcesAttributes') {
+                  const updatedDeclaration = ts.factory.updateVariableDeclaration(
+                    declaration,
+                    declaration.name,
+                    declaration.exclamationToken,
+                    declaration.type,
+                    asExpr.expression,
+                  );
+                  const updatedDeclarationList = ts.factory.updateVariableDeclarationList(node.declarationList, [updatedDeclaration]);
+                  return ts.factory.updateVariableStatement(node, node.modifiers, updatedDeclarationList);
+                }
               }
             }
           }
@@ -146,45 +218,29 @@ export class AmplifyHelperTransformer {
               expression.expression.name.text === 'getProjectInfo'
             ) {
               const propertyName = node.name.text;
-
-              if (propertyName === 'envName') {
-                return ts.factory.createIdentifier('branchName');
-              }
-              if (propertyName === 'projectName') {
-                return ts.factory.createIdentifier('projectName');
-              }
+              if (propertyName === 'envName') return ts.factory.createIdentifier('branchName');
+              if (propertyName === 'projectName') return ts.factory.createIdentifier('projectName');
             }
 
             // Handle variable access: amplifyProjectInfo.propertyName
             if (ts.isIdentifier(expression) && projectInfoVariables.has(expression.text)) {
               const propertyName = node.name.text;
-
-              if (propertyName === 'envName') {
-                return ts.factory.createIdentifier('branchName');
-              }
-              if (propertyName === 'projectName') {
-                return ts.factory.createIdentifier('projectName');
-              }
+              if (propertyName === 'envName') return ts.factory.createIdentifier('branchName');
+              if (propertyName === 'projectName') return ts.factory.createIdentifier('projectName');
             }
 
             // Handle amplifyResourceProps transformations
             if (ts.isIdentifier(expression) && amplifyResourcePropsParams.has(expression.text)) {
               const propertyName = node.name.text;
-              if (propertyName === 'resourceName') {
-                return ts.factory.createIdentifier('id');
-              }
-              if (propertyName === 'category') {
-                return ts.factory.createStringLiteral('custom');
-              }
+              if (propertyName === 'resourceName') return ts.factory.createIdentifier('id');
+              if (propertyName === 'category') return ts.factory.createStringLiteral('custom');
             }
 
-            // Transform property access like amplifyResources.storage.bucket.bucketName
-            // Only transform the outermost property access (when this node is not part of a larger chain)
+            // Transform property access like amplifyResources.storage.bucket.bucketName or dependency variable access
             if (!ts.isPropertyAccessExpression(node.parent)) {
               const fullAccess = AmplifyHelperTransformer.getPropertyAccessChain(node);
               const parts = fullAccess.split('.');
-              // Match pattern: amplifyResources.category.resourceName.property (4+ parts)
-              if (parts.length >= 4 && parts[0].includes('amplifyResources')) {
+              if (parts.length >= 4 && (parts[0].includes('amplifyResources') || dependencyVariables.has(parts[0]))) {
                 const gen1Category = parts[1];
                 const gen2Category = AmplifyHelperTransformer.CATEGORY_MAP[gen1Category] || gen1Category;
                 const resourceName = parts[2];
@@ -192,15 +248,12 @@ export class AmplifyHelperTransformer {
                 const mappedAttribute = AmplifyHelperTransformer.ATTRIBUTE_MAP[gen1Category]?.[gen1Attribute];
                 const gen2Property = mappedAttribute || parts.slice(3).join('.');
 
-                // Functions need resource name preserved: functions.myFunc.resources.lambda.functionArn
                 if (gen1Category === 'function') {
                   return AmplifyHelperTransformer.createPropertyAccessFromString(
-                    `${gen2Category}.${resourceName}.resources.${gen2Property}`,
+                    `backend.${gen2Category}.${resourceName}.resources.${gen2Property}`,
                   );
                 }
-
-                // Other categories: auth.resources.userPool.userPoolId
-                return AmplifyHelperTransformer.createPropertyAccessFromString(`${gen2Category}.resources.${gen2Property}`);
+                return AmplifyHelperTransformer.createPropertyAccessFromString(`backend.${gen2Category}.resources.${gen2Property}`);
               }
             }
           }
@@ -215,6 +268,24 @@ export class AmplifyHelperTransformer {
                 }
               }
             });
+          }
+
+          // Remove `new cdk.CfnParameter(this, 'env', ...)` expression statements
+          if (ts.isExpressionStatement(node)) {
+            const expr = node.expression;
+            if (ts.isNewExpression(expr)) {
+              const exprText = expr.expression;
+              const isCfnParameter =
+                (ts.isPropertyAccessExpression(exprText) && exprText.name.text === 'CfnParameter') ||
+                (ts.isIdentifier(exprText) && exprText.text === 'CfnParameter');
+
+              if (isCfnParameter && expr.arguments && expr.arguments.length >= 2) {
+                const secondArg = expr.arguments[1];
+                if (ts.isStringLiteral(secondArg) && secondArg.text === 'env') {
+                  return undefined;
+                }
+              }
+            }
           }
 
           // Visit children first
@@ -242,25 +313,23 @@ export class AmplifyHelperTransformer {
             );
           }
 
-          // Transform constructor: add resource dependencies as parameters
+          // Transform constructor: add backend parameter if resource has dependencies
           if (ts.isConstructorDeclaration(visitedNode)) {
             const baseParams = visitedNode.parameters.slice(0, 2); // scope, id
 
-            // Add resource dependency parameters with Gen2 naming
-            const resourceParams = Array.from(resourceDependencies).map((gen1Category) => {
-              const gen2Category = AmplifyHelperTransformer.CATEGORY_MAP[gen1Category] || gen1Category;
-              return ts.factory.createParameterDeclaration(
+            if (hasDependencies) {
+              const backendParam = ts.factory.createParameterDeclaration(
                 undefined,
                 undefined,
-                gen2Category,
+                'backend',
                 undefined,
-                ts.factory.createTypeReferenceNode('any'),
+                ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword),
                 undefined,
               );
-            });
+              baseParams.push(backendParam);
+            }
 
-            const newParams = [...baseParams, ...resourceParams];
-            return ts.factory.updateConstructorDeclaration(visitedNode, visitedNode.modifiers, newParams, visitedNode.body);
+            return ts.factory.updateConstructorDeclaration(visitedNode, visitedNode.modifiers, baseParams, visitedNode.body);
           }
 
           // Transform super() call: remove props argument
@@ -283,21 +352,18 @@ export class AmplifyHelperTransformer {
    * Inserts branchName and projectName variable declarations after imports.
    */
   public static addBranchNameVariable(sourceFile: ts.SourceFile, projectName?: string): ts.SourceFile {
-    // Check if branchName declaration already exists
     const hasBranchName = sourceFile.statements.some(
       (stmt) =>
         ts.isVariableStatement(stmt) &&
         stmt.declarationList.declarations.some((decl) => ts.isIdentifier(decl.name) && decl.name.text === 'branchName'),
     );
 
-    // Check if projectName declaration already exists
     const hasProjectName = sourceFile.statements.some(
       (stmt) =>
         ts.isVariableStatement(stmt) &&
         stmt.declarationList.declarations.some((decl) => ts.isIdentifier(decl.name) && decl.name.text === 'projectName'),
     );
 
-    // Create branchName declaration: const branchName = process.env.AWS_BRANCH ?? "sandbox";
     const branchNameDeclaration = ts.factory.createVariableStatement(
       undefined,
       ts.factory.createVariableDeclarationList(
@@ -320,7 +386,6 @@ export class AmplifyHelperTransformer {
       ),
     );
 
-    // Create projectName declaration: const projectName = "project-name";
     const projectNameDeclaration = projectName
       ? ts.factory.createVariableStatement(
           undefined,
@@ -332,21 +397,9 @@ export class AmplifyHelperTransformer {
       : undefined;
 
     const newStatements = [];
-
-    // Add imports
     newStatements.push(...sourceFile.statements.filter((stmt) => ts.isImportDeclaration(stmt)));
-
-    // Add branchName declaration if needed
-    if (!hasBranchName) {
-      newStatements.push(branchNameDeclaration);
-    }
-
-    // Add projectName declaration if needed
-    if (!hasProjectName && projectNameDeclaration) {
-      newStatements.push(projectNameDeclaration);
-    }
-
-    // Add remaining statements (classes, etc.)
+    if (!hasBranchName) newStatements.push(branchNameDeclaration);
+    if (!hasProjectName && projectNameDeclaration) newStatements.push(projectNameDeclaration);
     newStatements.push(...sourceFile.statements.filter((stmt) => !ts.isImportDeclaration(stmt)));
 
     return ts.factory.updateSourceFile(sourceFile, newStatements);

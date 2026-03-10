@@ -37,6 +37,7 @@ interface ResolvedFunction {
   readonly environment?: Record<string, string>;
   readonly escapeHatches: readonly EnvVarEscapeHatch[];
   readonly dynamoActions: string[];
+  readonly kinesisActions: string[];
   readonly graphqlApiPermissions: { readonly hasMutation: boolean; readonly hasQuery: boolean };
 }
 
@@ -135,8 +136,8 @@ export class FunctionGenerator implements Generator {
     // escape hatches become addEnvironment() calls in backend.ts.
     const { retained, escapeHatches } = classifyEnvVars(config.Environment?.Variables ?? {});
 
-    // Extract DynamoDB actions and GraphQL API permissions from the function's CloudFormation template
-    const { dynamoActions, graphqlApiPermissions } = await this.extractCfnPermissions();
+    // Extract DynamoDB/Kinesis actions and GraphQL API permissions from the function's CloudFormation template
+    const { dynamoActions, kinesisActions, graphqlApiPermissions } = await this.extractCfnPermissions();
 
     return {
       resourceName: this.resourceName,
@@ -150,6 +151,7 @@ export class FunctionGenerator implements Generator {
       environment: Object.keys(retained).length > 0 ? retained : undefined,
       escapeHatches,
       dynamoActions,
+      kinesisActions,
       graphqlApiPermissions,
     };
   }
@@ -200,6 +202,7 @@ export class FunctionGenerator implements Generator {
     this.contributeTableGrants(func);
     this.contributeStorageTableGrants(func);
     this.contributeGraphqlApiGrants(func);
+    this.contributeKinesisGrants(func);
   }
 
   private async copyFunctionSource(resourceName: string, destDir: string): Promise<void> {
@@ -347,26 +350,78 @@ export class FunctionGenerator implements Generator {
   }
 
   /**
+   * Contributes addToRolePolicy statements for functions with Kinesis stream access.
+   * Generates: backend.funcName.resources.lambda.addToRolePolicy(new aws_iam.PolicyStatement({...}))
+   */
+  private contributeKinesisGrants(func: ResolvedFunction): void {
+    if (func.kinesisActions.length === 0) return;
+
+    this.backendGenerator.addImport('aws-cdk-lib', ['aws_iam']);
+
+    const lambdaRef = factory.createPropertyAccessExpression(
+      factory.createPropertyAccessExpression(
+        factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier(func.resourceName)),
+        factory.createIdentifier('resources'),
+      ),
+      factory.createIdentifier('lambda'),
+    );
+
+    const policyStatement = factory.createNewExpression(
+      factory.createPropertyAccessExpression(factory.createIdentifier('aws_iam'), factory.createIdentifier('PolicyStatement')),
+      undefined,
+      [
+        factory.createObjectLiteralExpression(
+          [
+            factory.createPropertyAssignment(
+              'actions',
+              factory.createArrayLiteralExpression(func.kinesisActions.map((action) => factory.createStringLiteral(action))),
+            ),
+            factory.createPropertyAssignment(
+              'resources',
+              factory.createArrayLiteralExpression([
+                factory.createPropertyAccessExpression(factory.createIdentifier('analytics'), factory.createIdentifier('kinesisStreamArn')),
+              ]),
+            ),
+          ],
+          true,
+        ),
+      ],
+    );
+
+    this.backendGenerator.addStatement(
+      factory.createExpressionStatement(
+        factory.createCallExpression(
+          factory.createPropertyAccessExpression(lambdaRef, factory.createIdentifier('addToRolePolicy')),
+          undefined,
+          [policyStatement],
+        ),
+      ),
+    );
+  }
+
+  /**
    * Reads the function's CloudFormation template from the cloud backend
    * and extracts DynamoDB IAM actions and GraphQL API permissions.
    */
   private async extractCfnPermissions(): Promise<{
     dynamoActions: string[];
+    kinesisActions: string[];
     graphqlApiPermissions: { hasMutation: boolean; hasQuery: boolean };
   }> {
     const templatePath = `function/${this.resourceName}/${this.resourceName}-cloudformation-template.json`;
     const content = await this.gen1App.readCloudBackendFile(templatePath);
-    if (!content) return { dynamoActions: [], graphqlApiPermissions: { hasMutation: false, hasQuery: false } };
+    if (!content) return { dynamoActions: [], kinesisActions: [], graphqlApiPermissions: { hasMutation: false, hasQuery: false } };
 
     try {
       const template = JSON.parse(content);
       const policy = template.Resources?.AmplifyResourcesPolicy;
       if (!policy || policy.Type !== 'AWS::IAM::Policy') {
-        return { dynamoActions: [], graphqlApiPermissions: { hasMutation: false, hasQuery: false } };
+        return { dynamoActions: [], kinesisActions: [], graphqlApiPermissions: { hasMutation: false, hasQuery: false } };
       }
 
       const statements = policy.Properties?.PolicyDocument?.Statement ?? [];
       const dynamoActions: string[] = [];
+      const kinesisActions: string[] = [];
       let hasMutation = false;
       let hasQuery = false;
 
@@ -375,6 +430,9 @@ export class FunctionGenerator implements Generator {
         for (const action of stmtActions) {
           if (typeof action === 'string' && action.startsWith('dynamodb:')) {
             dynamoActions.push(action);
+          }
+          if (typeof action === 'string' && action.startsWith('kinesis:')) {
+            kinesisActions.push(action);
           }
         }
 
@@ -387,9 +445,9 @@ export class FunctionGenerator implements Generator {
         }
       }
 
-      return { dynamoActions, graphqlApiPermissions: { hasMutation, hasQuery } };
+      return { dynamoActions, kinesisActions, graphqlApiPermissions: { hasMutation, hasQuery } };
     } catch {
-      return { dynamoActions: [], graphqlApiPermissions: { hasMutation: false, hasQuery: false } };
+      return { dynamoActions: [], kinesisActions: [], graphqlApiPermissions: { hasMutation: false, hasQuery: false } };
     }
   }
 
@@ -629,6 +687,15 @@ function classifyEnvVars(variables: Record<string, string>): {
             const funcName = match ? match[1].toLowerCase() : 'unknown';
             return backendPath(funcName, 'resources', 'lambda', 'functionName');
           },
+        },
+      ],
+    },
+    {
+      prefix: 'ANALYTICS_',
+      suffixes: [
+        {
+          suffix: '_KINESISSTREAMARN',
+          build: () => directProp('analytics', 'kinesisStreamArn'),
         },
       ],
     },
