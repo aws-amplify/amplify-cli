@@ -66,10 +66,10 @@ test('mood-board snapshot', async () => {
 });
 
 async function testSnapshot(appName: string, appOptions?: MigrationAppOptions, customize?: (app: MigrationApp) => Promise<void>) {
-  if (process.env['GITHUB_ACTION'] !== undefined) {
-    console.log('Not running test on github actions');
-    return;
-  }
+  // if (process.env['GITHUB_ACTION'] !== undefined) {
+  //   console.log('Not running test on github actions');
+  //   return;
+  // }
   await MigrationApp.run(
     appName,
     async (app: MigrationApp) => {
