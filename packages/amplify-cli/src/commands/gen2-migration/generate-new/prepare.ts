@@ -91,23 +91,38 @@ export async function prepareNew(logger: Logger, appId: string, envName: string,
   generators.push(new AmplifyYmlGenerator(gen1App));
   generators.push(new GitIgnoreGenerator());
 
+  // No-op operation shown first so the user sees "Delete amplify/" at the top.
+  // The actual deletion happens in the post-generation operation below.
+  const operations: AmplifyMigrationOperation[] = [
+    {
+      describe: async () => ['Delete amplify/'],
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      execute: async () => {},
+    },
+  ];
+
   // Collect all operations from generators in order.
-  const operations: AmplifyMigrationOperation[] = [];
   for (const generator of generators) {
     operations.push(...(await generator.plan()));
   }
 
   // Post-generation: replace local amplify folder and reinstall deps.
   operations.push({
-    describe: async () => ["Replace local 'amplify' folder with generated Gen2 output", 'Install Gen2 dependencies'],
+    describe: async () => [],
     execute: async () => {
       const cwd = process.cwd();
-      logger.info(`Overriding local 'amplify' folder`);
+      logger.info('Deleting amplify/');
       await fs.rm(AMPLIFY_DIR, { recursive: true });
       await fs.rename(path.join(outputDir, 'amplify'), path.join(cwd, 'amplify'));
       await fs.rename(path.join(outputDir, 'package.json'), path.join(cwd, 'package.json'));
       await fs.rm(outputDir, { recursive: true });
+    },
+  });
 
+  operations.push({
+    describe: async () => ['Install Gen2 dependencies'],
+    execute: async () => {
+      const cwd = process.cwd();
       const packageLockPath = path.join(cwd, 'package-lock.json');
       const nodeModulesPath = path.join(cwd, 'node_modules');
 
