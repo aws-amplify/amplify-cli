@@ -6,7 +6,7 @@ import { AmplifyMigrationOperation } from '../../../_operation';
 import { BackendGenerator } from '../backend.generator';
 import { Gen1App } from '../../input/gen1-app';
 import { printNodes } from '../../ts-writer';
-import { AnalyticsRenderer } from './analytics.renderer';
+import { AnalyticsRenderer } from './kinesis.renderer';
 import { KinesisCfnConverter, KinesisAnalyticsDefinition } from './kinesis-cfn-converter';
 
 const factory = ts.factory;
