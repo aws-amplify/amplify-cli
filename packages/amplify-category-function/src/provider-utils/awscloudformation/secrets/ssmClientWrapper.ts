@@ -14,26 +14,26 @@ import {
  */
 const executeWithExponentialBackOff = async <T>(operation: () => Promise<T>): Promise<T> => {
   const MAX_RETRIES = 8;
-  const MAX_BACK_OFF_IN_MS = 30 * 1000;
-  const MIN_BACK_OFF_IN_MS = 1000;
+  const MAX_BACK_OFF_IN_MS = 10 * 1000; // 10 seconds
+  const MIN_BACK_OFF_IN_MS = 1000; // 1 second
   let backOffSleepTimeInMs = 500;
-  let consecutiveRetries = 0;
+  let lastError: Error | undefined;
 
-  // eslint-disable-next-line no-constant-condition
-  while (true) {
+  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
     try {
       return await operation();
     } catch (e) {
-      if ((e?.name === 'ThrottlingException' || e?.name === 'Throttling') && consecutiveRetries < MAX_RETRIES) {
-        ++consecutiveRetries;
+      lastError = e;
+      if ((e?.name === 'ThrottlingException' || e?.name === 'Throttling') && attempt < MAX_RETRIES) {
         await new Promise((resolve) => setTimeout(resolve, backOffSleepTimeInMs));
-        backOffSleepTimeInMs = 2 ** consecutiveRetries * backOffSleepTimeInMs;
+        backOffSleepTimeInMs = 2 ** (attempt + 1) * backOffSleepTimeInMs;
         backOffSleepTimeInMs = Math.max(Math.min(Math.random() * backOffSleepTimeInMs, MAX_BACK_OFF_IN_MS), MIN_BACK_OFF_IN_MS);
         continue;
       }
       throw e;
     }
   }
+  throw lastError;
 };
 
 /**
