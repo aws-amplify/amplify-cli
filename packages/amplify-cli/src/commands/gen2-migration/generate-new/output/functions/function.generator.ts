@@ -226,7 +226,6 @@ export class FunctionGenerator implements Generator {
 
     const templatePath = `function/${this.resourceName}/${this.resourceName}-cloudformation-template.json`;
     const content = await this.gen1App.readCloudBackendFile(templatePath);
-    if (!content) return;
 
     const authAccess = parseAuthAccessFromTemplate(content);
     if (Object.keys(authAccess).length > 0) {
@@ -249,32 +248,26 @@ export class FunctionGenerator implements Generator {
     };
 
     const templatePath = `function/${this.resourceName}/${this.resourceName}-cloudformation-template.json`;
-    const content = await this.gen1App.readCloudBackendFile(templatePath);
-    if (!content) return;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped CloudFormation template
+    const template = await this.gen1App.readCloudBackendJson<any>(templatePath);
+    const policy = template.Resources?.AmplifyResourcesPolicy;
+    if (!policy || policy.Type !== 'AWS::IAM::Policy') return;
 
-    try {
-      const template = JSON.parse(content);
-      const policy = template.Resources?.AmplifyResourcesPolicy;
-      if (!policy || policy.Type !== 'AWS::IAM::Policy') return;
+    const statements = policy.Properties?.PolicyDocument?.Statement ?? [];
+    const permissions = new Set<Permission>();
 
-      const statements = policy.Properties?.PolicyDocument?.Statement ?? [];
-      const permissions = new Set<Permission>();
-
-      for (const stmt of Array.isArray(statements) ? statements : [statements]) {
-        if (stmt.Effect !== 'Allow') continue;
-        const actions = Array.isArray(stmt.Action) ? stmt.Action : [stmt.Action];
-        for (const action of actions) {
-          if (typeof action === 'string' && S3_ACTION_TO_PERMISSION[action]) {
-            permissions.add(S3_ACTION_TO_PERMISSION[action]);
-          }
+    for (const stmt of Array.isArray(statements) ? statements : [statements]) {
+      if (stmt.Effect !== 'Allow') continue;
+      const actions = Array.isArray(stmt.Action) ? stmt.Action : [stmt.Action];
+      for (const action of actions) {
+        if (typeof action === 'string' && S3_ACTION_TO_PERMISSION[action]) {
+          permissions.add(S3_ACTION_TO_PERMISSION[action]);
         }
       }
+    }
 
-      if (permissions.size > 0) {
-        this.s3Generator.addFunctionStorageAccess(this.resourceName, category, Array.from(permissions));
-      }
-    } catch (e) {
-      throw new Error(`Failed to parse CloudFormation template for function '${this.resourceName}': ${e}`);
+    if (permissions.size > 0) {
+      this.s3Generator.addFunctionStorageAccess(this.resourceName, category, Array.from(permissions));
     }
   }
 
@@ -482,46 +475,40 @@ export class FunctionGenerator implements Generator {
     graphqlApiPermissions: { hasMutation: boolean; hasQuery: boolean };
   }> {
     const templatePath = `function/${this.resourceName}/${this.resourceName}-cloudformation-template.json`;
-    const content = await this.gen1App.readCloudBackendFile(templatePath);
-    if (!content) return { dynamoActions: [], kinesisActions: [], graphqlApiPermissions: { hasMutation: false, hasQuery: false } };
-
-    try {
-      const template = JSON.parse(content);
-      const policy = template.Resources?.AmplifyResourcesPolicy;
-      if (!policy || policy.Type !== 'AWS::IAM::Policy') {
-        return { dynamoActions: [], kinesisActions: [], graphqlApiPermissions: { hasMutation: false, hasQuery: false } };
-      }
-
-      const statements = policy.Properties?.PolicyDocument?.Statement ?? [];
-      const dynamoActions: string[] = [];
-      const kinesisActions: string[] = [];
-      let hasMutation = false;
-      let hasQuery = false;
-
-      for (const stmt of statements) {
-        const stmtActions = Array.isArray(stmt.Action) ? stmt.Action : [stmt.Action];
-        for (const action of stmtActions) {
-          if (typeof action === 'string' && action.startsWith('dynamodb:')) {
-            dynamoActions.push(action);
-          }
-          if (typeof action === 'string' && action.startsWith('kinesis:')) {
-            kinesisActions.push(action);
-          }
-        }
-
-        // Check for GraphQL API permissions in resource ARNs
-        const resources = Array.isArray(stmt.Resource) ? stmt.Resource : [stmt.Resource];
-        for (const resource of resources) {
-          const resourceStr = JSON.stringify(resource);
-          if (resourceStr.includes('/types/Mutation/')) hasMutation = true;
-          if (resourceStr.includes('/types/Query/')) hasQuery = true;
-        }
-      }
-
-      return { dynamoActions, kinesisActions, graphqlApiPermissions: { hasMutation, hasQuery } };
-    } catch (e) {
-      throw new Error(`Failed to parse CloudFormation template for function '${this.resourceName}': ${e}`);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped CloudFormation template
+    const template = await this.gen1App.readCloudBackendJson<any>(templatePath);
+    const policy = template.Resources?.AmplifyResourcesPolicy;
+    if (!policy || policy.Type !== 'AWS::IAM::Policy') {
+      return { dynamoActions: [], kinesisActions: [], graphqlApiPermissions: { hasMutation: false, hasQuery: false } };
     }
+
+    const statements = policy.Properties?.PolicyDocument?.Statement ?? [];
+    const dynamoActions: string[] = [];
+    const kinesisActions: string[] = [];
+    let hasMutation = false;
+    let hasQuery = false;
+
+    for (const stmt of statements) {
+      const stmtActions = Array.isArray(stmt.Action) ? stmt.Action : [stmt.Action];
+      for (const action of stmtActions) {
+        if (typeof action === 'string' && action.startsWith('dynamodb:')) {
+          dynamoActions.push(action);
+        }
+        if (typeof action === 'string' && action.startsWith('kinesis:')) {
+          kinesisActions.push(action);
+        }
+      }
+
+      // Check for GraphQL API permissions in resource ARNs
+      const resources = Array.isArray(stmt.Resource) ? stmt.Resource : [stmt.Resource];
+      for (const resource of resources) {
+        const resourceStr = JSON.stringify(resource);
+        if (resourceStr.includes('/types/Mutation/')) hasMutation = true;
+        if (resourceStr.includes('/types/Query/')) hasQuery = true;
+      }
+    }
+
+    return { dynamoActions, kinesisActions, graphqlApiPermissions: { hasMutation, hasQuery } };
   }
 
   /**
@@ -569,10 +556,8 @@ export class FunctionGenerator implements Generator {
    */
   private async detectDynamoTriggerModels(func: ResolvedFunction): Promise<string[]> {
     const templatePath = `function/${func.resourceName}/${func.resourceName}-cloudformation-template.json`;
-    const templateContent = await this.gen1App.readCloudBackendFile(templatePath);
-    if (!templateContent) return [];
-
-    const template = JSON.parse(templateContent);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped CloudFormation template
+    const template = await this.gen1App.readCloudBackendJson<any>(templatePath);
     const models: string[] = [];
 
     for (const resource of Object.values(template.Resources ?? {})) {

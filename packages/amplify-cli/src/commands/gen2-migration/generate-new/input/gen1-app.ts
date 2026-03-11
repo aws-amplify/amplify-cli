@@ -361,22 +361,28 @@ export class Gen1App {
 
   /**
    * Reads a JSON file from the cloud backend directory.
+   * Throws if the file does not exist or cannot be parsed.
    */
-  public async readCloudBackendJson<T>(relativePath: string): Promise<T | undefined> {
+  public async readCloudBackendJson<T>(relativePath: string): Promise<T> {
     const ccbDir = await this.fetchCloudBackendDir();
     const filePath = path.join(ccbDir, relativePath);
-    if (!(await fileOrDirectoryExists(filePath))) return undefined;
-    const contents = await fs.readFile(filePath, { encoding: 'utf8' });
-    return JSON.parse(contents) as T;
+    const result = JSONUtilities.readJson<T>(filePath, { throwIfNotExist: true });
+    if (!result) {
+      throw new Error(`Failed to parse cloud backend file: ${relativePath}`);
+    }
+    return result;
   }
 
   /**
    * Reads a text file from the cloud backend directory.
+   * Throws if the file does not exist.
    */
-  public async readCloudBackendFile(relativePath: string): Promise<string | undefined> {
+  public async readCloudBackendFile(relativePath: string): Promise<string> {
     const ccbDir = await this.fetchCloudBackendDir();
     const filePath = path.join(ccbDir, relativePath);
-    if (!(await fileOrDirectoryExists(filePath))) return undefined;
+    if (!(await fileOrDirectoryExists(filePath))) {
+      throw new Error(`Cloud backend file not found: ${relativePath}`);
+    }
     return fs.readFile(filePath, { encoding: 'utf8' });
   }
 

@@ -93,9 +93,6 @@ export class S3Generator implements Generator {
     }
 
     const cliInputs = await this.gen1App.readCloudBackendJson<StorageCLIInputsJSON>(`storage/${storageName}/cli-inputs.json`);
-    if (!cliInputs) {
-      throw new Error(`Could not find cli-inputs.json for ${storageName}`);
-    }
 
     const [notifications, accelerateStatus, versioningStatus, encryption] = await Promise.all([
       this.gen1App.aws.fetchBucketNotifications(bucketName),
