@@ -1,5 +1,5 @@
 import ts from 'typescript';
-import { newLineIdentifier } from '../../ts-factory-utils';
+import { newLineIdentifier, createBranchNameDeclaration } from '../../ts-factory-utils';
 
 const factory = ts.factory;
 
@@ -43,7 +43,7 @@ export class AnalyticsRenderer {
    */
   public render(opts: RenderDefineAnalyticsOptions): ts.NodeArray<ts.Node> {
     const imports = this.createImports(opts.constructClassName, opts.constructFileName);
-    const branchNameConst = this.createBranchNameConst();
+    const branchNameConst = createBranchNameDeclaration();
     const exportStatement = this.createExportStatement(opts);
 
     return factory.createNodeArray([...imports, newLineIdentifier, branchNameConst, newLineIdentifier, exportStatement]);
@@ -81,30 +81,6 @@ export class AnalyticsRenderer {
     );
 
     return [cfnStreamImport, constructImport, backendImport];
-  }
-
-  private createBranchNameConst(): ts.VariableStatement {
-    return factory.createVariableStatement(
-      undefined,
-      factory.createVariableDeclarationList(
-        [
-          factory.createVariableDeclaration(
-            'branchName',
-            undefined,
-            undefined,
-            factory.createBinaryExpression(
-              factory.createPropertyAccessExpression(
-                factory.createPropertyAccessExpression(factory.createIdentifier('process'), factory.createIdentifier('env')),
-                factory.createIdentifier('AWS_BRANCH'),
-              ),
-              factory.createToken(ts.SyntaxKind.QuestionQuestionToken),
-              factory.createStringLiteral('sandbox'),
-            ),
-          ),
-        ],
-        ts.NodeFlags.Const,
-      ),
-    );
   }
 
   private createStackCall(): ts.VariableStatement {

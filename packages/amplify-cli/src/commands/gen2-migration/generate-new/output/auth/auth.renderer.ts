@@ -78,11 +78,6 @@ export type Attribute =
 export type AttributeMappingRule = Record<Attribute, string>;
 
 /**
- * Email sending account configuration for Cognito
- */
-export type SendingAccount = 'COGNITO_DEFAULT' | 'DEVELOPER';
-
-/**
  * Multi-factor authentication configuration modes
  */
 export type UserPoolMfaConfig = 'OFF' | 'REQUIRED' | 'OPTIONAL';

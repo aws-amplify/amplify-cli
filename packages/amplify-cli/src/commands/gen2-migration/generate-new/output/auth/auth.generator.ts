@@ -211,7 +211,7 @@ export class AuthGenerator implements Generator {
     // cfnUserPoolClient override for OAuth flows (must come before addClient)
     if (auth.oAuthFlows) {
       this.backendGenerator.addStatement(constFromBackend('cfnUserPoolClient', 'auth', 'resources', 'cfnResources', 'cfnUserPoolClient'));
-      this.backendGenerator.addStatement(createPropertyAssignment('cfnUserPoolClient', 'allowedOAuthFlows', auth.oAuthFlows));
+      this.backendGenerator.addStatement(assignProp('cfnUserPoolClient', 'allowedOAuthFlows', auth.oAuthFlows));
     }
 
     // User pool client overrides (native app client)
@@ -249,12 +249,12 @@ export class AuthGenerator implements Generator {
         }
       } else {
         // Handle non-password overrides (e.g., usernameAttributes)
-        this.backendGenerator.addStatement(createPropertyAssignment('cfnUserPool', overridePath, value));
+        this.backendGenerator.addStatement(assignProp('cfnUserPool', overridePath, value));
       }
     }
 
     // cfnUserPool.policies = { passwordPolicy: { ... } }
-    this.backendGenerator.addStatement(createPropertyAssignment('cfnUserPool', 'policies', policies));
+    this.backendGenerator.addStatement(assignProp('cfnUserPool', 'policies', policies));
   }
 
   /**
@@ -262,7 +262,7 @@ export class AuthGenerator implements Generator {
    */
   private contributeIdentityPoolOverrides(): void {
     this.backendGenerator.addStatement(createConstFromBackendPath('cfnIdentityPool', 'auth.resources.cfnResources.cfnIdentityPool'));
-    this.backendGenerator.addStatement(createPropertyAssignment('cfnIdentityPool', 'allowUnauthenticatedIdentities', false));
+    this.backendGenerator.addStatement(assignProp('cfnIdentityPool', 'allowUnauthenticatedIdentities', false));
   }
 
   /**
@@ -1028,9 +1028,3 @@ function getAuthDefinition({
 // The aliases below keep the auth-generator call sites unchanged.
 const createConstFromBackendPath = (varName: string, propertyPath: string): ts.VariableStatement =>
   constFromBackend(varName, ...propertyPath.split('.'));
-
-const createPropertyAssignment = (
-  varName: string,
-  property: string,
-  value: number | string | boolean | string[] | object | undefined,
-): ts.ExpressionStatement => assignProp(varName, property, value);
