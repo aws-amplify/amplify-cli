@@ -74,9 +74,7 @@ export class AuthForwardRefactorer extends ForwardCategoryRefactorer {
     const target = await this.resolveTarget(gen2StackId);
 
     if (mainAuthSource.resourcesToMove.size === 0) {
-      throw new AmplifyError('InvalidStackError', {
-        message: `No auth resources to move in source stack '${mainAuthStackId}'`,
-      });
+      return []; // Nothing to move — skip auth category
     }
 
     const mainAuthIdMap = this.buildResourceMappings(mainAuthSource.resourcesToMove, target.resourcesToMove);

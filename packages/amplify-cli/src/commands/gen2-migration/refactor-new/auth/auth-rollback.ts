@@ -69,9 +69,7 @@ export class AuthRollbackRefactorer extends RollbackCategoryRefactorer {
     }
 
     if (mainAuthResources.size === 0) {
-      throw new AmplifyError('InvalidStackError', {
-        message: `No main auth resources to move in Gen2 stack '${gen2StackId}'`,
-      });
+      return []; // Nothing to move — skip auth category
     }
 
     const mainAuthTarget = await this.resolveTarget(mainAuthStackId);

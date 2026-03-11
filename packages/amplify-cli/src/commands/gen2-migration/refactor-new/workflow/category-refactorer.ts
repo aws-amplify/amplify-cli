@@ -70,9 +70,7 @@ export abstract class CategoryRefactorer implements Refactorer {
     const target = await this.resolveTarget(destStackId);
 
     if (source.resourcesToMove.size === 0) {
-      throw new AmplifyError('InvalidStackError', {
-        message: `No resources to move in source stack '${sourceStackId}'`,
-      });
+      return []; // Nothing to move — skip this category (matches old behavior)
     }
 
     const logicalIdMap = this.buildResourceMappings(source.resourcesToMove, target.resourcesToMove);
