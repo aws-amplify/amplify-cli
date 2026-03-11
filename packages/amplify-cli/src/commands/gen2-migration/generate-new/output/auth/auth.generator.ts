@@ -43,7 +43,6 @@ import {
   StandardAttributes,
 } from './auth.renderer';
 
-import { parseAuthAccessFromTemplate } from '../../input/auth-access-analyzer';
 import { constFromBackend, assignProp, jsValue } from '../../ts-factory-utils';
 
 const factory = ts.factory;
@@ -62,12 +61,21 @@ export class AuthGenerator implements Generator {
   private readonly backendGenerator: BackendGenerator;
   private readonly outputDir: string;
   private readonly defineAuth: AuthRenderer;
+  private readonly functions: FunctionAuthInfo[] = [];
 
   public constructor(gen1App: Gen1App, backendGenerator: BackendGenerator, outputDir: string) {
     this.gen1App = gen1App;
     this.backendGenerator = backendGenerator;
     this.outputDir = outputDir;
     this.defineAuth = new AuthRenderer();
+  }
+
+  /**
+   * Registers a function's auth access permissions.
+   * Called by FunctionGenerator before AuthGenerator.plan() runs.
+   */
+  public addFunctionAuthAccess(resourceName: string, authAccess: AuthAccess): void {
+    this.functions.push({ resourceName, authAccess });
   }
 
   /**
@@ -84,9 +92,6 @@ export class AuthGenerator implements Generator {
     if (referenceAuth) {
       return this.planReferenceAuth(referenceAuth);
     }
-
-    // Build function definitions for auth trigger access
-    const functions = await this.buildFunctionDefinitions();
 
     // Standard auth: fetch all Cognito resources
     const resources = await this.gen1App.fetchResourcesByLogicalId();
@@ -126,7 +131,7 @@ export class AuthGenerator implements Generator {
       userPoolClient,
     });
 
-    return this.planStandardAuth({ ...authDefinition, functions });
+    return this.planStandardAuth(authDefinition);
   }
 
   private planReferenceAuth(authDefinition: AuthDefinition): AmplifyMigrationOperation[] {
@@ -159,7 +164,7 @@ export class AuthGenerator implements Generator {
       {
         describe: async () => ['Generate amplify/auth/resource.ts'],
         execute: async () => {
-          const nodes = this.defineAuth.render(authDefinition);
+          const nodes = this.defineAuth.render({ ...authDefinition, functions: this.functions });
           let content = printNodes(nodes);
 
           // Post-process: fix generated code patterns
@@ -666,39 +671,7 @@ export class AuthGenerator implements Generator {
       },
     };
   }
-
-  /**
-   * Builds FunctionAuthInfo[] from the Gen1 app's function category
-   * for use by the auth renderer (function access rules).
-   */
-  private async buildFunctionDefinitions(): Promise<FunctionAuthInfo[]> {
-    const functionCategory = await this.gen1App.fetchMetaCategory('function');
-    if (!functionCategory) return [];
-
-    const definitions: FunctionAuthInfo[] = [];
-    for (const [resourceName] of Object.entries(functionCategory)) {
-      const authAccess = await this.readAuthAccessFromCloudBackend(resourceName);
-      if (authAccess && Object.keys(authAccess).length > 0) {
-        definitions.push({ resourceName, authAccess });
-      }
-    }
-    return definitions;
-  }
-
-  /**
-   * Reads a function's CloudFormation template from the cloud backend
-   * and extracts Cognito auth access permissions.
-   */
-  private async readAuthAccessFromCloudBackend(resourceName: string): Promise<AuthAccess | undefined> {
-    const templatePath = `function/${resourceName}/${resourceName}-cloudformation-template.json`;
-    const templateContent = await this.gen1App.readCloudBackendFile(templatePath);
-    if (!templateContent) return undefined;
-
-    const authAccess = parseAuthAccessFromTemplate(templateContent) as AuthAccess;
-    return Object.keys(authAccess).length > 0 ? authAccess : undefined;
-  }
 }
-
 // ── Auth adapter functions ─────────────────────────────────────────
 // Converts Cognito SDK types to AuthDefinition. Inlined from the
 // former auth-adapter.ts to eliminate the unjustified layer boundary

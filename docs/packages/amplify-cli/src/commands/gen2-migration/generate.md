@@ -135,7 +135,7 @@ No centralized synthesizer knows about every category. Instead, each category ge
 
 ### Each generator is self-contained
 
-A generator owns all logic for its category — both the `resource.ts` file and its `backend.ts` contributions. No cross-category logic lives in the orchestrator or in other generators. For example, the auth generator handles user pool overrides, identity pool config, and provider setup without any help from the storage or data generators.
+A generator owns all logic for its category — both the `resource.ts` file and its `backend.ts` contributions. No cross-category logic lives in the orchestrator or in other generators. Cross-category data flows use the contribution pattern: for example, `FunctionGenerator` contributes Cognito auth access permissions to `AuthGenerator` via `addFunctionAuthAccess()`, just as all generators contribute to `BackendGenerator`.
 
 ### Adding a new category requires only creating the generator
 

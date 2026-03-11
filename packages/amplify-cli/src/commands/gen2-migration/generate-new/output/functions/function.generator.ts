@@ -9,6 +9,8 @@ import { printNodes } from '../../ts-writer';
 import { FunctionRenderer, RenderDefineFunctionOptions } from './function.renderer';
 import { RootPackageJsonGenerator } from '../root-package-json.generator';
 import { extractFilePathFromHandler, propAccess, constDecl } from '../../ts-factory-utils';
+import { parseAuthAccessFromTemplate } from '../../input/auth-access-analyzer';
+import { AuthGenerator } from '../auth/auth.generator';
 
 const factory = ts.factory;
 
@@ -55,6 +57,7 @@ interface ResolvedFunction {
 export class FunctionGenerator implements Generator {
   private readonly gen1App: Gen1App;
   private readonly backendGenerator: BackendGenerator;
+  private readonly authGenerator: AuthGenerator | undefined;
   private readonly packageJsonGenerator: RootPackageJsonGenerator;
   private readonly outputDir: string;
   private readonly resourceName: string;
@@ -63,12 +66,14 @@ export class FunctionGenerator implements Generator {
   public constructor(
     gen1App: Gen1App,
     backendGenerator: BackendGenerator,
+    authGenerator: AuthGenerator | undefined,
     packageJsonGenerator: RootPackageJsonGenerator,
     outputDir: string,
     resourceName: string,
   ) {
     this.gen1App = gen1App;
     this.backendGenerator = backendGenerator;
+    this.authGenerator = authGenerator;
     this.packageJsonGenerator = packageJsonGenerator;
     this.outputDir = outputDir;
     this.resourceName = resourceName;
@@ -84,6 +89,7 @@ export class FunctionGenerator implements Generator {
     const func = await this.resolve();
     await this.mergeFunctionDependencies(func);
     const triggerModels = await this.detectDynamoTriggerModels(func);
+    await this.contributeAuthAccess();
 
     return [
       {
@@ -203,6 +209,23 @@ export class FunctionGenerator implements Generator {
     this.contributeStorageTableGrants(func);
     this.contributeGraphqlApiGrants(func);
     this.contributeKinesisGrants(func);
+  }
+
+  /**
+   * Parses Cognito auth access from the function's CFN template
+   * and contributes it to the AuthGenerator.
+   */
+  private async contributeAuthAccess(): Promise<void> {
+    if (!this.authGenerator) return;
+
+    const templatePath = `function/${this.resourceName}/${this.resourceName}-cloudformation-template.json`;
+    const content = await this.gen1App.readCloudBackendFile(templatePath);
+    if (!content) return;
+
+    const authAccess = parseAuthAccessFromTemplate(content);
+    if (Object.keys(authAccess).length > 0) {
+      this.authGenerator.addFunctionAuthAccess(this.resourceName, authAccess);
+    }
   }
 
   private async copyFunctionSource(resourceName: string, destDir: string): Promise<void> {

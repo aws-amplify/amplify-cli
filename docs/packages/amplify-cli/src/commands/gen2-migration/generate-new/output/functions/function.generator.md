@@ -24,7 +24,8 @@ The `classifyEnvVars()` function uses prefix/suffix pattern matching to dispatch
 
 ## Relationship to Other Components
 
-- Receives `Gen1App`, `BackendGenerator`, `RootPackageJsonGenerator`, `outputDir`, and `resourceName`
+- Receives `Gen1App`, `BackendGenerator`, `AuthGenerator` (optional), `RootPackageJsonGenerator`, `outputDir`, and `resourceName`
 - Uses `FunctionRenderer` (pure) for resource.ts AST construction
+- Contributes Cognito auth access permissions to `AuthGenerator` via `addFunctionAuthAccess()` when the function's CFN template contains cognito-idp actions
 - Merges function-level `package.json` dependencies into `RootPackageJsonGenerator`
 - The function's effective category (auth, storage, or function) is resolved via `Gen1App.fetchFunctionCategoryMap()`

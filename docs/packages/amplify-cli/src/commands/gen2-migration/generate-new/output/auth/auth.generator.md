@@ -15,5 +15,5 @@ Both paths render `auth/resource.ts` via `AuthRenderer`, then call `contributeTo
 
 - Receives `Gen1App`, `BackendGenerator`, and `outputDir`
 - Uses `AuthRenderer` (pure) for resource.ts AST construction
-- Uses `parseAuthAccessFromTemplate()` from `auth-access-analyzer.ts` to detect function auth access
+- Exposes `addFunctionAuthAccess()` for `FunctionGenerator` to contribute Cognito access permissions
 - `DataGenerator` checks for auth existence to decide whether to add additional auth provider overrides

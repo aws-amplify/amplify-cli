@@ -64,8 +64,9 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
 
     const generators: Generator[] = [];
 
-    if (meta.auth) {
-      generators.push(new AuthGenerator(gen1App, backendGenerator, outputDir));
+    const authGenerator = meta.auth ? new AuthGenerator(gen1App, backendGenerator, outputDir) : undefined;
+    if (authGenerator) {
+      generators.push(authGenerator);
     }
 
     const storageCategory = (meta.storage ?? {}) as Record<string, Record<string, unknown>>;
@@ -100,7 +101,7 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
 
     const functionNames = await gen1App.fetchFunctionNames();
     for (const resourceName of functionNames) {
-      generators.push(new FunctionGenerator(gen1App, backendGenerator, packageJsonGenerator, outputDir, resourceName));
+      generators.push(new FunctionGenerator(gen1App, backendGenerator, authGenerator, packageJsonGenerator, outputDir, resourceName));
     }
 
     // Infrastructure generators run last — BackendGenerator accumulates
