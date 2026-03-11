@@ -1,0 +1,35 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Temporary holding stack for Gen2 migration",
+  "Resources": {
+    "moodboardKinesisKinesisStreamD5E97047": {
+      "Type": "AWS::Kinesis::Stream",
+      "Properties": {
+        "Name": "moodboardKinesis-gen2-main",
+        "ShardCount": 1,
+        "Tags": [
+          {
+            "Key": "amplify:app-id",
+            "Value": "moodboard"
+          },
+          {
+            "Key": "amplify:branch-name",
+            "Value": "gen2-main"
+          },
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "branch"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/analytics/moodboardKinesis/KinesisStream"
+      }
+    }
+  },
+  "Outputs": {}
+}

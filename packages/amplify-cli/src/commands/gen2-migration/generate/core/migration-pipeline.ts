@@ -12,6 +12,7 @@
  * - Type Safety: Provides comprehensive TypeScript interfaces for migration parameters
  */
 
+import * as prettier from 'prettier';
 import path from 'path';
 import fs from 'node:fs/promises';
 import { PackageJson, patchNpmPackageJson } from '../npm_package/renderer';
@@ -60,6 +61,7 @@ import {
 import { DataDefinition, DataTableMapping, generateDataSource } from '../generators/data/index';
 import { DataModelTableAccess } from '../codegen-head/data_model_access_parser';
 import { ApiTriggerDetector } from '../adapters/functions/api-trigger-detector';
+import { extractFunctionKinesisAccess } from '../codegen-head/kinesis_cfn_access_parser';
 
 import { FunctionDefinition, renderFunctions } from '../generators/functions/index';
 import assert from 'assert';
@@ -121,7 +123,18 @@ export interface Gen2RenderingOptions {
  * @param path - File path to write to
  * @returns Async function that writes content to the file
  */
-const createFileWriter = (path: string) => async (content: string) => fs.writeFile(path, content);
+const createFileWriter = (path: string) => async (content: string) => {
+  if (path.endsWith('.ts')) {
+    const formatted = prettier.format(content, {
+      parser: 'typescript',
+      singleQuote: true,
+      tabWidth: 2,
+    });
+    await fs.writeFile(path, formatted);
+  } else {
+    await fs.writeFile(path, content);
+  }
+};
 
 /**
  * Extracts dependencies from Gen 1 function package.json
@@ -195,9 +208,9 @@ const copyGen1FunctionFiles = async (
         const file = path.relative(gen1SrcDir, path.join(entry.parentPath, entry.name));
         const fileName = path.basename(file);
         const skipFiles = ['package.json', 'package-lock.json', 'yarn.lock', 'pnpm-lock.yaml'];
+        const srcPath = path.join(gen1SrcDir, file);
 
-        if (!skipFiles.includes(fileName)) {
-          const srcPath = path.join(gen1SrcDir, file);
+        if (!srcPath.includes('node_modules') && !skipFiles.includes(fileName)) {
           const content = await fs.readFile(srcPath, 'utf-8');
 
           const destFile = file;
@@ -534,6 +547,14 @@ export const createGen2Renderer = ({
   // Handle DynamoDB triggers
   if (dynamoTriggers && dynamoTriggers.length > 0) {
     backendRenderOptions.dynamoTriggers = dynamoTriggers;
+  }
+
+  // Extract Kinesis access for functions and attach to analytics render options
+  if (analytics && functionNames.length > 0) {
+    const functionsWithKinesisAccess = extractFunctionKinesisAccess(functionNames);
+    if (functionsWithKinesisAccess.length > 0 && backendRenderOptions.analytics) {
+      backendRenderOptions.analytics.functionsWithKinesisAccess = functionsWithKinesisAccess;
+    }
   }
 
   // Generate the main backend.ts file that imports and combines all resources

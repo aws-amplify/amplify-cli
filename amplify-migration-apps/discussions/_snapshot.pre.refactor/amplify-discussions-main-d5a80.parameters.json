@@ -1,0 +1,14 @@
+[
+  {
+    "ParameterKey": "AuthRoleName",
+    "ParameterValue": "amplify-discussions-main-d5a80-authRole"
+  },
+  {
+    "ParameterKey": "DeploymentBucketName",
+    "ParameterValue": "amplify-discussions-main-d5a80-deployment"
+  },
+  {
+    "ParameterKey": "UnauthRoleName",
+    "ParameterValue": "amplify-discussions-main-d5a80-unauthRole"
+  }
+]

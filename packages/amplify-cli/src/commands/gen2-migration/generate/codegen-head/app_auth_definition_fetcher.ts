@@ -54,7 +54,6 @@ export class AppAuthDefinitionFetcher {
 
   private getAuthCategory = async (): Promise<Record<string, unknown> | undefined> => {
     const backendEnvironment = await this.backendEnvironmentResolver.selectBackendEnvironment();
-    if (!backendEnvironment?.deploymentArtifacts) return undefined;
     const currentCloudBackendDirectory = await this.ccbFetcher.getCurrentCloudBackend(backendEnvironment.deploymentArtifacts);
     const amplifyMetaPath = path.join(currentCloudBackendDirectory, 'amplify-meta.json');
 

@@ -1,0 +1,16 @@
+{
+  "resourceName": "s369f8ff1c",
+  "policyUUID": "69f8ff1c",
+  "bucketName": "projectboards34b9a7f3c2ca489293910116c994688b",
+  "storageAccess": "authAndGuest",
+  "guestAccess": [
+    "READ"
+  ],
+  "authAccess": [
+    "CREATE_AND_UPDATE",
+    "READ",
+    "DELETE"
+  ],
+  "triggerFunction": "NONE",
+  "groupAccess": {}
+}

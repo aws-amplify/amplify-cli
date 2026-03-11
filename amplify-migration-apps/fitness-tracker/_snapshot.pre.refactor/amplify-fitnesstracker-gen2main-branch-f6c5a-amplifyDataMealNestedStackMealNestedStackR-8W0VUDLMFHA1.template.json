@@ -1,0 +1,1981 @@
+{
+  "Parameters": {
+    "DynamoDBModelTableReadIOPS": {
+      "Type": "Number",
+      "Default": 5,
+      "Description": "The number of read IOPS the table should support."
+    },
+    "DynamoDBModelTableWriteIOPS": {
+      "Type": "Number",
+      "Default": 5,
+      "Description": "The number of write IOPS the table should support."
+    },
+    "DynamoDBBillingMode": {
+      "Type": "String",
+      "Default": "PAY_PER_REQUEST",
+      "AllowedValues": [
+        "PAY_PER_REQUEST",
+        "PROVISIONED"
+      ],
+      "Description": "Configure @model types to create DynamoDB tables with PAY_PER_REQUEST or PROVISIONED billing modes."
+    },
+    "DynamoDBEnablePointInTimeRecovery": {
+      "Type": "String",
+      "Default": "false",
+      "AllowedValues": [
+        "true",
+        "false"
+      ],
+      "Description": "Whether to enable Point in Time Recovery on the table."
+    },
+    "DynamoDBEnableServerSideEncryption": {
+      "Type": "String",
+      "Default": "true",
+      "AllowedValues": [
+        "true",
+        "false"
+      ],
+      "Description": "Enable server side encryption powered by KMS."
+    },
+    "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResource9E5C3FE8Outputsamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataAmplifyTableManagerTableMana3F678B61": {
+      "Type": "String"
+    },
+    "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPI530714E3ApiId": {
+      "Type": "String"
+    },
+    "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPINONEDSBA892CCCName": {
+      "Type": "String"
+    },
+    "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3authNestedStackauthNestedStackResourceC6E94DB9Outputsamplifyfitnesstrackergen2mainbranchf6c5a5beb3authamplifyAuthauthenticatedUserRoleB67A2B52Ref": {
+      "Type": "String"
+    },
+    "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3authNestedStackauthNestedStackResourceC6E94DB9Outputsamplifyfitnesstrackergen2mainbranchf6c5a5beb3authamplifyAuthunauthenticatedUserRole0595D315Ref": {
+      "Type": "String"
+    },
+    "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3authNestedStackauthNestedStackResourceC6E94DB9Outputsamplifyfitnesstrackergen2mainbranchf6c5a5beb3authamplifyAuthIdentityPoolE5B9CC1CRef": {
+      "Type": "String"
+    }
+  },
+  "Conditions": {
+    "HasEnvironmentParameter": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            "NONE",
+            "NONE"
+          ]
+        }
+      ]
+    },
+    "ShouldUsePayPerRequestBilling": {
+      "Fn::Equals": [
+        {
+          "Ref": "DynamoDBBillingMode"
+        },
+        "PAY_PER_REQUEST"
+      ]
+    },
+    "ShouldUsePointInTimeRecovery": {
+      "Fn::Equals": [
+        {
+          "Ref": "DynamoDBEnablePointInTimeRecovery"
+        },
+        "true"
+      ]
+    },
+    "CDKMetadataAvailable": {
+      "Fn::Or": [
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "af-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-3"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-south-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-3"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-4"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ca-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ca-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-northwest-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-central-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-south-2"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-3"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "il-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "me-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "me-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "sa-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-west-1"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "AWS::Region"
+            },
+            "us-west-2"
+          ]
+        }
+      ]
+    }
+  },
+  "Resources": {
+    "MealTable": {
+      "Type": "Custom::ImportedAmplifyDynamoDBTable",
+      "Properties": {
+        "ServiceToken": {
+          "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResource9E5C3FE8Outputsamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataAmplifyTableManagerTableMana3F678B61"
+        },
+        "tableName": "Meal-2aikutabnvbuhlzmh4mvkg3eji-main",
+        "attributeDefinitions": [
+          {
+            "attributeName": "id",
+            "attributeType": "S"
+          }
+        ],
+        "keySchema": [
+          {
+            "attributeName": "id",
+            "keyType": "HASH"
+          }
+        ],
+        "provisionedThroughput": {
+          "Fn::If": [
+            "ShouldUsePayPerRequestBilling",
+            {
+              "Ref": "AWS::NoValue"
+            },
+            {
+              "ReadCapacityUnits": {
+                "Ref": "DynamoDBModelTableReadIOPS"
+              },
+              "WriteCapacityUnits": {
+                "Ref": "DynamoDBModelTableWriteIOPS"
+              }
+            }
+          ]
+        },
+        "sseSpecification": {
+          "sseEnabled": false
+        },
+        "streamSpecification": {
+          "streamViewType": "NEW_AND_OLD_IMAGES"
+        },
+        "deletionProtectionEnabled": true,
+        "allowDestructiveGraphqlSchemaUpdates": true,
+        "replaceTableUponGsiUpdate": false,
+        "isImported": true,
+        "pointInTimeRecoverySpecification": {
+          "Fn::If": [
+            "ShouldUsePointInTimeRecovery",
+            {
+              "PointInTimeRecoveryEnabled": true
+            },
+            {
+              "Ref": "AWS::NoValue"
+            }
+          ]
+        },
+        "billingMode": {
+          "Fn::If": [
+            "ShouldUsePayPerRequestBilling",
+            "PAY_PER_REQUEST",
+            {
+              "Ref": "AWS::NoValue"
+            }
+          ]
+        }
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-f6c5a5beb3/data/amplifyData/Meal/MealTable/Default/Default"
+      }
+    },
+    "MealIAMRoleEDE19E15": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "appsync.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "dynamodb:BatchGetItem",
+                    "dynamodb:BatchWriteItem",
+                    "dynamodb:PutItem",
+                    "dynamodb:DeleteItem",
+                    "dynamodb:GetItem",
+                    "dynamodb:Scan",
+                    "dynamodb:Query",
+                    "dynamodb:UpdateItem",
+                    "dynamodb:ConditionCheckItem",
+                    "dynamodb:DescribeTable",
+                    "dynamodb:GetRecords",
+                    "dynamodb:GetShardIterator"
+                  ],
+                  "Effect": "Allow",
+                  "Resource": [
+                    {
+                      "Fn::Sub": [
+                        "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}",
+                        {
+                          "tablename": "Meal-2aikutabnvbuhlzmh4mvkg3eji-main"
+                        }
+                      ]
+                    },
+                    {
+                      "Fn::Sub": [
+                        "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}/*",
+                        {
+                          "tablename": "Meal-2aikutabnvbuhlzmh4mvkg3eji-main"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "Version": "2012-10-17"
+            },
+            "PolicyName": "DynamoDBAccess"
+          }
+        ],
+        "RoleName": {
+          "Fn::Join": [
+            "",
+            [
+              "MealIAMRole54b7fd-",
+              {
+                "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPI530714E3ApiId"
+              },
+              "-NONE"
+            ]
+          ]
+        },
+        "Tags": [
+          {
+            "Key": "amplify:app-id",
+            "Value": "fitnesstracker"
+          },
+          {
+            "Key": "amplify:branch-name",
+            "Value": "gen2-main"
+          },
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "branch"
+          },
+          {
+            "Key": "amplify:friendly-name",
+            "Value": "amplifyData"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-f6c5a5beb3/data/amplifyData/Meal/MealIAMRole/Resource"
+      }
+    },
+    "MealDataSource": {
+      "Type": "AWS::AppSync::DataSource",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPI530714E3ApiId"
+        },
+        "DynamoDBConfig": {
+          "AwsRegion": {
+            "Ref": "AWS::Region"
+          },
+          "TableName": {
+            "Fn::Select": [
+              1,
+              {
+                "Fn::Split": [
+                  "/",
+                  {
+                    "Fn::Select": [
+                      5,
+                      {
+                        "Fn::Split": [
+                          ":",
+                          {
+                            "Fn::GetAtt": [
+                              "MealTable",
+                              "TableArn"
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "Name": "MealTable",
+        "ServiceRoleArn": {
+          "Fn::GetAtt": [
+            "MealIAMRoleEDE19E15",
+            "Arn"
+          ]
+        },
+        "Type": "AMAZON_DYNAMODB"
+      },
+      "DependsOn": [
+        "MealIAMRoleEDE19E15"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-f6c5a5beb3/data/amplifyData/Meal/MealDataSource/Resource"
+      }
+    },
+    "QuerygetMealauth0FunctionQuerygetMealauth0FunctionAppSyncFunction3EC25F21": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPI530714E3ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPINONEDSBA892CCCName"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "QuerygetMealauth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0224a3e5097427da3f4460b5d6d2b86ad4195c9cb8da7bc13e7187eead1c3ae3.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-f6c5a5beb3/data/amplifyData/Meal/QuerygetMealauth0Function/QuerygetMealauth0Function.AppSyncFunction"
+      }
+    },
+    "QuerygetMealpostAuth0FunctionQuerygetMealpostAuth0FunctionAppSyncFunction9E0F196D": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPI530714E3ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPINONEDSBA892CCCName"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "QuerygetMealpostAuth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c1721bcd774e27c514d3454b5be4f9bdd094c0161b57ddf053d618e3b0086a77.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-f6c5a5beb3/data/amplifyData/Meal/QuerygetMealpostAuth0Function/QuerygetMealpostAuth0Function.AppSyncFunction"
+      }
+    },
+    "QueryGetMealDataResolverFnQueryGetMealDataResolverFnAppSyncFunction8B80E67B": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPI530714E3ApiId"
+        },
+        "DataSourceName": {
+          "Fn::GetAtt": [
+            "MealDataSource",
+            "Name"
+          ]
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "QueryGetMealDataResolverFn",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/08f4d557693d96c1a4efba0f9dc91330e4b19772fd5477c156468843e3d9cb5e.vtl"
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4c6a2d29f01c6091bd1d9afe16e5849d456c96f17c3b215938c8067399532719.vtl"
+        }
+      },
+      "DependsOn": [
+        "MealDataSource"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-f6c5a5beb3/data/amplifyData/Meal/QueryGetMealDataResolverFn/QueryGetMealDataResolverFn.AppSyncFunction"
+      }
+    },
+    "GetMealResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPI530714E3ApiId"
+        },
+        "FieldName": "getMeal",
+        "Kind": "PIPELINE",
+        "PipelineConfig": {
+          "Functions": [
+            {
+              "Fn::GetAtt": [
+                "QuerygetMealauth0FunctionQuerygetMealauth0FunctionAppSyncFunction3EC25F21",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "QuerygetMealpostAuth0FunctionQuerygetMealpostAuth0FunctionAppSyncFunction9E0F196D",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "QueryGetMealDataResolverFnQueryGetMealDataResolverFnAppSyncFunction8B80E67B",
+                "FunctionId"
+              ]
+            }
+          ]
+        },
+        "RequestMappingTemplate": {
+          "Fn::Join": [
+            "",
+            [
+              "$util.qr($ctx.stash.put(\"typeName\", \"Query\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"getMeal\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              {
+                "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPI530714E3ApiId"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
+              {
+                "Fn::Select": [
+                  1,
+                  {
+                    "Fn::Split": [
+                      "/",
+                      {
+                        "Fn::Select": [
+                          5,
+                          {
+                            "Fn::Split": [
+                              ":",
+                              {
+                                "Fn::GetAtt": [
+                                  "MealTable",
+                                  "TableArn"
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"authRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+                "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3authNestedStackauthNestedStackResourceC6E94DB9Outputsamplifyfitnesstrackergen2mainbranchf6c5a5beb3authamplifyAuthauthenticatedUserRoleB67A2B52Ref"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+                "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3authNestedStackauthNestedStackResourceC6E94DB9Outputsamplifyfitnesstrackergen2mainbranchf6c5a5beb3authamplifyAuthunauthenticatedUserRole0595D315Ref"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
+              {
+                "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3authNestedStackauthNestedStackResourceC6E94DB9Outputsamplifyfitnesstrackergen2mainbranchf6c5a5beb3authamplifyAuthIdentityPoolE5B9CC1CRef"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+            ]
+          ]
+        },
+        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+        "TypeName": "Query"
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-f6c5a5beb3/data/amplifyData/Meal/queryGetMealResolver"
+      }
+    },
+    "QuerylistMealsauth0FunctionQuerylistMealsauth0FunctionAppSyncFunctionB47607B5": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPI530714E3ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPINONEDSBA892CCCName"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "QuerylistMealsauth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0224a3e5097427da3f4460b5d6d2b86ad4195c9cb8da7bc13e7187eead1c3ae3.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-f6c5a5beb3/data/amplifyData/Meal/QuerylistMealsauth0Function/QuerylistMealsauth0Function.AppSyncFunction"
+      }
+    },
+    "QuerylistMealspostAuth0FunctionQuerylistMealspostAuth0FunctionAppSyncFunction15CC850C": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPI530714E3ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPINONEDSBA892CCCName"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "QuerylistMealspostAuth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c1721bcd774e27c514d3454b5be4f9bdd094c0161b57ddf053d618e3b0086a77.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-f6c5a5beb3/data/amplifyData/Meal/QuerylistMealspostAuth0Function/QuerylistMealspostAuth0Function.AppSyncFunction"
+      }
+    },
+    "QueryListMealsDataResolverFnQueryListMealsDataResolverFnAppSyncFunction3EE87F58": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPI530714E3ApiId"
+        },
+        "DataSourceName": {
+          "Fn::GetAtt": [
+            "MealDataSource",
+            "Name"
+          ]
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "QueryListMealsDataResolverFn",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9fcbe070ecd3023c5bf5b966fa9584757db9762eef123bad0820bd87591b2174.vtl"
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/cc01911d0269d4080ea57505dc445dfc315ef7ad85d3d9d4ea1357858bff451d.vtl"
+        }
+      },
+      "DependsOn": [
+        "MealDataSource"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-f6c5a5beb3/data/amplifyData/Meal/QueryListMealsDataResolverFn/QueryListMealsDataResolverFn.AppSyncFunction"
+      }
+    },
+    "ListMealResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPI530714E3ApiId"
+        },
+        "FieldName": "listMeals",
+        "Kind": "PIPELINE",
+        "PipelineConfig": {
+          "Functions": [
+            {
+              "Fn::GetAtt": [
+                "QuerylistMealsauth0FunctionQuerylistMealsauth0FunctionAppSyncFunctionB47607B5",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "QuerylistMealspostAuth0FunctionQuerylistMealspostAuth0FunctionAppSyncFunction15CC850C",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "QueryListMealsDataResolverFnQueryListMealsDataResolverFnAppSyncFunction3EE87F58",
+                "FunctionId"
+              ]
+            }
+          ]
+        },
+        "RequestMappingTemplate": {
+          "Fn::Join": [
+            "",
+            [
+              "$util.qr($ctx.stash.put(\"typeName\", \"Query\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"listMeals\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              {
+                "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPI530714E3ApiId"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
+              {
+                "Fn::Select": [
+                  1,
+                  {
+                    "Fn::Split": [
+                      "/",
+                      {
+                        "Fn::Select": [
+                          5,
+                          {
+                            "Fn::Split": [
+                              ":",
+                              {
+                                "Fn::GetAtt": [
+                                  "MealTable",
+                                  "TableArn"
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"authRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+                "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3authNestedStackauthNestedStackResourceC6E94DB9Outputsamplifyfitnesstrackergen2mainbranchf6c5a5beb3authamplifyAuthauthenticatedUserRoleB67A2B52Ref"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+                "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3authNestedStackauthNestedStackResourceC6E94DB9Outputsamplifyfitnesstrackergen2mainbranchf6c5a5beb3authamplifyAuthunauthenticatedUserRole0595D315Ref"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
+              {
+                "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3authNestedStackauthNestedStackResourceC6E94DB9Outputsamplifyfitnesstrackergen2mainbranchf6c5a5beb3authamplifyAuthIdentityPoolE5B9CC1CRef"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+            ]
+          ]
+        },
+        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+        "TypeName": "Query"
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-f6c5a5beb3/data/amplifyData/Meal/queryListMealsResolver"
+      }
+    },
+    "MutationcreateMealinit0FunctionMutationcreateMealinit0FunctionAppSyncFunctionC8456643": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPI530714E3ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPINONEDSBA892CCCName"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "MutationcreateMealinit0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a183ddccbd956316c38ef97177b8f088ef0826f62023323f5ae6053d348ccffc.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-f6c5a5beb3/data/amplifyData/Meal/MutationcreateMealinit0Function/MutationcreateMealinit0Function.AppSyncFunction"
+      }
+    },
+    "MutationcreateMealauth0FunctionMutationcreateMealauth0FunctionAppSyncFunction746792DB": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPI530714E3ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPINONEDSBA892CCCName"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "MutationcreateMealauth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d637c1fb7301003b8a5ada269338cf2e8df6cc0dc412ef13acc6158d680b6d3e.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-f6c5a5beb3/data/amplifyData/Meal/MutationcreateMealauth0Function/MutationcreateMealauth0Function.AppSyncFunction"
+      }
+    },
+    "MutationcreateMealpostAuth0FunctionMutationcreateMealpostAuth0FunctionAppSyncFunctionF0FDFBD0": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPI530714E3ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPINONEDSBA892CCCName"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "MutationcreateMealpostAuth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c1721bcd774e27c514d3454b5be4f9bdd094c0161b57ddf053d618e3b0086a77.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-f6c5a5beb3/data/amplifyData/Meal/MutationcreateMealpostAuth0Function/MutationcreateMealpostAuth0Function.AppSyncFunction"
+      }
+    },
+    "MutationCreateMealDataResolverFnMutationCreateMealDataResolverFnAppSyncFunction3A7E3265": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPI530714E3ApiId"
+        },
+        "DataSourceName": {
+          "Fn::GetAtt": [
+            "MealDataSource",
+            "Name"
+          ]
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "MutationCreateMealDataResolverFn",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/234a2e583ce643aca3c00032245fde469b9cb2a389dc5bd8f486ec3b2e335f92.vtl"
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f4a52b72209a9dfa197b5e7367a5c378c5bb86de6e29ddd9e48b49a3fe54b249.vtl"
+        }
+      },
+      "DependsOn": [
+        "MealDataSource"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-f6c5a5beb3/data/amplifyData/Meal/MutationCreateMealDataResolverFn/MutationCreateMealDataResolverFn.AppSyncFunction"
+      }
+    },
+    "CreateMealResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPI530714E3ApiId"
+        },
+        "FieldName": "createMeal",
+        "Kind": "PIPELINE",
+        "PipelineConfig": {
+          "Functions": [
+            {
+              "Fn::GetAtt": [
+                "MutationcreateMealinit0FunctionMutationcreateMealinit0FunctionAppSyncFunctionC8456643",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "MutationcreateMealauth0FunctionMutationcreateMealauth0FunctionAppSyncFunction746792DB",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "MutationcreateMealpostAuth0FunctionMutationcreateMealpostAuth0FunctionAppSyncFunctionF0FDFBD0",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "MutationCreateMealDataResolverFnMutationCreateMealDataResolverFnAppSyncFunction3A7E3265",
+                "FunctionId"
+              ]
+            }
+          ]
+        },
+        "RequestMappingTemplate": {
+          "Fn::Join": [
+            "",
+            [
+              "$util.qr($ctx.stash.put(\"typeName\", \"Mutation\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"createMeal\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              {
+                "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPI530714E3ApiId"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
+              {
+                "Fn::Select": [
+                  1,
+                  {
+                    "Fn::Split": [
+                      "/",
+                      {
+                        "Fn::Select": [
+                          5,
+                          {
+                            "Fn::Split": [
+                              ":",
+                              {
+                                "Fn::GetAtt": [
+                                  "MealTable",
+                                  "TableArn"
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"authRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+                "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3authNestedStackauthNestedStackResourceC6E94DB9Outputsamplifyfitnesstrackergen2mainbranchf6c5a5beb3authamplifyAuthauthenticatedUserRoleB67A2B52Ref"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+                "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3authNestedStackauthNestedStackResourceC6E94DB9Outputsamplifyfitnesstrackergen2mainbranchf6c5a5beb3authamplifyAuthunauthenticatedUserRole0595D315Ref"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
+              {
+                "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3authNestedStackauthNestedStackResourceC6E94DB9Outputsamplifyfitnesstrackergen2mainbranchf6c5a5beb3authamplifyAuthIdentityPoolE5B9CC1CRef"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+            ]
+          ]
+        },
+        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+        "TypeName": "Mutation"
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-f6c5a5beb3/data/amplifyData/Meal/mutationCreateMealResolver"
+      }
+    },
+    "MutationupdateMealinit0FunctionMutationupdateMealinit0FunctionAppSyncFunction80065D7F": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPI530714E3ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPINONEDSBA892CCCName"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "MutationupdateMealinit0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/06db846fd14e6fc371f22b12b5545ba8e2dbfeda85d8c8d586c71c282166657b.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-f6c5a5beb3/data/amplifyData/Meal/MutationupdateMealinit0Function/MutationupdateMealinit0Function.AppSyncFunction"
+      }
+    },
+    "MutationupdateMealauth0FunctionMutationupdateMealauth0FunctionAppSyncFunctionEFC9C205": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPI530714E3ApiId"
+        },
+        "DataSourceName": {
+          "Fn::GetAtt": [
+            "MealDataSource",
+            "Name"
+          ]
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "MutationupdateMealauth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1f5fed297da9c32ae3af922bf3a38ccf23b956078887d16891ec06c20c64722c.vtl"
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/89f92efd98b1034df0e2497fe31a97de6975de554b8a22e0677d05d6efcafa59.vtl"
+        }
+      },
+      "DependsOn": [
+        "MealDataSource"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-f6c5a5beb3/data/amplifyData/Meal/MutationupdateMealauth0Function/MutationupdateMealauth0Function.AppSyncFunction"
+      }
+    },
+    "MutationupdateMealpostAuth0FunctionMutationupdateMealpostAuth0FunctionAppSyncFunction5B29DBED": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPI530714E3ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPINONEDSBA892CCCName"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "MutationupdateMealpostAuth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c1721bcd774e27c514d3454b5be4f9bdd094c0161b57ddf053d618e3b0086a77.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-f6c5a5beb3/data/amplifyData/Meal/MutationupdateMealpostAuth0Function/MutationupdateMealpostAuth0Function.AppSyncFunction"
+      }
+    },
+    "MutationUpdateMealDataResolverFnMutationUpdateMealDataResolverFnAppSyncFunction7CE88037": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPI530714E3ApiId"
+        },
+        "DataSourceName": {
+          "Fn::GetAtt": [
+            "MealDataSource",
+            "Name"
+          ]
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "MutationUpdateMealDataResolverFn",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/474bf0776ec2164a13191d1a0a9e057154931e4918fea5086f49850d02a5371b.vtl"
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f4a52b72209a9dfa197b5e7367a5c378c5bb86de6e29ddd9e48b49a3fe54b249.vtl"
+        }
+      },
+      "DependsOn": [
+        "MealDataSource"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-f6c5a5beb3/data/amplifyData/Meal/MutationUpdateMealDataResolverFn/MutationUpdateMealDataResolverFn.AppSyncFunction"
+      }
+    },
+    "UpdateMealResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPI530714E3ApiId"
+        },
+        "FieldName": "updateMeal",
+        "Kind": "PIPELINE",
+        "PipelineConfig": {
+          "Functions": [
+            {
+              "Fn::GetAtt": [
+                "MutationupdateMealinit0FunctionMutationupdateMealinit0FunctionAppSyncFunction80065D7F",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "MutationupdateMealauth0FunctionMutationupdateMealauth0FunctionAppSyncFunctionEFC9C205",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "MutationupdateMealpostAuth0FunctionMutationupdateMealpostAuth0FunctionAppSyncFunction5B29DBED",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "MutationUpdateMealDataResolverFnMutationUpdateMealDataResolverFnAppSyncFunction7CE88037",
+                "FunctionId"
+              ]
+            }
+          ]
+        },
+        "RequestMappingTemplate": {
+          "Fn::Join": [
+            "",
+            [
+              "$util.qr($ctx.stash.put(\"typeName\", \"Mutation\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"updateMeal\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              {
+                "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPI530714E3ApiId"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
+              {
+                "Fn::Select": [
+                  1,
+                  {
+                    "Fn::Split": [
+                      "/",
+                      {
+                        "Fn::Select": [
+                          5,
+                          {
+                            "Fn::Split": [
+                              ":",
+                              {
+                                "Fn::GetAtt": [
+                                  "MealTable",
+                                  "TableArn"
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"authRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+                "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3authNestedStackauthNestedStackResourceC6E94DB9Outputsamplifyfitnesstrackergen2mainbranchf6c5a5beb3authamplifyAuthauthenticatedUserRoleB67A2B52Ref"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+                "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3authNestedStackauthNestedStackResourceC6E94DB9Outputsamplifyfitnesstrackergen2mainbranchf6c5a5beb3authamplifyAuthunauthenticatedUserRole0595D315Ref"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
+              {
+                "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3authNestedStackauthNestedStackResourceC6E94DB9Outputsamplifyfitnesstrackergen2mainbranchf6c5a5beb3authamplifyAuthIdentityPoolE5B9CC1CRef"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+            ]
+          ]
+        },
+        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+        "TypeName": "Mutation"
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-f6c5a5beb3/data/amplifyData/Meal/mutationUpdateMealResolver"
+      }
+    },
+    "MutationdeleteMealauth0FunctionMutationdeleteMealauth0FunctionAppSyncFunction5A3C8FCE": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPI530714E3ApiId"
+        },
+        "DataSourceName": {
+          "Fn::GetAtt": [
+            "MealDataSource",
+            "Name"
+          ]
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "MutationdeleteMealauth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1f5fed297da9c32ae3af922bf3a38ccf23b956078887d16891ec06c20c64722c.vtl"
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e3416b4d47414f29c21e59a70e83bddb959ef0625854ed7fb0ca376573e99069.vtl"
+        }
+      },
+      "DependsOn": [
+        "MealDataSource"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-f6c5a5beb3/data/amplifyData/Meal/MutationdeleteMealauth0Function/MutationdeleteMealauth0Function.AppSyncFunction"
+      }
+    },
+    "MutationdeleteMealpostAuth0FunctionMutationdeleteMealpostAuth0FunctionAppSyncFunctionC9BB36B8": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPI530714E3ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPINONEDSBA892CCCName"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "MutationdeleteMealpostAuth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c1721bcd774e27c514d3454b5be4f9bdd094c0161b57ddf053d618e3b0086a77.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-f6c5a5beb3/data/amplifyData/Meal/MutationdeleteMealpostAuth0Function/MutationdeleteMealpostAuth0Function.AppSyncFunction"
+      }
+    },
+    "MutationDeleteMealDataResolverFnMutationDeleteMealDataResolverFnAppSyncFunctionB6415754": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPI530714E3ApiId"
+        },
+        "DataSourceName": {
+          "Fn::GetAtt": [
+            "MealDataSource",
+            "Name"
+          ]
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "MutationDeleteMealDataResolverFn",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4f7907d1209a2c9953a0c053df402c634e359546d70c7cc5c2e8e21ea734880f.vtl"
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f4a52b72209a9dfa197b5e7367a5c378c5bb86de6e29ddd9e48b49a3fe54b249.vtl"
+        }
+      },
+      "DependsOn": [
+        "MealDataSource"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-f6c5a5beb3/data/amplifyData/Meal/MutationDeleteMealDataResolverFn/MutationDeleteMealDataResolverFn.AppSyncFunction"
+      }
+    },
+    "DeleteMealResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPI530714E3ApiId"
+        },
+        "FieldName": "deleteMeal",
+        "Kind": "PIPELINE",
+        "PipelineConfig": {
+          "Functions": [
+            {
+              "Fn::GetAtt": [
+                "MutationdeleteMealauth0FunctionMutationdeleteMealauth0FunctionAppSyncFunction5A3C8FCE",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "MutationdeleteMealpostAuth0FunctionMutationdeleteMealpostAuth0FunctionAppSyncFunctionC9BB36B8",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "MutationDeleteMealDataResolverFnMutationDeleteMealDataResolverFnAppSyncFunctionB6415754",
+                "FunctionId"
+              ]
+            }
+          ]
+        },
+        "RequestMappingTemplate": {
+          "Fn::Join": [
+            "",
+            [
+              "$util.qr($ctx.stash.put(\"typeName\", \"Mutation\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"deleteMeal\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              {
+                "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPI530714E3ApiId"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
+              {
+                "Fn::Select": [
+                  1,
+                  {
+                    "Fn::Split": [
+                      "/",
+                      {
+                        "Fn::Select": [
+                          5,
+                          {
+                            "Fn::Split": [
+                              ":",
+                              {
+                                "Fn::GetAtt": [
+                                  "MealTable",
+                                  "TableArn"
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"authRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+                "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3authNestedStackauthNestedStackResourceC6E94DB9Outputsamplifyfitnesstrackergen2mainbranchf6c5a5beb3authamplifyAuthauthenticatedUserRoleB67A2B52Ref"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+                "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3authNestedStackauthNestedStackResourceC6E94DB9Outputsamplifyfitnesstrackergen2mainbranchf6c5a5beb3authamplifyAuthunauthenticatedUserRole0595D315Ref"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
+              {
+                "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3authNestedStackauthNestedStackResourceC6E94DB9Outputsamplifyfitnesstrackergen2mainbranchf6c5a5beb3authamplifyAuthIdentityPoolE5B9CC1CRef"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+            ]
+          ]
+        },
+        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+        "TypeName": "Mutation"
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-f6c5a5beb3/data/amplifyData/Meal/mutationDeleteMealResolver"
+      }
+    },
+    "SubscriptiononCreateMealauth0FunctionSubscriptiononCreateMealauth0FunctionAppSyncFunction8AF26F94": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPI530714E3ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPINONEDSBA892CCCName"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "SubscriptiononCreateMealauth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e6da5a6e993df8b5fdc91086b71eb53e72a3a97c98836ef9c9257776f36c452b.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-f6c5a5beb3/data/amplifyData/Meal/SubscriptiononCreateMealauth0Function/SubscriptiononCreateMealauth0Function.AppSyncFunction"
+      }
+    },
+    "SubscriptiononCreateMealpostAuth0FunctionSubscriptiononCreateMealpostAuth0FunctionAppSyncFunction820A2BD2": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPI530714E3ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPINONEDSBA892CCCName"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "SubscriptiononCreateMealpostAuth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c1721bcd774e27c514d3454b5be4f9bdd094c0161b57ddf053d618e3b0086a77.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-f6c5a5beb3/data/amplifyData/Meal/SubscriptiononCreateMealpostAuth0Function/SubscriptiononCreateMealpostAuth0Function.AppSyncFunction"
+      }
+    },
+    "SubscriptionOnCreateMealDataResolverFnSubscriptionOnCreateMealDataResolverFnAppSyncFunctionF1334F8F": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPI530714E3ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPINONEDSBA892CCCName"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "SubscriptionOnCreateMealDataResolverFn",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fe3c43ada4b9d681a5e2312663ef7a73386424d73b73e51f8e2e9d4b50f7c502.vtl"
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e0cff47fb007f0bbf2a4e43ca256d6aa7ec109821769fd79fa7c5e83f0e7f9fc.vtl"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-f6c5a5beb3/data/amplifyData/Meal/SubscriptionOnCreateMealDataResolverFn/SubscriptionOnCreateMealDataResolverFn.AppSyncFunction"
+      }
+    },
+    "SubscriptiononCreateMealResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPI530714E3ApiId"
+        },
+        "FieldName": "onCreateMeal",
+        "Kind": "PIPELINE",
+        "PipelineConfig": {
+          "Functions": [
+            {
+              "Fn::GetAtt": [
+                "SubscriptiononCreateMealauth0FunctionSubscriptiononCreateMealauth0FunctionAppSyncFunction8AF26F94",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "SubscriptiononCreateMealpostAuth0FunctionSubscriptiononCreateMealpostAuth0FunctionAppSyncFunction820A2BD2",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "SubscriptionOnCreateMealDataResolverFnSubscriptionOnCreateMealDataResolverFnAppSyncFunctionF1334F8F",
+                "FunctionId"
+              ]
+            }
+          ]
+        },
+        "RequestMappingTemplate": {
+          "Fn::Join": [
+            "",
+            [
+              "$util.qr($ctx.stash.put(\"typeName\", \"Subscription\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"onCreateMeal\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"NONE\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              {
+                "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPI530714E3ApiId"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"authRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+                "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3authNestedStackauthNestedStackResourceC6E94DB9Outputsamplifyfitnesstrackergen2mainbranchf6c5a5beb3authamplifyAuthauthenticatedUserRoleB67A2B52Ref"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+                "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3authNestedStackauthNestedStackResourceC6E94DB9Outputsamplifyfitnesstrackergen2mainbranchf6c5a5beb3authamplifyAuthunauthenticatedUserRole0595D315Ref"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
+              {
+                "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3authNestedStackauthNestedStackResourceC6E94DB9Outputsamplifyfitnesstrackergen2mainbranchf6c5a5beb3authamplifyAuthIdentityPoolE5B9CC1CRef"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+            ]
+          ]
+        },
+        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+        "TypeName": "Subscription"
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-f6c5a5beb3/data/amplifyData/Meal/subscriptionOnCreateMealResolver"
+      }
+    },
+    "SubscriptiononUpdateMealauth0FunctionSubscriptiononUpdateMealauth0FunctionAppSyncFunction2DF3B7A1": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPI530714E3ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPINONEDSBA892CCCName"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "SubscriptiononUpdateMealauth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e6da5a6e993df8b5fdc91086b71eb53e72a3a97c98836ef9c9257776f36c452b.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-f6c5a5beb3/data/amplifyData/Meal/SubscriptiononUpdateMealauth0Function/SubscriptiononUpdateMealauth0Function.AppSyncFunction"
+      }
+    },
+    "SubscriptiononUpdateMealpostAuth0FunctionSubscriptiononUpdateMealpostAuth0FunctionAppSyncFunction6DDD0917": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPI530714E3ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPINONEDSBA892CCCName"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "SubscriptiononUpdateMealpostAuth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c1721bcd774e27c514d3454b5be4f9bdd094c0161b57ddf053d618e3b0086a77.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-f6c5a5beb3/data/amplifyData/Meal/SubscriptiononUpdateMealpostAuth0Function/SubscriptiononUpdateMealpostAuth0Function.AppSyncFunction"
+      }
+    },
+    "SubscriptionOnUpdateMealDataResolverFnSubscriptionOnUpdateMealDataResolverFnAppSyncFunction7E09A153": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPI530714E3ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPINONEDSBA892CCCName"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "SubscriptionOnUpdateMealDataResolverFn",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fe3c43ada4b9d681a5e2312663ef7a73386424d73b73e51f8e2e9d4b50f7c502.vtl"
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e0cff47fb007f0bbf2a4e43ca256d6aa7ec109821769fd79fa7c5e83f0e7f9fc.vtl"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-f6c5a5beb3/data/amplifyData/Meal/SubscriptionOnUpdateMealDataResolverFn/SubscriptionOnUpdateMealDataResolverFn.AppSyncFunction"
+      }
+    },
+    "SubscriptiononUpdateMealResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPI530714E3ApiId"
+        },
+        "FieldName": "onUpdateMeal",
+        "Kind": "PIPELINE",
+        "PipelineConfig": {
+          "Functions": [
+            {
+              "Fn::GetAtt": [
+                "SubscriptiononUpdateMealauth0FunctionSubscriptiononUpdateMealauth0FunctionAppSyncFunction2DF3B7A1",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "SubscriptiononUpdateMealpostAuth0FunctionSubscriptiononUpdateMealpostAuth0FunctionAppSyncFunction6DDD0917",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "SubscriptionOnUpdateMealDataResolverFnSubscriptionOnUpdateMealDataResolverFnAppSyncFunction7E09A153",
+                "FunctionId"
+              ]
+            }
+          ]
+        },
+        "RequestMappingTemplate": {
+          "Fn::Join": [
+            "",
+            [
+              "$util.qr($ctx.stash.put(\"typeName\", \"Subscription\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"onUpdateMeal\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"NONE\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              {
+                "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPI530714E3ApiId"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"authRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+                "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3authNestedStackauthNestedStackResourceC6E94DB9Outputsamplifyfitnesstrackergen2mainbranchf6c5a5beb3authamplifyAuthauthenticatedUserRoleB67A2B52Ref"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+                "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3authNestedStackauthNestedStackResourceC6E94DB9Outputsamplifyfitnesstrackergen2mainbranchf6c5a5beb3authamplifyAuthunauthenticatedUserRole0595D315Ref"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
+              {
+                "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3authNestedStackauthNestedStackResourceC6E94DB9Outputsamplifyfitnesstrackergen2mainbranchf6c5a5beb3authamplifyAuthIdentityPoolE5B9CC1CRef"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+            ]
+          ]
+        },
+        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+        "TypeName": "Subscription"
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-f6c5a5beb3/data/amplifyData/Meal/subscriptionOnUpdateMealResolver"
+      }
+    },
+    "SubscriptiononDeleteMealauth0FunctionSubscriptiononDeleteMealauth0FunctionAppSyncFunctionE50EF48C": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPI530714E3ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPINONEDSBA892CCCName"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "SubscriptiononDeleteMealauth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e6da5a6e993df8b5fdc91086b71eb53e72a3a97c98836ef9c9257776f36c452b.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-f6c5a5beb3/data/amplifyData/Meal/SubscriptiononDeleteMealauth0Function/SubscriptiononDeleteMealauth0Function.AppSyncFunction"
+      }
+    },
+    "SubscriptiononDeleteMealpostAuth0FunctionSubscriptiononDeleteMealpostAuth0FunctionAppSyncFunction6FA10C5F": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPI530714E3ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPINONEDSBA892CCCName"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "SubscriptiononDeleteMealpostAuth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c1721bcd774e27c514d3454b5be4f9bdd094c0161b57ddf053d618e3b0086a77.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-f6c5a5beb3/data/amplifyData/Meal/SubscriptiononDeleteMealpostAuth0Function/SubscriptiononDeleteMealpostAuth0Function.AppSyncFunction"
+      }
+    },
+    "SubscriptionOnDeleteMealDataResolverFnSubscriptionOnDeleteMealDataResolverFnAppSyncFunction0A2F61AD": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPI530714E3ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPINONEDSBA892CCCName"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "SubscriptionOnDeleteMealDataResolverFn",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fe3c43ada4b9d681a5e2312663ef7a73386424d73b73e51f8e2e9d4b50f7c502.vtl"
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e0cff47fb007f0bbf2a4e43ca256d6aa7ec109821769fd79fa7c5e83f0e7f9fc.vtl"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-f6c5a5beb3/data/amplifyData/Meal/SubscriptionOnDeleteMealDataResolverFn/SubscriptionOnDeleteMealDataResolverFn.AppSyncFunction"
+      }
+    },
+    "SubscriptiononDeleteMealResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPI530714E3ApiId"
+        },
+        "FieldName": "onDeleteMeal",
+        "Kind": "PIPELINE",
+        "PipelineConfig": {
+          "Functions": [
+            {
+              "Fn::GetAtt": [
+                "SubscriptiononDeleteMealauth0FunctionSubscriptiononDeleteMealauth0FunctionAppSyncFunctionE50EF48C",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "SubscriptiononDeleteMealpostAuth0FunctionSubscriptiononDeleteMealpostAuth0FunctionAppSyncFunction6FA10C5F",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "SubscriptionOnDeleteMealDataResolverFnSubscriptionOnDeleteMealDataResolverFnAppSyncFunction0A2F61AD",
+                "FunctionId"
+              ]
+            }
+          ]
+        },
+        "RequestMappingTemplate": {
+          "Fn::Join": [
+            "",
+            [
+              "$util.qr($ctx.stash.put(\"typeName\", \"Subscription\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"onDeleteMeal\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"NONE\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              {
+                "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPI530714E3ApiId"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"authRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+                "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3authNestedStackauthNestedStackResourceC6E94DB9Outputsamplifyfitnesstrackergen2mainbranchf6c5a5beb3authamplifyAuthauthenticatedUserRoleB67A2B52Ref"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+                "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3authNestedStackauthNestedStackResourceC6E94DB9Outputsamplifyfitnesstrackergen2mainbranchf6c5a5beb3authamplifyAuthunauthenticatedUserRole0595D315Ref"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
+              {
+                "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3authNestedStackauthNestedStackResourceC6E94DB9Outputsamplifyfitnesstrackergen2mainbranchf6c5a5beb3authamplifyAuthIdentityPoolE5B9CC1CRef"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+            ]
+          ]
+        },
+        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+        "TypeName": "Subscription"
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-f6c5a5beb3/data/amplifyData/Meal/subscriptionOnDeleteMealResolver"
+      }
+    },
+    "CDKMetadata": {
+      "Type": "AWS::CDK::Metadata",
+      "Properties": {
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/1WOwW6DMAyGn6X34LV0h11Xqh63CXavTGJQCjgodlpViHefoFOnnX5/8if7zyF/3cF2gzfJrOuy3tcwfZAouUrRdqZo+AsjDqQUFygCO68+sClJQoqWTJFEw/CHDT9nvMl5cnfGIbgavrHu6YBCxuMAUxn6hx16mg2Oo9zZwnRc9WN9RMXqefI/nRLbpUQRuPFtirg2+v3cXynORvZnFCEVeF/CyB4OyXakS4F5cT+TjknNuq4UW8/tbDg4gou8XPMcdm+w3VzE+ywmVj8QlI/8AXh83Gc2AQAA"
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-f6c5a5beb3/data/amplifyData/Meal/CDKMetadata/Default"
+      },
+      "Condition": "CDKMetadataAvailable"
+    }
+  },
+  "Outputs": {
+    "GetAttMealTableStreamArn": {
+      "Description": "Your DynamoDB table StreamArn.",
+      "Value": {
+        "Fn::GetAtt": [
+          "MealTable",
+          "TableStreamArn"
+        ]
+      },
+      "Export": {
+        "Name": {
+          "Fn::Join": [
+            ":",
+            [
+              {
+                "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPI530714E3ApiId"
+              },
+              "GetAtt:MealTable:StreamArn"
+            ]
+          ]
+        }
+      }
+    },
+    "GetAttMealTableName": {
+      "Description": "Your DynamoDB table name.",
+      "Value": "Meal-2aikutabnvbuhlzmh4mvkg3eji-main",
+      "Export": {
+        "Name": {
+          "Fn::Join": [
+            ":",
+            [
+              {
+                "Ref": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPI530714E3ApiId"
+              },
+              "GetAtt:MealTable:Name"
+            ]
+          ]
+        }
+      }
+    },
+    "amplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataMealMealTableFB0A2E92TableArn": {
+      "Value": {
+        "Fn::GetAtt": [
+          "MealTable",
+          "TableArn"
+        ]
+      }
+    }
+  }
+}

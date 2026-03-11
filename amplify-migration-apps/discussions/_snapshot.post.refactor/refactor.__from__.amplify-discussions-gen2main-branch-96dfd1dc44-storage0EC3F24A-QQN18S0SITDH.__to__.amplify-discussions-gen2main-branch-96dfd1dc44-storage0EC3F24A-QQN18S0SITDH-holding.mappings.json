@@ -1,0 +1,12 @@
+[
+  {
+    "Source": {
+      "StackName": "amplify-discussions-gen2main-branch-96dfd1dc44-storage0EC3F24A-QQN18S0SITDH",
+      "LogicalResourceId": "activity1E902D9C"
+    },
+    "Destination": {
+      "StackName": "amplify-discussions-gen2main-branch-96dfd1dc44-storage0EC3F24A-QQN18S0SITDH-holding",
+      "LogicalResourceId": "activity1E902D9C"
+    }
+  }
+]

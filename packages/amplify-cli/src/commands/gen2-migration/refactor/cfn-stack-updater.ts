@@ -1,5 +1,12 @@
-import { CloudFormationClient, DescribeStacksCommand, Parameter, UpdateStackCommand } from '@aws-sdk/client-cloudformation';
+import {
+  CloudFormationClient,
+  DescribeStacksCommand,
+  Parameter,
+  UpdateStackCommand,
+  UpdateStackCommandInput,
+} from '@aws-sdk/client-cloudformation';
 import { CFNTemplate } from './types';
+import * as snap from './snap';
 import assert from 'node:assert';
 
 const POLL_ATTEMPTS = 120;
@@ -8,6 +15,7 @@ const NO_UPDATES_MESSAGE = 'No updates are to be performed';
 const CFN_IAM_CAPABILIY = 'CAPABILITY_NAMED_IAM';
 const COMPLETION_STATE = '_COMPLETE';
 export const UPDATE_COMPLETE = 'UPDATE_COMPLETE';
+
 /**
  * Updates a stack with given template. If no updates are present, it no-ops.
  * @param cfnClient
@@ -24,15 +32,15 @@ export async function tryUpdateStack(
   attempts = POLL_ATTEMPTS,
 ): Promise<string> {
   try {
-    await cfnClient.send(
-      new UpdateStackCommand({
-        TemplateBody: JSON.stringify(templateBody),
-        Parameters: parameters,
-        StackName: stackName,
-        Capabilities: [CFN_IAM_CAPABILIY],
-        Tags: [],
-      }),
-    );
+    const input: UpdateStackCommandInput = {
+      TemplateBody: JSON.stringify(templateBody),
+      Parameters: parameters,
+      StackName: stackName,
+      Capabilities: [CFN_IAM_CAPABILIY],
+      Tags: [],
+    };
+    await snap.preUpdateStack(input);
+    await cfnClient.send(new UpdateStackCommand(input));
     return pollStackForCompletionState(cfnClient, stackName, attempts);
   } catch (e) {
     if (!(e && typeof e === 'object' && 'message' in e && typeof e.message === 'string' && e.message.includes(NO_UPDATES_MESSAGE))) {

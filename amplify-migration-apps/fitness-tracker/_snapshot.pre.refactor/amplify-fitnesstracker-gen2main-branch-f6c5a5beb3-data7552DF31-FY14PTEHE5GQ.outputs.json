@@ -1,0 +1,26 @@
+[
+  {
+    "OutputKey": "amplifyfitnesstrackergen2mainbranchf6c5a5beb3datalognutritiongen2mainlambdaB5F1A17DRef",
+    "OutputValue": "lognutrition-gen2-main"
+  },
+  {
+    "OutputKey": "amplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPI530714E3GraphQLUrl",
+    "OutputValue": "https://77wvqbitijagpavjez3eammdna.appsync-api.us-east-1.amazonaws.com/graphql"
+  },
+  {
+    "OutputKey": "amplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPI530714E3ApiId",
+    "OutputValue": "aolmivry45bvbmfywwm6tb542u"
+  },
+  {
+    "OutputKey": "amplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiB31EBB484DestinationBucketArn",
+    "OutputValue": "arn:aws:s3:::amplify-fitnesstracker-gen-amplifydataamplifycodege-cm7x3zuy98og"
+  },
+  {
+    "OutputKey": "amplifyfitnesstrackergen2mainbranchf6c5a5beb3datalognutritiongen2mainlambdaB5F1A17DArn",
+    "OutputValue": "arn:aws:lambda:us-east-1:123456789012:function:lognutrition-gen2-main"
+  },
+  {
+    "OutputKey": "amplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataGraphQLAPIDefaultApiKeyDA026B5BApiKey",
+    "OutputValue": "da2-ebjsxuyj6nccppdwuy2ozljcla"
+  }
+]

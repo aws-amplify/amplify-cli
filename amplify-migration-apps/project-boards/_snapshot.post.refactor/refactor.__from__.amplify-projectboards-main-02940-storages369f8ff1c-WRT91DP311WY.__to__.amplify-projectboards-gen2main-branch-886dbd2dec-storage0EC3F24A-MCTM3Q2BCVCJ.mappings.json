@@ -1,0 +1,12 @@
+[
+  {
+    "Source": {
+      "StackName": "amplify-projectboards-main-02940-storages369f8ff1c-WRT91DP311WY",
+      "LogicalResourceId": "S3Bucket"
+    },
+    "Destination": {
+      "StackName": "amplify-projectboards-gen2main-branch-886dbd2dec-storage0EC3F24A-MCTM3Q2BCVCJ",
+      "LogicalResourceId": "projectboards34b9a7f3c2ca489293910116c994688b02940gen2mainBucketC790823F"
+    }
+  }
+]

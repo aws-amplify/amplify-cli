@@ -1,0 +1,533 @@
+{
+  "Description": "{\"createdOn\":\"Linux\",\"createdBy\":\"AmplifyPipelineDeploy\",\"createdWith\":\"1.11.1\",\"stackType\":\"auth-Cognito\",\"metadata\":{}}",
+  "Resources": {
+    "amplifyAuthauthenticatedUserRoleD8DA3689": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRoleWithWebIdentity",
+              "Condition": {
+                "StringEquals": {
+                  "cognito-identity.amazonaws.com:aud": "us-east-1:f8ab7c96-56f6-46d4-8346-0a5235221fba"
+                },
+                "ForAnyValue:StringLike": {
+                  "cognito-identity.amazonaws.com:amr": "authenticated"
+                }
+              },
+              "Effect": "Allow",
+              "Principal": {
+                "Federated": "cognito-identity.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Tags": [
+          {
+            "Key": "amplify:app-id",
+            "Value": "projectboards"
+          },
+          {
+            "Key": "amplify:branch-name",
+            "Value": "gen2-main"
+          },
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "branch"
+          },
+          {
+            "Key": "amplify:friendly-name",
+            "Value": "amplifyAuth"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-projectboards-gen2main-branch-886dbd2dec/auth/amplifyAuth/authenticatedUserRole/Resource"
+      }
+    },
+    "amplifyAuthunauthenticatedUserRole2B524D9E": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRoleWithWebIdentity",
+              "Condition": {
+                "StringEquals": {
+                  "cognito-identity.amazonaws.com:aud": "us-east-1:f8ab7c96-56f6-46d4-8346-0a5235221fba"
+                },
+                "ForAnyValue:StringLike": {
+                  "cognito-identity.amazonaws.com:amr": "unauthenticated"
+                }
+              },
+              "Effect": "Allow",
+              "Principal": {
+                "Federated": "cognito-identity.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Tags": [
+          {
+            "Key": "amplify:app-id",
+            "Value": "projectboards"
+          },
+          {
+            "Key": "amplify:branch-name",
+            "Value": "gen2-main"
+          },
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "branch"
+          },
+          {
+            "Key": "amplify:friendly-name",
+            "Value": "amplifyAuth"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-projectboards-gen2main-branch-886dbd2dec/auth/amplifyAuth/unauthenticatedUserRole/Resource"
+      }
+    },
+    "CDKMetadata": {
+      "Type": "AWS::CDK::Metadata",
+      "Properties": {
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/02LwQrCMBBEv8V7urbBg1fpyYtIxbPEZNVt0w00q0VC/l2KVHuamTczGvSmgnJlxlhY1xWerpAOGAXdSYztlBnjJdlwZ5IA6RxxOIbgVX3jn59N7QlZltWf7B2ykLzn8zI3weNOxNhHjyxZkekhTXAaTppzVhwcQhvXL62h2kK5aiNRMTxZqEdovvoBH9Args4AAAA="
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-projectboards-gen2main-branch-886dbd2dec/auth/CDKMetadata/Default"
+      },
+      "Condition": "CDKMetadataAvailable"
+    },
+    "amplifyAuthUserPool4BA7F805": {
+      "Type": "AWS::Cognito::UserPool",
+      "Properties": {
+        "AutoVerifiedAttributes": [
+          "email"
+        ],
+        "EmailVerificationMessage": "Your verification code is {####}",
+        "EmailVerificationSubject": "Your verification code",
+        "MfaConfiguration": "OFF",
+        "Policies": {
+          "PasswordPolicy": {
+            "MinimumLength": "8",
+            "RequireLowercase": false,
+            "RequireNumbers": false,
+            "RequireSymbols": false,
+            "RequireUppercase": false
+          }
+        },
+        "Schema": [
+          {
+            "Mutable": true,
+            "Name": "email",
+            "Required": true
+          }
+        ],
+        "UserAttributeUpdateSettings": {
+          "AttributesRequireVerificationBeforeUpdate": [
+            "email"
+          ]
+        },
+        "UserPoolName": {
+          "Fn::Join": [
+            "",
+            [
+              "projectboards54040ecc_userpool_54040ecc",
+              "-",
+              "main"
+            ]
+          ]
+        },
+        "UsernameAttributes": [
+          "email"
+        ],
+        "UsernameConfiguration": {
+          "CaseSensitive": false
+        }
+      }
+    },
+    "amplifyAuthUserPoolAppClient2626C6F8": {
+      "Type": "AWS::Cognito::UserPoolClient",
+      "Properties": {
+        "ClientName": "projec54040ecc_app_clientWeb",
+        "RefreshTokenValidity": "30",
+        "TokenValidityUnits": {
+          "RefreshToken": "days"
+        },
+        "UserPoolId": "us-east-1_ct5s4IEz3"
+      },
+      "DependsOn": [
+        "amplifyAuthUserPool4BA7F805"
+      ]
+    },
+    "amplifyAuthUserPoolNativeAppClient79534448": {
+      "Type": "AWS::Cognito::UserPoolClient",
+      "Properties": {
+        "ClientName": "projec54040ecc_app_client",
+        "GenerateSecret": "false",
+        "RefreshTokenValidity": "30",
+        "TokenValidityUnits": {
+          "RefreshToken": "days"
+        },
+        "UserPoolId": "us-east-1_ct5s4IEz3"
+      },
+      "DependsOn": [
+        "amplifyAuthUserPool4BA7F805"
+      ]
+    },
+    "amplifyAuthIdentityPool3FDE84CC": {
+      "Type": "AWS::Cognito::IdentityPool",
+      "Properties": {
+        "AllowUnauthenticatedIdentities": "true",
+        "CognitoIdentityProviders": [
+          {
+            "ClientId": "3dbqrlfs0a0g4a6ihsanen6i5",
+            "ProviderName": {
+              "Fn::Sub": [
+                "cognito-idp.${region}.amazonaws.com/${client}",
+                {
+                  "region": {
+                    "Ref": "AWS::Region"
+                  },
+                  "client": "us-east-1_ct5s4IEz3"
+                }
+              ]
+            }
+          },
+          {
+            "ClientId": "1vpeihq8svf62sepfnkuvp8sld",
+            "ProviderName": {
+              "Fn::Sub": [
+                "cognito-idp.${region}.amazonaws.com/${client}",
+                {
+                  "region": {
+                    "Ref": "AWS::Region"
+                  },
+                  "client": "us-east-1_ct5s4IEz3"
+                }
+              ]
+            }
+          }
+        ],
+        "IdentityPoolName": {
+          "Fn::Join": [
+            "",
+            [
+              "projectboards54040ecc_identitypool_54040ecc__",
+              "main"
+            ]
+          ]
+        }
+      }
+    },
+    "amplifyAuthIdentityPoolRoleAttachment045F17C8": {
+      "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
+      "Properties": {
+        "IdentityPoolId": "us-east-1:88399477-86ba-4d93-aa1a-13242b53b791",
+        "Roles": {
+          "unauthenticated": "arn:aws:iam::123456789012:role/amplify-projectboards-main-02940-unauthRole",
+          "authenticated": "arn:aws:iam::123456789012:role/amplify-projectboards-main-02940-authRole"
+        }
+      },
+      "DependsOn": [
+        "amplifyAuthIdentityPool3FDE84CC"
+      ]
+    }
+  },
+  "Conditions": {
+    "CDKMetadataAvailable": {
+      "Fn::Or": [
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "af-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-3"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-south-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-3"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-4"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ca-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ca-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-northwest-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-central-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-south-2"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-3"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "il-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "me-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "me-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "sa-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-west-1"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "AWS::Region"
+            },
+            "us-west-2"
+          ]
+        }
+      ]
+    }
+  },
+  "Outputs": {
+    "amplifyprojectboardsgen2mainbranch886dbd2decauthamplifyAuthUserPool33BA12FBRef": {
+      "Value": "us-east-1_pXlpWF7QY"
+    },
+    "amplifyprojectboardsgen2mainbranch886dbd2decauthamplifyAuthUserPoolAppClient0435B83FRef": {
+      "Value": "oqgm3faeod0cr1b4v63iv4a7a"
+    },
+    "amplifyprojectboardsgen2mainbranch886dbd2decauthamplifyAuthIdentityPool16941F52Ref": {
+      "Value": "us-east-1:f8ab7c96-56f6-46d4-8346-0a5235221fba"
+    },
+    "amplifyprojectboardsgen2mainbranch886dbd2decauthamplifyAuthauthenticatedUserRole9FF894EARef": {
+      "Value": "amplify-projectboards-ge-amplifyAuthauthenticatedU-HuWvFKttqdhF"
+    },
+    "amplifyprojectboardsgen2mainbranch886dbd2decauthamplifyAuthunauthenticatedUserRole5DB50FFARef": {
+      "Value": "amplify-projectboards-ge-amplifyAuthunauthenticate-GHLvLgqZHYnT"
+    }
+  }
+}

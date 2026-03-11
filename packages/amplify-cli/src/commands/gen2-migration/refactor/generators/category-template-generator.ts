@@ -241,6 +241,7 @@ class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
       stackOutputs,
       stackResources,
     );
+    this.logger.debug('Finished resolving Gen2 output references...');
 
     return {
       oldTemplate: oldGen2Template,
@@ -288,8 +289,8 @@ class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
     };
 
     const resourceMappings: ResourceMapping[] = logicalResourceIds.map((id) => ({
-      Source: { StackName: this.gen2StackId, LogicalResourceId: id },
-      Destination: { StackName: holdingStackName, LogicalResourceId: id },
+      Source: { StackName: extractStackNameFromId(this.gen2StackId), LogicalResourceId: id },
+      Destination: { StackName: extractStackNameFromId(holdingStackName), LogicalResourceId: id },
     }));
 
     const [success, failedMetadata] = await tryRefactorStack(this.cfnClient, {
@@ -346,8 +347,8 @@ class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
     };
 
     const resourceMappings: ResourceMapping[] = resourcesToRestore.map(([logicalId]) => ({
-      Source: { StackName: holdingStackName, LogicalResourceId: logicalId },
-      Destination: { StackName: originalGen2StackId, LogicalResourceId: logicalId },
+      Source: { StackName: extractStackNameFromId(holdingStackName), LogicalResourceId: logicalId },
+      Destination: { StackName: extractStackNameFromId(originalGen2StackId), LogicalResourceId: logicalId },
     }));
 
     const [success, failedMetadata] = await tryRefactorStack(this.cfnClient, {

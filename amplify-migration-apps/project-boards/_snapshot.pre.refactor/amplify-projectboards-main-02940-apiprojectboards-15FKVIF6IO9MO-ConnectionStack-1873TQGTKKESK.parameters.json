@@ -1,0 +1,26 @@
+[
+  {
+    "ParameterKey": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
+    "ParameterValue": "amplify-appsync-files/182d69537a429ad74cd4e2ced5fdadbb4cbf17fc"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name",
+    "ParameterValue": "NONE_DS"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+    "ParameterValue": "47mmg7n7zzcmnhcdcrkmgul4xe"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
+    "ParameterValue": "amplify-projectboards-main-02940-deployment"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackTodoNestedStackTodoNestedStackResource9AC126A3OutputstransformerrootstackTodoTodoTableC67E79C2Ref",
+    "ParameterValue": "Todo-47mmg7n7zzcmnhcdcrkmgul4xe-main"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackTodoNestedStackTodoNestedStackResource9AC126A3OutputstransformerrootstackTodoTodoDataSourceBD713D7DName",
+    "ParameterValue": "TodoTable"
+  }
+]
