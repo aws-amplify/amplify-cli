@@ -12,7 +12,6 @@ import type { LocalDriftResults } from '../detect-local-drift';
 import type { TemplateDriftResults, ResourceChangeWithNested } from '../detect-template-drift';
 import { type StackDriftNode, type CloudFormationDriftResults } from '../detect-stack-drift';
 import { extractCategory } from '../../gen2-migration/categories';
-import { terminalLink } from './terminal-link';
 
 interface DriftBlock {
   categoryName: string;
@@ -189,8 +188,7 @@ function formatBlock(block: DriftBlock): string {
     if (block.driftDetectionId) {
       const stackArn = drift.StackId || '';
       const driftUrl = cfnDriftConsoleUrl(stackArn);
-      const driftIdText = driftUrl ? terminalLink(block.driftDetectionId, driftUrl) : block.driftDetectionId;
-      output += `  Drift Id: ${driftIdText}\n`;
+      output += `  Drift Id: ${driftUrl || block.driftDetectionId}\n`;
     }
     if (arn) {
       output += `\n  ${arn}\n`;
@@ -211,8 +209,7 @@ function formatBlock(block: DriftBlock): string {
     output += `  Template Drift: S3 and deployed templates differ\n`;
     if (block.changeSetId) {
       const changesetUrl = cfnChangesetConsoleUrl(block.changeSetId);
-      const changesetText = changesetUrl ? terminalLink(block.changeSetId, changesetUrl) : block.changeSetId;
-      output += `  Changeset Id: ${changesetText}\n`;
+      output += `  Changeset Id: ${changesetUrl || block.changeSetId}\n`;
     }
     output += `  ${colorResourceLine(symbol, `${symbol} ${change.ResourceType || 'Unknown'}`)}\n`;
   } else {

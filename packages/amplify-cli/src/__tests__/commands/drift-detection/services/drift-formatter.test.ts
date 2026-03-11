@@ -19,11 +19,6 @@ jest.mock('chalk', () => {
   return { __esModule: true, default: chalkMock };
 });
 
-// Mock terminal links to pass through text (strips OSC 8 escapes from snapshots)
-jest.mock('../../../../commands/drift-detection/services/terminal-link', () => ({
-  terminalLink: (text: string) => text,
-}));
-
 function makeDrift(overrides: Partial<StackResourceDrift> = {}): StackResourceDrift {
   return {
     StackId: 'arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-test-dev/guid',
@@ -103,7 +98,7 @@ describe('createUnifiedCategoryView', () => {
       "
       STORAGE MyTable
         CloudFormation Drift: Deployed resources do not match templates
-        Drift Id: drift-id-storage
+        Drift Id: https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/arn%3Aaws%3Acloudformation%3Aus-east-1%3A123456789012%3Astack%2Famplify-test-dev%2Fguid/drifts
 
         arn:aws:dynamodb:us-east-1:123456789012:table/MyTable
         ~ AWS::DynamoDB::Table
@@ -136,7 +131,7 @@ describe('createUnifiedCategoryView', () => {
       "
       CORE INFRASTRUCTURE DeploymentRole
         CloudFormation Drift: Deployed resources do not match templates
-        Drift Id: root-drift-id
+        Drift Id: https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/arn%3Aaws%3Acloudformation%3Aus-east-1%3A123456789012%3Astack%2Famplify-test-dev%2Fguid/drifts
 
         arn:aws:lambda:us-east-1:123456789012:function:test-fn
         ~ AWS::IAM::Role
@@ -179,12 +174,12 @@ describe('createUnifiedCategoryView', () => {
       "
       API Schema
         Template Drift: S3 and deployed templates differ
-        Changeset Id: arn:aws:cloudformation:us-east-1:123:changeSet/nested-api-cs/def
+        Changeset Id: https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/changesets/details?changeSetId=arn%3Aaws%3Acloudformation%3Aus-east-1%3A123%3AchangeSet%2Fnested-api-cs%2Fdef
         ~ AWS::AppSync::GraphQLSchema
 
       API NewResolver
         Template Drift: S3 and deployed templates differ
-        Changeset Id: arn:aws:cloudformation:us-east-1:123:changeSet/nested-api-cs/def
+        Changeset Id: https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/changesets/details?changeSetId=arn%3Aaws%3Acloudformation%3Aus-east-1%3A123%3AchangeSet%2Fnested-api-cs%2Fdef
         + AWS::AppSync::Resolver
 
       "
@@ -254,7 +249,7 @@ describe('createUnifiedCategoryView', () => {
       "
       STORAGE Table1
         CloudFormation Drift: Deployed resources do not match templates
-        Drift Id: storage-drift-id
+        Drift Id: https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/arn%3Aaws%3Acloudformation%3Aus-east-1%3A123456789012%3Astack%2Famplify-test-dev%2Fguid/drifts
 
         arn:aws:lambda:us-east-1:123456789012:function:test-fn
         ~ AWS::DynamoDB::Table
@@ -311,7 +306,7 @@ describe('createUnifiedCategoryView', () => {
       "
       FUNCTION MyFunction
         CloudFormation Drift: Deployed resources do not match templates
-        Drift Id: func-drift-id
+        Drift Id: https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/arn%3Aaws%3Acloudformation%3Aus-east-1%3A123456789012%3Astack%2Famplify-test-dev%2Fguid/drifts
 
         arn:aws:lambda:us-east-1:123456789012:function:test-fn
         - AWS::Lambda::Function
@@ -353,14 +348,14 @@ describe('createUnifiedCategoryView', () => {
       "
       STORAGE Table1
         CloudFormation Drift: Deployed resources do not match templates
-        Drift Id: storage-drift-id
+        Drift Id: https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/arn%3Aaws%3Acloudformation%3Aus-east-1%3A123456789012%3Astack%2Famplify-test-dev%2Fguid/drifts
 
         arn:aws:lambda:us-east-1:123456789012:function:test-fn
         ~ AWS::DynamoDB::Table
 
       STORAGE Bucket1
         CloudFormation Drift: Deployed resources do not match templates
-        Drift Id: storage-drift-id
+        Drift Id: https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/arn%3Aaws%3Acloudformation%3Aus-east-1%3A123456789012%3Astack%2Famplify-test-dev%2Fguid/drifts
 
         arn:aws:s3:::my-bucket
         ~ AWS::S3::Bucket
@@ -404,7 +399,7 @@ describe('createUnifiedCategoryView', () => {
       "
       API Schema
         Template Drift: S3 and deployed templates differ
-        Changeset Id: arn:aws:cloudformation:us-east-1:123:changeSet/deep-cs/ghi
+        Changeset Id: https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/changesets/details?changeSetId=arn%3Aaws%3Acloudformation%3Aus-east-1%3A123%3AchangeSet%2Fdeep-cs%2Fghi
         ~ AWS::AppSync::GraphQLSchema
 
       "
