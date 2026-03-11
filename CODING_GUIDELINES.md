@@ -115,7 +115,6 @@ Mutable state makes code hard to reason through. When a property can be reassign
 This applies at every level:
 
 - Interface properties and class fields should be `readonly`. Omitting `readonly` requires a clear, documented justification for why mutation is necessary. "Convenience" is not a justification.
-- Local variables should be `const` — see "Prefer `const` over `let`" for details.
 
 ---
 
