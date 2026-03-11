@@ -196,7 +196,7 @@ function extractLoggingConfig(graphqlApi: GraphqlApi): any {
 function createTableMappings(schema: string, apiId: string, envName: string): DataTableMapping {
   const modelRegex = /type\s+(\w+)\s+@model/g;
   const mapping: DataTableMapping = {};
-  let match;
+  let match: RegExpExecArray | null;
   while ((match = modelRegex.exec(schema)) !== null) {
     mapping[match[1]] = [match[1], apiId, envName].join('-');
   }

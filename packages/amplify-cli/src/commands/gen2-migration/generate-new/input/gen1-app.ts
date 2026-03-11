@@ -25,13 +25,13 @@ interface Gen1AppOptions {
  */
 export interface RestApiPath {
   readonly path: string;
-  readonly methods: string[];
+  readonly methods: readonly string[];
   readonly authType?: string;
   readonly lambdaFunction?: string;
-  readonly userPoolGroups?: string[];
+  readonly userPoolGroups?: readonly string[];
   readonly permissions?: {
     readonly hasAuth?: boolean;
-    readonly groups?: Record<string, string[]>;
+    readonly groups?: Readonly<Record<string, readonly string[]>>;
   };
 }
 
@@ -40,10 +40,10 @@ export interface RestApiPath {
  */
 export interface CorsConfiguration {
   readonly allowCredentials?: boolean;
-  readonly allowHeaders?: string[];
-  readonly allowMethods?: string[];
-  readonly allowOrigins?: string[];
-  readonly exposeHeaders?: string[];
+  readonly allowHeaders?: readonly string[];
+  readonly allowMethods?: readonly string[];
+  readonly allowOrigins?: readonly string[];
+  readonly exposeHeaders?: readonly string[];
   readonly maxAge?: number;
 }
 
@@ -53,10 +53,10 @@ export interface CorsConfiguration {
 export interface RestApiDefinition {
   readonly apiName: string;
   readonly functionName: string;
-  readonly paths: RestApiPath[];
+  readonly paths: readonly RestApiPath[];
   readonly authType?: string;
   readonly corsConfiguration?: CorsConfiguration;
-  readonly uniqueFunctions?: string[];
+  readonly uniqueFunctions?: readonly string[];
 }
 
 /**
@@ -333,10 +333,11 @@ export class Gen1App {
     if (!authCategory) return undefined;
 
     for (const resourceName of Object.keys(authCategory)) {
-      const triggerFilePath = path.join(ccbDir, 'auth', resourceName, 'cli-inputs.json');
+      const triggerRelativePath = path.join('auth', resourceName, 'cli-inputs.json');
+      const triggerFilePath = path.join(ccbDir, triggerRelativePath);
       if (await fileOrDirectoryExists(triggerFilePath)) {
-        const contents = await fs.readFile(triggerFilePath, { encoding: 'utf8' });
-        const cliInputs = JSON.parse(contents);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped Gen1 cli-inputs.json
+        const cliInputs = JSONUtilities.readJson<any>(triggerFilePath);
         if (cliInputs?.cognitoConfig?.triggers) {
           const triggers =
             typeof cliInputs.cognitoConfig.triggers === 'string'
@@ -397,7 +398,6 @@ export class Gen1App {
   // ── REST API configuration (local file reading) ─────────────────
 
   /**
-  /**
    * Fetches the REST API definition for a single API Gateway resource.
    */
   public async fetchRestApiConfig(resourceName: string): Promise<RestApiDefinition> {
@@ -417,7 +417,10 @@ export class Gen1App {
     }
 
     const cliInputsPath = path.join(rootDir, 'amplify', 'backend', 'api', resourceName, 'cli-inputs.json');
-    const cliInputs = JSONUtilities.readJson<RestApiCliInputs>(cliInputsPath)!;
+    const cliInputs = JSONUtilities.readJson<RestApiCliInputs>(cliInputsPath, { throwIfNotExist: true });
+    if (!cliInputs) {
+      throw new Error(`Failed to read cli-inputs.json for REST API '${resourceName}'`);
+    }
 
     const paths = cliInputs.paths ? parseRestApiPaths(cliInputs.paths) : [{ path: '/{proxy+}', methods: ['ANY'] }];
 
@@ -448,15 +451,15 @@ interface RestApiCliInputs {
 }
 
 interface RestApiPathConfig {
-  readonly methods?: string[];
+  readonly methods?: readonly string[];
   readonly permissions?: {
     readonly setting?: 'private' | 'protected' | 'open';
-    readonly auth?: string[];
-    readonly groups?: Record<string, string[]>;
+    readonly auth?: readonly string[];
+    readonly groups?: Readonly<Record<string, readonly string[]>>;
   };
   readonly lambdaFunction?: string;
   readonly restrictAccess?: boolean;
-  readonly groupAccess?: string[];
+  readonly groupAccess?: readonly string[];
 }
 
 function parseRestApiPaths(paths: Record<string, RestApiPathConfig>): RestApiPath[] {
@@ -464,7 +467,7 @@ function parseRestApiPaths(paths: Record<string, RestApiPathConfig>): RestApiPat
     const pathAuthType = pathConfig.permissions?.setting || 'open';
     const userPoolGroups = pathConfig.permissions?.groups ? Object.keys(pathConfig.permissions.groups) : undefined;
 
-    const permissions: { hasAuth?: boolean; groups?: Record<string, string[]> } = {};
+    const permissions: { hasAuth?: boolean; groups?: Readonly<Record<string, readonly string[]>> } = {};
     if (pathConfig.permissions?.auth && pathConfig.permissions.auth.length > 0) {
       permissions.hasAuth = true;
     }
@@ -497,11 +500,11 @@ function collectUniqueFunctions(paths: readonly RestApiPath[], defaultFunctionNa
 }
 
 function extractMethodsFromPath(pathConfig: {
-  methods?: string[];
-  permissions?: { auth?: string[]; groups?: Record<string, string[]> };
+  readonly methods?: readonly string[];
+  readonly permissions?: { readonly auth?: readonly string[]; readonly groups?: Readonly<Record<string, readonly string[]>> };
 }): string[] {
   if (pathConfig.methods && pathConfig.methods.length > 0) {
-    return pathConfig.methods;
+    return [...pathConfig.methods];
   }
 
   if (pathConfig.permissions?.auth && pathConfig.permissions.auth.length > 0) {
@@ -521,7 +524,7 @@ function extractMethodsFromPath(pathConfig: {
   return ['GET'];
 }
 
-function mapPermissionsToMethods(permissions: string[]): string[] {
+function mapPermissionsToMethods(permissions: readonly string[]): string[] {
   const methodMap: Record<string, string> = {
     read: 'GET',
     create: 'POST',

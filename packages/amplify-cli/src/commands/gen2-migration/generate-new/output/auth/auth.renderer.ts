@@ -167,19 +167,19 @@ export type LoginOptions = {
   readonly amazonLogin?: boolean;
   readonly appleLogin?: boolean;
   readonly facebookLogin?: boolean;
-  readonly oidcLogin?: OidcOptions[];
+  readonly oidcLogin?: readonly OidcOptions[];
   readonly samlLogin?: SamlOptions;
   readonly googleAttributes?: AttributeMappingRule;
   readonly amazonAttributes?: AttributeMappingRule;
   readonly appleAttributes?: AttributeMappingRule;
   readonly facebookAttributes?: AttributeMappingRule;
-  readonly callbackURLs?: string[];
-  readonly logoutURLs?: string[];
-  readonly scopes?: Scope[];
-  readonly googleScopes?: string[];
-  readonly facebookScopes?: string[];
-  readonly amazonScopes?: string[];
-  readonly appleScopes?: string[];
+  readonly callbackURLs?: readonly string[];
+  readonly logoutURLs?: readonly string[];
+  readonly scopes?: readonly Scope[];
+  readonly googleScopes?: readonly string[];
+  readonly facebookScopes?: readonly string[];
+  readonly amazonScopes?: readonly string[];
+  readonly appleScopes?: readonly string[];
 };
 
 /**
@@ -275,7 +275,7 @@ export interface FunctionAuthInfo {
  */
 export interface AuthDefinition {
   readonly loginOptions?: LoginOptions;
-  readonly groups?: Group[];
+  readonly groups?: readonly Group[];
   readonly mfa?: MultifactorOptions;
   readonly standardUserAttributes?: StandardAttributes;
   readonly customUserAttributes?: CustomAttributes;
@@ -283,12 +283,12 @@ export interface AuthDefinition {
   readonly lambdaTriggers?: Partial<AuthLambdaTriggers>;
   readonly guestLogin?: boolean;
   readonly identityPoolName?: string;
-  readonly oAuthFlows?: string[];
-  readonly readAttributes?: string[];
-  readonly writeAttributes?: string[];
+  readonly oAuthFlows?: readonly string[];
+  readonly readAttributes?: readonly string[];
+  readonly writeAttributes?: readonly string[];
   readonly referenceAuth?: ReferenceAuth;
   readonly userPoolClient?: UserPoolClientType;
-  readonly functions?: FunctionAuthInfo[];
+  readonly functions?: readonly FunctionAuthInfo[];
 }
 
 // TypeScript AST factory for creating nodes
@@ -369,7 +369,6 @@ export class AuthRenderer {
   private renderStandardAuth(definition: AuthDefinition, namedImports: Record<string, Set<string>>): ts.NodeArray<ts.Node> {
     namedImports['@aws-amplify/backend'].add('defineAuth');
     const defineAuthProperties: Array<PropertyAssignment> = [];
-    const secretErrors: ts.Node[] = [];
 
     const { loginOptions } = definition;
     if (
@@ -383,7 +382,7 @@ export class AuthRenderer {
       namedImports['@aws-amplify/backend'].add('secret');
     }
 
-    defineAuthProperties.push(this.createLogInWithPropertyAssignment(definition.loginOptions, secretErrors));
+    defineAuthProperties.push(this.createLogInWithPropertyAssignment(definition.loginOptions));
 
     if (definition.customUserAttributes || definition.standardUserAttributes) {
       defineAuthProperties.push(this.createUserAttributeAssignments(definition.standardUserAttributes, definition.customUserAttributes));
@@ -466,7 +465,7 @@ export class AuthRenderer {
   }
 
   private addFunctionAccess(
-    functions: FunctionAuthInfo[] | undefined,
+    functions: readonly FunctionAuthInfo[] | undefined,
     properties: PropertyAssignment[],
     namedImports: Record<string, Set<string>>,
   ): void {
@@ -526,7 +525,7 @@ export class AuthRenderer {
     }
   }
 
-  private createLogInWithPropertyAssignment(logInDefinition: LoginOptions = {}, secretErrors: ts.Node[]): PropertyAssignment {
+  private createLogInWithPropertyAssignment(logInDefinition: LoginOptions = {}): PropertyAssignment {
     const logInWith = factory.createIdentifier('loginWith');
     const assignments: ts.ObjectLiteralElementLike[] = [];
 
@@ -557,7 +556,7 @@ export class AuthRenderer {
       assignments.push(
         factory.createPropertyAssignment(
           factory.createIdentifier('externalProviders'),
-          this.createExternalProvidersExpression(logInDefinition, logInDefinition.callbackURLs, logInDefinition.logoutURLs, secretErrors),
+          this.createExternalProvidersExpression(logInDefinition, logInDefinition.callbackURLs, logInDefinition.logoutURLs),
         ),
       );
     }
@@ -594,9 +593,8 @@ export class AuthRenderer {
 
   private createExternalProvidersExpression(
     loginOptions: LoginOptions,
-    callbackUrls?: string[],
-    logoutUrls?: string[],
-    secretErrors?: ts.Node[],
+    callbackUrls?: readonly string[],
+    logoutUrls?: readonly string[],
   ): ts.ObjectLiteralExpression {
     const providerAssignments: PropertyAssignment[] = [];
 

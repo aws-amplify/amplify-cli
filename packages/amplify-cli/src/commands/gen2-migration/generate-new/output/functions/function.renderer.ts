@@ -15,7 +15,7 @@ export interface RenderDefineFunctionOptions {
   readonly memoryMB?: number;
   readonly runtime?: string;
   readonly schedule?: string;
-  readonly environment?: Record<string, string>;
+  readonly environment?: Readonly<Record<string, string>>;
 }
 
 /**

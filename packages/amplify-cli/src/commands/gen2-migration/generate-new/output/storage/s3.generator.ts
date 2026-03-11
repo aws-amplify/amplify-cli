@@ -23,13 +23,13 @@ interface StorageCLIInputsJSON {
   readonly resourceName?: string;
   readonly bucketName?: string;
   readonly storageAccess?: string;
-  readonly guestAccess: CLIV1Permission[];
-  readonly authAccess: CLIV1Permission[];
+  readonly guestAccess: readonly CLIV1Permission[];
+  readonly authAccess: readonly CLIV1Permission[];
   readonly triggerFunction?: string;
-  readonly groupAccess?: Record<string, CLIV1Permission[]>;
+  readonly groupAccess?: Readonly<Record<string, readonly CLIV1Permission[]>>;
 }
 
-const PERMISSION_MAP: Record<CLIV1Permission, Permission[]> = {
+const PERMISSION_MAP: Readonly<Record<CLIV1Permission, readonly Permission[]>> = {
   READ: ['read'],
   DELETE: ['delete'],
   CREATE_AND_UPDATE: ['write'],

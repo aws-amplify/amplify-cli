@@ -2,7 +2,7 @@ import { Generator } from '../../generator';
 import { AmplifyMigrationOperation } from '../../../_operation';
 import { BackendGenerator } from '../backend.generator';
 import { Gen1App } from '../../input/gen1-app';
-import { DynamoDBRenderer, DynamoDBTableDefinition } from './dynamodb.renderer';
+import { DynamoDBRenderer, DynamoDBGSI, DynamoDBTableDefinition } from './dynamodb.renderer';
 
 /**
  * Generates a single DynamoDB table construct and contributes it to backend.ts.
@@ -80,7 +80,7 @@ export class DynamoDBGenerator implements Generator {
       };
     }
 
-    const gsis: DynamoDBTableDefinition['gsis'] = [];
+    const gsis: DynamoDBGSI[] = [];
     if (table.GlobalSecondaryIndexes) {
       for (const gsi of table.GlobalSecondaryIndexes) {
         const gsiPartitionKey = {

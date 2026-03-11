@@ -69,7 +69,7 @@ export class RestApiGenerator implements Generator {
    * Adds function imports for unique functions used by this REST API
    * that aren't already registered by the main function generator.
    */
-  private addFunctionImports(restApi: { readonly uniqueFunctions?: string[] }, functionNames: ReadonlySet<string>): void {
+  private addFunctionImports(restApi: { readonly uniqueFunctions?: readonly string[] }, functionNames: ReadonlySet<string>): void {
     if (!restApi.uniqueFunctions) return;
 
     for (const funcName of restApi.uniqueFunctions) {

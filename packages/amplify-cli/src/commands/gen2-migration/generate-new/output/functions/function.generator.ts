@@ -2,13 +2,14 @@ import path from 'node:path';
 import fs from 'node:fs/promises';
 import ts from 'typescript';
 import { AmplifyMigrationOperation } from '../../../_operation';
+import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import { Generator } from '../../generator';
 import { BackendGenerator } from '../backend.generator';
 import { Gen1App } from '../../input/gen1-app';
 import { printNodes } from '../../ts-writer';
 import { FunctionRenderer, RenderDefineFunctionOptions } from './function.renderer';
 import { RootPackageJsonGenerator } from '../root-package-json.generator';
-import { extractFilePathFromHandler, propAccess, constDecl } from '../../ts-factory-utils';
+import { extractFilePathFromHandler, propAccess } from '../../ts-factory-utils';
 import { parseAuthAccessFromTemplate } from '../../input/auth-access-analyzer';
 import { AuthGenerator } from '../auth/auth.generator';
 import { S3Generator } from '../storage/s3.generator';
@@ -38,10 +39,10 @@ interface ResolvedFunction {
   readonly memoryMB?: number;
   readonly runtime?: string;
   readonly schedule?: string;
-  readonly environment?: Record<string, string>;
+  readonly environment?: Readonly<Record<string, string>>;
   readonly escapeHatches: readonly EnvVarEscapeHatch[];
-  readonly dynamoActions: string[];
-  readonly kinesisActions: string[];
+  readonly dynamoActions: readonly string[];
+  readonly kinesisActions: readonly string[];
   readonly graphqlApiPermissions: { readonly hasMutation: boolean; readonly hasQuery: boolean };
 }
 
@@ -299,16 +300,17 @@ export class FunctionGenerator implements Generator {
   private async mergeFunctionDependencies(func: ResolvedFunction): Promise<void> {
     const packageJsonPath = path.join('amplify', 'backend', 'function', func.resourceName, 'src', 'package.json');
     try {
-      const content = await fs.readFile(packageJsonPath, 'utf-8');
-      const pkg = JSON.parse(content);
-      if (pkg.dependencies) {
+      const pkg = JSONUtilities.readJson<{ dependencies?: Record<string, string>; devDependencies?: Record<string, string> }>(
+        packageJsonPath,
+      );
+      if (pkg?.dependencies) {
         for (const [name, version] of Object.entries(pkg.dependencies)) {
-          this.packageJsonGenerator.addDependency(name, version as string);
+          this.packageJsonGenerator.addDependency(name, version);
         }
       }
-      if (pkg.devDependencies) {
+      if (pkg?.devDependencies) {
         for (const [name, version] of Object.entries(pkg.devDependencies)) {
-          this.packageJsonGenerator.addDevDependency(name, version as string);
+          this.packageJsonGenerator.addDevDependency(name, version);
         }
       }
     } catch (e) {

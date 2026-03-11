@@ -2,6 +2,7 @@ import path from 'node:path';
 import fs from 'node:fs/promises';
 import { Generator } from '../generator';
 import { AmplifyMigrationOperation } from '../../_operation';
+import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import { patchNpmPackageJson, PackageJson } from '../package-json-patch';
 
 /**
@@ -48,8 +49,10 @@ export class RootPackageJsonGenerator implements Generator {
 
           let packageJson: PackageJson = { name: defaultName };
           try {
-            const existing = await fs.readFile('./package.json', { encoding: 'utf-8' });
-            packageJson = JSON.parse(existing);
+            const existing = JSONUtilities.readJson<PackageJson>('./package.json');
+            if (existing) {
+              packageJson = existing;
+            }
           } catch {
             // File doesn't exist or is inaccessible. Use default.
           }

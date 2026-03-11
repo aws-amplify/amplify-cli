@@ -26,7 +26,7 @@ export interface DynamoDBTableDefinition {
   readonly tableName: string;
   readonly partitionKey: DynamoDBAttribute;
   readonly sortKey?: DynamoDBAttribute;
-  readonly gsis?: DynamoDBGSI[];
+  readonly gsis?: readonly DynamoDBGSI[];
   readonly billingMode?: 'PROVISIONED' | 'PAY_PER_REQUEST';
   readonly readCapacity?: number;
   readonly writeCapacity?: number;

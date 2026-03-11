@@ -1,7 +1,7 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import ts from 'typescript';
-import { pathManager } from '@aws-amplify/amplify-cli-core';
+import { pathManager, JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import { Generator } from '../../generator';
 import { AmplifyMigrationOperation } from '../../../_operation';
 import { BackendGenerator } from '../backend.generator';
@@ -101,14 +101,13 @@ export class CustomResourceGenerator implements Generator {
   private async mergeDependencies(sourceResourcePath: string): Promise<void> {
     const pkgJsonPath = path.join(sourceResourcePath, 'package.json');
     try {
-      const content = await fs.readFile(pkgJsonPath, 'utf-8');
-      const pkg = JSON.parse(content) as { dependencies?: Record<string, string>; devDependencies?: Record<string, string> };
-      if (pkg.dependencies) {
+      const pkg = JSONUtilities.readJson<{ dependencies?: Record<string, string>; devDependencies?: Record<string, string> }>(pkgJsonPath);
+      if (pkg?.dependencies) {
         for (const [name, version] of Object.entries(pkg.dependencies)) {
           this.packageJsonGenerator.addDependency(name, version);
         }
       }
-      if (pkg.devDependencies) {
+      if (pkg?.devDependencies) {
         for (const [name, version] of Object.entries(pkg.devDependencies)) {
           this.packageJsonGenerator.addDevDependency(name, version);
         }
@@ -262,8 +261,8 @@ async function renameCdkStack(destResourcePath: string): Promise<void> {
 async function readProjectName(rootDir: string): Promise<string | undefined> {
   try {
     const projectConfigPath = path.join(rootDir, AMPLIFY_DIR, '.config', 'project-config.json');
-    const projectConfig = JSON.parse(await fs.readFile(projectConfigPath, { encoding: 'utf-8' }));
-    return projectConfig.projectName;
+    const projectConfig = JSONUtilities.readJson<{ projectName?: string }>(projectConfigPath);
+    return projectConfig?.projectName;
   } catch (e) {
     throw new Error(`Failed to read project config: ${e}`);
   }
