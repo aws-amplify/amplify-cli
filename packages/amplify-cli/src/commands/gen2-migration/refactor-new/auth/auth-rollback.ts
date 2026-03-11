@@ -1,12 +1,10 @@
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
-import { CFNResource, CFNTemplate } from '../cfn-template';
+import { CFNResource } from '../cfn-template';
 import { RefactorOperation } from '../refactorer';
 import { ResolvedStack } from '../workflow/category-refactorer';
 import { RollbackCategoryRefactorer } from '../workflow/rollback-category-refactorer';
+import { discoverGen1AuthStacks } from './auth-utils';
 
-/**
- * Main auth resource types (excluding UserPoolGroup — those go to a separate Gen1 stack).
- */
 const MAIN_AUTH_RESOURCE_TYPES = [
   'AWS::Cognito::UserPool',
   'AWS::Cognito::UserPoolClient',
@@ -17,15 +15,10 @@ const MAIN_AUTH_RESOURCE_TYPES = [
 
 const USER_POOL_GROUP_RESOURCE_TYPE = 'AWS::Cognito::UserPoolGroup';
 
-/**
- * All auth resource types (used for resolveSource filtering).
- */
 const ALL_AUTH_RESOURCE_TYPES = [...MAIN_AUTH_RESOURCE_TYPES, USER_POOL_GROUP_RESOURCE_TYPE, 'AWS::IAM::Role'];
 
 const GEN2_NATIVE_APP_CLIENT = 'UserPoolNativeAppClient';
 const GEN2_AMPLIFY_AUTH_LOGICAL_ID_PREFIX = 'amplifyAuth';
-const GEN1_AUTH_STACK_TYPE_DESCRIPTION = 'auth-Cognito';
-const GEN1_USER_POOL_GROUPS_STACK_TYPE_DESCRIPTION = 'auth-Cognito-UserPool-Groups';
 
 /**
  * Known Gen1 logical resource IDs for main auth resource types.
@@ -41,10 +34,7 @@ const GEN1_AUTH_LOGICAL_IDS = new Map<string, string>([
 /**
  * Rollback refactorer for the auth category.
  *
- * Handles the reverse of the two-source-stack case: Gen2 (one stack) → Gen1 (two stacks).
- * Main auth resources go to Gen1 main auth stack. UserPoolGroup resources go to Gen1
- * UserPoolGroups stack (if it exists).
- *
+ * Handles one Gen2 source → two Gen1 destinations (main auth + UserPoolGroups).
  * Overrides plan() to handle one source stack mapping to multiple destinations.
  */
 export class AuthRollbackRefactorer extends RollbackCategoryRefactorer {
@@ -52,13 +42,9 @@ export class AuthRollbackRefactorer extends RollbackCategoryRefactorer {
     return ALL_AUTH_RESOURCE_TYPES;
   }
 
-  /**
-   * Overrides plan() to handle one Gen2 source → two Gen1 destinations.
-   */
   public override async plan(): Promise<RefactorOperation[]> {
-    // 1. Discover stacks
     const gen2StackId = await this.findNestedStack(this.gen2Branch, 'auth');
-    const { mainAuthStackId, userPoolGroupStackId } = await this.discoverGen1AuthStacks();
+    const { mainAuthStackId, userPoolGroupStackId } = await discoverGen1AuthStacks(this.gen1Env);
 
     if (!gen2StackId && !mainAuthStackId) return [];
     if (!gen2StackId || !mainAuthStackId) {
@@ -69,10 +55,9 @@ export class AuthRollbackRefactorer extends RollbackCategoryRefactorer {
       });
     }
 
-    // 2. Resolve Gen2 source (all auth resources)
     const source = await this.resolveSource(gen2StackId);
 
-    // 3. Split source resources into main auth and UserPoolGroup
+    // Split source resources into main auth and UserPoolGroup
     const mainAuthResources = new Map<string, CFNResource>();
     const userPoolGroupResources = new Map<string, CFNResource>();
     for (const [id, resource] of source.resourcesToMove) {
@@ -89,53 +74,49 @@ export class AuthRollbackRefactorer extends RollbackCategoryRefactorer {
       });
     }
 
-    // 4. Resolve Gen1 destinations
     const mainAuthTarget = await this.resolveTarget(mainAuthStackId);
     const userPoolGroupTarget = userPoolGroupStackId ? await this.resolveTarget(userPoolGroupStackId) : undefined;
 
-    // 5. Build rollback mappings
+    // First move: main auth resources from Gen2 → Gen1 main auth
     const mainAuthSource: ResolvedStack = { ...source, resourcesToMove: mainAuthResources };
     const mainAuthIdMap = this.buildMainAuthRollbackMappings(mainAuthResources);
-
-    // 6. Chain buildRefactorTemplates: second move uses Gen2 template from first
     const { finalSource: gen2AfterMainAuth, finalTarget: finalMainAuthDest } = this.buildRefactorTemplates(
       mainAuthSource,
       mainAuthTarget.resolvedTemplate,
       mainAuthIdMap,
     );
-
     const mainAuthMoveOps = this.buildMoveOperations(gen2StackId, mainAuthStackId, gen2AfterMainAuth, finalMainAuthDest, mainAuthIdMap);
 
-    // 7. UserPoolGroup move (if exists) — chains from gen2AfterMainAuth
+    // Second move: UserPoolGroup resources — uses gen2AfterMainAuth as starting point
+    let finalGen2 = gen2AfterMainAuth;
     const userPoolGroupOps: RefactorOperation[] = [];
     if (userPoolGroupStackId && userPoolGroupTarget && userPoolGroupResources.size > 0) {
-      const userPoolGroupSource: ResolvedStack = { ...source, resourcesToMove: userPoolGroupResources };
+      const userPoolGroupSource: ResolvedStack = {
+        ...source,
+        resolvedTemplate: gen2AfterMainAuth, // Post-first-move Gen2 template
+        resourcesToMove: userPoolGroupResources,
+      };
       const userPoolGroupIdMap = this.buildUserPoolGroupRollbackMappings(userPoolGroupResources);
-
       const { finalSource: gen2AfterBoth, finalTarget: finalUserPoolGroupDest } = this.buildRefactorTemplates(
         userPoolGroupSource,
         userPoolGroupTarget.resolvedTemplate,
         userPoolGroupIdMap,
       );
-
-      // Use gen2AfterBoth as the Gen2 source template (resources from both moves removed)
+      finalGen2 = gen2AfterBoth;
       userPoolGroupOps.push(
         ...this.buildMoveOperations(gen2StackId, userPoolGroupStackId, gen2AfterBoth, finalUserPoolGroupDest, userPoolGroupIdMap),
       );
     }
 
-    // 8. Assemble operations — no updateSource/updateTarget for rollback
+    // Assemble — no updateSource/updateTarget for rollback
     const ops: RefactorOperation[] = [];
     ops.push(...mainAuthMoveOps);
     ops.push(...userPoolGroupOps);
-    ops.push(
-      ...this.afterMovePlan({ source, target: mainAuthTarget, finalSource: gen2AfterMainAuth, finalTarget: finalMainAuthDest }).operations,
-    );
+    ops.push(...this.afterMovePlan({ source, target: mainAuthTarget, finalSource: finalGen2, finalTarget: finalMainAuthDest }).operations);
     return ops;
   }
 
-  // -- These are not used (plan() is overridden) but must be implemented --
-
+  // Required by abstract base but not used (plan() is overridden)
   protected async fetchSourceStackId(): Promise<string | undefined> {
     return this.findNestedStack(this.gen2Branch, 'auth');
   }
@@ -151,13 +132,8 @@ export class AuthRollbackRefactorer extends RollbackCategoryRefactorer {
     return this.buildMainAuthRollbackMappings(sourceResources);
   }
 
-  // -- Private helpers --
-
   /**
-   * Builds rollback mappings for main auth resources.
-   *
-   * UserPoolClient with NativeAppClient in the name → Gen1 'UserPoolClient'.
-   * Other types → known Gen1 logical ID from GEN1_AUTH_LOGICAL_IDS.
+   * Main auth rollback: NativeAppClient → 'UserPoolClient', others → known Gen1 logical ID.
    */
   private buildMainAuthRollbackMappings(resources: Map<string, CFNResource>): Map<string, string> {
     const mapping = new Map<string, string>();
@@ -178,10 +154,8 @@ export class AuthRollbackRefactorer extends RollbackCategoryRefactorer {
   }
 
   /**
-   * Builds rollback mappings for UserPoolGroup resources.
-   *
-   * Gen2 logical ID format: amplifyAuth<Gen1LogicalId><8-char CDK hash>
-   * Strip the prefix and hash to get the Gen1 logical ID.
+   * UserPoolGroup rollback: strip amplifyAuth prefix and 8-char CDK hash suffix.
+   * Gen2 format: amplifyAuth<Gen1LogicalId><8-char hash>
    */
   private buildUserPoolGroupRollbackMappings(resources: Map<string, CFNResource>): Map<string, string> {
     const mapping = new Map<string, string>();
@@ -192,53 +166,8 @@ export class AuthRollbackRefactorer extends RollbackCategoryRefactorer {
           message: `Cannot extract Gen1 logical ID from UserPoolGroup resource '${sourceId}' — unexpected format`,
         });
       }
-      // Strip 8-char CDK hash suffix
-      const gen1Id = suffix.slice(0, suffix.length - 8);
-      mapping.set(sourceId, gen1Id);
+      mapping.set(sourceId, suffix.slice(0, suffix.length - 8));
     }
     return mapping;
-  }
-
-  /**
-   * Discovers Gen1 auth stacks by parsing stack Description JSON.
-   */
-  private async discoverGen1AuthStacks(): Promise<{ mainAuthStackId?: string; userPoolGroupStackId?: string }> {
-    const nestedStacks = await this.gen1Env.fetchNestedStacks();
-    const authStacks = nestedStacks.filter((s) => s.LogicalResourceId?.startsWith('auth'));
-
-    let mainAuthStackId: string | undefined;
-    let userPoolGroupStackId: string | undefined;
-
-    for (const stack of authStacks) {
-      if (!stack.PhysicalResourceId) continue;
-      const authType = await this.classifyGen1AuthStack(stack.PhysicalResourceId);
-      if (authType === 'auth') {
-        mainAuthStackId = stack.PhysicalResourceId;
-      } else if (authType === 'auth-user-pool-group') {
-        userPoolGroupStackId = stack.PhysicalResourceId;
-      }
-    }
-
-    return { mainAuthStackId, userPoolGroupStackId };
-  }
-
-  /**
-   * Classifies a Gen1 auth stack by parsing its Description JSON metadata.
-   */
-  private async classifyGen1AuthStack(stackId: string): Promise<'auth' | 'auth-user-pool-group' | null> {
-    const description = await this.gen1Env.fetchStackDescription(stackId);
-    const stackDescription = description.Description;
-    if (!stackDescription) return null;
-
-    try {
-      const parsed = JSON.parse(stackDescription);
-      if (typeof parsed === 'object' && 'stackType' in parsed) {
-        if (parsed.stackType === GEN1_AUTH_STACK_TYPE_DESCRIPTION) return 'auth';
-        if (parsed.stackType === GEN1_USER_POOL_GROUPS_STACK_TYPE_DESCRIPTION) return 'auth-user-pool-group';
-      }
-    } catch {
-      // Description might not be valid JSON
-    }
-    return null;
   }
 }
