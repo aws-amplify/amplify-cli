@@ -18,6 +18,7 @@ _framework/
 ├── snapshot.ts         # Snapshot — comparison and updating
 ├── clients/            # Per-service AWS SDK mock implementations
 │   ├── amplify.ts
+│   ├── api-gateway.ts
 │   ├── appsync.ts
 │   ├── cloudformation.ts
 │   ├── cloudwatch-events.ts
@@ -80,6 +81,7 @@ reads and returns.
 | Mock                          | Source Files                                                                                           | What It Provides                                           |
 | ----------------------------- | ------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------- |
 | `AmplifyMock`                 | `amplify-meta.json`, `team-provider-info.json`                                                         | Backend environment info, app metadata, build spec         |
+| `APIGatewayMock`              | (none)                                                                                                 | Root resource ID for REST APIs (`{restApiId}-root`)        |
 | `AppSyncMock`                 | `amplify-meta.json`, `api/<name>/cli-inputs.json`                                                      | GraphQL API config, auth types, API listing                |
 | `CloudFormationMock`          | CloudFormation templates via `templatePathForStack()`                                                  | Stack resources with physical IDs, nested stack parameters |
 | `CloudWatchEventsMock`        | (none)                                                                                                 | Empty/default responses                                    |
