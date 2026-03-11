@@ -43,7 +43,7 @@ import {
   StandardAttributes,
 } from './auth.renderer';
 
-import { constFromBackend, assignProp, jsValue } from '../../ts-factory-utils';
+import { constFromBackend, assignProp } from '../../ts-factory-utils';
 
 const factory = ts.factory;
 
@@ -1024,7 +1024,7 @@ function getAuthDefinition({
 }
 
 // ── Backend.ts helper functions ────────────────────────────────────
-// Promoted to ts-factory-utils.ts: constFromBackend, assignProp, jsValue.
+// Promoted to ts-factory-utils.ts: constFromBackend, assignProp.
 // The aliases below keep the auth-generator call sites unchanged.
 const createConstFromBackendPath = (varName: string, propertyPath: string): ts.VariableStatement =>
   constFromBackend(varName, ...propertyPath.split('.'));
@@ -1034,5 +1034,3 @@ const createPropertyAssignment = (
   property: string,
   value: number | string | boolean | string[] | object | undefined,
 ): ts.ExpressionStatement => assignProp(varName, property, value);
-
-const getOverrideValue = jsValue;

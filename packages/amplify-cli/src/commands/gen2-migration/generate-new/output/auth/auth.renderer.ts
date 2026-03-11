@@ -759,7 +759,7 @@ export class AuthRenderer {
   ): ts.ObjectLiteralElementLike[] {
     const properties: ts.ObjectLiteralElementLike[] = [];
 
-    Object.entries(config).map(([key, value]) => {
+    Object.entries(config).forEach(([key, value]) => {
       if (key === 'scopes') {
         const scopeArray = value.split(' ').filter((scope) => scope.length > 0);
         properties.push(
@@ -781,7 +781,7 @@ export class AuthRenderer {
     if (attributeMapping) {
       const mappingProperties: ts.ObjectLiteralElementLike[] = [];
 
-      Object.entries(attributeMapping).map(([key, value]) =>
+      Object.entries(attributeMapping).forEach(([key, value]) =>
         mappingProperties.push(factory.createPropertyAssignment(factory.createIdentifier(key), factory.createStringLiteral(value))),
       );
 
