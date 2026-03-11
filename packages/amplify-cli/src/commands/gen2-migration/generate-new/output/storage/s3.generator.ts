@@ -51,7 +51,7 @@ export class S3Generator implements Generator {
   private readonly functionStorageAccess: Array<{
     readonly functionName: string;
     readonly category: string;
-    readonly permissions: Permission[];
+    readonly permissions: readonly Permission[];
   }> = [];
 
   public constructor(gen1App: Gen1App, backendGenerator: BackendGenerator, outputDir: string) {
@@ -65,7 +65,7 @@ export class S3Generator implements Generator {
    * Registers a function's S3 storage access permissions.
    * Called by FunctionGenerator before S3Generator.execute() runs.
    */
-  public addFunctionStorageAccess(functionName: string, category: string, permissions: Permission[]): void {
+  public addFunctionStorageAccess(functionName: string, category: string, permissions: readonly Permission[]): void {
     this.functionStorageAccess.push({ functionName, category, permissions });
   }
 

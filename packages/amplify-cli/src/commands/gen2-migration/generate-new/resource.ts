@@ -5,12 +5,12 @@ const factory = ts.factory;
  * Parameters for rendering a single-export resource.ts file.
  */
 export type ResourceTsParameters = {
-  readonly additionalImportedBackendIdentifiers?: Record<string, Set<string>>;
+  readonly additionalImportedBackendIdentifiers?: Readonly<Record<string, Set<string>>>;
   readonly backendFunctionConstruct: string;
   readonly functionCallParameter: ts.ObjectLiteralExpression;
   readonly exportedVariableName: ts.Identifier;
-  readonly postImportStatements?: ts.Node[];
-  readonly postExportStatements?: ts.Node[];
+  readonly postImportStatements?: readonly ts.Node[];
+  readonly postExportStatements?: readonly ts.Node[];
 };
 /**
  * Renders a resource.ts file with imports, a single exported const,

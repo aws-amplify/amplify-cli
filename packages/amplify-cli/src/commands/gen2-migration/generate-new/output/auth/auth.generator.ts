@@ -682,9 +682,9 @@ type AuthTriggerConnectionSourceMap = Partial<Record<keyof LambdaConfigType, str
 interface AuthSynthesizerOptions {
   readonly userPool: UserPoolType;
   readonly identityPoolName?: string;
-  readonly identityProviders?: ProviderDescription[];
-  readonly identityProvidersDetails?: IdentityProviderType[];
-  readonly identityGroups?: GroupType[];
+  readonly identityProviders?: readonly ProviderDescription[];
+  readonly identityProvidersDetails?: readonly IdentityProviderType[];
+  readonly identityGroups?: readonly GroupType[];
   readonly webClient?: UserPoolClientType;
   readonly authTriggerConnections?: AuthTriggerConnectionSourceMap;
   readonly referenceAuth?: ReferenceAuth;
@@ -811,7 +811,7 @@ function getCustomUserAttributes(signupAttributes: SchemaAttributeType[] | undef
   );
 }
 
-function getGroups(identityGroups?: GroupType[]): string[] {
+function getGroups(identityGroups?: readonly GroupType[]): string[] {
   if (!identityGroups || identityGroups.length === 0) {
     return [];
   }

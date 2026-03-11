@@ -25,13 +25,13 @@ export interface Lambda {
  * Access patterns for S3 storage.
  */
 export interface AccessPatterns {
-  readonly auth?: Permission[];
-  readonly guest?: Permission[];
-  readonly groups?: Record<string, Permission[]>;
+  readonly auth?: readonly Permission[];
+  readonly guest?: readonly Permission[];
+  readonly groups?: Readonly<Record<string, readonly Permission[]>>;
   readonly functions?: ReadonlyArray<{
     readonly functionName: string;
     readonly category: string;
-    readonly permissions: Permission[];
+    readonly permissions: readonly Permission[];
   }>;
 }
 
@@ -225,7 +225,7 @@ export class S3Renderer {
     return factory.createPropertyAssignment(factory.createIdentifier('access'), accessFunction);
   }
 
-  private createAllowPattern(allowIdentifier: ts.Identifier, userLevel: string, permissions: Permission[]): CallExpression {
+  private createAllowPattern(allowIdentifier: ts.Identifier, userLevel: string, permissions: readonly Permission[]): CallExpression {
     return factory.createCallExpression(
       factory.createPropertyAccessExpression(allowIdentifier, factory.createIdentifier(`${userLevel}.to`)),
       undefined,
@@ -233,7 +233,7 @@ export class S3Renderer {
     );
   }
 
-  private createResourcePattern(allowIdentifier: ts.Identifier, functionName: string, permissions: Permission[]): CallExpression {
+  private createResourcePattern(allowIdentifier: ts.Identifier, functionName: string, permissions: readonly Permission[]): CallExpression {
     return factory.createCallExpression(
       factory.createPropertyAccessExpression(
         factory.createCallExpression(
