@@ -140,7 +140,7 @@ describe('createUnifiedCategoryView', () => {
     `);
   });
 
-  it('shows template drift with per-resource changeset IDs', () => {
+  it('shows template drift with per-resource changeset IDs via fallback', () => {
     const phase1 = makePhase1();
     const nestedChangeSetId = 'arn:aws:cloudformation:us-east-1:123:changeSet/nested-api-cs/def';
     const phase2: TemplateDriftResults = {
@@ -149,18 +149,17 @@ describe('createUnifiedCategoryView', () => {
           LogicalResourceId: 'apiMyGraphQL',
           ResourceType: 'AWS::CloudFormation::Stack',
           Action: ChangeAction.Modify,
+          ChangeSetId: nestedChangeSetId,
           nestedChanges: [
             {
               LogicalResourceId: 'Schema',
               ResourceType: 'AWS::AppSync::GraphQLSchema',
               Action: ChangeAction.Modify,
-              ChangeSetId: nestedChangeSetId,
             },
             {
               LogicalResourceId: 'NewResolver',
               ResourceType: 'AWS::AppSync::Resolver',
               Action: ChangeAction.Add,
-              ChangeSetId: nestedChangeSetId,
             },
           ],
         },
@@ -366,6 +365,7 @@ describe('createUnifiedCategoryView', () => {
 
   it('flattens deeply nested template changes (3+ levels) to leaf resources', () => {
     const phase1 = makePhase1();
+    const outerChangeSetId = 'arn:aws:cloudformation:us-east-1:123:changeSet/outer-cs/abc';
     const deepChangeSetId = 'arn:aws:cloudformation:us-east-1:123:changeSet/deep-cs/ghi';
     const phase2: TemplateDriftResults = {
       changes: [
@@ -373,6 +373,7 @@ describe('createUnifiedCategoryView', () => {
           LogicalResourceId: 'apiMyGraphQL',
           ResourceType: 'AWS::CloudFormation::Stack',
           Action: ChangeAction.Modify,
+          ChangeSetId: outerChangeSetId,
           nestedChanges: [
             {
               LogicalResourceId: 'apiMyGraphQLGraphQLAPI',
@@ -384,7 +385,6 @@ describe('createUnifiedCategoryView', () => {
                   LogicalResourceId: 'Schema',
                   ResourceType: 'AWS::AppSync::GraphQLSchema',
                   Action: ChangeAction.Modify,
-                  ChangeSetId: deepChangeSetId,
                 },
               ],
             },

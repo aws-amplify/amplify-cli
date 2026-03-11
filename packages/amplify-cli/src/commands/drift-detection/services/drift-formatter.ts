@@ -123,7 +123,7 @@ function collectDriftBlocks(phase1: CloudFormationDriftResults, phase2: Template
             logicalId: change.LogicalResourceId || 'Unknown',
             type: 'template',
             templateChange: change,
-            changeSetId: change.ChangeSetId || fallbackChangeSetId || phase2.changeSetId,
+            changeSetId: change.ChangeSetId || fallbackChangeSetId,
           });
         }
       }

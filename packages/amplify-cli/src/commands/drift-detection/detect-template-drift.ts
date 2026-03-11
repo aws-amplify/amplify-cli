@@ -178,10 +178,7 @@ export async function detectTemplateDrift(stackName: string, print: Printer, cfn
       }
 
       const result = await analyzeChangeSet(cfn, changeSet, print);
-      // Capture the changeset ARN for console tracking
-      if (changeSet.ChangeSetId) {
-        result.changeSetId = changeSet.ChangeSetId;
-      }
+      result.changeSetId = changeSet.ChangeSetId;
       return result;
     } finally {
       try {
@@ -296,13 +293,8 @@ async function analyzeChangeSet(
           hasNestedSkipped = true;
         }
 
-        // Add nested changes to the current change, stamping each with this stack's changeset ID
+        // Add nested changes to the current change
         if (nestedResult.changes && nestedResult.changes.length > 0) {
-          for (const nested of nestedResult.changes) {
-            if (!nested.ChangeSetId) {
-              nested.ChangeSetId = rc.ChangeSetId;
-            }
-          }
           changeInfo.nestedChanges = nestedResult.changes;
           print.debug(`Processed ${nestedResult.changes.length} nested changes`);
         }
