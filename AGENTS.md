@@ -15,10 +15,9 @@ files relevant to the issue, and the docs files relevant to the issue, as well a
 When in doubt, ask the user clarifying questions. When you think you have enough context to implement the task, summarize it to the
 user and ask for confirmation before continuing.
 
-**Before changing code you MUST first reference the relevant docs/ files**. Documentation is organized under `docs/` in the
-same path as the code it references. For example
+**Before changing code you MUST first reference the relevant docs/ files**. Documentation is organized under `docs/` in the same path as the code it references. For example
 
-- `packages/amplify-cli/src/commands/drift.ts`: `docs/amplify-cli/drift.md`
+- `packages/amplify-cli/src/commands/drift.ts`: `docs/packages/amplify-cli/src/commands/drift.md`
 
 ### 2. Implementation Stage
 
@@ -37,7 +36,7 @@ Verify your changes by following these guidelines:
 - **Always** update the appropriate README or design document when you make a change that impacts the contents of these documents.
 - **Always** update the appropriate skill files when you make a change that impacts the contents of the skill (path to docs for example).
 - **Always** update the appropriate JSDoc strings in the code you change. Be concise.
-- Do not create additional markdown files in the repository unless you are instructed explicitly to.
+- **Always** update the .md files that correspond to the code files you touched. Create new .md files for new files.
 - Commit your changes in git using a well-formed commit message following the Conventional Commits format. The message must start
   with a type prefix (e.g., `feat:`, `fix:`, `docs:`, `refactor:`, `test:`, `chore:`) followed by a single sentence summary and no more
   than a few paragraphs explaining the change and your testing. After this explanation, place the prompt the user used to trigger this
