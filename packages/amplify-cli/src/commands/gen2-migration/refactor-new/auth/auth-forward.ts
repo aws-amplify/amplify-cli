@@ -15,7 +15,6 @@ const AUTH_RESOURCE_TYPES = [
   'AWS::Cognito::IdentityPoolRoleAttachment',
   'AWS::Cognito::UserPoolDomain',
   'AWS::Cognito::UserPoolGroup',
-  'AWS::IAM::Role',
 ];
 
 const GEN1_WEB_APP_CLIENT = 'UserPoolClientWeb';

@@ -30,18 +30,22 @@ export function resolveConditions(template: CFNTemplate, parameters: Parameter[]
     conditionValues.set(conditionKey, evaluateCondition(conditions, left, right, parameters, fnType));
   }
 
-  // Phase 2: Resolve Fn::If in the entire template using the tree walker.
-  // The walker produces a new tree, so we can safely mutate the result in Phase 3.
-  const resolved = walkCfnTree(template, (node) => {
-    if (CFNFunction.If in node) {
-      const ifCondition = node[CFNFunction.If] as [string, unknown, unknown];
-      const conditionName = ifCondition[0];
-      if (conditionValues.has(conditionName)) {
-        return conditionValues.get(conditionName) ? ifCondition[1] : ifCondition[2];
+  // Phase 2: Resolve Fn::If only at the top level of resource properties (matching old code scope).
+  // The old code does NOT recurse into nested objects — Fn::If inside Fn::Join etc. is left as-is.
+  const resolved = JSON.parse(JSON.stringify(template)) as CFNTemplate;
+  for (const [, resource] of Object.entries(resolved.Resources)) {
+    for (const [propName, propValue] of Object.entries(resource.Properties)) {
+      if (typeof propValue === 'object' && propValue !== null && !Array.isArray(propValue)) {
+        resource.Properties[propName] = resolveIfCondition(propValue, conditionValues);
+      } else if (Array.isArray(propValue)) {
+        for (let i = 0; i < propValue.length; i++) {
+          if (typeof propValue[i] === 'object' && propValue[i] !== null) {
+            propValue[i] = resolveIfCondition(propValue[i], conditionValues);
+          }
+        }
       }
     }
-    return undefined;
-  }) as CFNTemplate;
+  }
 
   // Phase 3: Remove resources with unmet conditions (mutates the walker's output, not the input)
   for (const [logicalId, resource] of Object.entries(resolved.Resources)) {
@@ -129,4 +133,20 @@ function evaluateCondition(
         message: `Unsupported condition function: ${fnType}`,
       });
   }
+}
+
+/**
+ * Resolves a top-level Fn::If in a property value object.
+ * Does NOT recurse — matches old code behavior.
+ */
+function resolveIfCondition(propValue: object, conditionValues: Map<string, boolean>): object {
+  const record = propValue as Record<string, unknown>;
+  if (CFNFunction.If in record) {
+    const ifCondition = record[CFNFunction.If] as [string, unknown, unknown];
+    const conditionName = ifCondition[0];
+    if (conditionValues.has(conditionName)) {
+      return (conditionValues.get(conditionName) ? ifCondition[1] : ifCondition[2]) as object;
+    }
+  }
+  return propValue;
 }

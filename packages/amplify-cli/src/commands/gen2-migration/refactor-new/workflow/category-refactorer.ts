@@ -5,7 +5,7 @@ import { RefactorOperation, Refactorer } from '../refactorer';
 import { AwsClients } from '../aws-clients';
 import { StackFacade } from '../stack-facade';
 import { tryUpdateStack } from '../cfn-stack-updater';
-import { tryRefactorStack } from '../cfn-stack-refactor-updater';
+import { tryRefactorStack, RefactorFailure } from '../cfn-stack-refactor-updater';
 import { extractStackNameFromId } from '../utils';
 
 export const MIGRATION_PLACEHOLDER_LOGICAL_ID = 'MigrationPlaceholder';
@@ -261,8 +261,9 @@ export abstract class CategoryRefactorer implements Refactorer {
             ResourceMappings: resourceMappings,
           });
           if (!result.success) {
+            const failure = result as RefactorFailure;
             throw new AmplifyError('StackStateError', {
-              message: `Stack refactor failed: ${result.reason} (status: ${result.status}, refactorId: ${result.stackRefactorId})`,
+              message: `Stack refactor failed: ${failure.reason} (status: ${failure.status}, refactorId: ${failure.stackRefactorId})`,
             });
           }
         },
@@ -280,12 +281,17 @@ export abstract class CategoryRefactorer implements Refactorer {
   }
 
   /**
-   * Adds a placeholder resource if all resources are being moved.
+   * Adds a placeholder resource if all resources in the original template are being moved.
    * CloudFormation requires at least one resource in a stack.
+   * Uses the original template's resource count (before resolution) to match old behavior.
    */
-  protected addPlaceholderIfNeeded(template: CFNTemplate, resourcesToMove: Map<string, CFNResource>): void {
-    if (Object.keys(template.Resources).length === resourcesToMove.size) {
-      template.Resources[MIGRATION_PLACEHOLDER_LOGICAL_ID] = PLACEHOLDER_RESOURCE;
+  protected addPlaceholderIfNeeded(
+    resolvedTemplate: CFNTemplate,
+    originalTemplate: CFNTemplate,
+    resourcesToMove: Map<string, CFNResource>,
+  ): void {
+    if (Object.keys(originalTemplate.Resources).length === resourcesToMove.size) {
+      resolvedTemplate.Resources[MIGRATION_PLACEHOLDER_LOGICAL_ID] = PLACEHOLDER_RESOURCE;
     }
   }
 

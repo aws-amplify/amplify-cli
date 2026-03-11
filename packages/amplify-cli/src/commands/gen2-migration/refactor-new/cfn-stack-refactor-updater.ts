@@ -19,14 +19,14 @@ const POLL_INTERVAL_MS = 12000;
 const COMPLETION_STATE = '_COMPLETE';
 const FAILED_STATE = '_FAILED';
 
-export type RefactorResult =
-  | { readonly success: true }
-  | {
-      readonly success: false;
-      readonly reason: string | undefined;
-      readonly stackRefactorId: string;
-      readonly status: StackRefactorStatus | StackRefactorExecutionStatus | undefined;
-    };
+export type RefactorResult = { readonly success: true } | RefactorFailure;
+
+export type RefactorFailure = {
+  readonly success: false;
+  readonly reason: string | undefined;
+  readonly stackRefactorId: string;
+  readonly status: StackRefactorStatus | StackRefactorExecutionStatus | undefined;
+};
 
 /**
  * Creates and executes a CloudFormation stack refactor operation.

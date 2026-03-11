@@ -2,10 +2,8 @@ import {
   DescribeStackResourcesCommand,
   DescribeStacksCommand,
   GetTemplateCommand,
-  ListStackResourcesCommand,
   Stack,
   StackResource,
-  StackResourceSummary,
 } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { AwsClients } from './aws-clients';
@@ -20,14 +18,14 @@ export class StackFacade {
   private readonly templateCache = new Map<string, Promise<CFNTemplate>>();
   private readonly descriptionCache = new Map<string, Promise<Stack>>();
   private readonly resourcesCache = new Map<string, Promise<StackResource[]>>();
-  private nestedStacksPromise: Promise<StackResourceSummary[]> | undefined;
+  private nestedStacksPromise: Promise<StackResource[]> | undefined;
 
   constructor(private readonly clients: AwsClients, public readonly rootStackName: string) {}
 
   /**
    * Lists nested stacks under the root stack. Cached on first call.
    */
-  public async fetchNestedStacks(): Promise<StackResourceSummary[]> {
+  public async fetchNestedStacks(): Promise<StackResource[]> {
     if (!this.nestedStacksPromise) {
       this.nestedStacksPromise = this.doFetchNestedStacks().catch((error) => {
         this.nestedStacksPromise = undefined;
@@ -86,15 +84,8 @@ export class StackFacade {
     return promise;
   }
 
-  private async doFetchNestedStacks(): Promise<StackResourceSummary[]> {
-    const stacks: StackResourceSummary[] = [];
-    let nextToken: string | undefined;
-    do {
-      const response = await this.clients.cfn.send(new ListStackResourcesCommand({ StackName: this.rootStackName, NextToken: nextToken }));
-      const nested = response.StackResourceSummaries?.filter((r) => r.ResourceType === 'AWS::CloudFormation::Stack') ?? [];
-      stacks.push(...nested);
-      nextToken = response.NextToken;
-    } while (nextToken);
-    return stacks;
+  private async doFetchNestedStacks(): Promise<StackResource[]> {
+    const response = await this.clients.cfn.send(new DescribeStackResourcesCommand({ StackName: this.rootStackName }));
+    return (response.StackResources ?? []).filter((r) => r.ResourceType === 'AWS::CloudFormation::Stack');
   }
 }

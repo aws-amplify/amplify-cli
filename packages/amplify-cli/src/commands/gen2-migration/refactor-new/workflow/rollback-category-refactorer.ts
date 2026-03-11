@@ -8,7 +8,7 @@ import { resolveDependencies } from '../resolvers/cfn-dependency-resolver';
 import { extractStackNameFromId } from '../utils';
 import { getHoldingStackName, findHoldingStack, deleteHoldingStack } from '../holding-stack';
 import { tryUpdateStack } from '../cfn-stack-updater';
-import { tryRefactorStack } from '../cfn-stack-refactor-updater';
+import { tryRefactorStack, RefactorFailure } from '../cfn-stack-refactor-updater';
 import { CategoryRefactorer, MIGRATION_PLACEHOLDER_LOGICAL_ID, ResolvedStack, ResourceMapping } from './category-refactorer';
 
 const PLACEHOLDER_RESOURCE: CFNResource = { Type: 'AWS::CloudFormation::WaitConditionHandle', Properties: {} };
@@ -168,8 +168,9 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
             ResourceMappings: restoreMappings,
           });
           if (!result.success) {
+            const failure = result as RefactorFailure;
             throw new AmplifyError('StackStateError', {
-              message: `Failed to restore Gen2 resources from holding stack: ${result.reason}`,
+              message: `Failed to restore Gen2 resources from holding stack: ${failure.reason}`,
             });
           }
 

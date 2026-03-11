@@ -8,7 +8,7 @@ import { resolveDependencies } from '../resolvers/cfn-dependency-resolver';
 import { resolveConditions } from '../resolvers/cfn-condition-resolver';
 import { extractStackNameFromId } from '../utils';
 import { getHoldingStackName, findHoldingStack, deleteHoldingStack } from '../holding-stack';
-import { tryRefactorStack } from '../cfn-stack-refactor-updater';
+import { tryRefactorStack, RefactorFailure } from '../cfn-stack-refactor-updater';
 import { CategoryRefactorer, MIGRATION_PLACEHOLDER_LOGICAL_ID, ResolvedStack, ResourceMapping } from './category-refactorer';
 
 /**
@@ -45,7 +45,7 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
 
     // Add placeholder if all resources are being moved
     const resourcesToMove = new Map(resourceIds.filter((id) => id in resolved.Resources).map((id) => [id, resolved.Resources[id]]));
-    this.addPlaceholderIfNeeded(resolved, resourcesToMove);
+    this.addPlaceholderIfNeeded(resolved, originalTemplate, resourcesToMove);
 
     // Handle OAuth if this category needs it
     const updatedParameters = await this.resolveOAuthParameters(parameters, outputs);
@@ -131,8 +131,9 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
             EnableStackCreation: true,
           });
           if (!result.success) {
+            const failure = result as RefactorFailure;
             throw new AmplifyError('StackStateError', {
-              message: `Failed to move Gen2 resources to holding stack: ${result.reason}`,
+              message: `Failed to move Gen2 resources to holding stack: ${failure.reason}`,
             });
           }
         },
