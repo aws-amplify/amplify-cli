@@ -15,7 +15,7 @@ Key methods:
 - `fetchCloudBackendDir()`, `readCloudBackendJson()`, `readCloudBackendFile()` — S3 cloud backend
 - `fetchFunctionNames()`, `fetchFunctionCategoryMap()` — derived from meta
 - `fetchAuthTriggerConnections()` — reads cli-inputs.json from cloud backend
-- `fetchRestApiConfigs()` — reads cli-inputs.json from local project
+- `fetchRestApiConfig(resourceName)` — reads cli-inputs.json from local project
 - `fetchGraphQLSchema(apiName)` — local project (single file or schema/ directory)
 - `fetchAllStackResources()`, `fetchResourcesByLogicalId()` — delegates to `AwsFetcher`
 

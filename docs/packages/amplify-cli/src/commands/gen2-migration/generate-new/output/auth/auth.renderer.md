@@ -13,7 +13,7 @@ Pure renderer that produces TypeScript AST for `auth/resource.ts`.
 - Groups
 - Function access patterns (manageUsers, manageGroups, etc.)
 
-Secret references for OAuth providers generate `secret('name')` calls and emit TODO comments when the secret value can't be resolved.
+Secret references for OAuth providers generate `secret('name')` calls.
 
 ## Relationship to Other Components
 
