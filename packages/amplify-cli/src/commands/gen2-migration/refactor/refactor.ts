@@ -98,8 +98,15 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
    * Kept until a custom resource refactorer is implemented.
    */
   private async executeLegacy(): Promise<AmplifyMigrationOperation[]> {
-    // Lazy import to avoid loading old code when not needed
-    const { TemplateGenerator } = await import('./generators/template-generator');
+    let TemplateGenerator;
+    try {
+      ({ TemplateGenerator } = await import('./generators/template-generator'));
+    } catch {
+      throw new AmplifyError('NotImplementedError', {
+        message: '--resourceMappings requires the legacy refactor code which has been removed',
+        resolution: 'A custom resource refactorer has not been implemented yet. Please remove the --resourceMappings flag.',
+      });
+    }
 
     return [
       {
