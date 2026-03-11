@@ -493,3 +493,209 @@ Test command:
 cd packages/amplify-cli
 npx jest --testPathPattern="command-handlers.test" --no-coverage
 ```
+
+## Session 7 — Interface Cleanup, Contribution Pattern, Error Handling
+
+### Session Overview
+
+Deep cleanup of the generate-new codebase: eliminated bloated
+interfaces, established the contribution pattern for cross-
+category data flow, fixed error handling violations, and
+simplified API surfaces.
+
+### Commits (8 total)
+
+1. **`a3089fd` — Restructure generate-new tests to mirror source tree**
+   Moved 10 test files from flat `generate-new/` into
+   subdirectories matching the source code structure
+   (`input/`, `output/`, `output/analytics/`, etc.). Updated
+   import paths. 2 files already in correct location stayed.
+
+2. **`4c85c88` — Replace FunctionDefinition with FunctionAuthInfo**
+   Replaced the 13-field `FunctionDefinition` interface (most
+   fields unused by the auth renderer) with a 2-field
+   `FunctionAuthInfo` (resourceName + authAccess, both
+   required). Merged `functions` into `AuthDefinition`,
+   eliminated `RenderDefineAuthOptions` wrapper. Simplified
+   `buildFunctionDefinitions` to stop making unnecessary
+   `fetchFunctionConfig` API calls. Removed dead imports
+   (`EnvironmentResponse`, `Runtime`, `extractFilePathFromHandler`)
+   and the always-default `functionCategories` parameter.
+
+3. **`f6672f5` — Move auth access parsing to FunctionGenerator**
+   Established the contribution pattern: `FunctionGenerator`
+   now parses its own CFN template for Cognito actions and
+   calls `authGenerator.addFunctionAuthAccess()`. Auth's
+   `execute()` reads accumulated functions at render time.
+   Removed `buildFunctionDefinitions()` and
+   `readAuthAccessFromCloudBackend()` from `AuthGenerator`.
+
+4. **`6053985` — Fix formatting in AGENTS.md and gen2-migration.md**
+   Doc path corrections, trailing whitespace, table alignment.
+
+5. **`535f357` — Move S3 access parsing to FunctionGenerator**
+   Applied same contribution pattern to S3: each
+   `FunctionGenerator` parses S3 actions from its CFN template
+   and calls `s3Generator.addFunctionStorageAccess()`. Removed
+   `extractFunctionS3Access()` from `S3Generator` and
+   `functionCategoryMap` from `RenderDefineStorageOptions`.
+   Function category contributed alongside permissions for
+   correct import path resolution.
+
+6. **`5cc2292` — Replace silent catch blocks with throws**
+   Fixed 12 silent catch blocks across 4 files
+   (function.generator.ts, aws-fetcher.ts,
+   custom.generator.ts, kinesis-cfn-converter.ts). Added
+   "Never use empty catch blocks to silence errors" guideline
+   to CODING_GUIDELINES.md.
+
+7. **`0678c30` — Make readCloudBackendFile throw, use JSONUtilities**
+   `readCloudBackendFile` and `readCloudBackendJson` now throw
+   on missing files. `readCloudBackendJson` uses
+   `JSONUtilities.readJson`. Removed all `if (!content) return`
+   guards at call sites. Replaced `JSON.parse` on cloud
+   backend content with `readCloudBackendJson`.
+
+8. **`d348fda` — Replace fetchRestApiConfigs with single-resource fetchRestApiConfig**
+   The old method accepted a category object, iterated all
+   entries, returned an array — but the only caller wrapped a
+   single resource and took `[0]`. Replaced with
+   `fetchRestApiConfig(resourceName)`. Uses
+   `JSONUtilities.readJson` for cli-inputs.json.
+
+### Patterns Established
+
+**Contribution pattern for cross-category data.** When
+generator A needs data that generator B owns, B contributes
+it to A via a public `addX()` method. A accumulates
+contributions and reads them at `execute()` time (not
+`plan()` time). This avoids ordering dependencies between
+generators. Applied to:
+
+- FunctionGenerator → AuthGenerator (auth access)
+- FunctionGenerator → S3Generator (storage access)
+
+**Interface properties must belong to the concept.** The
+`FunctionDefinition` interface had 13 fields but the auth
+renderer only read 2. Replaced with `FunctionAuthInfo`
+containing only what the consumer needs.
+
+**Wrapper interfaces are unnecessary when the inner type is
+the concept.** `RenderDefineAuthOptions` wrapped
+`AuthDefinition` + `functions` — but functions are part of
+auth config. Merged into `AuthDefinition`, renderer takes
+it directly.
+
+**readCloudBackendFile/Json must throw on missing files.**
+Deployed resources have files. Returning undefined hides
+bugs. Callers no longer need null guards.
+
+**Use JSONUtilities.readJson for JSON files.** It handles
+parse errors, BOM stripping, and existence checks. Don't
+manually `JSON.parse` + try/catch.
+
+**Silent catch blocks hide bugs.** Only valid when the
+operation is genuinely optional (file may not exist yet) or
+as a fallthrough to an alternative. All other catches must
+rethrow with context.
+
+**Single-resource APIs over batch-then-index.** If a method
+returns an array but the caller always takes `[0]`, the
+method should accept a resource name and return one result.
+
+### Violations Found and Fixed
+
+1. Bloated interfaces with unused fields
+2. Wrapper interfaces that add no value
+3. Cross-category data fetching (auth reading function
+   templates, S3 reading function templates)
+4. Silent catch blocks (12 instances across 4 files)
+5. Returning undefined for files that must exist
+6. Manual JSON.parse instead of JSONUtilities.readJson
+7. Batch API returning array when caller needs one item
+8. Tests in wrong directory (not mirroring source tree)
+
+### What I Got Right
+
+- Identified the contribution pattern as the right solution
+  for cross-category data flow
+- Correctly deferred reading accumulated functions to
+  execute() time to avoid ordering issues
+- Caught that functionCategoryMap was always returning the
+  default value in auth context
+- Comprehensive audit found all 12 silent catch violations
+
+### Where I Needed Steering
+
+- Initially pushed back on inlining AuthDefinition into
+  RenderDefineAuthOptions — user correctly pointed out the
+  separation was artificial
+- Tried to move auth after functions in generator array —
+  broke tests because mock framework depended on ordering.
+  Had to defer to execute() time instead.
+- Missed readCloudBackendFile returning undefined — user
+  had to point it out explicitly
+- Didn't use JSONUtilities.readJson until user pointed it
+  out — was manually catching JSON.parse errors
+- Didn't catch the fetchRestApiConfigs array pattern until
+  user pointed it out
+
+### Instructions for Next Session
+
+**READ THIS SECTION CAREFULLY BEFORE DOING ANYTHING.**
+
+The user wants you to do a thorough self-review of the entire
+`generate-new/` codebase looking for MORE occurrences of the
+patterns we fixed in this session. The user will not be
+available to help — you must find these autonomously.
+
+Patterns to search for (check EVERY file):
+
+1. **Bloated interfaces** — Any interface where the consumer
+   doesn't read all fields. Check every renderer's render
+   method: does it actually use every field in its options
+   interface?
+
+2. **Wrapper interfaces** — Any `RenderXOptions` that wraps
+   a definition + extras. Should the extras be part of the
+   definition?
+
+3. **Cross-category data fetching** — Any generator that
+   reads another category's files (CFN templates, cli-inputs,
+   meta entries). Should this use the contribution pattern?
+
+4. **Silent catch blocks** — `catch {}` or `catch { // skip }`
+   that swallow errors. Only valid for genuinely optional
+   operations.
+
+5. **Returning undefined for invariant data** — Methods that
+   return `undefined` when the data must exist (deployed
+   resources, meta entries for known resources).
+
+6. **Manual JSON.parse** — Should use `JSONUtilities.readJson`
+   or `readCloudBackendJson`. Don't catch parse errors
+   manually.
+
+7. **Batch APIs used for single items** — Methods returning
+   arrays when callers always take `[0]`.
+
+8. **functionCategoryMap threading** — Any remaining places
+   where a category map is passed through just for import
+   path resolution. Should the category be part of the
+   contributed data instead?
+
+9. **Dead imports** — Imports that are no longer used after
+   refactoring.
+
+10. **Missing readonly** — Interface properties and class
+    fields without `readonly`.
+
+11. **Missing visibility modifiers** — Class members without
+    explicit `public`/`private`/`protected`.
+
+12. **Single-line JSDoc on public members** — Must be
+    multi-line format.
+
+Run `npx jest --testPathPattern="generate-new/|generate\\.test"
+--no-coverage` from `packages/amplify-cli` after any changes.
+All 145 tests must pass.
