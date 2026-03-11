@@ -10,7 +10,6 @@ import fs from 'fs-extra';
  * Local drift detection results (Phase 3)
  */
 export interface LocalDriftResults {
-  totalDrifted: number;
   resourcesToBeCreated?: Array<ResourceInfo>;
   resourcesToBeUpdated?: Array<ResourceInfo>;
   resourcesToBeDeleted?: Array<ResourceInfo>;
@@ -30,16 +29,18 @@ export interface ResourceInfo {
   dependsOn?: Array<any>;
 }
 
-function isValidResourceInfo(resource: any): resource is ResourceInfo {
-  return (
-    typeof resource === 'object' &&
-    resource !== null &&
-    typeof resource.category === 'string' &&
-    typeof resource.resourceName === 'string' &&
-    typeof resource.service === 'string' &&
-    (resource.providerPlugin === undefined || typeof resource.providerPlugin === 'string') &&
-    (resource.dependsOn === undefined || Array.isArray(resource.dependsOn))
-  );
+function assertValidResourceInfo(resource: any): asserts resource is ResourceInfo {
+  if (
+    typeof resource !== 'object' ||
+    resource === null ||
+    typeof resource.category !== 'string' ||
+    typeof resource.resourceName !== 'string' ||
+    typeof resource.service !== 'string' ||
+    (resource.providerPlugin !== undefined && typeof resource.providerPlugin !== 'string') ||
+    (resource.dependsOn !== undefined && !Array.isArray(resource.dependsOn))
+  ) {
+    throw new Error(`Invalid ResourceInfo: ${JSON.stringify(resource)}`);
+  }
 }
 
 /**
@@ -57,7 +58,6 @@ export async function detectLocalDrift(context: $TSContext): Promise<LocalDriftR
     // Check if project is initialized first
     if (!stateManager.metaFileExists()) {
       return {
-        totalDrifted: 0,
         skipped: true,
         skipReason: 'Project not initialized',
       };
@@ -67,7 +67,6 @@ export async function detectLocalDrift(context: $TSContext): Promise<LocalDriftR
     const currentCloudBackendDir = pathManager.getCurrentCloudBackendDirPath();
     if (!currentCloudBackendDir || !fs.existsSync(currentCloudBackendDir)) {
       return {
-        totalDrifted: 0,
         skipped: true,
         skipReason: 'No cloud backend found - project may not be deployed yet',
       };
@@ -79,16 +78,12 @@ export async function detectLocalDrift(context: $TSContext): Promise<LocalDriftR
     const { getResourceStatus } = require('../../extensions/amplify-helpers/resource-status-data');
     const statusResults = await getResourceStatus();
 
-    const resourcesToBeCreated = statusResults.resourcesToBeCreated.filter(isValidResourceInfo);
-    const resourcesToBeUpdated = statusResults.resourcesToBeUpdated.filter(isValidResourceInfo);
-    const resourcesToBeDeleted = statusResults.resourcesToBeDeleted.filter(isValidResourceInfo);
-    const resourcesToBeSynced = statusResults.resourcesToBeSynced.filter(isValidResourceInfo);
-
-    // Calculate total drift
-    const totalDrifted = resourcesToBeCreated.length + resourcesToBeUpdated.length + resourcesToBeDeleted.length;
+    const { resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeDeleted, resourcesToBeSynced } = statusResults;
+    for (const arr of [resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeDeleted, resourcesToBeSynced]) {
+      arr.forEach(assertValidResourceInfo);
+    }
 
     return {
-      totalDrifted,
       resourcesToBeCreated,
       resourcesToBeUpdated,
       resourcesToBeDeleted,
@@ -98,7 +93,6 @@ export async function detectLocalDrift(context: $TSContext): Promise<LocalDriftR
   } catch (error: any) {
     // Handle errors gracefully
     return {
-      totalDrifted: 0,
       skipped: true,
       skipReason: error.message || 'Unable to detect local drift',
     };

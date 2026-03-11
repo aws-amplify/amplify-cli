@@ -18,7 +18,6 @@ export interface ResourceChangeWithNested extends ResourceChange {
 }
 
 export interface TemplateDriftResults {
-  totalDrifted: number;
   changes: ResourceChangeWithNested[];
   skipped: boolean;
   skipReason?: string;
@@ -62,7 +61,6 @@ export async function detectTemplateDrift(stackName: string, print: Printer, cfn
     print.debug(`Checking for #current-cloud-backend at: ${currentCloudBackendPath}`);
     if (!fs.existsSync(currentCloudBackendPath)) {
       return {
-        totalDrifted: 0,
         changes: [],
         skipped: true,
         skipReason: 'No #current-cloud-backend found. Run "amplify pull" first.',
@@ -75,7 +73,6 @@ export async function detectTemplateDrift(stackName: string, print: Printer, cfn
 
     if (!fs.existsSync(templatePath)) {
       return {
-        totalDrifted: 0,
         changes: [],
         skipped: true,
         skipReason: 'No cached CloudFormation template found',
@@ -94,7 +91,6 @@ export async function detectTemplateDrift(stackName: string, print: Printer, cfn
 
     if (!stackDescription.Stacks || stackDescription.Stacks.length === 0) {
       return {
-        totalDrifted: 0,
         changes: [],
         skipped: true,
         skipReason: `Stack ${stackName} not found in CloudFormation`,
@@ -149,7 +145,6 @@ export async function detectTemplateDrift(stackName: string, print: Printer, cfn
       if (changeSet.Status === 'FAILED' && changeSet.StatusReason?.includes("didn't contain changes")) {
         print.debug('✓ Changeset status: No changes detected (no drift)');
         return {
-          totalDrifted: 0,
           changes: [],
           skipped: false,
         };
@@ -205,7 +200,6 @@ export async function detectTemplateDrift(stackName: string, print: Printer, cfn
     }
   } catch (error: any) {
     return {
-      totalDrifted: 0,
       changes: [],
       skipped: true,
       skipReason: `Error during template drift detection: ${error.message}`,
@@ -219,7 +213,6 @@ async function analyzeChangeSet(
   print: Printer,
 ): Promise<TemplateDriftResults> {
   const result: TemplateDriftResults = {
-    totalDrifted: 0,
     changes: [],
     skipped: false,
   };
@@ -238,7 +231,6 @@ async function analyzeChangeSet(
     // Other FAILED reasons are actual errors - mark as skipped
     print.warn(`ChangeSet failed with unexpected reason: ${changeSet.StatusReason || 'No reason provided'}`);
     return {
-      totalDrifted: 0,
       changes: [],
       skipped: true,
       skipReason: `Changeset failed: ${changeSet.StatusReason || 'Unknown reason'}`,
@@ -304,8 +296,13 @@ async function analyzeChangeSet(
           hasNestedSkipped = true;
         }
 
-        // Add nested changes to the current change
+        // Add nested changes to the current change, stamping each with this stack's changeset ID
         if (nestedResult.changes && nestedResult.changes.length > 0) {
+          for (const nested of nestedResult.changes) {
+            if (!nested.ChangeSetId) {
+              nested.ChangeSetId = rc.ChangeSetId;
+            }
+          }
           changeInfo.nestedChanges = nestedResult.changes;
           print.debug(`Processed ${nestedResult.changes.length} nested changes`);
         }
@@ -324,14 +321,11 @@ async function analyzeChangeSet(
   // If any nested stack analysis was skipped, mark entire result as skipped
   if (hasNestedSkipped) {
     return {
-      totalDrifted: 0,
       changes: [],
       skipped: true,
       skipReason: 'One or more nested stacks could not be analyzed',
     };
   }
 
-  // Set totalDrifted to the count of changes
-  result.totalDrifted = result.changes.length;
   return result;
 }
