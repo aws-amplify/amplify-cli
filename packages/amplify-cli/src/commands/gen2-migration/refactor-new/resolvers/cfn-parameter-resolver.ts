@@ -15,8 +15,7 @@ import { walkCfnTree } from './cfn-tree-walker';
 export function resolveParameters(template: CFNTemplate, parameters: Parameter[], stackName?: string): CFNTemplate {
   if (!parameters.length && !stackName) return template;
 
-  const cloned = JSON.parse(JSON.stringify(template)) as CFNTemplate;
-  const templateParams = cloned.Parameters ?? {};
+  const templateParams = template.Parameters ?? {};
 
   // Build a lookup of parameter key → resolved value.
   // The resolved value is already the final replacement (string, array, etc.).
@@ -44,9 +43,9 @@ export function resolveParameters(template: CFNTemplate, parameters: Parameter[]
     paramMap.set(ParameterKey, resolved);
   }
 
-  if (paramMap.size === 0) return cloned;
+  if (paramMap.size === 0) return template;
 
-  return walkCfnTree(cloned, (node) => {
+  return walkCfnTree(template, (node) => {
     if ('Ref' in node && typeof node.Ref === 'string' && Object.keys(node).length === 1) {
       const value = paramMap.get(node.Ref);
       if (value !== undefined) return value;

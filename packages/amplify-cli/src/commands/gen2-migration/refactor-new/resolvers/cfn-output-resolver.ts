@@ -32,26 +32,28 @@ export function resolveOutputs(
     });
   }
 
-  // Build lookup: outputKey → { logicalResourceId, stackOutputValue, outputValueShape }
-  const outputLookup = buildOutputLookup(templateOutputs, stackOutputs);
+  // Build separate lookups for Ref-based and GetAtt-based outputs.
+  // A single resource can appear in both (e.g., UserPool has Ref → pool ID, GetAtt → ARN).
+  // Conflating them into one map would overwrite the Ref value with the GetAtt value.
+  const { refLookup, getAttLookup } = buildOutputLookup(templateOutputs, stackOutputs);
 
   // Phase 1: Resolve Ref/GetAtt in Resources using stack outputs
   cloned.Resources = walkCfnTree(templateResources, (node) => {
-    // {"Ref": "LogicalId"} → replace with stack output value
+    // {"Ref": "LogicalId"} → replace with stack output value from Ref-based outputs
     if ('Ref' in node && typeof node.Ref === 'string' && Object.keys(node).length === 1) {
-      const entry = outputLookup.get(node.Ref);
-      if (entry) return entry.stackOutputValue;
+      const value = refLookup.get(node.Ref);
+      if (value !== undefined) return value;
     }
 
-    // {"Fn::GetAtt": ["LogicalId", "AttrName"]} → resolve via ARN builder
+    // {"Fn::GetAtt": ["LogicalId", "AttrName"]} → resolve via GetAtt-based outputs + ARN builder
     if ('Fn::GetAtt' in node && Array.isArray(node['Fn::GetAtt']) && Object.keys(node).length === 1) {
       const [logicalId, attrName] = node['Fn::GetAtt'] as [string, string];
       if (typeof logicalId === 'string' && typeof attrName === 'string') {
-        const entry = outputLookup.get(logicalId);
-        if (entry && attrName === 'Arn') {
+        const outputValue = getAttLookup.get(logicalId);
+        if (outputValue !== undefined && attrName === 'Arn') {
           const resourceType = templateResources[logicalId]?.Type;
           if (resourceType) {
-            const arn = buildArn(resourceType, entry.stackOutputValue, region, accountId);
+            const arn = buildArn(resourceType, outputValue, region, accountId);
             if (arn) return arn;
           }
         }
@@ -111,14 +113,15 @@ export function resolveOutputs(
 }
 
 /**
- * Builds a lookup from logical resource ID → stack output value,
- * derived from the template's Outputs section.
+ * Builds separate lookups for Ref-based and GetAtt-based outputs.
+ * A single resource can have both (e.g., UserPool: Ref → pool ID, GetAtt → ARN).
  */
 function buildOutputLookup(
   templateOutputs: Record<string, { Value: string | object }>,
   stackOutputs: Output[],
-): Map<string, { stackOutputValue: string }> {
-  const lookup = new Map<string, { stackOutputValue: string }>();
+): { refLookup: Map<string, string>; getAttLookup: Map<string, string> } {
+  const refLookup = new Map<string, string>();
+  const getAttLookup = new Map<string, string>();
 
   for (const [outputKey, outputDef] of Object.entries(templateOutputs)) {
     const value = outputDef.Value;
@@ -128,20 +131,15 @@ function buildOutputLookup(
     if (!runtimeOutput?.OutputValue) continue;
 
     const record = value as Record<string, unknown>;
-    let logicalId: string | undefined;
 
     if ('Ref' in record && typeof record.Ref === 'string') {
-      logicalId = record.Ref;
+      refLookup.set(record.Ref, runtimeOutput.OutputValue);
     } else if ('Fn::GetAtt' in record && Array.isArray(record['Fn::GetAtt'])) {
-      logicalId = record['Fn::GetAtt'][0] as string;
-    }
-
-    if (logicalId) {
-      lookup.set(logicalId, { stackOutputValue: runtimeOutput.OutputValue });
+      getAttLookup.set(record['Fn::GetAtt'][0] as string, runtimeOutput.OutputValue);
     }
   }
 
-  return lookup;
+  return { refLookup, getAttLookup };
 }
 
 /**

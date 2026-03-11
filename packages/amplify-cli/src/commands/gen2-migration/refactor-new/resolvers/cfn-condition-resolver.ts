@@ -19,8 +19,6 @@ export function resolveConditions(template: CFNTemplate, parameters: Parameter[]
   const conditions = template.Conditions;
   if (!conditions || Object.keys(conditions).length === 0) return template;
 
-  const cloned = JSON.parse(JSON.stringify(template)) as CFNTemplate;
-
   // Phase 1: Evaluate all conditions
   const conditionValues = new Map<string, boolean>();
   for (const [conditionKey, conditionDef] of Object.entries(conditions)) {
@@ -32,16 +30,9 @@ export function resolveConditions(template: CFNTemplate, parameters: Parameter[]
     conditionValues.set(conditionKey, evaluateCondition(conditions, left, right, parameters, fnType));
   }
 
-  // Phase 2: Remove resources with unmet conditions
-  for (const [logicalId, resource] of Object.entries(cloned.Resources)) {
-    const condition = resource.Condition;
-    if (condition && conditionValues.has(condition) && !conditionValues.get(condition)) {
-      delete cloned.Resources[logicalId];
-    }
-  }
-
-  // Phase 3: Resolve Fn::If in the entire template using the tree walker
-  const resolved = walkCfnTree(cloned, (node) => {
+  // Phase 2: Resolve Fn::If in the entire template using the tree walker.
+  // The walker produces a new tree, so we can safely mutate the result in Phase 3.
+  const resolved = walkCfnTree(template, (node) => {
     if (CFNFunction.If in node) {
       const ifCondition = node[CFNFunction.If] as [string, unknown, unknown];
       const conditionName = ifCondition[0];
@@ -51,6 +42,14 @@ export function resolveConditions(template: CFNTemplate, parameters: Parameter[]
     }
     return undefined;
   }) as CFNTemplate;
+
+  // Phase 3: Remove resources with unmet conditions (mutates the walker's output, not the input)
+  for (const [logicalId, resource] of Object.entries(resolved.Resources)) {
+    const condition = resource.Condition;
+    if (condition && conditionValues.has(condition) && !conditionValues.get(condition)) {
+      delete resolved.Resources[logicalId];
+    }
+  }
 
   return resolved;
 }
