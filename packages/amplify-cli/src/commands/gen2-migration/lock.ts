@@ -91,7 +91,7 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
           for (const apiStackId of apiStackIds) {
             await this.setDeletionPolicyRetainOnDynamoTables(apiStackId);
           }
-          this.logger.info('Set DeletionPolicy to Retain for DynamoDB tables');
+          this.logger.info('Successfully set DeletionPolicy to Retain for DynamoDB tables');
         },
       });
     }
@@ -283,27 +283,23 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
       const template = JSON.parse(templateResponse.TemplateBody);
       const resources = template.Resources;
 
-      let modified = false;
       for (const logicalId of Object.keys(resources)) {
         const resource = resources[logicalId];
         if (resource.Type === 'AWS::DynamoDB::Table' && resource.DeletionPolicy !== 'Retain') {
           resource.DeletionPolicy = 'Retain';
-          this.logger.info(`Set DeletionPolicy to Retain for '${logicalId}' in stack ${modelStackId}`);
-          modified = true;
+          this.logger.info(`Set DeletionPolicy to Retain for table '${logicalId}'`);
+
+          // Pass existing parameters through unchanged
+          const describeResponse = await this.cfnClient().send(new DescribeStacksCommand({ StackName: modelStackId }));
+          const parameters = (describeResponse.Stacks?.[0]?.Parameters ?? []).map((p) => ({
+            ParameterKey: p.ParameterKey,
+            UsePreviousValue: true,
+          }));
+
+          this.logger.info(`Updating DeletionPolicy for table '${logicalId}'...`);
+          await tryUpdateStack(this.cfnClient(), modelStackId, parameters, template);
+          this.logger.info(`Successfully updated DeletionPolicy for table '${logicalId}'`);
         }
-      }
-
-      if (modified) {
-        // Pass existing parameters through unchanged
-        const describeResponse = await this.cfnClient().send(new DescribeStacksCommand({ StackName: modelStackId }));
-        const parameters = (describeResponse.Stacks?.[0]?.Parameters ?? []).map((p) => ({
-          ParameterKey: p.ParameterKey,
-          UsePreviousValue: true,
-        }));
-
-        this.logger.info(`Updating stack ${modelStackId} with DeletionPolicy changes...`);
-        await tryUpdateStack(this.cfnClient(), modelStackId, parameters, template);
-        this.logger.info(`Successfully updated stack ${modelStackId}`);
       }
     }
   }
