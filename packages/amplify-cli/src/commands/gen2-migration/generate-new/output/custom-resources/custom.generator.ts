@@ -113,8 +113,8 @@ export class CustomResourceGenerator implements Generator {
           this.packageJsonGenerator.addDevDependency(name, version);
         }
       }
-    } catch {
-      // package.json may not exist
+    } catch (e) {
+      throw new Error(`Failed to read package.json for custom resource '${this.resourceName}': ${e}`);
     }
   }
 
@@ -154,8 +154,8 @@ async function extractClassName(sourceResourcePath: string): Promise<string | un
   try {
     const content = await fs.readFile(cdkStackFilePath, { encoding: 'utf-8' });
     return content.match(/export class (\w+)/)?.[1];
-  } catch {
-    return undefined;
+  } catch (e) {
+    throw new Error(`Failed to read cdk-stack.ts for custom resource '${sourceResourcePath}': ${e}`);
   }
 }
 
@@ -181,8 +181,8 @@ async function extractDependencies(sourceResourcePath: string): Promise<string[]
     }
 
     return dependencies;
-  } catch {
-    return [];
+  } catch (e) {
+    throw new Error(`Failed to read dependencies for custom resource '${sourceResourcePath}': ${e}`);
   }
 }
 
@@ -251,8 +251,8 @@ async function renameCdkStack(destResourcePath: string): Promise<void> {
   const resourceFilePath = path.join(destResourcePath, 'resource.ts');
   try {
     await fs.rename(cdkStackPath, resourceFilePath);
-  } catch {
-    // cdk-stack.ts doesn't exist
+  } catch (e) {
+    throw new Error(`Failed to rename cdk-stack.ts to resource.ts for custom resource: ${e}`);
   }
 }
 
@@ -264,7 +264,7 @@ async function readProjectName(rootDir: string): Promise<string | undefined> {
     const projectConfigPath = path.join(rootDir, AMPLIFY_DIR, '.config', 'project-config.json');
     const projectConfig = JSON.parse(await fs.readFile(projectConfigPath, { encoding: 'utf-8' }));
     return projectConfig.projectName;
-  } catch {
-    return undefined;
+  } catch (e) {
+    throw new Error(`Failed to read project config: ${e}`);
   }
 }

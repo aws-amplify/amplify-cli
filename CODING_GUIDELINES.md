@@ -349,6 +349,39 @@ const response = await client.send(new GetGraphqlApiCommand({ apiId }));
 
 ---
 
+### Never use empty catch blocks to silence errors
+
+An empty `catch {}` or `catch { // skip }` hides bugs. If an operation fails, the code continues with stale or missing data, and the actual failure surfaces much later — or never — making it nearly impossible to diagnose.
+
+The test: if the catch block runs, does the code after it still produce correct results? If the answer is "no" or "I'm not sure," the catch is hiding a bug.
+
+```typescript
+// Bad — template parse failure is silently swallowed
+try {
+  const template = JSON.parse(content);
+  // ... extract permissions from template
+} catch {
+  // Template parse error — skip
+}
+
+// Good — fail fast with context
+try {
+  const template = JSON.parse(content);
+  // ... extract permissions from template
+} catch (e) {
+  throw new Error(`Failed to parse CloudFormation template for '${resourceName}': ${e}`);
+}
+```
+
+There are exactly two cases where catching and continuing is valid:
+
+1. **The operation is genuinely optional** — e.g., reading a `.gitignore` that may not exist yet, or removing a build artifact that may already be gone. The code after the catch produces correct results regardless.
+2. **The catch is a fallthrough to an alternative** — e.g., trying to read a schema directory, and on failure falling through to read a single schema file.
+
+In both cases, add a comment explaining _why_ the failure is expected and harmless. If you can't write that comment convincingly, the catch is hiding a bug.
+
+---
+
 ## Control Flow & Logic
 
 ### Don't branch on the same condition multiple times

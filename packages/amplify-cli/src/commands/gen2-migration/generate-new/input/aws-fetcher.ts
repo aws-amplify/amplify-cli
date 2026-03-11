@@ -256,8 +256,8 @@ export class AwsFetcher {
       const config = result.Configuration ?? undefined;
       if (config) this.cachedFunctionConfigs.set(deployedName, config);
       return config;
-    } catch {
-      return undefined;
+    } catch (e) {
+      throw new Error(`Failed to fetch Lambda function config for '${deployedName}': ${e}`);
     }
   }
 
@@ -265,18 +265,24 @@ export class AwsFetcher {
    * Fetches the CloudWatch schedule expression for a Lambda function.
    */
   public async fetchFunctionSchedule(deployedName: string): Promise<string | undefined> {
+    let ruleName: string | undefined;
     try {
       const policyResponse = await this.clients.lambda.send(new GetPolicyCommand({ FunctionName: deployedName }));
       const policy = JSON.parse(policyResponse.Policy ?? '{}');
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const ruleName = policy.Statement?.find((s: any) => s.Condition?.ArnLike?.['AWS:SourceArn']?.includes('rule/'))
+      ruleName = policy.Statement?.find((s: any) => s.Condition?.ArnLike?.['AWS:SourceArn']?.includes('rule/'))
         ?.Condition.ArnLike['AWS:SourceArn'].split('/')
         .pop();
-      if (!ruleName) return undefined;
+    } catch {
+      // No resource-based policy — function has no schedule trigger.
+      return undefined;
+    }
+    if (!ruleName) return undefined;
+    try {
       const ruleResponse = await this.clients.cloudWatchEvents.send(new DescribeRuleCommand({ Name: ruleName }));
       return ruleResponse.ScheduleExpression;
-    } catch {
-      return undefined;
+    } catch (e) {
+      throw new Error(`Failed to fetch CloudWatch schedule rule '${ruleName}' for function '${deployedName}': ${e}`);
     }
   }
 

@@ -147,7 +147,7 @@ export class KinesisCfnConverter {
    * Gets the physical stack name for a nested stack by looking up its
    * physical resource ID from the root stack.
    *
-   * Returns undefined if the CFN client is unavailable or the lookup fails.
+   * Returns undefined if the CFN client is unavailable.
    */
   private async getNestedStackPhysicalName(logicalId: string): Promise<string | undefined> {
     if (!this.cfnClient || !this.rootStackName) {
@@ -163,9 +163,8 @@ export class KinesisCfnConverter {
       );
 
       return describeResourcesResponse.StackResources?.[0]?.PhysicalResourceId;
-    } catch {
-      // SDK errors are non-fatal — callers handle the undefined return.
-      return undefined;
+    } catch (e) {
+      throw new Error(`Failed to describe CloudFormation stack resources: ${e}`);
     }
   }
 
@@ -173,7 +172,7 @@ export class KinesisCfnConverter {
    * Gets the parameters for a nested stack by resolving its physical
    * resource ID from the root stack and then describing that stack.
    *
-   * Returns an empty array if the CFN client is unavailable or the lookup fails.
+   * Returns an empty array if the CFN client is unavailable.
    */
   private async getNestedStackParameters(logicalId: string): Promise<Parameter[]> {
     if (!this.cfnClient || !this.rootStackName) {
@@ -193,16 +192,15 @@ export class KinesisCfnConverter {
       );
 
       return describeStacksResponse.Stacks?.[0]?.Parameters ?? [];
-    } catch {
-      // SDK errors are non-fatal — callers handle the empty return.
-      return [];
+    } catch (e) {
+      throw new Error(`Failed to describe CloudFormation stack resources: ${e}`);
     }
   }
 
   /**
    * Gets the physical resource ID of a resource within a nested stack.
    *
-   * Returns undefined if the CFN client is unavailable or the lookup fails.
+   * Returns undefined if the CFN client is unavailable.
    */
   private async getNestedStackResourcePhysicalId(nestedStackLogicalId: string, resourceLogicalId: string): Promise<string | undefined> {
     if (!this.cfnClient || !this.rootStackName) {
@@ -223,9 +221,8 @@ export class KinesisCfnConverter {
       );
 
       return describeResourcesResponse.StackResources?.[0]?.PhysicalResourceId;
-    } catch {
-      // SDK errors are non-fatal — callers handle the undefined return.
-      return undefined;
+    } catch (e) {
+      throw new Error(`Failed to describe CloudFormation stack resources: ${e}`);
     }
   }
 

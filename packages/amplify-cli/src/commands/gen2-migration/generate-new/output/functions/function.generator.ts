@@ -273,8 +273,8 @@ export class FunctionGenerator implements Generator {
       if (permissions.size > 0) {
         this.s3Generator.addFunctionStorageAccess(this.resourceName, category, Array.from(permissions));
       }
-    } catch {
-      // Template parse error — skip
+    } catch (e) {
+      throw new Error(`Failed to parse CloudFormation template for function '${this.resourceName}': ${e}`);
     }
   }
 
@@ -295,8 +295,8 @@ export class FunctionGenerator implements Generator {
           );
         },
       });
-    } catch {
-      // Source directory may not exist for some functions
+    } catch (e) {
+      throw new Error(`Failed to copy source files for function '${this.resourceName}': ${e}`);
     }
   }
 
@@ -318,8 +318,8 @@ export class FunctionGenerator implements Generator {
           this.packageJsonGenerator.addDevDependency(name, version as string);
         }
       }
-    } catch {
-      // No package.json for this function
+    } catch (e) {
+      throw new Error(`Failed to read package.json for function '${this.resourceName}': ${e}`);
     }
   }
 
@@ -519,8 +519,8 @@ export class FunctionGenerator implements Generator {
       }
 
       return { dynamoActions, kinesisActions, graphqlApiPermissions: { hasMutation, hasQuery } };
-    } catch {
-      return { dynamoActions: [], kinesisActions: [], graphqlApiPermissions: { hasMutation: false, hasQuery: false } };
+    } catch (e) {
+      throw new Error(`Failed to parse CloudFormation template for function '${this.resourceName}': ${e}`);
     }
   }
 
