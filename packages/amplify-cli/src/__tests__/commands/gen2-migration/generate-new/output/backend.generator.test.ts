@@ -2,7 +2,7 @@ import ts from 'typescript';
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import os from 'node:os';
-import { BackendGenerator } from '../../../../commands/gen2-migration/generate-new/output/backend.generator';
+import { BackendGenerator } from '../../../../../commands/gen2-migration/generate-new/output/backend.generator';
 
 jest.unmock('fs-extra');
 

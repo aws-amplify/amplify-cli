@@ -1,4 +1,4 @@
-import { parseAuthAccessFromTemplate } from '../../../../commands/gen2-migration/generate-new/input/auth-access-analyzer';
+import { parseAuthAccessFromTemplate } from '../../../../../commands/gen2-migration/generate-new/input/auth-access-analyzer';
 
 function makeTemplate(actions: string | string[]): string {
   const actionValue = Array.isArray(actions) ? actions : [actions];

@@ -1,4 +1,4 @@
-import CFNConditionResolver from '../../../../commands/gen2-migration/generate-new/output/analytics/cfn-condition-resolver';
+import CFNConditionResolver from '../../../../../../commands/gen2-migration/generate-new/output/analytics/cfn-condition-resolver';
 import { Parameter } from '@aws-sdk/client-cloudformation';
 
 function params(...entries: Array<[string, string]>): Parameter[] {

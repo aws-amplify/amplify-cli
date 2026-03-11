@@ -1,7 +1,7 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import os from 'node:os';
-import { TsConfigGenerator } from '../../../../commands/gen2-migration/generate-new/output/tsconfig.generator';
+import { TsConfigGenerator } from '../../../../../commands/gen2-migration/generate-new/output/tsconfig.generator';
 
 jest.unmock('fs-extra');
 

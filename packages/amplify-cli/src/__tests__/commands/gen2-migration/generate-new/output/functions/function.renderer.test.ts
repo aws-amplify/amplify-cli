@@ -1,5 +1,5 @@
-import { FunctionRenderer } from '../../../../commands/gen2-migration/generate-new/output/functions/function.renderer';
-import { printNodes } from '../../../../commands/gen2-migration/generate-new/ts-writer';
+import { FunctionRenderer } from '../../../../../../commands/gen2-migration/generate-new/output/functions/function.renderer';
+import { printNodes } from '../../../../../../commands/gen2-migration/generate-new/ts-writer';
 
 describe('FunctionRenderer', () => {
   const renderer = new FunctionRenderer('d1abc2def3', 'main');

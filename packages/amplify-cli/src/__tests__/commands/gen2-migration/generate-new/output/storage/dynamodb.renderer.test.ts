@@ -2,7 +2,7 @@ import ts from 'typescript';
 import {
   DynamoDBRenderer,
   DynamoDBTableDefinition,
-} from '../../../../commands/gen2-migration/generate-new/output/storage/dynamodb.renderer';
+} from '../../../../../../commands/gen2-migration/generate-new/output/storage/dynamodb.renderer';
 
 const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
 const sourceFile = ts.createSourceFile('test.ts', '', ts.ScriptTarget.Latest, false, ts.ScriptKind.TS);

@@ -1,7 +1,7 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import os from 'node:os';
-import { GitIgnoreGenerator } from '../../../../commands/gen2-migration/generate-new/output/gitignore.generator';
+import { GitIgnoreGenerator } from '../../../../../commands/gen2-migration/generate-new/output/gitignore.generator';
 
 jest.unmock('fs-extra');
 

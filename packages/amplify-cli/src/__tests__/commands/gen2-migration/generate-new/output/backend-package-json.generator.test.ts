@@ -1,7 +1,7 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import os from 'node:os';
-import { BackendPackageJsonGenerator } from '../../../../commands/gen2-migration/generate-new/output/backend-package-json.generator';
+import { BackendPackageJsonGenerator } from '../../../../../commands/gen2-migration/generate-new/output/backend-package-json.generator';
 
 jest.unmock('fs-extra');
 

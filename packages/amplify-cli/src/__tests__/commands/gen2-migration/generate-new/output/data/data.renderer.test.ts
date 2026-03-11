@@ -1,5 +1,5 @@
-import { DataRenderer } from '../../../../commands/gen2-migration/generate-new/output/data/data.renderer';
-import { printNodes } from '../../../../commands/gen2-migration/generate-new/ts-writer';
+import { DataRenderer } from '../../../../../../commands/gen2-migration/generate-new/output/data/data.renderer';
+import { printNodes } from '../../../../../../commands/gen2-migration/generate-new/ts-writer';
 
 describe('DataRenderer', () => {
   const renderer = new DataRenderer('main');
