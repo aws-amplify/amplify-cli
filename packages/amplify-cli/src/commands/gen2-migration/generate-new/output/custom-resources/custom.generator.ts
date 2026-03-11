@@ -1,7 +1,7 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import ts from 'typescript';
-import { pathManager, JSONUtilities } from '@aws-amplify/amplify-cli-core';
+import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import { Generator } from '../../generator';
 import { AmplifyMigrationOperation } from '../../../_operation';
 import { BackendGenerator } from '../backend.generator';
@@ -51,10 +51,7 @@ export class CustomResourceGenerator implements Generator {
    * Plans the custom resource generation operation.
    */
   public async plan(): Promise<AmplifyMigrationOperation[]> {
-    const rootDir = pathManager.findProjectRoot();
-    if (!rootDir) {
-      throw new Error('Could not find Amplify project root');
-    }
+    const rootDir = this.gen1App.findProjectRoot();
 
     const sourceResourcePath = path.join(rootDir, AMPLIFY_DIR, BACKEND_DIR, CUSTOM_DIR, this.resourceName);
     const destResourcePath = path.join(this.outputDir, AMPLIFY_DIR, CUSTOM_DIR, this.resourceName);

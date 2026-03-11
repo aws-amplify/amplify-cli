@@ -102,6 +102,7 @@ export class Gen1App {
   private cachedMeta: $TSMeta | undefined;
   private cachedFunctionCategoryMap: ReadonlyMap<string, string> | undefined;
   private cachedFunctionNames: ReadonlySet<string> | undefined;
+  private cachedProjectRoot: string | undefined;
 
   public constructor(opts: Gen1AppOptions) {
     this.appId = opts.appId;
@@ -110,6 +111,22 @@ export class Gen1App {
     this.clients = opts.clients;
     this.backendDownloader = new BackendDownloader(opts.clients.s3);
     this.aws = new AwsFetcher(opts.clients);
+  }
+
+  // ── Project root ─────────────────────────────────────────────────
+
+  /**
+   * Returns the Amplify project root directory.
+   * Throws if the project root cannot be found.
+   */
+  public findProjectRoot(): string {
+    if (this.cachedProjectRoot) return this.cachedProjectRoot;
+    const rootDir = pathManager.findProjectRoot();
+    if (!rootDir) {
+      throw new Error('Could not find Amplify project root');
+    }
+    this.cachedProjectRoot = rootDir;
+    return rootDir;
   }
 
   // ── Backend environment ──────────────────────────────────────────
@@ -269,10 +286,7 @@ export class Gen1App {
    * Supports both single schema.graphql and multi-file schema/ directory.
    */
   public async fetchGraphQLSchema(apiName: string): Promise<string> {
-    const rootDir = pathManager.findProjectRoot();
-    if (!rootDir) {
-      throw new Error('Could not find Amplify project root');
-    }
+    const rootDir = this.findProjectRoot();
 
     const apiPath = path.join(rootDir, 'amplify', 'backend', 'api', apiName);
 
@@ -401,10 +415,7 @@ export class Gen1App {
    * Fetches the REST API definition for a single API Gateway resource.
    */
   public async fetchRestApiConfig(resourceName: string): Promise<RestApiDefinition> {
-    const rootDir = pathManager.findProjectRoot();
-    if (!rootDir) {
-      throw new Error('Could not find Amplify project root');
-    }
+    const rootDir = this.findProjectRoot();
 
     const apiCategory = await this.fetchMetaCategory('api');
     if (!apiCategory) {

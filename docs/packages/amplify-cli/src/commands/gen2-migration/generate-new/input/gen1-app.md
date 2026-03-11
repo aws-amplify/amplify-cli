@@ -10,6 +10,7 @@ Local state (amplify-meta.json, cloud backend files, GraphQL schemas, CLI inputs
 
 Key methods:
 
+- `findProjectRoot()` — cached Amplify project root directory
 - `fetchMeta()`, `fetchMetaCategory(category)` — parsed amplify-meta.json
 - `fetchBackendEnvironment()`, `fetchRootStackName()` — from Amplify API
 - `fetchCloudBackendDir()`, `readCloudBackendJson()`, `readCloudBackendFile()` — S3 cloud backend
