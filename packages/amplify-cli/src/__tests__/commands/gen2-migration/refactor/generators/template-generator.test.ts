@@ -48,6 +48,11 @@ const getStackId = (stackName: string, category: CATEGORY) => {
   return `arn:aws:cloudformation:${REGION}:${ACCOUNT_ID}:stack/${stackName}-${resolvedCategory}/12345`;
 };
 
+/** Extracts the stack name portion from an ARN, matching the production extractStackNameFromId behavior. */
+const getStackName = (stackName: string, category: CATEGORY) => {
+  return getStackId(stackName, category).split('/')[1];
+};
+
 const NUM_CATEGORIES_TO_REFACTOR = 3;
 const ACCOUNT_ID = 'TEST_ACCOUNT_ID';
 const GEN1_ROOT_STACK_NAME = 'amplify-gen1-dev-12345';
@@ -62,8 +67,8 @@ const GEN2_S3_BUCKET_LOGICAL_ID = 'Gen2S3Bucket';
 const GEN1_DDB_TABLE_LOGICAL_ID = 'DynamoDBTable';
 const GEN2_DDB_TABLE_LOGICAL_ID = 'Gen2DynamoDBTable';
 const STUB_CFN_CLIENT = new CloudFormationClient();
-const STUB_SSM_CLIENT = new SSMClient();
-const STUB_COGNITO_IDP_CLIENT = new CognitoIdentityProviderClient();
+const STUB_SSM_CLIENT = {} as SSMClient;
+const STUB_COGNITO_IDP_CLIENT = {} as CognitoIdentityProviderClient;
 const APP_ID = 'd123456';
 const ENV_NAME = 'test';
 const CDK_IDENTIFIER = '12345678';
@@ -1169,6 +1174,10 @@ describe('TemplateGenerator', () => {
   ) {
     const sourceStackName = isRevert ? getStackId(GEN2_ROOT_STACK_NAME, category) : getStackId(GEN1_ROOT_STACK_NAME, category);
     const destinationStackName = isRevert ? getStackId(GEN1_ROOT_STACK_NAME, category) : getStackId(GEN2_ROOT_STACK_NAME, category);
+    const sourceStackNameExtracted = isRevert ? getStackName(GEN2_ROOT_STACK_NAME, category) : getStackName(GEN1_ROOT_STACK_NAME, category);
+    const destinationStackNameExtracted = isRevert
+      ? getStackName(GEN1_ROOT_STACK_NAME, category)
+      : getStackName(GEN2_ROOT_STACK_NAME, category);
     expect(mockCfnClientSendMock.mock.calls[callIndex]).toBeACloudFormationCommand(
       {
         Description: `Move [ResourceA] from ${sourceStackName.split('/')[1]} to ${destinationStackName.split('/')[1]}`,
@@ -1176,11 +1185,11 @@ describe('TemplateGenerator', () => {
           {
             Source: {
               LogicalResourceId: 'ResourceA',
-              StackName: sourceStackName,
+              StackName: sourceStackNameExtracted,
             },
             Destination: {
               LogicalResourceId: 'ResourceB',
-              StackName: destinationStackName,
+              StackName: destinationStackNameExtracted,
             },
           },
         ],

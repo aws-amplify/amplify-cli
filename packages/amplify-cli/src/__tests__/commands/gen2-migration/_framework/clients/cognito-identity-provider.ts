@@ -152,7 +152,7 @@ export class CognitoIdentityProviderMock {
       .on(idp.GetUserPoolMfaConfigCommand)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .callsFake(async (input: idp.GetUserPoolMfaConfigCommandInput): Promise<idp.GetUserPoolMfaConfigCommandOutput> => {
-        const authResourceName = this.app.singleResourceName('auth');
+        const authResourceName = this.app.singleResourceName('auth', 'Cognito');
         const authCliInputs = this.app.cliInputsForResource(authResourceName, 'auth');
         return {
           SoftwareTokenMfaConfiguration: { Enabled: false },
@@ -166,7 +166,7 @@ export class CognitoIdentityProviderMock {
     this.mock
       .on(idp.DescribeUserPoolClientCommand)
       .callsFake(async (input: idp.DescribeUserPoolClientCommandInput): Promise<idp.DescribeUserPoolClientCommandOutput> => {
-        const authResourceName = this.app.singleResourceName('auth');
+        const authResourceName = this.app.singleResourceName('auth', 'Cognito');
         const authCliInputs = this.app.cliInputsForResource(authResourceName, 'auth');
         const logicalId = `auth${authResourceName}`;
         const nestedStackName = this.app.nestedStackName(this.app.rootStackName, logicalId);
@@ -189,12 +189,9 @@ export class CognitoIdentityProviderMock {
         const nativeClientProps = template.Resources.UserPoolClient?.Properties;
         const supportedIdentityProviders: string[] | undefined = nativeClientProps?.SupportedIdentityProviders;
 
-        const innerAuthResourceName = this.app.singleResourceName('auth');
-        const innerAuthCliInputs = this.app.cliInputsForResource(innerAuthResourceName, 'auth');
-
         const baseClient: idp.UserPoolClientType = {
           ClientId: input.ClientId,
-          RefreshTokenValidity: Number(innerAuthCliInputs.cognitoConfig.userpoolClientRefreshTokenValidity),
+          RefreshTokenValidity: Number(authCliInputs.cognitoConfig.userpoolClientRefreshTokenValidity),
           TokenValidityUnits: { RefreshToken: 'days' },
           EnableTokenRevocation: true,
           EnablePropagateAdditionalUserContextData: false,
@@ -229,7 +226,7 @@ export class CognitoIdentityProviderMock {
       .on(idp.ListIdentityProvidersCommand)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .callsFake(async (input: idp.ListIdentityProvidersCommandInput): Promise<idp.ListIdentityProvidersCommandOutput> => {
-        const authResourceName = this.app.singleResourceName('auth');
+        const authResourceName = this.app.singleResourceName('auth', 'Cognito');
         const authCliInputs = this.app.cliInputsForResource(authResourceName, 'auth');
 
         // Build identity provider list from authProvidersUserPool in cli-inputs.json.
@@ -252,7 +249,7 @@ export class CognitoIdentityProviderMock {
     this.mock
       .on(idp.DescribeIdentityProviderCommand)
       .callsFake(async (input: idp.DescribeIdentityProviderCommandInput): Promise<idp.DescribeIdentityProviderCommandOutput> => {
-        const authResourceName = this.app.singleResourceName('auth');
+        const authResourceName = this.app.singleResourceName('auth', 'Cognito');
         const authCliInputs = this.app.cliInputsForResource(authResourceName, 'auth');
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -291,7 +288,7 @@ export class CognitoIdentityProviderMock {
   private mockListGroups() {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     this.mock.on(idp.ListGroupsCommand).callsFake(async (input: idp.ListGroupsCommandInput): Promise<idp.ListGroupsCommandOutput> => {
-      const authResourceName = this.app.singleResourceName('auth');
+      const authResourceName = this.app.singleResourceName('auth', 'Cognito');
       const authCliInputs = this.app.cliInputsForResource(authResourceName, 'auth');
       const userPoolGroupList: string[] = authCliInputs.cognitoConfig.userPoolGroupList ?? [];
 

@@ -1,5 +1,6 @@
 import { MigrationApp } from './app';
 import { AmplifyMock } from './clients/amplify';
+import { APIGatewayMock } from './clients/api-gateway';
 import { CloudFormationMock } from './clients/cloudformation';
 import { LambdaMock } from './clients/lambda';
 import { CognitoIdentityMock } from './clients/cognito-identity';
@@ -36,6 +37,7 @@ import { STSMock } from './clients/sts';
  */
 export class MockClients {
   public readonly amplify: AmplifyMock;
+  public readonly apiGateway: APIGatewayMock;
   public readonly cloudformation: CloudFormationMock;
   public readonly lambda: LambdaMock;
   public readonly cognitoIdentityProvider: CognitoIdentityProviderMock;
@@ -53,6 +55,7 @@ export class MockClients {
    */
   constructor(app: MigrationApp) {
     this.amplify = new AmplifyMock(app);
+    this.apiGateway = new APIGatewayMock(app);
     this.cloudformation = new CloudFormationMock(app);
     this.lambda = new LambdaMock(app);
     this.cognitoIdentityProvider = new CognitoIdentityProviderMock(app);

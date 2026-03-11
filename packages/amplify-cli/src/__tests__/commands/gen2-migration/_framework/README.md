@@ -18,6 +18,7 @@ _framework/
 ├── snapshot.ts         # Snapshot — comparison and updating
 ├── clients/            # Per-service AWS SDK mock implementations
 │   ├── amplify.ts
+│   ├── api-gateway.ts
 │   ├── appsync.ts
 │   ├── cloudformation.ts
 │   ├── cloudwatch-events.ts
@@ -77,18 +78,24 @@ Each mock in `clients/` follows the same pattern: it receives a `MigrationApp` i
 the app's local files to construct realistic responses. The table below summarizes what each mock
 reads and returns.
 
-| Mock                          | Source Files                                                                                           | What It Provides                                           |
-| ----------------------------- | ------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------- |
-| `AmplifyMock`                 | `amplify-meta.json`, `team-provider-info.json`                                                         | Backend environment info, app metadata, build spec         |
-| `AppSyncMock`                 | `amplify-meta.json`, `api/<name>/cli-inputs.json`                                                      | GraphQL API config, auth types, API listing                |
-| `CloudFormationMock`          | CloudFormation templates via `templatePathForStack()`                                                  | Stack resources with physical IDs, nested stack parameters |
-| `CloudWatchEventsMock`        | (none)                                                                                                 | Empty/default responses                                    |
-| `CognitoIdentityMock`         | `auth/<name>/cli-inputs.json`, `amplify-meta.json`                                                     | Identity pool config                                       |
-| `CognitoIdentityProviderMock` | `auth/<name>/cli-inputs.json`, auth CloudFormation template, `amplify-meta.json`                       | User pool config, MFA, triggers, groups, client settings   |
-| `LambdaMock`                  | `function/<name>/<name>-cloudformation-template.json`, `function-parameters.json`, `amplify-meta.json` | Function config with resolved environment variables        |
-| `S3Mock`                      | `storage/<name>/` CloudFormation template, `amplify-meta.json`                                         | Bucket notification config, encryption, versioning         |
-| `DynamoDBMock`                | `storage/<name>/` CloudFormation template, `amplify-meta.json`                                         | Table schema, key schema, GSIs, throughput, stream config  |
-| `STSMock`                     | (none)                                                                                                 | Hardcoded caller identity (account ID `123456789012`)      |
+| Mock          | Source Files                                   | What It Provides                                   |
+| ------------- | ---------------------------------------------- | -------------------------------------------------- |
+| `AmplifyMock` | `amplify-meta.json`, `team-provider-info.json` | Backend environment info, app metadata, build spec |
+
+# <<<<<<< HEAD
+
+| `APIGatewayMock` | (none) | Root resource ID for REST APIs (`{restApiId}-root`) |
+
+> > > > > > > gen2-migration
+> > > > > > > | `AppSyncMock` | `amplify-meta.json`, `api/<name>/cli-inputs.json` | GraphQL API config, auth types, API listing |
+> > > > > > > | `CloudFormationMock` | CloudFormation templates via `templatePathForStack()` | Stack resources with physical IDs, nested stack parameters |
+> > > > > > > | `CloudWatchEventsMock` | (none) | Empty/default responses |
+> > > > > > > | `CognitoIdentityMock` | `auth/<name>/cli-inputs.json`, `amplify-meta.json` | Identity pool config |
+> > > > > > > | `CognitoIdentityProviderMock` | `auth/<name>/cli-inputs.json`, auth CloudFormation template, `amplify-meta.json` | User pool config, MFA, triggers, groups, client settings |
+> > > > > > > | `LambdaMock` | `function/<name>/<name>-cloudformation-template.json`, `function-parameters.json`, `amplify-meta.json` | Function config with resolved environment variables |
+> > > > > > > | `S3Mock` | `storage/<name>/` CloudFormation template, `amplify-meta.json` | Bucket notification config, encryption, versioning |
+> > > > > > > | `DynamoDBMock` | `storage/<name>/` CloudFormation template, `amplify-meta.json` | Table schema, key schema, GSIs, throughput, stream config |
+> > > > > > > | `STSMock` | (none) | Hardcoded caller identity (account ID `123456789012`) |
 
 ## Adding a New Mock Client
 

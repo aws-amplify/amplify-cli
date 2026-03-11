@@ -1,4 +1,5 @@
 import CategoryTemplateGenerator from '../../../../../commands/gen2-migration/refactor/generators/category-template-generator';
+
 import {
   CFN_AUTH_TYPE,
   CFN_PSEUDO_PARAMETERS_REF,
