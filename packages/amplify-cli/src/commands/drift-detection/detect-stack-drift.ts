@@ -30,11 +30,10 @@ export interface StackDriftNode {
 }
 
 /**
- * CloudFormation drift results — enriched tree + total drifted count
+ * CloudFormation drift results — enriched tree
  */
 export interface CloudFormationDriftResults {
   readonly root: StackDriftNode;
-  readonly totalDrifted: number;
   readonly skippedStacks: string[];
   readonly incomplete: boolean;
 }
@@ -42,17 +41,6 @@ export interface CloudFormationDriftResults {
 /** Check if a resource drift indicates actual drift (MODIFIED or DELETED) */
 const isDrifted = (d: StackResourceDrift): boolean =>
   d.StackResourceDriftStatus === StackResourceDriftStatus.MODIFIED || d.StackResourceDriftStatus === StackResourceDriftStatus.DELETED;
-
-/**
- * Recursively count total drifted resources across the entire tree
- */
-function countTotalDrifted(node: StackDriftNode): number {
-  let total = node.drifts.length;
-  for (const child of node.children) {
-    total += countTotalDrifted(child);
-  }
-  return total;
-}
 
 /**
  * Recursively collect all skipped children across the entire tree
@@ -69,7 +57,7 @@ function collectSkippedStacks(node: StackDriftNode, result: string[] = []): stri
  * @param cfn - CloudFormation client
  * @param stackName - the name of the stack to check for drift
  * @param print - printer for user feedback
- * @returns the CloudFormation description of the drift detection results
+ * @returns drift results and detection ID for the stack
  */
 export async function detectStackDrift(
   cfn: CloudFormationClient,
@@ -313,10 +301,9 @@ export async function detectStackDriftRecursive(
 
   const root = await buildDriftNode(cfn, stackName, null, print);
 
-  const totalDrifted = countTotalDrifted(root);
   const skippedStacks = collectSkippedStacks(root);
 
-  print.debug(`detectStackDriftRecursive.complete: ${stackName}, ${totalDrifted} total drifted resources`);
+  print.debug(`detectStackDriftRecursive.complete: ${stackName}`);
 
-  return { root, totalDrifted, skippedStacks, incomplete: skippedStacks.length > 0 };
+  return { root, skippedStacks, incomplete: skippedStacks.length > 0 };
 }
