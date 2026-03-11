@@ -1,0 +1,133 @@
+import { Parameter } from '@aws-sdk/client-cloudformation';
+import { AmplifyError } from '@aws-amplify/amplify-cli-core';
+import { CFNConditionFunction, CFNConditionFunctionStatement, CFNFunction, CFNTemplate } from '../cfn-template';
+import { walkCfnTree } from './cfn-tree-walker';
+
+/**
+ * Resolves conditions in a CloudFormation template.
+ *
+ * Two phases:
+ * 1. Evaluate all Conditions → Map<string, boolean>
+ * 2. Walk the template: remove resources with unmet conditions, resolve Fn::If in properties
+ *
+ * Fixes from old code:
+ * - Array.isArray check before typeof === 'object' (old code had unreachable array branch)
+ * - Fn::If resolution recurses into nested objects/arrays (old code only resolved top-level)
+ * - resolveStatement() helper eliminates triple copy-paste of left/right resolution
+ */
+export function resolveConditions(template: CFNTemplate, parameters: Parameter[]): CFNTemplate {
+  const conditions = template.Conditions;
+  if (!conditions || Object.keys(conditions).length === 0) return template;
+
+  const cloned = JSON.parse(JSON.stringify(template)) as CFNTemplate;
+
+  // Phase 1: Evaluate all conditions
+  const conditionValues = new Map<string, boolean>();
+  for (const [conditionKey, conditionDef] of Object.entries(conditions)) {
+    const fnType = Object.keys(conditionDef)[0] as CFNFunction;
+    if (!Object.values(CFNFunction).includes(fnType)) continue;
+
+    const statements = conditionDef[fnType as keyof CFNConditionFunction] as CFNConditionFunctionStatement[];
+    const [left, right] = statements;
+    conditionValues.set(conditionKey, evaluateCondition(conditions, left, right, parameters, fnType));
+  }
+
+  // Phase 2: Remove resources with unmet conditions
+  for (const [logicalId, resource] of Object.entries(cloned.Resources)) {
+    const condition = resource.Condition;
+    if (condition && conditionValues.has(condition) && !conditionValues.get(condition)) {
+      delete cloned.Resources[logicalId];
+    }
+  }
+
+  // Phase 3: Resolve Fn::If in the entire template using the tree walker
+  const resolved = walkCfnTree(cloned, (node) => {
+    if (CFNFunction.If in node) {
+      const ifCondition = node[CFNFunction.If] as [string, unknown, unknown];
+      const conditionName = ifCondition[0];
+      if (conditionValues.has(conditionName)) {
+        return conditionValues.get(conditionName) ? ifCondition[1] : ifCondition[2];
+      }
+    }
+    return undefined;
+  }) as CFNTemplate;
+
+  return resolved;
+}
+
+/**
+ * Resolves a single condition function statement to a boolean or string value.
+ * Handles: literal strings, nested conditions (Condition: "X"), nested functions
+ * (Fn::Equals, etc.), and parameter refs (Ref: "X").
+ */
+function resolveStatement(
+  conditions: Record<string, CFNConditionFunction>,
+  statement: CFNConditionFunctionStatement,
+  parameters: Parameter[],
+): boolean | string {
+  // Literal string
+  if (typeof statement !== 'object') return statement;
+
+  const record = statement as Record<string, unknown>;
+
+  // Nested condition reference: { Condition: "ConditionName" }
+  if ('Condition' in record) {
+    const nestedName = record.Condition as string;
+    const nestedDef = conditions[nestedName];
+    const nestedFnType = Object.keys(nestedDef)[0] as CFNFunction;
+    const nestedStatements = nestedDef[nestedFnType as keyof CFNConditionFunction] as CFNConditionFunctionStatement[];
+    return evaluateCondition(conditions, nestedStatements[0], nestedStatements[1], parameters, nestedFnType);
+  }
+
+  // Nested function: { "Fn::Equals": [...] }, { "Fn::Not": [...] }, etc.
+  const fnKey = Object.keys(record).find((k) => Object.values(CFNFunction).includes(k as CFNFunction));
+  if (fnKey) {
+    const nestedStatements = record[fnKey] as CFNConditionFunctionStatement[];
+    return evaluateCondition(conditions, nestedStatements[0], nestedStatements[1], parameters, fnKey as CFNFunction);
+  }
+
+  // Parameter ref: { Ref: "ParamName" }
+  if ('Ref' in record) {
+    const paramKey = record.Ref as string;
+    const value = parameters.find((p) => p.ParameterKey === paramKey)?.ParameterValue;
+    if (value === undefined) {
+      throw new AmplifyError('MissingExpectedParameterError', {
+        message: `Condition references parameter '${paramKey}' but no value was provided`,
+      });
+    }
+    return value;
+  }
+
+  throw new AmplifyError('CloudFormationTemplateError', {
+    message: `Unsupported condition statement: ${JSON.stringify(statement)}`,
+  });
+}
+
+/**
+ * Evaluates a condition function (Fn::Equals, Fn::Not, Fn::Or, Fn::And) to a boolean.
+ */
+function evaluateCondition(
+  conditions: Record<string, CFNConditionFunction>,
+  left: CFNConditionFunctionStatement,
+  right: CFNConditionFunctionStatement | undefined,
+  parameters: Parameter[],
+  fnType: CFNFunction,
+): boolean {
+  const resolvedLeft = resolveStatement(conditions, left, parameters);
+  const resolvedRight = right !== undefined ? resolveStatement(conditions, right, parameters) : undefined;
+
+  switch (fnType) {
+    case CFNFunction.Equals:
+      return resolvedLeft === resolvedRight;
+    case CFNFunction.Not:
+      return !resolvedLeft;
+    case CFNFunction.Or:
+      return !!(resolvedLeft || resolvedRight);
+    case CFNFunction.And:
+      return !!(resolvedLeft && resolvedRight);
+    default:
+      throw new AmplifyError('CloudFormationTemplateError', {
+        message: `Unsupported condition function: ${fnType}`,
+      });
+  }
+}
