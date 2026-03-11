@@ -109,6 +109,7 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
         validate: async () => {
           // No validation needed for holding stack restore
         },
+        describe: async () => [`Restore Gen2 resources from holding stack '${holdingStackName}' and clean up`],
         execute: async () => {
           const holdingStack = await findHoldingStack(this.clients.cfn, holdingStackName);
           if (!holdingStack) return; // No holding stack — nothing to restore
@@ -140,9 +141,9 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
           };
           await tryUpdateStack(this.clients.cfn, holdingStackName, [], holdingWithPlaceholder);
 
-          // Read current Gen2 template and add holding stack resources
-          const gen2Template = await this.gen2Branch.fetchTemplate(gen2StackId);
-          const restoreTarget = JSON.parse(JSON.stringify(gen2Template)) as CFNTemplate;
+          // Use finalSource (the post-move Gen2 template) instead of reading from
+          // the facade, which would return the cached pre-move version.
+          const restoreTarget = JSON.parse(JSON.stringify(params.finalSource)) as CFNTemplate;
           for (const [logicalId, resource] of resourcesToRestore) {
             restoreTarget.Resources[logicalId] = resource;
           }

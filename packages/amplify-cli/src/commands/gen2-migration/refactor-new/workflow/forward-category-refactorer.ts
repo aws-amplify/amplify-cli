@@ -114,6 +114,7 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
         validate: async () => {
           // No validation needed for holding stack move
         },
+        describe: async () => [`Move Gen2 resources to holding stack '${holdingStackName}'`],
         execute: async () => {
           // Clean up orphaned holding stack from a previous failed attempt
           const existing = await findHoldingStack(this.clients.cfn, holdingStackName);
