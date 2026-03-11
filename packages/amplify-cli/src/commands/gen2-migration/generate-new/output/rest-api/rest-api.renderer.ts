@@ -219,11 +219,8 @@ export class RestApiRenderer {
                 factory.createStringLiteral(`Gen1${restApi.apiName}Api`),
                 factory.createObjectLiteralExpression(
                   [
-                    factory.createPropertyAssignment('restApiId', factory.createStringLiteral(`<gen1-${restApi.apiName}-api-id>`)),
-                    factory.createPropertyAssignment(
-                      'rootResourceId',
-                      factory.createStringLiteral(`<gen1-${restApi.apiName}-root-resource-id>`),
-                    ),
+                    factory.createPropertyAssignment('restApiId', factory.createStringLiteral(restApi.gen1ApiId)),
+                    factory.createPropertyAssignment('rootResourceId', factory.createStringLiteral(restApi.gen1RootResourceId)),
                   ],
                   true,
                 ),

@@ -25,6 +25,7 @@ import { DescribeStackResourcesCommand, StackResource } from '@aws-sdk/client-cl
 import { GetGraphqlApiCommand, GraphqlApi } from '@aws-sdk/client-appsync';
 import { DescribeTableCommand, TableDescription } from '@aws-sdk/client-dynamodb';
 import { GetAppCommand } from '@aws-sdk/client-amplify';
+import { GetResourcesCommand } from '@aws-sdk/client-api-gateway';
 import { AwsClients } from './aws-clients';
 
 /**
@@ -372,5 +373,15 @@ export class AwsFetcher {
   public async fetchAppBuildSpec(appId: string): Promise<string | undefined> {
     const { app } = await this.clients.amplify.send(new GetAppCommand({ appId }));
     return app?.buildSpec;
+  }
+
+  /** Fetches the root resource ID for an API Gateway REST API. */
+  public async fetchRestApiRootResourceId(restApiId: string): Promise<string> {
+    const { items } = await this.clients.apiGateway.send(new GetResourcesCommand({ restApiId }));
+    const root = items?.find((r) => r.path === '/');
+    if (!root?.id) {
+      throw new Error(`Root resource not found for REST API '${restApiId}'`);
+    }
+    return root.id;
   }
 }

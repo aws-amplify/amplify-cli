@@ -57,6 +57,10 @@ export interface RestApiDefinition {
   readonly authType?: string;
   readonly corsConfiguration?: CorsConfiguration;
   readonly uniqueFunctions?: readonly string[];
+  /** Gen1 API Gateway REST API ID from amplify-meta.json output. */
+  readonly gen1ApiId: string;
+  /** Gen1 API Gateway root resource ID fetched via GetResources. */
+  readonly gen1RootResourceId: string;
 }
 
 /**
@@ -443,6 +447,13 @@ export class Gen1App {
     const dependsOn = (apiObj.dependsOn ?? []) as Array<{ category: string; resourceName: string }>;
     const defaultFunctionName = dependsOn.find((dep) => dep.category === 'function')?.resourceName;
 
+    const output = (apiObj.output ?? {}) as Record<string, string>;
+    const gen1ApiId = output.ApiId;
+    if (!gen1ApiId) {
+      throw new Error(`REST API '${resourceName}' has no ApiId in amplify-meta.json output`);
+    }
+    const gen1RootResourceId = await this.aws.fetchRestApiRootResourceId(gen1ApiId);
+
     return {
       apiName: resourceName,
       functionName: defaultFunctionName || 'defaultFunction',
@@ -450,6 +461,8 @@ export class Gen1App {
       authType,
       corsConfiguration: cliInputs.corsConfiguration,
       uniqueFunctions: collectUniqueFunctions(paths, defaultFunctionName),
+      gen1ApiId,
+      gen1RootResourceId,
     };
   }
 }

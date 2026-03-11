@@ -7,6 +7,7 @@ import { S3Client } from '@aws-sdk/client-s3';
 import { LambdaClient } from '@aws-sdk/client-lambda';
 import { CloudWatchEventsClient } from '@aws-sdk/client-cloudwatch-events';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { APIGatewayClient } from '@aws-sdk/client-api-gateway';
 
 /**
  * Single instantiation point for all AWS SDK clients used during Gen1 app introspection.
@@ -21,6 +22,7 @@ export interface AwsClients {
   readonly lambda: LambdaClient;
   readonly cloudWatchEvents: CloudWatchEventsClient;
   readonly dynamoDB: DynamoDBClient;
+  readonly apiGateway: APIGatewayClient;
 }
 
 /**
@@ -37,5 +39,6 @@ export function createAwsClients(region: string): AwsClients {
     lambda: new LambdaClient({ region }),
     cloudWatchEvents: new CloudWatchEventsClient(),
     dynamoDB: new DynamoDBClient(),
+    apiGateway: new APIGatewayClient(),
   };
 }
