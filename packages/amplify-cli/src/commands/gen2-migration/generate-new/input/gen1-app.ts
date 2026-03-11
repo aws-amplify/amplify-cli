@@ -397,46 +397,46 @@ export class Gen1App {
   // ── REST API configuration (local file reading) ─────────────────
 
   /**
-   * Reads REST API configurations from the local Gen1 project's
-   * cli-inputs.json files for all API Gateway entries in the given
-   * api category block.
+  /**
+   * Fetches the REST API definition for a single API Gateway resource.
    */
-  public async fetchRestApiConfigs(apiCategory: Record<string, unknown>): Promise<RestApiDefinition[]> {
+  public async fetchRestApiConfig(resourceName: string): Promise<RestApiDefinition> {
     const rootDir = pathManager.findProjectRoot();
     if (!rootDir) {
       throw new Error('Could not find Amplify project root');
     }
 
-    const restApis: RestApiDefinition[] = [];
-
-    for (const apiName of Object.keys(apiCategory)) {
-      const apiObj = apiCategory[apiName] as Record<string, unknown>;
-      if (apiObj.service !== 'API Gateway') continue;
-
-      const cliInputsPath = path.join(rootDir, 'amplify', 'backend', 'api', apiName, 'cli-inputs.json');
-      const cliInputs = JSON.parse(await fs.readFile(cliInputsPath, 'utf8')) as RestApiCliInputs;
-
-      const paths = cliInputs.paths ? parseRestApiPaths(cliInputs.paths) : [{ path: '/{proxy+}', methods: ['ANY'] }];
-
-      const hasPathAuth = Object.values(cliInputs.paths || {}).some(
-        (p) => p.permissions?.setting === 'private' || p.permissions?.setting === 'protected',
-      );
-      const authType = cliInputs.restrictAccess || hasPathAuth ? cliInputs.authType || 'AWS_IAM' : undefined;
-
-      const dependsOn = (apiObj.dependsOn ?? []) as Array<{ category: string; resourceName: string }>;
-      const defaultFunctionName = dependsOn.find((dep) => dep.category === 'function')?.resourceName;
-
-      restApis.push({
-        apiName,
-        functionName: defaultFunctionName || 'defaultFunction',
-        paths,
-        authType,
-        corsConfiguration: cliInputs.corsConfiguration,
-        uniqueFunctions: collectUniqueFunctions(paths, defaultFunctionName),
-      });
+    const apiCategory = await this.fetchMetaCategory('api');
+    if (!apiCategory) {
+      throw new Error('API category not found in amplify-meta.json');
     }
 
-    return restApis;
+    const apiObj = apiCategory[resourceName] as Record<string, unknown> | undefined;
+    if (!apiObj || apiObj.service !== 'API Gateway') {
+      throw new Error(`REST API '${resourceName}' not found in amplify-meta.json`);
+    }
+
+    const cliInputsPath = path.join(rootDir, 'amplify', 'backend', 'api', resourceName, 'cli-inputs.json');
+    const cliInputs = JSONUtilities.readJson<RestApiCliInputs>(cliInputsPath)!;
+
+    const paths = cliInputs.paths ? parseRestApiPaths(cliInputs.paths) : [{ path: '/{proxy+}', methods: ['ANY'] }];
+
+    const hasPathAuth = Object.values(cliInputs.paths || {}).some(
+      (p) => p.permissions?.setting === 'private' || p.permissions?.setting === 'protected',
+    );
+    const authType = cliInputs.restrictAccess || hasPathAuth ? cliInputs.authType || 'AWS_IAM' : undefined;
+
+    const dependsOn = (apiObj.dependsOn ?? []) as Array<{ category: string; resourceName: string }>;
+    const defaultFunctionName = dependsOn.find((dep) => dep.category === 'function')?.resourceName;
+
+    return {
+      apiName: resourceName,
+      functionName: defaultFunctionName || 'defaultFunction',
+      paths,
+      authType,
+      corsConfiguration: cliInputs.corsConfiguration,
+      uniqueFunctions: collectUniqueFunctions(paths, defaultFunctionName),
+    };
   }
 }
 

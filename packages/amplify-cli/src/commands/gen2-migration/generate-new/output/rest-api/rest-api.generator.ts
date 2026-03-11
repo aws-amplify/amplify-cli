@@ -31,13 +31,7 @@ export class RestApiGenerator implements Generator {
    * Plans the REST API generation operation.
    */
   public async plan(): Promise<AmplifyMigrationOperation[]> {
-    const apiCategory = await this.gen1App.fetchMetaCategory('api');
-    if (!apiCategory) return [];
-
-    const restApis = await this.gen1App.fetchRestApiConfigs(Object.fromEntries([[this.resourceName, apiCategory[this.resourceName]]]));
-    if (restApis.length === 0) return [];
-
-    const restApi = restApis[0];
+    const restApi = await this.gen1App.fetchRestApiConfig(this.resourceName);
     const functionNames = await this.gen1App.fetchFunctionNames();
     const hasAuth = (await this.gen1App.fetchMetaCategory('auth')) !== undefined;
     const renderer = new RestApiRenderer(hasAuth, functionNames);

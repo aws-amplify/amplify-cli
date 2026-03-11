@@ -6,7 +6,7 @@ Generates a single REST API (API Gateway) as CDK constructs in backend.ts.
 
 One per API Gateway resource. REST APIs have no `resource.ts` — Gen2 has no `defineRestApi()`, so the entire API is generated as CDK constructs directly in backend.ts.
 
-In `plan()`, it reads the REST API configuration from `Gen1App.fetchRestApiConfigs()` (which parses `cli-inputs.json` from the local project), then contributes to backend.ts via `RestApiRenderer`:
+In `plan()`, it reads the REST API configuration from `Gen1App.fetchRestApiConfig()` (which parses `cli-inputs.json` from the local project), then contributes to backend.ts via `RestApiRenderer`:
 
 - A dedicated CloudFormation stack per API
 - `RestApi` construct with CORS configuration
