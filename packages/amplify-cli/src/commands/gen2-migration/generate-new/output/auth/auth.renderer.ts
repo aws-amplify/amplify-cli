@@ -1,6 +1,5 @@
 import ts, { PropertyAssignment } from 'typescript';
 import { PasswordPolicyType, UserPoolClientType } from '@aws-sdk/client-cognito-identity-provider';
-import type { EnvironmentResponse, Runtime } from '@aws-sdk/client-lambda';
 import { renderResourceTsFile } from '../../resource';
 
 /**
@@ -257,72 +256,18 @@ export interface AuthAccess {
 }
 
 /**
- * Represents a function definition extracted from a Gen1 project.
+ * Minimal function info needed by the auth renderer to emit access rules.
  */
-export interface FunctionDefinition {
-  /**
-   * The Amplify category this function belongs to.
-   */
-  readonly category?: string;
-
-  /**
-   * The entry point file path for the function.
-   */
-  readonly entry?: string;
-
-  /**
-   * The AWS Lambda function name.
-   */
-  readonly name?: string;
-
-  /**
-   * Maximum execution time in seconds.
-   */
-  readonly timeoutSeconds?: number;
-
-  /**
-   * Memory allocation in MB.
-   */
-  readonly memoryMB?: number;
-
-  /**
-   * Environment variables configuration from AWS Lambda.
-   */
-  readonly environment?: EnvironmentResponse;
-
-  /**
-   * Environment variables filtered out by adapters.
-   */
-  readonly filteredEnvironmentVariables?: Record<string, string>;
-
-  /**
-   * AWS Lambda runtime.
-   */
-  readonly runtime?: Runtime | string;
-
+export interface FunctionAuthInfo {
   /**
    * The Amplify resource name.
    */
-  readonly resourceName?: string;
-
-  /**
-   * CloudWatch Events schedule expression.
-   */
-  readonly schedule?: string;
+  readonly resourceName: string;
 
   /**
    * Auth access permissions for this function.
    */
-  readonly authAccess?: AuthAccess;
-
-  /**
-   * Specific API permissions detected from CloudFormation analysis.
-   */
-  readonly apiPermissions?: {
-    readonly hasQuery: boolean;
-    readonly hasMutation: boolean;
-    readonly hasSubscription: boolean;
-  };
+  readonly authAccess: AuthAccess;
 }
 
 /**
@@ -343,15 +288,7 @@ export interface AuthDefinition {
   readonly writeAttributes?: string[];
   readonly referenceAuth?: ReferenceAuth;
   readonly userPoolClient?: UserPoolClientType;
-}
-
-/**
- * Options for rendering a defineAuth() resource file.
- */
-export interface RenderDefineAuthOptions {
-  readonly definition: AuthDefinition;
-  readonly functions?: FunctionDefinition[];
-  readonly functionCategories?: Map<string, string>;
+  readonly functions?: FunctionAuthInfo[];
 }
 
 // TypeScript AST factory for creating nodes
@@ -382,8 +319,7 @@ export class AuthRenderer {
   /**
    * Produces the complete TypeScript AST for auth/resource.ts.
    */
-  public render(opts: RenderDefineAuthOptions): ts.NodeArray<ts.Node> {
-    const { definition, functions, functionCategories } = opts;
+  public render(definition: AuthDefinition): ts.NodeArray<ts.Node> {
     const namedImports: { [importedPackageName: string]: Set<string> } = { '@aws-amplify/backend': new Set() };
     const refAuth = definition.referenceAuth;
 
@@ -391,7 +327,7 @@ export class AuthRenderer {
       return this.renderReferenceAuth(refAuth, namedImports);
     }
 
-    return this.renderStandardAuth(definition, functions, functionCategories, namedImports);
+    return this.renderStandardAuth(definition, namedImports);
   }
 
   private renderReferenceAuth(refAuth: ReferenceAuth, namedImports: Record<string, Set<string>>): ts.NodeArray<ts.Node> {
@@ -430,12 +366,7 @@ export class AuthRenderer {
     });
   }
 
-  private renderStandardAuth(
-    definition: AuthDefinition,
-    functions: FunctionDefinition[] | undefined,
-    functionCategories: Map<string, string> | undefined,
-    namedImports: Record<string, Set<string>>,
-  ): ts.NodeArray<ts.Node> {
+  private renderStandardAuth(definition: AuthDefinition, namedImports: Record<string, Set<string>>): ts.NodeArray<ts.Node> {
     namedImports['@aws-amplify/backend'].add('defineAuth');
     const defineAuthProperties: Array<PropertyAssignment> = [];
     const secretErrors: ts.Node[] = [];
@@ -469,7 +400,7 @@ export class AuthRenderer {
 
     this.addLambdaTriggers(definition, defineAuthProperties, namedImports);
     this.addMfaConfig(definition, defineAuthProperties);
-    this.addFunctionAccess(functions, functionCategories, defineAuthProperties, namedImports);
+    this.addFunctionAccess(definition.functions, defineAuthProperties, namedImports);
 
     return renderResourceTsFile({
       exportedVariableName: factory.createIdentifier('auth'),
@@ -535,8 +466,7 @@ export class AuthRenderer {
   }
 
   private addFunctionAccess(
-    functions: FunctionDefinition[] | undefined,
-    functionCategories: Map<string, string> | undefined,
+    functions: FunctionAuthInfo[] | undefined,
     properties: PropertyAssignment[],
     namedImports: Record<string, Set<string>>,
   ): void {
@@ -544,39 +474,34 @@ export class AuthRenderer {
       return;
     }
 
-    const functionsWithAuthAccess = functions.filter((func) => func.authAccess && Object.keys(func.authAccess).length > 0);
+    const functionsWithAuthAccess = functions.filter((func) => Object.keys(func.authAccess).length > 0);
     if (functionsWithAuthAccess.length === 0) {
       return;
     }
 
     for (const func of functionsWithAuthAccess) {
-      if (func.resourceName) {
-        const functionCategory = functionCategories?.get(func.resourceName) || 'function';
-        namedImports[`../${functionCategory}/${func.resourceName}/resource`] = new Set([func.resourceName]);
-      }
+      namedImports[`../function/${func.resourceName}/resource`] = new Set([func.resourceName]);
     }
 
     const accessRules: ts.Expression[] = [];
 
     for (const func of functionsWithAuthAccess) {
-      if (func.authAccess && func.resourceName) {
-        for (const [permission, enabled] of Object.entries(func.authAccess)) {
-          if (enabled) {
-            accessRules.push(
-              factory.createCallExpression(
-                factory.createPropertyAccessExpression(
-                  factory.createCallExpression(
-                    factory.createPropertyAccessExpression(factory.createIdentifier('allow'), factory.createIdentifier('resource')),
-                    undefined,
-                    [factory.createIdentifier(func.resourceName)],
-                  ),
-                  factory.createIdentifier('to'),
+      for (const [permission, enabled] of Object.entries(func.authAccess)) {
+        if (enabled) {
+          accessRules.push(
+            factory.createCallExpression(
+              factory.createPropertyAccessExpression(
+                factory.createCallExpression(
+                  factory.createPropertyAccessExpression(factory.createIdentifier('allow'), factory.createIdentifier('resource')),
+                  undefined,
+                  [factory.createIdentifier(func.resourceName)],
                 ),
-                undefined,
-                [factory.createArrayLiteralExpression([factory.createStringLiteral(permission)])],
+                factory.createIdentifier('to'),
               ),
-            );
-          }
+              undefined,
+              [factory.createArrayLiteralExpression([factory.createStringLiteral(permission)])],
+            ),
+          );
         }
       }
     }

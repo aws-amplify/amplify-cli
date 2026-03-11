@@ -4,7 +4,7 @@ Pure renderer that produces TypeScript AST for `auth/resource.ts`.
 
 ## How It Works
 
-`render(opts)` accepts an `AuthDefinition` and returns a `ts.NodeArray`. It dispatches to either `renderReferenceAuth()` (for imported user pools) or `renderStandardAuth()` (for Amplify-managed pools). The standard path builds a `defineAuth()` call with:
+`render(definition)` accepts an `AuthDefinition` and returns a `ts.NodeArray`. It dispatches to either `renderReferenceAuth()` (for imported user pools) or `renderStandardAuth()` (for Amplify-managed pools). The standard path builds a `defineAuth()` call with:
 
 - Login options (email, phone, username, external providers)
 - MFA configuration (SMS, TOTP)
@@ -18,5 +18,5 @@ Secret references for OAuth providers generate `secret('name')` calls and emit T
 ## Relationship to Other Components
 
 - Called by `AuthGenerator` — receives typed `AuthDefinition`, returns AST nodes
-- Defines the `AuthAccess`, `AuthDefinition`, `FunctionDefinition`, and `RenderDefineAuthOptions` interfaces used by the generator
+- Defines the `AuthAccess`, `AuthDefinition`, and `FunctionAuthInfo` interfaces used by the generator
 - No dependency on `Gen1App` or any AWS SDK types — purely transforms typed input to AST

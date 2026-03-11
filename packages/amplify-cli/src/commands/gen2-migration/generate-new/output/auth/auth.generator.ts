@@ -29,7 +29,7 @@ import {
   CustomAttribute,
   CustomAttributes,
   EmailOptions,
-  FunctionDefinition,
+  FunctionAuthInfo,
   Lambda,
   LoginOptions,
   MultifactorOptions,
@@ -44,7 +44,7 @@ import {
 } from './auth.renderer';
 
 import { parseAuthAccessFromTemplate } from '../../input/auth-access-analyzer';
-import { extractFilePathFromHandler, constFromBackend, assignProp, jsValue } from '../../ts-factory-utils';
+import { constFromBackend, assignProp, jsValue } from '../../ts-factory-utils';
 
 const factory = ts.factory;
 
@@ -126,7 +126,7 @@ export class AuthGenerator implements Generator {
       userPoolClient,
     });
 
-    return this.planStandardAuth(authDefinition, functions);
+    return this.planStandardAuth({ ...authDefinition, functions });
   }
 
   private planReferenceAuth(authDefinition: AuthDefinition): AmplifyMigrationOperation[] {
@@ -136,11 +136,7 @@ export class AuthGenerator implements Generator {
       {
         describe: async () => ['Generate amplify/auth/resource.ts (reference auth)'],
         execute: async () => {
-          const nodes = this.defineAuth.render({
-            definition: authDefinition,
-            functions: undefined,
-            functionCategories: new Map(),
-          });
+          const nodes = this.defineAuth.render(authDefinition);
           const content = printNodes(nodes);
 
           await fs.mkdir(authDir, { recursive: true });
@@ -152,16 +148,8 @@ export class AuthGenerator implements Generator {
     ];
   }
 
-  private planStandardAuth(authDefinition: AuthDefinition, functions: FunctionDefinition[]): AmplifyMigrationOperation[] {
+  private planStandardAuth(authDefinition: AuthDefinition): AmplifyMigrationOperation[] {
     const authDir = path.join(this.outputDir, 'amplify', 'auth');
-
-    // Build function category map for correct import paths in resource.ts
-    const functionCategories = new Map<string, string>();
-    for (const func of functions) {
-      if (func.resourceName && func.category) {
-        functionCategories.set(func.resourceName, func.category);
-      }
-    }
 
     const hasIdentityProviders =
       authDefinition.userPoolClient?.SupportedIdentityProviders !== undefined &&
@@ -171,11 +159,7 @@ export class AuthGenerator implements Generator {
       {
         describe: async () => ['Generate amplify/auth/resource.ts'],
         execute: async () => {
-          const nodes = this.defineAuth.render({
-            definition: authDefinition,
-            functions,
-            functionCategories,
-          });
+          const nodes = this.defineAuth.render(authDefinition);
           let content = printNodes(nodes);
 
           // Post-process: fix generated code patterns
@@ -684,36 +668,19 @@ export class AuthGenerator implements Generator {
   }
 
   /**
-   * Builds FunctionDefinition[] from the Gen1 app's function category
-   * for use by the auth renderer (auth trigger access).
+   * Builds FunctionAuthInfo[] from the Gen1 app's function category
+   * for use by the auth renderer (function access rules).
    */
-  private async buildFunctionDefinitions(): Promise<FunctionDefinition[]> {
+  private async buildFunctionDefinitions(): Promise<FunctionAuthInfo[]> {
     const functionCategory = await this.gen1App.fetchMetaCategory('function');
     if (!functionCategory) return [];
 
-    const definitions: FunctionDefinition[] = [];
-    for (const [resourceName, resourceValue] of Object.entries(functionCategory)) {
-      const resourceMeta = resourceValue as Record<string, unknown>;
-      const output = resourceMeta.output as Record<string, string> | undefined;
-      const deployedName = output?.Name;
-      if (!deployedName) continue;
-
-      const config = await this.gen1App.aws.fetchFunctionConfig(deployedName);
-
-      // Parse auth access from the function's CloudFormation template
+    const definitions: FunctionAuthInfo[] = [];
+    for (const [resourceName] of Object.entries(functionCategory)) {
       const authAccess = await this.readAuthAccessFromCloudBackend(resourceName);
-
-      definitions.push({
-        resourceName,
-        name: deployedName,
-        category: 'function',
-        entry: config?.Handler ? extractFilePathFromHandler(config.Handler) : undefined,
-        timeoutSeconds: config?.Timeout,
-        memoryMB: config?.MemorySize,
-        runtime: config?.Runtime,
-        environment: config?.Environment,
-        authAccess,
-      });
+      if (authAccess && Object.keys(authAccess).length > 0) {
+        definitions.push({ resourceName, authAccess });
+      }
     }
     return definitions;
   }
