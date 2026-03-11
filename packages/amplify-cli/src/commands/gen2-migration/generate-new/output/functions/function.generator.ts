@@ -11,6 +11,8 @@ import { RootPackageJsonGenerator } from '../root-package-json.generator';
 import { extractFilePathFromHandler, propAccess, constDecl } from '../../ts-factory-utils';
 import { parseAuthAccessFromTemplate } from '../../input/auth-access-analyzer';
 import { AuthGenerator } from '../auth/auth.generator';
+import { S3Generator } from '../storage/s3.generator';
+import { Permission } from '../storage/s3.renderer';
 
 const factory = ts.factory;
 
@@ -58,6 +60,7 @@ export class FunctionGenerator implements Generator {
   private readonly gen1App: Gen1App;
   private readonly backendGenerator: BackendGenerator;
   private readonly authGenerator: AuthGenerator | undefined;
+  private readonly s3Generator: S3Generator | undefined;
   private readonly packageJsonGenerator: RootPackageJsonGenerator;
   private readonly outputDir: string;
   private readonly resourceName: string;
@@ -67,6 +70,7 @@ export class FunctionGenerator implements Generator {
     gen1App: Gen1App,
     backendGenerator: BackendGenerator,
     authGenerator: AuthGenerator | undefined,
+    s3Generator: S3Generator | undefined,
     packageJsonGenerator: RootPackageJsonGenerator,
     outputDir: string,
     resourceName: string,
@@ -74,6 +78,7 @@ export class FunctionGenerator implements Generator {
     this.gen1App = gen1App;
     this.backendGenerator = backendGenerator;
     this.authGenerator = authGenerator;
+    this.s3Generator = s3Generator;
     this.packageJsonGenerator = packageJsonGenerator;
     this.outputDir = outputDir;
     this.resourceName = resourceName;
@@ -90,6 +95,7 @@ export class FunctionGenerator implements Generator {
     await this.mergeFunctionDependencies(func);
     const triggerModels = await this.detectDynamoTriggerModels(func);
     await this.contributeAuthAccess();
+    await this.contributeStorageAccess(func.category);
 
     return [
       {
@@ -225,6 +231,50 @@ export class FunctionGenerator implements Generator {
     const authAccess = parseAuthAccessFromTemplate(content);
     if (Object.keys(authAccess).length > 0) {
       this.authGenerator.addFunctionAuthAccess(this.resourceName, authAccess);
+    }
+  }
+
+  /**
+   * Parses S3 storage access from the function's CFN template
+   * and contributes it to the S3Generator.
+   */
+  private async contributeStorageAccess(category: string): Promise<void> {
+    if (!this.s3Generator) return;
+
+    const S3_ACTION_TO_PERMISSION: Readonly<Record<string, Permission>> = {
+      's3:GetObject': 'read',
+      's3:PutObject': 'write',
+      's3:DeleteObject': 'delete',
+      's3:ListBucket': 'read',
+    };
+
+    const templatePath = `function/${this.resourceName}/${this.resourceName}-cloudformation-template.json`;
+    const content = await this.gen1App.readCloudBackendFile(templatePath);
+    if (!content) return;
+
+    try {
+      const template = JSON.parse(content);
+      const policy = template.Resources?.AmplifyResourcesPolicy;
+      if (!policy || policy.Type !== 'AWS::IAM::Policy') return;
+
+      const statements = policy.Properties?.PolicyDocument?.Statement ?? [];
+      const permissions = new Set<Permission>();
+
+      for (const stmt of Array.isArray(statements) ? statements : [statements]) {
+        if (stmt.Effect !== 'Allow') continue;
+        const actions = Array.isArray(stmt.Action) ? stmt.Action : [stmt.Action];
+        for (const action of actions) {
+          if (typeof action === 'string' && S3_ACTION_TO_PERMISSION[action]) {
+            permissions.add(S3_ACTION_TO_PERMISSION[action]);
+          }
+        }
+      }
+
+      if (permissions.size > 0) {
+        this.s3Generator.addFunctionStorageAccess(this.resourceName, category, Array.from(permissions));
+      }
+    } catch {
+      // Template parse error — skip
     }
   }
 

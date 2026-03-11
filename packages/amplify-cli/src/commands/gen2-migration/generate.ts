@@ -69,10 +69,12 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
       generators.push(authGenerator);
     }
 
+    let s3Generator: S3Generator | undefined;
     const storageCategory = (meta.storage ?? {}) as Record<string, Record<string, unknown>>;
     for (const [resourceName, resourceMeta] of Object.entries(storageCategory)) {
       if (resourceMeta.service === 'S3') {
-        generators.push(new S3Generator(gen1App, backendGenerator, outputDir));
+        s3Generator = new S3Generator(gen1App, backendGenerator, outputDir);
+        generators.push(s3Generator);
       } else if (resourceMeta.service === 'DynamoDB') {
         generators.push(new DynamoDBGenerator(gen1App, backendGenerator, resourceName));
       }
@@ -101,7 +103,9 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
 
     const functionNames = await gen1App.fetchFunctionNames();
     for (const resourceName of functionNames) {
-      generators.push(new FunctionGenerator(gen1App, backendGenerator, authGenerator, packageJsonGenerator, outputDir, resourceName));
+      generators.push(
+        new FunctionGenerator(gen1App, backendGenerator, authGenerator, s3Generator, packageJsonGenerator, outputDir, resourceName),
+      );
     }
 
     // Infrastructure generators run last — BackendGenerator accumulates

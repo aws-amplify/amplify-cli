@@ -30,6 +30,7 @@ export interface AccessPatterns {
   readonly groups?: Record<string, Permission[]>;
   readonly functions?: ReadonlyArray<{
     readonly functionName: string;
+    readonly category: string;
     readonly permissions: Permission[];
   }>;
 }
@@ -41,7 +42,7 @@ export interface RenderDefineStorageOptions {
   readonly storageIdentifier: string;
   readonly accessPatterns?: AccessPatterns;
   readonly triggers?: Partial<Record<StorageTriggerEvent, Lambda>>;
-  readonly functionCategoryMap: ReadonlyMap<string, string>;
+  readonly triggerFunctionCategories: ReadonlyMap<string, string>;
 }
 
 /**
@@ -101,8 +102,7 @@ export class S3Renderer {
     // Add function imports for function access patterns
     if (opts.accessPatterns.functions && opts.accessPatterns.functions.length > 0) {
       for (const functionAccess of opts.accessPatterns.functions) {
-        const functionCategory = opts.functionCategoryMap.get(functionAccess.functionName) || 'function';
-        const functionImportPath = `../${functionCategory}/${functionAccess.functionName}/resource`;
+        const functionImportPath = `../${functionAccess.category}/${functionAccess.functionName}/resource`;
         if (!namedImports[functionImportPath]) {
           namedImports[functionImportPath] = new Set();
         }
@@ -141,9 +141,8 @@ export class S3Renderer {
 
     for (const value of Object.values(triggers)) {
       const functionName = value.source.split('/')[3];
-      const functionCategory = opts.functionCategoryMap.get(functionName) || 'function';
-      const functionImportPath =
-        functionCategory === 'storage' ? `./${functionName}/resource` : `../${functionCategory}/${functionName}/resource`;
+      const category = opts.triggerFunctionCategories.get(functionName) || 'function';
+      const functionImportPath = category === 'storage' ? `./${functionName}/resource` : `../${category}/${functionName}/resource`;
       if (!namedImports[functionImportPath]) {
         namedImports[functionImportPath] = new Set();
       }
