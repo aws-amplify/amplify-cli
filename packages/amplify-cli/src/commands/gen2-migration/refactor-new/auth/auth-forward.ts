@@ -26,7 +26,7 @@ const USER_POOL_ID_OUTPUT_KEY_NAME = 'UserPoolId';
 /**
  * Types with multiple instances that need disambiguation in forward mapping.
  */
-const TYPES_WITH_MULTIPLE_RESOURCES = ['AWS::Cognito::UserPoolClient', 'AWS::Cognito::UserPoolGroup', 'AWS::IAM::Role'];
+const TYPES_WITH_MULTIPLE_RESOURCES = ['AWS::Cognito::UserPoolClient', 'AWS::Cognito::UserPoolGroup'];
 
 /**
  * Forward refactorer for the auth category.

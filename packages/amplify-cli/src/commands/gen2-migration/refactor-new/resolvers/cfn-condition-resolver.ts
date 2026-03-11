@@ -1,18 +1,17 @@
 import { Parameter } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { CFNConditionFunction, CFNConditionFunctionStatement, CFNFunction, CFNTemplate } from '../cfn-template';
-import { walkCfnTree } from './cfn-tree-walker';
 
 /**
  * Resolves conditions in a CloudFormation template.
  *
- * Two phases:
+ * Three phases:
  * 1. Evaluate all Conditions → Map<string, boolean>
- * 2. Walk the template: remove resources with unmet conditions, resolve Fn::If in properties
+ * 2. Resolve top-level Fn::If in resource properties (non-recursive, matching old code scope)
+ * 3. Remove resources with unmet conditions
  *
  * Fixes from old code:
  * - Array.isArray check before typeof === 'object' (old code had unreachable array branch)
- * - Fn::If resolution recurses into nested objects/arrays (old code only resolved top-level)
  * - resolveStatement() helper eliminates triple copy-paste of left/right resolution
  */
 export function resolveConditions(template: CFNTemplate, parameters: Parameter[]): CFNTemplate {

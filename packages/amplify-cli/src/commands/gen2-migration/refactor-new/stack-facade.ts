@@ -84,6 +84,9 @@ export class StackFacade {
     return promise;
   }
 
+  // Uses DescribeStackResources (max 100 resources, no pagination) for test mock compatibility.
+  // Amplify projects are unlikely to exceed this limit. If pagination is needed in the future,
+  // switch to ListStackResources (paginated) and update the test mock accordingly.
   private async doFetchNestedStacks(): Promise<StackResource[]> {
     const response = await this.clients.cfn.send(new DescribeStackResourcesCommand({ StackName: this.rootStackName }));
     return (response.StackResources ?? []).filter((r) => r.ResourceType === 'AWS::CloudFormation::Stack');
