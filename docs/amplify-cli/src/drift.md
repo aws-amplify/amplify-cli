@@ -157,7 +157,8 @@ packages/amplify-cli/src/commands/
         ├── index.ts                   # Service exports
         ├── amplify-config-service.ts  # Config utilities
         ├── cloudformation-service.ts  # AWS API wrapper, S3 sync
-        └── drift-formatter.ts         # Output formatting
+        ├── drift-formatter.ts         # Output formatting
+        └── terminal-link.ts           # Clickable terminal links for console URLs
 ```
 
 ### Components
@@ -223,13 +224,11 @@ interface StackDriftNode {
 
 interface CloudFormationDriftResults {
   readonly root: StackDriftNode;
-  readonly totalDrifted: number;
   readonly skippedStacks: string[];
   readonly incomplete: boolean;
 }
 
 interface TemplateDriftResults {
-  totalDrifted: number;
   changes: ResourceChangeWithNested[];
   skipped: boolean;
   skipReason?: string;
@@ -237,7 +236,6 @@ interface TemplateDriftResults {
 }
 
 interface LocalDriftResults {
-  totalDrifted: number;
   resourcesToBeCreated?: ResourceInfo[];
   resourcesToBeUpdated?: ResourceInfo[];
   resourcesToBeDeleted?: ResourceInfo[];
@@ -260,22 +258,27 @@ interface ResourceInfo {
 ```
 Started Drift Detection for Project: myproject
 
-AUTH
-  Local Drift: Undeployed changes in this category
-
-API
-  Template Drift: S3 and deployed templates differ
-    + AWS::AppSync::Resolver  (NewResolver)
-    ~ AWS::AppSync::GraphQLSchema  (Schema)
-    Changeset Id: arn:aws:cloudformation:us-east-1:123:changeSet/drift-detect/abc
-
-STORAGE
+STORAGE MyTable
   CloudFormation Drift: Deployed resources do not match templates
-    ~ AWS::DynamoDB::Table  (MyTable)      arn:aws:dynamodb:us-east-1:123:table/MyTable
-      Property: /Tags/0/Value
-        + "new-value"
-        - "old-value"
-    Drift Id: 11111111-2222-3333-4444-555555555555
+  Drift Id: 11111111-2222-3333-4444-555555555555
+
+  arn:aws:dynamodb:us-east-1:123:table/MyTable
+  ~ AWS::DynamoDB::Table
+    Property: /Tags/0/Value
+      Deployed:  "new-value"
+      Expected:  "old-value"
+
+API Schema
+  Template Drift: S3 and deployed templates differ
+  Changeset Id: arn:aws:cloudformation:us-east-1:123:changeSet/drift-detect/abc
+  ~ AWS::AppSync::GraphQLSchema
+
+API NewResolver
+  Template Drift: S3 and deployed templates differ
+  Changeset Id: arn:aws:cloudformation:us-east-1:123:changeSet/drift-detect/abc
+  + AWS::AppSync::Resolver
+
+AUTH
   Local Drift: Undeployed changes in this category
 
 Drift detected
@@ -318,10 +321,9 @@ function isAmplifyAuthRoleDenyToAllowChange(propDiff, print): boolean {
 Phases can be skipped without failing the entire operation, with results including skip reasons:
 
 ```typescript
-return { 
-  totalDrifted: 0,
-  skipped: true, 
-  skipReason: 'No cloud backend found - project may not be deployed yet' 
+return {
+  skipped: true,
+  skipReason: 'No cloud backend found - project may not be deployed yet'
 };
 ```
 
