@@ -113,3 +113,4 @@ commit-msg.txt
 amplify-migration-apps/**/_snapshot.*.actual
 
 .pr-body.ai-generated.md
+**/.amplify/refactor.operations

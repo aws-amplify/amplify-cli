@@ -1,0 +1,36 @@
+[
+  {
+    "OutputKey": "GetAttUserTableName",
+    "OutputValue": "User-3oy6oxkj6ffojmc2upd52ftdsq-main",
+    "Description": "Your DynamoDB table name.",
+    "ExportName": "3oy6oxkj6ffojmc2upd52ftdsq:GetAtt:UserTable:Name"
+  },
+  {
+    "OutputKey": "transformerrootstackUserQuerygetUserpostAuth0FunctionQuerygetUserpostAuth0FunctionAppSyncFunction083DF5E5FunctionId",
+    "OutputValue": "tbj7jtlninfzndyh3dmgps2snq"
+  },
+  {
+    "OutputKey": "transformerrootstackUserMutationupdateUserinit0FunctionMutationupdateUserinit0FunctionAppSyncFunction90E2C98AFunctionId",
+    "OutputValue": "uduwhs6xxvf3ror7wbe7domohi"
+  },
+  {
+    "OutputKey": "transformerrootstackUserSubscriptionOnCreateUserDataResolverFnSubscriptionOnCreateUserDataResolverFnAppSyncFunctionCAFEE24EFunctionId",
+    "OutputValue": "ohgtfmzzb5fcbku37u4xxa3d54"
+  },
+  {
+    "OutputKey": "GetAttUserDataSourceName",
+    "OutputValue": "UserTable",
+    "Description": "Your model DataSource name.",
+    "ExportName": "3oy6oxkj6ffojmc2upd52ftdsq:GetAtt:UserDataSource:Name"
+  },
+  {
+    "OutputKey": "GetAttUserTableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/User-3oy6oxkj6ffojmc2upd52ftdsq-main/stream/2026-03-07T14:15:18.466",
+    "Description": "Your DynamoDB table StreamArn.",
+    "ExportName": "3oy6oxkj6ffojmc2upd52ftdsq:GetAtt:UserTable:StreamArn"
+  },
+  {
+    "OutputKey": "transformerrootstackUserMutationcreateUserinit0FunctionMutationcreateUserinit0FunctionAppSyncFunction5CF77F6AFunctionId",
+    "OutputValue": "eahdpvdvdjhw5ejcm6mzyp6lae"
+  }
+]

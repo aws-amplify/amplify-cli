@@ -1,0 +1,477 @@
+enum UserRole {
+  ADMIN
+  MANAGER
+  VIEWER
+}
+
+type User @aws_cognito_user_pools @aws_iam {
+  id: ID!
+  email: String!
+  name: String!
+  role: UserRole!
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+}
+
+type Product {
+  id: ID!
+  serialno: Int!
+  engword: String!
+  price: Float
+  category: String
+  description: String
+  stock: Int
+  brand: String
+  imageKey: String
+  imageUploadedAt: String
+  images: [String]
+  createdBy: String
+  updatedBy: String
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+  comments(filter: ModelCommentFilterInput, sortDirection: ModelSortDirection, limit: Int, nextToken: String): ModelCommentConnection
+}
+
+type Comment @aws_cognito_user_pools @aws_iam {
+  id: ID!
+  productId: ID!
+  authorId: String!
+  authorName: String!
+  content: String!
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+}
+
+type LowStockProduct {
+  name: String!
+  stock: Int!
+}
+
+type LowStockResponse {
+  message: String!
+  lowStockProducts: [LowStockProduct!]!
+}
+
+type Query {
+  getProduct(id: ID!): Product
+  listProducts(filter: ModelProductFilterInput, limit: Int, nextToken: String): ModelProductConnection
+  getUser(id: ID!): User @aws_iam @aws_cognito_user_pools
+  listUsers(filter: ModelUserFilterInput, limit: Int, nextToken: String): ModelUserConnection @aws_iam @aws_cognito_user_pools
+  getComment(id: ID!): Comment @aws_iam @aws_cognito_user_pools
+  listComments(filter: ModelCommentFilterInput, limit: Int, nextToken: String): ModelCommentConnection @aws_iam @aws_cognito_user_pools
+  commentsByProductId(productId: ID!, sortDirection: ModelSortDirection, filter: ModelCommentFilterInput, limit: Int, nextToken: String): ModelCommentConnection @aws_iam @aws_cognito_user_pools
+  checkLowStock: LowStockResponse @aws_api_key @aws_iam
+}
+
+input ModelStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelBooleanInput {
+  ne: Boolean
+  eq: Boolean
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelSubscriptionStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  in: [String]
+  notIn: [String]
+}
+
+input ModelSubscriptionIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  in: [Int]
+  notIn: [Int]
+}
+
+input ModelSubscriptionFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  in: [Float]
+  notIn: [Float]
+}
+
+input ModelSubscriptionBooleanInput {
+  ne: Boolean
+  eq: Boolean
+}
+
+input ModelSubscriptionIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  in: [ID]
+  notIn: [ID]
+}
+
+enum ModelAttributeTypes {
+  binary
+  binarySet
+  bool
+  list
+  map
+  number
+  numberSet
+  string
+  stringSet
+  _null
+}
+
+input ModelSizeInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
+type ModelUserConnection @aws_iam @aws_cognito_user_pools {
+  items: [User]!
+  nextToken: String
+}
+
+input ModelUserRoleInput {
+  eq: UserRole
+  ne: UserRole
+}
+
+input ModelUserFilterInput {
+  id: ModelIDInput
+  email: ModelStringInput
+  name: ModelStringInput
+  role: ModelUserRoleInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelUserFilterInput]
+  or: [ModelUserFilterInput]
+  not: ModelUserFilterInput
+}
+
+input ModelUserConditionInput {
+  email: ModelStringInput
+  name: ModelStringInput
+  role: ModelUserRoleInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelUserConditionInput]
+  or: [ModelUserConditionInput]
+  not: ModelUserConditionInput
+  id: ModelStringInput
+}
+
+input CreateUserInput {
+  id: ID
+  email: String!
+  name: String!
+  role: UserRole!
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+}
+
+input UpdateUserInput {
+  id: ID!
+  email: String
+  name: String
+  role: UserRole
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+}
+
+input DeleteUserInput {
+  id: ID!
+}
+
+type Mutation {
+  createProduct(input: CreateProductInput!, condition: ModelProductConditionInput): Product
+  updateProduct(input: UpdateProductInput!, condition: ModelProductConditionInput): Product
+  deleteProduct(input: DeleteProductInput!, condition: ModelProductConditionInput): Product
+  createUser(input: CreateUserInput!, condition: ModelUserConditionInput): User @aws_iam @aws_cognito_user_pools
+  updateUser(input: UpdateUserInput!, condition: ModelUserConditionInput): User @aws_iam @aws_cognito_user_pools
+  deleteUser(input: DeleteUserInput!, condition: ModelUserConditionInput): User @aws_iam @aws_cognito_user_pools
+  createComment(input: CreateCommentInput!, condition: ModelCommentConditionInput): Comment @aws_iam @aws_cognito_user_pools
+  updateComment(input: UpdateCommentInput!, condition: ModelCommentConditionInput): Comment @aws_iam @aws_cognito_user_pools
+  deleteComment(input: DeleteCommentInput!, condition: ModelCommentConditionInput): Comment @aws_iam @aws_cognito_user_pools
+}
+
+input ModelSubscriptionUserFilterInput {
+  email: ModelSubscriptionStringInput
+  name: ModelSubscriptionStringInput
+  role: ModelSubscriptionStringInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionUserFilterInput]
+  or: [ModelSubscriptionUserFilterInput]
+  id: ModelStringInput
+}
+
+type Subscription {
+  onCreateProduct(filter: ModelSubscriptionProductFilterInput): Product @aws_subscribe(mutations: ["createProduct"])
+  onUpdateProduct(filter: ModelSubscriptionProductFilterInput): Product @aws_subscribe(mutations: ["updateProduct"])
+  onDeleteProduct(filter: ModelSubscriptionProductFilterInput): Product @aws_subscribe(mutations: ["deleteProduct"])
+  onCreateUser(filter: ModelSubscriptionUserFilterInput, id: String): User @aws_subscribe(mutations: ["createUser"]) @aws_iam @aws_cognito_user_pools
+  onUpdateUser(filter: ModelSubscriptionUserFilterInput, id: String): User @aws_subscribe(mutations: ["updateUser"]) @aws_iam @aws_cognito_user_pools
+  onDeleteUser(filter: ModelSubscriptionUserFilterInput, id: String): User @aws_subscribe(mutations: ["deleteUser"]) @aws_iam @aws_cognito_user_pools
+  onCreateComment(filter: ModelSubscriptionCommentFilterInput, authorId: String): Comment @aws_subscribe(mutations: ["createComment"]) @aws_iam @aws_cognito_user_pools
+  onUpdateComment(filter: ModelSubscriptionCommentFilterInput, authorId: String): Comment @aws_subscribe(mutations: ["updateComment"]) @aws_iam @aws_cognito_user_pools
+  onDeleteComment(filter: ModelSubscriptionCommentFilterInput, authorId: String): Comment @aws_subscribe(mutations: ["deleteComment"]) @aws_iam @aws_cognito_user_pools
+}
+
+type ModelProductConnection {
+  items: [Product]!
+  nextToken: String
+}
+
+input ModelProductFilterInput {
+  id: ModelIDInput
+  serialno: ModelIntInput
+  engword: ModelStringInput
+  price: ModelFloatInput
+  category: ModelStringInput
+  description: ModelStringInput
+  stock: ModelIntInput
+  brand: ModelStringInput
+  imageKey: ModelStringInput
+  imageUploadedAt: ModelStringInput
+  images: ModelStringInput
+  createdBy: ModelStringInput
+  updatedBy: ModelStringInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelProductFilterInput]
+  or: [ModelProductFilterInput]
+  not: ModelProductFilterInput
+}
+
+input ModelProductConditionInput {
+  serialno: ModelIntInput
+  engword: ModelStringInput
+  price: ModelFloatInput
+  category: ModelStringInput
+  description: ModelStringInput
+  stock: ModelIntInput
+  brand: ModelStringInput
+  imageKey: ModelStringInput
+  imageUploadedAt: ModelStringInput
+  images: ModelStringInput
+  createdBy: ModelStringInput
+  updatedBy: ModelStringInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelProductConditionInput]
+  or: [ModelProductConditionInput]
+  not: ModelProductConditionInput
+}
+
+input CreateProductInput {
+  id: ID
+  serialno: Int!
+  engword: String!
+  price: Float
+  category: String
+  description: String
+  stock: Int
+  brand: String
+  imageKey: String
+  imageUploadedAt: String
+  images: [String]
+  createdBy: String
+  updatedBy: String
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+}
+
+input UpdateProductInput {
+  id: ID!
+  serialno: Int
+  engword: String
+  price: Float
+  category: String
+  description: String
+  stock: Int
+  brand: String
+  imageKey: String
+  imageUploadedAt: String
+  images: [String]
+  createdBy: String
+  updatedBy: String
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+}
+
+input DeleteProductInput {
+  id: ID!
+}
+
+input ModelSubscriptionProductFilterInput {
+  id: ModelSubscriptionIDInput
+  serialno: ModelSubscriptionIntInput
+  engword: ModelSubscriptionStringInput
+  price: ModelSubscriptionFloatInput
+  category: ModelSubscriptionStringInput
+  description: ModelSubscriptionStringInput
+  stock: ModelSubscriptionIntInput
+  brand: ModelSubscriptionStringInput
+  imageKey: ModelSubscriptionStringInput
+  imageUploadedAt: ModelSubscriptionStringInput
+  images: ModelSubscriptionStringInput
+  createdBy: ModelSubscriptionStringInput
+  updatedBy: ModelSubscriptionStringInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionProductFilterInput]
+  or: [ModelSubscriptionProductFilterInput]
+}
+
+type ModelCommentConnection @aws_iam @aws_cognito_user_pools {
+  items: [Comment]!
+  nextToken: String
+}
+
+input ModelCommentFilterInput {
+  id: ModelIDInput
+  productId: ModelIDInput
+  authorId: ModelStringInput
+  authorName: ModelStringInput
+  content: ModelStringInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelCommentFilterInput]
+  or: [ModelCommentFilterInput]
+  not: ModelCommentFilterInput
+}
+
+input ModelCommentConditionInput {
+  productId: ModelIDInput
+  authorId: ModelStringInput
+  authorName: ModelStringInput
+  content: ModelStringInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelCommentConditionInput]
+  or: [ModelCommentConditionInput]
+  not: ModelCommentConditionInput
+}
+
+input CreateCommentInput {
+  id: ID
+  productId: ID!
+  authorId: String!
+  authorName: String!
+  content: String!
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+}
+
+input UpdateCommentInput {
+  id: ID!
+  productId: ID
+  authorId: String
+  authorName: String
+  content: String
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+}
+
+input DeleteCommentInput {
+  id: ID!
+}
+
+input ModelSubscriptionCommentFilterInput {
+  id: ModelSubscriptionIDInput
+  productId: ModelSubscriptionIDInput
+  authorName: ModelSubscriptionStringInput
+  content: ModelSubscriptionStringInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionCommentFilterInput]
+  or: [ModelSubscriptionCommentFilterInput]
+  authorId: ModelStringInput
+}

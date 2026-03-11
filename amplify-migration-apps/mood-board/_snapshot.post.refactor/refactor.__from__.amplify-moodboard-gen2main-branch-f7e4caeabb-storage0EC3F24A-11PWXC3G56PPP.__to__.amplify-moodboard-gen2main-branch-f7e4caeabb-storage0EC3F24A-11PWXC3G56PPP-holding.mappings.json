@@ -1,0 +1,12 @@
+[
+  {
+    "Source": {
+      "StackName": "amplify-moodboard-gen2main-branch-f7e4caeabb-storage0EC3F24A-11PWXC3G56PPP",
+      "LogicalResourceId": "moodboard20e29595008142e3ad16f01c4066e1c41959agen2mainBucket71D6AA65"
+    },
+    "Destination": {
+      "StackName": "amplify-moodboard-gen2main-branch-f7e4caeabb-storage0EC3F24A-11PWXC3G56PPP-holding",
+      "LogicalResourceId": "moodboard20e29595008142e3ad16f01c4066e1c41959agen2mainBucket71D6AA65"
+    }
+  }
+]

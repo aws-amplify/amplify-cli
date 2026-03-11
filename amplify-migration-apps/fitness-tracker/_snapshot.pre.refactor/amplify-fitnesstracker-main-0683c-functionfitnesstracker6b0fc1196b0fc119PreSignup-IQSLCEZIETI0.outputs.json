@@ -1,0 +1,22 @@
+[
+  {
+    "OutputKey": "LambdaExecutionRoleArn",
+    "OutputValue": "arn:aws:iam::123456789012:role/fitnesstracker6b0fc1196b0fc119PreSignup-main"
+  },
+  {
+    "OutputKey": "Region",
+    "OutputValue": "us-east-1"
+  },
+  {
+    "OutputKey": "Arn",
+    "OutputValue": "arn:aws:lambda:us-east-1:123456789012:function:fitnesstracker6b0fc1196b0fc119PreSignup-main"
+  },
+  {
+    "OutputKey": "Name",
+    "OutputValue": "fitnesstracker6b0fc1196b0fc119PreSignup-main"
+  },
+  {
+    "OutputKey": "LambdaExecutionRole",
+    "OutputValue": "fitnesstracker6b0fc1196b0fc119PreSignup-main"
+  }
+]

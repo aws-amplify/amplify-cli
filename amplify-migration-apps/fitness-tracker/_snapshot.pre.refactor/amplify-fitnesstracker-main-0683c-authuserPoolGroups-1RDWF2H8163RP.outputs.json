@@ -1,0 +1,6 @@
+[
+  {
+    "OutputKey": "AdminGroupRole",
+    "OutputValue": "arn:aws:iam::123456789012:role/us-east-1_u3DbKJdMj-AdminGroupRole"
+  }
+]

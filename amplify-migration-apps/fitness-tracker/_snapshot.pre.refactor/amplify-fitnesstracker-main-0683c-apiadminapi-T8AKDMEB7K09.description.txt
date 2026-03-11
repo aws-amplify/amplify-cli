@@ -1,0 +1,1 @@
+API Gateway Resource for AWS Amplify CLI

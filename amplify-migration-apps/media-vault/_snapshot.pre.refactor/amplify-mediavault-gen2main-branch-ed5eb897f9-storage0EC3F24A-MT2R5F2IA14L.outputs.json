@@ -1,0 +1,10 @@
+[
+  {
+    "OutputKey": "amplifymediavaultgen2mainbranched5eb897f9storagemediavaultb574f210f1634e3a8d1934f263da5bed61114gen2mainBucket9A1D406DRef",
+    "OutputValue": "amplify-mediavault-ge-mediavaultb574f210f1634e-5dlrd30ro5u0"
+  },
+  {
+    "OutputKey": "amplifymediavaultgen2mainbranched5eb897f9storagethumbnailgengen2mainlambda45CDCFCARef",
+    "OutputValue": "thumbnailgen-gen2-main"
+  }
+]

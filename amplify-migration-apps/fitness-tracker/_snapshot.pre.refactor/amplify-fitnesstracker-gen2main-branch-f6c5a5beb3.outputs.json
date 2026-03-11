@@ -1,0 +1,130 @@
+[
+  {
+    "OutputKey": "webClientId",
+    "OutputValue": "2mph5n4c194d3ogp33evjku9cg"
+  },
+  {
+    "OutputKey": "socialProviders",
+    "OutputValue": ""
+  },
+  {
+    "OutputKey": "usernameAttributes",
+    "OutputValue": "[]"
+  },
+  {
+    "OutputKey": "signupAttributes",
+    "OutputValue": "[\"email\"]"
+  },
+  {
+    "OutputKey": "oauthClientId",
+    "OutputValue": "2mph5n4c194d3ogp33evjku9cg"
+  },
+  {
+    "OutputKey": "allowUnauthenticatedIdentities",
+    "OutputValue": "false"
+  },
+  {
+    "OutputKey": "oauthCognitoDomain",
+    "OutputValue": ""
+  },
+  {
+    "OutputKey": "oauthScope",
+    "OutputValue": "[\"profile\",\"phone\",\"email\",\"openid\",\"aws.cognito.signin.user.admin\"]"
+  },
+  {
+    "OutputKey": "oauthRedirectSignOut",
+    "OutputValue": ""
+  },
+  {
+    "OutputKey": "awsAppsyncAdditionalAuthenticationTypes",
+    "OutputValue": "API_KEY,AWS_IAM"
+  },
+  {
+    "OutputKey": "mfaTypes",
+    "OutputValue": "[]"
+  },
+  {
+    "OutputKey": "mfaConfiguration",
+    "OutputValue": "OFF"
+  },
+  {
+    "OutputKey": "oauthResponseType",
+    "OutputValue": "code"
+  },
+  {
+    "OutputKey": "awsAppsyncApiKey",
+    "OutputValue": "da2-ebjsxuyj6nccppdwuy2ozljcla"
+  },
+  {
+    "OutputKey": "awsAppsyncAuthenticationType",
+    "OutputValue": "AMAZON_COGNITO_USER_POOLS"
+  },
+  {
+    "OutputKey": "customOutputs",
+    "OutputValue": "{\"custom\":{\"API\":{\"adminapi-gen2-main\":{\"endpoint\":\"https://42m7vp2bob.execute-api.us-east-1.amazonaws.com/prod\",\"region\":\"us-east-1\",\"apiName\":\"adminapi-gen2-main\"},\"nutritionapi-gen2-main\":{\"endpoint\":\"https://nimt9s6hi5.execute-api.us-east-1.amazonaws.com/prod\",\"region\":\"us-east-1\",\"apiName\":\"nutritionapi-gen2-main\"}}},\"version\":\"1.4\"}"
+  },
+  {
+    "OutputKey": "oauthRedirectSignIn",
+    "OutputValue": "https://example.com"
+  },
+  {
+    "OutputKey": "passwordPolicyMinLength",
+    "OutputValue": "8"
+  },
+  {
+    "OutputKey": "awsAppsyncApiEndpoint",
+    "OutputValue": "https://77wvqbitijagpavjez3eammdna.appsync-api.us-east-1.amazonaws.com/graphql"
+  },
+  {
+    "OutputKey": "awsAppsyncApiId",
+    "OutputValue": "aolmivry45bvbmfywwm6tb542u"
+  },
+  {
+    "OutputKey": "authRegion",
+    "OutputValue": "us-east-1"
+  },
+  {
+    "OutputKey": "amplifyApiModelSchemaS3Uri",
+    "OutputValue": "s3://amplify-fitnesstracker-gen-amplifydataamplifycodege-cm7x3zuy98og/model-schema.graphql"
+  },
+  {
+    "OutputKey": "groups",
+    "OutputValue": "[{\"Admin\":{\"precedence\":0}}]"
+  },
+  {
+    "OutputKey": "definedFunctions",
+    "OutputValue": "[\"fitnesstracker6b0fc1196b0fc119PreSignup-gen2-main\",\"admin-gen2-main\",\"lognutrition-gen2-main\"]"
+  },
+  {
+    "OutputKey": "passwordlessOptions",
+    "OutputValue": ""
+  },
+  {
+    "OutputKey": "awsAppsyncRegion",
+    "OutputValue": "us-east-1"
+  },
+  {
+    "OutputKey": "deploymentType",
+    "OutputValue": "branch"
+  },
+  {
+    "OutputKey": "passwordPolicyRequirements",
+    "OutputValue": "[]"
+  },
+  {
+    "OutputKey": "region",
+    "OutputValue": "us-east-1"
+  },
+  {
+    "OutputKey": "userPoolId",
+    "OutputValue": "us-east-1_MZOGAx4cE"
+  },
+  {
+    "OutputKey": "identityPoolId",
+    "OutputValue": "us-east-1:6528409f-13ea-46fb-987a-ad861eedaad6"
+  },
+  {
+    "OutputKey": "verificationMechanisms",
+    "OutputValue": "[\"email\"]"
+  }
+]

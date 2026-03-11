@@ -1,0 +1,26 @@
+[
+  {
+    "OutputKey": "amplifydiscussionsgen2mainbranch96dfd1dc44dataamplifyDataTopicTopicTableBF2CFCFCTableArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Topic-ruiylk7rjnb4ziygno3jh4wrsq-main"
+  },
+  {
+    "OutputKey": "GetAttTopicTableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Topic-ruiylk7rjnb4ziygno3jh4wrsq-main/stream/2026-03-07T17:11:31.408",
+    "Description": "Your DynamoDB table StreamArn.",
+    "ExportName": "ybf4m7gbureqbeiizzl6s4rztq:GetAtt:TopicTable:StreamArn"
+  },
+  {
+    "OutputKey": "GetAttTopicTableName",
+    "OutputValue": "Topic-ruiylk7rjnb4ziygno3jh4wrsq-main",
+    "Description": "Your DynamoDB table name.",
+    "ExportName": "ybf4m7gbureqbeiizzl6s4rztq:GetAtt:TopicTable:Name"
+  },
+  {
+    "OutputKey": "amplifydiscussionsgen2mainbranch96dfd1dc44dataamplifyDataTopicTopicTableBF2CFCFCTableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Topic-ruiylk7rjnb4ziygno3jh4wrsq-main/stream/2026-03-07T17:11:31.408"
+  },
+  {
+    "OutputKey": "amplifydiscussionsgen2mainbranch96dfd1dc44dataamplifyDataTopicTopicDataSourceD97283B9Name",
+    "OutputValue": "TopicTable"
+  }
+]
