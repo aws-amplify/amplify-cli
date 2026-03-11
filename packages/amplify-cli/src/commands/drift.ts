@@ -41,7 +41,7 @@ export class AmplifyDriftDetector {
       info: (msg: string) => this.withSpinnerPaused(() => basePrint.info(msg)),
       debug: (msg: string) => {
         if (!isDebug) return;
-        this.withSpinnerPaused(() => basePrint.debug(msg));
+        basePrint.debug(msg);
       },
       warn: (msg: string) => this.withSpinnerPaused(() => basePrint.warn(msg)),
       blankLine: () => this.withSpinnerPaused(() => printer.blankLine()),
@@ -125,17 +125,15 @@ export class AmplifyDriftDetector {
       // Phase 1: Detect CloudFormation drift recursively
       this.updateSpinner('Detecting CloudFormation drift...');
       phase1Results = await detectStackDriftRecursive(cfn, stackName, this.printer);
-      this.printer.debug(`Phase 1 complete: ${phase1Results.totalDrifted} drifted resources detected`);
+      this.printer.debug('Phase 1 complete');
 
       if (!syncSuccess) {
         phase2Results = {
-          totalDrifted: 0,
           changes: [],
           skipped: true,
           skipReason: 'S3 backend sync failed - cannot compare templates',
         };
         phase3Results = {
-          totalDrifted: 0,
           skipped: true,
           skipReason: 'S3 backend sync failed - cannot compare local vs cloud',
         };
@@ -147,13 +145,13 @@ export class AmplifyDriftDetector {
         this.updateSpinner('Analyzing template changes...');
         this.printer.debug('Checking for template drift using changesets...');
         phase2Results = await detectTemplateDrift(stackName, this.printer, cfn);
-        this.printer.debug(`template drift totalDrifted=${phase2Results.totalDrifted}`);
+        this.printer.debug(`Phase 2 complete: ${phase2Results.changes.length} changes`);
 
         // Phase 3: Local drift detection
         this.updateSpinner('Checking local changes...');
         this.printer.debug('Checking local files vs cloud backend...');
         phase3Results = await detectLocalDrift(this.context);
-        this.printer.debug(`local drift totalDrifted=${phase3Results.totalDrifted}`);
+        this.printer.debug('Phase 3 complete');
       }
 
       this.stopSpinner('Drift detection completed');
