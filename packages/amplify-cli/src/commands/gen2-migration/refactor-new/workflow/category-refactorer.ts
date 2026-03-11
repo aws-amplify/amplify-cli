@@ -290,4 +290,13 @@ export abstract class CategoryRefactorer implements Refactorer {
       template.Resources[MIGRATION_PLACEHOLDER_LOGICAL_ID] = PLACEHOLDER_RESOURCE;
     }
   }
+
+  /**
+   * Finds a nested stack by logical ID prefix under the given facade's root stack.
+   * Returns the physical resource ID (stack ARN) or undefined if not found.
+   */
+  protected async findNestedStack(facade: StackFacade, prefix: string): Promise<string | undefined> {
+    const stacks = await facade.fetchNestedStacks();
+    return stacks.find((s) => s.LogicalResourceId?.startsWith(prefix))?.PhysicalResourceId;
+  }
 }
