@@ -10,6 +10,33 @@ import {
 } from '@aws-sdk/client-ssm';
 
 /**
+ * Executes an async operation with exponential backoff retry on throttling exceptions.
+ */
+const executeWithExponentialBackOff = async <T>(operation: () => Promise<T>): Promise<T> => {
+  const MAX_RETRIES = 8;
+  const MAX_BACK_OFF_IN_MS = 10 * 1000; // 10 seconds
+  const MIN_BACK_OFF_IN_MS = 1000; // 1 second
+  let backOffSleepTimeInMs = 500;
+  let lastError: Error | undefined;
+
+  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+    try {
+      return await operation();
+    } catch (e) {
+      lastError = e;
+      if ((e?.name === 'ThrottlingException' || e?.name === 'Throttling') && attempt < MAX_RETRIES) {
+        await new Promise((resolve) => setTimeout(resolve, backOffSleepTimeInMs));
+        backOffSleepTimeInMs = 2 ** (attempt + 1) * backOffSleepTimeInMs;
+        backOffSleepTimeInMs = Math.max(Math.min(Math.random() * backOffSleepTimeInMs, MAX_BACK_OFF_IN_MS), MIN_BACK_OFF_IN_MS);
+        continue;
+      }
+      throw e;
+    }
+  }
+  throw lastError;
+};
+
+/**
  * Wrapper around SSM SDK calls
  */
 export class SSMClientWrapper {
@@ -48,19 +75,21 @@ export class SSMClientWrapper {
     let NextToken;
     const accumulator: string[] = [];
     do {
-      const result: GetParametersByPathResult = await this.ssmClient.send(
-        new GetParametersByPathCommand({
-          Path: secretPath,
-          MaxResults: 10,
-          ParameterFilters: [
-            {
-              Key: 'Type',
-              Option: 'Equals',
-              Values: ['SecureString'],
-            },
-          ],
-          NextToken,
-        }),
+      const result: GetParametersByPathResult = await executeWithExponentialBackOff(() =>
+        this.ssmClient.send(
+          new GetParametersByPathCommand({
+            Path: secretPath,
+            MaxResults: 50,
+            ParameterFilters: [
+              {
+                Key: 'Type',
+                Option: 'Equals',
+                Values: ['SecureString'],
+              },
+            ],
+            NextToken,
+          }),
+        ),
       );
 
       if (Array.isArray(result?.Parameters)) {
