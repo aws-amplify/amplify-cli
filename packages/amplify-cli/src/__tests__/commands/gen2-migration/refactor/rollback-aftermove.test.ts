@@ -1,6 +1,6 @@
 import { RollbackCategoryRefactorer } from '../../../../commands/gen2-migration/refactor/workflow/rollback-category-refactorer';
 import { CFNResource, CFNTemplate } from '../../../../commands/gen2-migration/cfn-template';
-import { ResolvedStack } from '../../../../commands/gen2-migration/refactor/workflow/category-refactorer';
+import { RefactorBlueprint, MoveMapping } from '../../../../commands/gen2-migration/refactor/workflow/category-refactorer';
 import { AwsClients } from '../../../../commands/gen2-migration/aws-clients';
 import { StackFacade } from '../../../../commands/gen2-migration/refactor/stack-facade';
 import { mockClient } from 'aws-sdk-client-mock';
@@ -30,10 +30,35 @@ class TestRollbackRefactorer extends RollbackCategoryRefactorer {
     return ['AWS::S3::Bucket'];
   }
   protected buildResourceMappings(source: Map<string, CFNResource>) {
-    const mapping = new Map<string, string>();
-    for (const [id] of source) mapping.set(id, 'S3Bucket');
-    return mapping;
+    const mappings: MoveMapping[] = [];
+    for (const [id, resource] of source) mappings.push({ sourceId: id, targetId: 'S3Bucket', resource });
+    return mappings;
   }
+}
+
+function makeBlueprint(sourceAfterRemoval: CFNTemplate): RefactorBlueprint {
+  const emptyTemplate: CFNTemplate = {
+    AWSTemplateFormatVersion: '2010-09-09',
+    Description: 'empty',
+    Resources: {},
+    Outputs: {},
+  };
+  return {
+    source: {
+      stackId: 'gen2-auth-stack-id',
+      parameters: [],
+      resolvedTemplate: emptyTemplate,
+      afterRemoval: sourceAfterRemoval,
+    },
+    target: {
+      stackId: 'gen1-stack-id',
+      parameters: [],
+      resolvedTemplate: emptyTemplate,
+      afterRemoval: emptyTemplate,
+      afterAddition: emptyTemplate,
+    },
+    mappings: [],
+  };
 }
 
 /**
@@ -82,28 +107,16 @@ describe('RollbackCategoryRefactorer.afterMovePlan', () => {
     const gen2Branch = new StackFacade(clients, 'gen2-root');
     const refactorer = new TestRollbackRefactorer(gen1Env, gen2Branch, clients, 'us-east-1', '123456789');
 
-    const finalSource: CFNTemplate = {
+    const sourceAfterRemoval: CFNTemplate = {
       AWSTemplateFormatVersion: '2010-09-09',
       Description: 'gen2 after move',
       Resources: { OtherResource: { Type: 'AWS::Lambda::Function', Properties: {} } },
       Outputs: {},
     };
 
-    const dummyResolved: ResolvedStack = {
-      stackId: 'gen2-auth-stack-id',
-      originalTemplate: finalSource,
-      resolvedTemplate: finalSource,
-      parameters: [],
-      resourcesToMove: new Map(),
-    };
+    const blueprint = makeBlueprint(sourceAfterRemoval);
 
-    // afterMovePlan is now async — reads holding stack template during plan()
-    const { operations } = await (refactorer as any).afterMovePlan({
-      source: dummyResolved,
-      target: dummyResolved,
-      finalSource,
-      finalTarget: finalSource,
-    });
+    const operations = await (refactorer as any).afterMovePlan(blueprint);
 
     // 3 operations: update holding with placeholder, refactor back, delete holding
     expect(operations).toHaveLength(3);
@@ -124,7 +137,7 @@ describe('RollbackCategoryRefactorer.afterMovePlan', () => {
 
     const destTemplate = JSON.parse(refactorCalls[0].args[0].input.StackDefinitions![1].TemplateBody!);
 
-    // Restore template = finalSource + holding stack resources
+    // Restore template = source.afterRemoval + holding stack resources
     expect(destTemplate.Resources.OtherResource).toBeDefined();
     expect(destTemplate.Resources.MyBucket).toBeDefined();
     expect(destTemplate.Resources.MyBucket.Properties.BucketName).toBe('test-bucket');
@@ -134,7 +147,6 @@ describe('RollbackCategoryRefactorer.afterMovePlan', () => {
   });
 
   it('returns empty operations when no holding stack exists', async () => {
-    // findHoldingStack returns null when no matching stack exists
     cfnMock.on(DescribeStacksCommand).resolves({ Stacks: [] });
 
     const clients = new AwsClients({ region: 'us-east-1' });
@@ -143,27 +155,15 @@ describe('RollbackCategoryRefactorer.afterMovePlan', () => {
     const gen2Branch = new StackFacade(clients, 'gen2-root');
     const refactorer = new TestRollbackRefactorer(gen1Env, gen2Branch, clients, 'us-east-1', '123456789');
 
-    const dummyTemplate: CFNTemplate = {
+    const emptyTemplate: CFNTemplate = {
       AWSTemplateFormatVersion: '2010-09-09',
       Description: 'test',
       Resources: {},
       Outputs: {},
     };
-    const dummyResolved: ResolvedStack = {
-      stackId: 'gen2-stack-id',
-      originalTemplate: dummyTemplate,
-      resolvedTemplate: dummyTemplate,
-      parameters: [],
-      resourcesToMove: new Map(),
-    };
+    const blueprint = makeBlueprint(emptyTemplate);
 
-    const { operations } = await (refactorer as any).afterMovePlan({
-      source: dummyResolved,
-      target: dummyResolved,
-      finalSource: dummyTemplate,
-      finalTarget: dummyTemplate,
-    });
-
+    const operations = await (refactorer as any).afterMovePlan(blueprint);
     expect(operations).toHaveLength(0);
   });
 });

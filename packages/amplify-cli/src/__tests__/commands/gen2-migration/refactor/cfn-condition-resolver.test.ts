@@ -200,6 +200,22 @@ describe('resolveConditions - edge cases', () => {
     expect(() => resolveConditions(template, [])).toThrow("Condition references parameter 'MissingParam'");
   });
 
+  it('throws when Fn::Or has more than 2 operands', () => {
+    const template = makeConditionTemplate(
+      {
+        'Fn::Or': [
+          { 'Fn::Equals': [{ Ref: 'Env' }, 'prod'] },
+          { 'Fn::Equals': [{ Ref: 'Env' }, 'staging'] },
+          { 'Fn::Equals': [{ Ref: 'Env' }, 'dev'] },
+        ],
+      },
+      { Env: { Type: 'String' } },
+    );
+    expect(() => resolveConditions(template, [{ ParameterKey: 'Env', ParameterValue: 'prod' }])).toThrow(
+      "Fn::Or with 3 operands is not supported (condition 'TestCondition'). Only 2 operands are handled.",
+    );
+  });
+
   it('throws on unsupported condition statement', () => {
     const template = makeConditionTemplate({ 'Fn::Equals': [{ 'Fn::Select': [0, ['a', 'b']] }, 'a'] }, {});
     expect(() => resolveConditions(template, [])).toThrow('Unsupported condition statement');

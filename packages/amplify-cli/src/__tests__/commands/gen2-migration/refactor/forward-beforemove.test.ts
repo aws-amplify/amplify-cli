@@ -1,6 +1,6 @@
 import { ForwardCategoryRefactorer } from '../../../../commands/gen2-migration/refactor/workflow/forward-category-refactorer';
 import { CFNResource, CFNTemplate } from '../../../../commands/gen2-migration/cfn-template';
-import { ResolvedStack } from '../../../../commands/gen2-migration/refactor/workflow/category-refactorer';
+import { RefactorBlueprint, MoveMapping } from '../../../../commands/gen2-migration/refactor/workflow/category-refactorer';
 import { AwsClients } from '../../../../commands/gen2-migration/aws-clients';
 import { StackFacade } from '../../../../commands/gen2-migration/refactor/stack-facade';
 import { mockClient } from 'aws-sdk-client-mock';
@@ -28,14 +28,48 @@ class TestForwardRefactorer extends ForwardCategoryRefactorer {
   }
 }
 
-function makeResolved(stackId: string, resources: Map<string, CFNResource>, template?: CFNTemplate): ResolvedStack {
-  const t = template ?? {
+function makeBlueprint(overrides: {
+  targetResolved?: Record<string, CFNResource>;
+  targetAfterRemoval?: Record<string, CFNResource>;
+  mappings?: MoveMapping[];
+}): RefactorBlueprint {
+  const sourceTemplate: CFNTemplate = {
     AWSTemplateFormatVersion: '2010-09-09',
-    Description: 'test',
-    Resources: Object.fromEntries(resources),
+    Description: 'source',
+    Resources: {},
     Outputs: {},
   };
-  return { stackId, originalTemplate: t, resolvedTemplate: t, parameters: [], resourcesToMove: resources };
+  const targetResources = overrides.targetResolved ?? {};
+  const targetTemplate: CFNTemplate = {
+    AWSTemplateFormatVersion: '2010-09-09',
+    Description: 'target',
+    Resources: targetResources,
+    Outputs: {},
+  };
+  const afterRemovalResources = overrides.targetAfterRemoval ?? {};
+  const afterRemoval: CFNTemplate = {
+    AWSTemplateFormatVersion: '2010-09-09',
+    Description: 'target after removal',
+    Resources: afterRemovalResources,
+    Outputs: {},
+  };
+
+  return {
+    source: {
+      stackId: 'gen1-stack',
+      parameters: [],
+      resolvedTemplate: sourceTemplate,
+      afterRemoval: sourceTemplate,
+    },
+    target: {
+      stackId: 'gen2-stack',
+      parameters: [],
+      resolvedTemplate: targetTemplate,
+      afterRemoval,
+      afterAddition: afterRemoval,
+    },
+    mappings: overrides.mappings ?? [],
+  };
 }
 
 describe('ForwardCategoryRefactorer.beforeMovePlan', () => {
@@ -46,7 +80,7 @@ describe('ForwardCategoryRefactorer.beforeMovePlan', () => {
   });
   afterEach(() => cfnMock.restore());
 
-  it('returns empty operations when target has no resources to move', () => {
+  it('returns empty operations when target has no category resources', () => {
     const clients = new AwsClients({ region: 'us-east-1' });
     const refactorer = new TestForwardRefactorer(
       new StackFacade(clients, 'g1'),
@@ -55,16 +89,16 @@ describe('ForwardCategoryRefactorer.beforeMovePlan', () => {
       'us-east-1',
       '123',
     );
-    const source = makeResolved('gen1', new Map());
-    const target = makeResolved('gen2', new Map());
+    const blueprint = makeBlueprint({
+      targetResolved: { Lambda: { Type: 'AWS::Lambda::Function', Properties: {} } },
+    });
 
-    const { operations, postTargetTemplate } = (refactorer as any).beforeMovePlan(source, target);
+    const operations = (refactorer as any).beforeMovePlan(blueprint);
     expect(operations).toHaveLength(0);
-    expect(postTargetTemplate).toBe(target.resolvedTemplate);
   });
 
-  it('creates holding stack operation when target has resources to move', async () => {
-    cfnMock.on(DescribeStacksCommand).resolves({ Stacks: [] }); // no orphaned holding stack
+  it('creates holding stack operation when target has category resources', async () => {
+    cfnMock.on(DescribeStacksCommand).resolves({ Stacks: [] });
     cfnMock.on(CreateStackRefactorCommand).resolves({ StackRefactorId: 'r1' });
     cfnMock
       .on(DescribeStackRefactorCommand)
@@ -82,28 +116,22 @@ describe('ForwardCategoryRefactorer.beforeMovePlan', () => {
       '123',
     );
 
-    const targetResources = new Map<string, CFNResource>([['MyBucket', { Type: 'AWS::S3::Bucket', Properties: {} }]]);
-    const targetTemplate: CFNTemplate = {
-      AWSTemplateFormatVersion: '2010-09-09',
-      Description: 'test',
-      Resources: { MyBucket: { Type: 'AWS::S3::Bucket', Properties: {} }, Other: { Type: 'AWS::Lambda::Function', Properties: {} } },
-      Outputs: {},
-    };
-    const target = makeResolved('gen2-stack', targetResources, targetTemplate);
-    const source = makeResolved('gen1-stack', new Map());
+    const blueprint = makeBlueprint({
+      targetResolved: {
+        MyBucket: { Type: 'AWS::S3::Bucket', Properties: {} },
+        Other: { Type: 'AWS::Lambda::Function', Properties: {} },
+      },
+      targetAfterRemoval: {
+        Other: { Type: 'AWS::Lambda::Function', Properties: {} },
+      },
+    });
 
-    const { operations, postTargetTemplate } = (refactorer as any).beforeMovePlan(source, target);
+    const operations = (refactorer as any).beforeMovePlan(blueprint);
     expect(operations).toHaveLength(1);
     expect(await operations[0].describe()).toEqual([expect.stringContaining('holding stack')]);
-
-    // postTargetTemplate should have MyBucket removed
-    expect(postTargetTemplate.Resources.MyBucket).toBeUndefined();
-    expect(postTargetTemplate.Resources.Other).toBeDefined();
   });
 
   it('cleans up orphaned REVIEW_IN_PROGRESS holding stack before creating new one', async () => {
-    // findHoldingStack sees REVIEW_IN_PROGRESS, then delete poll sees DELETE_COMPLETE,
-    // then post-refactor polls see UPDATE_COMPLETE for both stacks
     cfnMock
       .on(DescribeStacksCommand)
       .resolvesOnce({ Stacks: [{ StackName: 'holding', StackStatus: 'REVIEW_IN_PROGRESS', CreationTime: new Date() }] })
@@ -127,20 +155,14 @@ describe('ForwardCategoryRefactorer.beforeMovePlan', () => {
       '123',
     );
 
-    const targetResources = new Map<string, CFNResource>([['MyBucket', { Type: 'AWS::S3::Bucket', Properties: {} }]]);
-    const targetTemplate: CFNTemplate = {
-      AWSTemplateFormatVersion: '2010-09-09',
-      Description: 'test',
-      Resources: { MyBucket: { Type: 'AWS::S3::Bucket', Properties: {} } },
-      Outputs: {},
-    };
-    const target = makeResolved('gen2-stack', targetResources, targetTemplate);
-    const source = makeResolved('gen1-stack', new Map());
+    const blueprint = makeBlueprint({
+      targetResolved: { MyBucket: { Type: 'AWS::S3::Bucket', Properties: {} } },
+      targetAfterRemoval: {},
+    });
 
-    const { operations } = (refactorer as any).beforeMovePlan(source, target);
+    const operations = (refactorer as any).beforeMovePlan(blueprint);
     await operations[0].execute();
 
-    // Verify DeleteStack was called (orphaned cleanup)
     expect(cfnMock.commandCalls(DeleteStackCommand).length).toBeGreaterThan(0);
   });
 });

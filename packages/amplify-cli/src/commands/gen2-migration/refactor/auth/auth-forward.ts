@@ -1,11 +1,11 @@
 import { Output, Parameter } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { CFNResource } from '../../cfn-template';
-import { AmplifyMigrationOperation } from '../../_operation';
 import { AwsClients } from '../../aws-clients';
 import { StackFacade } from '../stack-facade';
 import { retrieveOAuthValues } from '../oauth-values-retriever';
 import { ForwardCategoryRefactorer } from '../workflow/forward-category-refactorer';
+import { MoveMapping } from '../workflow/category-refactorer';
 import { AUTH_RESOURCE_TYPES, GEN2_NATIVE_APP_CLIENT, discoverGen1AuthStacks } from './auth-utils';
 
 const GEN1_WEB_APP_CLIENT = 'UserPoolClientWeb';
@@ -14,32 +14,10 @@ const HOSTED_PROVIDER_CREDENTIALS_PARAMETER_NAME = 'hostedUIProviderCreds';
 const USER_POOL_ID_OUTPUT_KEY_NAME = 'UserPoolId';
 
 /**
- * Types with multiple instances that need disambiguation in forward mapping.
- */
-const TYPES_WITH_MULTIPLE_RESOURCES = ['AWS::Cognito::UserPoolClient', 'AWS::Cognito::UserPoolGroup'];
-
-/**
  * Forward refactorer for the auth category.
  *
- * Overrides plan() because Gen1 auth has two source stacks (main auth + UserPoolGroups)
- * mapping to one Gen2 destination. The second move's templates chain off the first move's
- * output, requiring sequential buildRefactorTemplates calls that the base class's 1-to-1
- * plan() doesn't support.
- *
- * The override still calls the base class's concrete workflow methods (resolveSource,
- * resolveTarget, buildResourceMappings, beforeMovePlan, buildRefactorTemplates,
- * buildMoveOperations, updateSource, updateTarget) — it only controls the orchestration.
- *
- * TARGET STATE: Split into AuthMainForwardRefactorer + AuthUserPoolGroupForwardRefactorer,
- * each going through the standard plan() flow. Requires an orchestration-layer coordination
- * mechanism where planAndValidate in refactor.ts tracks per-destination-stack template state:
- *
- *   interface RefactorerWithOutput extends Refactorer {
- *     plan(currentDestTemplate?: CFNTemplate): Promise<{ operations: AmplifyMigrationOperation[]; finalDestTemplate?: CFNTemplate }>;
- *   }
- *
- * The first auth refactorer returns its finalDestTemplate. The second receives it as input
- * instead of reading from the facade. This eliminates the plan() override entirely.
+ * Moves main auth resources from Gen1 to Gen2.
+ * UserPoolGroup support will be added back in a future change.
  */
 export class AuthForwardRefactorer extends ForwardCategoryRefactorer {
   constructor(
@@ -56,69 +34,6 @@ export class AuthForwardRefactorer extends ForwardCategoryRefactorer {
 
   protected resourceTypes(): string[] {
     return AUTH_RESOURCE_TYPES;
-  }
-
-  /**
-   * Overrides plan() to handle two Gen1 source stacks → one Gen2 destination.
-   */
-  public override async plan(): Promise<AmplifyMigrationOperation[]> {
-    const { mainAuthStackId, userPoolGroupStackId } = await discoverGen1AuthStacks(this.gen1Env);
-    const gen2StackId = await this.findNestedStack(this.gen2Branch, 'auth');
-
-    if (!mainAuthStackId && !gen2StackId) return [];
-    if (!mainAuthStackId || !gen2StackId) {
-      throw new AmplifyError('InvalidStackError', {
-        message: `Auth category exists in ${mainAuthStackId ? 'source' : 'destination'} but not ${
-          mainAuthStackId ? 'destination' : 'source'
-        } stack`,
-      });
-    }
-
-    const mainAuthSource = await this.resolveSource(mainAuthStackId);
-    const userPoolGroupSource = userPoolGroupStackId ? await this.resolveSource(userPoolGroupStackId) : undefined;
-    const target = await this.resolveTarget(gen2StackId);
-
-    if (mainAuthSource.resourcesToMove.size === 0) {
-      return []; // Nothing to move — skip auth category
-    }
-
-    const mainAuthIdMap = this.buildResourceMappings(mainAuthSource.resourcesToMove, target.resourcesToMove);
-    const userPoolGroupIdMap = userPoolGroupSource
-      ? this.buildResourceMappings(userPoolGroupSource.resourcesToMove, target.resourcesToMove)
-      : new Map<string, string>();
-
-    const { operations: beforeMoveOps, postTargetTemplate } = this.beforeMovePlan(mainAuthSource, target);
-
-    // Chain: second move uses output of first
-    const { finalSource: finalMainAuth, finalTarget: gen2AfterMainAuth } = this.buildRefactorTemplates(
-      mainAuthSource,
-      postTargetTemplate,
-      mainAuthIdMap,
-    );
-    const mainAuthMoveOps = this.buildMoveOperations(mainAuthStackId, gen2StackId, finalMainAuth, gen2AfterMainAuth, mainAuthIdMap);
-
-    const userPoolGroupOps: AmplifyMigrationOperation[] = [];
-    if (userPoolGroupSource && userPoolGroupSource.resourcesToMove.size > 0) {
-      const { finalSource: finalUserPoolGroup, finalTarget: gen2AfterBoth } = this.buildRefactorTemplates(
-        userPoolGroupSource,
-        gen2AfterMainAuth,
-        userPoolGroupIdMap,
-      );
-      userPoolGroupOps.push(
-        ...this.buildMoveOperations(userPoolGroupStackId!, gen2StackId, finalUserPoolGroup, gen2AfterBoth, userPoolGroupIdMap),
-      );
-    }
-
-    const ops: AmplifyMigrationOperation[] = [];
-    ops.push(...this.updateSource(mainAuthSource));
-    if (userPoolGroupSource) {
-      ops.push(...this.updateSource(userPoolGroupSource));
-    }
-    ops.push(...this.updateTarget(target));
-    ops.push(...beforeMoveOps);
-    ops.push(...mainAuthMoveOps);
-    ops.push(...userPoolGroupOps);
-    return ops;
   }
 
   /**
@@ -157,45 +72,40 @@ export class AuthForwardRefactorer extends ForwardCategoryRefactorer {
   /**
    * Auth forward mapping with UserPoolClient Web/Native disambiguation.
    */
-  protected buildResourceMappings(
-    sourceResources: Map<string, CFNResource>,
-    targetResources: Map<string, CFNResource>,
-  ): Map<string, string> {
-    const mapping = new Map<string, string>();
+  protected buildResourceMappings(sourceResources: Map<string, CFNResource>, targetResources: Map<string, CFNResource>): MoveMapping[] {
+    const mappings: MoveMapping[] = [];
     const usedTargetIds = new Set<string>();
 
     for (const [sourceId, sourceResource] of sourceResources) {
+      let matched = false;
       for (const [targetId, targetResource] of targetResources) {
         if (sourceResource.Type !== targetResource.Type || usedTargetIds.has(targetId)) continue;
 
-        if (TYPES_WITH_MULTIPLE_RESOURCES.includes(sourceResource.Type)) {
-          if (sourceResource.Type === 'AWS::Cognito::UserPoolClient') {
-            const isWebPair = sourceId === GEN1_WEB_APP_CLIENT && !targetId.includes(GEN2_NATIVE_APP_CLIENT);
-            const isNativePair = sourceId !== GEN1_WEB_APP_CLIENT && targetId.includes(GEN2_NATIVE_APP_CLIENT);
-            if (!isWebPair && !isNativePair) continue;
-          } else if (!targetId.includes(sourceId)) {
-            continue;
-          }
+        if (sourceResource.Type === 'AWS::Cognito::UserPoolClient') {
+          const isWebPair = sourceId === GEN1_WEB_APP_CLIENT && !targetId.includes(GEN2_NATIVE_APP_CLIENT);
+          const isNativePair = sourceId !== GEN1_WEB_APP_CLIENT && targetId.includes(GEN2_NATIVE_APP_CLIENT);
+          if (!isWebPair && !isNativePair) continue;
         }
 
-        mapping.set(sourceId, targetId);
+        mappings.push({ sourceId, targetId, resource: sourceResource });
         usedTargetIds.add(targetId);
+        matched = true;
         break;
       }
+      if (!matched) {
+        throw new AmplifyError('InvalidStackError', {
+          message: `Source resource '${sourceId}' (type '${sourceResource.Type}') has no corresponding target resource`,
+        });
+      }
     }
-    return mapping;
+    return mappings;
   }
 
-  /**
-   * Returns the main Gen1 auth stack. Required by abstract base; not called when plan() is overridden.
-   */
   protected async fetchSourceStackId(): Promise<string | undefined> {
-    return this.findNestedStack(this.gen1Env, 'auth');
+    const { mainAuthStackId } = await discoverGen1AuthStacks(this.gen1Env);
+    return mainAuthStackId;
   }
 
-  /**
-   * Returns the Gen2 auth stack. Required by abstract base; not called when plan() is overridden.
-   */
   protected async fetchDestStackId(): Promise<string | undefined> {
     return this.findNestedStack(this.gen2Branch, 'auth');
   }

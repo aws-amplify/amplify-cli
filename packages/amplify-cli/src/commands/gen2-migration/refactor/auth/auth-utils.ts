@@ -6,7 +6,6 @@ export const AUTH_RESOURCE_TYPES = [
   'AWS::Cognito::IdentityPool',
   'AWS::Cognito::IdentityPoolRoleAttachment',
   'AWS::Cognito::UserPoolDomain',
-  'AWS::Cognito::UserPoolGroup',
 ];
 
 export const GEN2_NATIVE_APP_CLIENT = 'UserPoolNativeAppClient';

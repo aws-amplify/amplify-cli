@@ -18,10 +18,8 @@ export const PLACEHOLDER_RESOURCE: CFNResource = { Type: 'AWS::CloudFormation::W
  */
 export interface ResolvedStack {
   readonly stackId: string;
-  readonly originalTemplate: CFNTemplate;
   readonly resolvedTemplate: CFNTemplate;
   readonly parameters: Parameter[];
-  readonly resourcesToMove: Map<string, CFNResource>;
 }
 
 /**
@@ -33,6 +31,36 @@ export interface ResourceMapping {
 }
 
 /**
+ * A single resource to be moved from source to target stack.
+ */
+export interface MoveMapping {
+  readonly sourceId: string;
+  readonly targetId: string;
+  readonly resource: CFNResource;
+}
+
+/**
+ * Consolidated refactor data object. All templates and mappings are pre-computed
+ * together inside buildBlueprint(), ensuring source/target resources stay in sync.
+ */
+export interface RefactorBlueprint {
+  readonly source: {
+    readonly stackId: string;
+    readonly parameters: Parameter[];
+    readonly resolvedTemplate: CFNTemplate;
+    readonly afterRemoval: CFNTemplate;
+  };
+  readonly target: {
+    readonly stackId: string;
+    readonly parameters: Parameter[];
+    readonly resolvedTemplate: CFNTemplate;
+    readonly afterRemoval: CFNTemplate;
+    readonly afterAddition: CFNTemplate;
+  };
+  readonly mappings: MoveMapping[];
+}
+
+/**
  * Abstract base class implementing the shared refactor workflow.
  *
  * Concrete plan() enforces a rigid phase sequence. Category-specific methods
@@ -40,7 +68,7 @@ export interface ResourceMapping {
  * are abstract. Direction-specific methods (resolveSource, resolveTarget,
  * beforeMovePlan, afterMovePlan) are abstract.
  *
- * Shared workflow methods (updateSource, updateTarget, move, buildRefactorTemplates)
+ * Shared workflow methods (updateSource, updateTarget, buildBlueprint, buildMoveOperations)
  * are concrete on this base class.
  */
 export abstract class CategoryRefactorer implements Refactorer {
@@ -70,79 +98,51 @@ export abstract class CategoryRefactorer implements Refactorer {
     const source = await this.resolveSource(sourceStackId);
     const target = await this.resolveTarget(destStackId);
 
-    if (source.resourcesToMove.size === 0) {
-      return []; // Nothing to move — skip this category (matches old behavior)
+    const blueprint = this.buildBlueprint(source, target);
+    if (!blueprint) {
+      return []; // Nothing to move — skip this category
     }
 
-    const logicalIdMap = this.buildResourceMappings(source.resourcesToMove, target.resourcesToMove);
-    const { operations: beforeMoveOps, postTargetTemplate } = this.beforeMovePlan(source, target);
-    const { finalSource, finalTarget } = this.buildRefactorTemplates(source, postTargetTemplate, logicalIdMap);
+    const beforeMoveOps = this.beforeMovePlan(blueprint);
+    const moveOps = this.buildMoveOperations(blueprint);
+    const afterMoveOps = await this.afterMovePlan(blueprint);
 
-    const moveOps = this.buildMoveOperations(source.stackId, destStackId, finalSource, finalTarget, logicalIdMap);
-    const { operations: afterMoveOps } = await this.afterMovePlan({ source, target, finalSource, finalTarget });
-
-    return [...this.updateSource(source), ...this.updateTarget(target), ...beforeMoveOps, ...moveOps, ...afterMoveOps];
+    return [...this.updateSource(blueprint.source), ...this.updateTarget(target), ...beforeMoveOps, ...moveOps, ...afterMoveOps];
   }
 
   // -- Category-specific (abstract) --
 
-  /**
-   * Returns the source stack ID for this category, or undefined if the category doesn't exist.
-   */
   protected abstract fetchSourceStackId(): Promise<string | undefined>;
-
-  /**
-   * Returns the destination stack ID for this category, or undefined if the category doesn't exist.
-   */
   protected abstract fetchDestStackId(): Promise<string | undefined>;
-
-  /**
-   * Returns the CFN resource types this category handles (e.g., ['AWS::S3::Bucket']).
-   */
   protected abstract resourceTypes(): string[];
 
   /**
-   * Builds the logical ID mapping from source to destination.
+   * Builds the resource mappings from source to destination.
+   * Called internally by buildBlueprint() with already-filtered resources.
    */
   protected abstract buildResourceMappings(
     sourceResources: Map<string, CFNResource>,
     targetResources: Map<string, CFNResource>,
-  ): Map<string, string>;
+  ): MoveMapping[];
 
   // -- Direction-specific (abstract) --
 
-  /**
-   * Resolves the source stack template. Returns pre-computed data including
-   * the resolved template and the resources to move.
-   */
   protected abstract resolveSource(stackId: string): Promise<ResolvedStack>;
-
-  /**
-   * Resolves the target stack template.
-   */
   protected abstract resolveTarget(stackId: string): Promise<ResolvedStack>;
 
   /**
-   * Pre-move operations and the post-operation target template.
-   * Forward: moves Gen2 resources to holding stack, returns modified target template.
-   * Rollback: no-op, returns target template unchanged.
+   * Pre-move operations.
+   * Forward: moves Gen2 resources to holding stack.
+   * Rollback: no-op.
    */
-  protected abstract beforeMovePlan(
-    source: ResolvedStack,
-    target: ResolvedStack,
-  ): { operations: AmplifyMigrationOperation[]; postTargetTemplate: CFNTemplate };
+  protected abstract beforeMovePlan(blueprint: RefactorBlueprint): AmplifyMigrationOperation[];
 
   /**
-   * Post-move operations. All reads happen here (during plan()); operations only execute mutations.
+   * Post-move operations.
    * Forward: empty.
-   * Rollback: reads holding stack template, returns 3 operations (update, refactor, delete).
+   * Rollback: restores holding stack resources into Gen2, deletes holding stack.
    */
-  protected abstract afterMovePlan(params: {
-    source: ResolvedStack;
-    target: ResolvedStack;
-    finalSource: CFNTemplate;
-    finalTarget: CFNTemplate;
-  }): Promise<{ operations: AmplifyMigrationOperation[] }>;
+  protected abstract afterMovePlan(blueprint: RefactorBlueprint): Promise<AmplifyMigrationOperation[]>;
 
   // -- Shared workflow (concrete) --
 
@@ -153,9 +153,7 @@ export abstract class CategoryRefactorer implements Refactorer {
   protected updateSource(source: ResolvedStack): AmplifyMigrationOperation[] {
     return [
       {
-        validate: async () => {
-          this.validateNoResourceRemoval(source);
-        },
+        validate: async () => {},
         describe: async () => [`Update source stack '${extractStackNameFromId(source.stackId)}' with resolved references`],
         execute: async () => {
           const status = await tryUpdateStack({
@@ -181,9 +179,7 @@ export abstract class CategoryRefactorer implements Refactorer {
   protected updateTarget(target: ResolvedStack): AmplifyMigrationOperation[] {
     return [
       {
-        validate: async () => {
-          this.validateNoResourceRemoval(target);
-        },
+        validate: async () => {},
         describe: async () => [`Update target stack '${extractStackNameFromId(target.stackId)}' with resolved references`],
         execute: async () => {
           const status = await tryUpdateStack({
@@ -203,71 +199,94 @@ export abstract class CategoryRefactorer implements Refactorer {
   }
 
   /**
-   * Manipulates resolved templates to produce the final templates for the refactor API.
-   * Removes moved resources from source, adds them to target with remapped IDs.
+   * Builds a consolidated RefactorBlueprint from resolved source and target stacks.
+   * Returns undefined if there are no resources to move.
+   *
+   * This consolidates buildResourceMappings + template manipulation + placeholder logic
+   * into one function, ensuring resourcesToMove and logicalIdMap are always in sync.
    */
-  protected buildRefactorTemplates(
-    source: ResolvedStack,
-    postTargetTemplate: CFNTemplate,
-    logicalIdMap: Map<string, string>,
-  ): { finalSource: CFNTemplate; finalTarget: CFNTemplate } {
-    const finalSource = JSON.parse(JSON.stringify(source.resolvedTemplate)) as CFNTemplate;
-    const finalTarget = JSON.parse(JSON.stringify(postTargetTemplate)) as CFNTemplate;
+  protected buildBlueprint(source: ResolvedStack, target: ResolvedStack): RefactorBlueprint | undefined {
+    const sourceResources = this.filterResourcesByType(source.resolvedTemplate);
+    const targetResources = this.filterResourcesByType(target.resolvedTemplate);
 
-    // Remove moved resources from source
-    for (const logicalId of source.resourcesToMove.keys()) {
-      delete finalSource.Resources[logicalId];
+    if (sourceResources.size === 0) return undefined;
+
+    const mappings = this.buildResourceMappings(sourceResources, targetResources);
+
+    // source.afterRemoval: clone source template, remove mapped resources, add placeholder if empty
+    const afterRemoval = JSON.parse(JSON.stringify(source.resolvedTemplate)) as CFNTemplate;
+    for (const { sourceId } of mappings) {
+      delete afterRemoval.Resources[sourceId];
     }
+    addPlaceholderIfEmpty(afterRemoval);
 
-    // Add source resources to target with remapped logical IDs
-    for (const [sourceId, resource] of source.resourcesToMove) {
-      const targetId = logicalIdMap.get(sourceId);
-      if (!targetId) continue;
+    // If afterRemoval needs a placeholder, the resolved template used by updateSource must
+    // also include it. The refactor API only moves existing resources — the placeholder must
+    // be created via UpdateStack first so it physically exists before the refactor.
+    const sourceResolved = afterRemoval.Resources[MIGRATION_PLACEHOLDER_LOGICAL_ID]
+      ? { ...source.resolvedTemplate, Resources: { ...source.resolvedTemplate.Resources, [MIGRATION_PLACEHOLDER_LOGICAL_ID]: PLACEHOLDER_RESOURCE } }
+      : source.resolvedTemplate;
 
-      const clonedResource = JSON.parse(JSON.stringify(resource)) as CFNResource;
+    // target.afterRemoval: clone target template, remove target category resources, add placeholder if empty
+    const targetAfterRemoval = JSON.parse(JSON.stringify(target.resolvedTemplate)) as CFNTemplate;
+    for (const [id] of targetResources) {
+      delete targetAfterRemoval.Resources[id];
+    }
+    addPlaceholderIfEmpty(targetAfterRemoval);
 
-      // Remap DependsOn to use target logical IDs
-      if (clonedResource.DependsOn) {
-        const deps = Array.isArray(clonedResource.DependsOn) ? clonedResource.DependsOn : [clonedResource.DependsOn];
-        clonedResource.DependsOn = deps.map((d) => logicalIdMap.get(d) ?? d);
+    // target.afterAddition: clone afterRemoval, add mapped resources with remapped DependsOn
+    const afterAddition = JSON.parse(JSON.stringify(targetAfterRemoval)) as CFNTemplate;
+    const idMap = new Map(mappings.map((m) => [m.sourceId, m.targetId]));
+    for (const { targetId, resource } of mappings) {
+      const cloned = JSON.parse(JSON.stringify(resource)) as CFNResource;
+      if (cloned.DependsOn) {
+        const deps = Array.isArray(cloned.DependsOn) ? cloned.DependsOn : [cloned.DependsOn];
+        cloned.DependsOn = deps.map((d) => idMap.get(d) ?? d);
       }
-
-      finalTarget.Resources[targetId] = clonedResource;
+      afterAddition.Resources[targetId] = cloned;
     }
 
-    return { finalSource, finalTarget };
+    return {
+      source: {
+        stackId: source.stackId,
+        parameters: source.parameters,
+        resolvedTemplate: sourceResolved,
+        afterRemoval,
+      },
+      target: {
+        stackId: target.stackId,
+        parameters: target.parameters,
+        resolvedTemplate: target.resolvedTemplate,
+        afterRemoval: targetAfterRemoval,
+        afterAddition,
+      },
+      mappings,
+    };
   }
 
   /**
    * Creates the move operation that executes the CloudFormation stack refactor.
    */
-  protected buildMoveOperations(
-    sourceStackId: string,
-    destStackId: string,
-    finalSource: CFNTemplate,
-    finalTarget: CFNTemplate,
-    logicalIdMap: Map<string, string>,
-  ): AmplifyMigrationOperation[] {
-    const resourceMappings: ResourceMapping[] = [...logicalIdMap.entries()].map(([sourceLogicalId, destLogicalId]) => ({
-      Source: { StackName: extractStackNameFromId(sourceStackId), LogicalResourceId: sourceLogicalId },
-      Destination: { StackName: extractStackNameFromId(destStackId), LogicalResourceId: destLogicalId },
+  protected buildMoveOperations(blueprint: RefactorBlueprint): AmplifyMigrationOperation[] {
+    const { source, target, mappings } = blueprint;
+    const resourceMappings: ResourceMapping[] = mappings.map(({ sourceId, targetId }) => ({
+      Source: { StackName: extractStackNameFromId(source.stackId), LogicalResourceId: sourceId },
+      Destination: { StackName: extractStackNameFromId(target.stackId), LogicalResourceId: targetId },
     }));
 
     return [
       {
-        validate: async () => {
-          // No pre-validation needed for the move operation
-        },
+        validate: async () => {},
         describe: async () => [
-          `Move ${resourceMappings.length} resource(s) from '${extractStackNameFromId(sourceStackId)}' to '${extractStackNameFromId(
-            destStackId,
+          `Move ${resourceMappings.length} resource(s) from '${extractStackNameFromId(source.stackId)}' to '${extractStackNameFromId(
+            target.stackId,
           )}'`,
         ],
         execute: async () => {
           const result = await tryRefactorStack(this.clients.cloudFormation, {
             StackDefinitions: [
-              { TemplateBody: JSON.stringify(finalSource), StackName: sourceStackId },
-              { TemplateBody: JSON.stringify(finalTarget), StackName: destStackId },
+              { TemplateBody: JSON.stringify(source.afterRemoval), StackName: source.stackId },
+              { TemplateBody: JSON.stringify(target.afterAddition), StackName: target.stackId },
             ],
             ResourceMappings: resourceMappings,
           });
@@ -284,7 +303,6 @@ export abstract class CategoryRefactorer implements Refactorer {
 
   /**
    * Filters resources from a template by the category's resource types.
-   * Used by direction subclasses during resolution.
    */
   protected filterResourcesByType(template: CFNTemplate): Map<string, CFNResource> {
     const types = this.resourceTypes();
@@ -292,41 +310,20 @@ export abstract class CategoryRefactorer implements Refactorer {
   }
 
   /**
-   * Adds a placeholder resource if all resources in the resolved template are being moved.
-   * CloudFormation requires at least one resource in a stack.
-   */
-  protected addPlaceholderIfNeeded(resolvedTemplate: CFNTemplate, resourcesToMove: Map<string, CFNResource>): void {
-    if (Object.keys(resolvedTemplate.Resources).length === resourcesToMove.size) {
-      resolvedTemplate.Resources[MIGRATION_PLACEHOLDER_LOGICAL_ID] = PLACEHOLDER_RESOURCE;
-    }
-  }
-
-  /**
    * Finds a nested stack by logical ID prefix under the given facade's root stack.
-   * Returns the physical resource ID (stack ARN) or undefined if not found.
    */
   protected async findNestedStack(facade: StackFacade, prefix: string): Promise<string | undefined> {
     const stacks = await facade.fetchNestedStacks();
     return stacks.find((s) => s.LogicalResourceId?.startsWith(prefix))?.PhysicalResourceId;
   }
+}
 
-  /**
-   * R6: Validates that template resolution did not remove any unconditional resources.
-   * Resources with a Condition property may be legitimately removed by condition resolution
-   * (the condition evaluated to false, so the resource was never created).
-   * Only flags removal of resources that have no Condition — those should always survive resolution.
-   */
-  private validateNoResourceRemoval(stack: ResolvedStack): void {
-    const resolvedKeys = new Set(Object.keys(stack.resolvedTemplate.Resources));
-    const removed = Object.entries(stack.originalTemplate.Resources)
-      .filter(([key, resource]) => !resource.Condition && !resolvedKeys.has(key))
-      .map(([key]) => key);
-    if (removed.length > 0) {
-      throw new AmplifyError('StackStateError', {
-        message:
-          `Pre-processing stack '${extractStackNameFromId(stack.stackId)}' would remove ${removed.length} resource(s): ` +
-          `${removed.join(', ')}. Aborting to prevent resource deletion.`,
-      });
-    }
+/**
+ * Adds a placeholder resource if the template has no resources.
+ * CloudFormation requires at least one resource in a stack.
+ */
+function addPlaceholderIfEmpty(template: CFNTemplate): void {
+  if (Object.keys(template.Resources).length === 0) {
+    template.Resources[MIGRATION_PLACEHOLDER_LOGICAL_ID] = PLACEHOLDER_RESOURCE;
   }
 }

@@ -26,6 +26,11 @@ export function resolveConditions(template: CFNTemplate, parameters: Parameter[]
     if (!Object.values(CFNFunction).includes(fnType)) continue;
 
     const statements = conditionDef[fnType as keyof CFNConditionFunction] as CFNConditionFunctionStatement[];
+    if ((fnType === CFNFunction.Or || fnType === CFNFunction.And) && statements.length > 2) {
+      throw new AmplifyError('CloudFormationTemplateError', {
+        message: `${fnType} with ${statements.length} operands is not supported (condition '${conditionKey}'). Only 2 operands are handled.`,
+      });
+    }
     const [left, right] = statements;
     conditionValues.set(conditionKey, evaluateCondition(conditions, left, right, parameters, fnType));
   }
