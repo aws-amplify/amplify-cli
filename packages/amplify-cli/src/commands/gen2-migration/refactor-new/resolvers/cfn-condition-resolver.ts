@@ -4,6 +4,7 @@ import { CFNConditionFunction, CFNConditionFunctionStatement, CFNFunction, CFNTe
 
 /**
  * Resolves conditions in a CloudFormation template.
+ * Returns a new template; does not mutate input.
  *
  * Three phases:
  * 1. Evaluate all Conditions → Map<string, boolean>

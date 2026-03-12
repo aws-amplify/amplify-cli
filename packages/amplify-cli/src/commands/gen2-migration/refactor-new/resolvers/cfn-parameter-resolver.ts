@@ -5,6 +5,7 @@ import { walkCfnTree } from './cfn-tree-walker';
 
 /**
  * Resolves parameter references in a CloudFormation template by tree-walking.
+ * Returns a new template; does not mutate input.
  *
  * Finds {"Ref": "ParamKey"} nodes and replaces them with the parameter's runtime value.
  * Handles CommaDelimitedList/List<Number> (split into arrays), NoEcho (skipped),

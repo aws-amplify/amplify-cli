@@ -9,7 +9,7 @@ export const OUTPUT_DIRECTORY = `.amplify/refactor.operations`;
  * Writes stack update snapshot files before an UpdateStack call.
  * Produces: update.<stackName>.template.json, update.<stackName>.parameters.json
  */
-export async function preUpdateStack(input: UpdateStackCommandInput): Promise<void> {
+export function preUpdateStack(input: UpdateStackCommandInput): void {
   makeDirectory(OUTPUT_DIRECTORY);
   const stackName = extractStackNameFromId(input.StackName!);
   fs.writeFileSync(path.join(OUTPUT_DIRECTORY, `update.${stackName}.template.json`), formatTemplateBody(input.TemplateBody!));
@@ -20,7 +20,7 @@ export async function preUpdateStack(input: UpdateStackCommandInput): Promise<vo
  * Writes stack refactor snapshot files before a CreateStackRefactor call.
  * Produces: refactor.__from__.<source>.__to__.<dest>.{source.template.json, target.template.json, mappings.json}
  */
-export async function preRefactorStack(input: CreateStackRefactorCommandInput): Promise<void> {
+export function preRefactorStack(input: CreateStackRefactorCommandInput): void {
   makeDirectory(OUTPUT_DIRECTORY);
   const source = input.StackDefinitions![0];
   const target = input.StackDefinitions![1];

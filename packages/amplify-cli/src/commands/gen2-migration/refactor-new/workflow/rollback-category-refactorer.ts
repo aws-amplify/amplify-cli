@@ -132,8 +132,14 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
   /**
    * Restores holding stack resources into Gen2 and deletes the holding stack.
    *
-   * During plan(): reads the holding stack template, computes the restore target template.
-   * During execute(): updates holding stack with placeholder, refactors resources back, deletes.
+   * KNOWN LIMITATION: This operation reads the holding stack template during execute(),
+   * violating the "all reads in plan(), all mutations in execute()" contract. It also
+   * bundles read + update + refactor + delete into a single operation.
+   *
+   * TARGET STATE: Make afterMovePlan async, read holding stack template during plan(),
+   * and return 3 separate operations: (1) update holding stack with placeholder,
+   * (2) refactor resources back to Gen2, (3) delete holding stack. This requires
+   * updating the rollback-aftermove.test.ts which currently asserts operations.length === 1.
    */
   protected afterMovePlan(params: { source: ResolvedStack; target: ResolvedStack; finalSource: CFNTemplate; finalTarget: CFNTemplate }): {
     operations: RefactorOperation[];

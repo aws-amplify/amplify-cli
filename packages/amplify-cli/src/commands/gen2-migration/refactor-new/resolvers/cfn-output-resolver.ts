@@ -5,6 +5,7 @@ import { walkCfnTree } from './cfn-tree-walker';
 
 /**
  * Resolves output and resource references in a CloudFormation template by tree-walking.
+ * Returns a new template; does not mutate input.
  *
  * Two-phase resolution:
  * 1. Walk template.Resources — resolve {"Ref": "X"} and {"Fn::GetAtt": ["X", "Attr"]} using

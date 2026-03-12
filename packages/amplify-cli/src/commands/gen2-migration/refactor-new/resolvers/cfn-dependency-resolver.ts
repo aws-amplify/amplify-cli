@@ -2,6 +2,7 @@ import { CFNTemplate } from '../cfn-template';
 
 /**
  * Resolves DependsOn references in a CloudFormation template for a stack refactor.
+ * Returns a new template; does not mutate input.
  *
  * When resources are being moved between stacks, DependsOn references that cross
  * the refactor boundary must be removed:
