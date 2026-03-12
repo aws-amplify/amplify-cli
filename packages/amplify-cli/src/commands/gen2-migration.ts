@@ -238,6 +238,9 @@ async function validate(step: AmplifyMigrationStep, rollback: boolean, logger: L
 
 async function runOperations(operations: AmplifyMigrationOperation[]) {
   for (const operation of operations) {
+    await operation.validate();
+  }
+  for (const operation of operations) {
     await operation.execute();
   }
 }

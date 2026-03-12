@@ -1,7 +1,7 @@
 import { Output, Parameter } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { CFNResource, CFNTemplate } from '../cfn-template';
-import { RefactorOperation } from '../refactorer';
+import { AmplifyMigrationOperation } from '../../_operation';
 import { resolveParameters } from '../resolvers/cfn-parameter-resolver';
 import { resolveOutputs } from '../resolvers/cfn-output-resolver';
 import { resolveDependencies } from '../resolvers/cfn-dependency-resolver';
@@ -120,7 +120,7 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
   protected beforeMovePlan(
     _source: ResolvedStack,
     target: ResolvedStack,
-  ): { operations: RefactorOperation[]; postTargetTemplate: CFNTemplate } {
+  ): { operations: AmplifyMigrationOperation[]; postTargetTemplate: CFNTemplate } {
     if (target.resourcesToMove.size === 0) {
       return { operations: [], postTargetTemplate: target.resolvedTemplate };
     }
@@ -147,7 +147,7 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
       Destination: { StackName: extractStackNameFromId(holdingStackName), LogicalResourceId: id },
     }));
 
-    const operations: RefactorOperation[] = [
+    const operations: AmplifyMigrationOperation[] = [
       {
         validate: async () => {
           // No validation needed for holding stack move
@@ -184,7 +184,7 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
   /**
    * Forward: no post-move operations. Holding stack survives for rollback.
    */
-  protected async afterMovePlan(): Promise<{ operations: RefactorOperation[] }> {
+  protected async afterMovePlan(): Promise<{ operations: AmplifyMigrationOperation[] }> {
     return { operations: [] };
   }
 

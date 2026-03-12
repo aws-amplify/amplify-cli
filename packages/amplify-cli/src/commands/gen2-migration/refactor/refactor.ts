@@ -6,7 +6,7 @@ import { GetCallerIdentityCommand, STSClient } from '@aws-sdk/client-sts';
 import { AmplifyGen2MigrationValidations } from '../_validations';
 import { AwsClients } from './aws-clients';
 import { StackFacade } from './stack-facade';
-import { Refactorer, RefactorOperation } from './refactorer';
+import { Refactorer } from './refactorer';
 import { AuthForwardRefactorer } from './auth/auth-forward';
 import { AuthRollbackRefactorer } from './auth/auth-rollback';
 import { StorageForwardRefactorer } from './storage/storage-forward';
@@ -63,7 +63,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
       new AnalyticsRollbackRefactorer(gen1Env, gen2Branch, clients, this.region, accountId),
     ];
 
-    return this.planAndValidate(refactorers);
+    return this.plan(refactorers);
   }
 
   private async executeNew(toStack: string): Promise<AmplifyMigrationOperation[]> {
@@ -75,7 +75,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
       new AnalyticsForwardRefactorer(gen1Env, gen2Branch, clients, this.region, accountId),
     ];
 
-    return this.planAndValidate(refactorers);
+    return this.plan(refactorers);
   }
 
   private async createInfrastructure(toStack: string): Promise<{
@@ -98,17 +98,12 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
   }
 
   /**
-   * Collects operations from all refactorers and runs validation (R7).
+   * Collects operations from all refactorers.
    */
-  private async planAndValidate(refactorers: Refactorer[]): Promise<RefactorOperation[]> {
-    const operations: RefactorOperation[] = [];
+  private async plan(refactorers: Refactorer[]): Promise<AmplifyMigrationOperation[]> {
+    const operations: AmplifyMigrationOperation[] = [];
     for (const refactorer of refactorers) {
       operations.push(...(await refactorer.plan()));
-    }
-
-    // R7: All validations complete before any mutations
-    for (const op of operations) {
-      await op.validate();
     }
 
     return operations;

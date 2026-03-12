@@ -111,6 +111,9 @@ export class BackendGenerator implements Generator {
 
     return [
       {
+        validate: async () => {
+          return;
+        },
         describe: async () => ['Generate amplify/backend.ts'],
         execute: async () => {
           const nodes: ts.Node[] = [];

@@ -109,6 +109,9 @@ export class S3Generator implements Generator {
     const storageIdentifier = bucketName;
 
     return {
+      validate: async () => {
+        return;
+      },
       describe: async () => ['Generate amplify/storage/resource.ts'],
       execute: async () => {
         const accessPatterns = this.buildAccessPatterns(cliInputs);

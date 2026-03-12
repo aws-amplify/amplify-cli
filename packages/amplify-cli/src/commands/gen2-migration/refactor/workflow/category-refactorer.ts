@@ -1,7 +1,8 @@
 import { Parameter } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { CFNResource, CFNStackStatus, CFNTemplate } from '../cfn-template';
-import { RefactorOperation, Refactorer } from '../refactorer';
+import { Refactorer } from '../refactorer';
+import { AmplifyMigrationOperation } from '../../_operation';
 import { AwsClients } from '../aws-clients';
 import { StackFacade } from '../stack-facade';
 import { tryUpdateStack } from '../cfn-stack-updater';
@@ -55,7 +56,7 @@ export abstract class CategoryRefactorer implements Refactorer {
    * Computes the full operation plan for this category.
    * All AWS reads happen here. Operations only execute mutations.
    */
-  public async plan(): Promise<RefactorOperation[]> {
+  public async plan(): Promise<AmplifyMigrationOperation[]> {
     const sourceStackId = await this.fetchSourceStackId();
     const destStackId = await this.fetchDestStackId();
 
@@ -129,7 +130,7 @@ export abstract class CategoryRefactorer implements Refactorer {
   protected abstract beforeMovePlan(
     source: ResolvedStack,
     target: ResolvedStack,
-  ): { operations: RefactorOperation[]; postTargetTemplate: CFNTemplate };
+  ): { operations: AmplifyMigrationOperation[]; postTargetTemplate: CFNTemplate };
 
   /**
    * Post-move operations. All reads happen here (during plan()); operations only execute mutations.
@@ -141,7 +142,7 @@ export abstract class CategoryRefactorer implements Refactorer {
     target: ResolvedStack;
     finalSource: CFNTemplate;
     finalTarget: CFNTemplate;
-  }): Promise<{ operations: RefactorOperation[] }>;
+  }): Promise<{ operations: AmplifyMigrationOperation[] }>;
 
   // -- Shared workflow (concrete) --
 
@@ -149,7 +150,7 @@ export abstract class CategoryRefactorer implements Refactorer {
    * Creates operations to update the source stack with the resolved template.
    * Rollback overrides this to return [].
    */
-  protected updateSource(source: ResolvedStack): RefactorOperation[] {
+  protected updateSource(source: ResolvedStack): AmplifyMigrationOperation[] {
     return [
       {
         validate: async () => {
@@ -177,7 +178,7 @@ export abstract class CategoryRefactorer implements Refactorer {
    * Creates operations to update the target stack with the resolved template.
    * Rollback overrides this to return [].
    */
-  protected updateTarget(target: ResolvedStack): RefactorOperation[] {
+  protected updateTarget(target: ResolvedStack): AmplifyMigrationOperation[] {
     return [
       {
         validate: async () => {
@@ -246,7 +247,7 @@ export abstract class CategoryRefactorer implements Refactorer {
     finalSource: CFNTemplate,
     finalTarget: CFNTemplate,
     logicalIdMap: Map<string, string>,
-  ): RefactorOperation[] {
+  ): AmplifyMigrationOperation[] {
     const resourceMappings: ResourceMapping[] = [...logicalIdMap.entries()].map(([sourceLogicalId, destLogicalId]) => ({
       Source: { StackName: extractStackNameFromId(sourceStackId), LogicalResourceId: sourceLogicalId },
       Destination: { StackName: extractStackNameFromId(destStackId), LogicalResourceId: destLogicalId },

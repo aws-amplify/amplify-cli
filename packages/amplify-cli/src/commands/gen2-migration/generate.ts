@@ -143,6 +143,9 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
     // The actual deletion happens in the post-generation operation below.
     const operations: AmplifyMigrationOperation[] = [
       {
+        validate: async () => {
+          return;
+        },
         describe: async () => ['Delete amplify/'],
         // eslint-disable-next-line @typescript-eslint/no-empty-function
         execute: async () => {},
@@ -156,6 +159,9 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
 
     // Post-generation: replace local amplify folder.
     operations.push({
+      validate: async () => {
+        return;
+      },
       describe: async () => [],
       execute: async () => {
         const cwd = process.cwd();
@@ -169,6 +175,9 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
 
     // Post-generation: reinstall dependencies.
     operations.push({
+      validate: async () => {
+        return;
+      },
       describe: async () => ['Install Gen2 dependencies'],
       execute: async () => {
         const cwd = process.cwd();

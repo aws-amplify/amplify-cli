@@ -1,7 +1,7 @@
 import { GetTemplateCommand } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { CFNResource, CFNTemplate } from '../cfn-template';
-import { RefactorOperation } from '../refactorer';
+import { AmplifyMigrationOperation } from '../../_operation';
 import { resolveParameters } from '../resolvers/cfn-parameter-resolver';
 import { resolveOutputs } from '../resolvers/cfn-output-resolver';
 import { resolveDependencies } from '../resolvers/cfn-dependency-resolver';
@@ -108,14 +108,14 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
   /**
    * Rollback does not pre-update stacks.
    */
-  protected override updateSource(): RefactorOperation[] {
+  protected override updateSource(): AmplifyMigrationOperation[] {
     return [];
   }
 
   /**
    * Rollback does not pre-update stacks.
    */
-  protected override updateTarget(): RefactorOperation[] {
+  protected override updateTarget(): AmplifyMigrationOperation[] {
     return [];
   }
 
@@ -125,7 +125,7 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
   protected beforeMovePlan(
     _source: ResolvedStack,
     target: ResolvedStack,
-  ): { operations: RefactorOperation[]; postTargetTemplate: CFNTemplate } {
+  ): { operations: AmplifyMigrationOperation[]; postTargetTemplate: CFNTemplate } {
     return { operations: [], postTargetTemplate: target.resolvedTemplate };
   }
 
@@ -141,7 +141,7 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
     target: ResolvedStack;
     finalSource: CFNTemplate;
     finalTarget: CFNTemplate;
-  }): Promise<{ operations: RefactorOperation[] }> {
+  }): Promise<{ operations: AmplifyMigrationOperation[] }> {
     const gen2StackId = params.source.stackId;
     const holdingStackName = getHoldingStackName(extractStackNameFromId(gen2StackId));
 
@@ -235,7 +235,7 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
   /**
    * Builds an operation that deletes a holding stack.
    */
-  private buildDeleteHoldingStackOp(holdingStackName: string): RefactorOperation {
+  private buildDeleteHoldingStackOp(holdingStackName: string): AmplifyMigrationOperation {
     return {
       validate: async () => {
         /* no validation needed */

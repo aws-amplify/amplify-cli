@@ -16,6 +16,9 @@ export class BackendPackageJsonGenerator implements Generator {
     const filePath = path.join(this.outputDir, 'amplify', 'package.json');
     return [
       {
+        validate: async () => {
+          return;
+        },
         describe: async () => ['Generate amplify/package.json'],
         execute: async () => {
           await fs.mkdir(path.dirname(filePath), { recursive: true });

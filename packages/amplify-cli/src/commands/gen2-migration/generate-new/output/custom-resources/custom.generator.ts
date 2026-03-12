@@ -58,6 +58,9 @@ export class CustomResourceGenerator implements Generator {
 
     return [
       {
+        validate: async () => {
+          return;
+        },
         describe: async () => [`Migrate amplify/custom/${this.resourceName}/resource.ts`],
         execute: async () => {
           // Copy resource directory (excluding filtered files)

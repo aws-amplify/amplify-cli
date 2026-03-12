@@ -111,6 +111,9 @@ export class FunctionGenerator implements Generator {
 
     return [
       {
+        validate: async () => {
+          return;
+        },
         describe: async () => [`Generate amplify/${this.category}/${func.resourceName}/resource.ts`],
         execute: async () => {
           await this.generateResource(func);

@@ -88,6 +88,9 @@ export class AuthGenerator implements Generator {
 
     return [
       {
+        validate: async () => {
+          return;
+        },
         describe: async () => ['Generate amplify/auth/resource.ts'],
         execute: async () => {
           const nodes = this.defineAuth.render(renderOptions);

@@ -10,6 +10,13 @@ export interface AmplifyMigrationOperation {
   describe(): Promise<string[]>;
 
   /**
+   * Validates that this operation can proceed without causing harm.
+   * Called on ALL operations before any execute() runs.
+   * Throws AmplifyError if validation fails.
+   */
+  validate(): Promise<void>;
+
+  /**
    * Executes the operation.
    * Should be idempotent where possible and throw descriptive errors on failure.
    * Called sequentially for each operation after user confirmation.

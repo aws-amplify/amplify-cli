@@ -54,6 +54,9 @@ export class AnalyticsKinesisGenerator implements Generator {
 
     return [
       {
+        validate: async () => {
+          return;
+        },
         describe: async () => [`Generate amplify/analytics/${this.resourceName}/resource.ts`],
         execute: async () => {
           const fileWriter = async (content: string, filePath: string) => {

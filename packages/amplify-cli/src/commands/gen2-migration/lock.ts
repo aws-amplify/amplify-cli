@@ -49,6 +49,9 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
 
     for (const tableName of await this.dynamoTableNames()) {
       operations.push({
+        validate: async () => {
+          return;
+        },
         describe: async () => {
           return [`Enable deletion protection for table '${tableName}'`];
         },
@@ -66,6 +69,9 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
 
     for (const userPoolId of await this.userPoolIds()) {
       operations.push({
+        validate: async () => {
+          return;
+        },
         describe: async () => {
           return [`Enable deletion protection for user pool '${userPoolId}'`];
         },
@@ -82,6 +88,9 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
     }
 
     operations.push({
+      validate: async () => {
+        return;
+      },
       describe: async () => {
         return [`Add environment variable '${GEN2_MIGRATION_ENVIRONMENT_NAME}' (value: ${this.currentEnvName})`];
       },
@@ -105,6 +114,9 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
     });
 
     operations.push({
+      validate: async () => {
+        return;
+      },
       describe: async () => {
         return [`Set a policy on stack '${this.rootStackName}': ${stackPolicy}`];
       },
@@ -130,6 +142,9 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
     // create logging only operations to let this be known to the user.
     for (const tableName of await this.dynamoTableNames()) {
       operations.push({
+        validate: async () => {
+          return;
+        },
         describe: async () => {
           return [`Preserve deletion protection for table '${tableName}'`];
         },
@@ -141,6 +156,9 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
 
     for (const userPoolId of await this.userPoolIds()) {
       operations.push({
+        validate: async () => {
+          return;
+        },
         describe: async () => {
           return [`Preserve deletion protection for user pool '${userPoolId}'`];
         },
@@ -151,6 +169,9 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
     }
 
     operations.push({
+      validate: async () => {
+        return;
+      },
       describe: async () => {
         return [`Remove environment variable '${GEN2_MIGRATION_ENVIRONMENT_NAME}'`];
       },
@@ -175,6 +196,9 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
     });
 
     operations.push({
+      validate: async () => {
+        return;
+      },
       describe: async () => {
         return [`Set a policy on stack '${this.rootStackName}': ${stackPolicy}`];
       },

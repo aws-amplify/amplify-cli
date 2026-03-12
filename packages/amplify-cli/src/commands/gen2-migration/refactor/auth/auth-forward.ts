@@ -1,7 +1,7 @@
 import { Output, Parameter } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { CFNResource } from '../cfn-template';
-import { RefactorOperation } from '../refactorer';
+import { AmplifyMigrationOperation } from '../../_operation';
 import { AwsClients } from '../aws-clients';
 import { StackFacade } from '../stack-facade';
 import { retrieveOAuthValues } from '../oauth-values-retriever';
@@ -35,7 +35,7 @@ const TYPES_WITH_MULTIPLE_RESOURCES = ['AWS::Cognito::UserPoolClient', 'AWS::Cog
  * mechanism where planAndValidate in refactor.ts tracks per-destination-stack template state:
  *
  *   interface RefactorerWithOutput extends Refactorer {
- *     plan(currentDestTemplate?: CFNTemplate): Promise<{ operations: RefactorOperation[]; finalDestTemplate?: CFNTemplate }>;
+ *     plan(currentDestTemplate?: CFNTemplate): Promise<{ operations: AmplifyMigrationOperation[]; finalDestTemplate?: CFNTemplate }>;
  *   }
  *
  * The first auth refactorer returns its finalDestTemplate. The second receives it as input
@@ -61,7 +61,7 @@ export class AuthForwardRefactorer extends ForwardCategoryRefactorer {
   /**
    * Overrides plan() to handle two Gen1 source stacks → one Gen2 destination.
    */
-  public override async plan(): Promise<RefactorOperation[]> {
+  public override async plan(): Promise<AmplifyMigrationOperation[]> {
     const { mainAuthStackId, userPoolGroupStackId } = await discoverGen1AuthStacks(this.gen1Env);
     const gen2StackId = await this.findNestedStack(this.gen2Branch, 'auth');
 
@@ -97,7 +97,7 @@ export class AuthForwardRefactorer extends ForwardCategoryRefactorer {
     );
     const mainAuthMoveOps = this.buildMoveOperations(mainAuthStackId, gen2StackId, finalMainAuth, gen2AfterMainAuth, mainAuthIdMap);
 
-    const userPoolGroupOps: RefactorOperation[] = [];
+    const userPoolGroupOps: AmplifyMigrationOperation[] = [];
     if (userPoolGroupSource && userPoolGroupSource.resourcesToMove.size > 0) {
       const { finalSource: finalUserPoolGroup, finalTarget: gen2AfterBoth } = this.buildRefactorTemplates(
         userPoolGroupSource,
@@ -109,7 +109,7 @@ export class AuthForwardRefactorer extends ForwardCategoryRefactorer {
       );
     }
 
-    const ops: RefactorOperation[] = [];
+    const ops: AmplifyMigrationOperation[] = [];
     ops.push(...this.updateSource(mainAuthSource));
     if (userPoolGroupSource) {
       ops.push(...this.updateSource(userPoolGroupSource));

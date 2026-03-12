@@ -44,6 +44,9 @@ export class ReferenceAuthGenerator implements Generator {
 
     return [
       {
+        validate: async () => {
+          return;
+        },
         describe: async () => ['Generate amplify/auth/resource.ts (reference auth)'],
         execute: async () => {
           const nodes = this.renderer.render(referenceAuth);

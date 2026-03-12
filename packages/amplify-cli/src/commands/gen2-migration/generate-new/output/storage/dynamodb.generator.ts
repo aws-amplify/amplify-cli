@@ -34,6 +34,9 @@ export class DynamoDBGenerator implements Generator {
 
     return [
       {
+        validate: async () => {
+          return;
+        },
         describe: async () => [`Generate DynamoDB table ${this.resourceName} in amplify/backend.ts`],
         execute: async () => {
           const imports = this.renderer.requiredImports();

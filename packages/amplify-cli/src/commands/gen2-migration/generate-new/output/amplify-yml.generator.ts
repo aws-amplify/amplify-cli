@@ -34,6 +34,9 @@ export class AmplifyYmlGenerator implements Generator {
 
     return [
       {
+        validate: async () => {
+          return;
+        },
         describe: async () => [localFileExists ? 'Update amplify.yml with Gen2 build commands' : 'Generate amplify.yml'],
         execute: async () => {
           let parsed: unknown;
