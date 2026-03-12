@@ -44,6 +44,8 @@ import {
 } from './auth.renderer';
 
 import { constFromBackend, assignProp } from '../../ts-factory-utils';
+import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
+import { fileOrDirectoryExists } from '../../input/file-exists';
 
 const factory = ts.factory;
 
@@ -108,7 +110,7 @@ export class AuthGenerator implements Generator {
         this.gen1App.aws.fetchIdentityProviders(resources),
         this.gen1App.aws.fetchIdentityGroups(resources),
         this.gen1App.aws.fetchIdentityPool(resources),
-        this.gen1App.fetchAuthTriggerConnections(),
+        this.readAuthTriggerConnections(),
       ]);
 
     // Build the AuthDefinition using the existing adapter
@@ -670,6 +672,40 @@ export class AuthGenerator implements Generator {
         groups,
       },
     };
+  }
+
+  /**
+   * Reads auth trigger connections from the cloud backend cli-inputs.json.
+   */
+  private async readAuthTriggerConnections(): Promise<Partial<Record<keyof LambdaConfigType, string>> | undefined> {
+    const ccbDir = await this.gen1App.fetchCloudBackendDir();
+    const meta = await this.gen1App.fetchMeta();
+    const authCategory = meta.auth;
+    if (!authCategory) return undefined;
+
+    for (const resourceName of Object.keys(authCategory)) {
+      const triggerFilePath = path.join(ccbDir, 'auth', resourceName, 'cli-inputs.json');
+      if (await fileOrDirectoryExists(triggerFilePath)) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped Gen1 cli-inputs.json
+        const cliInputs = JSONUtilities.readJson<any>(triggerFilePath);
+        if (cliInputs?.cognitoConfig?.triggers) {
+          const triggers =
+            typeof cliInputs.cognitoConfig.triggers === 'string'
+              ? JSON.parse(cliInputs.cognitoConfig.triggers)
+              : cliInputs.cognitoConfig.triggers;
+          const connections: Partial<Record<keyof LambdaConfigType, string>> = {};
+          for (const [triggerName] of Object.entries(triggers)) {
+            // Normalize trigger name casing: Gen1 uses "PreSignup" but Cognito uses "PreSignUp"
+            const cognitoTriggerName = triggerName === 'PreSignup' ? 'PreSignUp' : triggerName;
+            // Function name follows Gen1 convention: {authResourceName}{triggerName}
+            const functionName = `${resourceName}${triggerName}`;
+            connections[cognitoTriggerName as keyof LambdaConfigType] = path.join('amplify', 'backend', 'function', functionName, 'src');
+          }
+          return Object.keys(connections).length > 0 ? connections : undefined;
+        }
+      }
+    }
+    return undefined;
   }
 }
 // ── Auth adapter functions ─────────────────────────────────────────

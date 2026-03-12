@@ -1,6 +1,8 @@
 import ts from 'typescript';
-import { RestApiRenderer } from '../../../../../../commands/gen2-migration/generate-new/output/rest-api/rest-api.renderer';
-import { RestApiDefinition } from '../../../../../../commands/gen2-migration/generate-new/input/gen1-app';
+import {
+  RestApiRenderer,
+  RestApiDefinition,
+} from '../../../../../../commands/gen2-migration/generate-new/output/rest-api/rest-api.renderer';
 
 const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
 const sourceFile = ts.createSourceFile('test.ts', '', ts.ScriptTarget.Latest, false, ts.ScriptKind.TS);

@@ -7,30 +7,39 @@ import { Gen1App } from '../../../../../../commands/gen2-migration/generate-new/
 
 jest.unmock('fs-extra');
 
-function createMockGen1App(overrides?: Record<string, unknown>): Gen1App {
-  return {
-    envName: 'main',
-    fetchMetaCategory: jest.fn(),
-    fetchGraphQLSchema: jest.fn(),
-    aws: {
-      fetchGraphqlApi: jest.fn(),
-    },
-    ...overrides,
-  } as unknown as Gen1App;
-}
-
 describe('DataGenerator', () => {
   let outputDir: string;
+  let projectRoot: string;
   let backendGenerator: BackendGenerator;
 
   beforeEach(async () => {
     outputDir = await fs.mkdtemp(path.join(os.tmpdir(), 'data-gen-test-'));
+    projectRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'data-gen-project-'));
     backendGenerator = new BackendGenerator(outputDir);
   });
 
   afterEach(async () => {
     await fs.rm(outputDir, { recursive: true, force: true });
+    await fs.rm(projectRoot, { recursive: true, force: true });
   });
+
+  function createMockGen1App(overrides?: Record<string, unknown>): Gen1App {
+    return {
+      envName: 'main',
+      fetchMetaCategory: jest.fn(),
+      findProjectRoot: jest.fn().mockReturnValue(projectRoot),
+      aws: {
+        fetchGraphqlApi: jest.fn(),
+      },
+      ...overrides,
+    } as unknown as Gen1App;
+  }
+
+  async function writeSchema(apiName: string, schema: string): Promise<void> {
+    const schemaDir = path.join(projectRoot, 'amplify', 'backend', 'api', apiName);
+    await fs.mkdir(schemaDir, { recursive: true });
+    await fs.writeFile(path.join(schemaDir, 'schema.graphql'), schema, 'utf-8');
+  }
 
   it('returns empty operations when api category is missing', async () => {
     const gen1App = createMockGen1App();
@@ -59,6 +68,7 @@ describe('DataGenerator', () => {
     (gen1App.fetchMetaCategory as jest.Mock).mockResolvedValue({
       myApi: { service: 'AppSync', output: {} },
     });
+    await writeSchema('myApi', 'type Todo @model { id: ID! }');
 
     const generator = new DataGenerator(gen1App, backendGenerator, outputDir);
 
@@ -78,7 +88,7 @@ describe('DataGenerator', () => {
       }
       return undefined;
     });
-    (gen1App.fetchGraphQLSchema as jest.Mock).mockResolvedValue('type Todo @model { id: ID! }');
+    await writeSchema('myApi', 'type Todo @model { id: ID! }');
     (gen1App.aws.fetchGraphqlApi as jest.Mock).mockResolvedValue(undefined);
 
     const generator = new DataGenerator(gen1App, backendGenerator, outputDir);
@@ -105,7 +115,7 @@ describe('DataGenerator', () => {
       if (category === 'auth') return undefined;
       return undefined;
     });
-    (gen1App.fetchGraphQLSchema as jest.Mock).mockResolvedValue('type Todo @model { id: ID! }');
+    await writeSchema('myApi', 'type Todo @model { id: ID! }');
     (gen1App.aws.fetchGraphqlApi as jest.Mock).mockResolvedValue({
       apiId: 'api-123',
       name: 'myApi',

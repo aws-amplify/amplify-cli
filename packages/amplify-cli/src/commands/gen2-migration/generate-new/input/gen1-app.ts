@@ -1,8 +1,6 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
-import glob from 'glob';
 import { BackendEnvironment, GetBackendEnvironmentCommand } from '@aws-sdk/client-amplify';
-import { LambdaConfigType } from '@aws-sdk/client-cognito-identity-provider';
 import { StackResource } from '@aws-sdk/client-cloudformation';
 import { $TSMeta, JSONUtilities, pathManager } from '@aws-amplify/amplify-cli-core';
 import { AwsClients } from './aws-clients';
@@ -21,91 +19,41 @@ interface Gen1AppOptions {
 }
 
 /**
- * A single path entry in a REST API configuration.
- */
-export interface RestApiPath {
-  readonly path: string;
-  readonly methods: readonly string[];
-  readonly authType?: string;
-  readonly lambdaFunction?: string;
-  readonly userPoolGroups?: readonly string[];
-  readonly permissions?: {
-    readonly hasAuth?: boolean;
-    readonly groups?: Readonly<Record<string, readonly string[]>>;
-  };
-}
-
-/**
- * CORS configuration for a REST API.
- */
-export interface CorsConfiguration {
-  readonly allowCredentials?: boolean;
-  readonly allowHeaders?: readonly string[];
-  readonly allowMethods?: readonly string[];
-  readonly allowOrigins?: readonly string[];
-  readonly exposeHeaders?: readonly string[];
-  readonly maxAge?: number;
-}
-
-/**
- * Complete definition of a REST API extracted from Gen1 cli-inputs.json.
- */
-export interface RestApiDefinition {
-  readonly apiName: string;
-  readonly functionName: string;
-  readonly paths: readonly RestApiPath[];
-  readonly authType?: string;
-  readonly corsConfiguration?: CorsConfiguration;
-  readonly uniqueFunctions?: readonly string[];
-  /** Gen1 API Gateway REST API ID from amplify-meta.json output. */
-  readonly gen1ApiId: string;
-  /** Gen1 API Gateway root resource ID fetched via GetResources. */
-  readonly gen1RootResourceId: string;
-}
-
-/**
  * Facade for all Gen1 app state — both local files and AWS resources.
  *
- * Local state (amplify-meta.json, cloud backend files) is read and cached
- * by this class directly. AWS SDK calls are delegated to {@link AwsFetcher}.
+ * Provides generic, category-agnostic access to the Gen1 project:
+ * amplify-meta.json, cloud backend files, backend environment, and
+ * CloudFormation stack resources. Category-specific logic (GraphQL
+ * schemas, auth triggers, REST API configs, function categories)
+ * lives in the respective generators.
  *
- * Every generator receives this facade. Easy to mock: stub `fetcher` for
- * AWS calls, or override local-reading methods for file-based state.
+ * AWS SDK calls are delegated to {@link AwsFetcher}. Every generator
+ * receives this facade. Easy to mock: stub only the methods your
+ * test needs.
  */
 export class Gen1App {
-  /**
-   * The Amplify app ID.
-   */
+  /** The Amplify app ID. */
   public readonly appId: string;
 
-  /**
-   * The AWS region.
-   */
+  /** The AWS region. */
   public readonly region: string;
 
-  /**
-   * The backend environment name.
-   */
+  /** The backend environment name. */
   public readonly envName: string;
 
   /**
-   * AWS SDK clients — exposed because generators need direct access
+   * AWS SDK clients — exposed for generators that need direct access
    * to service clients not yet wrapped by {@link AwsFetcher}.
    */
   public readonly clients: AwsClients;
 
-  private readonly backendDownloader: BackendDownloader;
-
-  /**
-   * AWS SDK fetcher for all remote resource introspection.
-   */
+  /** AWS SDK fetcher for all remote resource introspection. */
   public readonly aws: AwsFetcher;
 
+  private readonly backendDownloader: BackendDownloader;
   private cachedBackendEnv: BackendEnvironment | undefined;
   private cachedCcbDir: string | undefined;
   private cachedMeta: $TSMeta | undefined;
-  private cachedFunctionCategoryMap: ReadonlyMap<string, string> | undefined;
-  private cachedFunctionNames: ReadonlySet<string> | undefined;
   private cachedProjectRoot: string | undefined;
 
   public constructor(opts: Gen1AppOptions) {
@@ -135,9 +83,7 @@ export class Gen1App {
 
   // ── Backend environment ──────────────────────────────────────────
 
-  /**
-   * Resolves and caches the backend environment.
-   */
+  /** Resolves and caches the backend environment. */
   public async fetchBackendEnvironment(): Promise<BackendEnvironment> {
     if (this.cachedBackendEnv) return this.cachedBackendEnv;
     const { backendEnvironment } = await this.clients.amplify.send(
@@ -150,9 +96,7 @@ export class Gen1App {
     return backendEnvironment;
   }
 
-  /**
-   * Returns the root stack name from the backend environment.
-   */
+  /** Returns the root stack name from the backend environment. */
   public async fetchRootStackName(): Promise<string> {
     const env = await this.fetchBackendEnvironment();
     if (!env.stackName) {
@@ -163,9 +107,7 @@ export class Gen1App {
 
   // ── Current cloud backend (local files from S3) ──────────────────
 
-  /**
-   * Downloads and caches the current cloud backend zip from S3.
-   */
+  /** Downloads and caches the current cloud backend zip from S3. */
   public async fetchCloudBackendDir(): Promise<string> {
     if (this.cachedCcbDir) return this.cachedCcbDir;
     const env = await this.fetchBackendEnvironment();
@@ -178,9 +120,7 @@ export class Gen1App {
 
   // ── amplify-meta.json ────────────────────────────────────────────
 
-  /**
-   * Reads and caches amplify-meta.json from the cloud backend.
-   */
+  /** Reads and caches amplify-meta.json from the cloud backend. */
   public async fetchMeta(): Promise<$TSMeta> {
     if (this.cachedMeta) return this.cachedMeta;
     const ccbDir = await this.fetchCloudBackendDir();
@@ -196,9 +136,7 @@ export class Gen1App {
     return meta;
   }
 
-  /**
-   * Returns the category block from amplify-meta.json, or undefined.
-   */
+  /** Returns the category block from amplify-meta.json, or undefined. */
   public async fetchMetaCategory(category: string): Promise<Record<string, unknown> | undefined> {
     const meta = await this.fetchMeta();
     const block = (meta as Record<string, unknown>)[category];
@@ -208,172 +146,18 @@ export class Gen1App {
     return undefined;
   }
 
-  // ── Function metadata ──────────────────────────────────────────
-
-  /**
-   * Returns a map of function resource names to their effective category
-   * (auth, storage, or function), derived from dependsOn relationships
-   * in amplify-meta.json.
-   *
-   * A function's category is determined by which other category depends
-   * on it (auth triggers → 'auth', storage triggers → 'storage') or
-   * which category it depends on (function depends on storage → 'storage').
-   * Functions with no cross-category dependencies default to 'function'.
-   */
-  public async fetchFunctionCategoryMap(): Promise<ReadonlyMap<string, string>> {
-    if (this.cachedFunctionCategoryMap) return this.cachedFunctionCategoryMap;
-
-    const meta = await this.fetchMeta();
-    const categoryMap = new Map<string, string>();
-    const auth = meta.auth as Record<string, Record<string, unknown>> | undefined;
-    const storage = meta.storage as Record<string, Record<string, unknown>> | undefined;
-    const functions = meta.function as Record<string, Record<string, unknown>> | undefined;
-
-    // Auth triggers (auth depends on function)
-    if (auth) {
-      for (const authResource of Object.values(auth)) {
-        if (authResource.dependsOn) {
-          for (const dep of authResource.dependsOn as Array<{ category: string; resourceName: string }>) {
-            if (dep.category === 'function') {
-              categoryMap.set(dep.resourceName, 'auth');
-            }
-          }
-        }
-      }
-    }
-
-    // Storage triggers (storage depends on function)
-    if (storage) {
-      for (const storageResource of Object.values(storage)) {
-        if (storageResource.dependsOn) {
-          for (const dep of storageResource.dependsOn as Array<{ category: string; resourceName: string }>) {
-            if (dep.category === 'function') {
-              categoryMap.set(dep.resourceName, 'storage');
-            }
-          }
-        }
-      }
-    }
-
-    // DynamoDB stream triggers (function depends on storage)
-    if (functions) {
-      for (const [funcName, funcResource] of Object.entries(functions)) {
-        if (funcResource.dependsOn) {
-          for (const dep of funcResource.dependsOn as Array<{ category: string; resourceName: string }>) {
-            if (dep.category === 'storage') {
-              categoryMap.set(funcName, 'storage');
-            }
-          }
-        }
-      }
-    }
-
-    this.cachedFunctionCategoryMap = categoryMap;
-    return categoryMap;
-  }
-
-  /**
-   * Returns the set of all function resource names from amplify-meta.json.
-   */
-  public async fetchFunctionNames(): Promise<ReadonlySet<string>> {
-    if (this.cachedFunctionNames) return this.cachedFunctionNames;
-
-    const meta = await this.fetchMeta();
-    this.cachedFunctionNames = new Set(Object.keys((meta.function as object) ?? {}));
-    return this.cachedFunctionNames;
-  }
-
-  // ── Local project files ─────────────────────────────────────────
-
-  /**
-   * Reads the GraphQL schema from the local Gen1 project.
-   * Supports both single schema.graphql and multi-file schema/ directory.
-   */
-  public async fetchGraphQLSchema(apiName: string): Promise<string> {
-    const rootDir = this.findProjectRoot();
-
-    const apiPath = path.join(rootDir, 'amplify', 'backend', 'api', apiName);
-
-    // Try multi-file schema directory first
-    const schemaFolderPath = path.join(apiPath, 'schema');
-    try {
-      const stats = await fs.stat(schemaFolderPath);
-      if (stats.isDirectory()) {
-        const graphqlFiles = glob.sync(path.join(schemaFolderPath, '*.graphql'));
-        if (graphqlFiles.length > 0) {
-          let mergedSchema = '';
-          for (const file of graphqlFiles) {
-            const content = await fs.readFile(file, 'utf8');
-            mergedSchema += content + '\n';
-          }
-          return mergedSchema.trim();
-        }
-      }
-    } catch {
-      // Directory doesn't exist, fall through to single file
-    }
-
-    // Fall back to single schema.graphql
-    try {
-      return await fs.readFile(path.join(apiPath, 'schema.graphql'), 'utf8');
-    } catch {
-      throw new Error(`No GraphQL schema found for API '${apiName}' in ${apiPath}`);
-    }
-  }
-
   // ── CloudFormation stack resources ───────────────────────────────
 
-  /**
-   * Fetches and caches all leaf stack resources from the root stack.
-   */
+  /** Fetches and caches all leaf stack resources from the root stack. */
   public async fetchAllStackResources(): Promise<StackResource[]> {
     const stackName = await this.fetchRootStackName();
     return this.aws.fetchAllStackResources(stackName);
   }
 
-  /**
-   * Returns stack resources indexed by LogicalResourceId.
-   */
+  /** Returns stack resources indexed by LogicalResourceId. */
   public async fetchResourcesByLogicalId(): Promise<Record<string, StackResource>> {
     const stackName = await this.fetchRootStackName();
     return this.aws.fetchResourcesByLogicalId(stackName);
-  }
-
-  // ── Auth trigger connections (local file reading) ────────────────
-
-  /**
-   * Reads auth trigger connections from the cloud backend cli-inputs.json.
-   */
-  public async fetchAuthTriggerConnections(): Promise<Partial<Record<keyof LambdaConfigType, string>> | undefined> {
-    const ccbDir = await this.fetchCloudBackendDir();
-    const meta = await this.fetchMeta();
-    const authCategory = meta.auth;
-    if (!authCategory) return undefined;
-
-    for (const resourceName of Object.keys(authCategory)) {
-      const triggerRelativePath = path.join('auth', resourceName, 'cli-inputs.json');
-      const triggerFilePath = path.join(ccbDir, triggerRelativePath);
-      if (await fileOrDirectoryExists(triggerFilePath)) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped Gen1 cli-inputs.json
-        const cliInputs = JSONUtilities.readJson<any>(triggerFilePath);
-        if (cliInputs?.cognitoConfig?.triggers) {
-          const triggers =
-            typeof cliInputs.cognitoConfig.triggers === 'string'
-              ? JSON.parse(cliInputs.cognitoConfig.triggers)
-              : cliInputs.cognitoConfig.triggers;
-          const connections: Partial<Record<keyof LambdaConfigType, string>> = {};
-          for (const [triggerName] of Object.entries(triggers)) {
-            // Normalize trigger name casing: Gen1 uses "PreSignup" but Cognito uses "PreSignUp"
-            const cognitoTriggerName = triggerName === 'PreSignup' ? 'PreSignUp' : triggerName;
-            // Function name follows Gen1 convention: {authResourceName}{triggerName}
-            const functionName = `${resourceName}${triggerName}`;
-            connections[cognitoTriggerName as keyof LambdaConfigType] = path.join('amplify', 'backend', 'function', functionName, 'src');
-          }
-          return Object.keys(connections).length > 0 ? connections : undefined;
-        }
-      }
-    }
-    return undefined;
   }
 
   // ── Cloud backend file reading ──────────────────────────────────
@@ -405,158 +189,9 @@ export class Gen1App {
     return fs.readFile(filePath, { encoding: 'utf8' });
   }
 
-  /**
-   * Checks if a path exists in the cloud backend directory.
-   */
+  /** Checks if a path exists in the cloud backend directory. */
   public async cloudBackendPathExists(relativePath: string): Promise<boolean> {
     const ccbDir = await this.fetchCloudBackendDir();
     return fileOrDirectoryExists(path.join(ccbDir, relativePath));
   }
-
-  // ── REST API configuration (local file reading) ─────────────────
-
-  /**
-   * Fetches the REST API definition for a single API Gateway resource.
-   */
-  public async fetchRestApiConfig(resourceName: string): Promise<RestApiDefinition> {
-    const rootDir = this.findProjectRoot();
-
-    const apiCategory = await this.fetchMetaCategory('api');
-    if (!apiCategory) {
-      throw new Error('API category not found in amplify-meta.json');
-    }
-
-    const apiObj = apiCategory[resourceName] as Record<string, unknown> | undefined;
-    if (!apiObj || apiObj.service !== 'API Gateway') {
-      throw new Error(`REST API '${resourceName}' not found in amplify-meta.json`);
-    }
-
-    const cliInputsPath = path.join(rootDir, 'amplify', 'backend', 'api', resourceName, 'cli-inputs.json');
-    const cliInputs = JSONUtilities.readJson<RestApiCliInputs>(cliInputsPath, { throwIfNotExist: true });
-    if (!cliInputs) {
-      throw new Error(`Failed to read cli-inputs.json for REST API '${resourceName}'`);
-    }
-
-    const paths = cliInputs.paths ? parseRestApiPaths(cliInputs.paths) : [{ path: '/{proxy+}', methods: ['ANY'] }];
-
-    const hasPathAuth = Object.values(cliInputs.paths || {}).some(
-      (p) => p.permissions?.setting === 'private' || p.permissions?.setting === 'protected',
-    );
-    const authType = cliInputs.restrictAccess || hasPathAuth ? cliInputs.authType || 'AWS_IAM' : undefined;
-
-    const dependsOn = (apiObj.dependsOn ?? []) as Array<{ category: string; resourceName: string }>;
-    const defaultFunctionName = dependsOn.find((dep) => dep.category === 'function')?.resourceName;
-
-    const output = (apiObj.output ?? {}) as Record<string, string>;
-    const gen1ApiId = output.ApiId;
-    if (!gen1ApiId) {
-      throw new Error(`REST API '${resourceName}' has no ApiId in amplify-meta.json output`);
-    }
-    const gen1RootResourceId = await this.aws.fetchRestApiRootResourceId(gen1ApiId);
-
-    return {
-      apiName: resourceName,
-      functionName: defaultFunctionName || 'defaultFunction',
-      paths,
-      authType,
-      corsConfiguration: cliInputs.corsConfiguration,
-      uniqueFunctions: collectUniqueFunctions(paths, defaultFunctionName),
-      gen1ApiId,
-      gen1RootResourceId,
-    };
-  }
-}
-
-interface RestApiCliInputs {
-  readonly paths?: Record<string, RestApiPathConfig>;
-  readonly corsConfiguration?: CorsConfiguration;
-  readonly restrictAccess?: boolean;
-  readonly authType?: string;
-}
-
-interface RestApiPathConfig {
-  readonly methods?: readonly string[];
-  readonly permissions?: {
-    readonly setting?: 'private' | 'protected' | 'open';
-    readonly auth?: readonly string[];
-    readonly groups?: Readonly<Record<string, readonly string[]>>;
-  };
-  readonly lambdaFunction?: string;
-  readonly restrictAccess?: boolean;
-  readonly groupAccess?: readonly string[];
-}
-
-function parseRestApiPaths(paths: Record<string, RestApiPathConfig>): RestApiPath[] {
-  return Object.entries(paths).map(([pathName, pathConfig]) => {
-    const pathAuthType = pathConfig.permissions?.setting || 'open';
-    const userPoolGroups = pathConfig.permissions?.groups ? Object.keys(pathConfig.permissions.groups) : undefined;
-
-    const permissions: { hasAuth?: boolean; groups?: Readonly<Record<string, readonly string[]>> } = {};
-    if (pathConfig.permissions?.auth && pathConfig.permissions.auth.length > 0) {
-      permissions.hasAuth = true;
-    }
-    if (pathConfig.permissions?.groups && Object.keys(pathConfig.permissions.groups).length > 0) {
-      permissions.groups = pathConfig.permissions.groups;
-    }
-
-    return {
-      path: pathName,
-      methods: extractMethodsFromPath(pathConfig),
-      authType: pathAuthType,
-      lambdaFunction: pathConfig.lambdaFunction,
-      userPoolGroups,
-      ...(Object.keys(permissions).length > 0 && { permissions }),
-    };
-  });
-}
-
-function collectUniqueFunctions(paths: readonly RestApiPath[], defaultFunctionName?: string): string[] {
-  const uniqueFunctions = new Set<string>();
-  if (defaultFunctionName) {
-    uniqueFunctions.add(defaultFunctionName);
-  }
-  for (const p of paths) {
-    if (p.lambdaFunction) {
-      uniqueFunctions.add(p.lambdaFunction);
-    }
-  }
-  return Array.from(uniqueFunctions);
-}
-
-function extractMethodsFromPath(pathConfig: {
-  readonly methods?: readonly string[];
-  readonly permissions?: { readonly auth?: readonly string[]; readonly groups?: Readonly<Record<string, readonly string[]>> };
-}): string[] {
-  if (pathConfig.methods && pathConfig.methods.length > 0) {
-    return [...pathConfig.methods];
-  }
-
-  if (pathConfig.permissions?.auth && pathConfig.permissions.auth.length > 0) {
-    return mapPermissionsToMethods(pathConfig.permissions.auth);
-  }
-
-  if (pathConfig.permissions?.groups) {
-    const allPermissions = new Set<string>();
-    for (const permissions of Object.values(pathConfig.permissions.groups)) {
-      for (const permission of permissions) {
-        allPermissions.add(permission);
-      }
-    }
-    return mapPermissionsToMethods(Array.from(allPermissions));
-  }
-
-  return ['GET'];
-}
-
-function mapPermissionsToMethods(permissions: readonly string[]): string[] {
-  const methodMap: Record<string, string> = {
-    read: 'GET',
-    create: 'POST',
-    update: 'PUT',
-    delete: 'DELETE',
-  };
-
-  const methods = permissions.map((p) => methodMap[p]).filter((m): m is string => m !== undefined);
-
-  return methods.length > 0 ? methods : ['GET'];
 }

@@ -1,7 +1,49 @@
 import ts from 'typescript';
-import { RestApiDefinition, RestApiPath } from '../../input/gen1-app';
 
 const factory = ts.factory;
+
+/**
+ * A single path entry in a REST API configuration.
+ */
+export interface RestApiPath {
+  readonly path: string;
+  readonly methods: readonly string[];
+  readonly authType?: string;
+  readonly lambdaFunction?: string;
+  readonly userPoolGroups?: readonly string[];
+  readonly permissions?: {
+    readonly hasAuth?: boolean;
+    readonly groups?: Readonly<Record<string, readonly string[]>>;
+  };
+}
+
+/**
+ * CORS configuration for a REST API.
+ */
+export interface CorsConfiguration {
+  readonly allowCredentials?: boolean;
+  readonly allowHeaders?: readonly string[];
+  readonly allowMethods?: readonly string[];
+  readonly allowOrigins?: readonly string[];
+  readonly exposeHeaders?: readonly string[];
+  readonly maxAge?: number;
+}
+
+/**
+ * Complete definition of a REST API extracted from Gen1 cli-inputs.json.
+ */
+export interface RestApiDefinition {
+  readonly apiName: string;
+  readonly functionName: string;
+  readonly paths: readonly RestApiPath[];
+  readonly authType?: string;
+  readonly corsConfiguration?: CorsConfiguration;
+  readonly uniqueFunctions?: readonly string[];
+  /** Gen1 API Gateway REST API ID from amplify-meta.json output. */
+  readonly gen1ApiId: string;
+  /** Gen1 API Gateway root resource ID fetched via GetResources. */
+  readonly gen1RootResourceId: string;
+}
 
 /**
  * Renders CDK constructs for REST API (API Gateway) resources.

@@ -11,7 +11,8 @@ function createMockGen1App(): Gen1App {
   return {
     fetchMetaCategory: jest.fn(),
     fetchResourcesByLogicalId: jest.fn(),
-    fetchAuthTriggerConnections: jest.fn().mockResolvedValue({}),
+    fetchCloudBackendDir: jest.fn().mockResolvedValue('/tmp/ccb'),
+    fetchMeta: jest.fn().mockResolvedValue({}),
     aws: {
       fetchUserPool: jest.fn(),
       fetchMfaConfig: jest.fn(),

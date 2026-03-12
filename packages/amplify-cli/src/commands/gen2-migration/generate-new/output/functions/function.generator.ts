@@ -65,6 +65,7 @@ export class FunctionGenerator implements Generator {
   private readonly packageJsonGenerator: RootPackageJsonGenerator;
   private readonly outputDir: string;
   private readonly resourceName: string;
+  private readonly category: string;
   private readonly renderer: FunctionRenderer;
 
   public constructor(
@@ -75,6 +76,7 @@ export class FunctionGenerator implements Generator {
     packageJsonGenerator: RootPackageJsonGenerator,
     outputDir: string,
     resourceName: string,
+    category: string,
   ) {
     this.gen1App = gen1App;
     this.backendGenerator = backendGenerator;
@@ -83,6 +85,7 @@ export class FunctionGenerator implements Generator {
     this.packageJsonGenerator = packageJsonGenerator;
     this.outputDir = outputDir;
     this.resourceName = resourceName;
+    this.category = category;
     this.renderer = new FunctionRenderer(gen1App.appId, gen1App.envName);
   }
 
@@ -96,11 +99,11 @@ export class FunctionGenerator implements Generator {
     await this.mergeFunctionDependencies(func);
     const triggerModels = await this.detectDynamoTriggerModels(func);
     await this.contributeAuthAccess();
-    await this.contributeStorageAccess(func.category);
+    await this.contributeStorageAccess(this.category);
 
     return [
       {
-        describe: async () => [`Generate amplify/${func.category}/${func.resourceName}/resource.ts`],
+        describe: async () => [`Generate amplify/${this.category}/${func.resourceName}/resource.ts`],
         execute: async () => {
           await this.generateResource(func);
           this.contributeOverrides(func);
@@ -134,9 +137,6 @@ export class FunctionGenerator implements Generator {
       throw new Error(`Lambda function '${deployedName}' not found`);
     }
 
-    const categoryMap = await this.gen1App.fetchFunctionCategoryMap();
-    const category = categoryMap.get(this.resourceName) || 'function';
-
     const runtime = config.Runtime;
     if (runtime && !runtime.startsWith('nodejs')) {
       throw new Error(`Function '${deployedName}' uses unsupported runtime '${runtime}'. Gen 2 migration only supports Node.js functions.`);
@@ -154,7 +154,7 @@ export class FunctionGenerator implements Generator {
 
     return {
       resourceName: this.resourceName,
-      category,
+      category: this.category,
       entry,
       deployedName,
       timeoutSeconds: config.Timeout,
@@ -174,7 +174,7 @@ export class FunctionGenerator implements Generator {
    * function import + defineBackend property in backend.ts.
    */
   private async generateResource(func: ResolvedFunction): Promise<void> {
-    const dirPath = path.join(this.outputDir, 'amplify', func.category, func.resourceName);
+    const dirPath = path.join(this.outputDir, 'amplify', this.category, func.resourceName);
     const renderOpts: RenderDefineFunctionOptions = {
       resourceName: func.resourceName,
       entry: func.entry,
@@ -193,7 +193,7 @@ export class FunctionGenerator implements Generator {
     await fs.writeFile(path.join(dirPath, 'resource.ts'), content, 'utf-8');
     await this.copyFunctionSource(func.resourceName, dirPath);
 
-    this.backendGenerator.addImport(`./${func.category}/${func.resourceName}/resource`, [func.resourceName]);
+    this.backendGenerator.addImport(`./${this.category}/${func.resourceName}/resource`, [func.resourceName]);
     this.backendGenerator.addDefineBackendProperty(factory.createShorthandPropertyAssignment(factory.createIdentifier(func.resourceName)));
   }
 

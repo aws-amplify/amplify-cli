@@ -20,8 +20,6 @@ function createMockGen1App(projectRoot: string): Gen1App {
     appId: 'd1abc2def3',
     envName: 'main',
     fetchMetaCategory: jest.fn(),
-    fetchFunctionCategoryMap: jest.fn().mockResolvedValue(new Map()),
-    fetchFunctionNames: jest.fn().mockResolvedValue(new Set()),
     findProjectRoot: jest.fn().mockReturnValue(projectRoot),
     readCloudBackendJson: jest.fn().mockResolvedValue({ Resources: {} }),
     readCloudBackendFile: jest.fn().mockResolvedValue('{}'),
@@ -55,7 +53,16 @@ describe('FunctionGenerator', () => {
     const gen1App = createMockGen1App(projectRoot);
     (gen1App.fetchMetaCategory as jest.Mock).mockResolvedValue(undefined);
 
-    const generator = new FunctionGenerator(gen1App, backendGenerator, undefined, undefined, packageJsonGenerator, outputDir, 'myFunc');
+    const generator = new FunctionGenerator(
+      gen1App,
+      backendGenerator,
+      undefined,
+      undefined,
+      packageJsonGenerator,
+      outputDir,
+      'myFunc',
+      'function',
+    );
 
     await expect(generator.plan()).rejects.toThrow('not found in amplify-meta.json');
   });
@@ -66,7 +73,16 @@ describe('FunctionGenerator', () => {
       otherFunc: { service: 'Lambda', output: { Name: 'otherFunc-main' } },
     });
 
-    const generator = new FunctionGenerator(gen1App, backendGenerator, undefined, undefined, packageJsonGenerator, outputDir, 'myFunc');
+    const generator = new FunctionGenerator(
+      gen1App,
+      backendGenerator,
+      undefined,
+      undefined,
+      packageJsonGenerator,
+      outputDir,
+      'myFunc',
+      'function',
+    );
 
     await expect(generator.plan()).rejects.toThrow('not found in amplify-meta.json');
   });
@@ -90,7 +106,16 @@ describe('FunctionGenerator', () => {
       Environment: { Variables: {} },
     });
 
-    const generator = new FunctionGenerator(gen1App, backendGenerator, undefined, undefined, packageJsonGenerator, outputDir, 'myFunc');
+    const generator = new FunctionGenerator(
+      gen1App,
+      backendGenerator,
+      undefined,
+      undefined,
+      packageJsonGenerator,
+      outputDir,
+      'myFunc',
+      'function',
+    );
     const ops = await generator.plan();
 
     expect(ops).toHaveLength(1);
@@ -127,7 +152,16 @@ describe('FunctionGenerator', () => {
     const addPropertySpy = jest.spyOn(backendGenerator, 'addDefineBackendProperty');
 
     try {
-      const generator = new FunctionGenerator(gen1App, backendGenerator, undefined, undefined, packageJsonGenerator, outputDir, 'myFunc');
+      const generator = new FunctionGenerator(
+        gen1App,
+        backendGenerator,
+        undefined,
+        undefined,
+        packageJsonGenerator,
+        outputDir,
+        'myFunc',
+        'function',
+      );
       const ops = await generator.plan();
       await ops[0].execute();
 

@@ -7,6 +7,7 @@ import { AmplifyMigrationOperation } from './_operation';
 import { AmplifyGen2MigrationValidations } from './_validations';
 import { createAwsClients } from './generate-new/input/aws-clients';
 import { Gen1App } from './generate-new/input/gen1-app';
+import { $TSMeta } from '@aws-amplify/amplify-cli-core';
 import { Generator } from './generate-new/generator';
 import { BackendGenerator } from './generate-new/output/backend.generator';
 import { RootPackageJsonGenerator } from './generate-new/output/root-package-json.generator';
@@ -101,10 +102,21 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
       generators.push(new CustomResourceGenerator(gen1App, backendGenerator, packageJsonGenerator, outputDir, resourceName));
     }
 
-    const functionNames = await gen1App.fetchFunctionNames();
+    const functionNames = Object.keys((meta.function as object) ?? {});
+    const functionCategoryMap = computeFunctionCategories(meta);
     for (const resourceName of functionNames) {
+      const category = functionCategoryMap.get(resourceName) ?? 'function';
       generators.push(
-        new FunctionGenerator(gen1App, backendGenerator, authGenerator, s3Generator, packageJsonGenerator, outputDir, resourceName),
+        new FunctionGenerator(
+          gen1App,
+          backendGenerator,
+          authGenerator,
+          s3Generator,
+          packageJsonGenerator,
+          outputDir,
+          resourceName,
+          category,
+        ),
       );
     }
 
@@ -187,4 +199,56 @@ export class DependenciesInstaller {
     await execa('npm', ['install']);
     await execa('npm', ['install']);
   }
+}
+
+/**
+ * Derives a function-to-category map from dependsOn relationships
+ * in amplify-meta.json. A function's category is determined by which
+ * other category depends on it (auth → 'auth', storage → 'storage')
+ * or which category it depends on (function → storage = 'storage').
+ * Functions with no cross-category dependencies default to 'function'.
+ */
+function computeFunctionCategories(meta: $TSMeta): ReadonlyMap<string, string> {
+  const categoryMap = new Map<string, string>();
+  const auth = meta.auth as Record<string, Record<string, unknown>> | undefined;
+  const storage = meta.storage as Record<string, Record<string, unknown>> | undefined;
+  const functions = meta.function as Record<string, Record<string, unknown>> | undefined;
+
+  if (auth) {
+    for (const authResource of Object.values(auth)) {
+      if (authResource.dependsOn) {
+        for (const dep of authResource.dependsOn as Array<{ category: string; resourceName: string }>) {
+          if (dep.category === 'function') {
+            categoryMap.set(dep.resourceName, 'auth');
+          }
+        }
+      }
+    }
+  }
+
+  if (storage) {
+    for (const storageResource of Object.values(storage)) {
+      if (storageResource.dependsOn) {
+        for (const dep of storageResource.dependsOn as Array<{ category: string; resourceName: string }>) {
+          if (dep.category === 'function') {
+            categoryMap.set(dep.resourceName, 'storage');
+          }
+        }
+      }
+    }
+  }
+
+  if (functions) {
+    for (const [funcName, funcResource] of Object.entries(functions)) {
+      if (funcResource.dependsOn) {
+        for (const dep of funcResource.dependsOn as Array<{ category: string; resourceName: string }>) {
+          if (dep.category === 'storage') {
+            categoryMap.set(funcName, 'storage');
+          }
+        }
+      }
+    }
+  }
+
+  return categoryMap;
 }

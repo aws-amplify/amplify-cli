@@ -109,7 +109,10 @@ export class S3Generator implements Generator {
       describe: async () => ['Generate amplify/storage/resource.ts'],
       execute: async () => {
         const accessPatterns = this.buildAccessPatterns(cliInputs);
-        const triggerFunctionCategories = await this.gen1App.fetchFunctionCategoryMap();
+        // Trigger functions are storage triggers by definition — they're
+        // invoked by S3 bucket notifications and live under amplify/storage/.
+        const triggerFunctionNames = Object.values(triggers).map((t) => t.source.split('/')[3]);
+        const triggerFunctionCategories = new Map(triggerFunctionNames.map((name) => [name, 'storage']));
         const nodes = await this.defineStorage.render({
           storageIdentifier,
           accessPatterns,

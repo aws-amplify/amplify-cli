@@ -66,7 +66,7 @@ interface Generator {
 }
 ```
 
-**Gen1App** — Lazy-loading facade passed to every generator. Each `fetch*` method calls AWS on first invocation and caches the result. AWS SDK calls are delegated to `AwsFetcher`. Local file reads are handled directly. Easy to mock: stub only the methods your test needs.
+**Gen1App** — Category-agnostic, lazy-loading facade passed to every generator. Each `fetch*` method calls AWS on first invocation and caches the result. AWS SDK calls are delegated to `AwsFetcher`. Local file reads are handled directly. Category-specific logic (GraphQL schemas, auth triggers, REST API configs, function categories) lives in the respective generators. Easy to mock: stub only the methods your test needs.
 
 ```typescript
 class Gen1App {
@@ -78,10 +78,8 @@ class Gen1App {
 
   public fetchMeta(): Promise<$TSMeta>;
   public fetchMetaCategory(category: string): Promise<Record<string, unknown> | undefined>;
-  public fetchFunctionNames(): Promise<ReadonlySet<string>>;
-  public fetchFunctionCategoryMap(): Promise<ReadonlyMap<string, string>>;
-  public fetchGraphQLSchema(apiName: string): Promise<string>;
-  public fetchRestApiConfigs(apiCategory: Record<string, unknown>): Promise<RestApiDefinition[]>;
+  public readCloudBackendJson<T>(relativePath: string): Promise<T>;
+  public readCloudBackendFile(relativePath: string): Promise<string>;
   // ... other lazy-loading, cached methods
 }
 ```
@@ -121,9 +119,9 @@ Each generator receives `Gen1App`, `BackendGenerator`, the output directory, and
 
 Each resource entry in `amplify-meta.json` gets its own generator instance. The orchestrator iterates category keys and service types, creating one concrete generator per resource (e.g., one `S3Generator` for the S3 bucket, one `FunctionGenerator` per Lambda). This keeps each generator focused on a single resource and avoids shared mutable state between resources in the same category.
 
-### Orchestrator does zero data derivation
+### Orchestrator does minimal data derivation
 
-`execute()` reads `amplify-meta.json` top-level keys and dispatches by service type — that's it. All data fetching, transformation, and rendering logic lives in the generators themselves, accessed through `Gen1App`. The orchestrator is a thin loop that creates generators and collects their operations.
+`execute()` reads `amplify-meta.json` top-level keys and dispatches by service type. The only derived value it computes is the function-to-category map (from `dependsOn` relationships), which it passes to each `FunctionGenerator` as a constructor arg. All other data fetching, transformation, and rendering logic lives in the generators themselves, accessed through `Gen1App`. The orchestrator is a thin loop that creates generators and collects their operations.
 
 ### All generators access Gen1 state through Gen1App
 
