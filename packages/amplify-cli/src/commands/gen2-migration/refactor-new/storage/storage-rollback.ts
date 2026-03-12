@@ -1,8 +1,7 @@
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { CFNResource } from '../cfn-template';
 import { RollbackCategoryRefactorer } from '../workflow/rollback-category-refactorer';
-
-const STORAGE_RESOURCE_TYPES = ['AWS::S3::Bucket', 'AWS::DynamoDB::Table'];
+import { STORAGE_RESOURCE_TYPES } from './storage-forward';
 
 /**
  * Known Gen1 logical resource IDs for storage resource types.

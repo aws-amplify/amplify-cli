@@ -1,7 +1,7 @@
 import { CFNResource } from '../cfn-template';
 import { ForwardCategoryRefactorer } from '../workflow/forward-category-refactorer';
 
-const ANALYTICS_RESOURCE_TYPES = ['AWS::Kinesis::Stream'];
+export const ANALYTICS_RESOURCE_TYPES = ['AWS::Kinesis::Stream'];
 
 /**
  * Forward refactorer for the analytics category (Kinesis).

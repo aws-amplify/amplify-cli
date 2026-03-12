@@ -3,21 +3,10 @@ import { CFNResource } from '../cfn-template';
 import { RefactorOperation } from '../refactorer';
 import { ResolvedStack } from '../workflow/category-refactorer';
 import { RollbackCategoryRefactorer } from '../workflow/rollback-category-refactorer';
-import { discoverGen1AuthStacks } from './auth-utils';
-
-const MAIN_AUTH_RESOURCE_TYPES = [
-  'AWS::Cognito::UserPool',
-  'AWS::Cognito::UserPoolClient',
-  'AWS::Cognito::IdentityPool',
-  'AWS::Cognito::IdentityPoolRoleAttachment',
-  'AWS::Cognito::UserPoolDomain',
-];
+import { AUTH_RESOURCE_TYPES, GEN2_NATIVE_APP_CLIENT, discoverGen1AuthStacks } from './auth-utils';
 
 const USER_POOL_GROUP_RESOURCE_TYPE = 'AWS::Cognito::UserPoolGroup';
-
-const ALL_AUTH_RESOURCE_TYPES = [...MAIN_AUTH_RESOURCE_TYPES, USER_POOL_GROUP_RESOURCE_TYPE];
-
-const GEN2_NATIVE_APP_CLIENT = 'UserPoolNativeAppClient';
+const MAIN_AUTH_RESOURCE_TYPES = AUTH_RESOURCE_TYPES.filter((t) => t !== USER_POOL_GROUP_RESOURCE_TYPE);
 const GEN2_AMPLIFY_AUTH_LOGICAL_ID_PREFIX = 'amplifyAuth';
 
 /**
@@ -39,7 +28,7 @@ const GEN1_AUTH_LOGICAL_IDS = new Map<string, string>([
  */
 export class AuthRollbackRefactorer extends RollbackCategoryRefactorer {
   protected resourceTypes(): string[] {
-    return ALL_AUTH_RESOURCE_TYPES;
+    return AUTH_RESOURCE_TYPES;
   }
 
   public override async plan(): Promise<RefactorOperation[]> {

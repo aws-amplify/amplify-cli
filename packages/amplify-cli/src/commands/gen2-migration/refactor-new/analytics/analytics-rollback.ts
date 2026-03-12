@@ -1,8 +1,7 @@
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { CFNResource } from '../cfn-template';
 import { RollbackCategoryRefactorer } from '../workflow/rollback-category-refactorer';
-
-const ANALYTICS_RESOURCE_TYPES = ['AWS::Kinesis::Stream'];
+import { ANALYTICS_RESOURCE_TYPES } from './analytics-forward';
 
 /**
  * Known Gen1 logical resource IDs for analytics resource types.

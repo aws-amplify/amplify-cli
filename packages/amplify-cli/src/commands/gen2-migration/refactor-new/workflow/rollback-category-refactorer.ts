@@ -1,6 +1,6 @@
 import { GetTemplateCommand } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
-import { CFNResource, CFNTemplate } from '../cfn-template';
+import { CFNTemplate } from '../cfn-template';
 import { RefactorOperation } from '../refactorer';
 import { resolveParameters } from '../resolvers/cfn-parameter-resolver';
 import { resolveOutputs } from '../resolvers/cfn-output-resolver';
@@ -9,9 +9,13 @@ import { extractStackNameFromId } from '../utils';
 import { getHoldingStackName, findHoldingStack, deleteHoldingStack } from '../holding-stack';
 import { tryUpdateStack } from '../cfn-stack-updater';
 import { tryRefactorStack, RefactorFailure } from '../cfn-stack-refactor-updater';
-import { CategoryRefactorer, MIGRATION_PLACEHOLDER_LOGICAL_ID, ResolvedStack, ResourceMapping } from './category-refactorer';
-
-const PLACEHOLDER_RESOURCE: CFNResource = { Type: 'AWS::CloudFormation::WaitConditionHandle', Properties: {} };
+import {
+  CategoryRefactorer,
+  MIGRATION_PLACEHOLDER_LOGICAL_ID,
+  PLACEHOLDER_RESOURCE,
+  ResolvedStack,
+  ResourceMapping,
+} from './category-refactorer';
 
 /**
  * Rollback direction base: moves resources from Gen2 (source) back to Gen1 (target).

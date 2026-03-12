@@ -6,19 +6,9 @@ import { AwsClients } from '../aws-clients';
 import { StackFacade } from '../stack-facade';
 import { retrieveOAuthValues } from '../oauth-values-retriever';
 import { ForwardCategoryRefactorer } from '../workflow/forward-category-refactorer';
-import { discoverGen1AuthStacks } from './auth-utils';
-
-const AUTH_RESOURCE_TYPES = [
-  'AWS::Cognito::UserPool',
-  'AWS::Cognito::UserPoolClient',
-  'AWS::Cognito::IdentityPool',
-  'AWS::Cognito::IdentityPoolRoleAttachment',
-  'AWS::Cognito::UserPoolDomain',
-  'AWS::Cognito::UserPoolGroup',
-];
+import { AUTH_RESOURCE_TYPES, GEN2_NATIVE_APP_CLIENT, discoverGen1AuthStacks } from './auth-utils';
 
 const GEN1_WEB_APP_CLIENT = 'UserPoolClientWeb';
-const GEN2_NATIVE_APP_CLIENT = 'UserPoolNativeAppClient';
 const HOSTED_PROVIDER_META_PARAMETER_NAME = 'hostedUIProviderMeta';
 const HOSTED_PROVIDER_CREDENTIALS_PARAMETER_NAME = 'hostedUIProviderCreds';
 const USER_POOL_ID_OUTPUT_KEY_NAME = 'UserPoolId';

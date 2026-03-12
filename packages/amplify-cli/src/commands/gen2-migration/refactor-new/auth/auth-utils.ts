@@ -1,5 +1,16 @@
 import { StackFacade } from '../stack-facade';
 
+export const AUTH_RESOURCE_TYPES = [
+  'AWS::Cognito::UserPool',
+  'AWS::Cognito::UserPoolClient',
+  'AWS::Cognito::IdentityPool',
+  'AWS::Cognito::IdentityPoolRoleAttachment',
+  'AWS::Cognito::UserPoolDomain',
+  'AWS::Cognito::UserPoolGroup',
+];
+
+export const GEN2_NATIVE_APP_CLIENT = 'UserPoolNativeAppClient';
+
 const GEN1_AUTH_STACK_TYPE_DESCRIPTION = 'auth-Cognito';
 const GEN1_USER_POOL_GROUPS_STACK_TYPE_DESCRIPTION = 'auth-Cognito-UserPool-Groups';
 

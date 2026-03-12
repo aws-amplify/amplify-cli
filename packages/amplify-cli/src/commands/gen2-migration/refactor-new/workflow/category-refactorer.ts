@@ -9,7 +9,7 @@ import { tryRefactorStack, RefactorFailure } from '../cfn-stack-refactor-updater
 import { extractStackNameFromId } from '../utils';
 
 export const MIGRATION_PLACEHOLDER_LOGICAL_ID = 'MigrationPlaceholder';
-const PLACEHOLDER_RESOURCE: CFNResource = { Type: 'AWS::CloudFormation::WaitConditionHandle', Properties: {} };
+export const PLACEHOLDER_RESOURCE: CFNResource = { Type: 'AWS::CloudFormation::WaitConditionHandle', Properties: {} };
 
 /**
  * Pre-computed data from resolving a stack's template.

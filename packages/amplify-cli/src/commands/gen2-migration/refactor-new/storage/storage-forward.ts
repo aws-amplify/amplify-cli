@@ -1,7 +1,7 @@
 import { CFNResource } from '../cfn-template';
 import { ForwardCategoryRefactorer } from '../workflow/forward-category-refactorer';
 
-const STORAGE_RESOURCE_TYPES = ['AWS::S3::Bucket', 'AWS::DynamoDB::Table'];
+export const STORAGE_RESOURCE_TYPES = ['AWS::S3::Bucket', 'AWS::DynamoDB::Table'];
 
 /**
  * Forward refactorer for the storage category (S3 + DynamoDB).
