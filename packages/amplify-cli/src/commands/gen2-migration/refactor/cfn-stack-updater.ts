@@ -5,57 +5,48 @@ import {
   UpdateStackCommand,
   UpdateStackCommandInput,
 } from '@aws-sdk/client-cloudformation';
-import { CFNTemplate } from './types';
+import { AmplifyError } from '@aws-amplify/amplify-cli-core';
+import { CFNStackStatus, CFNTemplate } from './cfn-template';
 import * as snap from './snap';
-import assert from 'node:assert';
 
 const POLL_ATTEMPTS = 120;
 const POLL_INTERVAL_MS = 5 * 1000;
 const NO_UPDATES_MESSAGE = 'No updates are to be performed';
-const CFN_IAM_CAPABILIY = 'CAPABILITY_NAMED_IAM';
+const CFN_IAM_CAPABILITY = 'CAPABILITY_NAMED_IAM';
 const COMPLETION_STATE = '_COMPLETE';
-export const UPDATE_COMPLETE = 'UPDATE_COMPLETE';
 
 /**
- * Updates a stack with given template. If no updates are present, it no-ops.
- * @param cfnClient
- * @param stackName
- * @param parameters
- * @param templateBody
- * @param attempts number of attempts to poll CFN stack for update completion state. The interval between the polls is 5 seconds.
+ * Updates a stack with the given template. No-ops if no updates are needed.
  */
-export async function tryUpdateStack(
-  cfnClient: CloudFormationClient,
-  stackName: string,
-  parameters: Parameter[],
-  templateBody: CFNTemplate,
-  attempts = POLL_ATTEMPTS,
-): Promise<string> {
+export async function tryUpdateStack(params: {
+  readonly cfnClient: CloudFormationClient;
+  readonly stackName: string;
+  readonly parameters: Parameter[];
+  readonly templateBody: CFNTemplate;
+  readonly attempts?: number;
+}): Promise<string> {
+  const { cfnClient, stackName, parameters, templateBody, attempts = POLL_ATTEMPTS } = params;
   try {
     const input: UpdateStackCommandInput = {
       TemplateBody: JSON.stringify(templateBody),
       Parameters: parameters,
       StackName: stackName,
-      Capabilities: [CFN_IAM_CAPABILIY],
+      Capabilities: [CFN_IAM_CAPABILITY],
       Tags: [],
     };
-    await snap.preUpdateStack(input);
+    snap.preUpdateStack(input);
     await cfnClient.send(new UpdateStackCommand(input));
     return pollStackForCompletionState(cfnClient, stackName, attempts);
   } catch (e) {
-    if (!(e && typeof e === 'object' && 'message' in e && typeof e.message === 'string' && e.message.includes(NO_UPDATES_MESSAGE))) {
-      throw e;
+    if (e && typeof e === 'object' && 'message' in e && typeof e.message === 'string' && e.message.includes(NO_UPDATES_MESSAGE)) {
+      return CFNStackStatus.UPDATE_COMPLETE;
     }
-    return UPDATE_COMPLETE;
+    throw e;
   }
 }
 
 /**
- * Polls a stack for completion state
- * @param cfnClient
- * @param stackName
- * @param attempts number of attempts to poll for completion.
- * @returns the stack status
+ * Polls a stack until it reaches a completion state.
  */
 export async function pollStackForCompletionState(
   cfnClient: CloudFormationClient,
@@ -63,20 +54,26 @@ export async function pollStackForCompletionState(
   attempts: number = POLL_ATTEMPTS,
 ): Promise<string> {
   do {
-    const { Stacks } = await cfnClient.send(
-      new DescribeStacksCommand({
-        StackName: stackName,
-      }),
-    );
+    const { Stacks } = await cfnClient.send(new DescribeStacksCommand({ StackName: stackName }));
     const stack = Stacks?.[0];
-    assert(stack);
+    if (!stack) {
+      throw new AmplifyError('StackNotFoundError', {
+        message: `Stack '${stackName}' not found while polling for completion`,
+      });
+    }
     const stackStatus = stack.StackStatus;
-    assert(stackStatus);
-    if (stackStatus?.endsWith(COMPLETION_STATE)) {
+    if (!stackStatus) {
+      throw new AmplifyError('StackStateError', {
+        message: `Stack '${stackName}' has no status`,
+      });
+    }
+    if (stackStatus.endsWith(COMPLETION_STATE)) {
       return stackStatus;
     }
-    await new Promise((res) => setTimeout(() => res(''), POLL_INTERVAL_MS));
+    await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS));
     attempts--;
   } while (attempts > 0);
-  throw new Error(`Stack ${stackName} did not reach a completion state within the given time period.`);
+  throw new AmplifyError('StackStateError', {
+    message: `Stack '${stackName}' did not reach a completion state within the polling period`,
+  });
 }

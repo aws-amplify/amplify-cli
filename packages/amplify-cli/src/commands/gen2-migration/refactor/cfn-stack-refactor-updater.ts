@@ -8,101 +8,109 @@ import {
   StackRefactorExecutionStatus,
   StackRefactorStatus,
 } from '@aws-sdk/client-cloudformation';
-import assert from 'node:assert';
-import { CFNStackStatus, FailedRefactorResponse } from './types';
+import { AmplifyError } from '@aws-amplify/amplify-cli-core';
+import { CFNStackStatus } from './cfn-template';
 import { pollStackForCompletionState } from './cfn-stack-updater';
-import extractStackNameFromId from './utils';
+import { extractStackNameFromId } from './utils';
 import * as snap from './snap';
 
 const POLL_ATTEMPTS = 300;
 const POLL_INTERVAL_MS = 12000;
 const COMPLETION_STATE = '_COMPLETE';
 const FAILED_STATE = '_FAILED';
-export const UPDATE_COMPLETE = 'UPDATE_COMPLETE';
+
+export type RefactorResult = { readonly success: true } | RefactorFailure;
+
+export type RefactorFailure = {
+  readonly success: false;
+  readonly reason: string | undefined;
+  readonly stackRefactorId: string;
+  readonly status: StackRefactorStatus | StackRefactorExecutionStatus | undefined;
+};
+
 /**
- * Refactors a stack with given source and destination template.
- * @param cfnClient
- * @param createStackRefactorCommandInput
- * @param attempts number of attempts to poll CFN stack for update completion state. The interval between the polls is 1.5 seconds.
- * @returns a tuple containing the success/failed state and the reason if any.
+ * Creates and executes a CloudFormation stack refactor operation.
+ * Polls for completion at each stage (create, execute, stack updates).
  */
 export async function tryRefactorStack(
   cfnClient: CloudFormationClient,
-  createStackRefactorCommandInput: CreateStackRefactorCommandInput,
+  input: CreateStackRefactorCommandInput,
   attempts = POLL_ATTEMPTS,
-): Promise<[boolean, FailedRefactorResponse | undefined]> {
-  createStackRefactorCommandInput.Description = buildRefactorDescription(createStackRefactorCommandInput);
+): Promise<RefactorResult> {
+  input.Description = buildRefactorDescription(input);
 
-  await snap.preRefactorStack(createStackRefactorCommandInput);
-  const { StackRefactorId } = await cfnClient.send(new CreateStackRefactorCommand(createStackRefactorCommandInput));
-  assert(StackRefactorId);
-  let describeStackRefactorResponse = await pollStackRefactorForCompletionState(
+  snap.preRefactorStack(input);
+  const { StackRefactorId } = await cfnClient.send(new CreateStackRefactorCommand(input));
+  if (!StackRefactorId) {
+    throw new AmplifyError('StackStateError', {
+      message: 'CreateStackRefactor returned no StackRefactorId',
+    });
+  }
+
+  // Poll for create completion
+  let response = await pollStackRefactorForCompletionState(
     cfnClient,
     StackRefactorId,
-    (_describeStackRefactorResponse: DescribeStackRefactorCommandOutput) => {
-      assert(_describeStackRefactorResponse.Status);
-      return (
-        _describeStackRefactorResponse.Status.endsWith(COMPLETION_STATE) || _describeStackRefactorResponse.Status.endsWith(FAILED_STATE)
-      );
+    (r) => {
+      if (!r.Status) {
+        throw new AmplifyError('StackStateError', {
+          message: `Stack refactor '${StackRefactorId}' has no status`,
+        });
+      }
+      return r.Status.endsWith(COMPLETION_STATE) || r.Status.endsWith(FAILED_STATE);
     },
     attempts,
   );
-  if (describeStackRefactorResponse.Status !== StackRefactorStatus.CREATE_COMPLETE) {
-    return [
-      false,
-      {
-        status: describeStackRefactorResponse.Status,
-        reason: describeStackRefactorResponse.StatusReason,
-        stackRefactorId: StackRefactorId,
-      },
-    ];
+
+  if (response.Status !== StackRefactorStatus.CREATE_COMPLETE) {
+    return { success: false, status: response.Status, reason: response.StatusReason, stackRefactorId: StackRefactorId };
   }
-  await cfnClient.send(
-    new ExecuteStackRefactorCommand({
-      StackRefactorId,
-    }),
-  );
-  describeStackRefactorResponse = await pollStackRefactorForCompletionState(
+
+  // Execute the refactor
+  await cfnClient.send(new ExecuteStackRefactorCommand({ StackRefactorId }));
+
+  response = await pollStackRefactorForCompletionState(
     cfnClient,
     StackRefactorId,
-    (describeStackRefactorResponse: DescribeStackRefactorCommandOutput) => {
-      assert(describeStackRefactorResponse.ExecutionStatus);
-      return (
-        describeStackRefactorResponse.ExecutionStatus.endsWith(COMPLETION_STATE) ||
-        describeStackRefactorResponse.ExecutionStatus.endsWith(FAILED_STATE)
-      );
+    (r) => {
+      if (!r.ExecutionStatus) {
+        throw new AmplifyError('StackStateError', {
+          message: `Stack refactor '${StackRefactorId}' has no execution status`,
+        });
+      }
+      return r.ExecutionStatus.endsWith(COMPLETION_STATE) || r.ExecutionStatus.endsWith(FAILED_STATE);
     },
     attempts,
   );
-  if (describeStackRefactorResponse.ExecutionStatus !== StackRefactorExecutionStatus.EXECUTE_COMPLETE) {
-    return [
-      false,
-      {
-        status: describeStackRefactorResponse.ExecutionStatus,
-        stackRefactorId: StackRefactorId,
-        reason: describeStackRefactorResponse.ExecutionStatusReason,
-      },
-    ];
+
+  if (response.ExecutionStatus !== StackRefactorExecutionStatus.EXECUTE_COMPLETE) {
+    return { success: false, status: response.ExecutionStatus, reason: response.ExecutionStatusReason, stackRefactorId: StackRefactorId };
   }
 
-  const sourceStackName = createStackRefactorCommandInput.StackDefinitions?.[0].StackName;
-  const destinationStackName = createStackRefactorCommandInput.StackDefinitions?.[1].StackName;
-  assert(sourceStackName);
-  assert(destinationStackName);
-  const sourceStackStatus = await pollStackForCompletionState(cfnClient, sourceStackName);
-  assert(sourceStackStatus === CFNStackStatus.UPDATE_COMPLETE, `${sourceStackName} was not updated successfully.`);
-  const destinationStackStatus = await pollStackForCompletionState(cfnClient, destinationStackName);
-  assert(
-    destinationStackStatus === CFNStackStatus.UPDATE_COMPLETE || destinationStackStatus === CFNStackStatus.CREATE_COMPLETE,
-    `${destinationStackName} was not updated successfully.`,
-  );
+  // Verify both stacks reached completion
+  const sourceStackName = input.StackDefinitions?.[0]?.StackName;
+  const destStackName = input.StackDefinitions?.[1]?.StackName;
+  if (!sourceStackName || !destStackName) {
+    throw new AmplifyError('InvalidStackError', {
+      message: 'Stack refactor input is missing source or destination stack name',
+    });
+  }
 
-  return [true, undefined];
-}
+  const sourceStatus = await pollStackForCompletionState(cfnClient, sourceStackName);
+  if (sourceStatus !== CFNStackStatus.UPDATE_COMPLETE) {
+    throw new AmplifyError('StackStateError', {
+      message: `Source stack '${sourceStackName}' ended with status '${sourceStatus}' instead of UPDATE_COMPLETE`,
+    });
+  }
 
-function resolveStackName(stackNameOrArn: string | undefined): string {
-  if (!stackNameOrArn) return 'unknown';
-  return stackNameOrArn.startsWith('arn:') ? extractStackNameFromId(stackNameOrArn) : stackNameOrArn;
+  const destStatus = await pollStackForCompletionState(cfnClient, destStackName);
+  if (destStatus !== CFNStackStatus.UPDATE_COMPLETE && destStatus !== CFNStackStatus.CREATE_COMPLETE) {
+    throw new AmplifyError('StackStateError', {
+      message: `Destination stack '${destStackName}' ended with status '${destStatus}' instead of UPDATE_COMPLETE or CREATE_COMPLETE`,
+    });
+  }
+
+  return { success: true };
 }
 
 function buildRefactorDescription(input: CreateStackRefactorCommandInput): string {
@@ -112,31 +120,29 @@ function buildRefactorDescription(input: CreateStackRefactorCommandInput): strin
   return `Move [${logicalIds}] from ${source} to ${dest}`;
 }
 
+function resolveStackName(stackNameOrArn: string | undefined): string {
+  if (!stackNameOrArn) return 'unknown';
+  return stackNameOrArn.startsWith('arn:') ? extractStackNameFromId(stackNameOrArn) : stackNameOrArn;
+}
+
 /**
- * Polls a stack refactor operation for completion state
- * @param cfnClient
- * @param stackRefactorId
- * @param exitCondition a function that determines if the stack refactor operation has reached a completion state.
- * @param attempts number of attempts to poll for completion.
- * @returns the stack status
+ * Polls a stack refactor operation until the exit condition is met.
  */
 async function pollStackRefactorForCompletionState(
   cfnClient: CloudFormationClient,
   stackRefactorId: string,
-  exitCondition: (describeStackRefactorResponse: DescribeStackRefactorCommandOutput) => boolean,
+  exitCondition: (response: DescribeStackRefactorCommandOutput) => boolean,
   attempts: number,
 ): Promise<DescribeStackRefactorCommandOutput> {
   do {
-    const describeStackRefactorResponse = await cfnClient.send(
-      new DescribeStackRefactorCommand({
-        StackRefactorId: stackRefactorId,
-      }),
-    );
-    if (exitCondition(describeStackRefactorResponse)) {
-      return describeStackRefactorResponse;
+    const response = await cfnClient.send(new DescribeStackRefactorCommand({ StackRefactorId: stackRefactorId }));
+    if (exitCondition(response)) {
+      return response;
     }
-    await new Promise((res) => setTimeout(() => res(''), POLL_INTERVAL_MS));
+    await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS));
     attempts--;
   } while (attempts > 0);
-  throw new Error(`Stack refactor ${stackRefactorId} did not reach a completion state within the given time period.`);
+  throw new AmplifyError('StackStateError', {
+    message: `Stack refactor '${stackRefactorId}' did not reach a completion state within the polling period`,
+  });
 }

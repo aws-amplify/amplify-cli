@@ -175,10 +175,7 @@
       "json",
       "node"
     ],
-    "collectCoverage": true,
-    "setupFilesAfterEnv": [
-      "<rootDir>/src/__tests__/commands/gen2-migration/refactor/generators/setup-jest.ts"
-    ]
+    "collectCoverage": true
   },
   "amplify": {
     "officialPlugins": {

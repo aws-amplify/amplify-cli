@@ -1,208 +1,170 @@
-import { AWS_RESOURCE_ATTRIBUTES, CFN_RESOURCE_TYPES, CFNTemplate } from '../types';
-import assert from 'node:assert';
 import { Output, StackResource } from '@aws-sdk/client-cloudformation';
-
-const REF = 'Ref';
-const GET_ATT = 'Fn::GetAtt';
+import { AmplifyError } from '@aws-amplify/amplify-cli-core';
+import { CFNResource, CFNTemplate } from '../cfn-template';
+import { walkCfnTree } from './cfn-tree-walker';
 
 /**
- * This class is responsible for resolving logical resource ids in a CloudFormation template
- * with their corresponding stack outputs.
+ * Resolves output and resource references in a CloudFormation template by tree-walking.
+ * Returns a new template; does not mutate input.
+ *
+ * Two-phase resolution:
+ * 1. Walk template.Resources — resolve {"Ref": "X"} and {"Fn::GetAtt": ["X", "Attr"]} using
+ *    stack outputs and ARN construction.
+ * 2. Walk template.Resources again — resolve remaining {"Fn::GetAtt": ["X", "Attr"]} using
+ *    physical resource IDs from DescribeStackResources (fallback path).
+ * 3. Replace each template.Outputs[key].Value with the runtime OutputValue from DescribeStacks.
+ *
+ * Operates on Resources only (not the whole template). Outputs are replaced separately.
  */
-class CfnOutputResolver {
-  constructor(private readonly template: CFNTemplate, private readonly region: string, private readonly accountId: string) {}
+export function resolveOutputs(params: {
+  readonly template: CFNTemplate;
+  readonly stackOutputs: Output[];
+  readonly stackResources: StackResource[];
+  readonly region: string;
+  readonly accountId: string;
+}): CFNTemplate {
+  const { template, stackOutputs, stackResources, region, accountId } = params;
+  const cloned = JSON.parse(JSON.stringify(template)) as CFNTemplate;
+  const templateOutputs = cloned.Outputs;
+  const templateResources = cloned.Resources;
 
-  public resolve(logicalResourceIds: string[], stackOutputs: Output[], stackResources: StackResource[]): CFNTemplate {
-    const resources = this.template?.Resources;
-    assert(resources);
-    const clonedStackTemplate = JSON.parse(JSON.stringify(this.template)) as CFNTemplate;
-    const stackTemplateOutputs = this.template?.Outputs;
-    const stackTemplateResources = this.template?.Resources;
-    assert(stackTemplateResources);
-    assert(stackOutputs);
-    assert(stackTemplateOutputs);
-    let stackTemplateResourcesString = JSON.stringify(stackTemplateResources);
-
-    Object.entries(stackTemplateOutputs).forEach(([outputKey, outputValue]) => {
-      const value = outputValue.Value;
-      const stackOutputValue = stackOutputs?.find((op) => op.OutputKey === outputKey)?.OutputValue;
-      assert(stackOutputValue);
-
-      if (typeof value !== 'object') {
-        return;
-      }
-
-      let logicalResourceId: string | undefined;
-      // Replace logicalId references using stack output values
-      if (REF in value && typeof value[REF] === 'string') {
-        logicalResourceId = value[REF];
-        const outputRegexp = new RegExp(`{"${REF}":"${logicalResourceId}"}`, 'g');
-        stackTemplateResourcesString = stackTemplateResourcesString.replaceAll(outputRegexp, `"${stackOutputValue}"`);
-      } else if (GET_ATT in value && Array.isArray(value[GET_ATT])) {
-        logicalResourceId = value[GET_ATT][0];
-      } else {
-        return;
-      }
-      assert(logicalResourceId);
-
-      // Replace Fn:GetAtt references using stack output values
-      const fnGetAttRegExp = new RegExp(`{"${GET_ATT}":\\["${logicalResourceId}","(?<AttributeName>\\w+)"]}`, 'g');
-      const fnGetAttRegExpResult = stackTemplateResourcesString.matchAll(fnGetAttRegExp).next();
-      if (!fnGetAttRegExpResult.done) {
-        const resourceType = this.template.Resources[logicalResourceId].Type as CFN_RESOURCE_TYPES;
-        const attributeName = fnGetAttRegExpResult.value.groups?.AttributeName;
-        assert(attributeName);
-        const resource = this.getResourceAttribute(attributeName as AWS_RESOURCE_ATTRIBUTES, resourceType, stackOutputValue);
-        if (resource) {
-          stackTemplateResourcesString = stackTemplateResourcesString.replaceAll(fnGetAttRegExp, this.buildFnGetAttReplace(resource));
-        }
-      }
+  if (!templateOutputs || !templateResources) {
+    throw new AmplifyError('InvalidStackError', {
+      message: 'Template is missing Outputs or Resources section',
     });
-
-    // If not available in outputs, try to replace with their physical id counterparts.
-    stackTemplateResourcesString = this.tryReplaceLogicalResourceRefWithPhysicalId(stackTemplateResourcesString, stackResources);
-
-    clonedStackTemplate.Resources = JSON.parse(stackTemplateResourcesString);
-    Object.entries(clonedStackTemplate.Outputs).forEach(([outputKey]) => {
-      const stackOutputValue = stackOutputs?.find((op) => op.OutputKey === outputKey)?.OutputValue;
-      assert(stackOutputValue);
-      clonedStackTemplate.Outputs[outputKey].Value = stackOutputValue;
-    });
-
-    return clonedStackTemplate;
   }
 
-  /**
-   * Currently, we only look for Fn:GetAtt references in the template and try to replace with physical resource ids (if they are not available in outputs)
-   * before performing the refactor. We can expand to look for other cases if need be.
-   * If this function expands, we can always move it into its own resolver.
-   * @param stackTemplateResourcesString
-   * @param stackResources
-   * @private
-   */
-  private tryReplaceLogicalResourceRefWithPhysicalId(stackTemplateResourcesString: string, stackResources: StackResource[]) {
-    const fnGetAttRegExp = new RegExp(`{"${GET_ATT}":\\["(?<LogicalResourceId>\\w+)","(?<AttributeName>\\w+)"]}`, 'g');
-    const fnGetAttRegExpResult = stackTemplateResourcesString.matchAll(fnGetAttRegExp);
+  // Build separate lookups for Ref-based and GetAtt-based outputs.
+  // A single resource can appear in both (e.g., UserPool has Ref → pool ID, GetAtt → ARN).
+  // Conflating them into one map would overwrite the Ref value with the GetAtt value.
+  const { refLookup, getAttLookup } = buildOutputLookup(templateOutputs, stackOutputs);
 
-    for (const fnGetAttRegExpResultItem of fnGetAttRegExpResult) {
-      const groups = fnGetAttRegExpResultItem.groups;
-      if (groups && groups.LogicalResourceId) {
-        const stackResourceWithMatchingLogicalId = stackResources.find(
-          (resource) => resource.LogicalResourceId === groups.LogicalResourceId,
-        );
-        if (stackResourceWithMatchingLogicalId) {
-          const fnGetAttRegExpPerLogicalId = new RegExp(`{"${GET_ATT}":\\["${groups.LogicalResourceId}","(?<AttributeName>\\w+)"]}`, 'g');
-          const stackResourcePhysicalId = stackResourceWithMatchingLogicalId.PhysicalResourceId;
-          assert(stackResourcePhysicalId);
+  // Phase 1: Resolve Ref/GetAtt in Resources using stack outputs
+  cloned.Resources = walkCfnTree(templateResources, (node) => {
+    // {"Ref": "LogicalId"} → replace with stack output value from Ref-based outputs
+    if ('Ref' in node && typeof node.Ref === 'string' && Object.keys(node).length === 1) {
+      const value = refLookup.get(node.Ref);
+      if (value !== undefined) return value;
+    }
 
-          // Kinesis streams require their ARN to be exposed in CloudFormation outputs.
-          // The physical resource ID for Kinesis streams is the stream name, not the ARN.
-          if (
-            stackResourceWithMatchingLogicalId.ResourceType === 'AWS::Kinesis::Stream' &&
-            groups.AttributeName === 'Arn' &&
-            !stackResourcePhysicalId.startsWith('arn:aws:kinesis')
-          ) {
-            throw new Error(
-              `Kinesis stream ARN must be exposed in CloudFormation outputs. ` +
-                `Found physical resource ID '${stackResourcePhysicalId}' for logical resource '${groups.LogicalResourceId}' which is not a valid ARN. ` +
-                `Please add an output with Fn::GetAtt for the Kinesis stream's Arn attribute.`,
-            );
-          }
-
-          if (groups.AttributeName === 'Arn') {
-            // Few resources like SQS have their physical ids as their HTTP URLs. We need to construct the arn manually in such cases.
-            const resourceId = stackResourcePhysicalId.startsWith('http') ? stackResourcePhysicalId.split('/')[2] : stackResourcePhysicalId;
-            const resourceArn = this.getResourceAttribute(
-              groups.AttributeName,
-              stackResourceWithMatchingLogicalId.ResourceType as CFN_RESOURCE_TYPES,
-              resourceId,
-            );
-            if (resourceArn) {
-              stackTemplateResourcesString = stackTemplateResourcesString.replaceAll(fnGetAttRegExpPerLogicalId, `"${resourceArn.Arn}"`);
-            } else {
-              stackTemplateResourcesString = stackTemplateResourcesString.replaceAll(
-                fnGetAttRegExpPerLogicalId,
-                `"${stackResourcePhysicalId}"`,
-              );
-            }
-          } else {
-            stackTemplateResourcesString = stackTemplateResourcesString.replaceAll(
-              fnGetAttRegExpPerLogicalId,
-              `"${stackResourcePhysicalId}"`,
-            );
+    // {"Fn::GetAtt": ["LogicalId", "AttrName"]} → resolve via GetAtt-based outputs + ARN builder
+    if ('Fn::GetAtt' in node && Array.isArray(node['Fn::GetAtt']) && Object.keys(node).length === 1) {
+      const [logicalId, attrName] = node['Fn::GetAtt'] as [string, string];
+      if (typeof logicalId === 'string' && typeof attrName === 'string') {
+        const outputValue = getAttLookup.get(logicalId);
+        if (outputValue !== undefined && attrName === 'Arn') {
+          const resourceType = templateResources[logicalId]?.Type;
+          if (resourceType) {
+            const arn = buildArn(resourceType, outputValue, region, accountId);
+            if (arn) return arn;
           }
         }
       }
     }
-    return stackTemplateResourcesString;
-  }
 
-  /**
-   * Get resource attribute based on attribute name, resource type and resource identifier.
-   * Only Arn is supported for now since that is what is used in gen1 and gen2 stacks for Auth and Storage categories.
-   * @param attributeName
-   * @param resourceType
-   * @param resourceIdentifier
-   * @private
-   */
-  private getResourceAttribute(
-    attributeName: AWS_RESOURCE_ATTRIBUTES,
-    resourceType: CFN_RESOURCE_TYPES,
-    resourceIdentifier: string,
-  ): Record<string, string> | undefined {
-    switch (attributeName) {
-      case 'Arn': {
-        switch (resourceType) {
-          case 'AWS::S3::Bucket':
-            return {
-              Arn: `arn:aws:s3:::${resourceIdentifier}`,
-            };
-          case 'AWS::DynamoDB::Table':
-            return {
-              Arn: `arn:aws:dynamodb:${this.region}:${this.accountId}:table/${resourceIdentifier}`,
-            };
-          case 'AWS::Cognito::UserPool':
-            return {
-              Arn: `arn:aws:cognito-idp:${this.region}:${this.accountId}:userpool/${resourceIdentifier}`,
-            };
-          case 'AWS::IAM::Role':
-            return {
-              // output is already in ARN format
-              Arn: resourceIdentifier.startsWith('arn:aws:iam')
-                ? resourceIdentifier
-                : `arn:aws:iam::${this.accountId}:role/${resourceIdentifier}`,
-            };
-          case 'AWS::SQS::Queue':
-            return {
-              Arn: `arn:aws:sqs:${this.region}:${this.accountId}:${resourceIdentifier}`,
-            };
-          case 'AWS::Lambda::Function':
-            return {
-              Arn: `arn:aws:lambda:${this.region}:${this.accountId}:function:${resourceIdentifier}`,
-            };
-          case 'AWS::Kinesis::Stream':
-            return {
-              // output is already in ARN format
-              Arn: resourceIdentifier,
-            };
-          default:
-            return undefined;
-        }
+    return undefined;
+  }) as Record<string, CFNResource>;
+
+  // Phase 2: Resolve remaining Fn::GetAtt using physical resource IDs (fallback)
+  cloned.Resources = walkCfnTree(cloned.Resources, (node) => {
+    if ('Fn::GetAtt' in node && Array.isArray(node['Fn::GetAtt']) && Object.keys(node).length === 1) {
+      const [logicalId, attrName] = node['Fn::GetAtt'] as [string, string];
+      if (typeof logicalId !== 'string' || typeof attrName !== 'string') return undefined;
+
+      const stackResource = stackResources.find((r) => r.LogicalResourceId === logicalId);
+      if (!stackResource?.PhysicalResourceId) return undefined;
+
+      const physicalId = stackResource.PhysicalResourceId;
+      const resourceType = stackResource.ResourceType ?? '';
+
+      // Kinesis streams require ARN in outputs — physical ID is the stream name, not ARN
+      if (resourceType === 'AWS::Kinesis::Stream' && attrName === 'Arn' && !physicalId.startsWith('arn:aws:kinesis')) {
+        throw new AmplifyError('InvalidStackError', {
+          message:
+            `Kinesis stream ARN must be exposed in CloudFormation outputs. ` +
+            `Found physical resource ID '${physicalId}' for logical resource '${logicalId}' which is not a valid ARN. ` +
+            `Please add an output with Fn::GetAtt for the Kinesis stream's Arn attribute.`,
+        });
       }
-      default:
-        return undefined;
+
+      if (attrName === 'Arn') {
+        // SQS physical IDs are HTTP URLs — extract queue name for ARN construction
+        const resourceId = physicalId.startsWith('http') ? physicalId.split('/').pop()! : physicalId;
+        const arn = buildArn(resourceType, resourceId, region, accountId);
+        return arn ?? physicalId;
+      }
+
+      return physicalId;
     }
+
+    return undefined;
+  }) as Record<string, CFNResource>;
+
+  // Phase 3: Replace Output values with runtime stack output values
+  for (const [outputKey, outputDef] of Object.entries(cloned.Outputs)) {
+    const runtimeOutput = stackOutputs.find((o) => o.OutputKey === outputKey);
+    if (!runtimeOutput?.OutputValue) {
+      throw new AmplifyError('InvalidStackError', {
+        message: `Stack output '${outputKey}' has no runtime value`,
+      });
+    }
+    outputDef.Value = runtimeOutput.OutputValue;
   }
 
-  /**
-   * Build a custom replace function to replace Fn::GetAtt references with resource attribute values.
-   * @param record
-   * @private
-   */
-  private buildFnGetAttReplace(record: Record<string, string>) {
-    return (_match: string, _p1: string, _offset: number, _text: string, groups: Record<string, string>) =>
-      `"${record[groups.AttributeName]}"`;
-  }
+  return cloned;
 }
 
-export default CfnOutputResolver;
+/**
+ * Builds separate lookups for Ref-based and GetAtt-based outputs.
+ * A single resource can have both (e.g., UserPool: Ref → pool ID, GetAtt → ARN).
+ */
+function buildOutputLookup(
+  templateOutputs: Record<string, { Value: string | object }>,
+  stackOutputs: Output[],
+): { refLookup: Map<string, string>; getAttLookup: Map<string, string> } {
+  const refLookup = new Map<string, string>();
+  const getAttLookup = new Map<string, string>();
+
+  for (const [outputKey, outputDef] of Object.entries(templateOutputs)) {
+    const value = outputDef.Value;
+    if (typeof value !== 'object' || value === null) continue;
+
+    const runtimeOutput = stackOutputs.find((o) => o.OutputKey === outputKey);
+    if (!runtimeOutput?.OutputValue) continue;
+
+    const record = value as Record<string, unknown>;
+
+    if ('Ref' in record && typeof record.Ref === 'string') {
+      refLookup.set(record.Ref, runtimeOutput.OutputValue);
+    } else if ('Fn::GetAtt' in record && Array.isArray(record['Fn::GetAtt'])) {
+      getAttLookup.set(record['Fn::GetAtt'][0] as string, runtimeOutput.OutputValue);
+    }
+  }
+
+  return { refLookup, getAttLookup };
+}
+
+/**
+ * Constructs an ARN for a given resource type and identifier.
+ * Returns undefined if the resource type is not supported.
+ */
+function buildArn(resourceType: string, resourceId: string, region: string, accountId: string): string | undefined {
+  switch (resourceType) {
+    case 'AWS::S3::Bucket':
+      return `arn:aws:s3:::${resourceId}`;
+    case 'AWS::DynamoDB::Table':
+      return `arn:aws:dynamodb:${region}:${accountId}:table/${resourceId}`;
+    case 'AWS::Cognito::UserPool':
+      return `arn:aws:cognito-idp:${region}:${accountId}:userpool/${resourceId}`;
+    case 'AWS::IAM::Role':
+      return resourceId.startsWith('arn:aws:iam') ? resourceId : `arn:aws:iam::${accountId}:role/${resourceId}`;
+    case 'AWS::SQS::Queue':
+      return `arn:aws:sqs:${region}:${accountId}:${resourceId}`;
+    case 'AWS::Lambda::Function':
+      return `arn:aws:lambda:${region}:${accountId}:function:${resourceId}`;
+    case 'AWS::Kinesis::Stream':
+      return resourceId; // Already an ARN
+    default:
+      return undefined;
+  }
+}

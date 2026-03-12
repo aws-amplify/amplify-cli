@@ -1,45 +1,56 @@
-import { CFN_PSEUDO_PARAMETERS_REF, CFNTemplate, CFNParameter } from '../types';
 import { Parameter } from '@aws-sdk/client-cloudformation';
-import assert from 'node:assert';
+import { AmplifyError } from '@aws-amplify/amplify-cli-core';
+import { CFNTemplate, CFN_PSEUDO_PARAMETERS_REF } from '../cfn-template';
+import { walkCfnTree } from './cfn-tree-walker';
 
-class CfnParameterResolver {
-  constructor(private readonly template: CFNTemplate, private readonly stackName: string | undefined = undefined) {}
+/**
+ * Resolves parameter references in a CloudFormation template by tree-walking.
+ * Returns a new template; does not mutate input.
+ *
+ * Finds {"Ref": "ParamKey"} nodes and replaces them with the parameter's runtime value.
+ * Handles CommaDelimitedList/List<Number> (split into arrays), NoEcho (skipped),
+ * and AWS::StackName pseudo-parameter (when stackName is provided).
+ *
+ * Operates on the entire template (Resources, Outputs, Conditions, etc.).
+ */
+export function resolveParameters(template: CFNTemplate, parameters: Parameter[], stackName?: string): CFNTemplate {
+  if (!parameters.length && !stackName) return template;
 
-  public resolve(parameters: Parameter[]) {
-    if (!parameters.length) return this.template;
-    const clonedParameters = JSON.parse(JSON.stringify(parameters)) as Parameter[];
-    const clonedGen1Template = JSON.parse(JSON.stringify(this.template)) as CFNTemplate;
-    let templateString = JSON.stringify(clonedGen1Template);
-    const parametersFromTemplate = this.template.Parameters;
-    const clonedParametersFromTemplate = JSON.parse(JSON.stringify(parametersFromTemplate)) as Record<string, CFNParameter>;
-    // This is required for Gen1 bucket name as it relies on Gen1 stack name, and we need to resolve
-    // it before moving to Gen2 stack.
-    if (this.stackName) {
-      clonedParametersFromTemplate[CFN_PSEUDO_PARAMETERS_REF.StackName] = {
-        Type: 'String',
-      };
-      clonedParameters.push({
-        ParameterKey: CFN_PSEUDO_PARAMETERS_REF.StackName,
-        ParameterValue: this.stackName,
+  const templateParams = template.Parameters ?? {};
+
+  // Build a lookup of parameter key → resolved value.
+  // The resolved value is already the final replacement (string, array, etc.).
+  const paramMap = new Map<string, unknown>();
+
+  if (stackName) {
+    paramMap.set(CFN_PSEUDO_PARAMETERS_REF.StackName, stackName);
+  }
+
+  for (const { ParameterKey, ParameterValue } of parameters) {
+    if (!ParameterKey) {
+      throw new AmplifyError('MissingExpectedParameterError', {
+        message: 'Encountered a stack parameter with no ParameterKey',
       });
     }
-    for (const { ParameterKey, ParameterValue } of clonedParameters) {
-      assert(ParameterKey);
-      if (!ParameterValue) continue;
-      const { Type: parameterType, NoEcho } = clonedParametersFromTemplate[ParameterKey];
-      if (NoEcho) continue;
-      // All parameter values referenced by Ref are coerced to strings. List/Comma delimited are converted to arrays before coercing to string.
-      // Ref: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html
-      let resolvedParameterValue: string = JSON.stringify(ParameterValue);
-      const isListValue = parameterType === 'CommaDelimitedList' || parameterType === 'List<Number>';
-      if (isListValue) {
-        resolvedParameterValue = JSON.stringify(ParameterValue.includes(',') ? ParameterValue.split(',') : [ParameterValue]);
-      }
-      const paramRegexp = new RegExp(`{"Ref":"${ParameterKey}"}`, 'g');
-      templateString = templateString.replaceAll(paramRegexp, resolvedParameterValue);
-    }
-    return JSON.parse(templateString);
-  }
-}
+    if (!ParameterValue) continue;
 
-export default CfnParameterResolver;
+    const paramDef = templateParams[ParameterKey];
+    if (!paramDef) continue;
+    if (paramDef.NoEcho) continue;
+
+    const isListType = paramDef.Type === 'CommaDelimitedList' || paramDef.Type === 'List<Number>';
+    const resolved = isListType ? (ParameterValue.includes(',') ? ParameterValue.split(',') : [ParameterValue]) : ParameterValue;
+
+    paramMap.set(ParameterKey, resolved);
+  }
+
+  if (paramMap.size === 0) return template;
+
+  return walkCfnTree(template, (node) => {
+    if ('Ref' in node && typeof node.Ref === 'string' && Object.keys(node).length === 1) {
+      const value = paramMap.get(node.Ref);
+      if (value !== undefined) return value;
+    }
+    return undefined;
+  }) as CFNTemplate;
+}

@@ -8,7 +8,7 @@ import { AmplifyMigrationOperation } from '../_operation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import fs from 'fs-extra';
 import { GetCallerIdentityCommand, STSClient } from '@aws-sdk/client-sts';
-import { ResourceMapping } from '../refactor-new/workflow/category-refactorer';
+import { ResourceMapping } from './workflow/category-refactorer';
 
 const FILE_PROTOCOL_PREFIX = 'file://';
 
@@ -77,6 +77,7 @@ export async function executeLegacyRefactor(params: {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let TemplateGenerator: any;
   try {
+    // @ts-expect-error generators/ was removed in Phase 7; the catch block handles this gracefully.
     ({ TemplateGenerator } = await import('./generators/template-generator'));
   } catch {
     throw new AmplifyError('NotImplementedError', {
