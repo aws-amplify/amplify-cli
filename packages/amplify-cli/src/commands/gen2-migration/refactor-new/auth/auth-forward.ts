@@ -21,9 +21,25 @@ const TYPES_WITH_MULTIPLE_RESOURCES = ['AWS::Cognito::UserPoolClient', 'AWS::Cog
 /**
  * Forward refactorer for the auth category.
  *
- * Handles the two-source-stack case: Gen1 may have separate stacks for
- * main auth and UserPoolGroups. Gen2 combines them into one stack.
- * Overrides plan() to handle multiple source stacks mapping to one destination.
+ * Overrides plan() because Gen1 auth has two source stacks (main auth + UserPoolGroups)
+ * mapping to one Gen2 destination. The second move's templates chain off the first move's
+ * output, requiring sequential buildRefactorTemplates calls that the base class's 1-to-1
+ * plan() doesn't support.
+ *
+ * The override still calls the base class's concrete workflow methods (resolveSource,
+ * resolveTarget, buildResourceMappings, beforeMovePlan, buildRefactorTemplates,
+ * buildMoveOperations, updateSource, updateTarget) — it only controls the orchestration.
+ *
+ * TARGET STATE: Split into AuthMainForwardRefactorer + AuthUserPoolGroupForwardRefactorer,
+ * each going through the standard plan() flow. Requires an orchestration-layer coordination
+ * mechanism where planAndValidate in refactor.ts tracks per-destination-stack template state:
+ *
+ *   interface RefactorerWithOutput extends Refactorer {
+ *     plan(currentDestTemplate?: CFNTemplate): Promise<{ operations: RefactorOperation[]; finalDestTemplate?: CFNTemplate }>;
+ *   }
+ *
+ * The first auth refactorer returns its finalDestTemplate. The second receives it as input
+ * instead of reading from the facade. This eliminates the plan() override entirely.
  */
 export class AuthForwardRefactorer extends ForwardCategoryRefactorer {
   constructor(
@@ -170,11 +186,16 @@ export class AuthForwardRefactorer extends ForwardCategoryRefactorer {
     return mapping;
   }
 
-  // Required by abstract base but not used (plan() is overridden)
+  /**
+   * Returns the main Gen1 auth stack. Required by abstract base; not called when plan() is overridden.
+   */
   protected async fetchSourceStackId(): Promise<string | undefined> {
     return this.findNestedStack(this.gen1Env, 'auth');
   }
 
+  /**
+   * Returns the Gen2 auth stack. Required by abstract base; not called when plan() is overridden.
+   */
   protected async fetchDestStackId(): Promise<string | undefined> {
     return this.findNestedStack(this.gen2Branch, 'auth');
   }

@@ -23,8 +23,11 @@ const GEN1_AUTH_LOGICAL_IDS = new Map<string, string>([
 /**
  * Rollback refactorer for the auth category.
  *
- * Handles one Gen2 source → two Gen1 destinations (main auth + UserPoolGroups).
- * Overrides plan() to handle one source stack mapping to multiple destinations.
+ * Overrides plan() because Gen1 auth has two destination stacks (main auth + UserPoolGroups)
+ * receiving resources from one Gen2 source. The second move's templates chain off the first
+ * move's output, requiring sequential buildRefactorTemplates calls.
+ *
+ * See AuthForwardRefactorer JSDoc for the target state that would eliminate this override.
  */
 export class AuthRollbackRefactorer extends RollbackCategoryRefactorer {
   protected resourceTypes(): string[] {
@@ -103,11 +106,16 @@ export class AuthRollbackRefactorer extends RollbackCategoryRefactorer {
     return ops;
   }
 
-  // Required by abstract base but not used (plan() is overridden)
+  /**
+   * Returns the Gen2 auth stack. Required by abstract base; not called when plan() is overridden.
+   */
   protected async fetchSourceStackId(): Promise<string | undefined> {
     return this.findNestedStack(this.gen2Branch, 'auth');
   }
 
+  /**
+   * Returns the main Gen1 auth stack. Required by abstract base; not called when plan() is overridden.
+   */
   protected async fetchDestStackId(): Promise<string | undefined> {
     return this.findNestedStack(this.gen1Env, 'auth');
   }
