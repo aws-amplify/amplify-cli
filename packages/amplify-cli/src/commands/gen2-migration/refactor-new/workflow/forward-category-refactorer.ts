@@ -1,4 +1,4 @@
-import { Parameter } from '@aws-sdk/client-cloudformation';
+import { Output, Parameter } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { CFNResource, CFNTemplate } from '../cfn-template';
 import { RefactorOperation } from '../refactorer';
@@ -91,7 +91,7 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
     const postTargetTemplate = JSON.parse(JSON.stringify(target.resolvedTemplate)) as CFNTemplate;
     const holdingResources: Record<string, CFNResource> = {};
 
-    for (const [logicalId, resource] of target.resourcesToMove) {
+    for (const [logicalId] of target.resourcesToMove) {
       holdingResources[logicalId] = postTargetTemplate.Resources[logicalId];
       delete postTargetTemplate.Resources[logicalId];
     }
@@ -154,10 +154,7 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
    * Hook for OAuth parameter resolution. Override in auth category.
    * Default: returns parameters unchanged.
    */
-  protected async resolveOAuthParameters(
-    parameters: Parameter[],
-    _outputs: import('@aws-sdk/client-cloudformation').Output[],
-  ): Promise<Parameter[]> {
+  protected async resolveOAuthParameters(parameters: Parameter[], _outputs: Output[]): Promise<Parameter[]> {
     return parameters;
   }
 }

@@ -1,6 +1,6 @@
 import { Output, StackResource } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
-import { CFNTemplate } from '../cfn-template';
+import { CFNResource, CFNTemplate } from '../cfn-template';
 import { walkCfnTree } from './cfn-tree-walker';
 
 /**
@@ -61,7 +61,7 @@ export function resolveOutputs(
     }
 
     return undefined;
-  }) as Record<string, import('../cfn-template').CFNResource>;
+  }) as Record<string, CFNResource>;
 
   // Phase 2: Resolve remaining Fn::GetAtt using physical resource IDs (fallback)
   cloned.Resources = walkCfnTree(cloned.Resources, (node) => {
@@ -96,7 +96,7 @@ export function resolveOutputs(
     }
 
     return undefined;
-  }) as Record<string, import('../cfn-template').CFNResource>;
+  }) as Record<string, CFNResource>;
 
   // Phase 3: Replace Output values with runtime stack output values
   for (const [outputKey, outputDef] of Object.entries(cloned.Outputs)) {
