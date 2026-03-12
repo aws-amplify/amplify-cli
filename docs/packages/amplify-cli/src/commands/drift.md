@@ -5,15 +5,13 @@ Detects discrepancies between deployed AWS resources and expected state across t
 ## Quick Reference
 
 ```bash
-amplify drift                           # Run all phases (default: summary format)
-amplify drift --format tree             # Hierarchical view
+amplify drift                           # Run all phases
 amplify drift --debug                   # Verbose logging
 ```
 
 | Option | Description |
 |--------|-------------|
 | `--debug` | Enable debug output |
-| `--format <type>` | Output format: `tree` or `summary` (default) |
 
 **Exit codes:** `0` = no drift, `1` = drift detected OR any phase skipped/failed (fail-safe principle: uncertainty returns 1)
 
@@ -49,7 +47,7 @@ flowchart TD
     P2 --> DF
     P3 --> DF
     
-    DF --> OUT[Output: tree/summary]
+    DF --> OUT[Output]
 ```
 
 This diagram shows the deployment flow and where drift can occur between different layers of infrastructure state.
@@ -98,13 +96,12 @@ graph TB
 **What it detects:** Manual changes to AWS resources via console or direct API calls
 
 **How it works:**
-1. Syncs `#current-cloud-backend` from S3 deployment bucket
-2. Enumerates all Amplify stacks (root + nested stacks recursively)
-3. Calls AWS `DetectStackDrift` API for each stack
-4. Polls for completion (5-minute timeout, 2-second intervals)
-5. Retrieves detailed drift information for all resources
-6. Filters out known false positives (e.g., Auth role Deny→Allow changes)
-7. Reports resources with MODIFIED or DELETED status
+1. Enumerates all Amplify stacks (root + nested stacks recursively)
+2. Calls AWS `DetectStackDrift` API for each stack
+3. Polls for completion (5-minute timeout, 2-second intervals)
+4. Retrieves detailed drift information for all resources
+5. Filters out known false positives (e.g., Auth role Deny→Allow changes)
+6. Filters to only drifted resources (MODIFIED or DELETED) at detection time
 
 **Example drift detected:**
 - Tags added manually to S3 buckets or DynamoDB tables
@@ -160,7 +157,8 @@ packages/amplify-cli/src/commands/
         ├── index.ts                   # Service exports
         ├── amplify-config-service.ts  # Config utilities
         ├── cloudformation-service.ts  # AWS API wrapper, S3 sync
-        └── drift-formatter.ts         # Output formatting
+        ├── drift-formatter.ts         # Output formatting
+        └── terminal-link.ts           # Clickable terminal links for console URLs
 ```
 
 ### Components
@@ -173,7 +171,7 @@ packages/amplify-cli/src/commands/
 | detectLocalDrift | `detect-local-drift.ts` | Phase 3 - Local files vs S3 backend comparison |
 | CloudFormationService | `services/cloudformation-service.ts` | CloudFormation API interactions and S3 backend sync |
 | AmplifyConfigService | `services/amplify-config-service.ts` | Amplify project configuration and validation |
-| DriftFormatter | `services/drift-formatter.ts` | Processes and formats drift results for display |
+| createUnifiedCategoryView | `services/drift-formatter.ts` | Formats drift results grouped by category for display |
 
 ### Configuration Discovery
 
@@ -187,45 +185,57 @@ The drift detection tool discovers which CloudFormation stack to check through l
 ```typescript
 // Phase 1: Single stack drift detection
 async function detectStackDrift(
-  cfn: CloudFormationClient, 
-  stackName: string, 
-  print: Print
-): Promise<DescribeStackResourceDriftsCommandOutput>
+  cfn: CloudFormationClient,
+  stackName: string,
+  print: Printer
+): Promise<{ drifts: StackResourceDrift[]; driftDetectionId: string }>
 
 // Phase 1: Recursive drift detection for nested stacks
 async function detectStackDriftRecursive(
-  cfn: CloudFormationClient, 
-  stackName: string, 
-  print: Print, 
-  level?: number
-): Promise<CombinedDriftResults>
+  cfn: CloudFormationClient,
+  stackName: string,
+  print: Printer
+): Promise<CloudFormationDriftResults>
+
+// Phase 2: Template drift detection using changesets
+async function detectTemplateDrift(
+  stackName: string,
+  print: Printer,
+  cfn: CloudFormationClient
+): Promise<TemplateDriftResults>
 
 // Phase 3: Local vs cloud drift detection
 async function detectLocalDrift(
   context: $TSContext
-): Promise<Phase3Results>
+): Promise<LocalDriftResults>
 ```
 
 ## Key Types
 
 ```typescript
+interface StackDriftNode {
+  readonly logicalId: string;
+  readonly category: string;
+  readonly drifts: StackResourceDrift[];       // Only MODIFIED/DELETED resources
+  readonly driftDetectionId: string;
+  readonly children: StackDriftNode[];
+  readonly skippedChildren?: string[];
+}
+
 interface CloudFormationDriftResults {
-  totalDrifted: number;
-  rootStackDrifts: DescribeStackResourceDriftsCommandOutput;
-  nestedStackDrifts: Map<string, DescribeStackResourceDriftsCommandOutput>;
-  nestedStackPhysicalIds: Map<string, string>;
-  skippedNestedStacks?: string[];
+  readonly root: StackDriftNode;
+  readonly skippedStacks: string[];
+  readonly incomplete: boolean;
 }
 
 interface TemplateDriftResults {
-  totalDrifted: number;
-  changes: ChangeSetChange[];
+  changes: ResourceChangeWithNested[];
   skipped: boolean;
   skipReason?: string;
+  changeSetId?: string;
 }
 
 interface LocalDriftResults {
-  totalDrifted: number;
   resourcesToBeCreated?: ResourceInfo[];
   resourcesToBeUpdated?: ResourceInfo[];
   resourcesToBeDeleted?: ResourceInfo[];
@@ -234,38 +244,44 @@ interface LocalDriftResults {
   skipReason?: string;
 }
 
-type DriftDisplayFormat = 'tree' | 'summary';
+interface ResourceInfo {
+  category: string;
+  resourceName: string;
+  service: string;
+  providerPlugin?: string;
+  dependsOn?: Array<any>;
+}
 ```
 
 ## Output Sample
 
-
 ```
-Drift detection completed
+Started Drift Detection for Project: myproject
 
-┌─────────────────────────────────────────────────────────────┐
-│                   DRIFT DETECTION SUMMARY                   │
-├─────────────────────────────────────────────────────────────┤
-│ Project: myproject                                          │
-│ Total Stacks Checked: 4                                     │
-│ Resources with Drift: 2                                     │
-│ Resources in Sync: 22                                       │
-│ Unchecked Resources: 9                                      │
-└─────────────────────────────────────────────────────────────┘
+STORAGE MyTable
+  CloudFormation Drift: Deployed resources do not match templates
+  Drift Id: 11111111-2222-3333-4444-555555555555
 
-AMPLIFY CATEGORIES:
-├── [CORE] Core Infrastructure
-│   └── Status: DRIFT DETECTED: 1 resource
-└── [API] API
-    └── Status: DRIFT DETECTED: 1 resource
+  arn:aws:dynamodb:us-east-1:123:table/MyTable
+  ~ AWS::DynamoDB::Table
+    Property: /Tags/0/Value
+      Deployed:  "new-value"
+      Expected:  "old-value"
 
+API Schema
+  Template Drift: S3 and deployed templates differ
+  Changeset Id: arn:aws:cloudformation:us-east-1:123:changeSet/drift-detect/abc
+  ~ AWS::AppSync::GraphQLSchema
 
-TEMPLATE CHANGES:
-└── Status: NO DRIFT DETECTED
+API NewResolver
+  Template Drift: S3 and deployed templates differ
+  Changeset Id: arn:aws:cloudformation:us-east-1:123:changeSet/drift-detect/abc
+  + AWS::AppSync::Resolver
 
-LOCAL CHANGES:
-└── [API] API
-    └── Status: NO DRIFT DETECTED
+AUTH
+  Local Drift: Undeployed changes in this category
+
+Drift detected
 ```
 
 
@@ -279,8 +295,6 @@ The module separates concerns into specialized services coordinated by a central
 // From src/commands/drift.ts
 this.cfnService = new CloudFormationService(this.printer);
 this.configService = new AmplifyConfigService();
-this.fileService = new FileService();
-this.formatter = new DriftFormatter(this.cfnService);
 ```
 
 
@@ -307,10 +321,9 @@ function isAmplifyAuthRoleDenyToAllowChange(propDiff, print): boolean {
 Phases can be skipped without failing the entire operation, with results including skip reasons:
 
 ```typescript
-return { 
-  totalDrifted: 0,
-  skipped: true, 
-  skipReason: 'No cloud backend found - project may not be deployed yet' 
+return {
+  skipped: true,
+  skipReason: 'No cloud backend found - project may not be deployed yet'
 };
 ```
 
