@@ -17,6 +17,12 @@ const LOCK_STATEMENT = {
   Resource: '*',
 };
 
+const isLockStatement = (statement: Record<string, string>): boolean =>
+  statement.Effect === LOCK_STATEMENT.Effect &&
+  statement.Action === LOCK_STATEMENT.Action &&
+  statement.Principal === LOCK_STATEMENT.Principal &&
+  statement.Resource === LOCK_STATEMENT.Resource;
+
 const ALLOW_ALL_POLICY = {
   Statement: [
     {
@@ -117,6 +123,11 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
       },
       execute: async () => {
         const existingPolicy = await this.getExistingStackPolicy();
+        const alreadyLocked = existingPolicy.Statement.some(isLockStatement);
+        if (alreadyLocked) {
+          this.logger.info(`Lock statement already exists in stack policy on '${this.rootStackName}', skipping`);
+          return;
+        }
         existingPolicy.Statement.push(LOCK_STATEMENT);
         const mergedPolicy = JSON.stringify(existingPolicy);
         await this.cfnClient().send(
@@ -179,16 +190,12 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
       },
       execute: async () => {
         const existingPolicy = await this.getExistingStackPolicy();
-        const index = existingPolicy.Statement.findIndex(
-          (statement: Record<string, string>) =>
-            statement.Effect === LOCK_STATEMENT.Effect &&
-            statement.Action === LOCK_STATEMENT.Action &&
-            statement.Principal === LOCK_STATEMENT.Principal &&
-            statement.Resource === LOCK_STATEMENT.Resource,
-        );
-        if (index !== -1) {
-          existingPolicy.Statement.splice(index, 1);
+        const index = existingPolicy.Statement.findIndex(isLockStatement);
+        if (index === -1) {
+          this.logger.info(`Lock statement not found in stack policy on '${this.rootStackName}'`);
+          return;
         }
+        existingPolicy.Statement.splice(index, 1);
         const restoredPolicy = existingPolicy.Statement.length > 0 ? JSON.stringify(existingPolicy) : JSON.stringify(ALLOW_ALL_POLICY);
         await this.cfnClient().send(
           new SetStackPolicyCommand({
