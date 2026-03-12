@@ -2,7 +2,7 @@ import path from 'node:path';
 import fs from 'node:fs/promises';
 import { BackendEnvironment, GetBackendEnvironmentCommand } from '@aws-sdk/client-amplify';
 import { StackResource } from '@aws-sdk/client-cloudformation';
-import { $TSMeta, JSONUtilities, pathManager } from '@aws-amplify/amplify-cli-core';
+import { $TSMeta, JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import { AwsClients } from './aws-clients';
 import { AwsFetcher } from './aws-fetcher';
 import { BackendDownloader } from './backend-downloader';
@@ -27,9 +27,10 @@ interface Gen1AppOptions {
  * schemas, auth triggers, REST API configs, function categories)
  * lives in the respective generators.
  *
- * AWS SDK calls are delegated to {@link AwsFetcher}. Every generator
- * receives this facade. Easy to mock: stub only the methods your
- * test needs.
+ * Constructed via the static {@link Gen1App.create} factory, which
+ * resolves the backend environment and downloads the cloud backend
+ * from S3. After construction, all local state is available
+ * synchronously. AWS SDK calls are delegated to {@link AwsFetcher}.
  */
 export class Gen1App {
   /** The Amplify app ID. */
@@ -50,139 +51,101 @@ export class Gen1App {
   /** AWS SDK fetcher for all remote resource introspection. */
   public readonly aws: AwsFetcher;
 
-  private readonly backendDownloader: BackendDownloader;
-  private cachedBackendEnv: BackendEnvironment | undefined;
-  private cachedCcbDir: string | undefined;
-  private cachedMeta: $TSMeta | undefined;
-  private cachedProjectRoot: string | undefined;
+  /** The resolved backend environment from the Amplify API. */
+  public readonly backendEnvironment: BackendEnvironment;
 
-  public constructor(opts: Gen1AppOptions) {
+  /** Absolute path to the downloaded cloud backend directory. */
+  public readonly ccbDir: string;
+
+  /** The root CloudFormation stack name. */
+  public readonly rootStackName: string;
+
+  private readonly amplifyMeta: $TSMeta;
+
+  private constructor(opts: Gen1AppOptions, backendEnvironment: BackendEnvironment, ccbDir: string, amplifyMeta: $TSMeta) {
     this.appId = opts.appId;
     this.region = opts.region;
     this.envName = opts.envName;
     this.clients = opts.clients;
-    this.backendDownloader = new BackendDownloader(opts.clients.s3);
     this.aws = new AwsFetcher(opts.clients);
-  }
-
-  // ── Project root ─────────────────────────────────────────────────
-
-  /**
-   * Returns the Amplify project root directory.
-   * Throws if the project root cannot be found.
-   */
-  public findProjectRoot(): string {
-    if (this.cachedProjectRoot) return this.cachedProjectRoot;
-    const rootDir = pathManager.findProjectRoot();
-    if (!rootDir) {
-      throw new Error('Could not find Amplify project root');
-    }
-    this.cachedProjectRoot = rootDir;
-    return rootDir;
-  }
-
-  // ── Backend environment ──────────────────────────────────────────
-
-  /** Resolves and caches the backend environment. */
-  public async fetchBackendEnvironment(): Promise<BackendEnvironment> {
-    if (this.cachedBackendEnv) return this.cachedBackendEnv;
-    const { backendEnvironment } = await this.clients.amplify.send(
-      new GetBackendEnvironmentCommand({ appId: this.appId, environmentName: this.envName }),
-    );
-    if (!backendEnvironment) {
-      throw new Error(`No backend environment found for app ${this.appId}, env ${this.envName}`);
-    }
-    this.cachedBackendEnv = backendEnvironment;
-    return backendEnvironment;
-  }
-
-  /** Returns the root stack name from the backend environment. */
-  public async fetchRootStackName(): Promise<string> {
-    const env = await this.fetchBackendEnvironment();
-    if (!env.stackName) {
+    this.backendEnvironment = backendEnvironment;
+    this.ccbDir = ccbDir;
+    this.amplifyMeta = amplifyMeta;
+    if (!backendEnvironment.stackName) {
       throw new Error('Backend environment has no stack name');
     }
-    return env.stackName;
+    this.rootStackName = backendEnvironment.stackName;
   }
 
-  // ── Current cloud backend (local files from S3) ──────────────────
-
-  /** Downloads and caches the current cloud backend zip from S3. */
-  public async fetchCloudBackendDir(): Promise<string> {
-    if (this.cachedCcbDir) return this.cachedCcbDir;
-    const env = await this.fetchBackendEnvironment();
-    if (!env.deploymentArtifacts) {
+  /**
+   * Creates a Gen1App by resolving the backend environment, downloading
+   * the cloud backend from S3, and reading amplify-meta.json.
+   */
+  public static async create(opts: Gen1AppOptions): Promise<Gen1App> {
+    const { backendEnvironment } = await opts.clients.amplify.send(
+      new GetBackendEnvironmentCommand({ appId: opts.appId, environmentName: opts.envName }),
+    );
+    if (!backendEnvironment) {
+      throw new Error(`No backend environment found for app ${opts.appId}, env ${opts.envName}`);
+    }
+    if (!backendEnvironment.deploymentArtifacts) {
       throw new Error('Backend environment has no deployment artifacts');
     }
-    this.cachedCcbDir = await this.backendDownloader.getCurrentCloudBackend(env.deploymentArtifacts);
-    return this.cachedCcbDir;
-  }
 
-  // ── amplify-meta.json ────────────────────────────────────────────
+    const downloader = new BackendDownloader(opts.clients.s3);
+    const ccbDir = await downloader.getCurrentCloudBackend(backendEnvironment.deploymentArtifacts);
 
-  /** Reads and caches amplify-meta.json from the cloud backend. */
-  public async fetchMeta(): Promise<$TSMeta> {
-    if (this.cachedMeta) return this.cachedMeta;
-    const ccbDir = await this.fetchCloudBackendDir();
     const metaPath = path.join(ccbDir, 'amplify-meta.json');
     if (!(await fileOrDirectoryExists(metaPath))) {
       throw new Error('Could not find amplify-meta.json');
     }
-    const meta = JSONUtilities.readJson<$TSMeta>(metaPath, { throwIfNotExist: true });
-    if (!meta) {
+    const amplifyMeta = JSONUtilities.readJson<$TSMeta>(metaPath, { throwIfNotExist: true });
+    if (!amplifyMeta) {
       throw new Error('Failed to parse amplify-meta.json');
     }
-    this.cachedMeta = meta;
-    return meta;
+
+    return new Gen1App(opts, backendEnvironment, ccbDir, amplifyMeta);
   }
 
-  /** Returns the category block from amplify-meta.json, or undefined. */
-  public async fetchMetaCategory(category: string): Promise<Record<string, unknown> | undefined> {
-    const meta = await this.fetchMeta();
-    const block = (meta as Record<string, unknown>)[category];
+  // ── amplify-meta.json ────────────────────────────────────────────
+
+  /** Returns the category block from amplify-meta.json, or undefined if empty/absent. */
+  public meta(category: string): Record<string, unknown> | undefined {
+    const block = (this.amplifyMeta as Record<string, unknown>)[category];
     if (block && typeof block === 'object' && Object.keys(block as object).length > 0) {
       return block as Record<string, unknown>;
     }
     return undefined;
   }
 
-  // ── CloudFormation stack resources ───────────────────────────────
-
-  /** Fetches and caches all leaf stack resources from the root stack. */
-  public async fetchAllStackResources(): Promise<StackResource[]> {
-    const stackName = await this.fetchRootStackName();
-    return this.aws.fetchAllStackResources(stackName);
-  }
-
-  /** Returns stack resources indexed by LogicalResourceId. */
-  public async fetchResourcesByLogicalId(): Promise<Record<string, StackResource>> {
-    const stackName = await this.fetchRootStackName();
-    return this.aws.fetchResourcesByLogicalId(stackName);
+  /** Returns a resource output value from amplify-meta.json. */
+  public metaOutput(category: string, resourceName: string, outputKey: string): string {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped amplify-meta.json
+    return (this.amplifyMeta as any)[category]![resourceName]!.output![outputKey]!;
   }
 
   // ── Cloud backend file reading ──────────────────────────────────
 
-  /**
-   * Reads a JSON file from the cloud backend directory.
-   * Throws if the file does not exist or cannot be parsed.
-   */
-  public async readCloudBackendJson<T>(relativePath: string): Promise<T> {
-    const ccbDir = await this.fetchCloudBackendDir();
-    const filePath = path.join(ccbDir, relativePath);
-    const result = JSONUtilities.readJson<T>(filePath, { throwIfNotExist: true });
+  /** Reads a JSON CloudFormation template from the cloud backend. */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped CloudFormation templates
+  public template(relativePath: string): any {
+    const filePath = path.join(this.ccbDir, relativePath);
+    const result = JSONUtilities.readJson<unknown>(filePath, { throwIfNotExist: true });
     if (!result) {
-      throw new Error(`Failed to parse cloud backend file: ${relativePath}`);
+      throw new Error(`Failed to parse template: ${relativePath}`);
     }
     return result;
   }
 
-  /**
-   * Reads a text file from the cloud backend directory.
-   * Throws if the file does not exist.
-   */
-  public async readCloudBackendFile(relativePath: string): Promise<string> {
-    const ccbDir = await this.fetchCloudBackendDir();
-    const filePath = path.join(ccbDir, relativePath);
+  /** Reads cli-inputs.json for a resource in the cloud backend. */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped Gen1 cli-inputs.json
+  public cliInputsForResource(category: string, resourceName: string): any {
+    return this.template(path.join(category, resourceName, 'cli-inputs.json'));
+  }
+
+  /** Reads a text file from the cloud backend directory. */
+  public async readFile(relativePath: string): Promise<string> {
+    const filePath = path.join(this.ccbDir, relativePath);
     if (!(await fileOrDirectoryExists(filePath))) {
       throw new Error(`Cloud backend file not found: ${relativePath}`);
     }
@@ -190,8 +153,19 @@ export class Gen1App {
   }
 
   /** Checks if a path exists in the cloud backend directory. */
-  public async cloudBackendPathExists(relativePath: string): Promise<boolean> {
-    const ccbDir = await this.fetchCloudBackendDir();
-    return fileOrDirectoryExists(path.join(ccbDir, relativePath));
+  public async pathExists(relativePath: string): Promise<boolean> {
+    return fileOrDirectoryExists(path.join(this.ccbDir, relativePath));
+  }
+
+  // ── CloudFormation stack resources ───────────────────────────────
+
+  /** Fetches all leaf stack resources from the root stack. */
+  public async fetchAllStackResources(): Promise<StackResource[]> {
+    return this.aws.fetchAllStackResources(this.rootStackName);
+  }
+
+  /** Returns stack resources indexed by LogicalResourceId. */
+  public async fetchResourcesByLogicalId(): Promise<Record<string, StackResource>> {
+    return this.aws.fetchResourcesByLogicalId(this.rootStackName);
   }
 }

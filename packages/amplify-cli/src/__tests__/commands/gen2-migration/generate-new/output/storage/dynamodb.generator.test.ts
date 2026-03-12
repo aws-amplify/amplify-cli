@@ -4,7 +4,7 @@ import { Gen1App } from '../../../../../../commands/gen2-migration/generate-new/
 
 function createMockGen1App(overrides?: Partial<Gen1App>): Gen1App {
   return {
-    fetchMetaCategory: jest.fn(),
+    meta: jest.fn(),
     aws: {
       fetchTableDescription: jest.fn(),
     },
@@ -21,7 +21,7 @@ describe('DynamoDBGenerator', () => {
 
   it('returns empty operations when storage category is missing', async () => {
     const gen1App = createMockGen1App();
-    (gen1App.fetchMetaCategory as jest.Mock).mockResolvedValue(undefined);
+    (gen1App.meta as jest.Mock).mockReturnValue(undefined);
 
     const generator = new DynamoDBGenerator(gen1App, backendGenerator, 'myTable');
     const ops = await generator.plan();
@@ -31,7 +31,7 @@ describe('DynamoDBGenerator', () => {
 
   it('returns empty operations when resource is not in storage category', async () => {
     const gen1App = createMockGen1App();
-    (gen1App.fetchMetaCategory as jest.Mock).mockResolvedValue({
+    (gen1App.meta as jest.Mock).mockReturnValue({
       otherTable: { service: 'DynamoDB' },
     });
 
@@ -43,7 +43,7 @@ describe('DynamoDBGenerator', () => {
 
   it('returns one operation when resource exists', async () => {
     const gen1App = createMockGen1App();
-    (gen1App.fetchMetaCategory as jest.Mock).mockResolvedValue({
+    (gen1App.meta as jest.Mock).mockReturnValue({
       myTable: {
         service: 'DynamoDB',
         output: { Name: 'myTable-abc123' },
@@ -66,7 +66,7 @@ describe('DynamoDBGenerator', () => {
 
   it('contributes imports and early statements to backend generator on execute', async () => {
     const gen1App = createMockGen1App();
-    (gen1App.fetchMetaCategory as jest.Mock).mockResolvedValue({
+    (gen1App.meta as jest.Mock).mockReturnValue({
       myTable: {
         service: 'DynamoDB',
         output: { Name: 'myTable-abc123' },
@@ -94,7 +94,7 @@ describe('DynamoDBGenerator', () => {
 
   it('detects S3 bucket presence for ensureStorageStack', async () => {
     const gen1App = createMockGen1App();
-    (gen1App.fetchMetaCategory as jest.Mock).mockResolvedValue({
+    (gen1App.meta as jest.Mock).mockReturnValue({
       myTable: {
         service: 'DynamoDB',
         output: { Name: 'myTable-abc123' },
@@ -121,7 +121,7 @@ describe('DynamoDBGenerator', () => {
 
   it('throws when table is not found in AWS', async () => {
     const gen1App = createMockGen1App();
-    (gen1App.fetchMetaCategory as jest.Mock).mockResolvedValue({
+    (gen1App.meta as jest.Mock).mockReturnValue({
       myTable: {
         service: 'DynamoDB',
         output: { Name: 'myTable-abc123' },
@@ -136,7 +136,7 @@ describe('DynamoDBGenerator', () => {
 
   it('handles table with GSIs', async () => {
     const gen1App = createMockGen1App();
-    (gen1App.fetchMetaCategory as jest.Mock).mockResolvedValue({
+    (gen1App.meta as jest.Mock).mockReturnValue({
       myTable: {
         service: 'DynamoDB',
         output: { Name: 'myTable-abc123' },
@@ -171,7 +171,7 @@ describe('DynamoDBGenerator', () => {
 
   it('uses resourceName as table name when output.Name is missing', async () => {
     const gen1App = createMockGen1App();
-    (gen1App.fetchMetaCategory as jest.Mock).mockResolvedValue({
+    (gen1App.meta as jest.Mock).mockReturnValue({
       myTable: {
         service: 'DynamoDB',
       },

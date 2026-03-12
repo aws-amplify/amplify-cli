@@ -26,8 +26,8 @@ describe('DataGenerator', () => {
   function createMockGen1App(overrides?: Record<string, unknown>): Gen1App {
     return {
       envName: 'main',
-      fetchMetaCategory: jest.fn(),
-      findProjectRoot: jest.fn().mockReturnValue(projectRoot),
+      ccbDir: projectRoot,
+      meta: jest.fn(),
       aws: {
         fetchGraphqlApi: jest.fn(),
       },
@@ -36,14 +36,14 @@ describe('DataGenerator', () => {
   }
 
   async function writeSchema(apiName: string, schema: string): Promise<void> {
-    const schemaDir = path.join(projectRoot, 'amplify', 'backend', 'api', apiName);
+    const schemaDir = path.join(projectRoot, 'api', apiName);
     await fs.mkdir(schemaDir, { recursive: true });
     await fs.writeFile(path.join(schemaDir, 'schema.graphql'), schema, 'utf-8');
   }
 
   it('returns empty operations when api category is missing', async () => {
     const gen1App = createMockGen1App();
-    (gen1App.fetchMetaCategory as jest.Mock).mockResolvedValue(undefined);
+    (gen1App.meta as jest.Mock).mockReturnValue(undefined);
 
     const generator = new DataGenerator(gen1App, backendGenerator, outputDir);
     const ops = await generator.plan();
@@ -53,7 +53,7 @@ describe('DataGenerator', () => {
 
   it('returns empty operations when no AppSync API exists', async () => {
     const gen1App = createMockGen1App();
-    (gen1App.fetchMetaCategory as jest.Mock).mockResolvedValue({
+    (gen1App.meta as jest.Mock).mockReturnValue({
       myRestApi: { service: 'API Gateway' },
     });
 
@@ -65,7 +65,7 @@ describe('DataGenerator', () => {
 
   it('throws when AppSync API has no GraphQLAPIIdOutput', async () => {
     const gen1App = createMockGen1App();
-    (gen1App.fetchMetaCategory as jest.Mock).mockResolvedValue({
+    (gen1App.meta as jest.Mock).mockReturnValue({
       myApi: { service: 'AppSync', output: {} },
     });
     await writeSchema('myApi', 'type Todo @model { id: ID! }');
@@ -77,7 +77,7 @@ describe('DataGenerator', () => {
 
   it('throws when AppSync API is not found via SDK', async () => {
     const gen1App = createMockGen1App();
-    (gen1App.fetchMetaCategory as jest.Mock).mockImplementation(async (category: string) => {
+    (gen1App.meta as jest.Mock).mockImplementation((category: string) => {
       if (category === 'api') {
         return {
           myApi: {
@@ -98,7 +98,7 @@ describe('DataGenerator', () => {
 
   it('returns one operation and writes resource.ts on execute', async () => {
     const gen1App = createMockGen1App();
-    (gen1App.fetchMetaCategory as jest.Mock).mockImplementation(async (category: string) => {
+    (gen1App.meta as jest.Mock).mockImplementation((category: string) => {
       if (category === 'api') {
         return {
           myApi: {

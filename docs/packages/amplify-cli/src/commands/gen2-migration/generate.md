@@ -66,7 +66,7 @@ interface Generator {
 }
 ```
 
-**Gen1App** — Category-agnostic, lazy-loading facade passed to every generator. Each `fetch*` method calls AWS on first invocation and caches the result. AWS SDK calls are delegated to `AwsFetcher`. Local file reads are handled directly. Category-specific logic (GraphQL schemas, auth triggers, REST API configs, function categories) lives in the respective generators. Easy to mock: stub only the methods your test needs.
+**Gen1App** — Category-agnostic facade constructed via `Gen1App.create()`. The factory resolves the backend environment, downloads the cloud backend from S3, and reads `amplify-meta.json`. After construction, all local state is available synchronously via readonly fields. AWS SDK calls are delegated to `AwsFetcher`. Easy to mock: stub only the fields/methods your test needs.
 
 ```typescript
 class Gen1App {
@@ -75,12 +75,16 @@ class Gen1App {
   public readonly envName: string;
   public readonly clients: AwsClients;
   public readonly aws: AwsFetcher;
+  public readonly ccbDir: string;
+  public readonly rootStackName: string;
 
-  public fetchMeta(): Promise<$TSMeta>;
-  public fetchMetaCategory(category: string): Promise<Record<string, unknown> | undefined>;
-  public readCloudBackendJson<T>(relativePath: string): Promise<T>;
-  public readCloudBackendFile(relativePath: string): Promise<string>;
-  // ... other lazy-loading, cached methods
+  public static async create(opts: Gen1AppOptions): Promise<Gen1App>;
+  public meta(category: string): Record<string, unknown> | undefined;
+  public metaOutput(category: string, resourceName: string, outputKey: string): string;
+  public template(relativePath: string): any;
+  public cliInputsForResource(category: string, resourceName: string): any;
+  public readFile(relativePath: string): Promise<string>;
+  // ... other methods
 }
 ```
 

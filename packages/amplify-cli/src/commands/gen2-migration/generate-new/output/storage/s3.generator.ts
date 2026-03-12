@@ -73,7 +73,7 @@ export class S3Generator implements Generator {
    * Plans the S3 storage generation operations.
    */
   public async plan(): Promise<AmplifyMigrationOperation[]> {
-    const storageCategory = await this.gen1App.fetchMetaCategory('storage');
+    const storageCategory = this.gen1App.meta('storage');
     if (!storageCategory) return [];
 
     const s3Entry = Object.entries(storageCategory).find(([, value]) => (value as Record<string, unknown>).service === 'S3');
@@ -92,7 +92,7 @@ export class S3Generator implements Generator {
       throw new Error(`Could not find bucket name for storage resource '${storageName}'`);
     }
 
-    const cliInputs = await this.gen1App.readCloudBackendJson<StorageCLIInputsJSON>(`storage/${storageName}/cli-inputs.json`);
+    const cliInputs = this.gen1App.cliInputsForResource('storage', storageName) as StorageCLIInputsJSON;
 
     const [notifications, accelerateStatus, versioningStatus, encryption] = await Promise.all([
       this.gen1App.aws.fetchBucketNotifications(bucketName),

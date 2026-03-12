@@ -10,8 +10,8 @@ jest.unmock('fs-extra');
 function createMockGen1App(): Gen1App {
   return {
     envName: 'main',
-    fetchMetaCategory: jest.fn(),
-    fetchRootStackName: jest.fn().mockResolvedValue('root-stack'),
+    meta: jest.fn(),
+    rootStackName: 'root-stack',
     aws: {
       fetchKinesisStreamDetails: jest.fn(),
     },
@@ -36,7 +36,7 @@ describe('AnalyticsKinesisGenerator', () => {
 
   it('returns empty operations when analytics category is missing', async () => {
     const gen1App = createMockGen1App();
-    (gen1App.fetchMetaCategory as jest.Mock).mockResolvedValue(undefined);
+    (gen1App.meta as jest.Mock).mockReturnValue(undefined);
 
     const generator = new AnalyticsKinesisGenerator(gen1App, backendGenerator, outputDir, 'myKinesis');
     const ops = await generator.plan();
@@ -46,7 +46,7 @@ describe('AnalyticsKinesisGenerator', () => {
 
   it('returns empty operations when resource is not in analytics category', async () => {
     const gen1App = createMockGen1App();
-    (gen1App.fetchMetaCategory as jest.Mock).mockResolvedValue({
+    (gen1App.meta as jest.Mock).mockReturnValue({
       otherResource: { service: 'Kinesis' },
     });
 

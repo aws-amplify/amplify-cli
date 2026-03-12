@@ -37,13 +37,13 @@ export class AnalyticsKinesisGenerator implements Generator {
    * Plans the Kinesis analytics generation operation.
    */
   public async plan(): Promise<AmplifyMigrationOperation[]> {
-    const analyticsCategory = await this.gen1App.fetchMetaCategory('analytics');
+    const analyticsCategory = this.gen1App.meta('analytics');
     if (!analyticsCategory) return [];
 
     const resourceMeta = analyticsCategory[this.resourceName] as Record<string, unknown> | undefined;
     if (!resourceMeta) return [];
 
-    const rootStackName = await this.gen1App.fetchRootStackName();
+    const rootStackName = this.gen1App.rootStackName;
     const analyticsDir = path.join(this.outputDir, 'amplify', 'analytics');
 
     const definition: KinesisAnalyticsDefinition = {

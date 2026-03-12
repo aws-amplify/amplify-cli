@@ -120,7 +120,7 @@ export class FunctionGenerator implements Generator {
    * Resolves this function's deployed config from AWS.
    */
   private async resolve(): Promise<ResolvedFunction> {
-    const functionCategory = await this.gen1App.fetchMetaCategory('function');
+    const functionCategory = this.gen1App.meta('function');
     if (!functionCategory || !functionCategory[this.resourceName]) {
       throw new Error(`Function '${this.resourceName}' not found in amplify-meta.json`);
     }
@@ -226,7 +226,7 @@ export class FunctionGenerator implements Generator {
     if (!this.authGenerator) return;
 
     const templatePath = `function/${this.resourceName}/${this.resourceName}-cloudformation-template.json`;
-    const content = await this.gen1App.readCloudBackendFile(templatePath);
+    const content = await this.gen1App.readFile(templatePath);
 
     const authAccess = parseAuthAccessFromTemplate(content);
     if (Object.keys(authAccess).length > 0) {
@@ -250,7 +250,7 @@ export class FunctionGenerator implements Generator {
 
     const templatePath = `function/${this.resourceName}/${this.resourceName}-cloudformation-template.json`;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped CloudFormation template
-    const template = await this.gen1App.readCloudBackendJson<any>(templatePath);
+    const template = this.gen1App.template(templatePath);
     const policy = template.Resources?.AmplifyResourcesPolicy;
     if (!policy || policy.Type !== 'AWS::IAM::Policy') return;
 
@@ -478,7 +478,7 @@ export class FunctionGenerator implements Generator {
   }> {
     const templatePath = `function/${this.resourceName}/${this.resourceName}-cloudformation-template.json`;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped CloudFormation template
-    const template = await this.gen1App.readCloudBackendJson<any>(templatePath);
+    const template = this.gen1App.template(templatePath);
     const policy = template.Resources?.AmplifyResourcesPolicy;
     if (!policy || policy.Type !== 'AWS::IAM::Policy') {
       return { dynamoActions: [], kinesisActions: [], graphqlApiPermissions: { hasMutation: false, hasQuery: false } };
@@ -559,7 +559,7 @@ export class FunctionGenerator implements Generator {
   private async detectDynamoTriggerModels(func: ResolvedFunction): Promise<string[]> {
     const templatePath = `function/${func.resourceName}/${func.resourceName}-cloudformation-template.json`;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped CloudFormation template
-    const template = await this.gen1App.readCloudBackendJson<any>(templatePath);
+    const template = this.gen1App.template(templatePath);
     const models: string[] = [];
 
     for (const resource of Object.values(template.Resources ?? {})) {

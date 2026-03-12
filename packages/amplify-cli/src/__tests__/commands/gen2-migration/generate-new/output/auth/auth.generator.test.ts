@@ -9,10 +9,9 @@ jest.unmock('fs-extra');
 
 function createMockGen1App(): Gen1App {
   return {
-    fetchMetaCategory: jest.fn(),
+    meta: jest.fn(),
     fetchResourcesByLogicalId: jest.fn(),
-    fetchCloudBackendDir: jest.fn().mockResolvedValue('/tmp/ccb'),
-    fetchMeta: jest.fn().mockResolvedValue({}),
+    ccbDir: '/tmp/ccb',
     aws: {
       fetchUserPool: jest.fn(),
       fetchMfaConfig: jest.fn(),
@@ -42,7 +41,7 @@ describe('AuthGenerator', () => {
 
   it('returns empty operations when auth category is missing', async () => {
     const gen1App = createMockGen1App();
-    (gen1App.fetchMetaCategory as jest.Mock).mockResolvedValue(undefined);
+    (gen1App.meta as jest.Mock).mockReturnValue(undefined);
 
     const generator = new AuthGenerator(gen1App, backendGenerator, outputDir);
     const ops = await generator.plan();
@@ -52,7 +51,7 @@ describe('AuthGenerator', () => {
 
   it('returns empty operations when user pool is not found', async () => {
     const gen1App = createMockGen1App();
-    (gen1App.fetchMetaCategory as jest.Mock).mockResolvedValue({
+    (gen1App.meta as jest.Mock).mockReturnValue({
       myAuth: { service: 'Cognito' },
     });
     (gen1App.fetchResourcesByLogicalId as jest.Mock).mockResolvedValue({});
@@ -66,7 +65,7 @@ describe('AuthGenerator', () => {
 
   it('generates reference auth when serviceType is imported', async () => {
     const gen1App = createMockGen1App();
-    (gen1App.fetchMetaCategory as jest.Mock).mockResolvedValue({
+    (gen1App.meta as jest.Mock).mockReturnValue({
       myAuth: {
         service: 'Cognito',
         serviceType: 'imported',
@@ -105,7 +104,7 @@ describe('AuthGenerator', () => {
 
   it('generates standard auth and writes resource.ts', async () => {
     const gen1App = createMockGen1App();
-    (gen1App.fetchMetaCategory as jest.Mock).mockImplementation(async (category: string) => {
+    (gen1App.meta as jest.Mock).mockImplementation((category: string) => {
       if (category === 'auth') {
         return {
           myAuth: { service: 'Cognito' },
@@ -153,7 +152,7 @@ describe('AuthGenerator', () => {
 
   it('registers function auth access via addFunctionAuthAccess', async () => {
     const gen1App = createMockGen1App();
-    (gen1App.fetchMetaCategory as jest.Mock).mockImplementation(async (category: string) => {
+    (gen1App.meta as jest.Mock).mockImplementation((category: string) => {
       if (category === 'auth') {
         return { myAuth: { service: 'Cognito' } };
       }

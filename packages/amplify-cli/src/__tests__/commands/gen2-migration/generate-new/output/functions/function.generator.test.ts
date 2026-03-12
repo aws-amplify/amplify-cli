@@ -15,14 +15,13 @@ jest.mock('@aws-amplify/amplify-cli-core', () => ({
   },
 }));
 
-function createMockGen1App(projectRoot: string): Gen1App {
+function createMockGen1App(): Gen1App {
   return {
     appId: 'd1abc2def3',
     envName: 'main',
-    fetchMetaCategory: jest.fn(),
-    findProjectRoot: jest.fn().mockReturnValue(projectRoot),
-    readCloudBackendJson: jest.fn().mockResolvedValue({ Resources: {} }),
-    readCloudBackendFile: jest.fn().mockResolvedValue('{}'),
+    meta: jest.fn(),
+    template: jest.fn().mockReturnValue({ Resources: {} }),
+    readFile: jest.fn().mockResolvedValue('{}'),
     aws: {
       fetchFunctionConfig: jest.fn(),
       fetchFunctionSchedule: jest.fn().mockResolvedValue(undefined),
@@ -33,25 +32,23 @@ function createMockGen1App(projectRoot: string): Gen1App {
 
 describe('FunctionGenerator', () => {
   let outputDir: string;
-  let projectRoot: string;
   let backendGenerator: BackendGenerator;
   let packageJsonGenerator: RootPackageJsonGenerator;
 
   beforeEach(async () => {
     outputDir = await fs.mkdtemp(path.join(os.tmpdir(), 'func-gen-test-'));
-    projectRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'func-project-'));
+
     backendGenerator = new BackendGenerator(outputDir);
     packageJsonGenerator = new RootPackageJsonGenerator(outputDir);
   });
 
   afterEach(async () => {
     await fs.rm(outputDir, { recursive: true, force: true });
-    await fs.rm(projectRoot, { recursive: true, force: true });
   });
 
   it('throws when function category is missing', async () => {
-    const gen1App = createMockGen1App(projectRoot);
-    (gen1App.fetchMetaCategory as jest.Mock).mockResolvedValue(undefined);
+    const gen1App = createMockGen1App();
+    (gen1App.meta as jest.Mock).mockReturnValue(undefined);
 
     const generator = new FunctionGenerator(
       gen1App,
@@ -68,8 +65,8 @@ describe('FunctionGenerator', () => {
   });
 
   it('throws when resource is not in function category', async () => {
-    const gen1App = createMockGen1App(projectRoot);
-    (gen1App.fetchMetaCategory as jest.Mock).mockResolvedValue({
+    const gen1App = createMockGen1App();
+    (gen1App.meta as jest.Mock).mockReturnValue({
       otherFunc: { service: 'Lambda', output: { Name: 'otherFunc-main' } },
     });
 
@@ -88,8 +85,8 @@ describe('FunctionGenerator', () => {
   });
 
   it('returns one operation when function exists', async () => {
-    const gen1App = createMockGen1App(projectRoot);
-    (gen1App.fetchMetaCategory as jest.Mock).mockImplementation(async (category: string) => {
+    const gen1App = createMockGen1App();
+    (gen1App.meta as jest.Mock).mockImplementation((category: string) => {
       if (category === 'function') {
         return {
           myFunc: { service: 'Lambda', output: { Name: 'myFunc-main-abc' } },
@@ -125,8 +122,8 @@ describe('FunctionGenerator', () => {
   });
 
   it('writes resource.ts and copies source on execute', async () => {
-    const gen1App = createMockGen1App(projectRoot);
-    (gen1App.fetchMetaCategory as jest.Mock).mockImplementation(async (category: string) => {
+    const gen1App = createMockGen1App();
+    (gen1App.meta as jest.Mock).mockImplementation((category: string) => {
       if (category === 'function') {
         return {
           myFunc: { service: 'Lambda', output: { Name: 'myFunc-main-abc' } },

@@ -84,7 +84,7 @@ export class AuthGenerator implements Generator {
    * Plans the main auth generation operation (resource.ts + backend.ts overrides).
    */
   public async plan(): Promise<AmplifyMigrationOperation[]> {
-    const authCategory = await this.gen1App.fetchMetaCategory('auth');
+    const authCategory = this.gen1App.meta('auth');
     if (!authCategory) {
       return [];
     }
@@ -678,9 +678,8 @@ export class AuthGenerator implements Generator {
    * Reads auth trigger connections from the cloud backend cli-inputs.json.
    */
   private async readAuthTriggerConnections(): Promise<Partial<Record<keyof LambdaConfigType, string>> | undefined> {
-    const ccbDir = await this.gen1App.fetchCloudBackendDir();
-    const meta = await this.gen1App.fetchMeta();
-    const authCategory = meta.auth;
+    const ccbDir = this.gen1App.ccbDir;
+    const authCategory = this.gen1App.meta('auth');
     if (!authCategory) return undefined;
 
     for (const resourceName of Object.keys(authCategory)) {

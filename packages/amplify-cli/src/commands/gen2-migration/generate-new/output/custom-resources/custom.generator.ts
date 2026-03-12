@@ -51,7 +51,7 @@ export class CustomResourceGenerator implements Generator {
    * Plans the custom resource generation operation.
    */
   public async plan(): Promise<AmplifyMigrationOperation[]> {
-    const rootDir = this.gen1App.findProjectRoot();
+    const rootDir = process.cwd();
 
     const sourceResourcePath = path.join(rootDir, AMPLIFY_DIR, BACKEND_DIR, CUSTOM_DIR, this.resourceName);
     const destResourcePath = path.join(this.outputDir, AMPLIFY_DIR, CUSTOM_DIR, this.resourceName);

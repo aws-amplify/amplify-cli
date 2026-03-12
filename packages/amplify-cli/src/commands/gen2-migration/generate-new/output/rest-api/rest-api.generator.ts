@@ -1,6 +1,4 @@
-import path from 'node:path';
 import ts from 'typescript';
-import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import { Generator } from '../../generator';
 import { AmplifyMigrationOperation } from '../../../_operation';
 import { BackendGenerator } from '../backend.generator';
@@ -34,9 +32,9 @@ export class RestApiGenerator implements Generator {
    */
   public async plan(): Promise<AmplifyMigrationOperation[]> {
     const restApi = await RestApiGenerator.readRestApiConfig(this.gen1App, this.resourceName);
-    const functionCategory = await this.gen1App.fetchMetaCategory('function');
+    const functionCategory = this.gen1App.meta('function');
     const functionNames = new Set<string>(Object.keys((functionCategory as object) ?? {}));
-    const hasAuth = (await this.gen1App.fetchMetaCategory('auth')) !== undefined;
+    const hasAuth = this.gen1App.meta('auth') !== undefined;
     const renderer = new RestApiRenderer(hasAuth, functionNames);
 
     return [
@@ -87,9 +85,7 @@ export class RestApiGenerator implements Generator {
    * from local cli-inputs.json and amplify-meta.json.
    */
   private static async readRestApiConfig(gen1App: Gen1App, resourceName: string): Promise<RestApiDefinition> {
-    const rootDir = gen1App.findProjectRoot();
-
-    const apiCategory = await gen1App.fetchMetaCategory('api');
+    const apiCategory = gen1App.meta('api');
     if (!apiCategory) {
       throw new Error('API category not found in amplify-meta.json');
     }
@@ -99,8 +95,7 @@ export class RestApiGenerator implements Generator {
       throw new Error(`REST API '${resourceName}' not found in amplify-meta.json`);
     }
 
-    const cliInputsPath = path.join(rootDir, 'amplify', 'backend', 'api', resourceName, 'cli-inputs.json');
-    const cliInputs = JSONUtilities.readJson<RestApiCliInputs>(cliInputsPath, { throwIfNotExist: true });
+    const cliInputs = gen1App.cliInputsForResource('api', resourceName) as RestApiCliInputs | undefined;
     if (!cliInputs) {
       throw new Error(`Failed to read cli-inputs.json for REST API '${resourceName}'`);
     }

@@ -7,7 +7,6 @@ import { AmplifyMigrationOperation } from './_operation';
 import { AmplifyGen2MigrationValidations } from './_validations';
 import { createAwsClients } from './generate-new/input/aws-clients';
 import { Gen1App } from './generate-new/input/gen1-app';
-import { $TSMeta } from '@aws-amplify/amplify-cli-core';
 import { Generator } from './generate-new/generator';
 import { BackendGenerator } from './generate-new/output/backend.generator';
 import { RootPackageJsonGenerator } from './generate-new/output/root-package-json.generator';
@@ -56,8 +55,7 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
    */
   public async execute(): Promise<AmplifyMigrationOperation[]> {
     const clients = createAwsClients(this.region);
-    const gen1App = new Gen1App({ appId: this.appId, region: this.region, envName: this.currentEnvName, clients });
-    const meta = await gen1App.fetchMeta();
+    const gen1App = await Gen1App.create({ appId: this.appId, region: this.region, envName: this.currentEnvName, clients });
 
     const outputDir = await fs.mkdtemp(path.join(os.tmpdir(), 'amplify-gen2-'));
     const backendGenerator = new BackendGenerator(outputDir);
@@ -65,13 +63,13 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
 
     const generators: Generator[] = [];
 
-    const authGenerator = meta.auth ? new AuthGenerator(gen1App, backendGenerator, outputDir) : undefined;
+    const authGenerator = gen1App.meta('auth') ? new AuthGenerator(gen1App, backendGenerator, outputDir) : undefined;
     if (authGenerator) {
       generators.push(authGenerator);
     }
 
     let s3Generator: S3Generator | undefined;
-    const storageCategory = (meta.storage ?? {}) as Record<string, Record<string, unknown>>;
+    const storageCategory = (gen1App.meta('storage') ?? {}) as Record<string, Record<string, unknown>>;
     for (const [resourceName, resourceMeta] of Object.entries(storageCategory)) {
       if (resourceMeta.service === 'S3') {
         s3Generator = new S3Generator(gen1App, backendGenerator, outputDir);
@@ -81,7 +79,7 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
       }
     }
 
-    const apiCategory = (meta.api ?? {}) as Record<string, Record<string, unknown>>;
+    const apiCategory = (gen1App.meta('api') ?? {}) as Record<string, Record<string, unknown>>;
     for (const [resourceName, resourceMeta] of Object.entries(apiCategory)) {
       if (resourceMeta.service === 'AppSync') {
         generators.push(new DataGenerator(gen1App, backendGenerator, outputDir));
@@ -90,21 +88,21 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
       }
     }
 
-    const analyticsCategory = (meta.analytics ?? {}) as Record<string, Record<string, unknown>>;
+    const analyticsCategory = (gen1App.meta('analytics') ?? {}) as Record<string, Record<string, unknown>>;
     for (const [resourceName, resourceMeta] of Object.entries(analyticsCategory)) {
       if (resourceMeta.service === 'Kinesis') {
         generators.push(new AnalyticsKinesisGenerator(gen1App, backendGenerator, outputDir, resourceName));
       }
     }
 
-    const customCategory = (meta.custom ?? {}) as Record<string, Record<string, unknown>>;
+    const customCategory = (gen1App.meta('custom') ?? {}) as Record<string, Record<string, unknown>>;
     for (const resourceName of Object.keys(customCategory)) {
       generators.push(new CustomResourceGenerator(gen1App, backendGenerator, packageJsonGenerator, outputDir, resourceName));
     }
 
-    const functionNames = Object.keys((meta.function as object) ?? {});
-    const functionCategoryMap = computeFunctionCategories(meta);
-    for (const resourceName of functionNames) {
+    const functionCategory = (gen1App.meta('function') ?? {}) as Record<string, Record<string, unknown>>;
+    const functionCategoryMap = computeFunctionCategories(gen1App);
+    for (const resourceName of Object.keys(functionCategory)) {
       const category = functionCategoryMap.get(resourceName) ?? 'function';
       generators.push(
         new FunctionGenerator(
@@ -208,11 +206,11 @@ export class DependenciesInstaller {
  * or which category it depends on (function → storage = 'storage').
  * Functions with no cross-category dependencies default to 'function'.
  */
-function computeFunctionCategories(meta: $TSMeta): ReadonlyMap<string, string> {
+function computeFunctionCategories(gen1App: Gen1App): ReadonlyMap<string, string> {
   const categoryMap = new Map<string, string>();
-  const auth = meta.auth as Record<string, Record<string, unknown>> | undefined;
-  const storage = meta.storage as Record<string, Record<string, unknown>> | undefined;
-  const functions = meta.function as Record<string, Record<string, unknown>> | undefined;
+  const auth = gen1App.meta('auth') as Record<string, Record<string, unknown>> | undefined;
+  const storage = gen1App.meta('storage') as Record<string, Record<string, unknown>> | undefined;
+  const functions = gen1App.meta('function') as Record<string, Record<string, unknown>> | undefined;
 
   if (auth) {
     for (const authResource of Object.values(auth)) {

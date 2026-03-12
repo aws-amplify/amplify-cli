@@ -1,17 +1,12 @@
 import { RestApiGenerator } from '../../../../../../commands/gen2-migration/generate-new/output/rest-api/rest-api.generator';
 import { BackendGenerator } from '../../../../../../commands/gen2-migration/generate-new/output/backend.generator';
 import { Gen1App } from '../../../../../../commands/gen2-migration/generate-new/input/gen1-app';
-import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
-
-jest.mock('@aws-amplify/amplify-cli-core', () => ({
-  ...jest.requireActual('@aws-amplify/amplify-cli-core'),
-  JSONUtilities: { readJson: jest.fn() },
-}));
 
 function createMockGen1App(): Gen1App {
   return {
-    fetchMetaCategory: jest.fn(),
-    findProjectRoot: jest.fn().mockReturnValue('/tmp/project'),
+    meta: jest.fn(),
+    ccbDir: '/tmp/ccb',
+    cliInputsForResource: jest.fn(),
     aws: {
       fetchRestApiRootResourceId: jest.fn().mockResolvedValue('root-resource-id'),
     },
@@ -40,12 +35,12 @@ describe('RestApiGenerator', () => {
 
   beforeEach(() => {
     backendGenerator = new BackendGenerator('/tmp/test-output');
-    (JSONUtilities.readJson as jest.Mock).mockReturnValue(CLI_INPUTS);
   });
 
   it('returns one operation with correct description', async () => {
     const gen1App = createMockGen1App();
-    (gen1App.fetchMetaCategory as jest.Mock).mockImplementation(async (cat: string) => (cat === 'api' ? API_META : undefined));
+    (gen1App.meta as jest.Mock).mockImplementation((cat: string) => (cat === 'api' ? API_META : undefined));
+    (gen1App.cliInputsForResource as jest.Mock).mockReturnValue(CLI_INPUTS);
 
     const generator = new RestApiGenerator(gen1App, backendGenerator, 'myApi');
     const ops = await generator.plan();
@@ -57,7 +52,8 @@ describe('RestApiGenerator', () => {
 
   it('contributes imports and statements to backend generator on execute', async () => {
     const gen1App = createMockGen1App();
-    (gen1App.fetchMetaCategory as jest.Mock).mockImplementation(async (cat: string) => (cat === 'api' ? API_META : undefined));
+    (gen1App.meta as jest.Mock).mockImplementation((cat: string) => (cat === 'api' ? API_META : undefined));
+    (gen1App.cliInputsForResource as jest.Mock).mockReturnValue(CLI_INPUTS);
 
     const addImportSpy = jest.spyOn(backendGenerator, 'addImport');
     const addStatementSpy = jest.spyOn(backendGenerator, 'addStatement');

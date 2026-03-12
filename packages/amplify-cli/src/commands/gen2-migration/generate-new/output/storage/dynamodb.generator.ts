@@ -28,7 +28,7 @@ export class DynamoDBGenerator implements Generator {
    * Plans the DynamoDB table generation operation.
    */
   public async plan(): Promise<AmplifyMigrationOperation[]> {
-    const storageCategory = await this.gen1App.fetchMetaCategory('storage');
+    const storageCategory = this.gen1App.meta('storage');
     if (!storageCategory) return [];
 
     const resourceMeta = storageCategory[this.resourceName] as Record<string, unknown> | undefined;

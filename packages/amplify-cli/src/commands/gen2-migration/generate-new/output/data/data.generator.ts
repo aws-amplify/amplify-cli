@@ -38,7 +38,7 @@ export class DataGenerator implements Generator {
    * Plans the GraphQL data generation operations.
    */
   public async plan(): Promise<AmplifyMigrationOperation[]> {
-    const apiCategory = await this.gen1App.fetchMetaCategory('api');
+    const apiCategory = this.gen1App.meta('api');
     if (!apiCategory) {
       return [];
     }
@@ -74,7 +74,7 @@ export class DataGenerator implements Generator {
 
     const logging = extractLoggingConfig(graphqlApi);
     const dataDir = path.join(this.outputDir, 'amplify', 'data');
-    const hasAuth = (await this.gen1App.fetchMetaCategory('auth')) !== undefined;
+    const hasAuth = this.gen1App.meta('auth') !== undefined;
 
     return [
       {
@@ -184,8 +184,7 @@ export class DataGenerator implements Generator {
    * Supports both single schema.graphql and multi-file schema/ directory.
    */
   private static async readGraphQLSchema(gen1App: Gen1App, apiName: string): Promise<string> {
-    const rootDir = gen1App.findProjectRoot();
-    const apiPath = path.join(rootDir, 'amplify', 'backend', 'api', apiName);
+    const apiPath = path.join(gen1App.ccbDir, 'api', apiName);
 
     // Try multi-file schema directory first
     const schemaFolderPath = path.join(apiPath, 'schema');
