@@ -33,8 +33,9 @@ export type CFNConditionFunction =
 export interface CFNResource {
   readonly Type: string;
   readonly Properties: Record<string, string | number | object>;
+  readonly Condition?: string;
+  // DependsOn is mutable: resolvers and buildRefactorTemplates remap dependencies on cloned templates.
   DependsOn?: string | string[];
-  Condition?: string;
 }
 
 export interface CFNParameter {
@@ -47,9 +48,11 @@ export interface CFNParameter {
 export interface CFNTemplate {
   readonly Description: string;
   readonly AWSTemplateFormatVersion: string;
-  Conditions?: Record<string, CFNConditionFunction>;
+  readonly Conditions?: Record<string, CFNConditionFunction>;
+  readonly Parameters?: Record<string, CFNParameter>;
+  // Resources and Outputs are mutable: resolvers clone templates then transform them in place.
+  // The clone-then-mutate pattern is the standard way to produce modified templates.
   Resources: Record<string, CFNResource>;
-  Parameters?: Record<string, CFNParameter>;
   Outputs: Record<string, CFNOutput>;
 }
 
