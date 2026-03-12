@@ -1,15 +1,5 @@
 import { Parameter } from '@aws-sdk/client-cloudformation';
-
-/**
- * CloudFormation intrinsic function names used in condition expressions.
- */
-export enum CFNFunction {
-  Equals = 'Fn::Equals',
-  Not = 'Fn::Not',
-  Or = 'Fn::Or',
-  And = 'Fn::And',
-  If = 'Fn::If',
-}
+import { CFNFunction } from '../../../cfn-template';
 
 /**
  * Resolves conditions in a parsed CloudFormation template using deployed

@@ -1,5 +1,5 @@
 import { resolveConditions } from '../../../../commands/gen2-migration/refactor/resolvers/cfn-condition-resolver';
-import { CFNTemplate } from '../../../../commands/gen2-migration/refactor/cfn-template';
+import { CFNTemplate } from '../../../../commands/gen2-migration/cfn-template';
 
 /**
  * Builds a template with one condition gating one resource.

@@ -9,7 +9,7 @@ import {
   StackRefactorStatus,
 } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
-import { CFNStackStatus } from './cfn-template';
+import { CFNStackStatus } from '../cfn-template';
 import { pollStackForCompletionState } from './cfn-stack-updater';
 import { extractStackNameFromId } from './utils';
 import * as snap from './snap';

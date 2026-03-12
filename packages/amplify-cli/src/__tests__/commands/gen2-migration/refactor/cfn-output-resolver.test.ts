@@ -1,5 +1,5 @@
 import { resolveOutputs } from '../../../../commands/gen2-migration/refactor/resolvers/cfn-output-resolver';
-import { CFNTemplate } from '../../../../commands/gen2-migration/refactor/cfn-template';
+import { CFNTemplate } from '../../../../commands/gen2-migration/cfn-template';
 
 const baseTemplate: CFNTemplate = {
   AWSTemplateFormatVersion: '2010-09-09',

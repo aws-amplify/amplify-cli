@@ -1,6 +1,6 @@
 import { GetTemplateCommand } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
-import { CFNResource, CFNTemplate } from '../cfn-template';
+import { CFNResource, CFNTemplate } from '../../cfn-template';
 import { AmplifyMigrationOperation } from '../../_operation';
 import { resolveParameters } from '../resolvers/cfn-parameter-resolver';
 import { resolveOutputs } from '../resolvers/cfn-output-resolver';

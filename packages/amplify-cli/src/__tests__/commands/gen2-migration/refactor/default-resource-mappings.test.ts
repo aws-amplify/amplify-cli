@@ -1,6 +1,6 @@
 import { ForwardCategoryRefactorer } from '../../../../commands/gen2-migration/refactor/workflow/forward-category-refactorer';
 import { RollbackCategoryRefactorer } from '../../../../commands/gen2-migration/refactor/workflow/rollback-category-refactorer';
-import { CFNResource } from '../../../../commands/gen2-migration/refactor/cfn-template';
+import { CFNResource } from '../../../../commands/gen2-migration/cfn-template';
 
 class TestForwardRefactorer extends ForwardCategoryRefactorer {
   protected async fetchSourceStackId() {

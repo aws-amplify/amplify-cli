@@ -1,6 +1,6 @@
 import { Output, StackResource } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
-import { CFNResource, CFNTemplate } from '../cfn-template';
+import { CFNResource, CFNTemplate } from '../../cfn-template';
 import { walkCfnTree } from './cfn-tree-walker';
 
 /**

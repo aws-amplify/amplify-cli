@@ -6,7 +6,7 @@ import {
   UpdateStackCommandInput,
 } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
-import { CFNStackStatus, CFNTemplate } from './cfn-template';
+import { CFNStackStatus, CFNTemplate } from '../cfn-template';
 import * as snap from './snap';
 
 const POLL_ATTEMPTS = 120;

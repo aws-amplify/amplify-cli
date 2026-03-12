@@ -7,7 +7,7 @@ import {
 } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { AwsClients } from './aws-clients';
-import { CFNTemplate } from './cfn-template';
+import { CFNTemplate } from '../cfn-template';
 
 /**
  * Lazy-loading, caching facade over a CloudFormation stack hierarchy.

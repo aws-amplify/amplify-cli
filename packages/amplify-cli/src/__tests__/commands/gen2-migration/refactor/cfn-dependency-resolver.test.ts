@@ -1,5 +1,5 @@
 import { resolveDependencies } from '../../../../commands/gen2-migration/refactor/resolvers/cfn-dependency-resolver';
-import { CFNTemplate } from '../../../../commands/gen2-migration/refactor/cfn-template';
+import { CFNTemplate } from '../../../../commands/gen2-migration/cfn-template';
 
 const makeTemplate = (resources: Record<string, { Type: string; DependsOn?: string | string[] }>): CFNTemplate => ({
   AWSTemplateFormatVersion: '2010-09-09',

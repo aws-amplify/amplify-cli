@@ -1,5 +1,5 @@
 import { AuthForwardRefactorer } from '../../../../commands/gen2-migration/refactor/auth/auth-forward';
-import { CFNTemplate } from '../../../../commands/gen2-migration/refactor/cfn-template';
+import { CFNTemplate } from '../../../../commands/gen2-migration/cfn-template';
 import { AwsClients } from '../../../../commands/gen2-migration/refactor/aws-clients';
 import { StackFacade } from '../../../../commands/gen2-migration/refactor/stack-facade';
 import { mockClient } from 'aws-sdk-client-mock';

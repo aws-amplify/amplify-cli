@@ -1,5 +1,5 @@
 import { CategoryRefactorer, ResolvedStack } from '../../../../commands/gen2-migration/refactor/workflow/category-refactorer';
-import { CFNTemplate } from '../../../../commands/gen2-migration/refactor/cfn-template';
+import { CFNTemplate } from '../../../../commands/gen2-migration/cfn-template';
 
 /**
  * Tests for the R6 validateNoResourceRemoval method on CategoryRefactorer.

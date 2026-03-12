@@ -1,5 +1,5 @@
 import { RollbackCategoryRefactorer } from '../../../../commands/gen2-migration/refactor/workflow/rollback-category-refactorer';
-import { CFNResource, CFNTemplate } from '../../../../commands/gen2-migration/refactor/cfn-template';
+import { CFNResource, CFNTemplate } from '../../../../commands/gen2-migration/cfn-template';
 import { ResolvedStack } from '../../../../commands/gen2-migration/refactor/workflow/category-refactorer';
 import { AwsClients } from '../../../../commands/gen2-migration/refactor/aws-clients';
 import { StackFacade } from '../../../../commands/gen2-migration/refactor/stack-facade';

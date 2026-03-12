@@ -30,15 +30,15 @@ export interface AwsClients {
  */
 export function createAwsClients(region: string): AwsClients {
   return {
-    amplify: new AmplifyClient(),
-    appSync: new AppSyncClient(),
-    cloudFormation: new CloudFormationClient(),
-    cognitoIdentityProvider: new CognitoIdentityProviderClient(),
-    cognitoIdentity: new CognitoIdentityClient(),
-    s3: new S3Client(),
+    amplify: new AmplifyClient({ region }),
+    appSync: new AppSyncClient({ region }),
+    cloudFormation: new CloudFormationClient({ region }),
+    cognitoIdentityProvider: new CognitoIdentityProviderClient({ region }),
+    cognitoIdentity: new CognitoIdentityClient({ region }),
+    s3: new S3Client({ region }),
     lambda: new LambdaClient({ region }),
-    cloudWatchEvents: new CloudWatchEventsClient(),
-    dynamoDB: new DynamoDBClient(),
-    apiGateway: new APIGatewayClient(),
+    cloudWatchEvents: new CloudWatchEventsClient({ region }),
+    dynamoDB: new DynamoDBClient({ region }),
+    apiGateway: new APIGatewayClient({ region }),
   };
 }

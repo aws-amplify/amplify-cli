@@ -1,4 +1,4 @@
-import { CFNResource, CFNTemplate } from '../../../../commands/gen2-migration/refactor/cfn-template';
+import { CFNResource, CFNTemplate } from '../../../../commands/gen2-migration/cfn-template';
 import {
   CategoryRefactorer,
   ResolvedStack,

@@ -1,4 +1,4 @@
-import { CFNTemplate } from '../cfn-template';
+import { CFNTemplate } from '../../cfn-template';
 
 /**
  * Resolves DependsOn references in a CloudFormation template for a stack refactor.
