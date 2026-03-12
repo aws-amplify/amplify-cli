@@ -34,7 +34,7 @@ export async function tryUpdateStack(params: {
       Capabilities: [CFN_IAM_CAPABILITY],
       Tags: [],
     };
-    await snap.preUpdateStack(input);
+    snap.preUpdateStack(input);
     await cfnClient.send(new UpdateStackCommand(input));
     return pollStackForCompletionState(cfnClient, stackName, attempts);
   } catch (e) {

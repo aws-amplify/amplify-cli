@@ -74,7 +74,7 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
 
     // Add placeholder if all resources are being moved
     const resourcesToMove = new Map(resourceIds.filter((id) => id in resolved.Resources).map((id) => [id, resolved.Resources[id]]));
-    this.addPlaceholderIfNeeded(resolved, originalTemplate, resourcesToMove);
+    this.addPlaceholderIfNeeded(resolved, resourcesToMove);
 
     // Handle OAuth if this category needs it
     const updatedParameters = await this.resolveOAuthParameters(parameters, outputs);
@@ -181,7 +181,7 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
   /**
    * Forward: no post-move operations. Holding stack survives for rollback.
    */
-  protected afterMovePlan(): { operations: RefactorOperation[] } {
+  protected async afterMovePlan(): Promise<{ operations: RefactorOperation[] }> {
     return { operations: [] };
   }
 

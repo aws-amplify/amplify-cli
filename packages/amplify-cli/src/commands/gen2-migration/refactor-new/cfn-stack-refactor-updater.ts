@@ -39,7 +39,7 @@ export async function tryRefactorStack(
 ): Promise<RefactorResult> {
   input.Description = buildRefactorDescription(input);
 
-  await snap.preRefactorStack(input);
+  snap.preRefactorStack(input);
   const { StackRefactorId } = await cfnClient.send(new CreateStackRefactorCommand(input));
   if (!StackRefactorId) {
     throw new AmplifyError('StackStateError', {

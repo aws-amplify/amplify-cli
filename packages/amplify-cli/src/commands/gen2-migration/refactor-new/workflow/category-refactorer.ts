@@ -78,7 +78,7 @@ export abstract class CategoryRefactorer implements Refactorer {
     const { finalSource, finalTarget } = this.buildRefactorTemplates(source, postTargetTemplate, logicalIdMap);
 
     const moveOps = this.buildMoveOperations(source.stackId, destStackId, finalSource, finalTarget, logicalIdMap);
-    const { operations: afterMoveOps } = this.afterMovePlan({ source, target, finalSource, finalTarget });
+    const { operations: afterMoveOps } = await this.afterMovePlan({ source, target, finalSource, finalTarget });
 
     return [...this.updateSource(source), ...this.updateTarget(target), ...beforeMoveOps, ...moveOps, ...afterMoveOps];
   }
@@ -132,16 +132,16 @@ export abstract class CategoryRefactorer implements Refactorer {
   ): { operations: RefactorOperation[]; postTargetTemplate: CFNTemplate };
 
   /**
-   * Post-move operations.
+   * Post-move operations. All reads happen here (during plan()); operations only execute mutations.
    * Forward: empty.
-   * Rollback: restores holding stack resources into Gen2, deletes holding stack.
+   * Rollback: reads holding stack template, returns 3 operations (update, refactor, delete).
    */
   protected abstract afterMovePlan(params: {
     source: ResolvedStack;
     target: ResolvedStack;
     finalSource: CFNTemplate;
     finalTarget: CFNTemplate;
-  }): { operations: RefactorOperation[] };
+  }): Promise<{ operations: RefactorOperation[] }>;
 
   // -- Shared workflow (concrete) --
 
@@ -291,16 +291,11 @@ export abstract class CategoryRefactorer implements Refactorer {
   }
 
   /**
-   * Adds a placeholder resource if all resources in the original template are being moved.
+   * Adds a placeholder resource if all resources in the resolved template are being moved.
    * CloudFormation requires at least one resource in a stack.
-   * Uses the original template's resource count (before resolution) to match old behavior.
    */
-  protected addPlaceholderIfNeeded(
-    resolvedTemplate: CFNTemplate,
-    originalTemplate: CFNTemplate,
-    resourcesToMove: Map<string, CFNResource>,
-  ): void {
-    if (Object.keys(originalTemplate.Resources).length === resourcesToMove.size) {
+  protected addPlaceholderIfNeeded(resolvedTemplate: CFNTemplate, resourcesToMove: Map<string, CFNResource>): void {
+    if (Object.keys(resolvedTemplate.Resources).length === resourcesToMove.size) {
       resolvedTemplate.Resources[MIGRATION_PLACEHOLDER_LOGICAL_ID] = PLACEHOLDER_RESOURCE;
     }
   }

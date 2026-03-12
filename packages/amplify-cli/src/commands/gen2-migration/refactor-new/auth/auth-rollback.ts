@@ -102,7 +102,9 @@ export class AuthRollbackRefactorer extends RollbackCategoryRefactorer {
     const ops: RefactorOperation[] = [];
     ops.push(...mainAuthMoveOps);
     ops.push(...userPoolGroupOps);
-    ops.push(...this.afterMovePlan({ source, target: mainAuthTarget, finalSource: finalGen2, finalTarget: finalMainAuthDest }).operations);
+    ops.push(
+      ...(await this.afterMovePlan({ source, target: mainAuthTarget, finalSource: finalGen2, finalTarget: finalMainAuthDest })).operations,
+    );
     return ops;
   }
 
