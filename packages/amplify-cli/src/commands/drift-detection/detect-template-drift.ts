@@ -9,6 +9,7 @@ import {
   waitUntilChangeSetCreateComplete,
   type ResourceChange,
 } from '@aws-sdk/client-cloudformation';
+import { paginateListChangeSets } from '@aws-sdk/client-cloudformation';
 import fs from 'fs-extra';
 import * as path from 'path';
 import type { Printer } from '@aws-amplify/amplify-prompts';
@@ -44,6 +45,32 @@ function extractChangeSetNameFromArn(changeSetArn: string): string {
   // ChangeSet ARN resource format: "changeSet/changeSetName/id"
   const resource = parseArn(changeSetArn).resource;
   return resource.split('/')[1];
+}
+
+const CHANGESET_PREFIX = 'amplify-drift-detection-';
+
+/**
+ * Delete any existing amplify-drift-detection-* changesets from a previous run
+ */
+async function cleanupOldDriftChangesets(cfn: CloudFormationClient, stackName: string, print: Printer): Promise<void> {
+  try {
+    const toDelete: string[] = [];
+    for await (const page of paginateListChangeSets({ client: cfn }, { StackName: stackName })) {
+      for (const cs of page.Summaries || []) {
+        if (cs.ChangeSetName?.startsWith(CHANGESET_PREFIX)) {
+          toDelete.push(cs.ChangeSetName);
+        }
+      }
+    }
+    await Promise.allSettled(
+      toDelete.map((name) => {
+        print.debug(`Deleting old drift changeset: ${name}`);
+        return cfn.send(new DeleteChangeSetCommand({ StackName: stackName, ChangeSetName: name }));
+      }),
+    );
+  } catch (error: any) {
+    print.debug(`Failed to clean up old drift changesets: ${error.message}`);
+  }
 }
 
 /**
@@ -101,8 +128,11 @@ export async function detectTemplateDrift(stackName: string, print: Printer, cfn
     const parameters = stackDescription.Stacks[0].Parameters || [];
     print.debug(`Using ${parameters.length} parameters from deployed stack`);
 
+    // Clean up changesets from previous drift detection runs
+    await cleanupOldDriftChangesets(cfn, stackName, print);
+
     // Create changeset
-    const changeSetName = `amplify-drift-detection-${Date.now()}`;
+    const changeSetName = `${CHANGESET_PREFIX}${Date.now()}`;
     print.debug(`Creating changeset: ${changeSetName}`);
 
     await cfn.send(
@@ -117,84 +147,80 @@ export async function detectTemplateDrift(stackName: string, print: Printer, cfn
       }),
     );
 
+    // Wait for changeset to complete (may succeed or fail)
     try {
-      // Wait for changeset to complete (may succeed or fail)
-      try {
-        await waitUntilChangeSetCreateComplete(
-          {
-            client: cfn,
-            maxWaitTime: 300,
-          },
-          {
-            StackName: stackName,
-            ChangeSetName: changeSetName,
-          },
-        );
-      } catch (waitError: any) {
-        print.debug(`Changeset waiter failed, will check status...`);
-      }
-
-      const changeSet = await cfn.send(
-        new DescribeChangeSetCommand({
+      await waitUntilChangeSetCreateComplete(
+        {
+          client: cfn,
+          maxWaitTime: 300,
+        },
+        {
           StackName: stackName,
           ChangeSetName: changeSetName,
-        }),
+        },
       );
-
-      // Handle "no changes" case - this is SUCCESS for drift detection
-      if (changeSet.Status === 'FAILED' && changeSet.StatusReason?.includes("didn't contain changes")) {
-        print.debug('✓ Changeset status: No changes detected (no drift)');
-        return {
-          changes: [],
-          skipped: false,
-        };
-      }
-
-      // Handle other failure cases
-      if (changeSet.Status === 'FAILED') {
-        print.debug(`Changeset failed with status: ${changeSet.Status}`);
-        print.debug(`Reason: ${changeSet.StatusReason}`);
-        const errorMsg = `Changeset creation failed with status ${changeSet.Status}`;
-        const reasonMsg = changeSet.StatusReason ? `: ${changeSet.StatusReason}` : '';
-        throw new Error(`${errorMsg}${reasonMsg}`);
-      }
-
-      print.debug(`CloudFormation ChangeSet: ${stackName}`);
-      print.debug(`Status: ${changeSet.Status}`);
-      print.debug(`IncludeNestedStacks: ${changeSet.IncludeNestedStacks}`);
-      if (changeSet.StatusReason) {
-        print.debug(`StatusReason: ${changeSet.StatusReason}`);
-      }
-      if (changeSet.Changes && changeSet.Changes.length > 0) {
-        print.debug(`Changes: ${changeSet.Changes.length}`);
-        for (const change of changeSet.Changes) {
-          if (change.ResourceChange) {
-            const rc = change.ResourceChange;
-            print.debug(`  ${rc.LogicalResourceId} (${rc.ResourceType}) - ${rc.Action}`);
-          }
-        }
-      } else {
-        print.debug('Changes: 0');
-      }
-
-      const result = await analyzeChangeSet(cfn, changeSet, print);
-      result.changeSetId = changeSet.ChangeSetId;
-      return result;
-    } finally {
-      try {
-        print.debug(`Deleting changeset: ${changeSetName}`);
-        await cfn.send(
-          new DeleteChangeSetCommand({
-            StackName: stackName,
-            ChangeSetName: changeSetName,
-          }),
-        );
-        print.debug(`Deleted changeset: ${changeSetName}`);
-      } catch (deleteError: any) {
-        // Log cleanup errors but don't fail the operation
-        print.warn(`Failed to delete changeset ${changeSetName}: ${deleteError.message}`);
-      }
+    } catch (waitError: any) {
+      print.debug(`Changeset waiter failed, will check status...`);
     }
+
+    const changeSet = await cfn.send(
+      new DescribeChangeSetCommand({
+        StackName: stackName,
+        ChangeSetName: changeSetName,
+      }),
+    );
+
+    // Handle "no changes" case - this is SUCCESS for drift detection
+    if (changeSet.Status === 'FAILED' && changeSet.StatusReason?.includes("didn't contain changes")) {
+      print.debug('✓ Changeset status: No changes detected (no drift)');
+      // No drift to inspect — clean up immediately
+      await cfn
+        .send(new DeleteChangeSetCommand({ StackName: stackName, ChangeSetName: changeSetName }))
+        .catch((e: any) => print.debug(`Failed to delete changeset: ${e.message}`));
+      return {
+        changes: [],
+        skipped: false,
+      };
+    }
+
+    // Handle other failure cases
+    if (changeSet.Status === 'FAILED') {
+      print.debug(`Changeset failed with status: ${changeSet.Status}`);
+      print.debug(`Reason: ${changeSet.StatusReason}`);
+      await cfn
+        .send(new DeleteChangeSetCommand({ StackName: stackName, ChangeSetName: changeSetName }))
+        .catch((e: any) => print.debug(`Failed to delete changeset: ${e.message}`));
+      const errorMsg = `Changeset creation failed with status ${changeSet.Status}`;
+      const reasonMsg = changeSet.StatusReason ? `: ${changeSet.StatusReason}` : '';
+      return {
+        changes: [],
+        skipped: true,
+        skipReason: `${errorMsg}${reasonMsg}`,
+      };
+    }
+
+    print.debug(`CloudFormation ChangeSet: ${stackName}`);
+    print.debug(`Status: ${changeSet.Status}`);
+    print.debug(`IncludeNestedStacks: ${changeSet.IncludeNestedStacks}`);
+    if (changeSet.StatusReason) {
+      print.debug(`StatusReason: ${changeSet.StatusReason}`);
+    }
+    if (changeSet.Changes && changeSet.Changes.length > 0) {
+      print.debug(`Changes: ${changeSet.Changes.length}`);
+      for (const change of changeSet.Changes) {
+        if (change.ResourceChange) {
+          const rc = change.ResourceChange;
+          print.debug(`  ${rc.LogicalResourceId} (${rc.ResourceType}) - ${rc.Action}`);
+        }
+      }
+    } else {
+      print.debug('Changes: 0');
+    }
+
+    // Changeset is kept for user inspection via console URL — cleaned up on next run
+    const result = await analyzeChangeSet(cfn, changeSet, print);
+    result.changeSetId = changeSet.ChangeSetId;
+    return result;
   } catch (error: any) {
     return {
       changes: [],
