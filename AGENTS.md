@@ -43,17 +43,10 @@ Verify your changes by following these guidelines:
   work prefixed with a "Prompt: " after a single line consisting of '---'. Make sure there are no empty lines before or after this line.
   Word wrap all paragraphs at 72 columns including the prompt. For the author of the commit, use the configured username in git with
   ' (AI)' appended and the user email. For example, `git commit --author="John Doe (AI) <john@bigco.com>" -m "docs: update configuration guide"`.
-  To avoid issues with multi-line commit messages, use a heredoc:
+  To avoid issues with multi-line commit messages, write the message to `.commit-message.ai-generated.txt` and use `-F`:
 
   ```bash
-  git commit --author="John Doe (AI) <john@bigco.com>" -m "$(cat <<'EOF'
-  feat(scope): subject line
-
-  Body paragraph.
-  ---
-  Prompt: the user prompt
-  EOF
-  )"
+  git commit --author="John Doe (AI) <john@bigco.com>" -F .commit-message.ai-generated.txt
   ```
 
 - Since this repo has a commit hook that takes quite a long time to run, don't immediately commit every
