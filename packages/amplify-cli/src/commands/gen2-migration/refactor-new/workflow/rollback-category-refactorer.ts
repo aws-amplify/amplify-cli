@@ -43,7 +43,13 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
 
     const withParams = resolveParameters(originalTemplate, parameters);
     const stackResources = await facade.fetchStackResources(stackId);
-    const withOutputs = resolveOutputs(withParams, outputs, stackResources, this.region, this.accountId);
+    const withOutputs = resolveOutputs({
+      template: withParams,
+      stackOutputs: outputs,
+      stackResources,
+      region: this.region,
+      accountId: this.accountId,
+    });
     const resolved = resolveDependencies(withOutputs, resourceIds);
 
     const resourcesToMove = new Map(resourceIds.filter((id) => id in resolved.Resources).map((id) => [id, resolved.Resources[id]]));
@@ -143,7 +149,12 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
               ...holdingTemplate.Resources,
             },
           };
-          await tryUpdateStack(this.clients.cfn, holdingStackName, [], holdingWithPlaceholder);
+          await tryUpdateStack({
+            cfnClient: this.clients.cfn,
+            stackName: holdingStackName,
+            parameters: [],
+            templateBody: holdingWithPlaceholder,
+          });
 
           // Use finalSource (the post-move Gen2 template) instead of reading from
           // the facade, which would return the cached pre-move version.

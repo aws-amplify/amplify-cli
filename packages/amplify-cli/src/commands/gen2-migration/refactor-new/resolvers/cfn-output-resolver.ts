@@ -15,13 +15,14 @@ import { walkCfnTree } from './cfn-tree-walker';
  *
  * Operates on Resources only (not the whole template). Outputs are replaced separately.
  */
-export function resolveOutputs(
-  template: CFNTemplate,
-  stackOutputs: Output[],
-  stackResources: StackResource[],
-  region: string,
-  accountId: string,
-): CFNTemplate {
+export function resolveOutputs(params: {
+  readonly template: CFNTemplate;
+  readonly stackOutputs: Output[];
+  readonly stackResources: StackResource[];
+  readonly region: string;
+  readonly accountId: string;
+}): CFNTemplate {
+  const { template, stackOutputs, stackResources, region, accountId } = params;
   const cloned = JSON.parse(JSON.stringify(template)) as CFNTemplate;
   const templateOutputs = cloned.Outputs;
   const templateResources = cloned.Resources;

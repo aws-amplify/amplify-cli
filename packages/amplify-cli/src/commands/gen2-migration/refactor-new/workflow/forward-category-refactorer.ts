@@ -39,7 +39,13 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
     const stackName = extractStackNameFromId(stackId);
     const withParams = resolveParameters(originalTemplate, parameters, stackName);
     const stackResources = await facade.fetchStackResources(stackId);
-    const withOutputs = resolveOutputs(withParams, outputs, stackResources, this.region, this.accountId);
+    const withOutputs = resolveOutputs({
+      template: withParams,
+      stackOutputs: outputs,
+      stackResources,
+      region: this.region,
+      accountId: this.accountId,
+    });
     const withDeps = resolveDependencies(withOutputs, resourceIds);
     const resolved = resolveConditions(withDeps, parameters);
 
@@ -68,7 +74,13 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
 
     const stackResources = await facade.fetchStackResources(stackId);
     const withDeps = resolveDependencies(originalTemplate, resourceIds);
-    const resolved = resolveOutputs(withDeps, outputs, stackResources, this.region, this.accountId);
+    const resolved = resolveOutputs({
+      template: withDeps,
+      stackOutputs: outputs,
+      stackResources,
+      region: this.region,
+      accountId: this.accountId,
+    });
 
     const resourcesToMove = new Map(resourceIds.filter((id) => id in resolved.Resources).map((id) => [id, resolved.Resources[id]]));
 

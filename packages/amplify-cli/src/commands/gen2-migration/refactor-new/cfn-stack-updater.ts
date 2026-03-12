@@ -18,13 +18,14 @@ const COMPLETION_STATE = '_COMPLETE';
 /**
  * Updates a stack with the given template. No-ops if no updates are needed.
  */
-export async function tryUpdateStack(
-  cfnClient: CloudFormationClient,
-  stackName: string,
-  parameters: Parameter[],
-  templateBody: CFNTemplate,
-  attempts = POLL_ATTEMPTS,
-): Promise<string> {
+export async function tryUpdateStack(params: {
+  readonly cfnClient: CloudFormationClient;
+  readonly stackName: string;
+  readonly parameters: Parameter[];
+  readonly templateBody: CFNTemplate;
+  readonly attempts?: number;
+}): Promise<string> {
+  const { cfnClient, stackName, parameters, templateBody, attempts = POLL_ATTEMPTS } = params;
   try {
     const input: UpdateStackCommandInput = {
       TemplateBody: JSON.stringify(templateBody),

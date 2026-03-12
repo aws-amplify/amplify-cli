@@ -157,7 +157,12 @@ export abstract class CategoryRefactorer implements Refactorer {
         },
         describe: async () => [`Update source stack '${extractStackNameFromId(source.stackId)}' with resolved references`],
         execute: async () => {
-          const status = await tryUpdateStack(this.clients.cfn, source.stackId, source.parameters, source.resolvedTemplate);
+          const status = await tryUpdateStack({
+            cfnClient: this.clients.cfn,
+            stackName: source.stackId,
+            parameters: source.parameters,
+            templateBody: source.resolvedTemplate,
+          });
           if (status !== CFNStackStatus.UPDATE_COMPLETE) {
             throw new AmplifyError('StackStateError', {
               message: `Source stack '${source.stackId}' ended with status '${status}' instead of UPDATE_COMPLETE`,
@@ -180,7 +185,12 @@ export abstract class CategoryRefactorer implements Refactorer {
         },
         describe: async () => [`Update target stack '${extractStackNameFromId(target.stackId)}' with resolved references`],
         execute: async () => {
-          const status = await tryUpdateStack(this.clients.cfn, target.stackId, target.parameters, target.resolvedTemplate);
+          const status = await tryUpdateStack({
+            cfnClient: this.clients.cfn,
+            stackName: target.stackId,
+            parameters: target.parameters,
+            templateBody: target.resolvedTemplate,
+          });
           if (status !== CFNStackStatus.UPDATE_COMPLETE) {
             throw new AmplifyError('StackStateError', {
               message: `Target stack '${target.stackId}' ended with status '${status}' instead of UPDATE_COMPLETE`,
