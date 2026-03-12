@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.1.38-rc.2e06b2e79e143c7.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-interactions@5.1.37...@aws-amplify/amplify-category-interactions@5.1.38-rc.2e06b2e79e143c7.0) (2026-03-12)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-interactions
+
+
+
+
+
 ## [5.1.37](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-interactions@5.1.36...@aws-amplify/amplify-category-interactions@5.1.37) (2025-10-31)
 
 

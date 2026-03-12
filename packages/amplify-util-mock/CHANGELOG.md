@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.10.27-rc.2e06b2e79e143c7.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-mock@5.10.26...@aws-amplify/amplify-util-mock@5.10.27-rc.2e06b2e79e143c7.0) (2026-03-12)
+
+
+### Bug Fixes
+
+* bump aws-cdk-lib to 2.241.0 and constructs to 10.5.0 ([b7ea5cf](https://github.com/aws-amplify/amplify-cli/commit/b7ea5cf5b28a4b0137fb6b0f28c91113e60e7285)), closes [#14631](https://github.com/aws-amplify/amplify-cli/issues/14631)
+
+
+
+
+
 ## [5.10.26](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-mock@5.10.25...@aws-amplify/amplify-util-mock@5.10.26) (2026-01-22)
 
 **Note:** Version bump only for package @aws-amplify/amplify-util-mock

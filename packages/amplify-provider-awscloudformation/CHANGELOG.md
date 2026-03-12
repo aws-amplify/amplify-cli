@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.11.18-rc.2e06b2e79e143c7.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.11.17...@aws-amplify/amplify-provider-awscloudformation@8.11.18-rc.2e06b2e79e143c7.0) (2026-03-12)
+
+
+### Bug Fixes
+
+* bump aws-cdk-lib to 2.241.0 and constructs to 10.5.0 ([b7ea5cf](https://github.com/aws-amplify/amplify-cli/commit/b7ea5cf5b28a4b0137fb6b0f28c91113e60e7285)), closes [#14631](https://github.com/aws-amplify/amplify-cli/issues/14631)
+
+
+
+
+
 ## [8.11.17](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.11.16...@aws-amplify/amplify-provider-awscloudformation@8.11.17) (2025-11-20)
 
 **Note:** Version bump only for package @aws-amplify/amplify-provider-awscloudformation
