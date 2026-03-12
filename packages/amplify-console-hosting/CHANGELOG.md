@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.5.43-rc.6b0f0255b3764ff.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-console-hosting@2.5.42...@aws-amplify/amplify-console-hosting@2.5.43-rc.6b0f0255b3764ff.0) (2026-03-12)
+
+**Note:** Version bump only for package @aws-amplify/amplify-console-hosting
+
+
+
+
+
 ## [2.5.42](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-console-hosting@2.5.41...@aws-amplify/amplify-console-hosting@2.5.42) (2025-10-31)
 
 

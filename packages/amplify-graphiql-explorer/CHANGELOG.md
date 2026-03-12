@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.6.5-rc.6b0f0255b3764ff.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-graphiql-explorer@2.6.4...@aws-amplify/amplify-graphiql-explorer@2.6.5-rc.6b0f0255b3764ff.0) (2026-03-12)
+
+
+### Bug Fixes
+
+* resolve high dependabot alerts (immutable, svgo, serialize-javascript) ([4c70448](https://github.com/aws-amplify/amplify-cli/commit/4c70448c94415e22132519bc4baf67aea12409e8))
+
+
+
+
+
 ## [2.6.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-graphiql-explorer@2.6.3...@aws-amplify/amplify-graphiql-explorer@2.6.4) (2025-10-08)
 
 **Note:** Version bump only for package @aws-amplify/amplify-graphiql-explorer
