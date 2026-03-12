@@ -19,10 +19,6 @@ import { AnalyticsRollbackRefactorer } from '../refactor-new/analytics/analytics
 const FILE_PROTOCOL_PREFIX = 'file://';
 
 export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
-  private toStack?: string;
-  private resourceMappings?: string;
-  private parsedResourceMappings?: ResourceMapping[];
-
   public async executeImplications(): Promise<string[]> {
     return ['Move stateful resources from your Gen1 app to be managed by your Gen2 app'];
   }
@@ -41,23 +37,20 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
   }
 
   public async execute(): Promise<AmplifyMigrationOperation[]> {
-    this.extractParameters();
+    const { toStack, resourceMappings } = this.extractParameters();
 
     // Custom resources: if --resourceMappings provided, use legacy code path
-    if (this.resourceMappings) {
-      await this.processResourceMappings();
-    }
-    if (this.parsedResourceMappings) {
-      return this.executeLegacy();
+    if (resourceMappings) {
+      const parsedMappings = await this.parseResourceMappings(resourceMappings);
+      return this.executeLegacy(toStack, parsedMappings);
     }
 
-    return this.executeNew();
+    return this.executeNew(toStack);
   }
 
   public async rollback(): Promise<AmplifyMigrationOperation[]> {
-    this.extractParameters();
-
-    const { clients, accountId, gen1Env, gen2Branch } = await this.createInfrastructure();
+    const { toStack } = this.extractParameters();
+    const { clients, accountId, gen1Env, gen2Branch } = await this.createInfrastructure(toStack);
 
     const refactorers: Refactorer[] = [
       new AuthRollbackRefactorer(gen1Env, gen2Branch, clients, this.region, accountId),
@@ -65,12 +58,11 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
       new AnalyticsRollbackRefactorer(gen1Env, gen2Branch, clients, this.region, accountId),
     ];
 
-    const operations = await this.planAndValidate(refactorers);
-    return operations;
+    return this.planAndValidate(refactorers);
   }
 
-  private async executeNew(): Promise<AmplifyMigrationOperation[]> {
-    const { clients, accountId, gen1Env, gen2Branch } = await this.createInfrastructure();
+  private async executeNew(toStack: string): Promise<AmplifyMigrationOperation[]> {
+    const { clients, accountId, gen1Env, gen2Branch } = await this.createInfrastructure(toStack);
 
     const refactorers: Refactorer[] = [
       new AuthForwardRefactorer(gen1Env, gen2Branch, clients, this.region, accountId, this.appId, this.currentEnvName),
@@ -78,15 +70,14 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
       new AnalyticsForwardRefactorer(gen1Env, gen2Branch, clients, this.region, accountId),
     ];
 
-    const operations = await this.planAndValidate(refactorers);
-    return operations;
+    return this.planAndValidate(refactorers);
   }
 
   /**
    * Legacy code path for custom resource mappings (--resourceMappings flag).
    * Kept until a custom resource refactorer is implemented.
    */
-  private async executeLegacy(): Promise<AmplifyMigrationOperation[]> {
+  private async executeLegacy(toStack: string, parsedMappings: ResourceMapping[]): Promise<AmplifyMigrationOperation[]> {
     let TemplateGenerator;
     try {
       ({ TemplateGenerator } = await import('./generators/template-generator'));
@@ -101,10 +92,10 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
       {
         describe: async () => ['Move stateful resources from your Gen1 app to be managed by your Gen2 app'],
         execute: async () => {
-          const templateGenerator = await this.initializeLegacyTemplateGenerator(TemplateGenerator);
+          const templateGenerator = await this.initializeLegacyTemplateGenerator(TemplateGenerator, toStack);
           await templateGenerator.initializeForAssessment();
           const categories = [...templateGenerator.categoryStackMap.keys()];
-          const success = await templateGenerator.generateSelectedCategories(categories, this.parsedResourceMappings);
+          const success = await templateGenerator.generateSelectedCategories(categories, parsedMappings);
           if (!success) {
             throw new AmplifyError('DeploymentError', { message: 'Failed to execute CloudFormation stack refactor' });
           }
@@ -113,7 +104,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
     ];
   }
 
-  private async createInfrastructure(): Promise<{
+  private async createInfrastructure(toStack: string): Promise<{
     clients: AwsClients;
     accountId: string;
     gen1Env: StackFacade;
@@ -127,7 +118,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
 
     const clients = new AwsClients({ region: this.region });
     const gen1Env = new StackFacade(clients, this.rootStackName);
-    const gen2Branch = new StackFacade(clients, this.toStack!);
+    const gen2Branch = new StackFacade(clients, toStack);
 
     return { clients, accountId, gen1Env, gen2Branch };
   }
@@ -149,26 +140,26 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
     return operations;
   }
 
-  private extractParameters(): void {
-    this.toStack = this.context.parameters?.options?.to;
-    this.resourceMappings = this.context.parameters?.options?.resourceMappings;
+  private extractParameters(): { toStack: string; resourceMappings?: string } {
+    const toStack = this.context.parameters?.options?.to;
+    const resourceMappings = this.context.parameters?.options?.resourceMappings;
 
-    if (!this.toStack) {
+    if (!toStack) {
       throw new AmplifyError('InputValidationError', { message: '--to is required' });
     }
+
+    return { toStack, resourceMappings };
   }
 
-  private async processResourceMappings(): Promise<void> {
-    if (!this.resourceMappings) return;
-
-    if (!this.resourceMappings.startsWith(FILE_PROTOCOL_PREFIX)) {
+  private async parseResourceMappings(resourceMappings: string): Promise<ResourceMapping[]> {
+    if (!resourceMappings.startsWith(FILE_PROTOCOL_PREFIX)) {
       throw new AmplifyError('InputValidationError', {
         message: `Resource mappings path must start with ${FILE_PROTOCOL_PREFIX}`,
         resolution: `Use the format: ${FILE_PROTOCOL_PREFIX}/path/to/mappings.json`,
       });
     }
 
-    const resourceMapPath = this.resourceMappings.split(FILE_PROTOCOL_PREFIX)[1];
+    const resourceMapPath = resourceMappings.split(FILE_PROTOCOL_PREFIX)[1];
     if (!resourceMapPath) {
       throw new AmplifyError('InputValidationError', {
         message: 'Invalid resource mappings path',
@@ -185,8 +176,9 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
 
     const fileContent = await fs.readFile(resourceMapPath, 'utf-8');
 
+    let parsed: unknown;
     try {
-      this.parsedResourceMappings = JSON.parse(fileContent);
+      parsed = JSON.parse(fileContent);
     } catch (parseError) {
       throw new AmplifyError('InputValidationError', {
         message: `Failed to parse JSON from resource mappings file: ${
@@ -196,12 +188,14 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
       });
     }
 
-    if (!Array.isArray(this.parsedResourceMappings) || !this.parsedResourceMappings.every(this.isResourceMappingValid)) {
+    if (!Array.isArray(parsed) || !parsed.every(this.isResourceMappingValid)) {
       throw new AmplifyError('InputValidationError', {
         message: 'Invalid resource mappings structure',
         resolution: 'Each mapping must have Source and Destination objects with StackName and LogicalResourceId properties.',
       });
     }
+
+    return parsed;
   }
 
   private isResourceMappingValid(resourceMapping: unknown): resourceMapping is ResourceMapping {
@@ -226,7 +220,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private async initializeLegacyTemplateGenerator(TemplateGenerator: any) {
+  private async initializeLegacyTemplateGenerator(TemplateGenerator: any, toStack: string) {
     const stsClient = new STSClient({});
     const { Account: accountId } = await stsClient.send(new GetCallerIdentityCommand({}));
     if (!accountId) {
@@ -239,7 +233,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
 
     return new TemplateGenerator(
       this.rootStackName,
-      this.toStack!,
+      toStack,
       accountId,
       new CloudFormationClient({}),
       new SSMClient({}),
