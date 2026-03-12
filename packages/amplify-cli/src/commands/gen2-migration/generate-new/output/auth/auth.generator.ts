@@ -45,7 +45,7 @@ import {
 
 import { constFromBackend, assignProp } from '../../ts-factory-utils';
 import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
-import { fileOrDirectoryExists } from '../../input/file-exists';
+import { fileOrDirectoryExists } from '../../file-exists';
 
 const factory = ts.factory;
 
@@ -95,28 +95,39 @@ export class AuthGenerator implements Generator {
       return this.planReferenceAuth(referenceAuth);
     }
 
-    // Standard auth: fetch all Cognito resources
-    const resources = await this.gen1App.fetchResourcesByLogicalId();
-    const userPool = await this.gen1App.aws.fetchUserPool(resources);
+    // Standard auth: extract IDs from meta output
+    const authResourceName = Object.keys(authCategory).find(
+      (name) => (authCategory[name] as Record<string, unknown>).service === 'Cognito',
+    );
+    if (!authResourceName) return [];
+
+    const userPoolId = this.gen1App.metaOutput('auth', authResourceName, 'UserPoolId');
+    if (!userPoolId) return [];
+
+    const userPool = await this.gen1App.aws.fetchUserPool(userPoolId);
     if (!userPool) {
       return [];
     }
 
+    const appClientIdWeb = this.gen1App.metaOutput('auth', authResourceName, 'AppClientIDWeb');
+    const appClientId = this.gen1App.metaOutput('auth', authResourceName, 'AppClientID');
+    const identityPoolId = this.gen1App.metaOutput('auth', authResourceName, 'IdentityPoolId');
+
     const [mfaConfig, webClient, userPoolClient, identityProviders, identityGroups, identityPool, authTriggerConnections] =
       await Promise.all([
-        this.gen1App.aws.fetchMfaConfig(resources),
-        this.gen1App.aws.fetchWebClient(resources),
-        this.gen1App.aws.fetchUserPoolClient(resources),
-        this.gen1App.aws.fetchIdentityProviders(resources),
-        this.gen1App.aws.fetchIdentityGroups(resources),
-        this.gen1App.aws.fetchIdentityPool(resources),
+        this.gen1App.aws.fetchMfaConfig(userPoolId),
+        appClientIdWeb ? this.gen1App.aws.fetchUserPoolClient(userPoolId, appClientIdWeb) : Promise.resolve(undefined),
+        appClientId ? this.gen1App.aws.fetchUserPoolClient(userPoolId, appClientId) : Promise.resolve(undefined),
+        this.gen1App.aws.fetchIdentityProviders(userPoolId),
+        this.gen1App.aws.fetchIdentityGroups(userPoolId),
+        identityPoolId ? this.gen1App.aws.fetchIdentityPool(identityPoolId) : Promise.resolve(undefined),
         this.readAuthTriggerConnections(),
       ]);
 
     // Build the AuthDefinition using the existing adapter
     const authDefinition = getAuthDefinition({
       userPool,
-      identityPoolName: identityPool?.identityPoolName,
+      identityPoolName: identityPool?.IdentityPoolName,
       identityProviders: identityProviders.map((p) => ({
         ProviderName: p.ProviderName,
         ProviderType: p.ProviderType,
@@ -127,9 +138,9 @@ export class AuthGenerator implements Generator {
       identityGroups,
       webClient,
       authTriggerConnections,
-      guestLogin: identityPool?.guestLogin,
-      mfaConfig: mfaConfig?.mfaConfig,
-      totpConfig: mfaConfig?.totpConfig,
+      guestLogin: identityPool?.AllowUnauthenticatedIdentities,
+      mfaConfig: mfaConfig?.MfaConfiguration,
+      totpConfig: mfaConfig?.SoftwareTokenMfaConfiguration,
       userPoolClient,
     });
 

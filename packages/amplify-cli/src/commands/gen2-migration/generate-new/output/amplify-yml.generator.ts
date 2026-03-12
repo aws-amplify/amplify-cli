@@ -4,7 +4,7 @@ import * as yaml from 'yaml';
 import { Generator } from '../generator';
 import { AmplifyMigrationOperation } from '../../_operation';
 import { Gen1App } from '../input/gen1-app';
-import { fileOrDirectoryExists } from '../input/file-exists';
+import { fileOrDirectoryExists } from '../file-exists';
 
 const GEN1_COMMAND = '- amplifyPush --simple';
 const GEN2_INSTALL_COMMAND = '- npm ci --cache .npm --prefer-offline';

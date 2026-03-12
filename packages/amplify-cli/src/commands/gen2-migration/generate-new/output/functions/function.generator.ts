@@ -10,7 +10,7 @@ import { printNodes } from '../../ts-writer';
 import { FunctionRenderer, RenderDefineFunctionOptions } from './function.renderer';
 import { RootPackageJsonGenerator } from '../root-package-json.generator';
 import { extractFilePathFromHandler, propAccess } from '../../ts-factory-utils';
-import { parseAuthAccessFromTemplate } from '../../input/auth-access-analyzer';
+import { AuthAccess } from '../auth/auth.renderer';
 import { AuthGenerator } from '../auth/auth.generator';
 import { S3Generator } from '../storage/s3.generator';
 import { Permission } from '../storage/s3.renderer';
@@ -44,6 +44,7 @@ interface ResolvedFunction {
   readonly dynamoActions: readonly string[];
   readonly kinesisActions: readonly string[];
   readonly graphqlApiPermissions: { readonly hasMutation: boolean; readonly hasQuery: boolean };
+  readonly authAccess: AuthAccess;
 }
 
 /**
@@ -98,7 +99,7 @@ export class FunctionGenerator implements Generator {
     const func = await this.resolve();
     await this.mergeFunctionDependencies(func);
     const triggerModels = await this.detectDynamoTriggerModels(func);
-    await this.contributeAuthAccess();
+    this.contributeAuthAccess(func);
     await this.contributeStorageAccess(this.category);
 
     return [
@@ -150,7 +151,7 @@ export class FunctionGenerator implements Generator {
     const { retained, escapeHatches } = classifyEnvVars(config.Environment?.Variables ?? {});
 
     // Extract DynamoDB/Kinesis actions and GraphQL API permissions from the function's CloudFormation template
-    const { dynamoActions, kinesisActions, graphqlApiPermissions } = await this.extractCfnPermissions();
+    const { dynamoActions, kinesisActions, graphqlApiPermissions, authAccess } = this.extractCfnPermissions();
 
     return {
       resourceName: this.resourceName,
@@ -166,6 +167,7 @@ export class FunctionGenerator implements Generator {
       dynamoActions,
       kinesisActions,
       graphqlApiPermissions,
+      authAccess,
     };
   }
 
@@ -222,15 +224,10 @@ export class FunctionGenerator implements Generator {
    * Parses Cognito auth access from the function's CFN template
    * and contributes it to the AuthGenerator.
    */
-  private async contributeAuthAccess(): Promise<void> {
+  private contributeAuthAccess(func: ResolvedFunction): void {
     if (!this.authGenerator) return;
-
-    const templatePath = `function/${this.resourceName}/${this.resourceName}-cloudformation-template.json`;
-    const content = await this.gen1App.readFile(templatePath);
-
-    const authAccess = parseAuthAccessFromTemplate(content);
-    if (Object.keys(authAccess).length > 0) {
-      this.authGenerator.addFunctionAuthAccess(this.resourceName, authAccess);
+    if (Object.keys(func.authAccess).length > 0) {
+      this.authGenerator.addFunctionAuthAccess(this.resourceName, func.authAccess);
     }
   }
 
@@ -250,7 +247,7 @@ export class FunctionGenerator implements Generator {
 
     const templatePath = `function/${this.resourceName}/${this.resourceName}-cloudformation-template.json`;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped CloudFormation template
-    const template = this.gen1App.template(templatePath);
+    const template = this.gen1App.json(templatePath);
     const policy = template.Resources?.AmplifyResourcesPolicy;
     if (!policy || policy.Type !== 'AWS::IAM::Policy') return;
 
@@ -471,37 +468,48 @@ export class FunctionGenerator implements Generator {
    * Reads the function's CloudFormation template from the cloud backend
    * and extracts DynamoDB IAM actions and GraphQL API permissions.
    */
-  private async extractCfnPermissions(): Promise<{
+  private extractCfnPermissions(): {
     dynamoActions: string[];
     kinesisActions: string[];
     graphqlApiPermissions: { hasMutation: boolean; hasQuery: boolean };
-  }> {
+    authAccess: AuthAccess;
+  } {
     const templatePath = `function/${this.resourceName}/${this.resourceName}-cloudformation-template.json`;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped CloudFormation template
-    const template = this.gen1App.template(templatePath);
+    const template = this.gen1App.json(templatePath);
     const policy = template.Resources?.AmplifyResourcesPolicy;
     if (!policy || policy.Type !== 'AWS::IAM::Policy') {
-      return { dynamoActions: [], kinesisActions: [], graphqlApiPermissions: { hasMutation: false, hasQuery: false } };
+      return { dynamoActions: [], kinesisActions: [], graphqlApiPermissions: { hasMutation: false, hasQuery: false }, authAccess: {} };
     }
 
     const statements = policy.Properties?.PolicyDocument?.Statement ?? [];
     const dynamoActions: string[] = [];
     const kinesisActions: string[] = [];
+    const cognitoActions: string[] = [];
     let hasMutation = false;
     let hasQuery = false;
 
     for (const stmt of statements) {
       const stmtActions = Array.isArray(stmt.Action) ? stmt.Action : [stmt.Action];
       for (const action of stmtActions) {
-        if (typeof action === 'string' && action.startsWith('dynamodb:')) {
-          dynamoActions.push(action);
-        }
-        if (typeof action === 'string' && action.startsWith('kinesis:')) {
-          kinesisActions.push(action);
+        if (typeof action !== 'string') continue;
+        if (action.startsWith('dynamodb:')) dynamoActions.push(action);
+        if (action.startsWith('kinesis:')) kinesisActions.push(action);
+        if (action.startsWith('cognito-idp:')) {
+          if (action === 'cognito-idp:AdminList*') {
+            for (const a of ['cognito-idp:AdminListDevices', 'cognito-idp:AdminListGroupsForUser']) {
+              if (!cognitoActions.includes(a)) cognitoActions.push(a);
+            }
+          } else if (action === 'cognito-idp:List*') {
+            for (const a of ['cognito-idp:ListUsers', 'cognito-idp:ListUsersInGroup', 'cognito-idp:ListGroups']) {
+              if (!cognitoActions.includes(a)) cognitoActions.push(a);
+            }
+          } else if (!cognitoActions.includes(action)) {
+            cognitoActions.push(action);
+          }
         }
       }
 
-      // Check for GraphQL API permissions in resource ARNs
       const resources = Array.isArray(stmt.Resource) ? stmt.Resource : [stmt.Resource];
       for (const resource of resources) {
         const resourceStr = JSON.stringify(resource);
@@ -510,7 +518,8 @@ export class FunctionGenerator implements Generator {
       }
     }
 
-    return { dynamoActions, kinesisActions, graphqlApiPermissions: { hasMutation, hasQuery } };
+    const authAccess = resolveAuthAccess(cognitoActions);
+    return { dynamoActions, kinesisActions, graphqlApiPermissions: { hasMutation, hasQuery }, authAccess };
   }
 
   /**
@@ -559,7 +568,7 @@ export class FunctionGenerator implements Generator {
   private async detectDynamoTriggerModels(func: ResolvedFunction): Promise<string[]> {
     const templatePath = `function/${func.resourceName}/${func.resourceName}-cloudformation-template.json`;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped CloudFormation template
-    const template = this.gen1App.template(templatePath);
+    const template = this.gen1App.json(templatePath);
     const models: string[] = [];
 
     for (const resource of Object.values(template.Resources ?? {})) {
@@ -887,4 +896,94 @@ function createFunctionNameOverride(funcName: string): ts.ExpressionStatement {
   ]);
 
   return factory.createExpressionStatement(factory.createAssignment(lhs, rhs));
+}
+
+// ── Auth access extraction from CFN policy ────────────────────────
+
+const GROUPED_AUTH_PERMISSIONS: Readonly<Record<string, readonly string[]>> = {
+  manageUsers: [
+    'cognito-idp:AdminConfirmSignUp',
+    'cognito-idp:AdminCreateUser',
+    'cognito-idp:AdminDeleteUser',
+    'cognito-idp:AdminDeleteUserAttributes',
+    'cognito-idp:AdminDisableUser',
+    'cognito-idp:AdminEnableUser',
+    'cognito-idp:AdminGetUser',
+    'cognito-idp:AdminListGroupsForUser',
+    'cognito-idp:AdminRespondToAuthChallenge',
+    'cognito-idp:AdminSetUserMFAPreference',
+    'cognito-idp:AdminSetUserSettings',
+    'cognito-idp:AdminUpdateUserAttributes',
+    'cognito-idp:AdminUserGlobalSignOut',
+  ],
+  manageGroupMembership: ['cognito-idp:AdminAddUserToGroup', 'cognito-idp:AdminRemoveUserFromGroup'],
+  manageGroups: [
+    'cognito-idp:GetGroup',
+    'cognito-idp:ListGroups',
+    'cognito-idp:CreateGroup',
+    'cognito-idp:DeleteGroup',
+    'cognito-idp:UpdateGroup',
+  ],
+  manageUserDevices: [
+    'cognito-idp:AdminForgetDevice',
+    'cognito-idp:AdminGetDevice',
+    'cognito-idp:AdminListDevices',
+    'cognito-idp:AdminUpdateDeviceStatus',
+  ],
+  managePasswordRecovery: ['cognito-idp:AdminResetUserPassword', 'cognito-idp:AdminSetUserPassword'],
+};
+
+const AUTH_ACTION_MAPPING: Readonly<Record<string, keyof AuthAccess>> = {
+  'cognito-idp:AdminAddUserToGroup': 'addUserToGroup',
+  'cognito-idp:AdminCreateUser': 'createUser',
+  'cognito-idp:AdminDeleteUser': 'deleteUser',
+  'cognito-idp:AdminDeleteUserAttributes': 'deleteUserAttributes',
+  'cognito-idp:AdminDisableUser': 'disableUser',
+  'cognito-idp:AdminEnableUser': 'enableUser',
+  'cognito-idp:AdminForgetDevice': 'forgetDevice',
+  'cognito-idp:AdminGetDevice': 'getDevice',
+  'cognito-idp:AdminGetUser': 'getUser',
+  'cognito-idp:AdminListDevices': 'listDevices',
+  'cognito-idp:AdminListGroupsForUser': 'listGroupsForUser',
+  'cognito-idp:AdminRemoveUserFromGroup': 'removeUserFromGroup',
+  'cognito-idp:AdminResetUserPassword': 'resetUserPassword',
+  'cognito-idp:AdminSetUserMFAPreference': 'setUserMfaPreference',
+  'cognito-idp:AdminSetUserPassword': 'setUserPassword',
+  'cognito-idp:AdminSetUserSettings': 'setUserSettings',
+  'cognito-idp:AdminUpdateDeviceStatus': 'updateDeviceStatus',
+  'cognito-idp:AdminUpdateUserAttributes': 'updateUserAttributes',
+  'cognito-idp:ListUsers': 'listUsers',
+  'cognito-idp:ListUsersInGroup': 'listUsersInGroup',
+  'cognito-idp:ListGroups': 'listGroups',
+  'cognito-idp:AdminConfirmSignUp': 'manageUsers',
+  'cognito-idp:AdminRespondToAuthChallenge': 'manageUsers',
+  'cognito-idp:AdminUserGlobalSignOut': 'manageUsers',
+  'cognito-idp:AdminInitiateAuth': 'manageUsers',
+  'cognito-idp:AdminUpdateAuthEventFeedback': 'manageUsers',
+  'cognito-idp:ForgetDevice': 'forgetDevice',
+  'cognito-idp:VerifyUserAttribute': 'updateUserAttributes',
+  'cognito-idp:UpdateUserAttributes': 'updateUserAttributes',
+  'cognito-idp:SetUserMFAPreference': 'setUserMfaPreference',
+  'cognito-idp:SetUserSettings': 'setUserSettings',
+};
+
+function resolveAuthAccess(cognitoActions: string[]): AuthAccess {
+  if (cognitoActions.length === 0) return {};
+  const result: Record<string, boolean> = {};
+  const covered = new Set<string>();
+
+  for (const [group, required] of Object.entries(GROUPED_AUTH_PERMISSIONS)) {
+    if (required.every((a) => cognitoActions.includes(a))) {
+      result[group] = true;
+      for (const a of required) covered.add(a);
+    }
+  }
+
+  for (const action of cognitoActions) {
+    if (!covered.has(action) && AUTH_ACTION_MAPPING[action]) {
+      result[AUTH_ACTION_MAPPING[action]] = true;
+    }
+  }
+
+  return result as AuthAccess;
 }

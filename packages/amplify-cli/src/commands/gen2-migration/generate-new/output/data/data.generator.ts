@@ -1,7 +1,6 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import ts from 'typescript';
-import glob from 'glob';
 import { GraphqlApi } from '@aws-sdk/client-appsync';
 import { Generator } from '../../generator';
 import { AmplifyMigrationOperation } from '../../../_operation';
@@ -48,10 +47,9 @@ export class DataGenerator implements Generator {
       return [];
     }
 
-    const [apiName, apiMeta] = graphQLApiEntry;
-    const schema = await DataGenerator.readGraphQLSchema(this.gen1App, apiName);
-    const output = (apiMeta as Record<string, unknown>).output as Record<string, any>;
-    const apiId = output?.GraphQLAPIIdOutput as string;
+    const [apiName] = graphQLApiEntry;
+    const schema = this.gen1App.file(path.join('api', apiName, 'build', 'schema.graphql'));
+    const apiId = this.gen1App.metaOutput('api', apiName, 'GraphQLAPIIdOutput');
 
     if (!apiId) {
       throw new Error(`AppSync API '${apiName}' has no GraphQLAPIIdOutput in amplify-meta.json`);
@@ -64,7 +62,7 @@ export class DataGenerator implements Generator {
       throw new Error(`AppSync API '${apiId}' not found`);
     }
 
-    const authorizationModes = output?.authConfig;
+    const authorizationModes = this.gen1App.metaOutput('api', apiName, 'authConfig');
     const additionalAuthProviders = graphqlApi.additionalAuthenticationProviders?.map((provider) => ({
       authenticationType: provider.authenticationType,
       ...(provider.lambdaAuthorizerConfig && { lambdaAuthorizerConfig: provider.lambdaAuthorizerConfig }),
@@ -177,40 +175,6 @@ export class DataGenerator implements Generator {
       ),
     );
     this.backendGenerator.addStatement(assignment);
-  }
-
-  /**
-   * Reads the GraphQL schema from the local Gen1 project.
-   * Supports both single schema.graphql and multi-file schema/ directory.
-   */
-  private static async readGraphQLSchema(gen1App: Gen1App, apiName: string): Promise<string> {
-    const apiPath = path.join(gen1App.ccbDir, 'api', apiName);
-
-    // Try multi-file schema directory first
-    const schemaFolderPath = path.join(apiPath, 'schema');
-    try {
-      const stats = await fs.stat(schemaFolderPath);
-      if (stats.isDirectory()) {
-        const graphqlFiles = glob.sync(path.join(schemaFolderPath, '*.graphql'));
-        if (graphqlFiles.length > 0) {
-          let mergedSchema = '';
-          for (const file of graphqlFiles) {
-            const content = await fs.readFile(file, 'utf8');
-            mergedSchema += content + '\n';
-          }
-          return mergedSchema.trim();
-        }
-      }
-    } catch {
-      // Directory doesn't exist, fall through to single file
-    }
-
-    // Fall back to single schema.graphql
-    try {
-      return await fs.readFile(path.join(apiPath, 'schema.graphql'), 'utf8');
-    } catch {
-      throw new Error(`No GraphQL schema found for API '${apiName}' in ${apiPath}`);
-    }
   }
 }
 

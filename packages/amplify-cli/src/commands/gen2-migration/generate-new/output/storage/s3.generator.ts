@@ -92,7 +92,7 @@ export class S3Generator implements Generator {
       throw new Error(`Could not find bucket name for storage resource '${storageName}'`);
     }
 
-    const cliInputs = this.gen1App.cliInputsForResource('storage', storageName) as StorageCLIInputsJSON;
+    const cliInputs = this.gen1App.cliInputs('storage', storageName) as StorageCLIInputsJSON;
 
     const [notifications, accelerateStatus, versioningStatus, encryption] = await Promise.all([
       this.gen1App.aws.fetchBucketNotifications(bucketName),

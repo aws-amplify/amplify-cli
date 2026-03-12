@@ -95,7 +95,7 @@ export class RestApiGenerator implements Generator {
       throw new Error(`REST API '${resourceName}' not found in amplify-meta.json`);
     }
 
-    const cliInputs = gen1App.cliInputsForResource('api', resourceName) as RestApiCliInputs | undefined;
+    const cliInputs = gen1App.cliInputs('api', resourceName) as RestApiCliInputs | undefined;
     if (!cliInputs) {
       throw new Error(`Failed to read cli-inputs.json for REST API '${resourceName}'`);
     }

@@ -22,7 +22,7 @@ import { DynamoDBGenerator } from './generate-new/output/storage/dynamodb.genera
 import { FunctionGenerator } from './generate-new/output/functions/function.generator';
 import { AnalyticsKinesisGenerator } from './generate-new/output/analytics/kinesis.generator';
 import { CustomResourceGenerator } from './generate-new/output/custom-resources/custom.generator';
-import { fileOrDirectoryExists } from './generate-new/input/file-exists';
+import { fileOrDirectoryExists } from './generate-new/file-exists';
 
 const AMPLIFY_DIR = 'amplify';
 
