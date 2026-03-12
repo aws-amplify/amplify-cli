@@ -32,5 +32,6 @@
   },
   "typescript.enablePromptUseWorkspaceTsdk": true,
   "prettier.prettierPath": "./node_modules/prettier",
-  "jest.jestCommandLine": "./node_modules/.bin/jest"
+  "jest.jestCommandLine": "./node_modules/.bin/jest",
+  "kiroAgent.configureMCP": "Disabled"
 }

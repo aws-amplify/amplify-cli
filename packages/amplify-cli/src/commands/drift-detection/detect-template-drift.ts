@@ -7,33 +7,22 @@ import {
   DeleteChangeSetCommand,
   DescribeStacksCommand,
   waitUntilChangeSetCreateComplete,
+  type ResourceChange,
 } from '@aws-sdk/client-cloudformation';
+import { paginateListChangeSets } from '@aws-sdk/client-cloudformation';
 import fs from 'fs-extra';
 import * as path from 'path';
-import type { Print } from '../drift';
+import type { Printer } from '@aws-amplify/amplify-prompts';
+
+export interface ResourceChangeWithNested extends ResourceChange {
+  nestedChanges?: ResourceChangeWithNested[];
+}
 
 export interface TemplateDriftResults {
-  totalDrifted: number;
-  changes: ChangeSetChange[];
+  changes: ResourceChangeWithNested[];
   skipped: boolean;
   skipReason?: string;
-}
-
-interface ChangeSetChange {
-  logicalResourceId: string;
-  resourceType: string;
-  action: string;
-  replacement: boolean;
-  details?: ChangeDetail[];
-  nestedChanges?: ChangeSetChange[]; // Add nested changes support
-}
-
-interface ChangeDetail {
-  attribute?: string;
-  name?: string;
-  changeSource?: string;
-  evaluation?: string;
-  requiresRecreation?: string;
+  changeSetId?: string;
 }
 
 /**
@@ -58,6 +47,32 @@ function extractChangeSetNameFromArn(changeSetArn: string): string {
   return resource.split('/')[1];
 }
 
+const CHANGESET_PREFIX = 'amplify-drift-detection-';
+
+/**
+ * Delete any existing amplify-drift-detection-* changesets from a previous run
+ */
+async function cleanupOldDriftChangesets(cfn: CloudFormationClient, stackName: string, print: Printer): Promise<void> {
+  try {
+    const toDelete: string[] = [];
+    for await (const page of paginateListChangeSets({ client: cfn }, { StackName: stackName })) {
+      for (const cs of page.Summaries || []) {
+        if (cs.ChangeSetName?.startsWith(CHANGESET_PREFIX)) {
+          toDelete.push(cs.ChangeSetName);
+        }
+      }
+    }
+    await Promise.allSettled(
+      toDelete.map((name) => {
+        print.debug(`Deleting old drift changeset: ${name}`);
+        return cfn.send(new DeleteChangeSetCommand({ StackName: stackName, ChangeSetName: name }));
+      }),
+    );
+  } catch (error: any) {
+    print.debug(`Failed to clean up old drift changesets: ${error.message}`);
+  }
+}
+
 /**
  * Phase 2: Detect template drift using CloudFormation change sets
  * Inspired by CDK's cloudformation-diff implementation
@@ -66,14 +81,13 @@ function extractChangeSetNameFromArn(changeSetArn: string): string {
  * @param print - Logging interface
  * @param cfn - CloudFormation client
  */
-export async function detectTemplateDrift(stackName: string, print: Print, cfn: CloudFormationClient): Promise<TemplateDriftResults> {
+export async function detectTemplateDrift(stackName: string, print: Printer, cfn: CloudFormationClient): Promise<TemplateDriftResults> {
   try {
     // Check prerequisites
     const currentCloudBackendPath = pathManager.getCurrentCloudBackendDirPath();
     print.debug(`Checking for #current-cloud-backend at: ${currentCloudBackendPath}`);
     if (!fs.existsSync(currentCloudBackendPath)) {
       return {
-        totalDrifted: 0,
         changes: [],
         skipped: true,
         skipReason: 'No #current-cloud-backend found. Run "amplify pull" first.',
@@ -86,7 +100,6 @@ export async function detectTemplateDrift(stackName: string, print: Print, cfn: 
 
     if (!fs.existsSync(templatePath)) {
       return {
-        totalDrifted: 0,
         changes: [],
         skipped: true,
         skipReason: 'No cached CloudFormation template found',
@@ -105,7 +118,6 @@ export async function detectTemplateDrift(stackName: string, print: Print, cfn: 
 
     if (!stackDescription.Stacks || stackDescription.Stacks.length === 0) {
       return {
-        totalDrifted: 0,
         changes: [],
         skipped: true,
         skipReason: `Stack ${stackName} not found in CloudFormation`,
@@ -116,8 +128,11 @@ export async function detectTemplateDrift(stackName: string, print: Print, cfn: 
     const parameters = stackDescription.Stacks[0].Parameters || [];
     print.debug(`Using ${parameters.length} parameters from deployed stack`);
 
+    // Clean up changesets from previous drift detection runs
+    await cleanupOldDriftChangesets(cfn, stackName, print);
+
     // Create changeset
-    const changeSetName = `amplify-drift-detection-${Date.now()}`;
+    const changeSetName = `${CHANGESET_PREFIX}${Date.now()}`;
     print.debug(`Creating changeset: ${changeSetName}`);
 
     await cfn.send(
@@ -132,87 +147,82 @@ export async function detectTemplateDrift(stackName: string, print: Print, cfn: 
       }),
     );
 
+    // Wait for changeset to complete (may succeed or fail)
     try {
-      // Wait for changeset to complete (may succeed or fail)
-      try {
-        await waitUntilChangeSetCreateComplete(
-          {
-            client: cfn,
-            maxWaitTime: 300,
-          },
-          {
-            StackName: stackName,
-            ChangeSetName: changeSetName,
-          },
-        );
-      } catch (waitError: any) {
-        print.debug(`Changeset waiter failed, will check status...`);
-      }
-
-      const changeSet = await cfn.send(
-        new DescribeChangeSetCommand({
+      await waitUntilChangeSetCreateComplete(
+        {
+          client: cfn,
+          maxWaitTime: 300,
+        },
+        {
           StackName: stackName,
           ChangeSetName: changeSetName,
-        }),
+        },
       );
-
-      // Handle "no changes" case - this is SUCCESS for drift detection
-      if (changeSet.Status === 'FAILED' && changeSet.StatusReason?.includes("didn't contain changes")) {
-        print.debug('✓ Changeset status: No changes detected (no drift)');
-        return {
-          totalDrifted: 0,
-          changes: [],
-          skipped: false,
-        };
-      }
-
-      // Handle other failure cases
-      if (changeSet.Status === 'FAILED') {
-        print.debug(`Changeset failed with status: ${changeSet.Status}`);
-        print.debug(`Reason: ${changeSet.StatusReason}`);
-        const errorMsg = `Changeset creation failed with status ${changeSet.Status}`;
-        const reasonMsg = changeSet.StatusReason ? `: ${changeSet.StatusReason}` : '';
-        throw new Error(`${errorMsg}${reasonMsg}`);
-      }
-
-      print.debug(`CloudFormation ChangeSet: ${stackName}`);
-      print.debug(`Status: ${changeSet.Status}`);
-      print.debug(`IncludeNestedStacks: ${changeSet.IncludeNestedStacks}`);
-      if (changeSet.StatusReason) {
-        print.debug(`StatusReason: ${changeSet.StatusReason}`);
-      }
-      if (changeSet.Changes && changeSet.Changes.length > 0) {
-        print.debug(`Changes: ${changeSet.Changes.length}`);
-        for (const change of changeSet.Changes) {
-          if (change.ResourceChange) {
-            const rc = change.ResourceChange;
-            print.debug(`  ${rc.LogicalResourceId} (${rc.ResourceType}) - ${rc.Action}`);
-          }
-        }
-      } else {
-        print.debug('Changes: 0');
-      }
-
-      const result = await analyzeChangeSet(cfn, changeSet, print);
-      return result;
-    } finally {
-      try {
-        print.debug(`Deleting changeset: ${changeSetName}`);
-        await cfn.send(
-          new DeleteChangeSetCommand({
-            StackName: stackName,
-            ChangeSetName: changeSetName,
-          }),
-        );
-        print.debug(`Deleted changeset: ${changeSetName}`);
-      } catch (deleteError: any) {
-        // Log cleanup errors but don't fail the operation
-        print.warn(`Failed to delete changeset ${changeSetName}: ${deleteError.message}`);
-      }
+    } catch (waitError: any) {
+      print.debug(`Changeset waiter failed, will check status...`);
     }
+
+    const changeSet = await cfn.send(
+      new DescribeChangeSetCommand({
+        StackName: stackName,
+        ChangeSetName: changeSetName,
+      }),
+    );
+
+    // Handle "no changes" case - this is SUCCESS for drift detection
+    if (changeSet.Status === 'FAILED' && changeSet.StatusReason?.includes("didn't contain changes")) {
+      print.debug('✓ Changeset status: No changes detected (no drift)');
+      // No drift to inspect — clean up immediately
+      await cfn
+        .send(new DeleteChangeSetCommand({ StackName: stackName, ChangeSetName: changeSetName }))
+        .catch((e: any) => print.debug(`Failed to delete changeset: ${e.message}`));
+      return {
+        changes: [],
+        skipped: false,
+      };
+    }
+
+    // Handle other failure cases
+    if (changeSet.Status === 'FAILED') {
+      print.debug(`Changeset failed with status: ${changeSet.Status}`);
+      print.debug(`Reason: ${changeSet.StatusReason}`);
+      await cfn
+        .send(new DeleteChangeSetCommand({ StackName: stackName, ChangeSetName: changeSetName }))
+        .catch((e: any) => print.debug(`Failed to delete changeset: ${e.message}`));
+      const errorMsg = `Changeset creation failed with status ${changeSet.Status}`;
+      const reasonMsg = changeSet.StatusReason ? `: ${changeSet.StatusReason}` : '';
+      return {
+        changes: [],
+        skipped: true,
+        skipReason: `${errorMsg}${reasonMsg}`,
+      };
+    }
+
+    print.debug(`CloudFormation ChangeSet: ${stackName}`);
+    print.debug(`Status: ${changeSet.Status}`);
+    print.debug(`IncludeNestedStacks: ${changeSet.IncludeNestedStacks}`);
+    if (changeSet.StatusReason) {
+      print.debug(`StatusReason: ${changeSet.StatusReason}`);
+    }
+    if (changeSet.Changes && changeSet.Changes.length > 0) {
+      print.debug(`Changes: ${changeSet.Changes.length}`);
+      for (const change of changeSet.Changes) {
+        if (change.ResourceChange) {
+          const rc = change.ResourceChange;
+          print.debug(`  ${rc.LogicalResourceId} (${rc.ResourceType}) - ${rc.Action}`);
+        }
+      }
+    } else {
+      print.debug('Changes: 0');
+    }
+
+    // Changeset is kept for user inspection via console URL — cleaned up on next run
+    const result = await analyzeChangeSet(cfn, changeSet, print);
+    result.changeSetId = changeSet.ChangeSetId;
+    return result;
   } catch (error: any) {
     return {
-      totalDrifted: 0,
       changes: [],
       skipped: true,
       skipReason: `Error during template drift detection: ${error.message}`,
@@ -223,10 +233,9 @@ export async function detectTemplateDrift(stackName: string, print: Print, cfn: 
 async function analyzeChangeSet(
   cfn: CloudFormationClient,
   changeSet: DescribeChangeSetCommandOutput,
-  print: Print,
+  print: Printer,
 ): Promise<TemplateDriftResults> {
   const result: TemplateDriftResults = {
-    totalDrifted: 0,
     changes: [],
     skipped: false,
   };
@@ -245,7 +254,6 @@ async function analyzeChangeSet(
     // Other FAILED reasons are actual errors - mark as skipped
     print.warn(`ChangeSet failed with unexpected reason: ${changeSet.StatusReason || 'No reason provided'}`);
     return {
-      totalDrifted: 0,
       changes: [],
       skipped: true,
       skipReason: `Changeset failed: ${changeSet.StatusReason || 'Unknown reason'}`,
@@ -267,28 +275,10 @@ async function analyzeChangeSet(
     }
 
     const rc = change.ResourceChange;
-    const changeInfo: ChangeSetChange = {
-      logicalResourceId: rc.LogicalResourceId,
-      resourceType: rc.ResourceType,
-      action: rc.Action,
-      replacement: rc.Replacement === 'True',
-      details: [],
-      nestedChanges: [], // Add nested changes array
-    };
-
-    // Extract details
-    if (rc.Details) {
-      for (const detail of rc.Details) {
-        changeInfo.details?.push({
-          name: detail.Target?.Name,
-          changeSource: detail.ChangeSource,
-          requiresRecreation: detail.Target?.RequiresRecreation,
-        });
-      }
-    }
+    const changeInfo: ResourceChangeWithNested = { ...rc };
 
     // Check if this is a nested stack with its own changeset
-    if (rc.ResourceType === 'AWS::CloudFormation::Stack' && rc.ChangeSetId) {
+    if (rc.ResourceType === 'AWS::CloudFormation::Stack' && rc.ChangeSetId && rc.PhysicalResourceId) {
       try {
         // Extract stack name and changeset name from ARNs using parseArn utility
         const stackName = extractStackNameFromArn(rc.PhysicalResourceId);
@@ -349,14 +339,11 @@ async function analyzeChangeSet(
   // If any nested stack analysis was skipped, mark entire result as skipped
   if (hasNestedSkipped) {
     return {
-      totalDrifted: 0,
       changes: [],
       skipped: true,
       skipReason: 'One or more nested stacks could not be analyzed',
     };
   }
 
-  // Set totalDrifted to the count of changes
-  result.totalDrifted = result.changes.length;
   return result;
 }
