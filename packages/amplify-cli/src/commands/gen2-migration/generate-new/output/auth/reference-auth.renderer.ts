@@ -1,6 +1,8 @@
 import ts, { PropertyAssignment } from 'typescript';
 import { renderResourceTsFile } from '../../resource';
 
+const factory = ts.factory;
+
 export type ReferenceAuth = {
   readonly userPoolId?: string;
   readonly identityPoolId?: string;
@@ -45,5 +47,3 @@ export class ReferenceAuthRenderer {
     });
   }
 }
-
-const factory = ts.factory;

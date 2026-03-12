@@ -51,16 +51,16 @@ describe('FunctionGenerator', () => {
     const gen1App = createMockGen1App();
     (gen1App.meta as jest.Mock).mockReturnValue(undefined);
 
-    const generator = new FunctionGenerator(
+    const generator = new FunctionGenerator({
       gen1App,
       backendGenerator,
-      undefined,
-      undefined,
+      authGenerator: undefined,
+      s3Generator: undefined,
       packageJsonGenerator,
       outputDir,
-      'myFunc',
-      'function',
-    );
+      resourceName: 'myFunc',
+      category: 'function',
+    });
 
     await expect(generator.plan()).rejects.toThrow('not found in amplify-meta.json');
   });
@@ -71,16 +71,16 @@ describe('FunctionGenerator', () => {
       otherFunc: { service: 'Lambda', output: { Name: 'otherFunc-main' } },
     });
 
-    const generator = new FunctionGenerator(
+    const generator = new FunctionGenerator({
       gen1App,
       backendGenerator,
-      undefined,
-      undefined,
+      authGenerator: undefined,
+      s3Generator: undefined,
       packageJsonGenerator,
       outputDir,
-      'myFunc',
-      'function',
-    );
+      resourceName: 'myFunc',
+      category: 'function',
+    });
 
     await expect(generator.plan()).rejects.toThrow('not found in amplify-meta.json');
   });
@@ -104,16 +104,16 @@ describe('FunctionGenerator', () => {
       Environment: { Variables: {} },
     });
 
-    const generator = new FunctionGenerator(
+    const generator = new FunctionGenerator({
       gen1App,
       backendGenerator,
-      undefined,
-      undefined,
+      authGenerator: undefined,
+      s3Generator: undefined,
       packageJsonGenerator,
       outputDir,
-      'myFunc',
-      'function',
-    );
+      resourceName: 'myFunc',
+      category: 'function',
+    });
     const ops = await generator.plan();
 
     expect(ops).toHaveLength(1);
@@ -150,16 +150,16 @@ describe('FunctionGenerator', () => {
     const addPropertySpy = jest.spyOn(backendGenerator, 'addDefineBackendProperty');
 
     try {
-      const generator = new FunctionGenerator(
+      const generator = new FunctionGenerator({
         gen1App,
         backendGenerator,
-        undefined,
-        undefined,
+        authGenerator: undefined,
+        s3Generator: undefined,
         packageJsonGenerator,
         outputDir,
-        'myFunc',
-        'function',
-      );
+        resourceName: 'myFunc',
+        category: 'function',
+      });
       const ops = await generator.plan();
       await ops[0].execute();
 

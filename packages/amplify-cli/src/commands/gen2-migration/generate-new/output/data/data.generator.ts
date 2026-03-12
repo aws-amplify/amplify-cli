@@ -37,23 +37,9 @@ export class DataGenerator implements Generator {
    * Plans the GraphQL data generation operations.
    */
   public async plan(): Promise<AmplifyMigrationOperation[]> {
-    const apiCategory = this.gen1App.meta('api');
-    if (!apiCategory) {
-      return [];
-    }
-
-    const graphQLApiEntry = Object.entries(apiCategory).find(([, value]) => (value as Record<string, unknown>).service === 'AppSync');
-    if (!graphQLApiEntry) {
-      return [];
-    }
-
-    const [apiName] = graphQLApiEntry;
+    const apiName = this.gen1App.singleResourceName('api', 'AppSync');
     const schema = this.gen1App.file(path.join('api', apiName, 'build', 'schema.graphql'));
     const apiId = this.gen1App.metaOutput('api', apiName, 'GraphQLAPIIdOutput');
-
-    if (!apiId) {
-      throw new Error(`AppSync API '${apiName}' has no GraphQLAPIIdOutput in amplify-meta.json`);
-    }
 
     const tableMappings = createTableMappings(schema, apiId, this.gen1App.envName);
 

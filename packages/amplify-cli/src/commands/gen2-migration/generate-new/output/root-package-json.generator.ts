@@ -53,8 +53,12 @@ export class RootPackageJsonGenerator implements Generator {
             if (existing) {
               packageJson = existing;
             }
-          } catch {
-            // File doesn't exist or is inaccessible. Use default.
+          } catch (e: unknown) {
+            // JSONUtilities throws "File at path: ... does not exist" when the file is missing.
+            // Any other error (malformed JSON, permissions) should propagate.
+            if (!(e instanceof Error && e.message.includes('does not exist'))) {
+              throw e;
+            }
           }
 
           const merged: PackageJson = {

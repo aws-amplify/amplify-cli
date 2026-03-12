@@ -34,25 +34,23 @@ describe('AnalyticsKinesisGenerator', () => {
     await fs.rm(outputDir, { recursive: true, force: true });
   });
 
-  it('returns empty operations when analytics category is missing', async () => {
+  it('throws when analytics category is missing', async () => {
     const gen1App = createMockGen1App();
     (gen1App.meta as jest.Mock).mockReturnValue(undefined);
 
     const generator = new AnalyticsKinesisGenerator(gen1App, backendGenerator, outputDir, 'myKinesis');
-    const ops = await generator.plan();
 
-    expect(ops).toHaveLength(0);
+    await expect(generator.plan()).rejects.toThrow('not found in amplify-meta.json');
   });
 
-  it('returns empty operations when resource is not in analytics category', async () => {
+  it('throws when resource is not in analytics category', async () => {
     const gen1App = createMockGen1App();
     (gen1App.meta as jest.Mock).mockReturnValue({
       otherResource: { service: 'Kinesis' },
     });
 
     const generator = new AnalyticsKinesisGenerator(gen1App, backendGenerator, outputDir, 'myKinesis');
-    const ops = await generator.plan();
 
-    expect(ops).toHaveLength(0);
+    await expect(generator.plan()).rejects.toThrow('not found in amplify-meta.json');
   });
 });

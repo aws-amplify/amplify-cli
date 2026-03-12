@@ -3,6 +3,7 @@ import { AmplifyMigrationOperation } from '../../../_operation';
 import { BackendGenerator } from '../backend.generator';
 import { Gen1App } from '../../input/gen1-app';
 import { DynamoDBRenderer, DynamoDBGSI, DynamoDBTableDefinition } from './dynamodb.renderer';
+import { TableDescription, KeySchemaElement, AttributeDefinition } from '@aws-sdk/client-dynamodb';
 
 /**
  * Generates a single DynamoDB table construct and contributes it to backend.ts.
@@ -15,27 +16,21 @@ export class DynamoDBGenerator implements Generator {
   private readonly gen1App: Gen1App;
   private readonly backendGenerator: BackendGenerator;
   private readonly resourceName: string;
-  private readonly renderer: DynamoDBRenderer;
+  private readonly hasS3Bucket: boolean;
+  private readonly renderer = new DynamoDBRenderer();
 
-  public constructor(gen1App: Gen1App, backendGenerator: BackendGenerator, resourceName: string) {
+  public constructor(gen1App: Gen1App, backendGenerator: BackendGenerator, resourceName: string, hasS3Bucket: boolean) {
     this.gen1App = gen1App;
     this.backendGenerator = backendGenerator;
     this.resourceName = resourceName;
-    this.renderer = new DynamoDBRenderer();
+    this.hasS3Bucket = hasS3Bucket;
   }
 
   /**
    * Plans the DynamoDB table generation operation.
    */
   public async plan(): Promise<AmplifyMigrationOperation[]> {
-    const storageCategory = this.gen1App.meta('storage');
-    if (!storageCategory) return [];
-
-    const resourceMeta = storageCategory[this.resourceName] as Record<string, unknown> | undefined;
-    if (!resourceMeta) return [];
-
-    const table = await this.fetchTable(resourceMeta);
-    const hasS3Bucket = Object.values(storageCategory).some((v) => (v as Record<string, unknown>).service === 'S3');
+    const table = await this.fetchTable();
 
     return [
       {
@@ -43,19 +38,20 @@ export class DynamoDBGenerator implements Generator {
         execute: async () => {
           const imports = this.renderer.requiredImports();
           this.backendGenerator.addImport(imports.source, imports.identifiers);
-          this.backendGenerator.ensureStorageStack(hasS3Bucket);
+          this.backendGenerator.ensureStorageStack(this.hasS3Bucket);
 
-          const statements = this.renderer.renderTable(table);
-          for (const stmt of statements) {
-            this.backendGenerator.addEarlyStatement(stmt);
+          for (const statement of this.renderer.renderTable(table)) {
+            this.backendGenerator.addEarlyStatement(statement);
           }
         },
       },
     ];
   }
 
-  private async fetchTable(storageMeta: Record<string, unknown>): Promise<DynamoDBTableDefinition> {
-    const output = storageMeta.output as Record<string, string> | undefined;
+  private async fetchTable(): Promise<DynamoDBTableDefinition> {
+    const storageMeta = this.gen1App.meta('storage');
+    const resourceMeta = storageMeta?.[this.resourceName] as Record<string, unknown> | undefined;
+    const output = resourceMeta?.output as Record<string, string> | undefined;
     const actualTableName = output?.Name || this.resourceName;
 
     const table = await this.gen1App.aws.fetchTableDescription(actualTableName);
@@ -63,46 +59,22 @@ export class DynamoDBGenerator implements Generator {
       throw new Error(`DynamoDB table '${actualTableName}' not found`);
     }
 
-    const partitionKey = {
-      name: table.KeySchema!.find((k) => k.KeyType === 'HASH')!.AttributeName!,
-      type: mapAttributeType(
-        table.AttributeDefinitions!.find((a) => a.AttributeName === table.KeySchema!.find((k) => k.KeyType === 'HASH')!.AttributeName)!
-          .AttributeType!,
-      ),
-    };
+    const partitionKey = extractKey(table, 'HASH');
+    const sortKey = table.KeySchema?.some((k) => k.KeyType === 'RANGE') ? extractKey(table, 'RANGE') : undefined;
 
-    let sortKey: DynamoDBTableDefinition['sortKey'];
-    const sortKeySchema = table.KeySchema!.find((k) => k.KeyType === 'RANGE');
-    if (sortKeySchema) {
-      sortKey = {
-        name: sortKeySchema.AttributeName!,
-        type: mapAttributeType(table.AttributeDefinitions!.find((a) => a.AttributeName === sortKeySchema.AttributeName)!.AttributeType!),
-      };
-    }
+    const gsis: DynamoDBGSI[] = (table.GlobalSecondaryIndexes ?? []).map((gsi) => {
+      const keySchema = gsi.KeySchema ?? [];
+      const gsiPartitionKey = extractKeyFromSchema(keySchema, table.AttributeDefinitions ?? [], 'HASH', gsi.IndexName ?? 'unknown');
+      const gsiSortKeySchema = keySchema.find((k) => k.KeyType === 'RANGE');
+      const gsiSortKey = gsiSortKeySchema
+        ? extractKeyFromSchema(keySchema, table.AttributeDefinitions ?? [], 'RANGE', gsi.IndexName ?? 'unknown')
+        : undefined;
 
-    const gsis: DynamoDBGSI[] = [];
-    if (table.GlobalSecondaryIndexes) {
-      for (const gsi of table.GlobalSecondaryIndexes) {
-        const gsiPartitionKey = {
-          name: gsi.KeySchema!.find((k) => k.KeyType === 'HASH')!.AttributeName!,
-          type: mapAttributeType(
-            table.AttributeDefinitions!.find((a) => a.AttributeName === gsi.KeySchema!.find((k) => k.KeyType === 'HASH')!.AttributeName)!
-              .AttributeType!,
-          ),
-        };
-        const gsiSortKeySchema = gsi.KeySchema!.find((k) => k.KeyType === 'RANGE');
-        const gsiSortKey = gsiSortKeySchema
-          ? {
-              name: gsiSortKeySchema.AttributeName!,
-              type: mapAttributeType(
-                table.AttributeDefinitions!.find((a) => a.AttributeName === gsiSortKeySchema.AttributeName)!.AttributeType!,
-              ),
-            }
-          : undefined;
-
-        gsis.push({ indexName: gsi.IndexName!, partitionKey: gsiPartitionKey, sortKey: gsiSortKey });
+      if (!gsi.IndexName) {
+        throw new Error(`GSI on table '${actualTableName}' has no IndexName`);
       }
-    }
+      return { indexName: gsi.IndexName, partitionKey: gsiPartitionKey, sortKey: gsiSortKey };
+    });
 
     return {
       tableName: actualTableName,
@@ -116,6 +88,36 @@ export class DynamoDBGenerator implements Generator {
       streamViewType: table.StreamSpecification?.StreamViewType as DynamoDBTableDefinition['streamViewType'],
     };
   }
+}
+
+/**
+ * Extracts a key attribute (HASH or RANGE) from a table's KeySchema and AttributeDefinitions.
+ */
+function extractKey(
+  table: TableDescription,
+  keyType: 'HASH' | 'RANGE',
+): { readonly name: string; readonly type: 'STRING' | 'NUMBER' | 'BINARY' } {
+  return extractKeyFromSchema(table.KeySchema ?? [], table.AttributeDefinitions ?? [], keyType, table.TableName ?? 'unknown');
+}
+
+/**
+ * Extracts a key attribute from a KeySchema and AttributeDefinitions array.
+ */
+function extractKeyFromSchema(
+  keySchema: KeySchemaElement[],
+  attributeDefinitions: AttributeDefinition[],
+  keyType: 'HASH' | 'RANGE',
+  context: string,
+): { readonly name: string; readonly type: 'STRING' | 'NUMBER' | 'BINARY' } {
+  const keyElement = keySchema.find((k) => k.KeyType === keyType);
+  if (!keyElement?.AttributeName) {
+    throw new Error(`${keyType} key not found in KeySchema for '${context}'`);
+  }
+  const attrDef = attributeDefinitions.find((a) => a.AttributeName === keyElement.AttributeName);
+  if (!attrDef?.AttributeType) {
+    throw new Error(`Attribute definition for '${keyElement.AttributeName}' not found in '${context}'`);
+  }
+  return { name: keyElement.AttributeName, type: mapAttributeType(attrDef.AttributeType) };
 }
 
 function mapAttributeType(dynamoType: string): 'STRING' | 'NUMBER' | 'BINARY' {

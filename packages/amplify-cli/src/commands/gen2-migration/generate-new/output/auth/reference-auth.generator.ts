@@ -29,10 +29,16 @@ export class ReferenceAuthGenerator implements Generator {
 
   public async plan(): Promise<AmplifyMigrationOperation[]> {
     const authCategory = this.gen1App.meta('auth');
-    if (!authCategory) return [];
+    if (!authCategory) {
+      throw new Error('Auth category not found in amplify-meta.json — ReferenceAuthGenerator should only be created when auth exists');
+    }
 
     const referenceAuth = await this.buildReferenceAuth(authCategory);
-    if (!referenceAuth) return [];
+    if (!referenceAuth) {
+      throw new Error(
+        'Auth category exists but no imported auth resource found — ReferenceAuthGenerator should only be created for imported auth',
+      );
+    }
 
     const authDir = path.join(this.outputDir, 'amplify', 'auth');
 

@@ -21,8 +21,11 @@ export class GitIgnoreGenerator implements Generator {
           let content = '';
           try {
             content = await fs.readFile(gitignorePath, 'utf-8');
-          } catch {
-            // File doesn't exist yet
+          } catch (e: unknown) {
+            // ENOENT means no .gitignore exists yet — start with empty content.
+            if (!((e as NodeJS.ErrnoException).code === 'ENOENT')) {
+              throw e;
+            }
           }
 
           // Remove Gen1 amplify-do-not-edit block

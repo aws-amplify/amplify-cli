@@ -108,8 +108,8 @@ describe('S3Renderer', () => {
     const opts: RenderDefineStorageOptions = {
       storageIdentifier: 'myBucket-main',
       triggers: {
-        onUpload: { source: 'amplify/backend/function/onUploadFn/src' },
-        onDelete: { source: 'amplify/backend/function/onDeleteFn/src' },
+        onUpload: 'onUploadFn',
+        onDelete: 'onDeleteFn',
       },
       triggerFunctionCategories: new Map([
         ['onUploadFn', 'function'],
@@ -130,7 +130,7 @@ describe('S3Renderer', () => {
     const opts: RenderDefineStorageOptions = {
       storageIdentifier: 'myBucket-main',
       triggers: {
-        onUpload: { source: 'amplify/backend/storage/triggerFn/src' },
+        onUpload: 'triggerFn',
       },
       triggerFunctionCategories: new Map([['triggerFn', 'storage']]),
     };

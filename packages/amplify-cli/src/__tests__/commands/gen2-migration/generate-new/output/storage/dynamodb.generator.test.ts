@@ -19,26 +19,24 @@ describe('DynamoDBGenerator', () => {
     backendGenerator = new BackendGenerator('/tmp/test-output');
   });
 
-  it('returns empty operations when storage category is missing', async () => {
+  it('throws when storage category is missing', async () => {
     const gen1App = createMockGen1App();
     (gen1App.meta as jest.Mock).mockReturnValue(undefined);
 
-    const generator = new DynamoDBGenerator(gen1App, backendGenerator, 'myTable');
-    const ops = await generator.plan();
+    const generator = new DynamoDBGenerator(gen1App, backendGenerator, 'myTable', false);
 
-    expect(ops).toHaveLength(0);
+    await expect(generator.plan()).rejects.toThrow();
   });
 
-  it('returns empty operations when resource is not in storage category', async () => {
+  it('throws when resource is not in storage category', async () => {
     const gen1App = createMockGen1App();
     (gen1App.meta as jest.Mock).mockReturnValue({
       otherTable: { service: 'DynamoDB' },
     });
 
-    const generator = new DynamoDBGenerator(gen1App, backendGenerator, 'myTable');
-    const ops = await generator.plan();
+    const generator = new DynamoDBGenerator(gen1App, backendGenerator, 'myTable', false);
 
-    expect(ops).toHaveLength(0);
+    await expect(generator.plan()).rejects.toThrow();
   });
 
   it('returns one operation when resource exists', async () => {
@@ -56,7 +54,7 @@ describe('DynamoDBGenerator', () => {
       ProvisionedThroughput: {},
     });
 
-    const generator = new DynamoDBGenerator(gen1App, backendGenerator, 'myTable');
+    const generator = new DynamoDBGenerator(gen1App, backendGenerator, 'myTable', false);
     const ops = await generator.plan();
 
     expect(ops).toHaveLength(1);
@@ -83,7 +81,7 @@ describe('DynamoDBGenerator', () => {
     const ensureStorageStackSpy = jest.spyOn(backendGenerator, 'ensureStorageStack');
     const addEarlyStatementSpy = jest.spyOn(backendGenerator, 'addEarlyStatement');
 
-    const generator = new DynamoDBGenerator(gen1App, backendGenerator, 'myTable');
+    const generator = new DynamoDBGenerator(gen1App, backendGenerator, 'myTable', false);
     const ops = await generator.plan();
     await ops[0].execute();
 
@@ -92,15 +90,12 @@ describe('DynamoDBGenerator', () => {
     expect(addEarlyStatementSpy).toHaveBeenCalled();
   });
 
-  it('detects S3 bucket presence for ensureStorageStack', async () => {
+  it('passes hasS3Bucket=true to ensureStorageStack', async () => {
     const gen1App = createMockGen1App();
     (gen1App.meta as jest.Mock).mockReturnValue({
       myTable: {
         service: 'DynamoDB',
         output: { Name: 'myTable-abc123' },
-      },
-      myBucket: {
-        service: 'S3',
       },
     });
     (gen1App.aws.fetchTableDescription as jest.Mock).mockResolvedValue({
@@ -112,7 +107,7 @@ describe('DynamoDBGenerator', () => {
 
     const ensureStorageStackSpy = jest.spyOn(backendGenerator, 'ensureStorageStack');
 
-    const generator = new DynamoDBGenerator(gen1App, backendGenerator, 'myTable');
+    const generator = new DynamoDBGenerator(gen1App, backendGenerator, 'myTable', true);
     const ops = await generator.plan();
     await ops[0].execute();
 
@@ -129,7 +124,7 @@ describe('DynamoDBGenerator', () => {
     });
     (gen1App.aws.fetchTableDescription as jest.Mock).mockResolvedValue(undefined);
 
-    const generator = new DynamoDBGenerator(gen1App, backendGenerator, 'myTable');
+    const generator = new DynamoDBGenerator(gen1App, backendGenerator, 'myTable', false);
 
     await expect(generator.plan()).rejects.toThrow("DynamoDB table 'myTable-abc123' not found");
   });
@@ -160,7 +155,7 @@ describe('DynamoDBGenerator', () => {
 
     const addEarlyStatementSpy = jest.spyOn(backendGenerator, 'addEarlyStatement');
 
-    const generator = new DynamoDBGenerator(gen1App, backendGenerator, 'myTable');
+    const generator = new DynamoDBGenerator(gen1App, backendGenerator, 'myTable', false);
     const ops = await generator.plan();
     await ops[0].execute();
 
@@ -183,7 +178,7 @@ describe('DynamoDBGenerator', () => {
       ProvisionedThroughput: {},
     });
 
-    const generator = new DynamoDBGenerator(gen1App, backendGenerator, 'myTable');
+    const generator = new DynamoDBGenerator(gen1App, backendGenerator, 'myTable', false);
     const ops = await generator.plan();
 
     expect(ops).toHaveLength(1);

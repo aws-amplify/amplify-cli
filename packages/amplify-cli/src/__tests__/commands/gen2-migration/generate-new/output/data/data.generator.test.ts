@@ -29,6 +29,7 @@ describe('DataGenerator', () => {
       ccbDir: projectRoot,
       meta: jest.fn(),
       metaOutput: jest.fn(),
+      singleResourceName: jest.fn().mockReturnValue('myApi'),
       file: jest.fn(),
       aws: {
         fetchGraphqlApi: jest.fn(),
@@ -37,26 +38,26 @@ describe('DataGenerator', () => {
     } as unknown as Gen1App;
   }
 
-  it('returns empty operations when api category is missing', async () => {
+  it('throws when api category is missing', async () => {
     const gen1App = createMockGen1App();
-    (gen1App.meta as jest.Mock).mockReturnValue(undefined);
-
-    const generator = new DataGenerator(gen1App, backendGenerator, outputDir);
-    const ops = await generator.plan();
-
-    expect(ops).toHaveLength(0);
-  });
-
-  it('returns empty operations when no AppSync API exists', async () => {
-    const gen1App = createMockGen1App();
-    (gen1App.meta as jest.Mock).mockReturnValue({
-      myRestApi: { service: 'API Gateway' },
+    (gen1App.singleResourceName as jest.Mock).mockImplementation(() => {
+      throw new Error("Category 'api' not found");
     });
 
     const generator = new DataGenerator(gen1App, backendGenerator, outputDir);
-    const ops = await generator.plan();
 
-    expect(ops).toHaveLength(0);
+    await expect(generator.plan()).rejects.toThrow("Category 'api' not found");
+  });
+
+  it('throws when no AppSync API exists', async () => {
+    const gen1App = createMockGen1App();
+    (gen1App.singleResourceName as jest.Mock).mockImplementation(() => {
+      throw new Error("Expected exactly one 'AppSync' resource");
+    });
+
+    const generator = new DataGenerator(gen1App, backendGenerator, outputDir);
+
+    await expect(generator.plan()).rejects.toThrow("Expected exactly one 'AppSync' resource");
   });
 
   it('throws when AppSync API has no GraphQLAPIIdOutput', async () => {

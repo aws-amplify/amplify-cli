@@ -15,13 +15,6 @@ export type Permission = 'read' | 'write' | 'create' | 'delete';
 export type StorageTriggerEvent = 'onDelete' | 'onUpload';
 
 /**
- * Lambda trigger reference.
- */
-export interface Lambda {
-  readonly source: string;
-}
-
-/**
  * Access patterns for S3 storage.
  */
 export interface AccessPatterns {
@@ -41,7 +34,7 @@ export interface AccessPatterns {
 export interface RenderDefineStorageOptions {
   readonly storageIdentifier: string;
   readonly accessPatterns?: AccessPatterns;
-  readonly triggers?: Partial<Record<StorageTriggerEvent, Lambda>>;
+  readonly triggers?: Partial<Record<StorageTriggerEvent, string>>;
   readonly triggerFunctionCategories: ReadonlyMap<string, string>;
 }
 
@@ -59,7 +52,7 @@ export class S3Renderer {
   /**
    * Produces the complete TypeScript AST for storage/resource.ts.
    */
-  public async render(opts: RenderDefineStorageOptions): Promise<ts.NodeArray<ts.Node>> {
+  public render(opts: RenderDefineStorageOptions): ts.NodeArray<ts.Node> {
     const propertyAssignments: ts.PropertyAssignment[] = [];
     const namedImports: Record<string, Set<string>> = { '@aws-amplify/backend': new Set(['defineStorage']) };
     const postImportStatements: ts.Node[] = [];
@@ -68,8 +61,8 @@ export class S3Renderer {
     postImportStatements.push(branchNameStatement);
 
     this.renderName(propertyAssignments, opts.storageIdentifier);
-    await this.renderAccessPatterns(propertyAssignments, namedImports, postImportStatements, opts);
-    await this.renderTriggers(propertyAssignments, namedImports, opts);
+    this.renderAccessPatterns(propertyAssignments, namedImports, postImportStatements, opts);
+    this.renderTriggers(propertyAssignments, namedImports, opts);
 
     return renderResourceTsFile({
       backendFunctionConstruct: 'defineStorage',
@@ -89,12 +82,12 @@ export class S3Renderer {
     target.push(factory.createPropertyAssignment(factory.createIdentifier('name'), nameExpression));
   }
 
-  private async renderAccessPatterns(
+  private renderAccessPatterns(
     target: ts.PropertyAssignment[],
     namedImports: Record<string, Set<string>>,
     postImportStatements: ts.Node[],
     opts: RenderDefineStorageOptions,
-  ): Promise<void> {
+  ): void {
     if (!opts.accessPatterns) return;
 
     target.push(this.buildAccessProperty(opts.accessPatterns));
@@ -125,22 +118,20 @@ export class S3Renderer {
     }
   }
 
-  private async renderTriggers(
+  private renderTriggers(
     target: ts.PropertyAssignment[],
     namedImports: Record<string, Set<string>>,
     opts: RenderDefineStorageOptions,
-  ): Promise<void> {
+  ): void {
     const triggers = opts.triggers;
     if (!triggers || Object.keys(triggers).length === 0) return;
 
-    const triggerProps = Object.entries(triggers).map(([key, value]) => {
-      const functionName = value.source.split('/')[3];
+    const triggerProps = Object.entries(triggers).map(([key, functionName]) => {
       return factory.createPropertyAssignment(factory.createIdentifier(key), factory.createIdentifier(functionName));
     });
     target.push(factory.createPropertyAssignment('triggers', factory.createObjectLiteralExpression(triggerProps, true)));
 
-    for (const value of Object.values(triggers)) {
-      const functionName = value.source.split('/')[3];
+    for (const functionName of Object.values(triggers)) {
       const category = opts.triggerFunctionCategories.get(functionName) || 'function';
       const functionImportPath = category === 'storage' ? `./${functionName}/resource` : `../${category}/${functionName}/resource`;
       if (!namedImports[functionImportPath]) {

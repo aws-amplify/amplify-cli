@@ -73,8 +73,12 @@ export class CustomResourceGenerator implements Generator {
           try {
             await fs.mkdir(destTypesPath, { recursive: true });
             await fs.cp(sourceTypesPath, destTypesPath, { recursive: true });
-          } catch {
-            // Types directory may not exist
+          } catch (e: unknown) {
+            // ENOENT means the types directory doesn't exist — that's fine.
+            const isNotFound = e instanceof Error && (e as NodeJS.ErrnoException).code === 'ENOENT';
+            if (!isNotFound) {
+              throw e;
+            }
           }
 
           const projectName = await readProjectName(rootDir);

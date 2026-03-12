@@ -48,6 +48,20 @@ interface ResolvedFunction {
 }
 
 /**
+ * Constructor options for FunctionGenerator.
+ */
+interface FunctionGeneratorOptions {
+  readonly gen1App: Gen1App;
+  readonly backendGenerator: BackendGenerator;
+  readonly authGenerator: AuthGenerator | undefined;
+  readonly s3Generator: S3Generator | undefined;
+  readonly packageJsonGenerator: RootPackageJsonGenerator;
+  readonly outputDir: string;
+  readonly resourceName: string;
+  readonly category: string;
+}
+
+/**
  * Generates Lambda function resources and contributes to backend.ts
  * for a single Gen1 function.
  *
@@ -69,25 +83,16 @@ export class FunctionGenerator implements Generator {
   private readonly category: string;
   private readonly renderer: FunctionRenderer;
 
-  public constructor(
-    gen1App: Gen1App,
-    backendGenerator: BackendGenerator,
-    authGenerator: AuthGenerator | undefined,
-    s3Generator: S3Generator | undefined,
-    packageJsonGenerator: RootPackageJsonGenerator,
-    outputDir: string,
-    resourceName: string,
-    category: string,
-  ) {
-    this.gen1App = gen1App;
-    this.backendGenerator = backendGenerator;
-    this.authGenerator = authGenerator;
-    this.s3Generator = s3Generator;
-    this.packageJsonGenerator = packageJsonGenerator;
-    this.outputDir = outputDir;
-    this.resourceName = resourceName;
-    this.category = category;
-    this.renderer = new FunctionRenderer(gen1App.appId, gen1App.envName);
+  public constructor(options: FunctionGeneratorOptions) {
+    this.gen1App = options.gen1App;
+    this.backendGenerator = options.backendGenerator;
+    this.authGenerator = options.authGenerator;
+    this.s3Generator = options.s3Generator;
+    this.packageJsonGenerator = options.packageJsonGenerator;
+    this.outputDir = options.outputDir;
+    this.resourceName = options.resourceName;
+    this.category = options.category;
+    this.renderer = new FunctionRenderer(options.gen1App.appId, options.gen1App.envName);
   }
 
   /**
@@ -102,6 +107,7 @@ export class FunctionGenerator implements Generator {
     this.contributeAuthAccess(func);
     this.contributeAuthTrigger();
     await this.contributeStorageAccess(this.category);
+    this.contributeStorageTrigger();
 
     return [
       {
@@ -278,6 +284,40 @@ export class FunctionGenerator implements Generator {
 
     if (permissions.size > 0) {
       this.s3Generator.addFunctionStorageAccess(this.resourceName, category, Array.from(permissions));
+    }
+  }
+
+  /**
+   * Detects S3 trigger events from the storage CFN template and
+   * contributes them to the S3Generator. Only runs when this
+   * function's category is 'storage' (i.e., it's a storage trigger).
+   */
+  private contributeStorageTrigger(): void {
+    if (!this.s3Generator || this.category !== 'storage') return;
+
+    const storageCategory = this.gen1App.meta('storage');
+    if (!storageCategory) return;
+
+    const s3Entry = Object.entries(storageCategory).find(([, value]) => (value as Record<string, unknown>).service === 'S3');
+    if (!s3Entry) return;
+
+    const [storageName] = s3Entry;
+    const templatePath = `storage/${storageName}/build/cloudformation-template.json`;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped CloudFormation template
+    const template = this.gen1App.json(templatePath);
+
+    const lambdaConfigs = template?.Resources?.S3Bucket?.Properties?.NotificationConfiguration?.LambdaConfigurations ?? [];
+
+    for (const config of lambdaConfigs) {
+      const functionRef = config?.Function?.Ref as string | undefined;
+      if (!functionRef || !functionRef.includes(this.resourceName)) continue;
+
+      const event = config.Event as string | undefined;
+      if (event?.includes('ObjectCreated')) {
+        this.s3Generator.addTrigger('onUpload', this.resourceName);
+      } else if (event?.includes('ObjectRemoved')) {
+        this.s3Generator.addTrigger('onDelete', this.resourceName);
+      }
     }
   }
 

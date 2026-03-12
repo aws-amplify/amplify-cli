@@ -7,7 +7,7 @@ import { AmplifyMigrationOperation } from '../../../_operation';
 import { BackendGenerator } from '../backend.generator';
 import { Gen1App } from '../../input/gen1-app';
 import { printNodes } from '../../ts-writer';
-import { S3Renderer, AccessPatterns, Lambda, StorageTriggerEvent, Permission } from './s3.renderer';
+import { S3Renderer, AccessPatterns, StorageTriggerEvent, Permission } from './s3.renderer';
 
 const factory = ts.factory;
 
@@ -38,10 +38,12 @@ const PERMISSION_MAP: Readonly<Record<CLIV1Permission, readonly Permission[]>> =
 /**
  * Generates S3 storage resource and contributes to backend.ts.
  *
- * Reads bucket config (notifications, acceleration, versioning,
- * encryption) via Gen1App.aws, reads cli-inputs.json for access
- * patterns, and generates amplify/storage/resource.ts with
- * defineStorage(). Also contributes S3 bucket overrides to backend.ts.
+ * Reads bucket config (acceleration, versioning, encryption) via
+ * Gen1App.aws, reads cli-inputs.json for access patterns, and
+ * generates amplify/storage/resource.ts with defineStorage().
+ * Also contributes S3 bucket overrides to backend.ts.
+ *
+ * S3 triggers are contributed by FunctionGenerator via addTrigger().
  */
 export class S3Generator implements Generator {
   private readonly gen1App: Gen1App;
@@ -53,6 +55,7 @@ export class S3Generator implements Generator {
     readonly category: string;
     readonly permissions: readonly Permission[];
   }> = [];
+  private readonly triggers: Partial<Record<StorageTriggerEvent, string>> = {};
 
   public constructor(gen1App: Gen1App, backendGenerator: BackendGenerator, outputDir: string) {
     this.gen1App = gen1App;
@@ -70,17 +73,19 @@ export class S3Generator implements Generator {
   }
 
   /**
+   * Registers an S3 trigger contributed by a function generator.
+   * Called by FunctionGenerator when its category is 'storage'.
+   */
+  public addTrigger(event: StorageTriggerEvent, functionName: string): void {
+    this.triggers[event] = functionName;
+  }
+
+  /**
    * Plans the S3 storage generation operations.
    */
   public async plan(): Promise<AmplifyMigrationOperation[]> {
-    const storageCategory = this.gen1App.meta('storage');
-    if (!storageCategory) return [];
-
-    const s3Entry = Object.entries(storageCategory).find(([, value]) => (value as Record<string, unknown>).service === 'S3');
-    if (!s3Entry) return [];
-
-    const [storageName, storageValue] = s3Entry;
-    const storageMeta = storageValue as Record<string, unknown>;
+    const storageName = this.gen1App.singleResourceName('storage', 'S3');
+    const storageMeta = (this.gen1App.meta('storage') ?? {})[storageName] as Record<string, unknown>;
 
     return [await this.planS3(storageName, storageMeta)];
   }
@@ -94,14 +99,12 @@ export class S3Generator implements Generator {
 
     const cliInputs = this.gen1App.cliInputs('storage', storageName) as StorageCLIInputsJSON;
 
-    const [notifications, accelerateStatus, versioningStatus, encryption] = await Promise.all([
-      this.gen1App.aws.fetchBucketNotifications(bucketName),
+    const [accelerateStatus, versioningStatus, encryption] = await Promise.all([
       this.gen1App.aws.fetchBucketAccelerate(bucketName),
       this.gen1App.aws.fetchBucketVersioning(bucketName),
       this.gen1App.aws.fetchBucketEncryption(bucketName),
     ]);
 
-    const triggers = this.extractTriggers(notifications);
     const storageDir = path.join(this.outputDir, 'amplify', 'storage');
     const storageIdentifier = bucketName;
 
@@ -109,14 +112,11 @@ export class S3Generator implements Generator {
       describe: async () => ['Generate amplify/storage/resource.ts'],
       execute: async () => {
         const accessPatterns = this.buildAccessPatterns(cliInputs);
-        // Trigger functions are storage triggers by definition — they're
-        // invoked by S3 bucket notifications and live under amplify/storage/.
-        const triggerFunctionNames = Object.values(triggers).map((t) => t.source.split('/')[3]);
-        const triggerFunctionCategories = new Map(triggerFunctionNames.map((name) => [name, 'storage']));
-        const nodes = await this.defineStorage.render({
+        const triggerFunctionCategories = new Map(Object.values(this.triggers).map((name) => [name, 'storage']));
+        const nodes = this.defineStorage.render({
           storageIdentifier,
           accessPatterns,
-          triggers,
+          triggers: this.triggers,
           triggerFunctionCategories,
         });
 
@@ -256,26 +256,6 @@ export class S3Generator implements Generator {
         ),
       );
     }
-  }
-
-  private extractTriggers(
-    notifications: Awaited<ReturnType<typeof this.gen1App.aws.fetchBucketNotifications>>,
-  ): Partial<Record<StorageTriggerEvent, Lambda>> {
-    const triggers: Partial<Record<StorageTriggerEvent, Lambda>> = {};
-    const lambdaConfigs = notifications.LambdaFunctionConfigurations || [];
-
-    for (const config of lambdaConfigs) {
-      const functionName = config.LambdaFunctionArn ? config.LambdaFunctionArn.split(':').pop()?.split('-')[0] : '';
-      const event = config.Events ? config.Events[0] : '';
-
-      if (event.includes('ObjectCreated') && functionName) {
-        triggers.onUpload = { source: path.join('amplify', 'backend', 'function', functionName, 'src') };
-      } else if (event.includes('ObjectRemoved') && functionName) {
-        triggers.onDelete = { source: path.join('amplify', 'backend', 'function', functionName, 'src') };
-      }
-    }
-
-    return triggers;
   }
 
   private buildAccessPatterns(cliInputs: StorageCLIInputsJSON): AccessPatterns {

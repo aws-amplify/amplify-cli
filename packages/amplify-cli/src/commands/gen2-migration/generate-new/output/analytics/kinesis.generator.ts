@@ -38,10 +38,10 @@ export class AnalyticsKinesisGenerator implements Generator {
    */
   public async plan(): Promise<AmplifyMigrationOperation[]> {
     const analyticsCategory = this.gen1App.meta('analytics');
-    if (!analyticsCategory) return [];
-
-    const resourceMeta = analyticsCategory[this.resourceName] as Record<string, unknown> | undefined;
-    if (!resourceMeta) return [];
+    const resourceMeta = analyticsCategory?.[this.resourceName] as Record<string, unknown> | undefined;
+    if (!resourceMeta) {
+      throw new Error(`Analytics resource '${this.resourceName}' not found in amplify-meta.json`);
+    }
 
     const rootStackName = this.gen1App.rootStackName;
     const analyticsDir = path.join(this.outputDir, 'amplify', 'analytics');

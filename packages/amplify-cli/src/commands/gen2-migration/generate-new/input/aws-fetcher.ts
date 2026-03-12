@@ -116,13 +116,19 @@ export class AwsFetcher {
     let ruleName: string | undefined;
     try {
       const policyResponse = await this.clients.lambda.send(new GetPolicyCommand({ FunctionName: deployedName }));
-      const policy = JSON.parse(policyResponse.Policy ?? '{}');
+      if (!policyResponse?.Policy) return undefined;
+      const policy = JSON.parse(policyResponse.Policy);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       ruleName = policy.Statement?.find((s: any) => s.Condition?.ArnLike?.['AWS:SourceArn']?.includes('rule/'))
         ?.Condition.ArnLike['AWS:SourceArn'].split('/')
         .pop();
-    } catch {
-      return undefined;
+    } catch (e: unknown) {
+      // ResourceNotFoundException means the function has no resource policy (no schedule).
+      // Any other error (permissions, network) should propagate.
+      if (e instanceof Error && e.name === 'ResourceNotFoundException') {
+        return undefined;
+      }
+      throw e;
     }
     if (!ruleName) return undefined;
     const ruleResponse = await this.clients.cloudWatchEvents.send(new DescribeRuleCommand({ Name: ruleName }));
