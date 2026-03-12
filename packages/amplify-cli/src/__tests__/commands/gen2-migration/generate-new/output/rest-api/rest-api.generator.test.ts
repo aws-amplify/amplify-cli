@@ -6,7 +6,7 @@ function createMockGen1App(): Gen1App {
   return {
     meta: jest.fn(),
     ccbDir: '/tmp/ccb',
-    cliInputsForResource: jest.fn(),
+    cliInputs: jest.fn(),
     aws: {
       fetchRestApiRootResourceId: jest.fn().mockResolvedValue('root-resource-id'),
     },
@@ -40,7 +40,7 @@ describe('RestApiGenerator', () => {
   it('returns one operation with correct description', async () => {
     const gen1App = createMockGen1App();
     (gen1App.meta as jest.Mock).mockImplementation((cat: string) => (cat === 'api' ? API_META : undefined));
-    (gen1App.cliInputsForResource as jest.Mock).mockReturnValue(CLI_INPUTS);
+    (gen1App.cliInputs as jest.Mock).mockReturnValue(CLI_INPUTS);
 
     const generator = new RestApiGenerator(gen1App, backendGenerator, 'myApi');
     const ops = await generator.plan();
@@ -53,7 +53,7 @@ describe('RestApiGenerator', () => {
   it('contributes imports and statements to backend generator on execute', async () => {
     const gen1App = createMockGen1App();
     (gen1App.meta as jest.Mock).mockImplementation((cat: string) => (cat === 'api' ? API_META : undefined));
-    (gen1App.cliInputsForResource as jest.Mock).mockReturnValue(CLI_INPUTS);
+    (gen1App.cliInputs as jest.Mock).mockReturnValue(CLI_INPUTS);
 
     const addImportSpy = jest.spyOn(backendGenerator, 'addImport');
     const addStatementSpy = jest.spyOn(backendGenerator, 'addStatement');

@@ -28,17 +28,13 @@ describe('DataGenerator', () => {
       envName: 'main',
       ccbDir: projectRoot,
       meta: jest.fn(),
+      metaOutput: jest.fn(),
+      file: jest.fn(),
       aws: {
         fetchGraphqlApi: jest.fn(),
       },
       ...overrides,
     } as unknown as Gen1App;
-  }
-
-  async function writeSchema(apiName: string, schema: string): Promise<void> {
-    const schemaDir = path.join(projectRoot, 'api', apiName);
-    await fs.mkdir(schemaDir, { recursive: true });
-    await fs.writeFile(path.join(schemaDir, 'schema.graphql'), schema, 'utf-8');
   }
 
   it('returns empty operations when api category is missing', async () => {
@@ -68,7 +64,10 @@ describe('DataGenerator', () => {
     (gen1App.meta as jest.Mock).mockReturnValue({
       myApi: { service: 'AppSync', output: {} },
     });
-    await writeSchema('myApi', 'type Todo @model { id: ID! }');
+    (gen1App.file as jest.Mock).mockReturnValue('type Todo @model { id: ID! }');
+    (gen1App.metaOutput as jest.Mock).mockImplementation(() => {
+      throw new Error('no GraphQLAPIIdOutput');
+    });
 
     const generator = new DataGenerator(gen1App, backendGenerator, outputDir);
 
@@ -88,7 +87,8 @@ describe('DataGenerator', () => {
       }
       return undefined;
     });
-    await writeSchema('myApi', 'type Todo @model { id: ID! }');
+    (gen1App.file as jest.Mock).mockReturnValue('type Todo @model { id: ID! }');
+    (gen1App.metaOutput as jest.Mock).mockReturnValue('api-123');
     (gen1App.aws.fetchGraphqlApi as jest.Mock).mockResolvedValue(undefined);
 
     const generator = new DataGenerator(gen1App, backendGenerator, outputDir);
@@ -115,7 +115,11 @@ describe('DataGenerator', () => {
       if (category === 'auth') return undefined;
       return undefined;
     });
-    await writeSchema('myApi', 'type Todo @model { id: ID! }');
+    (gen1App.file as jest.Mock).mockReturnValue('type Todo @model { id: ID! }');
+    (gen1App.metaOutput as jest.Mock).mockImplementation((_cat: string, _res: string, key: string) => {
+      if (key === 'GraphQLAPIIdOutput') return 'api-123';
+      return { defaultAuthentication: { authenticationType: 'API_KEY' } };
+    });
     (gen1App.aws.fetchGraphqlApi as jest.Mock).mockResolvedValue({
       apiId: 'api-123',
       name: 'myApi',

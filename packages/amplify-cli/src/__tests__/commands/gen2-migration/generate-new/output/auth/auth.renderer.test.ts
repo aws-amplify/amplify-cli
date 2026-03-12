@@ -1,42 +1,46 @@
-import { AuthRenderer, AuthDefinition } from '../../../../../../commands/gen2-migration/generate-new/output/auth/auth.renderer';
+import {
+  AuthRenderer,
+  AuthRenderOptions,
+  FunctionAccess,
+  AuthTrigger,
+} from '../../../../../../commands/gen2-migration/generate-new/output/auth/auth.renderer';
 import { printNodes } from '../../../../../../commands/gen2-migration/generate-new/ts-writer';
+import { IdentityProviderTypeType } from '@aws-sdk/client-cognito-identity-provider';
 
 describe('AuthRenderer', () => {
   const renderer = new AuthRenderer();
 
   describe('standard auth', () => {
     it('renders a minimal defineAuth with email login', () => {
-      const definition: AuthDefinition = {
-        loginOptions: { email: true },
+      const options: AuthRenderOptions = {
+        userPool: { SchemaAttributes: [] },
       };
-      const output = printNodes(renderer.render(definition));
+      const output = printNodes(renderer.render(options));
 
       expect(output).toContain('defineAuth');
       expect(output).toContain('loginWith');
-      expect(output).toContain('email: true');
+      expect(output).toContain('email');
       expect(output).toContain('export const auth');
     });
 
     it('renders phone login', () => {
-      const definition: AuthDefinition = {
-        loginOptions: { phone: true },
+      const options: AuthRenderOptions = {
+        userPool: { UsernameAttributes: ['phone_number'], SchemaAttributes: [] },
       };
-      const output = printNodes(renderer.render(definition));
+      const output = printNodes(renderer.render(options));
 
       expect(output).toContain('phone: true');
     });
 
     it('renders email with verification options', () => {
-      const definition: AuthDefinition = {
-        loginOptions: {
-          email: true,
-          emailOptions: {
-            emailVerificationSubject: 'Verify your account',
-            emailVerificationBody: 'Your code is {####}',
-          },
+      const options: AuthRenderOptions = {
+        userPool: {
+          EmailVerificationSubject: 'Verify your account',
+          EmailVerificationMessage: 'Your code is {####}',
+          SchemaAttributes: [],
         },
       };
-      const output = printNodes(renderer.render(definition));
+      const output = printNodes(renderer.render(options));
 
       expect(output).toContain('verificationEmailSubject');
       expect(output).toContain('Verify your account');
@@ -44,26 +48,29 @@ describe('AuthRenderer', () => {
       expect(output).toContain('Your code is {####}');
     });
 
-    it('renders email options without email flag', () => {
-      const definition: AuthDefinition = {
-        loginOptions: {
-          emailOptions: {
-            emailVerificationSubject: 'Welcome',
-          },
+    it('renders email options with subject only', () => {
+      const options: AuthRenderOptions = {
+        userPool: {
+          EmailVerificationSubject: 'Welcome',
+          SchemaAttributes: [],
         },
       };
-      const output = printNodes(renderer.render(definition));
+      const output = printNodes(renderer.render(options));
 
       expect(output).toContain('verificationEmailSubject');
       expect(output).toContain('Welcome');
     });
 
     it('renders user groups', () => {
-      const definition: AuthDefinition = {
-        loginOptions: { email: true },
-        groups: ['admin', 'editors', 'viewers'],
+      const options: AuthRenderOptions = {
+        userPool: { SchemaAttributes: [] },
+        identityGroups: [
+          { GroupName: 'admin', Precedence: 1 },
+          { GroupName: 'editors', Precedence: 2 },
+          { GroupName: 'viewers', Precedence: 3 },
+        ],
       };
-      const output = printNodes(renderer.render(definition));
+      const output = printNodes(renderer.render(options));
 
       expect(output).toContain('groups');
       expect(output).toContain("'admin'");
@@ -72,14 +79,15 @@ describe('AuthRenderer', () => {
     });
 
     it('renders standard user attributes', () => {
-      const definition: AuthDefinition = {
-        loginOptions: { email: true },
-        standardUserAttributes: {
-          email: { required: true, mutable: true },
-          givenName: { required: false },
+      const options: AuthRenderOptions = {
+        userPool: {
+          SchemaAttributes: [
+            { Name: 'email', Required: true, Mutable: true },
+            { Name: 'given_name', Required: true, Mutable: false },
+          ],
         },
       };
-      const output = printNodes(renderer.render(definition));
+      const output = printNodes(renderer.render(options));
 
       expect(output).toContain('userAttributes');
       expect(output).toContain('email');
@@ -89,13 +97,19 @@ describe('AuthRenderer', () => {
     });
 
     it('renders custom user attributes', () => {
-      const definition: AuthDefinition = {
-        loginOptions: { email: true },
-        customUserAttributes: {
-          'custom:department': { dataType: 'String', mutable: true, minLen: 1, maxLen: 50 },
+      const options: AuthRenderOptions = {
+        userPool: {
+          SchemaAttributes: [
+            {
+              Name: 'custom:department',
+              AttributeDataType: 'String',
+              Mutable: true,
+              StringAttributeConstraints: { MinLength: '1', MaxLength: '50' },
+            },
+          ],
         },
       };
-      const output = printNodes(renderer.render(definition));
+      const output = printNodes(renderer.render(options));
 
       expect(output).toContain('userAttributes');
       expect(output).toContain('custom:department');
@@ -105,11 +119,14 @@ describe('AuthRenderer', () => {
     });
 
     it('renders MFA configuration with TOTP and SMS', () => {
-      const definition: AuthDefinition = {
-        loginOptions: { email: true },
-        mfa: { mode: 'OPTIONAL', totp: true, sms: true },
+      const options: AuthRenderOptions = {
+        userPool: { SchemaAttributes: [] },
+        mfaConfig: {
+          MfaConfiguration: 'OPTIONAL',
+          SoftwareTokenMfaConfiguration: { Enabled: true },
+        },
       };
-      const output = printNodes(renderer.render(definition));
+      const output = printNodes(renderer.render(options));
 
       expect(output).toContain('multifactor');
       expect(output).toContain("mode: 'OPTIONAL'");
@@ -118,26 +135,30 @@ describe('AuthRenderer', () => {
     });
 
     it('renders MFA with REQUIRED mode', () => {
-      const definition: AuthDefinition = {
-        loginOptions: { email: true },
-        mfa: { mode: 'REQUIRED', totp: true, sms: false },
+      const options: AuthRenderOptions = {
+        userPool: { SchemaAttributes: [] },
+        mfaConfig: {
+          MfaConfiguration: 'ON',
+          SoftwareTokenMfaConfiguration: { Enabled: true },
+        },
       };
-      const output = printNodes(renderer.render(definition));
+      const output = printNodes(renderer.render(options));
 
       expect(output).toContain("mode: 'REQUIRED'");
       expect(output).toContain('totp: true');
-      expect(output).toContain('sms: false');
+      expect(output).toContain('sms: true');
     });
 
     it('renders lambda triggers with function imports', () => {
-      const definition: AuthDefinition = {
-        loginOptions: { email: true },
-        lambdaTriggers: {
-          preSignUp: { source: 'amplify/backend/function/preSignUpFn/src' },
-          postConfirmation: { source: 'amplify/backend/function/postConfirmFn/src' },
-        },
+      const triggers: AuthTrigger[] = [
+        { event: 'preSignUp', resourceName: 'preSignUpFn' },
+        { event: 'postConfirmation', resourceName: 'postConfirmFn' },
+      ];
+      const options: AuthRenderOptions = {
+        userPool: { SchemaAttributes: [] },
+        triggers,
       };
-      const output = printNodes(renderer.render(definition));
+      const output = printNodes(renderer.render(options));
 
       expect(output).toContain('triggers');
       expect(output).toContain('preSignUp');
@@ -151,15 +172,15 @@ describe('AuthRenderer', () => {
 
   describe('external providers', () => {
     it('renders Google login with secrets', () => {
-      const definition: AuthDefinition = {
-        loginOptions: {
-          email: true,
-          googleLogin: true,
-          callbackURLs: ['https://example.com/callback'],
-          logoutURLs: ['https://example.com/logout'],
+      const options: AuthRenderOptions = {
+        userPool: { SchemaAttributes: [] },
+        identityProviders: [{ ProviderType: IdentityProviderTypeType.Google, ProviderName: 'Google' }],
+        webClient: {
+          CallbackURLs: ['https://example.com/callback'],
+          LogoutURLs: ['https://example.com/logout'],
         },
       };
-      const output = printNodes(renderer.render(definition));
+      const output = printNodes(renderer.render(options));
 
       expect(output).toContain('externalProviders');
       expect(output).toContain('google');
@@ -172,15 +193,15 @@ describe('AuthRenderer', () => {
     });
 
     it('renders Apple login with secrets', () => {
-      const definition: AuthDefinition = {
-        loginOptions: {
-          email: true,
-          appleLogin: true,
-          callbackURLs: ['https://example.com/callback'],
-          logoutURLs: ['https://example.com/logout'],
+      const options: AuthRenderOptions = {
+        userPool: { SchemaAttributes: [] },
+        identityProviders: [{ ProviderType: IdentityProviderTypeType.SignInWithApple, ProviderName: 'SignInWithApple' }],
+        webClient: {
+          CallbackURLs: ['https://example.com/callback'],
+          LogoutURLs: ['https://example.com/logout'],
         },
       };
-      const output = printNodes(renderer.render(definition));
+      const output = printNodes(renderer.render(options));
 
       expect(output).toContain('signInWithApple');
       expect(output).toContain('SIWA_CLIENT_ID');
@@ -190,15 +211,12 @@ describe('AuthRenderer', () => {
     });
 
     it('renders Amazon login with secrets', () => {
-      const definition: AuthDefinition = {
-        loginOptions: {
-          email: true,
-          amazonLogin: true,
-          callbackURLs: [],
-          logoutURLs: [],
-        },
+      const options: AuthRenderOptions = {
+        userPool: { SchemaAttributes: [] },
+        identityProviders: [{ ProviderType: IdentityProviderTypeType.LoginWithAmazon, ProviderName: 'LoginWithAmazon' }],
+        webClient: { CallbackURLs: [], LogoutURLs: [] },
       };
-      const output = printNodes(renderer.render(definition));
+      const output = printNodes(renderer.render(options));
 
       expect(output).toContain('loginWithAmazon');
       expect(output).toContain('LOGINWITHAMAZON_CLIENT_ID');
@@ -206,15 +224,12 @@ describe('AuthRenderer', () => {
     });
 
     it('renders Facebook login with secrets', () => {
-      const definition: AuthDefinition = {
-        loginOptions: {
-          email: true,
-          facebookLogin: true,
-          callbackURLs: [],
-          logoutURLs: [],
-        },
+      const options: AuthRenderOptions = {
+        userPool: { SchemaAttributes: [] },
+        identityProviders: [{ ProviderType: IdentityProviderTypeType.Facebook, ProviderName: 'Facebook' }],
+        webClient: { CallbackURLs: [], LogoutURLs: [] },
       };
-      const output = printNodes(renderer.render(definition));
+      const output = printNodes(renderer.render(options));
 
       expect(output).toContain('facebook');
       expect(output).toContain('FACEBOOK_CLIENT_ID');
@@ -222,16 +237,18 @@ describe('AuthRenderer', () => {
     });
 
     it('renders Google login with scopes', () => {
-      const definition: AuthDefinition = {
-        loginOptions: {
-          email: true,
-          googleLogin: true,
-          googleScopes: ['profile', 'email'],
-          callbackURLs: [],
-          logoutURLs: [],
-        },
+      const options: AuthRenderOptions = {
+        userPool: { SchemaAttributes: [] },
+        identityProviders: [
+          {
+            ProviderType: IdentityProviderTypeType.Google,
+            ProviderName: 'Google',
+            ProviderDetails: { authorized_scopes: 'profile email' },
+          },
+        ],
+        webClient: { CallbackURLs: [], LogoutURLs: [] },
       };
-      const output = printNodes(renderer.render(definition));
+      const output = printNodes(renderer.render(options));
 
       expect(output).toContain('scopes');
       expect(output).toContain("'profile'");
@@ -239,16 +256,18 @@ describe('AuthRenderer', () => {
     });
 
     it('renders Google login with attribute mapping', () => {
-      const definition: AuthDefinition = {
-        loginOptions: {
-          email: true,
-          googleLogin: true,
-          googleAttributes: { email: 'email', givenName: 'given_name' } as any,
-          callbackURLs: [],
-          logoutURLs: [],
-        },
+      const options: AuthRenderOptions = {
+        userPool: { SchemaAttributes: [] },
+        identityProviders: [
+          {
+            ProviderType: IdentityProviderTypeType.Google,
+            ProviderName: 'Google',
+            AttributeMapping: { email: 'email', given_name: 'given_name' },
+          },
+        ],
+        webClient: { CallbackURLs: [], LogoutURLs: [] },
       };
-      const output = printNodes(renderer.render(definition));
+      const output = printNodes(renderer.render(options));
 
       expect(output).toContain('attributeMapping');
       expect(output).toContain("email: 'email'");
@@ -256,24 +275,27 @@ describe('AuthRenderer', () => {
     });
 
     it('renders OIDC provider', () => {
-      const definition: AuthDefinition = {
-        loginOptions: {
-          email: true,
-          oidcLogin: [
-            {
-              issuerUrl: 'https://accounts.google.com',
-              name: 'MyOIDC',
-              endpoints: {
-                authorization: 'https://accounts.google.com/o/oauth2/v2/auth',
-                token: 'https://oauth2.googleapis.com/token',
-              },
+      const options: AuthRenderOptions = {
+        userPool: { SchemaAttributes: [] },
+        identityProviders: [
+          {
+            ProviderType: IdentityProviderTypeType.OIDC,
+            ProviderName: 'MyOIDC',
+            ProviderDetails: {
+              oidc_issuer: 'https://accounts.google.com',
+              authorize_url: 'https://accounts.google.com/o/oauth2/v2/auth',
+              token_url: 'https://oauth2.googleapis.com/token',
+              attributes_url: 'https://openidconnect.googleapis.com/v1/userinfo',
+              jwks_uri: 'https://www.googleapis.com/oauth2/v3/certs',
             },
-          ],
-          callbackURLs: ['https://example.com/callback'],
-          logoutURLs: ['https://example.com/logout'],
+          },
+        ],
+        webClient: {
+          CallbackURLs: ['https://example.com/callback'],
+          LogoutURLs: ['https://example.com/logout'],
         },
       };
-      const output = printNodes(renderer.render(definition));
+      const output = printNodes(renderer.render(options));
 
       expect(output).toContain('oidc');
       expect(output).toContain('OIDC_CLIENT_ID_1');
@@ -283,21 +305,23 @@ describe('AuthRenderer', () => {
     });
 
     it('renders SAML provider', () => {
-      const definition: AuthDefinition = {
-        loginOptions: {
-          email: true,
-          samlLogin: {
-            name: 'MySAML',
-            metadata: {
-              metadataContent: 'https://idp.example.com/metadata',
-              metadataType: 'URL',
+      const options: AuthRenderOptions = {
+        userPool: { SchemaAttributes: [] },
+        identityProviders: [
+          {
+            ProviderType: IdentityProviderTypeType.SAML,
+            ProviderName: 'MySAML',
+            ProviderDetails: {
+              metadataURL: 'https://idp.example.com/metadata',
             },
           },
-          callbackURLs: ['https://example.com/callback'],
-          logoutURLs: ['https://example.com/logout'],
+        ],
+        webClient: {
+          CallbackURLs: ['https://example.com/callback'],
+          LogoutURLs: ['https://example.com/logout'],
         },
       };
-      const output = printNodes(renderer.render(definition));
+      const output = printNodes(renderer.render(options));
 
       expect(output).toContain('saml');
       expect(output).toContain("name: 'MySAML'");
@@ -306,17 +330,19 @@ describe('AuthRenderer', () => {
     });
 
     it('renders multiple providers together', () => {
-      const definition: AuthDefinition = {
-        loginOptions: {
-          email: true,
-          googleLogin: true,
-          facebookLogin: true,
-          appleLogin: true,
-          callbackURLs: ['https://example.com/callback'],
-          logoutURLs: ['https://example.com/logout'],
+      const options: AuthRenderOptions = {
+        userPool: { SchemaAttributes: [] },
+        identityProviders: [
+          { ProviderType: IdentityProviderTypeType.Google, ProviderName: 'Google' },
+          { ProviderType: IdentityProviderTypeType.Facebook, ProviderName: 'Facebook' },
+          { ProviderType: IdentityProviderTypeType.SignInWithApple, ProviderName: 'SignInWithApple' },
+        ],
+        webClient: {
+          CallbackURLs: ['https://example.com/callback'],
+          LogoutURLs: ['https://example.com/logout'],
         },
       };
-      const output = printNodes(renderer.render(definition));
+      const output = printNodes(renderer.render(options));
 
       expect(output).toContain('google');
       expect(output).toContain('facebook');
@@ -326,16 +352,17 @@ describe('AuthRenderer', () => {
 
   describe('function access', () => {
     it('renders function auth access rules', () => {
-      const definition: AuthDefinition = {
-        loginOptions: { email: true },
-        functions: [
-          {
-            resourceName: 'adminFunc',
-            authAccess: { manageUsers: true, listUsers: true },
-          },
-        ],
+      const access: FunctionAccess[] = [
+        {
+          resourceName: 'adminFunc',
+          permissions: { manageUsers: true, listUsers: true },
+        },
+      ];
+      const options: AuthRenderOptions = {
+        userPool: { SchemaAttributes: [] },
+        access,
       };
-      const output = printNodes(renderer.render(definition));
+      const output = printNodes(renderer.render(options));
 
       expect(output).toContain('access');
       expect(output).toContain('allow');
@@ -346,14 +373,15 @@ describe('AuthRenderer', () => {
     });
 
     it('renders multiple functions with auth access', () => {
-      const definition: AuthDefinition = {
-        loginOptions: { email: true },
-        functions: [
-          { resourceName: 'func1', authAccess: { createUser: true } },
-          { resourceName: 'func2', authAccess: { deleteUser: true, getUser: true } },
-        ],
+      const access: FunctionAccess[] = [
+        { resourceName: 'func1', permissions: { createUser: true } },
+        { resourceName: 'func2', permissions: { deleteUser: true, getUser: true } },
+      ];
+      const options: AuthRenderOptions = {
+        userPool: { SchemaAttributes: [] },
+        access,
       };
-      const output = printNodes(renderer.render(definition));
+      const output = printNodes(renderer.render(options));
 
       expect(output).toContain('func1');
       expect(output).toContain('func2');
@@ -363,105 +391,53 @@ describe('AuthRenderer', () => {
     });
 
     it('skips functions with empty auth access', () => {
-      const definition: AuthDefinition = {
-        loginOptions: { email: true },
-        functions: [{ resourceName: 'noAccessFunc', authAccess: {} }],
+      const access: FunctionAccess[] = [{ resourceName: 'noAccessFunc', permissions: {} }];
+      const options: AuthRenderOptions = {
+        userPool: { SchemaAttributes: [] },
+        access,
       };
-      const output = printNodes(renderer.render(definition));
+      const output = printNodes(renderer.render(options));
 
       expect(output).not.toContain('access');
       expect(output).not.toContain('noAccessFunc');
     });
   });
 
-  describe('reference auth', () => {
-    it('renders referenceAuth with user pool and identity pool', () => {
-      const definition: AuthDefinition = {
-        referenceAuth: {
-          userPoolId: 'us-east-1_abc123',
-          identityPoolId: 'us-east-1:12345-abcde',
-          authRoleArn: 'arn:aws:iam::123456789:role/authRole',
-          unauthRoleArn: 'arn:aws:iam::123456789:role/unauthRole',
-          userPoolClientId: 'client123',
-        },
-      };
-      const output = printNodes(renderer.render(definition));
-
-      expect(output).toContain('referenceAuth');
-      expect(output).not.toContain('defineAuth');
-      expect(output).toContain("userPoolId: 'us-east-1_abc123'");
-      expect(output).toContain("identityPoolId: 'us-east-1:12345-abcde'");
-      expect(output).toContain('authRoleArn');
-      expect(output).toContain('unauthRoleArn');
-      expect(output).toContain("userPoolClientId: 'client123'");
-    });
-
-    it('renders referenceAuth with groups', () => {
-      const definition: AuthDefinition = {
-        referenceAuth: {
-          userPoolId: 'us-east-1_abc123',
-          groups: {
-            admin: 'arn:aws:iam::123456789:role/adminRole',
-            editors: 'arn:aws:iam::123456789:role/editorsRole',
-          },
-        },
-      };
-      const output = printNodes(renderer.render(definition));
-
-      expect(output).toContain('referenceAuth');
-      expect(output).toContain('groups');
-      expect(output).toContain('admin');
-      expect(output).toContain('editors');
-    });
-
-    it('renders referenceAuth with partial properties', () => {
-      const definition: AuthDefinition = {
-        referenceAuth: {
-          userPoolId: 'us-east-1_abc123',
-        },
-      };
-      const output = printNodes(renderer.render(definition));
-
-      expect(output).toContain('referenceAuth');
-      expect(output).toContain("userPoolId: 'us-east-1_abc123'");
-      expect(output).not.toContain('identityPoolId');
-      expect(output).not.toContain('authRoleArn');
-    });
-  });
-
   describe('empty/minimal definitions', () => {
     it('renders with no login options', () => {
-      const definition: AuthDefinition = {};
-      const output = printNodes(renderer.render(definition));
+      const options: AuthRenderOptions = {
+        userPool: { SchemaAttributes: [] },
+      };
+      const output = printNodes(renderer.render(options));
 
       expect(output).toContain('defineAuth');
       expect(output).toContain('loginWith');
     });
 
     it('does not render MFA when not provided', () => {
-      const definition: AuthDefinition = {
-        loginOptions: { email: true },
+      const options: AuthRenderOptions = {
+        userPool: { SchemaAttributes: [] },
       };
-      const output = printNodes(renderer.render(definition));
+      const output = printNodes(renderer.render(options));
 
       expect(output).not.toContain('multifactor');
     });
 
     it('does not render triggers when not provided', () => {
-      const definition: AuthDefinition = {
-        loginOptions: { email: true },
+      const options: AuthRenderOptions = {
+        userPool: { SchemaAttributes: [] },
       };
-      const output = printNodes(renderer.render(definition));
+      const output = printNodes(renderer.render(options));
 
       expect(output).not.toContain('triggers');
     });
 
     it('does not render groups when empty', () => {
-      const definition: AuthDefinition = {
-        loginOptions: { email: true },
-        groups: [],
+      const options: AuthRenderOptions = {
+        userPool: { SchemaAttributes: [] },
+        identityGroups: [],
       };
-      const output = printNodes(renderer.render(definition));
+      const output = printNodes(renderer.render(options));
 
       expect(output).not.toContain('groups');
     });

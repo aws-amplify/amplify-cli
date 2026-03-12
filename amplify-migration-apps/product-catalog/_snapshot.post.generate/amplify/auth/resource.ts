@@ -13,7 +13,4 @@ export const auth = defineAuth({
       mutable: true,
     },
   },
-  multifactor: {
-    mode: 'OFF',
-  },
 });

@@ -2,6 +2,7 @@ import path from 'node:path';
 import fs from 'node:fs/promises';
 import os from 'node:os';
 import { AuthGenerator } from '../../../../../../commands/gen2-migration/generate-new/output/auth/auth.generator';
+import { ReferenceAuthGenerator } from '../../../../../../commands/gen2-migration/generate-new/output/auth/reference-auth.generator';
 import { BackendGenerator } from '../../../../../../commands/gen2-migration/generate-new/output/backend.generator';
 import { Gen1App } from '../../../../../../commands/gen2-migration/generate-new/input/gen1-app';
 
@@ -10,12 +11,12 @@ jest.unmock('fs-extra');
 function createMockGen1App(): Gen1App {
   return {
     meta: jest.fn(),
-    fetchResourcesByLogicalId: jest.fn(),
+    metaOutput: jest.fn(),
+    singleResourceName: jest.fn().mockReturnValue('myAuth'),
     ccbDir: '/tmp/ccb',
     aws: {
       fetchUserPool: jest.fn(),
       fetchMfaConfig: jest.fn(),
-      fetchWebClient: jest.fn(),
       fetchUserPoolClient: jest.fn(),
       fetchIdentityProviders: jest.fn(),
       fetchIdentityGroups: jest.fn(),
@@ -41,26 +42,23 @@ describe('AuthGenerator', () => {
 
   it('returns empty operations when auth category is missing', async () => {
     const gen1App = createMockGen1App();
-    (gen1App.meta as jest.Mock).mockReturnValue(undefined);
+    (gen1App.singleResourceName as jest.Mock).mockImplementation(() => {
+      throw new Error("Category 'auth' not found in amplify-meta.json");
+    });
 
     const generator = new AuthGenerator(gen1App, backendGenerator, outputDir);
-    const ops = await generator.plan();
 
-    expect(ops).toHaveLength(0);
+    await expect(generator.plan()).rejects.toThrow("Category 'auth' not found");
   });
 
-  it('returns empty operations when user pool is not found', async () => {
+  it('throws when user pool is not found', async () => {
     const gen1App = createMockGen1App();
-    (gen1App.meta as jest.Mock).mockReturnValue({
-      myAuth: { service: 'Cognito' },
-    });
-    (gen1App.fetchResourcesByLogicalId as jest.Mock).mockResolvedValue({});
-    (gen1App.aws.fetchUserPool as jest.Mock).mockResolvedValue(undefined);
+    (gen1App.metaOutput as jest.Mock).mockReturnValue('us-east-1_abc123');
+    (gen1App.aws.fetchUserPool as jest.Mock).mockRejectedValue(new Error("User pool 'us-east-1_abc123' not found"));
 
     const generator = new AuthGenerator(gen1App, backendGenerator, outputDir);
-    const ops = await generator.plan();
 
-    expect(ops).toHaveLength(0);
+    await expect(generator.plan()).rejects.toThrow("User pool 'us-east-1_abc123' not found");
   });
 
   it('generates reference auth when serviceType is imported', async () => {
@@ -84,7 +82,7 @@ describe('AuthGenerator', () => {
 
     const addImportSpy = jest.spyOn(backendGenerator, 'addImport');
 
-    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir);
+    const generator = new ReferenceAuthGenerator(gen1App, backendGenerator, outputDir);
     const ops = await generator.plan();
 
     expect(ops).toHaveLength(1);
@@ -104,15 +102,13 @@ describe('AuthGenerator', () => {
 
   it('generates standard auth and writes resource.ts', async () => {
     const gen1App = createMockGen1App();
-    (gen1App.meta as jest.Mock).mockImplementation((category: string) => {
-      if (category === 'auth') {
-        return {
-          myAuth: { service: 'Cognito' },
-        };
-      }
+    (gen1App.metaOutput as jest.Mock).mockImplementation((_cat: string, _res: string, key: string) => {
+      if (key === 'UserPoolId') return 'us-east-1_abc123';
+      if (key === 'AppClientIDWeb') return 'webclient123';
+      if (key === 'AppClientID') return 'client123';
+      if (key === 'IdentityPoolId') return 'us-east-1:idpool';
       return undefined;
     });
-    (gen1App.fetchResourcesByLogicalId as jest.Mock).mockResolvedValue({});
     (gen1App.aws.fetchUserPool as jest.Mock).mockResolvedValue({
       UserPoolId: 'us-east-1_abc123',
       Policies: {
@@ -121,9 +117,8 @@ describe('AuthGenerator', () => {
       SchemaAttributes: [{ Name: 'email', Required: true, Mutable: true }],
     });
     (gen1App.aws.fetchMfaConfig as jest.Mock).mockResolvedValue({
-      mfaConfig: 'OFF',
+      MfaConfiguration: 'OFF',
     });
-    (gen1App.aws.fetchWebClient as jest.Mock).mockResolvedValue(undefined);
     (gen1App.aws.fetchUserPoolClient as jest.Mock).mockResolvedValue(undefined);
     (gen1App.aws.fetchIdentityProviders as jest.Mock).mockResolvedValue([]);
     (gen1App.aws.fetchIdentityGroups as jest.Mock).mockResolvedValue([]);
@@ -152,27 +147,26 @@ describe('AuthGenerator', () => {
 
   it('registers function auth access via addFunctionAuthAccess', async () => {
     const gen1App = createMockGen1App();
-    (gen1App.meta as jest.Mock).mockImplementation((category: string) => {
-      if (category === 'auth') {
-        return { myAuth: { service: 'Cognito' } };
-      }
+    (gen1App.metaOutput as jest.Mock).mockImplementation((_cat: string, _res: string, key: string) => {
+      if (key === 'UserPoolId') return 'us-east-1_abc123';
+      if (key === 'AppClientIDWeb') return 'webclient123';
+      if (key === 'AppClientID') return 'client123';
+      if (key === 'IdentityPoolId') return 'us-east-1:idpool';
       return undefined;
     });
-    (gen1App.fetchResourcesByLogicalId as jest.Mock).mockResolvedValue({});
     (gen1App.aws.fetchUserPool as jest.Mock).mockResolvedValue({
       UserPoolId: 'us-east-1_abc123',
       Policies: {},
       SchemaAttributes: [],
     });
-    (gen1App.aws.fetchMfaConfig as jest.Mock).mockResolvedValue({ mfaConfig: 'OFF' });
-    (gen1App.aws.fetchWebClient as jest.Mock).mockResolvedValue(undefined);
+    (gen1App.aws.fetchMfaConfig as jest.Mock).mockResolvedValue({ MfaConfiguration: 'OFF' });
     (gen1App.aws.fetchUserPoolClient as jest.Mock).mockResolvedValue(undefined);
     (gen1App.aws.fetchIdentityProviders as jest.Mock).mockResolvedValue([]);
     (gen1App.aws.fetchIdentityGroups as jest.Mock).mockResolvedValue([]);
     (gen1App.aws.fetchIdentityPool as jest.Mock).mockResolvedValue(undefined);
 
     const generator = new AuthGenerator(gen1App, backendGenerator, outputDir);
-    generator.addFunctionAuthAccess('adminFunc', { manageUsers: true });
+    generator.addFunctionAuthAccess({ resourceName: 'adminFunc', permissions: { manageUsers: true } });
 
     const ops = await generator.plan();
     await ops[0].execute();

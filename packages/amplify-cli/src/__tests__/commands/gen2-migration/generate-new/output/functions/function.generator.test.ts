@@ -20,8 +20,9 @@ function createMockGen1App(): Gen1App {
     appId: 'd1abc2def3',
     envName: 'main',
     meta: jest.fn(),
-    template: jest.fn().mockReturnValue({ Resources: {} }),
-    readFile: jest.fn().mockResolvedValue('{}'),
+    json: jest.fn().mockReturnValue({ Resources: {} }),
+    file: jest.fn().mockReturnValue('{}'),
+    singleResourceName: jest.fn(),
     aws: {
       fetchFunctionConfig: jest.fn(),
       fetchFunctionSchedule: jest.fn().mockResolvedValue(undefined),
