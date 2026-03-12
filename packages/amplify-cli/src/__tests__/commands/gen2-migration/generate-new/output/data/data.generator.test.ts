@@ -1,0 +1,137 @@
+import path from 'node:path';
+import fs from 'node:fs/promises';
+import os from 'node:os';
+import { DataGenerator } from '../../../../../../commands/gen2-migration/generate-new/output/data/data.generator';
+import { BackendGenerator } from '../../../../../../commands/gen2-migration/generate-new/output/backend.generator';
+import { Gen1App } from '../../../../../../commands/gen2-migration/generate-new/input/gen1-app';
+
+jest.unmock('fs-extra');
+
+function createMockGen1App(overrides?: Record<string, unknown>): Gen1App {
+  return {
+    envName: 'main',
+    fetchMetaCategory: jest.fn(),
+    fetchGraphQLSchema: jest.fn(),
+    aws: {
+      fetchGraphqlApi: jest.fn(),
+    },
+    ...overrides,
+  } as unknown as Gen1App;
+}
+
+describe('DataGenerator', () => {
+  let outputDir: string;
+  let backendGenerator: BackendGenerator;
+
+  beforeEach(async () => {
+    outputDir = await fs.mkdtemp(path.join(os.tmpdir(), 'data-gen-test-'));
+    backendGenerator = new BackendGenerator(outputDir);
+  });
+
+  afterEach(async () => {
+    await fs.rm(outputDir, { recursive: true, force: true });
+  });
+
+  it('returns empty operations when api category is missing', async () => {
+    const gen1App = createMockGen1App();
+    (gen1App.fetchMetaCategory as jest.Mock).mockResolvedValue(undefined);
+
+    const generator = new DataGenerator(gen1App, backendGenerator, outputDir);
+    const ops = await generator.plan();
+
+    expect(ops).toHaveLength(0);
+  });
+
+  it('returns empty operations when no AppSync API exists', async () => {
+    const gen1App = createMockGen1App();
+    (gen1App.fetchMetaCategory as jest.Mock).mockResolvedValue({
+      myRestApi: { service: 'API Gateway' },
+    });
+
+    const generator = new DataGenerator(gen1App, backendGenerator, outputDir);
+    const ops = await generator.plan();
+
+    expect(ops).toHaveLength(0);
+  });
+
+  it('throws when AppSync API has no GraphQLAPIIdOutput', async () => {
+    const gen1App = createMockGen1App();
+    (gen1App.fetchMetaCategory as jest.Mock).mockResolvedValue({
+      myApi: { service: 'AppSync', output: {} },
+    });
+
+    const generator = new DataGenerator(gen1App, backendGenerator, outputDir);
+
+    await expect(generator.plan()).rejects.toThrow('no GraphQLAPIIdOutput');
+  });
+
+  it('throws when AppSync API is not found via SDK', async () => {
+    const gen1App = createMockGen1App();
+    (gen1App.fetchMetaCategory as jest.Mock).mockImplementation(async (category: string) => {
+      if (category === 'api') {
+        return {
+          myApi: {
+            service: 'AppSync',
+            output: { GraphQLAPIIdOutput: 'api-123' },
+          },
+        };
+      }
+      return undefined;
+    });
+    (gen1App.fetchGraphQLSchema as jest.Mock).mockResolvedValue('type Todo @model { id: ID! }');
+    (gen1App.aws.fetchGraphqlApi as jest.Mock).mockResolvedValue(undefined);
+
+    const generator = new DataGenerator(gen1App, backendGenerator, outputDir);
+
+    await expect(generator.plan()).rejects.toThrow("AppSync API 'api-123' not found");
+  });
+
+  it('returns one operation and writes resource.ts on execute', async () => {
+    const gen1App = createMockGen1App();
+    (gen1App.fetchMetaCategory as jest.Mock).mockImplementation(async (category: string) => {
+      if (category === 'api') {
+        return {
+          myApi: {
+            service: 'AppSync',
+            output: {
+              GraphQLAPIIdOutput: 'api-123',
+              authConfig: {
+                defaultAuthentication: { authenticationType: 'API_KEY' },
+              },
+            },
+          },
+        };
+      }
+      if (category === 'auth') return undefined;
+      return undefined;
+    });
+    (gen1App.fetchGraphQLSchema as jest.Mock).mockResolvedValue('type Todo @model { id: ID! }');
+    (gen1App.aws.fetchGraphqlApi as jest.Mock).mockResolvedValue({
+      apiId: 'api-123',
+      name: 'myApi',
+      additionalAuthenticationProviders: [],
+    });
+
+    const addImportSpy = jest.spyOn(backendGenerator, 'addImport');
+    const addPropertySpy = jest.spyOn(backendGenerator, 'addDefineBackendProperty');
+
+    const generator = new DataGenerator(gen1App, backendGenerator, outputDir);
+    const ops = await generator.plan();
+
+    expect(ops).toHaveLength(1);
+    const descriptions = await ops[0].describe();
+    expect(descriptions[0]).toContain('data/resource.ts');
+
+    await ops[0].execute();
+
+    // Verify resource.ts was written
+    const resourcePath = path.join(outputDir, 'amplify', 'data', 'resource.ts');
+    const content = await fs.readFile(resourcePath, 'utf-8');
+    expect(content).toContain('defineData');
+    expect(content).toContain('Todo');
+
+    // Verify backend.ts contributions
+    expect(addImportSpy).toHaveBeenCalledWith('./data/resource', ['data']);
+    expect(addPropertySpy).toHaveBeenCalled();
+  });
+});
