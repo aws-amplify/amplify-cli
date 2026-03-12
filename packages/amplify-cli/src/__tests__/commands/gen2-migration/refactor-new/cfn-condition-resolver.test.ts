@@ -1,6 +1,22 @@
 import { resolveConditions } from '../../../../commands/gen2-migration/refactor-new/resolvers/cfn-condition-resolver';
 import { CFNTemplate } from '../../../../commands/gen2-migration/refactor-new/cfn-template';
 
+/**
+ * Builds a template with one condition gating one resource.
+ * The resource survives if the condition evaluates to true, is removed if false.
+ */
+const makeConditionTemplate = (conditionDef: object, parameters?: Record<string, { Type: string }>): CFNTemplate => ({
+  AWSTemplateFormatVersion: '2010-09-09',
+  Description: 'test',
+  ...(parameters ? { Parameters: parameters } : {}),
+  Conditions: { TestCondition: conditionDef as any },
+  Resources: {
+    Gated: { Type: 'AWS::S3::Bucket', Properties: {}, Condition: 'TestCondition' },
+    Ungated: { Type: 'AWS::S3::Bucket', Properties: {} },
+  },
+  Outputs: {},
+});
+
 describe('resolveConditions - Fn::If scope', () => {
   const parameters = [{ ParameterKey: 'EnvType', ParameterValue: 'prod' }];
 
@@ -82,5 +98,110 @@ describe('resolveConditions - Fn::If scope', () => {
     expect(result.Resources.ProdBucket).toBeDefined();
     expect(result.Resources.DevBucket).toBeUndefined();
     expect(result.Resources.AlwaysBucket).toBeDefined();
+  });
+});
+
+describe('resolveConditions - condition functions', () => {
+  const params = { Env: { Type: 'String' } };
+
+  it('Fn::Not negates a true condition', () => {
+    const template = makeConditionTemplate({ 'Fn::Not': [{ 'Fn::Equals': [{ Ref: 'Env' }, 'prod'] }] }, params);
+    const result = resolveConditions(template, [{ ParameterKey: 'Env', ParameterValue: 'prod' }]);
+    // Fn::Equals is true, Fn::Not makes it false → resource removed
+    expect(result.Resources.Gated).toBeUndefined();
+  });
+
+  it('Fn::Not negates a false condition', () => {
+    const template = makeConditionTemplate({ 'Fn::Not': [{ 'Fn::Equals': [{ Ref: 'Env' }, 'prod'] }] }, params);
+    const result = resolveConditions(template, [{ ParameterKey: 'Env', ParameterValue: 'dev' }]);
+    // Fn::Equals is false, Fn::Not makes it true → resource survives
+    expect(result.Resources.Gated).toBeDefined();
+  });
+
+  it('Fn::Or is true when one operand is true', () => {
+    const template = makeConditionTemplate(
+      { 'Fn::Or': [{ 'Fn::Equals': [{ Ref: 'Env' }, 'prod'] }, { 'Fn::Equals': [{ Ref: 'Env' }, 'staging'] }] },
+      params,
+    );
+    const result = resolveConditions(template, [{ ParameterKey: 'Env', ParameterValue: 'prod' }]);
+    expect(result.Resources.Gated).toBeDefined();
+  });
+
+  it('Fn::Or is false when both operands are false', () => {
+    const template = makeConditionTemplate(
+      { 'Fn::Or': [{ 'Fn::Equals': [{ Ref: 'Env' }, 'prod'] }, { 'Fn::Equals': [{ Ref: 'Env' }, 'staging'] }] },
+      params,
+    );
+    const result = resolveConditions(template, [{ ParameterKey: 'Env', ParameterValue: 'dev' }]);
+    expect(result.Resources.Gated).toBeUndefined();
+  });
+
+  it('Fn::And is true when both operands are true', () => {
+    const twoParams = { Env: { Type: 'String' }, Region: { Type: 'String' } };
+    const template = makeConditionTemplate(
+      { 'Fn::And': [{ 'Fn::Equals': [{ Ref: 'Env' }, 'prod'] }, { 'Fn::Equals': [{ Ref: 'Region' }, 'us-east-1'] }] },
+      twoParams,
+    );
+    const result = resolveConditions(template, [
+      { ParameterKey: 'Env', ParameterValue: 'prod' },
+      { ParameterKey: 'Region', ParameterValue: 'us-east-1' },
+    ]);
+    expect(result.Resources.Gated).toBeDefined();
+  });
+
+  it('Fn::And is false when one operand is false', () => {
+    const twoParams = { Env: { Type: 'String' }, Region: { Type: 'String' } };
+    const template = makeConditionTemplate(
+      { 'Fn::And': [{ 'Fn::Equals': [{ Ref: 'Env' }, 'prod'] }, { 'Fn::Equals': [{ Ref: 'Region' }, 'us-east-1'] }] },
+      twoParams,
+    );
+    const result = resolveConditions(template, [
+      { ParameterKey: 'Env', ParameterValue: 'prod' },
+      { ParameterKey: 'Region', ParameterValue: 'eu-west-1' },
+    ]);
+    expect(result.Resources.Gated).toBeUndefined();
+  });
+
+  it('resolves nested condition references ({ Condition: "X" })', () => {
+    const template: CFNTemplate = {
+      AWSTemplateFormatVersion: '2010-09-09',
+      Description: 'test',
+      Parameters: { Env: { Type: 'String' } },
+      Conditions: {
+        IsProd: { 'Fn::Equals': [{ Ref: 'Env' }, 'prod'] } as any,
+        NotProd: { 'Fn::Not': [{ Condition: 'IsProd' }] } as any,
+      },
+      Resources: {
+        ProdOnly: { Type: 'AWS::S3::Bucket', Properties: {}, Condition: 'IsProd' },
+        NonProdOnly: { Type: 'AWS::S3::Bucket', Properties: {}, Condition: 'NotProd' },
+      },
+      Outputs: {},
+    };
+    const result = resolveConditions(template, [{ ParameterKey: 'Env', ParameterValue: 'prod' }]);
+    expect(result.Resources.ProdOnly).toBeDefined();
+    expect(result.Resources.NonProdOnly).toBeUndefined();
+  });
+});
+
+describe('resolveConditions - edge cases', () => {
+  it('returns template unchanged when no Conditions section', () => {
+    const template: CFNTemplate = {
+      AWSTemplateFormatVersion: '2010-09-09',
+      Description: 'test',
+      Resources: { Bucket: { Type: 'AWS::S3::Bucket', Properties: {} } },
+      Outputs: {},
+    };
+    const result = resolveConditions(template, []);
+    expect(result).toBe(template); // Same reference — no clone
+  });
+
+  it('throws when condition references a parameter with no value', () => {
+    const template = makeConditionTemplate({ 'Fn::Equals': [{ Ref: 'MissingParam' }, 'x'] }, { MissingParam: { Type: 'String' } });
+    expect(() => resolveConditions(template, [])).toThrow("Condition references parameter 'MissingParam'");
+  });
+
+  it('throws on unsupported condition statement', () => {
+    const template = makeConditionTemplate({ 'Fn::Equals': [{ 'Fn::Select': [0, ['a', 'b']] }, 'a'] }, {});
+    expect(() => resolveConditions(template, [])).toThrow('Unsupported condition statement');
   });
 });
