@@ -226,49 +226,56 @@ If an operation fails, it must propagate the failure. The dispatcher already han
 ### Target Directory Structure
 
 ```
-refactor/
-  refactor.ts                        # AmplifyMigrationRefactorStep — orchestration only
-  refactorer.ts                      # Refactorer interface: plan() → AmplifyMigrationOperation[]
-
-  gen1-env.ts                        # Lazy-loading facade for Gen1 environment state
-  gen2-branch.ts                     # Lazy-loading facade for Gen2 branch state
+refactor-new/
+  refactorer.ts                      # Refactorer interface: plan() → RefactorOperation[]
   aws-clients.ts                     # Single instantiation point for all AWS SDK clients
+  stack-facade.ts                    # Lazy-loading, caching facade over CFN API calls (replaces gen1-env + gen2-branch)
+  cfn-template.ts                    # CFNTemplate type and related interfaces
+  utils.ts                           # extractStackNameFromId utility
 
   workflow/
-    category-refactorer.ts           # Abstract base: shared workflow phases
-    forward-category-refactorer.ts   # Forward direction base
-    rollback-category-refactorer.ts  # Rollback direction base
+    category-refactorer.ts           # Abstract base: shared workflow phases, ResourceMapping type
+    forward-category-refactorer.ts   # Forward direction: Gen1→Gen2, holding stack management
+    rollback-category-refactorer.ts  # Rollback direction: Gen2→Gen1, holding stack restore
 
   auth/
-    auth-forward.ts                  # Auth forward: resource types, ID mapping, OAuth
-    auth-rollback.ts                 # Auth rollback
-    auth-user-pool-group-forward.ts  # UserPoolGroup forward
-    auth-user-pool-group-rollback.ts # UserPoolGroup rollback
+    auth-forward.ts                  # Auth forward: resource types, ID mapping, OAuth, UserPoolGroup handling
+    auth-rollback.ts                 # Auth rollback (includes UserPoolGroup)
+    auth-utils.ts                    # Shared auth helpers (stack type detection from description)
 
   storage/
-    s3-forward.ts                    # S3 forward: resource types, ID mapping
-    s3-rollback.ts                   # S3 rollback
-    dynamodb-forward.ts              # DynamoDB forward
-    dynamodb-rollback.ts             # DynamoDB rollback
+    storage-forward.ts               # Storage forward: S3 + DynamoDB (shared workflow, no service-specific logic)
+    storage-rollback.ts              # Storage rollback: S3 + DynamoDB
 
   analytics/
-    kinesis-forward.ts               # Kinesis forward
-    kinesis-rollback.ts              # Kinesis rollback
-
-  custom/
-    custom-resource-forward.ts       # Custom resource forward
-    custom-resource-rollback.ts      # Custom resource rollback
+    analytics-forward.ts             # Analytics forward: Kinesis
+    analytics-rollback.ts            # Analytics rollback: Kinesis
 
   resolvers/
     cfn-condition-resolver.ts        # Stateless, tree-walking
     cfn-dependency-resolver.ts       # Stateless
     cfn-output-resolver.ts           # Stateless, tree-walking (no JSON string replacement)
     cfn-parameter-resolver.ts        # Stateless, tree-walking (no JSON string replacement)
+    cfn-tree-walker.ts               # Shared tree-walking utility used by parameter and output resolvers
 
-  holding-stack.ts                   # Holding stack utilities (unchanged)
-  cfn-stack-updater.ts               # Stack update + polling (unchanged)
-  cfn-stack-refactor-updater.ts      # Stack refactor + polling (unchanged)
+  holding-stack.ts                   # Holding stack utilities
+  cfn-stack-updater.ts               # Stack update + polling
+  cfn-stack-refactor-updater.ts      # Stack refactor + polling
+  oauth-values-retriever.ts          # OAuth credential retrieval from Cognito + SSM
+  snap.ts                            # Template/mapping snapshot utilities for debugging
+
+refactor/
+  refactor.ts                        # AmplifyMigrationRefactorStep — imports from refactor-new/
+  legacy-custom-resource.ts          # ⚠️ ACTIVE: Legacy code path for --resourceMappings flag (custom resources)
 ```
+
+**Deviations from original plan:**
+- `gen1-env.ts` / `gen2-branch.ts` → unified into `stack-facade.ts` (two instances, one class)
+- `auth-user-pool-group-forward/rollback.ts` → folded into `auth-forward.ts` / `auth-rollback.ts`
+- `s3-forward/rollback.ts` + `dynamodb-forward/rollback.ts` → consolidated into `storage-forward/rollback.ts` (S3 and DynamoDB share the same workflow)
+- `kinesis-forward/rollback.ts` → renamed to `analytics-forward/rollback.ts`
+- `custom/` directory → descoped; custom resources use `legacy-custom-resource.ts` until a proper refactorer is built
+- Added: `cfn-tree-walker.ts`, `cfn-template.ts`, `oauth-values-retriever.ts`, `auth-utils.ts`, `snap.ts`, `utils.ts`
 
 ### Key Abstractions
 
@@ -582,3 +589,5 @@ Merge the branch. The old `refactor/` directory stays in the codebase but is no 
 
 **Phase 7 — Delete old code**
 In a separate PR: delete the old `refactor/` directory and its tests. Rename `refactor-new/` to `refactor/`. Update all import paths. This is a clean deletion PR with no logic changes.
+
+**⚠️ Phase 7 exception:** `refactor/legacy-custom-resource.ts` is still actively called by `refactor.ts` when the `--resourceMappings` flag is provided (custom resource migration). During Phase 7, this file must be relocated into `refactor-new/` (or its renamed successor) before the old `refactor/` directory is deleted. The import in `refactor.ts` (`from './legacy-custom-resource'`) must be updated accordingly.
