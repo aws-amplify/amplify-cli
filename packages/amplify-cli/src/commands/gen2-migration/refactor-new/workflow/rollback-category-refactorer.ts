@@ -1,6 +1,6 @@
 import { GetTemplateCommand } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
-import { CFNTemplate } from '../cfn-template';
+import { CFNResource, CFNTemplate } from '../cfn-template';
 import { RefactorOperation } from '../refactorer';
 import { resolveParameters } from '../resolvers/cfn-parameter-resolver';
 import { resolveOutputs } from '../resolvers/cfn-output-resolver';
@@ -28,6 +28,35 @@ import {
  * Does NOT pre-update stacks (overrides updateSource/updateTarget to return []).
  */
 export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
+  /**
+   * Map of CFN resource type → Gen1 logical resource ID.
+   * Subclasses override this with their category-specific map.
+   * Used by the default buildResourceMappings implementation.
+   */
+  protected readonly gen1LogicalIds: ReadonlyMap<string, string> = new Map();
+
+  /**
+   * Default rollback mapping: looks up Gen1 logical ID by resource type.
+   * Throws AmplifyError if a source resource's type is not in gen1LogicalIds.
+   * Auth overrides this entirely (different mapping strategies for main auth vs user pool groups).
+   */
+  protected buildResourceMappings(
+    sourceResources: Map<string, CFNResource>,
+    _targetResources: Map<string, CFNResource>,
+  ): Map<string, string> {
+    const mapping = new Map<string, string>();
+    for (const [sourceId, resource] of sourceResources) {
+      const gen1LogicalId = this.gen1LogicalIds.get(resource.Type);
+      if (!gen1LogicalId) {
+        throw new AmplifyError('InvalidStackError', {
+          message: `No known Gen1 logical ID for resource type '${resource.Type}' (source: '${sourceId}')`,
+        });
+      }
+      mapping.set(sourceId, gen1LogicalId);
+    }
+    return mapping;
+  }
+
   /**
    * Resolves the Gen2 source stack template for rollback.
    * Resolution chain: params → outputs → deps (no conditions).

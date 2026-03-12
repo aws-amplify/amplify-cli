@@ -21,6 +21,29 @@ import { CategoryRefactorer, MIGRATION_PLACEHOLDER_LOGICAL_ID, ResolvedStack, Re
  */
 export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
   /**
+   * Default forward mapping: matches source and target resources by type.
+   * Works for categories with at most one resource per type (storage, analytics).
+   * Auth overrides this for UserPoolClient Web/Native disambiguation.
+   */
+  protected buildResourceMappings(
+    sourceResources: Map<string, CFNResource>,
+    targetResources: Map<string, CFNResource>,
+  ): Map<string, string> {
+    const mapping = new Map<string, string>();
+    const usedTargetIds = new Set<string>();
+    for (const [sourceId, sourceResource] of sourceResources) {
+      for (const [targetId, targetResource] of targetResources) {
+        if (sourceResource.Type === targetResource.Type && !usedTargetIds.has(targetId)) {
+          mapping.set(sourceId, targetId);
+          usedTargetIds.add(targetId);
+          break;
+        }
+      }
+    }
+    return mapping;
+  }
+
+  /**
    * Resolves the Gen1 source stack template.
    * Resolution chain: params → outputs → deps → conditions.
    * Resource IDs are filtered from the original template before resolution.
