@@ -8,24 +8,13 @@ import { AmplifyGen2MigrationValidations } from '../_validations';
 import { AwsClients } from '../refactor-new/aws-clients';
 import { StackFacade } from '../refactor-new/stack-facade';
 import { Refactorer, RefactorOperation } from '../refactor-new/refactorer';
+import { ResourceMapping } from '../refactor-new/workflow/category-refactorer';
 import { AuthForwardRefactorer } from '../refactor-new/auth/auth-forward';
 import { AuthRollbackRefactorer } from '../refactor-new/auth/auth-rollback';
 import { StorageForwardRefactorer } from '../refactor-new/storage/storage-forward';
 import { StorageRollbackRefactorer } from '../refactor-new/storage/storage-rollback';
 import { AnalyticsForwardRefactorer } from '../refactor-new/analytics/analytics-forward';
 import { AnalyticsRollbackRefactorer } from '../refactor-new/analytics/analytics-rollback';
-
-// Resource mapping interface for custom resource fallback path
-interface ResourceMapping {
-  Source: {
-    StackName: string;
-    LogicalResourceId: string;
-  };
-  Destination: {
-    StackName: string;
-    LogicalResourceId: string;
-  };
-}
 
 const FILE_PROTOCOL_PREFIX = 'file://';
 
