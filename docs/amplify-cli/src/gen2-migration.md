@@ -331,6 +331,7 @@ amplify gen2-migration <step> [options]
 
 **Important considerations:**
 - The step execution order matters: lock → generate → refactor → decommission. Each step validates prerequisites from previous steps.
+- The lock step preserves existing stack policies by appending its deny-all statement rather than overwriting. Rollback removes only the appended statement and restores the original policy.
 - The `clone`, `shift`, and `cleanup` steps are NOT IMPLEMENTED—they throw 'Method not implemented' errors.
 - The `GEN2_MIGRATION_ENVIRONMENT_NAME` environment variable on the Amplify app tracks which environment is being migrated and prevents concurrent migrations.
 - Stateful resources (defined in `STATEFUL_RESOURCES` set) require special handling—the module prevents their deletion and enables deletion protection.
