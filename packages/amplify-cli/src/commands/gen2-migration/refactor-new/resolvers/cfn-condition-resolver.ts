@@ -37,11 +37,9 @@ export function resolveConditions(template: CFNTemplate, parameters: Parameter[]
       if (typeof propValue === 'object' && propValue !== null && !Array.isArray(propValue)) {
         resource.Properties[propName] = resolveIfCondition(propValue, conditionValues);
       } else if (Array.isArray(propValue)) {
-        for (let i = 0; i < propValue.length; i++) {
-          if (typeof propValue[i] === 'object' && propValue[i] !== null) {
-            propValue[i] = resolveIfCondition(propValue[i], conditionValues);
-          }
-        }
+        resource.Properties[propName] = propValue.map((item) =>
+          typeof item === 'object' && item !== null ? resolveIfCondition(item, conditionValues) : item,
+        );
       }
     }
   }
