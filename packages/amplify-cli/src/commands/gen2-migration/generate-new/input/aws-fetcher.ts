@@ -42,8 +42,11 @@ export class AwsFetcher {
 
   // ── Auth (Cognito) ──────────────────────────────────────────────
 
-  public async fetchUserPool(userPoolId: string): Promise<UserPoolType | undefined> {
+  public async fetchUserPool(userPoolId: string): Promise<UserPoolType> {
     const { UserPool } = await this.clients.cognitoIdentityProvider.send(new DescribeUserPoolCommand({ UserPoolId: userPoolId }));
+    if (!UserPool) {
+      throw new Error(`User pool '${userPoolId}' not found`);
+    }
     return UserPool;
   }
 

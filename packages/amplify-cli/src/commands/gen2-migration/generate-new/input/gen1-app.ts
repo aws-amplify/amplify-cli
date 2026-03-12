@@ -82,9 +82,30 @@ export class Gen1App {
   }
 
   /** Returns a resource output value from amplify-meta.json. */
-  public metaOutput(category: string, resourceName: string, outputKey: string): string | undefined {
+  public metaOutput(category: string, resourceName: string, outputKey: string): string {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped amplify-meta.json
-    return (this._meta as any)[category]?.[resourceName]?.output?.[outputKey];
+    const value = (this._meta as any)[category]?.[resourceName]?.output?.[outputKey];
+    if (value === undefined) {
+      throw new AmplifyError('MigrationError', {
+        message: `Missing output '${outputKey}' for resource '${resourceName}' in category '${category}'`,
+      });
+    }
+    return value;
+  }
+
+  /** Returns the name of the single resource in a category matching a service type. */
+  public singleResourceName(category: string, service: string): string {
+    const categoryBlock = this.meta(category);
+    if (!categoryBlock) {
+      throw new AmplifyError('MigrationError', { message: `Category '${category}' not found in amplify-meta.json` });
+    }
+    const names = Object.keys(categoryBlock).filter((name) => (categoryBlock[name] as Record<string, unknown>).service === service);
+    if (names.length !== 1) {
+      throw new AmplifyError('MigrationError', {
+        message: `Expected exactly one '${service}' resource in '${category}', found ${names.length}: ${names.join(', ')}`,
+      });
+    }
+    return names[0];
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped CloudFormation templates and config files

@@ -15,6 +15,7 @@ import { TsConfigGenerator } from './generate-new/output/tsconfig.generator';
 import { AmplifyYmlGenerator } from './generate-new/output/amplify-yml.generator';
 import { GitIgnoreGenerator } from './generate-new/output/gitignore.generator';
 import { AuthGenerator } from './generate-new/output/auth/auth.generator';
+import { ReferenceAuthGenerator } from './generate-new/output/auth/reference-auth.generator';
 import { DataGenerator } from './generate-new/output/data/data.generator';
 import { RestApiGenerator } from './generate-new/output/rest-api/rest-api.generator';
 import { S3Generator } from './generate-new/output/storage/s3.generator';
@@ -63,8 +64,18 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
 
     const generators: Generator[] = [];
 
-    const authGenerator = gen1App.meta('auth') ? new AuthGenerator(gen1App, backendGenerator, outputDir) : undefined;
-    if (authGenerator) {
+    const authCategory = gen1App.meta('auth');
+    const isReferenceAuth = authCategory
+      ? Object.values(authCategory).some(
+          (v) => typeof v === 'object' && v !== null && 'serviceType' in v && (v as Record<string, unknown>).serviceType === 'imported',
+        )
+      : false;
+
+    let authGenerator: AuthGenerator | undefined;
+    if (authCategory && isReferenceAuth) {
+      generators.push(new ReferenceAuthGenerator(gen1App, backendGenerator, outputDir));
+    } else if (authCategory) {
+      authGenerator = new AuthGenerator(gen1App, backendGenerator, outputDir);
       generators.push(authGenerator);
     }
 

@@ -355,3 +355,59 @@ Merge the branch. The old `generate/` directory stays in the codebase but is no 
 
 **Phase 7 — Delete old code**
 In a separate PR: delete the old `generate/` directory and its tests. Rename `generate-new/` to `generate/`. Update all import paths. This is a clean deletion PR with no logic changes.
+
+---
+
+## Design Principles for AI Assistants
+
+When working on this codebase, follow these principles proactively — don't wait for the human to identify the issues.
+
+### Design toward a target structure, not incrementally from existing code
+
+Before making changes, define what the code should look like when you're done. Don't preserve existing patterns by default — question whether they belong in the target design. The existing code is a reference, not a constraint.
+
+### Gen1App is a thin, category-agnostic facade
+
+Gen1App provides generic access to the Gen1 project state. It must not contain category-specific logic (auth triggers, GraphQL schemas, REST API configs, function categories). If a method is only called by one generator, it belongs in that generator. Gen1App should look like the test framework's `MigrationApp` class in `_framework/app.ts` — eagerly resolved readonly fields, simple accessor methods, no caching of filesystem operations.
+
+### Generators follow a consistent structure
+
+Every generator has:
+
+1. A constructor accepting `gen1App`, `backendGenerator`, `outputDir`, and references to other generators it contributes to
+2. A renderer instance named `defineX` (e.g., `defineAuth`, `defineStorage`)
+3. One public `plan()` method
+4. Public methods to accept contributions from other generators (e.g., `addTrigger`, `addFunctionAuthAccess`)
+5. Private methods that contribute to other generators
+
+File length is fine as long as this structure is maintained. Don't split files based on line count — split based on responsibility.
+
+### Eliminate intermediate reshaping layers
+
+If data flows through an interface that just renames properties from the previous layer, that interface shouldn't exist. Renderers should accept raw SDK types directly. The test: if removing a layer only requires renaming properties at the boundary, the layer is pure overhead.
+
+### Each generator owns its domain knowledge
+
+A generator should derive everything it needs from `Gen1App` and its own inputs. It should not rely on other generators to parse data on its behalf. For example:
+
+- The function generator determines its own trigger event type (from the resource name suffix), not the auth generator
+- The data generator reads the GraphQL schema from the cloud backend, not Gen1App
+- The auth generator gets Cognito IDs from `metaOutput`, not from walking CloudFormation stacks
+
+### Prefer concrete identifiers over generic resource maps
+
+AWS SDK calls should accept the specific ID they need (user pool ID, bucket name, function name), not a generic `Record<string, StackResource>` that the callee searches through. The caller extracts the ID from `metaOutput` and passes it directly.
+
+### Don't add defensive checks for states that can't occur
+
+If a previous step validated that a resource exists, don't null-check it again downstream. If `singleResourceName` found the auth resource, `metaOutput('auth', name, 'UserPoolId')` will have a value — don't add `if (!userPoolId) return []`. The coding guidelines are explicit about this: "Only return fallbacks or branch for valid states."
+
+### Cross-generator contributions flow from producer to consumer
+
+When generator A needs information from generator B's domain, B contributes it to A — not the other way around. For example:
+
+- Function generators contribute trigger info and auth access permissions to the auth generator
+- Function generators contribute storage access to the S3 generator
+- All generators contribute imports and statements to the backend generator
+
+The consumer exposes `addX()` methods. The producer calls them during `plan()`.

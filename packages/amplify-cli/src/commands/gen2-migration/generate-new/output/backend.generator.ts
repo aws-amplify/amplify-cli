@@ -61,6 +61,11 @@ export class BackendGenerator implements Generator {
     this.postDefineStatements.push(statement);
   }
 
+  /** Adds `const varName = backend.a.b.c;` after defineBackend(). */
+  public addConstFromBackend(varName: string, ...path: string[]): void {
+    this.postDefineStatements.push(constDecl(varName, propAccess('backend', ...path)));
+  }
+
   /**
    * Adds a statement right after `defineBackend()`, before regular post-define
    * statements. Used for DynamoDB table constructs that must precede auth overrides.

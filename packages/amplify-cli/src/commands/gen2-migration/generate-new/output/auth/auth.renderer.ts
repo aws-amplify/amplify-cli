@@ -1,200 +1,34 @@
 import ts, { PropertyAssignment } from 'typescript';
-import { PasswordPolicyType, UserPoolClientType } from '@aws-sdk/client-cognito-identity-provider';
+import {
+  GroupType,
+  IdentityProviderType,
+  IdentityProviderTypeType,
+  PasswordPolicyType,
+  SchemaAttributeType,
+  UserPoolClientType,
+  UserPoolType,
+} from '@aws-sdk/client-cognito-identity-provider';
+import { IdentityPool } from '@aws-sdk/client-cognito-identity';
+import { GetUserPoolMfaConfigResponse } from '@aws-sdk/client-cognito-identity-provider';
 import { renderResourceTsFile } from '../../resource';
 
 /**
- * Represents a Lambda function trigger source.
+ * A registered auth trigger — contributed by the function generator.
  */
-export type Lambda = {
-  readonly source: string;
-};
-
-/**
- * Creates a TypeScript AST property assignment for auth Lambda triggers.
- */
-function createTriggersProperty(triggers: Record<string, Lambda>): PropertyAssignment {
-  return factory.createPropertyAssignment(
-    factory.createIdentifier('triggers'),
-    factory.createObjectLiteralExpression(
-      Object.entries(triggers).map(([key, value]) => {
-        const functionName = value.source.split('/')[3];
-        return factory.createPropertyAssignment(factory.createIdentifier(key), factory.createIdentifier(functionName));
-      }),
-      true,
-    ),
-  );
+export interface AuthTrigger {
+  readonly event: AuthTriggerEvent;
+  readonly resourceName: string;
 }
 
 /**
- * OAuth 2.0 scopes supported by Cognito User Pools
+ * OAuth 2.0 scopes supported by Cognito User Pools.
  */
 export type Scope = 'phone' | 'email' | 'openid' | 'profile' | 'aws.cognito.signin.user.admin';
 
 /**
- * Configuration for standard Cognito user attributes
+ * Cognito User Pool Lambda trigger event types.
  */
-export type StandardAttribute = {
-  readonly mutable?: boolean;
-  readonly required?: boolean;
-};
-
-/**
- * Configuration for custom user attributes with validation constraints.
- */
-export type CustomAttribute = {
-  readonly dataType: string | undefined;
-  readonly mutable?: boolean;
-  readonly minLen?: number;
-  readonly maxLen?: number;
-  readonly min?: number;
-  readonly max?: number;
-};
-
-/**
- * Standard user attributes supported by Cognito User Pools
- */
-export type Attribute =
-  | 'address'
-  | 'birthdate'
-  | 'email'
-  | 'familyName'
-  | 'gender'
-  | 'givenName'
-  | 'locale'
-  | 'middleName'
-  | 'fullname'
-  | 'nickname'
-  | 'phoneNumber'
-  | 'profilePicture'
-  | 'preferredUsername'
-  | 'profilePage'
-  | 'timezone'
-  | 'lastUpdateTime'
-  | 'website';
-
-/**
- * Maps standard attributes to external provider attribute names
- */
-export type AttributeMappingRule = Record<Attribute, string>;
-
-/**
- * Multi-factor authentication configuration modes
- */
-export type UserPoolMfaConfig = 'OFF' | 'REQUIRED' | 'OPTIONAL';
-
-/**
- * Type-safe paths for password policy overrides
- */
-export type PasswordPolicyPath = `Policies.PasswordPolicy.${keyof PasswordPolicyType}`;
-
-/**
- * CloudFormation policy overrides for User Pool configuration
- */
-export type PolicyOverrides = Partial<Record<PasswordPolicyPath | string, string | boolean | number | string[]>>;
-
-/**
- * Email verification message customization
- */
-export type EmailOptions = {
-  readonly emailVerificationBody: string;
-  readonly emailVerificationSubject: string;
-};
-
-/**
- * Collection of standard user attributes with their configurations
- */
-export type StandardAttributes = Partial<Record<Attribute, StandardAttribute>>;
-/**
- * Collection of custom user attributes with their configurations
- */
-export type CustomAttributes = Partial<Record<`custom:${string}`, CustomAttribute>>;
-
-/**
- * User group name
- */
-export type Group = string;
-
-/**
- * SAML metadata configuration options
- */
-export type MetadataOptions = {
-  readonly metadataContent: string;
-  readonly metadataType: 'URL' | 'FILE';
-};
-
-/**
- * SAML identity provider configuration.
- */
-export type SamlOptions = {
-  readonly name?: string;
-  readonly metadata: MetadataOptions;
-  readonly attributeMapping?: AttributeMappingRule;
-};
-
-/**
- * OpenID Connect endpoint URLs
- */
-export type OidcEndPoints = {
-  readonly authorization?: string;
-  readonly token?: string;
-  readonly userInfo?: string;
-  readonly jwksUri?: string;
-};
-
-/**
- * OpenID Connect identity provider configuration.
- */
-export type OidcOptions = {
-  readonly issuerUrl: string;
-  readonly name?: string;
-  readonly endpoints?: OidcEndPoints;
-  readonly attributeMapping?: AttributeMappingRule;
-};
-
-/**
- * Comprehensive login configuration options.
- */
-export type LoginOptions = {
-  readonly email?: boolean;
-  readonly phone?: boolean;
-  readonly emailOptions?: Partial<EmailOptions>;
-  readonly googleLogin?: boolean;
-  readonly amazonLogin?: boolean;
-  readonly appleLogin?: boolean;
-  readonly facebookLogin?: boolean;
-  readonly oidcLogin?: readonly OidcOptions[];
-  readonly samlLogin?: SamlOptions;
-  readonly googleAttributes?: AttributeMappingRule;
-  readonly amazonAttributes?: AttributeMappingRule;
-  readonly appleAttributes?: AttributeMappingRule;
-  readonly facebookAttributes?: AttributeMappingRule;
-  readonly callbackURLs?: readonly string[];
-  readonly logoutURLs?: readonly string[];
-  readonly scopes?: readonly Scope[];
-  readonly googleScopes?: readonly string[];
-  readonly facebookScopes?: readonly string[];
-  readonly amazonScopes?: readonly string[];
-  readonly appleScopes?: readonly string[];
-};
-
-/**
- * Multi-factor authentication configuration.
- */
-export type MultifactorOptions = {
-  readonly mode: UserPoolMfaConfig;
-  readonly totp?: boolean;
-  readonly sms?: boolean;
-};
-
-/**
- * Lambda triggers for Cognito User Pool events
- */
-export type AuthLambdaTriggers = Record<AuthTriggerEvents, Lambda>;
-
-/**
- * Cognito User Pool Lambda trigger event types
- */
-export type AuthTriggerEvents =
+export type AuthTriggerEvent =
   | 'createAuthChallenge'
   | 'customMessage'
   | 'defineAuthChallenge'
@@ -207,21 +41,9 @@ export type AuthTriggerEvents =
   | 'verifyAuthChallengeResponse';
 
 /**
- * Configuration for referencing existing auth resources
- */
-export type ReferenceAuth = {
-  readonly userPoolId?: string;
-  readonly identityPoolId?: string;
-  readonly authRoleArn?: string;
-  readonly unauthRoleArn?: string;
-  readonly userPoolClientId?: string;
-  readonly groups?: Record<string, string>;
-};
-
-/**
  * Auth access permissions for a Lambda function.
  */
-export interface AuthAccess {
+export interface AuthPermissions {
   readonly manageUsers?: boolean;
   readonly manageGroups?: boolean;
   readonly manageGroupMembership?: boolean;
@@ -253,7 +75,7 @@ export interface AuthAccess {
 /**
  * Minimal function info needed by the auth renderer to emit access rules.
  */
-export interface FunctionAuthInfo {
+export interface FunctionAccess {
   /**
    * The Amplify resource name.
    */
@@ -262,28 +84,22 @@ export interface FunctionAuthInfo {
   /**
    * Auth access permissions for this function.
    */
-  readonly authAccess: AuthAccess;
+  readonly permissions: AuthPermissions;
 }
 
 /**
- * Complete authentication configuration definition.
+ * Raw SDK inputs the renderer needs to produce auth/resource.ts.
  */
-export interface AuthDefinition {
-  readonly loginOptions?: LoginOptions;
-  readonly groups?: readonly Group[];
-  readonly mfa?: MultifactorOptions;
-  readonly standardUserAttributes?: StandardAttributes;
-  readonly customUserAttributes?: CustomAttributes;
-  readonly userPoolOverrides?: PolicyOverrides;
-  readonly lambdaTriggers?: Partial<AuthLambdaTriggers>;
-  readonly guestLogin?: boolean;
-  readonly identityPoolName?: string;
-  readonly oAuthFlows?: readonly string[];
-  readonly readAttributes?: readonly string[];
-  readonly writeAttributes?: readonly string[];
-  readonly referenceAuth?: ReferenceAuth;
+export interface AuthRenderOptions {
+  readonly userPool: UserPoolType;
+  readonly identityPool?: IdentityPool;
+  readonly identityProviders?: readonly IdentityProviderType[];
+  readonly identityGroups?: readonly GroupType[];
+  readonly webClient?: UserPoolClientType;
+  readonly triggers?: readonly AuthTrigger[];
+  readonly mfaConfig?: GetUserPoolMfaConfigResponse;
   readonly userPoolClient?: UserPoolClientType;
-  readonly functions?: readonly FunctionAuthInfo[];
+  readonly access?: readonly FunctionAccess[];
 }
 
 // TypeScript AST factory for creating nodes
@@ -306,6 +122,48 @@ const appleTeamID = 'SIWA_TEAM_ID';
 const oidcClientID = 'OIDC_CLIENT_ID';
 const oidcClientSecret = 'OIDC_CLIENT_SECRET';
 
+const VALID_SCOPES: readonly string[] = ['phone', 'email', 'openid', 'profile', 'aws.cognito.signin.user.admin'];
+
+const MAPPED_USER_ATTRIBUTE_NAME: Record<string, string> = {
+  address: 'address',
+  birthdate: 'birthdate',
+  email: 'email',
+  family_name: 'familyName',
+  gender: 'gender',
+  given_name: 'givenName',
+  locale: 'locale',
+  middle_name: 'middleName',
+  name: 'fullname',
+  nickname: 'nickname',
+  phone_number: 'phoneNumber',
+  picture: 'profilePicture',
+  preferred_username: 'preferredUsername',
+  profile: 'profilePage',
+  zoneinfo: 'timezone',
+  updated_at: 'lastUpdateTime',
+  website: 'website',
+};
+
+const MAP_IDENTITY_PROVIDER: Record<string, [string, string]> = {
+  [IdentityProviderTypeType.Google]: ['googleLogin', 'googleAttributes'],
+  [IdentityProviderTypeType.SignInWithApple]: ['appleLogin', 'appleAttributes'],
+  [IdentityProviderTypeType.LoginWithAmazon]: ['amazonLogin', 'amazonAttributes'],
+  [IdentityProviderTypeType.Facebook]: ['facebookLogin', 'facebookAttributes'],
+};
+
+/**
+ * Creates a TypeScript AST property assignment for auth Lambda triggers.
+ */
+function createTriggersProperty(triggers: readonly AuthTrigger[]): PropertyAssignment {
+  return factory.createPropertyAssignment(
+    factory.createIdentifier('triggers'),
+    factory.createObjectLiteralExpression(
+      triggers.map((t) => factory.createPropertyAssignment(factory.createIdentifier(t.event), factory.createIdentifier(t.resourceName))),
+      true,
+    ),
+  );
+}
+
 /**
  * Renders a defineAuth() resource.ts file from Gen1 Cognito configuration.
  * Pure — no AWS calls, no side effects.
@@ -314,87 +172,57 @@ export class AuthRenderer {
   /**
    * Produces the complete TypeScript AST for auth/resource.ts.
    */
-  public render(definition: AuthDefinition): ts.NodeArray<ts.Node> {
+  public render(options: AuthRenderOptions): ts.NodeArray<ts.Node> {
     const namedImports: { [importedPackageName: string]: Set<string> } = { '@aws-amplify/backend': new Set() };
-    const refAuth = definition.referenceAuth;
-
-    if (refAuth) {
-      return this.renderReferenceAuth(refAuth, namedImports);
-    }
-
-    return this.renderStandardAuth(definition, namedImports);
+    return this.renderStandardAuth(options, namedImports);
   }
 
-  private renderReferenceAuth(refAuth: ReferenceAuth, namedImports: Record<string, Set<string>>): ts.NodeArray<ts.Node> {
-    const referenceAuthProperties: Array<PropertyAssignment> = [];
-    namedImports['@aws-amplify/backend'].add('referenceAuth');
-
-    const stringProps: (keyof ReferenceAuth)[] = ['userPoolId', 'identityPoolId', 'authRoleArn', 'unauthRoleArn', 'userPoolClientId'];
-    for (const prop of stringProps) {
-      const value = refAuth[prop];
-      if (value) {
-        referenceAuthProperties.push(
-          factory.createPropertyAssignment(factory.createIdentifier(prop), factory.createStringLiteral(value as string)),
-        );
-      }
-    }
-
-    if (refAuth.groups) {
-      referenceAuthProperties.push(
-        factory.createPropertyAssignment(
-          factory.createIdentifier('groups'),
-          factory.createObjectLiteralExpression(
-            Object.entries(refAuth.groups).map(([key, value]) =>
-              factory.createPropertyAssignment(factory.createStringLiteral(key), factory.createStringLiteral(value)),
-            ),
-            true,
-          ),
-        ),
-      );
-    }
-
-    return renderResourceTsFile({
-      exportedVariableName: factory.createIdentifier('auth'),
-      functionCallParameter: factory.createObjectLiteralExpression(referenceAuthProperties, true),
-      additionalImportedBackendIdentifiers: namedImports,
-      backendFunctionConstruct: 'referenceAuth',
-    });
-  }
-
-  private renderStandardAuth(definition: AuthDefinition, namedImports: Record<string, Set<string>>): ts.NodeArray<ts.Node> {
+  private renderStandardAuth(options: AuthRenderOptions, namedImports: Record<string, Set<string>>): ts.NodeArray<ts.Node> {
     namedImports['@aws-amplify/backend'].add('defineAuth');
     const defineAuthProperties: Array<PropertyAssignment> = [];
 
-    const { loginOptions } = definition;
-    if (
-      loginOptions?.appleLogin ||
-      loginOptions?.amazonLogin ||
-      loginOptions?.googleLogin ||
-      loginOptions?.facebookLogin ||
-      (loginOptions?.oidcLogin && loginOptions.oidcLogin.length > 0) ||
-      loginOptions?.samlLogin
-    ) {
+    const loginFlags = AuthRenderer.deriveLoginFlags(options.identityProviders);
+    const hasExternalProviders =
+      loginFlags.googleLogin ||
+      loginFlags.amazonLogin ||
+      loginFlags.appleLogin ||
+      loginFlags.facebookLogin ||
+      (options.identityProviders ?? []).some((p) => p.ProviderType === IdentityProviderTypeType.OIDC) ||
+      (options.identityProviders ?? []).some((p) => p.ProviderType === IdentityProviderTypeType.SAML);
+
+    if (hasExternalProviders) {
       namedImports['@aws-amplify/backend'].add('secret');
     }
 
-    defineAuthProperties.push(this.createLogInWithPropertyAssignment(definition.loginOptions));
+    defineAuthProperties.push(this.createLogInWithPropertyAssignment(options, loginFlags));
 
-    if (definition.customUserAttributes || definition.standardUserAttributes) {
-      defineAuthProperties.push(this.createUserAttributeAssignments(definition.standardUserAttributes, definition.customUserAttributes));
+    const standardAttributes = AuthRenderer.deriveStandardUserAttributes(options.userPool.SchemaAttributes);
+    const customAttributes = AuthRenderer.deriveCustomUserAttributes(options.userPool.SchemaAttributes);
+    const hasStandard = Object.keys(standardAttributes).length > 0;
+    const hasCustom = Object.keys(customAttributes).length > 0;
+
+    if (hasStandard || hasCustom) {
+      defineAuthProperties.push(
+        this.createUserAttributeAssignments(hasStandard ? standardAttributes : undefined, hasCustom ? customAttributes : undefined),
+      );
     }
 
-    if (definition.groups?.length) {
+    const groups = AuthRenderer.deriveGroups(options.identityGroups);
+    if (groups.length > 0) {
       defineAuthProperties.push(
         factory.createPropertyAssignment(
           factory.createIdentifier('groups'),
-          factory.createArrayLiteralExpression(definition.groups.map((g) => factory.createStringLiteral(g))),
+          factory.createArrayLiteralExpression(groups.map((g) => factory.createStringLiteral(g))),
         ),
       );
     }
 
-    this.addLambdaTriggers(definition, defineAuthProperties, namedImports);
-    this.addMfaConfig(definition, defineAuthProperties);
-    this.addFunctionAccess(definition.functions, defineAuthProperties, namedImports);
+    this.addLambdaTriggers(options.triggers ?? [], defineAuthProperties, namedImports);
+
+    const mfa = AuthRenderer.deriveMfaConfig(options.mfaConfig);
+    this.addMfaConfig(mfa, defineAuthProperties);
+
+    this.addFunctionAccess(options.access, defineAuthProperties, namedImports);
 
     return renderResourceTsFile({
       exportedVariableName: factory.createIdentifier('auth'),
@@ -404,50 +232,277 @@ export class AuthRenderer {
     });
   }
 
-  private addLambdaTriggers(definition: AuthDefinition, properties: PropertyAssignment[], namedImports: Record<string, Set<string>>): void {
-    if (!definition.lambdaTriggers || Object.keys(definition.lambdaTriggers).length === 0) {
-      return;
+  // ── Derivation logic (moved from getAuthDefinition) ──────────────
+
+  /**
+   * Derives social login flags from identity provider descriptions.
+   */
+  private static deriveLoginFlags(providers?: readonly IdentityProviderType[]): Record<string, boolean> {
+    const flags: Record<string, boolean> = {
+      googleLogin: false,
+      amazonLogin: false,
+      appleLogin: false,
+      facebookLogin: false,
+    };
+    if (!providers) return flags;
+
+    for (const provider of providers) {
+      const mapping = MAP_IDENTITY_PROVIDER[provider?.ProviderType as keyof typeof MAP_IDENTITY_PROVIDER];
+      if (mapping) {
+        flags[mapping[0]] = true;
+      }
+    }
+    return flags;
+  }
+
+  /**
+   * Parses OIDC/SAML providers, attribute mappings, and scopes from
+   * identity provider details.
+   */
+  private static deriveExternalProviders(details?: readonly IdentityProviderType[]): {
+    readonly oidcProviders: readonly OidcProviderConfig[];
+    readonly samlProvider: SamlProviderConfig | undefined;
+    readonly attributeMappings: Readonly<Record<string, Record<string, string>>>;
+    readonly providerScopes: Readonly<Record<string, readonly string[]>>;
+  } {
+    const oidcProviders: OidcProviderConfig[] = [];
+    let samlProvider: SamlProviderConfig | undefined;
+    const attributeMappings: Record<string, Record<string, string>> = {};
+    const providerScopes: Record<string, string[]> = {};
+
+    if (!details) {
+      return { oidcProviders, samlProvider, attributeMappings, providerScopes };
     }
 
-    properties.push(createTriggersProperty(definition.lambdaTriggers));
+    for (const provider of details) {
+      const { ProviderType, ProviderName, ProviderDetails, AttributeMapping } = provider;
 
-    for (const value of Object.values(definition.lambdaTriggers)) {
-      const pathSegments = value.source.split('/');
-      if (pathSegments.length < 4) {
-        throw new Error(`Invalid Lambda source path format: ${value.source}. Expected format: amplify/backend/function/functionName/...`);
+      if (ProviderType === IdentityProviderTypeType.OIDC && ProviderDetails) {
+        const { oidc_issuer, authorize_url, token_url, attributes_url, jwks_uri } = ProviderDetails;
+        const endpoints =
+          authorize_url && token_url && attributes_url && jwks_uri
+            ? { authorization: authorize_url, token: token_url, userInfo: attributes_url, jwksUri: jwks_uri }
+            : undefined;
+        oidcProviders.push({
+          issuerUrl: oidc_issuer,
+          name: ProviderName,
+          endpoints,
+          attributeMapping: AttributeMapping ? AuthRenderer.filterAttributeMapping(AttributeMapping) : undefined,
+        });
+      } else if (ProviderType === IdentityProviderTypeType.SAML && ProviderDetails) {
+        const { metadataURL, metadataContent } = ProviderDetails;
+        samlProvider = {
+          metadata: {
+            metadataContent: metadataURL || metadataContent,
+            metadataType: metadataURL ? ('URL' as const) : ('FILE' as const),
+          },
+          name: ProviderName,
+          attributeMapping: AttributeMapping ? AuthRenderer.filterAttributeMapping(AttributeMapping) : undefined,
+        };
+      } else {
+        if (AttributeMapping) {
+          const filteredMapping = AuthRenderer.filterAttributeMapping(AttributeMapping);
+          const attributeProperty = MAP_IDENTITY_PROVIDER[provider?.ProviderType as keyof typeof MAP_IDENTITY_PROVIDER]?.[1];
+          if (attributeProperty) {
+            attributeMappings[attributeProperty] = filteredMapping;
+          }
+        }
+
+        if (ProviderDetails) {
+          const scopes = AuthRenderer.deriveProviderSpecificScopes(ProviderDetails);
+          if (scopes.length > 0) {
+            const mapped = scopes
+              .map((scope) => (scope === 'public_profile' ? 'profile' : scope))
+              .filter((scope) => VALID_SCOPES.includes(scope));
+            if (mapped.length > 0 && ProviderType) {
+              providerScopes[ProviderType] = mapped;
+            }
+          }
+        }
       }
-      const functionName = pathSegments[3];
-      if (!namedImports[`./${functionName}/resource`]) {
-        namedImports[`./${functionName}/resource`] = new Set();
+    }
+
+    return { oidcProviders, samlProvider, attributeMappings, providerScopes };
+  }
+
+  /**
+   * Derives MFA configuration from Cognito SDK types.
+   */
+  private static deriveMfaConfig(mfa?: GetUserPoolMfaConfigResponse): {
+    readonly mode: string;
+    readonly sms?: boolean;
+    readonly totp?: boolean;
+  } {
+    if (mfa?.MfaConfiguration === 'ON') {
+      return { mode: 'REQUIRED', sms: true, totp: mfa.SoftwareTokenMfaConfiguration?.Enabled ?? false };
+    }
+    if (mfa?.MfaConfiguration === 'OPTIONAL') {
+      return { mode: 'OPTIONAL', sms: true, totp: mfa.SoftwareTokenMfaConfiguration?.Enabled ?? false };
+    }
+    return { mode: 'OFF' };
+  }
+
+  /**
+   * Extracts standard user attributes from schema, keeping only required ones.
+   */
+  private static deriveStandardUserAttributes(
+    schema?: readonly SchemaAttributeType[],
+  ): Record<string, { readonly required?: boolean; readonly mutable?: boolean }> {
+    if (!schema) return {};
+    const result: Record<string, { readonly required?: boolean; readonly mutable?: boolean }> = {};
+    for (const attribute of schema) {
+      if (attribute.Name && attribute.Name in MAPPED_USER_ATTRIBUTE_NAME && attribute.Required) {
+        result[MAPPED_USER_ATTRIBUTE_NAME[attribute.Name]] = {
+          required: attribute.Required,
+          mutable: attribute.Mutable,
+        };
       }
-      namedImports[`./${functionName}/resource`].add(functionName);
+    }
+    return result;
+  }
+
+  /**
+   * Extracts custom user attributes from schema.
+   */
+  private static deriveCustomUserAttributes(schema?: readonly SchemaAttributeType[]): Record<
+    string,
+    {
+      readonly dataType?: string;
+      readonly mutable?: boolean;
+      readonly min?: number;
+      readonly max?: number;
+      readonly minLen?: number;
+      readonly maxLen?: number;
+    }
+  > {
+    if (!schema) return {};
+    const result: Record<
+      string,
+      {
+        readonly dataType?: string;
+        readonly mutable?: boolean;
+        readonly min?: number;
+        readonly max?: number;
+        readonly minLen?: number;
+        readonly maxLen?: number;
+      }
+    > = {};
+    for (const attribute of schema) {
+      if (attribute.Name && attribute.Name.startsWith('custom:')) {
+        const constraints =
+          attribute.NumberAttributeConstraints && Object.keys(attribute.NumberAttributeConstraints).length > 0
+            ? { min: Number(attribute.NumberAttributeConstraints.MinValue), max: Number(attribute.NumberAttributeConstraints.MaxValue) }
+            : attribute.StringAttributeConstraints && Object.keys(attribute.StringAttributeConstraints).length > 0
+            ? {
+                minLen: Number(attribute.StringAttributeConstraints.MinLength),
+                maxLen: Number(attribute.StringAttributeConstraints.MaxLength),
+              }
+            : {};
+
+        result[attribute.Name] = {
+          mutable: attribute.Mutable,
+          dataType: attribute.AttributeDataType,
+          ...constraints,
+        };
+      }
+    }
+    return result;
+  }
+
+  /**
+   * Derives sorted group names from Cognito group types.
+   */
+  private static deriveGroups(groups?: readonly GroupType[]): readonly string[] {
+    if (!groups || groups.length === 0) return [];
+    return groups
+      .filter((group) => group.Precedence !== undefined)
+      .sort((a, b) => (a.Precedence || 0) - (b.Precedence || 0))
+      .map((group) => group.GroupName)
+      .filter((name): name is string => name !== undefined);
+  }
+
+  public static deriveUserPoolOverrides(userPool: UserPoolType): Record<string, string | boolean | number | string[] | undefined> {
+    const overrides: Record<string, string | boolean | number | string[] | undefined> = {};
+    const passwordPolicy = userPool.Policies?.PasswordPolicy ?? {};
+    for (const key of Object.keys(passwordPolicy)) {
+      const typedKey = key as keyof PasswordPolicyType;
+      if (passwordPolicy[typedKey] !== undefined) {
+        overrides[`Policies.PasswordPolicy.${typedKey}`] = passwordPolicy[typedKey];
+      }
+    }
+    if (userPool.UsernameAttributes === undefined || userPool.UsernameAttributes.length === 0) {
+      overrides.usernameAttributes = undefined;
+    } else {
+      overrides.usernameAttributes = userPool.UsernameAttributes;
+    }
+    return overrides;
+  }
+
+  /**
+   * Extracts provider-specific scopes from provider details.
+   */
+  private static deriveProviderSpecificScopes(providerDetails: Record<string, string>): string[] {
+    const scopeFields = ['authorized_scopes', 'scope', 'scopes'];
+    for (const field of scopeFields) {
+      if (providerDetails[field]) {
+        return providerDetails[field].split(/[\s,]+/).filter((scope) => scope.length > 0);
+      }
+    }
+    return [];
+  }
+
+  /**
+   * Filters attribute mappings to only known standard attributes.
+   */
+  private static filterAttributeMapping(attributeMapping: Record<string, string>): Record<string, string> {
+    return Object.fromEntries(
+      Object.entries(attributeMapping)
+        .filter(([key]) => Object.keys(MAPPED_USER_ATTRIBUTE_NAME).includes(key))
+        .map(([key, value]) => [MAPPED_USER_ATTRIBUTE_NAME[key], value]),
+    );
+  }
+
+  // ── AST rendering helpers ────────────────────────────────────────
+
+  private addLambdaTriggers(
+    triggers: readonly AuthTrigger[],
+    properties: PropertyAssignment[],
+    namedImports: Record<string, Set<string>>,
+  ): void {
+    if (triggers.length === 0) return;
+
+    properties.push(createTriggersProperty(triggers));
+
+    for (const trigger of triggers) {
+      const importPath = `./${trigger.resourceName}/resource`;
+      if (!namedImports[importPath]) {
+        namedImports[importPath] = new Set();
+      }
+      namedImports[importPath].add(trigger.resourceName);
     }
   }
 
-  private addMfaConfig(definition: AuthDefinition, properties: PropertyAssignment[]): void {
-    if (!definition.mfa) {
+  private addMfaConfig(
+    mfa: { readonly mode: string; readonly sms?: boolean; readonly totp?: boolean },
+    properties: PropertyAssignment[],
+  ): void {
+    if (mfa.mode === 'OFF') {
       return;
     }
 
     const multifactorProperties = [
-      factory.createPropertyAssignment(factory.createIdentifier('mode'), factory.createStringLiteral(definition.mfa.mode)),
+      factory.createPropertyAssignment(factory.createIdentifier('mode'), factory.createStringLiteral(mfa.mode)),
     ];
 
-    if (definition.mfa.totp !== undefined) {
+    if (mfa.totp !== undefined) {
       multifactorProperties.push(
-        factory.createPropertyAssignment(
-          factory.createIdentifier('totp'),
-          definition.mfa.totp ? factory.createTrue() : factory.createFalse(),
-        ),
+        factory.createPropertyAssignment(factory.createIdentifier('totp'), mfa.totp ? factory.createTrue() : factory.createFalse()),
       );
     }
 
-    if (definition.mfa.sms !== undefined) {
+    if (mfa.sms !== undefined) {
       multifactorProperties.push(
-        factory.createPropertyAssignment(
-          factory.createIdentifier('sms'),
-          definition.mfa.sms ? factory.createTrue() : factory.createFalse(),
-        ),
+        factory.createPropertyAssignment(factory.createIdentifier('sms'), mfa.sms ? factory.createTrue() : factory.createFalse()),
       );
     }
 
@@ -460,7 +515,7 @@ export class AuthRenderer {
   }
 
   private addFunctionAccess(
-    functions: readonly FunctionAuthInfo[] | undefined,
+    functions: readonly FunctionAccess[] | undefined,
     properties: PropertyAssignment[],
     namedImports: Record<string, Set<string>>,
   ): void {
@@ -468,7 +523,7 @@ export class AuthRenderer {
       return;
     }
 
-    const functionsWithAuthAccess = functions.filter((func) => Object.keys(func.authAccess).length > 0);
+    const functionsWithAuthAccess = functions.filter((func) => Object.keys(func.permissions).length > 0);
     if (functionsWithAuthAccess.length === 0) {
       return;
     }
@@ -480,7 +535,7 @@ export class AuthRenderer {
     const accessRules: ts.Expression[] = [];
 
     for (const func of functionsWithAuthAccess) {
-      for (const [permission, enabled] of Object.entries(func.authAccess)) {
+      for (const [permission, enabled] of Object.entries(func.permissions)) {
         if (enabled) {
           accessRules.push(
             factory.createCallExpression(
@@ -520,38 +575,47 @@ export class AuthRenderer {
     }
   }
 
-  private createLogInWithPropertyAssignment(logInDefinition: LoginOptions = {}): PropertyAssignment {
+  private createLogInWithPropertyAssignment(options: AuthRenderOptions, loginFlags: Record<string, boolean>): PropertyAssignment {
     const logInWith = factory.createIdentifier('loginWith');
     const assignments: ts.ObjectLiteralElementLike[] = [];
 
-    if (logInDefinition.email === true && typeof logInDefinition.emailOptions === 'object') {
-      assignments.push(
-        factory.createPropertyAssignment(factory.createIdentifier('email'), this.createEmailDefinitionObject(logInDefinition.emailOptions)),
-      );
-    } else if (logInDefinition.email === true) {
+    const emailOptions =
+      options.userPool.EmailVerificationMessage || options.userPool.EmailVerificationSubject
+        ? {
+            emailVerificationBody: options.userPool.EmailVerificationMessage ?? '',
+            emailVerificationSubject: options.userPool.EmailVerificationSubject ?? '',
+          }
+        : undefined;
+
+    if (emailOptions) {
+      assignments.push(factory.createPropertyAssignment(factory.createIdentifier('email'), this.createEmailDefinitionObject(emailOptions)));
+    } else {
       assignments.push(factory.createPropertyAssignment(factory.createIdentifier('email'), factory.createTrue()));
-    } else if (typeof logInDefinition.emailOptions === 'object') {
-      assignments.push(
-        factory.createPropertyAssignment(factory.createIdentifier('email'), this.createEmailDefinitionObject(logInDefinition.emailOptions)),
-      );
     }
 
-    if (logInDefinition.phone === true) {
+    if (options.userPool.UsernameAttributes?.includes('phone_number')) {
       assignments.push(factory.createPropertyAssignment(factory.createIdentifier('phone'), factory.createTrue()));
     }
 
-    if (
-      logInDefinition.amazonLogin ||
-      logInDefinition.googleLogin ||
-      logInDefinition.facebookLogin ||
-      logInDefinition.appleLogin ||
-      (logInDefinition.oidcLogin && logInDefinition.oidcLogin.length > 0) ||
-      logInDefinition.samlLogin
-    ) {
+    const externalProviders = AuthRenderer.deriveExternalProviders(options.identityProviders);
+    const hasExternalProviders =
+      loginFlags.googleLogin ||
+      loginFlags.amazonLogin ||
+      loginFlags.appleLogin ||
+      loginFlags.facebookLogin ||
+      externalProviders.oidcProviders.length > 0 ||
+      externalProviders.samlProvider !== undefined;
+
+    if (hasExternalProviders) {
       assignments.push(
         factory.createPropertyAssignment(
           factory.createIdentifier('externalProviders'),
-          this.createExternalProvidersExpression(logInDefinition, logInDefinition.callbackURLs, logInDefinition.logoutURLs),
+          this.createExternalProvidersExpression(
+            loginFlags,
+            externalProviders,
+            options.webClient?.CallbackURLs,
+            options.webClient?.LogoutURLs,
+          ),
         ),
       );
     }
@@ -559,15 +623,18 @@ export class AuthRenderer {
     return factory.createPropertyAssignment(logInWith, factory.createObjectLiteralExpression(assignments, true));
   }
 
-  private createEmailDefinitionObject(emailOptions: Partial<EmailOptions> | undefined): ts.ObjectLiteralExpression {
+  private createEmailDefinitionObject(emailOptions: {
+    readonly emailVerificationBody: string;
+    readonly emailVerificationSubject: string;
+  }): ts.ObjectLiteralExpression {
     const emailDefinitionAssignments: ts.ObjectLiteralElementLike[] = [];
 
-    if (emailOptions?.emailVerificationSubject) {
+    if (emailOptions.emailVerificationSubject) {
       emailDefinitionAssignments.push(
         factory.createPropertyAssignment('verificationEmailSubject', factory.createStringLiteral(emailOptions.emailVerificationSubject)),
       );
     }
-    if (emailOptions?.emailVerificationBody) {
+    if (emailOptions.emailVerificationBody) {
       emailDefinitionAssignments.push(
         factory.createPropertyAssignment(
           'verificationEmailBody',
@@ -587,75 +654,98 @@ export class AuthRenderer {
   }
 
   private createExternalProvidersExpression(
-    loginOptions: LoginOptions,
+    loginFlags: Record<string, boolean>,
+    externalProviders: {
+      readonly oidcProviders: readonly OidcProviderConfig[];
+      readonly samlProvider: SamlProviderConfig | undefined;
+      readonly attributeMappings: Readonly<Record<string, Record<string, string>>>;
+      readonly providerScopes: Readonly<Record<string, readonly string[]>>;
+    },
     callbackUrls?: readonly string[],
     logoutUrls?: readonly string[],
   ): ts.ObjectLiteralExpression {
     const providerAssignments: PropertyAssignment[] = [];
 
-    if (loginOptions.googleLogin) {
+    if (loginFlags.googleLogin) {
       const googleConfig: Record<string, string> = {
         clientId: googleClientID,
         clientSecret: googleClientSecret,
       };
-      if (loginOptions.googleScopes && loginOptions.googleScopes.length > 0) {
-        googleConfig.scopes = loginOptions.googleScopes.join(' ');
+      const googleScopes = externalProviders.providerScopes[IdentityProviderTypeType.Google];
+      if (googleScopes && googleScopes.length > 0) {
+        googleConfig.scopes = googleScopes.join(' ');
       }
-      providerAssignments.push(AuthRenderer.createProviderPropertyAssignment('google', googleConfig, loginOptions.googleAttributes));
+      providerAssignments.push(
+        AuthRenderer.createProviderPropertyAssignment('google', googleConfig, externalProviders.attributeMappings.googleAttributes),
+      );
     }
 
-    if (loginOptions.appleLogin) {
+    if (loginFlags.appleLogin) {
       const appleConfig: Record<string, string> = {
         clientId: appleClientID,
         keyId: appleKeyId,
         privateKey: applePrivateKey,
         teamId: appleTeamID,
       };
-      if (loginOptions.appleScopes && loginOptions.appleScopes.length > 0) {
-        appleConfig.scopes = loginOptions.appleScopes.join(' ');
+      const appleScopes = externalProviders.providerScopes[IdentityProviderTypeType.SignInWithApple];
+      if (appleScopes && appleScopes.length > 0) {
+        appleConfig.scopes = appleScopes.join(' ');
       }
-      providerAssignments.push(AuthRenderer.createProviderPropertyAssignment('signInWithApple', appleConfig, loginOptions.appleAttributes));
+      providerAssignments.push(
+        AuthRenderer.createProviderPropertyAssignment('signInWithApple', appleConfig, externalProviders.attributeMappings.appleAttributes),
+      );
     }
 
-    if (loginOptions.amazonLogin) {
+    if (loginFlags.amazonLogin) {
       const amazonConfig: Record<string, string> = {
         clientId: amazonClientID,
         clientSecret: amazonClientSecret,
       };
-      if (loginOptions.amazonScopes && loginOptions.amazonScopes.length > 0) {
-        amazonConfig.scopes = loginOptions.amazonScopes.join(' ');
+      const amazonScopes = externalProviders.providerScopes[IdentityProviderTypeType.LoginWithAmazon];
+      if (amazonScopes && amazonScopes.length > 0) {
+        amazonConfig.scopes = amazonScopes.join(' ');
       }
       providerAssignments.push(
-        AuthRenderer.createProviderPropertyAssignment('loginWithAmazon', amazonConfig, loginOptions.amazonAttributes),
-      );
-    }
-
-    if (loginOptions.facebookLogin) {
-      const facebookConfig: Record<string, string> = {
-        clientId: facebookClientID,
-        clientSecret: facebookClientSecret,
-      };
-      if (loginOptions.facebookScopes && loginOptions.facebookScopes.length > 0) {
-        facebookConfig.scopes = loginOptions.facebookScopes.join(' ');
-      }
-      providerAssignments.push(AuthRenderer.createProviderPropertyAssignment('facebook', facebookConfig, loginOptions.facebookAttributes));
-    }
-
-    if (loginOptions.samlLogin) {
-      providerAssignments.push(
-        factory.createPropertyAssignment(
-          factory.createIdentifier('saml'),
-          factory.createObjectLiteralExpression(AuthRenderer.createOidcSamlPropertyAssignments(loginOptions.samlLogin), true),
+        AuthRenderer.createProviderPropertyAssignment(
+          'loginWithAmazon',
+          amazonConfig,
+          externalProviders.attributeMappings.amazonAttributes,
         ),
       );
     }
 
-    if (loginOptions.oidcLogin && loginOptions.oidcLogin.length > 0) {
+    if (loginFlags.facebookLogin) {
+      const facebookConfig: Record<string, string> = {
+        clientId: facebookClientID,
+        clientSecret: facebookClientSecret,
+      };
+      const facebookScopes = externalProviders.providerScopes[IdentityProviderTypeType.Facebook];
+      if (facebookScopes && facebookScopes.length > 0) {
+        facebookConfig.scopes = facebookScopes.join(' ');
+      }
+      providerAssignments.push(
+        AuthRenderer.createProviderPropertyAssignment('facebook', facebookConfig, externalProviders.attributeMappings.facebookAttributes),
+      );
+    }
+
+    if (externalProviders.samlProvider) {
+      providerAssignments.push(
+        factory.createPropertyAssignment(
+          factory.createIdentifier('saml'),
+          factory.createObjectLiteralExpression(
+            AuthRenderer.createOidcSamlPropertyAssignments(externalProviders.samlProvider as Record<string, unknown>),
+            true,
+          ),
+        ),
+      );
+    }
+
+    if (externalProviders.oidcProviders.length > 0) {
       providerAssignments.push(
         factory.createPropertyAssignment(
           factory.createIdentifier('oidc'),
           factory.createArrayLiteralExpression(
-            loginOptions.oidcLogin.map((oidc, index) =>
+            externalProviders.oidcProviders.map((oidc, index) =>
               factory.createObjectLiteralExpression(
                 [
                   factory.createPropertyAssignment(
@@ -670,7 +760,7 @@ export class AuthRenderer {
                       factory.createStringLiteral(`${oidcClientSecret}_${index + 1}`),
                     ]),
                   ),
-                  ...AuthRenderer.createOidcSamlPropertyAssignments(oidc),
+                  ...AuthRenderer.createOidcSamlPropertyAssignments(oidc as Record<string, unknown>),
                 ],
                 true,
               ),
@@ -697,15 +787,27 @@ export class AuthRenderer {
   }
 
   private createUserAttributeAssignments(
-    standardAttributes: StandardAttributes | undefined,
-    customAttributes: CustomAttributes | undefined,
+    standardAttributes: Record<string, { readonly required?: boolean; readonly mutable?: boolean }> | undefined,
+    customAttributes:
+      | Record<
+          string,
+          {
+            readonly dataType?: string;
+            readonly mutable?: boolean;
+            readonly min?: number;
+            readonly max?: number;
+            readonly minLen?: number;
+            readonly maxLen?: number;
+          }
+        >
+      | undefined,
   ): PropertyAssignment {
     const userAttributeIdentifier = factory.createIdentifier('userAttributes');
     const userAttributeProperties = [];
 
     if (standardAttributes !== undefined) {
       const standardAttributeProperties = Object.entries(standardAttributes).map(([key, value]) => {
-        return factory.createPropertyAssignment(factory.createIdentifier(key), AuthRenderer.createStandardAttributeDefinition(value));
+        return factory.createPropertyAssignment(factory.createIdentifier(key), AuthRenderer.createAttributeDefinition(value));
       });
       userAttributeProperties.push(...standardAttributeProperties);
     }
@@ -714,10 +816,7 @@ export class AuthRenderer {
       const customAttributeProperties = Object.entries(customAttributes)
         .map(([key, value]) => {
           if (value !== undefined) {
-            return factory.createPropertyAssignment(
-              factory.createStringLiteral(key),
-              AuthRenderer.createStandardAttributeDefinition(value),
-            );
+            return factory.createPropertyAssignment(factory.createStringLiteral(key), AuthRenderer.createAttributeDefinition(value));
           }
           return undefined;
         })
@@ -728,11 +827,11 @@ export class AuthRenderer {
     return factory.createPropertyAssignment(userAttributeIdentifier, factory.createObjectLiteralExpression(userAttributeProperties, true));
   }
 
-  private static createStandardAttributeDefinition(attribute: StandardAttribute | CustomAttribute): ts.ObjectLiteralExpression {
+  private static createAttributeDefinition(attribute: Record<string, string | boolean | number | undefined>): ts.ObjectLiteralExpression {
     const properties: ts.PropertyAssignment[] = [];
 
     for (const key of Object.keys(attribute)) {
-      const value = attribute[key as keyof (StandardAttribute | CustomAttribute)];
+      const value = attribute[key];
 
       if (typeof value === 'boolean') {
         properties.push(
@@ -750,7 +849,7 @@ export class AuthRenderer {
 
   private static createProviderConfig(
     config: Record<string, string>,
-    attributeMapping: AttributeMappingRule | undefined,
+    attributeMapping: Record<string, string> | undefined,
   ): ts.ObjectLiteralElementLike[] {
     const properties: ts.ObjectLiteralElementLike[] = [];
 
@@ -794,7 +893,7 @@ export class AuthRenderer {
   private static createProviderPropertyAssignment(
     name: string,
     config: Record<string, string>,
-    attributeMapping: AttributeMappingRule | undefined,
+    attributeMapping: Record<string, string> | undefined,
   ): PropertyAssignment {
     return factory.createPropertyAssignment(
       factory.createIdentifier(name),
@@ -802,9 +901,7 @@ export class AuthRenderer {
     );
   }
 
-  private static createOidcSamlPropertyAssignments(
-    config: Record<string, string | MetadataOptions | OidcEndPoints | AttributeMappingRule>,
-  ): PropertyAssignment[] {
+  private static createOidcSamlPropertyAssignments(config: Record<string, unknown>): PropertyAssignment[] {
     return Object.entries(config).flatMap(([key, value]) => {
       if (typeof value === 'string') {
         return [factory.createPropertyAssignment(factory.createIdentifier(key), factory.createStringLiteral(value))];
@@ -812,7 +909,7 @@ export class AuthRenderer {
         return [
           factory.createPropertyAssignment(
             factory.createIdentifier(key),
-            factory.createObjectLiteralExpression(AuthRenderer.createOidcSamlPropertyAssignments(value), true),
+            factory.createObjectLiteralExpression(AuthRenderer.createOidcSamlPropertyAssignments(value as Record<string, unknown>), true),
           ),
         ];
       }
@@ -820,3 +917,30 @@ export class AuthRenderer {
     });
   }
 }
+
+/**
+ * Internal OIDC provider config derived from IdentityProviderType.
+ */
+type OidcProviderConfig = {
+  readonly issuerUrl: string;
+  readonly name?: string;
+  readonly endpoints?: {
+    readonly authorization: string;
+    readonly token: string;
+    readonly userInfo: string;
+    readonly jwksUri: string;
+  };
+  readonly attributeMapping?: Record<string, string>;
+};
+
+/**
+ * Internal SAML provider config derived from IdentityProviderType.
+ */
+type SamlProviderConfig = {
+  readonly metadata: {
+    readonly metadataContent: string;
+    readonly metadataType: 'URL' | 'FILE';
+  };
+  readonly name?: string;
+  readonly attributeMapping?: Record<string, string>;
+};

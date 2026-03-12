@@ -10,7 +10,7 @@ import { printNodes } from '../../ts-writer';
 import { FunctionRenderer, RenderDefineFunctionOptions } from './function.renderer';
 import { RootPackageJsonGenerator } from '../root-package-json.generator';
 import { extractFilePathFromHandler, propAccess } from '../../ts-factory-utils';
-import { AuthAccess } from '../auth/auth.renderer';
+import { AuthPermissions, AuthTriggerEvent } from '../auth/auth.renderer';
 import { AuthGenerator } from '../auth/auth.generator';
 import { S3Generator } from '../storage/s3.generator';
 import { Permission } from '../storage/s3.renderer';
@@ -44,7 +44,7 @@ interface ResolvedFunction {
   readonly dynamoActions: readonly string[];
   readonly kinesisActions: readonly string[];
   readonly graphqlApiPermissions: { readonly hasMutation: boolean; readonly hasQuery: boolean };
-  readonly authAccess: AuthAccess;
+  readonly authAccess: AuthPermissions;
 }
 
 /**
@@ -100,6 +100,7 @@ export class FunctionGenerator implements Generator {
     await this.mergeFunctionDependencies(func);
     const triggerModels = await this.detectDynamoTriggerModels(func);
     this.contributeAuthAccess(func);
+    this.contributeAuthTrigger();
     await this.contributeStorageAccess(this.category);
 
     return [
@@ -227,7 +228,18 @@ export class FunctionGenerator implements Generator {
   private contributeAuthAccess(func: ResolvedFunction): void {
     if (!this.authGenerator) return;
     if (Object.keys(func.authAccess).length > 0) {
-      this.authGenerator.addFunctionAuthAccess(this.resourceName, func.authAccess);
+      this.authGenerator.addFunctionAuthAccess({ resourceName: this.resourceName, permissions: func.authAccess });
+    }
+  }
+
+  private contributeAuthTrigger(): void {
+    if (!this.authGenerator || this.category !== 'auth') return;
+    const authResourceName = this.gen1App.singleResourceName('auth', 'Cognito');
+    if (!this.resourceName.startsWith(authResourceName)) return;
+    const suffix = this.resourceName.slice(authResourceName.length);
+    const event = TRIGGER_SUFFIX_TO_EVENT[suffix];
+    if (event) {
+      this.authGenerator.addTrigger({ event, resourceName: this.resourceName });
     }
   }
 
@@ -472,7 +484,7 @@ export class FunctionGenerator implements Generator {
     dynamoActions: string[];
     kinesisActions: string[];
     graphqlApiPermissions: { hasMutation: boolean; hasQuery: boolean };
-    authAccess: AuthAccess;
+    authAccess: AuthPermissions;
   } {
     const templatePath = `function/${this.resourceName}/${this.resourceName}-cloudformation-template.json`;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped CloudFormation template
@@ -933,7 +945,7 @@ const GROUPED_AUTH_PERMISSIONS: Readonly<Record<string, readonly string[]>> = {
   managePasswordRecovery: ['cognito-idp:AdminResetUserPassword', 'cognito-idp:AdminSetUserPassword'],
 };
 
-const AUTH_ACTION_MAPPING: Readonly<Record<string, keyof AuthAccess>> = {
+const AUTH_ACTION_MAPPING: Readonly<Record<string, keyof AuthPermissions>> = {
   'cognito-idp:AdminAddUserToGroup': 'addUserToGroup',
   'cognito-idp:AdminCreateUser': 'createUser',
   'cognito-idp:AdminDeleteUser': 'deleteUser',
@@ -967,7 +979,7 @@ const AUTH_ACTION_MAPPING: Readonly<Record<string, keyof AuthAccess>> = {
   'cognito-idp:SetUserSettings': 'setUserSettings',
 };
 
-function resolveAuthAccess(cognitoActions: string[]): AuthAccess {
+function resolveAuthAccess(cognitoActions: string[]): AuthPermissions {
   if (cognitoActions.length === 0) return {};
   const result: Record<string, boolean> = {};
   const covered = new Set<string>();
@@ -985,5 +997,20 @@ function resolveAuthAccess(cognitoActions: string[]): AuthAccess {
     }
   }
 
-  return result as AuthAccess;
+  return result as AuthPermissions;
 }
+
+// ── Auth trigger suffix mapping ───────────────────────────────────
+
+const TRIGGER_SUFFIX_TO_EVENT: Readonly<Record<string, AuthTriggerEvent>> = {
+  PreSignup: 'preSignUp',
+  CustomMessage: 'customMessage',
+  UserMigration: 'userMigration',
+  PostConfirmation: 'postConfirmation',
+  PreAuthentication: 'preAuthentication',
+  PostAuthentication: 'postAuthentication',
+  PreTokenGeneration: 'preTokenGeneration',
+  DefineAuthChallenge: 'defineAuthChallenge',
+  CreateAuthChallenge: 'createAuthChallenge',
+  VerifyAuthChallengeResponse: 'verifyAuthChallengeResponse',
+};
