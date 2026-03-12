@@ -4,72 +4,112 @@ import { printNodes } from '../../../../../../commands/gen2-migration/generate-n
 describe('S3Renderer', () => {
   const renderer = new S3Renderer('main');
 
+  async function render(opts: RenderDefineStorageOptions): Promise<string> {
+    return printNodes(await renderer.render(opts));
+  }
+
   it('renders a basic defineStorage with name', async () => {
-    const opts: RenderDefineStorageOptions = {
+    const output = await render({
       storageIdentifier: 'myBucket-main',
       triggerFunctionCategories: new Map(),
-    };
-    const nodes = await renderer.render(opts);
-    const output = printNodes(nodes);
+    });
 
-    expect(output).toContain('defineStorage');
-    expect(output).toContain('export const storage');
-    expect(output).toContain('myBucket-');
-    expect(output).toContain('branchName');
+    expect(output).toMatchInlineSnapshot(`
+      "import { defineStorage } from '@aws-amplify/backend';
+
+      const branchName = process.env.AWS_BRANCH ?? 'sandbox';
+
+      export const storage = defineStorage({ name: \`myBucket-\${branchName}\` });
+      "
+    `);
   });
 
   it('renders auth access patterns', async () => {
-    const opts: RenderDefineStorageOptions = {
+    const output = await render({
       storageIdentifier: 'myBucket-main',
       accessPatterns: {
         auth: ['read', 'write'],
       },
       triggerFunctionCategories: new Map(),
-    };
-    const nodes = await renderer.render(opts);
-    const output = printNodes(nodes);
+    });
 
-    expect(output).toContain('access');
-    expect(output).toContain('authenticated');
-    expect(output).toContain("'read'");
-    expect(output).toContain("'write'");
+    expect(output).toMatchInlineSnapshot(`
+      "import { defineStorage } from '@aws-amplify/backend';
+
+      const branchName = process.env.AWS_BRANCH ?? 'sandbox';
+
+      export const storage = defineStorage({
+        name: \`myBucket-\${branchName}\`,
+        access: (allow) => ({
+          'public/*': [allow.authenticated.to(['read', 'write'])],
+          'protected/{entity_id}/*': [allow.authenticated.to(['read', 'write'])],
+          'private/{entity_id}/*': [allow.authenticated.to(['read', 'write'])],
+        }),
+      });
+      "
+    `);
   });
 
   it('renders guest access patterns', async () => {
-    const opts: RenderDefineStorageOptions = {
+    const output = await render({
       storageIdentifier: 'myBucket-main',
       accessPatterns: {
         guest: ['read'],
       },
       triggerFunctionCategories: new Map(),
-    };
-    const nodes = await renderer.render(opts);
-    const output = printNodes(nodes);
+    });
 
-    expect(output).toContain('guest');
-    expect(output).toContain("'read'");
-    expect(output).toContain('public/*');
+    expect(output).toMatchInlineSnapshot(`
+      "import { defineStorage } from '@aws-amplify/backend';
+
+      const branchName = process.env.AWS_BRANCH ?? 'sandbox';
+
+      export const storage = defineStorage({
+        name: \`myBucket-\${branchName}\`,
+        access: (allow) => ({
+          'public/*': [allow.guest.to(['read'])],
+        }),
+      });
+      "
+    `);
   });
 
   it('renders auth and guest access together with all paths', async () => {
-    const opts: RenderDefineStorageOptions = {
+    const output = await render({
       storageIdentifier: 'myBucket-main',
       accessPatterns: {
         auth: ['read', 'write', 'delete'],
         guest: ['read'],
       },
       triggerFunctionCategories: new Map(),
-    };
-    const nodes = await renderer.render(opts);
-    const output = printNodes(nodes);
+    });
 
-    expect(output).toContain('public/*');
-    expect(output).toContain('protected/{entity_id}/*');
-    expect(output).toContain('private/{entity_id}/*');
+    expect(output).toMatchInlineSnapshot(`
+      "import { defineStorage } from '@aws-amplify/backend';
+
+      const branchName = process.env.AWS_BRANCH ?? 'sandbox';
+
+      export const storage = defineStorage({
+        name: \`myBucket-\${branchName}\`,
+        access: (allow) => ({
+          'public/*': [
+            allow.guest.to(['read']),
+            allow.authenticated.to(['read', 'write', 'delete']),
+          ],
+          'protected/{entity_id}/*': [
+            allow.authenticated.to(['read', 'write', 'delete']),
+          ],
+          'private/{entity_id}/*': [
+            allow.authenticated.to(['read', 'write', 'delete']),
+          ],
+        }),
+      });
+      "
+    `);
   });
 
   it('renders group access patterns with TODO comment', async () => {
-    const opts: RenderDefineStorageOptions = {
+    const output = await render({
       storageIdentifier: 'myBucket-main',
       accessPatterns: {
         auth: ['read'],
@@ -78,34 +118,69 @@ describe('S3Renderer', () => {
         },
       },
       triggerFunctionCategories: new Map(),
-    };
-    const nodes = await renderer.render(opts);
-    const output = printNodes(nodes);
+    });
 
-    expect(output).toContain('admin');
-    expect(output).toContain('TODO');
-    expect(output).toContain('group permissions');
+    expect(output).toMatchInlineSnapshot(`
+      "import { defineStorage } from '@aws-amplify/backend';
+
+      const branchName = process.env.AWS_BRANCH ?? 'sandbox';
+      /**
+       * TODO: Your project uses group permissions. Group permissions have changed in Gen 2. In order to grant permissions to groups in Gen 2, please refer to https://docs.amplify.aws/react/build-a-backend/storage/authorization/#for-gen-1-public-protected-and-private-access-pattern. */
+
+      export const storage = defineStorage({
+        name: \`myBucket-\${branchName}\`,
+        access: (allow) => ({
+          'public/*': [
+            allow.authenticated.to(['read']),
+            allow.groups(['admin']).to(['read', 'write', 'delete']),
+          ],
+          'protected/{entity_id}/*': [
+            allow.authenticated.to(['read']),
+            allow.groups(['admin']).to(['read', 'write', 'delete']),
+          ],
+          'private/{entity_id}/*': [
+            allow.authenticated.to(['read']),
+            allow.groups(['admin']).to(['read', 'write', 'delete']),
+          ],
+        }),
+      });
+      "
+    `);
   });
 
   it('renders function access patterns with imports', async () => {
-    const opts: RenderDefineStorageOptions = {
+    const output = await render({
       storageIdentifier: 'myBucket-main',
       accessPatterns: {
         functions: [{ functionName: 'processImages', category: 'function', permissions: ['read', 'write'] }],
       },
       triggerFunctionCategories: new Map(),
-    };
-    const nodes = await renderer.render(opts);
-    const output = printNodes(nodes);
+    });
 
-    expect(output).toContain('processImages');
-    expect(output).toContain("'read'");
-    expect(output).toContain("'write'");
-    expect(output).toContain("from '../function/processImages/resource'");
+    expect(output).toMatchInlineSnapshot(`
+      "import { defineStorage } from '@aws-amplify/backend';
+      import { processImages } from '../function/processImages/resource';
+
+      const branchName = process.env.AWS_BRANCH ?? 'sandbox';
+
+      export const storage = defineStorage({
+        name: \`myBucket-\${branchName}\`,
+        access: (allow) => ({
+          'public/*': [allow.resource(processImages).to(['read', 'write'])],
+          'protected/{entity_id}/*': [
+            allow.resource(processImages).to(['read', 'write']),
+          ],
+          'private/{entity_id}/*': [
+            allow.resource(processImages).to(['read', 'write']),
+          ],
+        }),
+      });
+      "
+    `);
   });
 
   it('renders triggers with function imports', async () => {
-    const opts: RenderDefineStorageOptions = {
+    const output = await render({
       storageIdentifier: 'myBucket-main',
       triggers: {
         onUpload: 'onUploadFn',
@@ -115,33 +190,53 @@ describe('S3Renderer', () => {
         ['onUploadFn', 'function'],
         ['onDeleteFn', 'function'],
       ]),
-    };
-    const nodes = await renderer.render(opts);
-    const output = printNodes(nodes);
+    });
 
-    expect(output).toContain('triggers');
-    expect(output).toContain('onUpload');
-    expect(output).toContain('onDelete');
-    expect(output).toContain('onUploadFn');
-    expect(output).toContain('onDeleteFn');
+    expect(output).toMatchInlineSnapshot(`
+      "import { defineStorage } from '@aws-amplify/backend';
+      import { onUploadFn } from '../function/onUploadFn/resource';
+      import { onDeleteFn } from '../function/onDeleteFn/resource';
+
+      const branchName = process.env.AWS_BRANCH ?? 'sandbox';
+
+      export const storage = defineStorage({
+        name: \`myBucket-\${branchName}\`,
+        triggers: {
+          onUpload: onUploadFn,
+          onDelete: onDeleteFn,
+        },
+      });
+      "
+    `);
   });
 
   it('renders storage trigger in same category with relative import', async () => {
-    const opts: RenderDefineStorageOptions = {
+    const output = await render({
       storageIdentifier: 'myBucket-main',
       triggers: {
         onUpload: 'triggerFn',
       },
       triggerFunctionCategories: new Map([['triggerFn', 'storage']]),
-    };
-    const nodes = await renderer.render(opts);
-    const output = printNodes(nodes);
+    });
 
-    expect(output).toContain("from './triggerFn/resource'");
+    expect(output).toMatchInlineSnapshot(`
+      "import { defineStorage } from '@aws-amplify/backend';
+      import { triggerFn } from './triggerFn/resource';
+
+      const branchName = process.env.AWS_BRANCH ?? 'sandbox';
+
+      export const storage = defineStorage({
+        name: \`myBucket-\${branchName}\`,
+        triggers: {
+          onUpload: triggerFn,
+        },
+      });
+      "
+    `);
   });
 
   it('consolidates duplicate function permissions', async () => {
-    const opts: RenderDefineStorageOptions = {
+    const output = await render({
       storageIdentifier: 'myBucket-main',
       accessPatterns: {
         functions: [
@@ -150,33 +245,41 @@ describe('S3Renderer', () => {
         ],
       },
       triggerFunctionCategories: new Map(),
-    };
-    const nodes = await renderer.render(opts);
-    const output = printNodes(nodes);
+    });
 
-    expect(output).toContain("'read'");
-    expect(output).toContain("'write'");
+    expect(output).toMatchInlineSnapshot(`
+      "import { defineStorage } from '@aws-amplify/backend';
+      import { myFunc } from '../function/myFunc/resource';
+
+      const branchName = process.env.AWS_BRANCH ?? 'sandbox';
+
+      export const storage = defineStorage({
+        name: \`myBucket-\${branchName}\`,
+        access: (allow) => ({
+          'public/*': [allow.resource(myFunc).to(['read', 'write'])],
+          'protected/{entity_id}/*': [allow.resource(myFunc).to(['read', 'write'])],
+          'private/{entity_id}/*': [allow.resource(myFunc).to(['read', 'write'])],
+        }),
+      });
+      "
+    `);
   });
 
   it('renders no access property when no access patterns', async () => {
-    const opts: RenderDefineStorageOptions = {
+    const output = await render({
       storageIdentifier: 'myBucket-main',
       triggerFunctionCategories: new Map(),
-    };
-    const nodes = await renderer.render(opts);
-    const output = printNodes(nodes);
+    });
 
     expect(output).not.toContain('access');
   });
 
   it('renders no triggers when empty', async () => {
-    const opts: RenderDefineStorageOptions = {
+    const output = await render({
       storageIdentifier: 'myBucket-main',
       triggers: {},
       triggerFunctionCategories: new Map(),
-    };
-    const nodes = await renderer.render(opts);
-    const output = printNodes(nodes);
+    });
 
     expect(output).not.toContain('triggers');
   });

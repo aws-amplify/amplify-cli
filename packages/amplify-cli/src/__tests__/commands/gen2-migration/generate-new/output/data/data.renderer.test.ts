@@ -4,36 +4,68 @@ import { printNodes } from '../../../../../../commands/gen2-migration/generate-n
 describe('DataRenderer', () => {
   const renderer = new DataRenderer('main');
 
+  function render(...args: Parameters<DataRenderer['render']>): string {
+    return printNodes(renderer.render(...args));
+  }
+
   it('renders a basic defineData resource with schema and table mappings', () => {
-    const nodes = renderer.render({
+    const output = render({
       schema: 'type Todo @model { id: ID! title: String! }',
       tableMappings: { Todo: 'Todo-abc123-main' },
     });
-    const output = printNodes(nodes);
 
-    expect(output).toContain('defineData');
-    expect(output).toContain('Todo');
-    expect(output).toContain('Todo-abc123-main');
-    expect(output).toContain('migratedAmplifyGen1DynamoDbTableMappings');
-    expect(output).toContain("branchName: 'main'");
+    expect(output).toMatchInlineSnapshot(`
+      "import { defineData } from '@aws-amplify/backend';
+
+      const schema = \`type Todo @model { id: ID! title: String! }\`;
+
+      export const data = defineData({
+        migratedAmplifyGen1DynamoDbTableMappings: [
+          {
+            //The "branchname" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables
+            branchName: 'main',
+            modelNameToTableNameMapping: { Todo: 'Todo-abc123-main' },
+          },
+        ],
+        schema,
+      });
+      "
+    `);
   });
 
   it('renders authorization modes with default auth type', () => {
-    const nodes = renderer.render({
+    const output = render({
       schema: 'type Todo @model { id: ID! }',
       tableMappings: { Todo: 'Todo-abc-main' },
       authorizationModes: {
         defaultAuthentication: { authenticationType: 'AMAZON_COGNITO_USER_POOLS' },
       },
     });
-    const output = printNodes(nodes);
 
-    expect(output).toContain('authorizationModes');
-    expect(output).toContain("defaultAuthorizationMode: 'userPool'");
+    expect(output).toMatchInlineSnapshot(`
+      "import { defineData } from '@aws-amplify/backend';
+
+      const schema = \`type Todo @model { id: ID! }\`;
+
+      export const data = defineData({
+        migratedAmplifyGen1DynamoDbTableMappings: [
+          {
+            //The "branchname" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables
+            branchName: 'main',
+            modelNameToTableNameMapping: { Todo: 'Todo-abc-main' },
+          },
+        ],
+        authorizationModes: {
+          defaultAuthorizationMode: 'userPool',
+        },
+        schema,
+      });
+      "
+    `);
   });
 
   it('renders API key auth mode with expiration and description', () => {
-    const nodes = renderer.render({
+    const output = render({
       schema: 'type Todo @model { id: ID! }',
       tableMappings: {},
       authorizationModes: {
@@ -43,16 +75,32 @@ describe('DataRenderer', () => {
         },
       },
     });
-    const output = printNodes(nodes);
 
-    expect(output).toContain("defaultAuthorizationMode: 'apiKey'");
-    expect(output).toContain('apiKeyAuthorizationMode');
-    expect(output).toContain('expiresInDays');
-    expect(output).toContain("description: 'My API Key'");
+    expect(output).toMatchInlineSnapshot(`
+      "import { defineData } from '@aws-amplify/backend';
+
+      const schema = \`type Todo @model { id: ID! }\`;
+
+      export const data = defineData({
+        migratedAmplifyGen1DynamoDbTableMappings: [
+          {
+            //The "branchname" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables
+            branchName: 'main',
+            modelNameToTableNameMapping: {},
+          },
+        ],
+        authorizationModes: {
+          defaultAuthorizationMode: 'apiKey',
+          apiKeyAuthorizationMode: { expiresInDays: 30, description: 'My API Key' },
+        },
+        schema,
+      });
+      "
+    `);
   });
 
   it('renders OIDC auth mode', () => {
-    const nodes = renderer.render({
+    const output = render({
       schema: 'type Todo @model { id: ID! }',
       tableMappings: {},
       authorizationModes: {
@@ -70,16 +118,37 @@ describe('DataRenderer', () => {
         ],
       },
     });
-    const output = printNodes(nodes);
 
-    expect(output).toContain('oidcAuthorizationMode');
-    expect(output).toContain("oidcProviderName: 'MyOIDC'");
-    expect(output).toContain("oidcIssuerUrl: 'https://example.com'");
-    expect(output).toContain("clientId: 'client123'");
+    expect(output).toMatchInlineSnapshot(`
+      "import { defineData } from '@aws-amplify/backend';
+
+      const schema = \`type Todo @model { id: ID! }\`;
+
+      export const data = defineData({
+        migratedAmplifyGen1DynamoDbTableMappings: [
+          {
+            //The "branchname" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables
+            branchName: 'main',
+            modelNameToTableNameMapping: {},
+          },
+        ],
+        authorizationModes: {
+          oidcAuthorizationMode: {
+            oidcProviderName: 'MyOIDC',
+            oidcIssuerUrl: 'https://example.com',
+            clientId: 'client123',
+            tokenExpiryFromAuthInSeconds: 3600,
+            tokenExpireFromIssueInSeconds: 7200,
+          },
+        },
+        schema,
+      });
+      "
+    `);
   });
 
   it('renders Lambda auth mode', () => {
-    const nodes = renderer.render({
+    const output = render({
       schema: 'type Todo @model { id: ID! }',
       tableMappings: {},
       authorizationModes: {
@@ -91,68 +160,144 @@ describe('DataRenderer', () => {
         ],
       },
     });
-    const output = printNodes(nodes);
 
-    expect(output).toContain('lambdaAuthorizationMode');
-    expect(output).toContain('myAuthFn');
-    expect(output).toContain('timeToLiveInSeconds');
+    expect(output).toMatchInlineSnapshot(`
+      "import { defineData } from '@aws-amplify/backend';
+
+      const schema = \`type Todo @model { id: ID! }\`;
+
+      export const data = defineData({
+        migratedAmplifyGen1DynamoDbTableMappings: [
+          {
+            //The "branchname" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables
+            branchName: 'main',
+            modelNameToTableNameMapping: {},
+          },
+        ],
+        authorizationModes: {
+          lambdaAuthorizationMode: { function: myAuthFn, timeToLiveInSeconds: 300 },
+        },
+        schema,
+      });
+      "
+    `);
   });
 
   it('renders logging config', () => {
-    const nodes = renderer.render({
+    const output = render({
       schema: 'type Todo @model { id: ID! }',
       tableMappings: {},
       logging: { fieldLogLevel: 'error', excludeVerboseContent: true },
     });
-    const output = printNodes(nodes);
 
-    expect(output).toContain('logging');
-    expect(output).toContain("fieldLogLevel: 'error'");
-    expect(output).toContain('excludeVerboseContent: true');
+    expect(output).toMatchInlineSnapshot(`
+      "import { defineData } from '@aws-amplify/backend';
+
+      const schema = \`type Todo @model { id: ID! }\`;
+
+      export const data = defineData({
+        migratedAmplifyGen1DynamoDbTableMappings: [
+          {
+            //The "branchname" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables
+            branchName: 'main',
+            modelNameToTableNameMapping: {},
+          },
+        ],
+        logging: { fieldLogLevel: 'error', excludeVerboseContent: true },
+        schema,
+      });
+      "
+    `);
   });
 
   it('renders logging: true as a boolean', () => {
-    const nodes = renderer.render({
+    const output = render({
       schema: 'type Todo @model { id: ID! }',
       tableMappings: {},
       logging: true,
     });
-    const output = printNodes(nodes);
 
-    expect(output).toContain('logging: true');
+    expect(output).toMatchInlineSnapshot(`
+      "import { defineData } from '@aws-amplify/backend';
+
+      const schema = \`type Todo @model { id: ID! }\`;
+
+      export const data = defineData({
+        migratedAmplifyGen1DynamoDbTableMappings: [
+          {
+            //The "branchname" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables
+            branchName: 'main',
+            modelNameToTableNameMapping: {},
+          },
+        ],
+        logging: true,
+        schema,
+      });
+      "
+    `);
   });
 
-  it('replaces ${env} with ${branchName} in schema', () => {
-    const nodes = renderer.render({
+  it('replaces ${env} with ${branchName} in schema and adds branchName declaration', () => {
+    const output = render({
       schema: 'type Todo @model { env: String @default(value: "${env}") }',
       tableMappings: {},
     });
-    const output = printNodes(nodes);
 
-    expect(output).toContain('branchName');
+    expect(output).toMatchInlineSnapshot(`
+      "import { defineData } from '@aws-amplify/backend';
+
+      const branchName = process.env.AWS_BRANCH ?? 'sandbox';
+      const schema = \`type Todo @model { env: String @default(value: "\${branchName}") }\`;
+
+      export const data = defineData({
+        migratedAmplifyGen1DynamoDbTableMappings: [
+          {
+            //The "branchname" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables
+            branchName: 'main',
+            modelNameToTableNameMapping: {},
+          },
+        ],
+        schema,
+      });
+      "
+    `);
     expect(output).not.toContain('${env}');
   });
 
   it('does not emit branchName when schema has no ${env}', () => {
-    const nodes = renderer.render({
+    const output = render({
       schema: 'type Todo @model { id: ID! }',
       tableMappings: {},
     });
-    const output = printNodes(nodes);
 
     expect(output).not.toContain('const branchName');
   });
 
   it('renders multiple table mappings', () => {
-    const nodes = renderer.render({
+    const output = render({
       schema: 'type Todo @model { id: ID! } type Post @model { id: ID! }',
       tableMappings: { Todo: 'Todo-abc-main', Post: 'Post-def-main' },
     });
-    const output = printNodes(nodes);
 
-    expect(output).toContain('Todo');
-    expect(output).toContain('Post');
-    expect(output).toContain('Todo-abc-main');
-    expect(output).toContain('Post-def-main');
+    expect(output).toMatchInlineSnapshot(`
+      "import { defineData } from '@aws-amplify/backend';
+
+      const schema = \`type Todo @model { id: ID! } type Post @model { id: ID! }\`;
+
+      export const data = defineData({
+        migratedAmplifyGen1DynamoDbTableMappings: [
+          {
+            //The "branchname" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables
+            branchName: 'main',
+            modelNameToTableNameMapping: {
+              Todo: 'Todo-abc-main',
+              Post: 'Post-def-main',
+            },
+          },
+        ],
+        schema,
+      });
+      "
+    `);
   });
 });

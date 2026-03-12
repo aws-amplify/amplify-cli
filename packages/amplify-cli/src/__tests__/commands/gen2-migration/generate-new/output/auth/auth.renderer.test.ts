@@ -10,94 +10,125 @@ import { IdentityProviderTypeType } from '@aws-sdk/client-cognito-identity-provi
 describe('AuthRenderer', () => {
   const renderer = new AuthRenderer();
 
+  function render(options: AuthRenderOptions): string {
+    return printNodes(renderer.render(options));
+  }
+
   describe('standard auth', () => {
     it('renders a minimal defineAuth with email login', () => {
-      const options: AuthRenderOptions = {
-        userPool: { SchemaAttributes: [] },
-      };
-      const output = printNodes(renderer.render(options));
+      const output = render({ userPool: { SchemaAttributes: [] } });
 
-      expect(output).toContain('defineAuth');
-      expect(output).toContain('loginWith');
-      expect(output).toContain('email');
-      expect(output).toContain('export const auth');
+      expect(output).toMatchInlineSnapshot(`
+        "import { defineAuth } from '@aws-amplify/backend';
+
+        export const auth = defineAuth({
+          loginWith: {
+            email: true,
+          },
+        });
+        "
+      `);
     });
 
     it('renders phone login', () => {
-      const options: AuthRenderOptions = {
+      const output = render({
         userPool: { UsernameAttributes: ['phone_number'], SchemaAttributes: [] },
-      };
-      const output = printNodes(renderer.render(options));
+      });
 
-      expect(output).toContain('phone: true');
+      expect(output).toMatchInlineSnapshot(`
+        "import { defineAuth } from '@aws-amplify/backend';
+
+        export const auth = defineAuth({
+          loginWith: {
+            email: true,
+            phone: true,
+          },
+        });
+        "
+      `);
     });
 
     it('renders email with verification options', () => {
-      const options: AuthRenderOptions = {
+      const output = render({
         userPool: {
           EmailVerificationSubject: 'Verify your account',
           EmailVerificationMessage: 'Your code is {####}',
           SchemaAttributes: [],
         },
-      };
-      const output = printNodes(renderer.render(options));
+      });
 
-      expect(output).toContain('verificationEmailSubject');
-      expect(output).toContain('Verify your account');
-      expect(output).toContain('verificationEmailBody');
-      expect(output).toContain('Your code is {####}');
-    });
+      expect(output).toMatchInlineSnapshot(`
+        "import { defineAuth } from '@aws-amplify/backend';
 
-    it('renders email options with subject only', () => {
-      const options: AuthRenderOptions = {
-        userPool: {
-          EmailVerificationSubject: 'Welcome',
-          SchemaAttributes: [],
-        },
-      };
-      const output = printNodes(renderer.render(options));
-
-      expect(output).toContain('verificationEmailSubject');
-      expect(output).toContain('Welcome');
+        export const auth = defineAuth({
+          loginWith: {
+            email: {
+              verificationEmailSubject: 'Verify your account',
+              verificationEmailBody: () => 'Your code is {####}',
+            },
+          },
+        });
+        "
+      `);
     });
 
     it('renders user groups', () => {
-      const options: AuthRenderOptions = {
+      const output = render({
         userPool: { SchemaAttributes: [] },
         identityGroups: [
           { GroupName: 'admin', Precedence: 1 },
           { GroupName: 'editors', Precedence: 2 },
           { GroupName: 'viewers', Precedence: 3 },
         ],
-      };
-      const output = printNodes(renderer.render(options));
+      });
 
-      expect(output).toContain('groups');
-      expect(output).toContain("'admin'");
-      expect(output).toContain("'editors'");
-      expect(output).toContain("'viewers'");
+      expect(output).toMatchInlineSnapshot(`
+        "import { defineAuth } from '@aws-amplify/backend';
+
+        export const auth = defineAuth({
+          loginWith: {
+            email: true,
+          },
+          groups: ['admin', 'editors', 'viewers'],
+        });
+        "
+      `);
     });
 
     it('renders standard user attributes', () => {
-      const options: AuthRenderOptions = {
+      const output = render({
         userPool: {
           SchemaAttributes: [
             { Name: 'email', Required: true, Mutable: true },
             { Name: 'given_name', Required: true, Mutable: false },
           ],
         },
-      };
-      const output = printNodes(renderer.render(options));
+      });
 
-      expect(output).toContain('userAttributes');
-      expect(output).toContain('email');
-      expect(output).toContain('required: true');
-      expect(output).toContain('mutable: true');
-      expect(output).toContain('givenName');
+      expect(output).toMatchInlineSnapshot(`
+        "import { defineAuth } from '@aws-amplify/backend';
+
+        export const auth = defineAuth({
+          loginWith: {
+            email: true,
+          },
+          userAttributes: {
+            email: {
+              required: true,
+              mutable: true,
+            },
+            givenName: {
+              required: true,
+              mutable: false,
+            },
+          },
+        });
+        "
+      `);
     });
 
     it('renders custom user attributes', () => {
-      const options: AuthRenderOptions = {
+      const output = render({
         userPool: {
           SchemaAttributes: [
             {
@@ -108,45 +139,78 @@ describe('AuthRenderer', () => {
             },
           ],
         },
-      };
-      const output = printNodes(renderer.render(options));
+      });
 
-      expect(output).toContain('userAttributes');
-      expect(output).toContain('custom:department');
-      expect(output).toContain("dataType: 'String'");
-      expect(output).toContain('minLen: 1');
-      expect(output).toContain('maxLen: 50');
+      expect(output).toMatchInlineSnapshot(`
+        "import { defineAuth } from '@aws-amplify/backend';
+
+        export const auth = defineAuth({
+          loginWith: {
+            email: true,
+          },
+          userAttributes: {
+            'custom:department': {
+              mutable: true,
+              dataType: 'String',
+              minLen: 1,
+              maxLen: 50,
+            },
+          },
+        });
+        "
+      `);
     });
 
     it('renders MFA configuration with TOTP and SMS', () => {
-      const options: AuthRenderOptions = {
+      const output = render({
         userPool: { SchemaAttributes: [] },
         mfaConfig: {
           MfaConfiguration: 'OPTIONAL',
           SoftwareTokenMfaConfiguration: { Enabled: true },
         },
-      };
-      const output = printNodes(renderer.render(options));
+      });
 
-      expect(output).toContain('multifactor');
-      expect(output).toContain("mode: 'OPTIONAL'");
-      expect(output).toContain('totp: true');
-      expect(output).toContain('sms: true');
+      expect(output).toMatchInlineSnapshot(`
+        "import { defineAuth } from '@aws-amplify/backend';
+
+        export const auth = defineAuth({
+          loginWith: {
+            email: true,
+          },
+          multifactor: {
+            mode: 'OPTIONAL',
+            totp: true,
+            sms: true,
+          },
+        });
+        "
+      `);
     });
 
     it('renders MFA with REQUIRED mode', () => {
-      const options: AuthRenderOptions = {
+      const output = render({
         userPool: { SchemaAttributes: [] },
         mfaConfig: {
           MfaConfiguration: 'ON',
           SoftwareTokenMfaConfiguration: { Enabled: true },
         },
-      };
-      const output = printNodes(renderer.render(options));
+      });
 
-      expect(output).toContain("mode: 'REQUIRED'");
-      expect(output).toContain('totp: true');
-      expect(output).toContain('sms: true');
+      expect(output).toMatchInlineSnapshot(`
+        "import { defineAuth } from '@aws-amplify/backend';
+
+        export const auth = defineAuth({
+          loginWith: {
+            email: true,
+          },
+          multifactor: {
+            mode: 'REQUIRED',
+            totp: true,
+            sms: true,
+          },
+        });
+        "
+      `);
     });
 
     it('renders lambda triggers with function imports', () => {
@@ -154,90 +218,149 @@ describe('AuthRenderer', () => {
         { event: 'preSignUp', resourceName: 'preSignUpFn' },
         { event: 'postConfirmation', resourceName: 'postConfirmFn' },
       ];
-      const options: AuthRenderOptions = {
+      const output = render({
         userPool: { SchemaAttributes: [] },
         triggers,
-      };
-      const output = printNodes(renderer.render(options));
+      });
 
-      expect(output).toContain('triggers');
-      expect(output).toContain('preSignUp');
-      expect(output).toContain('preSignUpFn');
-      expect(output).toContain('postConfirmation');
-      expect(output).toContain('postConfirmFn');
-      expect(output).toContain("from './preSignUpFn/resource'");
-      expect(output).toContain("from './postConfirmFn/resource'");
+      expect(output).toMatchInlineSnapshot(`
+        "import { defineAuth } from '@aws-amplify/backend';
+        import { preSignUpFn } from './preSignUpFn/resource';
+        import { postConfirmFn } from './postConfirmFn/resource';
+
+        export const auth = defineAuth({
+          loginWith: {
+            email: true,
+          },
+          triggers: {
+            preSignUp: preSignUpFn,
+            postConfirmation: postConfirmFn,
+          },
+        });
+        "
+      `);
     });
   });
 
   describe('external providers', () => {
     it('renders Google login with secrets', () => {
-      const options: AuthRenderOptions = {
+      const output = render({
         userPool: { SchemaAttributes: [] },
         identityProviders: [{ ProviderType: IdentityProviderTypeType.Google, ProviderName: 'Google' }],
         webClient: {
           CallbackURLs: ['https://example.com/callback'],
           LogoutURLs: ['https://example.com/logout'],
         },
-      };
-      const output = printNodes(renderer.render(options));
+      });
 
-      expect(output).toContain('externalProviders');
-      expect(output).toContain('google');
-      expect(output).toContain('GOOGLE_CLIENT_ID');
-      expect(output).toContain('GOOGLE_CLIENT_SECRET');
-      expect(output).toContain('secret');
-      expect(output).toContain('callbackUrls');
-      expect(output).toContain('logoutUrls');
-      expect(output).toContain('https://example.com/callback');
+      expect(output).toMatchInlineSnapshot(`
+        "import { defineAuth, secret } from '@aws-amplify/backend';
+
+        export const auth = defineAuth({
+          loginWith: {
+            email: true,
+            externalProviders: {
+              google: {
+                clientId: secret('GOOGLE_CLIENT_ID'),
+                clientSecret: secret('GOOGLE_CLIENT_SECRET'),
+              },
+              callbackUrls: ['https://example.com/callback'],
+              logoutUrls: ['https://example.com/logout'],
+            },
+          },
+        });
+        "
+      `);
     });
 
     it('renders Apple login with secrets', () => {
-      const options: AuthRenderOptions = {
+      const output = render({
         userPool: { SchemaAttributes: [] },
         identityProviders: [{ ProviderType: IdentityProviderTypeType.SignInWithApple, ProviderName: 'SignInWithApple' }],
         webClient: {
           CallbackURLs: ['https://example.com/callback'],
           LogoutURLs: ['https://example.com/logout'],
         },
-      };
-      const output = printNodes(renderer.render(options));
+      });
 
-      expect(output).toContain('signInWithApple');
-      expect(output).toContain('SIWA_CLIENT_ID');
-      expect(output).toContain('SIWA_KEY_ID');
-      expect(output).toContain('SIWA_PRIVATE_KEY');
-      expect(output).toContain('SIWA_TEAM_ID');
+      expect(output).toMatchInlineSnapshot(`
+        "import { defineAuth, secret } from '@aws-amplify/backend';
+
+        export const auth = defineAuth({
+          loginWith: {
+            email: true,
+            externalProviders: {
+              signInWithApple: {
+                clientId: secret('SIWA_CLIENT_ID'),
+                keyId: secret('SIWA_KEY_ID'),
+                privateKey: secret('SIWA_PRIVATE_KEY'),
+                teamId: secret('SIWA_TEAM_ID'),
+              },
+              callbackUrls: ['https://example.com/callback'],
+              logoutUrls: ['https://example.com/logout'],
+            },
+          },
+        });
+        "
+      `);
     });
 
     it('renders Amazon login with secrets', () => {
-      const options: AuthRenderOptions = {
+      const output = render({
         userPool: { SchemaAttributes: [] },
         identityProviders: [{ ProviderType: IdentityProviderTypeType.LoginWithAmazon, ProviderName: 'LoginWithAmazon' }],
         webClient: { CallbackURLs: [], LogoutURLs: [] },
-      };
-      const output = printNodes(renderer.render(options));
+      });
 
-      expect(output).toContain('loginWithAmazon');
-      expect(output).toContain('LOGINWITHAMAZON_CLIENT_ID');
-      expect(output).toContain('LOGINWITHAMAZON_CLIENT_SECRET');
+      expect(output).toMatchInlineSnapshot(`
+        "import { defineAuth, secret } from '@aws-amplify/backend';
+
+        export const auth = defineAuth({
+          loginWith: {
+            email: true,
+            externalProviders: {
+              loginWithAmazon: {
+                clientId: secret('LOGINWITHAMAZON_CLIENT_ID'),
+                clientSecret: secret('LOGINWITHAMAZON_CLIENT_SECRET'),
+              },
+              callbackUrls: [],
+              logoutUrls: [],
+            },
+          },
+        });
+        "
+      `);
     });
 
     it('renders Facebook login with secrets', () => {
-      const options: AuthRenderOptions = {
+      const output = render({
         userPool: { SchemaAttributes: [] },
         identityProviders: [{ ProviderType: IdentityProviderTypeType.Facebook, ProviderName: 'Facebook' }],
         webClient: { CallbackURLs: [], LogoutURLs: [] },
-      };
-      const output = printNodes(renderer.render(options));
+      });
 
-      expect(output).toContain('facebook');
-      expect(output).toContain('FACEBOOK_CLIENT_ID');
-      expect(output).toContain('FACEBOOK_CLIENT_SECRET');
+      expect(output).toMatchInlineSnapshot(`
+        "import { defineAuth, secret } from '@aws-amplify/backend';
+
+        export const auth = defineAuth({
+          loginWith: {
+            email: true,
+            externalProviders: {
+              facebook: {
+                clientId: secret('FACEBOOK_CLIENT_ID'),
+                clientSecret: secret('FACEBOOK_CLIENT_SECRET'),
+              },
+              callbackUrls: [],
+              logoutUrls: [],
+            },
+          },
+        });
+        "
+      `);
     });
 
     it('renders Google login with scopes', () => {
-      const options: AuthRenderOptions = {
+      const output = render({
         userPool: { SchemaAttributes: [] },
         identityProviders: [
           {
@@ -247,16 +370,31 @@ describe('AuthRenderer', () => {
           },
         ],
         webClient: { CallbackURLs: [], LogoutURLs: [] },
-      };
-      const output = printNodes(renderer.render(options));
+      });
 
-      expect(output).toContain('scopes');
-      expect(output).toContain("'profile'");
-      expect(output).toContain("'email'");
+      expect(output).toMatchInlineSnapshot(`
+        "import { defineAuth, secret } from '@aws-amplify/backend';
+
+        export const auth = defineAuth({
+          loginWith: {
+            email: true,
+            externalProviders: {
+              google: {
+                clientId: secret('GOOGLE_CLIENT_ID'),
+                clientSecret: secret('GOOGLE_CLIENT_SECRET'),
+                scopes: ['profile', 'email'],
+              },
+              callbackUrls: [],
+              logoutUrls: [],
+            },
+          },
+        });
+        "
+      `);
     });
 
     it('renders Google login with attribute mapping', () => {
-      const options: AuthRenderOptions = {
+      const output = render({
         userPool: { SchemaAttributes: [] },
         identityProviders: [
           {
@@ -266,16 +404,34 @@ describe('AuthRenderer', () => {
           },
         ],
         webClient: { CallbackURLs: [], LogoutURLs: [] },
-      };
-      const output = printNodes(renderer.render(options));
+      });
 
-      expect(output).toContain('attributeMapping');
-      expect(output).toContain("email: 'email'");
-      expect(output).toContain("givenName: 'given_name'");
+      expect(output).toMatchInlineSnapshot(`
+        "import { defineAuth, secret } from '@aws-amplify/backend';
+
+        export const auth = defineAuth({
+          loginWith: {
+            email: true,
+            externalProviders: {
+              google: {
+                clientId: secret('GOOGLE_CLIENT_ID'),
+                clientSecret: secret('GOOGLE_CLIENT_SECRET'),
+                attributeMapping: {
+                  email: 'email',
+                  givenName: 'given_name',
+                },
+              },
+              callbackUrls: [],
+              logoutUrls: [],
+            },
+          },
+        });
+        "
+      `);
     });
 
     it('renders OIDC provider', () => {
-      const options: AuthRenderOptions = {
+      const output = render({
         userPool: { SchemaAttributes: [] },
         identityProviders: [
           {
@@ -294,18 +450,40 @@ describe('AuthRenderer', () => {
           CallbackURLs: ['https://example.com/callback'],
           LogoutURLs: ['https://example.com/logout'],
         },
-      };
-      const output = printNodes(renderer.render(options));
+      });
 
-      expect(output).toContain('oidc');
-      expect(output).toContain('OIDC_CLIENT_ID_1');
-      expect(output).toContain('OIDC_CLIENT_SECRET_1');
-      expect(output).toContain("issuerUrl: 'https://accounts.google.com'");
-      expect(output).toContain("name: 'MyOIDC'");
+      expect(output).toMatchInlineSnapshot(`
+        "import { defineAuth, secret } from '@aws-amplify/backend';
+
+        export const auth = defineAuth({
+          loginWith: {
+            email: true,
+            externalProviders: {
+              oidc: [
+                {
+                  clientId: secret('OIDC_CLIENT_ID_1'),
+                  clientSecret: secret('OIDC_CLIENT_SECRET_1'),
+                  issuerUrl: 'https://accounts.google.com',
+                  name: 'MyOIDC',
+                  endpoints: {
+                    authorization: 'https://accounts.google.com/o/oauth2/v2/auth',
+                    token: 'https://oauth2.googleapis.com/token',
+                    userInfo: 'https://openidconnect.googleapis.com/v1/userinfo',
+                    jwksUri: 'https://www.googleapis.com/oauth2/v3/certs',
+                  },
+                },
+              ],
+              callbackUrls: ['https://example.com/callback'],
+              logoutUrls: ['https://example.com/logout'],
+            },
+          },
+        });
+        "
+      `);
     });
 
     it('renders SAML provider', () => {
-      const options: AuthRenderOptions = {
+      const output = render({
         userPool: { SchemaAttributes: [] },
         identityProviders: [
           {
@@ -320,17 +498,33 @@ describe('AuthRenderer', () => {
           CallbackURLs: ['https://example.com/callback'],
           LogoutURLs: ['https://example.com/logout'],
         },
-      };
-      const output = printNodes(renderer.render(options));
+      });
 
-      expect(output).toContain('saml');
-      expect(output).toContain("name: 'MySAML'");
-      expect(output).toContain("metadataContent: 'https://idp.example.com/metadata'");
-      expect(output).toContain("metadataType: 'URL'");
+      expect(output).toMatchInlineSnapshot(`
+        "import { defineAuth, secret } from '@aws-amplify/backend';
+
+        export const auth = defineAuth({
+          loginWith: {
+            email: true,
+            externalProviders: {
+              saml: {
+                metadata: {
+                  metadataContent: 'https://idp.example.com/metadata',
+                  metadataType: 'URL',
+                },
+                name: 'MySAML',
+              },
+              callbackUrls: ['https://example.com/callback'],
+              logoutUrls: ['https://example.com/logout'],
+            },
+          },
+        });
+        "
+      `);
     });
 
     it('renders multiple providers together', () => {
-      const options: AuthRenderOptions = {
+      const output = render({
         userPool: { SchemaAttributes: [] },
         identityProviders: [
           { ProviderType: IdentityProviderTypeType.Google, ProviderName: 'Google' },
@@ -341,12 +535,36 @@ describe('AuthRenderer', () => {
           CallbackURLs: ['https://example.com/callback'],
           LogoutURLs: ['https://example.com/logout'],
         },
-      };
-      const output = printNodes(renderer.render(options));
+      });
 
-      expect(output).toContain('google');
-      expect(output).toContain('facebook');
-      expect(output).toContain('signInWithApple');
+      expect(output).toMatchInlineSnapshot(`
+        "import { defineAuth, secret } from '@aws-amplify/backend';
+
+        export const auth = defineAuth({
+          loginWith: {
+            email: true,
+            externalProviders: {
+              google: {
+                clientId: secret('GOOGLE_CLIENT_ID'),
+                clientSecret: secret('GOOGLE_CLIENT_SECRET'),
+              },
+              signInWithApple: {
+                clientId: secret('SIWA_CLIENT_ID'),
+                keyId: secret('SIWA_KEY_ID'),
+                privateKey: secret('SIWA_PRIVATE_KEY'),
+                teamId: secret('SIWA_TEAM_ID'),
+              },
+              facebook: {
+                clientId: secret('FACEBOOK_CLIENT_ID'),
+                clientSecret: secret('FACEBOOK_CLIENT_SECRET'),
+              },
+              callbackUrls: ['https://example.com/callback'],
+              logoutUrls: ['https://example.com/logout'],
+            },
+          },
+        });
+        "
+      `);
     });
   });
 
@@ -358,18 +576,26 @@ describe('AuthRenderer', () => {
           permissions: { manageUsers: true, listUsers: true },
         },
       ];
-      const options: AuthRenderOptions = {
+      const output = render({
         userPool: { SchemaAttributes: [] },
         access,
-      };
-      const output = printNodes(renderer.render(options));
+      });
 
-      expect(output).toContain('access');
-      expect(output).toContain('allow');
-      expect(output).toContain('adminFunc');
-      expect(output).toContain("'manageUsers'");
-      expect(output).toContain("'listUsers'");
-      expect(output).toContain("from '../function/adminFunc/resource'");
+      expect(output).toMatchInlineSnapshot(`
+        "import { defineAuth } from '@aws-amplify/backend';
+        import { adminFunc } from '../function/adminFunc/resource';
+
+        export const auth = defineAuth({
+          loginWith: {
+            email: true,
+          },
+          access: (allow, _unused) => [
+            allow.resource(adminFunc).to(['manageUsers']),
+            allow.resource(adminFunc).to(['listUsers']),
+          ],
+        });
+        "
+      `);
     });
 
     it('renders multiple functions with auth access', () => {
@@ -377,26 +603,36 @@ describe('AuthRenderer', () => {
         { resourceName: 'func1', permissions: { createUser: true } },
         { resourceName: 'func2', permissions: { deleteUser: true, getUser: true } },
       ];
-      const options: AuthRenderOptions = {
+      const output = render({
         userPool: { SchemaAttributes: [] },
         access,
-      };
-      const output = printNodes(renderer.render(options));
+      });
 
-      expect(output).toContain('func1');
-      expect(output).toContain('func2');
-      expect(output).toContain("'createUser'");
-      expect(output).toContain("'deleteUser'");
-      expect(output).toContain("'getUser'");
+      expect(output).toMatchInlineSnapshot(`
+        "import { defineAuth } from '@aws-amplify/backend';
+        import { func1 } from '../function/func1/resource';
+        import { func2 } from '../function/func2/resource';
+
+        export const auth = defineAuth({
+          loginWith: {
+            email: true,
+          },
+          access: (allow, _unused) => [
+            allow.resource(func1).to(['createUser']),
+            allow.resource(func2).to(['deleteUser']),
+            allow.resource(func2).to(['getUser']),
+          ],
+        });
+        "
+      `);
     });
 
     it('skips functions with empty auth access', () => {
       const access: FunctionAccess[] = [{ resourceName: 'noAccessFunc', permissions: {} }];
-      const options: AuthRenderOptions = {
+      const output = render({
         userPool: { SchemaAttributes: [] },
         access,
-      };
-      const output = printNodes(renderer.render(options));
+      });
 
       expect(output).not.toContain('access');
       expect(output).not.toContain('noAccessFunc');
@@ -404,40 +640,23 @@ describe('AuthRenderer', () => {
   });
 
   describe('empty/minimal definitions', () => {
-    it('renders with no login options', () => {
-      const options: AuthRenderOptions = {
-        userPool: { SchemaAttributes: [] },
-      };
-      const output = printNodes(renderer.render(options));
-
-      expect(output).toContain('defineAuth');
-      expect(output).toContain('loginWith');
-    });
-
     it('does not render MFA when not provided', () => {
-      const options: AuthRenderOptions = {
-        userPool: { SchemaAttributes: [] },
-      };
-      const output = printNodes(renderer.render(options));
+      const output = render({ userPool: { SchemaAttributes: [] } });
 
       expect(output).not.toContain('multifactor');
     });
 
     it('does not render triggers when not provided', () => {
-      const options: AuthRenderOptions = {
-        userPool: { SchemaAttributes: [] },
-      };
-      const output = printNodes(renderer.render(options));
+      const output = render({ userPool: { SchemaAttributes: [] } });
 
       expect(output).not.toContain('triggers');
     });
 
     it('does not render groups when empty', () => {
-      const options: AuthRenderOptions = {
+      const output = render({
         userPool: { SchemaAttributes: [] },
         identityGroups: [],
-      };
-      const output = printNodes(renderer.render(options));
+      });
 
       expect(output).not.toContain('groups');
     });

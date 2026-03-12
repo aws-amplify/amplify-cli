@@ -30,32 +30,70 @@ function createBasicRestApi(overrides?: Partial<RestApiDefinition>): RestApiDefi
 }
 
 describe('RestApiRenderer', () => {
-  it('renders a basic REST API with stack and construct', () => {
+  it('renders a basic REST API', () => {
     const renderer = new RestApiRenderer(false, new Set(['myFunc']));
     const restApi = createBasicRestApi();
     const output = printStatements(renderer.renderApi(restApi));
 
-    expect(output).toContain('myApiStack');
-    expect(output).toContain('backend.createStack("rest-api-stack-myApi")');
-    expect(output).toContain('myApiApi');
-    expect(output).toContain('new RestApi');
-    expect(output).toContain('myApi-');
-    expect(output).toContain('branchName');
-  });
-
-  it('renders gateway responses for 4XX and 5XX', () => {
-    const renderer = new RestApiRenderer(false, new Set());
-    const restApi = createBasicRestApi();
-    const output = printStatements(renderer.renderApi(restApi));
-
-    expect(output).toContain('addGatewayResponse');
-    expect(output).toContain('"Default4XX"');
-    expect(output).toContain('DEFAULT_4XX');
-    expect(output).toContain('"Default5XX"');
-    expect(output).toContain('DEFAULT_5XX');
-    expect(output).toContain('"Access-Control-Allow-Origin"');
-    expect(output).toContain('"Access-Control-Allow-Headers"');
-    expect(output).toContain('"Access-Control-Allow-Methods"');
+    expect(output).toMatchInlineSnapshot(`
+      "const myApiStack = backend.createStack("rest-api-stack-myApi");
+      const myApiApi = new RestApi(myApiStack, "RestApi", {
+          restApiName: \`myApi-\${branchName}\`
+      });
+      myApiApi.addGatewayResponse("Default4XX", {
+          type: ResponseType.DEFAULT_4XX,
+          responseHeaders: {
+              "Access-Control-Allow-Origin": "'*'",
+              "Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+              "Access-Control-Allow-Methods": "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
+              "Access-Control-Expose-Headers": "'Date,X-Amzn-ErrorType'"
+          }
+      });
+      myApiApi.addGatewayResponse("Default5XX", {
+          type: ResponseType.DEFAULT_5XX,
+          responseHeaders: {
+              "Access-Control-Allow-Origin": "'*'",
+              "Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+              "Access-Control-Allow-Methods": "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
+              "Access-Control-Expose-Headers": "'Date,X-Amzn-ErrorType'"
+          }
+      });
+      const myFuncIntegration = new LambdaIntegration(backend.myFunc.resources.lambda);
+      const gen1myApiApi = RestApi.fromRestApiAttributes(myApiStack, "Gen1myApiApi", {
+          restApiId: "abc123",
+          rootResourceId: "root456"
+      });
+      const gen1myApiPolicy = new Policy(myApiStack, "Gen1myApiPolicy", {
+          statements: [new PolicyStatement({
+                  actions: ["execute-api:Invoke"],
+                  resources: [\`\${gen1myApiApi.arnForExecuteApi("GET", "/*")}\`, \`\${gen1myApiApi.arnForExecuteApi("POST", "/*")}\`]
+              })]
+      });
+      const items = myApiApi.root.addResource("items", {
+          defaultCorsPreflightOptions: {
+              allowOrigins: Cors.ALL_ORIGINS,
+              allowMethods: Cors.ALL_METHODS,
+              allowHeaders: ["Content-Type", "X-Amz-Date", "Authorization", "X-Api-Key", "X-Amz-Security-Token", "X-Amz-User-Agent"],
+              statusCode: 200
+          }
+      });
+      items.addMethod("ANY", myFuncIntegration);
+      items.addProxy({
+          anyMethod: true,
+          defaultIntegration: myFuncIntegration
+      });
+      backend.addOutput({
+          custom: {
+              API: {
+                  [myApiApi.restApiName]: {
+                      endpoint: myApiApi.url.slice(0, -1),
+                      region: Stack.of(myApiApi).region,
+                      apiName: myApiApi.restApiName
+                  }
+              }
+          }
+      });"
+    `);
   });
 
   it('renders Lambda integrations for unique functions', () => {
@@ -63,33 +101,66 @@ describe('RestApiRenderer', () => {
     const restApi = createBasicRestApi({ uniqueFunctions: ['myFunc', 'otherFunc'] });
     const output = printStatements(renderer.renderApi(restApi));
 
-    expect(output).toContain('myFuncIntegration');
-    expect(output).toContain('otherFuncIntegration');
-    expect(output).toContain('new LambdaIntegration');
-    expect(output).toContain('backend.myFunc.resources.lambda');
-  });
-
-  it('renders Gen1 API reference with fromRestApiAttributes', () => {
-    const renderer = new RestApiRenderer(false, new Set());
-    const restApi = createBasicRestApi();
-    const output = printStatements(renderer.renderApi(restApi));
-
-    expect(output).toContain('gen1myApiApi');
-    expect(output).toContain('RestApi.fromRestApiAttributes');
-    expect(output).toContain('restApiId: "abc123"');
-    expect(output).toContain('rootResourceId: "root456"');
-  });
-
-  it('renders Gen1 policy with execute-api:Invoke', () => {
-    const renderer = new RestApiRenderer(false, new Set());
-    const restApi = createBasicRestApi();
-    const output = printStatements(renderer.renderApi(restApi));
-
-    expect(output).toContain('gen1myApiPolicy');
-    expect(output).toContain('new Policy');
-    expect(output).toContain('new PolicyStatement');
-    expect(output).toContain('"execute-api:Invoke"');
-    expect(output).toContain('arnForExecuteApi');
+    expect(output).toMatchInlineSnapshot(`
+      "const myApiStack = backend.createStack("rest-api-stack-myApi");
+      const myApiApi = new RestApi(myApiStack, "RestApi", {
+          restApiName: \`myApi-\${branchName}\`
+      });
+      myApiApi.addGatewayResponse("Default4XX", {
+          type: ResponseType.DEFAULT_4XX,
+          responseHeaders: {
+              "Access-Control-Allow-Origin": "'*'",
+              "Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+              "Access-Control-Allow-Methods": "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
+              "Access-Control-Expose-Headers": "'Date,X-Amzn-ErrorType'"
+          }
+      });
+      myApiApi.addGatewayResponse("Default5XX", {
+          type: ResponseType.DEFAULT_5XX,
+          responseHeaders: {
+              "Access-Control-Allow-Origin": "'*'",
+              "Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+              "Access-Control-Allow-Methods": "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
+              "Access-Control-Expose-Headers": "'Date,X-Amzn-ErrorType'"
+          }
+      });
+      const myFuncIntegration = new LambdaIntegration(backend.myFunc.resources.lambda);
+      const otherFuncIntegration = new LambdaIntegration(backend.otherFunc.resources.lambda);
+      const gen1myApiApi = RestApi.fromRestApiAttributes(myApiStack, "Gen1myApiApi", {
+          restApiId: "abc123",
+          rootResourceId: "root456"
+      });
+      const gen1myApiPolicy = new Policy(myApiStack, "Gen1myApiPolicy", {
+          statements: [new PolicyStatement({
+                  actions: ["execute-api:Invoke"],
+                  resources: [\`\${gen1myApiApi.arnForExecuteApi("GET", "/*")}\`, \`\${gen1myApiApi.arnForExecuteApi("POST", "/*")}\`]
+              })]
+      });
+      const items = myApiApi.root.addResource("items", {
+          defaultCorsPreflightOptions: {
+              allowOrigins: Cors.ALL_ORIGINS,
+              allowMethods: Cors.ALL_METHODS,
+              allowHeaders: ["Content-Type", "X-Amz-Date", "Authorization", "X-Api-Key", "X-Amz-Security-Token", "X-Amz-User-Agent"],
+              statusCode: 200
+          }
+      });
+      items.addMethod("ANY", myFuncIntegration);
+      items.addProxy({
+          anyMethod: true,
+          defaultIntegration: myFuncIntegration
+      });
+      backend.addOutput({
+          custom: {
+              API: {
+                  [myApiApi.restApiName]: {
+                      endpoint: myApiApi.url.slice(0, -1),
+                      region: Stack.of(myApiApi).region,
+                      apiName: myApiApi.restApiName
+                  }
+              }
+          }
+      });"
+    `);
   });
 
   it('renders policy attachment when auth exists and authType is set', () => {
@@ -97,9 +168,66 @@ describe('RestApiRenderer', () => {
     const restApi = createBasicRestApi({ authType: 'private' });
     const output = printStatements(renderer.renderApi(restApi));
 
-    expect(output).toContain('authenticatedUserIamRole');
-    expect(output).toContain('attachInlinePolicy');
-    expect(output).toContain('gen1myApiPolicy');
+    expect(output).toMatchInlineSnapshot(`
+      "const myApiStack = backend.createStack("rest-api-stack-myApi");
+      const myApiApi = new RestApi(myApiStack, "RestApi", {
+          restApiName: \`myApi-\${branchName}\`
+      });
+      myApiApi.addGatewayResponse("Default4XX", {
+          type: ResponseType.DEFAULT_4XX,
+          responseHeaders: {
+              "Access-Control-Allow-Origin": "'*'",
+              "Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+              "Access-Control-Allow-Methods": "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
+              "Access-Control-Expose-Headers": "'Date,X-Amzn-ErrorType'"
+          }
+      });
+      myApiApi.addGatewayResponse("Default5XX", {
+          type: ResponseType.DEFAULT_5XX,
+          responseHeaders: {
+              "Access-Control-Allow-Origin": "'*'",
+              "Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+              "Access-Control-Allow-Methods": "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
+              "Access-Control-Expose-Headers": "'Date,X-Amzn-ErrorType'"
+          }
+      });
+      const myFuncIntegration = new LambdaIntegration(backend.myFunc.resources.lambda);
+      const gen1myApiApi = RestApi.fromRestApiAttributes(myApiStack, "Gen1myApiApi", {
+          restApiId: "abc123",
+          rootResourceId: "root456"
+      });
+      const gen1myApiPolicy = new Policy(myApiStack, "Gen1myApiPolicy", {
+          statements: [new PolicyStatement({
+                  actions: ["execute-api:Invoke"],
+                  resources: [\`\${gen1myApiApi.arnForExecuteApi("GET", "/*")}\`, \`\${gen1myApiApi.arnForExecuteApi("POST", "/*")}\`]
+              })]
+      });
+      backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(gen1myApiPolicy);
+      const items = myApiApi.root.addResource("items", {
+          defaultCorsPreflightOptions: {
+              allowOrigins: Cors.ALL_ORIGINS,
+              allowMethods: Cors.ALL_METHODS,
+              allowHeaders: ["Content-Type", "X-Amz-Date", "Authorization", "X-Api-Key", "X-Amz-Security-Token", "X-Amz-User-Agent"],
+              statusCode: 200
+          }
+      });
+      items.addMethod("ANY", myFuncIntegration);
+      items.addProxy({
+          anyMethod: true,
+          defaultIntegration: myFuncIntegration
+      });
+      backend.addOutput({
+          custom: {
+              API: {
+                  [myApiApi.restApiName]: {
+                      endpoint: myApiApi.url.slice(0, -1),
+                      region: Stack.of(myApiApi).region,
+                      apiName: myApiApi.restApiName
+                  }
+              }
+          }
+      });"
+    `);
   });
 
   it('does not render policy attachment when no auth', () => {
@@ -109,31 +237,6 @@ describe('RestApiRenderer', () => {
 
     const attachCount = (output.match(/attachInlinePolicy\(gen1myApiPolicy\)/g) || []).length;
     expect(attachCount).toBe(0);
-  });
-
-  it('renders resource paths with addResource and addMethod', () => {
-    const renderer = new RestApiRenderer(false, new Set(['myFunc']));
-    const restApi = createBasicRestApi();
-    const output = printStatements(renderer.renderApi(restApi));
-
-    expect(output).toContain('addResource');
-    expect(output).toContain('"items"');
-    expect(output).toContain('addMethod("ANY"');
-    expect(output).toContain('addProxy');
-    expect(output).toContain('anyMethod: true');
-  });
-
-  it('renders CORS preflight options', () => {
-    const renderer = new RestApiRenderer(false, new Set());
-    const restApi = createBasicRestApi();
-    const output = printStatements(renderer.renderApi(restApi));
-
-    expect(output).toContain('defaultCorsPreflightOptions');
-    expect(output).toContain('Cors.ALL_ORIGINS');
-    expect(output).toContain('Cors.ALL_METHODS');
-    expect(output).toContain('"Content-Type"');
-    expect(output).toContain('"Authorization"');
-    expect(output).toContain('statusCode: 200');
   });
 
   it('renders IAM auth type on resource', () => {
@@ -150,8 +253,68 @@ describe('RestApiRenderer', () => {
     });
     const output = printStatements(renderer.renderApi(restApi));
 
-    expect(output).toContain('AuthorizationType.IAM');
-    expect(output).toContain('defaultMethodOptions');
+    expect(output).toMatchInlineSnapshot(`
+      "const myApiStack = backend.createStack("rest-api-stack-myApi");
+      const myApiApi = new RestApi(myApiStack, "RestApi", {
+          restApiName: \`myApi-\${branchName}\`
+      });
+      myApiApi.addGatewayResponse("Default4XX", {
+          type: ResponseType.DEFAULT_4XX,
+          responseHeaders: {
+              "Access-Control-Allow-Origin": "'*'",
+              "Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+              "Access-Control-Allow-Methods": "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
+              "Access-Control-Expose-Headers": "'Date,X-Amzn-ErrorType'"
+          }
+      });
+      myApiApi.addGatewayResponse("Default5XX", {
+          type: ResponseType.DEFAULT_5XX,
+          responseHeaders: {
+              "Access-Control-Allow-Origin": "'*'",
+              "Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+              "Access-Control-Allow-Methods": "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
+              "Access-Control-Expose-Headers": "'Date,X-Amzn-ErrorType'"
+          }
+      });
+      const myFuncIntegration = new LambdaIntegration(backend.myFunc.resources.lambda);
+      const gen1myApiApi = RestApi.fromRestApiAttributes(myApiStack, "Gen1myApiApi", {
+          restApiId: "abc123",
+          rootResourceId: "root456"
+      });
+      const gen1myApiPolicy = new Policy(myApiStack, "Gen1myApiPolicy", {
+          statements: [new PolicyStatement({
+                  actions: ["execute-api:Invoke"],
+                  resources: [\`\${gen1myApiApi.arnForExecuteApi("GET", "/*")}\`]
+              })]
+      });
+      const items = myApiApi.root.addResource("items", {
+          defaultMethodOptions: {
+              authorizationType: AuthorizationType.IAM
+          },
+          defaultCorsPreflightOptions: {
+              allowOrigins: Cors.ALL_ORIGINS,
+              allowMethods: Cors.ALL_METHODS,
+              allowHeaders: ["Content-Type", "X-Amz-Date", "Authorization", "X-Api-Key", "X-Amz-Security-Token", "X-Amz-User-Agent"],
+              statusCode: 200
+          }
+      });
+      items.addMethod("ANY", myFuncIntegration);
+      items.addProxy({
+          anyMethod: true,
+          defaultIntegration: myFuncIntegration
+      });
+      backend.addOutput({
+          custom: {
+              API: {
+                  [myApiApi.restApiName]: {
+                      endpoint: myApiApi.url.slice(0, -1),
+                      region: Stack.of(myApiApi).region,
+                      apiName: myApiApi.restApiName
+                  }
+              }
+          }
+      });"
+    `);
   });
 
   it('renders auth path policies when permissions.hasAuth is true', () => {
@@ -168,10 +331,73 @@ describe('RestApiRenderer', () => {
     });
     const output = printStatements(renderer.renderApi(restApi));
 
-    expect(output).toContain('"itemsAuthPolicy"');
-    expect(output).toContain('authenticatedUserIamRole');
-    expect(output).toContain('arnForExecuteApi("GET"');
-    expect(output).toContain('arnForExecuteApi("POST"');
+    expect(output).toMatchInlineSnapshot(`
+      "const myApiStack = backend.createStack("rest-api-stack-myApi");
+      const myApiApi = new RestApi(myApiStack, "RestApi", {
+          restApiName: \`myApi-\${branchName}\`
+      });
+      myApiApi.addGatewayResponse("Default4XX", {
+          type: ResponseType.DEFAULT_4XX,
+          responseHeaders: {
+              "Access-Control-Allow-Origin": "'*'",
+              "Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+              "Access-Control-Allow-Methods": "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
+              "Access-Control-Expose-Headers": "'Date,X-Amzn-ErrorType'"
+          }
+      });
+      myApiApi.addGatewayResponse("Default5XX", {
+          type: ResponseType.DEFAULT_5XX,
+          responseHeaders: {
+              "Access-Control-Allow-Origin": "'*'",
+              "Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+              "Access-Control-Allow-Methods": "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
+              "Access-Control-Expose-Headers": "'Date,X-Amzn-ErrorType'"
+          }
+      });
+      const myFuncIntegration = new LambdaIntegration(backend.myFunc.resources.lambda);
+      const gen1myApiApi = RestApi.fromRestApiAttributes(myApiStack, "Gen1myApiApi", {
+          restApiId: "abc123",
+          rootResourceId: "root456"
+      });
+      const gen1myApiPolicy = new Policy(myApiStack, "Gen1myApiPolicy", {
+          statements: [new PolicyStatement({
+                  actions: ["execute-api:Invoke"],
+                  resources: [\`\${gen1myApiApi.arnForExecuteApi("GET", "/*")}\`, \`\${gen1myApiApi.arnForExecuteApi("POST", "/*")}\`]
+              })]
+      });
+      const items = myApiApi.root.addResource("items", {
+          defaultCorsPreflightOptions: {
+              allowOrigins: Cors.ALL_ORIGINS,
+              allowMethods: Cors.ALL_METHODS,
+              allowHeaders: ["Content-Type", "X-Amz-Date", "Authorization", "X-Api-Key", "X-Amz-Security-Token", "X-Amz-User-Agent"],
+              statusCode: 200
+          }
+      });
+      items.addMethod("ANY", myFuncIntegration);
+      items.addProxy({
+          anyMethod: true,
+          defaultIntegration: myFuncIntegration
+      });
+      // /items - all authenticated users
+
+      backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(new Policy(myApiStack, "itemsAuthPolicy", {
+          statements: [new PolicyStatement({
+                  actions: ["execute-api:Invoke"],
+                  resources: [myApiApi.arnForExecuteApi("GET", "/items"), myApiApi.arnForExecuteApi("GET", "/items/*"), myApiApi.arnForExecuteApi("POST", "/items"), myApiApi.arnForExecuteApi("POST", "/items/*")]
+              })]
+      }));
+      backend.addOutput({
+          custom: {
+              API: {
+                  [myApiApi.restApiName]: {
+                      endpoint: myApiApi.url.slice(0, -1),
+                      region: Stack.of(myApiApi).region,
+                      apiName: myApiApi.restApiName
+                  }
+              }
+          }
+      });"
+    `);
   });
 
   it('renders group path policies', () => {
@@ -190,23 +416,73 @@ describe('RestApiRenderer', () => {
     });
     const output = printStatements(renderer.renderApi(restApi));
 
-    expect(output).toContain('"adminadminsPolicy"');
-    expect(output).toContain('groups["admins"]');
-    expect(output).toContain('role');
-    expect(output).toContain('attachInlinePolicy');
-  });
+    expect(output).toMatchInlineSnapshot(`
+      "const myApiStack = backend.createStack("rest-api-stack-myApi");
+      const myApiApi = new RestApi(myApiStack, "RestApi", {
+          restApiName: \`myApi-\${branchName}\`
+      });
+      myApiApi.addGatewayResponse("Default4XX", {
+          type: ResponseType.DEFAULT_4XX,
+          responseHeaders: {
+              "Access-Control-Allow-Origin": "'*'",
+              "Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+              "Access-Control-Allow-Methods": "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
+              "Access-Control-Expose-Headers": "'Date,X-Amzn-ErrorType'"
+          }
+      });
+      myApiApi.addGatewayResponse("Default5XX", {
+          type: ResponseType.DEFAULT_5XX,
+          responseHeaders: {
+              "Access-Control-Allow-Origin": "'*'",
+              "Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+              "Access-Control-Allow-Methods": "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
+              "Access-Control-Expose-Headers": "'Date,X-Amzn-ErrorType'"
+          }
+      });
+      const myFuncIntegration = new LambdaIntegration(backend.myFunc.resources.lambda);
+      const gen1myApiApi = RestApi.fromRestApiAttributes(myApiStack, "Gen1myApiApi", {
+          restApiId: "abc123",
+          rootResourceId: "root456"
+      });
+      const gen1myApiPolicy = new Policy(myApiStack, "Gen1myApiPolicy", {
+          statements: [new PolicyStatement({
+                  actions: ["execute-api:Invoke"],
+                  resources: [\`\${gen1myApiApi.arnForExecuteApi("GET", "/*")}\`]
+              })]
+      });
+      const admin = myApiApi.root.addResource("admin", {
+          defaultCorsPreflightOptions: {
+              allowOrigins: Cors.ALL_ORIGINS,
+              allowMethods: Cors.ALL_METHODS,
+              allowHeaders: ["Content-Type", "X-Amz-Date", "Authorization", "X-Api-Key", "X-Amz-Security-Token", "X-Amz-User-Agent"],
+              statusCode: 200
+          }
+      });
+      admin.addMethod("ANY", myFuncIntegration);
+      admin.addProxy({
+          anyMethod: true,
+          defaultIntegration: myFuncIntegration
+      });
+      // /admin - admins group only
 
-  it('renders output with addOutput', () => {
-    const renderer = new RestApiRenderer(false, new Set());
-    const restApi = createBasicRestApi();
-    const output = printStatements(renderer.renderApi(restApi));
-
-    expect(output).toContain('backend.addOutput');
-    expect(output).toContain('API');
-    expect(output).toContain('endpoint');
-    expect(output).toContain('region');
-    expect(output).toContain('apiName');
-    expect(output).toContain('.url.slice(0, -1)');
+      backend.auth.resources.groups["admins"].role.attachInlinePolicy(new Policy(myApiStack, "adminadminsPolicy", {
+          statements: [new PolicyStatement({
+                  actions: ["execute-api:Invoke"],
+                  resources: [myApiApi.arnForExecuteApi("GET", "/admin"), myApiApi.arnForExecuteApi("GET", "/admin/*")]
+              })]
+      }));
+      backend.addOutput({
+          custom: {
+              API: {
+                  [myApiApi.restApiName]: {
+                      endpoint: myApiApi.url.slice(0, -1),
+                      region: Stack.of(myApiApi).region,
+                      apiName: myApiApi.restApiName
+                  }
+              }
+          }
+      });"
+    `);
   });
 
   it('appends Resource suffix when resource name collides with function name', () => {
@@ -227,8 +503,78 @@ describe('RestApiRenderer', () => {
     });
     const output = printStatements(renderer.renderApi(restApi));
 
-    expect(output).toContain('"items"');
-    expect(output).toContain('"users"');
+    expect(output).toMatchInlineSnapshot(`
+      "const myApiStack = backend.createStack("rest-api-stack-myApi");
+      const myApiApi = new RestApi(myApiStack, "RestApi", {
+          restApiName: \`myApi-\${branchName}\`
+      });
+      myApiApi.addGatewayResponse("Default4XX", {
+          type: ResponseType.DEFAULT_4XX,
+          responseHeaders: {
+              "Access-Control-Allow-Origin": "'*'",
+              "Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+              "Access-Control-Allow-Methods": "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
+              "Access-Control-Expose-Headers": "'Date,X-Amzn-ErrorType'"
+          }
+      });
+      myApiApi.addGatewayResponse("Default5XX", {
+          type: ResponseType.DEFAULT_5XX,
+          responseHeaders: {
+              "Access-Control-Allow-Origin": "'*'",
+              "Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+              "Access-Control-Allow-Methods": "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
+              "Access-Control-Expose-Headers": "'Date,X-Amzn-ErrorType'"
+          }
+      });
+      const myFuncIntegration = new LambdaIntegration(backend.myFunc.resources.lambda);
+      const gen1myApiApi = RestApi.fromRestApiAttributes(myApiStack, "Gen1myApiApi", {
+          restApiId: "abc123",
+          rootResourceId: "root456"
+      });
+      const gen1myApiPolicy = new Policy(myApiStack, "Gen1myApiPolicy", {
+          statements: [new PolicyStatement({
+                  actions: ["execute-api:Invoke"],
+                  resources: [\`\${gen1myApiApi.arnForExecuteApi("GET", "/*")}\`, \`\${gen1myApiApi.arnForExecuteApi("POST", "/*")}\`]
+              })]
+      });
+      const items = myApiApi.root.addResource("items", {
+          defaultCorsPreflightOptions: {
+              allowOrigins: Cors.ALL_ORIGINS,
+              allowMethods: Cors.ALL_METHODS,
+              allowHeaders: ["Content-Type", "X-Amz-Date", "Authorization", "X-Api-Key", "X-Amz-Security-Token", "X-Amz-User-Agent"],
+              statusCode: 200
+          }
+      });
+      items.addMethod("ANY", myFuncIntegration);
+      items.addProxy({
+          anyMethod: true,
+          defaultIntegration: myFuncIntegration
+      });
+      const users = myApiApi.root.addResource("users", {
+          defaultCorsPreflightOptions: {
+              allowOrigins: Cors.ALL_ORIGINS,
+              allowMethods: Cors.ALL_METHODS,
+              allowHeaders: ["Content-Type", "X-Amz-Date", "Authorization", "X-Api-Key", "X-Amz-Security-Token", "X-Amz-User-Agent"],
+              statusCode: 200
+          }
+      });
+      users.addMethod("ANY", myFuncIntegration);
+      users.addProxy({
+          anyMethod: true,
+          defaultIntegration: myFuncIntegration
+      });
+      backend.addOutput({
+          custom: {
+              API: {
+                  [myApiApi.restApiName]: {
+                      endpoint: myApiApi.url.slice(0, -1),
+                      region: Stack.of(myApiApi).region,
+                      apiName: myApiApi.restApiName
+                  }
+              }
+          }
+      });"
+    `);
   });
 
   it('handles no uniqueFunctions gracefully', () => {
