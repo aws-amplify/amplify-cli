@@ -95,6 +95,9 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
 
     const resourceIds = [...this.filterResourcesByType(originalTemplate).keys()];
 
+    // Resolver ordering (deps → outputs) differs from resolveSource (params → outputs → deps → conditions).
+    // Order is irrelevant: resolveDependencies only touches DependsOn (string arrays),
+    // resolveOutputs only touches Ref/Fn::GetAtt (object nodes). They're orthogonal.
     const stackResources = await facade.fetchStackResources(stackId);
     const withDeps = resolveDependencies(originalTemplate, resourceIds);
     const resolved = resolveOutputs({
