@@ -62,4 +62,46 @@ describe('resolveParameters', () => {
     const result = resolveParameters(baseTemplate, []);
     expect(result).toBe(baseTemplate); // Same reference — no clone needed
   });
+
+  it('splits List<Number> values into arrays', () => {
+    const template: CFNTemplate = {
+      ...baseTemplate,
+      Parameters: { ...baseTemplate.Parameters, NumList: { Type: 'List<Number>' } },
+      Resources: { R: { Type: 'AWS::Lambda::Function', Properties: { Nums: { Ref: 'NumList' } } } },
+    };
+    const result = resolveParameters(template, [{ ParameterKey: 'NumList', ParameterValue: '1,2,3' }]);
+    expect(result.Resources.R.Properties.Nums).toEqual(['1', '2', '3']);
+  });
+
+  it('resolves refs nested inside arrays', () => {
+    const template: CFNTemplate = {
+      ...baseTemplate,
+      Resources: {
+        R: { Type: 'AWS::Lambda::Function', Properties: { Tags: [{ Key: 'env', Value: { Ref: 'BucketNameParam' } }] } },
+      },
+    };
+    const result = resolveParameters(template, [{ ParameterKey: 'BucketNameParam', ParameterValue: 'prod' }]);
+    expect((result.Resources.R.Properties.Tags as any[])[0].Value).toBe('prod');
+  });
+
+  it('skips parameters not defined in template Parameters section', () => {
+    const result = resolveParameters(baseTemplate, [{ ParameterKey: 'Unknown', ParameterValue: 'val' }]);
+    // Unknown param has no entry in template.Parameters → skipped, Ref stays
+    expect(result.Resources.MyBucket.Properties.BucketName).toEqual({ Ref: 'BucketNameParam' });
+  });
+
+  it('throws when parameter has no ParameterKey', () => {
+    expect(() => resolveParameters(baseTemplate, [{ ParameterKey: undefined, ParameterValue: 'x' } as any])).toThrow(
+      'Encountered a stack parameter with no ParameterKey',
+    );
+  });
+
+  it('wraps single-value CommaDelimitedList in array', () => {
+    const template: CFNTemplate = {
+      ...baseTemplate,
+      Resources: { R: { Type: 'AWS::Lambda::Function', Properties: { Zones: { Ref: 'ListParam' } } } },
+    };
+    const result = resolveParameters(template, [{ ParameterKey: 'ListParam', ParameterValue: 'single' }]);
+    expect(result.Resources.R.Properties.Zones).toEqual(['single']);
+  });
 });

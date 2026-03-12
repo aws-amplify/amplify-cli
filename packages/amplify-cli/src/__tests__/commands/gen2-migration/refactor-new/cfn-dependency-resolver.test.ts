@@ -42,4 +42,29 @@ describe('resolveDependencies', () => {
     const result = resolveDependencies(template, ['Moving']);
     expect(result.Resources.NoDeps.DependsOn).toBeUndefined();
   });
+
+  it('handles string DependsOn (not array) for staying resources', () => {
+    const template = makeTemplate({
+      Staying: { Type: 'AWS::Lambda::Function', DependsOn: 'Moving' },
+      Moving: { Type: 'AWS::S3::Bucket' },
+    });
+
+    const result = resolveDependencies(template, ['Moving']);
+    // String normalized to array, then filtered — result is empty array (not undefined)
+    expect(result.Resources.Staying.DependsOn).toEqual([]);
+  });
+
+  it('leaves DependsOn unchanged when all resources are moving together', () => {
+    const template = makeTemplate({
+      A: { Type: 'AWS::S3::Bucket', DependsOn: ['B'] },
+      B: { Type: 'AWS::S3::BucketPolicy', DependsOn: ['C'] },
+      C: { Type: 'AWS::IAM::Role' },
+    });
+
+    const result = resolveDependencies(template, ['A', 'B', 'C']);
+    // Neither filter condition triggers — deps.length === depsInRefactor.length for all
+    expect(result.Resources.A.DependsOn).toEqual(['B']);
+    expect(result.Resources.B.DependsOn).toEqual(['C']);
+    expect(result.Resources.C.DependsOn).toBeUndefined();
+  });
 });
