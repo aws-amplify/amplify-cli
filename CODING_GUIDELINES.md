@@ -1,4 +1,4 @@
-# General Coding Guidelines — Expanded
+# General Coding Guidelines
 
 These guidelines target problematic coding patterns observed in this project. Each guideline is explained with rationale and alternatives. Guidelines are ordered by severity — architectural issues first, code hygiene last.
 
