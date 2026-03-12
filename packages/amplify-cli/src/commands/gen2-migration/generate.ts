@@ -5,7 +5,7 @@ import execa from 'execa';
 import { AmplifyMigrationStep } from './_step';
 import { AmplifyMigrationOperation } from './_operation';
 import { AmplifyGen2MigrationValidations } from './_validations';
-import { createAwsClients } from './generate-new/input/aws-clients';
+import { AwsClients } from './aws-clients';
 import { Gen1App } from './generate-new/input/gen1-app';
 import { Generator } from './generate-new/generator';
 import { BackendGenerator } from './generate-new/output/backend.generator';
@@ -55,7 +55,7 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
    * can display descriptions to the user before confirmation.
    */
   public async execute(): Promise<AmplifyMigrationOperation[]> {
-    const clients = createAwsClients(this.region);
+    const clients = new AwsClients({ region: this.region });
     const gen1App = await Gen1App.create({ appId: this.appId, region: this.region, envName: this.currentEnvName, clients });
 
     const outputDir = await fs.mkdtemp(path.join(os.tmpdir(), 'amplify-gen2-'));

@@ -4,7 +4,7 @@ import { AmplifyMigrationOperation } from '../_operation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { GetCallerIdentityCommand, STSClient } from '@aws-sdk/client-sts';
 import { AmplifyGen2MigrationValidations } from '../_validations';
-import { AwsClients } from './aws-clients';
+import { AwsClients } from '../aws-clients';
 import { StackFacade } from './stack-facade';
 import { Refactorer } from './refactorer';
 import { AuthForwardRefactorer } from './auth/auth-forward';

@@ -146,10 +146,10 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
     const holdingStackName = getHoldingStackName(extractStackNameFromId(gen2StackId));
 
     // Read during plan() — all AWS reads happen here
-    const holdingStack = await findHoldingStack(this.clients.cfn, holdingStackName);
+    const holdingStack = await findHoldingStack(this.clients.cloudFormation, holdingStackName);
     if (!holdingStack) return { operations: [] };
 
-    const holdingTemplateResponse = await this.clients.cfn.send(
+    const holdingTemplateResponse = await this.clients.cloudFormation.send(
       new GetTemplateCommand({ StackName: holdingStackName, TemplateStage: 'Original' }),
     );
     if (!holdingTemplateResponse.TemplateBody) {
@@ -197,7 +197,7 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
           describe: async () => [`Add placeholder to holding stack '${holdingStackName}'`],
           execute: async () => {
             await tryUpdateStack({
-              cfnClient: this.clients.cfn,
+              cfnClient: this.clients.cloudFormation,
               stackName: holdingStackName,
               parameters: [],
               templateBody: holdingWithPlaceholder,
@@ -211,7 +211,7 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
           },
           describe: async () => [`Restore ${resourcesToRestore.length} resource(s) from holding stack to Gen2`],
           execute: async () => {
-            const result = await tryRefactorStack(this.clients.cfn, {
+            const result = await tryRefactorStack(this.clients.cloudFormation, {
               StackDefinitions: [
                 { TemplateBody: JSON.stringify(emptyHolding), StackName: holdingStackName },
                 { TemplateBody: JSON.stringify(restoreTarget), StackName: gen2StackId },
@@ -242,7 +242,7 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
       },
       describe: async () => [`Delete holding stack '${holdingStackName}'`],
       execute: async () => {
-        await deleteHoldingStack(this.clients.cfn, holdingStackName);
+        await deleteHoldingStack(this.clients.cloudFormation, holdingStackName);
       },
     };
   }

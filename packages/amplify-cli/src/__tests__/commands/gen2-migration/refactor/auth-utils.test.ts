@@ -1,6 +1,6 @@
 import { discoverGen1AuthStacks } from '../../../../commands/gen2-migration/refactor/auth/auth-utils';
 import { StackFacade } from '../../../../commands/gen2-migration/refactor/stack-facade';
-import { AwsClients } from '../../../../commands/gen2-migration/refactor/aws-clients';
+import { AwsClients } from '../../../../commands/gen2-migration/aws-clients';
 import { mockClient } from 'aws-sdk-client-mock';
 import { CloudFormationClient, DescribeStacksCommand, DescribeStackResourcesCommand, ResourceStatus } from '@aws-sdk/client-cloudformation';
 
@@ -55,7 +55,7 @@ describe('discoverGen1AuthStacks', () => {
     });
 
     const clients = new AwsClients({ region: 'us-east-1' });
-    (clients as any).cfn = new CloudFormationClient({});
+    (clients as any).cloudFormation = new CloudFormationClient({});
     const facade = new StackFacade(clients, 'root');
     const result = await discoverGen1AuthStacks(facade);
 
@@ -80,7 +80,7 @@ describe('discoverGen1AuthStacks', () => {
     });
 
     const clients = new AwsClients({ region: 'us-east-1' });
-    (clients as any).cfn = new CloudFormationClient({});
+    (clients as any).cloudFormation = new CloudFormationClient({});
     const facade = new StackFacade(clients, 'root');
     const result = await discoverGen1AuthStacks(facade);
 
@@ -112,7 +112,7 @@ describe('discoverGen1AuthStacks', () => {
     });
 
     const clients = new AwsClients({ region: 'us-east-1' });
-    (clients as any).cfn = new CloudFormationClient({});
+    (clients as any).cloudFormation = new CloudFormationClient({});
     const facade = new StackFacade(clients, 'root');
     const result = await discoverGen1AuthStacks(facade);
 

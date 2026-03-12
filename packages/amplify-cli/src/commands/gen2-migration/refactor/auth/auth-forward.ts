@@ -2,7 +2,7 @@ import { Output, Parameter } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { CFNResource } from '../../cfn-template';
 import { AmplifyMigrationOperation } from '../../_operation';
-import { AwsClients } from '../aws-clients';
+import { AwsClients } from '../../aws-clients';
 import { StackFacade } from '../stack-facade';
 import { retrieveOAuthValues } from '../oauth-values-retriever';
 import { ForwardCategoryRefactorer } from '../workflow/forward-category-refactorer';
@@ -137,7 +137,7 @@ export class AuthForwardRefactorer extends ForwardCategoryRefactorer {
 
     const oAuthValues = await retrieveOAuthValues({
       ssmClient: this.clients.ssm,
-      cognitoIdpClient: this.clients.cognito,
+      cognitoIdpClient: this.clients.cognitoIdentityProvider,
       oAuthParameter: oAuthParam,
       userPoolId,
       appId: this.appId,

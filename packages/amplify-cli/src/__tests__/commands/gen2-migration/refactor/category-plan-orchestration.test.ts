@@ -3,7 +3,7 @@ import { StorageRollbackRefactorer } from '../../../../commands/gen2-migration/r
 import { AnalyticsForwardRefactorer } from '../../../../commands/gen2-migration/refactor/analytics/analytics-forward';
 import { AnalyticsRollbackRefactorer } from '../../../../commands/gen2-migration/refactor/analytics/analytics-rollback';
 import { CFNTemplate } from '../../../../commands/gen2-migration/cfn-template';
-import { AwsClients } from '../../../../commands/gen2-migration/refactor/aws-clients';
+import { AwsClients } from '../../../../commands/gen2-migration/aws-clients';
 import { StackFacade } from '../../../../commands/gen2-migration/refactor/stack-facade';
 import { mockClient } from 'aws-sdk-client-mock';
 import {
@@ -59,7 +59,7 @@ function setupStorageMocks(cfnMock: ReturnType<typeof mockClient>) {
 
 function makeInstances() {
   const clients = new AwsClients({ region: 'us-east-1' });
-  (clients as any).cfn = new CloudFormationClient({});
+  (clients as any).cloudFormation = new CloudFormationClient({});
   const gen1Env = new StackFacade(clients, 'gen1-root');
   const gen2Branch = new StackFacade(clients, 'gen2-root');
   return { clients, gen1Env, gen2Branch };

@@ -6,7 +6,7 @@ import {
   StackResource,
 } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
-import { AwsClients } from './aws-clients';
+import { AwsClients } from '../aws-clients';
 import { CFNTemplate } from '../cfn-template';
 
 /**
@@ -40,7 +40,7 @@ export class StackFacade {
    */
   public async fetchTemplate(stackId: string): Promise<CFNTemplate> {
     return this.cachedFetch(this.templateCache, stackId, async () => {
-      const response = await this.clients.cfn.send(new GetTemplateCommand({ StackName: stackId, TemplateStage: 'Original' }));
+      const response = await this.clients.cloudFormation.send(new GetTemplateCommand({ StackName: stackId, TemplateStage: 'Original' }));
       if (!response.TemplateBody) {
         throw new AmplifyError('InvalidStackError', { message: `Stack '${stackId}' returned an empty template` });
       }
@@ -53,7 +53,7 @@ export class StackFacade {
    */
   public async fetchStackDescription(stackId: string): Promise<Stack> {
     return this.cachedFetch(this.descriptionCache, stackId, async () => {
-      const response = await this.clients.cfn.send(new DescribeStacksCommand({ StackName: stackId }));
+      const response = await this.clients.cloudFormation.send(new DescribeStacksCommand({ StackName: stackId }));
       const stack = response.Stacks?.[0];
       if (!stack) {
         throw new AmplifyError('StackNotFoundError', { message: `Stack '${stackId}' not found` });
@@ -67,7 +67,7 @@ export class StackFacade {
    */
   public async fetchStackResources(stackId: string): Promise<StackResource[]> {
     return this.cachedFetch(this.resourcesCache, stackId, async () => {
-      const response = await this.clients.cfn.send(new DescribeStackResourcesCommand({ StackName: stackId }));
+      const response = await this.clients.cloudFormation.send(new DescribeStackResourcesCommand({ StackName: stackId }));
       return response.StackResources ?? [];
     });
   }
@@ -88,7 +88,7 @@ export class StackFacade {
   // Amplify projects are unlikely to exceed this limit. If pagination is needed in the future,
   // switch to ListStackResources (paginated) and update the test mock accordingly.
   private async doFetchNestedStacks(): Promise<StackResource[]> {
-    const response = await this.clients.cfn.send(new DescribeStackResourcesCommand({ StackName: this.rootStackName }));
+    const response = await this.clients.cloudFormation.send(new DescribeStackResourcesCommand({ StackName: this.rootStackName }));
     return (response.StackResources ?? []).filter((r) => r.ResourceType === 'AWS::CloudFormation::Stack');
   }
 }

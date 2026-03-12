@@ -1,6 +1,6 @@
 import { AuthForwardRefactorer } from '../../../../commands/gen2-migration/refactor/auth/auth-forward';
 import { CFNTemplate } from '../../../../commands/gen2-migration/cfn-template';
-import { AwsClients } from '../../../../commands/gen2-migration/refactor/aws-clients';
+import { AwsClients } from '../../../../commands/gen2-migration/aws-clients';
 import { StackFacade } from '../../../../commands/gen2-migration/refactor/stack-facade';
 import { mockClient } from 'aws-sdk-client-mock';
 import {
@@ -136,7 +136,7 @@ describe('AuthForwardRefactorer.plan() — operation sequence', () => {
     setupMocks(cfnMock);
 
     const clients = new AwsClients({ region: 'us-east-1' });
-    (clients as any).cfn = new CloudFormationClient({});
+    (clients as any).cloudFormation = new CloudFormationClient({});
     const gen1Env = new StackFacade(clients, 'gen1-root');
     const gen2Branch = new StackFacade(clients, 'gen2-root');
     const refactorer = new AuthForwardRefactorer(gen1Env, gen2Branch, clients, 'us-east-1', '123456789', 'appId', 'main');
@@ -157,7 +157,7 @@ describe('AuthForwardRefactorer.plan() — operation sequence', () => {
     setupMocks(cfnMock, { includeUpg: true });
 
     const clients = new AwsClients({ region: 'us-east-1' });
-    (clients as any).cfn = new CloudFormationClient({});
+    (clients as any).cloudFormation = new CloudFormationClient({});
     const gen1Env = new StackFacade(clients, 'gen1-root');
     const gen2Branch = new StackFacade(clients, 'gen2-root');
     const refactorer = new AuthForwardRefactorer(gen1Env, gen2Branch, clients, 'us-east-1', '123456789', 'appId', 'main');
@@ -238,8 +238,8 @@ describe('AuthForwardRefactorer.plan() — operation sequence', () => {
     });
 
     const clients = new AwsClients({ region: 'us-east-1' });
-    (clients as any).cfn = new CloudFormationClient({});
-    (clients as any).cognito = new CognitoIdentityProviderClient({});
+    (clients as any).cloudFormation = new CloudFormationClient({});
+    (clients as any).cognitoIdentityProvider = new CognitoIdentityProviderClient({});
     const gen1Env = new StackFacade(clients, 'gen1-root');
     const gen2Branch = new StackFacade(clients, 'gen2-root');
     const refactorer = new AuthForwardRefactorer(gen1Env, gen2Branch, clients, 'us-east-1', '123456789', 'appId', 'main');
@@ -288,7 +288,7 @@ describe('AuthForwardRefactorer.plan() — operation sequence', () => {
     });
 
     const clients = new AwsClients({ region: 'us-east-1' });
-    (clients as any).cfn = new CloudFormationClient({});
+    (clients as any).cloudFormation = new CloudFormationClient({});
     const gen1Env = new StackFacade(clients, 'gen1-root');
     const gen2Branch = new StackFacade(clients, 'gen2-root');
     const refactorer = new AuthForwardRefactorer(gen1Env, gen2Branch, clients, 'us-east-1', '123456789', 'appId', 'main');

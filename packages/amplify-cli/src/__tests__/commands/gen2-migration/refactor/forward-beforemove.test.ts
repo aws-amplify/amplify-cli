@@ -1,7 +1,7 @@
 import { ForwardCategoryRefactorer } from '../../../../commands/gen2-migration/refactor/workflow/forward-category-refactorer';
 import { CFNResource, CFNTemplate } from '../../../../commands/gen2-migration/cfn-template';
 import { ResolvedStack } from '../../../../commands/gen2-migration/refactor/workflow/category-refactorer';
-import { AwsClients } from '../../../../commands/gen2-migration/refactor/aws-clients';
+import { AwsClients } from '../../../../commands/gen2-migration/aws-clients';
 import { StackFacade } from '../../../../commands/gen2-migration/refactor/stack-facade';
 import { mockClient } from 'aws-sdk-client-mock';
 import {
@@ -73,7 +73,7 @@ describe('ForwardCategoryRefactorer.beforeMovePlan', () => {
     cfnMock.on(DescribeStackResourcesCommand).resolves({ StackResources: [] });
 
     const clients = new AwsClients({ region: 'us-east-1' });
-    (clients as any).cfn = new CloudFormationClient({});
+    (clients as any).cloudFormation = new CloudFormationClient({});
     const refactorer = new TestForwardRefactorer(
       new StackFacade(clients, 'g1'),
       new StackFacade(clients, 'g2'),
@@ -118,7 +118,7 @@ describe('ForwardCategoryRefactorer.beforeMovePlan', () => {
     cfnMock.on(DescribeStackResourcesCommand).resolves({ StackResources: [] });
 
     const clients = new AwsClients({ region: 'us-east-1' });
-    (clients as any).cfn = new CloudFormationClient({});
+    (clients as any).cloudFormation = new CloudFormationClient({});
     const refactorer = new TestForwardRefactorer(
       new StackFacade(clients, 'g1'),
       new StackFacade(clients, 'g2'),

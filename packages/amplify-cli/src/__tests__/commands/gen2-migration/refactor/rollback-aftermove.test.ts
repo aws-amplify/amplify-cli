@@ -1,7 +1,7 @@
 import { RollbackCategoryRefactorer } from '../../../../commands/gen2-migration/refactor/workflow/rollback-category-refactorer';
 import { CFNResource, CFNTemplate } from '../../../../commands/gen2-migration/cfn-template';
 import { ResolvedStack } from '../../../../commands/gen2-migration/refactor/workflow/category-refactorer';
-import { AwsClients } from '../../../../commands/gen2-migration/refactor/aws-clients';
+import { AwsClients } from '../../../../commands/gen2-migration/aws-clients';
 import { StackFacade } from '../../../../commands/gen2-migration/refactor/stack-facade';
 import { mockClient } from 'aws-sdk-client-mock';
 import {
@@ -77,7 +77,7 @@ describe('RollbackCategoryRefactorer.afterMovePlan', () => {
     cfnMock.on(DescribeStackResourcesCommand).resolves({ StackResources: [] });
 
     const clients = new AwsClients({ region: 'us-east-1' });
-    (clients as any).cfn = new CloudFormationClient({});
+    (clients as any).cloudFormation = new CloudFormationClient({});
     const gen1Env = new StackFacade(clients, 'gen1-root');
     const gen2Branch = new StackFacade(clients, 'gen2-root');
     const refactorer = new TestRollbackRefactorer(gen1Env, gen2Branch, clients, 'us-east-1', '123456789');
@@ -138,7 +138,7 @@ describe('RollbackCategoryRefactorer.afterMovePlan', () => {
     cfnMock.on(DescribeStacksCommand).resolves({ Stacks: [] });
 
     const clients = new AwsClients({ region: 'us-east-1' });
-    (clients as any).cfn = new CloudFormationClient({});
+    (clients as any).cloudFormation = new CloudFormationClient({});
     const gen1Env = new StackFacade(clients, 'gen1-root');
     const gen2Branch = new StackFacade(clients, 'gen2-root');
     const refactorer = new TestRollbackRefactorer(gen1Env, gen2Branch, clients, 'us-east-1', '123456789');

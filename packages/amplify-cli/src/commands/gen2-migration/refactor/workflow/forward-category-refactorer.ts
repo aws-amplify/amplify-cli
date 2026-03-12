@@ -155,12 +155,12 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
         describe: async () => [`Move Gen2 resources to holding stack '${holdingStackName}'`],
         execute: async () => {
           // Clean up orphaned holding stack from a previous failed attempt
-          const existing = await findHoldingStack(this.clients.cfn, holdingStackName);
+          const existing = await findHoldingStack(this.clients.cloudFormation, holdingStackName);
           if (existing?.StackStatus === 'REVIEW_IN_PROGRESS') {
-            await deleteHoldingStack(this.clients.cfn, holdingStackName);
+            await deleteHoldingStack(this.clients.cloudFormation, holdingStackName);
           }
 
-          const result = await tryRefactorStack(this.clients.cfn, {
+          const result = await tryRefactorStack(this.clients.cloudFormation, {
             StackDefinitions: [
               { TemplateBody: JSON.stringify(postTargetTemplate), StackName: target.stackId },
               { TemplateBody: JSON.stringify(holdingTemplate), StackName: holdingStackName },

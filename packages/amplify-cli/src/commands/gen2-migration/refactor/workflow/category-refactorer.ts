@@ -3,7 +3,7 @@ import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { CFNResource, CFNStackStatus, CFNTemplate } from '../../cfn-template';
 import { Refactorer } from '../refactorer';
 import { AmplifyMigrationOperation } from '../../_operation';
-import { AwsClients } from '../aws-clients';
+import { AwsClients } from '../../aws-clients';
 import { StackFacade } from '../stack-facade';
 import { tryUpdateStack } from '../cfn-stack-updater';
 import { tryRefactorStack, RefactorFailure } from '../cfn-stack-refactor-updater';
@@ -159,7 +159,7 @@ export abstract class CategoryRefactorer implements Refactorer {
         describe: async () => [`Update source stack '${extractStackNameFromId(source.stackId)}' with resolved references`],
         execute: async () => {
           const status = await tryUpdateStack({
-            cfnClient: this.clients.cfn,
+            cfnClient: this.clients.cloudFormation,
             stackName: source.stackId,
             parameters: source.parameters,
             templateBody: source.resolvedTemplate,
@@ -187,7 +187,7 @@ export abstract class CategoryRefactorer implements Refactorer {
         describe: async () => [`Update target stack '${extractStackNameFromId(target.stackId)}' with resolved references`],
         execute: async () => {
           const status = await tryUpdateStack({
-            cfnClient: this.clients.cfn,
+            cfnClient: this.clients.cloudFormation,
             stackName: target.stackId,
             parameters: target.parameters,
             templateBody: target.resolvedTemplate,
@@ -264,7 +264,7 @@ export abstract class CategoryRefactorer implements Refactorer {
           )}'`,
         ],
         execute: async () => {
-          const result = await tryRefactorStack(this.clients.cfn, {
+          const result = await tryRefactorStack(this.clients.cloudFormation, {
             StackDefinitions: [
               { TemplateBody: JSON.stringify(finalSource), StackName: sourceStackId },
               { TemplateBody: JSON.stringify(finalTarget), StackName: destStackId },

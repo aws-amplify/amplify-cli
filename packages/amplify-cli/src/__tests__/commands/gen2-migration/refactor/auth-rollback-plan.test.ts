@@ -1,6 +1,6 @@
 import { AuthRollbackRefactorer } from '../../../../commands/gen2-migration/refactor/auth/auth-rollback';
 import { CFNTemplate } from '../../../../commands/gen2-migration/cfn-template';
-import { AwsClients } from '../../../../commands/gen2-migration/refactor/aws-clients';
+import { AwsClients } from '../../../../commands/gen2-migration/aws-clients';
 import { StackFacade } from '../../../../commands/gen2-migration/refactor/stack-facade';
 import { mockClient } from 'aws-sdk-client-mock';
 import {
@@ -125,7 +125,7 @@ describe('AuthRollbackRefactorer.plan()', () => {
   it('main auth only: produces move operations (no updateSource/updateTarget for rollback)', async () => {
     setupBasicMocks();
     const clients = new AwsClients({ region: 'us-east-1' });
-    (clients as any).cfn = new CloudFormationClient({});
+    (clients as any).cloudFormation = new CloudFormationClient({});
     const refactorer = new AuthRollbackRefactorer(
       new StackFacade(clients, 'gen1-root'),
       new StackFacade(clients, 'gen2-root'),
@@ -155,7 +155,7 @@ describe('AuthRollbackRefactorer.plan()', () => {
     cfnMock.on(GetTemplateCommand, { StackName: 'gen2-auth' }).resolves({ TemplateBody: JSON.stringify(gen2WithUpg) });
 
     const clients = new AwsClients({ region: 'us-east-1' });
-    (clients as any).cfn = new CloudFormationClient({});
+    (clients as any).cloudFormation = new CloudFormationClient({});
     const refactorer = new AuthRollbackRefactorer(
       new StackFacade(clients, 'gen1-root'),
       new StackFacade(clients, 'gen2-root'),
@@ -185,7 +185,7 @@ describe('AuthRollbackRefactorer.plan()', () => {
     cfnMock.on(GetTemplateCommand, { StackName: 'gen2-auth' }).resolves({ TemplateBody: JSON.stringify(gen2BadUpg) });
 
     const clients = new AwsClients({ region: 'us-east-1' });
-    (clients as any).cfn = new CloudFormationClient({});
+    (clients as any).cloudFormation = new CloudFormationClient({});
     const refactorer = new AuthRollbackRefactorer(
       new StackFacade(clients, 'gen1-root'),
       new StackFacade(clients, 'gen2-root'),

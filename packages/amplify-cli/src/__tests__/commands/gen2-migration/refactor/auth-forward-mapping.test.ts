@@ -1,6 +1,6 @@
 import { AuthForwardRefactorer } from '../../../../commands/gen2-migration/refactor/auth/auth-forward';
 import { CFNResource } from '../../../../commands/gen2-migration/cfn-template';
-import { AwsClients } from '../../../../commands/gen2-migration/refactor/aws-clients';
+import { AwsClients } from '../../../../commands/gen2-migration/aws-clients';
 import { StackFacade } from '../../../../commands/gen2-migration/refactor/stack-facade';
 
 /**
