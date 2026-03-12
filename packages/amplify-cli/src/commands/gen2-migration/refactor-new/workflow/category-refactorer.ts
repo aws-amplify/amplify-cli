@@ -153,7 +153,7 @@ export abstract class CategoryRefactorer implements Refactorer {
     return [
       {
         validate: async () => {
-          // R6: check resolved template doesn't remove stateful resources
+          this.validateNoResourceRemoval(source);
         },
         describe: async () => [`Update source stack '${extractStackNameFromId(source.stackId)}' with resolved references`],
         execute: async () => {
@@ -181,7 +181,7 @@ export abstract class CategoryRefactorer implements Refactorer {
     return [
       {
         validate: async () => {
-          // R6: check resolved template doesn't remove stateful resources
+          this.validateNoResourceRemoval(target);
         },
         describe: async () => [`Update target stack '${extractStackNameFromId(target.stackId)}' with resolved references`],
         execute: async () => {
@@ -312,5 +312,25 @@ export abstract class CategoryRefactorer implements Refactorer {
   protected async findNestedStack(facade: StackFacade, prefix: string): Promise<string | undefined> {
     const stacks = await facade.fetchNestedStacks();
     return stacks.find((s) => s.LogicalResourceId?.startsWith(prefix))?.PhysicalResourceId;
+  }
+
+  /**
+   * R6: Validates that template resolution did not remove any unconditional resources.
+   * Resources with a Condition property may be legitimately removed by condition resolution
+   * (the condition evaluated to false, so the resource was never created).
+   * Only flags removal of resources that have no Condition — those should always survive resolution.
+   */
+  private validateNoResourceRemoval(stack: ResolvedStack): void {
+    const resolvedKeys = new Set(Object.keys(stack.resolvedTemplate.Resources));
+    const removed = Object.entries(stack.originalTemplate.Resources)
+      .filter(([key, resource]) => !resource.Condition && !resolvedKeys.has(key))
+      .map(([key]) => key);
+    if (removed.length > 0) {
+      throw new AmplifyError('StackStateError', {
+        message:
+          `Pre-processing stack '${extractStackNameFromId(stack.stackId)}' would remove ${removed.length} resource(s): ` +
+          `${removed.join(', ')}. Aborting to prevent resource deletion.`,
+      });
+    }
   }
 }
