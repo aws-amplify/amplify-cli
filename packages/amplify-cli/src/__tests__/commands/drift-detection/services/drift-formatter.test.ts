@@ -98,7 +98,7 @@ describe('createUnifiedCategoryView', () => {
       "
       STORAGE MyTable
         CloudFormation Drift: Deployed resources do not match templates
-        Drift Id: https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/arn%3Aaws%3Acloudformation%3Aus-east-1%3A123456789012%3Astack%2Famplify-test-dev%2Fguid/drifts
+        Drift Id: https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/drifts?stackId=arn%3Aaws%3Acloudformation%3Aus-east-1%3A123456789012%3Astack%2Famplify-test-dev%2Fguid
 
         arn:aws:dynamodb:us-east-1:123456789012:table/MyTable
         ~ AWS::DynamoDB::Table
@@ -131,7 +131,7 @@ describe('createUnifiedCategoryView', () => {
       "
       CORE INFRASTRUCTURE DeploymentRole
         CloudFormation Drift: Deployed resources do not match templates
-        Drift Id: https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/arn%3Aaws%3Acloudformation%3Aus-east-1%3A123456789012%3Astack%2Famplify-test-dev%2Fguid/drifts
+        Drift Id: https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/drifts?stackId=arn%3Aaws%3Acloudformation%3Aus-east-1%3A123456789012%3Astack%2Famplify-test-dev%2Fguid
 
         arn:aws:lambda:us-east-1:123456789012:function:test-fn
         ~ AWS::IAM::Role
@@ -248,7 +248,7 @@ describe('createUnifiedCategoryView', () => {
       "
       STORAGE Table1
         CloudFormation Drift: Deployed resources do not match templates
-        Drift Id: https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/arn%3Aaws%3Acloudformation%3Aus-east-1%3A123456789012%3Astack%2Famplify-test-dev%2Fguid/drifts
+        Drift Id: https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/drifts?stackId=arn%3Aaws%3Acloudformation%3Aus-east-1%3A123456789012%3Astack%2Famplify-test-dev%2Fguid
 
         arn:aws:lambda:us-east-1:123456789012:function:test-fn
         ~ AWS::DynamoDB::Table
@@ -305,7 +305,7 @@ describe('createUnifiedCategoryView', () => {
       "
       FUNCTION MyFunction
         CloudFormation Drift: Deployed resources do not match templates
-        Drift Id: https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/arn%3Aaws%3Acloudformation%3Aus-east-1%3A123456789012%3Astack%2Famplify-test-dev%2Fguid/drifts
+        Drift Id: https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/drifts?stackId=arn%3Aaws%3Acloudformation%3Aus-east-1%3A123456789012%3Astack%2Famplify-test-dev%2Fguid
 
         arn:aws:lambda:us-east-1:123456789012:function:test-fn
         - AWS::Lambda::Function
@@ -347,14 +347,14 @@ describe('createUnifiedCategoryView', () => {
       "
       STORAGE Table1
         CloudFormation Drift: Deployed resources do not match templates
-        Drift Id: https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/arn%3Aaws%3Acloudformation%3Aus-east-1%3A123456789012%3Astack%2Famplify-test-dev%2Fguid/drifts
+        Drift Id: https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/drifts?stackId=arn%3Aaws%3Acloudformation%3Aus-east-1%3A123456789012%3Astack%2Famplify-test-dev%2Fguid
 
         arn:aws:lambda:us-east-1:123456789012:function:test-fn
         ~ AWS::DynamoDB::Table
 
       STORAGE Bucket1
         CloudFormation Drift: Deployed resources do not match templates
-        Drift Id: https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/arn%3Aaws%3Acloudformation%3Aus-east-1%3A123456789012%3Astack%2Famplify-test-dev%2Fguid/drifts
+        Drift Id: https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/drifts?stackId=arn%3Aaws%3Acloudformation%3Aus-east-1%3A123456789012%3Astack%2Famplify-test-dev%2Fguid
 
         arn:aws:s3:::my-bucket
         ~ AWS::S3::Bucket

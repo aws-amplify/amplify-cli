@@ -68,7 +68,9 @@ function regionFromArn(arn: string): string | undefined {
 function cfnDriftConsoleUrl(stackArn: string): string | undefined {
   const region = regionFromArn(stackArn);
   if (!region) return undefined;
-  return `https://${region}.console.aws.amazon.com/cloudformation/home?region=${region}#/stacks/${encodeURIComponent(stackArn)}/drifts`;
+  return `https://${region}.console.aws.amazon.com/cloudformation/home?region=${region}#/stacks/drifts?stackId=${encodeURIComponent(
+    stackArn,
+  )}`;
 }
 
 /**
