@@ -169,7 +169,7 @@ describe('AuthRollbackRefactorer.plan()', () => {
     const moveOps = descriptions.filter((d) => d.includes('Move'));
 
     // Should have at least 2 move operations (main auth + user pool groups)
-    expect(moveOps.length).toBeGreaterThanOrEqual(2);
+    expect(moveOps.length).toEqual(2);
   });
 
   it('throws on malformed UserPoolGroup logical ID', async () => {

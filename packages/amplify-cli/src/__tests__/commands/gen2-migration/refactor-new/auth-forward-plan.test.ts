@@ -246,10 +246,25 @@ describe('AuthForwardRefactorer.plan() — operation sequence', () => {
 
     const ops = await refactorer.plan();
 
-    // The updateSource operation should have the OAuth-resolved parameters
-    // Verify by checking that Cognito was called
+    // Verify Cognito was called for OAuth credential retrieval
     expect(cognitoMock.commandCalls(DescribeIdentityProviderCommand)).toHaveLength(1);
     expect(ops.length).toBeGreaterThanOrEqual(4);
+
+    // Execute the updateSource operation to verify OAuth creds are wired into parameters
+    const { UpdateStackCommand } = await import('@aws-sdk/client-cloudformation');
+    cfnMock.on(DescribeStacksCommand).resolves({
+      Stacks: [{ StackName: 'gen1-auth-stack', StackStatus: 'UPDATE_COMPLETE', CreationTime: ts }],
+    });
+    cfnMock.on(UpdateStackCommand).resolves({});
+    await ops[0].execute();
+
+    const updateCalls = cfnMock.commandCalls(UpdateStackCommand);
+    expect(updateCalls).toHaveLength(1);
+    const credsParam = updateCalls[0].args[0].input.Parameters?.find(
+      (p: { ParameterKey?: string }) => p.ParameterKey === 'hostedUIProviderCreds',
+    );
+    expect(credsParam?.ParameterValue).toContain('google-id');
+    expect(credsParam?.ParameterValue).toContain('google-secret');
 
     cognitoMock.restore();
   });
