@@ -355,7 +355,6 @@ async function createJSHelperFiles() {
   return new Promise((resolve, reject) => {
     const npmInstall = spawn(npm, ['install', '--only=dev'], {
       cwd: process.cwd(),
-      env: process.env,
       stdio: 'inherit',
       shell: isWin ? true : undefined,
     });
