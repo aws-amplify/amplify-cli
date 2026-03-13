@@ -79,7 +79,6 @@ backend.moodboardKinesisReader.resources.lambda.addToRolePolicy(
       'kinesis:SubscribeToShard',
       'kinesis:DescribeLimits',
       'kinesis:ListTagsForStream',
-      'kinesis:SubscribeToShard',
     ],
     resources: [analytics.kinesisStreamArn],
   })

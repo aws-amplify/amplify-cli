@@ -545,7 +545,7 @@ export class FunctionGenerator implements Generator {
       for (const action of stmtActions) {
         if (typeof action !== 'string') continue;
         if (action.startsWith('dynamodb:')) dynamoActions.push(action);
-        if (action.startsWith('kinesis:')) kinesisActions.push(action);
+        if (action.startsWith('kinesis:') && !kinesisActions.includes(action)) kinesisActions.push(action);
         if (action.startsWith('cognito-idp:')) {
           if (action === 'cognito-idp:AdminList*') {
             for (const a of ['cognito-idp:AdminListDevices', 'cognito-idp:AdminListGroupsForUser']) {
