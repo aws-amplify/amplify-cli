@@ -19,6 +19,9 @@ export const auth = defineAuth({
   triggers: {
     preSignUp: fitnesstracker6b0fc1196b0fc119PreSignup,
   },
+  multifactor: {
+    mode: 'OFF',
+  },
   access: (allow: any) => [
     allow.resource(admin).to(['getDevice']),
     allow.resource(admin).to(['getUser']),

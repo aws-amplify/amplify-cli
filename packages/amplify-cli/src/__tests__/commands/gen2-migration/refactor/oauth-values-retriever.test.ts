@@ -1,76 +1,42 @@
-import { retrieveOAuthValues } from '../../../../commands/gen2-migration/refactor/oauth-values-retriever';
-import { mockClient } from 'aws-sdk-client-mock';
-import { SSMClient, GetParameterCommand } from '@aws-sdk/client-ssm';
-import { CognitoIdentityProviderClient, DescribeIdentityProviderCommand } from '@aws-sdk/client-cognito-identity-provider';
+import oauthValuesRetriever from '../../../../commands/gen2-migration/refactor/oauth-values-retriever';
+import { SSMClient } from '@aws-sdk/client-ssm';
+import { CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-provider';
 
-describe('retrieveOAuthValues', () => {
-  let ssmMock: ReturnType<typeof mockClient>;
-  let cognitoMock: ReturnType<typeof mockClient>;
+const INVALID_OAUTH_METADATA_PARAM = 'Invalid Gen1 OAuth provider metadata';
+const APP_ID = 'appId';
+const ENV_NAME = 'envName';
+const USER_POOL_ID = 'userPoolId';
 
-  beforeEach(() => {
-    ssmMock = mockClient(SSMClient);
-    cognitoMock = mockClient(CognitoIdentityProviderClient);
-  });
-  afterEach(() => {
-    ssmMock.restore();
-    cognitoMock.restore();
-  });
-
-  it('retrieves standard provider credentials from Cognito', async () => {
-    cognitoMock.on(DescribeIdentityProviderCommand).resolves({
-      IdentityProvider: { ProviderDetails: { client_id: 'google-id', client_secret: 'google-secret' } },
-    });
-
-    const result = await retrieveOAuthValues({
-      ssmClient: new SSMClient({}),
-      cognitoIdpClient: new CognitoIdentityProviderClient({}),
-      oAuthParameter: { ParameterKey: 'hostedUIProviderMeta', ParameterValue: JSON.stringify([{ ProviderName: 'Google' }]) },
-      userPoolId: 'us-east-1_ABC',
-      appId: 'app1',
-      environmentName: 'main',
-    });
-
-    expect(result).toHaveLength(1);
-    expect(result[0]).toEqual({ ProviderName: 'Google', client_id: 'google-id', client_secret: 'google-secret' });
-  });
-
-  it('retrieves SignInWithApple credentials from Cognito + SSM private key', async () => {
-    cognitoMock.on(DescribeIdentityProviderCommand).resolves({
-      IdentityProvider: { ProviderDetails: { client_id: 'apple-id', team_id: 'TEAM1', key_id: 'KEY1' } },
-    });
-    ssmMock.on(GetParameterCommand).resolves({ Parameter: { Value: 'private-key-pem' } });
-
-    const result = await retrieveOAuthValues({
-      ssmClient: new SSMClient({}),
-      cognitoIdpClient: new CognitoIdentityProviderClient({}),
-      oAuthParameter: { ParameterKey: 'hostedUIProviderMeta', ParameterValue: JSON.stringify([{ ProviderName: 'SignInWithApple' }]) },
-      userPoolId: 'us-east-1_ABC',
-      appId: 'app1',
-      environmentName: 'main',
-    });
-
-    expect(result).toHaveLength(1);
-    expect(result[0]).toEqual({
-      ProviderName: 'SignInWithApple',
-      client_id: 'apple-id',
-      team_id: 'TEAM1',
-      key_id: 'KEY1',
-      private_key: 'private-key-pem',
-    });
-  });
-
-  it('throws when provider details are missing from Cognito', async () => {
-    cognitoMock.on(DescribeIdentityProviderCommand).resolves({ IdentityProvider: {} });
-
+// This test suite covers negative cases. Happy path cases are covered in its consumer (category-template-generator.test.ts)
+describe('OAuthValuesRetriever', () => {
+  it('should fail if the oauth param is not an array', async () => {
     await expect(
-      retrieveOAuthValues({
-        ssmClient: new SSMClient({}),
-        cognitoIdpClient: new CognitoIdentityProviderClient({}),
-        oAuthParameter: { ParameterKey: 'hostedUIProviderMeta', ParameterValue: JSON.stringify([{ ProviderName: 'Google' }]) },
-        userPoolId: 'us-east-1_ABC',
-        appId: 'app1',
-        environmentName: 'main',
+      oauthValuesRetriever({
+        appId: APP_ID,
+        environmentName: ENV_NAME,
+        userPoolId: USER_POOL_ID,
+        oAuthParameter: {
+          ParameterKey: 'hostedUIProviderMeta',
+          ParameterValue: JSON.stringify({}),
+        },
+        ssmClient: new SSMClient(),
+        cognitoIdpClient: new CognitoIdentityProviderClient(),
       }),
-    ).rejects.toThrow('no provider details');
+    ).rejects.toThrowError(INVALID_OAUTH_METADATA_PARAM);
+  });
+  it('should fail if the oauth param does not have provider info', async () => {
+    await expect(
+      oauthValuesRetriever({
+        appId: APP_ID,
+        environmentName: ENV_NAME,
+        userPoolId: USER_POOL_ID,
+        oAuthParameter: {
+          ParameterKey: 'hostedUIProviderMeta',
+          ParameterValue: JSON.stringify([{}]),
+        },
+        ssmClient: new SSMClient(),
+        cognitoIdpClient: new CognitoIdentityProviderClient(),
+      }),
+    ).rejects.toThrowError(INVALID_OAUTH_METADATA_PARAM);
   });
 });

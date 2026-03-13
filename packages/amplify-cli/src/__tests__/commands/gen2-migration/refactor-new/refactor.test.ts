@@ -1,5 +1,5 @@
-import { AmplifyMigrationRefactorStep } from '../../../../commands/gen2-migration/refactor';
-import { OUTPUT_DIRECTORY } from '../../../../commands/gen2-migration/refactor/snap';
+import { AmplifyMigrationRefactorStep } from '../../../../commands/gen2-migration/refactor-new';
+import { OUTPUT_DIRECTORY } from '../../../../commands/gen2-migration/refactor-new/snap';
 import { MigrationApp, MigrationAppOptions } from '../_framework/app';
 import * as fs from 'fs-extra';
 import * as path from 'path';

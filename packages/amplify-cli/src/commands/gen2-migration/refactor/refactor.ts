@@ -55,6 +55,9 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
   public async execute(): Promise<AmplifyMigrationOperation[]> {
     return [
       {
+        validate: async () => {
+          return;
+        },
         describe: async () => ['Move stateful resources from your Gen1 app to be managed by your Gen2 app'],
         execute: async () => {
           // Extract parameters from context
@@ -79,6 +82,9 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
   public async rollback(): Promise<AmplifyMigrationOperation[]> {
     return [
       {
+        validate: async () => {
+          return;
+        },
         describe: async () => ['Move stateful resources from your Gen2 app back to your Gen1 app'],
         execute: async () => {
           this.extractParameters();

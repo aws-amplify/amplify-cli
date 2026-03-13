@@ -6,7 +6,6 @@ export const auth = defineAuth({
       verificationEmailSubject: 'Verification',
       verificationEmailBody: () => 'Here is your verification code {####}',
     },
-    phone: true,
   },
   userAttributes: {
     email: {
@@ -17,5 +16,8 @@ export const auth = defineAuth({
       required: true,
       mutable: true,
     },
+  },
+  multifactor: {
+    mode: 'OFF',
   },
 });
