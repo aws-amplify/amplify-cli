@@ -36,7 +36,8 @@ Verify your changes by following these guidelines:
 - **Always** update the appropriate README or design document when you make a change that impacts the contents of these documents.
 - **Always** update the appropriate skill files when you make a change that impacts the contents of the skill (path to docs for example).
 - **Always** update the appropriate JSDoc strings in the code you change. Be concise.
-- **Always** update the .md files that correspond to the code files you touched. Create new .md files for new files.
+- **Always** update the .md files that correspond to the code files you touched.
+- Do not create additional markdown files in the repository unless you are instructed explicitly to.
 - Commit your changes in git using a well-formed commit message following the Conventional Commits format. The message must start
   with a type prefix (e.g., `feat:`, `fix:`, `docs:`, `refactor:`, `test:`, `chore:`) followed by a single sentence summary and no more
   than a few paragraphs explaining the change and your testing. After this explanation, place the prompt the user used to trigger this
