@@ -5,10 +5,10 @@ Automation system for migrating AWS Amplify Gen1 applications to Gen2 with suppo
 ## Features
 
 ### In-progress
-- Gen 2 migration tool commands
 - Test scripts to validate Gen 1 (pre-refactor and post-refactor) and Gen 2 stacks
 
 ### Complete
+- **Gen2 Migration Commands**: Executes `amplify gen2-migration` CLI commands (lock, generate) after Gen1 push
 - **Category Support**: Full support for API, Auth, Storage, Function, and Hosting categories
 - **Environment Detection**: Automatic detection of Atmosphere vs Local environments
 - **Flexible Authentication**: Support for AWS profiles and Atmosphere credentials
@@ -146,8 +146,21 @@ The system follows a modular architecture with:
 - **ConfigurationLoader**: Manages app-specific configurations
 - **EnvironmentDetector**: Detects Atmosphere vs Local environments
 - **AppSelector**: Handles app discovery and selection
+- **Gen2MigrationExecutor**: Executes gen2-migration CLI commands (lock, generate, refactor, decommission)
 - **Logger**: Formatted logging with file output
 - **FileManager**, **DirectryManager**: File system operations
+
+### Migration Workflow
+
+The CLI executes the following workflow:
+
+1. **Initialize**: Copy app source, run `amplify init`
+2. **Add Categories**: Add configured categories (auth, api, storage, function)
+3. **Push**: Deploy Gen1 app to AWS via `amplify push`
+4. **Lock**: Lock Gen1 environment via `amplify gen2-migration lock`
+5. **Generate**: Generate Gen2 code via `amplify gen2-migration generate`
+
+Post-deployment steps (refactor, decommission) require Gen2 deployment and are not yet automated.
 
 ## Development
 
