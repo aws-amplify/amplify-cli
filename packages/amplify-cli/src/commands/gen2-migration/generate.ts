@@ -5,25 +5,25 @@ import execa from 'execa';
 import { AmplifyMigrationStep } from './_step';
 import { AmplifyMigrationOperation } from './_operation';
 import { AmplifyGen2MigrationValidations } from './_validations';
-import { AwsClients } from './aws-clients';
-import { Gen1App } from './generate-new/input/gen1-app';
-import { Generator } from './generate-new/generator';
-import { BackendGenerator } from './generate-new/output/backend.generator';
-import { RootPackageJsonGenerator } from './generate-new/output/root-package-json.generator';
-import { BackendPackageJsonGenerator } from './generate-new/output/backend-package-json.generator';
-import { TsConfigGenerator } from './generate-new/output/tsconfig.generator';
-import { AmplifyYmlGenerator } from './generate-new/output/amplify-yml.generator';
-import { GitIgnoreGenerator } from './generate-new/output/gitignore.generator';
-import { AuthGenerator } from './generate-new/output/auth/auth.generator';
-import { ReferenceAuthGenerator } from './generate-new/output/auth/reference-auth.generator';
-import { DataGenerator } from './generate-new/output/data/data.generator';
-import { RestApiGenerator } from './generate-new/output/rest-api/rest-api.generator';
-import { S3Generator } from './generate-new/output/storage/s3.generator';
-import { DynamoDBGenerator } from './generate-new/output/storage/dynamodb.generator';
-import { FunctionGenerator } from './generate-new/output/functions/function.generator';
-import { AnalyticsKinesisGenerator } from './generate-new/output/analytics/kinesis.generator';
-import { CustomResourceGenerator } from './generate-new/output/custom-resources/custom.generator';
-import { fileOrDirectoryExists } from './generate-new/file-exists';
+import { createAwsClients } from './generate-new/_infra/aws-clients';
+import { Gen1App } from './generate-new/_infra/gen1-app';
+import { Generator } from './generate-new/_infra/generator';
+import { BackendGenerator } from './generate-new/amplify/backend.generator';
+import { RootPackageJsonGenerator } from './generate-new/package.json.generator';
+import { BackendPackageJsonGenerator } from './generate-new/amplify/package.json.generator';
+import { TsConfigGenerator } from './generate-new/amplify/tsconfig.generator';
+import { AmplifyYmlGenerator } from './generate-new/amplify.yml.generator';
+import { GitIgnoreGenerator } from './generate-new/gitignore.generator';
+import { AuthGenerator } from './generate-new/amplify/auth/auth.generator';
+import { ReferenceAuthGenerator } from './generate-new/amplify/auth/reference-auth.generator';
+import { DataGenerator } from './generate-new/amplify/data/data.generator';
+import { RestApiGenerator } from './generate-new/amplify/rest-api/rest-api.generator';
+import { S3Generator } from './generate-new/amplify/storage/s3.generator';
+import { DynamoDBGenerator } from './generate-new/amplify/storage/dynamodb.generator';
+import { FunctionGenerator } from './generate-new/amplify/function/function.generator';
+import { AnalyticsKinesisGenerator } from './generate-new/amplify/analytics/kinesis.generator';
+import { CustomResourceGenerator } from './generate-new/amplify/custom-resources/custom.generator';
+import { fileOrDirectoryExists } from './generate-new/_infra/files';
 
 const AMPLIFY_DIR = 'amplify';
 
@@ -55,7 +55,7 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
    * can display descriptions to the user before confirmation.
    */
   public async execute(): Promise<AmplifyMigrationOperation[]> {
-    const clients = new AwsClients({ region: this.region });
+    const clients = createAwsClients(this.region);
     const gen1App = await Gen1App.create({ appId: this.appId, region: this.region, envName: this.currentEnvName, clients });
 
     const outputDir = await fs.mkdtemp(path.join(os.tmpdir(), 'amplify-gen2-'));

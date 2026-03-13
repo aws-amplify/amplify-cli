@@ -153,7 +153,9 @@ export abstract class CategoryRefactorer implements Refactorer {
   protected updateSource(source: ResolvedStack): AmplifyMigrationOperation[] {
     return [
       {
-        validate: async () => {},
+        validate: async () => {
+          return;
+        },
         describe: async () => [`Update source stack '${extractStackNameFromId(source.stackId)}' with resolved references`],
         execute: async () => {
           const status = await tryUpdateStack({
@@ -179,7 +181,9 @@ export abstract class CategoryRefactorer implements Refactorer {
   protected updateTarget(target: ResolvedStack): AmplifyMigrationOperation[] {
     return [
       {
-        validate: async () => {},
+        validate: async () => {
+          return;
+        },
         describe: async () => [`Update target stack '${extractStackNameFromId(target.stackId)}' with resolved references`],
         execute: async () => {
           const status = await tryUpdateStack({
@@ -224,7 +228,10 @@ export abstract class CategoryRefactorer implements Refactorer {
     // also include it. The refactor API only moves existing resources — the placeholder must
     // be created via UpdateStack first so it physically exists before the refactor.
     const sourceResolved = afterRemoval.Resources[MIGRATION_PLACEHOLDER_LOGICAL_ID]
-      ? { ...source.resolvedTemplate, Resources: { ...source.resolvedTemplate.Resources, [MIGRATION_PLACEHOLDER_LOGICAL_ID]: PLACEHOLDER_RESOURCE } }
+      ? {
+          ...source.resolvedTemplate,
+          Resources: { ...source.resolvedTemplate.Resources, [MIGRATION_PLACEHOLDER_LOGICAL_ID]: PLACEHOLDER_RESOURCE },
+        }
       : source.resolvedTemplate;
 
     // target.afterRemoval: clone target template, remove target category resources, add placeholder if empty
@@ -276,7 +283,9 @@ export abstract class CategoryRefactorer implements Refactorer {
 
     return [
       {
-        validate: async () => {},
+        validate: async () => {
+          return;
+        },
         describe: async () => [
           `Move ${resourceMappings.length} resource(s) from '${extractStackNameFromId(source.stackId)}' to '${extractStackNameFromId(
             target.stackId,

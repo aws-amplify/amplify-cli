@@ -5,7 +5,7 @@ import { MockClients } from './clients';
 import { copySync } from './directories';
 import { Logger } from '../../../../commands/gen2-migration';
 import { BackendDownloader } from '../../../../commands/gen2-migration/generate/codegen-head/backend_downloader';
-import { Gen1App } from '../../../../commands/gen2-migration/generate-new/input/gen1-app';
+import { Gen1App } from '../../../../commands/gen2-migration/generate-new/_infra/gen1-app';
 import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import { Snapshot } from './snapshot';
 

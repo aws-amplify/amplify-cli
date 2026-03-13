@@ -114,6 +114,12 @@ export const run = async (context: $TSContext) => {
     });
   }
 
+  if (rollingBack && stepName === 'decommission') {
+    throw new AmplifyError('InputValidationError', {
+      message: 'Decommission is a one-way operation and does not support rollback.',
+    });
+  }
+
   // assuming all environment are deployed within the same app - can it be different?
   const appId = (Object.values(stateManager.getTeamProviderInfo())[0] as any).awscloudformation.AmplifyAppId;
 
@@ -179,8 +185,13 @@ export const run = async (context: $TSContext) => {
 
   printer.blankLine();
 
-  if (!rollingBack) {
+  if (!rollingBack && stepName !== 'decommission') {
     printer.info(chalk.grey(`(You can rollback this command by running: 'amplify gen2-migration ${stepName} --rollback')`));
+    printer.blankLine();
+  }
+
+  if (stepName === 'decommission') {
+    printer.info(chalk.grey('(Decommission is a one-way operation and cannot be rolled back.)'));
     printer.blankLine();
   }
 
