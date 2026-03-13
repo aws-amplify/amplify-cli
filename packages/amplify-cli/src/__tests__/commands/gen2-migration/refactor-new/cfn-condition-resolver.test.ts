@@ -1,4 +1,4 @@
-import { resolveConditions } from '../../../../commands/gen2-migration/refactor/resolvers/cfn-condition-resolver';
+import { resolveConditions } from '../../../../commands/gen2-migration/refactor-new/resolvers/cfn-condition-resolver';
 import { CFNTemplate } from '../../../../commands/gen2-migration/cfn-template';
 
 /**

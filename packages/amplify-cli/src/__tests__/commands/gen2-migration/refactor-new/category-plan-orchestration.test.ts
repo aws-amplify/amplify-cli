@@ -1,10 +1,10 @@
-import { StorageForwardRefactorer } from '../../../../commands/gen2-migration/refactor/storage/storage-forward';
-import { StorageRollbackRefactorer } from '../../../../commands/gen2-migration/refactor/storage/storage-rollback';
-import { AnalyticsForwardRefactorer } from '../../../../commands/gen2-migration/refactor/analytics/analytics-forward';
-import { AnalyticsRollbackRefactorer } from '../../../../commands/gen2-migration/refactor/analytics/analytics-rollback';
+import { StorageForwardRefactorer } from '../../../../commands/gen2-migration/refactor-new/storage/storage-forward';
+import { StorageRollbackRefactorer } from '../../../../commands/gen2-migration/refactor-new/storage/storage-rollback';
+import { AnalyticsForwardRefactorer } from '../../../../commands/gen2-migration/refactor-new/analytics/analytics-forward';
+import { AnalyticsRollbackRefactorer } from '../../../../commands/gen2-migration/refactor-new/analytics/analytics-rollback';
 import { CFNTemplate } from '../../../../commands/gen2-migration/cfn-template';
 import { AwsClients } from '../../../../commands/gen2-migration/aws-clients';
-import { StackFacade } from '../../../../commands/gen2-migration/refactor/stack-facade';
+import { StackFacade } from '../../../../commands/gen2-migration/refactor-new/stack-facade';
 import { mockClient } from 'aws-sdk-client-mock';
 import {
   CloudFormationClient,

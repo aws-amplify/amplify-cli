@@ -1,4 +1,4 @@
-import { retrieveOAuthValues } from '../../../../commands/gen2-migration/refactor/oauth-values-retriever';
+import { retrieveOAuthValues } from '../../../../commands/gen2-migration/refactor-new/oauth-values-retriever';
 import { mockClient } from 'aws-sdk-client-mock';
 import { SSMClient, GetParameterCommand } from '@aws-sdk/client-ssm';
 import { CognitoIdentityProviderClient, DescribeIdentityProviderCommand } from '@aws-sdk/client-cognito-identity-provider';

@@ -1,8 +1,8 @@
-import { ForwardCategoryRefactorer } from '../../../../commands/gen2-migration/refactor/workflow/forward-category-refactorer';
+import { ForwardCategoryRefactorer } from '../../../../commands/gen2-migration/refactor-new/workflow/forward-category-refactorer';
 import { CFNResource, CFNTemplate } from '../../../../commands/gen2-migration/cfn-template';
-import { RefactorBlueprint, MoveMapping } from '../../../../commands/gen2-migration/refactor/workflow/category-refactorer';
+import { RefactorBlueprint, MoveMapping } from '../../../../commands/gen2-migration/refactor-new/workflow/category-refactorer';
 import { AwsClients } from '../../../../commands/gen2-migration/aws-clients';
-import { StackFacade } from '../../../../commands/gen2-migration/refactor/stack-facade';
+import { StackFacade } from '../../../../commands/gen2-migration/refactor-new/stack-facade';
 import { mockClient } from 'aws-sdk-client-mock';
 import {
   CloudFormationClient,

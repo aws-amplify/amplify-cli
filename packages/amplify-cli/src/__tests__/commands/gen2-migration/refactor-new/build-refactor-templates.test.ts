@@ -5,7 +5,7 @@ import {
   ResolvedStack,
   MoveMapping,
   MIGRATION_PLACEHOLDER_LOGICAL_ID,
-} from '../../../../commands/gen2-migration/refactor/workflow/category-refactorer';
+} from '../../../../commands/gen2-migration/refactor-new/workflow/category-refactorer';
 
 // Minimal concrete subclass to access protected methods
 class TestRefactorer extends (CategoryRefactorer as any) {

@@ -1,9 +1,9 @@
-import { tryUpdateStack, pollStackForCompletionState } from '../../../../commands/gen2-migration/refactor/cfn-stack-updater';
+import { tryUpdateStack, pollStackForCompletionState } from '../../../../commands/gen2-migration/refactor-new/cfn-stack-updater';
 import { mockClient } from 'aws-sdk-client-mock';
 import { CloudFormationClient, UpdateStackCommand, DescribeStacksCommand } from '@aws-sdk/client-cloudformation';
 import { CFNTemplate } from '../../../../commands/gen2-migration/cfn-template';
 
-jest.mock('../../../../commands/gen2-migration/refactor/snap', () => ({
+jest.mock('../../../../commands/gen2-migration/refactor-new/snap', () => ({
   preUpdateStack: jest.fn(),
 }));
 

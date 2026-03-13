@@ -1,4 +1,4 @@
-import { extractStackNameFromId } from '../../../../commands/gen2-migration/refactor/utils';
+import { extractStackNameFromId } from '../../../../commands/gen2-migration/refactor-new/utils';
 
 describe('extractStackNameFromId', () => {
   it('extracts stack name from ARN', () => {

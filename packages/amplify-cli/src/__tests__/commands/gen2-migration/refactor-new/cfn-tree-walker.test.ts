@@ -1,4 +1,4 @@
-import { walkCfnTree } from '../../../../commands/gen2-migration/refactor/resolvers/cfn-tree-walker';
+import { walkCfnTree } from '../../../../commands/gen2-migration/refactor-new/resolvers/cfn-tree-walker';
 
 describe('walkCfnTree', () => {
   it('returns primitives unchanged', () => {

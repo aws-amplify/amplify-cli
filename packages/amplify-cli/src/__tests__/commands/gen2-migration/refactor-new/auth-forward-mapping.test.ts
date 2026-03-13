@@ -1,8 +1,8 @@
-import { AuthForwardRefactorer } from '../../../../commands/gen2-migration/refactor/auth/auth-forward';
+import { AuthForwardRefactorer } from '../../../../commands/gen2-migration/refactor-new/auth/auth-forward';
 import { CFNResource } from '../../../../commands/gen2-migration/cfn-template';
 import { AwsClients } from '../../../../commands/gen2-migration/aws-clients';
-import { StackFacade } from '../../../../commands/gen2-migration/refactor/stack-facade';
-import { MoveMapping } from '../../../../commands/gen2-migration/refactor/workflow/category-refactorer';
+import { StackFacade } from '../../../../commands/gen2-migration/refactor-new/stack-facade';
+import { MoveMapping } from '../../../../commands/gen2-migration/refactor-new/workflow/category-refactorer';
 
 /** Helper: convert MoveMapping[] to Map<sourceId, targetId> for easy assertions */
 function toIdMap(mappings: MoveMapping[]): Map<string, string> {

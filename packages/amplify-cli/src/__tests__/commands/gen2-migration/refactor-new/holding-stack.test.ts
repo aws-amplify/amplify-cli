@@ -1,4 +1,4 @@
-import { getHoldingStackName, findHoldingStack } from '../../../../commands/gen2-migration/refactor/holding-stack';
+import { getHoldingStackName, findHoldingStack } from '../../../../commands/gen2-migration/refactor-new/holding-stack';
 import { mockClient } from 'aws-sdk-client-mock';
 import { CloudFormationClient, DescribeStacksCommand } from '@aws-sdk/client-cloudformation';
 

@@ -1,4 +1,4 @@
-import { tryRefactorStack, RefactorFailure } from '../../../../commands/gen2-migration/refactor/cfn-stack-refactor-updater';
+import { tryRefactorStack, RefactorFailure } from '../../../../commands/gen2-migration/refactor-new/cfn-stack-refactor-updater';
 import { mockClient } from 'aws-sdk-client-mock';
 import {
   CloudFormationClient,
@@ -10,7 +10,7 @@ import {
   StackRefactorExecutionStatus,
 } from '@aws-sdk/client-cloudformation';
 
-jest.mock('../../../../commands/gen2-migration/refactor/snap', () => ({
+jest.mock('../../../../commands/gen2-migration/refactor-new/snap', () => ({
   preRefactorStack: jest.fn(),
 }));
 

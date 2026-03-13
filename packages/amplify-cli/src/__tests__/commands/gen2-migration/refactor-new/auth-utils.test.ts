@@ -1,5 +1,5 @@
-import { discoverGen1AuthStacks } from '../../../../commands/gen2-migration/refactor/auth/auth-utils';
-import { StackFacade } from '../../../../commands/gen2-migration/refactor/stack-facade';
+import { discoverGen1AuthStacks } from '../../../../commands/gen2-migration/refactor-new/auth/auth-utils';
+import { StackFacade } from '../../../../commands/gen2-migration/refactor-new/stack-facade';
 import { AwsClients } from '../../../../commands/gen2-migration/aws-clients';
 import { mockClient } from 'aws-sdk-client-mock';
 import { CloudFormationClient, DescribeStacksCommand, DescribeStackResourcesCommand, ResourceStatus } from '@aws-sdk/client-cloudformation';

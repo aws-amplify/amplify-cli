@@ -1,4 +1,4 @@
-import { parseResourceMappings } from '../../../../commands/gen2-migration/refactor/legacy-custom-resource';
+import { parseResourceMappings } from '../../../../commands/gen2-migration/refactor-new/legacy-custom-resource';
 import fs from 'fs-extra';
 
 jest.mock('fs-extra');

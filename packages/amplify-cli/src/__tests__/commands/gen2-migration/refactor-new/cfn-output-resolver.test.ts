@@ -1,4 +1,4 @@
-import { resolveOutputs } from '../../../../commands/gen2-migration/refactor/resolvers/cfn-output-resolver';
+import { resolveOutputs } from '../../../../commands/gen2-migration/refactor-new/resolvers/cfn-output-resolver';
 import { CFNTemplate } from '../../../../commands/gen2-migration/cfn-template';
 
 const baseTemplate: CFNTemplate = {

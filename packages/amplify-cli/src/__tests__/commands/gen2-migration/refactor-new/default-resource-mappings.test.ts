@@ -1,7 +1,7 @@
-import { ForwardCategoryRefactorer } from '../../../../commands/gen2-migration/refactor/workflow/forward-category-refactorer';
-import { RollbackCategoryRefactorer } from '../../../../commands/gen2-migration/refactor/workflow/rollback-category-refactorer';
+import { ForwardCategoryRefactorer } from '../../../../commands/gen2-migration/refactor-new/workflow/forward-category-refactorer';
+import { RollbackCategoryRefactorer } from '../../../../commands/gen2-migration/refactor-new/workflow/rollback-category-refactorer';
 import { CFNResource } from '../../../../commands/gen2-migration/cfn-template';
-import { MoveMapping } from '../../../../commands/gen2-migration/refactor/workflow/category-refactorer';
+import { MoveMapping } from '../../../../commands/gen2-migration/refactor-new/workflow/category-refactorer';
 
 class TestForwardRefactorer extends ForwardCategoryRefactorer {
   protected async fetchSourceStackId() {

@@ -1,7 +1,7 @@
-import { AuthForwardRefactorer } from '../../../../commands/gen2-migration/refactor/auth/auth-forward';
+import { AuthForwardRefactorer } from '../../../../commands/gen2-migration/refactor-new/auth/auth-forward';
 import { CFNTemplate } from '../../../../commands/gen2-migration/cfn-template';
 import { AwsClients } from '../../../../commands/gen2-migration/aws-clients';
-import { StackFacade } from '../../../../commands/gen2-migration/refactor/stack-facade';
+import { StackFacade } from '../../../../commands/gen2-migration/refactor-new/stack-facade';
 import { mockClient } from 'aws-sdk-client-mock';
 import {
   CloudFormationClient,

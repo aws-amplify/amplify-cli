@@ -1,4 +1,4 @@
-import { resolveDependencies } from '../../../../commands/gen2-migration/refactor/resolvers/cfn-dependency-resolver';
+import { resolveDependencies } from '../../../../commands/gen2-migration/refactor-new/resolvers/cfn-dependency-resolver';
 import { CFNTemplate } from '../../../../commands/gen2-migration/cfn-template';
 
 const makeTemplate = (resources: Record<string, { Type: string; DependsOn?: string | string[] }>): CFNTemplate => ({
