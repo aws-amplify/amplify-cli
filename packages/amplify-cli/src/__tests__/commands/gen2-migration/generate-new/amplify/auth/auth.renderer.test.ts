@@ -25,6 +25,9 @@ describe('AuthRenderer', () => {
           loginWith: {
             email: true,
           },
+          multifactor: {
+            mode: 'OFF',
+          },
         });
         "
       `);
@@ -41,7 +44,9 @@ describe('AuthRenderer', () => {
         export const auth = defineAuth({
           loginWith: {
             email: true,
-            phone: true,
+          },
+          multifactor: {
+            mode: 'OFF',
           },
         });
         "
@@ -67,6 +72,9 @@ describe('AuthRenderer', () => {
               verificationEmailBody: () => 'Your code is {####}',
             },
           },
+          multifactor: {
+            mode: 'OFF',
+          },
         });
         "
       `);
@@ -90,6 +98,9 @@ describe('AuthRenderer', () => {
             email: true,
           },
           groups: ['admin', 'editors', 'viewers'],
+          multifactor: {
+            mode: 'OFF',
+          },
         });
         "
       `);
@@ -121,6 +132,9 @@ describe('AuthRenderer', () => {
               required: true,
               mutable: false,
             },
+          },
+          multifactor: {
+            mode: 'OFF',
           },
         });
         "
@@ -155,6 +169,9 @@ describe('AuthRenderer', () => {
               minLen: 1,
               maxLen: 50,
             },
+          },
+          multifactor: {
+            mode: 'OFF',
           },
         });
         "
@@ -236,6 +253,9 @@ describe('AuthRenderer', () => {
             preSignUp: preSignUpFn,
             postConfirmation: postConfirmFn,
           },
+          multifactor: {
+            mode: 'OFF',
+          },
         });
         "
       `);
@@ -267,6 +287,9 @@ describe('AuthRenderer', () => {
               callbackUrls: ['https://example.com/callback'],
               logoutUrls: ['https://example.com/logout'],
             },
+          },
+          multifactor: {
+            mode: 'OFF',
           },
         });
         "
@@ -300,6 +323,9 @@ describe('AuthRenderer', () => {
               logoutUrls: ['https://example.com/logout'],
             },
           },
+          multifactor: {
+            mode: 'OFF',
+          },
         });
         "
       `);
@@ -327,6 +353,9 @@ describe('AuthRenderer', () => {
               logoutUrls: [],
             },
           },
+          multifactor: {
+            mode: 'OFF',
+          },
         });
         "
       `);
@@ -353,6 +382,9 @@ describe('AuthRenderer', () => {
               callbackUrls: [],
               logoutUrls: [],
             },
+          },
+          multifactor: {
+            mode: 'OFF',
           },
         });
         "
@@ -387,6 +419,9 @@ describe('AuthRenderer', () => {
               callbackUrls: [],
               logoutUrls: [],
             },
+          },
+          multifactor: {
+            mode: 'OFF',
           },
         });
         "
@@ -424,6 +459,9 @@ describe('AuthRenderer', () => {
               callbackUrls: [],
               logoutUrls: [],
             },
+          },
+          multifactor: {
+            mode: 'OFF',
           },
         });
         "
@@ -477,6 +515,9 @@ describe('AuthRenderer', () => {
               logoutUrls: ['https://example.com/logout'],
             },
           },
+          multifactor: {
+            mode: 'OFF',
+          },
         });
         "
       `);
@@ -517,6 +558,9 @@ describe('AuthRenderer', () => {
               callbackUrls: ['https://example.com/callback'],
               logoutUrls: ['https://example.com/logout'],
             },
+          },
+          multifactor: {
+            mode: 'OFF',
           },
         });
         "
@@ -562,6 +606,9 @@ describe('AuthRenderer', () => {
               logoutUrls: ['https://example.com/logout'],
             },
           },
+          multifactor: {
+            mode: 'OFF',
+          },
         });
         "
       `);
@@ -588,6 +635,9 @@ describe('AuthRenderer', () => {
         export const auth = defineAuth({
           loginWith: {
             email: true,
+          },
+          multifactor: {
+            mode: 'OFF',
           },
           access: (allow, _unused) => [
             allow.resource(adminFunc).to(['manageUsers']),
@@ -617,6 +667,9 @@ describe('AuthRenderer', () => {
           loginWith: {
             email: true,
           },
+          multifactor: {
+            mode: 'OFF',
+          },
           access: (allow, _unused) => [
             allow.resource(func1).to(['createUser']),
             allow.resource(func2).to(['deleteUser']),
@@ -640,10 +693,11 @@ describe('AuthRenderer', () => {
   });
 
   describe('empty/minimal definitions', () => {
-    it('does not render MFA when not provided', () => {
+    it('renders MFA OFF when not provided', () => {
       const output = render({ userPool: { SchemaAttributes: [] } });
 
-      expect(output).not.toContain('multifactor');
+      expect(output).toContain('multifactor');
+      expect(output).toContain("mode: 'OFF'");
     });
 
     it('does not render triggers when not provided', () => {
