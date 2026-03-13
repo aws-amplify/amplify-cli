@@ -64,19 +64,6 @@ const userPoolClient = userPool.addClient('NativeAppClient', {
   disableOAuth: false,
   generateSecret: false,
 });
-const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
-// Use this bucket name post refactor
-// s3Bucket.bucketName = 'mediavaultb574f210f1634e3a8d1934f263da5bed61114-main';
-s3Bucket.bucketEncryption = {
-  serverSideEncryptionConfiguration: [
-    {
-      serverSideEncryptionByDefault: {
-        sseAlgorithm: 'AES256',
-      },
-      bucketKeyEnabled: false,
-    },
-  ],
-};
 const providerSetupResult = (
   backend.auth.stack.node.children.find(
     (child) => child.node.id === 'amplifyAuth'
@@ -92,6 +79,19 @@ Object.keys(providerSetupResult).forEach((provider) => {
   }
 });
 // backend.auth.resources.userPool.node.tryRemoveChild("UserPoolDomain");
+const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
+// Use this bucket name post refactor
+// s3Bucket.bucketName = 'mediavaultb574f210f1634e3a8d1934f263da5bed61114-main';
+s3Bucket.bucketEncryption = {
+  serverSideEncryptionConfiguration: [
+    {
+      serverSideEncryptionByDefault: {
+        sseAlgorithm: 'AES256',
+      },
+      bucketKeyEnabled: false,
+    },
+  ],
+};
 const cfnGraphqlApi = backend.data.resources.cfnResources.cfnGraphqlApi;
 cfnGraphqlApi.additionalAuthenticationProviders = [
   {

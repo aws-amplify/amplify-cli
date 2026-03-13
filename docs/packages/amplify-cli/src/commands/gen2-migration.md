@@ -1,13 +1,13 @@
-# Command | `gen2-migration` 
+# Command | `gen2-migration`
 
-The `gen2-migration` command is a parent command that dispatches individual subcommands that facilitate the 
-the migration of Gen1 applications to Gen2. It exposes a step-based CLI workflow that guides users 
-through the complete migration process: 
+The `gen2-migration` command is a parent command that dispatches individual subcommands that facilitate the
+the migration of Gen1 applications to Gen2. It exposes a step-based CLI workflow that guides users
+through the complete migration process:
 
-1. Locking the Gen1 environment 
-2. Generating Gen2 code, 
-3. Refactoring CloudFormation stacks to move stateful resources, 
-4. Decommissioning the Gen1 environment. 
+1. Locking the Gen1 environment
+2. Generating Gen2 code,
+3. Refactoring CloudFormation stacks to move stateful resources,
+4. Decommissioning the Gen1 environment.
 
 Each step follows a consistent `validate → execute → rollback` lifecycle pattern with user confirmation and safety checks.
 
@@ -15,7 +15,7 @@ Each step follows a consistent `validate → execute → rollback` lifecycle pat
 
 ### Argument Parsing
 
-Parses CLI flags to control execution flow—whether to skip validations, run validations only, execute rollback operations, or 
+Parses CLI flags to control execution flow—whether to skip validations, run validations only, execute rollback operations, or
 disable automatic rollback on failure. Validates flag combinations to prevent conflicting options.
 
 ```ts
@@ -25,8 +25,8 @@ const rollingBack = (context.input.options ?? {})['rollback'] ?? false;
 
 ### Common Gen1 Configuration Extraction
 
-Extracts shared Gen1 configuration (`appId`, `appName`, `envName`, `stackName`, `region`) once from state manager and Amplify service, 
-then passes these values to step constructors. This establishes a single source of truth; subcommands should use the injected values 
+Extracts shared Gen1 configuration (`appId`, `appName`, `envName`, `stackName`, `region`) once from state manager and Amplify service,
+then passes these values to step constructors. This establishes a single source of truth; subcommands should use the injected values
 rather than re-extracting them independently.
 
 ```ts
@@ -38,7 +38,7 @@ const implementation: AmplifyMigrationStep = new step.class(logger, envName, app
 
 ### Subcommand Dispatching
 
-Maps the subcommand name to its implementation class via the `STEPS` registry, then instantiates the step with extracted configuration. 
+Maps the subcommand name to its implementation class via the `STEPS` registry, then instantiates the step with extracted configuration.
 This allows adding new migration steps by simply registering them in the `STEPS` object.
 
 ```ts
@@ -49,7 +49,7 @@ const implementation: AmplifyMigrationStep = new step.class(logger, envName, app
 
 ### Operations Reporting
 
-Displays a summary of what will happen before execution by calling `describe()` on each operation. This gives users visibility 
+Displays a summary of what will happen before execution by calling `describe()` on each operation. This gives users visibility
 into the specific actions that will be performed, enabling informed decision-making before confirming.
 
 ```ts
@@ -62,8 +62,8 @@ for (const operation of rollingBack ? await implementation.rollback() : await im
 
 ### Implications Reporting
 
-Displays the broader implications and side effects of the operation by calling the step's implications methods. 
-This helps users understand the impact beyond the immediate operations, such as downtime, 
+Displays the broader implications and side effects of the operation by calling the step's implications methods.
+This helps users understand the impact beyond the immediate operations, such as downtime,
 resource state changes, or irreversible actions.
 
 ```ts
@@ -74,7 +74,7 @@ for (const implication of rollingBack ? await implementation.rollbackImplication
 
 ### User Confirmation
 
-Prompts the user to confirm before executing operations, providing a safety gate after displaying the operations summary 
+Prompts the user to confirm before executing operations, providing a safety gate after displaying the operations summary
 and implications. Exits gracefully if the user declines.
 
 ```ts
@@ -85,7 +85,7 @@ if (!(await prompter.confirmContinue())) {
 
 ### Operation-Based Execution
 
-Executes operations sequentially by iterating through the array and calling `execute()` on each. This sequential 
+Executes operations sequentially by iterating through the array and calling `execute()` on each. This sequential
 execution ensures operations complete in the correct order and allows for proper error handling at the operation level.
 
 ```ts
@@ -98,7 +98,7 @@ async function runOperations(operations: AmplifyMigrationOperation[]) {
 
 ### Automatic Rollback on Failure
 
-Catches execution failures and automatically triggers rollback operations to restore the previous state, unless disabled 
+Catches execution failures and automatically triggers rollback operations to restore the previous state, unless disabled
 with `--no-rollback`. This provides a safety net for partial failures during migration steps.
 
 ```ts
@@ -116,14 +116,13 @@ try {
 
 Detailed documentation for subcommands is available in:
 
-- [codegen-generate.md](gen2-migration/codegen-generate.md) - Code generation pipeline for transforming Gen1 configs to Gen2 TypeScript
-- [codegen-custom-resources.md](gen2-migration/codegen-custom-resources.md) - Custom CDK resource scanner and transformer
-- [refactor.md](gen2-migration/refactor.md) - CloudFormation stack refactoring for moving stateful resources
+- [generate.md](./gen2-migration/generate.md) - Code generation pipeline for transforming Gen1 configs to Gen2 TypeScript
+- [refactor.md](./gen2-migration/refactor.md) - CloudFormation stack refactoring for moving stateful resources
 
 ## Architecture
 
-The command forces a step-based architecture with a central orchestrator (`run` function) that dispatches to step implementations. 
-Each step extends the abstract `AmplifyMigrationStep` class and implements separate validation and execution methods for both 
+The command forces a step-based architecture with a central orchestrator (`run` function) that dispatches to step implementations.
+Each step extends the abstract `AmplifyMigrationStep` class and implements separate validation and execution methods for both
 forward and rollback execution modes. Steps return `AmplifyMigrationOperation` arrays that describe and execute atomic operations.
 
 ```mermaid
@@ -131,19 +130,19 @@ flowchart LR
     CLI[amplify gen2-migration 'subcommand'] --> RUN[run dispatcher]
     RUN --> EXTRACT[Extract Common Gen1 Config: 'appId', 'envName', 'rootStackName', etc...]
     EXTRACT --> PARSE[Parse subcommand & flags]
-    
+
     PARSE --> STEP[Instantiate Step Class]
-    
+
     STEP --> VALONLY{Validations Only?}
-    
+
     VALONLY -->|yes| VALBRANCH{Rollback Flag?}
     VALBRANCH -->|no| VALEXEC[Validate Execute]
     VALBRANCH -->|yes| VALROLL[Validate Rollback]
     VALEXEC --> VALDONE[Complete]
     VALROLL --> VALDONE
-    
+
     VALONLY -->|no| BRANCH{Rollback Flag?}
-    
+
     BRANCH -->|no| FSUM[Display Execute Operations Summary]
     FSUM --> FIMP[Display Execute Implications]
     FIMP --> FCONF[User Confirmation]
@@ -152,7 +151,7 @@ flowchart LR
     FEX --> FERR{Failure?}
     FERR -->|yes & auto-rollback| REX
     FERR -->|no| FDONE[Complete]
-    
+
     BRANCH -->|yes| RSUM[Display Rollback Operations Summary]
     RSUM --> RIMP[Display Rollback Implications]
     RIMP --> RCONF[User Confirmation]
@@ -167,7 +166,7 @@ flowchart LR
 
 ```ts
 /**
- * Abstract base class that defines the lifecycle contract for all migration steps. 
+ * Abstract base class that defines the lifecycle contract for all migration steps.
  * Subcommands must extend this base class.
  */
 export abstract class AmplifyMigrationStep {...}
@@ -308,28 +307,29 @@ amplify gen2-migration <step> [options]
 
 ### Subcommands
 
-| Subcommand | Description | Implementation | Status |
-|------------|-------------|----------------|--------|
-| `clone` | Clone environment for migration | `clone.ts` → `AmplifyMigrationCloneStep` | NOT IMPLEMENTED |
-| `lock` | Lock environment and enable deletion protection on stateful resources | `lock.ts` → `AmplifyMigrationLockStep` | Implemented |
-| `generate` | Generate Gen2 backend code from Gen1 configuration | `generate.ts` → `AmplifyMigrationGenerateStep` | Implemented |
-| `refactor` | Move stateful resources from Gen1 to Gen2 stacks | `refactor/refactor.ts` → `AmplifyMigrationRefactorStep` | Implemented |
-| `shift` | Shift traffic to Gen2 | `shift.ts` → `AmplifyMigrationShiftStep` | NOT IMPLEMENTED |
-| `decommission` | Delete Gen1 environment after migration | `decommission.ts` → `AmplifyMigrationDecommissionStep` | Implemented |
-| `cleanup` | Clean up migration artifacts | `cleanup.ts` → `AmplifyMigrationCleanupStep` | NOT IMPLEMENTED |
+| Subcommand     | Description                                                           | Implementation                                          | Status          |
+| -------------- | --------------------------------------------------------------------- | ------------------------------------------------------- | --------------- |
+| `clone`        | Clone environment for migration                                       | `clone.ts` → `AmplifyMigrationCloneStep`                | NOT IMPLEMENTED |
+| `lock`         | Lock environment and enable deletion protection on stateful resources | `lock.ts` → `AmplifyMigrationLockStep`                  | Implemented     |
+| `generate`     | Generate Gen2 backend code from Gen1 configuration                    | `generate.ts` → `AmplifyMigrationGenerateStep`          | Implemented     |
+| `refactor`     | Move stateful resources from Gen1 to Gen2 stacks                      | `refactor/refactor.ts` → `AmplifyMigrationRefactorStep` | Implemented     |
+| `shift`        | Shift traffic to Gen2                                                 | `shift.ts` → `AmplifyMigrationShiftStep`                | NOT IMPLEMENTED |
+| `decommission` | Delete Gen1 environment after migration                               | `decommission.ts` → `AmplifyMigrationDecommissionStep`  | Implemented     |
+| `cleanup`      | Clean up migration artifacts                                          | `cleanup.ts` → `AmplifyMigrationCleanupStep`            | NOT IMPLEMENTED |
 
 ### Global Options
 
-| Option | Description |
-|--------|-------------|
-| `--skip-validations` | Skip pre-execution validations |
-| `--validations-only` | Run validations without executing |
-| `--rollback` | Execute rollback operations for the step |
-| `--no-rollback` | Disable automatic rollback on execution failure |
+| Option               | Description                                     |
+| -------------------- | ----------------------------------------------- |
+| `--skip-validations` | Skip pre-execution validations                  |
+| `--validations-only` | Run validations without executing               |
+| `--rollback`         | Execute rollback operations for the step        |
+| `--no-rollback`      | Disable automatic rollback on execution failure |
 
 ## AI Development Notes
 
 **Important considerations:**
+
 - The step execution order matters: lock → generate → refactor → decommission. Each step validates prerequisites from previous steps.
 - The `clone`, `shift`, and `cleanup` steps are NOT IMPLEMENTED—they throw 'Method not implemented' errors.
 - The `GEN2_MIGRATION_ENVIRONMENT_NAME` environment variable on the Amplify app tracks which environment is being migrated and prevents concurrent migrations.
@@ -342,6 +342,7 @@ amplify gen2-migration <step> [options]
 - The `--rollback` flag explicitly executes rollback operations for a step.
 
 **Common pitfalls:**
+
 - Don't skip the lock step—subsequent steps validate that the stack is locked before proceeding.
 - The `--skip-validations` flag bypasses safety checks—use with extreme caution in production.
 - Environment mismatch between local and migration target will throw an error—ensure consistency.

@@ -11,9 +11,8 @@ import {
   ResponseType,
 } from 'aws-cdk-lib/aws-apigateway';
 import { Policy, PolicyStatement } from 'aws-cdk-lib/aws-iam';
-import { Stack } from 'aws-cdk-lib';
 import { defineBackend } from '@aws-amplify/backend';
-import { Duration } from 'aws-cdk-lib';
+import { Duration, Stack } from 'aws-cdk-lib';
 
 const backend = defineBackend({
   auth,
@@ -289,11 +288,6 @@ backend.lognutrition.addEnvironment(
   'API_FITNESSTRACKER_MEALTABLE_NAME',
   backend.data.resources.tables['Meal'].tableName
 );
-backend.admin.resources.cfnResources.cfnFunction.functionName = `admin-${branchName}`;
-backend.admin.addEnvironment(
-  'AUTH_FITNESSTRACKER6B0FC1196B0FC119_USERPOOLID',
-  backend.auth.resources.userPool.userPoolId
-);
 backend.data.resources.tables['Meal'].grant(
   backend.lognutrition.resources.lambda,
   'dynamodb:Put*',
@@ -312,4 +306,9 @@ backend.data.resources.tables['Meal'].grant(
   'dynamodb:PartiQLUpdate',
   'dynamodb:Delete*',
   'dynamodb:PartiQLDelete'
+);
+backend.admin.resources.cfnResources.cfnFunction.functionName = `admin-${branchName}`;
+backend.admin.addEnvironment(
+  'AUTH_FITNESSTRACKER6B0FC1196B0FC119_USERPOOLID',
+  backend.auth.resources.userPool.userPoolId
 );

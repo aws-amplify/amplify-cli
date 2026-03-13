@@ -1,6 +1,7 @@
 import 'aws-sdk-client-mock-jest';
-import { prepare, DependenciesInstaller } from '../../../../../commands/gen2-migration/generate/codegen-head/command-handlers';
-import { MigrationAppOptions, MigrationApp } from '../../_framework/app';
+import { AmplifyMigrationGenerateStep, DependenciesInstaller } from '../../../commands/gen2-migration/generate';
+import { MigrationAppOptions, MigrationApp } from './_framework/app';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 
 // high to allow for debugging in the IDE
 const TIMEOUT_MINUTES = 60;
@@ -72,7 +73,19 @@ async function testSnapshot(appName: string, appOptions?: MigrationAppOptions, c
       if (customize) {
         await customize(app);
       }
-      await prepare(app.logger, app.id, app.environmentName, app.region);
+      const step = new AmplifyMigrationGenerateStep(
+        app.logger,
+        app.environmentName,
+        app.name,
+        app.id,
+        app.rootStackName,
+        app.region,
+        {} as $TSContext,
+      );
+      const operations = await step.execute();
+      for (const operation of operations) {
+        await operation.execute();
+      }
 
       const report = await app.snapshots.generate.compare(process.cwd());
       const isUpdatingSnapshots = expect.getState().snapshotState._updateSnapshot === 'all';
