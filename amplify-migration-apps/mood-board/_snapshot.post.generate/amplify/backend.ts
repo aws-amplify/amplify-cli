@@ -5,7 +5,8 @@ import { moodboardGetRandomEmoji } from './function/moodboardGetRandomEmoji/reso
 import { moodboardKinesisReader } from './function/moodboardKinesisReader/resource';
 import { defineBackend } from '@aws-amplify/backend';
 import { defineAnalytics } from './analytics/resource';
-import { Duration, aws_iam } from 'aws-cdk-lib';
+import { aws_iam } from 'aws-cdk-lib';
+import { Duration } from 'aws-cdk-lib';
 
 const backend = defineBackend({
   auth,
@@ -15,6 +16,24 @@ const backend = defineBackend({
   moodboardKinesisReader,
 });
 const analytics = defineAnalytics(backend);
+backend.moodboardKinesisReader.resources.lambda.addToRolePolicy(
+  new aws_iam.PolicyStatement({
+    actions: [
+      'kinesis:ListShards',
+      'kinesis:ListStreams',
+      'kinesis:ListStreamConsumers',
+      'kinesis:DescribeStream',
+      'kinesis:DescribeStreamSummary',
+      'kinesis:DescribeStreamConsumer',
+      'kinesis:GetRecords',
+      'kinesis:GetShardIterator',
+      'kinesis:SubscribeToShard',
+      'kinesis:DescribeLimits',
+      'kinesis:ListTagsForStream',
+    ],
+    resources: [analytics.kinesisStreamArn],
+  })
+);
 const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
 cfnUserPool.usernameAttributes = ['email'];
 cfnUserPool.policies = {
@@ -64,23 +83,4 @@ backend.moodboardKinesisReader.resources.cfnResources.cfnFunction.functionName =
 backend.moodboardKinesisReader.addEnvironment(
   'ANALYTICS_MOODBOARDKINESIS_KINESISSTREAMARN',
   analytics.kinesisStreamArn
-);
-backend.moodboardKinesisReader.resources.lambda.addToRolePolicy(
-  new aws_iam.PolicyStatement({
-    actions: [
-      'kinesis:ListShards',
-      'kinesis:ListStreams',
-      'kinesis:ListStreamConsumers',
-      'kinesis:DescribeStream',
-      'kinesis:DescribeStreamSummary',
-      'kinesis:DescribeStreamConsumer',
-      'kinesis:GetRecords',
-      'kinesis:GetShardIterator',
-      'kinesis:SubscribeToShard',
-      'kinesis:DescribeLimits',
-      'kinesis:ListTagsForStream',
-      'kinesis:SubscribeToShard',
-    ],
-    resources: [analytics.kinesisStreamArn],
-  })
 );

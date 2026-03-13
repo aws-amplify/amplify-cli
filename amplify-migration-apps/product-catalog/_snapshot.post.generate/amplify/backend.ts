@@ -75,9 +75,6 @@ backend.S3Trigger1ef46783.addEnvironment(
   'API_PRODUCTCATALOG_GRAPHQLAPIIDOUTPUT',
   backend.data.apiId
 );
-backend.data.resources.graphqlApi.grantMutation(
-  backend.S3Trigger1ef46783.resources.lambda
-);
 backend.lowstockproducts.resources.cfnResources.cfnFunction.functionName = `lowstockproducts-${branchName}`;
 backend.lowstockproducts.addEnvironment(
   'API_PRODUCTCATALOG_GRAPHQLAPIKEYOUTPUT',
@@ -90,6 +87,9 @@ backend.lowstockproducts.addEnvironment(
 backend.lowstockproducts.addEnvironment(
   'API_PRODUCTCATALOG_GRAPHQLAPIIDOUTPUT',
   backend.data.apiId
+);
+backend.data.resources.graphqlApi.grantMutation(
+  backend.S3Trigger1ef46783.resources.lambda
 );
 backend.data.resources.graphqlApi.grantQuery(
   backend.lowstockproducts.resources.lambda

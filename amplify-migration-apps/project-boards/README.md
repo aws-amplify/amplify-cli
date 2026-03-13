@@ -24,7 +24,6 @@ npm install
 ## Initialize Environment
 
 ```console
-rm -rf amplify
 amplify init
 ```
 
