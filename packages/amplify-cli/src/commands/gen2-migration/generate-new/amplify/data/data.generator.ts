@@ -38,7 +38,7 @@ export class DataGenerator implements Generator {
    */
   public async plan(): Promise<AmplifyMigrationOperation[]> {
     const apiName = this.gen1App.singleResourceName('api', 'AppSync');
-    const schema = this.gen1App.file(path.join('api', apiName, 'build', 'schema.graphql'));
+    const schema = this.gen1App.file(path.join('api', apiName, 'schema.graphql'));
     const apiId = this.gen1App.metaOutput('api', apiName, 'GraphQLAPIIdOutput');
 
     const tableMappings = createTableMappings(schema, apiId, this.gen1App.envName);

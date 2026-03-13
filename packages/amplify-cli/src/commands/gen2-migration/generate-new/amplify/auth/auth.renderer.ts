@@ -486,10 +486,6 @@ export class AuthRenderer {
     mfa: { readonly mode: string; readonly sms?: boolean; readonly totp?: boolean },
     properties: PropertyAssignment[],
   ): void {
-    if (mfa.mode === 'OFF') {
-      return;
-    }
-
     const multifactorProperties = [
       factory.createPropertyAssignment(factory.createIdentifier('mode'), factory.createStringLiteral(mfa.mode)),
     ];
@@ -591,10 +587,6 @@ export class AuthRenderer {
       assignments.push(factory.createPropertyAssignment(factory.createIdentifier('email'), this.createEmailDefinitionObject(emailOptions)));
     } else {
       assignments.push(factory.createPropertyAssignment(factory.createIdentifier('email'), factory.createTrue()));
-    }
-
-    if (options.userPool.UsernameAttributes?.includes('phone_number')) {
-      assignments.push(factory.createPropertyAssignment(factory.createIdentifier('phone'), factory.createTrue()));
     }
 
     const externalProviders = AuthRenderer.deriveExternalProviders(options.identityProviders);

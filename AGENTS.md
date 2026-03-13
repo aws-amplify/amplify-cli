@@ -28,8 +28,7 @@ For incremental validation, run `jest` commands directly and filter for the rele
 
 Verify your changes by following these guidelines:
 
-- Run `yarn test` in the package closest to the one you are working on.
-- No need to run `yarn build`. The unit tests are configured to execute the TypeScript files.
+- Run `yarn build && yarn test` in the package closest to the one you are working on.
 
 ### 4. Commit Stage
 

@@ -1,4 +1,4 @@
-import { AmplifyMigrationOperation } from '../_operation';
+import { AmplifyMigrationOperation } from '../../_operation';
 
 /**
  * Interface for all generators in the migration pipeline.
