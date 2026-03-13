@@ -1,7 +1,7 @@
 import ts from 'typescript';
 import path from 'node:path';
 import fs from 'node:fs/promises';
-import { Generator } from '../_infra/generator';
+import { Planner } from '../../planner';
 import { AmplifyMigrationOperation } from '../../_operation';
 import { TS } from '../_infra/ts';
 
@@ -16,7 +16,7 @@ const factory = ts.factory;
  * `BackendGenerator.plan()` runs last, it assembles everything into
  * a single `backend.ts` file.
  */
-export class BackendGenerator implements Generator {
+export class BackendGenerator implements Planner {
   private readonly imports: Array<{ readonly source: string; readonly identifiers: string[] }> = [];
   private readonly defineBackendProperties: ts.ObjectLiteralElementLike[] = [];
   private readonly postDefineStatements: ts.Statement[] = [];

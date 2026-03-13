@@ -13,7 +13,7 @@ import {
 } from '@aws-sdk/client-cloudformation';
 import { removeEnvFromCloud } from '../../extensions/amplify-helpers/remove-env-from-cloud';
 import { invokeDeleteEnvParamsFromService } from '../../extensions/amplify-helpers/invoke-delete-env-params';
-import { deleteHoldingStack, HOLDING_STACK_SUFFIX } from './refactor/holding-stack';
+import { deleteHoldingStack, HOLDING_STACK_SUFFIX } from './refactor-new/holding-stack';
 
 export class AmplifyMigrationDecommissionStep extends AmplifyMigrationStep {
   public async executeImplications(): Promise<string[]> {

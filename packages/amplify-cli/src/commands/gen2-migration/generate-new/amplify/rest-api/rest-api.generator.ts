@@ -1,5 +1,5 @@
 import ts from 'typescript';
-import { Generator } from '../../_infra/generator';
+import { Planner } from '../../../planner';
 import { AmplifyMigrationOperation } from '../../../_operation';
 import { BackendGenerator } from '../backend.generator';
 import { Gen1App } from '../../_infra/gen1-app';
@@ -16,7 +16,7 @@ const factory = ts.factory;
  * Each REST API gets its own CloudFormation stack with a RestApi,
  * LambdaIntegration, and IAM policies.
  */
-export class RestApiGenerator implements Generator {
+export class RestApiGenerator implements Planner {
   private readonly gen1App: Gen1App;
   private readonly backendGenerator: BackendGenerator;
   private readonly resourceName: string;

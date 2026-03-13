@@ -1,7 +1,7 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import * as yaml from 'yaml';
-import { Generator } from './_infra/generator';
+import { Planner } from '../planner';
 import { AmplifyMigrationOperation } from '../_operation';
 import { Gen1App } from './_infra/gen1-app';
 import { fileOrDirectoryExists } from './_infra/files';
@@ -18,7 +18,7 @@ const GEN2_REPLACE_STRING = `${GEN2_INSTALL_COMMAND}\n${' '.repeat(8)}${GEN2_COM
  * Parses the YAML and re-serializes it (normalizing quote style) before
  * performing the Gen1→Gen2 command substitution.
  */
-export class AmplifyYmlGenerator implements Generator {
+export class AmplifyYmlGenerator implements Planner {
   private readonly gen1App: Gen1App;
 
   public constructor(gen1App: Gen1App) {

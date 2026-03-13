@@ -1,7 +1,7 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import ts from 'typescript';
-import { Generator } from '../../_infra/generator';
+import { Planner } from '../../../planner';
 import { AmplifyMigrationOperation } from '../../../_operation';
 import { BackendGenerator } from '../backend.generator';
 import { Gen1App } from '../../_infra/gen1-app';
@@ -18,7 +18,7 @@ const factory = ts.factory;
  * generates analytics/resource.ts, and adds the analytics import
  * and call to backend.ts.
  */
-export class AnalyticsKinesisGenerator implements Generator {
+export class AnalyticsKinesisGenerator implements Planner {
   private readonly gen1App: Gen1App;
   private readonly backendGenerator: BackendGenerator;
   private readonly outputDir: string;

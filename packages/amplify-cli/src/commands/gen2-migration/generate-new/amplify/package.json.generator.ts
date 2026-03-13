@@ -1,12 +1,12 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
-import { Generator } from '../_infra/generator';
+import { Planner } from '../../planner';
 import { AmplifyMigrationOperation } from '../../_operation';
 
 /**
  * Writes amplify/package.json with ES module configuration.
  */
-export class BackendPackageJsonGenerator implements Generator {
+export class BackendPackageJsonGenerator implements Planner {
   public constructor(private readonly outputDir: string) {}
 
   /**

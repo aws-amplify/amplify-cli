@@ -24,7 +24,7 @@ import { GetGraphqlApiCommand, GraphqlApi } from '@aws-sdk/client-appsync';
 import { DescribeTableCommand, TableDescription } from '@aws-sdk/client-dynamodb';
 import { GetAppCommand } from '@aws-sdk/client-amplify';
 import { GetResourcesCommand } from '@aws-sdk/client-api-gateway';
-import { AwsClients } from './aws-clients';
+import { AwsClients } from '../../aws-clients';
 
 /**
  * Encapsulates all AWS SDK calls needed during Gen1 app introspection.

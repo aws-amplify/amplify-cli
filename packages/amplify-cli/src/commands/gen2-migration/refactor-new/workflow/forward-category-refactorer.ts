@@ -137,7 +137,9 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
 
     return [
       {
-        validate: async () => {},
+        validate: async () => {
+          return;
+        },
         describe: async () => [`Move Gen2 resources to holding stack '${holdingStackName}'`],
         execute: async () => {
           const existing = await findHoldingStack(this.clients.cloudFormation, holdingStackName);

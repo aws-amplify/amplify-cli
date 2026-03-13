@@ -2,7 +2,7 @@ import path from 'node:path';
 import fs from 'node:fs/promises';
 import ts from 'typescript';
 import { GraphqlApi } from '@aws-sdk/client-appsync';
-import { Generator } from '../../_infra/generator';
+import { Planner } from '../../../planner';
 import { AmplifyMigrationOperation } from '../../../_operation';
 import { BackendGenerator } from '../backend.generator';
 import { Gen1App } from '../../_infra/gen1-app';
@@ -20,7 +20,7 @@ const factory = ts.factory;
  *
  * REST APIs are handled by a separate RestApiGenerator.
  */
-export class DataGenerator implements Generator {
+export class DataGenerator implements Planner {
   private readonly gen1App: Gen1App;
   private readonly backendGenerator: BackendGenerator;
   private readonly outputDir: string;

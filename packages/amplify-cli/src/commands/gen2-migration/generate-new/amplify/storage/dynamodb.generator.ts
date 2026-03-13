@@ -1,4 +1,4 @@
-import { Generator } from '../../_infra/generator';
+import { Planner } from '../../../planner';
 import { AmplifyMigrationOperation } from '../../../_operation';
 import { BackendGenerator } from '../backend.generator';
 import { Gen1App } from '../../_infra/gen1-app';
@@ -12,7 +12,7 @@ import { TableDescription, KeySchemaElement, AttributeDefinition } from '@aws-sd
  * construct (with GSIs) as an early statement in backend.ts. The shared
  * `storageStack` declaration is emitted once via BackendGenerator.ensureStorageStack().
  */
-export class DynamoDBGenerator implements Generator {
+export class DynamoDBGenerator implements Planner {
   private readonly gen1App: Gen1App;
   private readonly backendGenerator: BackendGenerator;
   private readonly resourceName: string;

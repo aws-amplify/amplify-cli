@@ -3,7 +3,7 @@ import fs from 'node:fs/promises';
 import ts from 'typescript';
 import { AmplifyMigrationOperation } from '../../../_operation';
 import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
-import { Generator } from '../../_infra/generator';
+import { Planner } from '../../../planner';
 import { BackendGenerator } from '../backend.generator';
 import { Gen1App } from '../../_infra/gen1-app';
 import { TS } from '../../_infra/ts';
@@ -71,7 +71,7 @@ interface FunctionGeneratorOptions {
  * 5. Contributes function imports, name overrides, env var escape hatches,
  *    table grants, graphql grants, and dynamo triggers to backend.ts
  */
-export class FunctionGenerator implements Generator {
+export class FunctionGenerator implements Planner {
   private readonly gen1App: Gen1App;
   private readonly backendGenerator: BackendGenerator;
   private readonly authGenerator: AuthGenerator | undefined;

@@ -4,7 +4,7 @@ import * as cdk_from_cfn from 'cdk-from-cfn';
 import { CFNTemplate } from '../../cfn-template';
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { CloudFormationClient, DescribeStackResourcesCommand, DescribeStacksCommand, Parameter } from '@aws-sdk/client-cloudformation';
-import { resolveConditions } from '../../refactor/resolvers/cfn-condition-resolver';
+import { resolveConditions } from '../../refactor-new/resolvers/cfn-condition-resolver';
 
 /**
  * Definition for Kinesis Analytics resource from Gen1 amplify-meta.json

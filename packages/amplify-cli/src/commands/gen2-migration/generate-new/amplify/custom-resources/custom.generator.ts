@@ -2,7 +2,7 @@ import path from 'node:path';
 import fs from 'node:fs/promises';
 import ts from 'typescript';
 import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
-import { Generator } from '../../_infra/generator';
+import { Planner } from '../../../planner';
 import { AmplifyMigrationOperation } from '../../../_operation';
 import { BackendGenerator } from '../backend.generator';
 import { RootPackageJsonGenerator } from '../../package.json.generator';
@@ -26,7 +26,7 @@ const BUILD_ARTIFACTS = ['build', 'node_modules', '.npmrc', 'yarn.lock', 'tsconf
  * 5. Merges custom resource dependencies into root package.json
  * 6. Contributes import and stack creation to backend.ts
  */
-export class CustomResourceGenerator implements Generator {
+export class CustomResourceGenerator implements Planner {
   private readonly gen1App: Gen1App;
   private readonly backendGenerator: BackendGenerator;
   private readonly packageJsonGenerator: RootPackageJsonGenerator;

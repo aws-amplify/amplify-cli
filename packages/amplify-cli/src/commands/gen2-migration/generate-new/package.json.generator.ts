@@ -1,6 +1,6 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
-import { Generator } from './_infra/generator';
+import { Planner } from '../planner';
 import { AmplifyMigrationOperation } from '../_operation';
 import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 
@@ -40,7 +40,7 @@ function sortKeys(obj: Record<string, string>): Record<string, string> {
  * Category generators call `addDependency()` and `addDevDependency()`
  * during their `plan()` phase.
  */
-export class RootPackageJsonGenerator implements Generator {
+export class RootPackageJsonGenerator implements Planner {
   private readonly dependencies: Record<string, string> = {};
   private readonly devDependencies: Record<string, string> = {};
   private readonly outputDir: string;

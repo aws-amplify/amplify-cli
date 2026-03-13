@@ -2,7 +2,7 @@ import path from 'node:path';
 import fs from 'node:fs/promises';
 import ts from 'typescript';
 import type { BucketAccelerateStatus, BucketVersioningStatus, ServerSideEncryptionConfiguration } from '@aws-sdk/client-s3';
-import { Generator } from '../../_infra/generator';
+import { Planner } from '../../../planner';
 import { AmplifyMigrationOperation } from '../../../_operation';
 import { BackendGenerator } from '../backend.generator';
 import { Gen1App } from '../../_infra/gen1-app';
@@ -45,7 +45,7 @@ const PERMISSION_MAP: Readonly<Record<CLIV1Permission, readonly Permission[]>> =
  *
  * S3 triggers are contributed by FunctionGenerator via addTrigger().
  */
-export class S3Generator implements Generator {
+export class S3Generator implements Planner {
   private readonly gen1App: Gen1App;
   private readonly backendGenerator: BackendGenerator;
   private readonly outputDir: string;
