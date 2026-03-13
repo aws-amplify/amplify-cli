@@ -16,12 +16,14 @@ import { AmplifyInitializer } from './core/amplify-initializer';
 import { CategoryInitializer } from './core/category-initializer';
 import { DirectoryManager } from './utils/directory-manager';
 import { CDKAtmosphereIntegration } from './core/cdk-atmosphere-integration';
+import { Gen2MigrationExecutor } from './core/gen2-migration-executor';
 import execa from 'execa';
 import { LogLevel, CLIOptions, AppConfiguration, EnvironmentType, InitializeAppFromCLIParams } from './types';
 import { generateTimeBasedE2EAmplifyAppName } from './utils/math';
 import path from 'path';
 import os from 'os';
 import fs from 'fs';
+import { execSync } from 'child_process';
 
 // Initialize core components
 const logger = new Logger(LogLevel.INFO);
@@ -385,6 +387,23 @@ async function initializeAppFromCLI(params: InitializeAppFromCLIParams): Promise
     logger.info(`Pushing ${deploymentName} to AWS...`, context);
     await amplifyPush(targetAppPath);
     logger.info(`Successfully pushed ${deploymentName} to AWS`, context);
+
+    try {
+      execSync('git init && git add . && git commit -m "pre-deployment"', {
+        cwd: targetAppPath,
+        encoding: 'utf-8',
+      });
+      logger.info('Git repo initialized and committed successfully.');
+    } catch (error) {
+      logger.error('Git operation failed', error as Error);
+      process.exit(1);
+    }
+
+    // Step 4: Run gen2-migration pre-deployment workflow (lock -> generate)
+    logger.info(`Running gen2-migration pre-deployment workflow for ${deploymentName}...`, context);
+    const gen2MigrationExecutor = new Gen2MigrationExecutor(logger, { profile });
+    await gen2MigrationExecutor.runPreDeploymentWorkflow(targetAppPath);
+    logger.info(`Successfully completed gen2-migration pre-deployment workflow for ${deploymentName}`, context);
 
     logger.info(`App ${deploymentName} fully initialized and deployed at ${targetAppPath}`, context);
   } catch (error) {
