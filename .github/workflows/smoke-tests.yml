@@ -32,9 +32,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Enable global webcrypto for Node 18 on Windows
-          if: runner.os == 'Windows'
-          shell: powershell
-          run: echo "NODE_OPTIONS=$env:NODE_OPTIONS --experimental-global-webcrypto" >> $env:GITHUB_ENV
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: echo "NODE_OPTIONS=$env:NODE_OPTIONS --experimental-global-webcrypto" >> $env:GITHUB_ENV
 
       - name: Checkout Code
         uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
