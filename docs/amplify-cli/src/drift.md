@@ -100,7 +100,11 @@ graph TB
 2. Calls AWS `DetectStackDrift` API for each stack
 3. Polls for completion (5-minute timeout, 2-second intervals)
 4. Retrieves detailed drift information for all resources
-5. Filters out known false positives (e.g., Auth role Deny→Allow changes)
+5. Filters out known false positives:
+   - Auth role Deny→Allow changes (Cognito Identity Pool)
+   - REST API Description property (null vs empty)
+   - Auth trigger policies on Lambda execution roles (Cognito trigger policies added during push)
+   - S3 trigger policies on Lambda execution roles (S3 trigger policies added during push)
 6. Filters to only drifted resources (MODIFIED or DELETED) at detection time
 
 **Example drift detected:**
@@ -313,6 +317,25 @@ function isAmplifyAuthRoleDenyToAllowChange(propDiff, print): boolean {
       expectedStmt.Principal?.Federated === 'cognito-identity.amazonaws.com') {
     return true;
   }
+}
+```
+
+### REST API & Trigger Policy Filtering (False Positives)
+
+Amplify's push pipeline introduces drift that should not be reported:
+
+```typescript
+// From detect-stack-drift.ts
+
+// REST API Description: null vs empty mismatch
+function isAmplifyRestApiDescriptionDrift(drift, propDiff, print): boolean {
+  // Filters /Description on AWS::ApiGateway::RestApi where one side is null
+}
+
+// Auth/S3 trigger policies added to Lambda execution roles during push
+function isAmplifyTriggerPolicyDrift(drift, propDiff, print): boolean {
+  // Filters /Policies/N on AWS::IAM::Role where ExpectedValue is null
+  // and ActualValue contains known Cognito or S3 trigger policy content
 }
 ```
 
