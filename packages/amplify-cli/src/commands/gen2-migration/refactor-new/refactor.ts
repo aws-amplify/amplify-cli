@@ -16,21 +16,6 @@ import { AnalyticsRollbackRefactorer } from './analytics/analytics-rollback';
 import { parseResourceMappings, executeLegacyRefactor } from './legacy-custom-resource';
 import { DiscoveredResource, SupportResponse } from '../generate-new/_infra/gen1-app';
 
-/**
- * Services that have a dedicated refactorer for moving stateful resources.
- */
-const REFACTOR_SUPPORTED: ReadonlyMap<string, ReadonlySet<string>> = new Map([
-  ['auth', new Set(['Cognito'])],
-  ['storage', new Set(['S3', 'DynamoDB'])],
-  ['analytics', new Set(['Kinesis'])],
-]);
-
-/**
- * Categories whose resources are stateless and do not require refactoring.
- * Refactor returns supported=true for these as a no-op.
- */
-const STATELESS_CATEGORIES: ReadonlySet<string> = new Set(['function', 'api', 'custom']);
-
 export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
   /**
    * Evaluates whether refactoring is supported for a discovered resource.
@@ -39,16 +24,20 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
    * for categories with stateful resources that have no refactorer.
    */
   public static assess(resource: DiscoveredResource): SupportResponse {
-    const services = REFACTOR_SUPPORTED.get(resource.category);
-    if (services?.has(resource.service)) {
-      return { supported: true, notes: [] };
+    switch (`${resource.category}:${resource.service}`) {
+      case 'auth:Cognito':
+      case 'storage:S3':
+      case 'storage:DynamoDB':
+      case 'analytics:Kinesis':
+      // falls through — stateless categories, nothing to refactor
+      case 'function:Lambda':
+      case 'api:AppSync':
+      case 'api:API Gateway':
+      case 'custom:CloudFormation':
+        return { supported: true, notes: [] };
+      default:
+        return { supported: false, notes: [] };
     }
-
-    if (STATELESS_CATEGORIES.has(resource.category)) {
-      return { supported: true, notes: [] };
-    }
-
-    return { supported: false, notes: [] };
   }
 
   public async executeImplications(): Promise<string[]> {
