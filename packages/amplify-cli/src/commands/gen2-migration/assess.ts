@@ -1,35 +1,28 @@
-import { AmplifyMigrationStep } from './_step';
-import { AmplifyMigrationOperation } from './_operation';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { Assessment } from './_assessment';
 import { AmplifyMigrationGenerateStep } from './generate';
 import { AmplifyMigrationRefactorStep } from './refactor-new';
+import { Logger } from '../gen2-migration';
 
 /**
- * Migration step that evaluates readiness by calling assess() on the
- * generate and refactor steps. Read-only — rollback is not applicable.
+ * Evaluates migration readiness by calling assess() on the generate
+ * and refactor steps, then renders the result.
  */
-export class AmplifyMigrationAssessStep extends AmplifyMigrationStep {
-  public async executeImplications(): Promise<string[]> {
-    return ['Display migration readiness assessment (read-only, no changes made)'];
-  }
-
-  public async rollbackImplications(): Promise<string[]> {
-    return [];
-  }
-
-  public async executeValidate(): Promise<void> {
-    return;
-  }
-
-  public async rollbackValidate(): Promise<void> {
-    return;
-  }
+export class AmplifyMigrationAssessor {
+  constructor(
+    private readonly logger: Logger,
+    private readonly currentEnvName: string,
+    private readonly appName: string,
+    private readonly appId: string,
+    private readonly rootStackName: string,
+    private readonly region: string,
+    private readonly context: $TSContext,
+  ) {}
 
   /**
-   * Calls assess() on generate and refactor steps, then returns
-   * a single operation that renders the result.
+   * Runs assessment and renders the result to the terminal.
    */
-  public async execute(): Promise<AmplifyMigrationOperation[]> {
+  public async run(): Promise<void> {
     const assessment = new Assessment(this.appName, this.currentEnvName);
 
     const generateStep = new AmplifyMigrationGenerateStep(
@@ -54,20 +47,6 @@ export class AmplifyMigrationAssessStep extends AmplifyMigrationStep {
     );
     await refactorStep.assess(assessment);
 
-    return [
-      {
-        validate: async () => {
-          return;
-        },
-        describe: async () => ['Assess migration readiness'],
-        execute: async () => {
-          assessment.render();
-        },
-      },
-    ];
-  }
-
-  public async rollback(): Promise<AmplifyMigrationOperation[]> {
-    return [];
+    assessment.render();
   }
 }

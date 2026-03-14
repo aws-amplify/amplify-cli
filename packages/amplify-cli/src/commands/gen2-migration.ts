@@ -11,13 +11,9 @@ import { AmplifyMigrationShiftStep } from './gen2-migration/shift';
 import { stateManager } from '@aws-amplify/amplify-cli-core';
 import { AmplifyClient, GetAppCommand } from '@aws-sdk/client-amplify';
 import chalk from 'chalk';
-import { AmplifyMigrationAssessStep } from './gen2-migration/assess';
+import { AmplifyMigrationAssessor } from './gen2-migration/assess';
 
 const STEPS = {
-  assess: {
-    class: AmplifyMigrationAssessStep,
-    description: 'Assess migration readiness for your Gen1 environment',
-  },
   clone: {
     class: AmplifyMigrationCloneStep,
     description: 'Not Implemented',
@@ -95,7 +91,7 @@ export class Logger {
 export const run = async (context: $TSContext) => {
   const stepName = (context.input.subCommands ?? [])[0];
   const step = STEPS[stepName];
-  if (!step) {
+  if (!step && stepName !== 'assess') {
     displayHelp(context);
     return;
   }
@@ -155,6 +151,14 @@ export const run = async (context: $TSContext) => {
   const region = stateManager.getTeamProviderInfo()[envName].awscloudformation.Region;
 
   const logger = new Logger(stepName, appName, envName);
+
+  // Assess is not a migration step — handle it separately.
+  if (stepName === 'assess') {
+    const assessor = new AmplifyMigrationAssessor(logger, envName, appName, appId, stackName, region, context);
+    await assessor.run();
+    return;
+  }
+
   const implementation: AmplifyMigrationStep = new step.class(logger, envName, appName, appId, stackName, region, context);
 
   if (validationsOnly) {
@@ -290,10 +294,11 @@ function shiftParams(context) {
 }
 
 function displayHelp(context: $TSContext) {
-  context.amplify.showHelp(
-    'amplify gen2-migration <subcommands>',
-    Object.entries(STEPS).map(([name, v]) => ({ name, description: v.description })),
-  );
+  const commands = [
+    { name: 'assess', description: 'Assess migration readiness for your Gen1 environment' },
+    ...Object.entries(STEPS).map(([name, v]) => ({ name, description: v.description })),
+  ];
+  context.amplify.showHelp('amplify gen2-migration <subcommands>', commands);
   printer.info('');
 }
 
