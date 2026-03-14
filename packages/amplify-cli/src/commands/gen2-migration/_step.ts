@@ -1,7 +1,6 @@
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { Logger } from '../gen2-migration';
 import { AmplifyMigrationOperation } from './_operation';
-import { Assessment } from './_assessment';
 
 /**
  * Abstract base class that defines the lifecycle contract for all migration steps.
@@ -16,7 +15,6 @@ export abstract class AmplifyMigrationStep {
     protected readonly rootStackName: string,
     protected readonly region: string,
     protected readonly context: $TSContext,
-    protected readonly assessment: Assessment,
   ) {}
 
   /**

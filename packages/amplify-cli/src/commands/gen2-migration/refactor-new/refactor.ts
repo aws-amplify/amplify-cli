@@ -14,8 +14,37 @@ import { StorageRollbackRefactorer } from './storage/storage-rollback';
 import { AnalyticsForwardRefactorer } from './analytics/analytics-forward';
 import { AnalyticsRollbackRefactorer } from './analytics/analytics-rollback';
 import { Gen1App, DiscoveredResource } from '../generate-new/_infra/gen1-app';
+import { Assessment } from '../_assessment';
 
 export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
+  /**
+   * Records refactor support for each discovered resource into the assessment.
+   */
+  public async assess(assessment: Assessment): Promise<void> {
+    const clients = new AwsClients({ region: this.region });
+    const gen1App = await Gen1App.create({ appId: this.appId, region: this.region, envName: this.currentEnvName, clients });
+    const discovered = gen1App.discover();
+
+    for (const resource of discovered) {
+      switch (`${resource.category}:${resource.service}`) {
+        case 'auth:Cognito':
+        case 'storage:S3':
+        case 'storage:DynamoDB':
+        case 'analytics:Kinesis':
+        // falls through — stateless categories, nothing to refactor
+        case 'function:Lambda':
+        case 'api:AppSync':
+        case 'api:API Gateway':
+        case 'custom:CloudFormation':
+          assessment.record('refactor', resource, { supported: true, notes: [] });
+          break;
+        default:
+          assessment.record('refactor', resource, { supported: false, notes: [] });
+          break;
+      }
+    }
+  }
+
   public async executeImplications(): Promise<string[]> {
     return ['Move stateful resources from your Gen1 app to be managed by your Gen2 app'];
   }
@@ -47,18 +76,15 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
     for (const resource of discovered) {
       switch (`${resource.category}:${resource.service}`) {
         case 'auth:Cognito':
-          this.assessment.record('refactor', resource, { supported: true, notes: [] });
           refactorers.push(
             new AuthForwardRefactorer(gen1Env, gen2Branch, clients, this.region, accountId, this.appId, this.currentEnvName),
           );
           break;
         case 'storage:S3':
         case 'storage:DynamoDB':
-          this.assessment.record('refactor', resource, { supported: true, notes: [] });
           refactorers.push(new StorageForwardRefactorer(gen1Env, gen2Branch, clients, this.region, accountId));
           break;
         case 'analytics:Kinesis':
-          this.assessment.record('refactor', resource, { supported: true, notes: [] });
           refactorers.push(new AnalyticsForwardRefactorer(gen1Env, gen2Branch, clients, this.region, accountId));
           break;
         // Stateless categories — nothing to refactor
@@ -67,11 +93,11 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
         case 'api:AppSync':
         case 'api:API Gateway':
         case 'custom:CloudFormation':
-          this.assessment.record('refactor', resource, { supported: true, notes: [] });
           break;
         default:
-          this.assessment.record('refactor', resource, { supported: false, notes: [] });
-          break;
+          throw new AmplifyError('MigrationError', {
+            message: `Unsupported resource '${resource.resourceName}' (${resource.category}:${resource.service}). Run 'amplify gen2-migration assess' to check migration readiness.`,
+          });
       }
     }
 

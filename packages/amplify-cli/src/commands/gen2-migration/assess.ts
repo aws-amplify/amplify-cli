@@ -1,12 +1,12 @@
 import { AmplifyMigrationStep } from './_step';
 import { AmplifyMigrationOperation } from './_operation';
+import { Assessment } from './_assessment';
 import { AmplifyMigrationGenerateStep } from './generate';
 import { AmplifyMigrationRefactorStep } from './refactor-new';
 
 /**
- * Migration step that evaluates readiness by running the generate
- * and refactor steps with the shared Assessment collector. Read-only —
- * rollback is not applicable.
+ * Migration step that evaluates readiness by calling assess() on the
+ * generate and refactor steps. Read-only — rollback is not applicable.
  */
 export class AmplifyMigrationAssessStep extends AmplifyMigrationStep {
   public async executeImplications(): Promise<string[]> {
@@ -26,10 +26,12 @@ export class AmplifyMigrationAssessStep extends AmplifyMigrationStep {
   }
 
   /**
-   * Runs generate and refactor execute() with the shared assessment,
-   * then returns a single operation that renders the result.
+   * Calls assess() on generate and refactor steps, then returns
+   * a single operation that renders the result.
    */
   public async execute(): Promise<AmplifyMigrationOperation[]> {
+    const assessment = new Assessment(this.appName, this.currentEnvName);
+
     const generateStep = new AmplifyMigrationGenerateStep(
       this.logger,
       this.currentEnvName,
@@ -38,17 +40,8 @@ export class AmplifyMigrationAssessStep extends AmplifyMigrationStep {
       this.rootStackName,
       this.region,
       this.context,
-      this.assessment,
     );
-    await generateStep.execute();
-
-    // Provide a placeholder --to so the refactor step's extractParameters() doesn't throw.
-    // The refactor step will create infrastructure against this stack name but only
-    // record assessment entries — the operations are discarded by the assess step.
-    const refactorContext = {
-      ...this.context,
-      parameters: { ...this.context.parameters, options: { ...this.context.parameters?.options, to: 'assessment-placeholder' } },
-    };
+    await generateStep.assess(assessment);
 
     const refactorStep = new AmplifyMigrationRefactorStep(
       this.logger,
@@ -57,10 +50,9 @@ export class AmplifyMigrationAssessStep extends AmplifyMigrationStep {
       this.appId,
       this.rootStackName,
       this.region,
-      refactorContext,
-      this.assessment,
+      this.context,
     );
-    await refactorStep.execute();
+    await refactorStep.assess(assessment);
 
     return [
       {
@@ -69,7 +61,7 @@ export class AmplifyMigrationAssessStep extends AmplifyMigrationStep {
         },
         describe: async () => ['Assess migration readiness'],
         execute: async () => {
-          this.assessment.render();
+          assessment.render();
         },
       },
     ];

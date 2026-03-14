@@ -7,6 +7,8 @@ import { AmplifyMigrationOperation } from './_operation';
 import { AmplifyGen2MigrationValidations } from './_validations';
 import { AwsClients } from './aws-clients';
 import { Gen1App } from './generate-new/_infra/gen1-app';
+import { Assessment } from './_assessment';
+import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { Planner } from './planner';
 import { BackendGenerator } from './generate-new/amplify/backend.generator';
 import { RootPackageJsonGenerator } from './generate-new/package.json.generator';
@@ -28,6 +30,33 @@ import { fileOrDirectoryExists } from './generate-new/_infra/files';
 const AMPLIFY_DIR = 'amplify';
 
 export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
+  /**
+   * Records generate support for each discovered resource into the assessment.
+   */
+  public async assess(assessment: Assessment): Promise<void> {
+    const clients = new AwsClients({ region: this.region });
+    const gen1App = await Gen1App.create({ appId: this.appId, region: this.region, envName: this.currentEnvName, clients });
+    const discovered = gen1App.discover();
+
+    for (const resource of discovered) {
+      switch (`${resource.category}:${resource.service}`) {
+        case 'auth:Cognito':
+        case 'storage:S3':
+        case 'storage:DynamoDB':
+        case 'api:AppSync':
+        case 'api:API Gateway':
+        case 'analytics:Kinesis':
+        case 'custom:CloudFormation':
+        case 'function:Lambda':
+          assessment.record('generate', resource, { supported: true, notes: [] });
+          break;
+        default:
+          assessment.record('generate', resource, { supported: false, notes: [] });
+          break;
+      }
+    }
+  }
+
   public async executeImplications(): Promise<string[]> {
     return ['TODO'];
   }
@@ -77,7 +106,6 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
     for (const resource of discovered) {
       switch (`${resource.category}:${resource.service}`) {
         case 'auth:Cognito': {
-          this.assessment.record('generate', resource, { supported: true, notes: [] });
           const isReferenceAuth = discovered
             .filter((r) => r.category === 'auth')
             .some((r) => {
@@ -94,34 +122,27 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
           break;
         }
         case 'storage:S3':
-          this.assessment.record('generate', resource, { supported: true, notes: [] });
           s3Generator = new S3Generator(gen1App, backendGenerator, outputDir);
           generators.push(s3Generator);
           break;
         case 'storage:DynamoDB': {
-          this.assessment.record('generate', resource, { supported: true, notes: [] });
           const hasS3Bucket = discovered.some((r) => r.category === 'storage' && r.service === 'S3');
           generators.push(new DynamoDBGenerator(gen1App, backendGenerator, resource.resourceName, hasS3Bucket));
           break;
         }
         case 'api:AppSync':
-          this.assessment.record('generate', resource, { supported: true, notes: [] });
           generators.push(new DataGenerator(gen1App, backendGenerator, outputDir));
           break;
         case 'api:API Gateway':
-          this.assessment.record('generate', resource, { supported: true, notes: [] });
           generators.push(new RestApiGenerator(gen1App, backendGenerator, resource.resourceName));
           break;
         case 'analytics:Kinesis':
-          this.assessment.record('generate', resource, { supported: true, notes: [] });
           generators.push(new AnalyticsKinesisGenerator(gen1App, backendGenerator, outputDir, resource.resourceName));
           break;
         case 'custom:CloudFormation':
-          this.assessment.record('generate', resource, { supported: true, notes: [] });
           generators.push(new CustomResourceGenerator(gen1App, backendGenerator, packageJsonGenerator, outputDir, resource.resourceName));
           break;
         case 'function:Lambda': {
-          this.assessment.record('generate', resource, { supported: true, notes: [] });
           const functionCategoryMap = computeFunctionCategories(gen1App);
           generators.push(
             new FunctionGenerator({
@@ -138,8 +159,9 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
           break;
         }
         default:
-          this.assessment.record('generate', resource, { supported: false, notes: [] });
-          break;
+          throw new AmplifyError('MigrationError', {
+            message: `Unsupported resource '${resource.resourceName}' (${resource.category}:${resource.service}). Run 'amplify gen2-migration assess' to check migration readiness.`,
+          });
       }
     }
 
