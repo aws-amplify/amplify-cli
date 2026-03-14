@@ -14,8 +14,43 @@ import { StorageRollbackRefactorer } from './storage/storage-rollback';
 import { AnalyticsForwardRefactorer } from './analytics/analytics-forward';
 import { AnalyticsRollbackRefactorer } from './analytics/analytics-rollback';
 import { parseResourceMappings, executeLegacyRefactor } from './legacy-custom-resource';
+import { DiscoveredResource, SupportResponse } from '../generate-new/_infra/gen1-app';
+
+/**
+ * Services that have a dedicated refactorer for moving stateful resources.
+ */
+const REFACTOR_SUPPORTED: ReadonlyMap<string, ReadonlySet<string>> = new Map([
+  ['auth', new Set(['Cognito'])],
+  ['storage', new Set(['S3', 'DynamoDB'])],
+  ['analytics', new Set(['Kinesis'])],
+]);
+
+/**
+ * Categories whose resources are stateless and do not require refactoring.
+ * Refactor returns supported=true for these as a no-op.
+ */
+const STATELESS_CATEGORIES: ReadonlySet<string> = new Set(['function', 'api', 'custom']);
 
 export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
+  /**
+   * Evaluates whether refactoring is supported for a discovered resource.
+   * Returns supported=true for stateless categories (no-op) and for
+   * categories with a dedicated refactorer. Returns supported=false
+   * for categories with stateful resources that have no refactorer.
+   */
+  public static assess(resource: DiscoveredResource): SupportResponse {
+    const services = REFACTOR_SUPPORTED.get(resource.category);
+    if (services?.has(resource.service)) {
+      return { supported: true, notes: [] };
+    }
+
+    if (STATELESS_CATEGORIES.has(resource.category)) {
+      return { supported: true, notes: [] };
+    }
+
+    return { supported: false, notes: [] };
+  }
+
   public async executeImplications(): Promise<string[]> {
     return ['Move stateful resources from your Gen1 app to be managed by your Gen2 app'];
   }

@@ -6,7 +6,7 @@ import { AmplifyMigrationStep } from './_step';
 import { AmplifyMigrationOperation } from './_operation';
 import { AmplifyGen2MigrationValidations } from './_validations';
 import { AwsClients } from './aws-clients';
-import { Gen1App } from './generate-new/_infra/gen1-app';
+import { Gen1App, DiscoveredResource, SupportResponse } from './generate-new/_infra/gen1-app';
 import { Planner } from './planner';
 import { BackendGenerator } from './generate-new/amplify/backend.generator';
 import { RootPackageJsonGenerator } from './generate-new/package.json.generator';
@@ -27,7 +27,50 @@ import { fileOrDirectoryExists } from './generate-new/_infra/files';
 
 const AMPLIFY_DIR = 'amplify';
 
+/**
+ * Services supported by the generate step, keyed by category.
+ */
+const GENERATE_SUPPORTED: ReadonlyMap<string, ReadonlySet<string>> = new Map([
+  ['auth', new Set(['Cognito'])],
+  ['storage', new Set(['S3', 'DynamoDB'])],
+  ['api', new Set(['AppSync', 'API Gateway'])],
+  ['analytics', new Set(['Kinesis'])],
+  ['custom', new Set(['CloudFormation'])],
+  ['function', new Set(['Lambda'])],
+]);
+
 export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
+  /**
+   * Evaluates whether code generation is supported for a discovered resource.
+   * Returns notes for sub-features that are not yet handled.
+   */
+  public static assess(gen1App: Gen1App, resource: DiscoveredResource): SupportResponse {
+    const services = GENERATE_SUPPORTED.get(resource.category);
+    if (!services?.has(resource.service)) {
+      return { supported: false, notes: [] };
+    }
+
+    const notes: string[] = [];
+
+    // Sub-feature detection for functions
+    if (resource.category === 'function') {
+      try {
+        const templatePath = `function/${resource.resourceName}/${resource.resourceName}-cloudformation-template.json`;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped CloudFormation template
+        const template = gen1App.json(templatePath) as Record<string, any>;
+        const customPoliciesResource = template.Resources?.CustomLambdaExecutionPolicy;
+        if (customPoliciesResource && customPoliciesResource.Type === 'AWS::IAM::Policy') {
+          notes.push('custom-policies not supported');
+        }
+      } catch {
+        // Template may not exist for all functions (e.g. not yet deployed).
+        // Sub-feature detection is best-effort — missing template is harmless.
+      }
+    }
+
+    return { supported: true, notes };
+  }
+
   public async executeImplications(): Promise<string[]> {
     return ['TODO'];
   }

@@ -23,6 +23,23 @@ interface Gen1AppProps extends Gen1CreateOptions {
 }
 
 /**
+ * A resource discovered from amplify-meta.json.
+ */
+export interface DiscoveredResource {
+  readonly category: string;
+  readonly resourceName: string;
+  readonly service: string;
+}
+
+/**
+ * Response from a migration step's assess method.
+ */
+export interface SupportResponse {
+  readonly supported: boolean;
+  readonly notes: readonly string[];
+}
+
+/**
  * Facade for all Gen1 app state — both local files and AWS resources.
  *
  * Provides generic, category-agnostic access to the Gen1 project.
@@ -79,6 +96,28 @@ export class Gen1App {
       return block as Record<string, unknown>;
     }
     return undefined;
+  }
+
+  /**
+   * Iterates all categories in amplify-meta.json and returns a flat list of discovered resources.
+   * Skips internal categories (providers, hosting) that are not user-facing Amplify features.
+   */
+  public discover(): DiscoveredResource[] {
+    const meta = this._meta as Record<string, unknown>;
+    const skip = new Set(['providers', 'hosting']);
+    const resources: DiscoveredResource[] = [];
+
+    for (const [category, block] of Object.entries(meta)) {
+      if (skip.has(category) || !block || typeof block !== 'object') continue;
+      for (const [resourceName, resourceMeta] of Object.entries(block as Record<string, unknown>)) {
+        if (!resourceMeta || typeof resourceMeta !== 'object') continue;
+        const service = (resourceMeta as Record<string, unknown>).service as string | undefined;
+        if (!service) continue;
+        resources.push({ category, resourceName, service });
+      }
+    }
+
+    return resources;
   }
 
   /** Returns a resource output value from amplify-meta.json. */
