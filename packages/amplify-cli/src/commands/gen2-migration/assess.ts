@@ -6,8 +6,8 @@ import { AmplifyMigrationRefactorStep } from './refactor-new';
 
 /**
  * Migration step that evaluates readiness by running the generate
- * step with an Assessment collector and querying the refactor step
- * statically. Read-only — rollback is not applicable.
+ * and refactor steps with an Assessment collector. Read-only —
+ * rollback is not applicable.
  */
 export class AmplifyMigrationAssessStep extends AmplifyMigrationStep {
   public async executeImplications(): Promise<string[]> {
@@ -27,9 +27,8 @@ export class AmplifyMigrationAssessStep extends AmplifyMigrationStep {
   }
 
   /**
-   * Runs generate execute() with an Assessment collector. Refactor
-   * support is recorded via the static assess() since the refactor
-   * step requires a --to target stack not available during assessment.
+   * Runs generate and refactor execute() with an Assessment collector,
+   * then returns a single operation that renders the result.
    */
   public async execute(): Promise<AmplifyMigrationOperation[]> {
     const assessment = new Assessment(this.appName, this.currentEnvName);
@@ -46,10 +45,17 @@ export class AmplifyMigrationAssessStep extends AmplifyMigrationStep {
     );
     await generateStep.execute();
 
-    // Layer on refactor support for each discovered resource.
-    for (const [, entry] of assessment.entries) {
-      entry.refactor = AmplifyMigrationRefactorStep.assess(entry.resource);
-    }
+    const refactorStep = new AmplifyMigrationRefactorStep(
+      this.logger,
+      this.currentEnvName,
+      this.appName,
+      this.appId,
+      this.rootStackName,
+      this.region,
+      this.context,
+      assessment,
+    );
+    await refactorStep.execute();
 
     return [
       {

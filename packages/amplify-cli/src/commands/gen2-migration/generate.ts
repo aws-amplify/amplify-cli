@@ -9,6 +9,8 @@ import { AwsClients } from './aws-clients';
 import { Gen1App } from './generate-new/_infra/gen1-app';
 import { Assessment } from './_assessment';
 import { Planner } from './planner';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
+import { Logger } from '../gen2-migration';
 import { BackendGenerator } from './generate-new/amplify/backend.generator';
 import { RootPackageJsonGenerator } from './generate-new/package.json.generator';
 import { BackendPackageJsonGenerator } from './generate-new/amplify/package.json.generator';
@@ -31,9 +33,17 @@ const AMPLIFY_DIR = 'amplify';
 export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
   private readonly assessment?: Assessment;
 
-  constructor(...args: [...ConstructorParameters<typeof AmplifyMigrationStep>, Assessment?]) {
-    const assessment = args.length > 7 ? args[7] : undefined;
-    super(args[0], args[1], args[2], args[3], args[4], args[5], args[6]);
+  constructor(
+    logger: Logger,
+    currentEnvName: string,
+    appName: string,
+    appId: string,
+    rootStackName: string,
+    region: string,
+    context: $TSContext,
+    assessment?: Assessment,
+  ) {
+    super(logger, currentEnvName, appName, appId, rootStackName, region, context);
     this.assessment = assessment;
   }
 

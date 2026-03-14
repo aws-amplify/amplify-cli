@@ -1,7 +1,7 @@
 /* eslint-disable spellcheck/spell-checker */
 import { AmplifyMigrationStep } from '../_step';
 import { AmplifyMigrationOperation } from '../_operation';
-import { AmplifyError } from '@aws-amplify/amplify-cli-core';
+import { $TSContext, AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { GetCallerIdentityCommand, STSClient } from '@aws-sdk/client-sts';
 import { AmplifyGen2MigrationValidations } from '../_validations';
 import { AwsClients } from '../aws-clients';
@@ -14,30 +14,25 @@ import { StorageRollbackRefactorer } from './storage/storage-rollback';
 import { AnalyticsForwardRefactorer } from './analytics/analytics-forward';
 import { AnalyticsRollbackRefactorer } from './analytics/analytics-rollback';
 import { parseResourceMappings, executeLegacyRefactor } from './legacy-custom-resource';
-import { DiscoveredResource, SupportResponse } from '../generate-new/_infra/gen1-app';
+import { Gen1App } from '../generate-new/_infra/gen1-app';
+import { Assessment } from '../_assessment';
+import { Logger } from '../../gen2-migration';
 
 export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
-  /**
-   * Evaluates whether refactoring is supported for a discovered resource.
-   * Returns supported=true for stateless categories (no-op) and for
-   * categories with a dedicated refactorer. Returns supported=false
-   * for categories with stateful resources that have no refactorer.
-   */
-  public static assess(resource: DiscoveredResource): SupportResponse {
-    switch (`${resource.category}:${resource.service}`) {
-      case 'auth:Cognito':
-      case 'storage:S3':
-      case 'storage:DynamoDB':
-      case 'analytics:Kinesis':
-      // falls through — stateless categories, nothing to refactor
-      case 'function:Lambda':
-      case 'api:AppSync':
-      case 'api:API Gateway':
-      case 'custom:CloudFormation':
-        return { supported: true, notes: [] };
-      default:
-        return { supported: false, notes: [] };
-    }
+  private readonly assessment?: Assessment;
+
+  constructor(
+    logger: Logger,
+    currentEnvName: string,
+    appName: string,
+    appId: string,
+    rootStackName: string,
+    region: string,
+    context: $TSContext,
+    assessment?: Assessment,
+  ) {
+    super(logger, currentEnvName, appName, appId, rootStackName, region, context);
+    this.assessment = assessment;
   }
 
   public async executeImplications(): Promise<string[]> {
@@ -58,6 +53,37 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
   }
 
   public async execute(): Promise<AmplifyMigrationOperation[]> {
+    // Record assessment for all discovered resources if a collector is present.
+    if (this.assessment) {
+      const clients = new AwsClients({ region: this.region });
+      const gen1App = await Gen1App.create({ appId: this.appId, region: this.region, envName: this.currentEnvName, clients });
+      const discovered = gen1App.discover();
+
+      for (const resource of discovered) {
+        const supported = (() => {
+          switch (`${resource.category}:${resource.service}`) {
+            case 'auth:Cognito':
+            case 'storage:S3':
+            case 'storage:DynamoDB':
+            case 'analytics:Kinesis':
+            // falls through — stateless categories, nothing to refactor
+            case 'function:Lambda':
+            case 'api:AppSync':
+            case 'api:API Gateway':
+            case 'custom:CloudFormation':
+              return true;
+            default:
+              return false;
+          }
+        })();
+
+        this.assessment.record('refactor', resource, { supported, notes: [] });
+      }
+
+      // Assessment mode: no --to flag, no operations to return.
+      return [];
+    }
+
     const { toStack, resourceMappings } = this.extractParameters();
 
     // Custom resources: if --resourceMappings provided, use legacy code path
