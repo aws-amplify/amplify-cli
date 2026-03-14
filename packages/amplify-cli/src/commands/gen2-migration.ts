@@ -12,6 +12,7 @@ import { stateManager } from '@aws-amplify/amplify-cli-core';
 import { AmplifyClient, GetAppCommand } from '@aws-sdk/client-amplify';
 import chalk from 'chalk';
 import { AmplifyMigrationAssessStep } from './gen2-migration/assess';
+import { Assessment } from './gen2-migration/_assessment';
 
 const STEPS = {
   assess: {
@@ -155,7 +156,8 @@ export const run = async (context: $TSContext) => {
   const region = stateManager.getTeamProviderInfo()[envName].awscloudformation.Region;
 
   const logger = new Logger(stepName, appName, envName);
-  const implementation: AmplifyMigrationStep = new step.class(logger, envName, appName, appId, stackName, region, context);
+  const assessment = new Assessment(appName, envName);
+  const implementation: AmplifyMigrationStep = new step.class(logger, envName, appName, appId, stackName, region, context, assessment);
 
   if (validationsOnly) {
     await validate(implementation, rollingBack, logger, context);

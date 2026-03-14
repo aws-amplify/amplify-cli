@@ -1,7 +1,7 @@
 /* eslint-disable spellcheck/spell-checker */
 import { AmplifyMigrationStep } from '../_step';
 import { AmplifyMigrationOperation } from '../_operation';
-import { $TSContext, AmplifyError } from '@aws-amplify/amplify-cli-core';
+import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { GetCallerIdentityCommand, STSClient } from '@aws-sdk/client-sts';
 import { AmplifyGen2MigrationValidations } from '../_validations';
 import { AwsClients } from '../aws-clients';
@@ -13,27 +13,9 @@ import { StorageForwardRefactorer } from './storage/storage-forward';
 import { StorageRollbackRefactorer } from './storage/storage-rollback';
 import { AnalyticsForwardRefactorer } from './analytics/analytics-forward';
 import { AnalyticsRollbackRefactorer } from './analytics/analytics-rollback';
-import { Gen1App } from '../generate-new/_infra/gen1-app';
-import { Assessment } from '../_assessment';
-import { Logger } from '../../gen2-migration';
+import { Gen1App, DiscoveredResource } from '../generate-new/_infra/gen1-app';
 
 export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
-  private readonly assessment?: Assessment;
-
-  constructor(
-    logger: Logger,
-    currentEnvName: string,
-    appName: string,
-    appId: string,
-    rootStackName: string,
-    region: string,
-    context: $TSContext,
-    assessment?: Assessment,
-  ) {
-    super(logger, currentEnvName, appName, appId, rootStackName, region, context);
-    this.assessment = assessment;
-  }
-
   public async executeImplications(): Promise<string[]> {
     return ['Move stateful resources from your Gen1 app to be managed by your Gen2 app'];
   }
@@ -60,37 +42,23 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
 
     const refactorers: Refactorer[] = [];
 
-    // Refactorers assume a single resource per category.
-    // Multiple resources in the same category would produce incorrect mappings.
-    const refactorCategories = new Set(['auth', 'storage', 'analytics']);
-    const categoryCounts = new Map<string, number>();
-    for (const r of discovered) {
-      if (!refactorCategories.has(r.category)) continue;
-      categoryCounts.set(r.category, (categoryCounts.get(r.category) ?? 0) + 1);
-    }
-    for (const [category, count] of categoryCounts) {
-      if (count > 1) {
-        throw new AmplifyError('MigrationError', {
-          message: `Multiple resources in '${category}' category detected. The refactor step does not yet support multiple resources per category.`,
-        });
-      }
-    }
+    validateSingleResourcePerCategory(discovered);
 
     for (const resource of discovered) {
       switch (`${resource.category}:${resource.service}`) {
         case 'auth:Cognito':
-          this.assessment?.record('refactor', resource, { supported: true, notes: [] });
+          this.assessment.record('refactor', resource, { supported: true, notes: [] });
           refactorers.push(
             new AuthForwardRefactorer(gen1Env, gen2Branch, clients, this.region, accountId, this.appId, this.currentEnvName),
           );
           break;
         case 'storage:S3':
         case 'storage:DynamoDB':
-          this.assessment?.record('refactor', resource, { supported: true, notes: [] });
+          this.assessment.record('refactor', resource, { supported: true, notes: [] });
           refactorers.push(new StorageForwardRefactorer(gen1Env, gen2Branch, clients, this.region, accountId));
           break;
         case 'analytics:Kinesis':
-          this.assessment?.record('refactor', resource, { supported: true, notes: [] });
+          this.assessment.record('refactor', resource, { supported: true, notes: [] });
           refactorers.push(new AnalyticsForwardRefactorer(gen1Env, gen2Branch, clients, this.region, accountId));
           break;
         // Stateless categories — nothing to refactor
@@ -99,10 +67,10 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
         case 'api:AppSync':
         case 'api:API Gateway':
         case 'custom:CloudFormation':
-          this.assessment?.record('refactor', resource, { supported: true, notes: [] });
+          this.assessment.record('refactor', resource, { supported: true, notes: [] });
           break;
         default:
-          this.assessment?.record('refactor', resource, { supported: false, notes: [] });
+          this.assessment.record('refactor', resource, { supported: false, notes: [] });
           break;
       }
     }
@@ -162,5 +130,26 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
     }
 
     return toStack;
+  }
+}
+
+/**
+ * Throws if any refactorer category has more than one resource.
+ * Refactorers assume a single resource per category — multiple
+ * resources would produce incorrect mappings.
+ */
+function validateSingleResourcePerCategory(discovered: readonly DiscoveredResource[]): void {
+  const refactorCategories = new Set(['auth', 'storage', 'analytics']);
+  const categoryCounts = new Map<string, number>();
+  for (const r of discovered) {
+    if (!refactorCategories.has(r.category)) continue;
+    categoryCounts.set(r.category, (categoryCounts.get(r.category) ?? 0) + 1);
+  }
+  for (const [category, count] of categoryCounts) {
+    if (count > 1) {
+      throw new AmplifyError('MigrationError', {
+        message: `Multiple resources in '${category}' category detected. The refactor step does not yet support multiple resources per category.`,
+      });
+    }
   }
 }

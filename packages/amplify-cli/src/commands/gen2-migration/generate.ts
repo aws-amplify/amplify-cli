@@ -7,10 +7,7 @@ import { AmplifyMigrationOperation } from './_operation';
 import { AmplifyGen2MigrationValidations } from './_validations';
 import { AwsClients } from './aws-clients';
 import { Gen1App } from './generate-new/_infra/gen1-app';
-import { Assessment } from './_assessment';
 import { Planner } from './planner';
-import { $TSContext } from '@aws-amplify/amplify-cli-core';
-import { Logger } from '../gen2-migration';
 import { BackendGenerator } from './generate-new/amplify/backend.generator';
 import { RootPackageJsonGenerator } from './generate-new/package.json.generator';
 import { BackendPackageJsonGenerator } from './generate-new/amplify/package.json.generator';
@@ -31,22 +28,6 @@ import { fileOrDirectoryExists } from './generate-new/_infra/files';
 const AMPLIFY_DIR = 'amplify';
 
 export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
-  private readonly assessment?: Assessment;
-
-  constructor(
-    logger: Logger,
-    currentEnvName: string,
-    appName: string,
-    appId: string,
-    rootStackName: string,
-    region: string,
-    context: $TSContext,
-    assessment?: Assessment,
-  ) {
-    super(logger, currentEnvName, appName, appId, rootStackName, region, context);
-    this.assessment = assessment;
-  }
-
   public async executeImplications(): Promise<string[]> {
     return ['TODO'];
   }
@@ -96,7 +77,7 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
     for (const resource of discovered) {
       switch (`${resource.category}:${resource.service}`) {
         case 'auth:Cognito': {
-          this.assessment?.record('generate', resource, { supported: true, notes: [] });
+          this.assessment.record('generate', resource, { supported: true, notes: [] });
           const isReferenceAuth = discovered
             .filter((r) => r.category === 'auth')
             .some((r) => {
@@ -113,34 +94,34 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
           break;
         }
         case 'storage:S3':
-          this.assessment?.record('generate', resource, { supported: true, notes: [] });
+          this.assessment.record('generate', resource, { supported: true, notes: [] });
           s3Generator = new S3Generator(gen1App, backendGenerator, outputDir);
           generators.push(s3Generator);
           break;
         case 'storage:DynamoDB': {
-          this.assessment?.record('generate', resource, { supported: true, notes: [] });
+          this.assessment.record('generate', resource, { supported: true, notes: [] });
           const hasS3Bucket = discovered.some((r) => r.category === 'storage' && r.service === 'S3');
           generators.push(new DynamoDBGenerator(gen1App, backendGenerator, resource.resourceName, hasS3Bucket));
           break;
         }
         case 'api:AppSync':
-          this.assessment?.record('generate', resource, { supported: true, notes: [] });
+          this.assessment.record('generate', resource, { supported: true, notes: [] });
           generators.push(new DataGenerator(gen1App, backendGenerator, outputDir));
           break;
         case 'api:API Gateway':
-          this.assessment?.record('generate', resource, { supported: true, notes: [] });
+          this.assessment.record('generate', resource, { supported: true, notes: [] });
           generators.push(new RestApiGenerator(gen1App, backendGenerator, resource.resourceName));
           break;
         case 'analytics:Kinesis':
-          this.assessment?.record('generate', resource, { supported: true, notes: [] });
+          this.assessment.record('generate', resource, { supported: true, notes: [] });
           generators.push(new AnalyticsKinesisGenerator(gen1App, backendGenerator, outputDir, resource.resourceName));
           break;
         case 'custom:CloudFormation':
-          this.assessment?.record('generate', resource, { supported: true, notes: [] });
+          this.assessment.record('generate', resource, { supported: true, notes: [] });
           generators.push(new CustomResourceGenerator(gen1App, backendGenerator, packageJsonGenerator, outputDir, resource.resourceName));
           break;
         case 'function:Lambda': {
-          this.assessment?.record('generate', resource, { supported: true, notes: [] });
+          this.assessment.record('generate', resource, { supported: true, notes: [] });
           const functionCategoryMap = computeFunctionCategories(gen1App);
           generators.push(
             new FunctionGenerator({
@@ -157,7 +138,7 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
           break;
         }
         default:
-          this.assessment?.record('generate', resource, { supported: false, notes: [] });
+          this.assessment.record('generate', resource, { supported: false, notes: [] });
           break;
       }
     }
