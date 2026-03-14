@@ -7,12 +7,14 @@ import { AmplifyGen2MigrationValidations } from '../_validations';
 import { AwsClients } from '../aws-clients';
 import { StackFacade } from './stack-facade';
 import { Refactorer } from './refactorer';
-import { AuthForwardRefactorer } from './auth/auth-forward';
-import { AuthRollbackRefactorer } from './auth/auth-rollback';
-import { StorageForwardRefactorer } from './storage/storage-forward';
-import { StorageRollbackRefactorer } from './storage/storage-rollback';
-import { AnalyticsForwardRefactorer } from './analytics/analytics-forward';
-import { AnalyticsRollbackRefactorer } from './analytics/analytics-rollback';
+import { AuthCognitoForwardRefactorer } from './auth/auth-forward';
+import { AuthCognitoRollbackRefactorer } from './auth/auth-rollback';
+import { StorageS3ForwardRefactorer } from './storage/storage-forward';
+import { StorageS3RollbackRefactorer } from './storage/storage-rollback';
+import { StorageDynamoForwardRefactorer } from './storage/storage-dynamo-forward';
+import { StorageDynamoRollbackRefactorer } from './storage/storage-dynamo-rollback';
+import { AnalyticsKinesisForwardRefactorer } from './analytics/analytics-forward';
+import { AnalyticsKinesisRollbackRefactorer } from './analytics/analytics-rollback';
 import { Gen1App, DiscoveredResource } from '../generate-new/_infra/gen1-app';
 import { Assessment } from '../_assessment';
 
@@ -33,9 +35,10 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
         case 'analytics:Kinesis':
         // falls through — stateless categories, nothing to refactor
         case 'function:Lambda':
+          assessment.record('refactor', resource, { supported: false, notes: [] });
+          break;
         case 'api:AppSync':
         case 'api:API Gateway':
-        case 'custom:CloudFormation':
           assessment.record('refactor', resource, { supported: true, notes: [] });
           break;
         default:
@@ -77,22 +80,23 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
       switch (`${resource.category}:${resource.service}`) {
         case 'auth:Cognito':
           refactorers.push(
-            new AuthForwardRefactorer(gen1Env, gen2Branch, clients, this.region, accountId, this.appId, this.currentEnvName),
+            new AuthCognitoForwardRefactorer(gen1Env, gen2Branch, clients, this.region, accountId, this.appId, this.currentEnvName),
           );
           break;
         case 'storage:S3':
+          refactorers.push(new StorageS3ForwardRefactorer(gen1Env, gen2Branch, clients, this.region, accountId));
+          break;
         case 'storage:DynamoDB':
-          refactorers.push(new StorageForwardRefactorer(gen1Env, gen2Branch, clients, this.region, accountId));
+          refactorers.push(new StorageDynamoForwardRefactorer(gen1Env, gen2Branch, clients, this.region, accountId));
           break;
         case 'analytics:Kinesis':
-          refactorers.push(new AnalyticsForwardRefactorer(gen1Env, gen2Branch, clients, this.region, accountId));
+          refactorers.push(new AnalyticsKinesisForwardRefactorer(gen1Env, gen2Branch, clients, this.region, accountId));
           break;
         // Stateless categories — nothing to refactor
         // falls through
         case 'function:Lambda':
         case 'api:AppSync':
         case 'api:API Gateway':
-        case 'custom:CloudFormation':
           break;
         default:
           throw new AmplifyError('MigrationError', {
@@ -109,9 +113,10 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
     const { clients, accountId, gen1Env, gen2Branch } = await this.createInfrastructure(toStack);
 
     const refactorers: Refactorer[] = [
-      new AuthRollbackRefactorer(gen1Env, gen2Branch, clients, this.region, accountId),
-      new StorageRollbackRefactorer(gen1Env, gen2Branch, clients, this.region, accountId),
-      new AnalyticsRollbackRefactorer(gen1Env, gen2Branch, clients, this.region, accountId),
+      new AuthCognitoRollbackRefactorer(gen1Env, gen2Branch, clients, this.region, accountId),
+      new StorageS3RollbackRefactorer(gen1Env, gen2Branch, clients, this.region, accountId),
+      new StorageDynamoRollbackRefactorer(gen1Env, gen2Branch, clients, this.region, accountId),
+      new AnalyticsKinesisRollbackRefactorer(gen1Env, gen2Branch, clients, this.region, accountId),
     ];
 
     return this.plan(refactorers);

@@ -24,7 +24,6 @@ import { S3Generator } from './generate-new/amplify/storage/s3.generator';
 import { DynamoDBGenerator } from './generate-new/amplify/storage/dynamodb.generator';
 import { FunctionGenerator } from './generate-new/amplify/function/function.generator';
 import { AnalyticsKinesisGenerator } from './generate-new/amplify/analytics/kinesis.generator';
-import { CustomResourceGenerator } from './generate-new/amplify/custom-resources/custom.generator';
 import { fileOrDirectoryExists } from './generate-new/_infra/files';
 
 const AMPLIFY_DIR = 'amplify';
@@ -42,11 +41,12 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
       switch (`${resource.category}:${resource.service}`) {
         case 'auth:Cognito':
         case 'storage:S3':
+          assessment.record('generate', resource, { supported: false, notes: [] });
+          break;
         case 'storage:DynamoDB':
         case 'api:AppSync':
         case 'api:API Gateway':
         case 'analytics:Kinesis':
-        case 'custom:CloudFormation':
         case 'function:Lambda':
           assessment.record('generate', resource, { supported: true, notes: [] });
           break;
@@ -138,9 +138,6 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
           break;
         case 'analytics:Kinesis':
           generators.push(new AnalyticsKinesisGenerator(gen1App, backendGenerator, outputDir, resource.resourceName));
-          break;
-        case 'custom:CloudFormation':
-          generators.push(new CustomResourceGenerator(gen1App, backendGenerator, packageJsonGenerator, outputDir, resource.resourceName));
           break;
         case 'function:Lambda': {
           const functionCategoryMap = computeFunctionCategories(gen1App);

@@ -19,7 +19,7 @@ const USER_POOL_ID_OUTPUT_KEY_NAME = 'UserPoolId';
  * Moves main auth resources from Gen1 to Gen2.
  * UserPoolGroup support will be added back in a future change.
  */
-export class AuthForwardRefactorer extends ForwardCategoryRefactorer {
+export class AuthCognitoForwardRefactorer extends ForwardCategoryRefactorer {
   constructor(
     gen1Env: StackFacade,
     gen2Branch: StackFacade,

@@ -21,7 +21,7 @@ const GEN1_AUTH_LOGICAL_IDS = new Map<string, string>([
  * Moves main auth resources from Gen2 back to Gen1.
  * UserPoolGroup support will be added back in a future change.
  */
-export class AuthRollbackRefactorer extends RollbackCategoryRefactorer {
+export class AuthCognitoRollbackRefactorer extends RollbackCategoryRefactorer {
   protected resourceTypes(): string[] {
     return AUTH_RESOURCE_TYPES;
   }

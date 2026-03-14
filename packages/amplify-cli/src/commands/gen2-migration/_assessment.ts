@@ -74,6 +74,7 @@ export class Assessment {
 
   private static renderCategory(category: string, assessments: readonly ResourceAssessment[]): void {
     printer.info(chalk.bold(category.charAt(0).toUpperCase() + category.slice(1)));
+    printer.blankLine();
 
     const rows = assessments.map((a) => ({
       resource: a.resource.resourceName,

@@ -7,7 +7,7 @@ export const ANALYTICS_RESOURCE_TYPES = ['AWS::Kinesis::Stream'];
  * Moves analytics resources from Gen1 to Gen2.
  * Uses the default type-matching buildResourceMappings from ForwardCategoryRefactorer.
  */
-export class AnalyticsForwardRefactorer extends ForwardCategoryRefactorer {
+export class AnalyticsKinesisForwardRefactorer extends ForwardCategoryRefactorer {
   protected async fetchSourceStackId(): Promise<string | undefined> {
     return this.findNestedStack(this.gen1Env, 'analytics');
   }
