@@ -42,6 +42,14 @@ export class AmplifyMigrationAssessStep extends AmplifyMigrationStep {
     );
     await generateStep.execute();
 
+    // Provide a placeholder --to so the refactor step's extractParameters() doesn't throw.
+    // The refactor step will create infrastructure against this stack name but only
+    // record assessment entries — the operations are discarded by the assess step.
+    const refactorContext = {
+      ...this.context,
+      parameters: { ...this.context.parameters, options: { ...this.context.parameters?.options, to: 'assessment-placeholder' } },
+    };
+
     const refactorStep = new AmplifyMigrationRefactorStep(
       this.logger,
       this.currentEnvName,
@@ -49,7 +57,7 @@ export class AmplifyMigrationAssessStep extends AmplifyMigrationStep {
       this.appId,
       this.rootStackName,
       this.region,
-      this.context,
+      refactorContext,
       this.assessment,
     );
     await refactorStep.execute();
