@@ -30,6 +30,8 @@ jobs:
         cli-version: ${{ fromJson(inputs.versions) }}
     name: Smoke Tests ${{ matrix.os }} ${{ matrix.cli-version }}
     runs-on: ${{ matrix.os }}
+    env:
+      AMPLIFY_TEST_TIMEOUT_SEC: 600
     steps:
       - name: Checkout Code
         uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3

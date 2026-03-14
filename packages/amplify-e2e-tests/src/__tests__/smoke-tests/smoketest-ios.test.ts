@@ -42,6 +42,7 @@ describe('Smoke Test - iOS', () => {
 function rubyBundleInstall(cwd: string) {
   return spawn('bundle', ['install'], {
     cwd,
+    noOutputTimeout: 10 * 60 * 1000, // 10 minutes — gem installs can go silent
   })
     .wait('Bundle complete')
     .runAsync();
@@ -53,6 +54,7 @@ function buildAndTestExampleIosApp(cwd: string) {
     ['exec', 'fastlane', 'scan', '--destination', 'platform=iOS Simulator,name=iPhone 16,OS=18.5', '--deployment_target_version', '16.4'],
     {
       cwd,
+      noOutputTimeout: 10 * 60 * 1000, // 10 minutes — xcodebuild/SPM resolution goes silent during compilation
     },
   )
     .wait(/Test.*Succeeded/)
