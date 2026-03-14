@@ -1,5 +1,8 @@
 import chalk from 'chalk';
 import { printer } from '@aws-amplify/amplify-prompts';
+import { AmplifyMigrationStep } from './_step';
+import { AmplifyMigrationOperation } from './_operation';
+import { AwsClients } from './aws-clients';
 import { Gen1App, DiscoveredResource, SupportResponse } from './generate-new/_infra/gen1-app';
 import { AmplifyMigrationGenerateStep } from './generate';
 import { AmplifyMigrationRefactorStep } from './refactor-new';
@@ -14,87 +17,107 @@ export interface ResourceAssessment {
 }
 
 /**
- * Complete assessment result for a Gen1 application.
+ * Migration step that evaluates readiness by querying the generate
+ * and refactor steps for each discovered resource. Read-only — rollback
+ * is not applicable.
  */
-export interface AssessmentResult {
-  readonly appName: string;
-  readonly envName: string;
-  readonly categories: ReadonlyMap<string, readonly ResourceAssessment[]>;
-  readonly blocked: boolean;
-  readonly blockers: readonly ResourceAssessment[];
-  readonly generateWarnings: readonly ResourceAssessment[];
-  readonly subFeatureWarnings: readonly ResourceAssessment[];
-}
+export class AmplifyMigrationAssessStep extends AmplifyMigrationStep {
+  public async executeImplications(): Promise<string[]> {
+    return ['Display migration readiness assessment (read-only, no changes made)'];
+  }
 
-/**
- * Evaluates migration readiness for a Gen1 application by querying
- * the generate and refactor steps for each discovered resource.
- */
-export class Assessment {
-  constructor(private readonly gen1App: Gen1App, private readonly appName: string, private readonly envName: string) {}
+  public async rollbackImplications(): Promise<string[]> {
+    return [];
+  }
+
+  public async executeValidate(): Promise<void> {
+    return;
+  }
+
+  public async rollbackValidate(): Promise<void> {
+    return;
+  }
 
   /**
-   * Discovers all resources and evaluates support for each.
+   * Returns a single operation that evaluates and renders the assessment.
    */
-  public evaluate(): AssessmentResult {
-    const resources = this.gen1App.discover();
-    const assessments: ResourceAssessment[] = resources.map((r) => ({
+  public async execute(): Promise<AmplifyMigrationOperation[]> {
+    const clients = new AwsClients({ region: this.region });
+    const gen1App = await Gen1App.create({ appId: this.appId, region: this.region, envName: this.currentEnvName, clients });
+
+    const resources = gen1App.discover();
+    const resourceAssessments: ResourceAssessment[] = resources.map((r) => ({
       resource: r,
-      generate: AmplifyMigrationGenerateStep.assess(this.gen1App, r),
+      generate: AmplifyMigrationGenerateStep.assess(gen1App, r),
       refactor: AmplifyMigrationRefactorStep.assess(r),
     }));
 
+    const assessment = new Assessment(this.appName, this.currentEnvName, resourceAssessments);
+
+    return [
+      {
+        validate: async () => {
+          return;
+        },
+        describe: async () => ['Assess migration readiness'],
+        execute: async () => {
+          assessment.render();
+        },
+      },
+    ];
+  }
+
+  public async rollback(): Promise<AmplifyMigrationOperation[]> {
+    return [];
+  }
+}
+
+/**
+ * Holds the assessed resource data and renders the assessment to the terminal.
+ */
+class Assessment {
+  private readonly categories: ReadonlyMap<string, readonly ResourceAssessment[]>;
+  private readonly blockers: readonly ResourceAssessment[];
+  private readonly generateWarnings: readonly ResourceAssessment[];
+  private readonly subFeatureWarnings: readonly ResourceAssessment[];
+
+  constructor(private readonly appName: string, private readonly envName: string, assessments: readonly ResourceAssessment[]) {
     const categories = new Map<string, ResourceAssessment[]>();
     for (const a of assessments) {
       const list = categories.get(a.resource.category) ?? [];
       list.push(a);
       categories.set(a.resource.category, list);
     }
-
-    const blockers = assessments.filter((a) => !a.refactor.supported);
-    const generateWarnings = assessments.filter((a) => !a.generate.supported);
-    const subFeatureWarnings = assessments.filter((a) => a.generate.notes.length > 0 || a.refactor.notes.length > 0);
-
-    return {
-      appName: this.appName,
-      envName: this.envName,
-      categories,
-      blocked: blockers.length > 0,
-      blockers,
-      generateWarnings,
-      subFeatureWarnings,
-    };
+    this.categories = categories;
+    this.blockers = assessments.filter((a) => !a.refactor.supported);
+    this.generateWarnings = assessments.filter((a) => !a.generate.supported);
+    this.subFeatureWarnings = assessments.filter((a) => a.generate.notes.length > 0 || a.refactor.notes.length > 0);
   }
-}
 
-/**
- * Renders an AssessmentResult to the terminal.
- */
-export class AssessmentRenderer {
   /**
-   * Renders the full assessment output: header, per-category tables,
-   * summary, and verdict.
+   * Renders the full assessment: header, per-category tables, summary, and verdict.
    */
-  public static render(result: AssessmentResult): void {
+  public render(): void {
     printer.blankLine();
-    printer.info(`Assessment for "${result.appName}" (env: ${result.envName})`);
+    printer.info(`Assessment for "${this.appName}" (env: ${this.envName})`);
     printer.blankLine();
 
-    for (const [category, assessments] of result.categories) {
-      AssessmentRenderer.renderCategory(category, assessments);
+    for (const [category, assessments] of this.categories) {
+      this.renderCategory(category, assessments);
     }
 
-    AssessmentRenderer.renderSummary(result);
+    this.renderSummary();
   }
 
-  private static renderCategory(category: string, assessments: readonly ResourceAssessment[]): void {
+  private renderCategory(category: string, assessments: readonly ResourceAssessment[]): void {
     printer.info(chalk.bold(category.charAt(0).toUpperCase() + category.slice(1)));
+    printer.info('');
 
     const rows = assessments.map((a) => ({
       resource: a.resource.resourceName,
       service: a.resource.service,
-      generate: AssessmentRenderer.icon(a.generate),
-      refactor: AssessmentRenderer.icon(a.refactor),
+      generate: Assessment.icon(a.generate),
+      refactor: Assessment.icon(a.refactor),
     }));
 
     const colWidths = {
@@ -123,7 +146,6 @@ export class AssessmentRenderer {
     }
     printer.info(hr('─', '└', '┴', '┘'));
 
-    // Footnotes for sub-feature warnings
     const footnotes = assessments.filter((a) => a.generate.notes.length > 0 || a.refactor.notes.length > 0);
     for (const a of footnotes) {
       const allNotes = [...a.generate.notes, ...a.refactor.notes];
@@ -136,43 +158,44 @@ export class AssessmentRenderer {
     printer.blankLine();
   }
 
-  private static renderSummary(result: AssessmentResult): void {
-    const total = [...result.categories.values()].reduce((sum, list) => sum + list.length, 0);
-    const allResources = [...result.categories.values()].flat();
+  private renderSummary(): void {
+    const allResources = [...this.categories.values()].flat();
+    const total = allResources.length;
     const fullySupported = allResources.filter(
       (a) => a.generate.supported && a.refactor.supported && a.generate.notes.length === 0 && a.refactor.notes.length === 0,
     ).length;
-    const categoryCount = result.categories.size;
+    const categoryCount = this.categories.size;
+    const blocked = this.blockers.length > 0;
 
     printer.info(`Summary: ${fullySupported}/${total} resources across ${categoryCount} categories fully supported.`);
     printer.blankLine();
 
-    if (result.generateWarnings.length > 0) {
-      const names = result.generateWarnings.map((a) => `${a.resource.category}/${a.resource.resourceName}`).join(', ');
-      printer.info(chalk.yellow(`⚠ ${result.generateWarnings.length} resource(s) do not support code generation:`));
+    if (this.generateWarnings.length > 0) {
+      const names = this.generateWarnings.map((a) => `${a.resource.category}/${a.resource.resourceName}`).join(', ');
+      printer.info(chalk.yellow(`⚠ ${this.generateWarnings.length} resource(s) do not support code generation:`));
       printer.info(chalk.yellow(`    ${names}`));
       printer.info(chalk.yellow('  You will need to write Gen2 code for these manually'));
       printer.info(chalk.yellow('  after the generate step.'));
       printer.blankLine();
     }
 
-    if (result.subFeatureWarnings.length > 0) {
-      const names = result.subFeatureWarnings
+    if (this.subFeatureWarnings.length > 0) {
+      const names = this.subFeatureWarnings
         .map((a) => {
           const notes = [...a.generate.notes, ...a.refactor.notes].join(', ');
           return `${a.resource.category}/${a.resource.resourceName} (${notes})`;
         })
         .join(', ');
-      printer.info(chalk.yellow(`⚠ ${result.subFeatureWarnings.length} resource(s) have unsupported sub-features:`));
+      printer.info(chalk.yellow(`⚠ ${this.subFeatureWarnings.length} resource(s) have unsupported sub-features:`));
       printer.info(chalk.yellow(`    ${names}`));
       printer.info(chalk.yellow('  Generated code will be incomplete. Review and add'));
       printer.info(chalk.yellow('  missing configuration manually after the generate step.'));
       printer.blankLine();
     }
 
-    if (result.blockers.length > 0) {
-      const names = result.blockers.map((a) => `${a.resource.category}/${a.resource.resourceName}`).join(', ');
-      printer.info(chalk.red(`✘ ${result.blockers.length} resource(s) have stateful data that cannot be refactored:`));
+    if (this.blockers.length > 0) {
+      const names = this.blockers.map((a) => `${a.resource.category}/${a.resource.resourceName}`).join(', ');
+      printer.info(chalk.red(`✘ ${this.blockers.length} resource(s) have stateful data that cannot be refactored:`));
       printer.info(chalk.red(`    ${names}`));
       printer.info(chalk.red('  Automatic migration cannot proceed until refactoring'));
       printer.info(chalk.red('  support is added for these resources. Stateful resources'));
@@ -180,7 +203,7 @@ export class AssessmentRenderer {
       printer.blankLine();
     }
 
-    if (result.blocked) {
+    if (blocked) {
       printer.info(chalk.red('✘ Migration blocked.'));
     } else {
       printer.info(chalk.green('✔ Migration can proceed.'));

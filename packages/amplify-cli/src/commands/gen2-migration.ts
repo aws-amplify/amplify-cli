@@ -11,11 +11,13 @@ import { AmplifyMigrationShiftStep } from './gen2-migration/shift';
 import { stateManager } from '@aws-amplify/amplify-cli-core';
 import { AmplifyClient, GetAppCommand } from '@aws-sdk/client-amplify';
 import chalk from 'chalk';
-import { Assessment, AssessmentRenderer } from './gen2-migration/assessment';
-import { Gen1App } from './gen2-migration/generate-new/_infra/gen1-app';
-import { AwsClients } from './gen2-migration/aws-clients';
+import { AmplifyMigrationAssessStep } from './gen2-migration/assess';
 
 const STEPS = {
+  assess: {
+    class: AmplifyMigrationAssessStep,
+    description: 'Assess migration readiness for your Gen1 environment',
+  },
   clone: {
     class: AmplifyMigrationCloneStep,
     description: 'Not Implemented',
@@ -92,13 +94,6 @@ export class Logger {
 
 export const run = async (context: $TSContext) => {
   const stepName = (context.input.subCommands ?? [])[0];
-
-  // assess is a read-only command that does not follow the step lifecycle.
-  if (stepName === 'assess') {
-    await runAssess();
-    return;
-  }
-
   const step = STEPS[stepName];
   if (!step) {
     displayHelp(context);
@@ -239,30 +234,6 @@ export const run = async (context: $TSContext) => {
   }
 };
 
-async function runAssess(): Promise<void> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped team-provider-info.json
-  const appId = (Object.values(stateManager.getTeamProviderInfo())[0] as any).awscloudformation.AmplifyAppId;
-  const amplifyClient = new AmplifyClient();
-  const app = await amplifyClient.send(new GetAppCommand({ appId }));
-  const appName = app.app.name;
-  const envName = stateManager.getCurrentEnvName();
-
-  if (!envName) {
-    throw new AmplifyError('EnvironmentNotInitializedError', {
-      message: `No environment configured for app '${appName}'`,
-      resolution: 'Run "amplify pull" to configure an environment.',
-    });
-  }
-
-  const region = stateManager.getTeamProviderInfo()[envName].awscloudformation.Region;
-  const clients = new AwsClients({ region });
-  const gen1App = await Gen1App.create({ appId, region, envName, clients });
-
-  const assessment = new Assessment(gen1App, appName, envName);
-  const result = assessment.evaluate();
-  AssessmentRenderer.render(result);
-}
-
 async function validate(step: AmplifyMigrationStep, rollback: boolean, logger: Logger, context: $TSContext) {
   logger.envelope('Performing validations');
   try {
@@ -319,11 +290,10 @@ function shiftParams(context) {
 }
 
 function displayHelp(context: $TSContext) {
-  const commands = [
-    { name: 'assess', description: 'Assess migration readiness for your Gen1 environment' },
-    ...Object.entries(STEPS).map(([name, v]) => ({ name, description: v.description })),
-  ];
-  context.amplify.showHelp('amplify gen2-migration <subcommands>', commands);
+  context.amplify.showHelp(
+    'amplify gen2-migration <subcommands>',
+    Object.entries(STEPS).map(([name, v]) => ({ name, description: v.description })),
+  );
   printer.info('');
 }
 
