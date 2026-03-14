@@ -74,7 +74,22 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
     }
 
     const refactorers: Refactorer[] = [];
-    const instantiated = new Set<string>();
+
+    // Refactorers assume a single resource per category.
+    // Multiple resources in the same category would produce incorrect mappings.
+    const refactorCategories = new Set(['auth', 'storage', 'analytics']);
+    const categoryCounts = new Map<string, number>();
+    for (const r of discovered) {
+      if (!refactorCategories.has(r.category)) continue;
+      categoryCounts.set(r.category, (categoryCounts.get(r.category) ?? 0) + 1);
+    }
+    for (const [category, count] of categoryCounts) {
+      if (count > 1) {
+        throw new AmplifyError('MigrationError', {
+          message: `Multiple resources in '${category}' category detected. The refactor step does not yet support multiple resources per category.`,
+        });
+      }
+    }
 
     const infrastructure = toStack ? await this.createInfrastructure(toStack) : undefined;
 
@@ -82,27 +97,24 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
       switch (`${resource.category}:${resource.service}`) {
         case 'auth:Cognito':
           this.assessment?.record('refactor', resource, { supported: true, notes: [] });
-          if (infrastructure && !instantiated.has('auth')) {
+          if (infrastructure) {
             const { clients: c, accountId, gen1Env, gen2Branch } = infrastructure;
             refactorers.push(new AuthForwardRefactorer(gen1Env, gen2Branch, c, this.region, accountId, this.appId, this.currentEnvName));
-            instantiated.add('auth');
           }
           break;
         case 'storage:S3':
         case 'storage:DynamoDB':
           this.assessment?.record('refactor', resource, { supported: true, notes: [] });
-          if (infrastructure && !instantiated.has('storage')) {
+          if (infrastructure) {
             const { clients: c, accountId, gen1Env, gen2Branch } = infrastructure;
             refactorers.push(new StorageForwardRefactorer(gen1Env, gen2Branch, c, this.region, accountId));
-            instantiated.add('storage');
           }
           break;
         case 'analytics:Kinesis':
           this.assessment?.record('refactor', resource, { supported: true, notes: [] });
-          if (infrastructure && !instantiated.has('analytics')) {
+          if (infrastructure) {
             const { clients: c, accountId, gen1Env, gen2Branch } = infrastructure;
             refactorers.push(new AnalyticsForwardRefactorer(gen1Env, gen2Branch, c, this.region, accountId));
-            instantiated.add('analytics');
           }
           break;
         // Stateless categories — nothing to refactor
