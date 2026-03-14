@@ -53,41 +53,14 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
   }
 
   public async execute(): Promise<AmplifyMigrationOperation[]> {
-    // Record assessment for all discovered resources if a collector is present.
-    if (this.assessment) {
-      const clients = new AwsClients({ region: this.region });
-      const gen1App = await Gen1App.create({ appId: this.appId, region: this.region, envName: this.currentEnvName, clients });
-      const discovered = gen1App.discover();
+    const clients = new AwsClients({ region: this.region });
+    const gen1App = await Gen1App.create({ appId: this.appId, region: this.region, envName: this.currentEnvName, clients });
+    const discovered = gen1App.discover();
 
-      for (const resource of discovered) {
-        const supported = (() => {
-          switch (`${resource.category}:${resource.service}`) {
-            case 'auth:Cognito':
-            case 'storage:S3':
-            case 'storage:DynamoDB':
-            case 'analytics:Kinesis':
-            // falls through — stateless categories, nothing to refactor
-            case 'function:Lambda':
-            case 'api:AppSync':
-            case 'api:API Gateway':
-            case 'custom:CloudFormation':
-              return true;
-            default:
-              return false;
-          }
-        })();
-
-        this.assessment.record('refactor', resource, { supported, notes: [] });
-      }
-
-      // Assessment mode: no --to flag, no operations to return.
-      return [];
-    }
-
-    const { toStack, resourceMappings } = this.extractParameters();
+    const { toStack, resourceMappings } = this.assessment ? { toStack: undefined, resourceMappings: undefined } : this.extractParameters();
 
     // Custom resources: if --resourceMappings provided, use legacy code path
-    if (resourceMappings) {
+    if (resourceMappings && toStack) {
       const parsedMappings = await parseResourceMappings(resourceMappings);
       return executeLegacyRefactor({
         rootStackName: this.rootStackName,
@@ -100,7 +73,53 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
       });
     }
 
-    return this.executeNew(toStack);
+    const refactorers: Refactorer[] = [];
+    const instantiated = new Set<string>();
+
+    const infrastructure = toStack ? await this.createInfrastructure(toStack) : undefined;
+
+    for (const resource of discovered) {
+      switch (`${resource.category}:${resource.service}`) {
+        case 'auth:Cognito':
+          this.assessment?.record('refactor', resource, { supported: true, notes: [] });
+          if (infrastructure && !instantiated.has('auth')) {
+            const { clients: c, accountId, gen1Env, gen2Branch } = infrastructure;
+            refactorers.push(new AuthForwardRefactorer(gen1Env, gen2Branch, c, this.region, accountId, this.appId, this.currentEnvName));
+            instantiated.add('auth');
+          }
+          break;
+        case 'storage:S3':
+        case 'storage:DynamoDB':
+          this.assessment?.record('refactor', resource, { supported: true, notes: [] });
+          if (infrastructure && !instantiated.has('storage')) {
+            const { clients: c, accountId, gen1Env, gen2Branch } = infrastructure;
+            refactorers.push(new StorageForwardRefactorer(gen1Env, gen2Branch, c, this.region, accountId));
+            instantiated.add('storage');
+          }
+          break;
+        case 'analytics:Kinesis':
+          this.assessment?.record('refactor', resource, { supported: true, notes: [] });
+          if (infrastructure && !instantiated.has('analytics')) {
+            const { clients: c, accountId, gen1Env, gen2Branch } = infrastructure;
+            refactorers.push(new AnalyticsForwardRefactorer(gen1Env, gen2Branch, c, this.region, accountId));
+            instantiated.add('analytics');
+          }
+          break;
+        // Stateless categories — nothing to refactor
+        // falls through
+        case 'function:Lambda':
+        case 'api:AppSync':
+        case 'api:API Gateway':
+        case 'custom:CloudFormation':
+          this.assessment?.record('refactor', resource, { supported: true, notes: [] });
+          break;
+        default:
+          this.assessment?.record('refactor', resource, { supported: false, notes: [] });
+          break;
+      }
+    }
+
+    return this.plan(refactorers);
   }
 
   public async rollback(): Promise<AmplifyMigrationOperation[]> {
@@ -111,18 +130,6 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
       new AuthRollbackRefactorer(gen1Env, gen2Branch, clients, this.region, accountId),
       new StorageRollbackRefactorer(gen1Env, gen2Branch, clients, this.region, accountId),
       new AnalyticsRollbackRefactorer(gen1Env, gen2Branch, clients, this.region, accountId),
-    ];
-
-    return this.plan(refactorers);
-  }
-
-  private async executeNew(toStack: string): Promise<AmplifyMigrationOperation[]> {
-    const { clients, accountId, gen1Env, gen2Branch } = await this.createInfrastructure(toStack);
-
-    const refactorers: Refactorer[] = [
-      new AuthForwardRefactorer(gen1Env, gen2Branch, clients, this.region, accountId, this.appId, this.currentEnvName),
-      new StorageForwardRefactorer(gen1Env, gen2Branch, clients, this.region, accountId),
-      new AnalyticsForwardRefactorer(gen1Env, gen2Branch, clients, this.region, accountId),
     ];
 
     return this.plan(refactorers);
