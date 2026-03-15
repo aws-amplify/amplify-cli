@@ -55,14 +55,6 @@ export interface DiscoveredResource {
 }
 
 /**
- * Exhaustiveness guard — place after a switch on ResourceKey to get
- * a compile error if any case is missing.
- */
-export function assertNever(x: never): never {
-  throw new Error(`Unexpected resource key: ${x}`);
-}
-
-/**
  * Response from a migration step's assess method.
  */
 export interface SupportResponse {

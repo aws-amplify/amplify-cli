@@ -15,7 +15,7 @@ import { StorageDynamoForwardRefactorer } from './storage/storage-dynamo-forward
 import { StorageDynamoRollbackRefactorer } from './storage/storage-dynamo-rollback';
 import { AnalyticsKinesisForwardRefactorer } from './analytics/analytics-forward';
 import { AnalyticsKinesisRollbackRefactorer } from './analytics/analytics-rollback';
-import { Gen1App, DiscoveredResource, assertNever } from '../generate-new/_infra/gen1-app';
+import { Gen1App, DiscoveredResource } from '../generate-new/_infra/gen1-app';
 import { Assessment } from '../_assessment';
 
 export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
@@ -43,8 +43,6 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
         case 'unknown':
           assessment.record('refactor', resource, { supported: false, notes: [] });
           break;
-        default:
-          assertNever(resource.key);
       }
     }
   }
@@ -104,8 +102,6 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
           throw new AmplifyError('MigrationError', {
             message: `Unsupported resource '${resource.resourceName}' (${resource.category}:${resource.service}). Run 'amplify gen2-migration assess' to check migration readiness.`,
           });
-        default:
-          assertNever(resource.key);
       }
     }
 
@@ -148,8 +144,6 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
           throw new AmplifyError('MigrationError', {
             message: `Unsupported resource '${resource.resourceName}' (${resource.category}:${resource.service}). Cannot rollback.`,
           });
-        default:
-          assertNever(resource.key);
       }
     }
 

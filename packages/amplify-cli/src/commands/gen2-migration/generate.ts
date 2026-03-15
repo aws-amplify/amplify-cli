@@ -6,7 +6,7 @@ import { AmplifyMigrationStep } from './_step';
 import { AmplifyMigrationOperation } from './_operation';
 import { AmplifyGen2MigrationValidations } from './_validations';
 import { AwsClients } from './aws-clients';
-import { Gen1App, assertNever } from './generate-new/_infra/gen1-app';
+import { Gen1App } from './generate-new/_infra/gen1-app';
 import { Assessment } from './_assessment';
 import { Planner } from './planner';
 import { BackendGenerator } from './generate-new/amplify/backend.generator';
@@ -51,8 +51,6 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
         case 'unknown':
           assessment.record('generate', resource, { supported: false, notes: [] });
           break;
-        default:
-          assertNever(resource.key);
       }
     }
   }
@@ -161,8 +159,6 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
             `Skipping unsupported resource '${resource.resourceName}' (${resource.category}:${resource.service}). You will need to write Gen2 code for this resource manually.`,
           );
           break;
-        default:
-          assertNever(resource.key);
       }
     }
 
