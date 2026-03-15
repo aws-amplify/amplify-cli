@@ -103,11 +103,23 @@ amplify gen2-migration refactor --to <gen2-stack-name> [--resourceMappings file:
 
 The module supports migrating the following CloudFormation resource types:
 
-| Category               | Resource Types                                                                                                                                                     |
-| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `auth`                 | `AWS::Cognito::UserPool`, `AWS::Cognito::UserPoolClient`, `AWS::Cognito::IdentityPool`, `AWS::Cognito::IdentityPoolRoleAttachment`, `AWS::Cognito::UserPoolDomain` |
-| `auth-user-pool-group` | `AWS::Cognito::UserPoolGroup`                                                                                                                                      |
-| `storage`              | `AWS::S3::Bucket`, `AWS::DynamoDB::Table`                                                                                                                          |
+| Category               | Resource Types                                                                                                                                                     | Refactorer Class                          |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------- |
+| `auth`                 | `AWS::Cognito::UserPool`, `AWS::Cognito::UserPoolClient`, `AWS::Cognito::IdentityPool`, `AWS::Cognito::IdentityPoolRoleAttachment`, `AWS::Cognito::UserPoolDomain` | `AuthCognitoForwardRefactorer`            |
+| `auth-user-pool-group` | `AWS::Cognito::UserPoolGroup`                                                                                                                                      | (handled by AuthCognitoForwardRefactorer) |
+| `storage` (S3)         | `AWS::S3::Bucket`                                                                                                                                                  | `StorageS3ForwardRefactorer`              |
+| `storage` (DynamoDB)   | `AWS::DynamoDB::Table`                                                                                                                                             | `StorageDynamoForwardRefactorer`          |
+| `analytics`            | `AWS::Kinesis::Stream`                                                                                                                                             | `AnalyticsKinesisForwardRefactorer`       |
+
+### Resource Discovery
+
+The refactor step uses `Gen1App.discover()` to iterate all resources from `amplify-meta.json` and dispatches by `category:service` via a switch statement. The same switch is used by the `assess()` method to record support into an `Assessment` collector.
+
+Stateless categories (function, api) are skipped during refactoring — they have no stateful resources to move.
+
+### Multi-Resource Category Validation
+
+Refactorers assume a single resource per category. The `validateSingleResourcePerCategory()` function throws `AmplifyError` if any refactorer category (auth, storage, analytics) has more than one resource.
 
 ## Dependencies
 

@@ -4,12 +4,13 @@ The `gen2-migration` command is a parent command that dispatches individual subc
 the migration of Gen1 applications to Gen2. It exposes a step-based CLI workflow that guides users
 through the complete migration process:
 
-1. Locking the Gen1 environment
-2. Generating Gen2 code,
-3. Refactoring CloudFormation stacks to move stateful resources,
-4. Decommissioning the Gen1 environment.
+1. Assessing migration readiness,
+2. Locking the Gen1 environment,
+3. Generating Gen2 code,
+4. Refactoring CloudFormation stacks to move stateful resources,
+5. Decommissioning the Gen1 environment.
 
-Each step follows a consistent `validate → execute → rollback` lifecycle pattern with user confirmation and safety checks.
+The `assess` subcommand is handled separately from the step lifecycle — it is read-only and does not follow the `validate → execute → rollback` pattern. All other steps follow a consistent lifecycle with user confirmation and safety checks.
 
 ## Key Responsibilities
 
@@ -39,10 +40,16 @@ const implementation: AmplifyMigrationStep = new step.class(logger, envName, app
 ### Subcommand Dispatching
 
 Maps the subcommand name to its implementation class via the `STEPS` registry, then instantiates the step with extracted configuration.
-This allows adding new migration steps by simply registering them in the `STEPS` object.
+The `assess` subcommand is intercepted before the `STEPS` lookup — it creates an `AmplifyMigrationAssessor` instead of a step,
+calls `assess()` on the generate and refactor steps, and renders the result.
 
 ```ts
-const stepName = (context.input.subCommands ?? [])[0];
+if (stepName === 'assess') {
+  const assessor = new AmplifyMigrationAssessor(logger, envName, appName, appId, stackName, region, context);
+  await assessor.run();
+  return;
+}
+
 const step = STEPS[stepName];
 const implementation: AmplifyMigrationStep = new step.class(logger, envName, appName, appId, stackName, region, context);
 ```
@@ -116,6 +123,7 @@ try {
 
 Detailed documentation for subcommands is available in:
 
+- [assess.md](./gen2-migration/assess.md) - Migration readiness assessment
 - [generate.md](./gen2-migration/generate.md) - Code generation pipeline for transforming Gen1 configs to Gen2 TypeScript
 - [refactor.md](./gen2-migration/refactor.md) - CloudFormation stack refactoring for moving stateful resources
 
@@ -309,6 +317,7 @@ amplify gen2-migration <step> [options]
 
 | Subcommand     | Description                                                           | Implementation                                          | Status          |
 | -------------- | --------------------------------------------------------------------- | ------------------------------------------------------- | --------------- |
+| `assess`       | Assess migration readiness for the Gen1 environment                   | `assess.ts` → `AmplifyMigrationAssessor`                | Implemented     |
 | `clone`        | Clone environment for migration                                       | `clone.ts` → `AmplifyMigrationCloneStep`                | NOT IMPLEMENTED |
 | `lock`         | Lock environment and enable deletion protection on stateful resources | `lock.ts` → `AmplifyMigrationLockStep`                  | Implemented     |
 | `generate`     | Generate Gen2 backend code from Gen1 configuration                    | `generate.ts` → `AmplifyMigrationGenerateStep`          | Implemented     |

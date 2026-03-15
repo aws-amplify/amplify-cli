@@ -66,10 +66,12 @@ The pipeline has two layers plus an orchestrator:
   `AmplifyMigrationOperation[]`. Each category has a renderer (pure AST
   construction) and a generator (orchestration + backend.ts contributions).
 
-- **Orchestrator** (`generate.ts`) — Reads `amplify-meta.json` category
-  keys and service types, instantiates one generator per resource, collects
-  all operations, and appends a final operation for folder replacement +
-  npm install.
+- **Orchestrator** (`generate.ts`) — Uses `Gen1App.discover()` to iterate
+  all resources from `amplify-meta.json`, dispatches by `category:service`
+  via a switch statement, and instantiates one generator per resource.
+  Collects all operations and appends final operations for folder
+  replacement + npm install. The same switch is used by the `assess()`
+  method to record support into an `Assessment` collector.
 
 ## Key Abstractions
 
@@ -85,7 +87,8 @@ interface Generator {
 **Gen1App** — Category-agnostic facade constructed via `Gen1App.create()`.
 Downloads the cloud backend from S3 and reads `amplify-meta.json`. After
 construction, local state is available synchronously. AWS SDK calls are
-delegated to `AwsFetcher`.
+delegated to `AwsFetcher`. The `discover()` method iterates all categories
+and returns `DiscoveredResource[]` — a flat list of `(category, resourceName, service)` tuples.
 
 **TS** — Static utility class combining AST node builders (`constDecl`,
 `propAccess`, `assignProp`, `jsValue`), printing (`printNodes`,
@@ -98,25 +101,28 @@ execution. Runs last and writes `backend.ts` from accumulated content.
 
 **Per-resource generators** — The orchestrator creates one per resource:
 
-| Category  | Service     | Generator                   |
-| --------- | ----------- | --------------------------- |
-| auth      | Cognito     | `AuthGenerator`             |
-| storage   | S3          | `S3Generator`               |
-| storage   | DynamoDB    | `DynamoDBGenerator`         |
-| api       | AppSync     | `DataGenerator`             |
-| api       | API Gateway | `RestApiGenerator`          |
-| analytics | Kinesis     | `AnalyticsKinesisGenerator` |
-| custom    | any         | `CustomResourceGenerator`   |
-| function  | any         | `FunctionGenerator`         |
+| Category  | Service                 | Generator                   |
+| --------- | ----------------------- | --------------------------- |
+| auth      | Cognito                 | `AuthGenerator`             |
+| auth      | Cognito-UserPool-Groups | (handled by AuthGenerator)  |
+| storage   | S3                      | `S3Generator`               |
+| storage   | DynamoDB                | `DynamoDBGenerator`         |
+| api       | AppSync                 | `DataGenerator`             |
+| api       | API Gateway             | `RestApiGenerator`          |
+| analytics | Kinesis                 | `AnalyticsKinesisGenerator` |
+| function  | Lambda                  | `FunctionGenerator`         |
 
 ## Design Principles
 
 - **Generators are per-resource.** Each `amplify-meta.json` entry gets its
   own generator instance. No shared mutable state between resources.
 
-- **Orchestrator is a thin loop.** It reads meta keys, dispatches by
-  service type, and collects operations. All data fetching and rendering
-  lives in the generators.
+- **Orchestrator is a thin loop.** It uses `discover()` to iterate
+  resources, dispatches by `category:service` via a switch, and collects
+  operations. All data fetching and rendering lives in the generators.
+  Cross-category dependencies (FunctionGenerator needing AuthGenerator
+  and S3Generator) are wired via setters after the discovery loop,
+  making the iteration order-agnostic.
 
 - **All generators access Gen1 state through Gen1App.** Cached facade over
   AWS SDK calls and local files. Stub only what your test needs.
