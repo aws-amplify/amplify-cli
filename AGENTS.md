@@ -21,6 +21,10 @@ user and ask for confirmation before continuing.
 
 ### 2. Implementation Stage
 
+For non-trivial features, exhaust the design discussion before writing code. If the user says "don't implement yet" or
+"let's brainstorm," take that seriously — iterating on a design in conversation is far cheaper than iterating in code.
+Only start implementing when the approach is settled and confirmed.
+
 Make the necessary code changes and follow the guidelines in [CODING_GUIDELINES](./CODING_GUIDELINES.md).
 For incremental validation, run `jest` commands directly and filter for the relevant tests.
 
@@ -52,6 +56,9 @@ Verify your changes by following these guidelines:
 - Since this repo has a commit hook that takes quite a long time to run, don't immediately commit every
   change you were asked to do. Apply your judgment, if the diff is still fairly small just keep going.
   Otherwise, ask the user if they want to commit or keep going.
+- Batch commits aggressively. Wait until a design decision is settled and the code is stable before committing.
+  Committing after every incremental change wastes time on hooks and creates noisy history. Natural commit
+  points are: after a design discussion concludes, after tests pass, after a self-review finds no issues.
 - NEVER commit with --no-verify.
 - Before you actually commit, provide a (very) concise summary of changes to the user and ask for confirmation to commit.
 - **Before committing**, review your own diff (`git diff --cached`) against [CODING_GUIDELINES](./CODING_GUIDELINES.md). Look for and fix any violations you may have introduced.
