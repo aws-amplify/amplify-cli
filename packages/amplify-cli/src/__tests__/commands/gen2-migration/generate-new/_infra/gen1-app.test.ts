@@ -1,4 +1,4 @@
-import { Gen1App } from '../../../commands/gen2-migration/generate-new/_infra/gen1-app';
+import { Gen1App } from '../../../../../commands/gen2-migration/generate-new/_infra/gen1-app';
 
 /**
  * Creates a Gen1App with a known _meta for testing discover().
