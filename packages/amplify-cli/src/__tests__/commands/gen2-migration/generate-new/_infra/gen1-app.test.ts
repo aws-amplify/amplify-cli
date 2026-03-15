@@ -49,7 +49,7 @@ describe('Gen1App', () => {
       expect(resources).toEqual([{ category: 'auth', resourceName: 'myPool', service: 'Cognito' }]);
     });
 
-    it('skips resources without a service field', () => {
+    it('throws when a resource is missing the service field', () => {
       const app = createGen1AppWithMeta({
         auth: {
           myPool: { service: 'Cognito' },
@@ -57,9 +57,7 @@ describe('Gen1App', () => {
         },
       });
 
-      const resources = app.discover();
-
-      expect(resources).toEqual([{ category: 'auth', resourceName: 'myPool', service: 'Cognito' }]);
+      expect(() => app.discover()).toThrow("Resource 'noService' in category 'auth' is missing the 'service' field");
     });
 
     it('skips non-object category values', () => {

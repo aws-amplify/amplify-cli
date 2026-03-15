@@ -112,7 +112,11 @@ export class Gen1App {
       for (const [resourceName, resourceMeta] of Object.entries(block as Record<string, unknown>)) {
         if (!resourceMeta || typeof resourceMeta !== 'object') continue;
         const service = (resourceMeta as Record<string, unknown>).service as string | undefined;
-        if (!service) continue;
+        if (!service) {
+          throw new AmplifyError('MigrationError', {
+            message: `Resource '${resourceName}' in category '${category}' is missing the 'service' field in amplify-meta.json`,
+          });
+        }
         resources.push({ category, resourceName, service });
       }
     }
