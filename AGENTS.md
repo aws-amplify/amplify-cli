@@ -60,7 +60,9 @@ Verify your changes by following these guidelines:
 - Before you actually commit, provide a (very) concise summary of changes to the user and ask for confirmation to commit.
 - **Before committing**, review your own diff (`git diff --cached`) against [CODING_GUIDELINES](./CODING_GUIDELINES.md). Look for and fix any violations you may have introduced.
 
-### 5. PR Body
+### 5. PR
+
+This stage prepares the PR description — the user is responsible for creating the actual PR.
 
 When asked to create a PR body, write it to `.pr-body.ai-generated.md` and follow these guidelines:
 
