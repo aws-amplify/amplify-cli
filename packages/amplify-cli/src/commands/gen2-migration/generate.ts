@@ -8,7 +8,6 @@ import { AmplifyGen2MigrationValidations } from './_validations';
 import { AwsClients } from './aws-clients';
 import { Gen1App } from './generate-new/_infra/gen1-app';
 import { Assessment } from './_assessment';
-import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { Planner } from './planner';
 import { BackendGenerator } from './generate-new/amplify/backend.generator';
 import { RootPackageJsonGenerator } from './generate-new/package.json.generator';
@@ -156,9 +155,10 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
           break;
         }
         default:
-          throw new AmplifyError('MigrationError', {
-            message: `Unsupported resource '${resource.resourceName}' (${resource.category}:${resource.service}). Run 'amplify gen2-migration assess' to check migration readiness.`,
-          });
+          this.logger.warn(
+            `Skipping unsupported resource '${resource.resourceName}' (${resource.category}:${resource.service}). You will need to write Gen2 code for this resource manually.`,
+          );
+          break;
       }
     }
 
