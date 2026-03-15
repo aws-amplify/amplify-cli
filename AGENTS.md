@@ -36,10 +36,7 @@ Verify your changes by following these guidelines:
 
 ### 4. Commit Stage
 
-- **Always** update the appropriate README or design document when you make a change that impacts the contents of these documents.
-- **Always** update the appropriate skill files when you make a change that impacts the contents of the skill (path to docs for example).
 - **Always** update the appropriate JSDoc strings in the code you change. Be concise.
-- **Always** update the .md files that correspond to the code files you touched.
 - Do not create additional markdown files in the repository unless you are instructed explicitly to.
 - Commit your changes in git using a well-formed commit message following the Conventional Commits format. The message must start
   with a type prefix (e.g., `feat:`, `fix:`, `docs:`, `refactor:`, `test:`, `chore:`) followed by a single sentence summary and no more
@@ -72,6 +69,12 @@ When asked to create a PR body, write it to `.pr-body.ai-generated.md` and follo
 - Do not repeat information that already exists in README files included in the PR — link to them instead.
 - Do not go overboard on technical details. A reviewer can read the code.
 - Keep it concise and scannable.
+- **Before creating the PR body**, update all documentation that was impacted by the changes:
+  - Update the appropriate README or design documents when a change impacts their contents.
+  - Update the appropriate skill files when a change impacts the contents of the skill.
+  - Update the .md files in `docs/` that correspond to the code files you touched.
+  - Documentation is updated at PR time — not per-commit — because code changes frequently between commits
+    and updating docs mid-development creates churn that gets immediately outdated.
 
 ## Delegating to Sub-Agents
 
