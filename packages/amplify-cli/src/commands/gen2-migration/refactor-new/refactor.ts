@@ -115,6 +115,8 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
 
     const refactorers: Refactorer[] = [];
 
+    validateSingleResourcePerCategory(discovered);
+
     for (const resource of discovered) {
       switch (`${resource.category}:${resource.service}`) {
         case 'auth:Cognito':
