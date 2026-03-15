@@ -113,7 +113,7 @@ The module supports migrating the following CloudFormation resource types:
 
 ### Resource Discovery
 
-The refactor step uses `Gen1App.discover()` to iterate all resources from `amplify-meta.json` and dispatches by `category:service` via a switch statement. The same switch is used by the `assess()` method to record support into an `Assessment` collector.
+The refactor step uses `Gen1App.discover()` to iterate all resources from `amplify-meta.json` and dispatches by `resource.key` (a typed `ResourceKey`) via an exhaustive switch statement. The same switch is used by the `assess()` method to record support into an `Assessment` collector.
 
 Stateless categories (function, api) are skipped during refactoring — they have no stateful resources to move.
 

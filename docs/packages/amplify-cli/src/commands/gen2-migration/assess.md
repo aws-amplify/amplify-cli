@@ -61,10 +61,11 @@ interface DiscoveredResource {
   readonly category: string;
   readonly resourceName: string;
   readonly service: string;
+  readonly key: ResourceKey;
 }
 ```
 
-Produced by `Gen1App.discover()`, which iterates all categories in `amplify-meta.json` and extracts `(category, resourceName, service)` tuples. Skips internal categories (`providers`, `hosting`). Throws `AmplifyError` if a resource in a non-skipped category is missing the `service` field.
+Produced by `Gen1App.discover()`, which iterates all categories in `amplify-meta.json` and extracts `(category, resourceName, service, key)` tuples. The `key` is a typed `category:service` pair from `SUPPORTED_RESOURCE_KEYS`, or `'unsupported'` for pairs the tool has no migration logic for. Skips internal categories (`providers`, `hosting`). Throws `AmplifyError` if a resource in a non-skipped category is missing the `service` field.
 
 ## Blocker Condition
 
@@ -77,7 +78,7 @@ The same switch cases in each step's `assess()` and `execute()` methods define w
 | Category  | Service                 | Generate | Refactor  |
 | --------- | ----------------------- | -------- | --------- |
 | auth      | Cognito                 | ✔        | ✔         |
-| auth      | Cognito-UserPool-Groups | ✔        | ✔         |
+| auth      | Cognito-UserPool-Groups | ✔        | ✘         |
 | storage   | S3                      | ✔        | ✔         |
 | storage   | DynamoDB                | ✔        | ✔         |
 | api       | AppSync                 | ✔        | ✔ (no-op) |
@@ -85,11 +86,15 @@ The same switch cases in each step's `assess()` and `execute()` methods define w
 | analytics | Kinesis                 | ✔        | ✔         |
 | function  | Lambda                  | ✔        | ✔ (no-op) |
 
-Any other `(category, service)` pair is unsupported.
+Any other `(category, service)` pair gets `ResourceKey = 'unsupported'` and is marked unsupported for both steps.
+
+## ResourceKey and Exhaustive Switches
+
+`SUPPORTED_RESOURCE_KEYS` is a const array of all `category:service` pairs the tool supports. `ResourceKey` is the union of those pairs plus `'unsupported'`. Every switch on `resource.key` in the generate and refactor steps must handle all members — the ESLint `switch-exhaustiveness-check` rule enforces this at compile time. Adding a new pair to `SUPPORTED_RESOURCE_KEYS` forces every consumer to handle it.
 
 ## AI Development Notes
 
 - The assess command reuses the same config extraction as other steps (appId, envName, stackName, region, logger) — no duplication.
-- Adding support for a new resource type requires adding a case to both `assess()` and `execute()` in the relevant step. The switch cases are the single source of truth.
+- Adding support for a new resource type requires adding the pair to `SUPPORTED_RESOURCE_KEYS` in `gen1-app.ts`, then handling the new case in both `assess()` and `execute()` in the relevant step. The compiler enforces exhaustiveness.
 - The `Assessment` class owns rendering — it produces a flat table with dynamic column widths and status text baked into the Generate/Refactor cells.
 - `Gen1App.discover()` skips internal categories (`providers`, `hosting`) and throws on resources missing a `service` field.

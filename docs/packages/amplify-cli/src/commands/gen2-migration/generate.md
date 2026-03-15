@@ -67,11 +67,12 @@ The pipeline has two layers plus an orchestrator:
   construction) and a generator (orchestration + backend.ts contributions).
 
 - **Orchestrator** (`generate.ts`) — Uses `Gen1App.discover()` to iterate
-  all resources from `amplify-meta.json`, dispatches by `category:service`
-  via a switch statement, and instantiates one generator per resource.
-  Collects all operations and appends final operations for folder
-  replacement + npm install. The same switch is used by the `assess()`
-  method to record support into an `Assessment` collector.
+  all resources from `amplify-meta.json`, dispatches by `resource.key`
+  (a typed `ResourceKey`) via an exhaustive switch statement, and
+  instantiates one generator per resource. Collects all operations and
+  appends final operations for folder replacement + npm install. The same
+  switch is used by the `assess()` method to record support into an
+  `Assessment` collector.
 
 ## Key Abstractions
 
@@ -88,7 +89,7 @@ interface Generator {
 Downloads the cloud backend from S3 and reads `amplify-meta.json`. After
 construction, local state is available synchronously. AWS SDK calls are
 delegated to `AwsFetcher`. The `discover()` method iterates all categories
-and returns `DiscoveredResource[]` — a flat list of `(category, resourceName, service)` tuples.
+and returns `DiscoveredResource[]` — a flat list of `(category, resourceName, service, key)` tuples, where `key` is a typed `ResourceKey` from `SUPPORTED_RESOURCE_KEYS` or `'unsupported'`.
 
 **TS** — Static utility class combining AST node builders (`constDecl`,
 `propAccess`, `assignProp`, `jsValue`), printing (`printNodes`,
