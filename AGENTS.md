@@ -38,6 +38,7 @@ Verify your changes by following these guidelines:
 
 - **Always** update the appropriate JSDoc strings in the code you change. Be concise.
 - Do not create additional markdown files in the repository unless you are instructed explicitly to.
+- Never commit `.ai-generated` files (`.commit-message.ai-generated.txt`, `.pr-body.ai-generated.md`, etc.) — they are gitignored and are only used as local scratch files.
 - Commit your changes in git using a well-formed commit message following the Conventional Commits format. The message must start
   with a type prefix (e.g., `feat:`, `fix:`, `docs:`, `refactor:`, `test:`, `chore:`) followed by a single sentence summary and no more
   than a few paragraphs explaining the change and your testing. After this explanation, place the prompt the user used to trigger this

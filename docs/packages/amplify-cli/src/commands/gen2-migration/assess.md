@@ -64,7 +64,7 @@ interface DiscoveredResource {
 }
 ```
 
-Produced by `Gen1App.discover()`, which iterates all categories in `amplify-meta.json` and extracts `(category, resourceName, service)` tuples.
+Produced by `Gen1App.discover()`, which iterates all categories in `amplify-meta.json` and extracts `(category, resourceName, service)` tuples. Skips internal categories (`providers`, `hosting`). Throws `AmplifyError` if a resource in a non-skipped category is missing the `service` field.
 
 ## Blocker Condition
 
@@ -92,4 +92,4 @@ Any other `(category, service)` pair is unsupported.
 - The assess command reuses the same config extraction as other steps (appId, envName, stackName, region, logger) — no duplication.
 - Adding support for a new resource type requires adding a case to both `assess()` and `execute()` in the relevant step. The switch cases are the single source of truth.
 - The `Assessment` class owns rendering — it produces a flat table with dynamic column widths and status text baked into the Generate/Refactor cells.
-- `Gen1App.discover()` skips internal categories (`providers`, `hosting`) and resources without a `service` field.
+- `Gen1App.discover()` skips internal categories (`providers`, `hosting`) and throws on resources missing a `service` field.
