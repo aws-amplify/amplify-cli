@@ -30,7 +30,6 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
     for (const resource of discovered) {
       switch (`${resource.category}:${resource.service}`) {
         case 'auth:Cognito':
-        case 'auth:Cognito-UserPool-Groups':
         case 'storage:S3':
         case 'storage:DynamoDB':
         case 'analytics:Kinesis':
@@ -81,9 +80,6 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
           refactorers.push(
             new AuthCognitoForwardRefactorer(gen1Env, gen2Branch, clients, this.region, accountId, this.appId, this.currentEnvName),
           );
-          break;
-        case 'auth:Cognito-UserPool-Groups':
-          // Handled by the AuthCognitoForwardRefactorer created for the main Cognito resource.
           break;
         case 'storage:S3':
           refactorers.push(new StorageS3ForwardRefactorer(gen1Env, gen2Branch, clients, this.region, accountId));
