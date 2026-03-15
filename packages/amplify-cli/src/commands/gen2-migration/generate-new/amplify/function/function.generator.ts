@@ -91,14 +91,18 @@ export class FunctionGenerator implements Planner {
   }
 
   /**
-   * Wires the auth generator after construction. Must be called before plan().
+   * Wires the auth generator after construction. Called by the orchestrator
+   * after all generators are created, because the discovery loop may create
+   * FunctionGenerator before AuthGenerator exists. Must be called before plan().
    */
   public setAuthGenerator(authGenerator: AuthGenerator): void {
     this.authGenerator = authGenerator;
   }
 
   /**
-   * Wires the S3 generator after construction. Must be called before plan().
+   * Wires the S3 generator after construction. Called by the orchestrator
+   * after all generators are created, because the discovery loop may create
+   * FunctionGenerator before S3Generator exists. Must be called before plan().
    */
   public setS3Generator(s3Generator: S3Generator): void {
     this.s3Generator = s3Generator;
