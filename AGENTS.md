@@ -60,23 +60,26 @@ Verify your changes by following these guidelines:
 - Before you actually commit, provide a (very) concise summary of changes to the user and ask for confirmation to commit.
 - **Before committing**, review your own diff (`git diff --cached`) against [CODING_GUIDELINES](./CODING_GUIDELINES.md). Look for and fix any violations you may have introduced.
 
-### 5. PR
+### 5. PR Stage
 
 This stage prepares the PR description — the user is responsible for creating the actual PR.
 
-When asked to create a PR body, write it to `.pr-body.ai-generated.md` and follow these guidelines:
+#### 5.1 Update Docs
+
+Documentation is updated at PR time — not per-commit — because code changes frequently between commits and updating docs mid-development creates churn that gets immediately outdated.
+
+- Update the .md files in `docs/` that correspond to the code files you touched.
+- Update the appropriate skill files when a change impacts the contents of the skill.
+
+#### 5.2 Create Body File
+
+When asked to create a PR, generate a body into `.pr-body.ai-generated.md` and follow these guidelines:
 
 - Use the PR template in `.github/PULL_REQUEST_TEMPLATE.md` as the structure.
 - Focus on **why** the change is being made and **what** it accomplishes, not the implementation details that are obvious from the diff.
-- Do not repeat information that already exists in README files included in the PR — link to them instead.
+- Do a 30 second summary of the important design information.
 - Do not go overboard on technical details. A reviewer can read the code.
 - Keep it concise and scannable.
-- **Before creating the PR body**, update all documentation that was impacted by the changes:
-  - Update the appropriate README or design documents when a change impacts their contents.
-  - Update the appropriate skill files when a change impacts the contents of the skill.
-  - Update the .md files in `docs/` that correspond to the code files you touched.
-  - Documentation is updated at PR time — not per-commit — because code changes frequently between commits
-    and updating docs mid-development creates churn that gets immediately outdated.
 
 ## Delegating to Sub-Agents
 
