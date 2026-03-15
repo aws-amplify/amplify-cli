@@ -23,11 +23,11 @@ interface Gen1AppProps extends Gen1CreateOptions {
 }
 
 /**
- * All known category:service pairs the migration tool recognizes.
+ * All category:service pairs the migration tool supports.
  * Adding a new pair here forces every exhaustive switch on ResourceKey
  * to handle it — the compiler will error on any switch that misses a case.
  */
-export const KNOWN_RESOURCE_KEYS = [
+export const SUPPORTED_RESOURCE_KEYS = [
   'auth:Cognito',
   'auth:Cognito-UserPool-Groups',
   'storage:S3',
@@ -39,10 +39,10 @@ export const KNOWN_RESOURCE_KEYS = [
 ] as const;
 
 /**
- * Union of all known category:service pairs, plus 'unknown' for
- * resources the tool doesn't recognize.
+ * Union of all known category:service pairs, plus 'unsupported' for
+ * resources the tool has no migration logic for.
  */
-export type ResourceKey = (typeof KNOWN_RESOURCE_KEYS)[number] | 'unknown';
+export type ResourceKey = (typeof SUPPORTED_RESOURCE_KEYS)[number] | 'unsupported';
 
 /**
  * A resource discovered from amplify-meta.json.
@@ -141,7 +141,7 @@ export class Gen1App {
           });
         }
         const rawKey = `${category}:${service}`;
-        const key: ResourceKey = (KNOWN_RESOURCE_KEYS as readonly string[]).includes(rawKey) ? (rawKey as ResourceKey) : 'unknown';
+        const key: ResourceKey = (SUPPORTED_RESOURCE_KEYS as readonly string[]).includes(rawKey) ? (rawKey as ResourceKey) : 'unsupported';
         resources.push({ category, resourceName, service, key });
       }
     }

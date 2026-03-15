@@ -82,7 +82,7 @@ describe('AmplifyMigrationAssessor', () => {
     it('records unsupported resources as not supported', async () => {
       mockDiscover([
         { category: 'auth', resourceName: 'myPool', service: 'Cognito', key: 'auth:Cognito' },
-        { category: 'notifications', resourceName: 'push', service: 'Pinpoint', key: 'unknown' },
+        { category: 'notifications', resourceName: 'push', service: 'Pinpoint', key: 'unsupported' },
       ]);
 
       const renderSpy = jest.spyOn(Assessment.prototype, 'render').mockImplementation(() => {});

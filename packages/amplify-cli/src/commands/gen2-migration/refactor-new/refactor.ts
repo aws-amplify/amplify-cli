@@ -40,7 +40,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
           assessment.record('refactor', resource, { supported: true, notes: [] });
           break;
         case 'auth:Cognito-UserPool-Groups':
-        case 'unknown':
+        case 'unsupported':
           assessment.record('refactor', resource, { supported: false, notes: [] });
           break;
       }
@@ -98,7 +98,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
         case 'api:API Gateway':
           break;
         case 'auth:Cognito-UserPool-Groups':
-        case 'unknown':
+        case 'unsupported':
           throw new AmplifyError('MigrationError', {
             message: `Unsupported resource '${resource.resourceName}' (${resource.category}:${resource.service}). Run 'amplify gen2-migration assess' to check migration readiness.`,
           });
@@ -140,7 +140,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
         case 'api:API Gateway':
           break;
         case 'auth:Cognito-UserPool-Groups':
-        case 'unknown':
+        case 'unsupported':
           throw new AmplifyError('MigrationError', {
             message: `Unsupported resource '${resource.resourceName}' (${resource.category}:${resource.service}). Cannot rollback.`,
           });

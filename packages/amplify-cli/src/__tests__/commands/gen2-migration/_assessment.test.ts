@@ -53,7 +53,7 @@ describe('Assessment', () => {
       );
       assessment.record(
         'generate',
-        { category: 'geo', resourceName: 'map', service: 'Location', key: 'unknown' },
+        { category: 'geo', resourceName: 'map', service: 'Location', key: 'unsupported' },
         { supported: false, notes: [] },
       );
 

@@ -48,7 +48,7 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
         case 'function:Lambda':
           assessment.record('generate', resource, { supported: true, notes: [] });
           break;
-        case 'unknown':
+        case 'unsupported':
           assessment.record('generate', resource, { supported: false, notes: [] });
           break;
       }
@@ -154,7 +154,7 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
           functionGenerators.push(funcGen);
           break;
         }
-        case 'unknown':
+        case 'unsupported':
           this.logger.warn(
             `Skipping unsupported resource '${resource.resourceName}' (${resource.category}:${resource.service}). You will need to write Gen2 code for this resource manually.`,
           );
