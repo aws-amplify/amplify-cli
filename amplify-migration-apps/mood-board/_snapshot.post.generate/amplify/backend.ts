@@ -36,6 +36,15 @@ userPool.addClient('NativeAppClient', {
   disableOAuth: true,
   generateSecret: false,
 });
+const cfnGraphqlApi = backend.data.resources.cfnResources.cfnGraphqlApi;
+cfnGraphqlApi.additionalAuthenticationProviders = [
+  {
+    authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+    userPoolConfig: {
+      userPoolId: backend.auth.resources.userPool.userPoolId,
+    },
+  },
+];
 const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
 // Use this bucket name post refactor
 // s3Bucket.bucketName = 'moodboard20e29595008142e3ad16f01c4066e1c41959a-main';
@@ -49,15 +58,6 @@ s3Bucket.bucketEncryption = {
     },
   ],
 };
-const cfnGraphqlApi = backend.data.resources.cfnResources.cfnGraphqlApi;
-cfnGraphqlApi.additionalAuthenticationProviders = [
-  {
-    authenticationType: 'AMAZON_COGNITO_USER_POOLS',
-    userPoolConfig: {
-      userPoolId: backend.auth.resources.userPool.userPoolId,
-    },
-  },
-];
 const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 backend.moodboardGetRandomEmoji.resources.cfnResources.cfnFunction.functionName = `moodboardGetRandomEmoji-${branchName}`;
 backend.moodboardKinesisReader.resources.cfnResources.cfnFunction.functionName = `moodboardKinesisReader-${branchName}`;

@@ -40,9 +40,8 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
     for (const resource of discovered) {
       switch (`${resource.category}:${resource.service}`) {
         case 'auth:Cognito':
+        case 'auth:Cognito-UserPool-Groups':
         case 'storage:S3':
-          assessment.record('generate', resource, { supported: false, notes: [] });
-          break;
         case 'storage:DynamoDB':
         case 'api:AppSync':
         case 'api:API Gateway':
@@ -98,10 +97,10 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
     const generators: Planner[] = [];
     const discovered = gen1App.discover();
 
-    // Cross-category state captured during the loop and consumed by
-    // function generators below.
+    // Cross-category state captured during the loop.
     let authGenerator: AuthGenerator | undefined;
     let s3Generator: S3Generator | undefined;
+    const functionGenerators: FunctionGenerator[] = [];
 
     for (const resource of discovered) {
       switch (`${resource.category}:${resource.service}`) {
@@ -121,6 +120,9 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
           }
           break;
         }
+        case 'auth:Cognito-UserPool-Groups':
+          // Handled by the AuthGenerator created for the main Cognito resource.
+          break;
         case 'storage:S3':
           s3Generator = new S3Generator(gen1App, backendGenerator, outputDir);
           generators.push(s3Generator);
@@ -141,18 +143,16 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
           break;
         case 'function:Lambda': {
           const functionCategoryMap = computeFunctionCategories(gen1App);
-          generators.push(
-            new FunctionGenerator({
-              gen1App,
-              backendGenerator,
-              authGenerator,
-              s3Generator,
-              packageJsonGenerator,
-              outputDir,
-              resourceName: resource.resourceName,
-              category: functionCategoryMap.get(resource.resourceName) ?? 'function',
-            }),
-          );
+          const funcGen = new FunctionGenerator({
+            gen1App,
+            backendGenerator,
+            packageJsonGenerator,
+            outputDir,
+            resourceName: resource.resourceName,
+            category: functionCategoryMap.get(resource.resourceName) ?? 'function',
+          });
+          generators.push(funcGen);
+          functionGenerators.push(funcGen);
           break;
         }
         default:
@@ -160,6 +160,12 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
             message: `Unsupported resource '${resource.resourceName}' (${resource.category}:${resource.service}). Run 'amplify gen2-migration assess' to check migration readiness.`,
           });
       }
+    }
+
+    // Wire cross-category dependencies after all generators are created.
+    for (const funcGen of functionGenerators) {
+      if (authGenerator) funcGen.setAuthGenerator(authGenerator);
+      if (s3Generator) funcGen.setS3Generator(s3Generator);
     }
 
     // Infrastructure generators run last — BackendGenerator accumulates

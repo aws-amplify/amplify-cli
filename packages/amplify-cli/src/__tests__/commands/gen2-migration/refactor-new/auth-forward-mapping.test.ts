@@ -1,4 +1,4 @@
-import { AuthForwardRefactorer } from '../../../../commands/gen2-migration/refactor-new/auth/auth-forward';
+import { AuthCognitoForwardRefactorer } from '../../../../commands/gen2-migration/refactor-new/auth/auth-forward';
 import { CFNResource } from '../../../../commands/gen2-migration/cfn-template';
 import { AwsClients } from '../../../../commands/gen2-migration/aws-clients';
 import { StackFacade } from '../../../../commands/gen2-migration/refactor-new/stack-facade';
@@ -9,12 +9,12 @@ function toIdMap(mappings: MoveMapping[]): Map<string, string> {
   return new Map(mappings.map((m) => [m.sourceId, m.targetId]));
 }
 
-describe('AuthForwardRefactorer.buildResourceMappings - UserPoolClient disambiguation', () => {
+describe('AuthCognitoForwardRefactorer.buildResourceMappings - UserPoolClient disambiguation', () => {
   function createRefactorer() {
     const clients = new AwsClients({ region: 'us-east-1' });
     const gen1Env = new StackFacade(clients, 'gen1');
     const gen2Branch = new StackFacade(clients, 'gen2');
-    return new (class extends AuthForwardRefactorer {
+    return new (class extends AuthCognitoForwardRefactorer {
       constructor() {
         super(gen1Env, gen2Branch, clients, 'us-east-1', '123456789', 'appId', 'main');
       }

@@ -1,4 +1,4 @@
-import { AuthRollbackRefactorer } from '../../../../commands/gen2-migration/refactor-new/auth/auth-rollback';
+import { AuthCognitoRollbackRefactorer } from '../../../../commands/gen2-migration/refactor-new/auth/auth-rollback';
 import { CFNTemplate } from '../../../../commands/gen2-migration/cfn-template';
 import { AwsClients } from '../../../../commands/gen2-migration/aws-clients';
 import { StackFacade } from '../../../../commands/gen2-migration/refactor-new/stack-facade';
@@ -31,7 +31,7 @@ const gen1AuthTemplate: CFNTemplate = {
   Outputs: {},
 };
 
-describe('AuthRollbackRefactorer.plan()', () => {
+describe('AuthCognitoRollbackRefactorer.plan()', () => {
   let cfnMock: ReturnType<typeof mockClient>;
   beforeEach(() => {
     cfnMock = mockClient(CloudFormationClient);
@@ -90,7 +90,7 @@ describe('AuthRollbackRefactorer.plan()', () => {
     setupBasicMocks();
     const clients = new AwsClients({ region: 'us-east-1' });
     (clients as any).cloudFormation = new CloudFormationClient({});
-    const refactorer = new AuthRollbackRefactorer(
+    const refactorer = new AuthCognitoRollbackRefactorer(
       new StackFacade(clients, 'gen1-root'),
       new StackFacade(clients, 'gen2-root'),
       clients,

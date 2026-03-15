@@ -52,8 +52,6 @@ interface ResolvedFunction {
 interface FunctionGeneratorOptions {
   readonly gen1App: Gen1App;
   readonly backendGenerator: BackendGenerator;
-  readonly authGenerator: AuthGenerator | undefined;
-  readonly s3Generator: S3Generator | undefined;
   readonly packageJsonGenerator: RootPackageJsonGenerator;
   readonly outputDir: string;
   readonly resourceName: string;
@@ -74,8 +72,8 @@ interface FunctionGeneratorOptions {
 export class FunctionGenerator implements Planner {
   private readonly gen1App: Gen1App;
   private readonly backendGenerator: BackendGenerator;
-  private readonly authGenerator: AuthGenerator | undefined;
-  private readonly s3Generator: S3Generator | undefined;
+  private authGenerator: AuthGenerator | undefined;
+  private s3Generator: S3Generator | undefined;
   private readonly packageJsonGenerator: RootPackageJsonGenerator;
   private readonly outputDir: string;
   private readonly resourceName: string;
@@ -85,13 +83,25 @@ export class FunctionGenerator implements Planner {
   public constructor(options: FunctionGeneratorOptions) {
     this.gen1App = options.gen1App;
     this.backendGenerator = options.backendGenerator;
-    this.authGenerator = options.authGenerator;
-    this.s3Generator = options.s3Generator;
     this.packageJsonGenerator = options.packageJsonGenerator;
     this.outputDir = options.outputDir;
     this.resourceName = options.resourceName;
     this.category = options.category;
     this.renderer = new FunctionRenderer(options.gen1App.appId, options.gen1App.envName);
+  }
+
+  /**
+   * Wires the auth generator after construction. Must be called before plan().
+   */
+  public setAuthGenerator(authGenerator: AuthGenerator): void {
+    this.authGenerator = authGenerator;
+  }
+
+  /**
+   * Wires the S3 generator after construction. Must be called before plan().
+   */
+  public setS3Generator(s3Generator: S3Generator): void {
+    this.s3Generator = s3Generator;
   }
 
   /**

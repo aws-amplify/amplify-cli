@@ -79,6 +79,12 @@ Object.keys(providerSetupResult).forEach((provider) => {
   }
 });
 // backend.auth.resources.userPool.node.tryRemoveChild("UserPoolDomain");
+const cfnGraphqlApi = backend.data.resources.cfnResources.cfnGraphqlApi;
+cfnGraphqlApi.additionalAuthenticationProviders = [
+  {
+    authenticationType: 'API_KEY',
+  },
+];
 const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
 // Use this bucket name post refactor
 // s3Bucket.bucketName = 'mediavaultb574f210f1634e3a8d1934f263da5bed61114-main';
@@ -92,12 +98,6 @@ s3Bucket.bucketEncryption = {
     },
   ],
 };
-const cfnGraphqlApi = backend.data.resources.cfnResources.cfnGraphqlApi;
-cfnGraphqlApi.additionalAuthenticationProviders = [
-  {
-    authenticationType: 'API_KEY',
-  },
-];
 const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 backend.thumbnailgen.resources.cfnResources.cfnFunction.functionName = `thumbnailgen-${branchName}`;
 backend.thumbnailgen.addEnvironment(
