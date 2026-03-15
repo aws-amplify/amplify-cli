@@ -45,9 +45,9 @@ export class Assessment {
   }
 
   /**
-   * Renders the assessment as a single flat table with a compact summary.
+   * Displays the assessment as a single flat table with a compact summary.
    */
-  public render(): void {
+  public display(): void {
     const assessments = [...this._entries.values()];
 
     printer.blankLine();

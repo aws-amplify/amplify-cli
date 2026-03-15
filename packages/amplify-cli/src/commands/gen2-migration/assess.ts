@@ -47,6 +47,6 @@ export class AmplifyMigrationAssessor {
     );
     await refactorStep.assess(assessment);
 
-    assessment.render();
+    assessment.display();
   }
 }

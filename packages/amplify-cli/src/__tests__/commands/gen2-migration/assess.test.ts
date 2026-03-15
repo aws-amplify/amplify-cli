@@ -40,7 +40,7 @@ describe('AmplifyMigrationAssessor', () => {
         { category: 'function', resourceName: 'myFunc', service: 'Lambda', key: 'function:Lambda' },
       ]);
 
-      const renderSpy = jest.spyOn(Assessment.prototype, 'render').mockImplementation(() => {});
+      const displaySpy = jest.spyOn(Assessment.prototype, 'display').mockImplementation(() => {});
       const recordSpy = jest.spyOn(Assessment.prototype, 'record');
 
       await createAssessor().run();
@@ -73,9 +73,9 @@ describe('AmplifyMigrationAssessor', () => {
         notes: [],
       });
 
-      expect(renderSpy).toHaveBeenCalled();
+      expect(displaySpy).toHaveBeenCalled();
 
-      renderSpy.mockRestore();
+      displaySpy.mockRestore();
       recordSpy.mockRestore();
     });
 
@@ -85,7 +85,7 @@ describe('AmplifyMigrationAssessor', () => {
         { category: 'notifications', resourceName: 'push', service: 'Pinpoint', key: 'unsupported' },
       ]);
 
-      const renderSpy = jest.spyOn(Assessment.prototype, 'render').mockImplementation(() => {});
+      const displaySpy = jest.spyOn(Assessment.prototype, 'display').mockImplementation(() => {});
       const recordSpy = jest.spyOn(Assessment.prototype, 'record');
 
       await createAssessor().run();
@@ -100,20 +100,20 @@ describe('AmplifyMigrationAssessor', () => {
         notes: [],
       });
 
-      renderSpy.mockRestore();
+      displaySpy.mockRestore();
       recordSpy.mockRestore();
     });
 
-    it('calls render after recording all resources', async () => {
+    it('calls display after recording all resources', async () => {
       mockDiscover([{ category: 'auth', resourceName: 'myPool', service: 'Cognito', key: 'auth:Cognito' }]);
 
-      const renderSpy = jest.spyOn(Assessment.prototype, 'render').mockImplementation(() => {});
+      const displaySpy = jest.spyOn(Assessment.prototype, 'display').mockImplementation(() => {});
 
       await createAssessor().run();
 
-      expect(renderSpy).toHaveBeenCalledTimes(1);
+      expect(displaySpy).toHaveBeenCalledTimes(1);
 
-      renderSpy.mockRestore();
+      displaySpy.mockRestore();
     });
   });
 });

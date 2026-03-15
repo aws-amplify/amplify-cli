@@ -63,4 +63,144 @@ describe('Assessment', () => {
       expect(assessment.entries.get('geo:map')!.generate.supported).toBe(false);
     });
   });
+
+  describe('display()', () => {
+    let output: string[];
+
+    beforeEach(() => {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports -- capturing printer output for snapshot tests
+      const { printer } = require('@aws-amplify/amplify-prompts');
+      output = [];
+      jest.spyOn(printer, 'info').mockImplementation((...args: unknown[]) => output.push(String(args[0])));
+      jest.spyOn(printer, 'blankLine').mockImplementation(() => output.push(''));
+    });
+
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    function stripAnsi(str: string): string {
+      // eslint-disable-next-line no-control-regex -- stripping ANSI escape codes for snapshot comparison
+      return str.replace(/\u001b\[[0-9;]*m/g, '');
+    }
+
+    function displayed(assessment: Assessment): string {
+      assessment.display();
+      return output.map(stripAnsi).join('\n');
+    }
+
+    it('renders a fully supported app', () => {
+      const assessment = new Assessment('myapp', 'dev');
+      assessment.record(
+        'generate',
+        { category: 'auth', resourceName: 'pool', service: 'Cognito', key: 'auth:Cognito' },
+        { supported: true, notes: [] },
+      );
+      assessment.record(
+        'refactor',
+        { category: 'auth', resourceName: 'pool', service: 'Cognito', key: 'auth:Cognito' },
+        { supported: true, notes: [] },
+      );
+      assessment.record(
+        'generate',
+        { category: 'storage', resourceName: 'bucket', service: 'S3', key: 'storage:S3' },
+        { supported: true, notes: [] },
+      );
+      assessment.record(
+        'refactor',
+        { category: 'storage', resourceName: 'bucket', service: 'S3', key: 'storage:S3' },
+        { supported: true, notes: [] },
+      );
+
+      expect(displayed(assessment)).toMatchInlineSnapshot(`
+      "
+      Assessment for "myapp" (env: dev)
+
+      ┌──────────┬──────────┬─────────┬──────────┬──────────┐
+      │ Category │ Resource │ Service │ Generate │ Refactor │
+      ├──────────┼──────────┼─────────┼──────────┼──────────┤
+      │ auth     │ pool     │ Cognito │ ✔        │ ✔        │
+      │ storage  │ bucket   │ S3      │ ✔        │ ✔        │
+      └──────────┴──────────┴─────────┴──────────┴──────────┘
+
+      ✔ Migration can proceed."
+    `);
+    });
+
+    it('renders an app blocked by unsupported refactor', () => {
+      const assessment = new Assessment('myapp', 'dev');
+      assessment.record(
+        'generate',
+        { category: 'auth', resourceName: 'pool', service: 'Cognito', key: 'auth:Cognito' },
+        { supported: true, notes: [] },
+      );
+      assessment.record(
+        'refactor',
+        { category: 'auth', resourceName: 'pool', service: 'Cognito', key: 'auth:Cognito' },
+        { supported: true, notes: [] },
+      );
+      assessment.record(
+        'generate',
+        { category: 'geo', resourceName: 'map', service: 'Location', key: 'unsupported' },
+        { supported: false, notes: [] },
+      );
+      assessment.record(
+        'refactor',
+        { category: 'geo', resourceName: 'map', service: 'Location', key: 'unsupported' },
+        { supported: false, notes: [] },
+      );
+
+      expect(displayed(assessment)).toMatchInlineSnapshot(`
+      "
+      Assessment for "myapp" (env: dev)
+
+      ┌──────────┬──────────┬──────────┬──────────────────────┬────────────────────┐
+      │ Category │ Resource │ Service  │ Generate             │ Refactor           │
+      ├──────────┼──────────┼──────────┼──────────────────────┼────────────────────┤
+      │ auth     │ pool     │ Cognito  │ ✔                    │ ✔                  │
+      │ geo      │ map      │ Location │ ✘ manual code needed │ ✘ blocks migration │
+      └──────────┴──────────┴──────────┴──────────────────────┴────────────────────┘
+
+      ✘ Migration blocked."
+    `);
+    });
+
+    it('renders an app with unsupported generate but supported refactor', () => {
+      const assessment = new Assessment('myapp', 'dev');
+      assessment.record(
+        'generate',
+        { category: 'auth', resourceName: 'pool', service: 'Cognito', key: 'auth:Cognito' },
+        { supported: true, notes: [] },
+      );
+      assessment.record(
+        'refactor',
+        { category: 'auth', resourceName: 'pool', service: 'Cognito', key: 'auth:Cognito' },
+        { supported: true, notes: [] },
+      );
+      assessment.record(
+        'generate',
+        { category: 'custom', resourceName: 'alarms', service: 'CloudFormation', key: 'unsupported' },
+        { supported: false, notes: [] },
+      );
+      assessment.record(
+        'refactor',
+        { category: 'custom', resourceName: 'alarms', service: 'CloudFormation', key: 'unsupported' },
+        { supported: true, notes: [] },
+      );
+
+      expect(displayed(assessment)).toMatchInlineSnapshot(`
+      "
+      Assessment for "myapp" (env: dev)
+
+      ┌──────────┬──────────┬────────────────┬──────────────────────┬──────────┐
+      │ Category │ Resource │ Service        │ Generate             │ Refactor │
+      ├──────────┼──────────┼────────────────┼──────────────────────┼──────────┤
+      │ auth     │ pool     │ Cognito        │ ✔                    │ ✔        │
+      │ custom   │ alarms   │ CloudFormation │ ✘ manual code needed │ ✔        │
+      └──────────┴──────────┴────────────────┴──────────────────────┴──────────┘
+
+      ✔ Migration can proceed."
+    `);
+    });
+  });
 });

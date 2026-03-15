@@ -25,8 +25,8 @@ flowchart TD
     ASSESSOR --> REF["RefactorStep.assess(assessment)"]
     GEN -->|"record per resource"| ASSESSMENT
     REF -->|"record per resource"| ASSESSMENT
-    ASSESSMENT --> RENDER["assessment.render()"]
-    RENDER --> TABLE["Flat table + verdict"]
+    ASSESSMENT --> DISPLAY["assessment.display()"]
+    DISPLAY --> TABLE["Flat table + verdict"]
 ```
 
 ### `AmplifyMigrationAssessor`
@@ -39,7 +39,7 @@ Standalone class (not a step) that orchestrates the assessment. Creates generate
 
 [`src/commands/gen2-migration/_assessment.ts`](../../../../packages/amplify-cli/src/commands/gen2-migration/_assessment.ts)
 
-Collector that steps contribute to during `assess()`. Each step calls `record('generate' | 'refactor', resource, response)` for every discovered resource. The `render()` method produces the terminal output.
+Collector that steps contribute to during `assess()`. Each step calls `record('generate' | 'refactor', resource, response)` for every discovered resource. The `display()` method produces the terminal output.
 
 ### `SupportResponse`
 
