@@ -110,12 +110,37 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
     const toStack = this.extractParameters();
     const { clients, accountId, gen1Env, gen2Branch } = await this.createInfrastructure(toStack);
 
-    const refactorers: Refactorer[] = [
-      new AuthCognitoRollbackRefactorer(gen1Env, gen2Branch, clients, this.region, accountId),
-      new StorageS3RollbackRefactorer(gen1Env, gen2Branch, clients, this.region, accountId),
-      new StorageDynamoRollbackRefactorer(gen1Env, gen2Branch, clients, this.region, accountId),
-      new AnalyticsKinesisRollbackRefactorer(gen1Env, gen2Branch, clients, this.region, accountId),
-    ];
+    const gen1App = await Gen1App.create({ appId: this.appId, region: this.region, envName: this.currentEnvName, clients });
+    const discovered = gen1App.discover();
+
+    const refactorers: Refactorer[] = [];
+
+    for (const resource of discovered) {
+      switch (`${resource.category}:${resource.service}`) {
+        case 'auth:Cognito':
+          refactorers.push(new AuthCognitoRollbackRefactorer(gen1Env, gen2Branch, clients, this.region, accountId));
+          break;
+        case 'storage:S3':
+          refactorers.push(new StorageS3RollbackRefactorer(gen1Env, gen2Branch, clients, this.region, accountId));
+          break;
+        case 'storage:DynamoDB':
+          refactorers.push(new StorageDynamoRollbackRefactorer(gen1Env, gen2Branch, clients, this.region, accountId));
+          break;
+        case 'analytics:Kinesis':
+          refactorers.push(new AnalyticsKinesisRollbackRefactorer(gen1Env, gen2Branch, clients, this.region, accountId));
+          break;
+        // Stateless categories — nothing to rollback
+        // falls through
+        case 'function:Lambda':
+        case 'api:AppSync':
+        case 'api:API Gateway':
+          break;
+        default:
+          throw new AmplifyError('MigrationError', {
+            message: `Unsupported resource '${resource.resourceName}' (${resource.category}:${resource.service}). Cannot rollback.`,
+          });
+      }
+    }
 
     return this.plan(refactorers);
   }
