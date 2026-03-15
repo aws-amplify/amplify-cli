@@ -12,7 +12,7 @@ export interface ResourceAssessment {
 }
 
 /**
- * Collector that steps contribute to during execute().
+ * Collector that steps contribute to during assess().
  * Each step calls record() for every discovered resource,
  * reporting whether it supports that resource.
  */
@@ -45,142 +45,70 @@ export class Assessment {
   }
 
   /**
-   * Renders the full assessment: header, per-category tables, summary, and verdict.
+   * Renders the assessment as a single flat table with a compact summary.
    */
   public render(): void {
     const assessments = [...this._entries.values()];
 
-    const categories = new Map<string, ResourceAssessment[]>();
-    for (const a of assessments) {
-      const list = categories.get(a.resource.category) ?? [];
-      list.push(a);
-      categories.set(a.resource.category, list);
-    }
-
-    const blockers = assessments.filter((a) => !a.refactor.supported);
-    const generateWarnings = assessments.filter((a) => !a.generate.supported);
-    const subFeatureWarnings = assessments.filter((a) => a.generate.notes.length > 0 || a.refactor.notes.length > 0);
-
     printer.blankLine();
-    printer.info(`Assessment for "${this.appName}" (env: ${this.envName})`);
+    printer.info(chalk.bold(`Assessment for "${this.appName}" (env: ${this.envName})`));
     printer.blankLine();
 
-    for (const [category, items] of categories) {
-      Assessment.renderCategory(category, items);
-    }
-
-    Assessment.renderSummary(categories, blockers, generateWarnings, subFeatureWarnings);
+    Assessment.renderTable(assessments);
+    printer.blankLine();
+    Assessment.renderSummary(assessments);
   }
 
-  private static renderCategory(category: string, assessments: readonly ResourceAssessment[]): void {
-    printer.info(chalk.bold(category.charAt(0).toUpperCase() + category.slice(1)));
-    printer.blankLine();
-
+  private static renderTable(assessments: readonly ResourceAssessment[]): void {
     const rows = assessments.map((a) => ({
+      category: a.resource.category,
       resource: a.resource.resourceName,
       service: a.resource.service,
-      generate: Assessment.icon(a.generate),
-      refactor: Assessment.icon(a.refactor),
+      generate: Assessment.statusText(a.generate, 'manual code needed'),
+      refactor: Assessment.statusText(a.refactor, 'blocks migration'),
     }));
 
     const colWidths = {
+      category: Math.max(8, ...rows.map((r) => r.category.length)) + 2,
       resource: Math.max(8, ...rows.map((r) => r.resource.length)) + 2,
       service: Math.max(7, ...rows.map((r) => r.service.length)) + 2,
-      generate: 10,
-      refactor: 10,
+      generate: Math.max(8, ...rows.map((r) => r.generate.length)) + 2,
+      refactor: Math.max(8, ...rows.map((r) => r.refactor.length)) + 2,
     };
 
     const hr = (char: string, left: string, mid: string, right: string) =>
-      `${left}${''.padEnd(colWidths.resource, char)}${mid}${''.padEnd(colWidths.service, char)}${mid}${''.padEnd(
-        colWidths.generate,
+      `${left}${''.padEnd(colWidths.category, char)}${mid}${''.padEnd(colWidths.resource, char)}${mid}${''.padEnd(
+        colWidths.service,
         char,
-      )}${mid}${''.padEnd(colWidths.refactor, char)}${right}`;
+      )}${mid}${''.padEnd(colWidths.generate, char)}${mid}${''.padEnd(colWidths.refactor, char)}${right}`;
 
-    const row = (r: string, s: string, g: string, rf: string) =>
-      `│ ${r.padEnd(colWidths.resource - 2)} │ ${s.padEnd(colWidths.service - 2)} │ ${g.padEnd(colWidths.generate - 2)} │ ${rf.padEnd(
-        colWidths.refactor - 2,
-      )} │`;
+    const row = (cat: string, res: string, svc: string, gen: string, ref: string) =>
+      `│ ${cat.padEnd(colWidths.category - 2)} │ ${res.padEnd(colWidths.resource - 2)} │ ${svc.padEnd(
+        colWidths.service - 2,
+      )} │ ${gen.padEnd(colWidths.generate - 2)} │ ${ref.padEnd(colWidths.refactor - 2)} │`;
 
     printer.info(hr('─', '┌', '┬', '┐'));
-    printer.info(row('Resource', 'Service', 'Generate', 'Refactor'));
+    printer.info(row('Category', 'Resource', 'Service', 'Generate', 'Refactor'));
     printer.info(hr('─', '├', '┼', '┤'));
     for (const r of rows) {
-      printer.info(row(r.resource, r.service, r.generate, r.refactor));
+      printer.info(row(r.category, r.resource, r.service, r.generate, r.refactor));
     }
     printer.info(hr('─', '└', '┴', '┘'));
-
-    const footnotes = assessments.filter((a) => a.generate.notes.length > 0 || a.refactor.notes.length > 0);
-    for (const a of footnotes) {
-      const allNotes = [...a.generate.notes, ...a.refactor.notes];
-      printer.info(`  ⚠ ${a.resource.resourceName}:`);
-      for (const note of allNotes) {
-        printer.info(`    - ${note}`);
-      }
-    }
-
-    printer.blankLine();
   }
 
-  private static renderSummary(
-    categories: ReadonlyMap<string, readonly ResourceAssessment[]>,
-    blockers: readonly ResourceAssessment[],
-    generateWarnings: readonly ResourceAssessment[],
-    subFeatureWarnings: readonly ResourceAssessment[],
-  ): void {
-    const allResources = [...categories.values()].flat();
-    const total = allResources.length;
-    const fullySupported = allResources.filter(
-      (a) => a.generate.supported && a.refactor.supported && a.generate.notes.length === 0 && a.refactor.notes.length === 0,
-    ).length;
-    const categoryCount = categories.size;
-    const blocked = blockers.length > 0;
+  private static renderSummary(assessments: readonly ResourceAssessment[]): void {
+    const refactorUnsupported = assessments.filter((a) => !a.refactor.supported).length;
 
-    printer.info(`Summary: ${fullySupported}/${total} resources across ${categoryCount} categories fully supported.`);
-    printer.blankLine();
-
-    if (generateWarnings.length > 0) {
-      const names = generateWarnings.map((a) => `${a.resource.category}/${a.resource.resourceName}`).join(', ');
-      printer.info(chalk.yellow(`⚠ ${generateWarnings.length} resource(s) do not support code generation:`));
-      printer.info(chalk.yellow(`    ${names}`));
-      printer.info(chalk.yellow('  You will need to write Gen2 code for these manually'));
-      printer.info(chalk.yellow('  after the generate step.'));
-      printer.blankLine();
-    }
-
-    if (subFeatureWarnings.length > 0) {
-      const names = subFeatureWarnings
-        .map((a) => {
-          const notes = [...a.generate.notes, ...a.refactor.notes].join(', ');
-          return `${a.resource.category}/${a.resource.resourceName} (${notes})`;
-        })
-        .join(', ');
-      printer.info(chalk.yellow(`⚠ ${subFeatureWarnings.length} resource(s) have unsupported sub-features:`));
-      printer.info(chalk.yellow(`    ${names}`));
-      printer.info(chalk.yellow('  Generated code will be incomplete. Review and add'));
-      printer.info(chalk.yellow('  missing configuration manually after the generate step.'));
-      printer.blankLine();
-    }
-
-    if (blockers.length > 0) {
-      const names = blockers.map((a) => `${a.resource.category}/${a.resource.resourceName}`).join(', ');
-      printer.info(chalk.red(`✘ ${blockers.length} resource(s) have stateful data that cannot be refactored:`));
-      printer.info(chalk.red(`    ${names}`));
-      printer.info(chalk.red('  Automatic migration cannot proceed until refactoring'));
-      printer.info(chalk.red('  support is added for these resources. Stateful resources'));
-      printer.info(chalk.red('  require refactoring to avoid data loss.'));
-      printer.blankLine();
-    }
-
-    if (blocked) {
+    if (refactorUnsupported > 0) {
       printer.info(chalk.red('✘ Migration blocked.'));
     } else {
       printer.info(chalk.green('✔ Migration can proceed.'));
     }
   }
 
-  private static icon(response: SupportResponse): string {
-    if (!response.supported) return '   ✘';
-    if (response.notes.length > 0) return '   ⚠';
-    return '   ✔';
+  private static statusText(response: SupportResponse, unsupportedLabel: string): string {
+    if (!response.supported) return `✘ ${unsupportedLabel}`;
+    if (response.notes.length > 0) return `⚠ ${response.notes.join(', ')}`;
+    return '✔';
   }
 }
