@@ -35,9 +35,9 @@ describe('AmplifyMigrationAssessor', () => {
   describe('run()', () => {
     it('records all supported resources as supported for both generate and refactor', async () => {
       mockDiscover([
-        { category: 'auth', resourceName: 'myPool', service: 'Cognito' },
-        { category: 'storage', resourceName: 'myBucket', service: 'S3' },
-        { category: 'function', resourceName: 'myFunc', service: 'Lambda' },
+        { category: 'auth', resourceName: 'myPool', service: 'Cognito', key: 'auth:Cognito' },
+        { category: 'storage', resourceName: 'myBucket', service: 'S3', key: 'storage:S3' },
+        { category: 'function', resourceName: 'myFunc', service: 'Lambda', key: 'function:Lambda' },
       ]);
 
       const renderSpy = jest.spyOn(Assessment.prototype, 'render').mockImplementation(() => {});
@@ -81,8 +81,8 @@ describe('AmplifyMigrationAssessor', () => {
 
     it('records unsupported resources as not supported', async () => {
       mockDiscover([
-        { category: 'auth', resourceName: 'myPool', service: 'Cognito' },
-        { category: 'notifications', resourceName: 'push', service: 'Pinpoint' },
+        { category: 'auth', resourceName: 'myPool', service: 'Cognito', key: 'auth:Cognito' },
+        { category: 'notifications', resourceName: 'push', service: 'Pinpoint', key: 'unknown' },
       ]);
 
       const renderSpy = jest.spyOn(Assessment.prototype, 'render').mockImplementation(() => {});
@@ -105,7 +105,7 @@ describe('AmplifyMigrationAssessor', () => {
     });
 
     it('calls render after recording all resources', async () => {
-      mockDiscover([{ category: 'auth', resourceName: 'myPool', service: 'Cognito' }]);
+      mockDiscover([{ category: 'auth', resourceName: 'myPool', service: 'Cognito', key: 'auth:Cognito' }]);
 
       const renderSpy = jest.spyOn(Assessment.prototype, 'render').mockImplementation(() => {});
 

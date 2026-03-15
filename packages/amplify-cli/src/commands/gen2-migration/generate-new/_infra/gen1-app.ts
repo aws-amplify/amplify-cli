@@ -23,12 +23,43 @@ interface Gen1AppProps extends Gen1CreateOptions {
 }
 
 /**
+ * All known category:service pairs the migration tool recognizes.
+ * Adding a new pair here forces every exhaustive switch on ResourceKey
+ * to handle it — the compiler will error on any switch that misses a case.
+ */
+export const KNOWN_RESOURCE_KEYS = [
+  'auth:Cognito',
+  'auth:Cognito-UserPool-Groups',
+  'storage:S3',
+  'storage:DynamoDB',
+  'api:AppSync',
+  'api:API Gateway',
+  'analytics:Kinesis',
+  'function:Lambda',
+] as const;
+
+/**
+ * Union of all known category:service pairs, plus 'unknown' for
+ * resources the tool doesn't recognize.
+ */
+export type ResourceKey = (typeof KNOWN_RESOURCE_KEYS)[number] | 'unknown';
+
+/**
  * A resource discovered from amplify-meta.json.
  */
 export interface DiscoveredResource {
   readonly category: string;
   readonly resourceName: string;
   readonly service: string;
+  readonly key: ResourceKey;
+}
+
+/**
+ * Exhaustiveness guard — place after a switch on ResourceKey to get
+ * a compile error if any case is missing.
+ */
+export function assertNever(x: never): never {
+  throw new Error(`Unexpected resource key: ${x}`);
 }
 
 /**
@@ -117,7 +148,9 @@ export class Gen1App {
             message: `Resource '${resourceName}' in category '${category}' is missing the 'service' field in amplify-meta.json`,
           });
         }
-        resources.push({ category, resourceName, service });
+        const rawKey = `${category}:${service}`;
+        const key: ResourceKey = (KNOWN_RESOURCE_KEYS as readonly string[]).includes(rawKey) ? (rawKey as ResourceKey) : 'unknown';
+        resources.push({ category, resourceName, service, key });
       }
     }
 

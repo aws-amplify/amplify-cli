@@ -6,7 +6,7 @@ import { AmplifyMigrationStep } from './_step';
 import { AmplifyMigrationOperation } from './_operation';
 import { AmplifyGen2MigrationValidations } from './_validations';
 import { AwsClients } from './aws-clients';
-import { Gen1App } from './generate-new/_infra/gen1-app';
+import { Gen1App, assertNever } from './generate-new/_infra/gen1-app';
 import { Assessment } from './_assessment';
 import { Planner } from './planner';
 import { BackendGenerator } from './generate-new/amplify/backend.generator';
@@ -37,7 +37,7 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
     const discovered = gen1App.discover();
 
     for (const resource of discovered) {
-      switch (`${resource.category}:${resource.service}`) {
+      switch (resource.key) {
         case 'auth:Cognito':
         case 'auth:Cognito-UserPool-Groups':
         case 'storage:S3':
@@ -48,9 +48,11 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
         case 'function:Lambda':
           assessment.record('generate', resource, { supported: true, notes: [] });
           break;
-        default:
+        case 'unknown':
           assessment.record('generate', resource, { supported: false, notes: [] });
           break;
+        default:
+          assertNever(resource.key);
       }
     }
   }
@@ -102,7 +104,7 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
     const functionGenerators: FunctionGenerator[] = [];
 
     for (const resource of discovered) {
-      switch (`${resource.category}:${resource.service}`) {
+      switch (resource.key) {
         case 'auth:Cognito': {
           const isReferenceAuth = discovered
             .filter((r) => r.category === 'auth')
@@ -154,11 +156,13 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
           functionGenerators.push(funcGen);
           break;
         }
-        default:
+        case 'unknown':
           this.logger.warn(
             `Skipping unsupported resource '${resource.resourceName}' (${resource.category}:${resource.service}). You will need to write Gen2 code for this resource manually.`,
           );
           break;
+        default:
+          assertNever(resource.key);
       }
     }
 

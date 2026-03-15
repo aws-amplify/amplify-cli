@@ -21,9 +21,9 @@ describe('Gen1App', () => {
       const resources = app.discover();
 
       expect(resources).toEqual([
-        { category: 'auth', resourceName: 'myPool', service: 'Cognito' },
-        { category: 'storage', resourceName: 'myBucket', service: 'S3' },
-        { category: 'function', resourceName: 'myFunc', service: 'Lambda' },
+        { category: 'auth', resourceName: 'myPool', service: 'Cognito', key: 'auth:Cognito' },
+        { category: 'storage', resourceName: 'myBucket', service: 'S3', key: 'storage:S3' },
+        { category: 'function', resourceName: 'myFunc', service: 'Lambda', key: 'function:Lambda' },
       ]);
     });
 
@@ -35,7 +35,7 @@ describe('Gen1App', () => {
 
       const resources = app.discover();
 
-      expect(resources).toEqual([{ category: 'auth', resourceName: 'myPool', service: 'Cognito' }]);
+      expect(resources).toEqual([{ category: 'auth', resourceName: 'myPool', service: 'Cognito', key: 'auth:Cognito' }]);
     });
 
     it('skips the hosting category', () => {
@@ -46,7 +46,7 @@ describe('Gen1App', () => {
 
       const resources = app.discover();
 
-      expect(resources).toEqual([{ category: 'auth', resourceName: 'myPool', service: 'Cognito' }]);
+      expect(resources).toEqual([{ category: 'auth', resourceName: 'myPool', service: 'Cognito', key: 'auth:Cognito' }]);
     });
 
     it('throws when a resource is missing the service field', () => {
@@ -68,7 +68,7 @@ describe('Gen1App', () => {
 
       const resources = app.discover();
 
-      expect(resources).toEqual([{ category: 'auth', resourceName: 'myPool', service: 'Cognito' }]);
+      expect(resources).toEqual([{ category: 'auth', resourceName: 'myPool', service: 'Cognito', key: 'auth:Cognito' }]);
     });
 
     it('returns empty array for empty meta', () => {
@@ -88,8 +88,8 @@ describe('Gen1App', () => {
       const resources = app.discover();
 
       expect(resources).toEqual([
-        { category: 'storage', resourceName: 'myBucket', service: 'S3' },
-        { category: 'storage', resourceName: 'myTable', service: 'DynamoDB' },
+        { category: 'storage', resourceName: 'myBucket', service: 'S3', key: 'storage:S3' },
+        { category: 'storage', resourceName: 'myTable', service: 'DynamoDB', key: 'storage:DynamoDB' },
       ]);
     });
   });

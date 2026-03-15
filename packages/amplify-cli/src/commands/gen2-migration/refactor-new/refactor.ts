@@ -15,7 +15,7 @@ import { StorageDynamoForwardRefactorer } from './storage/storage-dynamo-forward
 import { StorageDynamoRollbackRefactorer } from './storage/storage-dynamo-rollback';
 import { AnalyticsKinesisForwardRefactorer } from './analytics/analytics-forward';
 import { AnalyticsKinesisRollbackRefactorer } from './analytics/analytics-rollback';
-import { Gen1App, DiscoveredResource } from '../generate-new/_infra/gen1-app';
+import { Gen1App, DiscoveredResource, assertNever } from '../generate-new/_infra/gen1-app';
 import { Assessment } from '../_assessment';
 
 export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
@@ -28,7 +28,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
     const discovered = gen1App.discover();
 
     for (const resource of discovered) {
-      switch (`${resource.category}:${resource.service}`) {
+      switch (resource.key) {
         case 'auth:Cognito':
         case 'storage:S3':
         case 'storage:DynamoDB':
@@ -39,9 +39,12 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
         case 'api:API Gateway':
           assessment.record('refactor', resource, { supported: true, notes: [] });
           break;
-        default:
+        case 'auth:Cognito-UserPool-Groups':
+        case 'unknown':
           assessment.record('refactor', resource, { supported: false, notes: [] });
           break;
+        default:
+          assertNever(resource.key);
       }
     }
   }
@@ -75,7 +78,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
     validateSingleResourcePerCategory(discovered);
 
     for (const resource of discovered) {
-      switch (`${resource.category}:${resource.service}`) {
+      switch (resource.key) {
         case 'auth:Cognito':
           refactorers.push(
             new AuthCognitoForwardRefactorer(gen1Env, gen2Branch, clients, this.region, accountId, this.appId, this.currentEnvName),
@@ -96,10 +99,13 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
         case 'api:AppSync':
         case 'api:API Gateway':
           break;
-        default:
+        case 'auth:Cognito-UserPool-Groups':
+        case 'unknown':
           throw new AmplifyError('MigrationError', {
             message: `Unsupported resource '${resource.resourceName}' (${resource.category}:${resource.service}). Run 'amplify gen2-migration assess' to check migration readiness.`,
           });
+        default:
+          assertNever(resource.key);
       }
     }
 
@@ -118,7 +124,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
     validateSingleResourcePerCategory(discovered);
 
     for (const resource of discovered) {
-      switch (`${resource.category}:${resource.service}`) {
+      switch (resource.key) {
         case 'auth:Cognito':
           refactorers.push(new AuthCognitoRollbackRefactorer(gen1Env, gen2Branch, clients, this.region, accountId));
           break;
@@ -137,10 +143,13 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
         case 'api:AppSync':
         case 'api:API Gateway':
           break;
-        default:
+        case 'auth:Cognito-UserPool-Groups':
+        case 'unknown':
           throw new AmplifyError('MigrationError', {
             message: `Unsupported resource '${resource.resourceName}' (${resource.category}:${resource.service}). Cannot rollback.`,
           });
+        default:
+          assertNever(resource.key);
       }
     }
 
