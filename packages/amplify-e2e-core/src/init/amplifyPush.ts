@@ -356,7 +356,7 @@ export const amplifyPushLayer = (cwd: string, settings: LayerPushSettings, testi
  * Function to test amplify push with iterativeRollback flag option
  */
 export const amplifyPushIterativeRollback = (cwd: string, testingWithLatestCodebase = false) =>
-  spawn(getCLIPath(testingWithLatestCodebase), ['push', '--iterative-rollback'], { cwd, stripColors: true })
+  spawn(getCLIPath(testingWithLatestCodebase), ['push', '--iterative-rollback'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
     .wait('Are you sure you want to continue?')
     .sendYes()
     .runAsync();
@@ -365,7 +365,7 @@ export const amplifyPushIterativeRollback = (cwd: string, testingWithLatestCodeb
  * Function to test amplify push with missing environment variable
  */
 export const amplifyPushMissingEnvVar = (cwd: string, newEnvVarValue: string) =>
-  spawn(getCLIPath(), ['push'], { cwd, stripColors: true })
+  spawn(getCLIPath(), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
     .wait('Enter a value for')
     .sendLine(newEnvVarValue)
     .wait('Are you sure you want to continue?')
@@ -376,7 +376,7 @@ export const amplifyPushMissingEnvVar = (cwd: string, newEnvVarValue: string) =>
  * Function to test amplify push with missing function secrets
  */
 export const amplifyPushMissingFuncSecret = (cwd: string, newSecretValue: string) =>
-  spawn(getCLIPath(), ['push'], { cwd, stripColors: true })
+  spawn(getCLIPath(), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
     .wait('does not have a value in this environment. Specify one now:')
     .sendLine(newSecretValue)
     .wait('Are you sure you want to continue?')
