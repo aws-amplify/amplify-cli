@@ -48,29 +48,23 @@ describe('AmplifyMigrationAssessor', () => {
       // Generate records all three as supported
       expect(recordSpy).toHaveBeenCalledWith('generate', expect.objectContaining({ resourceName: 'myPool' }), {
         supported: true,
-        notes: [],
       });
       expect(recordSpy).toHaveBeenCalledWith('generate', expect.objectContaining({ resourceName: 'myBucket' }), {
         supported: true,
-        notes: [],
       });
       expect(recordSpy).toHaveBeenCalledWith('generate', expect.objectContaining({ resourceName: 'myFunc' }), {
         supported: true,
-        notes: [],
       });
 
       // Refactor records all three as supported
       expect(recordSpy).toHaveBeenCalledWith('refactor', expect.objectContaining({ resourceName: 'myPool' }), {
         supported: true,
-        notes: [],
       });
       expect(recordSpy).toHaveBeenCalledWith('refactor', expect.objectContaining({ resourceName: 'myBucket' }), {
         supported: true,
-        notes: [],
       });
       expect(recordSpy).toHaveBeenCalledWith('refactor', expect.objectContaining({ resourceName: 'myFunc' }), {
         supported: true,
-        notes: [],
       });
 
       expect(displaySpy).toHaveBeenCalled();
@@ -93,11 +87,9 @@ describe('AmplifyMigrationAssessor', () => {
       // Notifications is unsupported for both
       expect(recordSpy).toHaveBeenCalledWith('generate', expect.objectContaining({ resourceName: 'push' }), {
         supported: false,
-        notes: [],
       });
       expect(recordSpy).toHaveBeenCalledWith('refactor', expect.objectContaining({ resourceName: 'push' }), {
         supported: false,
-        notes: [],
       });
 
       displaySpy.mockRestore();

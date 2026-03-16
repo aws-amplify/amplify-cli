@@ -7,7 +7,7 @@ describe('Assessment', () => {
       const assessment = new Assessment('app', 'dev');
       const resource: DiscoveredResource = { category: 'auth', resourceName: 'myPool', service: 'Cognito', key: 'auth:Cognito' };
 
-      assessment.record('generate', resource, { supported: true, notes: [] });
+      assessment.record('generate', resource, { supported: true });
 
       const entry = assessment.entries.get('auth:myPool');
       expect(entry).toBeDefined();
@@ -20,22 +20,12 @@ describe('Assessment', () => {
       const assessment = new Assessment('app', 'dev');
       const resource: DiscoveredResource = { category: 'storage', resourceName: 'myBucket', service: 'S3', key: 'storage:S3' };
 
-      assessment.record('generate', resource, { supported: true, notes: [] });
-      assessment.record('refactor', resource, { supported: true, notes: [] });
+      assessment.record('generate', resource, { supported: true });
+      assessment.record('refactor', resource, { supported: true });
 
       const entry = assessment.entries.get('storage:myBucket');
       expect(entry!.generate.supported).toBe(true);
       expect(entry!.refactor.supported).toBe(true);
-    });
-
-    it('records notes correctly', () => {
-      const assessment = new Assessment('app', 'dev');
-      const resource: DiscoveredResource = { category: 'function', resourceName: 'myFunc', service: 'Lambda', key: 'function:Lambda' };
-
-      assessment.record('generate', resource, { supported: true, notes: ['custom-policies not supported'] });
-
-      const entry = assessment.entries.get('function:myFunc');
-      expect(entry!.generate.notes).toEqual(['custom-policies not supported']);
     });
 
     it('handles multiple resources across categories', () => {
@@ -44,17 +34,13 @@ describe('Assessment', () => {
       assessment.record(
         'generate',
         { category: 'auth', resourceName: 'pool', service: 'Cognito', key: 'auth:Cognito' },
-        { supported: true, notes: [] },
+        { supported: true },
       );
-      assessment.record(
-        'generate',
-        { category: 'storage', resourceName: 'bucket', service: 'S3', key: 'storage:S3' },
-        { supported: true, notes: [] },
-      );
+      assessment.record('generate', { category: 'storage', resourceName: 'bucket', service: 'S3', key: 'storage:S3' }, { supported: true });
       assessment.record(
         'generate',
         { category: 'geo', resourceName: 'map', service: 'Location', key: 'unsupported' },
-        { supported: false, notes: [] },
+        { supported: false },
       );
 
       expect(assessment.entries.size).toBe(3);
@@ -94,23 +80,15 @@ describe('Assessment', () => {
       assessment.record(
         'generate',
         { category: 'auth', resourceName: 'pool', service: 'Cognito', key: 'auth:Cognito' },
-        { supported: true, notes: [] },
+        { supported: true },
       );
       assessment.record(
         'refactor',
         { category: 'auth', resourceName: 'pool', service: 'Cognito', key: 'auth:Cognito' },
-        { supported: true, notes: [] },
+        { supported: true },
       );
-      assessment.record(
-        'generate',
-        { category: 'storage', resourceName: 'bucket', service: 'S3', key: 'storage:S3' },
-        { supported: true, notes: [] },
-      );
-      assessment.record(
-        'refactor',
-        { category: 'storage', resourceName: 'bucket', service: 'S3', key: 'storage:S3' },
-        { supported: true, notes: [] },
-      );
+      assessment.record('generate', { category: 'storage', resourceName: 'bucket', service: 'S3', key: 'storage:S3' }, { supported: true });
+      assessment.record('refactor', { category: 'storage', resourceName: 'bucket', service: 'S3', key: 'storage:S3' }, { supported: true });
 
       expect(displayed(assessment)).toMatchInlineSnapshot(`
       "
@@ -132,22 +110,22 @@ describe('Assessment', () => {
       assessment.record(
         'generate',
         { category: 'auth', resourceName: 'pool', service: 'Cognito', key: 'auth:Cognito' },
-        { supported: true, notes: [] },
+        { supported: true },
       );
       assessment.record(
         'refactor',
         { category: 'auth', resourceName: 'pool', service: 'Cognito', key: 'auth:Cognito' },
-        { supported: true, notes: [] },
+        { supported: true },
       );
       assessment.record(
         'generate',
         { category: 'geo', resourceName: 'map', service: 'Location', key: 'unsupported' },
-        { supported: false, notes: [] },
+        { supported: false },
       );
       assessment.record(
         'refactor',
         { category: 'geo', resourceName: 'map', service: 'Location', key: 'unsupported' },
-        { supported: false, notes: [] },
+        { supported: false },
       );
 
       expect(displayed(assessment)).toMatchInlineSnapshot(`
@@ -170,22 +148,22 @@ describe('Assessment', () => {
       assessment.record(
         'generate',
         { category: 'auth', resourceName: 'pool', service: 'Cognito', key: 'auth:Cognito' },
-        { supported: true, notes: [] },
+        { supported: true },
       );
       assessment.record(
         'refactor',
         { category: 'auth', resourceName: 'pool', service: 'Cognito', key: 'auth:Cognito' },
-        { supported: true, notes: [] },
+        { supported: true },
       );
       assessment.record(
         'generate',
         { category: 'custom', resourceName: 'alarms', service: 'CloudFormation', key: 'unsupported' },
-        { supported: false, notes: [] },
+        { supported: false },
       );
       assessment.record(
         'refactor',
         { category: 'custom', resourceName: 'alarms', service: 'CloudFormation', key: 'unsupported' },
-        { supported: true, notes: [] },
+        { supported: true },
       );
 
       expect(displayed(assessment)).toMatchInlineSnapshot(`

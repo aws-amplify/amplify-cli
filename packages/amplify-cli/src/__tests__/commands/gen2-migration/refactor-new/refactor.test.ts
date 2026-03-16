@@ -156,7 +156,6 @@ describe('AmplifyMigrationRefactorStep', () => {
       for (const name of ['myPool', 'myBucket', 'myFunc']) {
         expect(recordSpy).toHaveBeenCalledWith('refactor', expect.objectContaining({ resourceName: name }), {
           supported: true,
-          notes: [],
         });
       }
 
@@ -172,7 +171,6 @@ describe('AmplifyMigrationRefactorStep', () => {
 
       expect(recordSpy).toHaveBeenCalledWith('refactor', expect.objectContaining({ resourceName: 'push' }), {
         supported: false,
-        notes: [],
       });
 
       recordSpy.mockRestore();
@@ -189,7 +187,6 @@ describe('AmplifyMigrationRefactorStep', () => {
 
       expect(recordSpy).toHaveBeenCalledWith('refactor', expect.objectContaining({ resourceName: 'userPoolGroups' }), {
         supported: false,
-        notes: [],
       });
 
       recordSpy.mockRestore();

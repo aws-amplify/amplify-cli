@@ -140,7 +140,6 @@ describe('AmplifyMigrationGenerateStep', () => {
       for (const name of ['myPool', 'myBucket', 'myFunc']) {
         expect(recordSpy).toHaveBeenCalledWith('generate', expect.objectContaining({ resourceName: name }), {
           supported: true,
-          notes: [],
         });
       }
 
@@ -156,7 +155,6 @@ describe('AmplifyMigrationGenerateStep', () => {
 
       expect(recordSpy).toHaveBeenCalledWith('generate', expect.objectContaining({ resourceName: 'push' }), {
         supported: false,
-        notes: [],
       });
 
       recordSpy.mockRestore();
