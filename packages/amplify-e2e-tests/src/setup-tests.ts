@@ -16,7 +16,7 @@ removeYarnPaths();
 
 const JEST_TIMEOUT = 1000 * 60 * 60; // 1 hour
 jest.setTimeout(JEST_TIMEOUT);
-if (process.env.CIRCLECI || process.env.CODEBUILD_BUILD_ID) {
+if (process.env.CIRCLECI) {
   jest.retryTimes(1);
 }
 

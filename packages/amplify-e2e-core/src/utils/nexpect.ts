@@ -773,7 +773,7 @@ export function nspawn(command: string | string[], params: string[] = [], option
     // Undo ci-info detection, required for some tests
     // see https://github.com/watson/ci-info/blob/master/index.js#L57
     if (options.disableCIDetection === true) {
-      childEnv.CI = 'false';
+      childEnv.CI = false;
     }
   }
 

@@ -2,8 +2,6 @@ import { nspawn as spawn, KEY_DOWN_ARROW, getCLIPath } from '..';
 import path from 'path';
 import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 
-const customResourceTimeoutMS = 1000 * 60 * 10; // 10 minutes
-
 export const addCDKCustomResource = async (cwd: string, settings: any): Promise<void> => {
   await spawn(getCLIPath(), ['add', 'custom'], { cwd, stripColors: true })
     .wait('How do you want to define this custom resource?')
@@ -38,7 +36,7 @@ export function buildCustomResources(cwd: string, usingLatestCodebase = false) {
   return new Promise((resolve, reject) => {
     const args = ['custom', 'build'];
 
-    spawn(getCLIPath(usingLatestCodebase), args, { cwd, stripColors: true, noOutputTimeout: customResourceTimeoutMS })
+    spawn(getCLIPath(usingLatestCodebase), args, { cwd, stripColors: true })
       .sendEof()
       .run((err: Error) => {
         if (!err) {
