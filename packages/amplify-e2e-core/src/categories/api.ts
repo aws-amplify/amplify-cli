@@ -477,6 +477,11 @@ export function addRestApi(cwd: string, settings: RestAPISettings) {
         .sendCarriageReturn() // Add another path
         .wait('Provide a path')
         .sendLine(settings.path)
+        .wait(/overlaps with.*Are you sure you want to continue|Choose a lambda source/, (data: string) => {
+          if (/overlaps with/.test(data)) {
+            chain.getProcess()?.write('y');
+          }
+        })
         .wait('Choose a lambda source');
 
       if (settings.existingLambda) {

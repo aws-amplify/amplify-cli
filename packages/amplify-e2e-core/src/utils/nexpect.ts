@@ -98,6 +98,7 @@ export type ExecutionContext = {
    */
   run: (cb: (err: any, signal?: any) => void) => ExecutionContext;
   runAsync: (expectedErrorPredicate?: (err: Error) => boolean) => Promise<void>;
+  getProcess: () => Recorder | undefined;
 };
 
 /**
@@ -387,6 +388,9 @@ function chain(context: Context): ExecutionContext {
       };
       context.queue.push(_delay);
       return chain(context);
+    },
+    getProcess(): Recorder | undefined {
+      return context.process;
     },
   };
   const run = (callback: (err: any, code?: number, signal?: string | number) => void): ExecutionContext => {
