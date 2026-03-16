@@ -37,6 +37,59 @@ export interface AnalyticsCodegenResult {
   streamName: string;
 }
 
+/**
+ * Definition for Geo resource from Gen1 amplify-meta.json
+ */
+export interface GeoResourceDefinition {
+  /** Resource name - set by migration-pipeline.ts from the geo key */
+  name?: string;
+  /** Service type */
+  service: 'Map' | 'PlaceIndex' | 'GeofenceCollection';
+  /** Provider metadata containing S3 template URL and logical ID */
+  providerMetadata: {
+    s3TemplateURL: string;
+    logicalId: string;
+  };
+}
+
+/**
+ * Base result fields common to all geo codegen results
+ */
+export interface GeoCodegenResultBase {
+  /** The class name of the generated construct (extracted from generated code) */
+  constructClassName: string;
+  /** The file name of the generated construct without extension */
+  constructFileName: string;
+  /** The resource name used for construct ID */
+  resourceName: string;
+  /** The full parameter name for the user pool ID prop on the construct */
+  userPoolIdParamName: string;
+  /** Group role parameters with extracted group names */
+  groupRoles: Array<{ paramName: string; groupName: string }>;
+  /** Whether this is the default resource */
+  isDefault: string;
+}
+
+export interface MapCodegenResult extends GeoCodegenResultBase {
+  serviceName: 'Map';
+  mapName: string;
+  mapStyle: string;
+}
+
+export interface PlaceIndexCodegenResult extends GeoCodegenResultBase {
+  serviceName: 'PlaceIndex';
+  indexName: string;
+  dataProvider: string;
+  dataSourceIntendedUse: string;
+}
+
+export interface GeofenceCollectionCodegenResult extends GeoCodegenResultBase {
+  serviceName: 'GeofenceCollection';
+  collectionName: string;
+}
+
+export type GeoCodegenResult = MapCodegenResult | PlaceIndexCodegenResult | GeofenceCollectionCodegenResult;
+
 export class CdkFromCfn {
   public constructor(
     private readonly dir: string,
@@ -167,6 +220,95 @@ export class CdkFromCfn {
     };
   }
 
+  public async generateGeoL1Code(definition: GeoResourceDefinition): Promise<GeoCodegenResult> {
+    const resourceName = definition.name ?? 'geo';
+    const constructFileName = `${resourceName}-construct`;
+    const filePath = path.join(this.dir, 'amplify', 'geo', resourceName, `${constructFileName}.ts`);
+    const templateS3Url = definition.providerMetadata.s3TemplateURL;
+    const template = await getCfnTemplateFromS3(templateS3Url);
+    const nestedStackLogicalId = definition.providerMetadata.logicalId;
+
+    // Fetch deployed stack parameters
+    const parameters = await this.getNestedStackParameters(nestedStackLogicalId);
+
+    // Apply preTransmute (renames env -> branchName, resolves conditions)
+    const finalTemplate = await this.preTransmute(template, nestedStackLogicalId);
+
+    // Generate TypeScript L1 construct code
+    const tsFile = cdk_from_cfn.transmute(JSON.stringify(finalTemplate), 'typescript', nestedStackLogicalId, 'construct');
+
+    // Fix Fn::FindInMap dictionary lookups
+    const fixedTsFile = this.postTransmute(tsFile);
+
+    // Write construct file
+    await fs.mkdir(path.dirname(filePath), { recursive: true });
+    await this.fileWriter(fixedTsFile, filePath);
+
+    // Extract class name from generated code
+    const classNameMatch = fixedTsFile.match(/export class (\w+) extends/);
+    if (!classNameMatch) {
+      throw new Error(`Failed to extract class name from generated construct for geo resource: ${resourceName}`);
+    }
+    const constructClassName = classNameMatch[1];
+
+    // Categorize deployed parameters
+    const paramMap = new Map(
+      parameters
+        .filter(
+          (p): p is { ParameterKey: string; ParameterValue: string } => p.ParameterKey !== undefined && p.ParameterValue !== undefined,
+        )
+        .map((p) => [p.ParameterKey, p.ParameterValue]),
+    );
+
+    let userPoolIdParamName = '';
+    const groupRoles: Array<{ paramName: string; groupName: string }> = [];
+    for (const [key] of paramMap) {
+      if (key.startsWith('auth') && key.endsWith('UserPoolId')) {
+        userPoolIdParamName = key;
+      } else if (key.startsWith('authuserPoolGroups') && key.endsWith('GroupRole')) {
+        const groupName = key.slice('authuserPoolGroups'.length, -'GroupRole'.length);
+        groupRoles.push({ paramName: key, groupName });
+      }
+    }
+
+    const base = {
+      constructClassName,
+      constructFileName,
+      resourceName,
+      userPoolIdParamName,
+      groupRoles,
+      isDefault: paramMap.get('isDefault') ?? 'false',
+    };
+
+    switch (definition.service) {
+      case 'Map':
+        return {
+          ...base,
+          serviceName: 'Map' as const,
+          mapName: paramMap.get('mapName') ?? resourceName,
+          mapStyle: paramMap.get('mapStyle') ?? '',
+        };
+      case 'PlaceIndex':
+        return {
+          ...base,
+          serviceName: 'PlaceIndex' as const,
+          indexName: paramMap.get('indexName') ?? resourceName,
+          dataProvider: paramMap.get('dataProvider') ?? '',
+          dataSourceIntendedUse: paramMap.get('dataSourceIntendedUse') ?? '',
+        };
+      case 'GeofenceCollection':
+        return {
+          ...base,
+          serviceName: 'GeofenceCollection' as const,
+          collectionName: paramMap.get('collectionName') ?? resourceName,
+        };
+      default: {
+        const _exhaustiveCheck: never = definition.service;
+        throw new Error(`Unsupported geo service type: ${_exhaustiveCheck}`);
+      }
+    }
+  }
+
   private async preTransmute(template: CFNTemplate, logicalId: string): Promise<CFNTemplate> {
     // Rename "env" parameter to "branchName"
     if (template.Parameters?.env) {
@@ -187,6 +329,49 @@ export class CdkFromCfn {
 
     updateRefs(template.Resources);
 
+    // Replace Fn::Join patterns that construct group role names from UserPoolId + GroupRole
+    // with direct Ref to the GroupRole parameter. This preserves CDK tokens for cross-stack
+    // dependency tracking. Without this, cdk-from-cfn generates .join('-') which destroys
+    // the token and breaks deployment ordering.
+    // See known-issues.md issue #1 for full details.
+    if (template.Parameters) {
+      const groupRoleParams = Object.keys(template.Parameters).filter(
+        (key) => key.startsWith('authuserPoolGroups') && key.endsWith('GroupRole'),
+      );
+
+      const replaceGroupRoleJoins = (obj: unknown): void => {
+        if (typeof obj !== 'object' || obj === null) return;
+        const record = obj as Record<string, unknown>;
+
+        for (const [key, value] of Object.entries(record)) {
+          if (typeof value === 'object' && value !== null && 'Fn::Join' in value) {
+            const joinValue = value as { 'Fn::Join': [string, unknown[]] };
+            const [separator, parts] = joinValue['Fn::Join'];
+            if (
+              separator === '-' &&
+              Array.isArray(parts) &&
+              parts.length === 2 &&
+              typeof parts[0] === 'object' &&
+              parts[0] !== null &&
+              'Ref' in parts[0] &&
+              typeof parts[1] === 'string' &&
+              parts[1].endsWith('GroupRole')
+            ) {
+              const groupRoleSuffix = parts[1];
+              const matchingParam = groupRoleParams.find((p) => p.endsWith(groupRoleSuffix));
+              if (matchingParam) {
+                record[key] = { Ref: matchingParam };
+              }
+            }
+          } else {
+            replaceGroupRoleJoins(value);
+          }
+        }
+      };
+
+      replaceGroupRoleJoins(template.Resources);
+    }
+
     // Resolve CFN conditions using deployed stack parameters
     // This is critical because cdk-from-cfn generates broken TypeScript for CFN conditions
     // (e.g., `const shouldNotCreateEnvResources = props.env! === 'NONE';` which is invalid syntax)
@@ -200,6 +385,37 @@ export class CdkFromCfn {
     }
 
     return template;
+  }
+
+  // Post-processes generated TypeScript code to fix Fn::FindInMap dictionary lookups.
+  // The cdk-from-cfn library translates CFN Fn::FindInMap into plain dictionary lookups
+  // (e.g., regionMapping[this.region]['locationServiceRegion']) which fail at CDK synth time
+  // because this.region is a CDK Token, not a concrete string.
+  // This method replaces those patterns with cdk.CfnMapping + findInMap() calls that produce
+  // proper Fn::FindInMap intrinsics in the synthesized CloudFormation template.
+  private postTransmute(tsCode: string): string {
+    // Replace dictionary-style Record<string, Record<string, string>> mapping
+    // variable declarations with new cdk.CfnMapping(this, ...) constructor calls.
+    const mappingVarNames: string[] = [];
+    let result = tsCode.replace(
+      /const (\w+):\s*Record<string,\s*Record<string,\s*string>>\s*=\s*\{([\s\S]*?)\n(\s*)\};/g,
+      (_match, varName: string, mappingBody: string, indent: string) => {
+        mappingVarNames.push(varName);
+        const constructId = varName.charAt(0).toUpperCase() + varName.slice(1);
+        return `const ${varName} = new cdk.CfnMapping(this, '${constructId}', {\n${indent}    mapping: {${mappingBody}\n${indent}    },\n${indent}});`;
+      },
+    );
+
+    // Replace all dictionary-style lookups varName[expr]['key']
+    // with varName.findInMap(expr, 'key') for each transformed mapping variable.
+    for (const varName of mappingVarNames) {
+      const lookupRegex = new RegExp(`${varName}\\[([^\\]]+)\\]\\[(['"])([^'"]+)\\2\\]`, 'g');
+      result = result.replace(lookupRegex, (_match, expr: string, quote: string, key: string) => {
+        return `${varName}.findInMap(${expr}, ${quote}${key}${quote})`;
+      });
+    }
+
+    return result;
   }
 }
 

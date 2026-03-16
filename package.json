@@ -91,6 +91,7 @@
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
+    "cdk-from-cfn": "^0.286.0",
     "lerna": "^8.2.1",
     "node-gyp": "^11.2.0",
     "strip-ansi": "^6.0.0",

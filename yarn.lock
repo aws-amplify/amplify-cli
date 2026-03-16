@@ -1748,7 +1748,7 @@ __metadata:
     aws-sdk-client-mock: ^4.1.0
     aws-sdk-client-mock-jest: ^4.1.0
     bottleneck: 2.19.5
-    cdk-from-cfn: ^0.271.0
+    cdk-from-cfn: ^0.286.0
     chalk: ^4.1.1
     ci-info: ^3.8.0
     cli-table3: ^0.6.0
@@ -22018,6 +22018,7 @@ __metadata:
     "@zkochan/cmd-shim": ^5.1.0
     babel-eslint: ^10.1.0
     babel-loader: ^8.3.0
+    cdk-from-cfn: ^0.286.0
     codecov: ^3.7.0
     copyfiles: ^2.2.0
     eslint: ^8.57.1
@@ -24490,10 +24491,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cdk-from-cfn@npm:^0.271.0":
-  version: 0.271.0
-  resolution: "cdk-from-cfn@npm:0.271.0"
-  checksum: dc7812dadc7808139138565e26bf321c65d9d07b73bd2cdad0aa70f7d02f9cced25214756b949ed389eac96ef47fdfed37bea4de24bec6331b0f8fcc2d859a7f
+"cdk-from-cfn@npm:^0.286.0":
+  version: 0.286.0
+  resolution: "cdk-from-cfn@npm:0.286.0"
+  checksum: afc5794c053c068779ca88afc9b49fdf94f139dbb4ac598445cf0984b1c6b6d720aac139f127b2a802c896067bf14574ac7ca04afb46eb749fae75ea10010554
   languageName: node
   linkType: hard
 

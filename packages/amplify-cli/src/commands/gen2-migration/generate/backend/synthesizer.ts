@@ -64,6 +64,9 @@ export interface BackendRenderParameters {
     importFrom: string;
     functionsWithKinesisAccess?: FunctionKinesisAccess[];
   };
+  geo?: {
+    importFrom: string;
+  };
   customResources?: Map<string, string>;
   unsupportedCategories?: Map<string, string>;
   dynamoTriggers?: DynamoTriggerInfo[];
@@ -1081,6 +1084,12 @@ export class BackendSynthesizer {
       imports.push(this.createImportStatement([analyticsFunctionIdentifier], renderArgs.analytics.importFrom));
     }
 
+    // Geo: import { defineGeo } from './geo/resource';
+    if (renderArgs.geo) {
+      const geoFunctionIdentifier = factory.createIdentifier('defineGeo');
+      imports.push(this.createImportStatement([geoFunctionIdentifier], renderArgs.geo.importFrom));
+    }
+
     // Kinesis access: import { aws_iam } from 'aws-cdk-lib';
     if (renderArgs.analytics?.functionsWithKinesisAccess?.length) {
       imports.push(this.createImportStatement([factory.createIdentifier('aws_iam')], 'aws-cdk-lib'));
@@ -1131,6 +1140,25 @@ export class BackendSynthesizer {
         ),
       );
       nodes.push(analyticsCall);
+    }
+
+    // Geo: const geo = defineGeo(backend)
+    if (renderArgs.geo) {
+      const geoCall = factory.createVariableStatement(
+        undefined,
+        factory.createVariableDeclarationList(
+          [
+            factory.createVariableDeclaration(
+              'geo',
+              undefined,
+              undefined,
+              factory.createCallExpression(factory.createIdentifier('defineGeo'), undefined, [factory.createIdentifier('backend')]),
+            ),
+          ],
+          ts.NodeFlags.Const,
+        ),
+      );
+      nodes.push(geoCall);
     }
 
     // Kinesis access: generate addToRolePolicy() for each function with Kinesis access
