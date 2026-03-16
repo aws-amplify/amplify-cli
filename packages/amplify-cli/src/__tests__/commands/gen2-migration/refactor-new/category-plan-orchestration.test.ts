@@ -1,7 +1,7 @@
-import { StorageForwardRefactorer } from '../../../../commands/gen2-migration/refactor-new/storage/storage-forward';
-import { StorageRollbackRefactorer } from '../../../../commands/gen2-migration/refactor-new/storage/storage-rollback';
-import { AnalyticsForwardRefactorer } from '../../../../commands/gen2-migration/refactor-new/analytics/analytics-forward';
-import { AnalyticsRollbackRefactorer } from '../../../../commands/gen2-migration/refactor-new/analytics/analytics-rollback';
+import { StorageS3ForwardRefactorer } from '../../../../commands/gen2-migration/refactor-new/storage/storage-forward';
+import { StorageS3RollbackRefactorer } from '../../../../commands/gen2-migration/refactor-new/storage/storage-rollback';
+import { AnalyticsKinesisForwardRefactorer } from '../../../../commands/gen2-migration/refactor-new/analytics/analytics-forward';
+import { AnalyticsKinesisRollbackRefactorer } from '../../../../commands/gen2-migration/refactor-new/analytics/analytics-rollback';
 import { CFNTemplate } from '../../../../commands/gen2-migration/cfn-template';
 import { AwsClients } from '../../../../commands/gen2-migration/aws-clients';
 import { StackFacade } from '../../../../commands/gen2-migration/refactor-new/stack-facade';
@@ -65,7 +65,7 @@ function makeInstances() {
   return { clients, gen1Env, gen2Branch };
 }
 
-describe('CategoryRefactorer.plan() orchestration — via StorageForwardRefactorer', () => {
+describe('CategoryRefactorer.plan() orchestration — via StorageS3ForwardRefactorer', () => {
   let cfnMock: ReturnType<typeof mockClient>;
   beforeEach(() => {
     cfnMock = mockClient(CloudFormationClient);
@@ -77,7 +77,7 @@ describe('CategoryRefactorer.plan() orchestration — via StorageForwardRefactor
     cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen2-root' }).resolves({ StackResources: [] });
 
     const { clients, gen1Env, gen2Branch } = makeInstances();
-    const ops = await new StorageForwardRefactorer(gen1Env, gen2Branch, clients, 'us-east-1', '123').plan();
+    const ops = await new StorageS3ForwardRefactorer(gen1Env, gen2Branch, clients, 'us-east-1', '123').plan();
     expect(ops).toEqual([]);
   });
 
@@ -88,7 +88,7 @@ describe('CategoryRefactorer.plan() orchestration — via StorageForwardRefactor
     cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen2-root' }).resolves({ StackResources: [] });
 
     const { clients, gen1Env, gen2Branch } = makeInstances();
-    await expect(new StorageForwardRefactorer(gen1Env, gen2Branch, clients, 'us-east-1', '123').plan()).rejects.toThrow(
+    await expect(new StorageS3ForwardRefactorer(gen1Env, gen2Branch, clients, 'us-east-1', '123').plan()).rejects.toThrow(
       'Category exists in source but not destination',
     );
   });
@@ -100,7 +100,7 @@ describe('CategoryRefactorer.plan() orchestration — via StorageForwardRefactor
     });
 
     const { clients, gen1Env, gen2Branch } = makeInstances();
-    await expect(new StorageForwardRefactorer(gen1Env, gen2Branch, clients, 'us-east-1', '123').plan()).rejects.toThrow(
+    await expect(new StorageS3ForwardRefactorer(gen1Env, gen2Branch, clients, 'us-east-1', '123').plan()).rejects.toThrow(
       'Category exists in destination but not source',
     );
   });
@@ -116,7 +116,7 @@ describe('CategoryRefactorer.plan() orchestration — via StorageForwardRefactor
     cfnMock.on(GetTemplateCommand, { StackName: 'gen1-storage-stack' }).resolves({ TemplateBody: JSON.stringify(noStorageTemplate) });
 
     const { clients, gen1Env, gen2Branch } = makeInstances();
-    const ops = await new StorageForwardRefactorer(gen1Env, gen2Branch, clients, 'us-east-1', '123').plan();
+    const ops = await new StorageS3ForwardRefactorer(gen1Env, gen2Branch, clients, 'us-east-1', '123').plan();
     expect(ops).toEqual([]);
   });
 
@@ -124,7 +124,7 @@ describe('CategoryRefactorer.plan() orchestration — via StorageForwardRefactor
     setupStorageMocks(cfnMock);
 
     const { clients, gen1Env, gen2Branch } = makeInstances();
-    const ops = await new StorageForwardRefactorer(gen1Env, gen2Branch, clients, 'us-east-1', '123').plan();
+    const ops = await new StorageS3ForwardRefactorer(gen1Env, gen2Branch, clients, 'us-east-1', '123').plan();
     const descriptions = (await Promise.all(ops.map((o) => o.describe()))).flat();
 
     expect(descriptions).toHaveLength(4);
@@ -135,7 +135,7 @@ describe('CategoryRefactorer.plan() orchestration — via StorageForwardRefactor
   });
 });
 
-describe('StorageRollbackRefactorer.plan() — rollback without holding stack', () => {
+describe('StorageS3RollbackRefactorer.plan() — rollback without holding stack', () => {
   let cfnMock: ReturnType<typeof mockClient>;
   beforeEach(() => {
     cfnMock = mockClient(CloudFormationClient);
@@ -170,7 +170,7 @@ describe('StorageRollbackRefactorer.plan() — rollback without holding stack', 
     cfnMock.on(GetTemplateCommand, { StackName: 'gen1-storage-stack' }).resolves({ TemplateBody: JSON.stringify(gen1StorageTemplate) });
 
     const { clients, gen1Env, gen2Branch } = makeInstances();
-    const ops = await new StorageRollbackRefactorer(gen1Env, gen2Branch, clients, 'us-east-1', '123').plan();
+    const ops = await new StorageS3RollbackRefactorer(gen1Env, gen2Branch, clients, 'us-east-1', '123').plan();
     const descriptions = (await Promise.all(ops.map((o) => o.describe()))).flat();
 
     // Rollback: no updateSource/updateTarget, just move
@@ -222,7 +222,7 @@ describe('Analytics wiring tests', () => {
   it('forward: discovers analytics stacks and maps Kinesis stream', async () => {
     setupAnalyticsMocks(cfnMock);
     const { clients, gen1Env, gen2Branch } = makeInstances();
-    const ops = await new AnalyticsForwardRefactorer(gen1Env, gen2Branch, clients, 'us-east-1', '123').plan();
+    const ops = await new AnalyticsKinesisForwardRefactorer(gen1Env, gen2Branch, clients, 'us-east-1', '123').plan();
     const descriptions = (await Promise.all(ops.map((o) => o.describe()))).flat();
 
     expect(descriptions).toHaveLength(4);
@@ -233,7 +233,7 @@ describe('Analytics wiring tests', () => {
     cfnMock.on(DescribeStacksCommand).resolves({ Stacks: [] }); // no holding stack
     setupAnalyticsMocks(cfnMock);
     const { clients, gen1Env, gen2Branch } = makeInstances();
-    const ops = await new AnalyticsRollbackRefactorer(gen1Env, gen2Branch, clients, 'us-east-1', '123').plan();
+    const ops = await new AnalyticsKinesisRollbackRefactorer(gen1Env, gen2Branch, clients, 'us-east-1', '123').plan();
     const descriptions = (await Promise.all(ops.map((o) => o.describe()))).flat();
 
     expect(descriptions).toHaveLength(1);

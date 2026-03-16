@@ -6,7 +6,7 @@ import { ANALYTICS_RESOURCE_TYPES } from './analytics-forward';
  * Moves analytics resources from Gen2 back to Gen1.
  * Uses the default gen1LogicalIds-based buildResourceMappings from RollbackCategoryRefactorer.
  */
-export class AnalyticsRollbackRefactorer extends RollbackCategoryRefactorer {
+export class AnalyticsKinesisRollbackRefactorer extends RollbackCategoryRefactorer {
   protected override readonly gen1LogicalIds = new Map<string, string>([['AWS::Kinesis::Stream', 'KinesisStream']]);
 
   protected async fetchSourceStackId(): Promise<string | undefined> {

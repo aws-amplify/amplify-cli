@@ -6,12 +6,20 @@ import { StackFacade } from '../stack-facade';
 import { retrieveOAuthValues } from '../oauth-values-retriever';
 import { ForwardCategoryRefactorer } from '../workflow/forward-category-refactorer';
 import { MoveMapping } from '../workflow/category-refactorer';
-import { AUTH_RESOURCE_TYPES, GEN2_NATIVE_APP_CLIENT, discoverGen1AuthStacks } from './auth-utils';
+import { GEN2_NATIVE_APP_CLIENT, discoverGen1AuthStacks } from './auth-utils';
 
 const GEN1_WEB_APP_CLIENT = 'UserPoolClientWeb';
 const HOSTED_PROVIDER_META_PARAMETER_NAME = 'hostedUIProviderMeta';
 const HOSTED_PROVIDER_CREDENTIALS_PARAMETER_NAME = 'hostedUIProviderCreds';
 const USER_POOL_ID_OUTPUT_KEY_NAME = 'UserPoolId';
+
+export const AUTH_RESOURCE_TYPES = [
+  'AWS::Cognito::UserPool',
+  'AWS::Cognito::UserPoolClient',
+  'AWS::Cognito::IdentityPool',
+  'AWS::Cognito::IdentityPoolRoleAttachment',
+  'AWS::Cognito::UserPoolDomain',
+];
 
 /**
  * Forward refactorer for the auth category.
@@ -19,7 +27,7 @@ const USER_POOL_ID_OUTPUT_KEY_NAME = 'UserPoolId';
  * Moves main auth resources from Gen1 to Gen2.
  * UserPoolGroup support will be added back in a future change.
  */
-export class AuthForwardRefactorer extends ForwardCategoryRefactorer {
+export class AuthCognitoForwardRefactorer extends ForwardCategoryRefactorer {
   constructor(
     gen1Env: StackFacade,
     gen2Branch: StackFacade,

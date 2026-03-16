@@ -2,7 +2,8 @@ import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { CFNResource } from '../../cfn-template';
 import { MoveMapping } from '../workflow/category-refactorer';
 import { RollbackCategoryRefactorer } from '../workflow/rollback-category-refactorer';
-import { AUTH_RESOURCE_TYPES, GEN2_NATIVE_APP_CLIENT, discoverGen1AuthStacks } from './auth-utils';
+import { GEN2_NATIVE_APP_CLIENT, discoverGen1AuthStacks } from './auth-utils';
+import { AUTH_RESOURCE_TYPES } from './auth-forward';
 
 /**
  * Known Gen1 logical resource IDs for main auth resource types.
@@ -21,7 +22,7 @@ const GEN1_AUTH_LOGICAL_IDS = new Map<string, string>([
  * Moves main auth resources from Gen2 back to Gen1.
  * UserPoolGroup support will be added back in a future change.
  */
-export class AuthRollbackRefactorer extends RollbackCategoryRefactorer {
+export class AuthCognitoRollbackRefactorer extends RollbackCategoryRefactorer {
   protected resourceTypes(): string[] {
     return AUTH_RESOURCE_TYPES;
   }

@@ -116,6 +116,17 @@ This applies at every level:
 
 - Interface properties and class fields should be `readonly`. Omitting `readonly` requires a clear, documented justification for why mutation is necessary. "Convenience" is not a justification.
 
+**Exception: post-construction wiring.** When objects have cross-references that can't be resolved at construction time — because the referenced object may not exist yet during an iteration — use post-construction setters rather than relying on iteration order. This is a controlled form of mutability: the field starts as `undefined`, gets set exactly once after the loop, and is never reassigned again. Document which fields must be wired before the object is used (e.g., "must be called before `plan()`").
+
+```typescript
+// Acceptable — cross-references wired after all objects are created
+const authGenerator = new AuthGenerator(...);
+const funcGenerator = new FunctionGenerator(...);
+
+// Wire after the loop — order-agnostic
+funcGenerator.setAuthGenerator(authGenerator);
+```
+
 ---
 
 ### Prefer `const` over `let`

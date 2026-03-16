@@ -7,6 +7,7 @@ import { AmplifyMigrationOperation } from './_operation';
 import { AmplifyGen2MigrationValidations } from './_validations';
 import { AwsClients } from './aws-clients';
 import { Gen1App } from './generate-new/_infra/gen1-app';
+import { Assessment } from './_assessment';
 import { Planner } from './planner';
 import { BackendGenerator } from './generate-new/amplify/backend.generator';
 import { RootPackageJsonGenerator } from './generate-new/package.json.generator';
@@ -22,12 +23,38 @@ import { S3Generator } from './generate-new/amplify/storage/s3.generator';
 import { DynamoDBGenerator } from './generate-new/amplify/storage/dynamodb.generator';
 import { FunctionGenerator } from './generate-new/amplify/function/function.generator';
 import { AnalyticsKinesisGenerator } from './generate-new/amplify/analytics/kinesis.generator';
-import { CustomResourceGenerator } from './generate-new/amplify/custom-resources/custom.generator';
 import { fileOrDirectoryExists } from './generate-new/_infra/files';
 
 const AMPLIFY_DIR = 'amplify';
 
 export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
+  /**
+   * Records generate support for each discovered resource into the assessment.
+   */
+  public async assess(assessment: Assessment): Promise<void> {
+    const clients = new AwsClients({ region: this.region });
+    const gen1App = await Gen1App.create({ appId: this.appId, region: this.region, envName: this.currentEnvName, clients });
+    const discovered = gen1App.discover();
+
+    for (const resource of discovered) {
+      switch (resource.key) {
+        case 'auth:Cognito':
+        case 'auth:Cognito-UserPool-Groups':
+        case 'storage:S3':
+        case 'storage:DynamoDB':
+        case 'api:AppSync':
+        case 'api:API Gateway':
+        case 'analytics:Kinesis':
+        case 'function:Lambda':
+          assessment.record('generate', resource, { supported: true });
+          break;
+        case 'unsupported':
+          assessment.record('generate', resource, { supported: false });
+          break;
+      }
+    }
+  }
+
   public async executeImplications(): Promise<string[]> {
     return ['TODO'];
   }
@@ -51,6 +78,10 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
    * Assembles all category generators based on the Gen1 app's
    * amplify-meta.json and returns the full list of migration operations.
    *
+   * Uses discover() to iterate all resources, then dispatches by
+   * (category, service) using the same GENERATE_SUPPORTED map that
+   * assess() uses. Unsupported resources are skipped.
+   *
    * Operations are returned — not executed — so the parent dispatcher
    * can display descriptions to the user before confirmation.
    */
@@ -63,71 +94,78 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
     const packageJsonGenerator = new RootPackageJsonGenerator(outputDir);
 
     const generators: Planner[] = [];
+    const discovered = gen1App.discover();
 
-    const authCategory = gen1App.meta('auth');
-    const isReferenceAuth = authCategory
-      ? Object.values(authCategory).some(
-          (v) => typeof v === 'object' && v !== null && 'serviceType' in v && (v as Record<string, unknown>).serviceType === 'imported',
-        )
-      : false;
-
+    // Cross-category state captured during the loop.
     let authGenerator: AuthGenerator | undefined;
-    if (authCategory && isReferenceAuth) {
-      generators.push(new ReferenceAuthGenerator(gen1App, backendGenerator, outputDir));
-    } else if (authCategory) {
-      authGenerator = new AuthGenerator(gen1App, backendGenerator, outputDir);
-      generators.push(authGenerator);
-    }
-
     let s3Generator: S3Generator | undefined;
-    const storageCategory = (gen1App.meta('storage') ?? {}) as Record<string, Record<string, unknown>>;
-    const hasS3Bucket = Object.values(storageCategory).some((v) => v.service === 'S3');
-    for (const [resourceName, resourceMeta] of Object.entries(storageCategory)) {
-      if (resourceMeta.service === 'S3') {
-        s3Generator = new S3Generator(gen1App, backendGenerator, outputDir);
-        generators.push(s3Generator);
-      } else if (resourceMeta.service === 'DynamoDB') {
-        generators.push(new DynamoDBGenerator(gen1App, backendGenerator, resourceName, hasS3Bucket));
+    const functionGenerators: FunctionGenerator[] = [];
+
+    for (const resource of discovered) {
+      switch (resource.key) {
+        case 'auth:Cognito': {
+          const isReferenceAuth = discovered
+            .filter((r) => r.category === 'auth')
+            .some((r) => {
+              const meta = (gen1App.meta('auth') ?? {})[r.resourceName] as Record<string, unknown> | undefined;
+              return meta?.serviceType === 'imported';
+            });
+
+          if (isReferenceAuth) {
+            generators.push(new ReferenceAuthGenerator(gen1App, backendGenerator, outputDir));
+          } else {
+            authGenerator = new AuthGenerator(gen1App, backendGenerator, outputDir);
+            generators.push(authGenerator);
+          }
+          break;
+        }
+        case 'auth:Cognito-UserPool-Groups':
+          // Handled by the AuthGenerator created for the main Cognito resource.
+          break;
+        case 'storage:S3':
+          s3Generator = new S3Generator(gen1App, backendGenerator, outputDir);
+          generators.push(s3Generator);
+          break;
+        case 'storage:DynamoDB': {
+          const hasS3Bucket = discovered.some((r) => r.category === 'storage' && r.service === 'S3');
+          generators.push(new DynamoDBGenerator(gen1App, backendGenerator, resource.resourceName, hasS3Bucket));
+          break;
+        }
+        case 'api:AppSync':
+          generators.push(new DataGenerator(gen1App, backendGenerator, outputDir));
+          break;
+        case 'api:API Gateway':
+          generators.push(new RestApiGenerator(gen1App, backendGenerator, resource.resourceName));
+          break;
+        case 'analytics:Kinesis':
+          generators.push(new AnalyticsKinesisGenerator(gen1App, backendGenerator, outputDir, resource.resourceName));
+          break;
+        case 'function:Lambda': {
+          const functionCategoryMap = computeFunctionCategories(gen1App);
+          const funcGen = new FunctionGenerator({
+            gen1App,
+            backendGenerator,
+            packageJsonGenerator,
+            outputDir,
+            resourceName: resource.resourceName,
+            category: functionCategoryMap.get(resource.resourceName) ?? 'function',
+          });
+          generators.push(funcGen);
+          functionGenerators.push(funcGen);
+          break;
+        }
+        case 'unsupported':
+          this.logger.warn(
+            `Skipping unsupported resource '${resource.resourceName}' (${resource.category}:${resource.service}). You will need to write Gen2 code for this resource manually.`,
+          );
+          break;
       }
     }
 
-    const apiCategory = (gen1App.meta('api') ?? {}) as Record<string, Record<string, unknown>>;
-    for (const [resourceName, resourceMeta] of Object.entries(apiCategory)) {
-      if (resourceMeta.service === 'AppSync') {
-        generators.push(new DataGenerator(gen1App, backendGenerator, outputDir));
-      } else if (resourceMeta.service === 'API Gateway') {
-        generators.push(new RestApiGenerator(gen1App, backendGenerator, resourceName));
-      }
-    }
-
-    const analyticsCategory = (gen1App.meta('analytics') ?? {}) as Record<string, Record<string, unknown>>;
-    for (const [resourceName, resourceMeta] of Object.entries(analyticsCategory)) {
-      if (resourceMeta.service === 'Kinesis') {
-        generators.push(new AnalyticsKinesisGenerator(gen1App, backendGenerator, outputDir, resourceName));
-      }
-    }
-
-    const customCategory = (gen1App.meta('custom') ?? {}) as Record<string, Record<string, unknown>>;
-    for (const resourceName of Object.keys(customCategory)) {
-      generators.push(new CustomResourceGenerator(gen1App, backendGenerator, packageJsonGenerator, outputDir, resourceName));
-    }
-
-    const functionCategory = (gen1App.meta('function') ?? {}) as Record<string, Record<string, unknown>>;
-    const functionCategoryMap = computeFunctionCategories(gen1App);
-    for (const resourceName of Object.keys(functionCategory)) {
-      const category = functionCategoryMap.get(resourceName) ?? 'function';
-      generators.push(
-        new FunctionGenerator({
-          gen1App,
-          backendGenerator,
-          authGenerator,
-          s3Generator,
-          packageJsonGenerator,
-          outputDir,
-          resourceName,
-          category,
-        }),
-      );
+    // Wire cross-category dependencies after all generators are created.
+    for (const funcGen of functionGenerators) {
+      if (authGenerator) funcGen.setAuthGenerator(authGenerator);
+      if (s3Generator) funcGen.setS3Generator(s3Generator);
     }
 
     // Infrastructure generators run last — BackendGenerator accumulates

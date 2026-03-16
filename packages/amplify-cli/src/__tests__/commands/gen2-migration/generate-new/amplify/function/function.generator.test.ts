@@ -71,8 +71,6 @@ function createFunctionGenerator(overrides: {
   return new FunctionGenerator({
     gen1App: overrides.gen1App,
     backendGenerator: overrides.backendGenerator,
-    authGenerator: undefined,
-    s3Generator: undefined,
     packageJsonGenerator: overrides.packageJsonGenerator,
     outputDir: overrides.outputDir,
     resourceName: overrides.resourceName ?? 'myFunc',

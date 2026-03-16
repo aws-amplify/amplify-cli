@@ -1,4 +1,4 @@
-import { AuthForwardRefactorer } from '../../../../commands/gen2-migration/refactor-new/auth/auth-forward';
+import { AuthCognitoForwardRefactorer } from '../../../../commands/gen2-migration/refactor-new/auth/auth-forward';
 import { CFNTemplate } from '../../../../commands/gen2-migration/cfn-template';
 import { AwsClients } from '../../../../commands/gen2-migration/aws-clients';
 import { StackFacade } from '../../../../commands/gen2-migration/refactor-new/stack-facade';
@@ -76,7 +76,7 @@ function setupMocks(cfnMock: ReturnType<typeof mockClient>) {
   cfnMock.on(GetTemplateCommand, { StackName: 'gen2-auth-stack' }).resolves({ TemplateBody: JSON.stringify(gen2AuthTemplate) });
 }
 
-describe('AuthForwardRefactorer.plan() — operation sequence', () => {
+describe('AuthCognitoForwardRefactorer.plan() — operation sequence', () => {
   let cfnMock: ReturnType<typeof mockClient>;
 
   beforeEach(() => {
@@ -96,7 +96,7 @@ describe('AuthForwardRefactorer.plan() — operation sequence', () => {
     (clients as any).cloudFormation = new CloudFormationClient({});
     const gen1Env = new StackFacade(clients, 'gen1-root');
     const gen2Branch = new StackFacade(clients, 'gen2-root');
-    const refactorer = new AuthForwardRefactorer(gen1Env, gen2Branch, clients, 'us-east-1', '123456789', 'appId', 'main');
+    const refactorer = new AuthCognitoForwardRefactorer(gen1Env, gen2Branch, clients, 'us-east-1', '123456789', 'appId', 'main');
 
     const ops = await refactorer.plan();
     const descriptions = await Promise.all(ops.map((op) => op.describe()));
@@ -175,7 +175,7 @@ describe('AuthForwardRefactorer.plan() — operation sequence', () => {
     (clients as any).cognitoIdentityProvider = new CognitoIdentityProviderClient({});
     const gen1Env = new StackFacade(clients, 'gen1-root');
     const gen2Branch = new StackFacade(clients, 'gen2-root');
-    const refactorer = new AuthForwardRefactorer(gen1Env, gen2Branch, clients, 'us-east-1', '123456789', 'appId', 'main');
+    const refactorer = new AuthCognitoForwardRefactorer(gen1Env, gen2Branch, clients, 'us-east-1', '123456789', 'appId', 'main');
 
     const ops = await refactorer.plan();
 
@@ -221,7 +221,7 @@ describe('AuthForwardRefactorer.plan() — operation sequence', () => {
     (clients as any).cloudFormation = new CloudFormationClient({});
     const gen1Env = new StackFacade(clients, 'gen1-root');
     const gen2Branch = new StackFacade(clients, 'gen2-root');
-    const refactorer = new AuthForwardRefactorer(gen1Env, gen2Branch, clients, 'us-east-1', '123456789', 'appId', 'main');
+    const refactorer = new AuthCognitoForwardRefactorer(gen1Env, gen2Branch, clients, 'us-east-1', '123456789', 'appId', 'main');
 
     await expect(refactorer.plan()).rejects.toThrow('exists in source but not destination');
   });
