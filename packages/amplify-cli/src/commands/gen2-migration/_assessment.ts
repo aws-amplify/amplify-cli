@@ -29,8 +29,8 @@ export class Assessment {
     if (!this._entries.has(key)) {
       this._entries.set(key, {
         resource,
-        generate: { supported: false, notes: [] },
-        refactor: { supported: false, notes: [] },
+        generate: { supported: false },
+        refactor: { supported: false },
       });
     }
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- entry just created above if missing
@@ -108,7 +108,6 @@ export class Assessment {
 
   private static statusText(response: SupportResponse, unsupportedLabel: string): string {
     if (!response.supported) return `✘ ${unsupportedLabel}`;
-    if (response.notes.length > 0) return `⚠ ${response.notes.join(', ')}`;
     return '✔';
   }
 }

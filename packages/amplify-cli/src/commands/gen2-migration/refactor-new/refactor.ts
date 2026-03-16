@@ -37,11 +37,11 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
         case 'function:Lambda':
         case 'api:AppSync':
         case 'api:API Gateway':
-          assessment.record('refactor', resource, { supported: true, notes: [] });
+          assessment.record('refactor', resource, { supported: true });
           break;
         case 'auth:Cognito-UserPool-Groups':
         case 'unsupported':
-          assessment.record('refactor', resource, { supported: false, notes: [] });
+          assessment.record('refactor', resource, { supported: false });
           break;
       }
     }

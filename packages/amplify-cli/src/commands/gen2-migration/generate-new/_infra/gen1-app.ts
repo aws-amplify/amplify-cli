@@ -59,7 +59,6 @@ export interface DiscoveredResource {
  */
 export interface SupportResponse {
   readonly supported: boolean;
-  readonly notes: readonly string[];
 }
 
 /**
@@ -133,7 +132,9 @@ export class Gen1App {
     for (const [category, block] of Object.entries(meta)) {
       if (skip.has(category) || !block || typeof block !== 'object') continue;
       for (const [resourceName, resourceMeta] of Object.entries(block as Record<string, unknown>)) {
-        if (!resourceMeta || typeof resourceMeta !== 'object') continue;
+        if (!resourceMeta || typeof resourceMeta !== 'object') {
+          throw new AmplifyError('MigrationError', { message: `Unable to find meta entry for resource ${resourceName}` });
+        }
         const service = (resourceMeta as Record<string, unknown>).service as string | undefined;
         if (!service) {
           throw new AmplifyError('MigrationError', {
