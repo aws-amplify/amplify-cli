@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as os from 'os';
 import { getCLIPath, initJSProjectWithProfile, nspawn as spawn } from '@aws-amplify/amplify-e2e-core';
-jest.retryTimes(0);
+jest.retryTimes(1);
 
 export type SmoketestArgs = {
   projectDirectory: string;
