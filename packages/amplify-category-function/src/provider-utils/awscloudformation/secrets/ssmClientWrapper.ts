@@ -79,7 +79,7 @@ export class SSMClientWrapper {
         this.ssmClient.send(
           new GetParametersByPathCommand({
             Path: secretPath,
-            MaxResults: 50,
+            MaxResults: 10,
             ParameterFilters: [
               {
                 Key: 'Type',
