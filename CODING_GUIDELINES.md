@@ -401,6 +401,37 @@ If multiple call sites independently read the same file, call the same API, or d
 
 ---
 
+### Don't guard at the top for edge cases that downstream functions should handle
+
+When an orchestrator checks for a trivial input (empty collection, zero count, no-op condition) and returns early to prevent downstream functions from receiving that input, the guard is compensating for fragile callees. The downstream functions should produce the correct result for trivial inputs on their own — an empty input should naturally yield an empty output without special-casing at the call site.
+
+A top-level guard like this creates two problems. First, it hides the fact that the downstream functions can't handle their own edge cases — if someone later calls those functions directly (in a new orchestrator, in tests, in a different composition), they'll hit the bug the guard was masking. Second, it misleads the reader: the guard implies the downstream code would _break_ on empty input, turning a simple "nothing to do" case into something that looks like it needs protection.
+
+```typescript
+// Bad — orchestrator guards because buildOperations doesn't handle empty input
+async plan(): Promise<Operation[]> {
+  const items = await this.fetchItems();
+  if (items.size === 0) {
+    return []; // early return to avoid passing empty items downstream
+  }
+  const mappings = this.buildMappings(items);
+  const ops = this.buildOperations(mappings); // would create a bogus API call with 0 mappings
+  return ops;
+}
+
+// Good — each function handles trivial input naturally
+async plan(): Promise<Operation[]> {
+  const items = await this.fetchItems();
+  const mappings = this.buildMappings(items);    // empty items → empty mappings
+  const ops = this.buildOperations(mappings);     // empty mappings → empty ops
+  return ops;
+}
+```
+
+The test: remove the guard and trace the function with the trivial input. If the result is correct, the guard was dead code. If the result is wrong, fix the downstream function — don't add a guard upstream.
+
+---
+
 ### Don't accept optional predicates as input
 
 Accepting an optional predicate callback to customize filtering or branching behavior creates multiple problems:

@@ -6,7 +6,7 @@ import { Stream } from 'node:stream';
 import unzipper from 'unzipper';
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { $TSMeta, $TSTeamProviderInfo, AmplifyError, JSONUtilities } from '@aws-amplify/amplify-cli-core';
-import { AwsClients } from './aws-clients';
+import { AwsClients } from '../../aws-clients';
 import { AwsFetcher } from './aws-fetcher';
 
 export interface Gen1CreateOptions {

@@ -5,9 +5,9 @@ import execa from 'execa';
 import { AmplifyMigrationStep } from './_step';
 import { AmplifyMigrationOperation } from './_operation';
 import { AmplifyGen2MigrationValidations } from './_validations';
-import { createAwsClients } from './generate-new/_infra/aws-clients';
+import { AwsClients } from './aws-clients';
 import { Gen1App } from './generate-new/_infra/gen1-app';
-import { Generator } from './generate-new/_infra/generator';
+import { Planner } from './planner';
 import { BackendGenerator } from './generate-new/amplify/backend.generator';
 import { RootPackageJsonGenerator } from './generate-new/package.json.generator';
 import { BackendPackageJsonGenerator } from './generate-new/amplify/package.json.generator';
@@ -55,14 +55,14 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
    * can display descriptions to the user before confirmation.
    */
   public async execute(): Promise<AmplifyMigrationOperation[]> {
-    const clients = createAwsClients(this.region);
+    const clients = new AwsClients({ region: this.region });
     const gen1App = await Gen1App.create({ appId: this.appId, region: this.region, envName: this.currentEnvName, clients });
 
     const outputDir = await fs.mkdtemp(path.join(os.tmpdir(), 'amplify-gen2-'));
     const backendGenerator = new BackendGenerator(outputDir);
     const packageJsonGenerator = new RootPackageJsonGenerator(outputDir);
 
-    const generators: Generator[] = [];
+    const generators: Planner[] = [];
 
     const authCategory = gen1App.meta('auth');
     const isReferenceAuth = authCategory
@@ -143,6 +143,9 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
     // The actual deletion happens in the post-generation operation below.
     const operations: AmplifyMigrationOperation[] = [
       {
+        validate: async () => {
+          return;
+        },
         describe: async () => ['Delete amplify/'],
         // eslint-disable-next-line @typescript-eslint/no-empty-function
         execute: async () => {},
@@ -156,6 +159,9 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
 
     // Post-generation: replace local amplify folder.
     operations.push({
+      validate: async () => {
+        return;
+      },
       describe: async () => [],
       execute: async () => {
         const cwd = process.cwd();
@@ -169,6 +175,9 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
 
     // Post-generation: reinstall dependencies.
     operations.push({
+      validate: async () => {
+        return;
+      },
       describe: async () => ['Install Gen2 dependencies'],
       execute: async () => {
         const cwd = process.cwd();

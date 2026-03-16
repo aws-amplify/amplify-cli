@@ -13,7 +13,7 @@ import {
 } from '@aws-sdk/client-cloudformation';
 import { removeEnvFromCloud } from '../../extensions/amplify-helpers/remove-env-from-cloud';
 import { invokeDeleteEnvParamsFromService } from '../../extensions/amplify-helpers/invoke-delete-env-params';
-import { deleteHoldingStack, HOLDING_STACK_SUFFIX } from './refactor/holding-stack';
+import { deleteHoldingStack, HOLDING_STACK_SUFFIX } from './refactor-new/holding-stack';
 
 export class AmplifyMigrationDecommissionStep extends AmplifyMigrationStep {
   public async executeImplications(): Promise<string[]> {
@@ -45,6 +45,9 @@ export class AmplifyMigrationDecommissionStep extends AmplifyMigrationStep {
 
     for (const stackName of holdingStacks) {
       operations.push({
+        validate: async () => {
+          return;
+        },
         describe: async () => [`Delete holding stack: ${stackName}`],
         execute: async () => {
           this.logger.info(`Deleting holding stack: ${stackName}`);
@@ -55,6 +58,9 @@ export class AmplifyMigrationDecommissionStep extends AmplifyMigrationStep {
     }
 
     operations.push({
+      validate: async () => {
+        return;
+      },
       describe: async () => ['Delete the Gen1 environment'],
       execute: async () => {
         this.logger.info(`Starting decommission of environment: ${this.currentEnvName}`);

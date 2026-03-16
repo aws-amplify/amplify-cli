@@ -6,7 +6,7 @@ import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import { AmplifyMigrationDecommissionStep } from './gen2-migration/decommission';
 import { AmplifyMigrationGenerateStep } from './gen2-migration/generate';
 import { AmplifyMigrationLockStep } from './gen2-migration/lock';
-import { AmplifyMigrationRefactorStep } from './gen2-migration/refactor';
+import { AmplifyMigrationRefactorStep } from './gen2-migration/refactor-new';
 import { AmplifyMigrationShiftStep } from './gen2-migration/shift';
 import { stateManager } from '@aws-amplify/amplify-cli-core';
 import { AmplifyClient, GetAppCommand } from '@aws-sdk/client-amplify';
@@ -248,6 +248,9 @@ async function validate(step: AmplifyMigrationStep, rollback: boolean, logger: L
 }
 
 async function runOperations(operations: AmplifyMigrationOperation[]) {
+  for (const operation of operations) {
+    await operation.validate();
+  }
   for (const operation of operations) {
     await operation.execute();
   }

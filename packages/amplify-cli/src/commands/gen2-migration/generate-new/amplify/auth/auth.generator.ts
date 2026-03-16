@@ -2,7 +2,7 @@ import path from 'node:path';
 import fs from 'node:fs/promises';
 import ts from 'typescript';
 import { UserPoolClientType } from '@aws-sdk/client-cognito-identity-provider';
-import { Generator } from '../../_infra/generator';
+import { Planner } from '../../../planner';
 import { AmplifyMigrationOperation } from '../../../_operation';
 import { BackendGenerator } from '../backend.generator';
 import { Gen1App } from '../../_infra/gen1-app';
@@ -20,7 +20,7 @@ const factory = ts.factory;
  * auth imports and CDK overrides (password policy, user pool client
  * settings, identity pool config) to backend.ts.
  */
-export class AuthGenerator implements Generator {
+export class AuthGenerator implements Planner {
   private readonly gen1App: Gen1App;
   private readonly backendGenerator: BackendGenerator;
   private readonly outputDir: string;
@@ -86,6 +86,9 @@ export class AuthGenerator implements Generator {
 
     return [
       {
+        validate: async () => {
+          return;
+        },
         describe: async () => ['Generate amplify/auth/resource.ts'],
         execute: async () => {
           const nodes = this.defineAuth.render(renderOptions);

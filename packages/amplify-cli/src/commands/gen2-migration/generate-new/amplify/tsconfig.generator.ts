@@ -1,12 +1,12 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
-import { Generator } from '../_infra/generator';
+import { Planner } from '../../planner';
 import { AmplifyMigrationOperation } from '../../_operation';
 
 /**
  * Writes amplify/tsconfig.json with Gen2 TypeScript configuration.
  */
-export class TsConfigGenerator implements Generator {
+export class TsConfigGenerator implements Planner {
   public constructor(private readonly outputDir: string) {}
 
   /**
@@ -16,6 +16,9 @@ export class TsConfigGenerator implements Generator {
     const filePath = path.join(this.outputDir, 'amplify', 'tsconfig.json');
     return [
       {
+        validate: async () => {
+          return;
+        },
         describe: async () => ['Generate amplify/tsconfig.json'],
         execute: async () => {
           const tsconfig = {

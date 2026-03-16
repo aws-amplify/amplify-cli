@@ -1,6 +1,6 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
-import { Generator } from './_infra/generator';
+import { Planner } from '../planner';
 import { AmplifyMigrationOperation } from '../_operation';
 
 const GEN2_GITIGNORE_ENTRIES = ['.amplify', 'amplify_outputs*', 'amplifyconfiguration*', 'aws-exports*', 'node_modules', 'build', 'dist'];
@@ -8,13 +8,16 @@ const GEN2_GITIGNORE_ENTRIES = ['.amplify', 'amplify_outputs*', 'amplifyconfigur
 /**
  * Updates .gitignore: removes the Gen1 amplify block and adds Gen2 entries.
  */
-export class GitIgnoreGenerator implements Generator {
+export class GitIgnoreGenerator implements Planner {
   /**
    * Plans the .gitignore update operation.
    */
   public async plan(): Promise<AmplifyMigrationOperation[]> {
     return [
       {
+        validate: async () => {
+          return;
+        },
         describe: async () => ['Update .gitignore with Gen2 entries'],
         execute: async () => {
           const gitignorePath = path.join(process.cwd(), '.gitignore');
