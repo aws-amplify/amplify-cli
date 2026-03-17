@@ -1,7 +1,15 @@
 import { AmplifyMigrationStep } from './_step';
 import { AmplifyMigrationOperation } from './_operation';
 import { AmplifyError, stateManager } from '@aws-amplify/amplify-cli-core';
-import { CloudFormationClient, SetStackPolicyCommand } from '@aws-sdk/client-cloudformation';
+import {
+  CloudFormationClient,
+  DescribeStackResourcesCommand,
+  DescribeStacksCommand,
+  GetTemplateCommand,
+  ListStackResourcesCommand,
+  SetStackPolicyCommand,
+} from '@aws-sdk/client-cloudformation';
+import { tryUpdateStack } from './refactor/cfn-stack-updater';
 import { AmplifyClient, UpdateAppCommand, GetAppCommand } from '@aws-sdk/client-amplify';
 import { DynamoDBClient, UpdateTableCommand, paginateListTables } from '@aws-sdk/client-dynamodb';
 import { AppSyncClient, paginateListGraphqlApis } from '@aws-sdk/client-appsync';
@@ -101,6 +109,21 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
         this.logger.info(`Added '${GEN2_MIGRATION_ENVIRONMENT_NAME}' environment variable (value: ${this.currentEnvName})`);
       },
     });
+
+    if ((await this.dynamoTableNames()).length > 0) {
+      operations.push({
+        describe: async () => {
+          return [`Set DeletionPolicy to Retain for DynamoDB tables in API stacks`];
+        },
+        execute: async () => {
+          const apiStackIds = await this.findApiCategoryStacks();
+          for (const apiStackId of apiStackIds) {
+            await this.setDeletionPolicyRetainOnDynamoTables(apiStackId);
+          }
+          this.logger.info('Successfully set DeletionPolicy to Retain for DynamoDB tables');
+        },
+      });
+    }
 
     const stackPolicy = JSON.stringify({
       Statement: [
@@ -272,6 +295,68 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
       this._cfnClient = new CloudFormationClient({});
     }
     return this._cfnClient;
+  }
+
+  private async findApiCategoryStacks(): Promise<string[]> {
+    const response = await this.cfnClient().send(new DescribeStackResourcesCommand({ StackName: this.rootStackName }));
+    const stackResources = response.StackResources ?? [];
+    return stackResources
+      .filter(
+        (resource) =>
+          resource.ResourceType === 'AWS::CloudFormation::Stack' &&
+          resource.LogicalResourceId?.startsWith('api') &&
+          resource.PhysicalResourceId,
+      )
+      .map((resource) => resource.PhysicalResourceId as string);
+  }
+
+  private async setDeletionPolicyRetainOnDynamoTables(stackId: string): Promise<void> {
+    // List the API stack's resources to find model nested stacks
+    let nextToken: string | undefined;
+    const modelStackIds: string[] = [];
+
+    do {
+      const response = await this.cfnClient().send(new ListStackResourcesCommand({ StackName: stackId, NextToken: nextToken }));
+      nextToken = response.NextToken;
+
+      for (const resource of response.StackResourceSummaries ?? []) {
+        if (resource.ResourceType === 'AWS::CloudFormation::Stack' && resource.PhysicalResourceId) {
+          modelStackIds.push(resource.PhysicalResourceId);
+        }
+      }
+    } while (nextToken);
+
+    // Update each model stack's template to set DeletionPolicy: Retain on DynamoDB tables
+    for (const modelStackId of modelStackIds) {
+      const templateResponse = await this.cfnClient().send(new GetTemplateCommand({ StackName: modelStackId }));
+      if (!templateResponse.TemplateBody) {
+        throw new AmplifyError('MigrationError', {
+          message: `Could not retrieve template for stack ${modelStackId}`,
+        });
+      }
+
+      const template = JSON.parse(templateResponse.TemplateBody);
+      const resources = template.Resources;
+
+      for (const logicalId of Object.keys(resources)) {
+        const resource = resources[logicalId];
+        if (resource.Type === 'AWS::DynamoDB::Table' && resource.DeletionPolicy !== 'Retain') {
+          resource.DeletionPolicy = 'Retain';
+          this.logger.info(`Set DeletionPolicy to Retain for table '${logicalId}'`);
+
+          // Pass existing parameters through unchanged
+          const describeResponse = await this.cfnClient().send(new DescribeStacksCommand({ StackName: modelStackId }));
+          const parameters = (describeResponse.Stacks?.[0]?.Parameters ?? []).map((p) => ({
+            ParameterKey: p.ParameterKey,
+            UsePreviousValue: true,
+          }));
+
+          this.logger.info(`Updating DeletionPolicy for table '${logicalId}'...`);
+          await tryUpdateStack(this.cfnClient(), modelStackId, parameters, template);
+          this.logger.info(`Successfully updated DeletionPolicy for table '${logicalId}'`);
+        }
+      }
+    }
   }
 
   private cognitoClient() {

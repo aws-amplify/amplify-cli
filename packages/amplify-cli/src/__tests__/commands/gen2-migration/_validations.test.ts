@@ -354,6 +354,14 @@ describe('AmplifyGen2MigrationValidations', () => {
         ],
         NextToken: undefined,
       });
+      // GetTemplate response — DeletionPolicy is Delete
+      mockSend.mockResolvedValueOnce({
+        TemplateBody: JSON.stringify({
+          Resources: {
+            Table: { Type: 'AWS::DynamoDB::Table', DeletionPolicy: 'Delete' },
+          },
+        }),
+      });
 
       const changeSet: DescribeChangeSetOutput = {
         Changes: [
@@ -372,6 +380,82 @@ describe('AmplifyGen2MigrationValidations', () => {
       await expect(validations.validateStatefulResources(changeSet)).rejects.toMatchObject({
         name: 'DestructiveMigrationError',
         message: 'Decommission will delete stateful resources.',
+      });
+    });
+
+    it('should pass when nested DynamoDB table has DeletionPolicy Retain', async () => {
+      mockSend.mockResolvedValueOnce({
+        StackResourceSummaries: [
+          {
+            ResourceType: 'AWS::DynamoDB::Table',
+            PhysicalResourceId: 'MyTable',
+            LogicalResourceId: 'Table',
+          },
+        ],
+        NextToken: undefined,
+      });
+      // GetTemplate response — DeletionPolicy is Retain
+      mockSend.mockResolvedValueOnce({
+        TemplateBody: JSON.stringify({
+          Resources: {
+            Table: { Type: 'AWS::DynamoDB::Table', DeletionPolicy: 'Retain' },
+          },
+        }),
+      });
+
+      const changeSet: DescribeChangeSetOutput = {
+        Changes: [
+          {
+            Type: 'Resource',
+            ResourceChange: {
+              Action: 'Remove',
+              ResourceType: 'AWS::CloudFormation::Stack',
+              LogicalResourceId: 'ApiStack',
+              PhysicalResourceId: 'api-stack',
+            },
+          },
+        ],
+      };
+
+      await expect(validations.validateStatefulResources(changeSet)).resolves.not.toThrow();
+    });
+
+    it('should throw when nested DynamoDB table has no DeletionPolicy', async () => {
+      mockSend.mockResolvedValueOnce({
+        StackResourceSummaries: [
+          {
+            ResourceType: 'AWS::DynamoDB::Table',
+            PhysicalResourceId: 'MyTable',
+            LogicalResourceId: 'Table',
+          },
+        ],
+        NextToken: undefined,
+      });
+      // GetTemplate response — no DeletionPolicy set
+      mockSend.mockResolvedValueOnce({
+        TemplateBody: JSON.stringify({
+          Resources: {
+            Table: { Type: 'AWS::DynamoDB::Table' },
+          },
+        }),
+      });
+
+      const changeSet: DescribeChangeSetOutput = {
+        Changes: [
+          {
+            Type: 'Resource',
+            ResourceChange: {
+              Action: 'Remove',
+              ResourceType: 'AWS::CloudFormation::Stack',
+              LogicalResourceId: 'ApiStack',
+              PhysicalResourceId: 'api-stack',
+            },
+          },
+        ],
+      };
+
+      await expect(validations.validateStatefulResources(changeSet)).rejects.toMatchObject({
+        name: 'DestructiveMigrationError',
       });
     });
 
