@@ -508,7 +508,15 @@ export function addRestApi(cwd: string, settings: RestAPISettings) {
   } else {
     chain.sendCarriageReturn();
   }
-  chain.wait('Provide a path').sendCarriageReturn().wait('Choose a lambda source');
+  chain
+    .wait('Provide a path')
+    .sendCarriageReturn()
+    .wait(/overlaps with.*Are you sure you want to continue|Choose a lambda source/, (data: string) => {
+      if (/overlaps with/.test(data)) {
+        chain.getProcess()?.write('y');
+      }
+    })
+    .wait('Choose a lambda source');
 
   if (settings.existingLambda) {
     chain
@@ -608,6 +616,11 @@ export function updateRestApi(cwd: string, settings: Partial<typeof updateRestAp
       chain
         .wait('Provide a path')
         .sendLine(completeSettings.newPath)
+        .wait(/overlaps with.*Are you sure you want to continue|Choose a Lambda source/, (data: string) => {
+          if (/overlaps with/.test(data)) {
+            chain.getProcess()?.write('y');
+          }
+        })
         .wait('Choose a Lambda source')
         .sendLine('Use a Lambda function already added in the current Amplify project');
       // assumes only one function in the project. otherwise, need to update to handle function selection here
