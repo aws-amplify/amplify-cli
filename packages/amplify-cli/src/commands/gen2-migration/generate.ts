@@ -47,10 +47,10 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
         case 'api:API Gateway':
         case 'analytics:Kinesis':
         case 'function:Lambda':
-          assessment.record('generate', resource, { supported: true, notes: [] });
+          assessment.record('generate', resource, { supported: true });
           break;
         case 'unsupported':
-          assessment.record('generate', resource, { supported: false, notes: [] });
+          assessment.record('generate', resource, { supported: false });
           break;
       }
     }
