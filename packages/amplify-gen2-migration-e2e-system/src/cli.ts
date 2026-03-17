@@ -399,6 +399,10 @@ async function initializeAppFromCLI(params: InitializeAppFromCLIParams): Promise
       process.exit(1);
     }
 
+    // TODO: remove early return when ready to test migration steps
+    logger.info(`Stopping after push + git commit. App deployed at ${targetAppPath}`, context);
+    return;
+
     // Step 4: Run gen2-migration pre-deployment workflow (lock -> generate)
     logger.info(`Running gen2-migration pre-deployment workflow for ${deploymentName}...`, context);
     const gen2MigrationExecutor = new Gen2MigrationExecutor(logger, { profile });
