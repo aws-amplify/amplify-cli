@@ -5,7 +5,7 @@
       "LogicalResourceId": "DynamoDBTable"
     },
     "Destination": {
-      "StackName": "amplify-discussions-gen2main-branch-96dfd1dc44-storage0EC3F24A-QQN18S0SITDH",
+      "StackName": "amplify-discussions-gen2main-branch-96dfd1dc44-storageactivityEF3255CD-QQN18S0SITDH",
       "LogicalResourceId": "activity1E902D9C"
     }
   }

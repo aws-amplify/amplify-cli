@@ -19,8 +19,8 @@ const backend = defineBackend({
   fetchuseractivity,
   recorduseractivity,
 });
-const storageStack = backend.createStack('storage');
-const activity = new Table(storageStack, 'activity', {
+const storageActivityStack = backend.createStack('storageactivity');
+const activity = new Table(storageActivityStack, 'activity', {
   partitionKey: { name: 'id', type: AttributeType.STRING },
   billingMode: BillingMode.PROVISIONED,
   readCapacity: 5,
@@ -33,6 +33,22 @@ activity.addGlobalSecondaryIndex({
   indexName: 'byUserId',
   partitionKey: { name: 'userId', type: AttributeType.STRING },
   sortKey: { name: 'timestamp', type: AttributeType.STRING },
+  readCapacity: 5,
+  writeCapacity: 5,
+});
+const storageBookmarksStack = backend.createStack('storagebookmarks');
+const bookmarks = new Table(storageBookmarksStack, 'bookmarks', {
+  partitionKey: { name: 'userId', type: AttributeType.STRING },
+  billingMode: BillingMode.PROVISIONED,
+  readCapacity: 5,
+  writeCapacity: 5,
+  stream: StreamViewType.NEW_IMAGE,
+  sortKey: { name: 'postId', type: AttributeType.STRING },
+});
+// Add this property to the Table above post refactor: tableName: 'bookmarks-main'
+bookmarks.addGlobalSecondaryIndex({
+  indexName: 'byPost',
+  partitionKey: { name: 'postId', type: AttributeType.STRING },
   readCapacity: 5,
   writeCapacity: 5,
 });

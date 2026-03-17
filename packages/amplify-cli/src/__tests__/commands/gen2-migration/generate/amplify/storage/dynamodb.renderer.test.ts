@@ -152,6 +152,29 @@ describe('DynamoDBRenderer', () => {
       `);
     });
 
+    it('uses custom scope variable name when provided', () => {
+      const table: DynamoDBTableDefinition = {
+        tableName: 'MyTable-abc123',
+        partitionKey: { name: 'id', type: 'STRING' },
+        billingMode: 'PAY_PER_REQUEST',
+      };
+      const output = printStatements(renderer.renderTable(table, 'storageActivityStack'));
+
+      expect(output).toContain('storageActivityStack');
+      expect(output).not.toContain('storageStack');
+    });
+
+    it('defaults to storageStack scope when no scope provided', () => {
+      const table: DynamoDBTableDefinition = {
+        tableName: 'MyTable-abc123',
+        partitionKey: { name: 'id', type: 'STRING' },
+        billingMode: 'PAY_PER_REQUEST',
+      };
+      const output = printStatements(renderer.renderTable(table));
+
+      expect(output).toContain('storageStack');
+    });
+
     it('handles BINARY attribute type', () => {
       const table: DynamoDBTableDefinition = {
         tableName: 'BinaryTable-abc',

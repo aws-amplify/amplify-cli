@@ -73,7 +73,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
 
     const refactorers: Refactorer[] = [];
 
-    validateSingleResourcePerCategory(discovered);
+    validateSingleResourcePerStack(discovered);
 
     for (const resource of discovered) {
       switch (resource.key) {
@@ -86,7 +86,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
           refactorers.push(new StorageS3ForwardRefactorer(gen1Env, gen2Branch, clients, this.region, accountId));
           break;
         case 'storage:DynamoDB':
-          refactorers.push(new StorageDynamoForwardRefactorer(gen1Env, gen2Branch, clients, this.region, accountId));
+          refactorers.push(new StorageDynamoForwardRefactorer(gen1Env, gen2Branch, clients, this.region, accountId, resource.resourceName));
           break;
         case 'analytics:Kinesis':
           refactorers.push(new AnalyticsKinesisForwardRefactorer(gen1Env, gen2Branch, clients, this.region, accountId));
@@ -117,7 +117,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
 
     const refactorers: Refactorer[] = [];
 
-    validateSingleResourcePerCategory(discovered);
+    validateSingleResourcePerStack(discovered);
 
     for (const resource of discovered) {
       switch (resource.key) {
@@ -128,7 +128,9 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
           refactorers.push(new StorageS3RollbackRefactorer(gen1Env, gen2Branch, clients, this.region, accountId));
           break;
         case 'storage:DynamoDB':
-          refactorers.push(new StorageDynamoRollbackRefactorer(gen1Env, gen2Branch, clients, this.region, accountId));
+          refactorers.push(
+            new StorageDynamoRollbackRefactorer(gen1Env, gen2Branch, clients, this.region, accountId, resource.resourceName),
+          );
           break;
         case 'analytics:Kinesis':
           refactorers.push(new AnalyticsKinesisRollbackRefactorer(gen1Env, gen2Branch, clients, this.region, accountId));
@@ -193,21 +195,38 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
 }
 
 /**
- * Throws if any refactorer category has more than one resource.
- * Refactorers assume a single resource per category — multiple
- * resources would produce incorrect mappings.
+ * Throws if any two discovered resources would produce the same stack name.
+ *
+ * DDB resources use 'storage' + resourceName as their stack prefix. Other
+ * stateful categories (auth, analytics) use the bare category name. If two
+ * resources would map to the same stack name, the refactor would be ambiguous.
  */
-function validateSingleResourcePerCategory(discovered: readonly DiscoveredResource[]): void {
-  const refactorCategories = new Set(['auth', 'storage', 'analytics']);
-  const categoryCounts = new Map<string, number>();
+function validateSingleResourcePerStack(discovered: readonly DiscoveredResource[]): void {
+  const stackNameCounts = new Map<string, number>();
   for (const r of discovered) {
-    if (!refactorCategories.has(r.category)) continue;
-    categoryCounts.set(r.category, (categoryCounts.get(r.category) ?? 0) + 1);
+    let stackName: string;
+    switch (r.key) {
+      case 'storage:DynamoDB':
+        stackName = 'storage' + r.resourceName;
+        break;
+      case 'auth:Cognito':
+        stackName = 'auth';
+        break;
+      case 'storage:S3':
+        stackName = 'storage';
+        break;
+      case 'analytics:Kinesis':
+        stackName = 'analytics';
+        break;
+      default:
+        continue; // non-stateful categories — no stack conflict possible
+    }
+    stackNameCounts.set(stackName, (stackNameCounts.get(stackName) ?? 0) + 1);
   }
-  for (const [category, count] of categoryCounts) {
+  for (const [stackName, count] of stackNameCounts) {
     if (count > 1) {
       throw new AmplifyError('MigrationError', {
-        message: `Multiple resources in '${category}' category detected. The refactor step does not yet support multiple resources per category.`,
+        message: `Multiple resources map to stack '${stackName}'. Each resource must have a unique stack name.`,
       });
     }
   }

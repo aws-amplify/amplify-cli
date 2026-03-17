@@ -1,0 +1,22 @@
+{
+  "resourceName": "bookmarks",
+  "tableName": "bookmarks",
+  "partitionKey": {
+    "fieldName": "userId",
+    "fieldType": "string"
+  },
+  "sortKey": {
+    "fieldName": "postId",
+    "fieldType": "string"
+  },
+  "gsi": [
+    {
+      "name": "byPost",
+      "partitionKey": {
+        "fieldName": "postId",
+        "fieldType": "string"
+      }
+    }
+  ],
+  "triggerFunctions": []
+}

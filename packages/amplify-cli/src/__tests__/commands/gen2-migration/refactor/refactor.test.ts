@@ -232,7 +232,7 @@ describe('AmplifyMigrationRefactorStep', () => {
       ]);
 
       const step = createStep();
-      await expect(step.execute()).rejects.toThrow(/Multiple resources in 'storage'/);
+      await expect(step.execute()).rejects.toThrow(/Multiple resources map to stack 'storage'/);
     });
   });
 
@@ -275,7 +275,7 @@ describe('AmplifyMigrationRefactorStep', () => {
       ]);
 
       const step = createStep();
-      await expect(step.rollback()).rejects.toThrow(/Multiple resources in 'auth'/);
+      await expect(step.rollback()).rejects.toThrow(/Multiple resources map to stack 'auth'/);
     });
   });
 });

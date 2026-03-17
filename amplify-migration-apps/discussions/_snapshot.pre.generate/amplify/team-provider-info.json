@@ -29,7 +29,8 @@
         "discussions": {}
       },
       "storage": {
-        "activity": {}
+        "activity": {},
+        "bookmarks": {}
       }
     }
   }

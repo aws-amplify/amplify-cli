@@ -270,9 +270,29 @@ describe('resolveOutputs - error paths', () => {
     );
   });
 
-  it('throws when template is missing Outputs or Resources', () => {
+  it('throws when template is missing Resources', () => {
     expect(() =>
-      resolveOutputs({ template: { Resources: {} } as any, stackOutputs: [], stackResources: [], region: 'us-east-1', accountId: '123' }),
-    ).toThrow('missing Outputs or Resources');
+      resolveOutputs({ template: {} as any, stackOutputs: [], stackResources: [], region: 'us-east-1', accountId: '123' }),
+    ).toThrow('missing Resources');
+  });
+
+  it('works when template has Resources but no Outputs section', () => {
+    const template: CFNTemplate = {
+      AWSTemplateFormatVersion: '2010-09-09',
+      Description: 'test',
+      Resources: {
+        MyTable: { Type: 'AWS::DynamoDB::Table', Properties: {} },
+      },
+    };
+    const result = resolveOutputs({
+      template,
+      stackOutputs: [],
+      stackResources: [],
+      region: 'us-east-1',
+      accountId: '123',
+    });
+    // Should return the template unchanged (no outputs to resolve)
+    expect(result.Resources.MyTable.Type).toBe('AWS::DynamoDB::Table');
+    expect(result.Outputs).toBeUndefined();
   });
 });
