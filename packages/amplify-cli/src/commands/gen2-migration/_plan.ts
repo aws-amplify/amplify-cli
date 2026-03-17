@@ -4,10 +4,11 @@ import { printer } from '@aws-amplify/amplify-prompts';
 import chalk from 'chalk';
 import CLITable from 'cli-table3';
 
-/** Internal type used only for rendering the validation summary table. */
+/** Internal type used only for rendering the validation summary. */
 interface ValidationSummaryEntry {
   readonly description: string;
   readonly valid: boolean;
+  readonly report?: string;
 }
 
 /**
@@ -50,7 +51,7 @@ export class Plan {
       this.logger.push(validation.description);
       const result = await validation.run();
       this.logger.pop();
-      entries.push({ description: validation.description, valid: result.valid });
+      entries.push({ description: validation.description, valid: result.valid, report: result.report });
     }
     this.logger.succeed('→ Validating complete');
     this.renderValidationResults(entries);
@@ -99,6 +100,21 @@ export class Plan {
 
   private renderValidationResults(entries: ValidationSummaryEntry[]): void {
     if (entries.length === 0) return;
+
+    const failed = entries.filter((e) => !e.valid && e.report);
+    if (failed.length > 0) {
+      printer.blankLine();
+      printer.info(chalk.bold(chalk.underline('Failed Validations Report')));
+      printer.blankLine();
+      for (let i = 0; i < failed.length; i++) {
+        printer.info(chalk.red(failed[i].description));
+        printer.blankLine();
+        printer.info(failed[i].report ?? '');
+        if (i < failed.length - 1) {
+          printer.blankLine();
+        }
+      }
+    }
 
     printer.blankLine();
     printer.info(chalk.bold(chalk.underline('Validations Summary')));
