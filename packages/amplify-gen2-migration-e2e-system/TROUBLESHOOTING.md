@@ -111,3 +111,24 @@ Category 'storage' failed: Killed the process as no output receive for 300 Sec.
 **Cause:** The `addS3WithTrigger` e2e-core helper assumed no Lambda functions existed in the project. When functions are already initialized (e.g. auth, function categories), the CLI shows an extra "Select from the following options" prompt that the automation didn't handle.
 
 **Solution:** Updated `addS3WithTrigger` in `amplify-e2e-core/src/categories/storage.ts` to accept an optional `{ projectHasFunctions: true }` flag. When set, it handles the extra prompt by selecting "Create a new function". The category initializer passes this flag based on whether functions were already initialized.
+
+---
+
+## 7. `@auth directive with 'userPools' provider found` during `amplify push`
+
+**Error:**
+```
+@auth directive with 'userPools' provider found, but the project has no Cognito User Pools authentication provider configured.
+```
+
+**Cause:** The GraphQL schema uses `{ allow: owner }` auth rules, which implicitly require `userPools` (Cognito) as a provider. However, `addApiWithBlankSchema` only configures the API with the default auth mode (API_KEY) — it doesn't add Cognito User Pools as an additional authorization provider on the API.
+
+**Solution:** Updated the category initializer to use `addApi` with explicit auth types config when the migration config specifies `COGNITO_USER_POOLS` or `IAM` auth modes. Pass `requireAuthSetup = false` as the third argument because the auth category is already initialized — the CLI reuses the existing user pool instead of prompting to create a new one.
+
+```typescript
+addApi(appPath, {
+  'API key': {},
+  'Amazon Cognito User Pool': {},
+  'IAM': {},
+}, false); // requireAuthSetup = false
+```
