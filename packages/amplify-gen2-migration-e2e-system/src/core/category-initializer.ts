@@ -325,8 +325,9 @@ export class CategoryInitializer {
     try {
       if (hasTriggers) {
         // Add S3 storage with Lambda trigger (creates a new trigger function)
-        this.logger.debug('Adding S3 storage with Lambda trigger', context);
-        await addS3WithTrigger(appPath);
+        const projectHasFunctions = result.initializedCategories.includes('function');
+        this.logger.debug(`Adding S3 storage with Lambda trigger (projectHasFunctions: ${projectHasFunctions})`, context);
+        await addS3WithTrigger(appPath, { projectHasFunctions });
       } else if (hasGuestAccess) {
         // Add S3 storage with auth and guest access
         await addS3Storage(appPath);

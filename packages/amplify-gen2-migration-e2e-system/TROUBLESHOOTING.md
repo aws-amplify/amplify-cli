@@ -76,3 +76,38 @@ eval "$(fnm env)"
 fnm use 22
 npm rebuild node-pty
 ```
+
+---
+
+## 5. Multiple AWS credential sources conflict
+
+**Error:**
+```
+@aws-sdk/credential-provider-node - defaultProvider::fromEnv WARNING:
+    Multiple credential sources detected:
+    Both AWS_PROFILE and the pair AWS_ACCESS_KEY_ID/AWS_SECRET_ACCESS_KEY static credentials are set.
+```
+
+**Cause:** Both `AWS_PROFILE` and `AWS_ACCESS_KEY_ID`/`AWS_SECRET_ACCESS_KEY` environment variables are set, likely from a previous session or atmosphere setup.
+
+**Solution:**
+```bash
+unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN
+```
+
+---
+
+## 6. S3 storage trigger times out when functions already exist
+
+**Error:**
+```
+Category 'storage' failed: Killed the process as no output receive for 300 Sec.
+
+? Select from the following options …  (Use arrow keys or type to filter)
+❯ Choose an existing function from the project
+  Create a new function
+```
+
+**Cause:** The `addS3WithTrigger` e2e-core helper assumed no Lambda functions existed in the project. When functions are already initialized (e.g. auth, function categories), the CLI shows an extra "Select from the following options" prompt that the automation didn't handle.
+
+**Solution:** Updated `addS3WithTrigger` in `amplify-e2e-core/src/categories/storage.ts` to accept an optional `{ projectHasFunctions: true }` flag. When set, it handles the extra prompt by selecting "Create a new function". The category initializer passes this flag based on whether functions were already initialized.
