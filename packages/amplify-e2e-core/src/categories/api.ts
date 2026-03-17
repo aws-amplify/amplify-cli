@@ -508,14 +508,22 @@ export function addRestApi(cwd: string, settings: RestAPISettings) {
   } else {
     chain.sendCarriageReturn();
   }
+  // Register a one-shot auto-responder for the optional overlap warning.
+  // When an overlap exists, the CLI prompts "...overlaps with...Are you sure you want to continue? (y/N)"
+  // before showing "Choose a lambda source". When no overlap exists, "Choose a lambda source" appears directly.
+  // We handle this by auto-responding 'y' to the overlap prompt via a data handler, so the single
+  // .wait('Choose a lambda source') works correctly in both cases without double-consuming the prompt.
+  let overlapHandled = false;
   chain
-    .wait('Provide a path')
-    .sendCarriageReturn()
-    .wait(/overlaps with.*Are you sure you want to continue|Choose a lambda source/, (data: string) => {
-      if (/overlaps with/.test(data)) {
-        chain.getProcess()?.write('y');
-      }
+    .wait('Provide a path', () => {
+      chain.getProcess()?.addOnDataHandler((data: string) => {
+        if (!overlapHandled && /overlaps with/.test(data)) {
+          overlapHandled = true;
+          chain.getProcess()?.write('y');
+        }
+      });
     })
+    .sendCarriageReturn()
     .wait('Choose a lambda source');
 
   if (settings.existingLambda) {
@@ -612,19 +620,26 @@ export function updateRestApi(cwd: string, settings: Partial<typeof updateRestAp
     chain.wait('A migration is needed to support latest updates on api resources.').sendYes();
   }
   switch (completeSettings.updateOperation) {
-    case 'Add another path':
+    case 'Add another path': {
+      // Register a one-shot auto-responder for the optional overlap warning.
+      // Same pattern as addRestApi: auto-respond 'y' to overlap via data handler so the single
+      // .wait('Choose a Lambda source') works correctly whether or not overlap occurs.
+      let overlapHandledUpdate = false;
       chain
-        .wait('Provide a path')
-        .sendLine(completeSettings.newPath)
-        .wait(/overlaps with.*Are you sure you want to continue|Choose a Lambda source/, (data: string) => {
-          if (/overlaps with/.test(data)) {
-            chain.getProcess()?.write('y');
-          }
+        .wait('Provide a path', () => {
+          chain.getProcess()?.addOnDataHandler((data: string) => {
+            if (!overlapHandledUpdate && /overlaps with/.test(data)) {
+              overlapHandledUpdate = true;
+              chain.getProcess()?.write('y');
+            }
+          });
         })
+        .sendLine(completeSettings.newPath)
         .wait('Choose a Lambda source')
         .sendLine('Use a Lambda function already added in the current Amplify project');
       // assumes only one function in the project. otherwise, need to update to handle function selection here
       break;
+    }
     default:
       throw new Error(`updateOperation ${completeSettings.updateOperation} is not implemented`);
   }
