@@ -3,6 +3,7 @@ import { CFNResource, CFNTemplate } from '../../../../commands/gen2-migration/cf
 import { RefactorBlueprint, MoveMapping } from '../../../../commands/gen2-migration/refactor/workflow/category-refactorer';
 import { AwsClients } from '../../../../commands/gen2-migration/aws-clients';
 import { StackFacade } from '../../../../commands/gen2-migration/refactor/stack-facade';
+import { noOpLogger } from '../_framework/logger';
 import { mockClient } from 'aws-sdk-client-mock';
 import {
   CloudFormationClient,
@@ -88,7 +89,7 @@ describe('ForwardCategoryRefactorer.beforeMovePlan', () => {
       clients,
       'us-east-1',
       '123',
-      null as any,
+      noOpLogger(),
     );
     const blueprint = makeBlueprint({
       targetResolved: { Lambda: { Type: 'AWS::Lambda::Function', Properties: {} } },
@@ -115,7 +116,7 @@ describe('ForwardCategoryRefactorer.beforeMovePlan', () => {
       clients,
       'us-east-1',
       '123',
-      null as any,
+      noOpLogger(),
     );
 
     const blueprint = makeBlueprint({
@@ -155,7 +156,7 @@ describe('ForwardCategoryRefactorer.beforeMovePlan', () => {
       clients,
       'us-east-1',
       '123',
-      null as any,
+      noOpLogger(),
     );
 
     const blueprint = makeBlueprint({

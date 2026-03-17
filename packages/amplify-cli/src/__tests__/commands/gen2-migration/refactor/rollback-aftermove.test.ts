@@ -3,6 +3,7 @@ import { CFNResource, CFNTemplate } from '../../../../commands/gen2-migration/cf
 import { RefactorBlueprint, MoveMapping } from '../../../../commands/gen2-migration/refactor/workflow/category-refactorer';
 import { AwsClients } from '../../../../commands/gen2-migration/aws-clients';
 import { StackFacade } from '../../../../commands/gen2-migration/refactor/stack-facade';
+import { noOpLogger } from '../_framework/logger';
 import { mockClient } from 'aws-sdk-client-mock';
 import {
   CloudFormationClient,
@@ -105,7 +106,7 @@ describe('RollbackCategoryRefactorer.afterMovePlan', () => {
     (clients as any).cloudFormation = new CloudFormationClient({});
     const gen1Env = new StackFacade(clients, 'gen1-root');
     const gen2Branch = new StackFacade(clients, 'gen2-root');
-    const refactorer = new TestRollbackRefactorer(gen1Env, gen2Branch, clients, 'us-east-1', '123456789', null as any);
+    const refactorer = new TestRollbackRefactorer(gen1Env, gen2Branch, clients, 'us-east-1', '123456789', noOpLogger());
 
     const sourceAfterRemoval: CFNTemplate = {
       AWSTemplateFormatVersion: '2010-09-09',
@@ -153,7 +154,7 @@ describe('RollbackCategoryRefactorer.afterMovePlan', () => {
     (clients as any).cloudFormation = new CloudFormationClient({});
     const gen1Env = new StackFacade(clients, 'gen1-root');
     const gen2Branch = new StackFacade(clients, 'gen2-root');
-    const refactorer = new TestRollbackRefactorer(gen1Env, gen2Branch, clients, 'us-east-1', '123456789', null as any);
+    const refactorer = new TestRollbackRefactorer(gen1Env, gen2Branch, clients, 'us-east-1', '123456789', noOpLogger());
 
     const emptyTemplate: CFNTemplate = {
       AWSTemplateFormatVersion: '2010-09-09',
