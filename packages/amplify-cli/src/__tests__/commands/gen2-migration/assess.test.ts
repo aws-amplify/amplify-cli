@@ -1,11 +1,11 @@
 import { AmplifyMigrationAssessor } from '../../../commands/gen2-migration/assess';
-import { Gen1App, DiscoveredResource } from '../../../commands/gen2-migration/generate-new/_infra/gen1-app';
+import { Gen1App, DiscoveredResource } from '../../../commands/gen2-migration/generate/_infra/gen1-app';
 import { Assessment } from '../../../commands/gen2-migration/_assessment';
 import { Logger } from '../../../commands/gen2-migration';
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
 
-jest.mock('../../../commands/gen2-migration/generate-new/_infra/gen1-app', () => {
-  const actual = jest.requireActual('../../../commands/gen2-migration/generate-new/_infra/gen1-app');
+jest.mock('../../../commands/gen2-migration/generate/_infra/gen1-app', () => {
+  const actual = jest.requireActual('../../../commands/gen2-migration/generate/_infra/gen1-app');
   return {
     ...actual,
     Gen1App: {

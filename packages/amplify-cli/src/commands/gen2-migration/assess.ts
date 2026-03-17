@@ -1,7 +1,7 @@
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { Assessment } from './_assessment';
 import { AmplifyMigrationGenerateStep } from './generate';
-import { AmplifyMigrationRefactorStep } from './refactor-new';
+import { AmplifyMigrationRefactorStep } from './refactor';
 import { Logger } from '../gen2-migration';
 
 /**

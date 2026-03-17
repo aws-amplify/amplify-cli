@@ -1,5 +1,5 @@
 import { Assessment } from '../../../commands/gen2-migration/_assessment';
-import { DiscoveredResource } from '../../../commands/gen2-migration/generate-new/_infra/gen1-app';
+import { DiscoveredResource } from '../../../commands/gen2-migration/generate/_infra/gen1-app';
 
 describe('Assessment', () => {
   describe('record()', () => {
