@@ -1,17 +1,31 @@
 import { AmplifyMigrationCloneStep } from './gen2-migration/clone';
 import { $TSContext, AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { AmplifyMigrationStep } from './gen2-migration/_step';
-import { AmplifyMigrationOperation } from './gen2-migration/_operation';
-import { printer, prompter } from '@aws-amplify/amplify-prompts';
+import { printer, prompter, isDebug } from '@aws-amplify/amplify-prompts';
 import { AmplifyMigrationDecommissionStep } from './gen2-migration/decommission';
 import { AmplifyMigrationGenerateStep } from './gen2-migration/generate';
 import { AmplifyMigrationLockStep } from './gen2-migration/lock';
 import { AmplifyMigrationRefactorStep } from './gen2-migration/refactor';
 import { AmplifyMigrationShiftStep } from './gen2-migration/shift';
+import { SpinningLogger } from './gen2-migration/_spinning-logger';
 import { stateManager } from '@aws-amplify/amplify-cli-core';
 import { AmplifyClient, GetAppCommand } from '@aws-sdk/client-amplify';
 import chalk from 'chalk';
 import { AmplifyMigrationAssessor } from './gen2-migration/assess';
+import { Plan } from './gen2-migration/_plan';
+
+/** Re-export so existing consumers can migrate incrementally. */
+export { SpinningLogger };
+
+/**
+ * @deprecated Use SpinningLogger instead. Kept for backward compatibility
+ * with the old refactor code path.
+ */
+export class Logger extends SpinningLogger {
+  constructor(stepName: string, appName: string, envName: string) {
+    super(`${stepName}] [${appName}/${envName}`, { debug: true });
+  }
+}
 
 const STEPS = {
   clone: {
@@ -32,6 +46,7 @@ const STEPS = {
   },
   refactor: {
     class: AmplifyMigrationRefactorStep,
+    // eslint-disable-next-line spellcheck/spell-checker
     description: 'Move stateful resources from your Gen1 environment to your newly deployed Gen2 branch',
   },
   shift: {
@@ -39,54 +54,6 @@ const STEPS = {
     description: 'Not Implemented',
   },
 };
-
-/**
- * Logging utility that wraps the standard printer with additional gen2-migration specific context.
- */
-export class Logger {
-  constructor(private readonly stepName: string, private readonly appName: string, private readonly envName: string) {}
-
-  /**
-   * Logs a message with a visual envelope border for major section headers
-   */
-  public envelope(message: string) {
-    printer.info(chalk.cyan(this._message(message, '→')));
-  }
-
-  /**
-   * Logs informational messages that are always displayed to the user.
-   */
-  public info(message: string): void {
-    printer.info(this._message(message, '•'));
-  }
-
-  /**
-   * Logs debug-level messages that are shown only if the command is executed with --debug.
-   */
-  public debug(message: string): void {
-    printer.debug(this._message(message, '·'));
-  }
-
-  /**
-   * Logs warning messages that are always displayed to the user.
-   */
-  public warn(message: string): void {
-    printer.warn(this._message(message, '·'));
-  }
-
-  /**
-   * Alias to `warn`.
-   */
-  public warning(message: string): void {
-    printer.warn(this._message(message, '·'));
-  }
-
-  private _message(message: string, prefix: string) {
-    return `[${new Date().toISOString()}] [${chalk.bold(this.stepName)}] [${chalk.blue(
-      `${this.appName}/${this.envName}`,
-    )}] ${prefix} ${message}`;
-  }
-}
 
 export const run = async (context: $TSContext) => {
   const stepName = (context.input.subCommands ?? [])[0];
@@ -150,7 +117,7 @@ export const run = async (context: $TSContext) => {
   const stackName = stateManager.getTeamProviderInfo()[envName].awscloudformation.StackName;
   const region = stateManager.getTeamProviderInfo()[envName].awscloudformation.Region;
 
-  const logger = new Logger(stepName, appName, envName);
+  const logger = new SpinningLogger(`${stepName}] [${appName}/${envName}`, { debug: isDebug });
 
   // Assess is not a migration step — handle it separately.
   if (stepName === 'assess') {
@@ -161,10 +128,33 @@ export const run = async (context: $TSContext) => {
 
   const implementation: AmplifyMigrationStep = new step.class(logger, envName, appName, appId, stackName, region, context);
 
-  if (validationsOnly) {
-    await validate(implementation, rollingBack, logger, context);
-    return;
+  // Plan
+  printer.blankLine();
+  logger.start('Planning');
+  let plan: Plan;
+  try {
+    plan = rollingBack ? await implementation.rollback() : await implementation.forward();
+    logger.succeed('→ Planning complete');
+  } catch (error: unknown) {
+    logger.failed('→ Planning failed');
+    printer.blankLine();
+    throw error;
   }
+
+  // Validate
+  if (!skipValidations) {
+    const passed = await plan.validate();
+    if (!passed) {
+      const skipCommand = `amplify ${context.input.argv.join(' ').trim()} --skip-validations`;
+      printer.blankLine();
+      throw new AmplifyError('MigrationError', {
+        message: 'Validations failed',
+        resolution: `Resolve the validation errors or skip them by running '${skipCommand}'`,
+      });
+    }
+  }
+
+  if (validationsOnly) return;
 
   printer.blankLine();
   printer.info(
@@ -172,27 +162,7 @@ export const run = async (context: $TSContext) => {
   );
   printer.blankLine();
 
-  printer.info(chalk.bold(chalk.underline('Operations Summary')));
-  printer.blankLine();
-
-  for (const operation of rollingBack ? await implementation.rollback() : await implementation.execute()) {
-    for (const description of await operation.describe()) {
-      printer.info(`• ${description}`);
-    }
-  }
-
-  printer.blankLine();
-
-  printer.info(chalk.bold(chalk.underline('Implications')));
-  printer.blankLine();
-
-  const cachedStep = new CachedAmplifyMigrationStep(implementation);
-
-  for (const implication of rollingBack ? await cachedStep.rollbackImplications() : await cachedStep.executeImplications()) {
-    printer.info(`• ${implication}`);
-  }
-
-  printer.blankLine();
+  await plan.describe();
 
   if (!rollingBack && stepName !== 'decommission') {
     printer.info(chalk.grey(`(You can rollback this command by running: 'amplify gen2-migration ${stepName} --rollback')`));
@@ -210,72 +180,21 @@ export const run = async (context: $TSContext) => {
 
   printer.blankLine();
 
-  if (!skipValidations) {
-    await validate(implementation, rollingBack, logger, context);
-    printer.blankLine();
-  }
-
-  if (rollingBack) {
-    await runRollback(cachedStep, logger);
-    printer.blankLine();
-    printer.success('Done');
-    return;
-  }
-
   try {
-    await runExecute(cachedStep, logger);
-    printer.blankLine();
-    printer.success('Done');
+    await plan.execute();
     return;
   } catch (error: unknown) {
-    if (!disableAutoRollback) {
-      printer.error(`Execution failed: ${error}`);
+    if (!rollingBack && !disableAutoRollback) {
       printer.blankLine();
-      await runRollback(cachedStep, logger);
+      printer.error(`Failed: ${error}`);
+      printer.blankLine();
+      const rollbackPlan = await implementation.rollback();
+      await rollbackPlan.execute();
     }
 
     throw error;
   }
 };
-
-async function validate(step: AmplifyMigrationStep, rollback: boolean, logger: Logger, context: $TSContext) {
-  logger.envelope('Performing validations');
-  try {
-    if (rollback) {
-      await step.rollbackValidate();
-    } else {
-      await step.executeValidate();
-    }
-  } catch (e) {
-    const skipValidationsCommand = `amplify ${context.input.argv.join(' ').trim()} --skip-validations`;
-    throw new AmplifyError('MigrationError', {
-      message: `Validations failed: ${e.message}`,
-      resolution: `Resolve the validation errors or skip them by running '${skipValidationsCommand}'`,
-    });
-  }
-  logger.envelope('Validations complete');
-}
-
-async function runOperations(operations: AmplifyMigrationOperation[]) {
-  for (const operation of operations) {
-    await operation.validate();
-  }
-  for (const operation of operations) {
-    await operation.execute();
-  }
-}
-
-async function runRollback(step: CachedAmplifyMigrationStep, logger: Logger) {
-  logger.envelope('Rolling back');
-  await runOperations(await step.rollback());
-  logger.envelope('Rollback complete');
-}
-
-async function runExecute(step: CachedAmplifyMigrationStep, logger: Logger) {
-  logger.envelope('Executing');
-  await runOperations(await step.execute());
-  logger.envelope('Execution complete');
-}
 
 function shiftParams(context) {
   delete context.parameters.first;
@@ -300,40 +219,4 @@ function displayHelp(context: $TSContext) {
   ];
   context.amplify.showHelp('amplify gen2-migration <subcommands>', commands);
   printer.info('');
-}
-
-/**
- * Convenience class that provides caching to step methods.
- * Return values are constructed and stored on the first invocation; subsequent invocations return
- * the cached values.
- *
- * This allows our gen2-migration.ts dispatcher to invoke step methods at will and on-demand.
- */
-class CachedAmplifyMigrationStep {
-  private _executionOperations: AmplifyMigrationOperation[];
-  private _rollbackOperations: AmplifyMigrationOperation[];
-
-  constructor(private readonly step: AmplifyMigrationStep) {}
-
-  public async execute(): Promise<AmplifyMigrationOperation[]> {
-    if (!this._executionOperations) {
-      this._executionOperations = await this.step.execute();
-    }
-    return this._executionOperations;
-  }
-
-  public async rollback(): Promise<AmplifyMigrationOperation[]> {
-    if (!this._rollbackOperations) {
-      this._rollbackOperations = await this.step.rollback();
-    }
-    return this._rollbackOperations;
-  }
-
-  public async executeImplications() {
-    return this.step.executeImplications();
-  }
-
-  public async rollbackImplications() {
-    return this.step.rollbackImplications();
-  }
 }

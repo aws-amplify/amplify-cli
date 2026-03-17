@@ -34,9 +34,7 @@ export class DynamoDBGenerator implements Planner {
 
     return [
       {
-        validate: async () => {
-          return;
-        },
+        validate: () => undefined,
         describe: async () => [`Generate DynamoDB table ${this.resourceName} in amplify/backend.ts`],
         execute: async () => {
           const imports = this.renderer.requiredImports();

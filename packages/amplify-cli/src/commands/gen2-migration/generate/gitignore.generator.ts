@@ -15,9 +15,7 @@ export class GitIgnoreGenerator implements Planner {
   public async plan(): Promise<AmplifyMigrationOperation[]> {
     return [
       {
-        validate: async () => {
-          return;
-        },
+        validate: () => undefined,
         describe: async () => ['Update .gitignore with Gen2 entries'],
         execute: async () => {
           const gitignorePath = path.join(process.cwd(), '.gitignore');

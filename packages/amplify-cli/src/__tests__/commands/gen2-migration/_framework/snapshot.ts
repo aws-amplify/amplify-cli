@@ -83,9 +83,9 @@ export class Snapshot {
     const differences = await diff({ expectedDir: this.props.expectedPath, actualDir, ignorePatterns: fullIgnorePatterns });
 
     // copy the temporary actual path to repo (ignored) for easy manual comparison
-    const ignoredActualPath = `${this.props.expectedPath}.actual`;
+    const ignoredActualPath = `${this.props.expectedPath}.actual.${Date.now()}`;
     if (fs.existsSync(ignoredActualPath)) {
-      fs.rmdirSync(ignoredActualPath, { recursive: true });
+      fs.rmSync(ignoredActualPath, { recursive: true, force: true });
     }
     copySync({ src: actualDir, dest: ignoredActualPath, ignorePatterns: fullIgnorePatterns });
 

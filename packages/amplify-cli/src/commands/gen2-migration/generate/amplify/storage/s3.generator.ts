@@ -109,9 +109,7 @@ export class S3Generator implements Planner {
     const storageIdentifier = bucketName;
 
     return {
-      validate: async () => {
-        return;
-      },
+      validate: () => undefined,
       describe: async () => ['Generate amplify/storage/resource.ts'],
       execute: async () => {
         const accessPatterns = this.buildAccessPatterns(cliInputs);

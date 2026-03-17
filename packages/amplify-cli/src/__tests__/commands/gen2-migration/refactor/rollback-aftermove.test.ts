@@ -105,7 +105,7 @@ describe('RollbackCategoryRefactorer.afterMovePlan', () => {
     (clients as any).cloudFormation = new CloudFormationClient({});
     const gen1Env = new StackFacade(clients, 'gen1-root');
     const gen2Branch = new StackFacade(clients, 'gen2-root');
-    const refactorer = new TestRollbackRefactorer(gen1Env, gen2Branch, clients, 'us-east-1', '123456789');
+    const refactorer = new TestRollbackRefactorer(gen1Env, gen2Branch, clients, 'us-east-1', '123456789', null as any);
 
     const sourceAfterRemoval: CFNTemplate = {
       AWSTemplateFormatVersion: '2010-09-09',
@@ -153,7 +153,7 @@ describe('RollbackCategoryRefactorer.afterMovePlan', () => {
     (clients as any).cloudFormation = new CloudFormationClient({});
     const gen1Env = new StackFacade(clients, 'gen1-root');
     const gen2Branch = new StackFacade(clients, 'gen2-root');
-    const refactorer = new TestRollbackRefactorer(gen1Env, gen2Branch, clients, 'us-east-1', '123456789');
+    const refactorer = new TestRollbackRefactorer(gen1Env, gen2Branch, clients, 'us-east-1', '123456789', null as any);
 
     const emptyTemplate: CFNTemplate = {
       AWSTemplateFormatVersion: '2010-09-09',

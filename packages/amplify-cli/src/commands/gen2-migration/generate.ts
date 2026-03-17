@@ -3,7 +3,8 @@ import os from 'node:os';
 import fs from 'node:fs/promises';
 import execa from 'execa';
 import { AmplifyMigrationStep } from './_step';
-import { AmplifyMigrationOperation } from './_operation';
+import { AmplifyMigrationOperation, ValidationResult } from './_operation';
+import { Plan } from './_plan';
 import { AmplifyGen2MigrationValidations } from './_validations';
 import { AwsClients } from './aws-clients';
 import { Gen1App } from './generate/_infra/gen1-app';
@@ -46,46 +47,16 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
         case 'api:API Gateway':
         case 'analytics:Kinesis':
         case 'function:Lambda':
-          assessment.record('generate', resource, { supported: true });
+          assessment.record('generate', resource, { supported: true, notes: [] });
           break;
         case 'unsupported':
-          assessment.record('generate', resource, { supported: false });
+          assessment.record('generate', resource, { supported: false, notes: [] });
           break;
       }
     }
   }
 
-  public async executeImplications(): Promise<string[]> {
-    return ['TODO'];
-  }
-
-  public async rollbackImplications(): Promise<string[]> {
-    throw new Error('Method not implemented.');
-  }
-
-  public async executeValidate(): Promise<void> {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const validations = new AmplifyGen2MigrationValidations(this.logger, this.rootStackName, this.currentEnvName, this.context);
-    await validations.validateLockStatus();
-    await validations.validateWorkingDirectory();
-  }
-
-  public async rollbackValidate(): Promise<void> {
-    throw new Error('Method not implemented.');
-  }
-
-  /**
-   * Assembles all category generators based on the Gen1 app's
-   * amplify-meta.json and returns the full list of migration operations.
-   *
-   * Uses discover() to iterate all resources, then dispatches by
-   * (category, service) using the same GENERATE_SUPPORTED map that
-   * assess() uses. Unsupported resources are skipped.
-   *
-   * Operations are returned — not executed — so the parent dispatcher
-   * can display descriptions to the user before confirmation.
-   */
-  public async execute(): Promise<AmplifyMigrationOperation[]> {
+  public async forward(): Promise<Plan> {
     const clients = new AwsClients({ region: this.region });
     const gen1App = await Gen1App.create({ appId: this.appId, region: this.region, envName: this.currentEnvName, clients });
 
@@ -177,14 +148,23 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
     generators.push(new AmplifyYmlGenerator(gen1App));
     generators.push(new GitIgnoreGenerator());
 
-    // No-op operation shown first so the user sees "Delete amplify/" at the top.
-    // The actual deletion happens in the post-generation operation below.
     const operations: AmplifyMigrationOperation[] = [
+      // Validation-only operations (formerly in executeValidate)
       {
-        validate: async () => {
-          return;
-        },
-        describe: async () => ['Delete amplify/'],
+        describe: async () => [],
+        validate: () => ({ description: 'Lock status', run: () => this.validateLockStatus() }),
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        execute: async () => {},
+      },
+      {
+        describe: async () => [],
+        validate: () => ({ description: 'Working directory', run: () => this.validateWorkingDirectory() }),
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        execute: async () => {},
+      },
+      {
+        validate: () => undefined,
+        describe: async () => [`Delete directory: ${path.join(process.cwd(), 'amplify')}`],
         // eslint-disable-next-line @typescript-eslint/no-empty-function
         execute: async () => {},
       },
@@ -197,9 +177,7 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
 
     // Post-generation: replace local amplify folder.
     operations.push({
-      validate: async () => {
-        return;
-      },
+      validate: () => undefined,
       describe: async () => [],
       execute: async () => {
         const cwd = process.cwd();
@@ -213,9 +191,7 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
 
     // Post-generation: reinstall dependencies.
     operations.push({
-      validate: async () => {
-        return;
-      },
+      validate: () => undefined,
       describe: async () => ['Install Gen2 dependencies'],
       execute: async () => {
         const cwd = process.cwd();
@@ -237,11 +213,36 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
       },
     });
 
-    return operations;
+    return new Plan({
+      operations,
+      logger: this.logger,
+      title: 'Execute',
+      implications: ["Your local 'amplify/' directory will be replaced with Gen2 code", 'Dependencies will be reinstalled'],
+    });
   }
 
-  public async rollback(): Promise<AmplifyMigrationOperation[]> {
+  public async rollback(): Promise<Plan> {
     throw new Error('Not Implemented');
+  }
+
+  private async validateLockStatus(): Promise<ValidationResult> {
+    try {
+      const validations = new AmplifyGen2MigrationValidations(this.logger, this.rootStackName, this.currentEnvName, this.context);
+      await validations.validateLockStatus();
+      return { valid: true };
+    } catch (e) {
+      return { valid: false, report: e.message };
+    }
+  }
+
+  private async validateWorkingDirectory(): Promise<ValidationResult> {
+    try {
+      const validations = new AmplifyGen2MigrationValidations(this.logger, this.rootStackName, this.currentEnvName, this.context);
+      await validations.validateWorkingDirectory();
+      return { valid: true };
+    } catch (e) {
+      return { valid: false, report: e.message };
+    }
   }
 }
 

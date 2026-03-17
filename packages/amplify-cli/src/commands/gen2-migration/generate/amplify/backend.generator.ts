@@ -110,9 +110,7 @@ export class BackendGenerator implements Planner {
 
     return [
       {
-        validate: async () => {
-          return;
-        },
+        validate: () => undefined,
         describe: async () => ['Generate amplify/backend.ts'],
         execute: async () => {
           const nodes: ts.Node[] = [];

@@ -1,5 +1,6 @@
 import { AmplifyMigrationStep } from './_step';
-import { AmplifyMigrationOperation } from './_operation';
+import { AmplifyMigrationOperation, ValidationResult } from './_operation';
+import { Plan } from './_plan';
 import { AmplifyGen2MigrationValidations } from './_validations';
 import {
   CloudFormationClient,
@@ -16,38 +17,23 @@ import { invokeDeleteEnvParamsFromService } from '../../extensions/amplify-helpe
 import { deleteHoldingStack, HOLDING_STACK_SUFFIX } from './refactor/holding-stack';
 
 export class AmplifyMigrationDecommissionStep extends AmplifyMigrationStep {
-  public async executeImplications(): Promise<string[]> {
-    return ['Delete the Gen1 environment'];
-  }
-
-  public async rollbackImplications(): Promise<string[]> {
-    throw new Error('Method not implemented.');
-  }
-
-  public async executeValidate(): Promise<void> {
-    const changeSet = await this.createChangeSet();
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const validations = new AmplifyGen2MigrationValidations(this.logger, this.rootStackName, this.currentEnvName, this.context);
-    // eslint-disable-next-line spellcheck/spell-checker
-    await validations.validateStatefulResources(changeSet, true);
-  }
-
-  public async rollbackValidate(): Promise<void> {
-    throw new Error('Method not implemented.');
-  }
-
-  public async execute(): Promise<AmplifyMigrationOperation[]> {
+  public async forward(): Promise<Plan> {
     const cfnClient = new CloudFormationClient({ region: this.region });
     const holdingStacks = await this.findHoldingStacks(cfnClient);
 
     const operations: AmplifyMigrationOperation[] = [];
 
+    // Validation-only operation (formerly in executeValidate)
+    operations.push({
+      describe: async () => [],
+      validate: () => ({ description: 'Stateful resources', run: () => this.validateStatefulResources() }),
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      execute: async () => {},
+    });
+
     for (const stackName of holdingStacks) {
       operations.push({
-        validate: async () => {
-          return;
-        },
+        validate: () => undefined,
         describe: async () => [`Delete holding stack: ${stackName}`],
         execute: async () => {
           this.logger.info(`Deleting holding stack: ${stackName}`);
@@ -58,9 +44,7 @@ export class AmplifyMigrationDecommissionStep extends AmplifyMigrationStep {
     }
 
     operations.push({
-      validate: async () => {
-        return;
-      },
+      validate: () => undefined,
       describe: async () => ['Delete the Gen1 environment'],
       execute: async () => {
         this.logger.info(`Starting decommission of environment: ${this.currentEnvName}`);
@@ -74,11 +58,31 @@ export class AmplifyMigrationDecommissionStep extends AmplifyMigrationStep {
       },
     });
 
-    return operations;
+    return new Plan({
+      operations,
+      logger: this.logger,
+      title: 'Execute',
+      implications: [
+        'The Gen1 CloudFormation stack and all its resources will be permanently deleted',
+        'This operation cannot be rolled back',
+      ],
+    });
   }
 
-  public async rollback(): Promise<AmplifyMigrationOperation[]> {
+  public async rollback(): Promise<Plan> {
     throw new Error('Not Implemented');
+  }
+
+  private async validateStatefulResources(): Promise<ValidationResult> {
+    try {
+      const changeSet = await this.createChangeSet();
+      const validations = new AmplifyGen2MigrationValidations(this.logger, this.rootStackName, this.currentEnvName, this.context);
+      // eslint-disable-next-line spellcheck/spell-checker
+      await validations.validateStatefulResources(changeSet, true);
+      return { valid: true };
+    } catch (e) {
+      return { valid: false, report: e.message };
+    }
   }
 
   private async findHoldingStacks(cfnClient: CloudFormationClient): Promise<string[]> {

@@ -16,7 +16,7 @@ describe('AuthCognitoForwardRefactorer.buildResourceMappings - UserPoolClient di
     const gen2Branch = new StackFacade(clients, 'gen2');
     return new (class extends AuthCognitoForwardRefactorer {
       constructor() {
-        super(gen1Env, gen2Branch, clients, 'us-east-1', '123456789', 'appId', 'main');
+        super(gen1Env, gen2Branch, clients, 'us-east-1', '123456789', null as any, 'appId', 'main');
       }
       public testBuildResourceMappings(source: Map<string, CFNResource>, target: Map<string, CFNResource>): MoveMapping[] {
         return this.buildResourceMappings(source, target);

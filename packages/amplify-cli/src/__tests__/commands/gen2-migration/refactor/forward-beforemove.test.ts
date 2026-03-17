@@ -88,6 +88,7 @@ describe('ForwardCategoryRefactorer.beforeMovePlan', () => {
       clients,
       'us-east-1',
       '123',
+      null as any,
     );
     const blueprint = makeBlueprint({
       targetResolved: { Lambda: { Type: 'AWS::Lambda::Function', Properties: {} } },
@@ -114,6 +115,7 @@ describe('ForwardCategoryRefactorer.beforeMovePlan', () => {
       clients,
       'us-east-1',
       '123',
+      null as any,
     );
 
     const blueprint = makeBlueprint({
@@ -153,6 +155,7 @@ describe('ForwardCategoryRefactorer.beforeMovePlan', () => {
       clients,
       'us-east-1',
       '123',
+      null as any,
     );
 
     const blueprint = makeBlueprint({

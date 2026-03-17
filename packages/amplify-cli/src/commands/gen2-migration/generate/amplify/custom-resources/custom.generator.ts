@@ -58,9 +58,7 @@ export class CustomResourceGenerator implements Planner {
 
     return [
       {
-        validate: async () => {
-          return;
-        },
+        validate: () => undefined,
         describe: async () => [`Migrate amplify/custom/${this.resourceName}/resource.ts`],
         execute: async () => {
           // Copy resource directory (excluding filtered files)

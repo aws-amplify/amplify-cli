@@ -1,28 +1,12 @@
 import { AmplifyMigrationStep } from './_step';
-import { AmplifyMigrationOperation } from './_operation';
+import { Plan } from './_plan';
 
 export class AmplifyMigrationShiftStep extends AmplifyMigrationStep {
-  public async executeImplications(): Promise<string[]> {
+  public async forward(): Promise<Plan> {
     throw new Error('Method not implemented.');
   }
 
-  public async rollbackImplications(): Promise<string[]> {
-    throw new Error('Method not implemented.');
-  }
-
-  public async executeValidate(): Promise<void> {
-    throw new Error('Method not implemented.');
-  }
-
-  public async rollbackValidate(): Promise<void> {
-    throw new Error('Method not implemented.');
-  }
-
-  public async execute(): Promise<AmplifyMigrationOperation[]> {
-    throw new Error('Method not implemented.');
-  }
-
-  public async rollback(): Promise<AmplifyMigrationOperation[]> {
+  public async rollback(): Promise<Plan> {
     throw new Error('Not Implemented');
   }
 }

@@ -71,9 +71,7 @@ export class RootPackageJsonGenerator implements Planner {
 
     return [
       {
-        validate: async () => {
-          return;
-        },
+        validate: () => undefined,
         describe: async () => ['Update package.json with Gen2 dependencies'],
         execute: async () => {
           const defaultName = 'amplify-gen2';

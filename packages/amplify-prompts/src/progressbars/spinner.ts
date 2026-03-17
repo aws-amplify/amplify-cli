@@ -79,15 +79,19 @@ export class AmplifySpinner {
       return;
     }
     if (this.terminal.isTTY()) {
-      const lines: TerminalLine[] = [
-        {
-          renderString: text || '',
-          color: success ? 'green' : 'red',
-        },
-      ];
-
       clearTimeout(this.timer);
-      this.terminal.writeLines(lines);
+      if (text) {
+        const lines: TerminalLine[] = [
+          {
+            renderString: text,
+            color: success ? 'green' : 'red',
+          },
+        ];
+        this.terminal.writeLines(lines);
+      } else {
+        // Clear the spinner line without leaving a blank line
+        this.terminal.clearCurrentLine();
+      }
       this.terminal.cursor(true);
     }
     this.terminal = null;

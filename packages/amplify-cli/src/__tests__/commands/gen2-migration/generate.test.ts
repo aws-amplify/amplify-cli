@@ -82,10 +82,8 @@ async function testSnapshot(appName: string, appOptions?: MigrationAppOptions, c
         app.region,
         {} as $TSContext,
       );
-      const operations = await step.execute();
-      for (const operation of operations) {
-        await operation.execute();
-      }
+      const plan = await step.forward();
+      await plan.execute();
 
       const report = await app.snapshots.generate.compare(process.cwd());
       const isUpdatingSnapshots = expect.getState().snapshotState._updateSnapshot === 'all';
@@ -167,8 +165,8 @@ describe('AmplifyMigrationGenerateStep', () => {
 
       const step = createStep();
       // Should not throw — generate warns on unsupported, unlike refactor
-      const operations = await step.execute();
-      expect(operations.length).toBeGreaterThan(0);
+      const plan = await step.forward();
+      await plan.describe();
     });
   });
 });

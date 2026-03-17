@@ -75,9 +75,8 @@ async function testSnapshot(appName: string, appOptions?: MigrationAppOptions, c
         context,
       );
 
-      for (const operation of await refactorStep.execute()) {
-        await operation.execute();
-      }
+      const plan = await refactorStep.forward();
+      await plan.execute();
 
       const isUpdatingSnapshots = expect.getState().snapshotState._updateSnapshot === 'all';
       const actualPath = path.join(process.cwd(), OUTPUT_DIRECTORY);
@@ -199,7 +198,7 @@ describe('AmplifyMigrationRefactorStep', () => {
       createSpy = mockDiscover([{ category: 'notifications', resourceName: 'push', service: 'Pinpoint', key: 'unsupported' }]);
 
       const step = createStep();
-      await expect(step.execute()).rejects.toThrow(/Unsupported resource 'push'/);
+      await expect(step.forward()).rejects.toThrow(/Unsupported resource 'push'/);
     });
 
     it('throws on Cognito-UserPool-Groups', async () => {
@@ -209,7 +208,7 @@ describe('AmplifyMigrationRefactorStep', () => {
       ]);
 
       const step = createStep();
-      await expect(step.execute()).rejects.toThrow(/Unsupported resource 'userPoolGroups'/);
+      await expect(step.forward()).rejects.toThrow(/Unsupported resource 'userPoolGroups'/);
     });
 
     it('does not throw for stateless-only resources', async () => {
@@ -220,8 +219,8 @@ describe('AmplifyMigrationRefactorStep', () => {
       ]);
 
       const step = createStep();
-      const operations = await step.execute();
-      expect(operations).toEqual([]);
+      const plan = await step.forward();
+      await plan.describe();
     });
 
     it('throws on multiple resources in the same refactor category', async () => {
@@ -232,7 +231,7 @@ describe('AmplifyMigrationRefactorStep', () => {
       ]);
 
       const step = createStep();
-      await expect(step.execute()).rejects.toThrow(/Multiple resources in 'storage'/);
+      await expect(step.forward()).rejects.toThrow(/Multiple resources in 'storage'/);
     });
   });
 
@@ -263,8 +262,8 @@ describe('AmplifyMigrationRefactorStep', () => {
       ]);
 
       const step = createStep();
-      const operations = await step.rollback();
-      expect(operations).toEqual([]);
+      const plan = await step.rollback();
+      await plan.describe();
     });
 
     it('throws on multiple resources in the same refactor category', async () => {

@@ -15,7 +15,8 @@ import {
 } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { extractCategory } from '../gen2-migration/categories';
-import type { Printer } from '@aws-amplify/amplify-prompts';
+import type { SpinningLogger } from '../gen2-migration/_spinning-logger';
+import { extractStackNameFromId } from '../gen2-migration/refactor/utils';
 
 /**
  * Enriched drift tree node — one per stack (root or nested)
@@ -62,10 +63,9 @@ function collectSkippedStacks(node: StackDriftNode, result: string[] = []): stri
 export async function detectStackDrift(
   cfn: CloudFormationClient,
   stackName: string,
-  print: Printer,
+  print: SpinningLogger,
 ): Promise<{ drifts: StackResourceDrift[]; driftDetectionId: string }> {
   // Start drift detection
-  print.debug(`detectStackDrift: ${stackName}`);
   const driftDetection = await cfn.send(
     new DetectStackDriftCommand({
       StackName: stackName,
@@ -116,7 +116,7 @@ export async function detectStackDrift(
 /**
  * Check if a property difference is an Amplify auth role Deny→Allow change (intended drift)
  */
-function isAmplifyAuthRoleDenyToAllowChange(propDiff: PropertyDifference, print: Printer): boolean {
+function isAmplifyAuthRoleDenyToAllowChange(propDiff: PropertyDifference, print: SpinningLogger): boolean {
   // Check if this is an AssumeRolePolicyDocument change
   if (!propDiff.PropertyPath || !propDiff.PropertyPath.includes('AssumeRolePolicyDocument')) {
     return false;
@@ -169,7 +169,7 @@ function isAmplifyAuthRoleDenyToAllowChange(propDiff: PropertyDifference, print:
 async function waitForDriftDetection(
   cfn: CloudFormationClient,
   driftDetectionId: string,
-  print: Printer,
+  print: SpinningLogger,
 ): Promise<DescribeStackDriftDetectionStatusCommandOutput | undefined> {
   const maxWaitForDrift = 300_000; // 5 minutes max
   const timeBetweenOutputs = 10_000; // User feedback every 10 seconds
@@ -221,11 +221,13 @@ async function buildDriftNode(
   cfn: CloudFormationClient,
   physicalName: string,
   logicalId: string | null,
-  print: Printer,
+  print: SpinningLogger,
   parentCategory?: string,
 ): Promise<StackDriftNode> {
   // Detect drift on this stack — filter to only drifted resources (MODIFIED/DELETED)
+  print.push(extractStackNameFromId(physicalName));
   const { drifts: allDrifts, driftDetectionId } = await detectStackDrift(cfn, physicalName, print);
+  print.pop();
   const drifts = allDrifts.filter(isDrifted);
 
   // Compute category — root stack (null logicalId) is always 'Core Infrastructure'
@@ -295,7 +297,7 @@ async function buildDriftNode(
 export async function detectStackDriftRecursive(
   cfn: CloudFormationClient,
   stackName: string,
-  print: Printer,
+  print: SpinningLogger,
 ): Promise<CloudFormationDriftResults> {
   print.debug(`detectStackDriftRecursive: ${stackName}`);
 

@@ -11,38 +11,36 @@ import { STATEFUL_RESOURCES } from './stateful-resources';
 import CLITable from 'cli-table3';
 import Bottleneck from 'bottleneck';
 import execa from 'execa';
-import { Logger } from '../gen2-migration';
+import { SpinningLogger } from './_spinning-logger';
 import chalk from 'chalk';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { extractCategory } from './categories';
 
 export class AmplifyGen2MigrationValidations {
-  private limiter = new Bottleneck({
+  private readonly limiter = new Bottleneck({
     maxConcurrent: 3,
     minTime: 50,
   });
 
   constructor(
-    private readonly logger: Logger,
+    private readonly logger: SpinningLogger,
     private readonly rootStackName: string,
     private readonly envName,
     private readonly context: $TSContext,
   ) {}
 
   public async validateDrift(): Promise<void> {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const code = await new AmplifyDriftDetector(this.context, this.logger).detect();
-    if (code !== 0) {
+    const result = await new AmplifyDriftDetector(this.context, this.logger).detect();
+    if (result.code !== 0) {
       throw new AmplifyError('MigrationError', {
-        message: 'Drift detected',
-        resolution: 'Inspect the output above and resolve the drift',
+        message: result.report ?? 'Drift detected',
+        resolution: 'Inspect the drift report above and resolve the drift',
       });
     }
-    this.logger.info(chalk.green('No drift detected ✔ '));
   }
 
   public async validateWorkingDirectory(): Promise<void> {
-    this.logger.info('Inspecting local directory state for uncommitted changes');
+    this.logger.debug('Inspecting local directory state for uncommitted changes');
 
     const { stdout: statusOutput } = await execa('git', ['status', '--porcelain']);
     if (statusOutput.trim()) {
@@ -51,12 +49,10 @@ export class AmplifyGen2MigrationValidations {
         resolution: 'Commit or stash your changes before proceeding with migration.',
       });
     }
-
-    this.logger.info(chalk.green('Local working directory is clean ✔'));
   }
 
   public async validateDeploymentStatus(): Promise<void> {
-    this.logger.info(`Inspecting root stack '${this.rootStackName}' status`);
+    this.logger.debug(`Inspecting root stack '${this.rootStackName}' status`);
     const cfnClient = new CloudFormationClient({});
     const response = await cfnClient.send(new DescribeStacksCommand({ StackName: this.rootStackName }));
 
@@ -68,7 +64,6 @@ export class AmplifyGen2MigrationValidations {
     }
 
     const stackStatus = response.Stacks[0].StackStatus;
-    // Note: UPDATE_ROLLBACK_COMPLETE isn't an expected state - only being added in the edge case of resuming migration from a failed state
     const validStatuses = ['UPDATE_COMPLETE', 'CREATE_COMPLETE', 'UPDATE_ROLLBACK_COMPLETE'];
 
     if (!validStatuses.includes(stackStatus)) {
@@ -77,8 +72,6 @@ export class AmplifyGen2MigrationValidations {
         resolution: 'Complete the deployment before proceeding.',
       });
     }
-
-    this.logger.info(chalk.green(`Root stack '${this.rootStackName}' status is ${stackStatus} ✔`));
   }
 
   public async validateDeploymentVersion(): Promise<void> {
@@ -102,7 +95,6 @@ export class AmplifyGen2MigrationValidations {
     const statefulRemoves: Array<{ category: string; resourceType: string; physicalId: string }> = [];
     for (const change of changeSet.Changes) {
       if (change.Type === 'Resource' && change.ResourceChange?.Action === 'Remove' && change.ResourceChange?.ResourceType) {
-        // Skip deployment bucket only when explicitly requested (e.g., during decommission)
         if (
           deploymentBucketName &&
           change.ResourceChange.ResourceType === 'AWS::S3::Bucket' &&
@@ -160,7 +152,7 @@ export class AmplifyGen2MigrationValidations {
 
   public async validateLockStatus(): Promise<void> {
     const cfnClient = new CloudFormationClient({});
-    this.logger.info(`Inspecting stack policy for ${this.rootStackName}`);
+    this.logger.debug(`Inspecting stack policy for ${this.rootStackName}`);
     const { StackPolicyBody } = await cfnClient.send(new GetStackPolicyCommand({ StackName: this.rootStackName }));
 
     if (!StackPolicyBody) {
@@ -189,7 +181,7 @@ export class AmplifyGen2MigrationValidations {
       });
     }
 
-    this.logger.info(chalk.green(`Stack ${this.rootStackName} is locked ✔`));
+    this.logger.debug(chalk.green(`Stack ${this.rootStackName} is locked ✔`));
   }
 
   private async getStatefulResources(

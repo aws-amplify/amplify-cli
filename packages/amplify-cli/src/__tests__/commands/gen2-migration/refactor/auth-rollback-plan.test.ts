@@ -96,6 +96,7 @@ describe('AuthCognitoRollbackRefactorer.plan()', () => {
       clients,
       'us-east-1',
       '123',
+      null as any,
     );
 
     const ops = await refactorer.plan();

@@ -96,7 +96,16 @@ describe('AuthCognitoForwardRefactorer.plan() — operation sequence', () => {
     (clients as any).cloudFormation = new CloudFormationClient({});
     const gen1Env = new StackFacade(clients, 'gen1-root');
     const gen2Branch = new StackFacade(clients, 'gen2-root');
-    const refactorer = new AuthCognitoForwardRefactorer(gen1Env, gen2Branch, clients, 'us-east-1', '123456789', 'appId', 'main');
+    const refactorer = new AuthCognitoForwardRefactorer(
+      gen1Env,
+      gen2Branch,
+      clients,
+      'us-east-1',
+      '123456789',
+      null as any,
+      'appId',
+      'main',
+    );
 
     const ops = await refactorer.plan();
     const descriptions = await Promise.all(ops.map((op) => op.describe()));
@@ -175,7 +184,16 @@ describe('AuthCognitoForwardRefactorer.plan() — operation sequence', () => {
     (clients as any).cognitoIdentityProvider = new CognitoIdentityProviderClient({});
     const gen1Env = new StackFacade(clients, 'gen1-root');
     const gen2Branch = new StackFacade(clients, 'gen2-root');
-    const refactorer = new AuthCognitoForwardRefactorer(gen1Env, gen2Branch, clients, 'us-east-1', '123456789', 'appId', 'main');
+    const refactorer = new AuthCognitoForwardRefactorer(
+      gen1Env,
+      gen2Branch,
+      clients,
+      'us-east-1',
+      '123456789',
+      null as any,
+      'appId',
+      'main',
+    );
 
     const ops = await refactorer.plan();
 
@@ -221,8 +239,17 @@ describe('AuthCognitoForwardRefactorer.plan() — operation sequence', () => {
     (clients as any).cloudFormation = new CloudFormationClient({});
     const gen1Env = new StackFacade(clients, 'gen1-root');
     const gen2Branch = new StackFacade(clients, 'gen2-root');
-    const refactorer = new AuthCognitoForwardRefactorer(gen1Env, gen2Branch, clients, 'us-east-1', '123456789', 'appId', 'main');
+    const refactorer = new AuthCognitoForwardRefactorer(
+      gen1Env,
+      gen2Branch,
+      clients,
+      'us-east-1',
+      '123456789',
+      null as any,
+      'appId',
+      'main',
+    );
 
-    await expect(refactorer.plan()).rejects.toThrow('exists in source but not destination');
+    await expect(refactorer.plan()).rejects.toThrow('unable to find target stack');
   });
 });

@@ -12,7 +12,7 @@ class TestRefactorer extends (CategoryRefactorer as any) {
   private mappingsToReturn: MoveMapping[] = [];
 
   constructor() {
-    super(null, null, null, 'us-east-1', '123');
+    super(null, null, null, 'us-east-1', '123', null as any);
   }
 
   setMappings(mappings: MoveMapping[]) {

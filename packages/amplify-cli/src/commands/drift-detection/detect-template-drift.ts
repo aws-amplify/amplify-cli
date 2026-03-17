@@ -12,7 +12,7 @@ import {
 import { paginateListChangeSets } from '@aws-sdk/client-cloudformation';
 import fs from 'fs-extra';
 import * as path from 'path';
-import type { Printer } from '@aws-amplify/amplify-prompts';
+import type { SpinningLogger } from '../gen2-migration/_spinning-logger';
 
 export interface ResourceChangeWithNested extends ResourceChange {
   nestedChanges?: ResourceChangeWithNested[];
@@ -52,7 +52,7 @@ const CHANGESET_PREFIX = 'amplify-drift-detection-';
 /**
  * Delete any existing amplify-drift-detection-* changesets from a previous run
  */
-async function cleanupOldDriftChangesets(cfn: CloudFormationClient, stackName: string, print: Printer): Promise<void> {
+async function cleanupOldDriftChangesets(cfn: CloudFormationClient, stackName: string, print: SpinningLogger): Promise<void> {
   try {
     const toDelete: string[] = [];
     for await (const page of paginateListChangeSets({ client: cfn }, { StackName: stackName })) {
@@ -81,7 +81,11 @@ async function cleanupOldDriftChangesets(cfn: CloudFormationClient, stackName: s
  * @param print - Logging interface
  * @param cfn - CloudFormation client
  */
-export async function detectTemplateDrift(stackName: string, print: Printer, cfn: CloudFormationClient): Promise<TemplateDriftResults> {
+export async function detectTemplateDrift(
+  stackName: string,
+  print: SpinningLogger,
+  cfn: CloudFormationClient,
+): Promise<TemplateDriftResults> {
   try {
     // Check prerequisites
     const currentCloudBackendPath = pathManager.getCurrentCloudBackendDirPath();
@@ -233,7 +237,7 @@ export async function detectTemplateDrift(stackName: string, print: Printer, cfn
 async function analyzeChangeSet(
   cfn: CloudFormationClient,
   changeSet: DescribeChangeSetCommandOutput,
-  print: Printer,
+  print: SpinningLogger,
 ): Promise<TemplateDriftResults> {
   const result: TemplateDriftResults = {
     changes: [],

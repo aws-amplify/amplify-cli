@@ -71,6 +71,16 @@ export class AmplifyTerminal {
   }
 
   /**
+   * Clears the current spinner line without writing a new line.
+   */
+  public clearCurrentLine(): void {
+    this.stream.write(cursorUp(this.lastHeight));
+    this.stream.write(`\u001b[2K\r`);
+    this.lastHeight = 0;
+    this.trailingEmptyLines = 0;
+  }
+
+  /**
    * Write array of lines into block.
    */
   public writeLines(lines: TerminalLine[]): void {
