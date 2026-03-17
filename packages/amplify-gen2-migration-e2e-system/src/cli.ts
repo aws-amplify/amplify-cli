@@ -23,6 +23,7 @@ import { generateTimeBasedE2EAmplifyAppName } from './utils/math';
 import path from 'path';
 import os from 'os';
 import fs from 'fs';
+import * as fsExtra from 'fs-extra';
 import { execSync } from 'child_process';
 
 // Initialize core components
@@ -298,6 +299,35 @@ function getAmplifyCliPath(): string {
 }
 
 /**
+ * Run the app's gen1-test-script.ts to validate the Gen1 deployment.
+ *
+ * Copies _test-common to the migration target directory so relative
+ * imports like ../_test-common resolve, then executes the test script
+ * via npx tsx from the target app directory.
+ */
+async function runGen1TestScript(targetAppPath: string, migrationTargetPath: string, sourceAppsBasePath: string): Promise<void> {
+  const testScriptName = 'gen1-test-script.ts';
+
+  // Copy _test-common so ../_test-common imports resolve from the target app dir
+  const testCommonSource = path.join(sourceAppsBasePath, '_test-common');
+  const testCommonDest = path.join(migrationTargetPath, '_test-common');
+
+  logger.info(`Copying _test-common to ${testCommonDest}`);
+  await fsExtra.copy(testCommonSource, testCommonDest, { overwrite: true });
+
+  logger.info(`Running ${testScriptName} in ${targetAppPath}`);
+  const result = await execa('npx', ['tsx', testScriptName], {
+    cwd: targetAppPath,
+  });
+
+  if (result.exitCode !== 0) {
+    throw new Error(`${testScriptName} failed with exit code ${result.exitCode}`);
+  }
+
+  logger.info(`${testScriptName} completed successfully`);
+}
+
+/**
  * Spawn the amplify CLI directly to run amplify push --yes.
  *
  * Uses AMPLIFY_PATH env var if set, otherwise
@@ -388,6 +418,12 @@ async function initializeAppFromCLI(params: InitializeAppFromCLIParams): Promise
     await amplifyPush(targetAppPath);
     logger.info(`Successfully pushed ${deploymentName} to AWS`, context);
 
+    // Step 4: Run gen1 test script to validate the deployment
+    logger.info(`Running gen1 test script for ${deploymentName}...`, context);
+    const sourceAppsBasePath = path.dirname(sourceAppPath);
+    await runGen1TestScript(targetAppPath, migrationTargetPath, sourceAppsBasePath);
+    logger.info(`Gen1 test script passed for ${deploymentName}`, context);
+
     try {
       execSync('git init && git add . && git commit -m "pre-deployment"', {
         cwd: targetAppPath,
@@ -399,7 +435,7 @@ async function initializeAppFromCLI(params: InitializeAppFromCLIParams): Promise
       process.exit(1);
     }
 
-    // Step 4: Run gen2-migration pre-deployment workflow (lock -> generate)
+    // Step 5: Run gen2-migration pre-deployment workflow (lock -> generate)
     logger.info(`Running gen2-migration pre-deployment workflow for ${deploymentName}...`, context);
     const gen2MigrationExecutor = new Gen2MigrationExecutor(logger, { profile });
     await gen2MigrationExecutor.runPreDeploymentWorkflow(targetAppPath);
