@@ -102,7 +102,7 @@ async function testSnapshot(appName: string, appOptions?: MigrationAppOptions, c
   );
 }
 
-import { Gen1App, DiscoveredResource } from '../../../commands/gen2-migration/generate-new/_infra/gen1-app';
+import { Gen1App, DiscoveredResource } from '../../../commands/gen2-migration/generate/_infra/gen1-app';
 import { Assessment } from '../../../commands/gen2-migration/_assessment';
 import { Logger } from '../../../commands/gen2-migration';
 

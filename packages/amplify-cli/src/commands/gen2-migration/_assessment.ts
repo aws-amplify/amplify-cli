@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import { printer } from '@aws-amplify/amplify-prompts';
-import { DiscoveredResource, SupportResponse } from './generate-new/_infra/gen1-app';
+import { DiscoveredResource, SupportResponse } from './generate/_infra/gen1-app';
 
 /**
  * Per-resource assessment combining generate and refactor support.
