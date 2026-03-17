@@ -63,7 +63,7 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
   protected async resolveSource(stackId: string): Promise<ResolvedStack> {
     const facade = this.gen2Branch;
     const originalTemplate = await facade.fetchTemplate(stackId);
-    const description = await facade.fetchStackDescription(stackId);
+    const description = await facade.fetchStack(stackId);
     const parameters = description.Parameters ?? [];
     const outputs = description.Outputs ?? [];
 
@@ -89,7 +89,7 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
   protected async resolveTarget(stackId: string): Promise<ResolvedStack> {
     const facade = this.gen1Env;
     const originalTemplate = await facade.fetchTemplate(stackId);
-    const description = await facade.fetchStackDescription(stackId);
+    const description = await facade.fetchStack(stackId);
     const parameters = description.Parameters ?? [];
 
     return { stackId, resolvedTemplate: originalTemplate, parameters };

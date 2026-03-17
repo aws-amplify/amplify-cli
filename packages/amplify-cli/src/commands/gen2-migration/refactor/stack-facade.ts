@@ -16,7 +16,7 @@ import { CFNTemplate } from '../cfn-template';
  */
 export class StackFacade {
   private readonly templateCache = new Map<string, Promise<CFNTemplate>>();
-  private readonly descriptionCache = new Map<string, Promise<Stack>>();
+  private readonly stackCache = new Map<string, Promise<Stack>>();
   private readonly resourcesCache = new Map<string, Promise<StackResource[]>>();
   private nestedStacksPromise: Promise<StackResource[]> | undefined;
 
@@ -51,8 +51,8 @@ export class StackFacade {
   /**
    * Describes a stack (parameters, outputs, status). Cached per stackId.
    */
-  public async fetchStackDescription(stackId: string): Promise<Stack> {
-    return this.cachedFetch(this.descriptionCache, stackId, async () => {
+  public async fetchStack(stackId: string): Promise<Stack> {
+    return this.cachedFetch(this.stackCache, stackId, async () => {
       const response = await this.clients.cloudFormation.send(new DescribeStacksCommand({ StackName: stackId }));
       const stack = response.Stacks?.[0];
       if (!stack) {
