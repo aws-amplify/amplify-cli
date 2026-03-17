@@ -548,8 +548,8 @@ by the CLI setting that configures them.
 
   - 🟡 `Facebook` (_generate_ ✔ _refactor_ ✗)
   - 🟡 `Google` (_generate_ ✔ _refactor_ ✗)
-  - 🔴 `Login With Amazon`
-  - 🔴 `Sign in with Apple`
+  - ⚠️ `Login With Amazon`
+  - ⚠️ `Sign in with Apple`
 
 - ➤ **Select the authentication/authorization services that you want to use**
 
@@ -643,16 +643,16 @@ by the CLI setting that configures them.
     - 🟢 `API Key`
     - 🟢 `Amazon Cognito User Pool`
     - 🟢 `IAM`
-    - 🔴 `OpenID Connect`
-    - 🔴 `Lambda`
+    - ⚠️  `OpenID Connect`
+    - ⚠️  `Lambda`
 
   - ➤ **Additional Authorization Type**
 
     - 🟢 `API Key`
     - 🟢 `Amazon Cognito User Pool`
-    - 🔴 `IAM`
-    - 🔴 `OpenID Connect`
-    - 🔴 `Lambda`
+    - ⚠️  `IAM`
+    - ⚠️  `OpenID Connect`
+    - ⚠️  `Lambda`
 
 - 🟡 **REST** (_generate_ ✗ _refactor_ ✔)
 
@@ -687,7 +687,7 @@ by the CLI setting that configures them.
   - 🟢 `Do you want to add a sort key to your table`
   - 🟢 `Do you want to add global secondary indexes to your table`
   - 🟢 `Do you want to add a sort key to your global secondary index`
-  - 🔴 `Do you want to add a Lambda Trigger for your Table`
+  - ⚠️ `Do you want to add a Lambda Trigger for your Table`
 
 ## Function
 
