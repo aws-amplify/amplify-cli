@@ -67,26 +67,6 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
       });
     }
 
-    for (const userPoolId of await this.userPoolIds()) {
-      operations.push({
-        validate: async () => {
-          return;
-        },
-        describe: async () => {
-          return [`Enable deletion protection for user pool '${userPoolId}'`];
-        },
-        execute: async () => {
-          await this.cognitoClient().send(
-            new UpdateUserPoolCommand({
-              UserPoolId: userPoolId,
-              DeletionProtection: 'ACTIVE',
-            }),
-          );
-          this.logger.info(`Enabled deletion protection for user pool '${userPoolId}'`);
-        },
-      });
-    }
-
     operations.push({
       validate: async () => {
         return;
