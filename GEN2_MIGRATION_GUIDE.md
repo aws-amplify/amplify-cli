@@ -533,11 +533,6 @@ by the CLI setting that configures them.
 > to manually augment the generated code to add the necessary configuration.
 > - ⚠️ | Untested. You're welcome to try it out and let us know!
 
-## Types of frontend deployment
-  - ⚠️ Continuous deployment / GitHub 
-  - ⚠️ Manual deployment
-  - ⚠️ s3 and Cloudfront
-
 ## Auth
 
 ### `amplify add auth`
@@ -796,6 +791,17 @@ by the CLI setting that configures them.
 ## Hosting
 
 ### `amplify add hosting` 🔴
+
+- ➤ **Select the plugin module to execute**
+  
+  - ➤ **Hosting with Amplify Console (Managed hosting with custom domains, Continuous deployment)**
+ 
+    - ➤ **Choose a type**
+
+        - ⚠️ `Continuous deployment (Git-based deployments)`
+        - ⚠️ `Manual deployment`
+      
+- ⚠️ **Amazon CloudFront and S3**
 
 ## Custom 
 
