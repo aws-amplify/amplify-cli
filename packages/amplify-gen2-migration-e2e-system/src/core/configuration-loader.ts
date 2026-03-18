@@ -159,23 +159,44 @@ export class ConfigurationLoader implements IConfigurationLoader {
 
     const storageConfig = config as Record<string, unknown>;
 
-    if (!storageConfig.buckets || !Array.isArray(storageConfig.buckets)) {
-      errors.push('Storage buckets must be an array');
+    // Storage can be either DynamoDB (type: "dynamodb" with tables) or S3 (buckets).
+    if (storageConfig.type === 'dynamodb') {
+      if (!storageConfig.tables || !Array.isArray(storageConfig.tables)) {
+        errors.push('Storage tables must be an array for dynamodb type');
+      } else {
+        storageConfig.tables.forEach((table: unknown, index: number) => {
+          if (!table || typeof table !== 'object') {
+            errors.push(`Storage table at index ${index} must be an object`);
+            return;
+          }
+          const tableConfig = table as Record<string, unknown>;
+          if (!tableConfig.name) {
+            errors.push(`Storage table at index ${index} must have a name`);
+          }
+          if (!tableConfig.partitionKey) {
+            errors.push(`Storage table at index ${index} must have a partitionKey`);
+          }
+        });
+      }
     } else {
-      storageConfig.buckets.forEach((bucket: unknown, index: number) => {
-        if (!bucket || typeof bucket !== 'object') {
-          errors.push(`Storage bucket at index ${index} must be an object`);
-          return;
-        }
+      if (!storageConfig.buckets || !Array.isArray(storageConfig.buckets)) {
+        errors.push('Storage buckets must be an array');
+      } else {
+        storageConfig.buckets.forEach((bucket: unknown, index: number) => {
+          if (!bucket || typeof bucket !== 'object') {
+            errors.push(`Storage bucket at index ${index} must be an object`);
+            return;
+          }
 
-        const bucketConfig = bucket as Record<string, unknown>;
-        if (!bucketConfig.name) {
-          errors.push(`Storage bucket at index ${index} must have a name`);
-        }
-        if (!bucketConfig.access || !Array.isArray(bucketConfig.access)) {
-          errors.push(`Storage bucket at index ${index} must have access array`);
-        }
-      });
+          const bucketConfig = bucket as Record<string, unknown>;
+          if (!bucketConfig.name) {
+            errors.push(`Storage bucket at index ${index} must have a name`);
+          }
+          if (!bucketConfig.access || !Array.isArray(bucketConfig.access)) {
+            errors.push(`Storage bucket at index ${index} must have access array`);
+          }
+        });
+      }
     }
 
     return errors;

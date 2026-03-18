@@ -437,8 +437,8 @@ async function initializeAppFromCLI(params: InitializeAppFromCLIParams): Promise
     logger.info(`Git repository initialized and Gen1 state committed`, context);
 
     // TODO: remove early return when ready to test migration steps
-    // logger.info(`Stopping after push + git commit. App deployed at ${targetAppPath}`, context);
-    // return;
+    logger.info(`Stopping after push + git commit. App deployed at ${targetAppPath}`, context);
+    return;
 
     // Step 4: Run gen2-migration pre-deployment workflow (lock -> checkout -> generate)
     logger.info(`Running gen2-migration pre-deployment workflow for ${deploymentName}...`, context);
