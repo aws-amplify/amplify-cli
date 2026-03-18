@@ -303,7 +303,7 @@ Resources:
 - The logical ID mapping between Gen1 and Gen2 is critical—UserPoolClient has special handling (Web vs Native) and UserPoolGroup uses CDK hash suffixes that must be stripped
 - OAuth migrations require credentials from both Cognito (client_id, client_secret) and SSM (Sign In With Apple private key)—ensure proper IAM permissions
 - The module supports both forward migration (Gen1→Gen2) and rollback (Gen2→Gen1) operations, but rollback has different logical ID mapping logic
-- Category stacks are identified by inspecting the nested stack's resources — for example, auth stacks are classified by checking for the presence of an `AWS::Cognito::UserPool` resource rather than parsing stack Description metadata.
+- Category stacks are identified by parsing the nested stack's `Description` field as JSON and checking the `stackType` property (e.g., `auth` vs `UserPool-Groups`).
 
 **Common pitfalls:**
 
