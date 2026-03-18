@@ -1,168 +1,155 @@
-import { CFNConditionFunction, CFNConditionFunctionStatement, CFNFunction, CFNResource, CFNTemplate } from '../types';
-import assert from 'node:assert';
 import { Parameter } from '@aws-sdk/client-cloudformation';
+import { AmplifyError } from '@aws-amplify/amplify-cli-core';
+import { CFNConditionFunction, CFNConditionFunctionStatement, CFNFunction, CFNTemplate } from '../../cfn-template';
 
 /**
- * Class to resolve conditions in a CloudFormation template.
- * This is needed prior to a stack refactor since same conditions and params are not present in Gen1 and Gen2 stacks
- * and the resource being moved needs to have its condition resolved.
+ * Resolves conditions in a CloudFormation template.
+ * Returns a new template; does not mutate input.
+ *
+ * Three phases:
+ * 1. Evaluate all Conditions → Map<string, boolean>
+ * 2. Resolve top-level Fn::If in resource properties (non-recursive, matching old code scope)
+ * 3. Remove resources with unmet conditions
+ *
+ * Fixes from old code:
+ * - Array.isArray check before typeof === 'object' (old code had unreachable array branch)
+ * - resolveStatement() helper eliminates triple copy-paste of left/right resolution
  */
-class CFNConditionResolver {
-  private readonly conditions: Record<string, CFNConditionFunction> | undefined;
-  constructor(private readonly template: CFNTemplate) {
-    this.conditions = template.Conditions;
-  }
+export function resolveConditions(template: CFNTemplate, parameters: Parameter[]): CFNTemplate {
+  const conditions = template.Conditions;
+  if (!conditions || Object.keys(conditions).length === 0) return template;
 
-  public resolve(parameters: Parameter[]) {
-    if (!this.conditions || Object.keys(this.conditions).length === 0) return this.template;
+  // Phase 1: Evaluate all conditions
+  const conditionValues = new Map<string, boolean>();
+  for (const [conditionKey, conditionDef] of Object.entries(conditions)) {
+    const fnType = Object.keys(conditionDef)[0] as CFNFunction;
+    if (!Object.values(CFNFunction).includes(fnType)) continue;
 
-    const clonedTemplate = JSON.parse(JSON.stringify(this.template)) as CFNTemplate;
-    const conditionValueMap = new Map<string, boolean>();
-    Object.entries(this.conditions).forEach(([conditionKey, conditionValue]) => {
-      const fnType = Object.keys(conditionValue)[0];
-      if (Object.values(CFNFunction).includes(fnType as CFNFunction)) {
-        const conditionStatements = conditionValue[fnType as keyof CFNConditionFunction];
-        const [leftStatement, rightStatement] = conditionStatements as [CFNConditionFunctionStatement, CFNConditionFunctionStatement];
-        const result = this.resolveCondition(leftStatement, rightStatement, parameters, fnType as CFNFunction);
-        conditionValueMap.set(conditionKey, result);
-      }
-    });
-
-    this.resolveConditionInResources(clonedTemplate.Resources, conditionValueMap);
-
-    return clonedTemplate;
-  }
-
-  private resolveCondition(
-    leftStatement: CFNConditionFunctionStatement,
-    rightStatement: CFNConditionFunctionStatement,
-    params: Parameter[],
-    fnType: CFNFunction,
-  ): boolean {
-    assert(this.conditions);
-    let resolvedLeftStatement: boolean | string | undefined;
-    let resolvedRightStatement: boolean | string | undefined;
-
-    if (typeof leftStatement !== 'object') {
-      resolvedLeftStatement = leftStatement;
-    }
-    if (typeof rightStatement !== 'object') {
-      resolvedRightStatement = rightStatement;
-    }
-    // Resolve nested condition
-    if (typeof leftStatement === 'object' && 'Condition' in leftStatement) {
-      const nestedConditionName = leftStatement.Condition;
-      const nestedCondition = this.conditions[nestedConditionName];
-      const nestedFnType = Object.keys(nestedCondition)[0] as CFNFunction;
-      const [nestedLeftStatement, nestedRightStatement] = nestedCondition[nestedFnType as keyof CFNConditionFunction] as [
-        CFNConditionFunctionStatement,
-        CFNConditionFunctionStatement,
-      ];
-      resolvedLeftStatement = this.resolveCondition(nestedLeftStatement, nestedRightStatement, params, nestedFnType);
-    }
-    if (typeof rightStatement === 'object' && 'Condition' in rightStatement) {
-      const nestedConditionName = rightStatement.Condition;
-      const nestedCondition = this.conditions[nestedConditionName];
-      const nestedFnType = Object.keys(nestedCondition)[0] as CFNFunction;
-      const [nestedLeftStatement, nestedRightStatement] = nestedCondition[nestedFnType as keyof CFNConditionFunction] as [
-        CFNConditionFunctionStatement,
-        CFNConditionFunctionStatement,
-      ];
-      resolvedRightStatement = this.resolveCondition(nestedLeftStatement, nestedRightStatement, params, nestedFnType);
-    }
-
-    // Resolve nested function
-    if (typeof leftStatement === 'object' && Object.values(CFNFunction).includes(Object.keys(leftStatement)[0] as CFNFunction)) {
-      const nestedCondition = leftStatement;
-      const nestedFnType = Object.keys(nestedCondition)[0] as CFNFunction;
-      const [nestedLeftStatement, nestedRightStatement] = nestedCondition[nestedFnType as keyof CFNConditionFunction] as [
-        CFNConditionFunctionStatement,
-        CFNConditionFunctionStatement,
-      ];
-      resolvedLeftStatement = this.resolveCondition(nestedLeftStatement, nestedRightStatement, params, nestedFnType);
-    }
-    if (typeof rightStatement === 'object' && Object.values(CFNFunction).includes(Object.keys(rightStatement)[0] as CFNFunction)) {
-      const nestedCondition = rightStatement;
-      const nestedFnType = Object.keys(nestedCondition)[0] as CFNFunction;
-      const [nestedLeftStatement, nestedRightStatement] = nestedCondition[nestedFnType as keyof CFNConditionFunction] as [
-        CFNConditionFunctionStatement,
-        CFNConditionFunctionStatement,
-      ];
-      resolvedRightStatement = this.resolveCondition(nestedLeftStatement, nestedRightStatement, params, nestedFnType);
-    }
-
-    // Resolve parameter refs
-    if (typeof leftStatement === 'object' && 'Ref' in leftStatement) {
-      const parameterKey = leftStatement.Ref;
-      const value = params.find((p) => p.ParameterKey === parameterKey)?.ParameterValue;
-      assert(value);
-      resolvedLeftStatement = value;
-    }
-    if (rightStatement && typeof rightStatement === 'object' && 'Ref' in rightStatement) {
-      const parameterKey = rightStatement.Ref;
-      const value = params.find((p) => p.ParameterKey === parameterKey)?.ParameterValue;
-      assert(value);
-      resolvedRightStatement = value;
-    }
-
-    let result: boolean | undefined;
-    switch (fnType) {
-      case CFNFunction.Equals:
-        result = resolvedLeftStatement === resolvedRightStatement;
-        break;
-      case CFNFunction.Not:
-        result = !resolvedLeftStatement;
-        break;
-      case CFNFunction.Or:
-        result = !!(resolvedLeftStatement || resolvedRightStatement);
-        break;
-      case CFNFunction.And:
-        result = !!(resolvedLeftStatement && resolvedRightStatement);
-        break;
-      default:
-        throw new Error(`Invalid ${fnType} condition`);
-    }
-    return result;
-  }
-
-  private resolveConditionInResources(resources: Record<string, CFNResource>, conditionValueMap: Map<string, boolean>) {
-    Object.entries(resources).forEach(([logicalId, value]) => {
-      const condition = value.Condition;
-      if (condition && conditionValueMap.has(condition)) {
-        const result = conditionValueMap.get(condition);
-        // delete resources from template that have unmet condition
-        if (!result) {
-          delete resources[logicalId];
-        }
-      }
-      const props = value.Properties;
-      Object.entries(props).forEach(([propName, propValue]) => {
-        if (typeof propValue === 'object') {
-          props[propName] = this.resolveIfCondition(propValue, conditionValueMap);
-        } else if (Array.isArray(propValue)) {
-          propValue.forEach((item, index) => {
-            if (typeof item === 'object') {
-              propValue[index] = this.resolveIfCondition(item, conditionValueMap);
-            }
-          });
-        }
+    const statements = conditionDef[fnType as keyof CFNConditionFunction] as CFNConditionFunctionStatement[];
+    if ((fnType === CFNFunction.Or || fnType === CFNFunction.And) && statements.length > 2) {
+      throw new AmplifyError('CloudFormationTemplateError', {
+        message: `${fnType} with ${statements.length} operands is not supported (condition '${conditionKey}'). Only 2 operands are handled.`,
       });
-    });
-    return resources;
+    }
+    const [left, right] = statements;
+    conditionValues.set(conditionKey, evaluateCondition(conditions, left, right, parameters, fnType));
   }
 
-  private resolveIfCondition(propValue: object, conditionValueMap: Map<string, boolean>) {
-    let result = propValue;
-    if (CFNFunction.If in propValue) {
-      const ifCondition = propValue[CFNFunction.If] as [string, object, object];
-      const conditionName = ifCondition[0];
-      if (conditionValueMap.has(conditionName)) {
-        const conditionValue = conditionValueMap.get(conditionName);
-        result = conditionValue ? ifCondition[1] : ifCondition[2];
+  // Phase 2: Resolve Fn::If only at the top level of resource properties (matching old code scope).
+  // The old code does NOT recurse into nested objects — Fn::If inside Fn::Join etc. is left as-is.
+  const resolved = JSON.parse(JSON.stringify(template)) as CFNTemplate;
+  for (const [, resource] of Object.entries(resolved.Resources)) {
+    for (const [propName, propValue] of Object.entries(resource.Properties)) {
+      if (typeof propValue === 'object' && propValue !== null && !Array.isArray(propValue)) {
+        resource.Properties[propName] = resolveIfCondition(propValue, conditionValues);
+      } else if (Array.isArray(propValue)) {
+        resource.Properties[propName] = propValue.map((item) =>
+          typeof item === 'object' && item !== null ? resolveIfCondition(item, conditionValues) : item,
+        );
       }
     }
-    return result;
+  }
+
+  // Phase 3: Remove resources with unmet conditions (mutates the walker's output, not the input)
+  for (const [logicalId, resource] of Object.entries(resolved.Resources)) {
+    const condition = resource.Condition;
+    if (condition && conditionValues.has(condition) && !conditionValues.get(condition)) {
+      delete resolved.Resources[logicalId];
+    }
+  }
+
+  return resolved;
+}
+
+/**
+ * Resolves a single condition function statement to a boolean or string value.
+ * Handles: literal strings, nested conditions (Condition: "X"), nested functions
+ * (Fn::Equals, etc.), and parameter refs (Ref: "X").
+ */
+function resolveStatement(
+  conditions: Record<string, CFNConditionFunction>,
+  statement: CFNConditionFunctionStatement,
+  parameters: Parameter[],
+): boolean | string {
+  // Literal string
+  if (typeof statement !== 'object') return statement;
+
+  const record = statement as Record<string, unknown>;
+
+  // Nested condition reference: { Condition: "ConditionName" }
+  if ('Condition' in record) {
+    const nestedName = record.Condition as string;
+    const nestedDef = conditions[nestedName];
+    const nestedFnType = Object.keys(nestedDef)[0] as CFNFunction;
+    const nestedStatements = nestedDef[nestedFnType as keyof CFNConditionFunction] as CFNConditionFunctionStatement[];
+    return evaluateCondition(conditions, nestedStatements[0], nestedStatements[1], parameters, nestedFnType);
+  }
+
+  // Nested function: { "Fn::Equals": [...] }, { "Fn::Not": [...] }, etc.
+  const fnKey = Object.keys(record).find((k) => Object.values(CFNFunction).includes(k as CFNFunction));
+  if (fnKey) {
+    const nestedStatements = record[fnKey] as CFNConditionFunctionStatement[];
+    return evaluateCondition(conditions, nestedStatements[0], nestedStatements[1], parameters, fnKey as CFNFunction);
+  }
+
+  // Parameter ref: { Ref: "ParamName" }
+  if ('Ref' in record) {
+    const paramKey = record.Ref as string;
+    const value = parameters.find((p) => p.ParameterKey === paramKey)?.ParameterValue;
+    if (value === undefined) {
+      throw new AmplifyError('MissingExpectedParameterError', {
+        message: `Condition references parameter '${paramKey}' but no value was provided`,
+      });
+    }
+    return value;
+  }
+
+  throw new AmplifyError('CloudFormationTemplateError', {
+    message: `Unsupported condition statement: ${JSON.stringify(statement)}`,
+  });
+}
+
+/**
+ * Evaluates a condition function (Fn::Equals, Fn::Not, Fn::Or, Fn::And) to a boolean.
+ */
+function evaluateCondition(
+  conditions: Record<string, CFNConditionFunction>,
+  left: CFNConditionFunctionStatement,
+  right: CFNConditionFunctionStatement | undefined,
+  parameters: Parameter[],
+  fnType: CFNFunction,
+): boolean {
+  const resolvedLeft = resolveStatement(conditions, left, parameters);
+  const resolvedRight = right !== undefined ? resolveStatement(conditions, right, parameters) : undefined;
+
+  switch (fnType) {
+    case CFNFunction.Equals:
+      return resolvedLeft === resolvedRight;
+    case CFNFunction.Not:
+      return !resolvedLeft;
+    case CFNFunction.Or:
+      return !!(resolvedLeft || resolvedRight);
+    case CFNFunction.And:
+      return !!(resolvedLeft && resolvedRight);
+    default:
+      throw new AmplifyError('CloudFormationTemplateError', {
+        message: `Unsupported condition function: ${fnType}`,
+      });
   }
 }
 
-export default CFNConditionResolver;
+/**
+ * Resolves a top-level Fn::If in a property value object.
+ * Does NOT recurse — matches old code behavior.
+ */
+function resolveIfCondition(propValue: object, conditionValues: Map<string, boolean>): object {
+  const record = propValue as Record<string, unknown>;
+  if (CFNFunction.If in record) {
+    const ifCondition = record[CFNFunction.If] as [string, unknown, unknown];
+    const conditionName = ifCondition[0];
+    if (conditionValues.has(conditionName)) {
+      return (conditionValues.get(conditionName) ? ifCondition[1] : ifCondition[2]) as object;
+    }
+  }
+  return propValue;
+}

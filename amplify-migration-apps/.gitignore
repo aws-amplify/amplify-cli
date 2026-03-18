@@ -1,1 +1,4 @@
-**/amplify
+# Ignore amplify dirs created by `amplify init` at each app root,
+# but not the ones inside _snapshot.* folders which are tracked.
+*/amplify/
+!*/_snapshot.*/amplify/
