@@ -315,6 +315,14 @@ async function runGen1TestScript(targetAppPath: string, migrationTargetPath: str
   logger.info(`Copying _test-common to ${testCommonDest}`);
   await fsExtra.copy(testCommonSource, testCommonDest, { overwrite: true });
 
+  // Install dependencies for the test script (aws-amplify, etc.)
+  logger.info(`Installing dependencies in ${targetAppPath}`);
+  await execa('npm', ['install'], { cwd: targetAppPath });
+
+  // Install dependencies for _test-common
+  logger.info(`Installing _test-common dependencies in ${testCommonDest}`);
+  await execa('npm', ['install'], { cwd: testCommonDest });
+
   logger.info(`Running ${testScriptName} in ${targetAppPath}`);
   const result = await execa('npx', ['tsx', testScriptName], {
     cwd: targetAppPath,
