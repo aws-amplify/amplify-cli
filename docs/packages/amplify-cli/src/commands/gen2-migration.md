@@ -38,7 +38,7 @@ calls `assess()` on the generate and refactor steps, and renders the result.
 
 ### Plan-Based Execution
 
-Each step's `forward()` or `rollback()` method returns a `Plan`. The dispatcher calls `plan.describe()` to show what will happen, `plan.validate()` to run pre-flight checks (rendering a "Failed Validations Report" with details when checks fail), and `plan.execute()` to run the operations. This replaces the previous pattern where the dispatcher managed operations, validations, and rendering independently.
+Each step's `forward()` or `rollback()` method returns a `Plan`. The dispatcher calls `plan.validate()` first (rendering a "Failed Validations Report" with details when checks fail), then `plan.describe()` to show the operations summary and implications, then prompts for user confirmation, and finally `plan.execute()` to run the operations. If `--validations-only` is set, the dispatcher stops after validation.
 
 ### Automatic Rollback on Failure
 
@@ -55,17 +55,17 @@ Detailed documentation for subcommands is available in:
 
 ## Architecture
 
-Each step extends `AmplifyMigrationStep` and returns a `Plan` from `forward()` or `rollback()`. The `Plan` owns the full lifecycle: it collects operations, runs validations (rendering a "Failed Validations Report" with per-validation details when checks fail, followed by a pass/fail summary table), displays the operations summary and implications, and executes operations sequentially. The top-level dispatcher only calls `plan.describe()`, `plan.validate()`, and `plan.execute()`.
+Each step extends `AmplifyMigrationStep` and returns a `Plan` from `forward()` or `rollback()`. The `Plan` owns the full lifecycle: it collects operations, runs validations (rendering a "Failed Validations Report" with per-validation details when checks fail, followed by a pass/fail summary table), displays the operations summary and implications, and executes operations sequentially. The dispatcher calls `plan.validate()` → `plan.describe()` → user confirmation → `plan.execute()`.
 
 ### `Plan`
 
 [`src/commands/gen2-migration/_plan.ts`](../../../packages/amplify-cli/src/commands/gen2-migration/_plan.ts)
 
-Encapsulates a list of `AmplifyMigrationOperation` objects and drives the describe/validate/execute lifecycle. Constructed with operations, a logger, a title, and optional implications.
+Encapsulates a list of `AmplifyMigrationOperation` objects and drives the describe/validate/execute lifecycle. Constructed with `PlanProps`: operations, a logger, a title, and optional implications.
 
+- `validate()` — runs each operation's validation with spinner context, renders a "Failed Validations Report" (description in red + report text) for any failures, then renders a pass/fail summary table. Returns `boolean` (`true` if all passed).
 - `describe()` — renders the operations summary and implications
-- `validate()` — runs each operation's validation with spinner context, renders a "Failed Validations Report" (description in red + report text) for any failures, then renders a pass/fail summary table. Returns `false` if any validation failed.
-- `execute()` — runs all operations sequentially
+- `execute()` — logs the title, runs all operations sequentially, prints "Done"
 
 ```mermaid
 flowchart LR
@@ -75,31 +75,34 @@ flowchart LR
 
     PARSE --> STEP[Instantiate Step Class]
 
-    STEP --> VALONLY{Validations Only?}
+    STEP --> PLAN{Rollback Flag?}
+    PLAN -->|no| FPLAN[Plan: step.forward]
+    PLAN -->|yes| RPLAN[Plan: step.rollback]
 
-    VALONLY -->|yes| VALBRANCH{Rollback Flag?}
-    VALBRANCH -->|no| VALEXEC[Validate Execute]
-    VALBRANCH -->|yes| VALROLL[Validate Rollback]
-    VALEXEC --> VALDONE[Complete]
-    VALROLL --> VALDONE
+    FPLAN --> FVAL[Validate]
+    RPLAN --> RVAL[Validate]
 
-    VALONLY -->|no| BRANCH{Rollback Flag?}
+    FVAL --> FVALONLY{Validations Only?}
+    RVAL --> RVALONLY{Validations Only?}
 
-    BRANCH -->|no| FSUM[Display Execute Operations Summary]
-    FSUM --> FIMP[Display Execute Implications]
-    FIMP --> FCONF[User Confirmation]
-    FCONF --> FV[Validate Execution]
-    FV --> FEX[Run Execute operations]
+    FVALONLY -->|yes| FDONE[Complete]
+    RVALONLY -->|yes| RDONE[Complete]
+
+    FVALONLY -->|no| FDESC[Describe operations + implications]
+    RVALONLY -->|no| RDESC[Describe operations + implications]
+
+    FDESC --> FCONF[User Confirmation]
+    RDESC --> RCONF[User Confirmation]
+
+    FCONF --> FEX[Execute]
+    RCONF --> REX[Execute]
+
     FEX --> FERR{Failure?}
-    FERR -->|yes & auto-rollback| REX
-    FERR -->|no| FDONE[Complete]
+    FERR -->|yes & auto-rollback| AUTOROLL[step.rollback → execute]
+    FERR -->|no| FDONE2[Complete]
+    AUTOROLL --> FDONE2
 
-    BRANCH -->|yes| RSUM[Display Rollback Operations Summary]
-    RSUM --> RIMP[Display Rollback Implications]
-    RIMP --> RCONF[User Confirmation]
-    RCONF --> RV[Validate Rollback]
-    RV --> REX[Run rollback operations]
-    REX --> RDONE[Complete]
+    REX --> RDONE2[Complete]
 ```
 
 ### `AmplifyMigrationStep`
@@ -112,7 +115,7 @@ Abstract base class that defines the lifecycle contract for all migration steps.
 
 [`src/commands/gen2-migration/_operation.ts`](../../../packages/amplify-cli/src/commands/gen2-migration/_operation.ts)
 
-Atomic operation with `describe()`, `validate()`, and `execute()` methods. The `validate()` method returns a `Validation` object with a description and a `run()` callback that produces a `ValidationResult`. The `ValidationResult` includes a `valid` boolean and an optional `report` string — when validation fails, the report is displayed to the user as part of the "Failed Validations Report" section.
+Atomic operation with `describe()`, `validate()`, and `execute()` methods. The `validate()` method returns a `Validation` object (with a `description` string and a `run()` callback that produces a `ValidationResult`) or `undefined` if the operation has no validation. The `ValidationResult` includes a `valid` boolean and an optional `report` string — when validation fails, the report is displayed to the user as part of the "Failed Validations Report" section.
 
 ### `SpinningLogger`
 

@@ -2,7 +2,7 @@
 
 ## Status
 
-Proposed
+Accepted (implemented with deviations noted below)
 
 ## Context
 
@@ -304,3 +304,33 @@ is broken, not a validatable condition.
 Since this code hasn't been published yet, this is a breaking change to internal
 interfaces only. All step implementations and their tests need to be updated in a
 single pass.
+
+## Implementation Deviations
+
+The following deviations from the original proposal were made during implementation:
+
+1. **`validate()` returns `Validation | undefined`, not `Promise<ValidationResult>`.**
+   Operations that have no validation return `undefined` instead of a passing
+   `ValidationResult`. The `Validation` interface is a declarative object with a
+   `description` string and a `run()` callback — the `Plan` drives the spinner
+   lifecycle around each validation.
+
+2. **`Plan.validate()` returns `Promise<boolean>`, not `Promise<ValidationResult[]>`.**
+   The `Plan` renders the validation summary table internally and returns a simple
+   pass/fail boolean. The orchestrator doesn't need the individual results.
+
+3. **`Plan` constructor takes `PlanProps` (operations, logger, title, implications).**
+   Implications are part of the `Plan` rather than being a separate step method.
+   The `Plan` renders them in `describe()`.
+
+4. **Steps expose `forward()` and `rollback()`, not `execute()` and `rollback()`.**
+   Renamed to avoid confusion with `Plan.execute()`.
+
+5. **`Gen2MigrationPlanningError` was not implemented.** Planning errors are thrown
+   as `AmplifyError` and are not aggregated across categories. This is a known gap
+   — R5 from the requirements is not yet satisfied.
+
+6. **Validation runs before describe/confirmation, not after.** The actual flow is
+   plan → validate → describe → confirm → execute. This gives faster feedback when
+   validations fail — the user doesn't have to read through the operations summary
+   before learning that a precondition check failed.
