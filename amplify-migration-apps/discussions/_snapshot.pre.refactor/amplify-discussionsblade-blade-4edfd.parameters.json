@@ -1,0 +1,14 @@
+[
+  {
+    "ParameterKey": "AuthRoleName",
+    "ParameterValue": "amplify-discussionsblade-blade-4edfd-authRole"
+  },
+  {
+    "ParameterKey": "DeploymentBucketName",
+    "ParameterValue": "amplify-discussionsblade-blade-4edfd-deployment"
+  },
+  {
+    "ParameterKey": "UnauthRoleName",
+    "ParameterValue": "amplify-discussionsblade-blade-4edfd-unauthRole"
+  }
+]

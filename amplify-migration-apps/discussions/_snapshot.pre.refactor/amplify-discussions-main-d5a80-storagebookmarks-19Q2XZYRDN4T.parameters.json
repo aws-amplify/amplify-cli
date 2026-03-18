@@ -1,11 +1,15 @@
 [
   {
-    "ParameterKey": "partitionKeyType",
-    "ParameterValue": "S"
+    "ParameterKey": "tableName",
+    "ParameterValue": "bookmarks"
   },
   {
     "ParameterKey": "partitionKeyName",
     "ParameterValue": "userId"
+  },
+  {
+    "ParameterKey": "partitionKeyType",
+    "ParameterValue": "S"
   },
   {
     "ParameterKey": "env",
@@ -18,9 +22,5 @@
   {
     "ParameterKey": "sortKeyType",
     "ParameterValue": "S"
-  },
-  {
-    "ParameterKey": "tableName",
-    "ParameterValue": "bookmarks"
   }
 ]

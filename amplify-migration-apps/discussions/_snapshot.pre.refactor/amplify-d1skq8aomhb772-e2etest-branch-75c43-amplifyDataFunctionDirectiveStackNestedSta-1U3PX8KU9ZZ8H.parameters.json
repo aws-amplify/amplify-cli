@@ -1,0 +1,22 @@
+[
+  {
+    "ParameterKey": "referencetoamplifyd1skq8aomhb772e2etestbranch75c4329a92authNestedStackauthNestedStackResource5FCD0ACDOutputsamplifyd1skq8aomhb772e2etestbranch75c4329a92authamplifyAuthIdentityPool88A68FC5Ref",
+    "ParameterValue": "us-east-1:b819ce03-3279-4956-a222-2eca8a9ba575"
+  },
+  {
+    "ParameterKey": "referencetoamplifyd1skq8aomhb772e2etestbranch75c4329a92authNestedStackauthNestedStackResource5FCD0ACDOutputsamplifyd1skq8aomhb772e2etestbranch75c4329a92authamplifyAuthunauthenticatedUserRole57C7A795Ref",
+    "ParameterValue": "amplify-d1skq8aomhb772-e2-amplifyAuthunauthenticate-MHvGYssZoqQG"
+  },
+  {
+    "ParameterKey": "referencetoamplifyd1skq8aomhb772e2etestbranch75c4329a92authNestedStackauthNestedStackResource5FCD0ACDOutputsamplifyd1skq8aomhb772e2etestbranch75c4329a92authamplifyAuthauthenticatedUserRole1FD28C30Ref",
+    "ParameterValue": "amplify-d1skq8aomhb772-e2-amplifyAuthauthenticatedU-Dq4Oodlb3x5d"
+  },
+  {
+    "ParameterKey": "referencetoamplifyd1skq8aomhb772e2etestbranch75c4329a92dataamplifyDataGraphQLAPINONEDSA4682650Name",
+    "ParameterValue": "NONE_DS"
+  },
+  {
+    "ParameterKey": "referencetoamplifyd1skq8aomhb772e2etestbranch75c4329a92dataamplifyDataGraphQLAPI8D8A4455ApiId",
+    "ParameterValue": "2264xbjvizfhfljloltcb4xr3e"
+  }
+]

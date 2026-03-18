@@ -30,6 +30,17 @@
               "sortKey": "timestamp"
             }
           ]
+        },
+        {
+          "name": "bookmarks",
+          "partitionKey": "userId",
+          "sortKey": "postId",
+          "gsi": [
+            {
+              "name": "byPost",
+              "partitionKey": "postId"
+            }
+          ]
         }
       ]
     },

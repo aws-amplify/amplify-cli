@@ -1,0 +1,12 @@
+[
+  {
+    "Source": {
+      "StackName": "amplify-d1skq8aomhb772-e2etest-branch-75c4329a92-storagebookmarks210DAF62-AOPTK1NWQZNJ",
+      "LogicalResourceId": "bookmarksA4548304"
+    },
+    "Destination": {
+      "StackName": "amplify-d1skq8aomhb772-e2etest-branch-75c4329a92-storagebookmarks210DAF62-AOPTK1NWQZNJ-holding",
+      "LogicalResourceId": "bookmarksA4548304"
+    }
+  }
+]

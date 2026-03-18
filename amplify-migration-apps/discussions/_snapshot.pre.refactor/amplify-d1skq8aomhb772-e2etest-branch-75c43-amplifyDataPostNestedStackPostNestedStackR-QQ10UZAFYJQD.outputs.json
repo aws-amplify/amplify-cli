@@ -1,0 +1,26 @@
+[
+  {
+    "OutputKey": "amplifyd1skq8aomhb772e2etestbranch75c4329a92dataamplifyDataPostPostTableCC3E5BC0TableArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Post-2264xbjvizfhfljloltcb4xr3e-NONE"
+  },
+  {
+    "OutputKey": "GetAttPostTableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Post-2264xbjvizfhfljloltcb4xr3e-NONE/stream/2026-03-17T21:51:35.688",
+    "Description": "Your DynamoDB table StreamArn.",
+    "ExportName": "2264xbjvizfhfljloltcb4xr3e:GetAtt:PostTable:StreamArn"
+  },
+  {
+    "OutputKey": "amplifyd1skq8aomhb772e2etestbranch75c4329a92dataamplifyDataPostPostTableCC3E5BC0TableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Post-2264xbjvizfhfljloltcb4xr3e-NONE/stream/2026-03-17T21:51:35.688"
+  },
+  {
+    "OutputKey": "amplifyd1skq8aomhb772e2etestbranch75c4329a92dataamplifyDataPostPostDataSourceB24AB8DAName",
+    "OutputValue": "PostTable"
+  },
+  {
+    "OutputKey": "GetAttPostTableName",
+    "OutputValue": "Post-2264xbjvizfhfljloltcb4xr3e-NONE",
+    "Description": "Your DynamoDB table name.",
+    "ExportName": "2264xbjvizfhfljloltcb4xr3e:GetAtt:PostTable:Name"
+  }
+]

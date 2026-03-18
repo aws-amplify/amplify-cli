@@ -45,7 +45,7 @@ const bookmarks = new Table(storageBookmarksStack, 'bookmarks', {
   stream: StreamViewType.NEW_IMAGE,
   sortKey: { name: 'postId', type: AttributeType.STRING },
 });
-// Add this property to the Table above post refactor: tableName: 'bookmarks-main'
+// Add this property to the Table above post refactor: tableName: 'bookmarks-blade'
 bookmarks.addGlobalSecondaryIndex({
   indexName: 'byPost',
   partitionKey: { name: 'postId', type: AttributeType.STRING },

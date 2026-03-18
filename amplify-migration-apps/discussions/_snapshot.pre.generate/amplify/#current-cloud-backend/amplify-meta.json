@@ -106,24 +106,24 @@
       "lastPushDirHash": "LKrx9n9rI5MFeuTLmyTA2Bho0zg="
     },
     "bookmarks": {
-      "service": "DynamoDB",
       "providerPlugin": "awscloudformation",
+      "service": "DynamoDB",
       "providerMetadata": {
-        "s3TemplateURL": "https://s3.amazonaws.com/amplify-discussions-main-d5a80-deployment/amplify-cfn-templates/storage/bookmarks-cloudformation-template.json",
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-discussionsblade-blade-4edfd-deployment/amplify-cfn-templates/storage/bookmarks-cloudformation-template.json",
         "logicalId": "storagebookmarks"
       },
-      "lastPushTimeStamp": "2026-03-07T17:15:23.263Z",
+      "lastPushTimeStamp": "2026-03-17T15:42:17.113Z",
       "output": {
         "PartitionKeyName": "userId",
         "SortKeyName": "postId",
         "SortKeyType": "S",
         "Region": "us-east-1",
-        "Arn": "arn:aws:dynamodb:us-east-1:123456789012:table/bookmarks-main",
-        "StreamArn": "arn:aws:dynamodb:us-east-1:123456789012:table/bookmarks-main/stream/2026-03-07T17:11:10.591",
+        "Arn": "arn:aws:dynamodb:us-east-1:123456789012:table/bookmarks-blade",
+        "StreamArn": "arn:aws:dynamodb:us-east-1:123456789012:table/bookmarks-blade/stream/2026-03-17T15:41:00.107",
         "PartitionKeyType": "S",
-        "Name": "bookmarks-main"
+        "Name": "bookmarks-blade"
       },
-      "lastPushDirHash": "MKrx9n9rI5MFeuTLmyTA2Bho0zg="
+      "lastPushDirHash": "UcosRNORY7WR8bi+QNNLl+eX+Eo="
     }
   },
   "function": {

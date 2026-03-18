@@ -1,0 +1,30 @@
+[
+  {
+    "OutputKey": "amplifyd1skq8aomhb772e2etestbranch75c4329a92dataamplifyDataGraphQLAPI8D8A4455GraphQLUrl",
+    "OutputValue": "https://ugegaqplxndhddmmhzi2j4rj4u.appsync-api.us-east-1.amazonaws.com/graphql"
+  },
+  {
+    "OutputKey": "amplifyd1skq8aomhb772e2etestbranch75c4329a92dataamplifyDataCommentNestedStackCommentNestedStackResource3430FEE6Outputsamplifyd1skq8aomhb772e2etestbranch75c4329a92dataamplifyDataCommentCommentTable5A2616EFTableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Comment-2264xbjvizfhfljloltcb4xr3e-NONE/stream/2026-03-17T21:51:35.433"
+  },
+  {
+    "OutputKey": "amplifyd1skq8aomhb772e2etestbranch75c4329a92dataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiB58A9127ADestinationBucketArn",
+    "OutputValue": "arn:aws:s3:::amplify-d1skq8aomhb772-e2-amplifydataamplifycodege-g8qjz8miowur"
+  },
+  {
+    "OutputKey": "amplifyd1skq8aomhb772e2etestbranch75c4329a92dataamplifyDataGraphQLAPIDefaultApiKey064789F0ApiKey",
+    "OutputValue": "da2-3ikaaaabp5gubimmave6av37ga"
+  },
+  {
+    "OutputKey": "amplifyd1skq8aomhb772e2etestbranch75c4329a92dataamplifyDataTopicNestedStackTopicNestedStackResourceA7537F66Outputsamplifyd1skq8aomhb772e2etestbranch75c4329a92dataamplifyDataTopicTopicTable8B37B260TableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Topic-2264xbjvizfhfljloltcb4xr3e-NONE/stream/2026-03-17T21:51:35.817"
+  },
+  {
+    "OutputKey": "amplifyd1skq8aomhb772e2etestbranch75c4329a92dataamplifyDataGraphQLAPI8D8A4455ApiId",
+    "OutputValue": "2264xbjvizfhfljloltcb4xr3e"
+  },
+  {
+    "OutputKey": "amplifyd1skq8aomhb772e2etestbranch75c4329a92dataamplifyDataPostNestedStackPostNestedStackResourceCC520A3FOutputsamplifyd1skq8aomhb772e2etestbranch75c4329a92dataamplifyDataPostPostTableCC3E5BC0TableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Post-2264xbjvizfhfljloltcb4xr3e-NONE/stream/2026-03-17T21:51:35.688"
+  }
+]

@@ -1,5 +1,5 @@
 {
-  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"Amplify\",\"createdWith\":\"14.2.5\",\"stackType\":\"storage-DynamoDB\",\"metadata\":{\"whyContinueWithGen1\":\"Prefer not to answer\"}}",
+  "Description": "DDB Resource for AWS Amplify CLI",
   "AWSTemplateFormatVersion": "2010-09-09",
   "Parameters": {
     "partitionKeyName": {
@@ -97,13 +97,13 @@
   },
   "Outputs": {
     "Name": {
-      "Value": "bookmarks-main"
+      "Value": "bookmarks-blade"
     },
     "Arn": {
-      "Value": "arn:aws:dynamodb:us-east-1:123456789012:table/bookmarks-main"
+      "Value": "arn:aws:dynamodb:us-east-1:123456789012:table/bookmarks-blade"
     },
     "StreamArn": {
-      "Value": "arn:aws:dynamodb:us-east-1:123456789012:table/bookmarks-main/stream/2026-03-07T17:11:10.591"
+      "Value": "arn:aws:dynamodb:us-east-1:123456789012:table/bookmarks-blade/stream/2026-03-17T15:41:00.107"
     },
     "PartitionKeyName": {
       "Value": "userId"

@@ -286,20 +286,6 @@
         }
       }
     },
-    "storagebookmarks": {
-      "Type": "AWS::CloudFormation::Stack",
-      "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-discussions-main-d5a80-deployment/amplify-cfn-templates/storage/bookmarks-cloudformation-template.json",
-        "Parameters": {
-          "tableName": "bookmarks",
-          "partitionKeyName": "userId",
-          "partitionKeyType": "S",
-          "sortKeyName": "postId",
-          "sortKeyType": "S",
-          "env": "main"
-        }
-      }
-    },
     "functionfetchuseractivity": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
@@ -571,6 +557,20 @@
             }
           }
         ]
+      }
+    },
+    "storagebookmarks": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": "https://s3.amazonaws.com/amplify-discussions-main-d5a80-deployment/amplify-cfn-templates/storage/bookmarks-cloudformation-template.json",
+        "Parameters": {
+          "tableName": "bookmarks",
+          "partitionKeyName": "id",
+          "partitionKeyType": "S",
+          "sortKeyName": "userId",
+          "sortKeyType": "S",
+          "env": "main"
+        }
       }
     }
   }

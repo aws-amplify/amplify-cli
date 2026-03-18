@@ -692,19 +692,19 @@
         "Parameters": {
           "referencetoamplifydiscussionsgen2mainbranch96dfd1dc44storageNestedStackstorageNestedStackResourceF6518C7AOutputsamplifydiscussionsgen2mainbranch96dfd1dc44storageactivityEF3255CDArn": {
             "Fn::GetAtt": [
-              "storageactivityEF3255CD",
+              "storage0EC3F24A",
               "Outputs.amplifydiscussionsgen2mainbranch96dfd1dc44storageactivityEF3255CDArn"
             ]
           },
           "referencetoamplifydiscussionsgen2mainbranch96dfd1dc44storageNestedStackstorageNestedStackResourceF6518C7AOutputsamplifydiscussionsgen2mainbranch96dfd1dc44storageactivityEF3255CDStreamArn": {
             "Fn::GetAtt": [
-              "storageactivityEF3255CD",
+              "storage0EC3F24A",
               "Outputs.amplifydiscussionsgen2mainbranch96dfd1dc44storageactivityEF3255CDStreamArn"
             ]
           },
           "referencetoamplifydiscussionsgen2mainbranch96dfd1dc44storageNestedStackstorageNestedStackResourceF6518C7AOutputsamplifydiscussionsgen2mainbranch96dfd1dc44storageactivityEF3255CDRef": {
             "Fn::GetAtt": [
-              "storageactivityEF3255CD",
+              "storage0EC3F24A",
               "Outputs.amplifydiscussionsgen2mainbranch96dfd1dc44storageactivityEF3255CDRef"
             ]
           },
@@ -774,7 +774,7 @@
         "aws:asset:property": "TemplateURL"
       }
     },
-    "storageactivityEF3255CD": {
+    "storage0EC3F24A": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
         "Tags": [
@@ -821,56 +821,6 @@
       "Metadata": {
         "aws:cdk:path": "amplify-discussions-gen2main-branch-96dfd1dc44/storage.NestedStack/storage.NestedStackResource",
         "aws:asset:path": "amplifydiscussionsgen2mainbranch96dfd1dc44storageEADE27C3.nested.template.json",
-        "aws:asset:property": "TemplateURL"
-      }
-    },
-    "storagebookmarks210DAF62": {
-      "Type": "AWS::CloudFormation::Stack",
-      "Properties": {
-        "Tags": [
-          {
-            "Key": "amplify:app-id",
-            "Value": "discussions"
-          },
-          {
-            "Key": "amplify:branch-name",
-            "Value": "gen2-main"
-          },
-          {
-            "Key": "amplify:deployment-type",
-            "Value": "branch"
-          },
-          {
-            "Key": "created-by",
-            "Value": "amplify"
-          }
-        ],
-        "TemplateURL": {
-          "Fn::Join": [
-            "",
-            [
-              "https://s3.",
-              {
-                "Ref": "AWS::Region"
-              },
-              ".",
-              {
-                "Ref": "AWS::URLSuffix"
-              },
-              "/",
-              {
-                "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-              },
-              "/bb3ec2369678c897d14fcba7ccfffd1b1e19ec841f3277a078f65e8981c75abe.json"
-            ]
-          ]
-        }
-      },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete",
-      "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-branch-96dfd1dc44/storagebookmarks.NestedStack/storagebookmarks.NestedStackResource",
-        "aws:asset:path": "amplifydiscussionsgen2mainbranch96dfd1dc44storagebookmarks4D210E3A.nested.template.json",
         "aws:asset:property": "TemplateURL"
       }
     },

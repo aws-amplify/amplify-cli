@@ -1,0 +1,154 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Temporary holding stack for Gen2 migration",
+  "Resources": {
+    "amplifyAuthUserPool4BA7F805": {
+      "Type": "AWS::Cognito::UserPool",
+      "Properties": {
+        "AutoVerifiedAttributes": [
+          "email"
+        ],
+        "EmailVerificationMessage": "Here is your verification code {####}",
+        "EmailVerificationSubject": "Verification",
+        "MfaConfiguration": "OFF",
+        "Policies": {
+          "PasswordPolicy": {
+            "MinimumLength": "8",
+            "RequireLowercase": false,
+            "RequireNumbers": false,
+            "RequireSymbols": false,
+            "RequireUppercase": false
+          }
+        },
+        "Schema": [
+          {
+            "Mutable": true,
+            "Name": "email",
+            "Required": true
+          },
+          {
+            "Mutable": true,
+            "Name": "phone_number",
+            "Required": true
+          }
+        ],
+        "SmsAuthenticationMessage": "Your authentication code is {####}",
+        "SmsConfiguration": {
+          "ExternalId": "discus22367c68_role_external_id",
+          "SnsCallerArn": "arn:aws:iam::123456789012:role/sns22367c684edfd-blade"
+        },
+        "SmsVerificationMessage": "Your verification code is {####}",
+        "UserAttributeUpdateSettings": {
+          "AttributesRequireVerificationBeforeUpdate": [
+            "email"
+          ]
+        },
+        "UserPoolName": {
+          "Fn::Join": [
+            "",
+            [
+              "discussions22367c68_userpool_22367c68",
+              "-",
+              "blade"
+            ]
+          ]
+        },
+        "UsernameAttributes": [
+          "phone_number"
+        ],
+        "UsernameConfiguration": {
+          "CaseSensitive": false
+        }
+      },
+      "DependsOn": []
+    },
+    "amplifyAuthUserPoolAppClient2626C6F8": {
+      "Type": "AWS::Cognito::UserPoolClient",
+      "Properties": {
+        "ClientName": "discus22367c68_app_clientWeb",
+        "RefreshTokenValidity": "120",
+        "TokenValidityUnits": {
+          "RefreshToken": "days"
+        },
+        "UserPoolId": "us-east-1_3t0fqaGQN"
+      },
+      "DependsOn": [
+        "amplifyAuthUserPool4BA7F805"
+      ]
+    },
+    "amplifyAuthUserPoolNativeAppClient79534448": {
+      "Type": "AWS::Cognito::UserPoolClient",
+      "Properties": {
+        "ClientName": "discus22367c68_app_client",
+        "GenerateSecret": "false",
+        "RefreshTokenValidity": "120",
+        "TokenValidityUnits": {
+          "RefreshToken": "days"
+        },
+        "UserPoolId": "us-east-1_3t0fqaGQN"
+      },
+      "DependsOn": [
+        "amplifyAuthUserPool4BA7F805"
+      ]
+    },
+    "amplifyAuthIdentityPool3FDE84CC": {
+      "Type": "AWS::Cognito::IdentityPool",
+      "Properties": {
+        "AllowUnauthenticatedIdentities": "false",
+        "CognitoIdentityProviders": [
+          {
+            "ClientId": "7oh5id275ip4505msdvhrtv5vq",
+            "ProviderName": {
+              "Fn::Sub": [
+                "cognito-idp.${region}.amazonaws.com/${client}",
+                {
+                  "region": {
+                    "Ref": "AWS::Region"
+                  },
+                  "client": "us-east-1_3t0fqaGQN"
+                }
+              ]
+            }
+          },
+          {
+            "ClientId": "7t0bpmsnis3540umt8r65jcicc",
+            "ProviderName": {
+              "Fn::Sub": [
+                "cognito-idp.${region}.amazonaws.com/${client}",
+                {
+                  "region": {
+                    "Ref": "AWS::Region"
+                  },
+                  "client": "us-east-1_3t0fqaGQN"
+                }
+              ]
+            }
+          }
+        ],
+        "IdentityPoolName": {
+          "Fn::Join": [
+            "",
+            [
+              "discussions22367c68_identitypool_22367c68__",
+              "blade"
+            ]
+          ]
+        }
+      }
+    },
+    "amplifyAuthIdentityPoolRoleAttachment045F17C8": {
+      "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
+      "Properties": {
+        "IdentityPoolId": "us-east-1:09b19c4e-2cc9-40f9-87da-99bbea62536d",
+        "Roles": {
+          "unauthenticated": "arn:aws:iam::123456789012:role/amplify-discussionsblade-blade-4edfd-unauthRole",
+          "authenticated": "arn:aws:iam::123456789012:role/amplify-discussionsblade-blade-4edfd-authRole"
+        }
+      },
+      "DependsOn": [
+        "amplifyAuthIdentityPool3FDE84CC"
+      ]
+    }
+  },
+  "Outputs": {}
+}

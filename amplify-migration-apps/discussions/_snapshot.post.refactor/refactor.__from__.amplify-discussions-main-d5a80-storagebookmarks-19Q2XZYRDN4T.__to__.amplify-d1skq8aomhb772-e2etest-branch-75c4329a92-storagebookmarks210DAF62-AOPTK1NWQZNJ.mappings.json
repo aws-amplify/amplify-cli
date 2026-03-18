@@ -1,0 +1,12 @@
+[
+  {
+    "Source": {
+      "StackName": "amplify-discussions-main-d5a80-storagebookmarks-19Q2XZYRDN4T",
+      "LogicalResourceId": "DynamoDBTable"
+    },
+    "Destination": {
+      "StackName": "amplify-d1skq8aomhb772-e2etest-branch-75c4329a92-storagebookmarks210DAF62-AOPTK1NWQZNJ",
+      "LogicalResourceId": "bookmarksA4548304"
+    }
+  }
+]
