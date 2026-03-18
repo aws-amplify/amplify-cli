@@ -1,4 +1,4 @@
-FROM public.ecr.aws/bitnami/node:14-prod-debian-10
+FROM public.ecr.aws/docker/library/node:22-slim
 
 WORKDIR /app
 
