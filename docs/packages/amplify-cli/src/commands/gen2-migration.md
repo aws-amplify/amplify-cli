@@ -30,6 +30,13 @@ Extracts shared Gen1 configuration (`appId`, `appName`, `envName`, `stackName`, 
 then passes these values to step constructors. This establishes a single source of truth; subcommands should use the injected values
 rather than re-extracting them independently.
 
+```ts
+const appId = (Object.values(stateManager.getTeamProviderInfo())[0] as any).awscloudformation.AmplifyAppId;
+const envName = localEnvName ?? migratingEnvName;
+// ... extract other config values
+const implementation: AmplifyMigrationStep = new step.class(logger, envName, appName, appId, stackName, region, context);
+```
+
 ### Subcommand Dispatching
 
 Maps the subcommand name to its implementation class via the `STEPS` registry, then instantiates the step with extracted configuration.
