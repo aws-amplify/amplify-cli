@@ -10,7 +10,7 @@ through the complete migration process:
 4. Refactoring CloudFormation stacks to move stateful resources,
 5. Decommissioning the Gen1 environment.
 
-The `assess` subcommand is handled separately from the step lifecycle — it is read-only and does not follow the `validate → execute → rollback` pattern. All other steps follow a consistent lifecycle with user confirmation and safety checks.
+The `assess` subcommand is handled separately from the step lifecycle — it is read-only and does not follow the `validate → execute → rollback` pattern. All other steps return a `Plan` object that drives a unified `describe → validate → execute` lifecycle. The `Plan` encapsulates operations and renders validation reports, operations summaries, and implications — the top-level dispatcher orchestrates all steps uniformly without knowing their internals.
 
 ## Key Responsibilities
 
@@ -30,94 +30,20 @@ Extracts shared Gen1 configuration (`appId`, `appName`, `envName`, `stackName`, 
 then passes these values to step constructors. This establishes a single source of truth; subcommands should use the injected values
 rather than re-extracting them independently.
 
-```ts
-const appId = (Object.values(stateManager.getTeamProviderInfo())[0] as any).awscloudformation.AmplifyAppId;
-const envName = localEnvName ?? migratingEnvName;
-// ... extract other config values
-const implementation: AmplifyMigrationStep = new step.class(logger, envName, appName, appId, stackName, region, context);
-```
-
 ### Subcommand Dispatching
 
 Maps the subcommand name to its implementation class via the `STEPS` registry, then instantiates the step with extracted configuration.
 The `assess` subcommand is intercepted before the `STEPS` lookup — it creates an `AmplifyMigrationAssessor` instead of a step,
 calls `assess()` on the generate and refactor steps, and renders the result.
 
-```ts
-if (stepName === 'assess') {
-  const assessor = new AmplifyMigrationAssessor(logger, envName, appName, appId, stackName, region, context);
-  await assessor.run();
-  return;
-}
+### Plan-Based Execution
 
-const step = STEPS[stepName];
-const implementation: AmplifyMigrationStep = new step.class(logger, envName, appName, appId, stackName, region, context);
-```
-
-### Operations Reporting
-
-Displays a summary of what will happen before execution by calling `describe()` on each operation. This gives users visibility
-into the specific actions that will be performed, enabling informed decision-making before confirming.
-
-```ts
-for (const operation of rollingBack ? await implementation.rollback() : await implementation.execute()) {
-  for (const description of await operation.describe()) {
-    printer.info(`• ${description}`);
-  }
-}
-```
-
-### Implications Reporting
-
-Displays the broader implications and side effects of the operation by calling the step's implications methods.
-This helps users understand the impact beyond the immediate operations, such as downtime,
-resource state changes, or irreversible actions.
-
-```ts
-for (const implication of rollingBack ? await implementation.rollbackImplications() : await implementation.executeImplications()) {
-  printer.info(`• ${implication}`);
-}
-```
-
-### User Confirmation
-
-Prompts the user to confirm before executing operations, providing a safety gate after displaying the operations summary
-and implications. Exits gracefully if the user declines.
-
-```ts
-if (!(await prompter.confirmContinue())) {
-  return;
-}
-```
-
-### Operation-Based Execution
-
-Executes operations sequentially by iterating through the array and calling `execute()` on each. This sequential
-execution ensures operations complete in the correct order and allows for proper error handling at the operation level.
-
-```ts
-async function runOperations(operations: AmplifyMigrationOperation[]) {
-  for (const operation of operations) {
-    await operation.execute();
-  }
-}
-```
+Each step's `forward()` or `rollback()` method returns a `Plan`. The dispatcher calls `plan.describe()` to show what will happen, `plan.validate()` to run pre-flight checks (rendering a "Failed Validations Report" with details when checks fail), and `plan.execute()` to run the operations. This replaces the previous pattern where the dispatcher managed operations, validations, and rendering independently.
 
 ### Automatic Rollback on Failure
 
 Catches execution failures and automatically triggers rollback operations to restore the previous state, unless disabled
-with `--no-rollback`. This provides a safety net for partial failures during migration steps.
-
-```ts
-try {
-  await runExecute(implementation, logger);
-} catch (error: unknown) {
-  if (!disableAutoRollback) {
-    await runRollback(implementation, logger);
-  }
-  throw error;
-}
-```
+with `--no-rollback`.
 
 ## Extended Documentation
 
@@ -129,9 +55,17 @@ Detailed documentation for subcommands is available in:
 
 ## Architecture
 
-The command forces a step-based architecture with a central orchestrator (`run` function) that dispatches to step implementations.
-Each step extends the abstract `AmplifyMigrationStep` class and implements separate validation and execution methods for both
-forward and rollback execution modes. Steps return `AmplifyMigrationOperation` arrays that describe and execute atomic operations.
+Each step extends `AmplifyMigrationStep` and returns a `Plan` from `forward()` or `rollback()`. The `Plan` owns the full lifecycle: it collects operations, runs validations (rendering a "Failed Validations Report" with per-validation details when checks fail, followed by a pass/fail summary table), displays the operations summary and implications, and executes operations sequentially. The top-level dispatcher only calls `plan.describe()`, `plan.validate()`, and `plan.execute()`.
+
+### `Plan`
+
+[`src/commands/gen2-migration/_plan.ts`](../../../packages/amplify-cli/src/commands/gen2-migration/_plan.ts)
+
+Encapsulates a list of `AmplifyMigrationOperation` objects and drives the describe/validate/execute lifecycle. Constructed with operations, a logger, a title, and optional implications.
+
+- `describe()` — renders the operations summary and implications
+- `validate()` — runs each operation's validation with spinner context, renders a "Failed Validations Report" (description in red + report text) for any failures, then renders a pass/fail summary table. Returns `false` if any validation failed.
+- `execute()` — runs all operations sequentially
 
 ```mermaid
 flowchart LR
@@ -172,140 +106,19 @@ flowchart LR
 
 [`src/commands/gen2-migration/_step.ts`](../../../packages/amplify-cli/src/commands/gen2-migration/_step.ts)
 
-```ts
-/**
- * Abstract base class that defines the lifecycle contract for all migration steps.
- * Subcommands must extend this base class.
- */
-export abstract class AmplifyMigrationStep {...}
-```
-
-```ts
-/**
- * Validates prerequisites before executing forward operations.
- * Should check environment state, resource availability, and any step-specific requirements.
- * Throws errors if validation fails.
- */
-public abstract executeValidate(): Promise<void>;
-```
-
-```ts
-/**
- * Validates prerequisites before executing rollback operations.
- * Ensures the environment is in a state where rollback can proceed safely.
- * Throws errors if validation fails.
- */
-public abstract rollbackValidate(): Promise<void>;
-```
-
-```ts
-/**
- * Returns an array of operations to perform for forward execution.
- * Each operation describes what it will do and contains the logic to execute it.
- * Operations are executed sequentially after user confirmation.
- */
-public abstract execute(): Promise<AmplifyMigrationOperation[]>;
-```
-
-```ts
-/**
- * Returns an array of operations to perform for rollback.
- * Reverses the changes made by execute().
- * Operations are executed sequentially after user confirmation.
- */
-public abstract rollback(): Promise<AmplifyMigrationOperation[]>;
-```
-
-```ts
-/**
- * Returns human-readable strings describing the implications and side effects of executing forward operations.
- * Displayed to users before confirmation prompt to help them understand the impact of the migration step.
- */
-public abstract executeImplications(): Promise<string[]>;
-```
-
-```ts
-/**
- * Returns human-readable strings describing the implications and side effects of executing rollback operations.
- * Displayed to users before confirmation prompt to help them understand the impact of reverting the migration step.
- */
-public abstract rollbackImplications(): Promise<string[]>;
-```
+Abstract base class that defines the lifecycle contract for all migration steps. Each step returns a `Plan` from `forward()` and `rollback()`.
 
 ### `AmplifyMigrationOperation`
 
 [`src/commands/gen2-migration/_operation.ts`](../../../packages/amplify-cli/src/commands/gen2-migration/_operation.ts)
 
-```ts
-/**
- * Interface for atomic operations that can be executed as part of a migration step.
- */
-export interface AmplifyMigrationOperation {...}
-```
+Atomic operation with `describe()`, `validate()`, and `execute()` methods. The `validate()` method returns a `Validation` object with a description and a `run()` callback that produces a `ValidationResult`. The `ValidationResult` includes a `valid` boolean and an optional `report` string — when validation fails, the report is displayed to the user as part of the "Failed Validations Report" section.
 
-```ts
-/**
- * Returns human-readable strings describing what the operation will do.
- * Used to display an operations summary to users before execution.
- * Each string should be a concise, actionable description (e.g., "Enable deletion protection for table 'MyTable'").
- */
-describe(): Promise<string[]>;
-```
+### `SpinningLogger`
 
-```ts
-/**
- * Executes the operation.
- * Should be idempotent where possible and throw descriptive errors on failure.
- * Called sequentially for each operation after user confirmation.
- */
-execute(): Promise<void>;
-```
+[`src/commands/gen2-migration/_spinning-logger.ts`](../../../packages/amplify-cli/src/commands/gen2-migration/_spinning-logger.ts)
 
-### `Logger`
-
-[`src/commands/gen2-migration.ts`](../../../packages/amplify-cli/src/commands/gen2-migration.ts)
-
-```ts
-/**
- * Logging utility that wraps the standard printer with additional gen2-migration specific context.
- */
-export class Logger {...}
-```
-
-```ts
-/**
- * Logs a message with a visual envelope border for major section headers
- */
-public envelope(message: string) {...}
-```
-
-```ts
-/**
- * Logs informational messages that are always displayed to the user.
- */
-public info(message: string): void {...}
-```
-
-```ts
-/**
- * Logs debug-level messages that are shown only if the command is executed with --debug.
- */
-public debug(message: string): void {...}
-```
-
-```ts
-/**
- * Logs warning messages that are always displayed to the user.
- */
-public warn(message: string): void {...}
-```
-
-```ts
-/**
- * Alias to `warn`.
- */
-public warning(message: string): void {...}
-```
+Logger that manages a spinner in normal mode and falls back to plain text output in debug mode. Consumers use `info`/`debug`/`warn` for messages and `push`/`pop` to manage hierarchical spinner context. Used by `Plan` to show progress during validation and execution.
 
 ## CLI Interface
 
@@ -345,8 +158,9 @@ amplify gen2-migration <step> [options]
 - Stateful resources (defined in `STATEFUL_RESOURCES` set) require special handling—the module prevents their deletion and enables deletion protection.
 - The refactor step uses interactive prompts to let users select which categories to migrate.
 - Because rollback functionality is still in development, it is recommended to run refactor with `--no-rollback` to prevent automatic rollbacks if refactor fails.
-- Steps now return arrays of `AmplifyMigrationOperation` objects that describe and execute atomic operations, enabling better visibility and control.
-- The orchestrator displays an operations summary and implications before prompting for user confirmation.
+- Steps now return a `Plan` from `forward()` and `rollback()`. The `Plan` drives the full describe/validate/execute lifecycle — the dispatcher doesn't manage operations directly.
+- Validations are embedded in operations via `validate()`. When a validation fails, its `report` field is displayed in a "Failed Validations Report" section before the summary table.
+- `SpinningLogger` is the only logger class — the deprecated `Logger` subclass has been removed. Import directly from `_spinning-logger.ts`.
 - Automatic rollback is enabled by default but can be disabled with `--no-rollback`.
 - The `--rollback` flag explicitly executes rollback operations for a step.
 
