@@ -23,7 +23,6 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
   public async forward(): Promise<Plan> {
     const operations: AmplifyMigrationOperation[] = [];
 
-    // Validation-only operations (formerly in executeValidate)
     operations.push({
       describe: async () => [],
       validate: () => ({ description: 'Environment Status', run: () => this.validateDeploymentStatus() }),

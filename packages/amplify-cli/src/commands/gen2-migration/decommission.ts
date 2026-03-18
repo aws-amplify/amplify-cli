@@ -23,7 +23,6 @@ export class AmplifyMigrationDecommissionStep extends AmplifyMigrationStep {
 
     const operations: AmplifyMigrationOperation[] = [];
 
-    // Validation-only operation (formerly in executeValidate)
     operations.push({
       describe: async () => [],
       validate: () => ({ description: 'Stateful resources', run: () => this.validateStatefulResources() }),

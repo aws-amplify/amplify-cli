@@ -64,6 +64,8 @@ export class AmplifyGen2MigrationValidations {
     }
 
     const stackStatus = response.Stacks[0].StackStatus;
+    // Note: UPDATE_ROLLBACK_COMPLETE isn't an expected state - only being
+    // added in the edge case of resuming migration from a failed state
     const validStatuses = ['UPDATE_COMPLETE', 'CREATE_COMPLETE', 'UPDATE_ROLLBACK_COMPLETE'];
 
     if (!validStatuses.includes(stackStatus)) {
@@ -95,6 +97,7 @@ export class AmplifyGen2MigrationValidations {
     const statefulRemoves: Array<{ category: string; resourceType: string; physicalId: string }> = [];
     for (const change of changeSet.Changes) {
       if (change.Type === 'Resource' && change.ResourceChange?.Action === 'Remove' && change.ResourceChange?.ResourceType) {
+        // Skip deployment bucket only when explicitly requested (e.g., during decommission)
         if (
           deploymentBucketName &&
           change.ResourceChange.ResourceType === 'AWS::S3::Bucket' &&

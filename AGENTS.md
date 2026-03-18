@@ -39,16 +39,8 @@ Verify your changes by following these guidelines:
 - **Always** update the appropriate JSDoc strings in the code you change. Be concise.
 - Do not create additional markdown files in the repository unless you are instructed explicitly to.
 - Never commit `.ai-generated` files (`.commit-message.ai-generated.txt`, `.pr-body.ai-generated.md`, etc.) — they are gitignored and are only used as local scratch files.
-<<<<<<< HEAD
 - Commit your changes in git using a well-formed commit message following the Conventional Commits format. The message must start
   with a type prefix (e.g., `feat:`, `fix:`, `docs:`, `refactor:`, `test:`, `chore:`) followed by a single sentence summary and no more
-=======
-- Commit your changes in git using a well-formed commit message following the Conventional Commits format. The message must include
-  a scope when the change is scoped to a specific package: `type(scope): subject`. The scope is derived from the package's `name`
-  field in `package.json` with the `@aws-amplify/` prefix stripped. For example, `@aws-amplify/cli-internal` → `cli-internal`,
-  `@aws-amplify/amplify-prompts` → `amplify-prompts`. Valid scopes are enforced by commitlint via `commitlint.config.js`. The
-  message must start with a type prefix (e.g., `feat:`, `fix:`, `docs:`, `refactor:`, `test:`, `chore:`) followed by a single sentence summary and no more
->>>>>>> 5ae9c3daf8 (feat(cli-internal): add assess, refactor, and generate-new commands)
   than a few paragraphs explaining the change and your testing. After this explanation, place the prompt the user used to trigger this
   work prefixed with a "Prompt: " after a single line consisting of '---'. Make sure there are no empty lines before or after this line.
   Word wrap all paragraphs at 72 columns including the prompt. For the author of the commit, use the configured username in git with
@@ -62,12 +54,7 @@ Verify your changes by following these guidelines:
 - Since this repo has a commit hook that takes quite a long time to run, don't immediately commit every
   change you were asked to do. Apply your judgment, if the diff is still fairly small just keep going.
   Otherwise, ask the user if they want to commit or keep going.
-<<<<<<< HEAD
 - Committing after every incremental change wastes time on hooks and creates noisy history. Natural commit
-=======
-- Batch commits aggressively. Wait until a design decision is settled and the code is stable before committing.
-  Committing after every incremental change wastes time on hooks and creates noisy history. Natural commit
->>>>>>> 5ae9c3daf8 (feat(cli-internal): add assess, refactor, and generate-new commands)
   points are: after a design discussion concludes, after tests pass, after a self-review finds no issues.
 - NEVER commit with --no-verify.
 - Before you actually commit, provide a (very) concise summary of changes to the user and ask for confirmation to commit.

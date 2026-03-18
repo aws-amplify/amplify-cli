@@ -2,7 +2,7 @@ import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { Assessment } from './_assessment';
 import { AmplifyMigrationGenerateStep } from './generate';
 import { AmplifyMigrationRefactorStep } from './refactor';
-import { SpinningLogger } from '../gen2-migration';
+import { SpinningLogger } from '../gen2-migration/_spinning-logger';
 
 /**
  * Evaluates migration readiness by calling assess() on the generate
