@@ -27,7 +27,7 @@ export interface AmplifyInitSettings {
 interface BuildInitSettingsOptions {
   config: AppConfiguration;
   deploymentName: string;
-  envName?: string;
+  envName: string;
   profile: string;
 }
 
@@ -49,11 +49,9 @@ export class AmplifyInitializer implements IAppInitializer {
       throw Error(`Invalid app name: ${appNameValidation.error}`);
     }
 
-    if (envName) {
-      const amplifyEnvNameValidation = this.validateEnvName(envName);
-      if (!amplifyEnvNameValidation.valid) {
-        throw Error(`Invalid env name: ${amplifyEnvNameValidation.error}`);
-      }
+    const amplifyEnvNameValidation = this.validateEnvName(envName);
+    if (!amplifyEnvNameValidation.valid) {
+      throw Error(`Invalid env name: ${amplifyEnvNameValidation.error}`);
     }
 
     const startTime = Date.now();
@@ -111,7 +109,8 @@ export class AmplifyInitializer implements IAppInitializer {
     return { valid: true };
   }
 
-  generateRandomEnvName(): string {
+  /** Generates a random env name (2-10 lowercase letters) */
+  static generateRandomEnvName(): string {
     const length = Math.floor(Math.random() * 9) + 2;
     return Array.from({ length }, () => String.fromCharCode(97 + Math.floor(Math.random() * 26))).join('');
   }
@@ -121,7 +120,7 @@ export class AmplifyInitializer implements IAppInitializer {
 
     const settings = {
       name: deploymentName,
-      envName: envName ?? this.generateRandomEnvName(), // Random environment name
+      envName,
       editor: 'Visual Studio Code',
       framework: config.app.framework ?? 'react',
       srcDir: 'src',

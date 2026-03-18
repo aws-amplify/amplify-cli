@@ -115,13 +115,21 @@ export class Gen2MigrationExecutor {
   }
 
   /**
-   * Run pre-deployment workflow: lock -> generate
+   * Run pre-deployment workflow: lock -> checkout gen2 branch -> generate
    */
-  async runPreDeploymentWorkflow(appPath: string): Promise<void> {
+  async runPreDeploymentWorkflow(appPath: string, envName = 'main'): Promise<void> {
     const context: LogContext = { operation: 'gen2-migration-workflow' };
-    this.logger.info('Starting pre-deployment workflow (lock -> generate)...', context);
+    this.logger.info('Starting pre-deployment workflow (lock -> checkout -> generate)...', context);
 
+    // Step 1: Lock on the main branch
     await this.lock(appPath);
+
+    // Step 2: Create and checkout gen2 branch before generate
+    const gen2BranchName = `gen2-${envName}`;
+    this.logger.info(`Creating and checking out branch '${gen2BranchName}'...`, context);
+    await execa('git', ['checkout', '-b', gen2BranchName], { cwd: appPath });
+
+    // Step 3: Generate Gen2 code
     await this.generate(appPath);
 
     this.logger.info('Pre-deployment workflow completed', context);

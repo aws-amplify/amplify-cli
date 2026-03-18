@@ -36,7 +36,8 @@ export interface InitializeAppOptions {
   appPath: string;
   config: AppConfiguration;
   deploymentName: string;
-  envName?: string;
+  /** Amplify environment name (required, 2-10 lowercase letters) */
+  envName: string;
   profile: string;
 }
 
