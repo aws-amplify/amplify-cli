@@ -34,6 +34,9 @@ export const run = async (context: $TSContext): Promise<void> => {
 
   if (result.report) {
     printer.info(result.report);
+    printer.info(chalk.yellow('Drift detected'));
+  } else {
+    printer.info(chalk.green('No drift detected'));
   }
 
   if (result.code !== 0) {
