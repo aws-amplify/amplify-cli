@@ -28,16 +28,16 @@ export function resolveOutputs(params: {
   const templateOutputs = cloned.Outputs;
   const templateResources = cloned.Resources;
 
-  if (!templateOutputs || !templateResources) {
+  if (!templateResources) {
     throw new AmplifyError('InvalidStackError', {
-      message: 'Template is missing Outputs or Resources section',
+      message: 'Template is missing Resources section',
     });
   }
 
   // Build separate lookups for Ref-based and GetAtt-based outputs.
   // A single resource can appear in both (e.g., UserPool has Ref → pool ID, GetAtt → ARN).
   // Conflating them into one map would overwrite the Ref value with the GetAtt value.
-  const { refLookup, getAttLookup } = buildOutputLookup(templateOutputs, stackOutputs);
+  const { refLookup, getAttLookup } = buildOutputLookup(templateOutputs ?? {}, stackOutputs);
 
   // Phase 1: Resolve Ref/GetAtt in Resources using stack outputs
   cloned.Resources = walkCfnTree(templateResources, (node) => {
@@ -101,7 +101,7 @@ export function resolveOutputs(params: {
   }) as Record<string, CFNResource>;
 
   // Phase 3: Replace Output values with runtime stack output values
-  for (const [outputKey, outputDef] of Object.entries(cloned.Outputs)) {
+  for (const [outputKey, outputDef] of Object.entries(cloned.Outputs ?? {})) {
     const runtimeOutput = stackOutputs.find((o) => o.OutputKey === outputKey);
     if (!runtimeOutput?.OutputValue) {
       throw new AmplifyError('InvalidStackError', {

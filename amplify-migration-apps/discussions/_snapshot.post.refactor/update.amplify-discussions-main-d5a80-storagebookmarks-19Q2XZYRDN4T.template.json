@@ -1,0 +1,124 @@
+{
+  "Description": "DDB Resource for AWS Amplify CLI",
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Parameters": {
+    "partitionKeyName": {
+      "Type": "String"
+    },
+    "partitionKeyType": {
+      "Type": "String"
+    },
+    "env": {
+      "Type": "String"
+    },
+    "sortKeyName": {
+      "Type": "String"
+    },
+    "sortKeyType": {
+      "Type": "String"
+    },
+    "tableName": {
+      "Type": "String"
+    }
+  },
+  "Conditions": {
+    "ShouldNotCreateEnvResources": {
+      "Fn::Equals": [
+        "main",
+        "NONE"
+      ]
+    }
+  },
+  "Resources": {
+    "DynamoDBTable": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "userId",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "postId",
+            "AttributeType": "S"
+          }
+        ],
+        "GlobalSecondaryIndexes": [
+          {
+            "IndexName": "byPost",
+            "KeySchema": [
+              {
+                "AttributeName": "postId",
+                "KeyType": "HASH"
+              }
+            ],
+            "Projection": {
+              "ProjectionType": "ALL"
+            },
+            "ProvisionedThroughput": {
+              "ReadCapacityUnits": 5,
+              "WriteCapacityUnits": 5
+            }
+          }
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "userId",
+            "KeyType": "HASH"
+          },
+          {
+            "AttributeName": "postId",
+            "KeyType": "RANGE"
+          }
+        ],
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 5,
+          "WriteCapacityUnits": 5
+        },
+        "StreamSpecification": {
+          "StreamViewType": "NEW_IMAGE"
+        },
+        "TableName": {
+          "Fn::Join": [
+            "",
+            [
+              "bookmarks",
+              "-",
+              "main"
+            ]
+          ]
+        }
+      }
+    },
+    "MigrationPlaceholder": {
+      "Type": "AWS::CloudFormation::WaitConditionHandle",
+      "Properties": {}
+    }
+  },
+  "Outputs": {
+    "Name": {
+      "Value": "bookmarks-blade"
+    },
+    "Arn": {
+      "Value": "arn:aws:dynamodb:us-east-1:123456789012:table/bookmarks-blade"
+    },
+    "StreamArn": {
+      "Value": "arn:aws:dynamodb:us-east-1:123456789012:table/bookmarks-blade/stream/2026-03-17T15:41:00.107"
+    },
+    "PartitionKeyName": {
+      "Value": "userId"
+    },
+    "PartitionKeyType": {
+      "Value": "S"
+    },
+    "SortKeyName": {
+      "Value": "postId"
+    },
+    "SortKeyType": {
+      "Value": "S"
+    },
+    "Region": {
+      "Value": "us-east-1"
+    }
+  }
+}

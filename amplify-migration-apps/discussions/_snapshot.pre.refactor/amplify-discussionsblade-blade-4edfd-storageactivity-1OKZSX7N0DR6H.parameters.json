@@ -1,0 +1,26 @@
+[
+  {
+    "ParameterKey": "partitionKeyType",
+    "ParameterValue": "S"
+  },
+  {
+    "ParameterKey": "partitionKeyName",
+    "ParameterValue": "id"
+  },
+  {
+    "ParameterKey": "env",
+    "ParameterValue": "blade"
+  },
+  {
+    "ParameterKey": "sortKeyName",
+    "ParameterValue": "userId"
+  },
+  {
+    "ParameterKey": "sortKeyType",
+    "ParameterValue": "S"
+  },
+  {
+    "ParameterKey": "tableName",
+    "ParameterValue": "activity"
+  }
+]

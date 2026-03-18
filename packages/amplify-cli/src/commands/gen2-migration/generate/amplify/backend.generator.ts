@@ -103,6 +103,22 @@ export class BackendGenerator implements Planner {
   }
 
   /**
+   * Creates a per-DDB-table stack via `backend.createStack('storage' + resourceName)`.
+   * Returns the variable name used to reference the stack (e.g., `storageActivityStack`).
+   * Each DDB table gets its own nested stack, enabling multi-table support.
+   */
+  public createDynamoDBStack(resourceName: string): string {
+    const varName = `storage${resourceName.charAt(0).toUpperCase()}${resourceName.slice(1)}Stack`;
+    const stackExpression = factory.createCallExpression(
+      TS.propAccess('backend', 'createStack') as ts.PropertyAccessExpression,
+      undefined,
+      [factory.createStringLiteral('storage' + resourceName)],
+    );
+    this.earlyStatements.push(TS.constDecl(varName, stackExpression));
+    return varName;
+  }
+
+  /**
    * Assembles all accumulated imports, properties, and statements into backend.ts.
    */
   public async plan(): Promise<AmplifyMigrationOperation[]> {

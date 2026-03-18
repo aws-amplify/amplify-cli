@@ -2,7 +2,7 @@
 
 ![](./images/app.png)
 
-A discussion application built featuring authentication, GraphQL API, Lambda functions, and DynamoDB storage.
+A discussion application built featuring authentication, GraphQL API, Lambda functions, and multiple DynamoDB storage tables (activity + bookmarks).
 
 > [!NOTICE]
 > Since amplify operations add files to your local directory, its better not to operate within this repo.
@@ -116,8 +116,9 @@ amplify add api
 
 ### Storage
 
-DynamoDB table for storing user activity logs with partition key, sort key,
-and global secondary index for querying by activity type.
+Two DynamoDB tables: `activity` for storing user activity logs, and `bookmarks` for storing user bookmarks on posts.
+
+#### Activity Table
 
 ```console
 amplify add storage
@@ -165,6 +166,42 @@ https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.Core
 ✔ Choose partition key for the GSI · userId
 ✔ Do you want to add a sort key to your global secondary index? (Y/n) · yes
 ✔ Choose sort key for the GSI · timestamp
+✔ Do you want to add more global secondary indexes to your table? (Y/n) · no
+✔ Do you want to add a Lambda Trigger for your Table? (y/N) · no
+```
+
+#### Bookmarks Table
+
+```console
+amplify add storage
+```
+
+```console
+? Select from one of the below mentioned services: NoSQL Database
+
+Welcome to the NoSQL DynamoDB database wizard
+This wizard asks you a series of questions to help determine how to set up your NoSQL database table.
+
+✔ Provide a friendly name · bookmarks
+✔ Provide table name · bookmarks
+
+You can now add columns to the table.
+
+✔ What would you like to name this column · userId
+✔ Choose the data type · string
+✔ Would you like to add another column? (Y/n) · yes
+✔ What would you like to name this column · postId
+✔ Choose the data type · string
+✔ Would you like to add another column? (Y/n) · no
+
+✔ Choose partition key for the table · userId
+✔ Do you want to add a sort key to your table? (Y/n) · yes
+✔ Choose sort key for the table · postId
+
+✔ Do you want to add global secondary indexes to your table? (Y/n) · yes
+✔ Provide the GSI name · byPost
+✔ Choose partition key for the GSI · postId
+✔ Do you want to add a sort key to your global secondary index? (Y/n) · no
 ✔ Do you want to add more global secondary indexes to your table? (Y/n) · no
 ✔ Do you want to add a Lambda Trigger for your Table? (y/N) · no
 ```
@@ -279,6 +316,8 @@ amplify push
 │ Api      │ discussions                 │ Create    │ awscloudformation │
 ├──────────┼─────────────────────────────┼───────────┼───────────────────┤
 │ Storage  │ activity                    │ Create    │ awscloudformation │
+├──────────┼─────────────────────────────┼───────────┼───────────────────┤
+│ Storage  │ bookmarks                   │ Create    │ awscloudformation │
 ├──────────┼─────────────────────────────┼───────────┼───────────────────┤
 │ Function │ fetchuseractivity           │ Create    │ awscloudformation │
 ├──────────┼─────────────────────────────┼───────────┼───────────────────┤

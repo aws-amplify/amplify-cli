@@ -53,7 +53,7 @@ export interface CFNTemplate {
   // Resources and Outputs are mutable: resolvers clone templates then transform them in place.
   // The clone-then-mutate pattern is the standard way to produce modified templates.
   Resources: Record<string, CFNResource>;
-  Outputs: Record<string, CFNOutput>;
+  Outputs?: Record<string, CFNOutput>;
 }
 
 export enum CFNStackStatus {

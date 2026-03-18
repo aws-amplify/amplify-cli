@@ -41,9 +41,9 @@ export class DynamoDBGenerator implements Planner {
         execute: async () => {
           const imports = this.renderer.requiredImports();
           this.backendGenerator.addImport(imports.source, imports.identifiers);
-          this.backendGenerator.ensureStorageStack(this.hasS3Bucket);
+          const scopeVarName = this.backendGenerator.createDynamoDBStack(this.resourceName);
 
-          for (const statement of this.renderer.renderTable(table)) {
+          for (const statement of this.renderer.renderTable(table, scopeVarName)) {
             this.backendGenerator.addEarlyStatement(statement);
           }
         },

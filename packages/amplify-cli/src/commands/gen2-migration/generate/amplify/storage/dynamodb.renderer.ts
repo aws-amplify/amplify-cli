@@ -52,7 +52,7 @@ export class DynamoDBRenderer {
   /**
    * Produces CDK Table construct statements for a single DynamoDB table.
    */
-  public renderTable(table: DynamoDBTableDefinition): ts.Statement[] {
+  public renderTable(table: DynamoDBTableDefinition, scopeVarName = 'storageStack'): ts.Statement[] {
     const statements: ts.Statement[] = [];
     const baseTableName = table.tableName.replace(/-[^-]+$/, '');
     const sanitizedName = sanitizeVariableName(baseTableName);
@@ -128,7 +128,7 @@ export class DynamoDBRenderer {
                 undefined,
                 undefined,
                 factory.createNewExpression(factory.createIdentifier('Table'), undefined, [
-                  factory.createIdentifier('storageStack'),
+                  factory.createIdentifier(scopeVarName),
                   factory.createStringLiteral(sanitizedName),
                   factory.createObjectLiteralExpression(tableProps),
                 ]),
@@ -142,7 +142,7 @@ export class DynamoDBRenderer {
       statements.push(
         factory.createExpressionStatement(
           factory.createNewExpression(factory.createIdentifier('Table'), undefined, [
-            factory.createIdentifier('storageStack'),
+            factory.createIdentifier(scopeVarName),
             factory.createStringLiteral(sanitizedName),
             factory.createObjectLiteralExpression(tableProps),
           ]),

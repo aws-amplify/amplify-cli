@@ -1,0 +1,30 @@
+[
+  {
+    "ParameterKey": "CloudWatchRule",
+    "ParameterValue": "NONE"
+  },
+  {
+    "ParameterKey": "storageactivityName",
+    "ParameterValue": "activity-blade"
+  },
+  {
+    "ParameterKey": "s3Key",
+    "ParameterValue": "amplify-builds/fetchuseractivity-663875517431786f5935-build.zip"
+  },
+  {
+    "ParameterKey": "deploymentBucketName",
+    "ParameterValue": "amplify-discussionsblade-blade-4edfd-deployment"
+  },
+  {
+    "ParameterKey": "storageactivityStreamArn",
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/activity-blade/stream/2026-03-17T15:12:56.430"
+  },
+  {
+    "ParameterKey": "env",
+    "ParameterValue": "blade"
+  },
+  {
+    "ParameterKey": "storageactivityArn",
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/activity-blade"
+  }
+]
