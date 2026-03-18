@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "storage": {
+      "Meal:@model(appsync)": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    }
+  },
+  "lambdaLayers": []
+}

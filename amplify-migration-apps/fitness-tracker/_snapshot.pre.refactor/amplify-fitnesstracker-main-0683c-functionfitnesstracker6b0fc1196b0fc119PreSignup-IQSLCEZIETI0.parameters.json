@@ -1,0 +1,50 @@
+[
+  {
+    "ParameterKey": "parentResource",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "s3Key",
+    "ParameterValue": "amplify-builds/fitnesstracker6b0fc1196b0fc119PreSignup-555a623867446f4a3843-build.zip"
+  },
+  {
+    "ParameterKey": "functionName",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "DOMAINALLOWLIST",
+    "ParameterValue": "amazon.com"
+  },
+  {
+    "ParameterKey": "parentStack",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "deploymentBucketName",
+    "ParameterValue": "amplify-fitnesstracker-main-0683c-deployment"
+  },
+  {
+    "ParameterKey": "DOMAINBLACKLIST",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "roleName",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "resourceName",
+    "ParameterValue": "fitnesstracker6b0fc1196b0fc119PreSignup"
+  },
+  {
+    "ParameterKey": "trigger",
+    "ParameterValue": "true"
+  },
+  {
+    "ParameterKey": "env",
+    "ParameterValue": "main"
+  },
+  {
+    "ParameterKey": "modules",
+    "ParameterValue": "email-filter-allowlist"
+  }
+]

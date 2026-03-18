@@ -1,0 +1,43 @@
+{
+  "main": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-fitnesstracker-main-0683c-authRole",
+      "UnauthRoleArn": "arn:aws:iam::123456789012:role/amplify-fitnesstracker-main-0683c-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::123456789012:role/amplify-fitnesstracker-main-0683c-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-fitnesstracker-main-0683c-deployment",
+      "UnauthRoleName": "amplify-fitnesstracker-main-0683c-unauthRole",
+      "StackName": "amplify-fitnesstracker-main-0683c",
+      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-fitnesstracker-main-0683c/8ef87630-1a5b-11f1-84f6-12153bdc35f9",
+      "AmplifyAppId": "fitnesstracker",
+      "APIGatewayAuthURL": "https://s3.amazonaws.com/amplify-fitnesstracker-main-0683c-deployment/amplify-cfn-templates/api/APIGatewayAuthStack.json",
+      "AuthTriggerTemplateURL": "https://s3.amazonaws.com/amplify-fitnesstracker-main-0683c-deployment/amplify-cfn-templates/auth/auth-trigger-cloudformation-template.json"
+    },
+    "categories": {
+      "auth": {
+        "fitnesstracker6b0fc1196b0fc119": {},
+        "userPoolGroups": {}
+      },
+      "function": {
+        "fitnesstracker6b0fc1196b0fc119PreSignup": {
+          "DOMAINALLOWLIST": "amazon.com",
+          "deploymentBucketName": "amplify-fitnesstracker-main-0683c-deployment",
+          "s3Key": "amplify-builds/fitnesstracker6b0fc1196b0fc119PreSignup-555a623867446f4a3843-build.zip"
+        },
+        "lognutrition": {
+          "deploymentBucketName": "amplify-fitnesstracker-main-0683c-deployment",
+          "s3Key": "amplify-builds/lognutrition-554b5263566866516c6c-build.zip"
+        },
+        "admin": {
+          "deploymentBucketName": "amplify-fitnesstracker-main-0683c-deployment",
+          "s3Key": "amplify-builds/admin-536f797874787247392f-build.zip"
+        }
+      },
+      "api": {
+        "fitnesstracker": {},
+        "nutritionapi": {},
+        "adminapi": {}
+      }
+    }
+  }
+}
