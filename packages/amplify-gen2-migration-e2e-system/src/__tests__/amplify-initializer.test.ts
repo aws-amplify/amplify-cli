@@ -54,15 +54,15 @@ describe('AmplifyInitializer', () => {
       console.log(`📝 Deployment name: ${deploymentName}`);
 
       const profile = 'test-profile';
+      const envName = 'testenv';
       console.log(`📝 Profile: ${profile}`);
 
-      const settings = (amplifyInitializer as any).buildInitSettings({ config, deploymentName, profile });
+      const settings = (amplifyInitializer as any).buildInitSettings({ config, deploymentName, profile, envName });
 
       console.log(`⚙️  Generated settings:`, JSON.stringify(settings, null, 2));
 
       expect(settings.name).toBe(deploymentName);
-      // envName should be a random 2-10 character lowercase string when not provided
-      expect(settings.envName).toMatch(/^[a-z]{2,10}$/);
+      expect(settings.envName).toBe('testenv');
       expect(settings.framework).toBe('react');
       expect(settings.editor).toBe('Visual Studio Code');
       expect(settings.srcDir).toBe('src');
@@ -100,11 +100,13 @@ describe('AmplifyInitializer', () => {
 
       const deploymentName = 'mytestapp';
       const profile = 'test-profile';
+      const envName = 'testenv';
       const startTime = Date.now();
       await amplifyInitializer.initializeApp({
         appPath,
         config,
         deploymentName,
+        envName,
         profile,
       });
       const duration = Date.now() - startTime;
@@ -115,6 +117,7 @@ describe('AmplifyInitializer', () => {
         appPath,
         expect.objectContaining({
           name: 'mytestapp',
+          envName: 'testenv',
           editor: 'Visual Studio Code',
           framework: 'react',
           srcDir: 'src',
@@ -125,9 +128,6 @@ describe('AmplifyInitializer', () => {
           disableAmplifyAppCreation: false,
         }),
       );
-      // Verify envName is a valid random string
-      const callArgs = (initJSProjectWithProfile as jest.Mock).mock.calls[0][1];
-      expect(callArgs.envName).toMatch(/^[a-z]{2,10}$/);
 
       console.log('✅ initializeApp test passed');
     });
@@ -156,8 +156,11 @@ describe('AmplifyInitializer', () => {
       console.log('🧪 Expecting initialization to fail...');
       const deploymentName = 'testapp';
       const profile = 'test-profile';
+      const envName = 'testenv';
 
-      await expect(amplifyInitializer.initializeApp({ appPath: '/path/to/app', config, deploymentName, profile })).rejects.toThrow(error);
+      await expect(amplifyInitializer.initializeApp({ appPath: '/path/to/app', config, deploymentName, envName, profile })).rejects.toThrow(
+        error,
+      );
 
       console.log('✅ Error handling test passed');
     });
@@ -182,11 +185,12 @@ describe('AmplifyInitializer', () => {
         };
 
         const profile = 'test-profile';
+        const envName = 'testenv';
 
         // Use the invalid name as the deploymentName to test validation
-        await expect(amplifyInitializer.initializeApp({ appPath: '/valid/path', config, deploymentName: name, profile })).rejects.toThrow(
-          expectedError,
-        );
+        await expect(
+          amplifyInitializer.initializeApp({ appPath: '/valid/path', config, deploymentName: name, envName, profile }),
+        ).rejects.toThrow(expectedError);
 
         console.log(`  ❌ Correctly rejected: "${name}"`);
       }

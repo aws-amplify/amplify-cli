@@ -23,7 +23,17 @@ import { generateTimeBasedE2EAmplifyAppName } from './utils/math';
 import path from 'path';
 import os from 'os';
 import fs from 'fs';
-import { execSync } from 'child_process';
+
+/** Options passed to app-specific post-generate scripts */
+interface PostGenerateOptions {
+  appPath: string;
+  envName?: string;
+}
+
+/** Shape of an app's post-generate module */
+interface PostGenerateModule {
+  postGenerate: (options: PostGenerateOptions) => Promise<void>;
+}
 
 // Initialize core components
 const logger = new Logger(LogLevel.INFO);
@@ -35,6 +45,7 @@ const amplifyInitializer = new AmplifyInitializer(logger);
 const categoryInitializer = new CategoryInitializer(logger);
 const directoryManager = new DirectoryManager(logger);
 const cdkAtmosphereIntegration = new CDKAtmosphereIntegration(logger, environmentDetector);
+const gen2MigrationExecutor = new Gen2MigrationExecutor(logger);
 
 // Default migration target directory
 const MIGRATION_TARGET_DIR = path.join(os.tmpdir(), 'amplify-gen2-migration-e2e-system', 'output-apps');
@@ -171,6 +182,10 @@ async function main(): Promise<void> {
     const selectedApp = await appSelector.selectApp(options);
     const deploymentName = generateTimeBasedE2EAmplifyAppName(selectedApp);
 
+    // Generate envName if not provided via CLI
+    const envName = options.envName ?? AmplifyInitializer.generateRandomEnvName();
+    logger.info(`Using Amplify environment name: ${envName}`);
+
     // Enable file logging
     const logDir = path.join(os.tmpdir(), 'amplify-gen2-migration-e2e-system', 'logs');
     const logFile = path.join(logDir, `${deploymentName}.log`);
@@ -200,7 +215,7 @@ async function main(): Promise<void> {
     const migrationTargetPath = MIGRATION_TARGET_DIR;
 
     try {
-      await initializeAppFromCLI({ appName: selectedApp, deploymentName, config, migrationTargetPath, envName: options.envName, profile });
+      await initializeAppFromCLI({ appName: selectedApp, deploymentName, config, migrationTargetPath, envName, profile });
       // TODO: migration
     } finally {
       // Cleanup atmosphere profile if we created one
@@ -298,6 +313,32 @@ function getAmplifyCliPath(): string {
 }
 
 /**
+ * Run the app-specific post-generate script if it exists.
+ * Each app in amplify-migration-apps can have a post-generate.ts that applies
+ * manual edits required after `amplify gen2-migration generate`.
+ */
+async function runPostGenerateScript(appName: string, targetAppPath: string, envName?: string): Promise<void> {
+  const sourceAppPath = appSelector.getAppPath(appName);
+  const postGeneratePath = path.join(sourceAppPath, 'post-generate.ts');
+
+  if (!fs.existsSync(postGeneratePath)) {
+    logger.debug(`No post-generate script found for ${appName} at ${postGeneratePath}`);
+    return;
+  }
+
+  logger.info(`Running post-generate script for ${appName}...`);
+
+  const postGenerateModule = (await import(postGeneratePath)) as PostGenerateModule;
+
+  if (typeof postGenerateModule.postGenerate !== 'function') {
+    throw new Error(`post-generate.ts for ${appName} does not export a postGenerate function`);
+  }
+
+  await postGenerateModule.postGenerate({ appPath: targetAppPath, envName });
+  logger.info(`Post-generate script completed for ${appName}`);
+}
+
+/**
  * Spawn the amplify CLI directly to run amplify push --yes.
  *
  * Uses AMPLIFY_PATH env var if set, otherwise
@@ -388,22 +429,20 @@ async function initializeAppFromCLI(params: InitializeAppFromCLIParams): Promise
     await amplifyPush(targetAppPath);
     logger.info(`Successfully pushed ${deploymentName} to AWS`, context);
 
-    try {
-      execSync('git init && git add . && git commit -m "pre-deployment"', {
-        cwd: targetAppPath,
-        encoding: 'utf-8',
-      });
-      logger.info('Git repo initialized and committed successfully.');
-    } catch (error) {
-      logger.error('Git operation failed', error as Error);
-      process.exit(1);
-    }
+    // Step 3.5: Initialize git repo and commit the Gen1 state
+    logger.info(`Initializing git repository for ${deploymentName}...`, context);
+    await execa('git', ['init'], { cwd: targetAppPath });
+    await execa('git', ['add', '.'], { cwd: targetAppPath });
+    await execa('git', ['commit', '-m', 'feat: gen1 initial commit'], { cwd: targetAppPath });
+    logger.info(`Git repository initialized and Gen1 state committed`, context);
 
-    // Step 4: Run gen2-migration pre-deployment workflow (lock -> generate)
+    // Step 4: Run gen2-migration pre-deployment workflow (lock -> checkout -> generate)
     logger.info(`Running gen2-migration pre-deployment workflow for ${deploymentName}...`, context);
-    const gen2MigrationExecutor = new Gen2MigrationExecutor(logger, { profile });
-    await gen2MigrationExecutor.runPreDeploymentWorkflow(targetAppPath);
+    await gen2MigrationExecutor.runPreDeploymentWorkflow(targetAppPath, envName);
     logger.info(`Successfully completed gen2-migration pre-deployment workflow for ${deploymentName}`, context);
+
+    // Step 5: Run app-specific post-generate script
+    await runPostGenerateScript(appName, targetAppPath, envName);
 
     logger.info(`App ${deploymentName} fully initialized and deployed at ${targetAppPath}`, context);
   } catch (error) {

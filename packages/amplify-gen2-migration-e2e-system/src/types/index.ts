@@ -235,7 +235,8 @@ export interface CLIOptions {
 export interface InitializeAppFromCLIParams {
   appName: string;
   deploymentName: string;
-  envName?: string;
+  /** Amplify environment name (required, 2-10 lowercase letters) */
+  envName: string;
   config: AppConfiguration;
   migrationTargetPath: string;
   profile: string;
