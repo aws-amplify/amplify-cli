@@ -23,6 +23,7 @@ import {
   addRestApi,
   addS3Storage,
   addS3StorageWithAuthOnly,
+  addS3WithGroupAccess,
   addS3WithTrigger,
   addDynamoDBWithGSIWithSettings,
   addFunction,
@@ -83,7 +84,7 @@ export class CategoryInitializer {
     }
 
     if (categories.storage) {
-      await this.initializeStorageCategory(appPath, categories.storage, result, context);
+      await this.initializeStorageCategory(appPath, categories.storage, categories.auth, result, context);
     }
 
     if (categories.api) {
@@ -312,6 +313,7 @@ export class CategoryInitializer {
   private async initializeStorageCategory(
     appPath: string,
     storageConfig: StorageConfiguration,
+    authConfig: AuthConfiguration | undefined,
     result: InitializeCategoriesResult,
     context: LogContext,
   ): Promise<void> {
@@ -328,6 +330,10 @@ export class CategoryInitializer {
       return;
     }
 
+    // When user pool groups exist, the CLI prompts "Restrict access by?" instead of
+    // "Who should have access:". Use the group-aware helper to avoid a prompt timeout.
+    const hasUserPoolGroups = authConfig?.userPoolGroups && authConfig.userPoolGroups.length > 0;
+
     // Check if guest access is configured for any bucket
     const hasGuestAccess = storageConfig.buckets.some((bucket) => bucket.access.includes('guest') || bucket.access.includes('public'));
     // Check if triggers are configured
@@ -335,7 +341,8 @@ export class CategoryInitializer {
 
     const accessType = hasGuestAccess ? 'auth and guest' : 'auth-only';
     const triggerInfo = hasTriggers ? ' with Lambda trigger' : '';
-    this.logger.info(`Initializing S3 storage category with ${accessType} access${triggerInfo}...`, context);
+    const groupInfo = hasUserPoolGroups ? ' (with user pool groups)' : '';
+    this.logger.info(`Initializing S3 storage category with ${accessType} access${triggerInfo}${groupInfo}...`, context);
 
     try {
       if (hasTriggers) {
@@ -343,6 +350,13 @@ export class CategoryInitializer {
         const projectHasFunctions = result.initializedCategories.includes('function');
         this.logger.debug(`Adding S3 storage with Lambda trigger (projectHasFunctions: ${projectHasFunctions})`, context);
         await addS3WithTrigger(appPath, { projectHasFunctions });
+      } else if (hasUserPoolGroups) {
+        // Use group-aware helper when user pool groups are configured
+        this.logger.debug(`Adding S3 storage with group access for groups: ${authConfig!.userPoolGroups!.join(', ')}`, context);
+        await addS3WithGroupAccess(appPath, {
+          userGroup1: authConfig!.userPoolGroups![0],
+          userGroup2: authConfig!.userPoolGroups![1],
+        });
       } else if (hasGuestAccess) {
         // Add S3 storage with auth and guest access
         await addS3Storage(appPath);
