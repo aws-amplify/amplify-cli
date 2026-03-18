@@ -18,6 +18,7 @@ import {
   addAuthWithDefaultSocial,
   addAuthWithEmail,
   addAuthWithGroups,
+  addApi,
   addApiWithBlankSchema,
   addRestApi,
   addS3Storage,
@@ -179,8 +180,22 @@ export class CategoryInitializer {
     this.logger.info('Initializing GraphQL API category...', context);
 
     try {
-      // Add GraphQL API with blank schema
-      await addApiWithBlankSchema(appPath);
+      // Determine which auth modes the API needs based on config
+      const needsCognitoAuth = apiConfig.authModes?.includes('COGNITO_USER_POOLS');
+      const needsIamAuth = apiConfig.authModes?.includes('IAM');
+
+      if (needsCognitoAuth || needsIamAuth) {
+        // Use addApi with explicit auth types config.
+        // Pass requireAuthSetup = false because the auth category is already initialized,
+        // so the CLI won't prompt for Cognito setup — it reuses the existing user pool.
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const authTypesConfig: Record<string, Record<string, unknown>> = { 'API key': {} };
+        if (needsCognitoAuth) authTypesConfig['Amazon Cognito User Pool'] = {};
+        if (needsIamAuth) authTypesConfig['IAM'] = {};
+        await addApi(appPath, authTypesConfig, false);
+      } else {
+        await addApiWithBlankSchema(appPath);
+      }
 
       // If a schema file is specified, update the schema
       if (apiConfig.schema) {
@@ -325,8 +340,9 @@ export class CategoryInitializer {
     try {
       if (hasTriggers) {
         // Add S3 storage with Lambda trigger (creates a new trigger function)
-        this.logger.debug('Adding S3 storage with Lambda trigger', context);
-        await addS3WithTrigger(appPath);
+        const projectHasFunctions = result.initializedCategories.includes('function');
+        this.logger.debug(`Adding S3 storage with Lambda trigger (projectHasFunctions: ${projectHasFunctions})`, context);
+        await addS3WithTrigger(appPath, { projectHasFunctions });
       } else if (hasGuestAccess) {
         // Add S3 storage with auth and guest access
         await addS3Storage(appPath);

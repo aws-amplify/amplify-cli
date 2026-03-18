@@ -503,9 +503,9 @@ export function addS3WithFirstGroupAccess(cwd: string): Promise<void> {
     .runAsync();
 }
 
-export function addS3WithTrigger(cwd: string): Promise<void> {
+export function addS3WithTrigger(cwd: string, settings?: { projectHasFunctions?: boolean }): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
+    const chain = spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
       .wait('Select from one of the below mentioned services')
       .sendCarriageReturn()
       .wait('Provide a friendly name')
@@ -518,7 +518,13 @@ export function addS3WithTrigger(cwd: string): Promise<void> {
       .send(' ')
       .sendCarriageReturn()
       .wait('Do you want to add a Lambda Trigger for your S3 Bucket')
-      .sendConfirmYes()
+      .sendConfirmYes();
+
+    if (settings?.projectHasFunctions) {
+      chain.wait('Select from the following options').sendKeyDown().sendCarriageReturn(); // Create a new function
+    }
+
+    chain
       .wait('Do you want to edit the local')
       .sendConfirmNo()
       .sendCarriageReturn()
