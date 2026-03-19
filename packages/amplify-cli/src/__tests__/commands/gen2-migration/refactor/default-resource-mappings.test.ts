@@ -2,6 +2,7 @@ import { ForwardCategoryRefactorer } from '../../../../commands/gen2-migration/r
 import { RollbackCategoryRefactorer } from '../../../../commands/gen2-migration/refactor/workflow/rollback-category-refactorer';
 import { CFNResource } from '../../../../commands/gen2-migration/cfn-template';
 import { MoveMapping } from '../../../../commands/gen2-migration/refactor/workflow/category-refactorer';
+import { noOpLogger } from '../_framework/logger';
 
 class TestForwardRefactorer extends ForwardCategoryRefactorer {
   protected async fetchSourceStackId() {
@@ -22,7 +23,7 @@ class TestRollbackRefactorer extends RollbackCategoryRefactorer {
   protected override readonly gen1LogicalIds: ReadonlyMap<string, string>;
 
   constructor(ids: ReadonlyMap<string, string>) {
-    super(null as any, null as any, null as any, 'us-east-1', '123');
+    super(null as any, null as any, null as any, 'us-east-1', '123', noOpLogger());
     this.gen1LogicalIds = ids;
   }
   protected async fetchSourceStackId() {
@@ -47,7 +48,7 @@ function toIdMap(mappings: MoveMapping[]): Map<string, string> {
 }
 
 describe('ForwardCategoryRefactorer.buildResourceMappings (default type-matching)', () => {
-  const refactorer = new TestForwardRefactorer(null as any, null as any, null as any, 'us-east-1', '123');
+  const refactorer = new TestForwardRefactorer(null as any, null as any, null as any, 'us-east-1', '123', noOpLogger());
 
   it('maps single resource per type', () => {
     const mappings = refactorer.testBuildResourceMappings(

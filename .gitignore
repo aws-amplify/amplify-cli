@@ -110,7 +110,7 @@ packages/amplify-environment-parameters/lib/
 
 reports/*.xml
 commit-msg.txt
-amplify-migration-apps/**/_snapshot.*.actual
+amplify-migration-apps/**/_snapshot.*.actual*
 
 .pr-body.ai-generated.md
 .commit-message.ai-generated.txt

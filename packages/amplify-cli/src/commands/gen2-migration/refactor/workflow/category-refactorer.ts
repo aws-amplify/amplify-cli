@@ -7,6 +7,7 @@ import { AwsClients } from '../../aws-clients';
 import { StackFacade } from '../stack-facade';
 import { tryUpdateStack } from '../cfn-stack-updater';
 import { tryRefactorStack, RefactorFailure } from '../cfn-stack-refactor-updater';
+import { SpinningLogger } from '../../_spinning-logger';
 import { extractStackNameFromId } from '../utils';
 
 export const MIGRATION_PLACEHOLDER_LOGICAL_ID = 'MigrationPlaceholder';
@@ -78,6 +79,7 @@ export abstract class CategoryRefactorer implements Refactorer {
     protected readonly clients: AwsClients,
     protected readonly region: string,
     protected readonly accountId: string,
+    protected readonly logger: SpinningLogger,
   ) {}
 
   /**
@@ -88,10 +90,14 @@ export abstract class CategoryRefactorer implements Refactorer {
     const sourceStackId = await this.fetchSourceStackId();
     const destStackId = await this.fetchDestStackId();
 
-    if (!sourceStackId && !destStackId) return [];
-    if (!sourceStackId || !destStackId) {
-      throw new AmplifyError('InvalidStackError', {
-        message: `Category exists in ${sourceStackId ? 'source' : 'destination'} but not ${sourceStackId ? 'destination' : 'source'} stack`,
+    if (!sourceStackId) {
+      throw new AmplifyError('MigrationError', {
+        message: `[${this.constructor.name}] unable to find source stack`,
+      });
+    }
+    if (!destStackId) {
+      throw new AmplifyError('MigrationError', {
+        message: `[${this.constructor.name}] unable to find target stack`,
       });
     }
 
@@ -107,7 +113,7 @@ export abstract class CategoryRefactorer implements Refactorer {
     const moveOps = this.buildMoveOperations(blueprint);
     const afterMoveOps = await this.afterMovePlan(blueprint);
 
-    return [...this.updateSource(blueprint.source), ...this.updateTarget(target), ...beforeMoveOps, ...moveOps, ...afterMoveOps];
+    return [...this.updateSource(blueprint.source), ...this.updateTarget(blueprint.target), ...beforeMoveOps, ...moveOps, ...afterMoveOps];
   }
 
   // -- Category-specific (abstract) --
@@ -151,12 +157,16 @@ export abstract class CategoryRefactorer implements Refactorer {
    * Rollback overrides this to return [].
    */
   protected updateSource(source: ResolvedStack): AmplifyMigrationOperation[] {
+    const sourceStackName = extractStackNameFromId(source.stackId);
     return [
       {
-        validate: async () => {
-          return;
-        },
-        describe: async () => [`Update source stack '${extractStackNameFromId(source.stackId)}' with resolved references`],
+        validate: () => ({
+          description: `Ensure no destructive changes to ${sourceStackName}`,
+          run: async () => {
+            return { valid: true };
+          },
+        }),
+        describe: async () => [`Update source stack '${sourceStackName}' with resolved references`],
         execute: async () => {
           const status = await tryUpdateStack({
             cfnClient: this.clients.cloudFormation,
@@ -179,12 +189,16 @@ export abstract class CategoryRefactorer implements Refactorer {
    * Rollback overrides this to return [].
    */
   protected updateTarget(target: ResolvedStack): AmplifyMigrationOperation[] {
+    const targetStackName = extractStackNameFromId(target.stackId);
     return [
       {
-        validate: async () => {
-          return;
-        },
-        describe: async () => [`Update target stack '${extractStackNameFromId(target.stackId)}' with resolved references`],
+        validate: () => ({
+          description: `Ensure no destructive changes to ${targetStackName}`,
+          run: async () => {
+            return { valid: true };
+          },
+        }),
+        describe: async () => [`Update target stack '${targetStackName}' with resolved references`],
         execute: async () => {
           const status = await tryUpdateStack({
             cfnClient: this.clients.cloudFormation,
@@ -283,9 +297,7 @@ export abstract class CategoryRefactorer implements Refactorer {
 
     return [
       {
-        validate: async () => {
-          return;
-        },
+        validate: () => undefined,
         describe: async () => [
           `Move ${resourceMappings.length} resource(s) from '${extractStackNameFromId(source.stackId)}' to '${extractStackNameFromId(
             target.stackId,

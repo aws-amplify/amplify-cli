@@ -44,9 +44,7 @@ export class ReferenceAuthGenerator implements Planner {
 
     return [
       {
-        validate: async () => {
-          return;
-        },
+        validate: () => undefined,
         describe: async () => ['Generate amplify/auth/resource.ts (reference auth)'],
         execute: async () => {
           const nodes = this.renderer.render(referenceAuth);

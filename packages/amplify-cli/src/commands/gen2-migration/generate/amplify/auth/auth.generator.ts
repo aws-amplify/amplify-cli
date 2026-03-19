@@ -86,9 +86,7 @@ export class AuthGenerator implements Planner {
 
     return [
       {
-        validate: async () => {
-          return;
-        },
+        validate: () => undefined,
         describe: async () => ['Generate amplify/auth/resource.ts'],
         execute: async () => {
           const nodes = this.defineAuth.render(renderOptions);

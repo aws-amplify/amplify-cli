@@ -1,6 +1,7 @@
 /* eslint-disable spellcheck/spell-checker */
 import { AmplifyMigrationStep } from '../_step';
-import { AmplifyMigrationOperation } from '../_operation';
+import { AmplifyMigrationOperation, ValidationResult } from '../_operation';
+import { Plan } from '../_plan';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { GetCallerIdentityCommand, STSClient } from '@aws-sdk/client-sts';
 import { AmplifyGen2MigrationValidations } from '../_validations';
@@ -47,24 +48,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
     }
   }
 
-  public async executeImplications(): Promise<string[]> {
-    return ['Move stateful resources from your Gen1 app to be managed by your Gen2 app'];
-  }
-
-  public async rollbackImplications(): Promise<string[]> {
-    return ['Move stateful resources from your Gen2 app back to your Gen1 app'];
-  }
-
-  public async executeValidate(): Promise<void> {
-    const validations = new AmplifyGen2MigrationValidations(this.logger, this.rootStackName, this.currentEnvName, this.context);
-    await validations.validateLockStatus();
-  }
-
-  public async rollbackValidate(): Promise<void> {
-    return;
-  }
-
-  public async execute(): Promise<AmplifyMigrationOperation[]> {
+  public async forward(): Promise<Plan> {
     const toStack = this.extractParameters();
     const { clients, accountId, gen1Env, gen2Branch } = await this.createInfrastructure(toStack);
 
@@ -79,17 +63,26 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
       switch (resource.key) {
         case 'auth:Cognito':
           refactorers.push(
-            new AuthCognitoForwardRefactorer(gen1Env, gen2Branch, clients, this.region, accountId, this.appId, this.currentEnvName),
+            new AuthCognitoForwardRefactorer(
+              gen1Env,
+              gen2Branch,
+              clients,
+              this.region,
+              accountId,
+              this.logger,
+              this.appId,
+              this.currentEnvName,
+            ),
           );
           break;
         case 'storage:S3':
-          refactorers.push(new StorageS3ForwardRefactorer(gen1Env, gen2Branch, clients, this.region, accountId));
+          refactorers.push(new StorageS3ForwardRefactorer(gen1Env, gen2Branch, clients, this.region, accountId, this.logger));
           break;
         case 'storage:DynamoDB':
-          refactorers.push(new StorageDynamoForwardRefactorer(gen1Env, gen2Branch, clients, this.region, accountId));
+          refactorers.push(new StorageDynamoForwardRefactorer(gen1Env, gen2Branch, clients, this.region, accountId, this.logger));
           break;
         case 'analytics:Kinesis':
-          refactorers.push(new AnalyticsKinesisForwardRefactorer(gen1Env, gen2Branch, clients, this.region, accountId));
+          refactorers.push(new AnalyticsKinesisForwardRefactorer(gen1Env, gen2Branch, clients, this.region, accountId, this.logger));
           break;
         // Stateless categories — nothing to refactor
         // falls through
@@ -105,10 +98,17 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
       }
     }
 
-    return this.plan(refactorers);
+    return this.buildPlan(
+      refactorers,
+      [
+        'Stateful resources (Cognito, S3, DynamoDB, etc...) will be moved from Gen1 to Gen2 CloudFormation stacks',
+        'Your Gen1 app will no longer manage these resources',
+      ],
+      'Execute',
+    );
   }
 
-  public async rollback(): Promise<AmplifyMigrationOperation[]> {
+  public async rollback(): Promise<Plan> {
     const toStack = this.extractParameters();
     const { clients, accountId, gen1Env, gen2Branch } = await this.createInfrastructure(toStack);
 
@@ -122,16 +122,16 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
     for (const resource of discovered) {
       switch (resource.key) {
         case 'auth:Cognito':
-          refactorers.push(new AuthCognitoRollbackRefactorer(gen1Env, gen2Branch, clients, this.region, accountId));
+          refactorers.push(new AuthCognitoRollbackRefactorer(gen1Env, gen2Branch, clients, this.region, accountId, this.logger));
           break;
         case 'storage:S3':
-          refactorers.push(new StorageS3RollbackRefactorer(gen1Env, gen2Branch, clients, this.region, accountId));
+          refactorers.push(new StorageS3RollbackRefactorer(gen1Env, gen2Branch, clients, this.region, accountId, this.logger));
           break;
         case 'storage:DynamoDB':
-          refactorers.push(new StorageDynamoRollbackRefactorer(gen1Env, gen2Branch, clients, this.region, accountId));
+          refactorers.push(new StorageDynamoRollbackRefactorer(gen1Env, gen2Branch, clients, this.region, accountId, this.logger));
           break;
         case 'analytics:Kinesis':
-          refactorers.push(new AnalyticsKinesisRollbackRefactorer(gen1Env, gen2Branch, clients, this.region, accountId));
+          refactorers.push(new AnalyticsKinesisRollbackRefactorer(gen1Env, gen2Branch, clients, this.region, accountId, this.logger));
           break;
         // Stateless categories — nothing to rollback
         // falls through
@@ -147,7 +147,11 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
       }
     }
 
-    return this.plan(refactorers);
+    return this.buildPlan(
+      refactorers,
+      ['Stateful resources will be moved back to Gen1 CloudFormation stacks', 'Your Gen2 app will no longer manage these resources'],
+      'Rollback',
+    );
   }
 
   private async createInfrastructure(toStack: string): Promise<{
@@ -172,13 +176,31 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
   /**
    * Collects operations from all refactorers.
    */
-  private async plan(refactorers: Refactorer[]): Promise<AmplifyMigrationOperation[]> {
+  private async buildPlan(refactorers: Refactorer[], implications: string[], title: string): Promise<Plan> {
     const operations: AmplifyMigrationOperation[] = [];
+
+    operations.push({
+      describe: async () => [],
+      validate: () => ({ description: 'Lock status', run: () => this.validateLockStatus() }),
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      execute: async () => {},
+    });
+
     for (const refactorer of refactorers) {
       operations.push(...(await refactorer.plan()));
     }
 
-    return operations;
+    return new Plan({ operations, logger: this.logger, implications, title });
+  }
+
+  private async validateLockStatus(): Promise<ValidationResult> {
+    try {
+      const validations = new AmplifyGen2MigrationValidations(this.logger, this.rootStackName, this.currentEnvName, this.context);
+      await validations.validateLockStatus();
+      return { valid: true };
+    } catch (e) {
+      return { valid: false, report: e.message };
+    }
   }
 
   private extractParameters(): string {

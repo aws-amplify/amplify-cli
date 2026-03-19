@@ -159,10 +159,8 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
 
     return [
       {
-        validate: async () => {
-          return;
-        },
-        describe: async () => [`Add placeholder to holding stack '${holdingStackName}'`],
+        validate: () => undefined,
+        describe: async () => [`Update ${holdingStackName} to include placeholder resource`],
         execute: async () => {
           await tryUpdateStack({
             cfnClient: this.clients.cloudFormation,
@@ -173,9 +171,7 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
         },
       },
       {
-        validate: async () => {
-          return;
-        },
+        validate: () => undefined,
         describe: async () => [`Restore ${resourcesToRestore.length} resource(s) from holding stack to Gen2`],
         execute: async () => {
           const result = await tryRefactorStack(this.clients.cloudFormation, {
@@ -199,9 +195,7 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
 
   private buildDeleteHoldingStackOp(holdingStackName: string): AmplifyMigrationOperation {
     return {
-      validate: async () => {
-        return;
-      },
+      validate: () => undefined,
       describe: async () => [`Delete holding stack '${holdingStackName}'`],
       execute: async () => {
         await deleteHoldingStack(this.clients.cloudFormation, holdingStackName);

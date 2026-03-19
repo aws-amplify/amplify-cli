@@ -1,7 +1,7 @@
 import { AmplifyGen2MigrationValidations } from '../../../commands/gen2-migration/_validations';
 import { $TSContext, stateManager } from '@aws-amplify/amplify-cli-core';
 import { CloudFormationClient, DescribeChangeSetOutput } from '@aws-sdk/client-cloudformation';
-import { Logger } from '../../../commands/gen2-migration';
+import { SpinningLogger } from '../../../commands/gen2-migration/_spinning-logger';
 
 jest.mock('@aws-sdk/client-cloudformation');
 jest.mock('bottleneck', () => {
@@ -22,7 +22,7 @@ describe('AmplifyGen2MigrationValidations', () => {
 
   beforeEach(() => {
     mockContext = {} as $TSContext;
-    validations = new AmplifyGen2MigrationValidations(new Logger('mock', 'mock', 'mock'), 'mock', 'mock', mockContext);
+    validations = new AmplifyGen2MigrationValidations(new SpinningLogger('mock', { debug: true }), 'mock', 'mock', mockContext);
   });
 
   describe('validateStatefulResources', () => {

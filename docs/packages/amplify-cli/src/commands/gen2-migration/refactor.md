@@ -88,7 +88,7 @@ amplify gen2-migration refactor --to <gen2-stack-name> [--resourceMappings file:
 
 | Export                         | Type     | Signature                                                                                                                                                                                                                                                                                                             | Description                                                         |
 | ------------------------------ | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
-| `AmplifyMigrationRefactorStep` | class    | `validate(): Promise<void>; execute(): Promise<void>; rollback(): Promise<void>; implications(): string[]`                                                                                                                                                                                                            | Main entry point implementing the `AmplifyMigrationStep` interface. |
+| `AmplifyMigrationRefactorStep` | class    | `forward(): Promise<Plan>; rollback(): Promise<Plan>; assess(assessment: Assessment): Promise<void>`                                                                                                                                                                                                                  | Main entry point implementing the `AmplifyMigrationStep` interface. |
 | `TemplateGenerator`            | class    | `initializeForAssessment(): Promise<void>; getStackTemplate(stackId): Promise<CFNTemplate>; getResourcesToMigrate(template, category): string[]; generateSelectedCategories(categories, resourceMap?): Promise<boolean>`                                                                                              | Core template generation engine.                                    |
 | `CategoryTemplateGenerator`    | class    | `generateGen1PreProcessTemplate(): Promise<CFNChangeTemplateWithParams>; generateGen2PreProcessTemplate(): Promise<CFNChangeTemplateWithParams>; moveGen2ResourcesToHoldingStack(resolvedGen2Template: CFNTemplate): Promise<CFNChangeTemplateWithParams>; generateRefactorTemplates(...): CFNStackRefactorTemplates` | Category-specific template generator.                               |
 | `tryRefactorStack`             | function | `async (cfnClient, input, attempts?): Promise<[boolean, FailedRefactorResponse \| undefined]>`                                                                                                                                                                                                                        | Executes CloudFormation stack refactor operation with polling.      |
@@ -125,7 +125,7 @@ Refactorers assume a single resource per category. The `validateSingleResourcePe
 
 **Internal:**
 
-- `gen2-migration-core` — `AmplifyMigrationStep` base class, `Logger` class, `AmplifyGen2MigrationValidations` for lock status validation
+- `gen2-migration-core` — `AmplifyMigrationStep` base class, `Plan` class, `SpinningLogger` class, `AmplifyGen2MigrationValidations` for lock status validation
 
 **External:**
 | Package | Purpose |
@@ -303,7 +303,7 @@ Resources:
 - The logical ID mapping between Gen1 and Gen2 is critical—UserPoolClient has special handling (Web vs Native) and UserPoolGroup uses CDK hash suffixes that must be stripped
 - OAuth migrations require credentials from both Cognito (client_id, client_secret) and SSM (Sign In With Apple private key)—ensure proper IAM permissions
 - The module supports both forward migration (Gen1→Gen2) and rollback (Gen2→Gen1) operations, but rollback has different logical ID mapping logic
-- Category stacks are identified by parsing the root stack's nested stacks and matching logical resource IDs that start with category names (auth, storage)
+- Category stacks are identified by parsing the nested stack's `Description` field as JSON and checking the `stackType` property (e.g., `auth` vs `UserPool-Groups`).
 
 **Common pitfalls:**
 

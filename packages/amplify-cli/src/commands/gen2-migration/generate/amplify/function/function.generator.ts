@@ -124,9 +124,7 @@ export class FunctionGenerator implements Planner {
 
     return [
       {
-        validate: async () => {
-          return;
-        },
+        validate: () => undefined,
         describe: async () => [`Generate amplify/${this.category}/${func.resourceName}/resource.ts`],
         execute: async () => {
           await this.generateResource(func);

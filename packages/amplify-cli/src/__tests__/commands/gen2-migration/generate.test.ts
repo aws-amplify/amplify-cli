@@ -82,10 +82,8 @@ async function testSnapshot(appName: string, appOptions?: MigrationAppOptions, c
         app.region,
         {} as $TSContext,
       );
-      const operations = await step.execute();
-      for (const operation of operations) {
-        await operation.execute();
-      }
+      const plan = await step.forward();
+      await plan.execute();
 
       const report = await app.snapshots.generate.compare(process.cwd());
       const isUpdatingSnapshots = expect.getState().snapshotState._updateSnapshot === 'all';
@@ -104,7 +102,7 @@ async function testSnapshot(appName: string, appOptions?: MigrationAppOptions, c
 
 import { Gen1App, DiscoveredResource } from '../../../commands/gen2-migration/generate/_infra/gen1-app';
 import { Assessment } from '../../../commands/gen2-migration/_assessment';
-import { Logger } from '../../../commands/gen2-migration';
+import { SpinningLogger } from '../../../commands/gen2-migration/_spinning-logger';
 
 function mockDiscover(resources: DiscoveredResource[]): jest.SpyInstance {
   return jest.spyOn(Gen1App, 'create').mockResolvedValue({
@@ -114,7 +112,7 @@ function mockDiscover(resources: DiscoveredResource[]): jest.SpyInstance {
 }
 
 function createStep(): AmplifyMigrationGenerateStep {
-  const logger = new Logger('generate', 'test-app', 'dev');
+  const logger = new SpinningLogger('generate', { debug: true });
   return new AmplifyMigrationGenerateStep(logger, 'dev', 'test-app', 'app-123', 'root-stack', 'us-east-1', {} as $TSContext);
 }
 
@@ -167,8 +165,8 @@ describe('AmplifyMigrationGenerateStep', () => {
 
       const step = createStep();
       // Should not throw — generate warns on unsupported, unlike refactor
-      const operations = await step.execute();
-      expect(operations.length).toBeGreaterThan(0);
+      const plan = await step.forward();
+      await plan.describe();
     });
   });
 });
