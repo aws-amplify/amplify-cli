@@ -14,19 +14,6 @@ import chalk from 'chalk';
 import { AmplifyMigrationAssessor } from './gen2-migration/assess';
 import { Plan } from './gen2-migration/_plan';
 
-/** Re-export so existing consumers can migrate incrementally. */
-export { SpinningLogger };
-
-/**
- * @deprecated Use SpinningLogger instead. Kept for backward compatibility
- * with the old refactor code path.
- */
-export class Logger extends SpinningLogger {
-  constructor(stepName: string, appName: string, envName: string) {
-    super(`${stepName}] [${appName}/${envName}`, { debug: true });
-  }
-}
-
 const STEPS = {
   clone: {
     class: AmplifyMigrationCloneStep,

@@ -3,7 +3,7 @@ import { OUTPUT_DIRECTORY } from '../../../../commands/gen2-migration/refactor/s
 import { MigrationApp, MigrationAppOptions } from '../_framework/app';
 import { Gen1App, DiscoveredResource } from '../../../../commands/gen2-migration/generate/_infra/gen1-app';
 import { Assessment } from '../../../../commands/gen2-migration/_assessment';
-import { Logger } from '../../../../commands/gen2-migration';
+import { SpinningLogger } from '../../../../commands/gen2-migration/_spinning-logger';
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
@@ -126,7 +126,7 @@ function mockCreateInfrastructure(): jest.SpyInstance {
 }
 
 function createStep(toStack = 'gen2-stack'): AmplifyMigrationRefactorStep {
-  const logger = new Logger('refactor', 'test-app', 'dev');
+  const logger = new SpinningLogger('refactor', { debug: true });
   const context = { parameters: { options: { to: toStack } } } as unknown as $TSContext;
   return new AmplifyMigrationRefactorStep(logger, 'dev', 'test-app', 'app-123', 'root-stack', 'us-east-1', context);
 }

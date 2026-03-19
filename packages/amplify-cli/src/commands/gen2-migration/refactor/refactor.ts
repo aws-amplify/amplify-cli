@@ -179,7 +179,6 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
   private async buildPlan(refactorers: Refactorer[], implications: string[], title: string): Promise<Plan> {
     const operations: AmplifyMigrationOperation[] = [];
 
-    // Validation-only operation (formerly in executeValidate)
     operations.push({
       describe: async () => [],
       validate: () => ({ description: 'Lock status', run: () => this.validateLockStatus() }),

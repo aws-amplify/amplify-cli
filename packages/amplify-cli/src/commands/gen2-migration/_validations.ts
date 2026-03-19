@@ -64,6 +64,8 @@ export class AmplifyGen2MigrationValidations {
     }
 
     const stackStatus = response.Stacks[0].StackStatus;
+    // Note: UPDATE_ROLLBACK_COMPLETE isn't an expected state - only being
+    // added in the edge case of resuming migration from a failed state
     const validStatuses = ['UPDATE_COMPLETE', 'CREATE_COMPLETE', 'UPDATE_ROLLBACK_COMPLETE'];
 
     if (!validStatuses.includes(stackStatus)) {

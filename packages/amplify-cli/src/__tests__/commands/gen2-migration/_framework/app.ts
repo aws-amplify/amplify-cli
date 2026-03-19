@@ -3,7 +3,7 @@ import * as fs from 'fs-extra';
 import * as os from 'os';
 import { MockClients } from './clients';
 import { copySync } from './directories';
-import { Logger } from '../../../../commands/gen2-migration';
+import { SpinningLogger } from '../../../../commands/gen2-migration/_spinning-logger';
 import { Gen1App } from '../../../../commands/gen2-migration/generate/_infra/gen1-app';
 import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import { Snapshot } from './snapshot';
@@ -206,7 +206,7 @@ export class MigrationApp {
    * Logs are prefixed with the command name, app name, and environment name
    * for easy identification in test output.
    */
-  public readonly logger: Logger;
+  public readonly logger: SpinningLogger;
 
   /**
    * Generate and refactor snapshots for this app.
@@ -272,7 +272,7 @@ export class MigrationApp {
 
     this.environmentName = environments[0];
     this.clients = new MockClients(this);
-    this.logger = new Logger('generate', this.name, this.environmentName);
+    this.logger = new SpinningLogger('generate', { debug: true });
 
     // Pre-populate the CloudFormation mock's resource map so that
     // mocks (e.g. Cognito) can resolve physical IDs to stack names.
