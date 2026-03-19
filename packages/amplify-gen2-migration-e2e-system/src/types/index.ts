@@ -21,6 +21,7 @@ export interface CategoryConfiguration {
   function?: FunctionConfiguration;
   hosting?: HostingConfiguration;
   restApi?: RestApiConfiguration;
+  analytics?: AnalyticsConfiguration;
 }
 
 export interface APIConfiguration {
@@ -100,6 +101,12 @@ export interface HostingConfiguration {
   customDomain?: string;
   sslCertificate?: string;
   buildSettings?: BuildSettings;
+}
+
+export interface AnalyticsConfiguration {
+  type: 'kinesis' | 'pinpoint';
+  name: string;
+  shards?: number;
 }
 
 export interface DependencyConfiguration {
