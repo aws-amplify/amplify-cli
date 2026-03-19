@@ -380,6 +380,7 @@ async function runGen1TestScript(targetAppPath: string, migrationTargetPath: str
   logger.info(`${testScriptName} completed successfully`);
 }
 
+/**
  * Run the app-specific post-generate script if it exists.
  * Each app in amplify-migration-apps can have a post-generate.ts that applies
  * manual edits required after `amplify gen2-migration generate`.
