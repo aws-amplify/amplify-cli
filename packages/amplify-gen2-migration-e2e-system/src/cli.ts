@@ -23,6 +23,8 @@ import { generateTimeBasedE2EAmplifyAppName } from './utils/math';
 import path from 'path';
 import os from 'os';
 import fs from 'fs';
+import * as fsExtra from 'fs-extra';
+import { execSync } from 'child_process';
 
 /** Options passed to app-specific post-generate scripts */
 interface PostGenerateOptions {
@@ -215,7 +217,7 @@ async function main(): Promise<void> {
     const migrationTargetPath = MIGRATION_TARGET_DIR;
 
     try {
-      await initializeAppFromCLI({ appName: selectedApp, deploymentName, config, migrationTargetPath, envName, profile });
+      await initializeAppFromCLI({ appName: selectedApp, deploymentName, config, migrationTargetPath, envName: options.envName, profile });
       // TODO: migration
     } finally {
       // Cleanup atmosphere profile if we created one
@@ -310,6 +312,72 @@ function getAmplifyCliPath(): string {
     return amplifyPath;
   }
   return process.platform === 'win32' ? 'amplify.exe' : 'amplify';
+}
+
+/**
+ * Run the app's gen1-test-script.ts to validate the Gen1 deployment.
+ *
+ * Copies _test-common to the migration target directory so relative
+ * imports like ../_test-common resolve, then executes the test script
+ * via npx tsx from the target app directory.
+ */
+async function runGen1TestScript(targetAppPath: string, migrationTargetPath: string, sourceAppsBasePath: string): Promise<void> {
+  const testScriptName = 'gen1-test-script.ts';
+
+  // Copy _test-common so ../_test-common imports resolve from the target app dir
+  const testCommonSource = path.join(sourceAppsBasePath, '_test-common');
+  const testCommonDest = path.join(migrationTargetPath, '_test-common');
+
+  logger.info(`Copying _test-common to ${testCommonDest}`);
+  await fsExtra.copy(testCommonSource, testCommonDest, { overwrite: true });
+
+  // Install dependencies for the test script (aws-amplify, etc.)
+  logger.info(`Installing dependencies in ${targetAppPath}`);
+  await execa('npm', ['install'], { cwd: targetAppPath });
+
+  // Install dependencies for _test-common
+  logger.info(`Installing _test-common dependencies in ${testCommonDest}`);
+  await execa('npm', ['install'], { cwd: testCommonDest });
+
+  logger.info(`Running ${testScriptName} in ${targetAppPath}`);
+  const result = await execa('npx', ['tsx', testScriptName], {
+    cwd: targetAppPath,
+    reject: false,
+  });
+
+  const stdout = result.stdout || '';
+  const stderr = result.stderr || '';
+
+  // Always log full output at DEBUG level (visible with --verbose)
+  if (stdout) {
+    logger.debug(`[test-script] stdout:\n${stdout}`);
+  }
+  if (stderr) {
+    logger.debug(`[test-script] stderr:\n${stderr}`);
+  }
+
+  // At INFO level, surface the meaningful test result lines
+  const testResultLines = stdout.split('\n').filter((line) => {
+    const trimmed = line.trim();
+    return (
+      trimmed.startsWith('✅') ||
+      trimmed.startsWith('❌') ||
+      trimmed.includes('TEST SUMMARY') ||
+      trimmed.includes('All tests passed') ||
+      trimmed.includes('test(s) failed')
+    );
+  });
+  for (const line of testResultLines) {
+    logger.info(`[test-script] ${line.trim()}`);
+  }
+
+  if (result.exitCode !== 0) {
+    // Include output in the error so it's visible even without --verbose
+    const combinedOutput = [stdout, stderr].filter(Boolean).join('\n');
+    throw new Error(`${testScriptName} failed with exit code ${result.exitCode}\n${combinedOutput}`);
+  }
+
+  logger.info(`${testScriptName} completed successfully`);
 }
 
 /**
@@ -429,23 +497,30 @@ async function initializeAppFromCLI(params: InitializeAppFromCLIParams): Promise
     await amplifyPush(targetAppPath);
     logger.info(`Successfully pushed ${deploymentName} to AWS`, context);
 
-    // Step 3.5: Initialize git repo and commit the Gen1 state
-    logger.info(`Initializing git repository for ${deploymentName}...`, context);
-    await execa('git', ['init'], { cwd: targetAppPath });
-    await execa('git', ['add', '.'], { cwd: targetAppPath });
-    await execa('git', ['commit', '-m', 'feat: gen1 initial commit'], { cwd: targetAppPath });
-    logger.info(`Git repository initialized and Gen1 state committed`, context);
+    // Step 4: Run gen1 test script to validate the deployment
+    logger.info(`Running gen1 test script for ${deploymentName}...`, context);
+    const sourceAppsBasePath = path.dirname(sourceAppPath);
+    await runGen1TestScript(targetAppPath, migrationTargetPath, sourceAppsBasePath);
+    logger.info(`Gen1 test script passed for ${deploymentName}`, context);
 
-    // TODO: remove early return when ready to test migration steps
-    // logger.info(`Stopping after push + git commit. App deployed at ${targetAppPath}`, context);
-    // return;
+    try {
+      execSync('git init && git add . && git commit -m "pre-deployment"', {
+        cwd: targetAppPath,
+        encoding: 'utf-8',
+      });
+      logger.info('Git repo initialized and committed successfully.');
+    } catch (error) {
+      logger.error('Git operation failed', error as Error);
+      process.exit(1);
+    }
 
-    // Step 4: Run gen2-migration pre-deployment workflow (lock -> checkout -> generate)
+    // Step 5: Run gen2-migration pre-deployment workflow (lock -> generate)
     logger.info(`Running gen2-migration pre-deployment workflow for ${deploymentName}...`, context);
-    await gen2MigrationExecutor.runPreDeploymentWorkflow(targetAppPath, envName);
+    const gen2MigrationExecutor = new Gen2MigrationExecutor(logger, { profile });
+    await gen2MigrationExecutor.runPreDeploymentWorkflow(targetAppPath);
     logger.info(`Successfully completed gen2-migration pre-deployment workflow for ${deploymentName}`, context);
 
-    // Step 5: Run app-specific post-generate script
+    // Step 6: Run app-specific post-generate script
     await runPostGenerateScript(appName, targetAppPath, envName);
 
     logger.info(`App ${deploymentName} fully initialized and deployed at ${targetAppPath}`, context);
