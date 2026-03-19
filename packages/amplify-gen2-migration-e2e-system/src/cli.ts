@@ -492,22 +492,12 @@ async function initializeAppFromCLI(params: InitializeAppFromCLIParams): Promise
       throw new Error(`Failed to initialize ${categoryResult.errors.length} category(ies)`);
     }
 
-    // Step 3: Run configure.sh if present (copies custom source files into amplify/backend/)
-    const configureScriptPath = path.join(targetAppPath, 'configure.sh');
-    if (fs.existsSync(configureScriptPath)) {
-      logger.info(`Running configure.sh for ${deploymentName}...`, context);
-      await execa('bash', ['configure.sh'], { cwd: targetAppPath });
-      logger.info(`Successfully ran configure.sh for ${deploymentName}`, context);
-    } else {
-      logger.debug(`No configure.sh found for ${deploymentName}, skipping`, context);
-    }
-
-    // Step 4: Push the initialized app to AWS
+    // Step 3: Push the initialized app to AWS
     logger.info(`Pushing ${deploymentName} to AWS...`, context);
     await amplifyPush(targetAppPath);
     logger.info(`Successfully pushed ${deploymentName} to AWS`, context);
 
-    // Step 5: Run gen1 test script to validate the deployment
+    // Step 4: Run gen1 test script to validate the deployment
     logger.info(`Running gen1 test script for ${deploymentName}...`, context);
     const sourceAppsBasePath = path.dirname(sourceAppPath);
     await runGen1TestScript(targetAppPath, migrationTargetPath, sourceAppsBasePath);
@@ -524,13 +514,13 @@ async function initializeAppFromCLI(params: InitializeAppFromCLIParams): Promise
       process.exit(1);
     }
 
-    // Step 6: Run gen2-migration pre-deployment workflow (lock -> generate)
+    // Step 5: Run gen2-migration pre-deployment workflow (lock -> generate)
     logger.info(`Running gen2-migration pre-deployment workflow for ${deploymentName}...`, context);
     const gen2MigrationExecutor = new Gen2MigrationExecutor(logger, { profile });
     await gen2MigrationExecutor.runPreDeploymentWorkflow(targetAppPath);
     logger.info(`Successfully completed gen2-migration pre-deployment workflow for ${deploymentName}`, context);
 
-    // Step 7: Run app-specific post-generate script
+    // Step 6: Run app-specific post-generate script
     await runPostGenerateScript(appName, targetAppPath, envName);
 
     logger.info(`App ${deploymentName} fully initialized and deployed at ${targetAppPath}`, context);
