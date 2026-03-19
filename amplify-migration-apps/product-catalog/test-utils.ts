@@ -46,6 +46,8 @@ export function createTestFunctions() {
   // PART 1: GraphQL Query Tests
   // ============================================================
 
+  // Test ListProducts
+
   async function testListProducts(): Promise<string | null> {
     console.log('\n📦 Testing listProducts...');
     const client = getAuthClient();
