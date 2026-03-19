@@ -30,9 +30,20 @@ interface PostGenerateOptions {
   envName?: string;
 }
 
+/** Options passed to app-specific post-refactor scripts */
+interface PostRefactorOptions {
+  appPath: string;
+  envName?: string;
+}
+
 /** Shape of an app's post-generate module */
 interface PostGenerateModule {
   postGenerate: (options: PostGenerateOptions) => Promise<void>;
+}
+
+/** Shape of an app's post-refactor module */
+interface PostRefactorModule {
+  postRefactor: (options: PostRefactorOptions) => Promise<void>;
 }
 
 // Initialize core components
@@ -216,7 +227,6 @@ async function main(): Promise<void> {
 
     try {
       await initializeAppFromCLI({ appName: selectedApp, deploymentName, config, migrationTargetPath, envName, profile });
-      // TODO: migration
     } finally {
       // Cleanup atmosphere profile if we created one
       if (isAtmosphereEnv) {
@@ -339,6 +349,32 @@ async function runPostGenerateScript(appName: string, targetAppPath: string, env
 }
 
 /**
+ * Run the app-specific post-refactor script if it exists.
+ * Each app in amplify-migration-apps can have a post-refactor.ts that applies
+ * manual edits required after `amplify gen2-migration refactor`.
+ */
+async function runPostRefactorScript(appName: string, targetAppPath: string, envName?: string): Promise<void> {
+  const sourceAppPath = appSelector.getAppPath(appName);
+  const postRefactorPath = path.join(sourceAppPath, 'post-refactor.ts');
+
+  if (!fs.existsSync(postRefactorPath)) {
+    logger.debug(`No post-refactor script found for ${appName} at ${postRefactorPath}`);
+    return;
+  }
+
+  logger.info(`Running post-refactor script for ${appName}...`);
+
+  const postRefactorModule = (await import(postRefactorPath)) as PostRefactorModule;
+
+  if (typeof postRefactorModule.postRefactor !== 'function') {
+    throw new Error(`post-refactor.ts for ${appName} does not export a postRefactor function`);
+  }
+
+  await postRefactorModule.postRefactor({ appPath: targetAppPath, envName });
+  logger.info(`Post-refactor script completed for ${appName}`);
+}
+
+/**
  * Spawn the amplify CLI directly to run amplify push --yes.
  *
  * Uses AMPLIFY_PATH env var if set, otherwise
@@ -389,6 +425,13 @@ async function initializeAppFromCLI(params: InitializeAppFromCLIParams): Promise
 
     logger.debug(`Copying source directory to target...`, context);
     await directoryManager.copyDirectory(sourceAppPath, targetAppPath);
+
+    // Update package.json name to use deploymentName for predictable Gen2 stack naming
+    const packageJsonPath = path.join(targetAppPath, 'package.json');
+    const packageJson = JSON.parse(await fs.promises.readFile(packageJsonPath, 'utf-8')) as { name: string };
+    packageJson.name = deploymentName;
+    await fs.promises.writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2) + '\n', 'utf-8');
+    logger.debug(`Updated package.json name to ${deploymentName}`, context);
 
     logger.debug(`Running amplify init in ${targetAppPath}`, context);
 
@@ -448,7 +491,46 @@ async function initializeAppFromCLI(params: InitializeAppFromCLIParams): Promise
     // Step 5: Run app-specific post-generate script
     await runPostGenerateScript(appName, targetAppPath, envName);
 
-    logger.info(`App ${deploymentName} fully initialized and deployed at ${targetAppPath}`, context);
+    // Step 6: Commit Gen2 generated code
+    logger.info(`Committing Gen2 generated code for ${deploymentName}...`, context);
+    await execa('git', ['add', '.'], { cwd: targetAppPath });
+    await execa('git', ['commit', '-m', 'feat: gen2 migration generate'], { cwd: targetAppPath });
+    logger.info(`Gen2 generated code committed`, context);
+
+    // Step 7: Deploy Gen2 using ampx sandbox
+    logger.info(`Deploying Gen2 app using ampx sandbox for ${deploymentName}...`, context);
+    const gen2StackName = await gen2MigrationExecutor.deployGen2Sandbox(targetAppPath, deploymentName);
+    logger.info(`Gen2 app deployed with stack name: ${gen2StackName}`, context);
+
+    // Step 8: Checkout back to main branch for refactor (refactor must run from Gen1 branch)
+    const gen2BranchName = `gen2-${envName}`;
+    logger.info(`Checking out main branch for refactor (refactor requires Gen1 files)...`, context);
+    await execa('git', ['checkout', 'main'], { cwd: targetAppPath });
+
+    // Step 9: Run refactor to move stateful resources from Gen1 to Gen2
+    logger.info(`Running gen2-migration refactor for ${deploymentName}...`, context);
+    await gen2MigrationExecutor.refactor(targetAppPath, gen2StackName);
+    logger.info(`Successfully completed gen2-migration refactor for ${deploymentName}`, context);
+
+    // Step 10: Checkout back to Gen2 branch for post-refactor edits
+    logger.info(`Checking out ${gen2BranchName} branch for post-refactor edits...`, context);
+    await execa('git', ['checkout', gen2BranchName], { cwd: targetAppPath });
+
+    // Step 11: Run app-specific post-refactor script
+    await runPostRefactorScript(appName, targetAppPath, envName);
+
+    // Step 12: Commit post-refactor changes
+    logger.info(`Committing post-refactor changes for ${deploymentName}...`, context);
+    await execa('git', ['add', '.'], { cwd: targetAppPath });
+    await execa('git', ['commit', '-m', 'fix: post-refactor edits'], { cwd: targetAppPath });
+    logger.info(`Post-refactor changes committed`, context);
+
+    // Step 13: Redeploy Gen2 to pick up post-refactor changes
+    logger.info(`Redeploying Gen2 app after refactor for ${deploymentName}...`, context);
+    await gen2MigrationExecutor.deployGen2Sandbox(targetAppPath, deploymentName);
+    logger.info(`Gen2 app redeployed successfully`, context);
+
+    logger.info(`App ${deploymentName} fully initialized and migrated at ${targetAppPath}`, context);
   } catch (error) {
     logger.error(`Failed to initialize ${appName}`, error as Error, context);
     throw error;

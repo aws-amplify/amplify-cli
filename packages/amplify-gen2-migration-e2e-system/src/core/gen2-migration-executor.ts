@@ -7,6 +7,7 @@
 
 import execa from 'execa';
 import fs from 'fs';
+import os from 'os';
 import { ILogger } from '../interfaces';
 import { LogContext } from '../types';
 
@@ -44,14 +45,14 @@ export class Gen2MigrationExecutor {
   /**
    * Execute a gen2-migration step. Throws on failure.
    */
-  private async executeStep(step: Gen2MigrationStep, appPath: string): Promise<void> {
+  private async executeStep(step: Gen2MigrationStep, appPath: string, extraArgs: string[] = []): Promise<void> {
     const context: LogContext = { operation: `gen2-migration-${step}` };
 
     this.logger.info(`Executing gen2-migration ${step}...`, context);
     this.logger.debug(`App path: ${appPath}`, context);
     this.logger.debug(`Using amplify CLI at: ${this.amplifyPath}`, context);
 
-    const args = ['gen2-migration', step, '--yes'];
+    const args = ['gen2-migration', step, '--yes', ...extraArgs];
     this.logger.debug(`Command: ${this.amplifyPath} ${args.join(' ')}`, context);
 
     const startTime = Date.now();
@@ -82,7 +83,7 @@ export class Gen2MigrationExecutor {
    * Enables deletion protection on DynamoDB tables, sets a deny-all stack policy,
    * and adds GEN2_MIGRATION_ENVIRONMENT_NAME env var to the Amplify app.
    */
-  async lock(appPath: string): Promise<void> {
+  public async lock(appPath: string): Promise<void> {
     await this.executeStep('lock', appPath);
   }
 
@@ -92,7 +93,7 @@ export class Gen2MigrationExecutor {
    * Creates/updates package.json with Gen2 dependencies, replaces the amplify
    * folder with Gen2 TypeScript definitions, and installs dependencies.
    */
-  async generate(appPath: string): Promise<void> {
+  public async generate(appPath: string): Promise<void> {
     await this.executeStep('generate', appPath);
   }
 
@@ -101,8 +102,8 @@ export class Gen2MigrationExecutor {
    *
    * Requires Gen2 deployment to be complete before running.
    */
-  async refactor(appPath: string): Promise<void> {
-    await this.executeStep('refactor', appPath);
+  public async refactor(appPath: string, gen2StackName: string): Promise<void> {
+    await this.executeStep('refactor', appPath, ['--to', gen2StackName]);
   }
 
   /**
@@ -110,14 +111,14 @@ export class Gen2MigrationExecutor {
    *
    * Should only be run after successful refactor.
    */
-  async decommission(appPath: string): Promise<void> {
+  public async decommission(appPath: string): Promise<void> {
     await this.executeStep('decommission', appPath);
   }
 
   /**
    * Run pre-deployment workflow: lock -> checkout gen2 branch -> generate
    */
-  async runPreDeploymentWorkflow(appPath: string, envName = 'main'): Promise<void> {
+  public async runPreDeploymentWorkflow(appPath: string, envName = 'main'): Promise<void> {
     const context: LogContext = { operation: 'gen2-migration-workflow' };
     this.logger.info('Starting pre-deployment workflow (lock -> checkout -> generate)...', context);
 
@@ -138,14 +139,134 @@ export class Gen2MigrationExecutor {
   /**
    * Run post-deployment workflow: refactor -> decommission
    */
-  async runPostDeploymentWorkflow(appPath: string): Promise<void> {
+  public async runPostDeploymentWorkflow(appPath: string, gen2StackName: string): Promise<void> {
     const context: LogContext = { operation: 'gen2-migration-workflow' };
     this.logger.info('Starting post-deployment workflow (refactor -> decommission)...', context);
 
-    await this.refactor(appPath);
+    await this.refactor(appPath, gen2StackName);
     await this.decommission(appPath);
 
     this.logger.info('Post-deployment workflow completed', context);
+  }
+
+  /**
+   * Deploy Gen2 app using ampx sandbox.
+   *
+   * Runs `npx ampx sandbox --once` to do a single non-interactive deployment.
+   * Returns the Gen2 root stack name by querying CloudFormation.
+   */
+  public async deployGen2Sandbox(appPath: string, deploymentName: string): Promise<string> {
+    const context: LogContext = { operation: 'gen2-sandbox-deploy' };
+
+    this.logger.info('Deploying Gen2 app using ampx sandbox...', context);
+    this.logger.debug(`App path: ${appPath}`, context);
+
+    const startTime = Date.now();
+
+    // Set AWS_PROFILE env var if profile is specified
+    const env = this.profile ? { ...process.env, AWS_PROFILE: this.profile } : undefined;
+
+    const result = await execa('npx', ['ampx', 'sandbox', '--once'], {
+      cwd: appPath,
+      reject: false,
+      env,
+      all: true, // Combine stdout and stderr into result.all
+    });
+
+    const durationMs = Date.now() - startTime;
+
+    // Use result.all if available (combined output), otherwise combine manually
+    const combinedOutput = result.all ?? `${result.stdout}\n${result.stderr}`;
+
+    // Check for errors in output (ampx sandbox may return exit code 0 even on failure)
+    const hasError = this.checkForAmpxErrors(combinedOutput);
+
+    if (result.exitCode !== 0 || hasError) {
+      this.logAmpxOutput(combinedOutput, context);
+      const errorMessage = hasError ? 'ampx sandbox failed (found [ERROR] in output)' : `Exit code ${result.exitCode}`;
+      throw new Error(`ampx sandbox failed: ${errorMessage}`);
+    }
+
+    this.logger.info(`ampx sandbox completed (${durationMs}ms)`, context);
+
+    // Find the Gen2 root stack by querying CloudFormation
+    // Pattern: amplify-<app-name>-<username>-sandbox-<hash>
+    const username = os.userInfo().username;
+    const stackPrefix = `amplify-${deploymentName}-${username}-sandbox`;
+
+    const gen2StackName = await this.findGen2RootStack(stackPrefix);
+    this.logger.info(`Gen2 stack name: ${gen2StackName}`, context);
+
+    return gen2StackName;
+  }
+
+  /**
+   * Check ampx output for error indicators.
+   * ampx sandbox may return exit code 0 even on failure, so we check the output.
+   */
+  private checkForAmpxErrors(output: string): boolean {
+    // Check for [ERROR] pattern (with or without timestamp prefix)
+    return output.includes('[ERROR]');
+  }
+
+  /**
+   * Log the last 40 lines of ampx output for debugging.
+   */
+  private logAmpxOutput(output: string, context: LogContext): void {
+    const outputLines = output.split('\n');
+    const last40Lines = outputLines.slice(-40).join('\n');
+    this.logger.error(`ampx sandbox output (last 40 lines):\n${last40Lines}`, undefined, context);
+  }
+
+  /**
+   * Find the Gen2 root stack by prefix using AWS CLI.
+   */
+  private async findGen2RootStack(stackPrefix: string): Promise<string> {
+    const context: LogContext = { operation: 'find-gen2-stack' };
+
+    this.logger.debug(`Looking for stack with prefix: ${stackPrefix}`, context);
+
+    const env = this.profile ? { ...process.env, AWS_PROFILE: this.profile } : undefined;
+
+    const result = await execa(
+      'aws',
+      [
+        'cloudformation',
+        'list-stacks',
+        '--stack-status-filter',
+        'CREATE_COMPLETE',
+        'UPDATE_COMPLETE',
+        '--query',
+        `StackSummaries[?starts_with(StackName, '${stackPrefix}')].StackName`,
+        '--output',
+        'text',
+      ],
+      { reject: false, env },
+    );
+
+    if (result.exitCode !== 0) {
+      throw new Error(`Failed to list CloudFormation stacks: ${result.stderr || result.stdout}`);
+    }
+
+    const stacks = result.stdout
+      .trim()
+      .split(/\s+/)
+      .filter((s) => s.length > 0);
+
+    // Find root stacks (those without nested stack suffixes like -auth, -data, -storage)
+    const rootStacks = stacks.filter((name) => {
+      const suffix = name.replace(stackPrefix, '');
+      // Root stack has pattern: -<hash> (10 char hex)
+      // Nested stacks have pattern: -<hash>-<category><hash>-<random>
+      return /^-[a-f0-9]+$/.test(suffix);
+    });
+
+    if (rootStacks.length === 0) {
+      throw new Error(`No Gen2 sandbox stack found with prefix: ${stackPrefix}`);
+    }
+
+    // Return the most recently created (should only be one)
+    return rootStacks[0];
   }
 
   private getAmplifyCliPath(): string {
