@@ -351,12 +351,11 @@ export class CategoryInitializer {
         this.logger.debug(`Adding S3 storage with Lambda trigger (projectHasFunctions: ${projectHasFunctions})`, context);
         await addS3WithTrigger(appPath, { projectHasFunctions });
       } else if (hasUserPoolGroups) {
-        // Use group-aware helper when user pool groups are configured
-        this.logger.debug(`Adding S3 storage with group access for groups: ${authConfig!.userPoolGroups!.join(', ')}`, context);
-        await addS3WithGroupAccess(appPath, {
-          userGroup1: authConfig!.userPoolGroups![0],
-          userGroup2: authConfig!.userPoolGroups![1],
-        });
+        // Use group-aware helper when user pool groups are configured.
+        // addAuthWithGroups creates hardcoded "Admins" and "Users" groups regardless
+        // of what the config specifies, so we must pass those names here.
+        this.logger.debug(`Adding S3 storage with group access (Admins, Users)`, context);
+        await addS3WithGroupAccess(appPath);
       } else if (hasGuestAccess) {
         // Add S3 storage with auth and guest access
         await addS3Storage(appPath);

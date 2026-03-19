@@ -43,3 +43,25 @@ Updated `initializeStorageCategory` in `src/core/category-initializer.ts` to:
 - Accept the auth config and check for `userPoolGroups`.
 - When groups are present, use the `addS3WithGroupAccess` e2e-core helper which handles the "Restrict access by?" prompt.
 - Fall back to `addS3Storage` / `addS3StorageWithAuthOnly` when no groups exist.
+
+---
+
+## 3. S3 storage with groups times out at "What kind of access do you want for Admins users?"
+
+**Error:**
+```
+Category 'storage' failed: Killed the process as no output receive for 300 Sec.
+
+✔ Select groups: · Admins, Users
+
+? What kind of access do you want for Admins users? …
+❯○ create/update
+ ○ read
+ ○ delete
+```
+
+**Cause:**
+`addS3WithGroupAccess` was called with group names from the migration config (`"Admin"`, `"Basic"`), but `addAuthWithGroups` always creates hardcoded groups named `"Admins"` and `"Users"`. The helper uses the group names to match the CLI prompt text (e.g., "What kind of access do you want for Admins users"), so the mismatch caused it to never match the prompt.
+
+**Solution:**
+Call `addS3WithGroupAccess(appPath)` without custom group name arguments, letting it use its defaults (`"Admins"` and `"Users"`) which match what `addAuthWithGroups` actually creates.
