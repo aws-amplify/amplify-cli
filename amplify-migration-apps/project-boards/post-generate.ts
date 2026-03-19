@@ -3,9 +3,10 @@
  * Post-generate script for project-boards app.
  *
  * Applies manual edits required after `amplify gen2-migration generate`:
- * 1. Update branchName in amplify/data/resource.ts to "gen2-main"
+ * 1. Update branchName in amplify/data/resource.ts to "gen2-{envName}"
  * 2. Convert quotegenerator function from CommonJS to ESM
  * 3. Update frontend import from amplifyconfiguration.json to amplify_outputs.json
+ * 4. Fix missing awsRegion in GraphQL API userPoolConfig
  */
 
 import fs from 'fs/promises';
@@ -102,6 +103,39 @@ async function updateFrontendConfig(appPath: string): Promise<void> {
   console.log('  Updated import to amplify_outputs.json');
 }
 
+async function fixUserPoolRegionInGraphqlApi(appPath: string): Promise<void> {
+  const backendPath = path.join(appPath, 'amplify', 'backend.ts');
+
+  console.log(`Fixing user pool region in GraphQL API config in ${backendPath}...`);
+
+  let content: string;
+  try {
+    content = await fs.readFile(backendPath, 'utf-8');
+  } catch {
+    console.log('  backend.ts not found, skipping');
+    return;
+  }
+
+  // The generated code sets additionalAuthenticationProviders with userPoolConfig
+  // but is missing the awsRegion property. We need to add it.
+  // Pattern: userPoolConfig: { userPoolId: backend.auth.resources.userPool.userPoolId, }
+  const updated = content.replace(
+    /userPoolConfig:\s*\{\s*userPoolId:\s*backend\.auth\.resources\.userPool\.userPoolId,?\s*\}/g,
+    `userPoolConfig: {
+      userPoolId: backend.auth.resources.userPool.userPoolId,
+      awsRegion: backend.auth.stack.region,
+    }`,
+  );
+
+  if (updated === content) {
+    console.log('  No userPoolConfig found to fix, skipping');
+    return;
+  }
+
+  await fs.writeFile(backendPath, updated, 'utf-8');
+  console.log('  Added awsRegion to userPoolConfig');
+}
+
 export async function postGenerate(options: PostGenerateOptions): Promise<void> {
   const { appPath, envName = 'main' } = options;
 
@@ -111,6 +145,7 @@ export async function postGenerate(options: PostGenerateOptions): Promise<void> 
   await updateBranchName(appPath, envName);
   await convertQuotegeneratorToESM(appPath);
   await updateFrontendConfig(appPath);
+  await fixUserPoolRegionInGraphqlApi(appPath);
 
   console.log('');
   console.log('Post-generate completed');
