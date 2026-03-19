@@ -326,10 +326,39 @@ async function runGen1TestScript(targetAppPath: string, migrationTargetPath: str
   logger.info(`Running ${testScriptName} in ${targetAppPath}`);
   const result = await execa('npx', ['tsx', testScriptName], {
     cwd: targetAppPath,
+    reject: false,
   });
 
+  const stdout = result.stdout || '';
+  const stderr = result.stderr || '';
+
+  // Always log full output at DEBUG level (visible with --verbose)
+  if (stdout) {
+    logger.debug(`[test-script] stdout:\n${stdout}`);
+  }
+  if (stderr) {
+    logger.debug(`[test-script] stderr:\n${stderr}`);
+  }
+
+  // At INFO level, surface the meaningful test result lines
+  const testResultLines = stdout.split('\n').filter((line) => {
+    const trimmed = line.trim();
+    return (
+      trimmed.startsWith('✅') ||
+      trimmed.startsWith('❌') ||
+      trimmed.includes('TEST SUMMARY') ||
+      trimmed.includes('All tests passed') ||
+      trimmed.includes('test(s) failed')
+    );
+  });
+  for (const line of testResultLines) {
+    logger.info(`[test-script] ${line.trim()}`);
+  }
+
   if (result.exitCode !== 0) {
-    throw new Error(`${testScriptName} failed with exit code ${result.exitCode}`);
+    // Include output in the error so it's visible even without --verbose
+    const combinedOutput = [stdout, stderr].filter(Boolean).join('\n');
+    throw new Error(`${testScriptName} failed with exit code ${result.exitCode}\n${combinedOutput}`);
   }
 
   logger.info(`${testScriptName} completed successfully`);
@@ -421,12 +450,22 @@ async function initializeAppFromCLI(params: InitializeAppFromCLIParams): Promise
       throw new Error(`Failed to initialize ${categoryResult.errors.length} category(ies)`);
     }
 
-    // Step 3: Push the initialized app to AWS
+    // Step 3: Run configure.sh if present (copies custom source files into amplify/backend/)
+    const configureScriptPath = path.join(targetAppPath, 'configure.sh');
+    if (fs.existsSync(configureScriptPath)) {
+      logger.info(`Running configure.sh for ${deploymentName}...`, context);
+      await execa('bash', ['configure.sh'], { cwd: targetAppPath });
+      logger.info(`Successfully ran configure.sh for ${deploymentName}`, context);
+    } else {
+      logger.debug(`No configure.sh found for ${deploymentName}, skipping`, context);
+    }
+
+    // Step 4: Push the initialized app to AWS
     logger.info(`Pushing ${deploymentName} to AWS...`, context);
     await amplifyPush(targetAppPath);
     logger.info(`Successfully pushed ${deploymentName} to AWS`, context);
 
-    // Step 4: Run gen1 test script to validate the deployment
+    // Step 5: Run gen1 test script to validate the deployment
     logger.info(`Running gen1 test script for ${deploymentName}...`, context);
     const sourceAppsBasePath = path.dirname(sourceAppPath);
     await runGen1TestScript(targetAppPath, migrationTargetPath, sourceAppsBasePath);
@@ -443,7 +482,7 @@ async function initializeAppFromCLI(params: InitializeAppFromCLIParams): Promise
       process.exit(1);
     }
 
-    // Step 5: Run gen2-migration pre-deployment workflow (lock -> generate)
+    // Step 6: Run gen2-migration pre-deployment workflow (lock -> generate)
     logger.info(`Running gen2-migration pre-deployment workflow for ${deploymentName}...`, context);
     const gen2MigrationExecutor = new Gen2MigrationExecutor(logger, { profile });
     await gen2MigrationExecutor.runPreDeploymentWorkflow(targetAppPath);
