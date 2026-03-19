@@ -1,9 +1,9 @@
 import {
   CloudFormationClient,
+  CloudFormationServiceException,
   DeleteStackCommand,
   DescribeStacksCommand,
   Stack,
-  CloudFormationServiceException,
 } from '@aws-sdk/client-cloudformation';
 import { pollStackForCompletionState } from './cfn-stack-updater';
 
@@ -44,7 +44,7 @@ export async function findHoldingStack(cfnClient: CloudFormationClient, stackNam
 }
 
 /**
- * Deletes a holding stack.
+ * Deletes a holding stack and waits for deletion to complete.
  */
 export async function deleteHoldingStack(cfnClient: CloudFormationClient, stackName: string): Promise<void> {
   try {

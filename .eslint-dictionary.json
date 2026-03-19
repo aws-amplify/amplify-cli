@@ -359,6 +359,7 @@
   "signup",
   "silenceable",
   "startable",
+  "stateful",
   "stderr",
   "stdin",
   "stdout",

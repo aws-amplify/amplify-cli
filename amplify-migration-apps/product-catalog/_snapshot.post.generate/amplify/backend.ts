@@ -36,19 +36,6 @@ userPool.addClient('NativeAppClient', {
   disableOAuth: true,
   generateSecret: false,
 });
-const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
-// Use this bucket name post refactor
-// s3Bucket.bucketName = 'productcatalogf95af07481f845caa6594c26ac9c8ed331323-main';
-s3Bucket.bucketEncryption = {
-  serverSideEncryptionConfiguration: [
-    {
-      serverSideEncryptionByDefault: {
-        sseAlgorithm: 'AES256',
-      },
-      bucketKeyEnabled: false,
-    },
-  ],
-};
 const cfnGraphqlApi = backend.data.resources.cfnResources.cfnGraphqlApi;
 cfnGraphqlApi.additionalAuthenticationProviders = [
   {
@@ -75,6 +62,9 @@ backend.S3Trigger1ef46783.addEnvironment(
   'API_PRODUCTCATALOG_GRAPHQLAPIIDOUTPUT',
   backend.data.apiId
 );
+backend.data.resources.graphqlApi.grantMutation(
+  backend.S3Trigger1ef46783.resources.lambda
+);
 backend.lowstockproducts.resources.cfnResources.cfnFunction.functionName = `lowstockproducts-${branchName}`;
 backend.lowstockproducts.addEnvironment(
   'API_PRODUCTCATALOG_GRAPHQLAPIKEYOUTPUT',
@@ -88,9 +78,19 @@ backend.lowstockproducts.addEnvironment(
   'API_PRODUCTCATALOG_GRAPHQLAPIIDOUTPUT',
   backend.data.apiId
 );
-backend.data.resources.graphqlApi.grantMutation(
-  backend.S3Trigger1ef46783.resources.lambda
-);
 backend.data.resources.graphqlApi.grantQuery(
   backend.lowstockproducts.resources.lambda
 );
+const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
+// Use this bucket name post refactor
+// s3Bucket.bucketName = 'productcatalogf95af07481f845caa6594c26ac9c8ed331323-main';
+s3Bucket.bucketEncryption = {
+  serverSideEncryptionConfiguration: [
+    {
+      serverSideEncryptionByDefault: {
+        sseAlgorithm: 'AES256',
+      },
+      bucketKeyEnabled: false,
+    },
+  ],
+};

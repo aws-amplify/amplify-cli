@@ -5,8 +5,7 @@ import { moodboardGetRandomEmoji } from './function/moodboardGetRandomEmoji/reso
 import { moodboardKinesisReader } from './function/moodboardKinesisReader/resource';
 import { defineBackend } from '@aws-amplify/backend';
 import { defineAnalytics } from './analytics/resource';
-import { aws_iam } from 'aws-cdk-lib';
-import { Duration } from 'aws-cdk-lib';
+import { Duration, aws_iam } from 'aws-cdk-lib';
 
 const backend = defineBackend({
   auth,
@@ -16,24 +15,6 @@ const backend = defineBackend({
   moodboardKinesisReader,
 });
 const analytics = defineAnalytics(backend);
-backend.moodboardKinesisReader.resources.lambda.addToRolePolicy(
-  new aws_iam.PolicyStatement({
-    actions: [
-      'kinesis:ListShards',
-      'kinesis:ListStreams',
-      'kinesis:ListStreamConsumers',
-      'kinesis:DescribeStream',
-      'kinesis:DescribeStreamSummary',
-      'kinesis:DescribeStreamConsumer',
-      'kinesis:GetRecords',
-      'kinesis:GetShardIterator',
-      'kinesis:SubscribeToShard',
-      'kinesis:DescribeLimits',
-      'kinesis:ListTagsForStream',
-    ],
-    resources: [analytics.kinesisStreamArn],
-  })
-);
 const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
 cfnUserPool.usernameAttributes = ['email'];
 cfnUserPool.policies = {
@@ -55,6 +36,15 @@ userPool.addClient('NativeAppClient', {
   disableOAuth: true,
   generateSecret: false,
 });
+const cfnGraphqlApi = backend.data.resources.cfnResources.cfnGraphqlApi;
+cfnGraphqlApi.additionalAuthenticationProviders = [
+  {
+    authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+    userPoolConfig: {
+      userPoolId: backend.auth.resources.userPool.userPoolId,
+    },
+  },
+];
 const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
 // Use this bucket name post refactor
 // s3Bucket.bucketName = 'moodboard20e29595008142e3ad16f01c4066e1c41959a-main';
@@ -68,19 +58,28 @@ s3Bucket.bucketEncryption = {
     },
   ],
 };
-const cfnGraphqlApi = backend.data.resources.cfnResources.cfnGraphqlApi;
-cfnGraphqlApi.additionalAuthenticationProviders = [
-  {
-    authenticationType: 'AMAZON_COGNITO_USER_POOLS',
-    userPoolConfig: {
-      userPoolId: backend.auth.resources.userPool.userPoolId,
-    },
-  },
-];
 const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 backend.moodboardGetRandomEmoji.resources.cfnResources.cfnFunction.functionName = `moodboardGetRandomEmoji-${branchName}`;
 backend.moodboardKinesisReader.resources.cfnResources.cfnFunction.functionName = `moodboardKinesisReader-${branchName}`;
 backend.moodboardKinesisReader.addEnvironment(
   'ANALYTICS_MOODBOARDKINESIS_KINESISSTREAMARN',
   analytics.kinesisStreamArn
+);
+backend.moodboardKinesisReader.resources.lambda.addToRolePolicy(
+  new aws_iam.PolicyStatement({
+    actions: [
+      'kinesis:ListShards',
+      'kinesis:ListStreams',
+      'kinesis:ListStreamConsumers',
+      'kinesis:DescribeStream',
+      'kinesis:DescribeStreamSummary',
+      'kinesis:DescribeStreamConsumer',
+      'kinesis:GetRecords',
+      'kinesis:GetShardIterator',
+      'kinesis:SubscribeToShard',
+      'kinesis:DescribeLimits',
+      'kinesis:ListTagsForStream',
+    ],
+    resources: [analytics.kinesisStreamArn],
+  })
 );

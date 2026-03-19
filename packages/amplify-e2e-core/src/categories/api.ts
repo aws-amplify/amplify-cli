@@ -636,7 +636,9 @@ export function addApi(projectDir: string, authTypesConfig?: Record<string, $TSA
         .sendCarriageReturn();
 
       singleSelect(chain.wait('Choose the default authorization type for the API'), defaultType, authTypesToSelectFrom);
-      if (requireAuthSetup) setupAuthType(defaultType, chain, authTypesConfig);
+      // API key prompts (description/expiration) are always shown by the CLI.
+      // Cognito/OIDC prompts are only shown when auth doesn't already exist.
+      if (requireAuthSetup || defaultType === 'API key' || defaultType === 'IAM') setupAuthType(defaultType, chain, authTypesConfig);
 
       if (authTypesToAdd.length > 1) {
         authTypesToAdd.shift();
@@ -652,7 +654,7 @@ export function addApi(projectDir: string, authTypesConfig?: Record<string, $TSA
         );
 
         authTypesToAdd.forEach((authType) => {
-          if (requireAuthSetup) setupAuthType(authType, chain, authTypesConfig);
+          if (requireAuthSetup || authType === 'API key' || authType === 'IAM') setupAuthType(authType, chain, authTypesConfig);
         });
       } else {
         chain.wait('Configure additional auth types?').sendLine('n');

@@ -11,9 +11,8 @@ import {
   ResponseType,
 } from 'aws-cdk-lib/aws-apigateway';
 import { Policy, PolicyStatement } from 'aws-cdk-lib/aws-iam';
-import { Stack } from 'aws-cdk-lib';
 import { defineBackend } from '@aws-amplify/backend';
-import { Duration } from 'aws-cdk-lib';
+import { Duration, Stack } from 'aws-cdk-lib';
 
 const backend = defineBackend({
   auth,
@@ -45,13 +44,51 @@ userPool.addClient('NativeAppClient', {
   disableOAuth: true,
   generateSecret: false,
 });
+const branchName = process.env.AWS_BRANCH ?? 'sandbox';
+backend.fitnesstracker6b0fc1196b0fc119PreSignup.resources.cfnResources.cfnFunction.functionName = `fitnesstracker6b0fc1196b0fc119PreSignup-${branchName}`;
+backend.lognutrition.resources.cfnResources.cfnFunction.functionName = `lognutrition-${branchName}`;
+backend.lognutrition.addEnvironment(
+  'API_FITNESSTRACKER_GRAPHQLAPIIDOUTPUT',
+  backend.data.apiId
+);
+backend.lognutrition.addEnvironment(
+  'API_FITNESSTRACKER_MEALTABLE_ARN',
+  backend.data.resources.tables['Meal'].tableArn
+);
+backend.lognutrition.addEnvironment(
+  'API_FITNESSTRACKER_MEALTABLE_NAME',
+  backend.data.resources.tables['Meal'].tableName
+);
+backend.data.resources.tables['Meal'].grant(
+  backend.lognutrition.resources.lambda,
+  'dynamodb:Put*',
+  'dynamodb:Create*',
+  'dynamodb:BatchWriteItem',
+  'dynamodb:PartiQLInsert',
+  'dynamodb:Get*',
+  'dynamodb:BatchGetItem',
+  'dynamodb:List*',
+  'dynamodb:Describe*',
+  'dynamodb:Scan',
+  'dynamodb:Query',
+  'dynamodb:PartiQLSelect',
+  'dynamodb:Update*',
+  'dynamodb:RestoreTable*',
+  'dynamodb:PartiQLUpdate',
+  'dynamodb:Delete*',
+  'dynamodb:PartiQLDelete'
+);
+backend.admin.resources.cfnResources.cfnFunction.functionName = `admin-${branchName}`;
+backend.admin.addEnvironment(
+  'AUTH_FITNESSTRACKER6B0FC1196B0FC119_USERPOOLID',
+  backend.auth.resources.userPool.userPoolId
+);
 const cfnGraphqlApi = backend.data.resources.cfnResources.cfnGraphqlApi;
 cfnGraphqlApi.additionalAuthenticationProviders = [
   {
     authenticationType: 'API_KEY',
   },
 ];
-const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 const nutritionapiStack = backend.createStack('rest-api-stack-nutritionapi');
 const nutritionapiApi = new RestApi(nutritionapiStack, 'RestApi', {
   restApiName: `nutritionapi-${branchName}`,
@@ -275,41 +312,3 @@ backend.addOutput({
     },
   },
 });
-backend.fitnesstracker6b0fc1196b0fc119PreSignup.resources.cfnResources.cfnFunction.functionName = `fitnesstracker6b0fc1196b0fc119PreSignup-${branchName}`;
-backend.lognutrition.resources.cfnResources.cfnFunction.functionName = `lognutrition-${branchName}`;
-backend.lognutrition.addEnvironment(
-  'API_FITNESSTRACKER_GRAPHQLAPIIDOUTPUT',
-  backend.data.apiId
-);
-backend.lognutrition.addEnvironment(
-  'API_FITNESSTRACKER_MEALTABLE_ARN',
-  backend.data.resources.tables['Meal'].tableArn
-);
-backend.lognutrition.addEnvironment(
-  'API_FITNESSTRACKER_MEALTABLE_NAME',
-  backend.data.resources.tables['Meal'].tableName
-);
-backend.admin.resources.cfnResources.cfnFunction.functionName = `admin-${branchName}`;
-backend.admin.addEnvironment(
-  'AUTH_FITNESSTRACKER6B0FC1196B0FC119_USERPOOLID',
-  backend.auth.resources.userPool.userPoolId
-);
-backend.data.resources.tables['Meal'].grant(
-  backend.lognutrition.resources.lambda,
-  'dynamodb:Put*',
-  'dynamodb:Create*',
-  'dynamodb:BatchWriteItem',
-  'dynamodb:PartiQLInsert',
-  'dynamodb:Get*',
-  'dynamodb:BatchGetItem',
-  'dynamodb:List*',
-  'dynamodb:Describe*',
-  'dynamodb:Scan',
-  'dynamodb:Query',
-  'dynamodb:PartiQLSelect',
-  'dynamodb:Update*',
-  'dynamodb:RestoreTable*',
-  'dynamodb:PartiQLUpdate',
-  'dynamodb:Delete*',
-  'dynamodb:PartiQLDelete'
-);

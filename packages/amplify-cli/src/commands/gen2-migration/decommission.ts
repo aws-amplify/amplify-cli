@@ -45,6 +45,9 @@ export class AmplifyMigrationDecommissionStep extends AmplifyMigrationStep {
 
     for (const stackName of holdingStacks) {
       operations.push({
+        validate: async () => {
+          return;
+        },
         describe: async () => [`Delete holding stack: ${stackName}`],
         execute: async () => {
           this.logger.info(`Deleting holding stack: ${stackName}`);
@@ -55,6 +58,9 @@ export class AmplifyMigrationDecommissionStep extends AmplifyMigrationStep {
     }
 
     operations.push({
+      validate: async () => {
+        return;
+      },
       describe: async () => ['Delete the Gen1 environment'],
       execute: async () => {
         this.logger.info(`Starting decommission of environment: ${this.currentEnvName}`);

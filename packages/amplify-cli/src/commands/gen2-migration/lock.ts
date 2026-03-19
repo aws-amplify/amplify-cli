@@ -1,23 +1,20 @@
 import { AmplifyMigrationStep } from './_step';
 import { AmplifyMigrationOperation } from './_operation';
-import { AmplifyError, stateManager } from '@aws-amplify/amplify-cli-core';
+import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { CloudFormationClient, SetStackPolicyCommand } from '@aws-sdk/client-cloudformation';
 import { AmplifyClient, UpdateAppCommand, GetAppCommand } from '@aws-sdk/client-amplify';
 import { DynamoDBClient, UpdateTableCommand, paginateListTables } from '@aws-sdk/client-dynamodb';
 import { AppSyncClient, paginateListGraphqlApis } from '@aws-sdk/client-appsync';
-import { CognitoIdentityProviderClient, UpdateUserPoolCommand } from '@aws-sdk/client-cognito-identity-provider';
 import { AmplifyGen2MigrationValidations } from './_validations';
 
 const GEN2_MIGRATION_ENVIRONMENT_NAME = 'GEN2_MIGRATION_ENVIRONMENT_NAME';
 
 export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
   private _dynamoTableNames: string[];
-  private _userPoolIds: string[];
 
   private _ddbClient: DynamoDBClient;
   private _amplifyClient: AmplifyClient;
   private _cfnClient: CloudFormationClient;
-  private _cognitoClient: CognitoIdentityProviderClient;
 
   public async executeImplications(): Promise<string[]> {
     return [
@@ -49,6 +46,9 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
 
     for (const tableName of await this.dynamoTableNames()) {
       operations.push({
+        validate: async () => {
+          return;
+        },
         describe: async () => {
           return [`Enable deletion protection for table '${tableName}'`];
         },
@@ -64,24 +64,10 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
       });
     }
 
-    for (const userPoolId of await this.userPoolIds()) {
-      operations.push({
-        describe: async () => {
-          return [`Enable deletion protection for user pool '${userPoolId}'`];
-        },
-        execute: async () => {
-          await this.cognitoClient().send(
-            new UpdateUserPoolCommand({
-              UserPoolId: userPoolId,
-              DeletionProtection: 'ACTIVE',
-            }),
-          );
-          this.logger.info(`Enabled deletion protection for user pool '${userPoolId}'`);
-        },
-      });
-    }
-
     operations.push({
+      validate: async () => {
+        return;
+      },
       describe: async () => {
         return [`Add environment variable '${GEN2_MIGRATION_ENVIRONMENT_NAME}' (value: ${this.currentEnvName})`];
       },
@@ -105,6 +91,9 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
     });
 
     operations.push({
+      validate: async () => {
+        return;
+      },
       describe: async () => {
         return [`Set a policy on stack '${this.rootStackName}': ${stackPolicy}`];
       },
@@ -130,6 +119,9 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
     // create logging only operations to let this be known to the user.
     for (const tableName of await this.dynamoTableNames()) {
       operations.push({
+        validate: async () => {
+          return;
+        },
         describe: async () => {
           return [`Preserve deletion protection for table '${tableName}'`];
         },
@@ -139,18 +131,10 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
       });
     }
 
-    for (const userPoolId of await this.userPoolIds()) {
-      operations.push({
-        describe: async () => {
-          return [`Preserve deletion protection for user pool '${userPoolId}'`];
-        },
-        execute: async () => {
-          return;
-        },
-      });
-    }
-
     operations.push({
+      validate: async () => {
+        return;
+      },
       describe: async () => {
         return [`Remove environment variable '${GEN2_MIGRATION_ENVIRONMENT_NAME}'`];
       },
@@ -175,6 +159,9 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
     });
 
     operations.push({
+      validate: async () => {
+        return;
+      },
       describe: async () => {
         return [`Set a policy on stack '${this.rootStackName}': ${stackPolicy}`];
       },
@@ -248,29 +235,5 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
       this._cfnClient = new CloudFormationClient({});
     }
     return this._cfnClient;
-  }
-
-  private cognitoClient() {
-    if (!this._cognitoClient) {
-      this._cognitoClient = new CognitoIdentityProviderClient({});
-    }
-    return this._cognitoClient;
-  }
-
-  private async userPoolIds(): Promise<string[]> {
-    if (!this._userPoolIds) {
-      this._userPoolIds = [];
-      const meta = stateManager.getMeta();
-      const authCategory = meta?.auth;
-      if (authCategory) {
-        for (const [, resource] of Object.entries(authCategory)) {
-          const typedResource = resource as { service?: string; output?: { UserPoolId?: string } };
-          if (typedResource.service === 'Cognito' && typedResource.output?.UserPoolId) {
-            this._userPoolIds.push(typedResource.output.UserPoolId);
-          }
-        }
-      }
-    }
-    return this._userPoolIds;
   }
 }

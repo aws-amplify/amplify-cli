@@ -26,6 +26,17 @@ import fs from 'fs';
 import * as fsExtra from 'fs-extra';
 import { execSync } from 'child_process';
 
+/** Options passed to app-specific post-generate scripts */
+interface PostGenerateOptions {
+  appPath: string;
+  envName?: string;
+}
+
+/** Shape of an app's post-generate module */
+interface PostGenerateModule {
+  postGenerate: (options: PostGenerateOptions) => Promise<void>;
+}
+
 // Initialize core components
 const logger = new Logger(LogLevel.INFO);
 const fileManager = new FileManager(logger);
@@ -36,6 +47,7 @@ const amplifyInitializer = new AmplifyInitializer(logger);
 const categoryInitializer = new CategoryInitializer(logger);
 const directoryManager = new DirectoryManager(logger);
 const cdkAtmosphereIntegration = new CDKAtmosphereIntegration(logger, environmentDetector);
+const gen2MigrationExecutor = new Gen2MigrationExecutor(logger);
 
 // Default migration target directory
 const MIGRATION_TARGET_DIR = path.join(os.tmpdir(), 'amplify-gen2-migration-e2e-system', 'output-apps');
@@ -171,6 +183,10 @@ async function main(): Promise<void> {
     logger.debug('Selecting apps for migration...');
     const selectedApp = await appSelector.selectApp(options);
     const deploymentName = generateTimeBasedE2EAmplifyAppName(selectedApp);
+
+    // Generate envName if not provided via CLI
+    const envName = options.envName ?? AmplifyInitializer.generateRandomEnvName();
+    logger.info(`Using Amplify environment name: ${envName}`);
 
     // Enable file logging
     const logDir = path.join(os.tmpdir(), 'amplify-gen2-migration-e2e-system', 'logs');
@@ -362,6 +378,29 @@ async function runGen1TestScript(targetAppPath: string, migrationTargetPath: str
   }
 
   logger.info(`${testScriptName} completed successfully`);
+ * Run the app-specific post-generate script if it exists.
+ * Each app in amplify-migration-apps can have a post-generate.ts that applies
+ * manual edits required after `amplify gen2-migration generate`.
+ */
+async function runPostGenerateScript(appName: string, targetAppPath: string, envName?: string): Promise<void> {
+  const sourceAppPath = appSelector.getAppPath(appName);
+  const postGeneratePath = path.join(sourceAppPath, 'post-generate.ts');
+
+  if (!fs.existsSync(postGeneratePath)) {
+    logger.debug(`No post-generate script found for ${appName} at ${postGeneratePath}`);
+    return;
+  }
+
+  logger.info(`Running post-generate script for ${appName}...`);
+
+  const postGenerateModule = (await import(postGeneratePath)) as PostGenerateModule;
+
+  if (typeof postGenerateModule.postGenerate !== 'function') {
+    throw new Error(`post-generate.ts for ${appName} does not export a postGenerate function`);
+  }
+
+  await postGenerateModule.postGenerate({ appPath: targetAppPath, envName });
+  logger.info(`Post-generate script completed for ${appName}`);
 }
 
 /**
@@ -487,6 +526,9 @@ async function initializeAppFromCLI(params: InitializeAppFromCLIParams): Promise
     const gen2MigrationExecutor = new Gen2MigrationExecutor(logger, { profile });
     await gen2MigrationExecutor.runPreDeploymentWorkflow(targetAppPath);
     logger.info(`Successfully completed gen2-migration pre-deployment workflow for ${deploymentName}`, context);
+
+    // Step 7: Run app-specific post-generate script
+    await runPostGenerateScript(appName, targetAppPath, envName);
 
     logger.info(`App ${deploymentName} fully initialized and deployed at ${targetAppPath}`, context);
   } catch (error) {

@@ -18,10 +18,12 @@ import {
   addAuthWithDefaultSocial,
   addAuthWithEmail,
   addAuthWithGroups,
+  addApi,
   addApiWithBlankSchema,
   addRestApi,
   addS3Storage,
   addS3StorageWithAuthOnly,
+  addS3WithGroupAccess,
   addS3WithTrigger,
   addDynamoDBWithGSIWithSettings,
   addFunction,
@@ -82,7 +84,7 @@ export class CategoryInitializer {
     }
 
     if (categories.storage) {
-      await this.initializeStorageCategory(appPath, categories.storage, result, context);
+      await this.initializeStorageCategory(appPath, categories.storage, categories.auth, result, context);
     }
 
     if (categories.api) {
@@ -179,8 +181,22 @@ export class CategoryInitializer {
     this.logger.info('Initializing GraphQL API category...', context);
 
     try {
-      // Add GraphQL API with blank schema
-      await addApiWithBlankSchema(appPath);
+      // Determine which auth modes the API needs based on config
+      const needsCognitoAuth = apiConfig.authModes?.includes('COGNITO_USER_POOLS');
+      const needsIamAuth = apiConfig.authModes?.includes('IAM');
+
+      if (needsCognitoAuth || needsIamAuth) {
+        // Use addApi with explicit auth types config.
+        // Pass requireAuthSetup = false because the auth category is already initialized,
+        // so the CLI won't prompt for Cognito setup — it reuses the existing user pool.
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const authTypesConfig: Record<string, Record<string, unknown>> = { 'API key': {} };
+        if (needsCognitoAuth) authTypesConfig['Amazon Cognito User Pool'] = {};
+        if (needsIamAuth) authTypesConfig['IAM'] = {};
+        await addApi(appPath, authTypesConfig, false);
+      } else {
+        await addApiWithBlankSchema(appPath);
+      }
 
       // If a schema file is specified, update the schema
       if (apiConfig.schema) {
@@ -297,6 +313,7 @@ export class CategoryInitializer {
   private async initializeStorageCategory(
     appPath: string,
     storageConfig: StorageConfiguration,
+    authConfig: AuthConfiguration | undefined,
     result: InitializeCategoriesResult,
     context: LogContext,
   ): Promise<void> {
@@ -313,6 +330,10 @@ export class CategoryInitializer {
       return;
     }
 
+    // When user pool groups exist, the CLI prompts "Restrict access by?" instead of
+    // "Who should have access:". Use the group-aware helper to avoid a prompt timeout.
+    const hasUserPoolGroups = authConfig?.userPoolGroups && authConfig.userPoolGroups.length > 0;
+
     // Check if guest access is configured for any bucket
     const hasGuestAccess = storageConfig.buckets.some((bucket) => bucket.access.includes('guest') || bucket.access.includes('public'));
     // Check if triggers are configured
@@ -320,13 +341,21 @@ export class CategoryInitializer {
 
     const accessType = hasGuestAccess ? 'auth and guest' : 'auth-only';
     const triggerInfo = hasTriggers ? ' with Lambda trigger' : '';
-    this.logger.info(`Initializing S3 storage category with ${accessType} access${triggerInfo}...`, context);
+    const groupInfo = hasUserPoolGroups ? ' (with user pool groups)' : '';
+    this.logger.info(`Initializing S3 storage category with ${accessType} access${triggerInfo}${groupInfo}...`, context);
 
     try {
       if (hasTriggers) {
         // Add S3 storage with Lambda trigger (creates a new trigger function)
-        this.logger.debug('Adding S3 storage with Lambda trigger', context);
-        await addS3WithTrigger(appPath);
+        const projectHasFunctions = result.initializedCategories.includes('function');
+        this.logger.debug(`Adding S3 storage with Lambda trigger (projectHasFunctions: ${projectHasFunctions})`, context);
+        await addS3WithTrigger(appPath, { projectHasFunctions });
+      } else if (hasUserPoolGroups) {
+        // Use group-aware helper when user pool groups are configured.
+        // addAuthWithGroups creates hardcoded "Admins" and "Users" groups regardless
+        // of what the config specifies, so we must pass those names here.
+        this.logger.debug(`Adding S3 storage with group access (Admins, Users)`, context);
+        await addS3WithGroupAccess(appPath);
       } else if (hasGuestAccess) {
         // Add S3 storage with auth and guest access
         await addS3Storage(appPath);
