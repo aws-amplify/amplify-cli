@@ -45,6 +45,22 @@ export const addAuthWithDefault = async (cwd: string, testingWithLatestCodebase 
     .runAsync();
 };
 
+/**
+ * Add auth with email sign-in method (instead of default username)
+ */
+export const addAuthWithEmail = async (cwd: string, testingWithLatestCodebase = false): Promise<void> => {
+  return spawn(getCLIPath(testingWithLatestCodebase), ['add', 'auth'], { cwd, stripColors: true })
+    .wait('Do you want to use the default authentication')
+    .sendCarriageReturn()
+    .wait('How do you want users to be able to sign in')
+    .sendKeyDown() // Select Email (Username is default, Email is second option)
+    .sendCarriageReturn()
+    .wait('Do you want to configure advanced settings?')
+    .sendCarriageReturn()
+    .sendEof()
+    .runAsync();
+};
+
 export function runAmplifyAuthConsole(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['auth', 'console'], { cwd, stripColors: true })
