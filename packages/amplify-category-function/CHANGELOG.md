@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.8.0-rc.bea564a3a360c43.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-function@5.7.19...@aws-amplify/amplify-category-function@5.8.0-rc.bea564a3a360c43.0) (2026-03-20)
+
+
+### Bug Fixes
+
+* change MaxResults from 50 to 10 ([#14676](https://github.com/aws-amplify/amplify-cli/issues/14676)) ([7112e4a](https://github.com/aws-amplify/amplify-cli/commit/7112e4a3ff18a3e7002e2ee0bf3d5e58d256d443))
+* update few code fixes ([962a325](https://github.com/aws-amplify/amplify-cli/commit/962a32560f0cbe0ceb081d4acfe80b193d96b4ee))
+
+
+### Features
+
+* add retry on throttling exceptions for ssm ([5dddf42](https://github.com/aws-amplify/amplify-cli/commit/5dddf42273e1051d83453dc8ba5427a94a5791f8))
+
+
+
+
+
 ## [5.7.19](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-function@5.7.18...@aws-amplify/amplify-category-function@5.7.19) (2025-11-20)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-function

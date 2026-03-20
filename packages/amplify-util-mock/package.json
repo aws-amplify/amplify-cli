@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-util-mock",
-  "version": "5.10.26",
+  "version": "5.10.27-rc.bea564a3a360c43.0",
   "description": "amplify cli plugin providing local testing",
   "repository": {
     "type": "git",
@@ -31,18 +31,18 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/amplify-appsync-simulator": "2.16.17",
-    "@aws-amplify/amplify-category-function": "5.7.19",
+    "@aws-amplify/amplify-appsync-simulator": "2.16.18-rc.bea564a3a360c43.0",
+    "@aws-amplify/amplify-category-function": "5.8.0-rc.bea564a3a360c43.0",
     "@aws-amplify/amplify-cli-core": "4.4.4",
     "@aws-amplify/amplify-environment-parameters": "1.9.23",
-    "@aws-amplify/amplify-opensearch-simulator": "1.7.23",
+    "@aws-amplify/amplify-opensearch-simulator": "1.7.24-rc.bea564a3a360c43.0",
     "@aws-amplify/amplify-prompts": "2.8.7",
     "@aws-amplify/amplify-provider-awscloudformation": "8.11.17",
     "@aws-sdk/client-dynamodb": "^3.919.0",
     "@aws-sdk/client-dynamodb-streams": "^3.919.0",
     "@hapi/topo": "^5.0.0",
     "amplify-codegen": "^4.10.3",
-    "amplify-dynamodb-simulator": "2.9.27",
+    "amplify-dynamodb-simulator": "2.9.28-rc.bea564a3a360c43.0",
     "amplify-storage-simulator": "1.11.8",
     "axios": "^1.11.0",
     "chokidar": "^3.5.3",

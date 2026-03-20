@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-category-function",
-  "version": "5.7.19",
+  "version": "5.8.0-rc.bea564a3a360c43.0",
   "description": "amplify-cli function plugin",
   "repository": {
     "type": "git",

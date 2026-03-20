@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.11.16-rc.bea564a3a360c43.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.11.15...amplify-e2e-tests@4.11.16-rc.bea564a3a360c43.0) (2026-03-20)
+
+
+### Bug Fixes
+
+* bump aws-cdk-lib to 2.241.0 and constructs to 10.5.0 ([b7ea5cf](https://github.com/aws-amplify/amplify-cli/commit/b7ea5cf5b28a4b0137fb6b0f28c91113e60e7285)), closes [#14631](https://github.com/aws-amplify/amplify-cli/issues/14631)
+* **e2e:** improve smoke test stability ([#14672](https://github.com/aws-amplify/amplify-cli/issues/14672)) ([bc628a7](https://github.com/aws-amplify/amplify-cli/commit/bc628a77b003dcbc72f8d54648c4a172b2d0657b))
+
+
+
+
+
 ## [4.11.15](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.11.14...amplify-e2e-tests@4.11.15) (2026-01-26)
 
 **Note:** Version bump only for package amplify-e2e-tests
