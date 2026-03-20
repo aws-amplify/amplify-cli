@@ -83,7 +83,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
           );
           break;
         case 'storage:S3':
-          refactorers.push(new StorageS3ForwardRefactorer(gen1Env, gen2Branch, clients, this.region, accountId));
+          refactorers.push(new StorageS3ForwardRefactorer(gen1Env, gen2Branch, clients, this.region, accountId, resource.resourceName));
           break;
         case 'storage:DynamoDB':
           refactorers.push(new StorageDynamoForwardRefactorer(gen1Env, gen2Branch, clients, this.region, accountId, resource.resourceName));
@@ -125,7 +125,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
           refactorers.push(new AuthCognitoRollbackRefactorer(gen1Env, gen2Branch, clients, this.region, accountId));
           break;
         case 'storage:S3':
-          refactorers.push(new StorageS3RollbackRefactorer(gen1Env, gen2Branch, clients, this.region, accountId));
+          refactorers.push(new StorageS3RollbackRefactorer(gen1Env, gen2Branch, clients, this.region, accountId, resource.resourceName));
           break;
         case 'storage:DynamoDB':
           refactorers.push(
@@ -197,9 +197,10 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
 /**
  * Throws if any two discovered resources would produce the same stack name.
  *
- * DDB resources use 'storage' + resourceName as their stack prefix. Other
- * stateful categories (auth, analytics) use the bare category name. If two
- * resources would map to the same stack name, the refactor would be ambiguous.
+ * Storage resources (both S3 and DDB) use 'storage' + resourceName as their
+ * Gen1 stack prefix. Other stateful categories (auth, analytics) use the bare
+ * category name. If two resources would map to the same stack name, the
+ * refactor would be ambiguous.
  */
 function validateSingleResourcePerStack(discovered: readonly DiscoveredResource[]): void {
   const stackNameCounts = new Map<string, number>();
@@ -207,13 +208,11 @@ function validateSingleResourcePerStack(discovered: readonly DiscoveredResource[
     let stackName: string;
     switch (r.key) {
       case 'storage:DynamoDB':
+      case 'storage:S3':
         stackName = 'storage' + r.resourceName;
         break;
       case 'auth:Cognito':
         stackName = 'auth';
-        break;
-      case 'storage:S3':
-        stackName = 'storage';
         break;
       case 'analytics:Kinesis':
         stackName = 'analytics';

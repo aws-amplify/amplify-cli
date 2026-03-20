@@ -1,0 +1,28 @@
+[
+  {
+    "OutputKey": "GetAttPostDataSourceName",
+    "OutputValue": "PostTable",
+    "Description": "Your model DataSource name.",
+    "ExportName": "u3jn2qbupzbyhc3h53673wdvim:GetAtt:PostDataSource:Name"
+  },
+  {
+    "OutputKey": "GetAttPostTableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Post-u3jn2qbupzbyhc3h53673wdvim-main/stream/2026-03-20T21:21:05.591",
+    "Description": "Your DynamoDB table StreamArn.",
+    "ExportName": "u3jn2qbupzbyhc3h53673wdvim:GetAtt:PostTable:StreamArn"
+  },
+  {
+    "OutputKey": "transformerrootstackPostPostDataSource6998E105Name",
+    "OutputValue": "PostTable"
+  },
+  {
+    "OutputKey": "GetAttPostTableName",
+    "OutputValue": "Post-u3jn2qbupzbyhc3h53673wdvim-main",
+    "Description": "Your DynamoDB table name.",
+    "ExportName": "u3jn2qbupzbyhc3h53673wdvim:GetAtt:PostTable:Name"
+  },
+  {
+    "OutputKey": "transformerrootstackPostPostTable34CAE87BRef",
+    "OutputValue": "Post-u3jn2qbupzbyhc3h53673wdvim-main"
+  }
+]

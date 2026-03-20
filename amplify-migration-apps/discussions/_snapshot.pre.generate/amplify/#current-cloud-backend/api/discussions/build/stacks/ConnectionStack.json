@@ -111,7 +111,7 @@
               {
                 "Ref": "referencetotransformerrootstackPostNestedStackPostNestedStackResource45FCAC5EOutputstransformerrootstackPostPostTable34CAE87BRef"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-maintwo\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-main\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -200,7 +200,7 @@
               {
                 "Ref": "referencetotransformerrootstackCommentNestedStackCommentNestedStackResource199283FBOutputstransformerrootstackCommentCommentTable5427FDE2Ref"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-maintwo\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-main\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -289,7 +289,7 @@
               {
                 "Ref": "referencetotransformerrootstackTopicNestedStackTopicNestedStackResource792C4229OutputstransformerrootstackTopicTopicTableFD91FB92Ref"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-maintwo\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-main\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -378,7 +378,7 @@
               {
                 "Ref": "referencetotransformerrootstackPostNestedStackPostNestedStackResource45FCAC5EOutputstransformerrootstackPostPostTable34CAE87BRef"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-maintwo\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-main\"]))\n$util.toJson({})"
             ]
           ]
         },

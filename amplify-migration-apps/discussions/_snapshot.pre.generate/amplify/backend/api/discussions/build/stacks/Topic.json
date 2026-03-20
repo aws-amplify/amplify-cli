@@ -503,7 +503,7 @@
               {
                 "Ref": "TopicTable"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:d3542be7-d73b-443b-bd5c-416f98683f8e\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-maintwo\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-main\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -604,7 +604,7 @@
               {
                 "Ref": "TopicTable"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:d3542be7-d73b-443b-bd5c-416f98683f8e\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-maintwo\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-main\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -771,7 +771,7 @@
               {
                 "Ref": "TopicTable"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:d3542be7-d73b-443b-bd5c-416f98683f8e\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-maintwo\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-main\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -959,7 +959,7 @@
               {
                 "Ref": "TopicTable"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:d3542be7-d73b-443b-bd5c-416f98683f8e\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-maintwo\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-main\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1111,7 +1111,7 @@
               {
                 "Ref": "TopicTable"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:d3542be7-d73b-443b-bd5c-416f98683f8e\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-maintwo\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-main\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1232,7 +1232,7 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:d3542be7-d73b-443b-bd5c-416f98683f8e\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-maintwo\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-main\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1278,7 +1278,7 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:d3542be7-d73b-443b-bd5c-416f98683f8e\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-maintwo\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-main\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1324,7 +1324,7 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:d3542be7-d73b-443b-bd5c-416f98683f8e\"))\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-maintwo\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-main\"]))\n$util.toJson({})"
             ]
           ]
         },

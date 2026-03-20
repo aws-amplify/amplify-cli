@@ -202,21 +202,21 @@
     "apidiscussions": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-discussions-maintwo-decb9-deployment/amplify-cfn-templates/api/cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-discussions-main-c39a5-deployment/amplify-cfn-templates/api/cloudformation-template.json",
         "Parameters": {
           "AppSyncApiName": "discussions",
           "DynamoDBBillingMode": "PAY_PER_REQUEST",
           "DynamoDBEnableServerSideEncryption": false,
-          "S3DeploymentBucket": "amplify-discussions-maintwo-decb9-deployment",
+          "S3DeploymentBucket": "amplify-discussions-main-c39a5-deployment",
           "S3DeploymentRootKey": "amplify-appsync-files/db92bad357b2590353e82db2f2ec7d0fc9cfd30d",
-          "env": "maintwo"
+          "env": "main"
         }
       }
     },
     "authdiscussionsc578c16ec578c16e": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-discussions-maintwo-decb9-deployment/amplify-cfn-templates/auth/discussionsc578c16ec578c16e-cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-discussions-main-c39a5-deployment/amplify-cfn-templates/auth/discussionsc578c16ec578c16e-cloudformation-template.json",
         "Parameters": {
           "identityPoolName": "discussionsc578c16e_identitypool_c578c16e",
           "allowUnauthenticatedIdentities": false,
@@ -268,16 +268,16 @@
           },
           "breakCircularDependency": true,
           "dependsOn": "",
-          "env": "maintwo"
+          "env": "main"
         }
       }
     },
     "functionfetchuseractivity": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-discussions-maintwo-decb9-deployment/amplify-cfn-templates/function/fetchuseractivity-cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-discussions-main-c39a5-deployment/amplify-cfn-templates/function/fetchuseractivity-cloudformation-template.json",
         "Parameters": {
-          "deploymentBucketName": "amplify-discussions-maintwo-decb9-deployment",
+          "deploymentBucketName": "amplify-discussions-main-c39a5-deployment",
           "s3Key": "amplify-builds/fetchuseractivity-6e523036545438726f37-build.zip",
           "storageactivityName": {
             "Fn::GetAtt": [
@@ -297,16 +297,16 @@
               "Outputs.StreamArn"
             ]
           },
-          "env": "maintwo"
+          "env": "main"
         }
       }
     },
     "functionrecorduseractivity": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-discussions-maintwo-decb9-deployment/amplify-cfn-templates/function/recorduseractivity-cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-discussions-main-c39a5-deployment/amplify-cfn-templates/function/recorduseractivity-cloudformation-template.json",
         "Parameters": {
-          "deploymentBucketName": "amplify-discussions-maintwo-decb9-deployment",
+          "deploymentBucketName": "amplify-discussions-main-c39a5-deployment",
           "s3Key": "amplify-builds/recorduseractivity-433947686f7145754543-build.zip",
           "apidiscussionsGraphQLAPIIdOutput": {
             "Fn::GetAtt": [
@@ -338,28 +338,28 @@
               "Outputs.StreamArn"
             ]
           },
-          "env": "maintwo"
+          "env": "main"
         }
       }
     },
     "storageactivity": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-discussions-maintwo-decb9-deployment/amplify-cfn-templates/storage/activity-cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-discussions-main-c39a5-deployment/amplify-cfn-templates/storage/activity-cloudformation-template.json",
         "Parameters": {
           "tableName": "activity",
           "partitionKeyName": "id",
           "partitionKeyType": "S",
           "sortKeyName": "userId",
           "sortKeyType": "S",
-          "env": "maintwo"
+          "env": "main"
         }
       }
     },
     "storageavatars": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-discussions-maintwo-decb9-deployment/amplify-cfn-templates/storage/cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-discussions-main-c39a5-deployment/amplify-cfn-templates/storage/cloudformation-template.json",
         "Parameters": {
           "bucketName": "discus-avatars",
           "selectedGuestPermissions": "",
@@ -385,21 +385,21 @@
           "s3PermissionsAuthenticatedUploads": "s3:PutObject",
           "s3PermissionsGuestPublic": "DISALLOW",
           "s3PermissionsGuestUploads": "DISALLOW",
-          "env": "maintwo"
+          "env": "main"
         }
       }
     },
     "storagebookmarks": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-discussions-maintwo-decb9-deployment/amplify-cfn-templates/storage/bookmarks-cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-discussions-main-c39a5-deployment/amplify-cfn-templates/storage/bookmarks-cloudformation-template.json",
         "Parameters": {
           "tableName": "bookmarks",
           "partitionKeyName": "userId",
           "partitionKeyType": "S",
           "sortKeyName": "postId",
           "sortKeyType": "S",
-          "env": "maintwo"
+          "env": "main"
         }
       }
     },

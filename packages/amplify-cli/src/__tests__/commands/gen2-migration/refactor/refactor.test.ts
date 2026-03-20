@@ -227,12 +227,12 @@ describe('AmplifyMigrationRefactorStep', () => {
     it('throws on multiple resources in the same refactor category', async () => {
       infraSpy = mockCreateInfrastructure();
       createSpy = mockDiscover([
-        { category: 'storage', resourceName: 'bucket1', service: 'S3', key: 'storage:S3' },
-        { category: 'storage', resourceName: 'bucket2', service: 'S3', key: 'storage:S3' },
+        { category: 'storage', resourceName: 'avatars', service: 'S3', key: 'storage:S3' },
+        { category: 'storage', resourceName: 'avatars', service: 'S3', key: 'storage:S3' },
       ]);
 
       const step = createStep();
-      await expect(step.execute()).rejects.toThrow(/Multiple resources map to stack 'storage'/);
+      await expect(step.execute()).rejects.toThrow(/Multiple resources map to stack 'storageavatars'/);
     });
   });
 

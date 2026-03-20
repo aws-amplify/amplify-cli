@@ -1,0 +1,56 @@
+[
+  {
+    "OutputKey": "GetAttTopicTableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Topic-u3jn2qbupzbyhc3h53673wdvim-main/stream/2026-03-20T21:20:17.537",
+    "Description": "Your DynamoDB table StreamArn.",
+    "ExportName": "u3jn2qbupzbyhc3h53673wdvim:GetAtt:TopicTable:StreamArn"
+  },
+  {
+    "OutputKey": "GetAttTopicTableName",
+    "OutputValue": "Topic-u3jn2qbupzbyhc3h53673wdvim-main",
+    "Description": "Your DynamoDB table name.",
+    "ExportName": "u3jn2qbupzbyhc3h53673wdvim:GetAtt:TopicTable:Name"
+  },
+  {
+    "OutputKey": "transformerrootstackTopicQuerygetTopicauth0FunctionQuerygetTopicauth0FunctionAppSyncFunctionEC4A6DABFunctionId",
+    "OutputValue": "xpl3pgeq4fhwji3vgpzje5i7ky"
+  },
+  {
+    "OutputKey": "transformerrootstackTopicSubscriptiononCreateTopicauth0FunctionSubscriptiononCreateTopicauth0FunctionAppSyncFunctionA56CE4F0FunctionId",
+    "OutputValue": "k6fcuyzzyja75po4s3jdi2odwe"
+  },
+  {
+    "OutputKey": "transformerrootstackTopicQuerygetTopicpostAuth0FunctionQuerygetTopicpostAuth0FunctionAppSyncFunction821534EDFunctionId",
+    "OutputValue": "gb77pqdsqvfxlf43gz2ay4ll7a"
+  },
+  {
+    "OutputKey": "GetAttTopicDataSourceName",
+    "OutputValue": "TopicTable",
+    "Description": "Your model DataSource name.",
+    "ExportName": "u3jn2qbupzbyhc3h53673wdvim:GetAtt:TopicDataSource:Name"
+  },
+  {
+    "OutputKey": "transformerrootstackTopicTopicTableFD91FB92Ref",
+    "OutputValue": "Topic-u3jn2qbupzbyhc3h53673wdvim-main"
+  },
+  {
+    "OutputKey": "transformerrootstackTopicTopicDataSource63D2F34BName",
+    "OutputValue": "TopicTable"
+  },
+  {
+    "OutputKey": "transformerrootstackTopicMutationcreateTopicinit0FunctionMutationcreateTopicinit0FunctionAppSyncFunction3ECD028CFunctionId",
+    "OutputValue": "27xllzlwpve67blxdyydbpfvzm"
+  },
+  {
+    "OutputKey": "transformerrootstackTopicSubscriptionOnCreateTopicDataResolverFnSubscriptionOnCreateTopicDataResolverFnAppSyncFunctionA25E598AFunctionId",
+    "OutputValue": "stocrj6wmnfwdc4rdkdv7z5t2u"
+  },
+  {
+    "OutputKey": "transformerrootstackTopicMutationcreateTopicauth0FunctionMutationcreateTopicauth0FunctionAppSyncFunction2E1A1C86FunctionId",
+    "OutputValue": "gsc7uhamufgixefq3v5ucyfwua"
+  },
+  {
+    "OutputKey": "transformerrootstackTopicMutationupdateTopicinit0FunctionMutationupdateTopicinit0FunctionAppSyncFunction16C763FFFunctionId",
+    "OutputValue": "e4yi7ioceze5riv7y2vaozdoqu"
+  }
+]

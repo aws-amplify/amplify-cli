@@ -1,0 +1,12 @@
+[
+  {
+    "Source": {
+      "StackName": "amplify-discussions-gen2main-branch-a27e51c30a-storage0EC3F24A-O1Q835F0QK5N",
+      "LogicalResourceId": "discusavatarsc39a5gen2mainBucketB24EA230"
+    },
+    "Destination": {
+      "StackName": "amplify-discussions-gen2main-branch-a27e51c30a-storage0EC3F24A-O1Q835F0QK5N-holding",
+      "LogicalResourceId": "discusavatarsc39a5gen2mainBucketB24EA230"
+    }
+  }
+]

@@ -3,7 +3,7 @@ import { defineStorage } from '@aws-amplify/backend';
 const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 
 export const storage = defineStorage({
-  name: `discus-avatarsdecb9-${branchName}`,
+  name: `discus-avatarsc39a5-${branchName}`,
   access: (allow) => ({
     'public/*': [allow.authenticated.to(['write', 'read', 'delete'])],
     'protected/{entity_id}/*': [

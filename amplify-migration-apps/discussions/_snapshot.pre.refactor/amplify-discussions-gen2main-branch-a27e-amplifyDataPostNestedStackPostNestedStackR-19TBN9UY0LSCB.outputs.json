@@ -1,0 +1,26 @@
+[
+  {
+    "OutputKey": "amplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataPostPostTable3FE3EB5DTableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Post-u3jn2qbupzbyhc3h53673wdvim-main/stream/2026-03-20T21:21:05.591"
+  },
+  {
+    "OutputKey": "GetAttPostTableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Post-u3jn2qbupzbyhc3h53673wdvim-main/stream/2026-03-20T21:21:05.591",
+    "Description": "Your DynamoDB table StreamArn.",
+    "ExportName": "33zwnmmin5anviw7lh6x2wxanq:GetAtt:PostTable:StreamArn"
+  },
+  {
+    "OutputKey": "amplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataPostPostDataSource1181B975Name",
+    "OutputValue": "PostTable"
+  },
+  {
+    "OutputKey": "amplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataPostPostTable3FE3EB5DTableArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Post-u3jn2qbupzbyhc3h53673wdvim-main"
+  },
+  {
+    "OutputKey": "GetAttPostTableName",
+    "OutputValue": "Post-u3jn2qbupzbyhc3h53673wdvim-main",
+    "Description": "Your DynamoDB table name.",
+    "ExportName": "33zwnmmin5anviw7lh6x2wxanq:GetAtt:PostTable:Name"
+  }
+]

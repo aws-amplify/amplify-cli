@@ -1,0 +1,30 @@
+[
+  {
+    "OutputKey": "amplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataTopicNestedStackTopicNestedStackResourceBD3B6C61Outputsamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataTopicTopicTable0F7B351ATableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Topic-u3jn2qbupzbyhc3h53673wdvim-main/stream/2026-03-20T21:20:17.537"
+  },
+  {
+    "OutputKey": "amplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataGraphQLAPI5BB21C21GraphQLUrl",
+    "OutputValue": "https://auprb5ishbhltcshr2palt65ka.appsync-api.us-east-1.amazonaws.com/graphql"
+  },
+  {
+    "OutputKey": "amplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataPostNestedStackPostNestedStackResource3E8F8B99Outputsamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataPostPostTable3FE3EB5DTableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Post-u3jn2qbupzbyhc3h53673wdvim-main/stream/2026-03-20T21:21:05.591"
+  },
+  {
+    "OutputKey": "amplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiBABCA4586DestinationBucketArn",
+    "OutputValue": "arn:aws:s3:::amplify-discussions-ge-amplifydataamplifycodege-jxzg53vmja75"
+  },
+  {
+    "OutputKey": "amplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataGraphQLAPIDefaultApiKey467DD7FFApiKey",
+    "OutputValue": "da2-lnrd6z7ejfdg3j23f4ljtb2gaq"
+  },
+  {
+    "OutputKey": "amplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataGraphQLAPI5BB21C21ApiId",
+    "OutputValue": "33zwnmmin5anviw7lh6x2wxanq"
+  },
+  {
+    "OutputKey": "amplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataCommentNestedStackCommentNestedStackResource06709DCDOutputsamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataCommentCommentTable4FC8AE39TableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Comment-u3jn2qbupzbyhc3h53673wdvim-main/stream/2026-03-20T21:21:05.630"
+  }
+]
