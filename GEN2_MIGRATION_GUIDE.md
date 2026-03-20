@@ -548,8 +548,8 @@ by the CLI setting that configures them.
 
   - 🟡 `Facebook` (_generate_ ✔ _refactor_ ✗)
   - 🟡 `Google` (_generate_ ✔ _refactor_ ✗)
-  - 🔴 `Login With Amazon`
-  - 🔴 `Sign in with Apple`
+  - ⚠️ `Login With Amazon`
+  - ⚠️ `Sign in with Apple`
 
 - ➤ **Select the authentication/authorization services that you want to use**
 
@@ -643,16 +643,16 @@ by the CLI setting that configures them.
     - 🟢 `API Key`
     - 🟢 `Amazon Cognito User Pool`
     - 🟢 `IAM`
-    - 🔴 `OpenID Connect`
-    - 🔴 `Lambda`
+    - ⚠️  `OpenID Connect`
+    - ⚠️  `Lambda`
 
   - ➤ **Additional Authorization Type**
 
     - 🟢 `API Key`
     - 🟢 `Amazon Cognito User Pool`
-    - 🔴 `IAM`
-    - 🔴 `OpenID Connect`
-    - 🔴 `Lambda`
+    - ⚠️  `IAM`
+    - ⚠️  `OpenID Connect`
+    - ⚠️  `Lambda`
 
 - 🟡 **REST** (_generate_ ✗ _refactor_ ✔)
 
