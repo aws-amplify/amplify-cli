@@ -110,7 +110,12 @@ function main(): void {
 
     const sanitizedFileName = sanitizeFileName(file, values.amplifyAppId, appNameNoDashes);
 
-    fs.writeFileSync(file, content, 'utf-8');
+    // ensure a single new line at the end of the file
+    // since linters and IDEs will add them automatically
+    // and cause false snapshot diffs.
+    const trimmedContent = `${content.trim()}\n`;
+
+    fs.writeFileSync(file, trimmedContent, 'utf-8');
     fs.renameSync(file, sanitizedFileName);
   }
 }

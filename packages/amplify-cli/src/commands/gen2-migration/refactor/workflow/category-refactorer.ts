@@ -9,6 +9,7 @@ import { tryUpdateStack } from '../cfn-stack-updater';
 import { tryRefactorStack, RefactorFailure } from '../cfn-stack-refactor-updater';
 import { SpinningLogger } from '../../_spinning-logger';
 import { extractStackNameFromId } from '../utils';
+import { DiscoveredResource } from '../../generate/_infra/gen1-app';
 
 export const MIGRATION_PLACEHOLDER_LOGICAL_ID = 'MigrationPlaceholder';
 export const PLACEHOLDER_RESOURCE: CFNResource = { Type: 'AWS::CloudFormation::WaitConditionHandle', Properties: {} };
@@ -80,6 +81,7 @@ export abstract class CategoryRefactorer implements Refactorer {
     protected readonly region: string,
     protected readonly accountId: string,
     protected readonly logger: SpinningLogger,
+    protected readonly resource: DiscoveredResource,
   ) {}
 
   /**

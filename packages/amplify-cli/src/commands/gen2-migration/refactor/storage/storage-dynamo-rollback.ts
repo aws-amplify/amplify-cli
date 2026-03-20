@@ -1,3 +1,5 @@
+import { AmplifyError } from '@aws-amplify/amplify-cli-core';
+import { CFNResource } from '../../cfn-template';
 import { RollbackCategoryRefactorer } from '../workflow/rollback-category-refactorer';
 
 /**
@@ -5,8 +7,6 @@ import { RollbackCategoryRefactorer } from '../workflow/rollback-category-refact
  * Moves DynamoDB tables from Gen2 back to Gen1.
  */
 export class StorageDynamoRollbackRefactorer extends RollbackCategoryRefactorer {
-  protected override readonly gen1LogicalIds = new Map<string, string>([['AWS::DynamoDB::Table', 'DynamoDBTable']]);
-
   protected async fetchSourceStackId(): Promise<string | undefined> {
     return this.findNestedStack(this.gen2Branch, 'storage');
   }
@@ -17,5 +17,14 @@ export class StorageDynamoRollbackRefactorer extends RollbackCategoryRefactorer 
 
   protected resourceTypes(): string[] {
     return ['AWS::DynamoDB::Table'];
+  }
+
+  protected targetLogicalId(_sourceId: string, sourceResource: CFNResource): string | undefined {
+    switch (sourceResource.Type) {
+      case 'AWS::DynamoDB::Table':
+        return 'DynamoDBTable';
+      default:
+        return undefined;
+    }
   }
 }

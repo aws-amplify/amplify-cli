@@ -30,22 +30,10 @@ import {
  * Does NOT pre-update stacks (overrides updateSource/updateTarget to return []).
  */
 export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
-  /**
-   * Map of CFN resource type → Gen1 logical resource ID.
-   * Subclasses override this with their category-specific map.
-   * Used by the default buildResourceMappings implementation.
-   */
-  protected readonly gen1LogicalIds: ReadonlyMap<string, string> = new Map();
-
-  /**
-   * Default rollback mapping: looks up Gen1 logical ID by resource type.
-   * Throws AmplifyError if a source resource's type is not in gen1LogicalIds.
-   * Auth overrides this entirely.
-   */
   protected buildResourceMappings(sourceResources: Map<string, CFNResource>, _targetResources: Map<string, CFNResource>): MoveMapping[] {
     const mappings: MoveMapping[] = [];
     for (const [sourceId, resource] of sourceResources) {
-      const gen1LogicalId = this.gen1LogicalIds.get(resource.Type);
+      const gen1LogicalId = this.targetLogicalId(sourceId, resource);
       if (!gen1LogicalId) {
         throw new AmplifyError('InvalidStackError', {
           message: `No known Gen1 logical ID for resource type '${resource.Type}' (source: '${sourceId}')`,
@@ -55,6 +43,8 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
     }
     return mappings;
   }
+
+  protected abstract targetLogicalId(sourceId: string, sourceResource: CFNResource): string | undefined;
 
   /**
    * Resolves the Gen2 source stack template for rollback.

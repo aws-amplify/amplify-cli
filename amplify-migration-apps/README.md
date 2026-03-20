@@ -344,3 +344,9 @@ npx jest --no-coverage src/__tests__/commands/gen2-migration/generate/codegen-he
 ```
 
 Always review the diff after updating to make sure the changes are intentional.
+
+> [!NOTE]
+> Updating a snapshot for one phase (e.g., `generate`) currently requires updating
+> snapshots for all phases (`generate` and `refactor`). The phases share state, so
+> a change in one phase's expected output can affect the inputs or expectations of
+> subsequent phases.

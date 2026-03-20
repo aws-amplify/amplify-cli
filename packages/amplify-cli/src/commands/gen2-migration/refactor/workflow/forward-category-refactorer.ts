@@ -20,31 +20,35 @@ import { CategoryRefactorer, MoveMapping, RefactorBlueprint, ResolvedStack, Reso
  * afterMovePlan: empty (holding stack survives for rollback)
  */
 export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
-  /**
-   * Default forward mapping: matches source and target resources by type.
-   * Works for categories with at most one resource per type (storage, analytics).
-   * Auth overrides this for UserPoolClient Web/Native disambiguation.
-   */
   protected buildResourceMappings(sourceResources: Map<string, CFNResource>, targetResources: Map<string, CFNResource>): MoveMapping[] {
     const mappings: MoveMapping[] = [];
-    const usedTargetIds = new Set<string>();
     for (const [sourceId, sourceResource] of sourceResources) {
-      let matched = false;
+      const matchedTargets = [];
       for (const [targetId, targetResource] of targetResources) {
-        if (sourceResource.Type === targetResource.Type && !usedTargetIds.has(targetId)) {
-          mappings.push({ sourceId, targetId, resource: sourceResource });
-          usedTargetIds.add(targetId);
-          matched = true;
-          break;
+        const matched = this.match(sourceId, sourceResource, targetId, targetResource);
+        if (matched) {
+          matchedTargets.push(targetId);
         }
       }
-      if (!matched) {
+      if (matchedTargets.length === 0) {
         throw new AmplifyError('InvalidStackError', {
           message: `Source resource '${sourceId}' (type '${sourceResource.Type}') has no corresponding target resource`,
         });
       }
+      if (matchedTargets.length > 1) {
+        throw new AmplifyError('InvalidStackError', {
+          message: `Source resource '${sourceId}' (type '${sourceResource.Type}') has multiple corresponding target resources`,
+        });
+      }
+      const targetId = matchedTargets[0];
+      mappings.push({ sourceId, targetId, resource: sourceResource });
     }
     return mappings;
+  }
+
+  protected match(_sourceId: string, sourceResource: CFNResource, _targetId: string, targetResource: CFNResource): boolean {
+    // default matching - assumes one resource per type in source/target
+    return sourceResource.Type === targetResource.Type;
   }
 
   /**

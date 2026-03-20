@@ -8,8 +8,8 @@ import { AmplifyGen2MigrationValidations } from '../_validations';
 import { AwsClients } from '../aws-clients';
 import { StackFacade } from './stack-facade';
 import { Refactorer } from './refactorer';
-import { AuthCognitoForwardRefactorer } from './auth/auth-forward';
-import { AuthCognitoRollbackRefactorer } from './auth/auth-rollback';
+import { AuthCognitoForwardRefactorer } from './auth/auth-cognito-forward';
+import { AuthCognitoRollbackRefactorer } from './auth/auth-cognito-rollback';
 import { StorageS3ForwardRefactorer } from './storage/storage-forward';
 import { StorageS3RollbackRefactorer } from './storage/storage-rollback';
 import { StorageDynamoForwardRefactorer } from './storage/storage-dynamo-forward';
@@ -18,6 +18,7 @@ import { AnalyticsKinesisForwardRefactorer } from './analytics/analytics-forward
 import { AnalyticsKinesisRollbackRefactorer } from './analytics/analytics-rollback';
 import { Gen1App, DiscoveredResource } from '../generate/_infra/gen1-app';
 import { Assessment } from '../_assessment';
+import { AuthUserPoolGroupsForwardRefactorer } from './auth/auth-user-pool-groups-forward';
 
 export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
   /**
@@ -72,17 +73,25 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
               this.logger,
               this.appId,
               this.currentEnvName,
+              resource,
             ),
           );
           break;
+        case 'auth:Cognito-UserPool-Groups':
+          refactorers.push(
+            new AuthUserPoolGroupsForwardRefactorer(gen1Env, gen2Branch, clients, this.region, accountId, this.logger, resource),
+          );
+          break;
         case 'storage:S3':
-          refactorers.push(new StorageS3ForwardRefactorer(gen1Env, gen2Branch, clients, this.region, accountId, this.logger));
+          refactorers.push(new StorageS3ForwardRefactorer(gen1Env, gen2Branch, clients, this.region, accountId, this.logger, resource));
           break;
         case 'storage:DynamoDB':
-          refactorers.push(new StorageDynamoForwardRefactorer(gen1Env, gen2Branch, clients, this.region, accountId, this.logger));
+          refactorers.push(new StorageDynamoForwardRefactorer(gen1Env, gen2Branch, clients, this.region, accountId, this.logger, resource));
           break;
         case 'analytics:Kinesis':
-          refactorers.push(new AnalyticsKinesisForwardRefactorer(gen1Env, gen2Branch, clients, this.region, accountId, this.logger));
+          refactorers.push(
+            new AnalyticsKinesisForwardRefactorer(gen1Env, gen2Branch, clients, this.region, accountId, this.logger, resource),
+          );
           break;
         // Stateless categories — nothing to refactor
         // falls through
@@ -90,7 +99,6 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
         case 'api:AppSync':
         case 'api:API Gateway':
           break;
-        case 'auth:Cognito-UserPool-Groups':
         case 'unsupported':
           throw new AmplifyError('MigrationError', {
             message: `Unsupported resource '${resource.resourceName}' (${resource.category}:${resource.service}). Run 'amplify gen2-migration assess' to check migration readiness.`,
@@ -122,16 +130,20 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
     for (const resource of discovered) {
       switch (resource.key) {
         case 'auth:Cognito':
-          refactorers.push(new AuthCognitoRollbackRefactorer(gen1Env, gen2Branch, clients, this.region, accountId, this.logger));
+          refactorers.push(new AuthCognitoRollbackRefactorer(gen1Env, gen2Branch, clients, this.region, accountId, this.logger, resource));
           break;
         case 'storage:S3':
-          refactorers.push(new StorageS3RollbackRefactorer(gen1Env, gen2Branch, clients, this.region, accountId, this.logger));
+          refactorers.push(new StorageS3RollbackRefactorer(gen1Env, gen2Branch, clients, this.region, accountId, this.logger, resource));
           break;
         case 'storage:DynamoDB':
-          refactorers.push(new StorageDynamoRollbackRefactorer(gen1Env, gen2Branch, clients, this.region, accountId, this.logger));
+          refactorers.push(
+            new StorageDynamoRollbackRefactorer(gen1Env, gen2Branch, clients, this.region, accountId, this.logger, resource),
+          );
           break;
         case 'analytics:Kinesis':
-          refactorers.push(new AnalyticsKinesisRollbackRefactorer(gen1Env, gen2Branch, clients, this.region, accountId, this.logger));
+          refactorers.push(
+            new AnalyticsKinesisRollbackRefactorer(gen1Env, gen2Branch, clients, this.region, accountId, this.logger, resource),
+          );
           break;
         // Stateless categories — nothing to rollback
         // falls through
