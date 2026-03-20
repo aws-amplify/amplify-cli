@@ -149,7 +149,6 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
     generators.push(new GitIgnoreGenerator());
 
     const operations: AmplifyMigrationOperation[] = [
-      // Validation-only operations (formerly in executeValidate)
       {
         describe: async () => [],
         validate: () => ({ description: 'Lock status', run: () => this.validateLockStatus() }),
