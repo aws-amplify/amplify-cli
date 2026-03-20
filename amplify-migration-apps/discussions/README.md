@@ -2,7 +2,7 @@
 
 ![](./images/app.png)
 
-A discussion application built featuring authentication, GraphQL API, Lambda functions, and multiple DynamoDB storage tables (activity + bookmarks).
+A discussion application built featuring authentication, GraphQL API, Lambda functions, multiple DynamoDB storage tables (activity + bookmarks), and S3.
 
 > [!NOTICE]
 > Since amplify operations add files to your local directory, its better not to operate within this repo.
@@ -206,6 +206,23 @@ You can now add columns to the table.
 ✔ Do you want to add a Lambda Trigger for your Table? (y/N) · no
 ```
 
+### Storage (S3 Avatars)
+
+S3 bucket for storing user profile pictures.
+
+```console
+amplify add storage
+```
+
+```console
+? Select from one of the below mentioned services: Content (Images, audio, video, etc.)
+✔ Provide a friendly name for your resource that will be used to label this category in the project: · avatars
+✔ Provide bucket name: · discus-avatars
+✔ Who should have access: · Auth users only
+✔ What kind of access do you want for Authenticated users? · create/update, read, delete
+✔ Do you want to add a Lambda Trigger for your S3 Bucket? (y/N) · no
+```
+
 ### Function
 
 **Node.js Lambda function that retrieves user activity from DynamoDB storage.**
@@ -319,6 +336,8 @@ amplify push
 ├──────────┼─────────────────────────────┼───────────┼───────────────────┤
 │ Storage  │ bookmarks                   │ Create    │ awscloudformation │
 ├──────────┼─────────────────────────────┼───────────┼───────────────────┤
+│ Storage  │ avatars                     │ Create    │ awscloudformation │
+├──────────┼─────────────────────────────┼───────────┼───────────────────┤
 │ Function │ fetchuseractivity           │ Create    │ awscloudformation │
 ├──────────┼─────────────────────────────┼───────────┼───────────────────┤
 │ Function │ recorduseractivity          │ Create    │ awscloudformation │
@@ -371,7 +390,7 @@ this process for any number of users.
 
 > Based on https://github.com/aws-amplify/amplify-cli/blob/gen2-migration/GEN2_MIGRATION_GUIDE.md
 
-First and install the experimental CLI package the provides the new commands:
+First install the experimental amplify CLI package that provides the migration commands.
 
 ```console
 npm install --no-save @aws-amplify/cli-internal-gen2-migration-experimental-alpha
@@ -458,4 +477,3 @@ git push origin gen2-main
 ```
 
 Wait for the deployment to finish successfully.
-
