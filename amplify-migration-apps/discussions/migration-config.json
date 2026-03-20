@@ -1,7 +1,7 @@
 {
   "app": {
     "name": "discussions",
-    "description": "Discussion app with phone authentication and DynamoDB activity logging",
+    "description": "Discussion app with phone authentication, DynamoDB activity logging, bookmarks, and S3 avatars",
     "framework": "none"
   },
   "categories": {
@@ -17,7 +17,12 @@
       "socialProviders": []
     },
     "storage": {
-      "type": "dynamodb",
+      "buckets": [
+        {
+          "name": "avatars",
+          "access": ["auth"]
+        }
+      ],
       "tables": [
         {
           "name": "activity",
