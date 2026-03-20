@@ -1,0 +1,138 @@
+[
+  {
+    "OutputKey": "webClientId",
+    "OutputValue": "1c1vf5gnunutele7c45m171n11"
+  },
+  {
+    "OutputKey": "socialProviders",
+    "OutputValue": ""
+  },
+  {
+    "OutputKey": "usernameAttributes",
+    "OutputValue": "[\"phone_number\"]"
+  },
+  {
+    "OutputKey": "bucketName",
+    "OutputValue": "amplify-discussions-ge-discusavatarsdecb9gen2ma-2na4arzi4tor"
+  },
+  {
+    "OutputKey": "signupAttributes",
+    "OutputValue": "[\"email\",\"phone_number\"]"
+  },
+  {
+    "OutputKey": "oauthClientId",
+    "OutputValue": "1c1vf5gnunutele7c45m171n11"
+  },
+  {
+    "OutputKey": "allowUnauthenticatedIdentities",
+    "OutputValue": "false"
+  },
+  {
+    "OutputKey": "oauthCognitoDomain",
+    "OutputValue": ""
+  },
+  {
+    "OutputKey": "oauthScope",
+    "OutputValue": "[\"profile\",\"phone\",\"email\",\"openid\",\"aws.cognito.signin.user.admin\"]"
+  },
+  {
+    "OutputKey": "oauthRedirectSignOut",
+    "OutputValue": ""
+  },
+  {
+    "OutputKey": "awsAppsyncAdditionalAuthenticationTypes",
+    "OutputValue": "AMAZON_COGNITO_USER_POOLS,AWS_IAM"
+  },
+  {
+    "OutputKey": "mfaTypes",
+    "OutputValue": "[]"
+  },
+  {
+    "OutputKey": "mfaConfiguration",
+    "OutputValue": "OFF"
+  },
+  {
+    "OutputKey": "storageRegion",
+    "OutputValue": "us-east-1"
+  },
+  {
+    "OutputKey": "oauthResponseType",
+    "OutputValue": "code"
+  },
+  {
+    "OutputKey": "awsAppsyncApiKey",
+    "OutputValue": "da2-g2kwwpglwnakbe2n4gy375uyxy"
+  },
+  {
+    "OutputKey": "awsAppsyncAuthenticationType",
+    "OutputValue": "API_KEY"
+  },
+  {
+    "OutputKey": "oauthRedirectSignIn",
+    "OutputValue": "https://example.com"
+  },
+  {
+    "OutputKey": "passwordPolicyMinLength",
+    "OutputValue": "8"
+  },
+  {
+    "OutputKey": "awsAppsyncApiEndpoint",
+    "OutputValue": "https://reebkadyw5e47aagqne7csre5m.appsync-api.us-east-1.amazonaws.com/graphql"
+  },
+  {
+    "OutputKey": "awsAppsyncApiId",
+    "OutputValue": "d4mt7tdvurcczil4a5eoajtsxy"
+  },
+  {
+    "OutputKey": "authRegion",
+    "OutputValue": "us-east-1"
+  },
+  {
+    "OutputKey": "buckets",
+    "OutputValue": "[\"{\\\"name\\\":\\\"discus-avatarsdecb9-gen2-maintwo\\\",\\\"bucketName\\\":\\\"amplify-discussions-ge-discusavatarsdecb9gen2ma-2na4arzi4tor\\\",\\\"storageRegion\\\":\\\"us-east-1\\\",\\\"paths\\\":{\\\"public/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"protected/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"private/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]}}}\"]"
+  },
+  {
+    "OutputKey": "amplifyApiModelSchemaS3Uri",
+    "OutputValue": "s3://amplify-discussions-ge-amplifydataamplifycodege-eouy18dnw0i5/model-schema.graphql"
+  },
+  {
+    "OutputKey": "groups",
+    "OutputValue": "[]"
+  },
+  {
+    "OutputKey": "definedFunctions",
+    "OutputValue": "[\"fetchuseractivity-gen2-maintwo\",\"recorduseractivity-gen2-maintwo\"]"
+  },
+  {
+    "OutputKey": "passwordlessOptions",
+    "OutputValue": ""
+  },
+  {
+    "OutputKey": "awsAppsyncRegion",
+    "OutputValue": "us-east-1"
+  },
+  {
+    "OutputKey": "deploymentType",
+    "OutputValue": "branch"
+  },
+  {
+    "OutputKey": "passwordPolicyRequirements",
+    "OutputValue": "[]"
+  },
+  {
+    "OutputKey": "region",
+    "OutputValue": "us-east-1"
+  },
+  {
+    "OutputKey": "userPoolId",
+    "OutputValue": "us-east-1_fU7jrxvo5"
+  },
+  {
+    "OutputKey": "identityPoolId",
+    "OutputValue": "us-east-1:ae327679-b135-4e18-afcd-ea1b463c0546"
+  },
+  {
+    "OutputKey": "verificationMechanisms",
+    "OutputValue": "[\"email\"]"
+  }
+]

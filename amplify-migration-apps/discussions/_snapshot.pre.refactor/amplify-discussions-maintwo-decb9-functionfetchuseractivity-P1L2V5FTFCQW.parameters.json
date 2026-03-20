@@ -1,0 +1,30 @@
+[
+  {
+    "ParameterKey": "CloudWatchRule",
+    "ParameterValue": "NONE"
+  },
+  {
+    "ParameterKey": "storageactivityName",
+    "ParameterValue": "activity-maintwo"
+  },
+  {
+    "ParameterKey": "s3Key",
+    "ParameterValue": "amplify-builds/fetchuseractivity-6e523036545438726f37-build.zip"
+  },
+  {
+    "ParameterKey": "deploymentBucketName",
+    "ParameterValue": "amplify-discussions-maintwo-decb9-deployment"
+  },
+  {
+    "ParameterKey": "storageactivityStreamArn",
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/activity-maintwo/stream/2026-01-29T19:50:35.748"
+  },
+  {
+    "ParameterKey": "env",
+    "ParameterValue": "maintwo"
+  },
+  {
+    "ParameterKey": "storageactivityArn",
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/activity-maintwo"
+  }
+]

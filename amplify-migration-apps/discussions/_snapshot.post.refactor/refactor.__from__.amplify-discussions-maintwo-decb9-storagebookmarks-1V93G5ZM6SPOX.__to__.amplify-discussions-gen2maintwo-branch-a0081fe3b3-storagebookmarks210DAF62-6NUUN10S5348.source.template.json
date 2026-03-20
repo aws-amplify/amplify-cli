@@ -1,0 +1,64 @@
+{
+  "Description": "{\"createdOn\":\"Linux\",\"createdBy\":\"Amplify\",\"createdWith\":\"14.2.5\",\"stackType\":\"storage-DynamoDB\",\"metadata\":{\"whyContinueWithGen1\":\"Prefer not to answer\"}}",
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Parameters": {
+    "partitionKeyName": {
+      "Type": "String"
+    },
+    "partitionKeyType": {
+      "Type": "String"
+    },
+    "env": {
+      "Type": "String"
+    },
+    "sortKeyName": {
+      "Type": "String"
+    },
+    "sortKeyType": {
+      "Type": "String"
+    },
+    "tableName": {
+      "Type": "String"
+    }
+  },
+  "Conditions": {
+    "ShouldNotCreateEnvResources": {
+      "Fn::Equals": [
+        "maintwo",
+        "NONE"
+      ]
+    }
+  },
+  "Resources": {
+    "MigrationPlaceholder": {
+      "Type": "AWS::CloudFormation::WaitConditionHandle",
+      "Properties": {}
+    }
+  },
+  "Outputs": {
+    "Name": {
+      "Value": "bookmarks-maintwo"
+    },
+    "Arn": {
+      "Value": "arn:aws:dynamodb:us-east-1:123456789012:table/bookmarks-maintwo"
+    },
+    "StreamArn": {
+      "Value": "arn:aws:dynamodb:us-east-1:123456789012:table/bookmarks-maintwo/stream/2026-03-20T18:01:05.305"
+    },
+    "PartitionKeyName": {
+      "Value": "userId"
+    },
+    "PartitionKeyType": {
+      "Value": "S"
+    },
+    "SortKeyName": {
+      "Value": "postId"
+    },
+    "SortKeyType": {
+      "Value": "S"
+    },
+    "Region": {
+      "Value": "us-east-1"
+    }
+  }
+}

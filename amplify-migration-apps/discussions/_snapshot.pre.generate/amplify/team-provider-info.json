@@ -1,35 +1,38 @@
 {
-  "main": {
+  "maintwo": {
     "awscloudformation": {
-      "AuthRoleName": "amplify-discussions-main-d5a80-authRole",
-      "UnauthRoleArn": "arn:aws:iam::123456789012:role/amplify-discussions-main-d5a80-unauthRole",
-      "AuthRoleArn": "arn:aws:iam::123456789012:role/amplify-discussions-main-d5a80-authRole",
+      "AuthRoleName": "amplify-discussions-maintwo-decb9-authRole",
+      "UnauthRoleArn": "arn:aws:iam::123456789012:role/amplify-discussions-maintwo-decb9-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::123456789012:role/amplify-discussions-maintwo-decb9-authRole",
       "Region": "us-east-1",
-      "DeploymentBucketName": "amplify-discussions-main-d5a80-deployment",
-      "UnauthRoleName": "amplify-discussions-main-d5a80-unauthRole",
-      "StackName": "amplify-discussions-main-d5a80",
-      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-discussions-main-d5a80/2bc587e0-1a44-11f1-8b6b-0affd4d11c2d",
+      "DeploymentBucketName": "amplify-discussions-maintwo-decb9-deployment",
+      "UnauthRoleName": "amplify-discussions-maintwo-decb9-unauthRole",
+      "StackName": "amplify-discussions-maintwo-decb9",
+      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-discussions-maintwo-decb9/d54a1f50-fd49-11f0-918d-126c95e1eb8f",
       "AmplifyAppId": "discussions"
     },
     "categories": {
       "auth": {
-        "discussions22367c6822367c68": {}
+        "discussionsc578c16ec578c16e": {}
       },
       "function": {
         "fetchuseractivity": {
-          "deploymentBucketName": "amplify-discussions-main-d5a80-deployment",
-          "s3Key": "amplify-builds/fetchuseractivity-6e6d76524e6255314269-build.zip"
+          "deploymentBucketName": "amplify-discussions-maintwo-decb9-deployment",
+          "s3Key": "amplify-builds/fetchuseractivity-6e523036545438726f37-build.zip"
         },
         "recorduseractivity": {
-          "deploymentBucketName": "amplify-discussions-main-d5a80-deployment",
-          "s3Key": "amplify-builds/recorduseractivity-4969755347686f776962-build.zip"
-        }
+          "deploymentBucketName": "amplify-discussions-maintwo-decb9-deployment",
+          "s3Key": "amplify-builds/recorduseractivity-433947686f7145754543-build.zip"
+        },
+        "activity": {},
+        "discussions": {}
       },
       "api": {
         "discussions": {}
       },
       "storage": {
         "activity": {},
+        "avatars": {},
         "bookmarks": {}
       }
     }

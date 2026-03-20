@@ -1,0 +1,52 @@
+[
+  {
+    "Source": {
+      "StackName": "amplify-discussions-maintwo-decb9-authdiscussionsc578c16ec578c16e-1IQSRWBM9RZF3",
+      "LogicalResourceId": "UserPool"
+    },
+    "Destination": {
+      "StackName": "amplify-discussions-gen2maintwo-branch-a0081fe3b3-auth179371D7-2NLVKCUURH94",
+      "LogicalResourceId": "amplifyAuthUserPool4BA7F805"
+    }
+  },
+  {
+    "Source": {
+      "StackName": "amplify-discussions-maintwo-decb9-authdiscussionsc578c16ec578c16e-1IQSRWBM9RZF3",
+      "LogicalResourceId": "UserPoolClientWeb"
+    },
+    "Destination": {
+      "StackName": "amplify-discussions-gen2maintwo-branch-a0081fe3b3-auth179371D7-2NLVKCUURH94",
+      "LogicalResourceId": "amplifyAuthUserPoolAppClient2626C6F8"
+    }
+  },
+  {
+    "Source": {
+      "StackName": "amplify-discussions-maintwo-decb9-authdiscussionsc578c16ec578c16e-1IQSRWBM9RZF3",
+      "LogicalResourceId": "UserPoolClient"
+    },
+    "Destination": {
+      "StackName": "amplify-discussions-gen2maintwo-branch-a0081fe3b3-auth179371D7-2NLVKCUURH94",
+      "LogicalResourceId": "amplifyAuthUserPoolNativeAppClient79534448"
+    }
+  },
+  {
+    "Source": {
+      "StackName": "amplify-discussions-maintwo-decb9-authdiscussionsc578c16ec578c16e-1IQSRWBM9RZF3",
+      "LogicalResourceId": "IdentityPool"
+    },
+    "Destination": {
+      "StackName": "amplify-discussions-gen2maintwo-branch-a0081fe3b3-auth179371D7-2NLVKCUURH94",
+      "LogicalResourceId": "amplifyAuthIdentityPool3FDE84CC"
+    }
+  },
+  {
+    "Source": {
+      "StackName": "amplify-discussions-maintwo-decb9-authdiscussionsc578c16ec578c16e-1IQSRWBM9RZF3",
+      "LogicalResourceId": "IdentityPoolRoleMap"
+    },
+    "Destination": {
+      "StackName": "amplify-discussions-gen2maintwo-branch-a0081fe3b3-auth179371D7-2NLVKCUURH94",
+      "LogicalResourceId": "amplifyAuthIdentityPoolRoleAttachment045F17C8"
+    }
+  }
+]

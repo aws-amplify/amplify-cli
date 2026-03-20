@@ -4,7 +4,7 @@ export const auth = defineAuth({
   loginWith: {
     email: {
       verificationEmailSubject: 'Verification',
-      verificationEmailBody: () => 'Here is your verification code {####}',
+      verificationEmailBody: () => 'Your verification code is {####}',
     },
   },
   userAttributes: {

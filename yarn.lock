@@ -38,28 +38,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@amplify-migration-apps/discussions@workspace:amplify-migration-apps/discussions/_snapshot.post.generate":
-  version: 0.0.0-use.local
-  resolution: "@amplify-migration-apps/discussions@workspace:amplify-migration-apps/discussions/_snapshot.post.generate"
-  dependencies:
-    "@aws-amplify/backend": ^1.18.0
-    "@aws-amplify/backend-cli": ^1.8.0
-    "@aws-amplify/backend-data": ^1.6.2
-    "@aws-sdk/client-dynamodb": ^3.936.0
-    "@aws-sdk/lib-dynamodb": ^3.936.0
-    "@types/aws-lambda": ^8.10.92
-    "@types/node": "*"
-    aws-amplify: ^6.15.8
-    aws-cdk: ^2
-    aws-cdk-lib: ^2
-    ci-info: ^4.3.1
-    constructs: ^10.0.0
-    esbuild: ^0.27.0
-    tsx: ^4.20.6
-    vite: ^7.2.2
-  languageName: unknown
-  linkType: soft
-
 "@amplify-migration-apps/fitness-goal-tracker@workspace:amplify-migration-apps/fitness-tracker/_snapshot.post.generate":
   version: 0.0.0-use.local
   resolution: "@amplify-migration-apps/fitness-goal-tracker@workspace:amplify-migration-apps/fitness-tracker/_snapshot.post.generate"
@@ -26695,6 +26673,28 @@ __metadata:
   checksum: dcac00920a4d503e38bb64001acb19df4efc14536ada475725e12f52c16777afdee4db827f55f13a908ee7efc0cb282e2e3dbaeeb98c0993dd93d1802d3bf00c
   languageName: node
   linkType: hard
+
+"discussions@workspace:amplify-migration-apps/discussions/_snapshot.post.generate":
+  version: 0.0.0-use.local
+  resolution: "discussions@workspace:amplify-migration-apps/discussions/_snapshot.post.generate"
+  dependencies:
+    "@aws-amplify/backend": ^1.18.0
+    "@aws-amplify/backend-cli": ^1.8.0
+    "@aws-amplify/backend-data": ^1.6.2
+    "@aws-sdk/client-dynamodb": ^3.936.0
+    "@aws-sdk/lib-dynamodb": ^3.936.0
+    "@types/aws-lambda": ^8.10.92
+    "@types/node": "*"
+    aws-amplify: ^6.15.8
+    aws-cdk: ^2
+    aws-cdk-lib: ^2
+    ci-info: ^4.3.1
+    constructs: ^10.0.0
+    esbuild: ^0.27.0
+    tsx: ^4.20.6
+    vite: ^7.2.2
+  languageName: unknown
+  linkType: soft
 
 "dlv@npm:^1.1.3":
   version: 1.1.3

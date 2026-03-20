@@ -1,0 +1,832 @@
+{
+  "Description": "{\"createdOn\":\"Linux\",\"createdBy\":\"AmplifyPipelineDeploy\",\"createdWith\":\"1.17.0\",\"stackType\":\"function-Lambda\",\"metadata\":{}}",
+  "Resources": {
+    "fetchuseractivitygen2maintwolambdaServiceRole0B561055": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "amplify:app-id",
+            "Value": "discussions"
+          },
+          {
+            "Key": "amplify:branch-name",
+            "Value": "gen2-maintwo"
+          },
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "branch"
+          },
+          {
+            "Key": "amplify:friendly-name",
+            "Value": "fetchuseractivity-gen2-maintwo"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-discussions-gen2maintwo-branch-a0081fe3b3/function/fetchuseractivity-gen2-maintwo-lambda/ServiceRole/Resource"
+      }
+    },
+    "fetchuseractivitygen2maintwolambdaServiceRoleDefaultPolicy752079E1": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "dynamodb:Get*",
+                "dynamodb:BatchGetItem",
+                "dynamodb:List*",
+                "dynamodb:Describe*",
+                "dynamodb:Scan",
+                "dynamodb:Query",
+                "dynamodb:PartiQLSelect"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Ref": "referencetoamplifydiscussionsgen2maintwobrancha0081fe3b3storageactivityNestedStackstorageactivityNestedStackResource7E13FBAEOutputsamplifydiscussionsgen2maintwobrancha0081fe3b3storageactivityBCEEF9A7Arn"
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Ref": "referencetoamplifydiscussionsgen2maintwobrancha0081fe3b3storageactivityNestedStackstorageactivityNestedStackResource7E13FBAEOutputsamplifydiscussionsgen2maintwobrancha0081fe3b3storageactivityBCEEF9A7Arn"
+                      },
+                      "/index/*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "fetchuseractivitygen2maintwolambdaServiceRoleDefaultPolicy752079E1",
+        "Roles": [
+          {
+            "Ref": "fetchuseractivitygen2maintwolambdaServiceRole0B561055"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-discussions-gen2maintwo-branch-a0081fe3b3/function/fetchuseractivity-gen2-maintwo-lambda/ServiceRole/DefaultPolicy/Resource"
+      }
+    },
+    "fetchuseractivitygen2maintwolambda75E37FB2": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Architectures": [
+          "x86_64"
+        ],
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+          },
+          "S3Key": "64ee581196febc85959027f8318591ccf788a4a57c2f47e0adcce31b6bbb97da.zip"
+        },
+        "Environment": {
+          "Variables": {
+            "ENV": "gen2-maintwo",
+            "REGION": "us-east-1",
+            "AMPLIFY_SSM_ENV_CONFIG": "{}",
+            "STORAGE_ACTIVITY_STREAMARN": {
+              "Ref": "referencetoamplifydiscussionsgen2maintwobrancha0081fe3b3storageactivityNestedStackstorageactivityNestedStackResource7E13FBAEOutputsamplifydiscussionsgen2maintwobrancha0081fe3b3storageactivityBCEEF9A7StreamArn"
+            },
+            "STORAGE_ACTIVITY_ARN": {
+              "Ref": "referencetoamplifydiscussionsgen2maintwobrancha0081fe3b3storageactivityNestedStackstorageactivityNestedStackResource7E13FBAEOutputsamplifydiscussionsgen2maintwobrancha0081fe3b3storageactivityBCEEF9A7Arn"
+            },
+            "STORAGE_ACTIVITY_NAME": {
+              "Ref": "referencetoamplifydiscussionsgen2maintwobrancha0081fe3b3storageactivityNestedStackstorageactivityNestedStackResource7E13FBAEOutputsamplifydiscussionsgen2maintwobrancha0081fe3b3storageactivityBCEEF9A7Ref"
+            }
+          }
+        },
+        "EphemeralStorage": {
+          "Size": 512
+        },
+        "FunctionName": "fetchuseractivity-gen2-maintwo",
+        "Handler": "index.handler",
+        "MemorySize": 128,
+        "Role": {
+          "Fn::GetAtt": [
+            "fetchuseractivitygen2maintwolambdaServiceRole0B561055",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs22.x",
+        "Tags": [
+          {
+            "Key": "amplify:app-id",
+            "Value": "discussions"
+          },
+          {
+            "Key": "amplify:branch-name",
+            "Value": "gen2-maintwo"
+          },
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "branch"
+          },
+          {
+            "Key": "amplify:friendly-name",
+            "Value": "fetchuseractivity-gen2-maintwo"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ],
+        "Timeout": 25
+      },
+      "DependsOn": [
+        "fetchuseractivitygen2maintwolambdaServiceRoleDefaultPolicy752079E1",
+        "fetchuseractivitygen2maintwolambdaServiceRole0B561055"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "amplify-discussions-gen2maintwo-branch-a0081fe3b3/function/fetchuseractivity-gen2-maintwo-lambda/Resource",
+        "aws:asset:path": "asset.64ee581196febc85959027f8318591ccf788a4a57c2f47e0adcce31b6bbb97da",
+        "aws:asset:is-bundled": true,
+        "aws:asset:property": "Code"
+      }
+    },
+    "recorduseractivitygen2maintwolambdaServiceRole8DB19DE9": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "amplify:app-id",
+            "Value": "discussions"
+          },
+          {
+            "Key": "amplify:branch-name",
+            "Value": "gen2-maintwo"
+          },
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "branch"
+          },
+          {
+            "Key": "amplify:friendly-name",
+            "Value": "recorduseractivity-gen2-maintwo"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-discussions-gen2maintwo-branch-a0081fe3b3/function/recorduseractivity-gen2-maintwo-lambda/ServiceRole/Resource"
+      }
+    },
+    "recorduseractivitygen2maintwolambdaServiceRoleDefaultPolicy8FD603AF": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "dynamodb:Put*",
+                "dynamodb:Create*",
+                "dynamodb:BatchWriteItem",
+                "dynamodb:PartiQLInsert",
+                "dynamodb:Get*",
+                "dynamodb:BatchGetItem",
+                "dynamodb:List*",
+                "dynamodb:Describe*",
+                "dynamodb:Scan",
+                "dynamodb:Query",
+                "dynamodb:PartiQLSelect",
+                "dynamodb:Update*",
+                "dynamodb:RestoreTable*",
+                "dynamodb:PartiQLUpdate",
+                "dynamodb:Delete*",
+                "dynamodb:PartiQLDelete"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Ref": "referencetoamplifydiscussionsgen2maintwobrancha0081fe3b3storageactivityNestedStackstorageactivityNestedStackResource7E13FBAEOutputsamplifydiscussionsgen2maintwobrancha0081fe3b3storageactivityBCEEF9A7Arn"
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Ref": "referencetoamplifydiscussionsgen2maintwobrancha0081fe3b3storageactivityNestedStackstorageactivityNestedStackResource7E13FBAEOutputsamplifydiscussionsgen2maintwobrancha0081fe3b3storageactivityBCEEF9A7Arn"
+                      },
+                      "/index/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": "dynamodb:ListStreams",
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": [
+                "dynamodb:DescribeStream",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Ref": "referencetoamplifydiscussionsgen2maintwobrancha0081fe3b3dataNestedStackdataNestedStackResourceEDF06937Outputsamplifydiscussionsgen2maintwobrancha0081fe3b3dataamplifyDataTopicNestedStackTopicNestedStackResourceDF824BE0Outputsamplifyd2l67DFE00D"
+              }
+            },
+            {
+              "Action": [
+                "dynamodb:DescribeStream",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Ref": "referencetoamplifydiscussionsgen2maintwobrancha0081fe3b3dataNestedStackdataNestedStackResourceEDF06937Outputsamplifydiscussionsgen2maintwobrancha0081fe3b3dataamplifyDataPostNestedStackPostNestedStackResource357388A6Outputsamplifyd2l28A326AA64"
+              }
+            },
+            {
+              "Action": [
+                "dynamodb:DescribeStream",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Ref": "referencetoamplifydiscussionsgen2maintwobrancha0081fe3b3dataNestedStackdataNestedStackResourceEDF06937Outputsamplifydiscussionsgen2maintwobrancha0081fe3b3dataamplifyDataCommentNestedStackCommentNestedStackResourceB5C7283DOutputsamplif487BF11E"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "recorduseractivitygen2maintwolambdaServiceRoleDefaultPolicy8FD603AF",
+        "Roles": [
+          {
+            "Ref": "recorduseractivitygen2maintwolambdaServiceRole8DB19DE9"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-discussions-gen2maintwo-branch-a0081fe3b3/function/recorduseractivity-gen2-maintwo-lambda/ServiceRole/DefaultPolicy/Resource"
+      }
+    },
+    "recorduseractivitygen2maintwolambdaFBA585F0": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Architectures": [
+          "x86_64"
+        ],
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+          },
+          "S3Key": "0f5f3ad02804e7329f1981c8fc67574bd71c722200b653fcefdd6129eb82aa30.zip"
+        },
+        "Environment": {
+          "Variables": {
+            "ENV": "gen2-maintwo",
+            "REGION": "us-east-1",
+            "AMPLIFY_SSM_ENV_CONFIG": "{}",
+            "STORAGE_ACTIVITY_STREAMARN": {
+              "Ref": "referencetoamplifydiscussionsgen2maintwobrancha0081fe3b3storageactivityNestedStackstorageactivityNestedStackResource7E13FBAEOutputsamplifydiscussionsgen2maintwobrancha0081fe3b3storageactivityBCEEF9A7StreamArn"
+            },
+            "STORAGE_ACTIVITY_ARN": {
+              "Ref": "referencetoamplifydiscussionsgen2maintwobrancha0081fe3b3storageactivityNestedStackstorageactivityNestedStackResource7E13FBAEOutputsamplifydiscussionsgen2maintwobrancha0081fe3b3storageactivityBCEEF9A7Arn"
+            },
+            "STORAGE_ACTIVITY_NAME": {
+              "Ref": "referencetoamplifydiscussionsgen2maintwobrancha0081fe3b3storageactivityNestedStackstorageactivityNestedStackResource7E13FBAEOutputsamplifydiscussionsgen2maintwobrancha0081fe3b3storageactivityBCEEF9A7Ref"
+            }
+          }
+        },
+        "EphemeralStorage": {
+          "Size": 512
+        },
+        "FunctionName": "recorduseractivity-gen2-maintwo",
+        "Handler": "index.handler",
+        "MemorySize": 128,
+        "Role": {
+          "Fn::GetAtt": [
+            "recorduseractivitygen2maintwolambdaServiceRole8DB19DE9",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs22.x",
+        "Tags": [
+          {
+            "Key": "amplify:app-id",
+            "Value": "discussions"
+          },
+          {
+            "Key": "amplify:branch-name",
+            "Value": "gen2-maintwo"
+          },
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "branch"
+          },
+          {
+            "Key": "amplify:friendly-name",
+            "Value": "recorduseractivity-gen2-maintwo"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ],
+        "Timeout": 25
+      },
+      "DependsOn": [
+        "recorduseractivitygen2maintwolambdaServiceRoleDefaultPolicy8FD603AF",
+        "recorduseractivitygen2maintwolambdaServiceRole8DB19DE9"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "amplify-discussions-gen2maintwo-branch-a0081fe3b3/function/recorduseractivity-gen2-maintwo-lambda/Resource",
+        "aws:asset:path": "asset.0f5f3ad02804e7329f1981c8fc67574bd71c722200b653fcefdd6129eb82aa30",
+        "aws:asset:is-bundled": true,
+        "aws:asset:property": "Code"
+      }
+    },
+    "recorduseractivitygen2maintwolambdaDynamoDBEventSourceamplifydiscussionsgen2maintwobrancha0081fe3b3dataamplifyDataTopicCustomTableTopicTable8B3A6ED9ECB61435": {
+      "Type": "AWS::Lambda::EventSourceMapping",
+      "Properties": {
+        "BatchSize": 100,
+        "EventSourceArn": {
+          "Ref": "referencetoamplifydiscussionsgen2maintwobrancha0081fe3b3dataNestedStackdataNestedStackResourceEDF06937Outputsamplifydiscussionsgen2maintwobrancha0081fe3b3dataamplifyDataTopicNestedStackTopicNestedStackResourceDF824BE0Outputsamplifyd2l67DFE00D"
+        },
+        "FunctionName": {
+          "Ref": "recorduseractivitygen2maintwolambdaFBA585F0"
+        },
+        "StartingPosition": "LATEST",
+        "Tags": [
+          {
+            "Key": "amplify:app-id",
+            "Value": "discussions"
+          },
+          {
+            "Key": "amplify:branch-name",
+            "Value": "gen2-maintwo"
+          },
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "branch"
+          },
+          {
+            "Key": "amplify:friendly-name",
+            "Value": "recorduseractivity-gen2-maintwo"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-discussions-gen2maintwo-branch-a0081fe3b3/function/recorduseractivity-gen2-maintwo-lambda/DynamoDBEventSource:amplifydiscussionsgen2maintwobrancha0081fe3b3dataamplifyDataTopicCustomTableTopicTable8B3A6ED9/Resource"
+      }
+    },
+    "recorduseractivitygen2maintwolambdaDynamoDBEventSourceamplifydiscussionsgen2maintwobrancha0081fe3b3dataamplifyDataPostCustomTablePostTable6F127D041B2A119F": {
+      "Type": "AWS::Lambda::EventSourceMapping",
+      "Properties": {
+        "BatchSize": 100,
+        "EventSourceArn": {
+          "Ref": "referencetoamplifydiscussionsgen2maintwobrancha0081fe3b3dataNestedStackdataNestedStackResourceEDF06937Outputsamplifydiscussionsgen2maintwobrancha0081fe3b3dataamplifyDataPostNestedStackPostNestedStackResource357388A6Outputsamplifyd2l28A326AA64"
+        },
+        "FunctionName": {
+          "Ref": "recorduseractivitygen2maintwolambdaFBA585F0"
+        },
+        "StartingPosition": "LATEST",
+        "Tags": [
+          {
+            "Key": "amplify:app-id",
+            "Value": "discussions"
+          },
+          {
+            "Key": "amplify:branch-name",
+            "Value": "gen2-maintwo"
+          },
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "branch"
+          },
+          {
+            "Key": "amplify:friendly-name",
+            "Value": "recorduseractivity-gen2-maintwo"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-discussions-gen2maintwo-branch-a0081fe3b3/function/recorduseractivity-gen2-maintwo-lambda/DynamoDBEventSource:amplifydiscussionsgen2maintwobrancha0081fe3b3dataamplifyDataPostCustomTablePostTable6F127D04/Resource"
+      }
+    },
+    "recorduseractivitygen2maintwolambdaDynamoDBEventSourceamplifydiscussionsgen2maintwobrancha0081fe3b3dataamplifyDataCommentCustomTableCommentTable7F3A5F9A76CBDA76": {
+      "Type": "AWS::Lambda::EventSourceMapping",
+      "Properties": {
+        "BatchSize": 100,
+        "EventSourceArn": {
+          "Ref": "referencetoamplifydiscussionsgen2maintwobrancha0081fe3b3dataNestedStackdataNestedStackResourceEDF06937Outputsamplifydiscussionsgen2maintwobrancha0081fe3b3dataamplifyDataCommentNestedStackCommentNestedStackResourceB5C7283DOutputsamplif487BF11E"
+        },
+        "FunctionName": {
+          "Ref": "recorduseractivitygen2maintwolambdaFBA585F0"
+        },
+        "StartingPosition": "LATEST",
+        "Tags": [
+          {
+            "Key": "amplify:app-id",
+            "Value": "discussions"
+          },
+          {
+            "Key": "amplify:branch-name",
+            "Value": "gen2-maintwo"
+          },
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "branch"
+          },
+          {
+            "Key": "amplify:friendly-name",
+            "Value": "recorduseractivity-gen2-maintwo"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-discussions-gen2maintwo-branch-a0081fe3b3/function/recorduseractivity-gen2-maintwo-lambda/DynamoDBEventSource:amplifydiscussionsgen2maintwobrancha0081fe3b3dataamplifyDataCommentCustomTableCommentTable7F3A5F9A/Resource"
+      }
+    },
+    "CDKMetadata": {
+      "Type": "AWS::CDK::Metadata",
+      "Properties": {
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/2WOwQ6CMBBEv4V7WRE5eBWiN4mRDyBLWUihtIQtGkP4d1NIvHh6M3N4mRjiJIEowDeHsu5DrSpYcmJHdeFQ9gLfXC4ah6rG0tiaOoZ8w2020ilrhMIBlqfVJLLGbHxYreTH1z2tgk8lMpNjuHgIPkE6y55cikxi18OSNeZnvb7IuMLOk6Q7jqMyrff9r+sqNmXhsPVV+JPQ8eEVx3A8QxR0rFQ4zcapgeC58wtmzoOU9wAAAA=="
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-discussions-gen2maintwo-branch-a0081fe3b3/function/CDKMetadata/Default"
+      },
+      "Condition": "CDKMetadataAvailable"
+    }
+  },
+  "Conditions": {
+    "CDKMetadataAvailable": {
+      "Fn::Or": [
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "af-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-3"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-south-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-3"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-4"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ca-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ca-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-northwest-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-central-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-south-2"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-3"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "il-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "me-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "me-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "sa-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-west-1"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "AWS::Region"
+            },
+            "us-west-2"
+          ]
+        }
+      ]
+    }
+  },
+  "Parameters": {
+    "referencetoamplifydiscussionsgen2maintwobrancha0081fe3b3storageactivityNestedStackstorageactivityNestedStackResource7E13FBAEOutputsamplifydiscussionsgen2maintwobrancha0081fe3b3storageactivityBCEEF9A7Arn": {
+      "Type": "String"
+    },
+    "referencetoamplifydiscussionsgen2maintwobrancha0081fe3b3storageactivityNestedStackstorageactivityNestedStackResource7E13FBAEOutputsamplifydiscussionsgen2maintwobrancha0081fe3b3storageactivityBCEEF9A7StreamArn": {
+      "Type": "String"
+    },
+    "referencetoamplifydiscussionsgen2maintwobrancha0081fe3b3storageactivityNestedStackstorageactivityNestedStackResource7E13FBAEOutputsamplifydiscussionsgen2maintwobrancha0081fe3b3storageactivityBCEEF9A7Ref": {
+      "Type": "String"
+    },
+    "referencetoamplifydiscussionsgen2maintwobrancha0081fe3b3dataNestedStackdataNestedStackResourceEDF06937Outputsamplifydiscussionsgen2maintwobrancha0081fe3b3dataamplifyDataTopicNestedStackTopicNestedStackResourceDF824BE0Outputsamplifyd2l67DFE00D": {
+      "Type": "String"
+    },
+    "referencetoamplifydiscussionsgen2maintwobrancha0081fe3b3dataNestedStackdataNestedStackResourceEDF06937Outputsamplifydiscussionsgen2maintwobrancha0081fe3b3dataamplifyDataPostNestedStackPostNestedStackResource357388A6Outputsamplifyd2l28A326AA64": {
+      "Type": "String"
+    },
+    "referencetoamplifydiscussionsgen2maintwobrancha0081fe3b3dataNestedStackdataNestedStackResourceEDF06937Outputsamplifydiscussionsgen2maintwobrancha0081fe3b3dataamplifyDataCommentNestedStackCommentNestedStackResourceB5C7283DOutputsamplif487BF11E": {
+      "Type": "String"
+    }
+  },
+  "Outputs": {
+    "amplifydiscussionsgen2maintwobrancha0081fe3b3functionfetchuseractivitygen2maintwolambda6D9C5EFDRef": {
+      "Value": {
+        "Ref": "fetchuseractivitygen2maintwolambda75E37FB2"
+      }
+    },
+    "amplifydiscussionsgen2maintwobrancha0081fe3b3functionrecorduseractivitygen2maintwolambda15FF9A2DRef": {
+      "Value": {
+        "Ref": "recorduseractivitygen2maintwolambdaFBA585F0"
+      }
+    }
+  }
+}

@@ -1,0 +1,66 @@
+[
+  {
+    "ParameterKey": "DynamoDBModelTableReadIOPS",
+    "ParameterValue": "5"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackTopicNestedStackTopicNestedStackResource792C4229OutputstransformerrootstackTopicSubscriptionOnCreateTopicDataResolverFnSubscriptionOnCreateTopicDataResolverFnAppSyncFunctionA25E598AFunctionId",
+    "ParameterValue": "cthbhhlyd5gwrjmbn2oe3mmzpe"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
+    "ParameterValue": "amplify-appsync-files/db92bad357b2590353e82db2f2ec7d0fc9cfd30d"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackTopicNestedStackTopicNestedStackResource792C4229OutputstransformerrootstackTopicMutationupdateTopicinit0FunctionMutationupdateTopicinit0FunctionAppSyncFunction16C763FFFunctionId",
+    "ParameterValue": "qd7jydnwobcfvanwmjhvrbpwhm"
+  },
+  {
+    "ParameterKey": "DynamoDBBillingMode",
+    "ParameterValue": "PAY_PER_REQUEST"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+    "ParameterValue": "st35wex2drhe5piowtinjea47y"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackTopicNestedStackTopicNestedStackResource792C4229OutputstransformerrootstackTopicMutationcreateTopicauth0FunctionMutationcreateTopicauth0FunctionAppSyncFunction2E1A1C86FunctionId",
+    "ParameterValue": "j3guc4443jaurd5t57uyfjrzoe"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackTopicNestedStackTopicNestedStackResource792C4229OutputstransformerrootstackTopicQuerygetTopicpostAuth0FunctionQuerygetTopicpostAuth0FunctionAppSyncFunction821534EDFunctionId",
+    "ParameterValue": "knbxu4bubjg6fnww57kmgtvdpa"
+  },
+  {
+    "ParameterKey": "DynamoDBEnableServerSideEncryption",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackTopicNestedStackTopicNestedStackResource792C4229OutputstransformerrootstackTopicMutationcreateTopicinit0FunctionMutationcreateTopicinit0FunctionAppSyncFunction3ECD028CFunctionId",
+    "ParameterValue": "mzwd7p5cufaxpjscvvjhpvu42y"
+  },
+  {
+    "ParameterKey": "DynamoDBEnablePointInTimeRecovery",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackTopicNestedStackTopicNestedStackResource792C4229OutputstransformerrootstackTopicQuerygetTopicauth0FunctionQuerygetTopicauth0FunctionAppSyncFunctionEC4A6DABFunctionId",
+    "ParameterValue": "fv2vfbtkeff2bmihzfq7ruoqqi"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackTopicNestedStackTopicNestedStackResource792C4229OutputstransformerrootstackTopicSubscriptiononCreateTopicauth0FunctionSubscriptiononCreateTopicauth0FunctionAppSyncFunctionA56CE4F0FunctionId",
+    "ParameterValue": "fe6mxc5oa5afdm65jz72xihooi"
+  },
+  {
+    "ParameterKey": "DynamoDBModelTableWriteIOPS",
+    "ParameterValue": "5"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
+    "ParameterValue": "amplify-discussions-maintwo-decb9-deployment"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackenv10C5A902Ref",
+    "ParameterValue": "maintwo"
+  }
+]

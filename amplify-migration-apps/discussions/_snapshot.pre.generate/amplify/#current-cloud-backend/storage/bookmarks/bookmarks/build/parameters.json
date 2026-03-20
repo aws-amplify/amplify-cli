@@ -1,7 +1,0 @@
-{
-  "tableName": "bookmarks",
-  "partitionKeyName": "userId",
-  "partitionKeyType": "S",
-  "sortKeyName": "postId",
-  "sortKeyType": "S"
-}

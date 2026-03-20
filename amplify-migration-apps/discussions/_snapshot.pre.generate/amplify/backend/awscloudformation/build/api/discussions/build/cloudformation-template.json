@@ -111,7 +111,7 @@
             "ApiId"
           ]
         },
-        "Expires": 1773508259
+        "Expires": 1770321021
       }
     },
     "GraphQLAPINONEDS95A13CF0": {
@@ -641,7 +641,7 @@
                   "ApiId"
                 ]
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-main\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-maintwo\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -738,7 +738,7 @@
                   "ApiId"
                 ]
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-main\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-maintwo\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -835,7 +835,7 @@
                   "ApiId"
                 ]
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-main\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-maintwo\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -932,7 +932,7 @@
                   "ApiId"
                 ]
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-main\"]))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"adminRoles\", [\"recorduseractivity-maintwo\"]))\n$util.toJson({})"
             ]
           ]
         },
@@ -1062,5 +1062,5 @@
       }
     }
   },
-  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"Amplify\",\"createdWith\":\"14.2.5\",\"stackType\":\"api-AppSync\",\"metadata\":{\"whyContinueWithGen1\":\"Prefer not to answer\"}}"
+  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"Amplify\",\"createdWith\":\"14.2.3\",\"stackType\":\"api-AppSync\",\"metadata\":{\"whyContinueWithGen1\":\"Prefer not to answer\"}}"
 }

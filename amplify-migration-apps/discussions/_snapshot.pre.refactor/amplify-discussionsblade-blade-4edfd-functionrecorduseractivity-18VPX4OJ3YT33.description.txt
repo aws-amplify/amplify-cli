@@ -1,1 +1,0 @@
-{"createdOn":"Linux","createdBy":"Amplify","createdWith":"14.2.5","stackType":"function-Lambda","metadata":{"whyContinueWithGen1":"Prefer not to answer"}}

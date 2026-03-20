@@ -1,21 +1,23 @@
 import { auth } from './auth/resource';
 import { data } from './data/resource';
+import { storage } from './storage/resource';
 import { fetchuseractivity } from './storage/fetchuseractivity/resource';
 import { recorduseractivity } from './storage/recorduseractivity/resource';
+import { DynamoEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
+import { StartingPosition } from 'aws-cdk-lib/aws-lambda';
 import {
   Table,
   AttributeType,
   BillingMode,
   StreamViewType,
 } from 'aws-cdk-lib/aws-dynamodb';
-import { DynamoEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
-import { StartingPosition } from 'aws-cdk-lib/aws-lambda';
 import { defineBackend } from '@aws-amplify/backend';
 import { Duration } from 'aws-cdk-lib';
 
 const backend = defineBackend({
   auth,
   data,
+  storage,
   fetchuseractivity,
   recorduseractivity,
 });
@@ -28,7 +30,7 @@ const activity = new Table(storageActivityStack, 'activity', {
   stream: StreamViewType.NEW_IMAGE,
   sortKey: { name: 'userId', type: AttributeType.STRING },
 });
-// Add this property to the Table above post refactor: tableName: 'activity-main'
+// Add this property to the Table above post refactor: tableName: 'activity-maintwo'
 activity.addGlobalSecondaryIndex({
   indexName: 'byUserId',
   partitionKey: { name: 'userId', type: AttributeType.STRING },
@@ -45,7 +47,7 @@ const bookmarks = new Table(storageBookmarksStack, 'bookmarks', {
   stream: StreamViewType.NEW_IMAGE,
   sortKey: { name: 'postId', type: AttributeType.STRING },
 });
-// Add this property to the Table above post refactor: tableName: 'bookmarks-blade'
+// Add this property to the Table above post refactor: tableName: 'bookmarks-maintwo'
 bookmarks.addGlobalSecondaryIndex({
   indexName: 'byPost',
   partitionKey: { name: 'postId', type: AttributeType.STRING },
@@ -141,3 +143,16 @@ for (const model of ['Topic', 'Post', 'Comment']) {
     backend.recorduseractivity.resources.lambda.role!
   );
 }
+const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
+// Use this bucket name post refactor
+// s3Bucket.bucketName = 'discus-avatarsdecb9-maintwo';
+s3Bucket.bucketEncryption = {
+  serverSideEncryptionConfiguration: [
+    {
+      serverSideEncryptionByDefault: {
+        sseAlgorithm: 'AES256',
+      },
+      bucketKeyEnabled: false,
+    },
+  ],
+};

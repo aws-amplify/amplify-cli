@@ -1,0 +1,746 @@
+{
+  "Description": "{\"createdOn\":\"Linux\",\"createdBy\":\"AmplifyPipelineDeploy\",\"createdWith\":\"1.4.3\",\"stackType\":\"storage-S3\",\"metadata\":{}}",
+  "Resources": {
+    "discusavatarsdecb9gen2maintwoBucket5CCF194E": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "BucketKeyEnabled": false,
+              "ServerSideEncryptionByDefault": {
+                "SSEAlgorithm": "AES256"
+              }
+            }
+          ]
+        },
+        "CorsConfiguration": {
+          "CorsRules": [
+            {
+              "AllowedHeaders": [
+                "*"
+              ],
+              "AllowedMethods": [
+                "GET",
+                "HEAD",
+                "PUT",
+                "POST",
+                "DELETE"
+              ],
+              "AllowedOrigins": [
+                "*"
+              ],
+              "ExposedHeaders": [
+                "x-amz-server-side-encryption",
+                "x-amz-request-id",
+                "x-amz-id-2",
+                "ETag"
+              ],
+              "MaxAge": 3000
+            }
+          ]
+        },
+        "Tags": [
+          {
+            "Key": "amplify:app-id",
+            "Value": "discussions"
+          },
+          {
+            "Key": "amplify:branch-name",
+            "Value": "gen2-maintwo"
+          },
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "branch"
+          },
+          {
+            "Key": "amplify:friendly-name",
+            "Value": "discus-avatarsdecb9-gen2-maintwo"
+          },
+          {
+            "Key": "aws-cdk:auto-delete-objects",
+            "Value": "true"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-discussions-gen2maintwo-branch-a0081fe3b3/storage/discus-avatarsdecb9-gen2-maintwo/Bucket/Resource"
+      }
+    },
+    "discusavatarsdecb9gen2maintwoBucketPolicy125A25F7": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": {
+          "Ref": "discusavatarsdecb9gen2maintwoBucket5CCF194E"
+        },
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:*",
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": "false"
+                }
+              },
+              "Effect": "Deny",
+              "Principal": {
+                "AWS": "*"
+              },
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "discusavatarsdecb9gen2maintwoBucket5CCF194E",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "discusavatarsdecb9gen2maintwoBucket5CCF194E",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "s3:PutBucketPolicy",
+                "s3:GetBucket*",
+                "s3:List*",
+                "s3:DeleteObject*"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::GetAtt": [
+                    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+                    "Arn"
+                  ]
+                }
+              },
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "discusavatarsdecb9gen2maintwoBucket5CCF194E",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "discusavatarsdecb9gen2maintwoBucket5CCF194E",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-discussions-gen2maintwo-branch-a0081fe3b3/storage/discus-avatarsdecb9-gen2-maintwo/Bucket/Policy/Resource"
+      }
+    },
+    "discusavatarsdecb9gen2maintwoBucketAutoDeleteObjectsCustomResourceF149C46F": {
+      "Type": "Custom::S3AutoDeleteObjects",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
+            "Arn"
+          ]
+        },
+        "BucketName": {
+          "Ref": "discusavatarsdecb9gen2maintwoBucket5CCF194E"
+        }
+      },
+      "DependsOn": [
+        "discusavatarsdecb9gen2maintwoBucketPolicy125A25F7"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-discussions-gen2maintwo-branch-a0081fe3b3/storage/discus-avatarsdecb9-gen2-maintwo/Bucket/AutoDeleteObjectsCustomResource/Default"
+      }
+    },
+    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ]
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-discussions-gen2maintwo-branch-a0081fe3b3/storage/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role"
+      }
+    },
+    "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+          },
+          "S3Key": "faa95a81ae7d7373f3e1f242268f904eb748d8d0fdd306e8a6fe515a1905a7d6.zip"
+        },
+        "Timeout": 900,
+        "MemorySize": 128,
+        "Handler": "index.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs22.x",
+        "Description": {
+          "Fn::Join": [
+            "",
+            [
+              "Lambda function for auto-deleting objects in ",
+              {
+                "Ref": "discusavatarsdecb9gen2maintwoBucket5CCF194E"
+              },
+              " S3 bucket."
+            ]
+          ]
+        }
+      },
+      "DependsOn": [
+        "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "amplify-discussions-gen2maintwo-branch-a0081fe3b3/storage/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler",
+        "aws:asset:path": "asset.faa95a81ae7d7373f3e1f242268f904eb748d8d0fdd306e8a6fe515a1905a7d6",
+        "aws:asset:property": "Code"
+      }
+    },
+    "DISCUSAVATARSDECB9GEN2MAINTWOBUCKETNAMEParameter04623971": {
+      "Type": "AWS::SSM::Parameter",
+      "Properties": {
+        "Name": "/amplify/resource_reference/discussions/gen2maintwo-branch-a0081fe3b3/DISCUS_AVATARSDECB_9_GEN_2_MAINTWO_BUCKET_NAME",
+        "Tags": {
+          "amplify:app-id": "discussions",
+          "amplify:branch-name": "gen2-maintwo",
+          "amplify:deployment-type": "branch",
+          "created-by": "amplify"
+        },
+        "Type": "String",
+        "Value": {
+          "Ref": "discusavatarsdecb9gen2maintwoBucket5CCF194E"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-discussions-gen2maintwo-branch-a0081fe3b3/storage/DISCUS_AVATARSDECB_9_GEN_2_MAINTWO_BUCKET_NAMEParameter/Resource"
+      }
+    },
+    "amplifydiscussionsgen2maintwobrancha0081fe3b3storageAccess3106BBB91": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:PutObject",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "discusavatarsdecb9gen2maintwoBucket5CCF194E",
+                          "Arn"
+                        ]
+                      },
+                      "/public/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "discusavatarsdecb9gen2maintwoBucket5CCF194E",
+                          "Arn"
+                        ]
+                      },
+                      "/protected/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "discusavatarsdecb9gen2maintwoBucket5CCF194E",
+                          "Arn"
+                        ]
+                      },
+                      "/private/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": "s3:GetObject",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "discusavatarsdecb9gen2maintwoBucket5CCF194E",
+                          "Arn"
+                        ]
+                      },
+                      "/public/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "discusavatarsdecb9gen2maintwoBucket5CCF194E",
+                          "Arn"
+                        ]
+                      },
+                      "/protected/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "discusavatarsdecb9gen2maintwoBucket5CCF194E",
+                          "Arn"
+                        ]
+                      },
+                      "/private/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": "s3:ListBucket",
+              "Condition": {
+                "StringLike": {
+                  "s3:prefix": [
+                    "public/*",
+                    "public/",
+                    "protected/*",
+                    "protected/",
+                    "private/*",
+                    "private/"
+                  ]
+                }
+              },
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "discusavatarsdecb9gen2maintwoBucket5CCF194E",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": "s3:DeleteObject",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "discusavatarsdecb9gen2maintwoBucket5CCF194E",
+                          "Arn"
+                        ]
+                      },
+                      "/public/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "discusavatarsdecb9gen2maintwoBucket5CCF194E",
+                          "Arn"
+                        ]
+                      },
+                      "/protected/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "discusavatarsdecb9gen2maintwoBucket5CCF194E",
+                          "Arn"
+                        ]
+                      },
+                      "/private/*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "amplifydiscussionsgen2maintwobrancha0081fe3b3storageAccess3106BBB91",
+        "Roles": [
+          {
+            "Ref": "referencetoamplifydiscussionsgen2maintwobrancha0081fe3b3authNestedStackauthNestedStackResourceD7AECC99Outputsamplifydiscussionsgen2maintwobrancha0081fe3b3authamplifyAuthauthenticatedUserRoleAEA32B43Ref"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-discussions-gen2maintwo-branch-a0081fe3b3/storage/amplify-discussions-gen2maintwo-branch-a0081fe3b3--storageAccess3/Resource"
+      }
+    },
+    "CDKMetadata": {
+      "Type": "AWS::CDK::Metadata",
+      "Properties": {
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/5WNy07DMBBFv6VZO0NJu0Ds2rKGqFkihFxniCaJbckz6UOW/x2llggsWc0dnfuooNpuYb3SFy5NO5QjnSC+Igu2jWgzKH3hz8gbiPvJDCjq8OWyeo+FpSu54rn4HZ79vIE7YsjW3ST+BUcUfDv1aISL9KEyqv1I5ra05v8f3TnQiBa06O7VSTFbiI0Ecl2tg7YoGOaNnycp0hbisp5VSuowsXh7RPZTMDijRf9BdfBnajHsNaPaMaM0ojtyXVLOtwg9P5yrCh6fYL3qmagMkxOyCMd8vwGr7NONegEAAA=="
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-discussions-gen2maintwo-branch-a0081fe3b3/storage/CDKMetadata/Default"
+      },
+      "Condition": "CDKMetadataAvailable"
+    }
+  },
+  "Conditions": {
+    "CDKMetadataAvailable": {
+      "Fn::Or": [
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "af-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-3"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-south-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-3"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-4"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ca-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ca-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-northwest-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-central-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-south-2"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-3"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "il-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "me-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "me-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "sa-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-west-1"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "AWS::Region"
+            },
+            "us-west-2"
+          ]
+        }
+      ]
+    }
+  },
+  "Parameters": {
+    "referencetoamplifydiscussionsgen2maintwobrancha0081fe3b3authNestedStackauthNestedStackResourceD7AECC99Outputsamplifydiscussionsgen2maintwobrancha0081fe3b3authamplifyAuthauthenticatedUserRoleAEA32B43Ref": {
+      "Type": "String"
+    }
+  },
+  "Outputs": {
+    "amplifydiscussionsgen2maintwobrancha0081fe3b3storagediscusavatarsdecb9gen2maintwoBucketF8281B37Ref": {
+      "Value": {
+        "Ref": "discusavatarsdecb9gen2maintwoBucket5CCF194E"
+      }
+    }
+  }
+}

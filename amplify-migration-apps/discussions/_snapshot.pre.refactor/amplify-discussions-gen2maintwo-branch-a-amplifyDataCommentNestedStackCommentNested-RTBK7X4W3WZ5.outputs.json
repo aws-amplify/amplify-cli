@@ -1,0 +1,26 @@
+[
+  {
+    "OutputKey": "GetAttCommentTableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Comment-d4mt7tdvurcczil4a5eoajtsxy-NONE/stream/2026-03-20T18:24:46.619",
+    "Description": "Your DynamoDB table StreamArn.",
+    "ExportName": "d4mt7tdvurcczil4a5eoajtsxy:GetAtt:CommentTable:StreamArn"
+  },
+  {
+    "OutputKey": "amplifydiscussionsgen2maintwobrancha0081fe3b3dataamplifyDataCommentCommentTable1026D4FDTableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Comment-d4mt7tdvurcczil4a5eoajtsxy-NONE/stream/2026-03-20T18:24:46.619"
+  },
+  {
+    "OutputKey": "GetAttCommentTableName",
+    "OutputValue": "Comment-d4mt7tdvurcczil4a5eoajtsxy-NONE",
+    "Description": "Your DynamoDB table name.",
+    "ExportName": "d4mt7tdvurcczil4a5eoajtsxy:GetAtt:CommentTable:Name"
+  },
+  {
+    "OutputKey": "amplifydiscussionsgen2maintwobrancha0081fe3b3dataamplifyDataCommentCommentDataSource6D10D95BName",
+    "OutputValue": "CommentTable"
+  },
+  {
+    "OutputKey": "amplifydiscussionsgen2maintwobrancha0081fe3b3dataamplifyDataCommentCommentTable1026D4FDTableArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Comment-d4mt7tdvurcczil4a5eoajtsxy-NONE"
+  }
+]
