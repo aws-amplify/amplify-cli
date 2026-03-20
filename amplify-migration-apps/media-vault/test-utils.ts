@@ -1,38 +1,30 @@
 // test-utils.ts
 /**
- * Shared test utilities for Media Vault Gen1 and Gen2 test scripts
+ * Shared test utilities for MediaVault Gen1 and Gen2 test scripts
  */
 
 import { Amplify } from 'aws-amplify';
 import { generateClient } from 'aws-amplify/api';
 import { fetchAuthSession } from 'aws-amplify/auth';
 import { uploadData } from 'aws-amplify/storage';
-import { readFileSync } from 'fs';
+import { readFileSync, existsSync } from 'fs';
 import { getNote, listNotes, generateThumbnail, addUserToGroup, removeUserFromGroup } from './src/graphql/queries';
 import { createNote, updateNote, deleteNote } from './src/graphql/mutations';
-import { TestRunner } from '../shared-test-utils/test-apps-test-utils';
+import { TestRunner } from '../_test-common/test-apps-test-utils';
 import amplifyconfig from './src/amplifyconfiguration.json';
 
 // Configure Amplify in this module to ensure api/storage singletons see the config
 Amplify.configure(amplifyconfig);
+
+// Test data for Lambda functions
+const TEST_IMAGE_PATH = './test-image.jpg';
+const TEST_GROUP = 'Admin';
 
 // ============================================================
 // Shared Test Functions Factory
 // ============================================================
 
 export function createTestFunctions() {
-  // Test data for Lambda functions
-  const TEST_IMAGE_PATH = 'YOUR_TEST_IMAGE_PATH'; // Path to a test image file
-  const TEST_GROUP = 'Admin'; // Group name for user management tests
-
-  function getAuthClient() {
-    return generateClient({ authMode: 'userPool' });
-  }
-
-  function getPublicClient() {
-    return generateClient({ authMode: 'apiKey' });
-  }
-
   async function getUserSub(): Promise<string | null> {
     try {
       const session = await fetchAuthSession();
@@ -49,7 +41,7 @@ export function createTestFunctions() {
 
   async function testListNotes(): Promise<string | null> {
     console.log('\n📋 Testing listNotes...');
-    const authClient = getAuthClient();
+    const authClient = generateClient({ authMode: 'userPool' });
     const result = await authClient.graphql({ query: listNotes });
     const notes = (result as any).data.listNotes.items;
     console.log(`✅ Found ${notes.length} notes:`);
@@ -59,11 +51,8 @@ export function createTestFunctions() {
 
   async function testGetNote(id: string): Promise<void> {
     console.log(`\n🔍 Testing getNote (id: ${id})...`);
-    const authClient = getAuthClient();
-    const result = await authClient.graphql({
-      query: getNote,
-      variables: { id },
-    });
+    const authClient = generateClient({ authMode: 'userPool' });
+    const result = await authClient.graphql({ query: getNote, variables: { id } });
     const note = (result as any).data.getNote;
     console.log('✅ Note:', {
       id: note.id,
@@ -80,7 +69,7 @@ export function createTestFunctions() {
 
   async function testCreateNote(): Promise<string | null> {
     console.log('\n🆕 Testing createNote...');
-    const authClient = getAuthClient();
+    const authClient = generateClient({ authMode: 'userPool' });
     const result = await authClient.graphql({
       query: createNote,
       variables: {
@@ -102,7 +91,7 @@ export function createTestFunctions() {
 
   async function testUpdateNote(noteId: string): Promise<void> {
     console.log(`\n✏️ Testing updateNote (id: ${noteId})...`);
-    const authClient = getAuthClient();
+    const authClient = generateClient({ authMode: 'userPool' });
     const result = await authClient.graphql({
       query: updateNote,
       variables: {
@@ -123,7 +112,7 @@ export function createTestFunctions() {
 
   async function testDeleteNote(noteId: string): Promise<void> {
     console.log(`\n🗑️ Testing deleteNote (id: ${noteId})...`);
-    const authClient = getAuthClient();
+    const authClient = generateClient({ authMode: 'userPool' });
     const result = await authClient.graphql({
       query: deleteNote,
       variables: { input: { id: noteId } },
@@ -139,60 +128,51 @@ export function createTestFunctions() {
   async function testGenerateThumbnail(): Promise<void> {
     console.log('\n🖼️  Testing generateThumbnail Lambda function...');
 
-    try {
-      // Step 1: Upload a test image to S3
-      console.log('   📤 Uploading test image to S3...');
-      const imageBuffer = readFileSync(TEST_IMAGE_PATH);
-      const key = `media/test-${Date.now()}.jpg`;
+    console.log('   📤 Uploading test image to S3...');
+    let imageBuffer: Buffer;
 
-      const uploadResult = await uploadData({
-        path: ({ identityId }) => `private/${identityId}/${key}`,
-        data: imageBuffer,
-      }).result;
-
-      console.log(`   ✅ Image uploaded: ${key}`);
-
-      // Step 2: Get the full S3 path from upload result
-      const fullKey = uploadResult.path;
-      console.log(`   🔑 Full S3 key: ${fullKey}`);
-
-      // Step 3: Call the thumbnail generation Lambda
-      console.log('   🎨 Generating thumbnail...');
-      const publicClient = getPublicClient();
-      const result = await publicClient.graphql({
-        query: generateThumbnail,
-        variables: { mediaFileKey: fullKey },
-      });
-      const response = (result as any).data.generateThumbnail;
-      console.log('✅ Thumbnail generation response:', {
-        statusCode: response.statusCode,
-        message: response.message,
-      });
-    } catch (error: any) {
-      if (error.code === 'ENOENT') {
-        console.log('⏭️  Skipping thumbnail test - test image file not found');
-        console.log(`   Please add an image file at: ${TEST_IMAGE_PATH}`);
-        console.log('   Or update TEST_IMAGE_PATH to point to an existing image');
-        return;
-      }
-      throw error;
+    if (existsSync(TEST_IMAGE_PATH)) {
+      imageBuffer = readFileSync(TEST_IMAGE_PATH);
+      console.log('   Using local image file');
+    } else {
+      const testImageBase64 =
+        'iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAIAAAD/gAIDAAAA3klEQVR42u3QMQEAAAgDILV/51nBzwci0JlYsWLFihUrVqxYsWLFihUrVqxYsWLFihUrVqxYsWLFihUrVqxYsWLFihUrVqxYsWLFihUrVqxYsWLFihUrVqxYsWLFihUrVqxYsWLFihUrVqxYsWLFihUrVqxYsWLFihUrVqxYsWLFihUrVqxYsWLFihUrVqxYsWLFihUrVqxYsWLFihUrVqxYsWLFihUrVqxYsWLFihUrVqxYsWLFihUrVqxYsWLFihUrVqxYsWLFihUrVqxYsWLFihUrVqxYsWLFihUrVqz8WgGPGAGBPQqrHAAAAABJRU5ErkJggg==';
+      imageBuffer = Buffer.from(testImageBase64, 'base64');
+      console.log('   Using generated test image (no local file found)');
     }
+
+    const key = `media/test-${Date.now()}.jpg`;
+    const uploadResult = await uploadData({
+      path: ({ identityId }: { identityId: string }) => `private/${identityId}/${key}`,
+      data: imageBuffer,
+    }).result;
+
+    console.log(`   ✅ Image uploaded: ${key}`);
+    const fullKey = uploadResult.path;
+    console.log(`   🔑 Full S3 key: ${fullKey}`);
+
+    console.log('   🎨 Generating thumbnail...');
+    const publicClient = generateClient({ authMode: 'apiKey' });
+    const result = await publicClient.graphql({
+      query: generateThumbnail,
+      variables: { mediaFileKey: fullKey },
+    });
+    const response = (result as any).data.generateThumbnail;
+    console.log('✅ Thumbnail generation response:', {
+      statusCode: response.statusCode,
+      message: response.message,
+    });
   }
 
   async function testAddUserToGroup(): Promise<void> {
     console.log(`\n👥 Testing addUserToGroup Lambda function...`);
     const userSub = await getUserSub();
-    if (!userSub) {
-      throw new Error('Could not retrieve user sub');
-    }
+    if (!userSub) throw new Error('Could not retrieve user sub');
 
-    const publicClient = getPublicClient();
+    const publicClient = generateClient({ authMode: 'apiKey' });
     const result = await publicClient.graphql({
       query: addUserToGroup,
-      variables: {
-        userSub: userSub,
-        group: TEST_GROUP,
-      },
+      variables: { userSub, group: TEST_GROUP },
     });
     const response = (result as any).data.addUserToGroup;
     console.log('✅ Add user to group response:', {
@@ -204,17 +184,12 @@ export function createTestFunctions() {
   async function testRemoveUserFromGroup(): Promise<void> {
     console.log(`\n👥 Testing removeUserFromGroup Lambda function...`);
     const userSub = await getUserSub();
-    if (!userSub) {
-      throw new Error('Could not retrieve user sub');
-    }
+    if (!userSub) throw new Error('Could not retrieve user sub');
 
-    const publicClient = getPublicClient();
+    const publicClient = generateClient({ authMode: 'apiKey' });
     const result = await publicClient.graphql({
       query: removeUserFromGroup,
-      variables: {
-        userSub: userSub,
-        group: TEST_GROUP,
-      },
+      variables: { userSub, group: TEST_GROUP },
     });
     const response = (result as any).data.removeUserFromGroup;
     console.log('✅ Remove user from group response:', {
@@ -275,9 +250,5 @@ export function createTestOrchestrator(testFunctions: ReturnType<typeof createTe
     await runner.runTest('removeUserFromGroup', testFunctions.testRemoveUserFromGroup);
   }
 
-  return {
-    runQueryTests,
-    runMutationTests,
-    runLambdaFunctionTests,
-  };
+  return { runQueryTests, runMutationTests, runLambdaFunctionTests };
 }

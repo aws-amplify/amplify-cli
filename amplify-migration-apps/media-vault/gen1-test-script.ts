@@ -2,11 +2,11 @@
  * Gen1 Test Script for MediaVault App
  *
  * This script tests all functionality:
- * 1. Authenticated GraphQL Queries (Notes)
- * 2. Authenticated GraphQL Mutations (Notes)
+ * 1. Authenticated GraphQL Queries (requires auth)
+ * 2. Authenticated GraphQL Mutations (requires auth)
  * 3. Lambda Function Operations (Thumbnails, User Groups)
  *
- * Credentials are provisioned automatically via Cognito SignUp + AdminConfirmSignUp.
+ * Credentials are provisioned automatically via Cognito AdminCreateUser + AdminSetUserPassword.
  */
 
 // Polyfill crypto for Node.js environment (required for Amplify Auth)
@@ -18,8 +18,8 @@ if (typeof globalThis.crypto === 'undefined') {
 import { Amplify } from 'aws-amplify';
 import { signIn, signOut, getCurrentUser } from 'aws-amplify/auth';
 import amplifyconfig from './src/amplifyconfiguration.json';
-import { TestRunner, provisionTestUser } from '../shared-test-utils/test-apps-test-utils';
-import testCredentials from '../shared-test-utils/test-credentials.json';
+import { TestRunner } from '../_test-common/test-apps-test-utils';
+import { provisionTestUser } from '../_test-common/signup';
 import { createTestFunctions, createTestOrchestrator } from './test-utils';
 
 // Configure Amplify
@@ -30,14 +30,14 @@ Amplify.configure(amplifyconfig);
 // ============================================================
 
 async function runAllTests(): Promise<void> {
-  console.log('🚀 Starting Gen1 Test Script for MediaVault\n');
+  console.log('🚀 Starting MediaVault Gen1 Test Script\n');
   console.log('This script tests:');
   console.log('  1. Authenticated GraphQL Queries (Notes)');
   console.log('  2. Authenticated GraphQL Mutations (Notes)');
   console.log('  3. Lambda Function Operations (Thumbnails, User Groups)');
 
-  // Provision user via SDK, then sign in here so tokens stay in this module's Amplify scope
-  const { signinValue, testUser } = await provisionTestUser(amplifyconfig, testCredentials);
+  // Provision user via admin APIs, then sign in here so tokens stay in this module's Amplify scope
+  const { signinValue, testUser } = await provisionTestUser(amplifyconfig);
 
   // Sign in from this module so the auth tokens are available to api/storage
   try {
@@ -45,7 +45,7 @@ async function runAllTests(): Promise<void> {
     const currentUser = await getCurrentUser();
     console.log(`✅ Signed in as: ${currentUser.username}`);
   } catch (error: any) {
-    console.error('❌ SignIn has failed:', error.message || error);
+    console.error('❌ SignIn failed:', error.message || error);
     process.exit(1);
   }
 
