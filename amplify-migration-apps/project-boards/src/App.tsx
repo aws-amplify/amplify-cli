@@ -30,12 +30,32 @@ const getRandomQuote = /* GraphQL */ `
   }
 `;
 
+const getRandomTip = /* GraphQL */ `
+  query GetRandomTip {
+    getRandomTip {
+      message
+      tip
+      category
+      timestamp
+      totalTips
+    }
+  }
+`;
+
 type QuoteData = {
   message: string;
   quote: string;
   author: string;
   timestamp: string;
   totalQuotes: number;
+};
+
+type TipData = {
+  message: string;
+  tip: string;
+  category: string;
+  timestamp: string;
+  totalTips: number;
 };
 
 // Client for authenticated users (owner-based operations)
@@ -1109,6 +1129,10 @@ const AuthenticatedApp: React.FC<AppProps> = ({ signOut, user }) => {
   const [quote, setQuote] = useState<QuoteData | null>(null);
   const [loadingQuote, setLoadingQuote] = useState(false);
 
+  // Tip state
+  const [tip, setTip] = useState<TipData | null>(null);
+  const [loadingTip, setLoadingTip] = useState(false);
+
   const { theme, toggleTheme } = useTheme();
   const themedStyles = getThemedStyles(theme);
 
@@ -1295,6 +1319,22 @@ const AuthenticatedApp: React.FC<AppProps> = ({ signOut, user }) => {
     }
   }
 
+  async function fetchRandomTip() {
+    try {
+      setLoadingTip(true);
+      const result = await publicClient.graphql({
+        query: getRandomTip,
+      });
+      if ((result as any).data?.getRandomTip) {
+        setTip((result as any).data.getRandomTip as TipData);
+      }
+    } catch (err) {
+      console.log('Error fetching tip:', err);
+    } finally {
+      setLoadingTip(false);
+    }
+  }
+
   return (
     <div style={themedStyles.container}>
       <div style={themedStyles.header}>
@@ -1467,6 +1507,53 @@ const AuthenticatedApp: React.FC<AppProps> = ({ signOut, user }) => {
                       }}
                     >
                       {quote.totalQuotes} quotes available
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              <div style={{ marginTop: 24, padding: 16, backgroundColor: theme === 'dark' ? '#374151' : '#f8f9fa', borderRadius: 8 }}>
+                <h3 style={{ ...themedStyles.formTitle, fontSize: 18, marginBottom: 12 }}>🧠 Productivity Tips</h3>
+                <button style={{ ...themedStyles.button, marginBottom: tip ? 16 : 0 }} onClick={fetchRandomTip} disabled={loadingTip}>
+                  {loadingTip ? '⏳ Loading...' : '💡 Get Random Tip'}
+                </button>
+                {tip && (
+                  <div
+                    style={{
+                      padding: 16,
+                      backgroundColor: theme === 'dark' ? '#2d3748' : 'white',
+                      borderRadius: 8,
+                      borderLeft: '4px solid #28a745',
+                    }}
+                  >
+                    <p
+                      style={{
+                        margin: '0 0 8px 0',
+                        fontSize: 15,
+                        color: theme === 'dark' ? '#e1e8ed' : '#2c3e50',
+                        lineHeight: 1.6,
+                      }}
+                    >
+                      {tip.tip}
+                    </p>
+                    <p
+                      style={{
+                        margin: 0,
+                        fontSize: 13,
+                        fontWeight: '600',
+                        color: theme === 'dark' ? '#a0aec0' : '#5a6c7d',
+                      }}
+                    >
+                      📂 {tip.category}
+                    </p>
+                    <p
+                      style={{
+                        margin: '8px 0 0 0',
+                        fontSize: 11,
+                        color: theme === 'dark' ? '#718096' : '#6c757d',
+                      }}
+                    >
+                      {tip.totalTips} tips available
                     </p>
                   </div>
                 )}

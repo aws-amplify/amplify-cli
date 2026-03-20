@@ -6,8 +6,17 @@ type QuoteResponse {
   totalQuotes: Int! @auth(rules: [{ allow: public }])
 }
 
+type TipResponse {
+  message: String! @auth(rules: [{ allow: public }])
+  tip: String! @auth(rules: [{ allow: public }])
+  category: String! @auth(rules: [{ allow: public }])
+  timestamp: String! @auth(rules: [{ allow: public }])
+  totalTips: Int! @auth(rules: [{ allow: public }])
+}
+
 type Query {
   getRandomQuote: QuoteResponse @function(name: "quotegenerator-${env}") @auth(rules: [{ allow: public }])
+  getRandomTip: TipResponse @function(name: "projectboardslambda2-${env}") @auth(rules: [{ allow: public }])
 }
 
 enum ProjectStatus {
@@ -17,10 +26,7 @@ enum ProjectStatus {
   ARCHIVED
 }
 
-type Project @model @auth(rules: [
-  { allow: public, operations: [read] },
-  { allow: owner, operations: [create, read, update, delete] }
-]) {
+type Project @model @auth(rules: [{ allow: public, operations: [read] }, { allow: owner, operations: [create, read, update, delete] }]) {
   id: ID!
   title: String!
   description: String
@@ -30,10 +36,7 @@ type Project @model @auth(rules: [
   todos: [Todo] @hasMany
 }
 
-type Todo @model @auth(rules: [
-  { allow: public, operations: [read] },
-  { allow: owner, operations: [create, read, update, delete] }
-]) {
+type Todo @model @auth(rules: [{ allow: public, operations: [read] }, { allow: owner, operations: [create, read, update, delete] }]) {
   id: ID!
   name: String!
   description: String

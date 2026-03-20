@@ -146,6 +146,59 @@ amplify add function
 ? Do you want to edit the local lambda function now? No
 ```
 
+```console
+amplify add function
+```
+
+```console
+? Select which capability you want to add: Lambda layer (shared code & resource used across functions)
+? Provide a name for your Lambda layer: projectboardslambdalayer
+? Choose the runtime that you want to use: (Use arrow keys)
+❯ NodeJS
+? The current AWS account will always have access to this layer.
+  Optionally, configure who else can access this layer. (Hit <Enter> to skip)
+> Specific AWS accounts
+> Specific AWS organization
+```
+
+Node.js lambda function that generates tips.
+
+```console
+amplify add function
+```
+
+```console
+? Select which capability you want to add: Lambda function (serverless function)
+? Provide an AWS Lambda function name: quotegenerator
+? Choose the runtime that you want to use: NodeJS
+? Choose the function template that you want to use: Hello World
+
+✅ Available advanced settings:
+- Resource access permissions
+- Scheduled recurring invocation
+- Lambda layers configuration
+- Environment variables configuration
+- Secret values configuration
+
+? Do you want to configure advanced settings? No
+? Do you want to edit the local lambda function now? No
+```
+
+Link both functions to the lambda layer. Repeat for the other function
+
+```console
+amplify update function
+```
+
+```
+? Select the Lambda function you want to update: quotegenerator
+? Which setting do you want to update? Lambda layers configuration
+? Do you want to enable Lambda layers for this function? Yes
+? Provide existing Lambda layer ARNs or select layers in this project:
+  ❯◉ projectboardslambdalayer
+? Select a version for projectboardslambdalayer: Always choose latest version
+```
+
 ## Configure
 
 ```console
