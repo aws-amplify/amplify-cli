@@ -10,14 +10,14 @@ import { uploadData } from 'aws-amplify/storage';
 import { readFileSync } from 'fs';
 import { getNote, listNotes, generateThumbnail, addUserToGroup, removeUserFromGroup } from './src/graphql/queries';
 import { createNote, updateNote, deleteNote } from './src/graphql/mutations';
-import { TestRunner } from './_test-common/test-apps-test-utils';
+import { TestRunner } from '../_test-common/test-apps-test-utils';
 import amplifyconfig from './src/amplifyconfiguration.json';
 
 // Configure Amplify in this module to ensure api/storage singletons see the config
 Amplify.configure(amplifyconfig);
 
 // Test data for Lambda functions
-const TEST_IMAGE_PATH = 'YOUR_TEST_IMAGE_PATH'; // Path to a test image file
+const TEST_IMAGE_PATH = './images/app.png'; // Uses existing app screenshot as test image
 const TEST_GROUP = 'Admin'; // Group name for user management tests
 
 // ============================================================
