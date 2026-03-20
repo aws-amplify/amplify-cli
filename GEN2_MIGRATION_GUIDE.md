@@ -792,6 +792,17 @@ by the CLI setting that configures them.
 
 ### `amplify add hosting` 🔴
 
+- ➤ **Select the plugin module to execute**
+  
+  - ➤ **Hosting with Amplify Console (Managed hosting with custom domains, Continuous deployment)**
+ 
+    - ➤ **Choose a type**
+
+        - ⚠️ `Continuous deployment (Git-based deployments)`
+        - ⚠️ `Manual deployment`
+      
+- ⚠️ **Amazon CloudFront and S3**
+
 ## Custom 
 
 ### `amplify add custom` 🔴
