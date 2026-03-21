@@ -44,6 +44,8 @@ export class CloudFormationMock {
     this.mockGetTemplate();
     this.mockCreateStackRefactor();
     this.mockDescribeStackRefactor();
+    this.mockCreateChangeSet();
+    this.mockDescribeChangeSet();
   }
 
   public stackNameForResource(physicalId: string) {
@@ -172,6 +174,24 @@ export class CloudFormationMock {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       async (input: cloudformation.DescribeStackRefactorCommandInput): Promise<cloudformation.DescribeStackRefactorCommandOutput> => {
         return { Status: 'CREATE_COMPLETE', ExecutionStatus: 'EXECUTE_COMPLETE', $metadata: {} };
+      },
+    );
+  }
+
+  private mockCreateChangeSet() {
+    this.mock.on(cloudformation.CreateChangeSetCommand).callsFake(
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      async (_input: cloudformation.CreateChangeSetCommandInput): Promise<cloudformation.CreateChangeSetCommandOutput> => {
+        return { $metadata: {} };
+      },
+    );
+  }
+
+  private mockDescribeChangeSet() {
+    this.mock.on(cloudformation.DescribeChangeSetCommand).callsFake(
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      async (_input: cloudformation.DescribeChangeSetCommandInput): Promise<cloudformation.DescribeChangeSetCommandOutput> => {
+        return { Status: 'CREATE_COMPLETE', Changes: [], $metadata: {} };
       },
     );
   }

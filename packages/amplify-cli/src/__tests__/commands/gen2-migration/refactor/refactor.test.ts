@@ -175,7 +175,7 @@ describe('AmplifyMigrationRefactorStep', () => {
       recordSpy.mockRestore();
     });
 
-    it('records Cognito-UserPool-Groups as not supported', async () => {
+    it('records Cognito-UserPool-Groups as supported', async () => {
       createSpy = mockDiscover([
         { category: 'auth', resourceName: 'userPoolGroups', service: 'Cognito-UserPool-Groups', key: 'auth:Cognito-UserPool-Groups' },
       ]);
@@ -185,7 +185,7 @@ describe('AmplifyMigrationRefactorStep', () => {
       await step.assess(new Assessment('test-app', 'dev'));
 
       expect(recordSpy).toHaveBeenCalledWith('refactor', expect.objectContaining({ resourceName: 'userPoolGroups' }), {
-        supported: false,
+        supported: true,
       });
 
       recordSpy.mockRestore();
@@ -201,16 +201,6 @@ describe('AmplifyMigrationRefactorStep', () => {
       await expect(step.forward()).rejects.toThrow(/Unsupported resource 'push'/);
     });
 
-    it('throws on Cognito-UserPool-Groups', async () => {
-      infraSpy = mockCreateInfrastructure();
-      createSpy = mockDiscover([
-        { category: 'auth', resourceName: 'userPoolGroups', service: 'Cognito-UserPool-Groups', key: 'auth:Cognito-UserPool-Groups' },
-      ]);
-
-      const step = createStep();
-      await expect(step.forward()).rejects.toThrow(/Unsupported resource 'userPoolGroups'/);
-    });
-
     it('does not throw for stateless-only resources', async () => {
       infraSpy = mockCreateInfrastructure();
       createSpy = mockDiscover([
@@ -221,17 +211,6 @@ describe('AmplifyMigrationRefactorStep', () => {
       const step = createStep();
       const plan = await step.forward();
       await plan.describe();
-    });
-
-    it('throws on multiple resources in the same refactor category', async () => {
-      infraSpy = mockCreateInfrastructure();
-      createSpy = mockDiscover([
-        { category: 'storage', resourceName: 'bucket1', service: 'S3', key: 'storage:S3' },
-        { category: 'storage', resourceName: 'bucket2', service: 'S3', key: 'storage:S3' },
-      ]);
-
-      const step = createStep();
-      await expect(step.forward()).rejects.toThrow(/Multiple resources in 'storage'/);
     });
   });
 
@@ -244,16 +223,6 @@ describe('AmplifyMigrationRefactorStep', () => {
       await expect(step.rollback()).rejects.toThrow(/Unsupported resource 'push'/);
     });
 
-    it('throws on Cognito-UserPool-Groups', async () => {
-      infraSpy = mockCreateInfrastructure();
-      createSpy = mockDiscover([
-        { category: 'auth', resourceName: 'userPoolGroups', service: 'Cognito-UserPool-Groups', key: 'auth:Cognito-UserPool-Groups' },
-      ]);
-
-      const step = createStep();
-      await expect(step.rollback()).rejects.toThrow(/Unsupported resource 'userPoolGroups'/);
-    });
-
     it('does not throw for stateless-only resources', async () => {
       infraSpy = mockCreateInfrastructure();
       createSpy = mockDiscover([
@@ -264,17 +233,6 @@ describe('AmplifyMigrationRefactorStep', () => {
       const step = createStep();
       const plan = await step.rollback();
       await plan.describe();
-    });
-
-    it('throws on multiple resources in the same refactor category', async () => {
-      infraSpy = mockCreateInfrastructure();
-      createSpy = mockDiscover([
-        { category: 'auth', resourceName: 'pool1', service: 'Cognito', key: 'auth:Cognito' },
-        { category: 'auth', resourceName: 'pool2', service: 'Cognito', key: 'auth:Cognito' },
-      ]);
-
-      const step = createStep();
-      await expect(step.rollback()).rejects.toThrow(/Multiple resources in 'auth'/);
     });
   });
 });

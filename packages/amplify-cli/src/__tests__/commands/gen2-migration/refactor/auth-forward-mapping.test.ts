@@ -1,4 +1,4 @@
-import { AuthCognitoForwardRefactorer } from '../../../../commands/gen2-migration/refactor/auth/auth-forward';
+import { AuthCognitoForwardRefactorer } from '../../../../commands/gen2-migration/refactor/auth/auth-cognito-forward';
 import { CFNResource } from '../../../../commands/gen2-migration/cfn-template';
 import { AwsClients } from '../../../../commands/gen2-migration/aws-clients';
 import { StackFacade } from '../../../../commands/gen2-migration/refactor/stack-facade';
@@ -17,7 +17,12 @@ describe('AuthCognitoForwardRefactorer.buildResourceMappings - UserPoolClient di
     const gen2Branch = new StackFacade(clients, 'gen2');
     return new (class extends AuthCognitoForwardRefactorer {
       constructor() {
-        super(gen1Env, gen2Branch, clients, 'us-east-1', '123456789', noOpLogger(), 'appId', 'main');
+        super(gen1Env, gen2Branch, clients, 'us-east-1', '123456789', noOpLogger(), 'appId', 'main', {
+          category: 'auth',
+          resourceName: 'test',
+          service: 'Cognito',
+          key: 'auth:Cognito',
+        });
       }
       public testBuildResourceMappings(source: Map<string, CFNResource>, target: Map<string, CFNResource>): MoveMapping[] {
         return this.buildResourceMappings(source, target);

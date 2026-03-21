@@ -20,7 +20,7 @@ class TestForwardRefactorer extends ForwardCategoryRefactorer {
 }
 
 class TestRollbackRefactorer extends RollbackCategoryRefactorer {
-  protected override readonly gen1LogicalIds: ReadonlyMap<string, string>;
+  private readonly ids: ReadonlyMap<string, string>;
 
   constructor(ids: ReadonlyMap<string, string>) {
     super(null as any, null as any, null as any, 'us-east-1', '123', noOpLogger(), {
@@ -29,7 +29,11 @@ class TestRollbackRefactorer extends RollbackCategoryRefactorer {
       service: 'S3',
       key: 'storage:S3' as const,
     });
-    this.gen1LogicalIds = ids;
+    this.ids = ids;
+  }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  protected targetLogicalId(sourceId: string, _sourceResource: CFNResource): string | undefined {
+    return this.ids.get(sourceId);
   }
   protected async fetchSourceStackId() {
     return 'gen2-stack';
@@ -87,22 +91,24 @@ describe('ForwardCategoryRefactorer.buildResourceMappings (default type-matching
     expect(map.get('Table')).toBe('GenTable');
   });
 
-  it('throws when target has fewer resources of the same type', () => {
-    expect(() =>
-      refactorer.testBuildResourceMappings(
-        new Map([
-          ['BucketA', r('AWS::S3::Bucket')],
-          ['BucketB', r('AWS::S3::Bucket')],
-        ]),
-        new Map([['GenBucket', r('AWS::S3::Bucket')]]),
-      ),
-    ).toThrow("Source resource 'BucketB' (type 'AWS::S3::Bucket') has no corresponding target resource");
+  it('maps multiple source resources to same target when types match', () => {
+    const mappings = refactorer.testBuildResourceMappings(
+      new Map([
+        ['BucketA', r('AWS::S3::Bucket')],
+        ['BucketB', r('AWS::S3::Bucket')],
+      ]),
+      new Map([['GenBucket', r('AWS::S3::Bucket')]]),
+    );
+    const map = toIdMap(mappings);
+    expect(map.size).toBe(2);
+    expect(map.get('BucketA')).toBe('GenBucket');
+    expect(map.get('BucketB')).toBe('GenBucket');
   });
 
   it('throws when no types match', () => {
     expect(() =>
       refactorer.testBuildResourceMappings(new Map([['Stream', r('AWS::Kinesis::Stream')]]), new Map([['Bucket', r('AWS::S3::Bucket')]])),
-    ).toThrow("Source resource 'Stream' (type 'AWS::Kinesis::Stream') has no corresponding target resource");
+    ).toThrow("Source resource 'Stream' (AWS::Kinesis::Stream) has no corresponding target resource");
   });
 
   it('includes resource in MoveMapping', () => {
@@ -116,11 +122,11 @@ describe('ForwardCategoryRefactorer.buildResourceMappings (default type-matching
 });
 
 describe('RollbackCategoryRefactorer.buildResourceMappings (gen1LogicalIds-based)', () => {
-  it('maps source resources to Gen1 logical IDs by type', () => {
+  it('maps source resources to Gen1 logical IDs', () => {
     const refactorer = new TestRollbackRefactorer(
       new Map([
-        ['AWS::S3::Bucket', 'S3Bucket'],
-        ['AWS::DynamoDB::Table', 'DynamoDBTable'],
+        ['amplifyBucket', 'S3Bucket'],
+        ['amplifyTable', 'DynamoDBTable'],
       ]),
     );
     const mappings = refactorer.testBuildResourceMappings(
@@ -136,8 +142,8 @@ describe('RollbackCategoryRefactorer.buildResourceMappings (gen1LogicalIds-based
     expect(map.get('amplifyTable')).toBe('DynamoDBTable');
   });
 
-  it('throws for resource type not in gen1LogicalIds', () => {
-    const refactorer = new TestRollbackRefactorer(new Map([['AWS::S3::Bucket', 'S3Bucket']]));
+  it('throws for resource with no known Gen1 logical ID', () => {
+    const refactorer = new TestRollbackRefactorer(new Map());
     expect(() => refactorer.testBuildResourceMappings(new Map([['amplifyTopic', r('AWS::SNS::Topic')]]), new Map())).toThrow(
       "No known Gen1 logical ID for resource type 'AWS::SNS::Topic' (source: 'amplifyTopic')",
     );

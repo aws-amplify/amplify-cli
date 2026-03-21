@@ -1,6 +1,6 @@
 import { RollbackCategoryRefactorer } from '../../../../commands/gen2-migration/refactor/workflow/rollback-category-refactorer';
 import { CFNResource, CFNTemplate } from '../../../../commands/gen2-migration/cfn-template';
-import { RefactorBlueprint, MoveMapping } from '../../../../commands/gen2-migration/refactor/workflow/category-refactorer';
+import { RefactorBlueprint } from '../../../../commands/gen2-migration/refactor/workflow/category-refactorer';
 import { AwsClients } from '../../../../commands/gen2-migration/aws-clients';
 import { StackFacade } from '../../../../commands/gen2-migration/refactor/stack-facade';
 import { noOpLogger } from '../_framework/logger';
@@ -21,6 +21,10 @@ import {
 
 // Concrete test subclass
 class TestRollbackRefactorer extends RollbackCategoryRefactorer {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  protected targetLogicalId(_sourceId: string, _sourceResource: CFNResource): string | undefined {
+    return 'S3Bucket';
+  }
   protected async fetchSourceStackId() {
     return 'gen2-stack-id';
   }
@@ -29,11 +33,6 @@ class TestRollbackRefactorer extends RollbackCategoryRefactorer {
   }
   protected resourceTypes() {
     return ['AWS::S3::Bucket'];
-  }
-  protected buildResourceMappings(source: Map<string, CFNResource>) {
-    const mappings: MoveMapping[] = [];
-    for (const [id, resource] of source) mappings.push({ sourceId: id, targetId: 'S3Bucket', resource });
-    return mappings;
   }
 }
 

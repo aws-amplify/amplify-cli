@@ -81,7 +81,7 @@ describe('ForwardCategoryRefactorer.beforeMovePlan', () => {
   });
   afterEach(() => cfnMock.restore());
 
-  it('returns empty operations when target has no category resources', () => {
+  it('returns empty operations when target has no category resources', async () => {
     const clients = new AwsClients({ region: 'us-east-1' });
     const refactorer = new TestForwardRefactorer(
       new StackFacade(clients, 'g1'),
@@ -96,7 +96,7 @@ describe('ForwardCategoryRefactorer.beforeMovePlan', () => {
       targetResolved: { Lambda: { Type: 'AWS::Lambda::Function', Properties: {} } },
     });
 
-    const operations = (refactorer as any).beforeMovePlan(blueprint);
+    const operations = await (refactorer as any).beforeMovePlan(blueprint);
     expect(operations).toHaveLength(0);
   });
 
@@ -131,9 +131,9 @@ describe('ForwardCategoryRefactorer.beforeMovePlan', () => {
       },
     });
 
-    const operations = (refactorer as any).beforeMovePlan(blueprint);
+    const operations = await (refactorer as any).beforeMovePlan(blueprint);
     expect(operations).toHaveLength(1);
-    expect(await operations[0].describe()).toEqual([expect.stringContaining('holding stack')]);
+    expect(await operations[0].describe()).toEqual([expect.stringContaining('holding')]);
   });
 
   it('cleans up orphaned REVIEW_IN_PROGRESS holding stack before creating new one', async () => {
@@ -167,7 +167,7 @@ describe('ForwardCategoryRefactorer.beforeMovePlan', () => {
       targetAfterRemoval: {},
     });
 
-    const operations = (refactorer as any).beforeMovePlan(blueprint);
+    const operations = await (refactorer as any).beforeMovePlan(blueprint);
     await operations[0].execute();
 
     expect(cfnMock.commandCalls(DeleteStackCommand).length).toBeGreaterThan(0);

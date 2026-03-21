@@ -1,4 +1,4 @@
-import { AuthCognitoForwardRefactorer } from '../../../../commands/gen2-migration/refactor/auth/auth-forward';
+import { AuthCognitoForwardRefactorer } from '../../../../commands/gen2-migration/refactor/auth/auth-cognito-forward';
 import { CFNTemplate } from '../../../../commands/gen2-migration/cfn-template';
 import { AwsClients } from '../../../../commands/gen2-migration/aws-clients';
 import { StackFacade } from '../../../../commands/gen2-migration/refactor/stack-facade';
@@ -10,6 +10,8 @@ import {
   DescribeStacksCommand,
   DescribeStackResourcesCommand,
   ResourceStatus,
+  CreateChangeSetCommand,
+  DescribeChangeSetCommand,
 } from '@aws-sdk/client-cloudformation';
 import { SSMClient } from '@aws-sdk/client-ssm';
 import { CognitoIdentityProviderClient, DescribeIdentityProviderCommand } from '@aws-sdk/client-cognito-identity-provider';
@@ -34,7 +36,7 @@ const gen2AuthTemplate: CFNTemplate = {
 function setupMocks(cfnMock: ReturnType<typeof mockClient>) {
   const gen1NestedStacks = [
     {
-      LogicalResourceId: 'authMainStack',
+      LogicalResourceId: 'authtestStack',
       ResourceType: 'AWS::CloudFormation::Stack',
       PhysicalResourceId: 'gen1-auth-stack',
       Timestamp: ts,
@@ -75,6 +77,9 @@ function setupMocks(cfnMock: ReturnType<typeof mockClient>) {
 
   cfnMock.on(GetTemplateCommand, { StackName: 'gen1-auth-stack' }).resolves({ TemplateBody: JSON.stringify(gen1AuthTemplate) });
   cfnMock.on(GetTemplateCommand, { StackName: 'gen2-auth-stack' }).resolves({ TemplateBody: JSON.stringify(gen2AuthTemplate) });
+
+  cfnMock.on(CreateChangeSetCommand).resolves({});
+  cfnMock.on(DescribeChangeSetCommand).resolves({ Status: 'CREATE_COMPLETE', Changes: [] });
 }
 
 describe('AuthCognitoForwardRefactorer.plan() — operation sequence', () => {
@@ -117,7 +122,7 @@ describe('AuthCognitoForwardRefactorer.plan() — operation sequence', () => {
     expect(flat).toHaveLength(4);
     expect(flat[0]).toContain('Update source');
     expect(flat[1]).toContain('Update target');
-    expect(flat[2]).toContain('holding stack');
+    expect(flat[2]).toContain('holding');
     expect(flat[3]).toContain('Move');
   });
 
@@ -133,7 +138,7 @@ describe('AuthCognitoForwardRefactorer.plan() — operation sequence', () => {
     cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen1-root' }).resolves({
       StackResources: [
         {
-          LogicalResourceId: 'authMainStack',
+          LogicalResourceId: 'authtestStack',
           ResourceType: 'AWS::CloudFormation::Stack',
           PhysicalResourceId: 'gen1-auth-stack',
           Timestamp: ts,
@@ -175,6 +180,8 @@ describe('AuthCognitoForwardRefactorer.plan() — operation sequence', () => {
     });
     cfnMock.on(GetTemplateCommand, { StackName: 'gen1-auth-stack' }).resolves({ TemplateBody: JSON.stringify(oauthGen1Template) });
     cfnMock.on(GetTemplateCommand, { StackName: 'gen2-auth-stack' }).resolves({ TemplateBody: JSON.stringify(gen2AuthTemplate) });
+    cfnMock.on(CreateChangeSetCommand).resolves({});
+    cfnMock.on(DescribeChangeSetCommand).resolves({ Status: 'CREATE_COMPLETE', Changes: [] });
 
     const cognitoMock = mockClient(CognitoIdentityProviderClient);
     cognitoMock.on(DescribeIdentityProviderCommand).resolves({
@@ -225,7 +232,7 @@ describe('AuthCognitoForwardRefactorer.plan() — operation sequence', () => {
     cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen1-root' }).resolves({
       StackResources: [
         {
-          LogicalResourceId: 'authMainStack',
+          LogicalResourceId: 'authtestStack',
           ResourceType: 'AWS::CloudFormation::Stack',
           PhysicalResourceId: 'gen1-auth-stack',
           Timestamp: ts,

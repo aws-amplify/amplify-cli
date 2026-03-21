@@ -1,4 +1,4 @@
-import { AuthCognitoRollbackRefactorer } from '../../../../commands/gen2-migration/refactor/auth/auth-rollback';
+import { AuthCognitoRollbackRefactorer } from '../../../../commands/gen2-migration/refactor/auth/auth-cognito-rollback';
 import { CFNTemplate } from '../../../../commands/gen2-migration/cfn-template';
 import { AwsClients } from '../../../../commands/gen2-migration/aws-clients';
 import { StackFacade } from '../../../../commands/gen2-migration/refactor/stack-facade';
@@ -20,7 +20,7 @@ const gen2AuthTemplate: CFNTemplate = {
   Description: 'gen2 auth',
   Resources: {
     amplifyAuthUserPool12345678: { Type: 'AWS::Cognito::UserPool', Properties: {} },
-    amplifyAuthUserPoolClientWeb12345678: { Type: 'AWS::Cognito::UserPoolClient', Properties: {} },
+    amplifyAuthUserPoolAppClient12345678: { Type: 'AWS::Cognito::UserPoolClient', Properties: {} },
   },
   Outputs: {},
 };
@@ -56,7 +56,7 @@ describe('AuthCognitoRollbackRefactorer.plan()', () => {
     cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen1-root' }).resolves({
       StackResources: [
         {
-          LogicalResourceId: 'authMain',
+          LogicalResourceId: 'authtestMain',
           ResourceType: 'AWS::CloudFormation::Stack',
           PhysicalResourceId: 'gen1-auth',
           Timestamp: ts,

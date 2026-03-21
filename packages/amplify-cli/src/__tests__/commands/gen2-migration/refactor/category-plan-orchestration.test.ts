@@ -161,7 +161,7 @@ describe('CategoryRefactorer.plan() orchestration — via StorageS3ForwardRefact
     expect(descriptions).toHaveLength(4);
     expect(descriptions[0]).toContain('Update source');
     expect(descriptions[1]).toContain('Update target');
-    expect(descriptions[2]).toContain('holding stack');
+    expect(descriptions[2]).toContain('holding');
     expect(descriptions[3]).toContain('Move');
   });
 });
