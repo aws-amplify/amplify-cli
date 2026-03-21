@@ -4,9 +4,9 @@ import { DescribeChangeSetOutput } from '@aws-sdk/client-cloudformation';
 /**
  * Produces a human-readable report of property changes from a described changeset.
  */
-export function formatChangeSetReport(changeSet: DescribeChangeSetOutput): string {
+export function formatChangeSetReport(changeSet: DescribeChangeSetOutput): string | undefined {
   const changes = changeSet.Changes ?? [];
-  if (changes.length === 0) return '';
+  if (changes.length === 0) return undefined;
 
   const lines: string[] = [];
 

@@ -181,7 +181,7 @@ export abstract class CategoryRefactorer implements Refactorer {
     // const deployed = await this.gen1Env.fetchTemplate(source.stackId);
     // const diff = formatTemplateDiff(deployed, source.resolvedTemplate);
     const report = await this.createChangeSetReport(source);
-    const header = chalk.bgGray(`Update source stack '${sourceStackName}' with resolved references`);
+    const header = `Update source stack '${sourceStackName}' with resolved references`;
     return [
       {
         resource: this.resource,
@@ -191,7 +191,7 @@ export abstract class CategoryRefactorer implements Refactorer {
             return { valid: true };
           },
         }),
-        describe: async () => [`${header}\n${report}`],
+        describe: async () => [`${header}\n\n${report}`],
         execute: async () => {
           const status = await tryUpdateStack({
             cfnClient: this.clients.cloudFormation,
@@ -218,7 +218,7 @@ export abstract class CategoryRefactorer implements Refactorer {
     // const deployed = await this.gen2Branch.fetchTemplate(target.stackId);
     // const diff = formatTemplateDiff(deployed, target.resolvedTemplate);
     const report = await this.createChangeSetReport(target);
-    const header = chalk.bgGray(`Update target stack '${targetStackName}' with resolved references`);
+    const header = `Update target stack '${targetStackName}' with resolved references`;
     return [
       {
         resource: this.resource,
@@ -228,7 +228,7 @@ export abstract class CategoryRefactorer implements Refactorer {
             return { valid: true };
           },
         }),
-        describe: async () => [`${header}\n${report}`],
+        describe: async () => [`${header}\n\n${report}`],
         execute: async () => {
           const status = await tryUpdateStack({
             cfnClient: this.clients.cloudFormation,
@@ -264,22 +264,18 @@ export abstract class CategoryRefactorer implements Refactorer {
       }),
     );
 
-    try {
-      await waitUntilChangeSetCreateComplete(
-        { client: this.clients.cloudFormation, maxWaitTime: 120 },
-        { StackName: stackName, ChangeSetName: changeSetName },
-      );
-    } catch {
-      // Changeset creation fails when there are no changes — not an error.
-      return 'No changes\n';
-    }
+    await waitUntilChangeSetCreateComplete(
+      { client: this.clients.cloudFormation, maxWaitTime: 120 },
+      { StackName: stackName, ChangeSetName: changeSetName },
+    );
 
     const changeSet = await this.clients.cloudFormation.send(
       new DescribeChangeSetCommand({ StackName: stackName, ChangeSetName: changeSetName, IncludePropertyValues: true }),
     );
 
     this.logger.pop();
-    return formatChangeSetReport(changeSet);
+    const report = formatChangeSetReport(changeSet);
+    return report ?? 'Empty ChangeSet (expected)';
   }
 
   /**
@@ -367,11 +363,9 @@ export abstract class CategoryRefactorer implements Refactorer {
     const physicalIds = new Map(sourceResources.map((r) => [r.LogicalResourceId!, r.PhysicalResourceId ?? '']));
     const types = new Map(mappings.map((m) => [m.sourceId, m.resource.Type]));
 
-    const header = chalk.bgGray(
-      `Move ${resourceMappings.length} resource(s) from '${extractStackNameFromId(sourceStackName)}' to '${extractStackNameFromId(
-        targetStackName,
-      )}'`,
-    );
+    const header = `Move ${resourceMappings.length} resource(s) from '${extractStackNameFromId(
+      sourceStackName,
+    )}' to '${extractStackNameFromId(targetStackName)}'`;
     const table = formatMoveTable(resourceMappings, physicalIds, types);
 
     return [

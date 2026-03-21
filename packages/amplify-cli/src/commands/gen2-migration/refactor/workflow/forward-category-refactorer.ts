@@ -145,12 +145,9 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
     const physicalIds = new Map(gen2Resources.map((r) => [r.LogicalResourceId!, r.PhysicalResourceId ?? '']));
     const types = new Map([...targetResources].map(([id, res]) => [id, res.Type]));
 
-    const header = chalk.bgGray(
-      `Move ${holdingMappings.length} resource(s) from '${extractStackNameFromId(blueprint.target.stackId)}' to '${extractStackNameFromId(
-        holdingStackName,
-      )}'`,
-    );
-
+    const header = `Move ${holdingMappings.length} resource(s) from '${extractStackNameFromId(
+      blueprint.target.stackId,
+    )}' to '${extractStackNameFromId(holdingStackName)}'`;
     const table = formatMoveTable(holdingMappings, physicalIds, types);
 
     return [
