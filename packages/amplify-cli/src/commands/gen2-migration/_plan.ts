@@ -71,7 +71,7 @@ export class Plan {
       const lines = await op.describe();
       if (lines.length === 0) continue;
       if (op.resource) {
-        const label = `${op.resource.resourceName} (${op.resource.category}/${op.resource.service})`;
+        const label = `${op.resource.category}/${op.resource.resourceName} (${op.resource.service})`;
         if (!grouped.has(label)) grouped.set(label, []);
         grouped.get(label)!.push(...lines);
       } else {
@@ -84,10 +84,12 @@ export class Plan {
       printer.blankLine();
 
       for (const [label, descriptions] of grouped) {
-        printer.info(chalk.bold(label));
+        printer.info(chalk.bold(chalk.cyan(label)));
+        printer.blankLine();
         for (const description of descriptions) {
-          printer.info(`  • ${description}`);
+          printer.info(`• ${description}`);
         }
+        printer.blankLine();
       }
 
       for (const description of ungrouped) {
