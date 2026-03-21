@@ -79,10 +79,12 @@ export class Plan {
       printer.blankLine();
 
       for (const [label, descriptions] of grouped) {
-        printer.info(label);
+        printer.info(chalk.bold(label));
         printer.blankLine();
+        let step = 1;
         for (const description of descriptions) {
-          printer.info(chalk.gray(`• ${description}`));
+          printer.info(`${step}. ${description}`);
+          step++;
         }
         printer.blankLine();
       }

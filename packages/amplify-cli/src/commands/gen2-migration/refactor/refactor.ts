@@ -16,7 +16,7 @@ import { StorageDynamoForwardRefactorer } from './storage/storage-dynamo-forward
 import { StorageDynamoRollbackRefactorer } from './storage/storage-dynamo-rollback';
 import { AnalyticsKinesisForwardRefactorer } from './analytics/analytics-forward';
 import { AnalyticsKinesisRollbackRefactorer } from './analytics/analytics-rollback';
-import { Gen1App, DiscoveredResource } from '../generate/_infra/gen1-app';
+import { Gen1App } from '../generate/_infra/gen1-app';
 import { Assessment } from '../_assessment';
 import { AuthUserPoolGroupsForwardRefactorer } from './auth/auth-user-pool-groups-forward';
 import { AuthUserPoolGroupsRollbackRefactorer } from './auth/auth-user-pool-groups-rollback';
@@ -58,8 +58,6 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
     const discovered = gen1App.discover();
 
     const refactorers: Refactorer[] = [];
-
-    validateSingleResourcePerCategory(discovered);
 
     for (const resource of discovered) {
       switch (resource.key) {
@@ -125,8 +123,6 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
     const discovered = gen1App.discover();
 
     const refactorers: Refactorer[] = [];
-
-    validateSingleResourcePerCategory(discovered);
 
     for (const resource of discovered) {
       switch (resource.key) {
@@ -228,26 +224,5 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
     }
 
     return toStack;
-  }
-}
-
-/**
- * Throws if any refactorer category has more than one resource.
- * Refactorers assume a single resource per category — multiple
- * resources would produce incorrect mappings.
- */
-function validateSingleResourcePerCategory(discovered: readonly DiscoveredResource[]): void {
-  const refactorCategories = new Set(['auth', 'storage', 'analytics']);
-  const categoryCounts = new Map<string, number>();
-  for (const r of discovered) {
-    if (!refactorCategories.has(r.category)) continue;
-    categoryCounts.set(r.category, (categoryCounts.get(r.category) ?? 0) + 1);
-  }
-  for (const [category, count] of categoryCounts) {
-    if (count > 1) {
-      throw new AmplifyError('MigrationError', {
-        message: `Multiple resources in '${category}' category detected. The refactor step does not yet support multiple resources per category.`,
-      });
-    }
   }
 }

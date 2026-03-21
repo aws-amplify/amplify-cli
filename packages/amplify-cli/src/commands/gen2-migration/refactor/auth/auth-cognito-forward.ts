@@ -8,16 +8,21 @@ import { SpinningLogger } from '../../_spinning-logger';
 import { DiscoveredResource } from '../../generate/_infra/gen1-app';
 import { CFNResource } from '../../cfn-template';
 
-const GEN1_WEB_APP_CLIENT = 'UserPoolClientWeb';
 const HOSTED_PROVIDER_META_PARAMETER_NAME = 'hostedUIProviderMeta';
 const HOSTED_PROVIDER_CREDENTIALS_PARAMETER_NAME = 'hostedUIProviderCreds';
 const USER_POOL_ID_OUTPUT_KEY_NAME = 'UserPoolId';
 
-export const GEN2_NATIVE_APP_CLIENT = 'UserPoolNativeAppClient';
+export const GEN1_NATIVE_APP_CLIENT = 'UserPoolClient';
+export const GEN1_WEB_CLIENT = 'UserPoolClientWeb';
 
-export const AUTH_RESOURCE_TYPES = [
+export const GEN2_NATIVE_APP_CLIENT = 'UserPoolNativeAppClient';
+export const GEN2_WEB_CLIENT = 'UserPoolAppClient';
+
+export const USER_POOL_CLIENT_TYPE = 'AWS::Cognito::UserPoolClient';
+
+export const RESOURCE_TYPES = [
   'AWS::Cognito::UserPool',
-  'AWS::Cognito::UserPoolClient',
+  USER_POOL_CLIENT_TYPE,
   'AWS::Cognito::IdentityPool',
   'AWS::Cognito::IdentityPoolRoleAttachment',
   'AWS::Cognito::UserPoolDomain',
@@ -44,7 +49,7 @@ export class AuthCognitoForwardRefactorer extends ForwardCategoryRefactorer {
   }
 
   protected resourceTypes(): string[] {
-    return AUTH_RESOURCE_TYPES;
+    return RESOURCE_TYPES;
   }
 
   /**
@@ -85,10 +90,17 @@ export class AuthCognitoForwardRefactorer extends ForwardCategoryRefactorer {
       return false;
     }
     switch (sourceResource.Type) {
-      case 'AWS::Cognito::UserPoolClient': {
-        const isWebPair = sourceId === GEN1_WEB_APP_CLIENT && !targetId.includes(GEN2_NATIVE_APP_CLIENT);
-        const isNativePair = sourceId !== GEN1_WEB_APP_CLIENT && targetId.includes(GEN2_NATIVE_APP_CLIENT);
-        return isWebPair || isNativePair;
+      case USER_POOL_CLIENT_TYPE: {
+        switch (sourceId) {
+          case GEN1_WEB_CLIENT:
+            return targetId.includes(GEN2_WEB_CLIENT);
+          case GEN1_NATIVE_APP_CLIENT:
+            return targetId.includes(GEN2_NATIVE_APP_CLIENT);
+          default:
+            throw new AmplifyError('MigrationError', {
+              message: `Unexpected source logical id ${sourceId} for resource of type ${USER_POOL_CLIENT_TYPE}`,
+            });
+        }
       }
       default:
         return true;

@@ -10,6 +10,7 @@ import { extractStackNameFromId } from '../utils';
 import { getHoldingStackName, findHoldingStack, deleteHoldingStack } from '../holding-stack';
 import { tryRefactorStack, RefactorFailure } from '../cfn-stack-refactor-updater';
 import { CategoryRefactorer, MoveMapping, RefactorBlueprint, ResolvedStack, ResourceMapping } from './category-refactorer';
+import { formatMoveTable } from '../move-table';
 
 /**
  * Forward direction base: moves resources from Gen1 (source) to Gen2 (target).
@@ -32,12 +33,12 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
       }
       if (matchedTargets.length === 0) {
         throw new AmplifyError('InvalidStackError', {
-          message: `Source resource '${sourceId}' (type '${sourceResource.Type}') has no corresponding target resource`,
+          message: `Source resource '${sourceId}' (${sourceResource.Type}) has no corresponding target resource`,
         });
       }
       if (matchedTargets.length > 1) {
         throw new AmplifyError('InvalidStackError', {
-          message: `Source resource '${sourceId}' (type '${sourceResource.Type}') has multiple corresponding target resources`,
+          message: `Source resource '${sourceId}' (${sourceResource.Type}) has multiple corresponding target resources`,
         });
       }
       const targetId = matchedTargets[0];
@@ -111,7 +112,7 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
   /**
    * Moves Gen2 resources to a holding stack before the main refactor.
    */
-  protected beforeMovePlan(blueprint: RefactorBlueprint): AmplifyMigrationOperation[] {
+  protected async beforeMovePlan(blueprint: RefactorBlueprint): Promise<AmplifyMigrationOperation[]> {
     const targetResources = this.filterResourcesByType(blueprint.target.resolvedTemplate);
     if (targetResources.size === 0) {
       return [];
@@ -139,11 +140,21 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
       Destination: { StackName: extractStackNameFromId(holdingStackName), LogicalResourceId: id },
     }));
 
+    const gen2Resources = await this.gen2Branch.fetchStackResources(blueprint.target.stackId);
+    const physicalIds = new Map(gen2Resources.map((r) => [r.LogicalResourceId!, r.PhysicalResourceId ?? '']));
+    const types = new Map([...targetResources].map(([id, res]) => [id, res.Type]));
+
+    const header = `Move ${holdingMappings.length} resource(s) from '${extractStackNameFromId(
+      blueprint.target.stackId,
+    )}' to '${extractStackNameFromId(holdingStackName)}'`;
+
+    const table = formatMoveTable(holdingMappings, physicalIds, types);
+
     return [
       {
         resource: this.resource,
         validate: () => undefined,
-        describe: async () => [`Move Gen2 resources to holding stack '${holdingStackName}'`],
+        describe: async () => [`${header}\n\n${table}`],
         execute: async () => {
           const existing = await findHoldingStack(this.clients.cloudFormation, holdingStackName);
           if (existing?.StackStatus === 'REVIEW_IN_PROGRESS') {

@@ -1,4 +1,9 @@
-import { Parameter } from '@aws-sdk/client-cloudformation';
+import {
+  Parameter,
+  CreateChangeSetCommand,
+  DescribeChangeSetCommand,
+  waitUntilChangeSetCreateComplete,
+} from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { CFNResource, CFNStackStatus, CFNTemplate } from '../../cfn-template';
 import { Refactorer } from '../refactorer';
@@ -10,6 +15,9 @@ import { tryRefactorStack, RefactorFailure } from '../cfn-stack-refactor-updater
 import { SpinningLogger } from '../../_spinning-logger';
 import { extractStackNameFromId } from '../utils';
 import { DiscoveredResource } from '../../generate/_infra/gen1-app';
+import { formatTemplateDiff } from '../template-diff';
+import { formatChangeSetReport } from '../changeset-report';
+import { formatMoveTable } from '../move-table';
 
 export const MIGRATION_PLACEHOLDER_LOGICAL_ID = 'MigrationPlaceholder';
 export const PLACEHOLDER_RESOURCE: CFNResource = { Type: 'AWS::CloudFormation::WaitConditionHandle', Properties: {} };
@@ -89,6 +97,7 @@ export abstract class CategoryRefactorer implements Refactorer {
    * All AWS reads happen here. Operations only execute mutations.
    */
   public async plan(): Promise<AmplifyMigrationOperation[]> {
+    this.logger.push(`${this.resource.category}/${this.resource.resourceName} (${this.resource.service})`);
     const sourceStackId = await this.fetchSourceStackId();
     const destStackId = await this.fetchDestStackId();
 
@@ -111,11 +120,19 @@ export abstract class CategoryRefactorer implements Refactorer {
       return []; // Nothing to move — skip this category
     }
 
-    const beforeMoveOps = this.beforeMovePlan(blueprint);
-    const moveOps = this.buildMoveOperations(blueprint);
+    const beforeMoveOps = await this.beforeMovePlan(blueprint);
+    const moveOps = await this.buildMoveOperations(blueprint);
     const afterMoveOps = await this.afterMovePlan(blueprint);
 
-    return [...this.updateSource(blueprint.source), ...this.updateTarget(blueprint.target), ...beforeMoveOps, ...moveOps, ...afterMoveOps];
+    const operations = [
+      ...(await this.updateSource(blueprint.source)),
+      ...(await this.updateTarget(blueprint.target)),
+      ...beforeMoveOps,
+      ...moveOps,
+      ...afterMoveOps,
+    ];
+    this.logger.pop();
+    return operations;
   }
 
   // -- Category-specific (abstract) --
@@ -143,7 +160,7 @@ export abstract class CategoryRefactorer implements Refactorer {
    * Forward: moves Gen2 resources to holding stack.
    * Rollback: no-op.
    */
-  protected abstract beforeMovePlan(blueprint: RefactorBlueprint): AmplifyMigrationOperation[];
+  protected abstract beforeMovePlan(blueprint: RefactorBlueprint): Promise<AmplifyMigrationOperation[]> | AmplifyMigrationOperation[];
 
   /**
    * Post-move operations.
@@ -158,8 +175,12 @@ export abstract class CategoryRefactorer implements Refactorer {
    * Creates operations to update the source stack with the resolved template.
    * Rollback overrides this to return [].
    */
-  protected updateSource(source: ResolvedStack): AmplifyMigrationOperation[] {
+  protected async updateSource(source: ResolvedStack): Promise<AmplifyMigrationOperation[]> {
     const sourceStackName = extractStackNameFromId(source.stackId);
+    // const deployed = await this.gen1Env.fetchTemplate(source.stackId);
+    // const diff = formatTemplateDiff(deployed, source.resolvedTemplate);
+    const report = await this.createChangeSetReport(source);
+    const description = [report].filter(Boolean).join('\n\n');
     return [
       {
         resource: this.resource,
@@ -169,7 +190,10 @@ export abstract class CategoryRefactorer implements Refactorer {
             return { valid: true };
           },
         }),
-        describe: async () => [`Update source stack '${sourceStackName}' with resolved references`],
+        describe: async () =>
+          description
+            ? [`Update source stack '${sourceStackName}' with resolved references\n${description}`]
+            : [`Update source stack '${sourceStackName}' with resolved references`],
         execute: async () => {
           const status = await tryUpdateStack({
             cfnClient: this.clients.cloudFormation,
@@ -191,8 +215,12 @@ export abstract class CategoryRefactorer implements Refactorer {
    * Creates operations to update the target stack with the resolved template.
    * Rollback overrides this to return [].
    */
-  protected updateTarget(target: ResolvedStack): AmplifyMigrationOperation[] {
+  protected async updateTarget(target: ResolvedStack): Promise<AmplifyMigrationOperation[]> {
     const targetStackName = extractStackNameFromId(target.stackId);
+    // const deployed = await this.gen2Branch.fetchTemplate(target.stackId);
+    // const diff = formatTemplateDiff(deployed, target.resolvedTemplate);
+    const report = await this.createChangeSetReport(target);
+    const description = [report].filter(Boolean).join('\n\n');
     return [
       {
         resource: this.resource,
@@ -202,7 +230,10 @@ export abstract class CategoryRefactorer implements Refactorer {
             return { valid: true };
           },
         }),
-        describe: async () => [`Update target stack '${targetStackName}' with resolved references`],
+        describe: async () =>
+          description
+            ? [`Update target stack '${targetStackName}' with resolved references\n${description}`]
+            : [`Update target stack '${targetStackName}' with resolved references`],
         execute: async () => {
           const status = await tryUpdateStack({
             cfnClient: this.clients.cloudFormation,
@@ -218,6 +249,42 @@ export abstract class CategoryRefactorer implements Refactorer {
         },
       },
     ];
+  }
+
+  /**
+   * Creates a changeset for the given stack and returns a formatted report.
+   */
+  private async createChangeSetReport(stack: ResolvedStack): Promise<string> {
+    const changeSetName = `migration-preview-${Date.now()}`;
+    const stackName = stack.stackId;
+
+    this.logger.push(extractStackNameFromId(stackName));
+    await this.clients.cloudFormation.send(
+      new CreateChangeSetCommand({
+        StackName: stackName,
+        ChangeSetName: changeSetName,
+        TemplateBody: JSON.stringify(stack.resolvedTemplate),
+        Parameters: stack.parameters,
+        Capabilities: ['CAPABILITY_NAMED_IAM'],
+      }),
+    );
+
+    try {
+      await waitUntilChangeSetCreateComplete(
+        { client: this.clients.cloudFormation, maxWaitTime: 120 },
+        { StackName: stackName, ChangeSetName: changeSetName },
+      );
+    } catch {
+      // Changeset creation fails when there are no changes — not an error.
+      return '';
+    }
+
+    const changeSet = await this.clients.cloudFormation.send(
+      new DescribeChangeSetCommand({ StackName: stackName, ChangeSetName: changeSetName, IncludePropertyValues: true }),
+    );
+
+    this.logger.pop();
+    return formatChangeSetReport(changeSet);
   }
 
   /**
@@ -292,22 +359,29 @@ export abstract class CategoryRefactorer implements Refactorer {
   /**
    * Creates the move operation that executes the CloudFormation stack refactor.
    */
-  protected buildMoveOperations(blueprint: RefactorBlueprint): AmplifyMigrationOperation[] {
+  protected async buildMoveOperations(blueprint: RefactorBlueprint): Promise<AmplifyMigrationOperation[]> {
     const { source, target, mappings } = blueprint;
+    const sourceStackName = extractStackNameFromId(source.stackId);
+    const targetStackName = extractStackNameFromId(target.stackId);
     const resourceMappings: ResourceMapping[] = mappings.map(({ sourceId, targetId }) => ({
-      Source: { StackName: extractStackNameFromId(source.stackId), LogicalResourceId: sourceId },
-      Destination: { StackName: extractStackNameFromId(target.stackId), LogicalResourceId: targetId },
+      Source: { StackName: sourceStackName, LogicalResourceId: sourceId },
+      Destination: { StackName: targetStackName, LogicalResourceId: targetId },
     }));
+
+    const sourceResources = await this.gen1Env.fetchStackResources(source.stackId);
+    const physicalIds = new Map(sourceResources.map((r) => [r.LogicalResourceId!, r.PhysicalResourceId ?? '']));
+    const types = new Map(mappings.map((m) => [m.sourceId, m.resource.Type]));
+
+    const header = `Move ${resourceMappings.length} resource(s) from '${extractStackNameFromId(
+      sourceStackName,
+    )}' to '${extractStackNameFromId(targetStackName)}'`;
+    const table = formatMoveTable(resourceMappings, physicalIds, types);
 
     return [
       {
         resource: this.resource,
         validate: () => undefined,
-        describe: async () => [
-          `Move ${resourceMappings.length} resource(s) from '${extractStackNameFromId(source.stackId)}' to '${extractStackNameFromId(
-            target.stackId,
-          )}'`,
-        ],
+        describe: async () => [`${header}\n\n${table}`],
         execute: async () => {
           const result = await tryRefactorStack(this.clients.cloudFormation, {
             StackDefinitions: [

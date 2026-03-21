@@ -3,6 +3,8 @@ import { ForwardCategoryRefactorer } from '../workflow/forward-category-refactor
 
 export const USER_POOL_GROUP_TYPE = 'AWS::Cognito::UserPoolGroup';
 
+export const RESOURCE_TYPES = [USER_POOL_GROUP_TYPE];
+
 /**
  * Forward refactorer for the auth:UserPoolGroups resource.
  *
@@ -10,7 +12,7 @@ export const USER_POOL_GROUP_TYPE = 'AWS::Cognito::UserPoolGroup';
  */
 export class AuthUserPoolGroupsForwardRefactorer extends ForwardCategoryRefactorer {
   protected resourceTypes(): string[] {
-    return [USER_POOL_GROUP_TYPE];
+    return RESOURCE_TYPES;
   }
 
   protected async fetchSourceStackId(): Promise<string | undefined> {

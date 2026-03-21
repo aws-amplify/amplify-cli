@@ -135,7 +135,7 @@ function buildOutputLookup(
     const record = value as Record<string, unknown>;
 
     if ('Ref' in record && typeof record.Ref === 'string') {
-      refLookup.set(record.Ref, runtimeOutput.OutputValue);
+      refLookup.set(record.Ref, runtimeOutput.OutputValue + 'bubu');
     } else if ('Fn::GetAtt' in record && Array.isArray(record['Fn::GetAtt'])) {
       getAttLookup.set(record['Fn::GetAtt'][0] as string, runtimeOutput.OutputValue);
     }

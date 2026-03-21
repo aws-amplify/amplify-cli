@@ -1,6 +1,6 @@
 import { CFNResource } from '../../cfn-template';
 import { RollbackCategoryRefactorer } from '../workflow/rollback-category-refactorer';
-import { USER_POOL_GROUP_TYPE } from './auth-user-pool-groups-forward';
+import { RESOURCE_TYPES, USER_POOL_GROUP_TYPE } from './auth-user-pool-groups-forward';
 
 /**
  * Rollback refactorer for the auth:UserPoolGroups resource.
@@ -9,7 +9,7 @@ import { USER_POOL_GROUP_TYPE } from './auth-user-pool-groups-forward';
  */
 export class AuthUserPoolGroupsRollbackRefactorer extends RollbackCategoryRefactorer {
   protected resourceTypes(): string[] {
-    return [USER_POOL_GROUP_TYPE];
+    return RESOURCE_TYPES;
   }
 
   protected async fetchSourceStackId(): Promise<string | undefined> {
@@ -22,7 +22,7 @@ export class AuthUserPoolGroupsRollbackRefactorer extends RollbackCategoryRefact
 
   protected targetLogicalId(sourceId: string, sourceResource: CFNResource): string | undefined {
     switch (sourceResource.Type) {
-      case 'AWS::Cognito::UserPoolGroup':
+      case USER_POOL_GROUP_TYPE:
         return `${sourceResource.Properties['GroupName']}Group`;
       default:
         return undefined;

@@ -18,6 +18,7 @@ import {
   ResolvedStack,
   ResourceMapping,
 } from './category-refactorer';
+import { formatMoveTable } from '../move-table';
 
 /**
  * Rollback direction base: moves resources from Gen2 (source) back to Gen1 (target).
@@ -85,11 +86,11 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
     return { stackId, resolvedTemplate: originalTemplate, parameters };
   }
 
-  protected override updateSource(): AmplifyMigrationOperation[] {
+  protected override async updateSource(): Promise<AmplifyMigrationOperation[]> {
     return [];
   }
 
-  protected override updateTarget(): AmplifyMigrationOperation[] {
+  protected override async updateTarget(): Promise<AmplifyMigrationOperation[]> {
     return [];
   }
 
@@ -147,6 +148,9 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
       Destination: { StackName: extractStackNameFromId(gen2StackId), LogicalResourceId: logicalId },
     }));
 
+    const restoreTypes = new Map(resourcesToRestore.map(([id, res]) => [id, (res as { Type: string }).Type]));
+    const restoreTable = formatMoveTable(restoreMappings, new Map(), restoreTypes);
+
     return [
       {
         resource: this.resource,
@@ -164,7 +168,7 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
       {
         resource: this.resource,
         validate: () => undefined,
-        describe: async () => [`Restore ${resourcesToRestore.length} resource(s) from holding stack to Gen2`],
+        describe: async () => [`Restore ${resourcesToRestore.length} resource(s) from holding stack to Gen2\n\n${restoreTable}`],
         execute: async () => {
           const result = await tryRefactorStack(this.clients.cloudFormation, {
             StackDefinitions: [

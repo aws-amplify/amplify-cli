@@ -13,6 +13,8 @@ import {
   DescribeStacksCommand,
   DescribeStackResourcesCommand,
   ResourceStatus,
+  CreateChangeSetCommand,
+  DescribeChangeSetCommand,
 } from '@aws-sdk/client-cloudformation';
 
 const ts = new Date();
@@ -70,6 +72,8 @@ describe('CategoryRefactorer.plan() orchestration — via StorageS3ForwardRefact
   let cfnMock: ReturnType<typeof mockClient>;
   beforeEach(() => {
     cfnMock = mockClient(CloudFormationClient);
+    cfnMock.on(CreateChangeSetCommand).resolves({});
+    cfnMock.on(DescribeChangeSetCommand).resolves({ Status: 'CREATE_COMPLETE', Changes: [] });
   });
   afterEach(() => cfnMock.restore());
 
@@ -166,6 +170,8 @@ describe('StorageS3RollbackRefactorer.plan() — rollback without holding stack'
   let cfnMock: ReturnType<typeof mockClient>;
   beforeEach(() => {
     cfnMock = mockClient(CloudFormationClient);
+    cfnMock.on(CreateChangeSetCommand).resolves({});
+    cfnMock.on(DescribeChangeSetCommand).resolves({ Status: 'CREATE_COMPLETE', Changes: [] });
   });
   afterEach(() => cfnMock.restore());
 
@@ -216,6 +222,8 @@ describe('Analytics wiring tests', () => {
   let cfnMock: ReturnType<typeof mockClient>;
   beforeEach(() => {
     cfnMock = mockClient(CloudFormationClient);
+    cfnMock.on(CreateChangeSetCommand).resolves({});
+    cfnMock.on(DescribeChangeSetCommand).resolves({ Status: 'CREATE_COMPLETE', Changes: [] });
   });
   afterEach(() => cfnMock.restore());
 
