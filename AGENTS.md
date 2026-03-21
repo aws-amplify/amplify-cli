@@ -51,8 +51,11 @@ Verify your changes by following these guidelines:
   To avoid issues with multi-line commit messages, write the message to `.commit-message.ai-generated.txt` and use `-F`:
 
   ```bash
-  git commit --author="John Doe (AI) <john@bigco.com>" -F .commit-message.ai-generated.txt
+  NODE_OPTIONS="--max-old-space-size=8192" git commit --author="John Doe (AI) <john@bigco.com>" -F .commit-message.ai-generated.txt
   ```
+
+  Always set `NODE_OPTIONS="--max-old-space-size=8192"` when committing to prevent OOM failures in the lint-staged hook.
+  After a successful commit, delete the scratch file: `rm -f .commit-message.ai-generated.txt`.
 
 - Since this repo has a commit hook that takes quite a long time to run, don't immediately commit every
   change you were asked to do. Apply your judgment, if the diff is still fairly small just keep going.
