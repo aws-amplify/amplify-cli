@@ -42,7 +42,12 @@ describe('RestApiGenerator', () => {
     (gen1App.meta as jest.Mock).mockImplementation((cat: string) => (cat === 'api' ? API_META : undefined));
     (gen1App.cliInputs as jest.Mock).mockReturnValue(CLI_INPUTS);
 
-    const generator = new RestApiGenerator(gen1App, backendGenerator, 'myApi');
+    const generator = new RestApiGenerator(gen1App, backendGenerator, {
+      category: 'api',
+      resourceName: 'myApi',
+      service: 'API Gateway',
+      key: 'api:API Gateway',
+    });
     const ops = await generator.plan();
 
     expect(ops).toHaveLength(1);
@@ -59,7 +64,12 @@ describe('RestApiGenerator', () => {
     const addStatementSpy = jest.spyOn(backendGenerator, 'addStatement');
     const ensureBranchNameSpy = jest.spyOn(backendGenerator, 'ensureBranchName');
 
-    const generator = new RestApiGenerator(gen1App, backendGenerator, 'myApi');
+    const generator = new RestApiGenerator(gen1App, backendGenerator, {
+      category: 'api',
+      resourceName: 'myApi',
+      service: 'API Gateway',
+      key: 'api:API Gateway',
+    });
     const ops = await generator.plan();
     await ops[0].execute();
 

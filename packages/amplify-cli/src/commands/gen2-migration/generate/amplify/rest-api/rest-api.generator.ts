@@ -2,7 +2,7 @@ import ts from 'typescript';
 import { Planner } from '../../../planner';
 import { AmplifyMigrationOperation } from '../../../_operation';
 import { BackendGenerator } from '../backend.generator';
-import { Gen1App } from '../../_infra/gen1-app';
+import { Gen1App, DiscoveredResource } from '../../_infra/gen1-app';
 import { CorsConfiguration, RestApiDefinition, RestApiPath, RestApiRenderer } from './rest-api.renderer';
 
 const factory = ts.factory;
@@ -19,19 +19,19 @@ const factory = ts.factory;
 export class RestApiGenerator implements Planner {
   private readonly gen1App: Gen1App;
   private readonly backendGenerator: BackendGenerator;
-  private readonly resourceName: string;
+  private readonly resource: DiscoveredResource;
 
-  public constructor(gen1App: Gen1App, backendGenerator: BackendGenerator, resourceName: string) {
+  public constructor(gen1App: Gen1App, backendGenerator: BackendGenerator, resource: DiscoveredResource) {
     this.gen1App = gen1App;
     this.backendGenerator = backendGenerator;
-    this.resourceName = resourceName;
+    this.resource = resource;
   }
 
   /**
    * Plans the REST API generation operation.
    */
   public async plan(): Promise<AmplifyMigrationOperation[]> {
-    const restApi = await RestApiGenerator.readRestApiConfig(this.gen1App, this.resourceName);
+    const restApi = await RestApiGenerator.readRestApiConfig(this.gen1App, this.resource.resourceName);
     const functionCategory = this.gen1App.meta('function');
     const functionNames = new Set<string>(Object.keys((functionCategory as object) ?? {}));
     const hasAuth = this.gen1App.meta('auth') !== undefined;
@@ -39,6 +39,7 @@ export class RestApiGenerator implements Planner {
 
     return [
       {
+        resource: this.resource,
         validate: () => undefined,
         describe: async () => [`Generate REST API ${restApi.apiName} in amplify/backend.ts`],
         execute: async () => {

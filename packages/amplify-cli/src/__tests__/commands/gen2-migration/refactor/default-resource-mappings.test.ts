@@ -23,7 +23,12 @@ class TestRollbackRefactorer extends RollbackCategoryRefactorer {
   protected override readonly gen1LogicalIds: ReadonlyMap<string, string>;
 
   constructor(ids: ReadonlyMap<string, string>) {
-    super(null as any, null as any, null as any, 'us-east-1', '123', noOpLogger());
+    super(null as any, null as any, null as any, 'us-east-1', '123', noOpLogger(), {
+      category: 'storage',
+      resourceName: 'test',
+      service: 'S3',
+      key: 'storage:S3' as const,
+    });
     this.gen1LogicalIds = ids;
   }
   protected async fetchSourceStackId() {
@@ -48,7 +53,12 @@ function toIdMap(mappings: MoveMapping[]): Map<string, string> {
 }
 
 describe('ForwardCategoryRefactorer.buildResourceMappings (default type-matching)', () => {
-  const refactorer = new TestForwardRefactorer(null as any, null as any, null as any, 'us-east-1', '123', noOpLogger());
+  const refactorer = new TestForwardRefactorer(null as any, null as any, null as any, 'us-east-1', '123', noOpLogger(), {
+    category: 'storage',
+    resourceName: 'test',
+    service: 'S3',
+    key: 'storage:S3' as const,
+  });
 
   it('maps single resource per type', () => {
     const mappings = refactorer.testBuildResourceMappings(

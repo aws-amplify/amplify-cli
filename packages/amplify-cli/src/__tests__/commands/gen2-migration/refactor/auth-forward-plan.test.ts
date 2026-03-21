@@ -106,6 +106,7 @@ describe('AuthCognitoForwardRefactorer.plan() — operation sequence', () => {
       noOpLogger(),
       'appId',
       'main',
+      { category: 'auth', resourceName: 'test', service: 'Cognito', key: 'auth:Cognito' as const },
     );
 
     const ops = await refactorer.plan();
@@ -194,6 +195,7 @@ describe('AuthCognitoForwardRefactorer.plan() — operation sequence', () => {
       noOpLogger(),
       'appId',
       'main',
+      { category: 'auth', resourceName: 'test', service: 'Cognito', key: 'auth:Cognito' as const },
     );
 
     const ops = await refactorer.plan();
@@ -249,6 +251,7 @@ describe('AuthCognitoForwardRefactorer.plan() — operation sequence', () => {
       noOpLogger(),
       'appId',
       'main',
+      { category: 'auth', resourceName: 'test', service: 'Cognito', key: 'auth:Cognito' as const },
     );
 
     await expect(refactorer.plan()).rejects.toThrow('unable to find target stack');

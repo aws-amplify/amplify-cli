@@ -98,6 +98,7 @@ describe('AuthCognitoRollbackRefactorer.plan()', () => {
       'us-east-1',
       '123',
       noOpLogger(),
+      { category: 'auth', resourceName: 'test', service: 'Cognito', key: 'auth:Cognito' as const },
     );
 
     const ops = await refactorer.plan();

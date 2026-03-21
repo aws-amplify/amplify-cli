@@ -59,7 +59,12 @@ describe('DataGenerator', () => {
       throw new Error("Category 'api' not found");
     });
 
-    const generator = new DataGenerator(gen1App, backendGenerator, outputDir);
+    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, {
+      category: 'api',
+      resourceName: 'testApi',
+      service: 'AppSync',
+      key: 'api:AppSync',
+    });
 
     await expect(generator.plan()).rejects.toThrow("Category 'api' not found");
   });
@@ -70,7 +75,12 @@ describe('DataGenerator', () => {
       throw new Error("Expected exactly one 'AppSync' resource");
     });
 
-    const generator = new DataGenerator(gen1App, backendGenerator, outputDir);
+    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, {
+      category: 'api',
+      resourceName: 'testApi',
+      service: 'AppSync',
+      key: 'api:AppSync',
+    });
 
     await expect(generator.plan()).rejects.toThrow("Expected exactly one 'AppSync' resource");
   });
@@ -82,7 +92,12 @@ describe('DataGenerator', () => {
       throw new Error('no GraphQLAPIIdOutput');
     });
 
-    const generator = new DataGenerator(gen1App, backendGenerator, outputDir);
+    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, {
+      category: 'api',
+      resourceName: 'testApi',
+      service: 'AppSync',
+      key: 'api:AppSync',
+    });
 
     await expect(generator.plan()).rejects.toThrow('no GraphQLAPIIdOutput');
   });
@@ -93,14 +108,24 @@ describe('DataGenerator', () => {
     (gen1App.metaOutput as jest.Mock).mockReturnValue('api-123');
     (gen1App.aws.fetchGraphqlApi as jest.Mock).mockResolvedValue(undefined);
 
-    const generator = new DataGenerator(gen1App, backendGenerator, outputDir);
+    const generator = new DataGenerator(gen1App, backendGenerator, outputDir, {
+      category: 'api',
+      resourceName: 'testApi',
+      service: 'AppSync',
+      key: 'api:AppSync',
+    });
 
     await expect(generator.plan()).rejects.toThrow("AppSync API 'api-123' not found");
   });
 
   it('constructs DataRenderer with envName', () => {
     const gen1App = createMockGen1App();
-    new DataGenerator(gen1App, backendGenerator, outputDir);
+    new DataGenerator(gen1App, backendGenerator, outputDir, {
+      category: 'api',
+      resourceName: 'testApi',
+      service: 'AppSync',
+      key: 'api:AppSync',
+    });
 
     expect(DataRenderer).toHaveBeenCalledWith('main');
   });
@@ -127,7 +152,12 @@ describe('DataGenerator', () => {
     });
 
     it('returns one operation describing data/resource.ts', async () => {
-      const generator = new DataGenerator(gen1App, backendGenerator, outputDir);
+      const generator = new DataGenerator(gen1App, backendGenerator, outputDir, {
+        category: 'api',
+        resourceName: 'testApi',
+        service: 'AppSync',
+        key: 'api:AppSync',
+      });
       const ops = await generator.plan();
 
       expect(ops).toHaveLength(1);
@@ -136,7 +166,12 @@ describe('DataGenerator', () => {
     });
 
     it('calls renderer.render with schema, tableMappings, authorizationModes, and logging', async () => {
-      const generator = new DataGenerator(gen1App, backendGenerator, outputDir);
+      const generator = new DataGenerator(gen1App, backendGenerator, outputDir, {
+        category: 'api',
+        resourceName: 'testApi',
+        service: 'AppSync',
+        key: 'api:AppSync',
+      });
       const ops = await generator.plan();
       await ops[0].execute();
 
@@ -157,7 +192,12 @@ describe('DataGenerator', () => {
         logConfig: { fieldLogLevel: 'ERROR', excludeVerboseContent: true },
       });
 
-      const generator = new DataGenerator(gen1App, backendGenerator, outputDir);
+      const generator = new DataGenerator(gen1App, backendGenerator, outputDir, {
+        category: 'api',
+        resourceName: 'testApi',
+        service: 'AppSync',
+        key: 'api:AppSync',
+      });
       const ops = await generator.plan();
       await ops[0].execute();
 
@@ -173,7 +213,12 @@ describe('DataGenerator', () => {
         logConfig: { fieldLogLevel: 'NONE' },
       });
 
-      const generator = new DataGenerator(gen1App, backendGenerator, outputDir);
+      const generator = new DataGenerator(gen1App, backendGenerator, outputDir, {
+        category: 'api',
+        resourceName: 'testApi',
+        service: 'AppSync',
+        key: 'api:AppSync',
+      });
       const ops = await generator.plan();
       await ops[0].execute();
 
@@ -182,7 +227,12 @@ describe('DataGenerator', () => {
     });
 
     it('writes renderer output to amplify/data/resource.ts via printNodes', async () => {
-      const generator = new DataGenerator(gen1App, backendGenerator, outputDir);
+      const generator = new DataGenerator(gen1App, backendGenerator, outputDir, {
+        category: 'api',
+        resourceName: 'testApi',
+        service: 'AppSync',
+        key: 'api:AppSync',
+      });
       const ops = await generator.plan();
       await ops[0].execute();
 
@@ -195,7 +245,12 @@ describe('DataGenerator', () => {
       const addImportSpy = jest.spyOn(backendGenerator, 'addImport');
       const addPropertySpy = jest.spyOn(backendGenerator, 'addDefineBackendProperty');
 
-      const generator = new DataGenerator(gen1App, backendGenerator, outputDir);
+      const generator = new DataGenerator(gen1App, backendGenerator, outputDir, {
+        category: 'api',
+        resourceName: 'testApi',
+        service: 'AppSync',
+        key: 'api:AppSync',
+      });
       const ops = await generator.plan();
       await ops[0].execute();
 
@@ -216,7 +271,12 @@ describe('DataGenerator', () => {
 
       const addStatementSpy = jest.spyOn(backendGenerator, 'addStatement');
 
-      const generator = new DataGenerator(gen1App, backendGenerator, outputDir);
+      const generator = new DataGenerator(gen1App, backendGenerator, outputDir, {
+        category: 'api',
+        resourceName: 'testApi',
+        service: 'AppSync',
+        key: 'api:AppSync',
+      });
       const ops = await generator.plan();
       await ops[0].execute();
 
@@ -233,7 +293,12 @@ describe('DataGenerator', () => {
 
       const addStatementSpy = jest.spyOn(backendGenerator, 'addStatement');
 
-      const generator = new DataGenerator(gen1App, backendGenerator, outputDir);
+      const generator = new DataGenerator(gen1App, backendGenerator, outputDir, {
+        category: 'api',
+        resourceName: 'testApi',
+        service: 'AppSync',
+        key: 'api:AppSync',
+      });
       const ops = await generator.plan();
       await ops[0].execute();
 
@@ -248,7 +313,12 @@ describe('DataGenerator', () => {
 
       const addStatementSpy = jest.spyOn(backendGenerator, 'addStatement');
 
-      const generator = new DataGenerator(gen1App, backendGenerator, outputDir);
+      const generator = new DataGenerator(gen1App, backendGenerator, outputDir, {
+        category: 'api',
+        resourceName: 'testApi',
+        service: 'AppSync',
+        key: 'api:AppSync',
+      });
       const ops = await generator.plan();
       await ops[0].execute();
 

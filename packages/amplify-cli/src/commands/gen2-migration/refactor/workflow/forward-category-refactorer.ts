@@ -141,6 +141,7 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
 
     return [
       {
+        resource: this.resource,
         validate: () => undefined,
         describe: async () => [`Move Gen2 resources to holding stack '${holdingStackName}'`],
         execute: async () => {

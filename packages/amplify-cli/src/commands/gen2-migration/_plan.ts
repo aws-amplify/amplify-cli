@@ -60,17 +60,37 @@ export class Plan {
 
   /**
    * Renders the operations summary and implications to the terminal.
+   * Operations with a resource are grouped under a resource header;
+   * ungrouped operations render as a flat list.
    */
   public async describe(): Promise<void> {
-    const descriptions: string[] = [];
+    const grouped = new Map<string, string[]>();
+    const ungrouped: string[] = [];
+
     for (const op of this.operations) {
-      descriptions.push(...(await op.describe()));
+      const lines = await op.describe();
+      if (lines.length === 0) continue;
+      if (op.resource) {
+        const label = `${op.resource.resourceName} (${op.resource.category}/${op.resource.service})`;
+        if (!grouped.has(label)) grouped.set(label, []);
+        grouped.get(label)!.push(...lines);
+      } else {
+        ungrouped.push(...lines);
+      }
     }
 
-    if (descriptions.length > 0) {
+    if (grouped.size > 0 || ungrouped.length > 0) {
       printer.info(chalk.bold(chalk.underline('Operations Summary')));
       printer.blankLine();
-      for (const description of descriptions) {
+
+      for (const [label, descriptions] of grouped) {
+        printer.info(chalk.bold(label));
+        for (const description of descriptions) {
+          printer.info(`  • ${description}`);
+        }
+      }
+
+      for (const description of ungrouped) {
         printer.info(`• ${description}`);
       }
       printer.blankLine();

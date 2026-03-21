@@ -90,6 +90,7 @@ describe('ForwardCategoryRefactorer.beforeMovePlan', () => {
       'us-east-1',
       '123',
       noOpLogger(),
+      { category: 'storage', resourceName: 'test', service: 'S3', key: 'storage:S3' as const },
     );
     const blueprint = makeBlueprint({
       targetResolved: { Lambda: { Type: 'AWS::Lambda::Function', Properties: {} } },
@@ -117,6 +118,7 @@ describe('ForwardCategoryRefactorer.beforeMovePlan', () => {
       'us-east-1',
       '123',
       noOpLogger(),
+      { category: 'storage', resourceName: 'test', service: 'S3', key: 'storage:S3' as const },
     );
 
     const blueprint = makeBlueprint({
@@ -157,6 +159,7 @@ describe('ForwardCategoryRefactorer.beforeMovePlan', () => {
       'us-east-1',
       '123',
       noOpLogger(),
+      { category: 'storage', resourceName: 'test', service: 'S3', key: 'storage:S3' as const },
     );
 
     const blueprint = makeBlueprint({

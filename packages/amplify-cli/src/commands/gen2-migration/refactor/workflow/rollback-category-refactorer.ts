@@ -149,6 +149,7 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
 
     return [
       {
+        resource: this.resource,
         validate: () => undefined,
         describe: async () => [`Update ${holdingStackName} to include placeholder resource`],
         execute: async () => {
@@ -161,6 +162,7 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
         },
       },
       {
+        resource: this.resource,
         validate: () => undefined,
         describe: async () => [`Restore ${resourcesToRestore.length} resource(s) from holding stack to Gen2`],
         execute: async () => {
@@ -185,6 +187,7 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
 
   private buildDeleteHoldingStackOp(holdingStackName: string): AmplifyMigrationOperation {
     return {
+      resource: this.resource,
       validate: () => undefined,
       describe: async () => [`Delete holding stack '${holdingStackName}'`],
       execute: async () => {

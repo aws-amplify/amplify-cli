@@ -162,6 +162,7 @@ export abstract class CategoryRefactorer implements Refactorer {
     const sourceStackName = extractStackNameFromId(source.stackId);
     return [
       {
+        resource: this.resource,
         validate: () => ({
           description: `Ensure no destructive changes to ${sourceStackName}`,
           run: async () => {
@@ -194,6 +195,7 @@ export abstract class CategoryRefactorer implements Refactorer {
     const targetStackName = extractStackNameFromId(target.stackId);
     return [
       {
+        resource: this.resource,
         validate: () => ({
           description: `Ensure no destructive changes to ${targetStackName}`,
           run: async () => {
@@ -299,6 +301,7 @@ export abstract class CategoryRefactorer implements Refactorer {
 
     return [
       {
+        resource: this.resource,
         validate: () => undefined,
         describe: async () => [
           `Move ${resourceMappings.length} resource(s) from '${extractStackNameFromId(source.stackId)}' to '${extractStackNameFromId(

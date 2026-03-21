@@ -106,7 +106,12 @@ describe('RollbackCategoryRefactorer.afterMovePlan', () => {
     (clients as any).cloudFormation = new CloudFormationClient({});
     const gen1Env = new StackFacade(clients, 'gen1-root');
     const gen2Branch = new StackFacade(clients, 'gen2-root');
-    const refactorer = new TestRollbackRefactorer(gen1Env, gen2Branch, clients, 'us-east-1', '123456789', noOpLogger());
+    const refactorer = new TestRollbackRefactorer(gen1Env, gen2Branch, clients, 'us-east-1', '123456789', noOpLogger(), {
+      category: 'storage',
+      resourceName: 'test',
+      service: 'S3',
+      key: 'storage:S3',
+    });
 
     const sourceAfterRemoval: CFNTemplate = {
       AWSTemplateFormatVersion: '2010-09-09',
@@ -154,7 +159,12 @@ describe('RollbackCategoryRefactorer.afterMovePlan', () => {
     (clients as any).cloudFormation = new CloudFormationClient({});
     const gen1Env = new StackFacade(clients, 'gen1-root');
     const gen2Branch = new StackFacade(clients, 'gen2-root');
-    const refactorer = new TestRollbackRefactorer(gen1Env, gen2Branch, clients, 'us-east-1', '123456789', noOpLogger());
+    const refactorer = new TestRollbackRefactorer(gen1Env, gen2Branch, clients, 'us-east-1', '123456789', noOpLogger(), {
+      category: 'storage',
+      resourceName: 'test',
+      service: 'S3',
+      key: 'storage:S3',
+    });
 
     const emptyTemplate: CFNTemplate = {
       AWSTemplateFormatVersion: '2010-09-09',
