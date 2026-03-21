@@ -65,37 +65,27 @@ export class Plan {
    */
   public async describe(): Promise<void> {
     const grouped = new Map<string, string[]>();
-    const ungrouped: string[] = [];
 
     for (const op of this.operations) {
       const lines = await op.describe();
       if (lines.length === 0) continue;
-      if (op.resource) {
-        const label = `${op.resource.category}/${op.resource.resourceName} (${op.resource.service})`;
-        if (!grouped.has(label)) grouped.set(label, []);
-        grouped.get(label)!.push(...lines);
-      } else {
-        ungrouped.push(...lines);
-      }
+      const label = op.resource ? `Resource: ${op.resource.category}/${op.resource.resourceName} (${op.resource.service})` : 'Project';
+      if (!grouped.has(label)) grouped.set(label, []);
+      grouped.get(label)!.push(...lines);
     }
 
-    if (grouped.size > 0 || ungrouped.length > 0) {
+    if (grouped.size > 0) {
       printer.info(chalk.bold(chalk.underline('Operations Summary')));
       printer.blankLine();
 
       for (const [label, descriptions] of grouped) {
-        printer.info(chalk.bold(chalk.cyan(label)));
+        printer.info(label);
         printer.blankLine();
         for (const description of descriptions) {
-          printer.info(`• ${description}`);
+          printer.info(chalk.gray(`• ${description}`));
         }
         printer.blankLine();
       }
-
-      for (const description of ungrouped) {
-        printer.info(`• ${description}`);
-      }
-      printer.blankLine();
     }
 
     if (this.implications.length > 0) {

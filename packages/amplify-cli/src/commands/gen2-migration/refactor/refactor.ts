@@ -19,6 +19,7 @@ import { AnalyticsKinesisRollbackRefactorer } from './analytics/analytics-rollba
 import { Gen1App, DiscoveredResource } from '../generate/_infra/gen1-app';
 import { Assessment } from '../_assessment';
 import { AuthUserPoolGroupsForwardRefactorer } from './auth/auth-user-pool-groups-forward';
+import { AuthUserPoolGroupsRollbackRefactorer } from './auth/auth-user-pool-groups-rollback';
 
 export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
   /**
@@ -32,6 +33,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
     for (const resource of discovered) {
       switch (resource.key) {
         case 'auth:Cognito':
+        case 'auth:Cognito-UserPool-Groups':
         case 'storage:S3':
         case 'storage:DynamoDB':
         case 'analytics:Kinesis':
@@ -41,7 +43,6 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
         case 'api:API Gateway':
           assessment.record('refactor', resource, { supported: true });
           break;
-        case 'auth:Cognito-UserPool-Groups':
         case 'unsupported':
           assessment.record('refactor', resource, { supported: false });
           break;
@@ -132,6 +133,11 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
         case 'auth:Cognito':
           refactorers.push(new AuthCognitoRollbackRefactorer(gen1Env, gen2Branch, clients, this.region, accountId, this.logger, resource));
           break;
+        case 'auth:Cognito-UserPool-Groups':
+          refactorers.push(
+            new AuthUserPoolGroupsRollbackRefactorer(gen1Env, gen2Branch, clients, this.region, accountId, this.logger, resource),
+          );
+          break;
         case 'storage:S3':
           refactorers.push(new StorageS3RollbackRefactorer(gen1Env, gen2Branch, clients, this.region, accountId, this.logger, resource));
           break;
@@ -151,7 +157,6 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
         case 'api:AppSync':
         case 'api:API Gateway':
           break;
-        case 'auth:Cognito-UserPool-Groups':
         case 'unsupported':
           throw new AmplifyError('MigrationError', {
             message: `Unsupported resource '${resource.resourceName}' (${resource.category}:${resource.service}). Cannot rollback.`,
