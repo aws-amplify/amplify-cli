@@ -18,6 +18,7 @@ import { DiscoveredResource } from '../../generate/_infra/gen1-app';
 import { formatTemplateDiff } from '../template-diff';
 import { formatChangeSetReport } from '../changeset-report';
 import { formatMoveTable } from '../move-table';
+import chalk from 'chalk';
 
 export const MIGRATION_PLACEHOLDER_LOGICAL_ID = 'MigrationPlaceholder';
 export const PLACEHOLDER_RESOURCE: CFNResource = { Type: 'AWS::CloudFormation::WaitConditionHandle', Properties: {} };
@@ -180,7 +181,7 @@ export abstract class CategoryRefactorer implements Refactorer {
     // const deployed = await this.gen1Env.fetchTemplate(source.stackId);
     // const diff = formatTemplateDiff(deployed, source.resolvedTemplate);
     const report = await this.createChangeSetReport(source);
-    const description = [report].filter(Boolean).join('\n\n');
+    const header = chalk.bgGray(`Update source stack '${sourceStackName}' with resolved references`);
     return [
       {
         resource: this.resource,
@@ -190,10 +191,7 @@ export abstract class CategoryRefactorer implements Refactorer {
             return { valid: true };
           },
         }),
-        describe: async () =>
-          description
-            ? [`Update source stack '${sourceStackName}' with resolved references\n${description}`]
-            : [`Update source stack '${sourceStackName}' with resolved references`],
+        describe: async () => [`${header}\n${report}`],
         execute: async () => {
           const status = await tryUpdateStack({
             cfnClient: this.clients.cloudFormation,
@@ -220,7 +218,7 @@ export abstract class CategoryRefactorer implements Refactorer {
     // const deployed = await this.gen2Branch.fetchTemplate(target.stackId);
     // const diff = formatTemplateDiff(deployed, target.resolvedTemplate);
     const report = await this.createChangeSetReport(target);
-    const description = [report].filter(Boolean).join('\n\n');
+    const header = chalk.bgGray(`Update target stack '${targetStackName}' with resolved references`);
     return [
       {
         resource: this.resource,
@@ -230,10 +228,7 @@ export abstract class CategoryRefactorer implements Refactorer {
             return { valid: true };
           },
         }),
-        describe: async () =>
-          description
-            ? [`Update target stack '${targetStackName}' with resolved references\n${description}`]
-            : [`Update target stack '${targetStackName}' with resolved references`],
+        describe: async () => [`${header}\n${report}`],
         execute: async () => {
           const status = await tryUpdateStack({
             cfnClient: this.clients.cloudFormation,
@@ -276,7 +271,7 @@ export abstract class CategoryRefactorer implements Refactorer {
       );
     } catch {
       // Changeset creation fails when there are no changes — not an error.
-      return '';
+      return 'No changes\n';
     }
 
     const changeSet = await this.clients.cloudFormation.send(
@@ -372,9 +367,11 @@ export abstract class CategoryRefactorer implements Refactorer {
     const physicalIds = new Map(sourceResources.map((r) => [r.LogicalResourceId!, r.PhysicalResourceId ?? '']));
     const types = new Map(mappings.map((m) => [m.sourceId, m.resource.Type]));
 
-    const header = `Move ${resourceMappings.length} resource(s) from '${extractStackNameFromId(
-      sourceStackName,
-    )}' to '${extractStackNameFromId(targetStackName)}'`;
+    const header = chalk.bgGray(
+      `Move ${resourceMappings.length} resource(s) from '${extractStackNameFromId(sourceStackName)}' to '${extractStackNameFromId(
+        targetStackName,
+      )}'`,
+    );
     const table = formatMoveTable(resourceMappings, physicalIds, types);
 
     return [

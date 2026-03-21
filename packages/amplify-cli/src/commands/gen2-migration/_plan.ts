@@ -84,9 +84,9 @@ export class Plan {
         let step = 1;
         for (const description of descriptions) {
           printer.info(`${step}. ${description}`);
+          printer.blankLine();
           step++;
         }
-        printer.blankLine();
       }
     }
 

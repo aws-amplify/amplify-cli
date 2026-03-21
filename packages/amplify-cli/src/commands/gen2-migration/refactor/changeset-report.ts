@@ -20,25 +20,29 @@ export function formatChangeSetReport(changeSet: DescribeChangeSetOutput): strin
 
     lines.push('');
     lines.push(`${chalk.bold(logicalId)} (${resourceType}) — ${chalk.yellow(action)}`);
-    lines.push('');
 
     const details = rc.Details ?? [];
     const propDetails = details.filter((d) => d.Target?.Attribute === 'Properties' && d.Target?.Name);
 
     for (const detail of propDetails) {
       const target = detail.Target!;
-      const name = target.Name!;
+      const propertyPath = target.Path ?? target.Name!;
       const before = target.BeforeValue;
       const after = target.AfterValue;
 
+      lines.push('');
       if (before && after) {
-        lines.push(`  ${name}: ${chalk.red(before)} → ${chalk.green(after)}`);
+        lines.push(`  ${propertyPath}:`);
+        lines.push(`    ${chalk.red(`- ${before}`)}`);
+        lines.push(`    ${chalk.green(`+ ${after}`)}`);
       } else if (after) {
-        lines.push(`  ${name}: ${chalk.green(`+ ${after}`)}`);
+        lines.push(`  ${propertyPath}:`);
+        lines.push(`    ${chalk.green(`+ ${after}`)}`);
       } else if (before) {
-        lines.push(`  ${name}: ${chalk.red(`- ${before}`)}`);
+        lines.push(`  ${propertyPath}:`);
+        lines.push(`    ${chalk.red(`- ${before}`)}`);
       } else {
-        lines.push(`  ${name}: (changed)`);
+        lines.push(`  ${propertyPath}: (changed)`);
       }
     }
   }

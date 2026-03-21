@@ -33,6 +33,5 @@ export function formatMoveTable(
     hr('─', '├', '┼', '┤'),
     ...rows.map((r) => row(r.type, r.source, r.target, r.physical)),
     hr('─', '└', '┴', '┘'),
-    '',
   ].join('\n');
 }

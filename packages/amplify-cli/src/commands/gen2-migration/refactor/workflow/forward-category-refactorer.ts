@@ -11,6 +11,7 @@ import { getHoldingStackName, findHoldingStack, deleteHoldingStack } from '../ho
 import { tryRefactorStack, RefactorFailure } from '../cfn-stack-refactor-updater';
 import { CategoryRefactorer, MoveMapping, RefactorBlueprint, ResolvedStack, ResourceMapping } from './category-refactorer';
 import { formatMoveTable } from '../move-table';
+import chalk from 'chalk';
 
 /**
  * Forward direction base: moves resources from Gen1 (source) to Gen2 (target).
@@ -144,9 +145,11 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
     const physicalIds = new Map(gen2Resources.map((r) => [r.LogicalResourceId!, r.PhysicalResourceId ?? '']));
     const types = new Map([...targetResources].map(([id, res]) => [id, res.Type]));
 
-    const header = `Move ${holdingMappings.length} resource(s) from '${extractStackNameFromId(
-      blueprint.target.stackId,
-    )}' to '${extractStackNameFromId(holdingStackName)}'`;
+    const header = chalk.bgGray(
+      `Move ${holdingMappings.length} resource(s) from '${extractStackNameFromId(blueprint.target.stackId)}' to '${extractStackNameFromId(
+        holdingStackName,
+      )}'`,
+    );
 
     const table = formatMoveTable(holdingMappings, physicalIds, types);
 
