@@ -11,7 +11,6 @@ import { getHoldingStackName, findHoldingStack, deleteHoldingStack } from '../ho
 import { tryRefactorStack, RefactorFailure } from '../cfn-stack-refactor-updater';
 import { CategoryRefactorer, MoveMapping, RefactorBlueprint, ResolvedStack, ResourceMapping } from './category-refactorer';
 import { formatMoveTable } from '../move-table';
-import chalk from 'chalk';
 
 /**
  * Forward direction base: moves resources from Gen1 (source) to Gen2 (target).

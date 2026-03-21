@@ -15,10 +15,8 @@ import { tryRefactorStack, RefactorFailure } from '../cfn-stack-refactor-updater
 import { SpinningLogger } from '../../_spinning-logger';
 import { extractStackNameFromId } from '../utils';
 import { DiscoveredResource } from '../../generate/_infra/gen1-app';
-import { formatTemplateDiff } from '../template-diff';
 import { formatChangeSetReport } from '../changeset-report';
 import { formatMoveTable } from '../move-table';
-import chalk from 'chalk';
 
 export const MIGRATION_PLACEHOLDER_LOGICAL_ID = 'MigrationPlaceholder';
 export const PLACEHOLDER_RESOURCE: CFNResource = { Type: 'AWS::CloudFormation::WaitConditionHandle', Properties: {} };
@@ -178,20 +176,16 @@ export abstract class CategoryRefactorer implements Refactorer {
    */
   protected async updateSource(source: ResolvedStack): Promise<AmplifyMigrationOperation[]> {
     const sourceStackName = extractStackNameFromId(source.stackId);
-    // const deployed = await this.gen1Env.fetchTemplate(source.stackId);
-    // const diff = formatTemplateDiff(deployed, source.resolvedTemplate);
-    const report = await this.createChangeSetReport(source);
     const header = `Update source stack '${sourceStackName}' with resolved references`;
+    const report = await this.createChangeSetReport(source);
     return [
       {
         resource: this.resource,
         validate: () => ({
-          description: `Ensure no destructive changes to ${sourceStackName}`,
-          run: async () => {
-            return { valid: true };
-          },
+          description: `Ensure no changes to ${sourceStackName}`,
+          run: async () => ({ valid: report === undefined, report }),
         }),
-        describe: async () => [`${header}\n\n${report}`],
+        describe: async () => [`${header}\n\n${(report ?? 'No changes').trimStart()}`],
         execute: async () => {
           const status = await tryUpdateStack({
             cfnClient: this.clients.cloudFormation,
@@ -215,20 +209,16 @@ export abstract class CategoryRefactorer implements Refactorer {
    */
   protected async updateTarget(target: ResolvedStack): Promise<AmplifyMigrationOperation[]> {
     const targetStackName = extractStackNameFromId(target.stackId);
-    // const deployed = await this.gen2Branch.fetchTemplate(target.stackId);
-    // const diff = formatTemplateDiff(deployed, target.resolvedTemplate);
-    const report = await this.createChangeSetReport(target);
     const header = `Update target stack '${targetStackName}' with resolved references`;
+    const report = await this.createChangeSetReport(target);
     return [
       {
         resource: this.resource,
         validate: () => ({
-          description: `Ensure no destructive changes to ${targetStackName}`,
-          run: async () => {
-            return { valid: true };
-          },
+          description: `Ensure no changes to ${targetStackName}`,
+          run: async () => ({ valid: report === undefined, report }),
         }),
-        describe: async () => [`${header}\n\n${report}`],
+        describe: async () => [`${header}\n\n${(report ?? 'No changes').trimStart()}`],
         execute: async () => {
           const status = await tryUpdateStack({
             cfnClient: this.clients.cloudFormation,
@@ -249,7 +239,7 @@ export abstract class CategoryRefactorer implements Refactorer {
   /**
    * Creates a changeset for the given stack and returns a formatted report.
    */
-  private async createChangeSetReport(stack: ResolvedStack): Promise<string> {
+  private async createChangeSetReport(stack: ResolvedStack): Promise<string | undefined> {
     const changeSetName = `migration-preview-${Date.now()}`;
     const stackName = stack.stackId;
 
@@ -274,8 +264,7 @@ export abstract class CategoryRefactorer implements Refactorer {
     );
 
     this.logger.pop();
-    const report = formatChangeSetReport(changeSet);
-    return report ?? 'Empty ChangeSet (expected)';
+    return formatChangeSetReport(changeSet);
   }
 
   /**

@@ -121,9 +121,9 @@ export class Plan {
       printer.info(chalk.bold(chalk.underline('Failed Validations Report')));
       printer.blankLine();
       for (let i = 0; i < failed.length; i++) {
-        printer.info(chalk.red(failed[i].description));
+        printer.info(chalk.bold(chalk.red(`✘ ${failed[i].description}`)));
         printer.blankLine();
-        printer.info(failed[i].report ?? '');
+        printer.info(failed[i].report!.trimStart());
         if (i < failed.length - 1) {
           printer.blankLine();
         }
