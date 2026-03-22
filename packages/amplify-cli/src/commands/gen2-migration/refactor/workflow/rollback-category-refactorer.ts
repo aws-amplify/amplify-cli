@@ -63,8 +63,6 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
     const parameters = description.Parameters ?? [];
     const outputs = description.Outputs ?? [];
 
-    const resourceIds = [...this.filterResourcesByType(originalTemplate).keys()];
-
     const withParams = resolveParameters(originalTemplate, parameters);
     const stackResources = await facade.fetchStackResources(stackId);
     const withOutputs = resolveOutputs({
@@ -74,7 +72,7 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
       region: this.region,
       accountId: this.accountId,
     });
-    const resolved = resolveDependencies(withOutputs, resourceIds);
+    const resolved = resolveDependencies(withOutputs);
 
     return { stackId, resolvedTemplate: resolved, parameters };
   }

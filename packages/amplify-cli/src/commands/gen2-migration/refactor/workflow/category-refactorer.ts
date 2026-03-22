@@ -285,7 +285,9 @@ export abstract class CategoryRefactorer implements Planner {
     return `${prefix.substring(0, maxPrefixLength)}${tail}`;
   }
 
-  /** Renders a CLI table of move mappings. */
+  /**
+   * Renders a CLI table of move mappings.
+   */
   protected renderMappingTable(mappings: readonly ResourceMapping[]): string {
     const table = new CLITable({
       head: ['Source Logical ID', 'Target Logical ID'],

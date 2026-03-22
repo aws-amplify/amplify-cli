@@ -1,31 +1,16 @@
 import { CFNTemplate } from '../../cfn-template';
 
 /**
- * Resolves DependsOn references in a CloudFormation template for a stack refactor.
- * Returns a new template; does not mutate input.
- *
- * When resources are being moved between stacks, DependsOn references that cross
- * the refactor boundary must be removed:
- * - Resources NOT being moved must not depend on resources being moved.
- * - Resources being moved must only depend on other resources being moved.
+ * Strips all DependsOn references from a CloudFormation template.
+ * DependsOn only controls deployment ordering, which is irrelevant during
+ * refactor since all resources already exist. Removing them avoids
+ * cross-boundary issues when resources move between stacks.
  */
-export function resolveDependencies(template: CFNTemplate, resourcesToRefactor: string[]): CFNTemplate {
+export function resolveDependencies(template: CFNTemplate): CFNTemplate {
   const cloned = JSON.parse(JSON.stringify(template)) as CFNTemplate;
 
-  for (const [logicalId, resource] of Object.entries(cloned.Resources)) {
-    if (!resource.DependsOn) continue;
-
-    const deps = Array.isArray(resource.DependsOn) ? resource.DependsOn : [resource.DependsOn];
-    const depsInRefactor = deps.filter((dep) => resourcesToRefactor.includes(dep));
-    const isBeingMoved = resourcesToRefactor.includes(logicalId);
-
-    if (!isBeingMoved && depsInRefactor.length > 0) {
-      // Resource stays — remove dependencies on resources being moved
-      resource.DependsOn = deps.filter((dep) => !resourcesToRefactor.includes(dep));
-    } else if (isBeingMoved && deps.length > depsInRefactor.length) {
-      // Resource moves — keep only dependencies on other resources being moved
-      resource.DependsOn = depsInRefactor;
-    }
+  for (const resource of Object.values(cloned.Resources)) {
+    delete resource.DependsOn;
   }
 
   return cloned;
