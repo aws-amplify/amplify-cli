@@ -2,7 +2,7 @@ import { Parameter } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { CFNResource, CFNTemplate } from '../../cfn-template';
 import { Planner } from '../../planner';
-import { AmplifyMigrationOperation } from '../../_operation';
+import { AmplifyMigrationOperation, buildNoopOperation } from '../../_operation';
 import { AwsClients } from '../../aws-clients';
 import { StackFacade } from '../stack-facade';
 import { Cfn } from '../cfn';
@@ -86,7 +86,7 @@ export abstract class CategoryRefactorer implements Planner {
     protected readonly logger: SpinningLogger,
     protected readonly resource: DiscoveredResource,
   ) {
-    this.cfn = new Cfn(clients.cloudFormation, logger);
+    this.cfn = new Cfn(clients.cloudFormation, logger, resource);
   }
 
   protected readonly cfn: Cfn;
@@ -117,7 +117,7 @@ export abstract class CategoryRefactorer implements Planner {
     const blueprint = await this.buildBlueprint(source, target);
     if (!blueprint) {
       this.logger.pop();
-      return []; // Nothing to move — skip this category
+      return [buildNoopOperation(this.resource)];
     }
 
     const updateSourceOps = await this.updateSource(blueprint.source);
@@ -230,7 +230,7 @@ export abstract class CategoryRefactorer implements Planner {
   /**
    * Creates a changeset for the given stack and returns a formatted report.
    */
-  private async createChangeSetReport(stack: ResolvedStack): Promise<string | undefined> {
+  protected async createChangeSetReport(stack: ResolvedStack): Promise<string | undefined> {
     const stackName = extractStackNameFromId(stack.stackId);
     this.logger.push(stackName);
     try {
@@ -259,6 +259,10 @@ export abstract class CategoryRefactorer implements Planner {
     if (sourceResources.size === 0) return undefined;
 
     const mappings = await this.buildResourceMappings(sourceResources, targetResources, source.stackId, target.stackId);
+
+    if (mappings.length === 0) {
+      return undefined;
+    }
 
     // source.afterRemoval: clone source template, remove mapped resources, add placeholder if empty
     const afterRemoval = JSON.parse(JSON.stringify(source.resolvedTemplate)) as CFNTemplate;

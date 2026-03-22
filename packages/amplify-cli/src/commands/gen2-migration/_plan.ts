@@ -1,4 +1,4 @@
-import { AmplifyMigrationOperation } from './_operation';
+import { AmplifyMigrationOperation, NO_OP_MESSAGE } from './_operation';
 import { SpinningLogger } from './_spinning-logger';
 import { printer } from '@aws-amplify/amplify-prompts';
 import chalk from 'chalk';
@@ -74,6 +74,8 @@ export class Plan {
       grouped.get(label)!.push(...lines);
     }
 
+    let hasRealImplications = false;
+
     if (grouped.size > 0) {
       printer.info(chalk.bold(chalk.underline('Operations Summary')));
       printer.blankLine();
@@ -84,12 +86,15 @@ export class Plan {
         let step = 1;
         for (const description of descriptions) {
           printer.info(`${step}. ${description}`);
+          if (description !== NO_OP_MESSAGE) {
+            hasRealImplications = true;
+          }
           step++;
         }
       }
     }
 
-    if (this.implications.length > 0) {
+    if (hasRealImplications && this.implications.length > 0) {
       printer.info(chalk.bold(chalk.underline('Implications')));
       printer.blankLine();
       for (const implication of this.implications) {

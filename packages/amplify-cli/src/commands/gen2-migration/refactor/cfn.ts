@@ -29,8 +29,9 @@ import { SpinningLogger } from '../_spinning-logger';
 import chalk from 'chalk';
 import * as fs from 'fs';
 import * as path from 'path';
+import { DiscoveredResource } from '../generate/_infra/gen1-app';
 
-const MAX_WAIT_TIME_SECONDS = 3600;
+const MAX_WAIT_TIME_SECONDS = 900;
 const NO_UPDATES_MESSAGE = 'No updates are to be performed';
 const CFN_IAM_CAPABILITY = 'CAPABILITY_NAMED_IAM';
 export const OUTPUT_DIRECTORY = '.amplify/refactor.operations';
@@ -40,7 +41,11 @@ export const OUTPUT_DIRECTORY = '.amplify/refactor.operations';
  * Wraps update, refactor, and change set APIs behind a single client instance.
  */
 export class Cfn {
-  constructor(private readonly client: CloudFormationClient, private readonly logger: SpinningLogger) {
+  constructor(
+    private readonly client: CloudFormationClient,
+    private readonly logger: SpinningLogger,
+    private readonly resource?: DiscoveredResource,
+  ) {
     if (!fs.existsSync(OUTPUT_DIRECTORY)) {
       fs.mkdirSync(OUTPUT_DIRECTORY, { recursive: true });
     }
@@ -65,6 +70,7 @@ export class Cfn {
         Tags: [],
       };
       writeUpdateSnapshot(input);
+      this.info(`Updating stack: ${extractStackNameFromId(stackName)}`);
       await this.client.send(new UpdateStackCommand(input));
     } catch (e) {
       if (e && typeof e === 'object' && 'message' in e && typeof e.message === 'string' && e.message.includes(NO_UPDATES_MESSAGE)) {
@@ -72,7 +78,7 @@ export class Cfn {
       }
       throw e;
     }
-    this.logger.info(`Waiting for stack update to complete: ${extractStackNameFromId(stackName)}`);
+    this.info(`Waiting for stack update to complete: ${extractStackNameFromId(stackName)}`);
     await waitUntilStackUpdateComplete({ client: this.client, maxWaitTime: MAX_WAIT_TIME_SECONDS }, { StackName: stackName });
   }
 
@@ -81,25 +87,6 @@ export class Cfn {
    * Throws on failure.
    */
   public async refactor(input: CreateStackRefactorCommandInput): Promise<void> {
-    input.Description = buildRefactorDescription(input);
-
-    writeRefactorSnapshot(input);
-    const { StackRefactorId } = await this.client.send(new CreateStackRefactorCommand(input));
-    if (!StackRefactorId) {
-      throw new AmplifyError('StackStateError', {
-        message: 'CreateStackRefactor returned no StackRefactorId',
-      });
-    }
-
-    this.logger.info(`Waiting for refactor create to complete: ${StackRefactorId}`);
-    await waitUntilStackRefactorCreateComplete({ client: this.client, maxWaitTime: MAX_WAIT_TIME_SECONDS }, { StackRefactorId });
-
-    await this.client.send(new ExecuteStackRefactorCommand({ StackRefactorId }));
-
-    this.logger.info(`Waiting for refactor execute to complete: ${StackRefactorId}`);
-    await waitUntilStackRefactorExecuteComplete({ client: this.client, maxWaitTime: MAX_WAIT_TIME_SECONDS }, { StackRefactorId });
-
-    // Verify both stacks reached their final state
     const sourceStackName = input.StackDefinitions?.[0]?.StackName;
     const destStackName = input.StackDefinitions?.[1]?.StackName;
     if (!sourceStackName || !destStackName) {
@@ -108,14 +95,35 @@ export class Cfn {
       });
     }
 
-    this.logger.info(`Waiting for source stack update: ${extractStackNameFromId(sourceStackName)}`);
+    input.Description = buildRefactorDescription(input);
+
+    writeRefactorSnapshot(input);
+    this.info(`Creating stack refactor: ${extractStackNameFromId(sourceStackName)} → ${extractStackNameFromId(destStackName)}`);
+    const { StackRefactorId } = await this.client.send(new CreateStackRefactorCommand(input));
+    if (!StackRefactorId) {
+      throw new AmplifyError('StackStateError', {
+        message: 'CreateStackRefactor returned no StackRefactorId',
+      });
+    }
+
+    const destinationStack = await this.findStack(destStackName);
+
+    this.info(`Waiting for stack refactor creation to complete: ${StackRefactorId}`);
+    await waitUntilStackRefactorCreateComplete({ client: this.client, maxWaitTime: MAX_WAIT_TIME_SECONDS }, { StackRefactorId });
+
+    await this.client.send(new ExecuteStackRefactorCommand({ StackRefactorId }));
+
+    this.info(`Waiting for stack refactor execution to complete: ${StackRefactorId}`);
+    await waitUntilStackRefactorExecuteComplete({ client: this.client, maxWaitTime: MAX_WAIT_TIME_SECONDS }, { StackRefactorId });
+
+    this.info(`Waiting for source stack update: ${extractStackNameFromId(sourceStackName)}`);
     await waitUntilStackUpdateComplete({ client: this.client, maxWaitTime: MAX_WAIT_TIME_SECONDS }, { StackName: sourceStackName });
 
     // Destination may be newly created (EnableStackCreation) or updated
-    this.logger.info(`Waiting for destination stack: ${extractStackNameFromId(destStackName)}`);
-    try {
+    this.info(`Waiting for destination stack: ${extractStackNameFromId(destStackName)}`);
+    if (destinationStack) {
       await waitUntilStackUpdateComplete({ client: this.client, maxWaitTime: MAX_WAIT_TIME_SECONDS }, { StackName: destStackName });
-    } catch {
+    } else {
       await waitUntilStackCreateComplete({ client: this.client, maxWaitTime: MAX_WAIT_TIME_SECONDS }, { StackName: destStackName });
     }
   }
@@ -208,9 +216,9 @@ export class Cfn {
    */
   public async deleteStack(stackName: string): Promise<void> {
     try {
-      this.logger.info(`Deleting stack: ${extractStackNameFromId(stackName)}`);
+      this.info(`Deleting stack: ${extractStackNameFromId(stackName)}`);
       await this.client.send(new DeleteStackCommand({ StackName: stackName }));
-      this.logger.info(`Waiting for stack deletion: ${extractStackNameFromId(stackName)}`);
+      this.info(`Waiting for stack deletion: ${extractStackNameFromId(stackName)}`);
       await waitUntilStackDeleteComplete({ client: this.client, maxWaitTime: 300 }, { StackName: stackName });
     } catch (error: unknown) {
       if (
@@ -271,6 +279,10 @@ export class Cfn {
     }
 
     return lines.join('\n');
+  }
+
+  private info(message: string) {
+    this.logger.info(`${this.resource ? `[${this.resource.category}/${this.resource.resourceName}] ` : ''}${message}`);
   }
 }
 

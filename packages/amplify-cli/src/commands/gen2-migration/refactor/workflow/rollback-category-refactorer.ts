@@ -44,11 +44,12 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
         });
       }
       if (targetResources.has(gen1LogicalId)) {
-        throw new AmplifyError('MigrationError', {
-          message: `Failed building mappings: Resource ${gen1LogicalId} (${
-            resource.Type
-          }) already exists in target stack: ${extractStackNameFromId(targetStackId)}`,
-        });
+        continue;
+        // throw new AmplifyError('MigrationError', {
+        //   message: `Failed building mappings: Resource ${gen1LogicalId} (${
+        //     resource.Type
+        //   }) already exists in target stack: ${extractStackNameFromId(targetStackId)}`,
+        // });
       }
       mappings.push({ sourceId, targetId: gen1LogicalId, resource, physicalResourceId: physicalIds.get(sourceId) ?? '' });
     }
@@ -135,23 +136,25 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
       Resources: { ...holdingTemplate.Resources, [MIGRATION_PLACEHOLDER_LOGICAL_ID]: PLACEHOLDER_RESOURCE },
     };
 
+    this.logger.push(extractStackNameFromId(holdingStackName));
     const holdingChangeSet = await this.cfn.createChangeSet({
       stackName: holdingStackName,
       parameters: [],
       templateBody: holdingWithPlaceholder,
     });
     const holdingReport = holdingChangeSet ? this.cfn.renderChangeSet(holdingChangeSet) : undefined;
+    this.logger.pop();
 
     return [
       {
         resource: this.resource,
         validate: () => ({
-          description: `Ensure holding stack update only adds placeholder`,
+          description: `Ensure holding stack ${extractStackNameFromId(holdingStackName)} update only adds placeholder`,
           run: async () => ({ valid: this.isPlaceholderOnlyChangeSet(holdingChangeSet), report: holdingReport }),
         }),
         describe: async () => {
           const header = `Update holding stack '${extractStackNameFromId(holdingStackName)}' with placeholder resource`;
-          const desc = holdingReport ? `${header}\n\n${holdingReport.trimStart()}` : `${header} (empty change-set)`;
+          const desc = holdingReport ? `${header}\n\n${holdingReport.trimStart()}\n` : `${header} (empty change-set)`;
           return [desc];
         },
         execute: async () => {
