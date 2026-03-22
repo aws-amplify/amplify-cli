@@ -1,4 +1,4 @@
-import { Output, Parameter } from '@aws-sdk/client-cloudformation';
+import { GetTemplateCommand, Output, Parameter } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { CFNResource, CFNTemplate } from '../../cfn-template';
 import { AmplifyMigrationOperation } from '../../_operation';
@@ -113,18 +113,34 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
    * Moves Gen2 resources to a holding stack before the main refactor.
    */
   protected async beforeMovePlan(blueprint: RefactorBlueprint): Promise<AmplifyMigrationOperation[]> {
-    const targetResources = this.filterResourcesByType(blueprint.target.resolvedTemplate);
-    if (targetResources.size === 0) {
-      return [];
-    }
-
-    // The holding stack gets all target category resources
+    // holding stack gets all mapping targets
+    const targets = blueprint.mappings.map((m) => m.targetId);
     const holdingResources: Record<string, CFNResource> = {};
-    for (const [logicalId] of targetResources) {
+    for (const logicalId of targets) {
       holdingResources[logicalId] = blueprint.target.resolvedTemplate.Resources[logicalId];
     }
 
     const holdingStackName = getHoldingStackName(extractStackNameFromId(blueprint.target.stackId));
+
+    // in auth, there are two gen1 stacks (cognito, groups) that map to the same gen2 stack.
+    // each of them gets its own refactorer so the same holding stack is used twice in sequence.
+    const existing = await findHoldingStack(this.clients.cloudFormation, holdingStackName);
+    if (existing && existing.StackStatus !== 'REVIEW_IN_PROGRESS') {
+      const getTemplateResponse = await this.clients.cloudFormation.send(
+        new GetTemplateCommand({
+          StackName: holdingStackName,
+        }),
+      );
+      const existingTemplate = JSON.parse(getTemplateResponse.TemplateBody ?? '{}');
+      for (const logicalId of Object.keys(existingTemplate.Resources ?? {})) {
+        const existingResource = holdingResources[logicalId];
+        if (existingResource) {
+          throw new AmplifyError('MigrationError', { message: 'WTF?' });
+        }
+        holdingResources[logicalId] = existingTemplate.Resources[logicalId];
+      }
+    }
+
     const holdingTemplate: CFNTemplate = {
       AWSTemplateFormatVersion: '2010-09-09',
       Description: 'Temporary holding stack for Gen2 migration',
@@ -135,31 +151,33 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
     // Post-holding target = target.afterRemoval (already computed by buildBlueprint)
     const postTargetTemplate = blueprint.target.afterRemoval;
 
-    const holdingMappings: ResourceMapping[] = [...targetResources.keys()].map((id) => ({
+    const holdingMappings: ResourceMapping[] = targets.map((id) => ({
       Source: { StackName: extractStackNameFromId(blueprint.target.stackId), LogicalResourceId: id },
       Destination: { StackName: extractStackNameFromId(holdingStackName), LogicalResourceId: id },
     }));
 
     const gen2Resources = await this.gen2Branch.fetchStackResources(blueprint.target.stackId);
-    const physicalIds = new Map(gen2Resources.map((r) => [r.LogicalResourceId!, r.PhysicalResourceId ?? '']));
-    const types = new Map([...targetResources].map(([id, res]) => [id, res.Type]));
+    const physicalIds = new Map(gen2Resources.map((r) => [r.LogicalResourceId!, r.PhysicalResourceId!]));
+    const types = new Map(targets.map((id) => [id, blueprint.mappings.find((m) => m.targetId === id).resource.Type]));
 
     const header = `Move ${holdingMappings.length} resource(s) from '${extractStackNameFromId(
       blueprint.target.stackId,
     )}' to '${extractStackNameFromId(holdingStackName)}'`;
     const table = formatMoveTable(holdingMappings, physicalIds, types);
+    const description = `${header}\n\n${table}`;
 
     return [
       {
         resource: this.resource,
         validate: () => undefined,
-        describe: async () => [`${header}\n\n${table}`],
+        describe: async () => [description],
         execute: async () => {
-          const existing = await findHoldingStack(this.clients.cloudFormation, holdingStackName);
           if (existing?.StackStatus === 'REVIEW_IN_PROGRESS') {
+            this.logger.info(`Deleting existing holding stack: ${holdingStackName}`);
             await deleteHoldingStack(this.clients.cloudFormation, holdingStackName);
           }
 
+          this.logger.info(header);
           const result = await tryRefactorStack(this.clients.cloudFormation, {
             StackDefinitions: [
               { TemplateBody: JSON.stringify(postTargetTemplate), StackName: blueprint.target.stackId },

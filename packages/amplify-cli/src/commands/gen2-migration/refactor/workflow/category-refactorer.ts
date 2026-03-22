@@ -116,20 +116,17 @@ export abstract class CategoryRefactorer implements Refactorer {
 
     const blueprint = this.buildBlueprint(source, target);
     if (!blueprint) {
+      this.logger.pop();
       return []; // Nothing to move — skip this category
     }
 
+    const updateSourceOps = await this.updateSource(blueprint.source);
+    const updateTargetOps = await this.updateTarget(blueprint.target);
     const beforeMoveOps = await this.beforeMovePlan(blueprint);
     const moveOps = await this.buildMoveOperations(blueprint);
     const afterMoveOps = await this.afterMovePlan(blueprint);
 
-    const operations = [
-      ...(await this.updateSource(blueprint.source)),
-      ...(await this.updateTarget(blueprint.target)),
-      ...beforeMoveOps,
-      ...moveOps,
-      ...afterMoveOps,
-    ];
+    const operations = [...updateSourceOps, ...updateTargetOps, ...beforeMoveOps, ...moveOps, ...afterMoveOps];
     this.logger.pop();
     return operations;
   }
@@ -178,15 +175,17 @@ export abstract class CategoryRefactorer implements Refactorer {
     const sourceStackName = extractStackNameFromId(source.stackId);
     const header = `Update source stack '${sourceStackName}' with resolved references`;
     const report = await this.createChangeSetReport(source);
+    const description = report ? `${header}\n\n${report.trimStart()}` : `${header} (empty change-set)`;
     return [
       {
         resource: this.resource,
         validate: () => ({
-          description: `Ensure no changes to ${sourceStackName}`,
+          description: `Ensure no unexpected changes to ${sourceStackName}`,
           run: async () => ({ valid: report === undefined, report }),
         }),
-        describe: async () => [`${header}\n\n${(report ?? 'No changes').trimStart()}`],
+        describe: async () => [description],
         execute: async () => {
+          this.logger.info(header);
           const status = await tryUpdateStack({
             cfnClient: this.clients.cloudFormation,
             stackName: source.stackId,
@@ -211,15 +210,17 @@ export abstract class CategoryRefactorer implements Refactorer {
     const targetStackName = extractStackNameFromId(target.stackId);
     const header = `Update target stack '${targetStackName}' with resolved references`;
     const report = await this.createChangeSetReport(target);
+    const description = report ? `${header}\n\n${report.trimStart()}` : `${header} (empty change-set)`;
     return [
       {
         resource: this.resource,
         validate: () => ({
-          description: `Ensure no changes to ${targetStackName}`,
+          description: `Ensure no unexpected changes to ${targetStackName}`,
           run: async () => ({ valid: report === undefined, report }),
         }),
-        describe: async () => [`${header}\n\n${(report ?? 'No changes').trimStart()}`],
+        describe: async () => [description],
         execute: async () => {
+          this.logger.info(header);
           const status = await tryUpdateStack({
             cfnClient: this.clients.cloudFormation,
             stackName: target.stackId,
@@ -254,10 +255,21 @@ export abstract class CategoryRefactorer implements Refactorer {
       }),
     );
 
-    await waitUntilChangeSetCreateComplete(
-      { client: this.clients.cloudFormation, maxWaitTime: 120 },
-      { StackName: stackName, ChangeSetName: changeSetName },
-    );
+    try {
+      await waitUntilChangeSetCreateComplete(
+        { client: this.clients.cloudFormation, maxWaitTime: 120 },
+        { StackName: stackName, ChangeSetName: changeSetName },
+      );
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (e: any) {
+      this.logger.pop();
+      if (e.message?.includes(`The submitted information didn't contain changes`)) {
+        // means the template we gave is exactly the same as the deployed template.
+        // this can happen after partial failures (update source -> update target -> fail -> update source)
+        return undefined;
+      }
+      throw e;
+    }
 
     const changeSet = await this.clients.cloudFormation.send(
       new DescribeChangeSetCommand({ StackName: stackName, ChangeSetName: changeSetName, IncludePropertyValues: true }),
@@ -349,20 +361,22 @@ export abstract class CategoryRefactorer implements Refactorer {
     }));
 
     const sourceResources = await this.gen1Env.fetchStackResources(source.stackId);
-    const physicalIds = new Map(sourceResources.map((r) => [r.LogicalResourceId!, r.PhysicalResourceId ?? '']));
+    const physicalIds = new Map(sourceResources.map((r) => [r.LogicalResourceId!, r.PhysicalResourceId!]));
     const types = new Map(mappings.map((m) => [m.sourceId, m.resource.Type]));
 
     const header = `Move ${resourceMappings.length} resource(s) from '${extractStackNameFromId(
       sourceStackName,
     )}' to '${extractStackNameFromId(targetStackName)}'`;
     const table = formatMoveTable(resourceMappings, physicalIds, types);
+    const description = `${header}\n\n${table}`;
 
     return [
       {
         resource: this.resource,
         validate: () => undefined,
-        describe: async () => [`${header}\n\n${table}`],
+        describe: async () => [description],
         execute: async () => {
+          this.logger.info(header);
           const result = await tryRefactorStack(this.clients.cloudFormation, {
             StackDefinitions: [
               { TemplateBody: JSON.stringify(source.afterRemoval), StackName: source.stackId },

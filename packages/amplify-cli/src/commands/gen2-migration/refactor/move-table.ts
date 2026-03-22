@@ -23,5 +23,5 @@ export function formatMoveTable(
     ]);
   }
 
-  return table.toString();
+  return `${table.toString()}\n`;
 }
