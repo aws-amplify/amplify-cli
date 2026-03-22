@@ -20,7 +20,7 @@ import { HOLDING_STACK_SUFFIX } from './refactor/workflow/category-refactorer';
 export class AmplifyMigrationDecommissionStep extends AmplifyMigrationStep {
   public async forward(): Promise<Plan> {
     const cfnClient = new CloudFormationClient({ region: this.region });
-    const cfn = new Cfn(cfnClient);
+    const cfn = new Cfn(cfnClient, this.logger);
     const holdingStacks = await this.findHoldingStacks(cfnClient);
 
     const operations: AmplifyMigrationOperation[] = [];

@@ -86,7 +86,7 @@ export abstract class CategoryRefactorer implements Planner {
     protected readonly logger: SpinningLogger,
     protected readonly resource: DiscoveredResource,
   ) {
-    this.cfn = new Cfn(clients.cloudFormation);
+    this.cfn = new Cfn(clients.cloudFormation, logger);
   }
 
   protected readonly cfn: Cfn;
