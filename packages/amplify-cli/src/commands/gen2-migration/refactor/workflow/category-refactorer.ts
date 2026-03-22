@@ -145,6 +145,7 @@ export abstract class CategoryRefactorer implements Planner {
     sourceResources: Map<string, CFNResource>,
     targetResources: Map<string, CFNResource>,
     sourceStackId: string,
+    targetStackId: string,
   ): Promise<MoveMapping[]>;
 
   // -- Direction-specific (abstract) --
@@ -257,7 +258,7 @@ export abstract class CategoryRefactorer implements Planner {
 
     if (sourceResources.size === 0) return undefined;
 
-    const mappings = await this.buildResourceMappings(sourceResources, targetResources, source.stackId);
+    const mappings = await this.buildResourceMappings(sourceResources, targetResources, source.stackId, target.stackId);
 
     // source.afterRemoval: clone source template, remove mapped resources, add placeholder if empty
     const afterRemoval = JSON.parse(JSON.stringify(source.resolvedTemplate)) as CFNTemplate;

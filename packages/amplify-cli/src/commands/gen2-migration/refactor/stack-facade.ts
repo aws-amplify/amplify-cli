@@ -8,6 +8,7 @@ import {
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { AwsClients } from '../aws-clients';
 import { CFNTemplate } from '../cfn-template';
+import { ResolvedStack } from './workflow/category-refactorer';
 
 /**
  * Lazy-loading, caching facade over a CloudFormation stack hierarchy.
@@ -19,6 +20,8 @@ export class StackFacade {
   private readonly stackCache = new Map<string, Promise<Stack>>();
   private readonly resourcesCache = new Map<string, Promise<StackResource[]>>();
   private nestedStacksPromise: Promise<StackResource[]> | undefined;
+
+  private readonly updatedStacks = new Map<string, boolean>();
 
   constructor(private readonly clients: AwsClients, public readonly rootStackName: string) {}
 
@@ -70,6 +73,14 @@ export class StackFacade {
       const response = await this.clients.cloudFormation.send(new DescribeStackResourcesCommand({ StackName: stackId }));
       return response.StackResources ?? [];
     });
+  }
+
+  public isUpdated(stack: ResolvedStack): boolean {
+    return this.updatedStacks.get(stack.stackId) === true;
+  }
+
+  public markUpdated(stack: ResolvedStack) {
+    this.updatedStacks.set(stack.stackId, true);
   }
 
   private async cachedFetch<T>(cache: Map<string, Promise<T>>, key: string, fetcher: () => Promise<T>): Promise<T> {

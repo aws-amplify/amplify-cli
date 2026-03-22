@@ -28,18 +28,26 @@ import {
 export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
   protected async buildResourceMappings(
     sourceResources: Map<string, CFNResource>,
-    _targetResources: Map<string, CFNResource>,
+    targetResources: Map<string, CFNResource>,
     sourceStackId: string,
+    targetStackId: string,
   ): Promise<MoveMapping[]> {
     const stackResources = await this.gen2Branch.fetchStackResources(sourceStackId);
-    const physicalIds = new Map(stackResources.map((r) => [r.LogicalResourceId!, r.PhysicalResourceId!]));
+    const physicalIds = new Map(stackResources.map((r) => [r.LogicalResourceId, r.PhysicalResourceId]));
 
     const mappings: MoveMapping[] = [];
     for (const [sourceId, resource] of sourceResources) {
       const gen1LogicalId = this.targetLogicalId(sourceId, resource);
       if (!gen1LogicalId) {
-        throw new AmplifyError('InvalidStackError', {
-          message: `No known Gen1 logical ID for resource type '${resource.Type}' (source: '${sourceId}')`,
+        throw new AmplifyError('MigrationError', {
+          message: `Failed building mappings: Unable to determine target id of resource ${sourceId} (${resource.Type})`,
+        });
+      }
+      if (targetResources.has(gen1LogicalId)) {
+        throw new AmplifyError('MigrationError', {
+          message: `Failed building mappings: Resource ${gen1LogicalId} (${
+            resource.Type
+          }) already exists in target stack: ${extractStackNameFromId(targetStackId)}`,
         });
       }
       mappings.push({ sourceId, targetId: gen1LogicalId, resource, physicalResourceId: physicalIds.get(sourceId) ?? '' });
@@ -88,11 +96,11 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
     return { stackId, resolvedTemplate: originalTemplate, parameters };
   }
 
-  protected override async updateSource(): Promise<AmplifyMigrationOperation[]> {
+  protected override async updateSource(_source: ResolvedStack): Promise<AmplifyMigrationOperation[]> {
     return [];
   }
 
-  protected override async updateTarget(): Promise<AmplifyMigrationOperation[]> {
+  protected override async updateTarget(_target: ResolvedStack): Promise<AmplifyMigrationOperation[]> {
     return [];
   }
 
@@ -115,10 +123,6 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
 
     const holdingTemplate = await this.cfn.fetchTemplate(holdingStackName);
 
-    if (blueprint.mappings.length === 0) {
-      return [];
-    }
-
     const mappings = blueprint.mappings.map((m) => ({
       sourceId: m.sourceId,
       targetId: m.sourceId,
@@ -131,14 +135,6 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
       Resources: { ...holdingTemplate.Resources, [MIGRATION_PLACEHOLDER_LOGICAL_ID]: PLACEHOLDER_RESOURCE },
     };
 
-    const targetTemplate = JSON.parse(JSON.stringify(blueprint.source.afterRemoval)) as CFNTemplate;
-    const holdingAfterRestore = JSON.parse(JSON.stringify(holdingWithPlaceholder)) as CFNTemplate;
-    for (const mapping of blueprint.mappings) {
-      targetTemplate.Resources[mapping.sourceId] = holdingWithPlaceholder.Resources[mapping.sourceId];
-      delete holdingAfterRestore.Resources[mapping.sourceId];
-    }
-
-    // Pre-compute the changeset report for the holding stack update
     const holdingChangeSet = await this.cfn.createChangeSet({
       stackName: holdingStackName,
       parameters: [],
@@ -181,9 +177,18 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
             Source: { StackName: extractStackNameFromId(holdingStackName), LogicalResourceId: sourceId },
             Destination: { StackName: extractStackNameFromId(gen2StackId), LogicalResourceId: targetId },
           }));
+
+          const targetTemplate = JSON.parse(JSON.stringify(blueprint.source.afterRemoval)) as CFNTemplate;
+          const holdingAfterRemoval = JSON.parse(JSON.stringify(holdingWithPlaceholder)) as CFNTemplate;
+          for (const mapping of resourceMappings) {
+            targetTemplate.Resources[mapping.Destination.LogicalResourceId] =
+              holdingWithPlaceholder.Resources[mapping.Source.LogicalResourceId];
+            delete holdingAfterRemoval.Resources[mapping.Source.LogicalResourceId];
+          }
+
           await this.cfn.refactor({
             StackDefinitions: [
-              { TemplateBody: JSON.stringify(holdingAfterRestore), StackName: holdingStackName },
+              { TemplateBody: JSON.stringify(holdingAfterRemoval), StackName: holdingStackName },
               { TemplateBody: JSON.stringify(targetTemplate), StackName: gen2StackId },
             ],
             ResourceMappings: resourceMappings,
