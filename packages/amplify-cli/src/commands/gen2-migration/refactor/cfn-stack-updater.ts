@@ -17,6 +17,7 @@ const COMPLETION_STATE = '_COMPLETE';
 
 /**
  * Updates a stack with the given template. No-ops if no updates are needed.
+ * Throws if the stack does not reach UPDATE_COMPLETE.
  */
 export async function tryUpdateStack(params: {
   readonly cfnClient: CloudFormationClient;
@@ -24,7 +25,7 @@ export async function tryUpdateStack(params: {
   readonly parameters: Parameter[];
   readonly templateBody: CFNTemplate;
   readonly attempts?: number;
-}): Promise<string> {
+}): Promise<void> {
   const { cfnClient, stackName, parameters, templateBody, attempts = POLL_ATTEMPTS } = params;
   try {
     const input: UpdateStackCommandInput = {
@@ -36,12 +37,17 @@ export async function tryUpdateStack(params: {
     };
     snap.preUpdateStack(input);
     await cfnClient.send(new UpdateStackCommand(input));
-    return pollStackForCompletionState(cfnClient, stackName, attempts);
   } catch (e) {
     if (e && typeof e === 'object' && 'message' in e && typeof e.message === 'string' && e.message.includes(NO_UPDATES_MESSAGE)) {
-      return CFNStackStatus.UPDATE_COMPLETE;
+      return;
     }
     throw e;
+  }
+  const status = await pollStackForCompletionState(cfnClient, stackName, attempts);
+  if (status !== CFNStackStatus.UPDATE_COMPLETE) {
+    throw new AmplifyError('StackStateError', {
+      message: `Stack '${stackName}' ended with status '${status}' instead of UPDATE_COMPLETE`,
+    });
   }
 }
 

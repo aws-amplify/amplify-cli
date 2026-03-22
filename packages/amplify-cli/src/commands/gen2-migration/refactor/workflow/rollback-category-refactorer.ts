@@ -8,7 +8,7 @@ import { resolveDependencies } from '../resolvers/cfn-dependency-resolver';
 import { extractStackNameFromId } from '../utils';
 import { getHoldingStackName, findHoldingStack, deleteHoldingStack } from '../holding-stack';
 import { tryUpdateStack } from '../cfn-stack-updater';
-import { tryRefactorStack, RefactorFailure } from '../cfn-stack-refactor-updater';
+import { tryRefactorStack } from '../cfn-stack-refactor-updater';
 import {
   CategoryRefactorer,
   MIGRATION_PLACEHOLDER_LOGICAL_ID,
@@ -151,41 +151,39 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
     const table = this.renderMappingTable(restoreMoveMappings);
     const description = `${header}\n\n${table}`;
 
+    const holdingTemplate = JSON.parse(holdingTemplateResponse.TemplateBody) as CFNTemplate;
+    const holdingWithPlaceholder = {
+      ...holdingTemplate,
+      Resources: { ...holdingTemplate.Resources, [MIGRATION_PLACEHOLDER_LOGICAL_ID]: PLACEHOLDER_RESOURCE },
+    };
+
+    const targetTemplate = JSON.parse(JSON.stringify(blueprint.source.afterRemoval)) as CFNTemplate;
+    const holdingAfterRestore = JSON.parse(JSON.stringify(holdingWithPlaceholder)) as CFNTemplate;
+    for (const mapping of blueprint.mappings) {
+      targetTemplate.Resources[mapping.sourceId] = holdingWithPlaceholder.Resources[mapping.sourceId];
+      delete holdingAfterRestore.Resources[mapping.sourceId];
+    }
+
     return [
       {
         resource: this.resource,
         validate: () => undefined,
         describe: async () => [description],
         execute: async () => {
-          const holdingTemplate = JSON.parse(holdingTemplateResponse.TemplateBody) as CFNTemplate;
-          holdingTemplate.Resources[MIGRATION_PLACEHOLDER_LOGICAL_ID] = PLACEHOLDER_RESOURCE;
           await tryUpdateStack({
             cfnClient: this.clients.cloudFormation,
             stackName: holdingStackName,
             parameters: [],
-            templateBody: holdingTemplate,
+            templateBody: holdingWithPlaceholder,
           });
 
-          const targetTemplate = JSON.parse(JSON.stringify(blueprint.source.afterRemoval)) as CFNTemplate;
-          for (const mapping of blueprint.mappings) {
-            targetTemplate.Resources[mapping.sourceId] = holdingTemplate.Resources[mapping.sourceId];
-            delete holdingTemplate.Resources[mapping.sourceId];
-          }
-
-          this.logger.info(header);
-          const result = await tryRefactorStack(this.clients.cloudFormation, {
+          await tryRefactorStack(this.clients.cloudFormation, {
             StackDefinitions: [
-              { TemplateBody: JSON.stringify(holdingTemplate), StackName: holdingStackName },
+              { TemplateBody: JSON.stringify(holdingAfterRestore), StackName: holdingStackName },
               { TemplateBody: JSON.stringify(targetTemplate), StackName: gen2StackId },
             ],
             ResourceMappings: restoreMappings,
           });
-          if (!result.success) {
-            const failure = result as RefactorFailure;
-            throw new AmplifyError('MigrationError', {
-              message: `Failed to restore Gen2 resources from holding stack: ${failure.reason}`,
-            });
-          }
         },
       },
     ];

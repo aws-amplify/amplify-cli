@@ -19,24 +19,16 @@ const POLL_INTERVAL_MS = 12000;
 const COMPLETION_STATE = '_COMPLETE';
 const FAILED_STATE = '_FAILED';
 
-export type RefactorResult = { readonly success: true } | RefactorFailure;
-
-export type RefactorFailure = {
-  readonly success: false;
-  readonly reason: string | undefined;
-  readonly stackRefactorId: string;
-  readonly status: StackRefactorStatus | StackRefactorExecutionStatus | undefined;
-};
-
 /**
  * Creates and executes a CloudFormation stack refactor operation.
  * Polls for completion at each stage (create, execute, stack updates).
+ * Throws on failure.
  */
 export async function tryRefactorStack(
   cfnClient: CloudFormationClient,
   input: CreateStackRefactorCommandInput,
   attempts = POLL_ATTEMPTS,
-): Promise<RefactorResult> {
+): Promise<void> {
   input.Description = buildRefactorDescription(input);
 
   snap.preRefactorStack(input);
@@ -63,7 +55,9 @@ export async function tryRefactorStack(
   );
 
   if (response.Status !== StackRefactorStatus.CREATE_COMPLETE) {
-    return { success: false, status: response.Status, reason: response.StatusReason, stackRefactorId: StackRefactorId };
+    throw new AmplifyError('MigrationError', {
+      message: `Stack refactor '${StackRefactorId}' failed during create: ${response.StatusReason} (status: ${response.Status})`,
+    });
   }
 
   // Execute the refactor
@@ -84,7 +78,9 @@ export async function tryRefactorStack(
   );
 
   if (response.ExecutionStatus !== StackRefactorExecutionStatus.EXECUTE_COMPLETE) {
-    return { success: false, status: response.ExecutionStatus, reason: response.ExecutionStatusReason, stackRefactorId: StackRefactorId };
+    throw new AmplifyError('MigrationError', {
+      message: `Stack refactor '${StackRefactorId}' failed during execute: ${response.ExecutionStatusReason} (status: ${response.ExecutionStatus})`,
+    });
   }
 
   // Verify both stacks reached completion
@@ -110,7 +106,7 @@ export async function tryRefactorStack(
     });
   }
 
-  return { success: true };
+  return;
 }
 
 function buildRefactorDescription(input: CreateStackRefactorCommandInput): string {

@@ -8,7 +8,7 @@ import { resolveDependencies } from '../resolvers/cfn-dependency-resolver';
 import { resolveConditions } from '../resolvers/cfn-condition-resolver';
 import { extractStackNameFromId } from '../utils';
 import { getHoldingStackName, findHoldingStack, deleteHoldingStack } from '../holding-stack';
-import { tryRefactorStack, RefactorFailure } from '../cfn-stack-refactor-updater';
+import { tryRefactorStack } from '../cfn-stack-refactor-updater';
 import { CategoryRefactorer, MoveMapping, RefactorBlueprint, ResolvedStack, ResourceMapping } from './category-refactorer';
 
 /**
@@ -190,7 +190,7 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
           }
 
           this.logger.info(header);
-          const result = await tryRefactorStack(this.clients.cloudFormation, {
+          await tryRefactorStack(this.clients.cloudFormation, {
             StackDefinitions: [
               { TemplateBody: JSON.stringify(postTargetTemplate), StackName: blueprint.target.stackId },
               { TemplateBody: JSON.stringify(holdingTemplate), StackName: holdingStackName },
@@ -198,12 +198,6 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
             ResourceMappings: holdingMappings,
             EnableStackCreation: true,
           });
-          if (!result.success) {
-            const failure = result as RefactorFailure;
-            throw new AmplifyError('StackStateError', {
-              message: `Failed to move Gen2 resources to holding stack: ${failure.reason}`,
-            });
-          }
         },
       },
     ];

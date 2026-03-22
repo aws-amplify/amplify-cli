@@ -1,17 +1,18 @@
 import {
   Parameter,
   CreateChangeSetCommand,
+  DeleteChangeSetCommand,
   DescribeChangeSetCommand,
   waitUntilChangeSetCreateComplete,
 } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
-import { CFNResource, CFNStackStatus, CFNTemplate } from '../../cfn-template';
+import { CFNResource, CFNTemplate } from '../../cfn-template';
 import { Refactorer } from '../refactorer';
 import { AmplifyMigrationOperation } from '../../_operation';
 import { AwsClients } from '../../aws-clients';
 import { StackFacade } from '../stack-facade';
 import { tryUpdateStack } from '../cfn-stack-updater';
-import { tryRefactorStack, RefactorFailure } from '../cfn-stack-refactor-updater';
+import { tryRefactorStack } from '../cfn-stack-refactor-updater';
 import { SpinningLogger } from '../../_spinning-logger';
 import { extractStackNameFromId } from '../utils';
 import { DiscoveredResource } from '../../generate/_infra/gen1-app';
@@ -188,17 +189,12 @@ export abstract class CategoryRefactorer implements Refactorer {
         describe: async () => [description],
         execute: async () => {
           this.logger.info(header);
-          const status = await tryUpdateStack({
+          await tryUpdateStack({
             cfnClient: this.clients.cloudFormation,
             stackName: source.stackId,
             parameters: source.parameters,
             templateBody: source.resolvedTemplate,
           });
-          if (status !== CFNStackStatus.UPDATE_COMPLETE) {
-            throw new AmplifyError('StackStateError', {
-              message: `Source stack '${source.stackId}' ended with status '${status}' instead of UPDATE_COMPLETE`,
-            });
-          }
         },
       },
     ];
@@ -223,17 +219,12 @@ export abstract class CategoryRefactorer implements Refactorer {
         describe: async () => [description],
         execute: async () => {
           this.logger.info(header);
-          const status = await tryUpdateStack({
+          await tryUpdateStack({
             cfnClient: this.clients.cloudFormation,
             stackName: target.stackId,
             parameters: target.parameters,
             templateBody: target.resolvedTemplate,
           });
-          if (status !== CFNStackStatus.UPDATE_COMPLETE) {
-            throw new AmplifyError('StackStateError', {
-              message: `Target stack '${target.stackId}' ended with status '${status}' instead of UPDATE_COMPLETE`,
-            });
-          }
         },
       },
     ];
@@ -258,27 +249,27 @@ export abstract class CategoryRefactorer implements Refactorer {
     );
 
     try {
-      await waitUntilChangeSetCreateComplete(
-        { client: this.clients.cloudFormation, maxWaitTime: 120 },
-        { StackName: stackName, ChangeSetName: changeSetName },
-      );
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (e: any) {
-      this.logger.pop();
-      if (e.message?.includes(`The submitted information didn't contain changes`)) {
-        // means the template we gave is exactly the same as the deployed template.
-        // this can happen after partial failures (update source -> update target -> fail -> update source)
-        return undefined;
+      try {
+        await waitUntilChangeSetCreateComplete(
+          { client: this.clients.cloudFormation, maxWaitTime: 120 },
+          { StackName: stackName, ChangeSetName: changeSetName },
+        );
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (e: any) {
+        if (e.message?.includes(`The submitted information didn't contain changes`)) {
+          return undefined;
+        }
+        throw e;
       }
-      throw e;
+
+      const changeSet = await this.clients.cloudFormation.send(
+        new DescribeChangeSetCommand({ StackName: stackName, ChangeSetName: changeSetName, IncludePropertyValues: true }),
+      );
+      return formatChangeSetReport(changeSet);
+    } finally {
+      await this.clients.cloudFormation.send(new DeleteChangeSetCommand({ StackName: stackName, ChangeSetName: changeSetName }));
+      this.logger.pop();
     }
-
-    const changeSet = await this.clients.cloudFormation.send(
-      new DescribeChangeSetCommand({ StackName: stackName, ChangeSetName: changeSetName, IncludePropertyValues: true }),
-    );
-
-    this.logger.pop();
-    return formatChangeSetReport(changeSet);
   }
 
   /**
@@ -376,19 +367,13 @@ export abstract class CategoryRefactorer implements Refactorer {
           return [`${header}\n\n${table}`];
         },
         execute: async () => {
-          const result = await tryRefactorStack(this.clients.cloudFormation, {
+          await tryRefactorStack(this.clients.cloudFormation, {
             StackDefinitions: [
               { TemplateBody: JSON.stringify(source.afterRemoval), StackName: source.stackId },
               { TemplateBody: JSON.stringify(target.afterAddition), StackName: target.stackId },
             ],
             ResourceMappings: resourceMappings,
           });
-          if (!result.success) {
-            const failure = result as RefactorFailure;
-            throw new AmplifyError('MigrationError', {
-              message: `Stack refactor failed: ${failure.reason} (status: ${failure.status}, refactorId: ${failure.stackRefactorId})`,
-            });
-          }
         },
       },
     ];
