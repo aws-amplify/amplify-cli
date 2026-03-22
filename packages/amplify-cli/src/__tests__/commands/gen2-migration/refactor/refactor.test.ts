@@ -1,5 +1,5 @@
 import { AmplifyMigrationRefactorStep } from '../../../../commands/gen2-migration/refactor';
-import { OUTPUT_DIRECTORY } from '../../../../commands/gen2-migration/refactor/snap';
+import { OUTPUT_DIRECTORY } from '../../../../commands/gen2-migration/refactor/cfn';
 import { MigrationApp, MigrationAppOptions } from '../_framework/app';
 import { Gen1App, DiscoveredResource } from '../../../../commands/gen2-migration/generate/_infra/gen1-app';
 import { Assessment } from '../../../../commands/gen2-migration/_assessment';

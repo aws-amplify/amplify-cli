@@ -1,26 +1,20 @@
-import {
-  Parameter,
-  CreateChangeSetCommand,
-  DeleteChangeSetCommand,
-  DescribeChangeSetCommand,
-  waitUntilChangeSetCreateComplete,
-} from '@aws-sdk/client-cloudformation';
+import { Parameter } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { CFNResource, CFNTemplate } from '../../cfn-template';
-import { Refactorer } from '../refactorer';
+import { Planner } from '../../planner';
 import { AmplifyMigrationOperation } from '../../_operation';
 import { AwsClients } from '../../aws-clients';
 import { StackFacade } from '../stack-facade';
-import { tryUpdateStack } from '../cfn-stack-updater';
-import { tryRefactorStack } from '../cfn-stack-refactor-updater';
+import { Cfn } from '../cfn';
 import { SpinningLogger } from '../../_spinning-logger';
 import { extractStackNameFromId } from '../utils';
 import { DiscoveredResource } from '../../generate/_infra/gen1-app';
-import { formatChangeSetReport } from '../changeset-report';
 import CLITable from 'cli-table3';
 
 export const MIGRATION_PLACEHOLDER_LOGICAL_ID = 'MigrationPlaceholder';
 export const PLACEHOLDER_RESOURCE: CFNResource = { Type: 'AWS::CloudFormation::WaitConditionHandle', Properties: {} };
+export const HOLDING_STACK_SUFFIX = '-holding';
+const MAX_STACK_NAME_LENGTH = 128;
 
 /**
  * Pre-computed data from resolving a stack's template.
@@ -82,7 +76,7 @@ export interface RefactorBlueprint {
  * Shared workflow methods (updateSource, updateTarget, buildBlueprint, buildMoveOperations)
  * are concrete on this base class.
  */
-export abstract class CategoryRefactorer implements Refactorer {
+export abstract class CategoryRefactorer implements Planner {
   constructor(
     protected readonly gen1Env: StackFacade,
     protected readonly gen2Branch: StackFacade,
@@ -91,7 +85,11 @@ export abstract class CategoryRefactorer implements Refactorer {
     protected readonly accountId: string,
     protected readonly logger: SpinningLogger,
     protected readonly resource: DiscoveredResource,
-  ) {}
+  ) {
+    this.cfn = new Cfn(clients.cloudFormation);
+  }
+
+  protected readonly cfn: Cfn;
 
   /**
    * Computes the full operation plan for this category.
@@ -189,8 +187,7 @@ export abstract class CategoryRefactorer implements Refactorer {
         describe: async () => [description],
         execute: async () => {
           this.logger.info(header);
-          await tryUpdateStack({
-            cfnClient: this.clients.cloudFormation,
+          await this.cfn.update({
             stackName: source.stackId,
             parameters: source.parameters,
             templateBody: source.resolvedTemplate,
@@ -219,8 +216,7 @@ export abstract class CategoryRefactorer implements Refactorer {
         describe: async () => [description],
         execute: async () => {
           this.logger.info(header);
-          await tryUpdateStack({
-            cfnClient: this.clients.cloudFormation,
+          await this.cfn.update({
             stackName: target.stackId,
             parameters: target.parameters,
             templateBody: target.resolvedTemplate,
@@ -234,40 +230,16 @@ export abstract class CategoryRefactorer implements Refactorer {
    * Creates a changeset for the given stack and returns a formatted report.
    */
   private async createChangeSetReport(stack: ResolvedStack): Promise<string | undefined> {
-    const changeSetName = `migration-preview-${Date.now()}`;
-    const stackName = stack.stackId;
-
-    this.logger.push(extractStackNameFromId(stackName));
-    await this.clients.cloudFormation.send(
-      new CreateChangeSetCommand({
-        StackName: stackName,
-        ChangeSetName: changeSetName,
-        TemplateBody: JSON.stringify(stack.resolvedTemplate),
-        Parameters: stack.parameters,
-        Capabilities: ['CAPABILITY_NAMED_IAM'],
-      }),
-    );
-
+    const stackName = extractStackNameFromId(stack.stackId);
+    this.logger.push(stackName);
     try {
-      try {
-        await waitUntilChangeSetCreateComplete(
-          { client: this.clients.cloudFormation, maxWaitTime: 120 },
-          { StackName: stackName, ChangeSetName: changeSetName },
-        );
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } catch (e: any) {
-        if (e.message?.includes(`The submitted information didn't contain changes`)) {
-          return undefined;
-        }
-        throw e;
-      }
-
-      const changeSet = await this.clients.cloudFormation.send(
-        new DescribeChangeSetCommand({ StackName: stackName, ChangeSetName: changeSetName, IncludePropertyValues: true }),
-      );
-      return formatChangeSetReport(changeSet);
+      const changeSet = await this.cfn.createChangeSet({
+        stackName: stack.stackId,
+        parameters: stack.parameters,
+        templateBody: stack.resolvedTemplate,
+      });
+      return changeSet ? this.cfn.renderChangeSet(changeSet) : undefined;
     } finally {
-      await this.clients.cloudFormation.send(new DeleteChangeSetCommand({ StackName: stackName, ChangeSetName: changeSetName }));
       this.logger.pop();
     }
   }
@@ -367,7 +339,7 @@ export abstract class CategoryRefactorer implements Refactorer {
           return [`${header}\n\n${table}`];
         },
         execute: async () => {
-          await tryRefactorStack(this.clients.cloudFormation, {
+          await this.cfn.refactor({
             StackDefinitions: [
               { TemplateBody: JSON.stringify(source.afterRemoval), StackName: source.stackId },
               { TemplateBody: JSON.stringify(target.afterAddition), StackName: target.stackId },
@@ -393,6 +365,19 @@ export abstract class CategoryRefactorer implements Refactorer {
   protected async findNestedStack(facade: StackFacade, prefix: string): Promise<string | undefined> {
     const stacks = await facade.fetchNestedStacks();
     return stacks.find((s) => s.LogicalResourceId?.startsWith(prefix))?.PhysicalResourceId;
+  }
+
+  /**
+   * Derives the holding stack name from a Gen2 category stack name.
+   * Preserves the CloudFormation hash suffix for uniqueness.
+   */
+  protected getHoldingStackName(gen2CategoryStackId: string): string {
+    const lastDashIndex = gen2CategoryStackId.lastIndexOf('-');
+    const prefix = gen2CategoryStackId.substring(0, lastDashIndex);
+    const hashSuffix = gen2CategoryStackId.substring(lastDashIndex);
+    const tail = `${hashSuffix}${HOLDING_STACK_SUFFIX}`;
+    const maxPrefixLength = MAX_STACK_NAME_LENGTH - tail.length;
+    return `${prefix.substring(0, maxPrefixLength)}${tail}`;
   }
 
   /** Renders a CLI table of move mappings. */

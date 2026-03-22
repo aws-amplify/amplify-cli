@@ -6,9 +6,6 @@ import { resolveParameters } from '../resolvers/cfn-parameter-resolver';
 import { resolveOutputs } from '../resolvers/cfn-output-resolver';
 import { resolveDependencies } from '../resolvers/cfn-dependency-resolver';
 import { extractStackNameFromId } from '../utils';
-import { getHoldingStackName, findHoldingStack, deleteHoldingStack } from '../holding-stack';
-import { tryUpdateStack } from '../cfn-stack-updater';
-import { tryRefactorStack } from '../cfn-stack-refactor-updater';
 import {
   CategoryRefactorer,
   MIGRATION_PLACEHOLDER_LOGICAL_ID,
@@ -112,9 +109,9 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
    */
   protected async afterMovePlan(blueprint: RefactorBlueprint): Promise<AmplifyMigrationOperation[]> {
     const gen2StackId = blueprint.source.stackId;
-    const holdingStackName = getHoldingStackName(extractStackNameFromId(gen2StackId));
+    const holdingStackName = this.getHoldingStackName(extractStackNameFromId(gen2StackId));
 
-    const holdingStack = await findHoldingStack(this.clients.cloudFormation, holdingStackName);
+    const holdingStack = await this.cfn.findStack(holdingStackName);
     if (!holdingStack) return [];
 
     const holdingTemplateResponse = await this.clients.cloudFormation.send(
@@ -170,14 +167,13 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
         validate: () => undefined,
         describe: async () => [description],
         execute: async () => {
-          await tryUpdateStack({
-            cfnClient: this.clients.cloudFormation,
+          await this.cfn.update({
             stackName: holdingStackName,
             parameters: [],
             templateBody: holdingWithPlaceholder,
           });
 
-          await tryRefactorStack(this.clients.cloudFormation, {
+          await this.cfn.refactor({
             StackDefinitions: [
               { TemplateBody: JSON.stringify(holdingAfterRestore), StackName: holdingStackName },
               { TemplateBody: JSON.stringify(targetTemplate), StackName: gen2StackId },

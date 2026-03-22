@@ -7,8 +7,6 @@ import { resolveOutputs } from '../resolvers/cfn-output-resolver';
 import { resolveDependencies } from '../resolvers/cfn-dependency-resolver';
 import { resolveConditions } from '../resolvers/cfn-condition-resolver';
 import { extractStackNameFromId } from '../utils';
-import { getHoldingStackName, findHoldingStack, deleteHoldingStack } from '../holding-stack';
-import { tryRefactorStack } from '../cfn-stack-refactor-updater';
 import { CategoryRefactorer, MoveMapping, RefactorBlueprint, ResolvedStack, ResourceMapping } from './category-refactorer';
 
 /**
@@ -126,11 +124,11 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
       holdingResources[logicalId] = blueprint.target.resolvedTemplate.Resources[logicalId];
     }
 
-    const holdingStackName = getHoldingStackName(extractStackNameFromId(blueprint.target.stackId));
+    const holdingStackName = this.getHoldingStackName(extractStackNameFromId(blueprint.target.stackId));
 
     // in auth, there are two gen1 stacks (cognito, groups) that map to the same gen2 stack.
     // each of them gets its own refactorer so the same holding stack is used twice in sequence.
-    const existing = await findHoldingStack(this.clients.cloudFormation, holdingStackName);
+    const existing = await this.cfn.findStack(holdingStackName);
     if (existing && existing.StackStatus !== 'REVIEW_IN_PROGRESS') {
       const getTemplateResponse = await this.clients.cloudFormation.send(
         new GetTemplateCommand({
@@ -186,11 +184,11 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
         execute: async () => {
           if (existing?.StackStatus === 'REVIEW_IN_PROGRESS') {
             this.logger.info(`Deleting existing holding stack: ${holdingStackName}`);
-            await deleteHoldingStack(this.clients.cloudFormation, holdingStackName);
+            await this.cfn.deleteStack(holdingStackName);
           }
 
           this.logger.info(header);
-          await tryRefactorStack(this.clients.cloudFormation, {
+          await this.cfn.refactor({
             StackDefinitions: [
               { TemplateBody: JSON.stringify(postTargetTemplate), StackName: blueprint.target.stackId },
               { TemplateBody: JSON.stringify(holdingTemplate), StackName: holdingStackName },

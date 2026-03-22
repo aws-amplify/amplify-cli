@@ -7,7 +7,7 @@ import { GetCallerIdentityCommand, STSClient } from '@aws-sdk/client-sts';
 import { AmplifyGen2MigrationValidations } from '../_validations';
 import { AwsClients } from '../aws-clients';
 import { StackFacade } from './stack-facade';
-import { Refactorer } from './refactorer';
+import { Planner } from '../planner';
 import { AuthCognitoForwardRefactorer } from './auth/auth-cognito-forward';
 import { AuthCognitoRollbackRefactorer } from './auth/auth-cognito-rollback';
 import { StorageS3ForwardRefactorer } from './storage/storage-forward';
@@ -57,7 +57,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
     const gen1App = await Gen1App.create({ appId: this.appId, region: this.region, envName: this.currentEnvName, clients });
     const discovered = gen1App.discover();
 
-    const refactorers: Refactorer[] = [];
+    const refactorers: Planner[] = [];
 
     for (const resource of discovered) {
       switch (resource.key) {
@@ -122,7 +122,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
     const gen1App = await Gen1App.create({ appId: this.appId, region: this.region, envName: this.currentEnvName, clients });
     const discovered = gen1App.discover();
 
-    const refactorers: Refactorer[] = [];
+    const refactorers: Planner[] = [];
 
     for (const resource of discovered) {
       switch (resource.key) {
@@ -189,7 +189,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
   /**
    * Collects operations from all refactorers.
    */
-  private async buildPlan(refactorers: Refactorer[], implications: string[], title: string): Promise<Plan> {
+  private async buildPlan(refactorers: Planner[], implications: string[], title: string): Promise<Plan> {
     const operations: AmplifyMigrationOperation[] = [];
 
     operations.push({
