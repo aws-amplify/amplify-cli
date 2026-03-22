@@ -67,17 +67,7 @@ runs:
 
     - name: Run Smoke Tests
       shell: bash
-      run: |
-        set +e
-        yarn smoketest -- --forceExit --no-cache --maxWorkers=2
-        EXIT_CODE=$?
-        if [ $EXIT_CODE -ne 0 ]; then
-          echo "::warning::Smoke tests failed on first attempt (exit code $EXIT_CODE). Retrying in 30s..."
-          sleep 30
-          yarn smoketest -- --forceExit --no-cache --maxWorkers=2
-          EXIT_CODE=$?
-        fi
-        exit $EXIT_CODE
+      run: yarn smoketest -- --forceExit --no-cache --maxWorkers=2
       env:
         CLI_REGION: ${{ inputs.region }}
         CI: true
