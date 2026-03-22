@@ -122,9 +122,9 @@ export abstract class CategoryRefactorer implements Planner {
 
     const updateSourceOps = await this.updateSource(blueprint.source);
     const updateTargetOps = await this.updateTarget(blueprint.target);
-    const beforeMoveOps = await this.beforeMovePlan(blueprint);
-    const moveOps = await this.buildMoveOperations(blueprint);
-    const afterMoveOps = await this.afterMovePlan(blueprint);
+    const beforeMoveOps = await this.beforeMove(blueprint);
+    const moveOps = await this.move(blueprint);
+    const afterMoveOps = await this.afterMove(blueprint);
 
     const operations = [...updateSourceOps, ...updateTargetOps, ...beforeMoveOps, ...moveOps, ...afterMoveOps];
     this.logger.pop();
@@ -157,14 +157,14 @@ export abstract class CategoryRefactorer implements Planner {
    * Forward: moves Gen2 resources to holding stack.
    * Rollback: no-op.
    */
-  protected abstract beforeMovePlan(blueprint: RefactorBlueprint): Promise<AmplifyMigrationOperation[]> | AmplifyMigrationOperation[];
+  protected abstract beforeMove(blueprint: RefactorBlueprint): Promise<AmplifyMigrationOperation[]> | AmplifyMigrationOperation[];
 
   /**
    * Post-move operations.
    * Forward: empty.
    * Rollback: restores holding stack resources into Gen2, deletes holding stack.
    */
-  protected abstract afterMovePlan(blueprint: RefactorBlueprint): Promise<AmplifyMigrationOperation[]>;
+  protected abstract afterMove(blueprint: RefactorBlueprint): Promise<AmplifyMigrationOperation[]>;
 
   // -- Shared workflow (concrete) --
 
@@ -174,9 +174,7 @@ export abstract class CategoryRefactorer implements Planner {
    */
   protected async updateSource(source: ResolvedStack): Promise<AmplifyMigrationOperation[]> {
     const sourceStackName = extractStackNameFromId(source.stackId);
-    const header = `Update source stack '${sourceStackName}' with resolved references`;
     const report = await this.createChangeSetReport(source);
-    const description = report ? `${header}\n\n${report.trimStart()}` : `${header} (empty change-set)`;
     return [
       {
         resource: this.resource,
@@ -184,9 +182,11 @@ export abstract class CategoryRefactorer implements Planner {
           description: `Ensure no unexpected changes to ${sourceStackName}`,
           run: async () => ({ valid: report === undefined, report }),
         }),
-        describe: async () => [description],
+        describe: async () => {
+          const header = `Update source stack '${sourceStackName}' with resolved references`;
+          return [report ? `${header}\n\n${report.trimStart()}` : `${header} (empty change-set)`];
+        },
         execute: async () => {
-          this.logger.info(header);
           await this.cfn.update({
             stackName: source.stackId,
             parameters: source.parameters,
@@ -203,9 +203,7 @@ export abstract class CategoryRefactorer implements Planner {
    */
   protected async updateTarget(target: ResolvedStack): Promise<AmplifyMigrationOperation[]> {
     const targetStackName = extractStackNameFromId(target.stackId);
-    const header = `Update target stack '${targetStackName}' with resolved references`;
     const report = await this.createChangeSetReport(target);
-    const description = report ? `${header}\n\n${report.trimStart()}` : `${header} (empty change-set)`;
     return [
       {
         resource: this.resource,
@@ -213,9 +211,11 @@ export abstract class CategoryRefactorer implements Planner {
           description: `Ensure no unexpected changes to ${targetStackName}`,
           run: async () => ({ valid: report === undefined, report }),
         }),
-        describe: async () => [description],
+        describe: async () => {
+          const header = `Update target stack '${targetStackName}' with resolved references`;
+          return [report ? `${header}\n\n${report.trimStart()}` : `${header} (empty change-set)`];
+        },
         execute: async () => {
-          this.logger.info(header);
           await this.cfn.update({
             stackName: target.stackId,
             parameters: target.parameters,
@@ -316,7 +316,7 @@ export abstract class CategoryRefactorer implements Planner {
   /**
    * Creates the move operation that executes the CloudFormation stack refactor.
    */
-  protected async buildMoveOperations(blueprint: RefactorBlueprint): Promise<AmplifyMigrationOperation[]> {
+  protected async move(blueprint: RefactorBlueprint): Promise<AmplifyMigrationOperation[]> {
     const { source, target, mappings } = blueprint;
     const sourceStackName = extractStackNameFromId(source.stackId);
     const targetStackName = extractStackNameFromId(target.stackId);

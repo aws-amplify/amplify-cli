@@ -1,4 +1,4 @@
-import { GetTemplateCommand, Output, Parameter } from '@aws-sdk/client-cloudformation';
+import { Output, Parameter } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { CFNResource, CFNTemplate } from '../../cfn-template';
 import { AmplifyMigrationOperation } from '../../_operation';
@@ -116,7 +116,7 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
   /**
    * Moves Gen2 resources to a holding stack before the main refactor.
    */
-  protected async beforeMovePlan(blueprint: RefactorBlueprint): Promise<AmplifyMigrationOperation[]> {
+  protected async beforeMove(blueprint: RefactorBlueprint): Promise<AmplifyMigrationOperation[]> {
     // holding stack gets all mapping targets
     const targets = blueprint.mappings.map((m) => m.targetId);
     const holdingResources: Record<string, CFNResource> = {};
@@ -130,12 +130,7 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
     // each of them gets its own refactorer so the same holding stack is used twice in sequence.
     const existing = await this.cfn.findStack(holdingStackName);
     if (existing && existing.StackStatus !== 'REVIEW_IN_PROGRESS') {
-      const getTemplateResponse = await this.clients.cloudFormation.send(
-        new GetTemplateCommand({
-          StackName: holdingStackName,
-        }),
-      );
-      const existingTemplate = JSON.parse(getTemplateResponse.TemplateBody ?? '{}');
+      const existingTemplate = await this.cfn.fetchTemplate(holdingStackName);
       for (const logicalId of Object.keys(existingTemplate.Resources ?? {})) {
         const existingResource = holdingResources[logicalId];
         if (existingResource) {
@@ -152,59 +147,63 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
       Outputs: {},
     };
 
-    // Post-holding target = target.afterRemoval (already computed by buildBlueprint)
-    const postTargetTemplate = blueprint.target.afterRemoval;
-
-    const holdingMappings: ResourceMapping[] = targets.map((id) => ({
-      Source: { StackName: extractStackNameFromId(blueprint.target.stackId), LogicalResourceId: id },
-      Destination: { StackName: extractStackNameFromId(holdingStackName), LogicalResourceId: id },
+    const holdingMoveMappings: MoveMapping[] = blueprint.mappings.map((m) => ({
+      sourceId: m.targetId,
+      targetId: m.targetId,
+      resource: m.resource,
+      physicalResourceId: m.physicalResourceId,
     }));
 
-    const gen2Resources = await this.gen2Branch.fetchStackResources(blueprint.target.stackId);
-    const physicalIds = new Map(gen2Resources.map((r) => [r.LogicalResourceId!, r.PhysicalResourceId!]));
+    const targetStackName = extractStackNameFromId(blueprint.target.stackId);
 
-    const holdingMoveMappings: MoveMapping[] = targets.map((id) => ({
-      sourceId: id,
-      targetId: id,
-      resource: blueprint.target.resolvedTemplate.Resources[id],
-      physicalResourceId: physicalIds.get(id) ?? '',
-    }));
+    const header = `Move ${holdingMoveMappings.length} resource(s) from '${targetStackName}' to '${extractStackNameFromId(
+      holdingStackName,
+    )}'`;
 
-    const header = `Move ${holdingMappings.length} resource(s) from '${extractStackNameFromId(
-      blueprint.target.stackId,
-    )}' to '${extractStackNameFromId(holdingStackName)}'`;
-    const table = this.renderMappingTable(holdingMoveMappings);
-    const description = `${header}\n\n${table}`;
+    const operations: AmplifyMigrationOperation[] = [];
 
-    return [
-      {
+    if (existing?.StackStatus === 'REVIEW_IN_PROGRESS') {
+      operations.push({
         resource: this.resource,
         validate: () => undefined,
-        describe: async () => [description],
+        describe: async () => [`Delete stale holding stack '${extractStackNameFromId(holdingStackName)}'`],
         execute: async () => {
-          if (existing?.StackStatus === 'REVIEW_IN_PROGRESS') {
-            this.logger.info(`Deleting existing holding stack: ${holdingStackName}`);
-            await this.cfn.deleteStack(holdingStackName);
-          }
-
-          this.logger.info(header);
-          await this.cfn.refactor({
-            StackDefinitions: [
-              { TemplateBody: JSON.stringify(postTargetTemplate), StackName: blueprint.target.stackId },
-              { TemplateBody: JSON.stringify(holdingTemplate), StackName: holdingStackName },
-            ],
-            ResourceMappings: holdingMappings,
-            EnableStackCreation: true,
-          });
+          await this.cfn.deleteStack(holdingStackName);
         },
+      });
+    }
+
+    operations.push({
+      resource: this.resource,
+      validate: () => undefined,
+      describe: async () => {
+        const table = this.renderMappingTable(holdingMoveMappings);
+        return [`${header}\n\n${table}`];
       },
-    ];
+      execute: async () => {
+        this.logger.info(header);
+        const resourceMappings: ResourceMapping[] = holdingMoveMappings.map(({ sourceId, targetId }) => ({
+          Source: { StackName: targetStackName, LogicalResourceId: sourceId },
+          Destination: { StackName: extractStackNameFromId(holdingStackName), LogicalResourceId: targetId },
+        }));
+        await this.cfn.refactor({
+          StackDefinitions: [
+            { TemplateBody: JSON.stringify(blueprint.target.afterRemoval), StackName: blueprint.target.stackId },
+            { TemplateBody: JSON.stringify(holdingTemplate), StackName: holdingStackName },
+          ],
+          ResourceMappings: resourceMappings,
+          EnableStackCreation: true,
+        });
+      },
+    });
+
+    return operations;
   }
 
   /**
    * Forward: no post-move operations. Holding stack survives for rollback.
    */
-  protected async afterMovePlan(): Promise<AmplifyMigrationOperation[]> {
+  protected async afterMove(): Promise<AmplifyMigrationOperation[]> {
     return [];
   }
 

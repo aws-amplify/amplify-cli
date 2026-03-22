@@ -10,6 +10,7 @@ import {
   DescribeChangeSetOutput,
   DescribeStacksCommand,
   ExecuteStackRefactorCommand,
+  GetTemplateCommand,
   Parameter,
   Stack,
   UpdateStackCommand,
@@ -185,6 +186,20 @@ export class Cfn {
       }
       throw error;
     }
+  }
+
+  /**
+   * Fetches and parses the original template for a stack.
+   * Throws if the stack returns an empty template.
+   */
+  public async fetchTemplate(stackName: string): Promise<CFNTemplate> {
+    const response = await this.client.send(new GetTemplateCommand({ StackName: stackName, TemplateStage: 'Original' }));
+    if (!response.TemplateBody) {
+      throw new AmplifyError('InvalidStackError', {
+        message: `Stack '${extractStackNameFromId(stackName)}' returned an empty template`,
+      });
+    }
+    return JSON.parse(response.TemplateBody) as CFNTemplate;
   }
 
   /**

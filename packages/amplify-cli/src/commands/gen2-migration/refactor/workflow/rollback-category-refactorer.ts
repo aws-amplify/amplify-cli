@@ -1,4 +1,4 @@
-import { GetTemplateCommand } from '@aws-sdk/client-cloudformation';
+import { DescribeChangeSetOutput } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { CFNResource, CFNTemplate } from '../../cfn-template';
 import { AmplifyMigrationOperation } from '../../_operation';
@@ -13,7 +13,6 @@ import {
   MoveMapping,
   RefactorBlueprint,
   ResolvedStack,
-  ResourceMapping,
 } from './category-refactorer';
 
 /**
@@ -100,55 +99,33 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
   /**
    * Rollback: no pre-move operations.
    */
-  protected beforeMovePlan(_blueprint: RefactorBlueprint): AmplifyMigrationOperation[] {
+  protected beforeMove(_blueprint: RefactorBlueprint): AmplifyMigrationOperation[] {
     return [];
   }
 
   /**
    * Restores holding stack resources into Gen2 and deletes the holding stack.
    */
-  protected async afterMovePlan(blueprint: RefactorBlueprint): Promise<AmplifyMigrationOperation[]> {
+  protected async afterMove(blueprint: RefactorBlueprint): Promise<AmplifyMigrationOperation[]> {
     const gen2StackId = blueprint.source.stackId;
     const holdingStackName = this.getHoldingStackName(extractStackNameFromId(gen2StackId));
 
     const holdingStack = await this.cfn.findStack(holdingStackName);
     if (!holdingStack) return [];
 
-    const holdingTemplateResponse = await this.clients.cloudFormation.send(
-      new GetTemplateCommand({ StackName: holdingStackName, TemplateStage: 'Original' }),
-    );
-    if (!holdingTemplateResponse.TemplateBody) {
-      throw new AmplifyError('InvalidStackError', {
-        message: `Holding stack '${holdingStackName}' returned an empty template`,
-      });
-    }
+    const holdingTemplate = await this.cfn.fetchTemplate(holdingStackName);
 
     if (blueprint.mappings.length === 0) {
       return [];
     }
 
-    const restoreMappings: ResourceMapping[] = blueprint.mappings.map((m) => ({
-      Source: { StackName: extractStackNameFromId(holdingStackName), LogicalResourceId: m.sourceId },
-      Destination: { StackName: extractStackNameFromId(gen2StackId), LogicalResourceId: m.sourceId },
-    }));
-
-    const sourceResources = await this.gen2Branch.fetchStackResources(blueprint.source.stackId);
-    const physicalIds = new Map(sourceResources.map((r) => [r.LogicalResourceId!, r.PhysicalResourceId!]));
-
-    const restoreMoveMappings: MoveMapping[] = blueprint.mappings.map((m) => ({
+    const mappings = blueprint.mappings.map((m) => ({
       sourceId: m.sourceId,
       targetId: m.sourceId,
       resource: m.resource,
-      physicalResourceId: physicalIds.get(m.sourceId) ?? '',
+      physicalResourceId: m.physicalResourceId,
     }));
 
-    const header = `Move ${blueprint.mappings.length} resource(s) from '${extractStackNameFromId(
-      holdingStackName,
-    )}' to '${extractStackNameFromId(gen2StackId)}'`;
-    const table = this.renderMappingTable(restoreMoveMappings);
-    const description = `${header}\n\n${table}`;
-
-    const holdingTemplate = JSON.parse(holdingTemplateResponse.TemplateBody) as CFNTemplate;
     const holdingWithPlaceholder = {
       ...holdingTemplate,
       Resources: { ...holdingTemplate.Resources, [MIGRATION_PLACEHOLDER_LOGICAL_ID]: PLACEHOLDER_RESOURCE },
@@ -161,27 +138,71 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
       delete holdingAfterRestore.Resources[mapping.sourceId];
     }
 
+    // Pre-compute the changeset report for the holding stack update
+    const holdingChangeSet = await this.cfn.createChangeSet({
+      stackName: holdingStackName,
+      parameters: [],
+      templateBody: holdingWithPlaceholder,
+    });
+    const holdingReport = holdingChangeSet ? this.cfn.renderChangeSet(holdingChangeSet) : undefined;
+
     return [
       {
         resource: this.resource,
-        validate: () => undefined,
-        describe: async () => [description],
+        validate: () => ({
+          description: `Ensure holding stack update only adds placeholder`,
+          run: async () => ({ valid: this.isPlaceholderOnlyChangeSet(holdingChangeSet), report: holdingReport }),
+        }),
+        describe: async () => {
+          const header = `Update holding stack '${extractStackNameFromId(holdingStackName)}' with placeholder resource`;
+          const desc = holdingReport ? `${header}\n\n${holdingReport.trimStart()}` : `${header} (empty change-set)`;
+          return [desc];
+        },
         execute: async () => {
           await this.cfn.update({
             stackName: holdingStackName,
             parameters: [],
             templateBody: holdingWithPlaceholder,
           });
-
+        },
+      },
+      {
+        resource: this.resource,
+        validate: () => undefined,
+        describe: async () => {
+          const header = `Move ${blueprint.mappings.length} resource(s) from '${extractStackNameFromId(
+            holdingStackName,
+          )}' to '${extractStackNameFromId(gen2StackId)}'`;
+          const table = this.renderMappingTable(mappings);
+          return [`${header}\n\n${table}`];
+        },
+        execute: async () => {
+          const resourceMappings = mappings.map(({ sourceId, targetId }) => ({
+            Source: { StackName: extractStackNameFromId(holdingStackName), LogicalResourceId: sourceId },
+            Destination: { StackName: extractStackNameFromId(gen2StackId), LogicalResourceId: targetId },
+          }));
           await this.cfn.refactor({
             StackDefinitions: [
               { TemplateBody: JSON.stringify(holdingAfterRestore), StackName: holdingStackName },
               { TemplateBody: JSON.stringify(targetTemplate), StackName: gen2StackId },
             ],
-            ResourceMappings: restoreMappings,
+            ResourceMappings: resourceMappings,
           });
         },
       },
     ];
+  }
+
+  /**
+   * Returns true if the changeset is empty or only adds the migration placeholder.
+   */
+  private isPlaceholderOnlyChangeSet(changeSet: DescribeChangeSetOutput | undefined): boolean {
+    if (!changeSet) return true;
+    const changes = changeSet.Changes ?? [];
+    if (changes.length === 0) return true;
+    return changes.every((c) => {
+      const rc = c.ResourceChange;
+      return rc?.Action === 'Add' && rc?.LogicalResourceId === MIGRATION_PLACEHOLDER_LOGICAL_ID;
+    });
   }
 }
