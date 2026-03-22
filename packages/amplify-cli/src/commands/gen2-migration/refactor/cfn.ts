@@ -37,6 +37,13 @@ const NO_UPDATES_MESSAGE = 'No updates are to be performed';
 const CFN_IAM_CAPABILITY = 'CAPABILITY_NAMED_IAM';
 export const OUTPUT_DIRECTORY = '.amplify/refactor.operations';
 
+const EMPTY_HOLDING_TEMPLATE: CFNTemplate = {
+  AWSTemplateFormatVersion: '2010-09-09',
+  Description: 'Temporary holding stack for Gen2 migration',
+  Resources: {},
+  Outputs: {},
+};
+
 /**
  * Centralized CloudFormation operations for the refactor workflow.
  * Wraps update, refactor, and change set APIs behind a single client instance.
@@ -91,8 +98,18 @@ export class Cfn {
     const sourceStackId = resourceMappings[0].Source.StackName;
     const targetStackId = resourceMappings[0].Destination.StackName;
 
+    this.info(`Creating stack refactor: ${extractStackNameFromId(sourceStackId)} → ${extractStackNameFromId(targetStackId)}`);
+
+    const targetStack = await this.findStack(targetStackId);
+
+    if (!targetStack && !targetStackId.endsWith('-holding')) {
+      // only holding stacks may be absent because they are
+      // created by the refactor operation.
+      throw new AmplifyError('MigrationError', { message: `Stack with id ${targetStackId} not found` });
+    }
+
     const sourceTemplate = await this.fetchTemplate(sourceStackId);
-    const targetTemplate = await this.fetchTemplate(targetStackId);
+    const targetTemplate = targetStack ? await this.fetchTemplate(targetStackId) : EMPTY_HOLDING_TEMPLATE;
 
     for (const mapping of resourceMappings) {
       targetTemplate.Resources[mapping.Destination.LogicalResourceId] = sourceTemplate.Resources[mapping.Source.LogicalResourceId];
@@ -112,15 +129,12 @@ export class Cfn {
 
     writeRefactorSnapshot(input);
 
-    this.info(`Creating stack refactor: ${extractStackNameFromId(sourceStackId)} → ${extractStackNameFromId(targetStackId)}`);
     const { StackRefactorId } = await this.client.send(new CreateStackRefactorCommand(input));
     if (!StackRefactorId) {
       throw new AmplifyError('StackStateError', {
         message: 'CreateStackRefactor returned no StackRefactorId',
       });
     }
-
-    const destinationStack = await this.findStack(targetStackId);
 
     this.info(`Waiting for stack refactor creation to complete: ${StackRefactorId}`);
     await waitUntilStackRefactorCreateComplete({ client: this.client, maxWaitTime: MAX_WAIT_TIME_SECONDS }, { StackRefactorId });
@@ -135,7 +149,7 @@ export class Cfn {
 
     // Destination may be newly created (EnableStackCreation) or updated
     this.info(`Waiting for destination stack: ${extractStackNameFromId(targetStackId)}`);
-    if (destinationStack) {
+    if (targetStack) {
       await waitUntilStackUpdateComplete({ client: this.client, maxWaitTime: MAX_WAIT_TIME_SECONDS }, { StackName: targetStackId });
     } else {
       await waitUntilStackCreateComplete({ client: this.client, maxWaitTime: MAX_WAIT_TIME_SECONDS }, { StackName: targetStackId });

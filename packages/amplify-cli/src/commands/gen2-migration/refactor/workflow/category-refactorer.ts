@@ -79,14 +79,15 @@ export abstract class CategoryRefactorer implements Planner {
     const sourceStackId = await this.fetchSourceStackId();
     const destStackId = await this.fetchDestStackId();
 
+    const resourceSpec = `${this.resource.category}/${this.resource.resourceName} (${this.resource.service})`;
     if (!sourceStackId) {
       throw new AmplifyError('MigrationError', {
-        message: `[${this.constructor.name}] unable to find source stack`,
+        message: `Unable to find source stack for resource: ${resourceSpec}`,
       });
     }
     if (!destStackId) {
       throw new AmplifyError('MigrationError', {
-        message: `[${this.constructor.name}] unable to find target stack`,
+        message: `Unable to find target stack for resource: ${resourceSpec}`,
       });
     }
 

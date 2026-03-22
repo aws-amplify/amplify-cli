@@ -115,8 +115,6 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
     const holdingStack = await this.cfn.findStack(holdingStackName);
     if (!holdingStack) return [];
 
-    const holdingTemplate = await this.cfn.fetchTemplate(holdingStackName);
-
     const resourceMappings: ResourceMapping[] = blueprint.mappings.map((m) => ({
       Source: { LogicalResourceId: m.Source.LogicalResourceId, StackName: holdingStackName },
       Destination: { LogicalResourceId: m.Source.LogicalResourceId, StackName: gen2StackName },
@@ -130,6 +128,7 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
           return [`Update holding stack '${extractStackNameFromId(holdingStackName)}' with placeholder resource`];
         },
         execute: async () => {
+          const holdingTemplate = await this.cfn.fetchTemplate(holdingStackName);
           holdingTemplate.Resources[MIGRATION_PLACEHOLDER_LOGICAL_ID] = PLACEHOLDER_RESOURCE;
           await this.cfn.update({
             stackName: holdingStackName,
