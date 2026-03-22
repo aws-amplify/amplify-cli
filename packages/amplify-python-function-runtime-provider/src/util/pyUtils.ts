@@ -3,24 +3,12 @@ import fs from 'fs-extra';
 import * as which from 'which';
 import { parse } from 'ini';
 import { AmplifyError, execWithOutputAsString } from '@aws-amplify/amplify-cli-core';
+import { getVirtualEnvPath } from './packageManagerUtils';
 
-// Gets the pipenv dir where this function's dependencies are located
+// Gets the virtual env dir where this function's dependencies are located
+// This function now supports both uv and pipenv
 export async function getPipenvDir(srcRoot: string): Promise<string> {
-  const pipEnvDir = await execWithOutputAsString('pipenv --venv', { cwd: srcRoot });
-  const pyBinary = getPythonBinaryName();
-
-  if (!pyBinary) {
-    throw new AmplifyError('PackagingLambdaFunctionError', { message: `Could not find 'python3' or 'python' executable in the PATH.` });
-  }
-
-  let pipEnvPath = path.join(pipEnvDir, 'lib', `python${getPipfilePyVersion(path.join(srcRoot, 'Pipfile'))}`, 'site-packages');
-  if (process.platform.startsWith('win')) {
-    pipEnvPath = path.join(pipEnvDir, 'Lib', 'site-packages');
-  }
-  if (fs.existsSync(pipEnvPath)) {
-    return pipEnvPath;
-  }
-  throw new AmplifyError('PackagingLambdaFunctionError', { message: `Could not find a pipenv site-packages directory at ${pipEnvPath}` });
+  return getVirtualEnvPath(srcRoot);
 }
 
 export function majMinPyVersion(pyVersion: string): string {
@@ -45,13 +33,4 @@ export const getPythonBinaryName = (): string | undefined => {
     }
   }
   return undefined;
-};
-
-const getPipfilePyVersion = (pipfilePath: string) => {
-  const pipfile = parse(fs.readFileSync(pipfilePath, 'utf-8'));
-  const version = pipfile?.requires?.python_version;
-  if (!version) {
-    throw new AmplifyError('PackagingLambdaFunctionError', { message: `Did not find Python version specified in ${pipfilePath}` });
-  }
-  return version as string;
 };

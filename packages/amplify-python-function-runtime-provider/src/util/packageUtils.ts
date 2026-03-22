@@ -44,8 +44,12 @@ export async function pythonPackage(context: any, params: PackageRequest): Promi
         }
       });
     } else {
+      // Check if 'src' folder exists, otherwise use srcRoot directly
+      const srcDir = path.join(params.srcRoot, 'src');
+      const sourceFolder = fs.existsSync(srcDir) ? srcDir : params.srcRoot;
+
       zipEntries.push({
-        sourceFolder: path.join(params.srcRoot, 'src'),
+        sourceFolder: sourceFolder,
         packageFolder: await getPipenvDir(params.srcRoot),
         ignoreFiles: [
           '**/dist/**',
