@@ -34813,12 +34813,12 @@ __metadata:
   linkType: hard
 
 "yauzl@npm:^3.1.3":
-  version: 3.1.3
-  resolution: "yauzl@npm:3.1.3"
+  version: 3.2.1
+  resolution: "yauzl@npm:3.2.1"
   dependencies:
     buffer-crc32: ~0.2.3
     pend: ~1.2.0
-  checksum: e04a2567860e1337798cd2570d776b4040520b20660e7ec5dfcce24b8be2b134d6a5ae835804a0186b1a58cb8b1741b37eaa6a86f7546b6219b62a265dbaf3fc
+  checksum: fe1997a8ee53c42556789ca61a28278e9ea2ca8f68cae1ae9904edaf3b5fbbc5d5537a3fb8623ac82c2bd0bd9d67233ce593f1acaadfb8718489d9f06d1bb3d0
   languageName: node
   linkType: hard
 
