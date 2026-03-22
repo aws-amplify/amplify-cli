@@ -1,13 +1,13 @@
-import { Output, Parameter, Stack } from '@aws-sdk/client-cloudformation';
+import { Output, Parameter, ResourceMapping } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
-import { CFNResource, CFNTemplate } from '../../cfn-template';
+import { CFNResource } from '../../cfn-template';
 import { AmplifyMigrationOperation } from '../../_operation';
 import { resolveParameters } from '../resolvers/cfn-parameter-resolver';
 import { resolveOutputs } from '../resolvers/cfn-output-resolver';
 import { resolveDependencies } from '../resolvers/cfn-dependency-resolver';
 import { resolveConditions } from '../resolvers/cfn-condition-resolver';
 import { extractStackNameFromId } from '../utils';
-import { CategoryRefactorer, MoveMapping, RefactorBlueprint, ResolvedStack } from './category-refactorer';
+import { CategoryRefactorer, RefactorBlueprint, ResolvedStack } from './category-refactorer';
 
 /**
  * Forward direction base: moves resources from Gen1 (source) to Gen2 (target).
@@ -23,11 +23,8 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
     targetResources: Map<string, CFNResource>,
     sourceStackId: string,
     targetStackId: string,
-  ): Promise<MoveMapping[]> {
-    const stackResources = await this.gen1Env.fetchStackResources(sourceStackId);
-    const physicalIds = new Map(stackResources.map((r) => [r.LogicalResourceId, r.PhysicalResourceId]));
-
-    const mappings: MoveMapping[] = [];
+  ): Promise<ResourceMapping[]> {
+    const mappings: ResourceMapping[] = [];
     for (const [sourceId, sourceResource] of sourceResources) {
       const matchedTargets = [];
       for (const [targetId, targetResource] of targetResources) {
@@ -51,7 +48,10 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
         });
       }
       const targetId = matchedTargets[0];
-      mappings.push({ sourceId, targetId, resource: sourceResource, physicalResourceId: physicalIds.get(sourceId) });
+      mappings.push({
+        Source: { LogicalResourceId: sourceId, StackName: sourceStackId },
+        Destination: { LogicalResourceId: targetId, StackName: targetStackId },
+      });
     }
     return mappings;
   }
@@ -118,11 +118,11 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
     return { stackId, resolvedTemplate: resolved, parameters };
   }
 
-  protected override async updateSource(source: ResolvedStack, mappings: MoveMapping[]): Promise<AmplifyMigrationOperation[]> {
+  protected override async updateSource(source: ResolvedStack): Promise<AmplifyMigrationOperation[]> {
     if (this.gen1Env.isUpdated(source)) {
       return [];
     }
-    const operations = super.updateSource(source, mappings);
+    const operations = super.updateSource(source);
     this.gen1Env.markUpdated(source);
     return operations;
   }
@@ -144,7 +144,10 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
     const gen2StackName = extractStackNameFromId(blueprint.targetStackId);
     const holdingStackName = this.getHoldingStackName(gen2StackName);
 
-    // Pre-fetch holding stack status for plan-time description
+    const resourceMappings: ResourceMapping[] = blueprint.mappings.map((m) => ({
+      Source: { LogicalResourceId: m.Destination.LogicalResourceId, StackName: gen2StackName },
+      Destination: { LogicalResourceId: m.Destination.LogicalResourceId, StackName: holdingStackName },
+    }));
     const holdingStack = await this.cfn.findStack(holdingStackName);
 
     const operations: AmplifyMigrationOperation[] = [];
@@ -167,46 +170,11 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
         const header = `Move ${blueprint.mappings.length} resource(s) from '${gen2StackName}' to '${extractStackNameFromId(
           holdingStackName,
         )}'`;
-        const table = this.renderMappingTable(
-          blueprint.mappings.map((m) => ({
-            sourceId: m.targetId,
-            targetId: m.targetId,
-            resource: m.resource,
-            physicalResourceId: m.physicalResourceId,
-          })),
-        );
+        const table = this.renderMappingTable(resourceMappings);
         return [`${header}\n\n${table}`];
       },
       execute: async () => {
-        const target = await this.resolveTarget(blueprint.targetStackId);
-        const gen2Template = JSON.parse(JSON.stringify(target.resolvedTemplate)) as CFNTemplate;
-        const { template: holdingTemplate } = await this.fetchHoldingStackTemplate(holdingStackName);
-
-        const moveMappings = blueprint.mappings.map((m) => ({
-          sourceId: m.targetId,
-          targetId: m.targetId,
-          resource: gen2Template.Resources[m.targetId],
-          physicalResourceId: m.physicalResourceId,
-        }));
-
-        const resourceMappings = moveMappings.map(({ sourceId, targetId }) => ({
-          Source: { StackName: gen2StackName, LogicalResourceId: sourceId },
-          Destination: { StackName: holdingStackName, LogicalResourceId: targetId },
-        }));
-
-        for (const mapping of moveMappings) {
-          holdingTemplate.Resources[mapping.targetId] = mapping.resource;
-          delete gen2Template.Resources[mapping.sourceId];
-        }
-
-        await this.cfn.refactor({
-          StackDefinitions: [
-            { TemplateBody: JSON.stringify(gen2Template), StackName: gen2StackName },
-            { TemplateBody: JSON.stringify(holdingTemplate), StackName: holdingStackName },
-          ],
-          ResourceMappings: resourceMappings,
-          EnableStackCreation: true,
-        });
+        await this.cfn.refactor(resourceMappings);
       },
     });
 
@@ -225,22 +193,5 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
    */
   protected async resolveOAuthParameters(parameters: Parameter[], _outputs: Output[]): Promise<Parameter[]> {
     return parameters;
-  }
-
-  protected async fetchHoldingStackTemplate(holdingStackName: string): Promise<{
-    readonly stack?: Stack;
-    readonly template: CFNTemplate;
-  }> {
-    const existing = await this.cfn.findStack(holdingStackName);
-    const template =
-      existing && existing.StackStatus !== 'REVIEW_IN_PROGRESS'
-        ? await this.cfn.fetchTemplate(holdingStackName)
-        : {
-            AWSTemplateFormatVersion: '2010-09-09',
-            Description: 'Temporary holding stack for Gen2 migration',
-            Resources: {},
-            Outputs: {},
-          };
-    return { stack: existing, template };
   }
 }

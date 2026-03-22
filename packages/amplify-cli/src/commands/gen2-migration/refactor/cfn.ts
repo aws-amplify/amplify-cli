@@ -12,6 +12,7 @@ import {
   ExecuteStackRefactorCommand,
   GetTemplateCommand,
   Parameter,
+  ResourceMapping,
   Stack,
   UpdateStackCommand,
   UpdateStackCommandInput,
@@ -86,19 +87,32 @@ export class Cfn {
    * Creates and executes a CloudFormation stack refactor.
    * Throws on failure.
    */
-  public async refactor(input: CreateStackRefactorCommandInput): Promise<void> {
-    const sourceStackName = input.StackDefinitions?.[0]?.StackName;
-    const destStackName = input.StackDefinitions?.[1]?.StackName;
-    if (!sourceStackName || !destStackName) {
-      throw new AmplifyError('InvalidStackError', {
-        message: 'Stack refactor input is missing source or destination stack name',
-      });
+  public async refactor(resourceMappings: ResourceMapping[]): Promise<void> {
+    const sourceStackId = resourceMappings[0].Source.StackName;
+    const targetStackId = resourceMappings[0].Destination.StackName;
+
+    const sourceTemplate = await this.fetchTemplate(sourceStackId);
+    const targetTemplate = await this.fetchTemplate(targetStackId);
+
+    for (const mapping of resourceMappings) {
+      targetTemplate.Resources[mapping.Destination.LogicalResourceId] = sourceTemplate.Resources[mapping.Source.LogicalResourceId];
+      delete sourceTemplate.Resources[mapping.Source.LogicalResourceId];
     }
+
+    const input: CreateStackRefactorCommandInput = {
+      StackDefinitions: [
+        { TemplateBody: JSON.stringify(sourceTemplate), StackName: sourceStackId },
+        { TemplateBody: JSON.stringify(targetTemplate), StackName: targetStackId },
+      ],
+      ResourceMappings: resourceMappings,
+      EnableStackCreation: true,
+    };
 
     input.Description = buildRefactorDescription(input);
 
     writeRefactorSnapshot(input);
-    this.info(`Creating stack refactor: ${extractStackNameFromId(sourceStackName)} → ${extractStackNameFromId(destStackName)}`);
+
+    this.info(`Creating stack refactor: ${extractStackNameFromId(sourceStackId)} → ${extractStackNameFromId(targetStackId)}`);
     const { StackRefactorId } = await this.client.send(new CreateStackRefactorCommand(input));
     if (!StackRefactorId) {
       throw new AmplifyError('StackStateError', {
@@ -106,7 +120,7 @@ export class Cfn {
       });
     }
 
-    const destinationStack = await this.findStack(destStackName);
+    const destinationStack = await this.findStack(targetStackId);
 
     this.info(`Waiting for stack refactor creation to complete: ${StackRefactorId}`);
     await waitUntilStackRefactorCreateComplete({ client: this.client, maxWaitTime: MAX_WAIT_TIME_SECONDS }, { StackRefactorId });
@@ -116,15 +130,15 @@ export class Cfn {
     this.info(`Waiting for stack refactor execution to complete: ${StackRefactorId}`);
     await waitUntilStackRefactorExecuteComplete({ client: this.client, maxWaitTime: MAX_WAIT_TIME_SECONDS }, { StackRefactorId });
 
-    this.info(`Waiting for source stack update: ${extractStackNameFromId(sourceStackName)}`);
-    await waitUntilStackUpdateComplete({ client: this.client, maxWaitTime: MAX_WAIT_TIME_SECONDS }, { StackName: sourceStackName });
+    this.info(`Waiting for source stack update: ${extractStackNameFromId(sourceStackId)}`);
+    await waitUntilStackUpdateComplete({ client: this.client, maxWaitTime: MAX_WAIT_TIME_SECONDS }, { StackName: sourceStackId });
 
     // Destination may be newly created (EnableStackCreation) or updated
-    this.info(`Waiting for destination stack: ${extractStackNameFromId(destStackName)}`);
+    this.info(`Waiting for destination stack: ${extractStackNameFromId(targetStackId)}`);
     if (destinationStack) {
-      await waitUntilStackUpdateComplete({ client: this.client, maxWaitTime: MAX_WAIT_TIME_SECONDS }, { StackName: destStackName });
+      await waitUntilStackUpdateComplete({ client: this.client, maxWaitTime: MAX_WAIT_TIME_SECONDS }, { StackName: targetStackId });
     } else {
-      await waitUntilStackCreateComplete({ client: this.client, maxWaitTime: MAX_WAIT_TIME_SECONDS }, { StackName: destStackName });
+      await waitUntilStackCreateComplete({ client: this.client, maxWaitTime: MAX_WAIT_TIME_SECONDS }, { StackName: targetStackId });
     }
   }
 
