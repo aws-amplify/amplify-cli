@@ -97,7 +97,7 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
     return { stackId, resolvedTemplate: originalTemplate, parameters };
   }
 
-  protected override async updateSource(_source: ResolvedStack): Promise<AmplifyMigrationOperation[]> {
+  protected override async updateSource(_source: ResolvedStack, _mappings: MoveMapping[]): Promise<AmplifyMigrationOperation[]> {
     return [];
   }
 
@@ -114,9 +114,10 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
 
   /**
    * Restores holding stack resources into Gen2 and deletes the holding stack.
+   * Templates are fetched fresh at execution time.
    */
   protected async afterMove(blueprint: RefactorBlueprint): Promise<AmplifyMigrationOperation[]> {
-    const gen2StackId = blueprint.source.stackId;
+    const gen2StackId = blueprint.sourceStackId;
     const holdingStackName = this.getHoldingStackName(extractStackNameFromId(gen2StackId));
 
     const holdingStack = await this.cfn.findStack(holdingStackName);
@@ -176,16 +177,24 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
           return [`${header}\n\n${table}`];
         },
         execute: async () => {
+          // Fetch fresh templates at execution time
+          const source = await this.resolveSource(gen2StackId);
+          const currentHoldingTemplate = await this.cfn.fetchTemplate(holdingStackName);
+          const currentHoldingWithPlaceholder = {
+            ...currentHoldingTemplate,
+            Resources: { ...currentHoldingTemplate.Resources, [MIGRATION_PLACEHOLDER_LOGICAL_ID]: PLACEHOLDER_RESOURCE },
+          };
+
           const resourceMappings = mappings.map(({ sourceId, targetId }) => ({
             Source: { StackName: extractStackNameFromId(holdingStackName), LogicalResourceId: sourceId },
             Destination: { StackName: extractStackNameFromId(gen2StackId), LogicalResourceId: targetId },
           }));
 
-          const targetTemplate = JSON.parse(JSON.stringify(blueprint.source.afterRemoval)) as CFNTemplate;
-          const holdingAfterRemoval = JSON.parse(JSON.stringify(holdingWithPlaceholder)) as CFNTemplate;
+          const targetTemplate = JSON.parse(JSON.stringify(source.resolvedTemplate)) as CFNTemplate;
+          const holdingAfterRemoval = JSON.parse(JSON.stringify(currentHoldingWithPlaceholder)) as CFNTemplate;
           for (const mapping of resourceMappings) {
             targetTemplate.Resources[mapping.Destination.LogicalResourceId] =
-              holdingWithPlaceholder.Resources[mapping.Source.LogicalResourceId];
+              currentHoldingWithPlaceholder.Resources[mapping.Source.LogicalResourceId];
             delete holdingAfterRemoval.Resources[mapping.Source.LogicalResourceId];
           }
 

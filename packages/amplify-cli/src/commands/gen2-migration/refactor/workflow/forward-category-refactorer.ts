@@ -7,7 +7,7 @@ import { resolveOutputs } from '../resolvers/cfn-output-resolver';
 import { resolveDependencies } from '../resolvers/cfn-dependency-resolver';
 import { resolveConditions } from '../resolvers/cfn-condition-resolver';
 import { extractStackNameFromId } from '../utils';
-import { CategoryRefactorer, MoveMapping, RefactorBlueprint, ResolvedStack, ResourceMapping } from './category-refactorer';
+import { CategoryRefactorer, MoveMapping, RefactorBlueprint, ResolvedStack } from './category-refactorer';
 
 /**
  * Forward direction base: moves resources from Gen1 (source) to Gen2 (target).
@@ -118,11 +118,11 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
     return { stackId, resolvedTemplate: resolved, parameters };
   }
 
-  protected override async updateSource(source: ResolvedStack): Promise<AmplifyMigrationOperation[]> {
+  protected override async updateSource(source: ResolvedStack, mappings: MoveMapping[]): Promise<AmplifyMigrationOperation[]> {
     if (this.gen1Env.isUpdated(source)) {
       return [];
     }
-    const operations = super.updateSource(source);
+    const operations = super.updateSource(source, mappings);
     this.gen1Env.markUpdated(source);
     return operations;
   }
@@ -138,29 +138,14 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
 
   /**
    * Moves Gen2 resources to a holding stack before the main refactor.
+   * Templates are fetched fresh at execution time.
    */
   protected async beforeMove(blueprint: RefactorBlueprint): Promise<AmplifyMigrationOperation[]> {
-    const gen2StackName = extractStackNameFromId(blueprint.target.stackId);
-    const gen2StackTemplate = JSON.parse(JSON.stringify(blueprint.target.resolvedTemplate)) as CFNTemplate;
+    const gen2StackName = extractStackNameFromId(blueprint.targetStackId);
     const holdingStackName = this.getHoldingStackName(gen2StackName);
-    const { stack: holdingStack, template: holdingStackTemplate } = await this.fetchHoldingStackTemplate(holdingStackName);
 
-    const mappings = blueprint.mappings.map((m) => ({
-      sourceId: m.targetId,
-      targetId: m.targetId,
-      resource: gen2StackTemplate.Resources[m.targetId],
-      physicalResourceId: m.physicalResourceId,
-    }));
-
-    const resourceMappings = mappings.map(({ sourceId, targetId }) => ({
-      Source: { StackName: gen2StackName, LogicalResourceId: sourceId },
-      Destination: { StackName: holdingStackName, LogicalResourceId: targetId },
-    }));
-
-    for (const mapping of mappings) {
-      holdingStackTemplate.Resources[mapping.targetId] = mapping.resource;
-      delete gen2StackTemplate.Resources[mapping.sourceId];
-    }
+    // Pre-fetch holding stack status for plan-time description
+    const holdingStack = await this.cfn.findStack(holdingStackName);
 
     const operations: AmplifyMigrationOperation[] = [];
 
@@ -179,15 +164,45 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
       resource: this.resource,
       validate: () => undefined,
       describe: async () => {
-        const header = `Move ${mappings.length} resource(s) from '${gen2StackName}' to '${extractStackNameFromId(holdingStackName)}'`;
-        const table = this.renderMappingTable(mappings);
+        const header = `Move ${blueprint.mappings.length} resource(s) from '${gen2StackName}' to '${extractStackNameFromId(
+          holdingStackName,
+        )}'`;
+        const table = this.renderMappingTable(
+          blueprint.mappings.map((m) => ({
+            sourceId: m.targetId,
+            targetId: m.targetId,
+            resource: m.resource,
+            physicalResourceId: m.physicalResourceId,
+          })),
+        );
         return [`${header}\n\n${table}`];
       },
       execute: async () => {
+        const target = await this.resolveTarget(blueprint.targetStackId);
+        const gen2Template = JSON.parse(JSON.stringify(target.resolvedTemplate)) as CFNTemplate;
+        const { template: holdingTemplate } = await this.fetchHoldingStackTemplate(holdingStackName);
+
+        const moveMappings = blueprint.mappings.map((m) => ({
+          sourceId: m.targetId,
+          targetId: m.targetId,
+          resource: gen2Template.Resources[m.targetId],
+          physicalResourceId: m.physicalResourceId,
+        }));
+
+        const resourceMappings = moveMappings.map(({ sourceId, targetId }) => ({
+          Source: { StackName: gen2StackName, LogicalResourceId: sourceId },
+          Destination: { StackName: holdingStackName, LogicalResourceId: targetId },
+        }));
+
+        for (const mapping of moveMappings) {
+          holdingTemplate.Resources[mapping.targetId] = mapping.resource;
+          delete gen2Template.Resources[mapping.sourceId];
+        }
+
         await this.cfn.refactor({
           StackDefinitions: [
-            { TemplateBody: JSON.stringify(gen2StackTemplate), StackName: gen2StackName },
-            { TemplateBody: JSON.stringify(holdingStackTemplate), StackName: holdingStackName },
+            { TemplateBody: JSON.stringify(gen2Template), StackName: gen2StackName },
+            { TemplateBody: JSON.stringify(holdingTemplate), StackName: holdingStackName },
           ],
           ResourceMappings: resourceMappings,
           EnableStackCreation: true,
