@@ -10,7 +10,6 @@ import { extractStackNameFromId } from '../utils';
 import { getHoldingStackName, findHoldingStack, deleteHoldingStack } from '../holding-stack';
 import { tryRefactorStack, RefactorFailure } from '../cfn-stack-refactor-updater';
 import { CategoryRefactorer, MoveMapping, RefactorBlueprint, ResolvedStack, ResourceMapping } from './category-refactorer';
-import { formatMoveTable } from '../move-table';
 
 /**
  * Forward direction base: moves resources from Gen1 (source) to Gen2 (target).
@@ -21,7 +20,14 @@ import { formatMoveTable } from '../move-table';
  * afterMovePlan: empty (holding stack survives for rollback)
  */
 export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
-  protected buildResourceMappings(sourceResources: Map<string, CFNResource>, targetResources: Map<string, CFNResource>): MoveMapping[] {
+  protected async buildResourceMappings(
+    sourceResources: Map<string, CFNResource>,
+    targetResources: Map<string, CFNResource>,
+    sourceStackId: string,
+  ): Promise<MoveMapping[]> {
+    const stackResources = await this.gen1Env.fetchStackResources(sourceStackId);
+    const physicalIds = new Map(stackResources.map((r) => [r.LogicalResourceId!, r.PhysicalResourceId!]));
+
     const mappings: MoveMapping[] = [];
     for (const [sourceId, sourceResource] of sourceResources) {
       const matchedTargets = [];
@@ -42,7 +48,7 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
         });
       }
       const targetId = matchedTargets[0];
-      mappings.push({ sourceId, targetId, resource: sourceResource });
+      mappings.push({ sourceId, targetId, resource: sourceResource, physicalResourceId: physicalIds.get(sourceId) ?? '' });
     }
     return mappings;
   }
@@ -158,12 +164,18 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
 
     const gen2Resources = await this.gen2Branch.fetchStackResources(blueprint.target.stackId);
     const physicalIds = new Map(gen2Resources.map((r) => [r.LogicalResourceId!, r.PhysicalResourceId!]));
-    const types = new Map(targets.map((id) => [id, blueprint.mappings.find((m) => m.targetId === id).resource.Type]));
+
+    const holdingMoveMappings: MoveMapping[] = targets.map((id) => ({
+      sourceId: id,
+      targetId: id,
+      resource: blueprint.target.resolvedTemplate.Resources[id],
+      physicalResourceId: physicalIds.get(id) ?? '',
+    }));
 
     const header = `Move ${holdingMappings.length} resource(s) from '${extractStackNameFromId(
       blueprint.target.stackId,
     )}' to '${extractStackNameFromId(holdingStackName)}'`;
-    const table = formatMoveTable(holdingMappings, physicalIds, types);
+    const table = this.renderMappingTable(holdingMoveMappings);
     const description = `${header}\n\n${table}`;
 
     return [

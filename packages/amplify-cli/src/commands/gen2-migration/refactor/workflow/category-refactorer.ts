@@ -16,7 +16,7 @@ import { SpinningLogger } from '../../_spinning-logger';
 import { extractStackNameFromId } from '../utils';
 import { DiscoveredResource } from '../../generate/_infra/gen1-app';
 import { formatChangeSetReport } from '../changeset-report';
-import { formatMoveTable } from '../move-table';
+import CLITable from 'cli-table3';
 
 export const MIGRATION_PLACEHOLDER_LOGICAL_ID = 'MigrationPlaceholder';
 export const PLACEHOLDER_RESOURCE: CFNResource = { Type: 'AWS::CloudFormation::WaitConditionHandle', Properties: {} };
@@ -46,6 +46,7 @@ export interface MoveMapping {
   readonly sourceId: string;
   readonly targetId: string;
   readonly resource: CFNResource;
+  readonly physicalResourceId: string;
 }
 
 /**
@@ -114,7 +115,7 @@ export abstract class CategoryRefactorer implements Refactorer {
     const source = await this.resolveSource(sourceStackId);
     const target = await this.resolveTarget(destStackId);
 
-    const blueprint = this.buildBlueprint(source, target);
+    const blueprint = await this.buildBlueprint(source, target);
     if (!blueprint) {
       this.logger.pop();
       return []; // Nothing to move — skip this category
@@ -144,7 +145,8 @@ export abstract class CategoryRefactorer implements Refactorer {
   protected abstract buildResourceMappings(
     sourceResources: Map<string, CFNResource>,
     targetResources: Map<string, CFNResource>,
-  ): MoveMapping[];
+    sourceStackId: string,
+  ): Promise<MoveMapping[]>;
 
   // -- Direction-specific (abstract) --
 
@@ -286,13 +288,13 @@ export abstract class CategoryRefactorer implements Refactorer {
    * This consolidates buildResourceMappings + template manipulation + placeholder logic
    * into one function, ensuring resourcesToMove and logicalIdMap are always in sync.
    */
-  protected buildBlueprint(source: ResolvedStack, target: ResolvedStack): RefactorBlueprint | undefined {
+  protected async buildBlueprint(source: ResolvedStack, target: ResolvedStack): Promise<RefactorBlueprint | undefined> {
     const sourceResources = this.filterResourcesByType(source.resolvedTemplate);
     const targetResources = this.filterResourcesByType(target.resolvedTemplate);
 
     if (sourceResources.size === 0) return undefined;
 
-    const mappings = this.buildResourceMappings(sourceResources, targetResources);
+    const mappings = await this.buildResourceMappings(sourceResources, targetResources, source.stackId);
 
     // source.afterRemoval: clone source template, remove mapped resources, add placeholder if empty
     const afterRemoval = JSON.parse(JSON.stringify(source.resolvedTemplate)) as CFNTemplate;
@@ -355,28 +357,25 @@ export abstract class CategoryRefactorer implements Refactorer {
     const { source, target, mappings } = blueprint;
     const sourceStackName = extractStackNameFromId(source.stackId);
     const targetStackName = extractStackNameFromId(target.stackId);
+
+    const header = `Move ${blueprint.mappings.length} resource(s) from '${extractStackNameFromId(
+      sourceStackName,
+    )}' to '${extractStackNameFromId(targetStackName)}'`;
+    const table = this.renderMappingTable(mappings);
+
     const resourceMappings: ResourceMapping[] = mappings.map(({ sourceId, targetId }) => ({
       Source: { StackName: sourceStackName, LogicalResourceId: sourceId },
       Destination: { StackName: targetStackName, LogicalResourceId: targetId },
     }));
 
-    const sourceResources = await this.gen1Env.fetchStackResources(source.stackId);
-    const physicalIds = new Map(sourceResources.map((r) => [r.LogicalResourceId!, r.PhysicalResourceId!]));
-    const types = new Map(mappings.map((m) => [m.sourceId, m.resource.Type]));
-
-    const header = `Move ${resourceMappings.length} resource(s) from '${extractStackNameFromId(
-      sourceStackName,
-    )}' to '${extractStackNameFromId(targetStackName)}'`;
-    const table = formatMoveTable(resourceMappings, physicalIds, types);
-    const description = `${header}\n\n${table}`;
-
     return [
       {
         resource: this.resource,
         validate: () => undefined,
-        describe: async () => [description],
+        describe: async () => {
+          return [`${header}\n\n${table}`];
+        },
         execute: async () => {
-          this.logger.info(header);
           const result = await tryRefactorStack(this.clients.cloudFormation, {
             StackDefinitions: [
               { TemplateBody: JSON.stringify(source.afterRemoval), StackName: source.stackId },
@@ -386,7 +385,7 @@ export abstract class CategoryRefactorer implements Refactorer {
           });
           if (!result.success) {
             const failure = result as RefactorFailure;
-            throw new AmplifyError('StackStateError', {
+            throw new AmplifyError('MigrationError', {
               message: `Stack refactor failed: ${failure.reason} (status: ${failure.status}, refactorId: ${failure.stackRefactorId})`,
             });
           }
@@ -409,6 +408,18 @@ export abstract class CategoryRefactorer implements Refactorer {
   protected async findNestedStack(facade: StackFacade, prefix: string): Promise<string | undefined> {
     const stacks = await facade.fetchNestedStacks();
     return stacks.find((s) => s.LogicalResourceId?.startsWith(prefix))?.PhysicalResourceId;
+  }
+
+  /** Renders a CLI table of move mappings. */
+  protected renderMappingTable(mappings: readonly MoveMapping[]): string {
+    const table = new CLITable({
+      head: ['Type', 'Source Logical ID', 'Target Logical ID', 'Physical ID'],
+      style: { head: [] },
+    });
+    for (const m of mappings) {
+      table.push([m.resource.Type, m.sourceId, m.targetId, m.physicalResourceId]);
+    }
+    return `${table.toString()}\n`;
   }
 }
 

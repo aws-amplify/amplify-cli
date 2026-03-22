@@ -18,7 +18,6 @@ import {
   ResolvedStack,
   ResourceMapping,
 } from './category-refactorer';
-import { formatMoveTable } from '../move-table';
 
 /**
  * Rollback direction base: moves resources from Gen2 (source) back to Gen1 (target).
@@ -31,7 +30,14 @@ import { formatMoveTable } from '../move-table';
  * Does NOT pre-update stacks (overrides updateSource/updateTarget to return []).
  */
 export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
-  protected buildResourceMappings(sourceResources: Map<string, CFNResource>, _targetResources: Map<string, CFNResource>): MoveMapping[] {
+  protected async buildResourceMappings(
+    sourceResources: Map<string, CFNResource>,
+    _targetResources: Map<string, CFNResource>,
+    sourceStackId: string,
+  ): Promise<MoveMapping[]> {
+    const stackResources = await this.gen2Branch.fetchStackResources(sourceStackId);
+    const physicalIds = new Map(stackResources.map((r) => [r.LogicalResourceId!, r.PhysicalResourceId!]));
+
     const mappings: MoveMapping[] = [];
     for (const [sourceId, resource] of sourceResources) {
       const gen1LogicalId = this.targetLogicalId(sourceId, resource);
@@ -40,7 +46,7 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
           message: `No known Gen1 logical ID for resource type '${resource.Type}' (source: '${sourceId}')`,
         });
       }
-      mappings.push({ sourceId, targetId: gen1LogicalId, resource });
+      mappings.push({ sourceId, targetId: gen1LogicalId, resource, physicalResourceId: physicalIds.get(sourceId) ?? '' });
     }
     return mappings;
   }
@@ -131,12 +137,18 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
 
     const sourceResources = await this.gen2Branch.fetchStackResources(blueprint.source.stackId);
     const physicalIds = new Map(sourceResources.map((r) => [r.LogicalResourceId!, r.PhysicalResourceId!]));
-    const restoreTypes = new Map(blueprint.mappings.map((m) => [m.sourceId, m.resource.Type]));
+
+    const restoreMoveMappings: MoveMapping[] = blueprint.mappings.map((m) => ({
+      sourceId: m.sourceId,
+      targetId: m.sourceId,
+      resource: m.resource,
+      physicalResourceId: physicalIds.get(m.sourceId) ?? '',
+    }));
 
     const header = `Move ${blueprint.mappings.length} resource(s) from '${extractStackNameFromId(
       holdingStackName,
     )}' to '${extractStackNameFromId(gen2StackId)}'`;
-    const table = formatMoveTable(restoreMappings, physicalIds, restoreTypes);
+    const table = this.renderMappingTable(restoreMoveMappings);
     const description = `${header}\n\n${table}`;
 
     return [
