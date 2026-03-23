@@ -18,6 +18,12 @@ import { extractCategory } from '../gen2-migration/categories';
 import type { Printer } from '@aws-amplify/amplify-prompts';
 
 /**
+ * Known false-positive filters applied to Phase 1 drift results.
+ * Add new filters here instead of modifying the detection loop.
+ */
+const FALSE_POSITIVE_FILTERS = [isAmplifyAuthRoleDenyToAllowChange, isAmplifyRestApiDescriptionDrift, isAmplifyTriggerPolicyDrift] as const;
+
+/**
  * Enriched drift tree node — one per stack (root or nested)
  */
 export interface StackDriftNode {
@@ -99,12 +105,9 @@ export async function detectStackDrift(
       drift.PropertyDifferences &&
       drift.PropertyDifferences.length > 0
     ) {
-      drift.PropertyDifferences = drift.PropertyDifferences.filter((propDiff) => {
-        if (isAmplifyAuthRoleDenyToAllowChange(propDiff, print)) return false;
-        if (isAmplifyRestApiDescriptionDrift(drift, propDiff, print)) return false;
-        if (isAmplifyTriggerPolicyDrift(drift, propDiff, print)) return false;
-        return true;
-      });
+      drift.PropertyDifferences = drift.PropertyDifferences.filter(
+        (propDiff) => !FALSE_POSITIVE_FILTERS.some((filter) => filter(drift, propDiff, print)),
+      );
 
       if (drift.PropertyDifferences.length === 0) {
         drift.StackResourceDriftStatus = StackResourceDriftStatus.IN_SYNC;
@@ -119,7 +122,7 @@ export async function detectStackDrift(
 /**
  * Check if a property difference is an Amplify auth role Deny→Allow change (intended drift)
  */
-function isAmplifyAuthRoleDenyToAllowChange(propDiff: PropertyDifference, print: Printer): boolean {
+function isAmplifyAuthRoleDenyToAllowChange(_drift: StackResourceDrift, propDiff: PropertyDifference, print: Printer): boolean {
   // Check if this is an AssumeRolePolicyDocument change
   if (!propDiff.PropertyPath || !propDiff.PropertyPath.includes('AssumeRolePolicyDocument')) {
     return false;
@@ -198,22 +201,16 @@ export function isAmplifyTriggerPolicyDrift(drift: StackResourceDrift, propDiff:
 
   const actualPolicy = JSON.parse(propDiff.ActualValue ?? '');
   const policyName: string = actualPolicy.PolicyName;
-  const policyDocStr: string = actualPolicy.PolicyDocument;
+  const policyDoc = JSON.parse(actualPolicy.PolicyDocument as string);
+  const actions = new Set(policyDoc.Statement.flatMap((s) => [s.Action].flat()));
 
   // Auth trigger policies: known Cognito trigger policy pattern
-  const isCognitoTriggerPolicy =
-    policyName === 'AddToGroupCognito' &&
-    policyDocStr.includes('cognito-idp:AdminAddUserToGroup') &&
-    policyDocStr.includes('cognito-idp:GetGroup') &&
-    policyDocStr.includes('cognito-idp:CreateGroup');
+  const cognitoActions = ['cognito-idp:AdminAddUserToGroup', 'cognito-idp:GetGroup', 'cognito-idp:CreateGroup'];
+  const isCognitoTriggerPolicy = policyName === 'AddToGroupCognito' && cognitoActions.every((a) => actions.has(a));
 
   // S3 storage trigger policies: known S3 trigger policy pattern
-  const isS3TriggerPolicy =
-    policyName === 'amplify-lambda-execution-policy-storage' &&
-    policyDocStr.includes('s3:ListBucket') &&
-    policyDocStr.includes('s3:PutObject') &&
-    policyDocStr.includes('s3:GetObject') &&
-    policyDocStr.includes('s3:DeleteObject');
+  const s3Actions = ['s3:ListBucket', 's3:PutObject', 's3:GetObject', 's3:DeleteObject'];
+  const isS3TriggerPolicy = policyName === 'amplify-lambda-execution-policy-storage' && s3Actions.every((a) => actions.has(a));
 
   if (isCognitoTriggerPolicy || isS3TriggerPolicy) {
     print.debug(`Filtering false positive: trigger policy drift on ${drift.LogicalResourceId} (${policyName})`);

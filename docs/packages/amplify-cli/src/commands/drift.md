@@ -325,7 +325,12 @@ function isAmplifyAuthRoleDenyToAllowChange(propDiff, print): boolean {
 Amplify's push pipeline introduces drift that should not be reported:
 
 ```typescript
-// From detect-stack-drift.ts
+// From detect-stack-drift.ts — all filters are registered in a single array
+const FALSE_POSITIVE_FILTERS = [
+  isAmplifyAuthRoleDenyToAllowChange,
+  isAmplifyRestApiDescriptionDrift,
+  isAmplifyTriggerPolicyDrift,
+] as const;
 
 // REST API Description: null vs empty mismatch
 function isAmplifyRestApiDescriptionDrift(drift, propDiff, print): boolean {
@@ -334,8 +339,8 @@ function isAmplifyRestApiDescriptionDrift(drift, propDiff, print): boolean {
 
 // Auth/S3 trigger policies added to Lambda execution roles during push
 function isAmplifyTriggerPolicyDrift(drift, propDiff, print): boolean {
-  // Filters /Policies/N on AWS::IAM::Role where ExpectedValue is null
-  // and ActualValue contains known Cognito or S3 trigger policy content
+  // Parses PolicyDocument JSON and checks actions via Set containment
+  // against known Cognito or S3 trigger policy patterns
 }
 ```
 
