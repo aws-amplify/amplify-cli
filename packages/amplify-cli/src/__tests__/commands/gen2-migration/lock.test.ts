@@ -3,7 +3,7 @@ import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { CloudFormationClient, SetStackPolicyCommand } from '@aws-sdk/client-cloudformation';
 import { AmplifyClient, UpdateAppCommand } from '@aws-sdk/client-amplify';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { Logger } from '../../../commands/gen2-migration';
+import { SpinningLogger } from '../../../commands/gen2-migration/_spinning-logger';
 
 jest.mock('@aws-sdk/client-cloudformation', () => ({
   ...jest.requireActual('@aws-sdk/client-cloudformation'),
@@ -31,32 +31,27 @@ jest.mock('@aws-sdk/client-dynamodb', () => ({
     },
   })),
 }));
-jest.mock('@aws-sdk/client-cognito-identity-provider', () => ({
-  ...jest.requireActual('@aws-sdk/client-cognito-identity-provider'),
-  CognitoIdentityProviderClient: jest.fn().mockImplementation(() => ({ send: jest.fn() })),
+jest.mock('@aws-amplify/amplify-prompts', () => ({
+  printer: { info: jest.fn(), blankLine: jest.fn(), success: jest.fn(), warn: jest.fn(), debug: jest.fn() },
+  AmplifySpinner: jest.fn().mockImplementation(() => ({
+    start: jest.fn(),
+    stop: jest.fn(),
+    resetMessage: jest.fn(),
+  })),
+  isDebug: false,
 }));
-jest.mock('@aws-amplify/amplify-cli-core', () => ({
-  ...jest.requireActual('@aws-amplify/amplify-cli-core'),
-  stateManager: {
-    getMeta: jest.fn().mockReturnValue({ auth: {} }),
-  },
+jest.mock('../../../commands/gen2-migration/_validations', () => ({
+  AmplifyGen2MigrationValidations: jest.fn().mockImplementation(() => ({
+    validateDeploymentStatus: jest.fn().mockResolvedValue(undefined),
+    validateDrift: jest.fn().mockResolvedValue(undefined),
+  })),
 }));
-
-const findOperation = async (operations: Awaited<ReturnType<AmplifyMigrationLockStep['execute']>>, substring: string) => {
-  for (const op of operations) {
-    const desc = await op.describe();
-    if (desc.some((d) => d.includes(substring))) {
-      return op;
-    }
-  }
-  throw new Error(`Operation containing '${substring}' not found`);
-};
 
 describe('AmplifyMigrationLockStep', () => {
   let lockStep: AmplifyMigrationLockStep;
   let mockCfnSend: jest.Mock;
   let mockAmplifySend: jest.Mock;
-  let mockLogger: Logger;
+  let mockLogger: SpinningLogger;
 
   beforeEach(() => {
     mockCfnSend = jest.fn();
@@ -66,8 +61,12 @@ describe('AmplifyMigrationLockStep', () => {
     (AmplifyClient as jest.Mock).mockImplementation(() => ({ send: mockAmplifySend }));
     (DynamoDBClient as jest.Mock).mockImplementation(() => ({ send: jest.fn() }));
 
-    mockLogger = new Logger('mock', 'mock', 'mock');
+    mockLogger = new SpinningLogger('mock');
     jest.spyOn(mockLogger, 'info').mockImplementation(() => {});
+    jest.spyOn(mockLogger, 'start').mockImplementation(() => {});
+    jest.spyOn(mockLogger, 'succeed').mockImplementation(() => {});
+    jest.spyOn(mockLogger, 'push').mockImplementation(() => {});
+    jest.spyOn(mockLogger, 'pop').mockImplementation(() => {});
 
     lockStep = new AmplifyMigrationLockStep(
       mockLogger,
@@ -84,17 +83,17 @@ describe('AmplifyMigrationLockStep', () => {
     jest.clearAllMocks();
   });
 
-  describe('execute stack policy merge', () => {
+  describe('forward stack policy merge', () => {
     it('should append lock statement to empty stack policy', async () => {
       mockCfnSend.mockResolvedValueOnce({ StackPolicyBody: undefined }).mockResolvedValueOnce({});
+      mockAmplifySend.mockResolvedValueOnce({ app: { environmentVariables: {} } }).mockResolvedValueOnce({});
 
-      const operations = await lockStep.execute();
-      const lockOp = await findOperation(operations, 'Add lock statement');
-      await lockOp.execute();
+      const plan = await lockStep.forward();
+      await plan.execute();
 
-      const setCall = mockCfnSend.mock.calls[1][0];
-      expect(setCall).toBeInstanceOf(SetStackPolicyCommand);
-      expect(setCall.input).toEqual({
+      const setCalls = mockCfnSend.mock.calls.filter(([cmd]: [unknown]) => cmd instanceof SetStackPolicyCommand);
+      expect(setCalls).toHaveLength(1);
+      expect(setCalls[0][0].input).toEqual({
         StackName: 'test-root-stack',
         StackPolicyBody: JSON.stringify({
           Statement: [{ Effect: 'Deny', Action: 'Update:*', Principal: '*', Resource: '*' }],
@@ -107,13 +106,14 @@ describe('AmplifyMigrationLockStep', () => {
         Statement: [{ Effect: 'Deny', Action: 'Update:Replace', Principal: '*', Resource: 'LogicalResourceId/MyDB' }],
       };
       mockCfnSend.mockResolvedValueOnce({ StackPolicyBody: JSON.stringify(existingPolicy) }).mockResolvedValueOnce({});
+      mockAmplifySend.mockResolvedValueOnce({ app: { environmentVariables: {} } }).mockResolvedValueOnce({});
 
-      const operations = await lockStep.execute();
-      const lockOp = await findOperation(operations, 'Add lock statement');
-      await lockOp.execute();
+      const plan = await lockStep.forward();
+      await plan.execute();
 
-      const setCall = mockCfnSend.mock.calls[1][0];
-      expect(setCall.input).toEqual({
+      const setCalls = mockCfnSend.mock.calls.filter(([cmd]: [unknown]) => cmd instanceof SetStackPolicyCommand);
+      expect(setCalls).toHaveLength(1);
+      expect(setCalls[0][0].input).toEqual({
         StackName: 'test-root-stack',
         StackPolicyBody: JSON.stringify({
           Statement: [
@@ -129,27 +129,27 @@ describe('AmplifyMigrationLockStep', () => {
         Statement: [{ Effect: 'Deny', Action: 'Update:*', Principal: '*', Resource: '*' }],
       };
       mockCfnSend.mockResolvedValueOnce({ StackPolicyBody: JSON.stringify(alreadyLockedPolicy) });
+      mockAmplifySend.mockResolvedValueOnce({ app: { environmentVariables: {} } }).mockResolvedValueOnce({});
 
-      const operations = await lockStep.execute();
-      const lockOp = await findOperation(operations, 'Add lock statement');
-      await lockOp.execute();
+      const plan = await lockStep.forward();
+      await plan.execute();
 
-      // Only one call: GetStackPolicy. No SetStackPolicy because lock already exists.
-      expect(mockCfnSend).toHaveBeenCalledTimes(1);
+      const setCalls = mockCfnSend.mock.calls.filter(([cmd]: [unknown]) => cmd instanceof SetStackPolicyCommand);
+      expect(setCalls).toHaveLength(0);
     });
   });
 
-  describe('execute env var merge', () => {
+  describe('forward env var merge', () => {
     it('should merge new env var with existing env vars', async () => {
+      mockCfnSend.mockResolvedValueOnce({ StackPolicyBody: undefined }).mockResolvedValueOnce({});
       mockAmplifySend.mockResolvedValueOnce({ app: { environmentVariables: { EXISTING: 'value' } } }).mockResolvedValueOnce({});
 
-      const operations = await lockStep.execute();
-      const envOp = await findOperation(operations, 'Add environment variable');
-      await envOp.execute();
+      const plan = await lockStep.forward();
+      await plan.execute();
 
-      const updateCommand = mockAmplifySend.mock.calls[1][0];
-      expect(updateCommand).toBeInstanceOf(UpdateAppCommand);
-      expect(updateCommand.input).toEqual({
+      const updateCalls = mockAmplifySend.mock.calls.filter(([cmd]: [unknown]) => cmd instanceof UpdateAppCommand);
+      expect(updateCalls).toHaveLength(1);
+      expect(updateCalls[0][0].input).toEqual({
         appId: 'test-app-id',
         environmentVariables: { EXISTING: 'value', GEN2_MIGRATION_ENVIRONMENT_NAME: 'testEnv' },
       });
@@ -165,13 +165,16 @@ describe('AmplifyMigrationLockStep', () => {
         ],
       };
       mockCfnSend.mockResolvedValueOnce({ StackPolicyBody: JSON.stringify(policyWithLock) }).mockResolvedValueOnce({});
+      mockAmplifySend
+        .mockResolvedValueOnce({ app: { environmentVariables: { GEN2_MIGRATION_ENVIRONMENT_NAME: 'testEnv' } } })
+        .mockResolvedValueOnce({});
 
-      const operations = await lockStep.rollback();
-      const unlockOp = await findOperation(operations, 'Remove lock statement');
-      await unlockOp.execute();
+      const plan = await lockStep.rollback();
+      await plan.execute();
 
-      const setCall = mockCfnSend.mock.calls[1][0];
-      expect(setCall.input).toEqual({
+      const setCalls = mockCfnSend.mock.calls.filter(([cmd]: [unknown]) => cmd instanceof SetStackPolicyCommand);
+      expect(setCalls).toHaveLength(1);
+      expect(setCalls[0][0].input).toEqual({
         StackName: 'test-root-stack',
         StackPolicyBody: JSON.stringify({
           Statement: [{ Effect: 'Deny', Action: 'Update:Replace', Principal: '*', Resource: 'LogicalResourceId/MyDB' }],
@@ -184,13 +187,16 @@ describe('AmplifyMigrationLockStep', () => {
         Statement: [{ Effect: 'Deny', Action: 'Update:*', Principal: '*', Resource: '*' }],
       };
       mockCfnSend.mockResolvedValueOnce({ StackPolicyBody: JSON.stringify(policyWithOnlyLock) }).mockResolvedValueOnce({});
+      mockAmplifySend
+        .mockResolvedValueOnce({ app: { environmentVariables: { GEN2_MIGRATION_ENVIRONMENT_NAME: 'testEnv' } } })
+        .mockResolvedValueOnce({});
 
-      const operations = await lockStep.rollback();
-      const unlockOp = await findOperation(operations, 'Remove lock statement');
-      await unlockOp.execute();
+      const plan = await lockStep.rollback();
+      await plan.execute();
 
-      const setCall = mockCfnSend.mock.calls[1][0];
-      expect(setCall.input).toEqual({
+      const setCalls = mockCfnSend.mock.calls.filter(([cmd]: [unknown]) => cmd instanceof SetStackPolicyCommand);
+      expect(setCalls).toHaveLength(1);
+      expect(setCalls[0][0].input).toEqual({
         StackName: 'test-root-stack',
         StackPolicyBody: JSON.stringify({
           Statement: [{ Effect: 'Allow', Action: 'Update:*', Principal: '*', Resource: '*' }],
@@ -200,13 +206,15 @@ describe('AmplifyMigrationLockStep', () => {
 
     it('should skip SetStackPolicy when no existing policy (lock not found)', async () => {
       mockCfnSend.mockResolvedValueOnce({ StackPolicyBody: undefined });
+      mockAmplifySend
+        .mockResolvedValueOnce({ app: { environmentVariables: { GEN2_MIGRATION_ENVIRONMENT_NAME: 'testEnv' } } })
+        .mockResolvedValueOnce({});
 
-      const operations = await lockStep.rollback();
-      const unlockOp = await findOperation(operations, 'Remove lock statement');
-      await unlockOp.execute();
+      const plan = await lockStep.rollback();
+      await plan.execute();
 
-      // Only one call: GetStackPolicy. No SetStackPolicy because lock wasn't found.
-      expect(mockCfnSend).toHaveBeenCalledTimes(1);
+      const setCalls = mockCfnSend.mock.calls.filter(([cmd]: [unknown]) => cmd instanceof SetStackPolicyCommand);
+      expect(setCalls).toHaveLength(0);
     });
 
     it('should skip SetStackPolicy when lock statement is not found', async () => {
@@ -214,31 +222,33 @@ describe('AmplifyMigrationLockStep', () => {
         Statement: [{ Effect: 'Deny', Action: 'Update:Replace', Principal: '*', Resource: 'LogicalResourceId/MyDB' }],
       };
       mockCfnSend.mockResolvedValueOnce({ StackPolicyBody: JSON.stringify(customerPolicy) });
+      mockAmplifySend
+        .mockResolvedValueOnce({ app: { environmentVariables: { GEN2_MIGRATION_ENVIRONMENT_NAME: 'testEnv' } } })
+        .mockResolvedValueOnce({});
 
-      const operations = await lockStep.rollback();
-      const unlockOp = await findOperation(operations, 'Remove lock statement');
-      await unlockOp.execute();
+      const plan = await lockStep.rollback();
+      await plan.execute();
 
-      // Only one call: GetStackPolicy. No SetStackPolicy because lock wasn't found.
-      expect(mockCfnSend).toHaveBeenCalledTimes(1);
+      const setCalls = mockCfnSend.mock.calls.filter(([cmd]: [unknown]) => cmd instanceof SetStackPolicyCommand);
+      expect(setCalls).toHaveLength(0);
     });
   });
 
   describe('rollback env var removal', () => {
     it('should remove GEN2_MIGRATION_ENVIRONMENT_NAME and preserve other env vars', async () => {
+      mockCfnSend.mockResolvedValueOnce({ StackPolicyBody: undefined });
       mockAmplifySend
         .mockResolvedValueOnce({
           app: { environmentVariables: { GEN2_MIGRATION_ENVIRONMENT_NAME: 'testEnv', OTHER: 'keep' } },
         })
         .mockResolvedValueOnce({});
 
-      const operations = await lockStep.rollback();
-      const envOp = await findOperation(operations, 'Remove environment variable');
-      await envOp.execute();
+      const plan = await lockStep.rollback();
+      await plan.execute();
 
-      const updateCommand = mockAmplifySend.mock.calls[1][0];
-      expect(updateCommand).toBeInstanceOf(UpdateAppCommand);
-      expect(updateCommand.input).toEqual({
+      const updateCalls = mockAmplifySend.mock.calls.filter(([cmd]: [unknown]) => cmd instanceof UpdateAppCommand);
+      expect(updateCalls).toHaveLength(1);
+      expect(updateCalls[0][0].input).toEqual({
         appId: 'test-app-id',
         environmentVariables: { OTHER: 'keep' },
       });
