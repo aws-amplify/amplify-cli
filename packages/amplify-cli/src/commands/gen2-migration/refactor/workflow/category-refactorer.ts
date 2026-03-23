@@ -1,4 +1,4 @@
-import { Parameter } from '@aws-sdk/client-cloudformation';
+import { Parameter, ResourceMapping } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { CFNResource, CFNTemplate } from '../../cfn-template';
 import { Planner } from '../../planner';
@@ -24,14 +24,6 @@ export interface ResolvedStack {
   readonly stackId: string;
   readonly resolvedTemplate: CFNTemplate;
   readonly parameters: Parameter[];
-}
-
-/**
- * Resource mapping for the CloudFormation StackRefactor API.
- */
-export interface ResourceMapping {
-  readonly Source: { readonly StackName: string; readonly LogicalResourceId: string };
-  readonly Destination: { readonly StackName: string; readonly LogicalResourceId: string };
 }
 
 /**
