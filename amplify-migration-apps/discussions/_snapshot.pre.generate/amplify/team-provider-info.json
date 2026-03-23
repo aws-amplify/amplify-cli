@@ -1,0 +1,36 @@
+{
+  "main": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-discussions-main-d5a80-authRole",
+      "UnauthRoleArn": "arn:aws:iam::123456789012:role/amplify-discussions-main-d5a80-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::123456789012:role/amplify-discussions-main-d5a80-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-discussions-main-d5a80-deployment",
+      "UnauthRoleName": "amplify-discussions-main-d5a80-unauthRole",
+      "StackName": "amplify-discussions-main-d5a80",
+      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-discussions-main-d5a80/2bc587e0-1a44-11f1-8b6b-0affd4d11c2d",
+      "AmplifyAppId": "discussions"
+    },
+    "categories": {
+      "auth": {
+        "discussions22367c6822367c68": {}
+      },
+      "function": {
+        "fetchuseractivity": {
+          "deploymentBucketName": "amplify-discussions-main-d5a80-deployment",
+          "s3Key": "amplify-builds/fetchuseractivity-6e6d76524e6255314269-build.zip"
+        },
+        "recorduseractivity": {
+          "deploymentBucketName": "amplify-discussions-main-d5a80-deployment",
+          "s3Key": "amplify-builds/recorduseractivity-4969755347686f776962-build.zip"
+        }
+      },
+      "api": {
+        "discussions": {}
+      },
+      "storage": {
+        "activity": {}
+      }
+    }
+  }
+}

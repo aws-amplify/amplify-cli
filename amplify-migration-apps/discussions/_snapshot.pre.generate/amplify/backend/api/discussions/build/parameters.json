@@ -1,0 +1,7 @@
+{
+    "AppSyncApiName": "discussions",
+    "DynamoDBBillingMode": "PAY_PER_REQUEST",
+    "DynamoDBEnableServerSideEncryption": false,
+    "S3DeploymentBucket": "amplify-discussions-main-d5a80-deployment",
+    "S3DeploymentRootKey": "amplify-appsync-files/db92bad357b2590353e82db2f2ec7d0fc9cfd30d"
+}

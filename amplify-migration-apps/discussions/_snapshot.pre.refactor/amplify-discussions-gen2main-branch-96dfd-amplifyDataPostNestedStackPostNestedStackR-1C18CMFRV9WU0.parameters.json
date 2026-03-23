@@ -1,0 +1,46 @@
+[
+  {
+    "ParameterKey": "DynamoDBModelTableReadIOPS",
+    "ParameterValue": "5"
+  },
+  {
+    "ParameterKey": "referencetoamplifydiscussionsgen2mainbranch96dfd1dc44authNestedStackauthNestedStackResource3DD9188BOutputsamplifydiscussionsgen2mainbranch96dfd1dc44authamplifyAuthauthenticatedUserRole95356EEFRef",
+    "ParameterValue": "amplify-discussions-gen-amplifyAuthauthenticatedU-cOJdlmnFCZS8"
+  },
+  {
+    "ParameterKey": "referencetoamplifydiscussionsgen2mainbranch96dfd1dc44authNestedStackauthNestedStackResource3DD9188BOutputsamplifydiscussionsgen2mainbranch96dfd1dc44authamplifyAuthunauthenticatedUserRoleE19AFD6CRef",
+    "ParameterValue": "amplify-discussions-gen-amplifyAuthunauthenticate-LUKlk2oThU8X"
+  },
+  {
+    "ParameterKey": "DynamoDBEnableServerSideEncryption",
+    "ParameterValue": "true"
+  },
+  {
+    "ParameterKey": "DynamoDBEnablePointInTimeRecovery",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "DynamoDBBillingMode",
+    "ParameterValue": "PAY_PER_REQUEST"
+  },
+  {
+    "ParameterKey": "referencetoamplifydiscussionsgen2mainbranch96dfd1dc44dataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResource8F5AD471Outputsamplifydiscussionsgen2mainbranch96dfd1dc44dataamplifyDataAmplifyTableManagerTableManaFB9EF7A3",
+    "ParameterValue": "arn:aws:lambda:us-east-1:123456789012:function:amplify-discussions-gen-TableManagerCustomProvid-dYxhpxyNz9my"
+  },
+  {
+    "ParameterKey": "referencetoamplifydiscussionsgen2mainbranch96dfd1dc44authNestedStackauthNestedStackResource3DD9188BOutputsamplifydiscussionsgen2mainbranch96dfd1dc44authamplifyAuthIdentityPoolA0C42AE7Ref",
+    "ParameterValue": "us-east-1:84e99afb-f5e8-4fa4-bc21-875242ea6689"
+  },
+  {
+    "ParameterKey": "DynamoDBModelTableWriteIOPS",
+    "ParameterValue": "5"
+  },
+  {
+    "ParameterKey": "referencetoamplifydiscussionsgen2mainbranch96dfd1dc44dataamplifyDataGraphQLAPINONEDSE249BA0EName",
+    "ParameterValue": "NONE_DS"
+  },
+  {
+    "ParameterKey": "referencetoamplifydiscussionsgen2mainbranch96dfd1dc44dataamplifyDataGraphQLAPI0A3B504AApiId",
+    "ParameterValue": "ybf4m7gbureqbeiizzl6s4rztq"
+  }
+]

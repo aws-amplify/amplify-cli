@@ -1,0 +1,15 @@
+## [Start] Get Request template. **
+#set( $GetRequest = {
+  "version": "2018-05-29",
+  "operation": "GetItem"
+} )
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $key = $ctx.stash.metadata.modelObjectKey )
+#else
+  #set( $key = {
+  "id":   $util.dynamodb.toDynamoDB($ctx.args.input.id)
+} )
+#end
+$util.qr($GetRequest.put("key", $key))
+$util.toJson($GetRequest)
+## [End] Get Request template. **

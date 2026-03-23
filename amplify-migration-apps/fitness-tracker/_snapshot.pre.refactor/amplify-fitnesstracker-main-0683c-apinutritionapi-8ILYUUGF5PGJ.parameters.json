@@ -1,0 +1,22 @@
+[
+  {
+    "ParameterKey": "authfitnesstracker6b0fc1196b0fc119UserPoolId",
+    "ParameterValue": "us-east-1_u3DbKJdMj"
+  },
+  {
+    "ParameterKey": "functionlognutritionArn",
+    "ParameterValue": "arn:aws:lambda:us-east-1:123456789012:function:lognutrition-main"
+  },
+  {
+    "ParameterKey": "functionlognutritionName",
+    "ParameterValue": "lognutrition-main"
+  },
+  {
+    "ParameterKey": "env",
+    "ParameterValue": "main"
+  },
+  {
+    "ParameterKey": "authuserPoolGroupsAdminGroupRole",
+    "ParameterValue": "arn:aws:iam::123456789012:role/us-east-1_u3DbKJdMj-AdminGroupRole"
+  }
+]

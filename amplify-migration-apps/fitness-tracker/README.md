@@ -75,6 +75,7 @@ mages or other content, Analytics, and more)
 ? Do you want to add User Pool Groups? Yes
 ? Provide a name for your user pool group: Admin
 ? Do you want to add another User Pool Group No
+✔ Sort the user pool groups in order of preference · Admin
 ? Do you want to add an admin queries API? No
 ? Multifactor authentication (MFA) user login options: OFF
 ? Email based user registration/forgot password: Enabled (Requires per-user email entry at registration)
@@ -158,7 +159,6 @@ You can access the following resource attributes as environment variables from y
 ✔ Restrict access by: · Both
 ✔ Who should have access? · Authenticated users only
 ✔ What permissions do you want to grant to Authenticated users? · create, read, update, delete
-✔ Select groups: · Admin
 ✔ What permissions do you want to grant to Admin users? · create, read, update, delete
 ✔ Do you want to add another path? (y/N) · no
 ```
@@ -192,7 +192,7 @@ amplify add api
 ? Select the operations you want to permit on fitnesstrackercdd70e8bcdd70e8b read
 
 You can access the following resource attributes as environment variables from your Lambda function
-        AUTH_APP4FITNESSTRACKER1D5522F41D5522F4_USERPOOLID
+        AUTH_FITNESSTRACKER99C4DF2199C4DF21_USERPOOLID
         ENV
         REGION
 ? Do you want to invoke this function on a recurring schedule? No
@@ -213,7 +213,6 @@ To access AWS resources outside of this Amplify app, edit the /Users/gandhya/Des
 ✅ Succesfully added the Lambda function locally
 ✔ Restrict API access? (Y/n) · yes
 ✔ Restrict access by: · Individual Groups
-✔ Select groups: · Admin
 ✔ What permissions do you want to grant to Admin users? · read
 ✔ Do you want to add another path? (y/N) · no
 ```
@@ -252,6 +251,7 @@ amplify push
 └──────────┴─────────────────────────────────────────┴───────────┴───────────────────┘
 
 ? Are you sure you want to continue? (Y/n) › 
+? Do you want to generate code for your newly created GraphQL API No
 ```
 
 ## Publish Frontend
@@ -300,11 +300,29 @@ npx amplify gen2-migration generate
 + branchName: "gen2-main"
 ```
 
+**Edit in `./amplify/backend.ts`:**
+
+Navigate to the Amplify Console to find the `<gen1-rest-api-id>` and `<gen1-root-resource-id>` on the ApiGateway AWS Console. For example:
+
+![](./images/gen1-rest-api-id.png)
+![](./images/gen1-root-resource-id.png)
+
 ```diff
-- defaultAuthorizationMode: "userPool",
-+ defaultAuthorizationMode: "userPool",
-+ apiKeyAuthorizationMode: { expiresInDays: 7 }
++ const gen1RestApi = RestApi.fromRestApiAttributes(restApiStack, "Gen1RestApi", {
++     restApiId: '<gen1-rest-api-id>',
++     rootResourceId: '<gen1-root-resource-id>',
++ })
++ const gen1RestApiPolicy = new Policy(restApiStack, "Gen1RestApiPolicy", {
++     statements: [
++         new PolicyStatement({
++             actions: ["execute-api:Invoke"],
++             resources: [`${gen1RestApi.arnForExecuteApi("*", "/*")}`]
++         })
++     ]
++ });
++ backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(gen1RestApiPolicy);
 ```
+
 
 **Edit in `./amplify/function/lognutrition/resource.ts`:**
 
@@ -346,6 +364,11 @@ npx amplify gen2-migration generate
 + import crypto from 'crypto';
 ```
 
+```diff
+- module.exports = app;
++ export default app;
+```
+
 **Edit in `./amplify/function/admin/resource.ts`:**
 
 ```diff
@@ -380,6 +403,10 @@ npx amplify gen2-migration generate
 + import bodyParser from 'body-parser';
 + import awsServerlessExpressMiddleware from 'aws-serverless-express/middleware';
 + import { CognitoIdentityProviderClient, ListUsersCommand } from '@aws-sdk/client-cognito-identity-provider';
+```
+
+```diff
+- module.exports = app;
 + export default app;
 ```
 

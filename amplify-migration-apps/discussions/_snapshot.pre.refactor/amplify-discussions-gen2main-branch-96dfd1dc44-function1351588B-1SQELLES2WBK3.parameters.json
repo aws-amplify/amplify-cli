@@ -1,0 +1,26 @@
+[
+  {
+    "ParameterKey": "referencetoamplifydiscussionsgen2mainbranch96dfd1dc44storageNestedStackstorageNestedStackResourceF6518C7AOutputsamplifydiscussionsgen2mainbranch96dfd1dc44storageactivityEF3255CDArn",
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/amplify-discussions-gen2main-branch-96dfd1dc44-storage0EC3F24A-QQN18S0SITDH-activity1E902D9C-TT6R2GXJ05FS"
+  },
+  {
+    "ParameterKey": "referencetoamplifydiscussionsgen2mainbranch96dfd1dc44dataNestedStackdataNestedStackResource2163667EOutputsamplifydiscussionsgen2mainbranch96dfd1dc44dataamplifyDataCommentNestedStackCommentNestedStackResource47CE1CB5Outputsamplifydh04enr95FF1192",
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Comment-ruiylk7rjnb4ziygno3jh4wrsq-main/stream/2026-03-07T17:12:19.739"
+  },
+  {
+    "ParameterKey": "referencetoamplifydiscussionsgen2mainbranch96dfd1dc44storageNestedStackstorageNestedStackResourceF6518C7AOutputsamplifydiscussionsgen2mainbranch96dfd1dc44storageactivityEF3255CDStreamArn",
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/amplify-discussions-gen2main-branch-96dfd1dc44-storage0EC3F24A-QQN18S0SITDH-activity1E902D9C-TT6R2GXJ05FS/stream/2026-03-07T18:02:23.205"
+  },
+  {
+    "ParameterKey": "referencetoamplifydiscussionsgen2mainbranch96dfd1dc44dataNestedStackdataNestedStackResource2163667EOutputsamplifydiscussionsgen2mainbranch96dfd1dc44dataamplifyDataTopicNestedStackTopicNestedStackResource7AA88BABOutputsamplifydh04enrtcsd0C187242",
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Topic-ruiylk7rjnb4ziygno3jh4wrsq-main/stream/2026-03-07T17:11:31.408"
+  },
+  {
+    "ParameterKey": "referencetoamplifydiscussionsgen2mainbranch96dfd1dc44dataNestedStackdataNestedStackResource2163667EOutputsamplifydiscussionsgen2mainbranch96dfd1dc44dataamplifyDataPostNestedStackPostNestedStackResourceDD4F69CDOutputsamplifydiscussions42CE1AA5",
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Post-ruiylk7rjnb4ziygno3jh4wrsq-main/stream/2026-03-07T17:12:19.057"
+  },
+  {
+    "ParameterKey": "referencetoamplifydiscussionsgen2mainbranch96dfd1dc44storageNestedStackstorageNestedStackResourceF6518C7AOutputsamplifydiscussionsgen2mainbranch96dfd1dc44storageactivityEF3255CDRef",
+    "ParameterValue": "amplify-discussions-gen2main-branch-96dfd1dc44-storage0EC3F24A-QQN18S0SITDH-activity1E902D9C-TT6R2GXJ05FS"
+  }
+]

@@ -1,0 +1,64 @@
+{
+  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"Amplify\",\"createdWith\":\"14.2.5\",\"stackType\":\"storage-DynamoDB\",\"metadata\":{\"whyContinueWithGen1\":\"Prefer not to answer\"}}",
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Parameters": {
+    "partitionKeyName": {
+      "Type": "String"
+    },
+    "partitionKeyType": {
+      "Type": "String"
+    },
+    "env": {
+      "Type": "String"
+    },
+    "sortKeyName": {
+      "Type": "String"
+    },
+    "sortKeyType": {
+      "Type": "String"
+    },
+    "tableName": {
+      "Type": "String"
+    }
+  },
+  "Conditions": {
+    "ShouldNotCreateEnvResources": {
+      "Fn::Equals": [
+        "main",
+        "NONE"
+      ]
+    }
+  },
+  "Resources": {
+    "MigrationPlaceholder": {
+      "Type": "AWS::CloudFormation::WaitConditionHandle",
+      "Properties": {}
+    }
+  },
+  "Outputs": {
+    "Name": {
+      "Value": "activity-main"
+    },
+    "Arn": {
+      "Value": "arn:aws:dynamodb:us-east-1:123456789012:table/activity-main"
+    },
+    "StreamArn": {
+      "Value": "arn:aws:dynamodb:us-east-1:123456789012:table/activity-main/stream/2026-03-07T17:11:10.591"
+    },
+    "PartitionKeyName": {
+      "Value": "id"
+    },
+    "PartitionKeyType": {
+      "Value": "S"
+    },
+    "SortKeyName": {
+      "Value": "userId"
+    },
+    "SortKeyType": {
+      "Value": "S"
+    },
+    "Region": {
+      "Value": "us-east-1"
+    }
+  }
+}

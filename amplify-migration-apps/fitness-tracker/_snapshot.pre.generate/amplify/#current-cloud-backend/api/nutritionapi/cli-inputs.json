@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "paths": {
+    "/nutrition/log": {
+      "name": "/nutrition/log",
+      "lambdaFunction": "lognutrition",
+      "permissions": {
+        "setting": "private",
+        "auth": [
+          "create",
+          "read",
+          "update",
+          "delete"
+        ],
+        "groups": {
+          "Admin": [
+            "create",
+            "read",
+            "update",
+            "delete"
+          ]
+        }
+      }
+    }
+  }
+}

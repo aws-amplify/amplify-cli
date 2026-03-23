@@ -1,0 +1,14 @@
+[
+  {
+    "ParameterKey": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3authNestedStackauthNestedStackResourceC6E94DB9Outputsamplifyfitnesstrackergen2mainbranchf6c5a5beb3authamplifyAuthauthenticatedUserRoleB67A2B52Ref",
+    "ParameterValue": "amplify-fitnesstracker-gen-amplifyAuthauthenticatedU-ROG8INaCaQWH"
+  },
+  {
+    "ParameterKey": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3authNestedStackauthNestedStackResourceC6E94DB9Outputsamplifyfitnesstrackergen2mainbranchf6c5a5beb3authadmingen2mainlambda2E47DE6AArn",
+    "ParameterValue": "arn:aws:lambda:us-east-1:123456789012:function:admin-gen2-main"
+  },
+  {
+    "ParameterKey": "referencetoamplifyfitnesstrackergen2mainbranchf6c5a5beb3authNestedStackauthNestedStackResourceC6E94DB9Outputsamplifyfitnesstrackergen2mainbranchf6c5a5beb3authamplifyAuthAdminGroupRole5A967615Ref",
+    "ParameterValue": "amplify-fitnesstracker-gen-amplifyAuthAdminGroupRole-Xedsy5EWmRnv"
+  }
+]

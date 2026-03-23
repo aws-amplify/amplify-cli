@@ -1,0 +1,691 @@
+{
+  "Description": "{\"createdOn\":\"Linux\",\"createdBy\":\"AmplifyPipelineDeploy\",\"createdWith\":\"1.4.3\",\"stackType\":\"storage-S3\",\"metadata\":{}}",
+  "Resources": {
+    "moodboard20e29595008142e3ad16f01c4066e1c41959agen2mainBucketPolicy9A17D834": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": "amplify-moodboard-ge-moodboard20e29595008142e-hil8whofbv0z",
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:*",
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": "false"
+                }
+              },
+              "Effect": "Deny",
+              "Principal": {
+                "AWS": "*"
+              },
+              "Resource": [
+                "arn:aws:s3:::amplify-moodboard-ge-moodboard20e29595008142e-hil8whofbv0z",
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::amplify-moodboard-ge-moodboard20e29595008142e-hil8whofbv0z",
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "s3:PutBucketPolicy",
+                "s3:GetBucket*",
+                "s3:List*",
+                "s3:DeleteObject*"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": "arn:aws:iam::123456789012:role/amplify-moodboard-gen2main-branch-f7e4caeabb-storage0EC3F24A-11PWXC3G56PPP/CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+              },
+              "Resource": [
+                "arn:aws:s3:::amplify-moodboard-ge-moodboard20e29595008142e-hil8whofbv0z",
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::amplify-moodboard-ge-moodboard20e29595008142e-hil8whofbv0z",
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/storage/moodboard20e29595008142e3ad16f01c4066e1c41959a-gen2-main/Bucket/Policy/Resource"
+      }
+    },
+    "moodboard20e29595008142e3ad16f01c4066e1c41959agen2mainBucketAutoDeleteObjectsCustomResource6C820EA7": {
+      "Type": "Custom::S3AutoDeleteObjects",
+      "Properties": {
+        "ServiceToken": "arn:aws:lambda:us-east-1:123456789012:function:amplify-moodboard-gen2main-branch-f7e4caeabb-storage0EC3F24A-11PWXC3G56PPP/CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
+        "BucketName": "amplify-moodboard-ge-moodboard20e29595008142e-hil8whofbv0z"
+      },
+      "DependsOn": [
+        "moodboard20e29595008142e3ad16f01c4066e1c41959agen2mainBucketPolicy9A17D834"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/storage/moodboard20e29595008142e3ad16f01c4066e1c41959a-gen2-main/Bucket/AutoDeleteObjectsCustomResource/Default"
+      }
+    },
+    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ]
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/storage/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role"
+      }
+    },
+    "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+          },
+          "S3Key": "faa95a81ae7d7373f3e1f242268f904eb748d8d0fdd306e8a6fe515a1905a7d6.zip"
+        },
+        "Timeout": 900,
+        "MemorySize": 128,
+        "Handler": "index.handler",
+        "Role": "arn:aws:iam::123456789012:role/amplify-moodboard-gen2main-branch-f7e4caeabb-storage0EC3F24A-11PWXC3G56PPP/CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+        "Runtime": "nodejs22.x",
+        "Description": {
+          "Fn::Join": [
+            "",
+            [
+              "Lambda function for auto-deleting objects in ",
+              "amplify-moodboard-ge-moodboard20e29595008142e-hil8whofbv0z",
+              " S3 bucket."
+            ]
+          ]
+        }
+      },
+      "DependsOn": [
+        "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/storage/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler",
+        "aws:asset:path": "asset.faa95a81ae7d7373f3e1f242268f904eb748d8d0fdd306e8a6fe515a1905a7d6",
+        "aws:asset:property": "Code"
+      }
+    },
+    "MOODBOARD20E29595008142E3AD16F01C4066E1C41959AGEN2MAINBUCKETNAMEParameter8092E674": {
+      "Type": "AWS::SSM::Parameter",
+      "Properties": {
+        "Name": "/amplify/resource_reference/moodboard/gen2main-branch-f7e4caeabb/MOODBOARD_20_E_29595008142_E_3_AD_16_F_01_C_4066_E_1_C_41959_A_GEN_2_MAIN_BUCKET_NAME",
+        "Tags": {
+          "amplify:app-id": "moodboard",
+          "amplify:branch-name": "gen2-main",
+          "amplify:deployment-type": "branch",
+          "created-by": "amplify"
+        },
+        "Type": "String",
+        "Value": "amplify-moodboard-ge-moodboard20e29595008142e-hil8whofbv0z"
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/storage/MOODBOARD_20_E_29595008142_E_3_AD_16_F_01_C_4066_E_1_C_41959_A_GEN_2_MAIN_BUCKET_NAMEParameter/Resource"
+      }
+    },
+    "amplifymoodboardgen2mainbranchf7e4caeabbstorageAccess390737D54": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:GetObject",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:aws:s3:::amplify-moodboard-ge-moodboard20e29595008142e-hil8whofbv0z",
+                    "/public/*"
+                  ]
+                ]
+              }
+            },
+            {
+              "Action": "s3:ListBucket",
+              "Condition": {
+                "StringLike": {
+                  "s3:prefix": [
+                    "public/*",
+                    "public/"
+                  ]
+                }
+              },
+              "Effect": "Allow",
+              "Resource": "arn:aws:s3:::amplify-moodboard-ge-moodboard20e29595008142e-hil8whofbv0z"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "amplifymoodboardgen2mainbranchf7e4caeabbstorageAccess390737D54",
+        "Roles": [
+          {
+            "Ref": "referencetoamplifymoodboardgen2mainbranchf7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthunauthenticatedUserRoleBEC4D39ARef"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/storage/amplify-moodboard-gen2main-branch-f7e4caeabb--storageAccess3/Resource"
+      }
+    },
+    "amplifymoodboardgen2mainbranchf7e4caeabbstorageAccess48AB6518A": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:PutObject",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::amplify-moodboard-ge-moodboard20e29595008142e-hil8whofbv0z",
+                      "/public/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::amplify-moodboard-ge-moodboard20e29595008142e-hil8whofbv0z",
+                      "/protected/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::amplify-moodboard-ge-moodboard20e29595008142e-hil8whofbv0z",
+                      "/private/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": "s3:GetObject",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::amplify-moodboard-ge-moodboard20e29595008142e-hil8whofbv0z",
+                      "/public/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::amplify-moodboard-ge-moodboard20e29595008142e-hil8whofbv0z",
+                      "/protected/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::amplify-moodboard-ge-moodboard20e29595008142e-hil8whofbv0z",
+                      "/private/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": "s3:ListBucket",
+              "Condition": {
+                "StringLike": {
+                  "s3:prefix": [
+                    "public/*",
+                    "public/",
+                    "protected/*",
+                    "protected/",
+                    "private/*",
+                    "private/"
+                  ]
+                }
+              },
+              "Effect": "Allow",
+              "Resource": "arn:aws:s3:::amplify-moodboard-ge-moodboard20e29595008142e-hil8whofbv0z"
+            },
+            {
+              "Action": "s3:DeleteObject",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::amplify-moodboard-ge-moodboard20e29595008142e-hil8whofbv0z",
+                      "/public/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::amplify-moodboard-ge-moodboard20e29595008142e-hil8whofbv0z",
+                      "/protected/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::amplify-moodboard-ge-moodboard20e29595008142e-hil8whofbv0z",
+                      "/private/*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "amplifymoodboardgen2mainbranchf7e4caeabbstorageAccess48AB6518A",
+        "Roles": [
+          {
+            "Ref": "referencetoamplifymoodboardgen2mainbranchf7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthauthenticatedUserRole0AA19633Ref"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/storage/amplify-moodboard-gen2main-branch-f7e4caeabb--storageAccess4/Resource"
+      }
+    },
+    "CDKMetadata": {
+      "Type": "AWS::CDK::Metadata",
+      "Properties": {
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/1WLTQ6CMBCFz8K+jIgu3Cp7Q+AAppaRjNA26QwQ03B3QyASV+97fznk5yNkiZ44NU2X9vSEeEcWbGrRplN64kfkE8TbYDoUVbzcRquUvifz2ePVz4rZQqwlkGtLHbRFwbCsfmZWpC3E/b89Z1UMLN5WyH4IBpdq57+qDH6kBsNNM6orM0otuiXXzsr5BuHNhzHP4XiBLHkzURoGJ2QRqlW/LyyDFv0AAAA="
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/storage/CDKMetadata/Default"
+      },
+      "Condition": "CDKMetadataAvailable"
+    },
+    "moodboard20e29595008142e3ad16f01c4066e1c41959agen2mainBucket71D6AA65": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": {
+          "Fn::Join": [
+            "",
+            [
+              "moodboard20e29595008142e3ad16f01c4066e1c4",
+              {
+                "Fn::Select": [
+                  3,
+                  {
+                    "Fn::Split": [
+                      "-",
+                      "amplify-moodboard-main-1959a-storagemoodboardStorage-4QIRO85L6OVA"
+                    ]
+                  }
+                ]
+              },
+              "-",
+              "main"
+            ]
+          ]
+        },
+        "CorsConfiguration": {
+          "CorsRules": [
+            {
+              "AllowedHeaders": [
+                "*"
+              ],
+              "AllowedMethods": [
+                "GET",
+                "HEAD",
+                "PUT",
+                "POST",
+                "DELETE"
+              ],
+              "AllowedOrigins": [
+                "*"
+              ],
+              "ExposedHeaders": [
+                "x-amz-server-side-encryption",
+                "x-amz-request-id",
+                "x-amz-id-2",
+                "ETag"
+              ],
+              "Id": "S3CORSRuleId1",
+              "MaxAge": 3000
+            }
+          ]
+        },
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "ServerSideEncryptionByDefault": {
+                "SSEAlgorithm": "AES256"
+              }
+            }
+          ]
+        }
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
+    }
+  },
+  "Conditions": {
+    "CDKMetadataAvailable": {
+      "Fn::Or": [
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "af-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-3"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-south-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-3"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-4"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ca-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ca-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-northwest-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-central-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-south-2"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-3"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "il-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "me-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "me-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "sa-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-west-1"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "AWS::Region"
+            },
+            "us-west-2"
+          ]
+        }
+      ]
+    }
+  },
+  "Parameters": {
+    "referencetoamplifymoodboardgen2mainbranchf7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthunauthenticatedUserRoleBEC4D39ARef": {
+      "Type": "String"
+    },
+    "referencetoamplifymoodboardgen2mainbranchf7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthauthenticatedUserRole0AA19633Ref": {
+      "Type": "String"
+    }
+  },
+  "Outputs": {
+    "amplifymoodboardgen2mainbranchf7e4caeabbstoragemoodboard20e29595008142e3ad16f01c4066e1c41959agen2mainBucket352A7A47Ref": {
+      "Value": "amplify-moodboard-ge-moodboard20e29595008142e-hil8whofbv0z"
+    }
+  }
+}

@@ -1,0 +1,42 @@
+[
+  {
+    "ParameterKey": "referencetotransformerrootstackTopicNestedStackTopicNestedStackResource792C4229OutputstransformerrootstackTopicTopicTableFD91FB92Ref",
+    "ParameterValue": "Topic-ruiylk7rjnb4ziygno3jh4wrsq-main"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
+    "ParameterValue": "amplify-appsync-files/db92bad357b2590353e82db2f2ec7d0fc9cfd30d"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name",
+    "ParameterValue": "NONE_DS"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackPostNestedStackPostNestedStackResource45FCAC5EOutputstransformerrootstackPostPostTable34CAE87BRef",
+    "ParameterValue": "Post-ruiylk7rjnb4ziygno3jh4wrsq-main"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackCommentNestedStackCommentNestedStackResource199283FBOutputstransformerrootstackCommentCommentTable5427FDE2Ref",
+    "ParameterValue": "Comment-ruiylk7rjnb4ziygno3jh4wrsq-main"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+    "ParameterValue": "ruiylk7rjnb4ziygno3jh4wrsq"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackCommentNestedStackCommentNestedStackResource199283FBOutputstransformerrootstackCommentCommentDataSourceA0E54655Name",
+    "ParameterValue": "CommentTable"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
+    "ParameterValue": "amplify-discussions-main-d5a80-deployment"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackPostNestedStackPostNestedStackResource45FCAC5EOutputstransformerrootstackPostPostDataSource6998E105Name",
+    "ParameterValue": "PostTable"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackTopicNestedStackTopicNestedStackResource792C4229OutputstransformerrootstackTopicTopicDataSource63D2F34BName",
+    "ParameterValue": "TopicTable"
+  }
+]

@@ -1,0 +1,22 @@
+[
+  {
+    "OutputKey": "amplifybackendonlygen2mainbranch8e0f260810authamplifyAuthauthenticatedUserRole5699D34FRef",
+    "OutputValue": "amplify-backendonly-ge-amplifyAuthauthenticatedU-NrnOsacJVeCr"
+  },
+  {
+    "OutputKey": "amplifybackendonlygen2mainbranch8e0f260810authamplifyAuthUserPoolAppClientF2CDC3A8Ref",
+    "OutputValue": "55m5602upkjiv7819hcf2ht5v3"
+  },
+  {
+    "OutputKey": "amplifybackendonlygen2mainbranch8e0f260810authamplifyAuthIdentityPool91CBC3ADRef",
+    "OutputValue": "us-east-1:33a8fea2-6293-4bec-8726-31e6b5817de5"
+  },
+  {
+    "OutputKey": "amplifybackendonlygen2mainbranch8e0f260810authamplifyAuthunauthenticatedUserRole02B14E66Ref",
+    "OutputValue": "amplify-backendonly-ge-amplifyAuthunauthenticate-mFzNB8V2DE4J"
+  },
+  {
+    "OutputKey": "amplifybackendonlygen2mainbranch8e0f260810authamplifyAuthUserPoolACA7606BRef",
+    "OutputValue": "us-east-1_W9u2NBSRe"
+  }
+]

@@ -4,12 +4,12 @@
  */
 
 import { $TSContext, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
+import fs from 'fs-extra';
 
 /**
  * Local drift detection results (Phase 3)
  */
 export interface LocalDriftResults {
-  totalDrifted: number;
   resourcesToBeCreated?: Array<ResourceInfo>;
   resourcesToBeUpdated?: Array<ResourceInfo>;
   resourcesToBeDeleted?: Array<ResourceInfo>;
@@ -24,9 +24,23 @@ export interface LocalDriftResults {
 export interface ResourceInfo {
   category: string;
   resourceName: string;
-  service?: string;
+  service: string;
   providerPlugin?: string;
   dependsOn?: Array<any>;
+}
+
+function assertValidResourceInfo(resource: any): asserts resource is ResourceInfo {
+  if (
+    typeof resource !== 'object' ||
+    resource === null ||
+    typeof resource.category !== 'string' ||
+    typeof resource.resourceName !== 'string' ||
+    typeof resource.service !== 'string' ||
+    (resource.providerPlugin !== undefined && typeof resource.providerPlugin !== 'string') ||
+    (resource.dependsOn !== undefined && !Array.isArray(resource.dependsOn))
+  ) {
+    throw new Error(`Invalid ResourceInfo: ${JSON.stringify(resource)}`);
+  }
 }
 
 /**
@@ -44,7 +58,6 @@ export async function detectLocalDrift(context: $TSContext): Promise<LocalDriftR
     // Check if project is initialized first
     if (!stateManager.metaFileExists()) {
       return {
-        totalDrifted: 0,
         skipped: true,
         skipReason: 'Project not initialized',
       };
@@ -52,27 +65,25 @@ export async function detectLocalDrift(context: $TSContext): Promise<LocalDriftR
 
     // Check if we have a cloud backend to compare against
     const currentCloudBackendDir = pathManager.getCurrentCloudBackendDirPath();
-    if (!currentCloudBackendDir || !require('fs-extra').existsSync(currentCloudBackendDir)) {
+    if (!currentCloudBackendDir || !fs.existsSync(currentCloudBackendDir)) {
       return {
-        totalDrifted: 0,
         skipped: true,
         skipReason: 'No cloud backend found - project may not be deployed yet',
       };
     }
 
-    // Use existing status logic to compare local vs cloud backend
-    // Note: The cloud backend has already been synced from S3
+    // Lazy require — resource-status-data transitively imports amplify-provider-awscloudformation
+    // which has top-level side effects (FeatureFlags.getNumber) that crash in test environments.
+    // This is the established pattern in this codebase (see amplify-toolkit.ts).
     const { getResourceStatus } = require('../../extensions/amplify-helpers/resource-status-data');
-
     const statusResults = await getResourceStatus();
 
     const { resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeDeleted, resourcesToBeSynced } = statusResults;
-
-    // Calculate total drift
-    const totalDrifted = resourcesToBeCreated.length + resourcesToBeUpdated.length + resourcesToBeDeleted.length;
+    for (const arr of [resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeDeleted, resourcesToBeSynced]) {
+      arr.forEach(assertValidResourceInfo);
+    }
 
     return {
-      totalDrifted,
       resourcesToBeCreated,
       resourcesToBeUpdated,
       resourcesToBeDeleted,
@@ -82,7 +93,6 @@ export async function detectLocalDrift(context: $TSContext): Promise<LocalDriftR
   } catch (error: any) {
     // Handle errors gracefully
     return {
-      totalDrifted: 0,
       skipped: true,
       skipReason: error.message || 'Unable to detect local drift',
     };

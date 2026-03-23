@@ -5,5 +5,5 @@ module.exports = {
   rules: {
     'package-json-dependencies/alphabetically-sorted-dependencies': 'error',
   },
-  ignorePatterns: ['node_modules'],
+  ignorePatterns: ['node_modules', 'amplify-migration-apps'],
 };

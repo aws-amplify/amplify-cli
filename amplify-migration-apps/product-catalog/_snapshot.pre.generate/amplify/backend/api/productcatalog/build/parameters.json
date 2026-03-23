@@ -1,0 +1,19 @@
+{
+    "AppSyncApiName": "productcatalog",
+    "DynamoDBBillingMode": "PAY_PER_REQUEST",
+    "DynamoDBEnableServerSideEncryption": false,
+    "AuthCognitoUserPoolId": {
+        "Fn::GetAtt": [
+            "authproductcatalog90174ac4",
+            "Outputs.UserPoolId"
+        ]
+    },
+    "authRoleName": {
+        "Ref": "AuthRoleName"
+    },
+    "unauthRoleName": {
+        "Ref": "UnauthRoleName"
+    },
+    "S3DeploymentBucket": "amplify-productcatalog-main-31323-deployment",
+    "S3DeploymentRootKey": "amplify-appsync-files/51b6d4362e9dc4529fd8298646795247239d2c30"
+}

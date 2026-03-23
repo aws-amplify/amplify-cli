@@ -1,0 +1,18 @@
+[
+  {
+    "OutputKey": "GetAttMealTableName",
+    "OutputValue": "Meal-2aikutabnvbuhlzmh4mvkg3eji-main",
+    "Description": "Your DynamoDB table name.",
+    "ExportName": "aolmivry45bvbmfywwm6tb542u:GetAtt:MealTable:Name"
+  },
+  {
+    "OutputKey": "GetAttMealTableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Meal-2aikutabnvbuhlzmh4mvkg3eji-main/stream/2026-03-07T19:49:12.348",
+    "Description": "Your DynamoDB table StreamArn.",
+    "ExportName": "aolmivry45bvbmfywwm6tb542u:GetAtt:MealTable:StreamArn"
+  },
+  {
+    "OutputKey": "amplifyfitnesstrackergen2mainbranchf6c5a5beb3dataamplifyDataMealMealTableFB0A2E92TableArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Meal-2aikutabnvbuhlzmh4mvkg3eji-main"
+  }
+]

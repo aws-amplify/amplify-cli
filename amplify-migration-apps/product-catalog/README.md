@@ -288,12 +288,6 @@ npx amplify gen2-migration generate
 + branchName: "gen2-main"
 ```
 
-```diff
--    defaultAuthorizationMode: "iam",
-+    defaultAuthorizationMode: "iam",
-+    apiKeyAuthorizationMode: { expiresInDays: 7 }
-```
-
 **Edit in `./amplify/backend.ts`:**
 
 ```diff

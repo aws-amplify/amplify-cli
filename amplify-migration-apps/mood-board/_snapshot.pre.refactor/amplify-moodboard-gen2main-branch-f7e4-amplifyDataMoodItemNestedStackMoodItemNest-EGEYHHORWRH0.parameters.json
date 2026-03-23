@@ -1,0 +1,46 @@
+[
+  {
+    "ParameterKey": "DynamoDBModelTableReadIOPS",
+    "ParameterValue": "5"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboardgen2mainbranchf7e4caeabbdataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResource4ABB9726Outputsamplifymoodboardgen2mainbranchf7e4caeabbdataamplifyDataAmplifyTableManagerTableMa128CE2CC",
+    "ParameterValue": "arn:aws:lambda:us-east-1:123456789012:function:amplify-moodboard-ge-TableManagerCustomProvid-P9ApcdX7uMst"
+  },
+  {
+    "ParameterKey": "DynamoDBEnableServerSideEncryption",
+    "ParameterValue": "true"
+  },
+  {
+    "ParameterKey": "DynamoDBEnablePointInTimeRecovery",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboardgen2mainbranchf7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthauthenticatedUserRole0AA19633Ref",
+    "ParameterValue": "amplify-moodboard-ge-amplifyAuthauthenticatedU-UANJImTyKZ7p"
+  },
+  {
+    "ParameterKey": "DynamoDBBillingMode",
+    "ParameterValue": "PAY_PER_REQUEST"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboardgen2mainbranchf7e4caeabbdataamplifyDataGraphQLAPINONEDS782A06A6Name",
+    "ParameterValue": "NONE_DS"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboardgen2mainbranchf7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthIdentityPoolA9AA7B9FRef",
+    "ParameterValue": "us-east-1:820c5910-56e0-4010-b0c4-b457a728acfb"
+  },
+  {
+    "ParameterKey": "DynamoDBModelTableWriteIOPS",
+    "ParameterValue": "5"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboardgen2mainbranchf7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthunauthenticatedUserRoleBEC4D39ARef",
+    "ParameterValue": "amplify-moodboard-ge-amplifyAuthunauthenticate-rp3r1qUbAKVV"
+  },
+  {
+    "ParameterKey": "referencetoamplifymoodboardgen2mainbranchf7e4caeabbdataamplifyDataGraphQLAPI57A75E48ApiId",
+    "ParameterValue": "i3rfe6qyonbeldjtlui5jixz4u"
+  }
+]

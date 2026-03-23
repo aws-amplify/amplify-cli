@@ -225,12 +225,7 @@ amplify push
 └───────────┴──────────────────────────┴───────────┴───────────────────┘
 
 ✔ Are you sure you want to continue? (Y/n) · yes
-? Do you want to generate code for your newly created GraphQL API Yes
-? Choose the code generation language target: typescript
-? Enter the file name pattern of graphql queries, mutations and subscriptions: src/graphql/**/*.ts
-? Do you want to generate/update all possible GraphQL operations - queries, mutations and subscriptions: Yes
-? Enter maximum statement depth: 2
-? Enter the file name for the generated code: src/API.ts
+? Do you want to generate code for your newly created GraphQL API No
 ```
 
 ## Publish Frontend
@@ -341,7 +336,7 @@ npx amplify gen2-migration generate
 ```
 
 ```diff
-+ backend.moodBoardKinesisReader.addEnvironment("ANALYTICS_MOODBOARDKINESIS_KINESISSTREAMARN",analytics.kinesisStreamArn)
++ backend.moodboardKinesisReader.addEnvironment("ANALYTICS_MOODBOARDKINESIS_KINESISSTREAMARN",analytics.kinesisStreamArn)
 ```
 
 ```console

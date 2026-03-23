@@ -1,11 +1,11 @@
 import { AmplifyMigrationStep } from './_step';
-import { AmplifyMigrationOperation } from './_operation';
-import { AmplifyError, stateManager } from '@aws-amplify/amplify-cli-core';
+import { AmplifyMigrationOperation, ValidationResult } from './_operation';
+import { Plan } from './_plan';
+import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { CloudFormationClient, SetStackPolicyCommand, GetStackPolicyCommand } from '@aws-sdk/client-cloudformation';
 import { AmplifyClient, UpdateAppCommand, GetAppCommand } from '@aws-sdk/client-amplify';
 import { DynamoDBClient, UpdateTableCommand, paginateListTables } from '@aws-sdk/client-dynamodb';
 import { AppSyncClient, paginateListGraphqlApis } from '@aws-sdk/client-appsync';
-import { CognitoIdentityProviderClient, UpdateUserPoolCommand } from '@aws-sdk/client-cognito-identity-provider';
 import { AmplifyGen2MigrationValidations } from './_validations';
 
 const GEN2_MIGRATION_ENVIRONMENT_NAME = 'GEN2_MIGRATION_ENVIRONMENT_NAME';
@@ -36,46 +36,32 @@ const ALLOW_ALL_POLICY = {
 
 export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
   private _dynamoTableNames: string[];
-  private _userPoolIds: string[];
 
   private _ddbClient: DynamoDBClient;
   private _amplifyClient: AmplifyClient;
   private _cfnClient: CloudFormationClient;
-  private _cognitoClient: CognitoIdentityProviderClient;
 
-  public async executeImplications(): Promise<string[]> {
-    return [
-      `You will not be able to run 'amplify push' on environment '${this.currentEnvName}'`,
-      `You will not be able to migrate another environment until migration of '${this.currentEnvName}' is complete or rolled back`,
-    ];
-  }
-
-  public async rollbackImplications(): Promise<string[]> {
-    return [
-      `You will be able to run 'amplify push' on environment '${this.currentEnvName}'`,
-      `You will be able to start migration of another environment`,
-    ];
-  }
-
-  public async executeValidate(): Promise<void> {
-    const validations = new AmplifyGen2MigrationValidations(this.logger, this.rootStackName, this.currentEnvName, this.context);
-    await validations.validateDeploymentStatus();
-    await validations.validateDrift();
-  }
-
-  public async rollbackValidate(): Promise<void> {
-    // https://github.com/aws-amplify/amplify-cli/issues/14570
-    return;
-  }
-
-  public async execute(): Promise<AmplifyMigrationOperation[]> {
+  public async forward(): Promise<Plan> {
     const operations: AmplifyMigrationOperation[] = [];
+
+    operations.push({
+      describe: async () => [],
+      validate: () => ({ description: 'Environment Status', run: () => this.validateDeploymentStatus() }),
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      execute: async () => {},
+    });
+
+    operations.push({
+      describe: async () => [],
+      validate: () => ({ description: 'Drift', run: () => this.validateDrift() }),
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      execute: async () => {},
+    });
 
     for (const tableName of await this.dynamoTableNames()) {
       operations.push({
-        describe: async () => {
-          return [`Enable deletion protection for table '${tableName}'`];
-        },
+        validate: () => undefined,
+        describe: async () => [`Enable deletion protection for table '${tableName}'`],
         execute: async () => {
           await this.ddbClient().send(
             new UpdateTableCommand({
@@ -88,27 +74,9 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
       });
     }
 
-    for (const userPoolId of await this.userPoolIds()) {
-      operations.push({
-        describe: async () => {
-          return [`Enable deletion protection for user pool '${userPoolId}'`];
-        },
-        execute: async () => {
-          await this.cognitoClient().send(
-            new UpdateUserPoolCommand({
-              UserPoolId: userPoolId,
-              DeletionProtection: 'ACTIVE',
-            }),
-          );
-          this.logger.info(`Enabled deletion protection for user pool '${userPoolId}'`);
-        },
-      });
-    }
-
     operations.push({
-      describe: async () => {
-        return [`Add environment variable '${GEN2_MIGRATION_ENVIRONMENT_NAME}' (value: ${this.currentEnvName})`];
-      },
+      validate: () => undefined,
+      describe: async () => [`Add environment variable '${GEN2_MIGRATION_ENVIRONMENT_NAME}' (value: ${this.currentEnvName})`],
       execute: async () => {
         const app = await this.amplifyClient().send(new GetAppCommand({ appId: this.appId }));
         const environmentVariables = { ...(app.app.environmentVariables ?? {}), [GEN2_MIGRATION_ENVIRONMENT_NAME]: this.currentEnvName };
@@ -118,6 +86,7 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
     });
 
     operations.push({
+      validate: () => undefined,
       describe: async () => {
         return [`Add lock statement to stack policy on '${this.rootStackName}': ${JSON.stringify(LOCK_STATEMENT)}`];
       },
@@ -140,41 +109,32 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
       },
     });
 
-    return operations;
+    return new Plan({
+      operations,
+      logger: this.logger,
+      title: 'Execute',
+      implications: [
+        `You will not be able to run 'amplify push' on environment '${this.currentEnvName}'`,
+        `You will not be able to migrate another environment until migration of '${this.currentEnvName}' is complete or rolled back`,
+      ],
+    });
   }
 
-  public async rollback(): Promise<AmplifyMigrationOperation[]> {
+  public async rollback(): Promise<Plan> {
     const operations: AmplifyMigrationOperation[] = [];
 
-    // note that we don't disable deletion protection on the tables because we don't
-    // know what the original value was; to play it safe we leave it untouched.
-    // create logging only operations to let this be known to the user.
     for (const tableName of await this.dynamoTableNames()) {
       operations.push({
-        describe: async () => {
-          return [`Preserve deletion protection for table '${tableName}'`];
-        },
-        execute: async () => {
-          return;
-        },
-      });
-    }
-
-    for (const userPoolId of await this.userPoolIds()) {
-      operations.push({
-        describe: async () => {
-          return [`Preserve deletion protection for user pool '${userPoolId}'`];
-        },
-        execute: async () => {
-          return;
-        },
+        validate: () => undefined,
+        describe: async () => [`Preserve deletion protection for table '${tableName}'`],
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        execute: async () => {},
       });
     }
 
     operations.push({
-      describe: async () => {
-        return [`Remove environment variable '${GEN2_MIGRATION_ENVIRONMENT_NAME}'`];
-      },
+      validate: () => undefined,
+      describe: async () => [`Remove environment variable '${GEN2_MIGRATION_ENVIRONMENT_NAME}'`],
       execute: async () => {
         const app = await this.amplifyClient().send(new GetAppCommand({ appId: this.appId }));
         const environmentVariables = app.app.environmentVariables ?? {};
@@ -185,6 +145,7 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
     });
 
     operations.push({
+      validate: () => undefined,
       describe: async () => {
         return [`Remove lock statement from stack policy on '${this.rootStackName}': ${JSON.stringify(LOCK_STATEMENT)}`];
       },
@@ -209,7 +170,35 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
       },
     });
 
-    return operations;
+    return new Plan({
+      operations,
+      logger: this.logger,
+      title: 'Rollback',
+      implications: [
+        `You will be able to run 'amplify push' on environment '${this.currentEnvName}'`,
+        `You will be able to start migration of another environment`,
+      ],
+    });
+  }
+
+  private async validateDeploymentStatus(): Promise<ValidationResult> {
+    try {
+      const validations = new AmplifyGen2MigrationValidations(this.logger, this.rootStackName, this.currentEnvName, this.context);
+      await validations.validateDeploymentStatus();
+      return { valid: true };
+    } catch (e) {
+      return { valid: false, report: e.message };
+    }
+  }
+
+  private async validateDrift(): Promise<ValidationResult> {
+    try {
+      const validations = new AmplifyGen2MigrationValidations(this.logger, this.rootStackName, this.currentEnvName, this.context);
+      await validations.validateDrift();
+      return { valid: true };
+    } catch (e) {
+      return { valid: false, report: e.message };
+    }
   }
 
   private async fetchGraphQLApiId(): Promise<string> {
@@ -280,29 +269,5 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
       return JSON.parse(response.StackPolicyBody) as { Statement: Record<string, string>[] };
     }
     return { Statement: [] };
-  }
-
-  private cognitoClient() {
-    if (!this._cognitoClient) {
-      this._cognitoClient = new CognitoIdentityProviderClient({});
-    }
-    return this._cognitoClient;
-  }
-
-  private async userPoolIds(): Promise<string[]> {
-    if (!this._userPoolIds) {
-      this._userPoolIds = [];
-      const meta = stateManager.getMeta();
-      const authCategory = meta?.auth;
-      if (authCategory) {
-        for (const [, resource] of Object.entries(authCategory)) {
-          const typedResource = resource as { service?: string; output?: { UserPoolId?: string } };
-          if (typedResource.service === 'Cognito' && typedResource.output?.UserPoolId) {
-            this._userPoolIds.push(typedResource.output.UserPoolId);
-          }
-        }
-      }
-    }
-    return this._userPoolIds;
   }
 }

@@ -1,0 +1,556 @@
+{
+  "Description": "An auto-generated nested stack for the @function directive.",
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Conditions": {
+    "HasEnvironmentParameter": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            "NONE",
+            "NONE"
+          ]
+        }
+      ]
+    },
+    "CDKMetadataAvailable": {
+      "Fn::Or": [
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "af-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-3"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-south-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-3"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-4"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ca-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ca-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-northwest-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-central-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-south-2"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-3"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "il-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "me-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "me-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "sa-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-west-1"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "AWS::Region"
+            },
+            "us-west-2"
+          ]
+        }
+      ]
+    }
+  },
+  "Resources": {
+    "FetchuseractivityGen2MainLambdaDataSourceServiceRole4C155E48": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "appsync.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Tags": [
+          {
+            "Key": "amplify:app-id",
+            "Value": "discussions"
+          },
+          {
+            "Key": "amplify:branch-name",
+            "Value": "gen2-main"
+          },
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "branch"
+          },
+          {
+            "Key": "amplify:friendly-name",
+            "Value": "amplifyData"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-96dfd1dc44/data/amplifyData/FunctionDirectiveStack/FetchuseractivityGen2MainLambdaDataSource/ServiceRole/Resource"
+      }
+    },
+    "FetchuseractivityGen2MainLambdaDataSourceServiceRoleDefaultPolicyD13BD55D": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::If": [
+                    "HasEnvironmentParameter",
+                    {
+                      "Fn::Sub": [
+                        "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:fetchuseractivity-gen2-main",
+                        {}
+                      ]
+                    },
+                    {
+                      "Fn::Sub": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:fetchuseractivity-gen2-main"
+                    }
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::If": [
+                          "HasEnvironmentParameter",
+                          {
+                            "Fn::Sub": [
+                              "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:fetchuseractivity-gen2-main",
+                              {}
+                            ]
+                          },
+                          {
+                            "Fn::Sub": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:fetchuseractivity-gen2-main"
+                          }
+                        ]
+                      },
+                      ":*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "FetchuseractivityGen2MainLambdaDataSourceServiceRoleDefaultPolicyD13BD55D",
+        "Roles": [
+          {
+            "Ref": "FetchuseractivityGen2MainLambdaDataSourceServiceRole4C155E48"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-96dfd1dc44/data/amplifyData/FunctionDirectiveStack/FetchuseractivityGen2MainLambdaDataSource/ServiceRole/DefaultPolicy/Resource"
+      }
+    },
+    "FetchuseractivityGen2MainLambdaDataSource": {
+      "Type": "AWS::AppSync::DataSource",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifydiscussionsgen2mainbranch96dfd1dc44dataamplifyDataGraphQLAPI0A3B504AApiId"
+        },
+        "LambdaConfig": {
+          "LambdaFunctionArn": {
+            "Fn::If": [
+              "HasEnvironmentParameter",
+              {
+                "Fn::Sub": [
+                  "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:fetchuseractivity-gen2-main",
+                  {}
+                ]
+              },
+              {
+                "Fn::Sub": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:fetchuseractivity-gen2-main"
+              }
+            ]
+          }
+        },
+        "Name": "FetchuseractivityGen2MainLambdaDataSource",
+        "ServiceRoleArn": {
+          "Fn::GetAtt": [
+            "FetchuseractivityGen2MainLambdaDataSourceServiceRole4C155E48",
+            "Arn"
+          ]
+        },
+        "Type": "AWS_LAMBDA"
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-96dfd1dc44/data/amplifyData/FunctionDirectiveStack/FetchuseractivityGen2MainLambdaDataSource/Resource"
+      }
+    },
+    "InvokeFetchuseractivityGen2MainLambdaDataSourceInvokeFetchuseractivityGen2MainLambdaDataSourceAppSyncFunctionA6277669": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifydiscussionsgen2mainbranch96dfd1dc44dataamplifyDataGraphQLAPI0A3B504AApiId"
+        },
+        "DataSourceName": {
+          "Fn::GetAtt": [
+            "FetchuseractivityGen2MainLambdaDataSource",
+            "Name"
+          ]
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "InvokeFetchuseractivityGen2MainLambdaDataSource",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fe1fde42ccef15458dbd92a2a8585717ca41949d9a24f6e018c70d3b404315ee.vtl"
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a20e304512b1fde77dc16ed9d5e0ed03817afcab629ce87ef11c99877b7b1e30.vtl"
+        }
+      },
+      "DependsOn": [
+        "FetchuseractivityGen2MainLambdaDataSource"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-96dfd1dc44/data/amplifyData/FunctionDirectiveStack/InvokeFetchuseractivityGen2MainLambdaDataSource/InvokeFetchuseractivityGen2MainLambdaDataSource.AppSyncFunction"
+      }
+    },
+    "QueryfetchUserActivityResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifydiscussionsgen2mainbranch96dfd1dc44dataamplifyDataGraphQLAPI0A3B504AApiId"
+        },
+        "FieldName": "fetchUserActivity",
+        "Kind": "PIPELINE",
+        "PipelineConfig": {
+          "Functions": [
+            {
+              "Fn::GetAtt": [
+                "QueryFetchUserActivityAuthFNQueryFetchUserActivityAuthFNAppSyncFunctionC061F612",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "InvokeFetchuseractivityGen2MainLambdaDataSourceInvokeFetchuseractivityGen2MainLambdaDataSourceAppSyncFunctionA6277669",
+                "FunctionId"
+              ]
+            }
+          ]
+        },
+        "RequestMappingTemplate": {
+          "Fn::Join": [
+            "",
+            [
+              "## [Start] Stash resolver specific context.. **\n$util.qr($ctx.stash.put(\"typeName\", \"Query\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"fetchUserActivity\"))\n$util.qr($ctx.stash.put(\"authRole\", \"arn:aws:sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+                "Ref": "referencetoamplifydiscussionsgen2mainbranch96dfd1dc44authNestedStackauthNestedStackResource3DD9188BOutputsamplifydiscussionsgen2mainbranch96dfd1dc44authamplifyAuthauthenticatedUserRole95356EEFRef"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:aws:sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+                "Ref": "referencetoamplifydiscussionsgen2mainbranch96dfd1dc44authNestedStackauthNestedStackResource3DD9188BOutputsamplifydiscussionsgen2mainbranch96dfd1dc44authamplifyAuthunauthenticatedUserRoleE19AFD6CRef"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
+              {
+                "Ref": "referencetoamplifydiscussionsgen2mainbranch96dfd1dc44authNestedStackauthNestedStackResource3DD9188BOutputsamplifydiscussionsgen2mainbranch96dfd1dc44authamplifyAuthIdentityPoolA0C42AE7Ref"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n{}\n## [End] Stash resolver specific context.. **"
+            ]
+          ]
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/387d5992f5fc03d05de27289457dcc374a84c42a889acb504aff1031047dde00.vtl"
+        },
+        "TypeName": "Query"
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-96dfd1dc44/data/amplifyData/FunctionDirectiveStack/queryFetchUserActivityResolver"
+      }
+    },
+    "QueryFetchUserActivityAuthFNQueryFetchUserActivityAuthFNAppSyncFunctionC061F612": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifydiscussionsgen2mainbranch96dfd1dc44dataamplifyDataGraphQLAPI0A3B504AApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifydiscussionsgen2mainbranch96dfd1dc44dataamplifyDataGraphQLAPINONEDSE249BA0EName"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "QueryFetchUserActivityAuthFN",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/830fd5a473c43e78ac02d7ec373d9543ca16c5b96b72acdde27ccd8277dec3f2.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-96dfd1dc44/data/amplifyData/FunctionDirectiveStack/QueryFetchUserActivityAuthFN/QueryFetchUserActivityAuthFN.AppSyncFunction"
+      }
+    },
+    "CDKMetadata": {
+      "Type": "AWS::CDK::Metadata",
+      "Properties": {
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/1WOQW/CMAyFfwv31IPCYdfRaadpmtofgEziVqapg+oEhKr+d5SgHXb6/J79nlxDfdjBdoN3rawbK89nWH5II7kuoh1N00sTxHHkIAbvelo8TmeH8JXEZvOISgavV32IheW7LD8xYhfSbCnn/6u/XBOk5yHNWJqbXlrS4G80r4ZxgqUNvtwX/gbP9pHla1qN7k+oSlHhI8PoHo7JjhTzP6spZhdxYBlWI8ERXPTtVtewe4ft5qLM1Zwk8kTQvvgElyxBfQsBAAA="
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-96dfd1dc44/data/amplifyData/FunctionDirectiveStack/CDKMetadata/Default"
+      },
+      "Condition": "CDKMetadataAvailable"
+    }
+  },
+  "Parameters": {
+    "referencetoamplifydiscussionsgen2mainbranch96dfd1dc44dataamplifyDataGraphQLAPI0A3B504AApiId": {
+      "Type": "String"
+    },
+    "referencetoamplifydiscussionsgen2mainbranch96dfd1dc44authNestedStackauthNestedStackResource3DD9188BOutputsamplifydiscussionsgen2mainbranch96dfd1dc44authamplifyAuthauthenticatedUserRole95356EEFRef": {
+      "Type": "String"
+    },
+    "referencetoamplifydiscussionsgen2mainbranch96dfd1dc44authNestedStackauthNestedStackResource3DD9188BOutputsamplifydiscussionsgen2mainbranch96dfd1dc44authamplifyAuthunauthenticatedUserRoleE19AFD6CRef": {
+      "Type": "String"
+    },
+    "referencetoamplifydiscussionsgen2mainbranch96dfd1dc44authNestedStackauthNestedStackResource3DD9188BOutputsamplifydiscussionsgen2mainbranch96dfd1dc44authamplifyAuthIdentityPoolA0C42AE7Ref": {
+      "Type": "String"
+    },
+    "referencetoamplifydiscussionsgen2mainbranch96dfd1dc44dataamplifyDataGraphQLAPINONEDSE249BA0EName": {
+      "Type": "String"
+    }
+  }
+}

@@ -1,0 +1,22 @@
+[
+  {
+    "OutputKey": "LambdaExecutionRoleArn",
+    "OutputValue": "arn:aws:iam::123456789012:role/discussionsLambdaRole7674760b-main"
+  },
+  {
+    "OutputKey": "Region",
+    "OutputValue": "us-east-1"
+  },
+  {
+    "OutputKey": "Arn",
+    "OutputValue": "arn:aws:lambda:us-east-1:123456789012:function:recorduseractivity-main"
+  },
+  {
+    "OutputKey": "Name",
+    "OutputValue": "recorduseractivity-main"
+  },
+  {
+    "OutputKey": "LambdaExecutionRole",
+    "OutputValue": "discussionsLambdaRole7674760b-main"
+  }
+]

@@ -1,0 +1,31 @@
+## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put("hasAuth", true))
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
+#set( $inputFields = $util.parseJson($util.toJson($ctx.args.input.keySet())) )
+#set( $isAuthorized = false )
+#set( $allowedFields = [] )
+#set( $nullAllowedFields = [] )
+#set( $deniedFields = {} )
+#if( $util.authType() == "API Key Authorization" )
+  #set( $isAuthorized = true )
+#end
+#if( !$isAuthorized && $allowedFields.isEmpty() && $nullAllowedFields.isEmpty() )
+$util.unauthorized()
+#end
+#if( !$isAuthorized )
+  #foreach( $entry in $util.map.copyAndRetainAllKeys($ctx.args.input, $inputFields).entrySet() )
+    #if( $util.isNull($entry.value) && !$nullAllowedFields.contains($entry.key) )
+      $util.qr($deniedFields.put($entry.key, ""))
+    #end
+  #end
+  #foreach( $deniedField in $util.list.copyAndRemoveAll($inputFields, $allowedFields) )
+    $util.qr($deniedFields.put($deniedField, ""))
+  #end
+#end
+#if( $deniedFields.keySet().size() > 0 )
+  $util.error("Unauthorized on ${deniedFields.keySet()}", "Unauthorized")
+#end
+$util.toJson({})
+## [End] Authorization Steps. **
