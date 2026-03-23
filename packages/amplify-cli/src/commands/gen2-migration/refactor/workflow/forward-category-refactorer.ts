@@ -119,6 +119,8 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
    * Templates are fetched fresh at execution time.
    */
   protected async beforeMove(blueprint: RefactorBlueprint): Promise<AmplifyMigrationOperation[]> {
+    if (blueprint.mappings.length === 0) return [];
+
     const gen2StackName = extractStackNameFromId(blueprint.targetStackId);
     const holdingStackName = this.getHoldingStackName(gen2StackName);
 

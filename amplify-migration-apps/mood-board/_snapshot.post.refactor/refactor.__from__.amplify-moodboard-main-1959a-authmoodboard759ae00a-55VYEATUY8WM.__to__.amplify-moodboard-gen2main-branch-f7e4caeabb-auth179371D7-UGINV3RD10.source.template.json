@@ -114,7 +114,9 @@
   "Conditions": {
     "ShouldNotCreateEnvResources": {
       "Fn::Equals": [
-        "main",
+        {
+          "Ref": "env"
+        },
         "NONE"
       ]
     }
@@ -136,24 +138,36 @@
           ]
         },
         "RoleName": {
-          "Fn::Join": [
-            "",
-            [
-              "upClientLambdaRole759ae00a",
-              {
-                "Fn::Select": [
-                  3,
+          "Fn::If": [
+            "ShouldNotCreateEnvResources",
+            {
+              "Ref": "userpoolClientLambdaRole"
+            },
+            {
+              "Fn::Join": [
+                "",
+                [
+                  "upClientLambdaRole759ae00a",
                   {
-                    "Fn::Split": [
-                      "-",
-                      "amplify-moodboard-main-1959a-authmoodboard759ae00a-55VYEATUY8WM"
+                    "Fn::Select": [
+                      3,
+                      {
+                        "Fn::Split": [
+                          "-",
+                          {
+                            "Ref": "AWS::StackName"
+                          }
+                        ]
+                      }
                     ]
+                  },
+                  "-",
+                  {
+                    "Ref": "env"
                   }
                 ]
-              },
-              "-",
-              "main"
-            ]
+              ]
+            }
           ]
         }
       }
@@ -162,29 +176,49 @@
   "Outputs": {
     "IdentityPoolId": {
       "Description": "Id for the identity pool",
-      "Value": "us-east-1:a39e734d-ac34-43c7-8303-67512f010f0d"
+      "Value": {
+        "Ref": "IdentityPool"
+      }
     },
     "IdentityPoolName": {
-      "Value": "moodboard759ae00a_identitypool_759ae00a__main"
+      "Value": {
+        "Fn::GetAtt": [
+          "IdentityPool",
+          "Name"
+        ]
+      }
     },
     "UserPoolId": {
       "Description": "Id for the user pool",
-      "Value": "us-east-1_Cwvqs93Nc"
+      "Value": {
+        "Ref": "UserPool"
+      }
     },
     "UserPoolArn": {
       "Description": "Arn for the user pool",
-      "Value": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_Cwvqs93Nc"
+      "Value": {
+        "Fn::GetAtt": [
+          "UserPool",
+          "Arn"
+        ]
+      }
     },
     "UserPoolName": {
-      "Value": "moodboard759ae00a_userpool_759ae00a"
+      "Value": {
+        "Ref": "userPoolName"
+      }
     },
     "AppClientIDWeb": {
       "Description": "The user pool app client id for web",
-      "Value": "5t2df7ru217mr5ar6r44r61uqg"
+      "Value": {
+        "Ref": "UserPoolClientWeb"
+      }
     },
     "AppClientID": {
       "Description": "The user pool app client id",
-      "Value": "1ssdipb0d8rfa77rq3o7u8t16c"
+      "Value": {
+        "Ref": "UserPoolClient"
+      }
     }
   }
 }

@@ -10,7 +10,9 @@
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": {
                 "StringEquals": {
-                  "cognito-identity.amazonaws.com:aud": "us-east-1:33a8fea2-6293-4bec-8726-31e6b5817de5"
+                  "cognito-identity.amazonaws.com:aud": {
+                    "Ref": "amplifyAuthIdentityPool3FDE84CC"
+                  }
                 },
                 "ForAnyValue:StringLike": {
                   "cognito-identity.amazonaws.com:amr": "authenticated"
@@ -60,7 +62,9 @@
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": {
                 "StringEquals": {
-                  "cognito-identity.amazonaws.com:aud": "us-east-1:33a8fea2-6293-4bec-8726-31e6b5817de5"
+                  "cognito-identity.amazonaws.com:aud": {
+                    "Ref": "amplifyAuthIdentityPool3FDE84CC"
+                  }
                 },
                 "ForAnyValue:StringLike": {
                   "cognito-identity.amazonaws.com:amr": "unauthenticated"
@@ -380,19 +384,29 @@
   },
   "Outputs": {
     "amplifybackendonlygen2mainbranch8e0f260810authamplifyAuthUserPoolACA7606BRef": {
-      "Value": "us-east-1_W9u2NBSRe"
+      "Value": {
+        "Ref": "amplifyAuthUserPool4BA7F805"
+      }
     },
     "amplifybackendonlygen2mainbranch8e0f260810authamplifyAuthUserPoolAppClientF2CDC3A8Ref": {
-      "Value": "55m5602upkjiv7819hcf2ht5v3"
+      "Value": {
+        "Ref": "amplifyAuthUserPoolAppClient2626C6F8"
+      }
     },
     "amplifybackendonlygen2mainbranch8e0f260810authamplifyAuthIdentityPool91CBC3ADRef": {
-      "Value": "us-east-1:33a8fea2-6293-4bec-8726-31e6b5817de5"
+      "Value": {
+        "Ref": "amplifyAuthIdentityPool3FDE84CC"
+      }
     },
     "amplifybackendonlygen2mainbranch8e0f260810authamplifyAuthauthenticatedUserRole5699D34FRef": {
-      "Value": "amplify-backendonly-ge-amplifyAuthauthenticatedU-NrnOsacJVeCr"
+      "Value": {
+        "Ref": "amplifyAuthauthenticatedUserRoleD8DA3689"
+      }
     },
     "amplifybackendonlygen2mainbranch8e0f260810authamplifyAuthunauthenticatedUserRole02B14E66Ref": {
-      "Value": "amplify-backendonly-ge-amplifyAuthunauthenticate-mFzNB8V2DE4J"
+      "Value": {
+        "Ref": "amplifyAuthunauthenticatedUserRole2B524D9E"
+      }
     }
   }
 }

@@ -10,7 +10,9 @@
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": {
                 "StringEquals": {
-                  "cognito-identity.amazonaws.com:aud": "us-east-1:84e99afb-f5e8-4fa4-bc21-875242ea6689"
+                  "cognito-identity.amazonaws.com:aud": {
+                    "Ref": "amplifyAuthIdentityPool3FDE84CC"
+                  }
                 },
                 "ForAnyValue:StringLike": {
                   "cognito-identity.amazonaws.com:amr": "authenticated"
@@ -60,7 +62,9 @@
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": {
                 "StringEquals": {
-                  "cognito-identity.amazonaws.com:aud": "us-east-1:84e99afb-f5e8-4fa4-bc21-875242ea6689"
+                  "cognito-identity.amazonaws.com:aud": {
+                    "Ref": "amplifyAuthIdentityPool3FDE84CC"
+                  }
                 },
                 "ForAnyValue:StringLike": {
                   "cognito-identity.amazonaws.com:amr": "unauthenticated"
@@ -380,19 +384,29 @@
   },
   "Outputs": {
     "amplifydiscussionsgen2mainbranch96dfd1dc44authamplifyAuthUserPool9D23206ERef": {
-      "Value": "us-east-1_olNpwuJIL"
+      "Value": {
+        "Ref": "amplifyAuthUserPool4BA7F805"
+      }
     },
     "amplifydiscussionsgen2mainbranch96dfd1dc44authamplifyAuthUserPoolAppClientCD70FA03Ref": {
-      "Value": "6bdqt8vavvh3efopgb031lc3jg"
+      "Value": {
+        "Ref": "amplifyAuthUserPoolAppClient2626C6F8"
+      }
     },
     "amplifydiscussionsgen2mainbranch96dfd1dc44authamplifyAuthIdentityPoolA0C42AE7Ref": {
-      "Value": "us-east-1:84e99afb-f5e8-4fa4-bc21-875242ea6689"
+      "Value": {
+        "Ref": "amplifyAuthIdentityPool3FDE84CC"
+      }
     },
     "amplifydiscussionsgen2mainbranch96dfd1dc44authamplifyAuthauthenticatedUserRole95356EEFRef": {
-      "Value": "amplify-discussions-gen-amplifyAuthauthenticatedU-cOJdlmnFCZS8"
+      "Value": {
+        "Ref": "amplifyAuthauthenticatedUserRoleD8DA3689"
+      }
     },
     "amplifydiscussionsgen2mainbranch96dfd1dc44authamplifyAuthunauthenticatedUserRoleE19AFD6CRef": {
-      "Value": "amplify-discussions-gen-amplifyAuthunauthenticate-LUKlk2oThU8X"
+      "Value": {
+        "Ref": "amplifyAuthunauthenticatedUserRole2B524D9E"
+      }
     }
   }
 }

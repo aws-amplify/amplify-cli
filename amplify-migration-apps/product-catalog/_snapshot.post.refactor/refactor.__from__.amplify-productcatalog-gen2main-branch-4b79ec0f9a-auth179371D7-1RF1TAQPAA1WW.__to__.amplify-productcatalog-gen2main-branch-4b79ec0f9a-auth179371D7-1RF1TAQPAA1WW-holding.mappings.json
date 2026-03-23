@@ -1,52 +1,52 @@
 [
   {
     "Source": {
-      "StackName": "amplify-productcatalog-gen2main-branch-4b79ec0f9a-auth179371D7-1RF1TAQPAA1WW",
-      "LogicalResourceId": "amplifyAuthUserPool4BA7F805"
+      "LogicalResourceId": "amplifyAuthUserPool4BA7F805",
+      "StackName": "amplify-productcatalog-gen2main-branch-4b79ec0f9a-auth179371D7-1RF1TAQPAA1WW"
     },
     "Destination": {
-      "StackName": "amplify-productcatalog-gen2main-branch-4b79ec0f9a-auth179371D7-1RF1TAQPAA1WW-holding",
-      "LogicalResourceId": "amplifyAuthUserPool4BA7F805"
+      "LogicalResourceId": "amplifyAuthUserPool4BA7F805",
+      "StackName": "amplify-productcatalog-gen2main-branch-4b79ec0f9a-auth179371D7-1RF1TAQPAA1WW-holding"
     }
   },
   {
     "Source": {
-      "StackName": "amplify-productcatalog-gen2main-branch-4b79ec0f9a-auth179371D7-1RF1TAQPAA1WW",
-      "LogicalResourceId": "amplifyAuthUserPoolNativeAppClient79534448"
+      "LogicalResourceId": "amplifyAuthUserPoolAppClient2626C6F8",
+      "StackName": "amplify-productcatalog-gen2main-branch-4b79ec0f9a-auth179371D7-1RF1TAQPAA1WW"
     },
     "Destination": {
-      "StackName": "amplify-productcatalog-gen2main-branch-4b79ec0f9a-auth179371D7-1RF1TAQPAA1WW-holding",
-      "LogicalResourceId": "amplifyAuthUserPoolNativeAppClient79534448"
+      "LogicalResourceId": "amplifyAuthUserPoolAppClient2626C6F8",
+      "StackName": "amplify-productcatalog-gen2main-branch-4b79ec0f9a-auth179371D7-1RF1TAQPAA1WW-holding"
     }
   },
   {
     "Source": {
-      "StackName": "amplify-productcatalog-gen2main-branch-4b79ec0f9a-auth179371D7-1RF1TAQPAA1WW",
-      "LogicalResourceId": "amplifyAuthUserPoolAppClient2626C6F8"
+      "LogicalResourceId": "amplifyAuthUserPoolNativeAppClient79534448",
+      "StackName": "amplify-productcatalog-gen2main-branch-4b79ec0f9a-auth179371D7-1RF1TAQPAA1WW"
     },
     "Destination": {
-      "StackName": "amplify-productcatalog-gen2main-branch-4b79ec0f9a-auth179371D7-1RF1TAQPAA1WW-holding",
-      "LogicalResourceId": "amplifyAuthUserPoolAppClient2626C6F8"
+      "LogicalResourceId": "amplifyAuthUserPoolNativeAppClient79534448",
+      "StackName": "amplify-productcatalog-gen2main-branch-4b79ec0f9a-auth179371D7-1RF1TAQPAA1WW-holding"
     }
   },
   {
     "Source": {
-      "StackName": "amplify-productcatalog-gen2main-branch-4b79ec0f9a-auth179371D7-1RF1TAQPAA1WW",
-      "LogicalResourceId": "amplifyAuthIdentityPool3FDE84CC"
+      "LogicalResourceId": "amplifyAuthIdentityPool3FDE84CC",
+      "StackName": "amplify-productcatalog-gen2main-branch-4b79ec0f9a-auth179371D7-1RF1TAQPAA1WW"
     },
     "Destination": {
-      "StackName": "amplify-productcatalog-gen2main-branch-4b79ec0f9a-auth179371D7-1RF1TAQPAA1WW-holding",
-      "LogicalResourceId": "amplifyAuthIdentityPool3FDE84CC"
+      "LogicalResourceId": "amplifyAuthIdentityPool3FDE84CC",
+      "StackName": "amplify-productcatalog-gen2main-branch-4b79ec0f9a-auth179371D7-1RF1TAQPAA1WW-holding"
     }
   },
   {
     "Source": {
-      "StackName": "amplify-productcatalog-gen2main-branch-4b79ec0f9a-auth179371D7-1RF1TAQPAA1WW",
-      "LogicalResourceId": "amplifyAuthIdentityPoolRoleAttachment045F17C8"
+      "LogicalResourceId": "amplifyAuthIdentityPoolRoleAttachment045F17C8",
+      "StackName": "amplify-productcatalog-gen2main-branch-4b79ec0f9a-auth179371D7-1RF1TAQPAA1WW"
     },
     "Destination": {
-      "StackName": "amplify-productcatalog-gen2main-branch-4b79ec0f9a-auth179371D7-1RF1TAQPAA1WW-holding",
-      "LogicalResourceId": "amplifyAuthIdentityPoolRoleAttachment045F17C8"
+      "LogicalResourceId": "amplifyAuthIdentityPoolRoleAttachment045F17C8",
+      "StackName": "amplify-productcatalog-gen2main-branch-4b79ec0f9a-auth179371D7-1RF1TAQPAA1WW-holding"
     }
   }
 ]

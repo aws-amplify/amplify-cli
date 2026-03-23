@@ -104,31 +104,25 @@ export class CloudFormationMock {
         const invocationCount = this._describeStackCounter.get(input.StackName!) ?? 0;
         this._describeStackCounter.set(input.StackName!, invocationCount + 1);
         if (input.StackName!.endsWith('-holding')) {
-          switch (invocationCount) {
-            case 0:
-              // first time is before executing refactor when we check if it already
-              // exists. simulate a standard pre-refactor state where it doesn't.
-              throw new cloudformation.CloudFormationServiceException({
-                name: 'ValidationError',
-                message: `stack ${input.StackName} does not exist`,
-                $fault: 'client',
-                $metadata: {},
-              });
-            case 1:
-              // second time is after we execute the refactor and CloudFormation is supposed
-              // to create the stack for us. all we need is a completion status here.
-              return {
-                Stacks: [
-                  {
-                    StackName: input.StackName,
-                    StackStatus: 'UPDATE_COMPLETE',
-                    CreationTime: undefined,
-                  },
-                ],
-              };
-            default:
-              throw new Error(`Unexpected invocation of DescribeStacks with input: ${JSON.stringify(input)}`);
+          if (invocationCount === 0) {
+            // first call: findStack check before refactor — stack doesn't exist yet
+            throw new cloudformation.CloudFormationServiceException({
+              name: 'ValidationError',
+              message: `stack ${input.StackName} does not exist`,
+              $fault: 'client',
+              $metadata: {},
+            });
           }
+          // subsequent calls: after refactor creates the stack, waiters poll for completion
+          return {
+            Stacks: [
+              {
+                StackName: input.StackName,
+                StackStatus: cloudformation.StackStatus.CREATE_COMPLETE,
+                CreationTime: new Date(),
+              },
+            ],
+          };
         }
         const parameters = this.app.cfnParametersForStack(input.StackName!);
         const outputs = this.app.cfnOutputsForStack(input.StackName!);
@@ -138,8 +132,8 @@ export class CloudFormationMock {
             {
               StackName: input.StackName!,
               Parameters: parameters,
-              CreationTime: undefined,
-              StackStatus: 'UPDATE_COMPLETE',
+              CreationTime: new Date(),
+              StackStatus: cloudformation.StackStatus.UPDATE_COMPLETE,
               Description: description,
               Outputs: outputs,
             },
@@ -153,6 +147,18 @@ export class CloudFormationMock {
       .on(cloudformation.GetTemplateCommand)
       .callsFake(async (input: cloudformation.GetTemplateCommandInput): Promise<cloudformation.GetTemplateCommandOutput> => {
         const templatePath = this.app.templatePathForStack(input.StackName!);
+        // Holding stacks are created dynamically during refactor and have no snapshot file.
+        // Return an empty template so Cfn.refactor() can populate it with moved resources.
+        if (!fs.existsSync(templatePath)) {
+          return {
+            TemplateBody: JSON.stringify({
+              AWSTemplateFormatVersion: '2010-09-09',
+              Resources: {},
+              Outputs: {},
+            }),
+            $metadata: {},
+          };
+        }
         return {
           TemplateBody: fs.readFileSync(templatePath, { encoding: 'utf-8' }),
           $metadata: {},

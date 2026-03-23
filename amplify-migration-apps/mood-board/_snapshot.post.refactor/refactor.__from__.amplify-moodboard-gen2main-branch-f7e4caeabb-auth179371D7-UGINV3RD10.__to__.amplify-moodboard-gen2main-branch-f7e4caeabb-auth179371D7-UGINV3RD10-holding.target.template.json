@@ -1,6 +1,5 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "Temporary holding stack for Gen2 migration",
   "Resources": {
     "amplifyAuthUserPool4BA7F805": {
       "Type": "AWS::Cognito::UserPool",
@@ -71,27 +70,6 @@
         "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/auth/amplifyAuth/UserPool/Resource"
       }
     },
-    "amplifyAuthUserPoolNativeAppClient79534448": {
-      "Type": "AWS::Cognito::UserPoolClient",
-      "Properties": {
-        "AllowedOAuthFlowsUserPoolClient": false,
-        "AuthSessionValidity": 3,
-        "EnablePropagateAdditionalUserContextData": false,
-        "EnableTokenRevocation": true,
-        "GenerateSecret": false,
-        "RefreshTokenValidity": 43200,
-        "SupportedIdentityProviders": [
-          "COGNITO"
-        ],
-        "TokenValidityUnits": {
-          "RefreshToken": "minutes"
-        },
-        "UserPoolId": "us-east-1_1A4RMvPNr"
-      },
-      "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/auth/amplifyAuth/UserPool/NativeAppClient/Resource"
-      }
-    },
     "amplifyAuthUserPoolAppClient2626C6F8": {
       "Type": "AWS::Cognito::UserPoolClient",
       "Properties": {
@@ -118,10 +96,35 @@
         "SupportedIdentityProviders": [
           "COGNITO"
         ],
-        "UserPoolId": "us-east-1_1A4RMvPNr"
+        "UserPoolId": {
+          "Ref": "amplifyAuthUserPool4BA7F805"
+        }
       },
       "Metadata": {
         "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/auth/amplifyAuth/UserPoolAppClient/Resource"
+      }
+    },
+    "amplifyAuthUserPoolNativeAppClient79534448": {
+      "Type": "AWS::Cognito::UserPoolClient",
+      "Properties": {
+        "AllowedOAuthFlowsUserPoolClient": false,
+        "AuthSessionValidity": 3,
+        "EnablePropagateAdditionalUserContextData": false,
+        "EnableTokenRevocation": true,
+        "GenerateSecret": false,
+        "RefreshTokenValidity": 43200,
+        "SupportedIdentityProviders": [
+          "COGNITO"
+        ],
+        "TokenValidityUnits": {
+          "RefreshToken": "minutes"
+        },
+        "UserPoolId": {
+          "Ref": "amplifyAuthUserPool4BA7F805"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/auth/amplifyAuth/UserPool/NativeAppClient/Resource"
       }
     },
     "amplifyAuthIdentityPool3FDE84CC": {
@@ -130,7 +133,9 @@
         "AllowUnauthenticatedIdentities": true,
         "CognitoIdentityProviders": [
           {
-            "ClientId": "2otm0qh3fj270k5tdn95cgjlm5",
+            "ClientId": {
+              "Ref": "amplifyAuthUserPoolAppClient2626C6F8"
+            },
             "ProviderName": {
               "Fn::Join": [
                 "",
@@ -140,7 +145,9 @@
                     "Ref": "AWS::Region"
                   },
                   ".amazonaws.com/",
-                  "us-east-1_1A4RMvPNr"
+                  {
+                    "Ref": "amplifyAuthUserPool4BA7F805"
+                  }
                 ]
               ]
             }
@@ -177,7 +184,9 @@
     "amplifyAuthIdentityPoolRoleAttachment045F17C8": {
       "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
       "Properties": {
-        "IdentityPoolId": "us-east-1:820c5910-56e0-4010-b0c4-b457a728acfb",
+        "IdentityPoolId": {
+          "Ref": "amplifyAuthIdentityPool3FDE84CC"
+        },
         "RoleMappings": {
           "UserPoolWebClientRoleMapping": {
             "AmbiguousRoleResolution": "AuthenticatedRole",
@@ -190,9 +199,13 @@
                     "Ref": "AWS::Region"
                   },
                   ".amazonaws.com/",
-                  "us-east-1_1A4RMvPNr",
+                  {
+                    "Ref": "amplifyAuthUserPool4BA7F805"
+                  },
                   ":",
-                  "2otm0qh3fj270k5tdn95cgjlm5"
+                  {
+                    "Ref": "amplifyAuthUserPoolAppClient2626C6F8"
+                  }
                 ]
               ]
             },
@@ -200,8 +213,18 @@
           }
         },
         "Roles": {
-          "unauthenticated": "arn:aws:iam::123456789012:role/amplify-moodboard-ge-amplifyAuthunauthenticate-rp3r1qUbAKVV",
-          "authenticated": "arn:aws:iam::123456789012:role/amplify-moodboard-ge-amplifyAuthauthenticatedU-UANJImTyKZ7p"
+          "unauthenticated": {
+            "Fn::GetAtt": [
+              "amplifyAuthunauthenticatedUserRole2B524D9E",
+              "Arn"
+            ]
+          },
+          "authenticated": {
+            "Fn::GetAtt": [
+              "amplifyAuthauthenticatedUserRoleD8DA3689",
+              "Arn"
+            ]
+          }
         }
       },
       "DependsOn": [

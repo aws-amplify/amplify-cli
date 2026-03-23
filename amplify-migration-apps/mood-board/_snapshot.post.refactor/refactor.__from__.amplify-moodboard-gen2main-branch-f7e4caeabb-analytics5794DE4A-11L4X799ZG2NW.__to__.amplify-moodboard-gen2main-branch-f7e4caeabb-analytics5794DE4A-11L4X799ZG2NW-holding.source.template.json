@@ -13,7 +13,12 @@
                 "kinesis:PutRecord",
                 "kinesis:PutRecords"
               ],
-              "Resource": "arn:aws:kinesis:us-east-1:123456789012:stream/moodboardKinesis-gen2-main"
+              "Resource": {
+                "Fn::GetAtt": [
+                  "moodboardKinesisKinesisStreamD5E97047",
+                  "Arn"
+                ]
+              }
             }
           ]
         },
@@ -40,7 +45,12 @@
                 "kinesis:PutRecord",
                 "kinesis:PutRecords"
               ],
-              "Resource": "arn:aws:kinesis:us-east-1:123456789012:stream/moodboardKinesis-gen2-main"
+              "Resource": {
+                "Fn::GetAtt": [
+                  "moodboardKinesisKinesisStreamD5E97047",
+                  "Arn"
+                ]
+              }
             }
           ]
         },
@@ -68,16 +78,28 @@
   },
   "Outputs": {
     "kinesisStreamArn": {
-      "Value": "arn:aws:kinesis:us-east-1:123456789012:stream/moodboardKinesis-gen2-main"
+      "Value": {
+        "Fn::GetAtt": [
+          "moodboardKinesisKinesisStreamD5E97047",
+          "Arn"
+        ]
+      }
     },
     "kinesisStreamId": {
-      "Value": "moodboardKinesis-gen2-main"
+      "Value": {
+        "Ref": "moodboardKinesisKinesisStreamD5E97047"
+      }
     },
     "kinesisStreamShardCount": {
       "Value": "1"
     },
     "amplifymoodboardgen2mainbranchf7e4caeabbanalyticsmoodboardKinesisKinesisStreamBD82380AArn": {
-      "Value": "arn:aws:kinesis:us-east-1:123456789012:stream/moodboardKinesis-gen2-main"
+      "Value": {
+        "Fn::GetAtt": [
+          "moodboardKinesisKinesisStreamD5E97047",
+          "Arn"
+        ]
+      }
     }
   },
   "Conditions": {

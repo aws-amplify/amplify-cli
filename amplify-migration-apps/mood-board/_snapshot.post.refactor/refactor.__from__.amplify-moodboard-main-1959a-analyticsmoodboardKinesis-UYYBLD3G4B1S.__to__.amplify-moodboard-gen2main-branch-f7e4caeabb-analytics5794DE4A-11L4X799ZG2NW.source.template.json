@@ -28,7 +28,9 @@
   "Conditions": {
     "ShouldNotCreateEnvResources": {
       "Fn::Equals": [
-        "main",
+        {
+          "Ref": "env"
+        },
         "NONE"
       ]
     }
@@ -37,9 +39,13 @@
     "CognitoUnauthPolicy": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
-        "PolicyName": "kinesis_amplify_bca5ce95",
+        "PolicyName": {
+          "Ref": "unauthPolicyName"
+        },
         "Roles": [
-          "amplify-moodboard-main-1959a-unauthRole"
+          {
+            "Ref": "unauthRoleName"
+          }
         ],
         "PolicyDocument": {
           "Version": "2012-10-17",
@@ -50,7 +56,12 @@
                 "kinesis:PutRecord",
                 "kinesis:PutRecords"
               ],
-              "Resource": "arn:aws:kinesis:us-east-1:123456789012:stream/moodboardKinesis-main"
+              "Resource": {
+                "Fn::GetAtt": [
+                  "KinesisStream",
+                  "Arn"
+                ]
+              }
             }
           ]
         }
@@ -59,9 +70,13 @@
     "CognitoAuthPolicy": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
-        "PolicyName": "kinesis_amplify_bca5ce95",
+        "PolicyName": {
+          "Ref": "authPolicyName"
+        },
         "Roles": [
-          "amplify-moodboard-main-1959a-authRole"
+          {
+            "Ref": "authRoleName"
+          }
         ],
         "PolicyDocument": {
           "Version": "2012-10-17",
@@ -72,7 +87,12 @@
                 "kinesis:PutRecord",
                 "kinesis:PutRecords"
               ],
-              "Resource": "arn:aws:kinesis:us-east-1:123456789012:stream/moodboardKinesis-main"
+              "Resource": {
+                "Fn::GetAtt": [
+                  "KinesisStream",
+                  "Arn"
+                ]
+              }
             }
           ]
         }
@@ -81,13 +101,22 @@
   },
   "Outputs": {
     "kinesisStreamArn": {
-      "Value": "arn:aws:kinesis:us-east-1:123456789012:stream/moodboardKinesis-main"
+      "Value": {
+        "Fn::GetAtt": [
+          "KinesisStream",
+          "Arn"
+        ]
+      }
     },
     "kinesisStreamId": {
-      "Value": "moodboardKinesis-main"
+      "Value": {
+        "Ref": "KinesisStream"
+      }
     },
     "kinesisStreamShardCount": {
-      "Value": "1"
+      "Value": {
+        "Ref": "kinesisStreamShardCount"
+      }
     }
   }
 }

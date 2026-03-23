@@ -36,6 +36,9 @@ const gen2AuthTemplate: CFNTemplate = {
 };
 
 function setupMocks(cfnMock: ReturnType<typeof mockClient>) {
+  // Default: no stacks found (used by findStack for holding stacks)
+  cfnMock.on(DescribeStacksCommand).resolves({ Stacks: [] });
+
   const gen1NestedStacks = [
     {
       LogicalResourceId: 'authtestStack',
@@ -138,6 +141,9 @@ describe('AuthCognitoForwardRefactorer.plan() — operation sequence', () => {
         hostedUIProviderCreds: { Type: 'String' },
       },
     };
+
+    // Default: no stacks found (for holding stack lookup)
+    cfnMock.on(DescribeStacksCommand).resolves({ Stacks: [] });
 
     cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen1-root' }).resolves({
       StackResources: [

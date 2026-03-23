@@ -1,6 +1,5 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "Temporary holding stack for Gen2 migration",
   "Resources": {
     "moodboardKinesisKinesisStreamD5E97047": {
       "Type": "AWS::Kinesis::Stream",

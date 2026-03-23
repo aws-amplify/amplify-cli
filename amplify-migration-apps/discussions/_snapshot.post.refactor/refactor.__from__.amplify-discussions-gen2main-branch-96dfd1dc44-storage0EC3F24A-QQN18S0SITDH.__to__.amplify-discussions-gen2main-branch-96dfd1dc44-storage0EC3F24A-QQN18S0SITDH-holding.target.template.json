@@ -1,6 +1,5 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "Temporary holding stack for Gen2 migration",
   "Resources": {
     "activity1E902D9C": {
       "Type": "AWS::DynamoDB::Table",

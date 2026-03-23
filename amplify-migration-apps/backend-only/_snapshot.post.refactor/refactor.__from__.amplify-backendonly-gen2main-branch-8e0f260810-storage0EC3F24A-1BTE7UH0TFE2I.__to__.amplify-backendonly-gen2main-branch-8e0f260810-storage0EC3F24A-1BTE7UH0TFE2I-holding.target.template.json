@@ -1,6 +1,5 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "Temporary holding stack for Gen2 migration",
   "Resources": {
     "backendonlycb1a13ab81664ecaa7d015068ab2d0165e0fagen2mainBucket50DDE738": {
       "Type": "AWS::S3::Bucket",

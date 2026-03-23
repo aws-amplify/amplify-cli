@@ -1,6 +1,27 @@
 {
   "Description": "{\"createdOn\":\"Linux\",\"createdBy\":\"AmplifyPipelineDeploy\",\"createdWith\":\"1.21.0\",\"stackType\":\"custom\",\"metadata\":{}}",
   "Resources": {
+    "moodboardKinesisKinesisStreamD5E97047": {
+      "Type": "AWS::Kinesis::Stream",
+      "Properties": {
+        "Name": {
+          "Fn::Join": [
+            "-",
+            [
+              {
+                "Ref": "kinesisStreamName"
+              },
+              {
+                "Ref": "env"
+              }
+            ]
+          ]
+        },
+        "ShardCount": {
+          "Ref": "kinesisStreamShardCount"
+        }
+      }
+    },
     "moodboardKinesisCognitoAuthPolicyB69F4FA6": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
@@ -13,7 +34,12 @@
                 "kinesis:PutRecord",
                 "kinesis:PutRecords"
               ],
-              "Resource": "arn:aws:kinesis:us-east-1:123456789012:stream/moodboardKinesis-gen2-main"
+              "Resource": {
+                "Fn::GetAtt": [
+                  "moodboardKinesisKinesisStreamD5E97047",
+                  "Arn"
+                ]
+              }
             }
           ]
         },
@@ -40,7 +66,12 @@
                 "kinesis:PutRecord",
                 "kinesis:PutRecords"
               ],
-              "Resource": "arn:aws:kinesis:us-east-1:123456789012:stream/moodboardKinesis-gen2-main"
+              "Resource": {
+                "Fn::GetAtt": [
+                  "moodboardKinesisKinesisStreamD5E97047",
+                  "Arn"
+                ]
+              }
             }
           ]
         },
@@ -64,35 +95,32 @@
         "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/analytics/CDKMetadata/Default"
       },
       "Condition": "CDKMetadataAvailable"
-    },
-    "moodboardKinesisKinesisStreamD5E97047": {
-      "Type": "AWS::Kinesis::Stream",
-      "Properties": {
-        "Name": {
-          "Fn::Join": [
-            "-",
-            [
-              "moodboardKinesis",
-              "main"
-            ]
-          ]
-        },
-        "ShardCount": "1"
-      }
     }
   },
   "Outputs": {
     "kinesisStreamArn": {
-      "Value": "arn:aws:kinesis:us-east-1:123456789012:stream/moodboardKinesis-gen2-main"
+      "Value": {
+        "Fn::GetAtt": [
+          "moodboardKinesisKinesisStreamD5E97047",
+          "Arn"
+        ]
+      }
     },
     "kinesisStreamId": {
-      "Value": "moodboardKinesis-gen2-main"
+      "Value": {
+        "Ref": "moodboardKinesisKinesisStreamD5E97047"
+      }
     },
     "kinesisStreamShardCount": {
       "Value": "1"
     },
     "amplifymoodboardgen2mainbranchf7e4caeabbanalyticsmoodboardKinesisKinesisStreamBD82380AArn": {
-      "Value": "arn:aws:kinesis:us-east-1:123456789012:stream/moodboardKinesis-gen2-main"
+      "Value": {
+        "Fn::GetAtt": [
+          "moodboardKinesisKinesisStreamD5E97047",
+          "Arn"
+        ]
+      }
     }
   },
   "Conditions": {

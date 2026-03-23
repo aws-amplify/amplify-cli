@@ -280,13 +280,25 @@
   },
   "Outputs": {
     "amplifydiscussionsgen2mainbranch96dfd1dc44storageactivityEF3255CDArn": {
-      "Value": "arn:aws:dynamodb:us-east-1:123456789012:table/amplify-discussions-gen2main-branch-96dfd1dc44-storage0EC3F24A-QQN18S0SITDH-activity1E902D9C-TT6R2GXJ05FS"
+      "Value": {
+        "Fn::GetAtt": [
+          "activity1E902D9C",
+          "Arn"
+        ]
+      }
     },
     "amplifydiscussionsgen2mainbranch96dfd1dc44storageactivityEF3255CDStreamArn": {
-      "Value": "arn:aws:dynamodb:us-east-1:123456789012:table/amplify-discussions-gen2main-branch-96dfd1dc44-storage0EC3F24A-QQN18S0SITDH-activity1E902D9C-TT6R2GXJ05FS/stream/2026-03-07T18:02:23.205"
+      "Value": {
+        "Fn::GetAtt": [
+          "activity1E902D9C",
+          "StreamArn"
+        ]
+      }
     },
     "amplifydiscussionsgen2mainbranch96dfd1dc44storageactivityEF3255CDRef": {
-      "Value": "amplify-discussions-gen2main-branch-96dfd1dc44-storage0EC3F24A-QQN18S0SITDH-activity1E902D9C-TT6R2GXJ05FS"
+      "Value": {
+        "Ref": "activity1E902D9C"
+      }
     }
   }
 }

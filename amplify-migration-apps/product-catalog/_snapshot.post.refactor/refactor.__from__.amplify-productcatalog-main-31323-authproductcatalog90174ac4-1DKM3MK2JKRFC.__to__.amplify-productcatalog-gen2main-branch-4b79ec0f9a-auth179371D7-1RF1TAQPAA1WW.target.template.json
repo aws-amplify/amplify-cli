@@ -1,6 +1,176 @@
 {
   "Description": "{\"createdOn\":\"Linux\",\"createdBy\":\"AmplifyPipelineDeploy\",\"createdWith\":\"1.11.1\",\"stackType\":\"auth-Cognito\",\"metadata\":{}}",
   "Resources": {
+    "amplifyAuthUserPool4BA7F805": {
+      "Type": "AWS::Cognito::UserPool",
+      "Properties": {
+        "AutoVerifiedAttributes": [
+          "email"
+        ],
+        "EmailVerificationMessage": {
+          "Ref": "emailVerificationMessage"
+        },
+        "EmailVerificationSubject": {
+          "Ref": "emailVerificationSubject"
+        },
+        "MfaConfiguration": {
+          "Ref": "mfaConfiguration"
+        },
+        "Policies": {
+          "PasswordPolicy": {
+            "MinimumLength": {
+              "Ref": "passwordPolicyMinLength"
+            },
+            "RequireLowercase": false,
+            "RequireNumbers": false,
+            "RequireSymbols": false,
+            "RequireUppercase": false
+          }
+        },
+        "Schema": [
+          {
+            "Mutable": true,
+            "Name": "email",
+            "Required": true
+          }
+        ],
+        "UserAttributeUpdateSettings": {
+          "AttributesRequireVerificationBeforeUpdate": [
+            "email"
+          ]
+        },
+        "UserPoolName": {
+          "Fn::If": [
+            "ShouldNotCreateEnvResources",
+            {
+              "Ref": "userPoolName"
+            },
+            {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Ref": "userPoolName"
+                  },
+                  "-",
+                  {
+                    "Ref": "env"
+                  }
+                ]
+              ]
+            }
+          ]
+        },
+        "UsernameAttributes": {
+          "Ref": "usernameAttributes"
+        },
+        "UsernameConfiguration": {
+          "CaseSensitive": false
+        }
+      }
+    },
+    "amplifyAuthUserPoolNativeAppClient79534448": {
+      "Type": "AWS::Cognito::UserPoolClient",
+      "Properties": {
+        "ClientName": "produc90174ac4_app_client",
+        "GenerateSecret": {
+          "Ref": "userpoolClientGenerateSecret"
+        },
+        "RefreshTokenValidity": {
+          "Ref": "userpoolClientRefreshTokenValidity"
+        },
+        "TokenValidityUnits": {
+          "RefreshToken": "days"
+        },
+        "UserPoolId": {
+          "Ref": "UserPool"
+        }
+      },
+      "DependsOn": [
+        "UserPool"
+      ]
+    },
+    "amplifyAuthUserPoolAppClient2626C6F8": {
+      "Type": "AWS::Cognito::UserPoolClient",
+      "Properties": {
+        "ClientName": "produc90174ac4_app_clientWeb",
+        "RefreshTokenValidity": {
+          "Ref": "userpoolClientRefreshTokenValidity"
+        },
+        "TokenValidityUnits": {
+          "RefreshToken": "days"
+        },
+        "UserPoolId": {
+          "Ref": "UserPool"
+        }
+      },
+      "DependsOn": [
+        "UserPool"
+      ]
+    },
+    "amplifyAuthIdentityPool3FDE84CC": {
+      "Type": "AWS::Cognito::IdentityPool",
+      "Properties": {
+        "AllowUnauthenticatedIdentities": {
+          "Ref": "allowUnauthenticatedIdentities"
+        },
+        "CognitoIdentityProviders": [
+          {
+            "ClientId": {
+              "Ref": "UserPoolClient"
+            },
+            "ProviderName": {
+              "Fn::Sub": [
+                "cognito-idp.${region}.amazonaws.com/${client}",
+                {
+                  "region": {
+                    "Ref": "AWS::Region"
+                  },
+                  "client": {
+                    "Ref": "UserPool"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "ClientId": {
+              "Ref": "UserPoolClientWeb"
+            },
+            "ProviderName": {
+              "Fn::Sub": [
+                "cognito-idp.${region}.amazonaws.com/${client}",
+                {
+                  "region": {
+                    "Ref": "AWS::Region"
+                  },
+                  "client": {
+                    "Ref": "UserPool"
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "IdentityPoolName": {
+          "Fn::If": [
+            "ShouldNotCreateEnvResources",
+            "productcatalog90174ac4_identitypool_90174ac4",
+            {
+              "Fn::Join": [
+                "",
+                [
+                  "productcatalog90174ac4_identitypool_90174ac4__",
+                  {
+                    "Ref": "env"
+                  }
+                ]
+              ]
+            }
+          ]
+        }
+      }
+    },
     "amplifyAuthauthenticatedUserRoleD8DA3689": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -10,7 +180,9 @@
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": {
                 "StringEquals": {
-                  "cognito-identity.amazonaws.com:aud": "us-east-1:c464f123-eaf0-4289-98b3-381197fa3d7f"
+                  "cognito-identity.amazonaws.com:aud": {
+                    "Ref": "amplifyAuthIdentityPool3FDE84CC"
+                  }
                 },
                 "ForAnyValue:StringLike": {
                   "cognito-identity.amazonaws.com:amr": "authenticated"
@@ -81,7 +253,9 @@
         },
         "PolicyName": "amplifyAuthauthenticatedUserRoleDefaultPolicy82E52873",
         "Roles": [
-          "amplify-productcatalog-ge-amplifyAuthauthenticatedU-7u6GoubHxSy7"
+          {
+            "Ref": "amplifyAuthauthenticatedUserRoleD8DA3689"
+          }
         ]
       },
       "Metadata": {
@@ -97,7 +271,9 @@
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": {
                 "StringEquals": {
-                  "cognito-identity.amazonaws.com:aud": "us-east-1:c464f123-eaf0-4289-98b3-381197fa3d7f"
+                  "cognito-identity.amazonaws.com:aud": {
+                    "Ref": "amplifyAuthIdentityPool3FDE84CC"
+                  }
                 },
                 "ForAnyValue:StringLike": {
                   "cognito-identity.amazonaws.com:amr": "unauthenticated"
@@ -138,6 +314,25 @@
         "aws:cdk:path": "amplify-productcatalog-gen2main-branch-4b79ec0f9a/auth/amplifyAuth/unauthenticatedUserRole/Resource"
       }
     },
+    "amplifyAuthIdentityPoolRoleAttachment045F17C8": {
+      "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
+      "Properties": {
+        "IdentityPoolId": {
+          "Ref": "IdentityPool"
+        },
+        "Roles": {
+          "unauthenticated": {
+            "Ref": "unauthRoleArn"
+          },
+          "authenticated": {
+            "Ref": "authRoleArn"
+          }
+        }
+      },
+      "DependsOn": [
+        "IdentityPool"
+      ]
+    },
     "CDKMetadata": {
       "Type": "AWS::CDK::Metadata",
       "Properties": {
@@ -147,141 +342,6 @@
         "aws:cdk:path": "amplify-productcatalog-gen2main-branch-4b79ec0f9a/auth/CDKMetadata/Default"
       },
       "Condition": "CDKMetadataAvailable"
-    },
-    "amplifyAuthUserPool4BA7F805": {
-      "Type": "AWS::Cognito::UserPool",
-      "Properties": {
-        "AutoVerifiedAttributes": [
-          "email"
-        ],
-        "EmailVerificationMessage": "Your verification code is {####}",
-        "EmailVerificationSubject": "Your verification code",
-        "MfaConfiguration": "OFF",
-        "Policies": {
-          "PasswordPolicy": {
-            "MinimumLength": "8",
-            "RequireLowercase": false,
-            "RequireNumbers": false,
-            "RequireSymbols": false,
-            "RequireUppercase": false
-          }
-        },
-        "Schema": [
-          {
-            "Mutable": true,
-            "Name": "email",
-            "Required": true
-          }
-        ],
-        "UserAttributeUpdateSettings": {
-          "AttributesRequireVerificationBeforeUpdate": [
-            "email"
-          ]
-        },
-        "UserPoolName": {
-          "Fn::Join": [
-            "",
-            [
-              "productcatalog90174ac4_userpool_90174ac4",
-              "-",
-              "main"
-            ]
-          ]
-        },
-        "UsernameAttributes": [
-          "email"
-        ],
-        "UsernameConfiguration": {
-          "CaseSensitive": false
-        }
-      }
-    },
-    "amplifyAuthUserPoolAppClient2626C6F8": {
-      "Type": "AWS::Cognito::UserPoolClient",
-      "Properties": {
-        "ClientName": "produc90174ac4_app_clientWeb",
-        "RefreshTokenValidity": "30",
-        "TokenValidityUnits": {
-          "RefreshToken": "days"
-        },
-        "UserPoolId": "us-east-1_66BkqNfdX"
-      },
-      "DependsOn": [
-        "amplifyAuthUserPool4BA7F805"
-      ]
-    },
-    "amplifyAuthUserPoolNativeAppClient79534448": {
-      "Type": "AWS::Cognito::UserPoolClient",
-      "Properties": {
-        "ClientName": "produc90174ac4_app_client",
-        "GenerateSecret": "false",
-        "RefreshTokenValidity": "30",
-        "TokenValidityUnits": {
-          "RefreshToken": "days"
-        },
-        "UserPoolId": "us-east-1_66BkqNfdX"
-      },
-      "DependsOn": [
-        "amplifyAuthUserPool4BA7F805"
-      ]
-    },
-    "amplifyAuthIdentityPool3FDE84CC": {
-      "Type": "AWS::Cognito::IdentityPool",
-      "Properties": {
-        "AllowUnauthenticatedIdentities": "false",
-        "CognitoIdentityProviders": [
-          {
-            "ClientId": "27jbakm3s7vgm116b36evi830d",
-            "ProviderName": {
-              "Fn::Sub": [
-                "cognito-idp.${region}.amazonaws.com/${client}",
-                {
-                  "region": {
-                    "Ref": "AWS::Region"
-                  },
-                  "client": "us-east-1_66BkqNfdX"
-                }
-              ]
-            }
-          },
-          {
-            "ClientId": "7ogg1fkk68io03i95o0viqhibk",
-            "ProviderName": {
-              "Fn::Sub": [
-                "cognito-idp.${region}.amazonaws.com/${client}",
-                {
-                  "region": {
-                    "Ref": "AWS::Region"
-                  },
-                  "client": "us-east-1_66BkqNfdX"
-                }
-              ]
-            }
-          }
-        ],
-        "IdentityPoolName": {
-          "Fn::Join": [
-            "",
-            [
-              "productcatalog90174ac4_identitypool_90174ac4__",
-              "main"
-            ]
-          ]
-        }
-      }
-    },
-    "amplifyAuthIdentityPoolRoleAttachment045F17C8": {
-      "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
-      "Properties": {
-        "IdentityPoolId": "us-east-1:46acac6f-21d1-433c-93b9-d9d908c696fc",
-        "Roles": {
-          "unauthenticated": "arn:aws:iam::123456789012:role/amplify-productcatalog-main-31323-unauthRole",
-          "authenticated": "arn:aws:iam::123456789012:role/amplify-productcatalog-main-31323-authRole"
-        }
-      },
-      "DependsOn": [
-        "amplifyAuthIdentityPool3FDE84CC"
-      ]
     }
   },
   "Conditions": {
@@ -552,19 +612,29 @@
   },
   "Outputs": {
     "amplifyproductcataloggen2mainbranch4b79ec0f9aauthamplifyAuthUserPool0E44954DRef": {
-      "Value": "us-east-1_OFRBVzhq5"
+      "Value": {
+        "Ref": "amplifyAuthUserPool4BA7F805"
+      }
     },
     "amplifyproductcataloggen2mainbranch4b79ec0f9aauthamplifyAuthUserPoolAppClient99A19E4CRef": {
-      "Value": "61e6oq3acg1at7f9da6cfna70d"
+      "Value": {
+        "Ref": "amplifyAuthUserPoolAppClient2626C6F8"
+      }
     },
     "amplifyproductcataloggen2mainbranch4b79ec0f9aauthamplifyAuthIdentityPool3AA33B1CRef": {
-      "Value": "us-east-1:c464f123-eaf0-4289-98b3-381197fa3d7f"
+      "Value": {
+        "Ref": "amplifyAuthIdentityPool3FDE84CC"
+      }
     },
     "amplifyproductcataloggen2mainbranch4b79ec0f9aauthamplifyAuthauthenticatedUserRole66B9FD31Ref": {
-      "Value": "amplify-productcatalog-ge-amplifyAuthauthenticatedU-7u6GoubHxSy7"
+      "Value": {
+        "Ref": "amplifyAuthauthenticatedUserRoleD8DA3689"
+      }
     },
     "amplifyproductcataloggen2mainbranch4b79ec0f9aauthamplifyAuthunauthenticatedUserRole84BD6ECBRef": {
-      "Value": "amplify-productcatalog-ge-amplifyAuthunauthenticate-JMPocA8XyO6M"
+      "Value": {
+        "Ref": "amplifyAuthunauthenticatedUserRole2B524D9E"
+      }
     }
   }
 }

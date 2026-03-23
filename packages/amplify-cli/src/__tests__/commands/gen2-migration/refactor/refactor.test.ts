@@ -13,6 +13,22 @@ const TIMEOUT_MINUTES = 60;
 
 jest.setTimeout(60 * 1000 * TIMEOUT_MINUTES);
 
+// Mock SDK waiters to resolve immediately. The underlying DescribeStacks/DescribeStackRefactor
+// mocks return the correct terminal status, but the SDK waiters have a 30-second minDelay
+// between polls. With multiple refactor operations per test, this adds minutes of dead time.
+jest.mock('@aws-sdk/client-cloudformation', () => {
+  const actual = jest.requireActual('@aws-sdk/client-cloudformation');
+  return {
+    ...actual,
+    waitUntilStackUpdateComplete: jest.fn().mockResolvedValue({ state: 'SUCCESS' }),
+    waitUntilStackCreateComplete: jest.fn().mockResolvedValue({ state: 'SUCCESS' }),
+    waitUntilStackDeleteComplete: jest.fn().mockResolvedValue({ state: 'SUCCESS' }),
+    waitUntilStackRefactorCreateComplete: jest.fn().mockResolvedValue({ state: 'SUCCESS' }),
+    waitUntilStackRefactorExecuteComplete: jest.fn().mockResolvedValue({ state: 'SUCCESS' }),
+    waitUntilChangeSetCreateComplete: jest.fn().mockResolvedValue({ state: 'SUCCESS' }),
+  };
+});
+
 // fs-extra is (for some reason) globally mocked in tests via the __mocks__ directory.
 // unmock it because we actually need the proper implementation.
 // note that this must be declared in the top level since jest will hoist it such that it

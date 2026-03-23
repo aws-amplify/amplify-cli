@@ -114,7 +114,9 @@
   "Conditions": {
     "ShouldNotCreateEnvResources": {
       "Fn::Equals": [
-        "main",
+        {
+          "Ref": "env"
+        },
         "NONE"
       ]
     }
@@ -136,24 +138,36 @@
           ]
         },
         "RoleName": {
-          "Fn::Join": [
-            "",
-            [
-              "upClientLambdaRole54040ecc",
-              {
-                "Fn::Select": [
-                  3,
+          "Fn::If": [
+            "ShouldNotCreateEnvResources",
+            {
+              "Ref": "userpoolClientLambdaRole"
+            },
+            {
+              "Fn::Join": [
+                "",
+                [
+                  "upClientLambdaRole54040ecc",
                   {
-                    "Fn::Split": [
-                      "-",
-                      "amplify-projectboards-main-02940-authprojectboards54040ecc-PH0BQLGBQAYV"
+                    "Fn::Select": [
+                      3,
+                      {
+                        "Fn::Split": [
+                          "-",
+                          {
+                            "Ref": "AWS::StackName"
+                          }
+                        ]
+                      }
                     ]
+                  },
+                  "-",
+                  {
+                    "Ref": "env"
                   }
                 ]
-              },
-              "-",
-              "main"
-            ]
+              ]
+            }
           ]
         }
       }
@@ -162,29 +176,49 @@
   "Outputs": {
     "IdentityPoolId": {
       "Description": "Id for the identity pool",
-      "Value": "us-east-1:88399477-86ba-4d93-aa1a-13242b53b791"
+      "Value": {
+        "Ref": "IdentityPool"
+      }
     },
     "IdentityPoolName": {
-      "Value": "projectboards54040ecc_identitypool_54040ecc__main"
+      "Value": {
+        "Fn::GetAtt": [
+          "IdentityPool",
+          "Name"
+        ]
+      }
     },
     "UserPoolId": {
       "Description": "Id for the user pool",
-      "Value": "us-east-1_ct5s4IEz3"
+      "Value": {
+        "Ref": "UserPool"
+      }
     },
     "UserPoolArn": {
       "Description": "Arn for the user pool",
-      "Value": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_ct5s4IEz3"
+      "Value": {
+        "Fn::GetAtt": [
+          "UserPool",
+          "Arn"
+        ]
+      }
     },
     "UserPoolName": {
-      "Value": "projectboards54040ecc_userpool_54040ecc"
+      "Value": {
+        "Ref": "userPoolName"
+      }
     },
     "AppClientIDWeb": {
       "Description": "The user pool app client id for web",
-      "Value": "1vpeihq8svf62sepfnkuvp8sld"
+      "Value": {
+        "Ref": "UserPoolClientWeb"
+      }
     },
     "AppClientID": {
       "Description": "The user pool app client id",
-      "Value": "3dbqrlfs0a0g4a6ihsanen6i5"
+      "Value": {
+        "Ref": "UserPoolClient"
+      }
     }
   }
 }
