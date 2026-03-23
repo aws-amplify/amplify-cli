@@ -5,7 +5,7 @@ import { RESOURCE_TYPES, USER_POOL_GROUP_TYPE } from './auth-user-pool-groups-fo
 /**
  * Rollback refactorer for the auth:UserPoolGroups resource.
  *
- * Moves user pool groups auth resources resources from Gen2 back to Gen1.
+ * Moves user pool groups auth resources from Gen2 back to Gen1.
  */
 export class AuthUserPoolGroupsRollbackRefactorer extends RollbackCategoryRefactorer {
   protected resourceTypes(): string[] {

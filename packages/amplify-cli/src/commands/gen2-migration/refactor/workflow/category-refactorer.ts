@@ -146,7 +146,7 @@ export abstract class CategoryRefactorer implements Planner {
   /**
    * Post-move operations.
    * Forward: empty.
-   * Rollback: restores holding stack resources into Gen2, deletes holding stack.
+   * Rollback: restores holding stack resources into Gen2.
    */
   protected abstract afterMove(blueprint: RefactorBlueprint): Promise<AmplifyMigrationOperation[]>;
 
