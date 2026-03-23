@@ -10,7 +10,11 @@ import {
   DescribeStacksCommand,
   DescribeStackResourcesCommand,
   ResourceStatus,
+  CreateChangeSetCommand,
+  DescribeChangeSetCommand,
+  DeleteChangeSetCommand,
 } from '@aws-sdk/client-cloudformation';
+import { Cfn } from '../../../../commands/gen2-migration/refactor/cfn';
 
 const ts = new Date();
 const rs = ResourceStatus.CREATE_COMPLETE;
@@ -85,12 +89,17 @@ describe('AuthCognitoRollbackRefactorer.plan()', () => {
 
     cfnMock.on(GetTemplateCommand, { StackName: 'gen2-auth' }).resolves({ TemplateBody: JSON.stringify(gen2AuthTemplate) });
     cfnMock.on(GetTemplateCommand, { StackName: 'gen1-auth' }).resolves({ TemplateBody: JSON.stringify(gen1AuthTemplate) });
+
+    cfnMock.on(CreateChangeSetCommand).resolves({});
+    cfnMock.on(DescribeChangeSetCommand).resolves({ Status: 'CREATE_COMPLETE', Changes: [] });
+    cfnMock.on(DeleteChangeSetCommand).resolves({});
   }
 
-  it('main auth only: produces move operations (no updateSource/updateTarget for rollback)', async () => {
+  it('main auth: produces updateSource → updateTarget → move → afterMove', async () => {
     setupBasicMocks();
     const clients = new AwsClients({ region: 'us-east-1' });
     (clients as any).cloudFormation = new CloudFormationClient({});
+    const cfn = new Cfn(new CloudFormationClient({}), noOpLogger());
     const refactorer = new AuthCognitoRollbackRefactorer(
       new StackFacade(clients, 'gen1-root'),
       new StackFacade(clients, 'gen2-root'),
@@ -99,13 +108,15 @@ describe('AuthCognitoRollbackRefactorer.plan()', () => {
       '123',
       noOpLogger(),
       { category: 'auth', resourceName: 'test', service: 'Cognito', key: 'auth:Cognito' as const },
+      cfn,
     );
 
     const ops = await refactorer.plan();
     const descriptions = (await Promise.all(ops.map((o) => o.describe()))).flat();
 
-    // Rollback: no updateSource/updateTarget, just move ops + afterMove
-    expect(descriptions.every((d) => !d.includes('Update source') && !d.includes('Update target'))).toBe(true);
+    // Rollback now resolves and updates both stacks before moving
+    expect(descriptions.some((d) => d.includes('Update source'))).toBe(true);
+    expect(descriptions.some((d) => d.includes('Update target'))).toBe(true);
     expect(descriptions.some((d) => d.includes('Move'))).toBe(true);
   });
 });

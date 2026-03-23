@@ -1,8 +1,8 @@
 import { ForwardCategoryRefactorer } from '../../../../commands/gen2-migration/refactor/workflow/forward-category-refactorer';
-import { CFNResource, CFNTemplate } from '../../../../commands/gen2-migration/cfn-template';
-import { RefactorBlueprint, MoveMapping } from '../../../../commands/gen2-migration/refactor/workflow/category-refactorer';
+import { RefactorBlueprint } from '../../../../commands/gen2-migration/refactor/workflow/category-refactorer';
 import { AwsClients } from '../../../../commands/gen2-migration/aws-clients';
 import { StackFacade } from '../../../../commands/gen2-migration/refactor/stack-facade';
+import { Cfn } from '../../../../commands/gen2-migration/refactor/cfn';
 import { noOpLogger } from '../_framework/logger';
 import { mockClient } from 'aws-sdk-client-mock';
 import {
@@ -12,9 +12,11 @@ import {
   CreateStackRefactorCommand,
   DescribeStackRefactorCommand,
   ExecuteStackRefactorCommand,
+  GetTemplateCommand,
   DeleteStackCommand,
   StackRefactorStatus,
   StackRefactorExecutionStatus,
+  ResourceMapping,
 } from '@aws-sdk/client-cloudformation';
 
 class TestForwardRefactorer extends ForwardCategoryRefactorer {
@@ -29,51 +31,15 @@ class TestForwardRefactorer extends ForwardCategoryRefactorer {
   }
 }
 
-function makeBlueprint(overrides: {
-  targetResolved?: Record<string, CFNResource>;
-  targetAfterRemoval?: Record<string, CFNResource>;
-  mappings?: MoveMapping[];
-}): RefactorBlueprint {
-  const sourceTemplate: CFNTemplate = {
-    AWSTemplateFormatVersion: '2010-09-09',
-    Description: 'source',
-    Resources: {},
-    Outputs: {},
-  };
-  const targetResources = overrides.targetResolved ?? {};
-  const targetTemplate: CFNTemplate = {
-    AWSTemplateFormatVersion: '2010-09-09',
-    Description: 'target',
-    Resources: targetResources,
-    Outputs: {},
-  };
-  const afterRemovalResources = overrides.targetAfterRemoval ?? {};
-  const afterRemoval: CFNTemplate = {
-    AWSTemplateFormatVersion: '2010-09-09',
-    Description: 'target after removal',
-    Resources: afterRemovalResources,
-    Outputs: {},
-  };
-
+function makeBlueprint(mappings: ResourceMapping[]): RefactorBlueprint {
   return {
-    source: {
-      stackId: 'gen1-stack',
-      parameters: [],
-      resolvedTemplate: sourceTemplate,
-      afterRemoval: sourceTemplate,
-    },
-    target: {
-      stackId: 'gen2-stack',
-      parameters: [],
-      resolvedTemplate: targetTemplate,
-      afterRemoval,
-      afterAddition: afterRemoval,
-    },
-    mappings: overrides.mappings ?? [],
+    sourceStackId: 'gen1-stack',
+    targetStackId: 'gen2-stack',
+    mappings,
   };
 }
 
-describe('ForwardCategoryRefactorer.beforeMovePlan', () => {
+describe('ForwardCategoryRefactorer.beforeMove', () => {
   let cfnMock: ReturnType<typeof mockClient>;
 
   beforeEach(() => {
@@ -81,8 +47,9 @@ describe('ForwardCategoryRefactorer.beforeMovePlan', () => {
   });
   afterEach(() => cfnMock.restore());
 
-  it('returns empty operations when target has no category resources', async () => {
+  it('returns empty operations when no mappings', async () => {
     const clients = new AwsClients({ region: 'us-east-1' });
+    const cfn = new Cfn(new CloudFormationClient({}), noOpLogger());
     const refactorer = new TestForwardRefactorer(
       new StackFacade(clients, 'g1'),
       new StackFacade(clients, 'g2'),
@@ -91,16 +58,15 @@ describe('ForwardCategoryRefactorer.beforeMovePlan', () => {
       '123',
       noOpLogger(),
       { category: 'storage', resourceName: 'test', service: 'S3', key: 'storage:S3' as const },
+      cfn,
     );
-    const blueprint = makeBlueprint({
-      targetResolved: { Lambda: { Type: 'AWS::Lambda::Function', Properties: {} } },
-    });
+    const blueprint = makeBlueprint([]);
 
-    const operations = await (refactorer as any).beforeMovePlan(blueprint);
+    const operations = await (refactorer as any).beforeMove(blueprint);
     expect(operations).toHaveLength(0);
   });
 
-  it('creates holding stack operation when target has category resources', async () => {
+  it('creates holding stack operation when mappings exist', async () => {
     cfnMock.on(DescribeStacksCommand).resolves({ Stacks: [] });
     cfnMock.on(CreateStackRefactorCommand).resolves({ StackRefactorId: 'r1' });
     cfnMock
@@ -108,9 +74,17 @@ describe('ForwardCategoryRefactorer.beforeMovePlan', () => {
       .resolves({ Status: StackRefactorStatus.CREATE_COMPLETE, ExecutionStatus: StackRefactorExecutionStatus.EXECUTE_COMPLETE });
     cfnMock.on(ExecuteStackRefactorCommand).resolves({});
     cfnMock.on(DescribeStackResourcesCommand).resolves({ StackResources: [] });
+    cfnMock.on(GetTemplateCommand).resolves({
+      TemplateBody: JSON.stringify({
+        AWSTemplateFormatVersion: '2010-09-09',
+        Resources: { MyBucket: { Type: 'AWS::S3::Bucket', Properties: {} } },
+        Outputs: {},
+      }),
+    });
 
     const clients = new AwsClients({ region: 'us-east-1' });
     (clients as any).cloudFormation = new CloudFormationClient({});
+    const cfn = new Cfn(new CloudFormationClient({}), noOpLogger());
     const refactorer = new TestForwardRefactorer(
       new StackFacade(clients, 'g1'),
       new StackFacade(clients, 'g2'),
@@ -119,19 +93,17 @@ describe('ForwardCategoryRefactorer.beforeMovePlan', () => {
       '123',
       noOpLogger(),
       { category: 'storage', resourceName: 'test', service: 'S3', key: 'storage:S3' as const },
+      cfn,
     );
 
-    const blueprint = makeBlueprint({
-      targetResolved: {
-        MyBucket: { Type: 'AWS::S3::Bucket', Properties: {} },
-        Other: { Type: 'AWS::Lambda::Function', Properties: {} },
+    const blueprint = makeBlueprint([
+      {
+        Source: { StackName: 'gen1-stack', LogicalResourceId: 'S3Bucket' },
+        Destination: { StackName: 'gen2-stack', LogicalResourceId: 'MyBucket' },
       },
-      targetAfterRemoval: {
-        Other: { Type: 'AWS::Lambda::Function', Properties: {} },
-      },
-    });
+    ]);
 
-    const operations = await (refactorer as any).beforeMovePlan(blueprint);
+    const operations = await (refactorer as any).beforeMove(blueprint);
     expect(operations).toHaveLength(1);
     expect(await operations[0].describe()).toEqual([expect.stringContaining('holding')]);
   });
@@ -149,9 +121,17 @@ describe('ForwardCategoryRefactorer.beforeMovePlan', () => {
       .resolves({ Status: StackRefactorStatus.CREATE_COMPLETE, ExecutionStatus: StackRefactorExecutionStatus.EXECUTE_COMPLETE });
     cfnMock.on(ExecuteStackRefactorCommand).resolves({});
     cfnMock.on(DescribeStackResourcesCommand).resolves({ StackResources: [] });
+    cfnMock.on(GetTemplateCommand).resolves({
+      TemplateBody: JSON.stringify({
+        AWSTemplateFormatVersion: '2010-09-09',
+        Resources: { MyBucket: { Type: 'AWS::S3::Bucket', Properties: {} } },
+        Outputs: {},
+      }),
+    });
 
     const clients = new AwsClients({ region: 'us-east-1' });
     (clients as any).cloudFormation = new CloudFormationClient({});
+    const cfn = new Cfn(new CloudFormationClient({}), noOpLogger());
     const refactorer = new TestForwardRefactorer(
       new StackFacade(clients, 'g1'),
       new StackFacade(clients, 'g2'),
@@ -160,14 +140,18 @@ describe('ForwardCategoryRefactorer.beforeMovePlan', () => {
       '123',
       noOpLogger(),
       { category: 'storage', resourceName: 'test', service: 'S3', key: 'storage:S3' as const },
+      cfn,
     );
 
-    const blueprint = makeBlueprint({
-      targetResolved: { MyBucket: { Type: 'AWS::S3::Bucket', Properties: {} } },
-      targetAfterRemoval: {},
-    });
+    const blueprint = makeBlueprint([
+      {
+        Source: { StackName: 'gen1-stack', LogicalResourceId: 'S3Bucket' },
+        Destination: { StackName: 'gen2-stack', LogicalResourceId: 'MyBucket' },
+      },
+    ]);
 
-    const operations = await (refactorer as any).beforeMovePlan(blueprint);
+    const operations = await (refactorer as any).beforeMove(blueprint);
+    expect(operations).toHaveLength(2);
     await operations[0].execute();
 
     expect(cfnMock.commandCalls(DeleteStackCommand).length).toBeGreaterThan(0);

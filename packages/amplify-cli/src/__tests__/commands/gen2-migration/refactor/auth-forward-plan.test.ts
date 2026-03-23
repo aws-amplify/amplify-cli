@@ -12,9 +12,11 @@ import {
   ResourceStatus,
   CreateChangeSetCommand,
   DescribeChangeSetCommand,
+  DeleteChangeSetCommand,
 } from '@aws-sdk/client-cloudformation';
 import { SSMClient } from '@aws-sdk/client-ssm';
 import { CognitoIdentityProviderClient, DescribeIdentityProviderCommand } from '@aws-sdk/client-cognito-identity-provider';
+import { Cfn } from '../../../../commands/gen2-migration/refactor/cfn';
 
 const ts = new Date();
 const rs = ResourceStatus.CREATE_COMPLETE;
@@ -80,6 +82,7 @@ function setupMocks(cfnMock: ReturnType<typeof mockClient>) {
 
   cfnMock.on(CreateChangeSetCommand).resolves({});
   cfnMock.on(DescribeChangeSetCommand).resolves({ Status: 'CREATE_COMPLETE', Changes: [] });
+  cfnMock.on(DeleteChangeSetCommand).resolves({});
 }
 
 describe('AuthCognitoForwardRefactorer.plan() — operation sequence', () => {
@@ -112,6 +115,7 @@ describe('AuthCognitoForwardRefactorer.plan() — operation sequence', () => {
       'appId',
       'main',
       { category: 'auth', resourceName: 'test', service: 'Cognito', key: 'auth:Cognito' as const },
+      new Cfn(new CloudFormationClient({}), noOpLogger()),
     );
 
     const ops = await refactorer.plan();
@@ -203,6 +207,7 @@ describe('AuthCognitoForwardRefactorer.plan() — operation sequence', () => {
       'appId',
       'main',
       { category: 'auth', resourceName: 'test', service: 'Cognito', key: 'auth:Cognito' as const },
+      new Cfn(new CloudFormationClient({}), noOpLogger()),
     );
 
     const ops = await refactorer.plan();
@@ -259,8 +264,9 @@ describe('AuthCognitoForwardRefactorer.plan() — operation sequence', () => {
       'appId',
       'main',
       { category: 'auth', resourceName: 'test', service: 'Cognito', key: 'auth:Cognito' as const },
+      new Cfn(new CloudFormationClient({}), noOpLogger()),
     );
 
-    await expect(refactorer.plan()).rejects.toThrow('unable to find target stack');
+    await expect(refactorer.plan()).rejects.toThrow('Unable to find target stack');
   });
 });

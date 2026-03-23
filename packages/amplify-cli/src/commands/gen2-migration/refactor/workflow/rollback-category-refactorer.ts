@@ -97,7 +97,7 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
   }
 
   /**
-   * Restores holding stack resources into Gen2 and deletes the holding stack.
+   * Restores holding stack resources into Gen2.
    * Templates are fetched fresh at execution time.
    */
   protected async afterMove(blueprint: RefactorBlueprint): Promise<AmplifyMigrationOperation[]> {

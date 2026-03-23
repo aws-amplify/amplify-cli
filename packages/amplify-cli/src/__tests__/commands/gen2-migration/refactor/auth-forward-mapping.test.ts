@@ -2,12 +2,12 @@ import { AuthCognitoForwardRefactorer } from '../../../../commands/gen2-migratio
 import { CFNResource } from '../../../../commands/gen2-migration/cfn-template';
 import { AwsClients } from '../../../../commands/gen2-migration/aws-clients';
 import { StackFacade } from '../../../../commands/gen2-migration/refactor/stack-facade';
-import { MoveMapping } from '../../../../commands/gen2-migration/refactor/workflow/category-refactorer';
+import { Cfn } from '../../../../commands/gen2-migration/refactor/cfn';
+import { ResourceMapping } from '@aws-sdk/client-cloudformation';
 import { noOpLogger } from '../_framework/logger';
 
-/** Helper: convert MoveMapping[] to Map<sourceId, targetId> for easy assertions */
-function toIdMap(mappings: MoveMapping[]): Map<string, string> {
-  return new Map(mappings.map((m) => [m.sourceId, m.targetId]));
+function toIdMap(mappings: ResourceMapping[]): Map<string, string> {
+  return new Map(mappings.map((m) => [m.Source!.LogicalResourceId!, m.Destination!.LogicalResourceId!]));
 }
 
 describe('AuthCognitoForwardRefactorer.buildResourceMappings - UserPoolClient disambiguation', () => {
@@ -17,15 +17,26 @@ describe('AuthCognitoForwardRefactorer.buildResourceMappings - UserPoolClient di
     const gen2Branch = new StackFacade(clients, 'gen2');
     return new (class extends AuthCognitoForwardRefactorer {
       constructor() {
-        super(gen1Env, gen2Branch, clients, 'us-east-1', '123456789', noOpLogger(), 'appId', 'main', {
-          category: 'auth',
-          resourceName: 'test',
-          service: 'Cognito',
-          key: 'auth:Cognito',
-        });
+        super(
+          gen1Env,
+          gen2Branch,
+          clients,
+          'us-east-1',
+          '123456789',
+          noOpLogger(),
+          'appId',
+          'main',
+          {
+            category: 'auth',
+            resourceName: 'test',
+            service: 'Cognito',
+            key: 'auth:Cognito',
+          },
+          null as unknown as Cfn,
+        );
       }
-      public testBuildResourceMappings(source: Map<string, CFNResource>, target: Map<string, CFNResource>): MoveMapping[] {
-        return this.buildResourceMappings(source, target);
+      public testBuildResourceMappings(source: Map<string, CFNResource>, target: Map<string, CFNResource>): ResourceMapping[] {
+        return this.buildResourceMappings(source, target, 'gen1-auth', 'gen2-auth') as unknown as ResourceMapping[];
       }
     })();
   }

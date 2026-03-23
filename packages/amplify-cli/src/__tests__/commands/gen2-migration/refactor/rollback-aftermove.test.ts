@@ -3,6 +3,7 @@ import { CFNResource, CFNTemplate } from '../../../../commands/gen2-migration/cf
 import { RefactorBlueprint } from '../../../../commands/gen2-migration/refactor/workflow/category-refactorer';
 import { AwsClients } from '../../../../commands/gen2-migration/aws-clients';
 import { StackFacade } from '../../../../commands/gen2-migration/refactor/stack-facade';
+import { Cfn } from '../../../../commands/gen2-migration/refactor/cfn';
 import { noOpLogger } from '../_framework/logger';
 import { mockClient } from 'aws-sdk-client-mock';
 import {
@@ -10,16 +11,15 @@ import {
   GetTemplateCommand,
   DescribeStacksCommand,
   DescribeStackResourcesCommand,
-  DeleteStackCommand,
   UpdateStackCommand,
   CreateStackRefactorCommand,
   DescribeStackRefactorCommand,
   ExecuteStackRefactorCommand,
   StackRefactorStatus,
   StackRefactorExecutionStatus,
+  ResourceMapping,
 } from '@aws-sdk/client-cloudformation';
 
-// Concrete test subclass
 class TestRollbackRefactorer extends RollbackCategoryRefactorer {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   protected targetLogicalId(_sourceId: string, _sourceResource: CFNResource): string | undefined {
@@ -36,48 +36,23 @@ class TestRollbackRefactorer extends RollbackCategoryRefactorer {
   }
 }
 
-function makeBlueprint(sourceAfterRemoval: CFNTemplate): RefactorBlueprint {
-  const emptyTemplate: CFNTemplate = {
-    AWSTemplateFormatVersion: '2010-09-09',
-    Description: 'empty',
-    Resources: {},
-    Outputs: {},
-  };
+function makeBlueprint(mappings: ResourceMapping[]): RefactorBlueprint {
   return {
-    source: {
-      stackId: 'gen2-auth-stack-id',
-      parameters: [],
-      resolvedTemplate: emptyTemplate,
-      afterRemoval: sourceAfterRemoval,
-    },
-    target: {
-      stackId: 'gen1-stack-id',
-      parameters: [],
-      resolvedTemplate: emptyTemplate,
-      afterRemoval: emptyTemplate,
-      afterAddition: emptyTemplate,
-    },
-    mappings: [],
+    sourceStackId: 'gen2-auth-stack-id',
+    targetStackId: 'gen1-stack-id',
+    mappings,
   };
 }
 
-/**
- * afterMovePlan reads the holding stack template during plan() and returns
- * 3 separate operations: (1) update holding stack with placeholder,
- * (2) refactor resources back to Gen2, (3) delete holding stack.
- */
-describe('RollbackCategoryRefactorer.afterMovePlan', () => {
+describe('RollbackCategoryRefactorer.afterMove', () => {
   let cfnMock: ReturnType<typeof mockClient>;
 
   beforeEach(() => {
     cfnMock = mockClient(CloudFormationClient);
   });
+  afterEach(() => cfnMock.restore());
 
-  afterEach(() => {
-    cfnMock.restore();
-  });
-
-  it('reads holding stack during plan and splits into 3 operations', async () => {
+  it('returns operations to update holding stack and move resources back', async () => {
     const holdingTemplate: CFNTemplate = {
       AWSTemplateFormatVersion: '2010-09-09',
       Description: 'holding',
@@ -98,57 +73,35 @@ describe('RollbackCategoryRefactorer.afterMovePlan', () => {
       ExecutionStatus: StackRefactorExecutionStatus.EXECUTE_COMPLETE,
     });
     cfnMock.on(ExecuteStackRefactorCommand).resolves({});
-    cfnMock.on(DeleteStackCommand).resolves({});
     cfnMock.on(DescribeStackResourcesCommand).resolves({ StackResources: [] });
 
     const clients = new AwsClients({ region: 'us-east-1' });
     (clients as any).cloudFormation = new CloudFormationClient({});
-    const gen1Env = new StackFacade(clients, 'gen1-root');
-    const gen2Branch = new StackFacade(clients, 'gen2-root');
-    const refactorer = new TestRollbackRefactorer(gen1Env, gen2Branch, clients, 'us-east-1', '123456789', noOpLogger(), {
-      category: 'storage',
-      resourceName: 'test',
-      service: 'S3',
-      key: 'storage:S3',
-    });
+    const cfn = new Cfn(new CloudFormationClient({}), noOpLogger());
+    const refactorer = new TestRollbackRefactorer(
+      new StackFacade(clients, 'gen1-root'),
+      new StackFacade(clients, 'gen2-root'),
+      clients,
+      'us-east-1',
+      '123456789',
+      noOpLogger(),
+      { category: 'storage', resourceName: 'test', service: 'S3', key: 'storage:S3' },
+      cfn,
+    );
 
-    const sourceAfterRemoval: CFNTemplate = {
-      AWSTemplateFormatVersion: '2010-09-09',
-      Description: 'gen2 after move',
-      Resources: { OtherResource: { Type: 'AWS::Lambda::Function', Properties: {} } },
-      Outputs: {},
-    };
+    const blueprint = makeBlueprint([
+      {
+        Source: { StackName: 'gen2-auth-stack-id', LogicalResourceId: 'MyBucket' },
+        Destination: { StackName: 'gen1-stack-id', LogicalResourceId: 'S3Bucket' },
+      },
+    ]);
 
-    const blueprint = makeBlueprint(sourceAfterRemoval);
+    const operations = await (refactorer as any).afterMove(blueprint);
 
-    const operations = await (refactorer as any).afterMovePlan(blueprint);
-
-    // 3 operations: update holding with placeholder, refactor back, delete holding
-    expect(operations).toHaveLength(3);
-
-    // Verify descriptions
+    // 2 operations: update holding with placeholder, refactor back to Gen2
+    expect(operations).toHaveLength(2);
     expect(await operations[0].describe()).toEqual([expect.stringContaining('placeholder')]);
-    expect(await operations[1].describe()).toEqual([expect.stringContaining('Restore')]);
-    expect(await operations[2].describe()).toEqual([expect.stringContaining('Delete')]);
-
-    // Execute all 3 operations
-    await operations[0].execute();
-    await operations[1].execute();
-    await operations[2].execute();
-
-    // Verify the restore template passed to CreateStackRefactor (op 2)
-    const refactorCalls = cfnMock.commandCalls(CreateStackRefactorCommand);
-    expect(refactorCalls.length).toBeGreaterThan(0);
-
-    const destTemplate = JSON.parse(refactorCalls[0].args[0].input.StackDefinitions![1].TemplateBody!);
-
-    // Restore template = source.afterRemoval + holding stack resources
-    expect(destTemplate.Resources.OtherResource).toBeDefined();
-    expect(destTemplate.Resources.MyBucket).toBeDefined();
-    expect(destTemplate.Resources.MyBucket.Properties.BucketName).toBe('test-bucket');
-
-    // Verify delete was called (op 3)
-    expect(cfnMock.commandCalls(DeleteStackCommand).length).toBeGreaterThan(0);
+    expect(await operations[1].describe()).toEqual([expect.stringContaining('Move')]);
   });
 
   it('returns empty operations when no holding stack exists', async () => {
@@ -156,24 +109,21 @@ describe('RollbackCategoryRefactorer.afterMovePlan', () => {
 
     const clients = new AwsClients({ region: 'us-east-1' });
     (clients as any).cloudFormation = new CloudFormationClient({});
-    const gen1Env = new StackFacade(clients, 'gen1-root');
-    const gen2Branch = new StackFacade(clients, 'gen2-root');
-    const refactorer = new TestRollbackRefactorer(gen1Env, gen2Branch, clients, 'us-east-1', '123456789', noOpLogger(), {
-      category: 'storage',
-      resourceName: 'test',
-      service: 'S3',
-      key: 'storage:S3',
-    });
+    const cfn = new Cfn(new CloudFormationClient({}), noOpLogger());
+    const refactorer = new TestRollbackRefactorer(
+      new StackFacade(clients, 'gen1-root'),
+      new StackFacade(clients, 'gen2-root'),
+      clients,
+      'us-east-1',
+      '123456789',
+      noOpLogger(),
+      { category: 'storage', resourceName: 'test', service: 'S3', key: 'storage:S3' },
+      cfn,
+    );
 
-    const emptyTemplate: CFNTemplate = {
-      AWSTemplateFormatVersion: '2010-09-09',
-      Description: 'test',
-      Resources: {},
-      Outputs: {},
-    };
-    const blueprint = makeBlueprint(emptyTemplate);
+    const blueprint = makeBlueprint([]);
 
-    const operations = await (refactorer as any).afterMovePlan(blueprint);
+    const operations = await (refactorer as any).afterMove(blueprint);
     expect(operations).toHaveLength(0);
   });
 });

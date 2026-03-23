@@ -9,62 +9,37 @@ const makeTemplate = (resources: Record<string, { Type: string; DependsOn?: stri
 });
 
 describe('resolveDependencies', () => {
-  it('removes cross-boundary DependsOn from staying resources', () => {
+  it('strips all DependsOn from every resource', () => {
     const template = makeTemplate({
       StayingResource: { Type: 'AWS::Lambda::Function', DependsOn: ['MovingResource', 'OtherStaying'] },
       MovingResource: { Type: 'AWS::S3::Bucket' },
-      OtherStaying: { Type: 'AWS::IAM::Role' },
+      OtherStaying: { Type: 'AWS::IAM::Role', DependsOn: 'MovingResource' },
     });
 
-    const result = resolveDependencies(template, ['MovingResource']);
-    // StayingResource should no longer depend on MovingResource
-    expect(result.Resources.StayingResource.DependsOn).toEqual(['OtherStaying']);
-  });
-
-  it('keeps within-boundary DependsOn for moving resources', () => {
-    const template = makeTemplate({
-      MovingA: { Type: 'AWS::S3::Bucket', DependsOn: ['MovingB', 'StayingResource'] },
-      MovingB: { Type: 'AWS::S3::BucketPolicy' },
-      StayingResource: { Type: 'AWS::Lambda::Function' },
-    });
-
-    const result = resolveDependencies(template, ['MovingA', 'MovingB']);
-    // MovingA keeps dep on MovingB (both moving), loses dep on StayingResource
-    expect(result.Resources.MovingA.DependsOn).toEqual(['MovingB']);
+    const result = resolveDependencies(template);
+    expect(result.Resources.StayingResource.DependsOn).toBeUndefined();
+    expect(result.Resources.MovingResource.DependsOn).toBeUndefined();
+    expect(result.Resources.OtherStaying.DependsOn).toBeUndefined();
   });
 
   it('passes through resources without DependsOn unchanged', () => {
     const template = makeTemplate({
       NoDeps: { Type: 'AWS::S3::Bucket' },
-      Moving: { Type: 'AWS::DynamoDB::Table' },
+      AlsoNoDeps: { Type: 'AWS::DynamoDB::Table' },
     });
 
-    const result = resolveDependencies(template, ['Moving']);
+    const result = resolveDependencies(template);
     expect(result.Resources.NoDeps.DependsOn).toBeUndefined();
+    expect(result.Resources.AlsoNoDeps.DependsOn).toBeUndefined();
   });
 
-  it('handles string DependsOn (not array) for staying resources', () => {
-    const template = makeTemplate({
-      Staying: { Type: 'AWS::Lambda::Function', DependsOn: 'Moving' },
-      Moving: { Type: 'AWS::S3::Bucket' },
-    });
-
-    const result = resolveDependencies(template, ['Moving']);
-    // String normalized to array, then filtered — result is empty array (not undefined)
-    expect(result.Resources.Staying.DependsOn).toEqual([]);
-  });
-
-  it('leaves DependsOn unchanged when all resources are moving together', () => {
+  it('does not mutate the input template', () => {
     const template = makeTemplate({
       A: { Type: 'AWS::S3::Bucket', DependsOn: ['B'] },
-      B: { Type: 'AWS::S3::BucketPolicy', DependsOn: ['C'] },
-      C: { Type: 'AWS::IAM::Role' },
+      B: { Type: 'AWS::S3::BucketPolicy' },
     });
 
-    const result = resolveDependencies(template, ['A', 'B', 'C']);
-    // Neither filter condition triggers — deps.length === depsInRefactor.length for all
-    expect(result.Resources.A.DependsOn).toEqual(['B']);
-    expect(result.Resources.B.DependsOn).toEqual(['C']);
-    expect(result.Resources.C.DependsOn).toBeUndefined();
+    resolveDependencies(template);
+    expect(template.Resources.A.DependsOn).toEqual(['B']);
   });
 });
