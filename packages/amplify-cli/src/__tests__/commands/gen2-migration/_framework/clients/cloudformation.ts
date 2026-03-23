@@ -3,6 +3,7 @@ import * as cloudformation from '@aws-sdk/client-cloudformation';
 import { MigrationApp } from '../app';
 import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import * as fs from 'fs-extra';
+import * as path from 'path';
 
 /**
  * Mock for the AWS CloudFormation service client (`@aws-sdk/client-cloudformation`).
@@ -34,11 +35,17 @@ export class CloudFormationMock {
   public readonly mock;
 
   private readonly _stackNameForResource: Map<string, string> = new Map<string, string>();
-
-  private readonly _describeStackCounter: Map<string, number> = new Map<string, number>();
+  private readonly _templateForStack: Map<string, string> = new Map<string, string>();
 
   constructor(private readonly app: MigrationApp) {
     this.mock = mockClient(cloudformation.CloudFormationClient);
+
+    const refactorInputPath = this.app.snapshots.refactor.props.inputPath;
+    for (const stackFile of fs.readdirSync(refactorInputPath).filter((f) => f.endsWith('.template.json'))) {
+      const stackName = stackFile.replace('.template.json', '');
+      this._templateForStack.set(stackName, fs.readFileSync(path.join(refactorInputPath, stackFile), { encoding: 'utf-8' }));
+    }
+
     this.mockDescribeStackResources();
     this.mockDescribeStacks();
     this.mockGetTemplate();
@@ -46,6 +53,7 @@ export class CloudFormationMock {
     this.mockDescribeStackRefactor();
     this.mockCreateChangeSet();
     this.mockDescribeChangeSet();
+    this.mockUpdateStack();
   }
 
   public stackNameForResource(physicalId: string) {
@@ -101,41 +109,26 @@ export class CloudFormationMock {
     this.mock
       .on(cloudformation.DescribeStacksCommand)
       .callsFake(async (input: cloudformation.DescribeStacksInput): Promise<cloudformation.DescribeStacksOutput> => {
-        const invocationCount = this._describeStackCounter.get(input.StackName!) ?? 0;
-        this._describeStackCounter.set(input.StackName!, invocationCount + 1);
-        if (input.StackName!.endsWith('-holding')) {
-          if (invocationCount === 0) {
-            // first call: findStack check before refactor — stack doesn't exist yet
-            throw new cloudformation.CloudFormationServiceException({
-              name: 'ValidationError',
-              message: `stack ${input.StackName} does not exist`,
-              $fault: 'client',
-              $metadata: {},
-            });
-          }
-          // subsequent calls: after refactor creates the stack, waiters poll for completion
-          return {
-            Stacks: [
-              {
-                StackName: input.StackName,
-                StackStatus: cloudformation.StackStatus.CREATE_COMPLETE,
-                CreationTime: new Date(),
-              },
-            ],
-          };
+        const template = this._templateForStack.get(input.StackName!);
+        if (!template) {
+          throw new cloudformation.CloudFormationServiceException({
+            name: 'ValidationError',
+            message: `stack ${input.StackName} does not exist`,
+            $fault: 'client',
+            $metadata: {},
+          });
         }
-        const parameters = this.app.cfnParametersForStack(input.StackName!);
-        const outputs = this.app.cfnOutputsForStack(input.StackName!);
-        const description = this.app.cfnDescriptionForStack(input.StackName!);
+
+        const preExistingStack = fs.existsSync(this.app.templatePathForStack(input.StackName!));
         return {
           Stacks: [
             {
               StackName: input.StackName!,
-              Parameters: parameters,
               CreationTime: new Date(),
               StackStatus: cloudformation.StackStatus.UPDATE_COMPLETE,
-              Description: description,
-              Outputs: outputs,
+              Parameters: preExistingStack ? this.app.cfnParametersForStack(input.StackName!) : undefined,
+              Description: preExistingStack ? this.app.cfnDescriptionForStack(input.StackName!) : undefined,
+              Outputs: preExistingStack ? this.app.cfnOutputsForStack(input.StackName!) : undefined,
             },
           ],
         };
@@ -146,21 +139,8 @@ export class CloudFormationMock {
     this.mock
       .on(cloudformation.GetTemplateCommand)
       .callsFake(async (input: cloudformation.GetTemplateCommandInput): Promise<cloudformation.GetTemplateCommandOutput> => {
-        const templatePath = this.app.templatePathForStack(input.StackName!);
-        // Holding stacks are created dynamically during refactor and have no snapshot file.
-        // Return an empty template so Cfn.refactor() can populate it with moved resources.
-        if (!fs.existsSync(templatePath)) {
-          return {
-            TemplateBody: JSON.stringify({
-              AWSTemplateFormatVersion: '2010-09-09',
-              Resources: {},
-              Outputs: {},
-            }),
-            $metadata: {},
-          };
-        }
         return {
-          TemplateBody: fs.readFileSync(templatePath, { encoding: 'utf-8' }),
+          TemplateBody: this._templateForStack.get(input.StackName!),
           $metadata: {},
         };
       });
@@ -170,6 +150,10 @@ export class CloudFormationMock {
     this.mock.on(cloudformation.CreateStackRefactorCommand).callsFake(
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       async (input: cloudformation.CreateStackRefactorCommandInput): Promise<cloudformation.CreateStackRefactorCommandOutput> => {
+        const source = input.StackDefinitions![0];
+        const target = input.StackDefinitions![1];
+        this._templateForStack.set(source.StackName!, source.TemplateBody!);
+        this._templateForStack.set(target.StackName!, target.TemplateBody!);
         return { StackRefactorId: `${Date.now()}`, $metadata: {} };
       },
     );
@@ -200,5 +184,14 @@ export class CloudFormationMock {
         return { Status: 'CREATE_COMPLETE', Changes: [], $metadata: {} };
       },
     );
+  }
+
+  private mockUpdateStack() {
+    this.mock
+      .on(cloudformation.UpdateStackCommand)
+      .callsFake(async (input: cloudformation.UpdateStackCommandInput): Promise<cloudformation.UpdateStackCommandOutput> => {
+        this._templateForStack.set(input.StackName!, input.TemplateBody!);
+        return { StackId: input.StackName, $metadata: {} };
+      });
   }
 }
