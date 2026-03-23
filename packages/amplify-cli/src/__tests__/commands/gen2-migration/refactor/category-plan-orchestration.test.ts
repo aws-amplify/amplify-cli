@@ -98,6 +98,7 @@ describe('CategoryRefactorer.plan() orchestration — via StorageS3ForwardRefact
     cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen2-root' }).resolves({
       StackResources: [nestedStack('storage0EC3F24A', 'gen2-storage-stack')],
     });
+    cfnMock.on(GetTemplateCommand, { StackName: 'gen2-storage-stack' }).resolves({ TemplateBody: JSON.stringify(gen2StorageTemplate) });
 
     const { clients, gen1Env, gen2Branch } = makeInstances();
     await expect(new StorageS3ForwardRefactorer(gen1Env, gen2Branch, clients, 'us-east-1', '123', 'avatars').plan()).rejects.toThrow(

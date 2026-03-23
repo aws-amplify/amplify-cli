@@ -53,6 +53,7 @@ export interface CFNTemplate {
   // Resources and Outputs are mutable: resolvers clone templates then transform them in place.
   // The clone-then-mutate pattern is the standard way to produce modified templates.
   Resources: Record<string, CFNResource>;
+  // Optional because CDK omits Outputs when a stack has no cross-stack references.
   Outputs?: Record<string, CFNOutput>;
 }
 

@@ -52,7 +52,7 @@ export class DynamoDBRenderer {
   /**
    * Produces CDK Table construct statements for a single DynamoDB table.
    */
-  public renderTable(table: DynamoDBTableDefinition, scopeVarName = 'storageStack'): ts.Statement[] {
+  public renderTable(table: DynamoDBTableDefinition, scopeVarName: string): ts.Statement[] {
     const statements: ts.Statement[] = [];
     const baseTableName = table.tableName.replace(/-[^-]+$/, '');
     const sanitizedName = sanitizeVariableName(baseTableName);

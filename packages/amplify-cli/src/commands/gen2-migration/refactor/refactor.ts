@@ -208,7 +208,6 @@ function validateSingleResourcePerStack(discovered: readonly DiscoveredResource[
     let stackName: string;
     switch (r.key) {
       case 'storage:DynamoDB':
-      case 'storage:S3':
         stackName = 'storage' + r.resourceName;
         break;
       case 'auth:Cognito':
