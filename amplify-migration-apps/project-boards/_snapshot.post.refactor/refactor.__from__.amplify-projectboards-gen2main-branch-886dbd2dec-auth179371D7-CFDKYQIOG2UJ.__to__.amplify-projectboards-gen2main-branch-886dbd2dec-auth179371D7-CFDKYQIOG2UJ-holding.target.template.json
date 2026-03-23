@@ -71,27 +71,6 @@
         "aws:cdk:path": "amplify-projectboards-gen2main-branch-886dbd2dec/auth/amplifyAuth/UserPool/Resource"
       }
     },
-    "amplifyAuthUserPoolNativeAppClient79534448": {
-      "Type": "AWS::Cognito::UserPoolClient",
-      "Properties": {
-        "AllowedOAuthFlowsUserPoolClient": false,
-        "AuthSessionValidity": 3,
-        "EnablePropagateAdditionalUserContextData": false,
-        "EnableTokenRevocation": true,
-        "GenerateSecret": false,
-        "RefreshTokenValidity": 43200,
-        "SupportedIdentityProviders": [
-          "COGNITO"
-        ],
-        "TokenValidityUnits": {
-          "RefreshToken": "minutes"
-        },
-        "UserPoolId": "us-east-1_pXlpWF7QY"
-      },
-      "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-gen2main-branch-886dbd2dec/auth/amplifyAuth/UserPool/NativeAppClient/Resource"
-      }
-    },
     "amplifyAuthUserPoolAppClient2626C6F8": {
       "Type": "AWS::Cognito::UserPoolClient",
       "Properties": {
@@ -122,6 +101,27 @@
       },
       "Metadata": {
         "aws:cdk:path": "amplify-projectboards-gen2main-branch-886dbd2dec/auth/amplifyAuth/UserPoolAppClient/Resource"
+      }
+    },
+    "amplifyAuthUserPoolNativeAppClient79534448": {
+      "Type": "AWS::Cognito::UserPoolClient",
+      "Properties": {
+        "AllowedOAuthFlowsUserPoolClient": false,
+        "AuthSessionValidity": 3,
+        "EnablePropagateAdditionalUserContextData": false,
+        "EnableTokenRevocation": true,
+        "GenerateSecret": false,
+        "RefreshTokenValidity": 43200,
+        "SupportedIdentityProviders": [
+          "COGNITO"
+        ],
+        "TokenValidityUnits": {
+          "RefreshToken": "minutes"
+        },
+        "UserPoolId": "us-east-1_pXlpWF7QY"
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-projectboards-gen2main-branch-886dbd2dec/auth/amplifyAuth/UserPool/NativeAppClient/Resource"
       }
     },
     "amplifyAuthIdentityPool3FDE84CC": {
@@ -204,10 +204,6 @@
           "authenticated": "arn:aws:iam::123456789012:role/amplify-projectboards-ge-amplifyAuthauthenticatedU-HuWvFKttqdhF"
         }
       },
-      "DependsOn": [
-        "amplifyAuthIdentityPool3FDE84CC",
-        "amplifyAuthUserPoolAppClient2626C6F8"
-      ],
       "Metadata": {
         "aws:cdk:path": "amplify-projectboards-gen2main-branch-886dbd2dec/auth/amplifyAuth/IdentityPoolRoleAttachment"
       }

@@ -109,8 +109,7 @@ export class CloudFormationMock {
     this.mock
       .on(cloudformation.DescribeStacksCommand)
       .callsFake(async (input: cloudformation.DescribeStacksInput): Promise<cloudformation.DescribeStacksOutput> => {
-        const template = this._templateForStack.get(input.StackName!);
-        if (!template) {
+        if (!this._templateForStack.has(input.StackName!)) {
           throw new cloudformation.CloudFormationServiceException({
             name: 'ValidationError',
             message: `stack ${input.StackName} does not exist`,
@@ -139,8 +138,13 @@ export class CloudFormationMock {
     this.mock
       .on(cloudformation.GetTemplateCommand)
       .callsFake(async (input: cloudformation.GetTemplateCommandInput): Promise<cloudformation.GetTemplateCommandOutput> => {
+        const templateBody = this._templateForStack.get(input.StackName!);
+        if (!templateBody) {
+          throw new Error(`Unable to find template for stack ${input.StackName}`);
+        }
         return {
-          TemplateBody: this._templateForStack.get(input.StackName!),
+          // create a clone so our code doesn't mutate the inner objects.
+          TemplateBody: JSON.stringify(JSON.parse(templateBody)),
           $metadata: {},
         };
       });
@@ -152,8 +156,8 @@ export class CloudFormationMock {
       async (input: cloudformation.CreateStackRefactorCommandInput): Promise<cloudformation.CreateStackRefactorCommandOutput> => {
         const source = input.StackDefinitions![0];
         const target = input.StackDefinitions![1];
-        this._templateForStack.set(source.StackName!, source.TemplateBody!);
-        this._templateForStack.set(target.StackName!, target.TemplateBody!);
+        this._setTemplate(source.StackName!, source.TemplateBody!);
+        this._setTemplate(target.StackName!, target.TemplateBody!);
         return { StackRefactorId: `${Date.now()}`, $metadata: {} };
       },
     );
@@ -190,8 +194,12 @@ export class CloudFormationMock {
     this.mock
       .on(cloudformation.UpdateStackCommand)
       .callsFake(async (input: cloudformation.UpdateStackCommandInput): Promise<cloudformation.UpdateStackCommandOutput> => {
-        this._templateForStack.set(input.StackName!, input.TemplateBody!);
+        this._setTemplate(input.StackName!, input.TemplateBody!);
         return { StackId: input.StackName, $metadata: {} };
       });
+  }
+
+  private _setTemplate(stackName: string, templateBody: string) {
+    this._templateForStack.set(stackName, templateBody);
   }
 }

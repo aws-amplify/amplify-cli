@@ -1,52 +1,52 @@
 [
   {
     "Source": {
-      "StackName": "amplify-projectboards-gen2main-branch-886dbd2dec-auth179371D7-CFDKYQIOG2UJ",
-      "LogicalResourceId": "amplifyAuthUserPool4BA7F805"
+      "LogicalResourceId": "amplifyAuthUserPool4BA7F805",
+      "StackName": "amplify-projectboards-gen2main-branch-886dbd2dec-auth179371D7-CFDKYQIOG2UJ"
     },
     "Destination": {
-      "StackName": "amplify-projectboards-gen2main-branch-886dbd2dec-auth179371D7-CFDKYQIOG2UJ-holding",
-      "LogicalResourceId": "amplifyAuthUserPool4BA7F805"
+      "LogicalResourceId": "amplifyAuthUserPool4BA7F805",
+      "StackName": "amplify-projectboards-gen2main-branch-886dbd2dec-auth179371D7-CFDKYQIOG2UJ-holding"
     }
   },
   {
     "Source": {
-      "StackName": "amplify-projectboards-gen2main-branch-886dbd2dec-auth179371D7-CFDKYQIOG2UJ",
-      "LogicalResourceId": "amplifyAuthUserPoolNativeAppClient79534448"
+      "LogicalResourceId": "amplifyAuthUserPoolAppClient2626C6F8",
+      "StackName": "amplify-projectboards-gen2main-branch-886dbd2dec-auth179371D7-CFDKYQIOG2UJ"
     },
     "Destination": {
-      "StackName": "amplify-projectboards-gen2main-branch-886dbd2dec-auth179371D7-CFDKYQIOG2UJ-holding",
-      "LogicalResourceId": "amplifyAuthUserPoolNativeAppClient79534448"
+      "LogicalResourceId": "amplifyAuthUserPoolAppClient2626C6F8",
+      "StackName": "amplify-projectboards-gen2main-branch-886dbd2dec-auth179371D7-CFDKYQIOG2UJ-holding"
     }
   },
   {
     "Source": {
-      "StackName": "amplify-projectboards-gen2main-branch-886dbd2dec-auth179371D7-CFDKYQIOG2UJ",
-      "LogicalResourceId": "amplifyAuthUserPoolAppClient2626C6F8"
+      "LogicalResourceId": "amplifyAuthUserPoolNativeAppClient79534448",
+      "StackName": "amplify-projectboards-gen2main-branch-886dbd2dec-auth179371D7-CFDKYQIOG2UJ"
     },
     "Destination": {
-      "StackName": "amplify-projectboards-gen2main-branch-886dbd2dec-auth179371D7-CFDKYQIOG2UJ-holding",
-      "LogicalResourceId": "amplifyAuthUserPoolAppClient2626C6F8"
+      "LogicalResourceId": "amplifyAuthUserPoolNativeAppClient79534448",
+      "StackName": "amplify-projectboards-gen2main-branch-886dbd2dec-auth179371D7-CFDKYQIOG2UJ-holding"
     }
   },
   {
     "Source": {
-      "StackName": "amplify-projectboards-gen2main-branch-886dbd2dec-auth179371D7-CFDKYQIOG2UJ",
-      "LogicalResourceId": "amplifyAuthIdentityPool3FDE84CC"
+      "LogicalResourceId": "amplifyAuthIdentityPool3FDE84CC",
+      "StackName": "amplify-projectboards-gen2main-branch-886dbd2dec-auth179371D7-CFDKYQIOG2UJ"
     },
     "Destination": {
-      "StackName": "amplify-projectboards-gen2main-branch-886dbd2dec-auth179371D7-CFDKYQIOG2UJ-holding",
-      "LogicalResourceId": "amplifyAuthIdentityPool3FDE84CC"
+      "LogicalResourceId": "amplifyAuthIdentityPool3FDE84CC",
+      "StackName": "amplify-projectboards-gen2main-branch-886dbd2dec-auth179371D7-CFDKYQIOG2UJ-holding"
     }
   },
   {
     "Source": {
-      "StackName": "amplify-projectboards-gen2main-branch-886dbd2dec-auth179371D7-CFDKYQIOG2UJ",
-      "LogicalResourceId": "amplifyAuthIdentityPoolRoleAttachment045F17C8"
+      "LogicalResourceId": "amplifyAuthIdentityPoolRoleAttachment045F17C8",
+      "StackName": "amplify-projectboards-gen2main-branch-886dbd2dec-auth179371D7-CFDKYQIOG2UJ"
     },
     "Destination": {
-      "StackName": "amplify-projectboards-gen2main-branch-886dbd2dec-auth179371D7-CFDKYQIOG2UJ-holding",
-      "LogicalResourceId": "amplifyAuthIdentityPoolRoleAttachment045F17C8"
+      "LogicalResourceId": "amplifyAuthIdentityPoolRoleAttachment045F17C8",
+      "StackName": "amplify-projectboards-gen2main-branch-886dbd2dec-auth179371D7-CFDKYQIOG2UJ-holding"
     }
   }
 ]

@@ -127,7 +127,7 @@ export class Cfn {
     }
 
     const sourceTemplate = await this.fetchTemplate(sourceStackId);
-    const targetTemplate = targetStack ? await this.fetchTemplate(targetStackId) : EMPTY_HOLDING_TEMPLATE;
+    const targetTemplate = targetStack ? await this.fetchTemplate(targetStackId) : JSON.parse(JSON.stringify(EMPTY_HOLDING_TEMPLATE));
 
     for (const mapping of resourceMappings) {
       targetTemplate.Resources[mapping.Destination.LogicalResourceId] = sourceTemplate.Resources[mapping.Source.LogicalResourceId];
