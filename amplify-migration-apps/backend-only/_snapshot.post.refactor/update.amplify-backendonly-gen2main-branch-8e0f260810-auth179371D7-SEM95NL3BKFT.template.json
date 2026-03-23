@@ -303,6 +303,10 @@
           "authenticated": "arn:aws:iam::123456789012:role/amplify-backendonly-ge-amplifyAuthauthenticatedU-NrnOsacJVeCr"
         }
       },
+      "DependsOn": [
+        "amplifyAuthIdentityPool3FDE84CC",
+        "amplifyAuthUserPoolAppClient2626C6F8"
+      ],
       "Metadata": {
         "aws:cdk:path": "amplify-backendonly-gen2main-branch-8e0f260810/auth/amplifyAuth/IdentityPoolRoleAttachment"
       }

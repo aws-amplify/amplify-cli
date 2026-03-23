@@ -303,6 +303,10 @@
           "authenticated": "arn:aws:iam::123456789012:role/amplify-projectboards-ge-amplifyAuthauthenticatedU-HuWvFKttqdhF"
         }
       },
+      "DependsOn": [
+        "amplifyAuthIdentityPool3FDE84CC",
+        "amplifyAuthUserPoolAppClient2626C6F8"
+      ],
       "Metadata": {
         "aws:cdk:path": "amplify-projectboards-gen2main-branch-886dbd2dec/auth/amplifyAuth/IdentityPoolRoleAttachment"
       }

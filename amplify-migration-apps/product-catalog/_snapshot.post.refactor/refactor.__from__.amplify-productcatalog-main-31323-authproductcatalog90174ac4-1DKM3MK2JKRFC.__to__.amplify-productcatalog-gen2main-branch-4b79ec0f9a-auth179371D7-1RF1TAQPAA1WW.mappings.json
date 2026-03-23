@@ -1,52 +1,52 @@
 [
   {
     "Source": {
-      "LogicalResourceId": "UserPool",
-      "StackName": "amplify-productcatalog-main-31323-authproductcatalog90174ac4-1DKM3MK2JKRFC"
+      "StackName": "amplify-productcatalog-main-31323-authproductcatalog90174ac4-1DKM3MK2JKRFC",
+      "LogicalResourceId": "UserPool"
     },
     "Destination": {
-      "LogicalResourceId": "amplifyAuthUserPool4BA7F805",
-      "StackName": "amplify-productcatalog-gen2main-branch-4b79ec0f9a-auth179371D7-1RF1TAQPAA1WW"
+      "StackName": "amplify-productcatalog-gen2main-branch-4b79ec0f9a-auth179371D7-1RF1TAQPAA1WW",
+      "LogicalResourceId": "amplifyAuthUserPool4BA7F805"
     }
   },
   {
     "Source": {
-      "LogicalResourceId": "UserPoolClientWeb",
-      "StackName": "amplify-productcatalog-main-31323-authproductcatalog90174ac4-1DKM3MK2JKRFC"
+      "StackName": "amplify-productcatalog-main-31323-authproductcatalog90174ac4-1DKM3MK2JKRFC",
+      "LogicalResourceId": "UserPoolClientWeb"
     },
     "Destination": {
-      "LogicalResourceId": "amplifyAuthUserPoolAppClient2626C6F8",
-      "StackName": "amplify-productcatalog-gen2main-branch-4b79ec0f9a-auth179371D7-1RF1TAQPAA1WW"
+      "StackName": "amplify-productcatalog-gen2main-branch-4b79ec0f9a-auth179371D7-1RF1TAQPAA1WW",
+      "LogicalResourceId": "amplifyAuthUserPoolAppClient2626C6F8"
     }
   },
   {
     "Source": {
-      "LogicalResourceId": "UserPoolClient",
-      "StackName": "amplify-productcatalog-main-31323-authproductcatalog90174ac4-1DKM3MK2JKRFC"
+      "StackName": "amplify-productcatalog-main-31323-authproductcatalog90174ac4-1DKM3MK2JKRFC",
+      "LogicalResourceId": "UserPoolClient"
     },
     "Destination": {
-      "LogicalResourceId": "amplifyAuthUserPoolNativeAppClient79534448",
-      "StackName": "amplify-productcatalog-gen2main-branch-4b79ec0f9a-auth179371D7-1RF1TAQPAA1WW"
+      "StackName": "amplify-productcatalog-gen2main-branch-4b79ec0f9a-auth179371D7-1RF1TAQPAA1WW",
+      "LogicalResourceId": "amplifyAuthUserPoolNativeAppClient79534448"
     }
   },
   {
     "Source": {
-      "LogicalResourceId": "IdentityPool",
-      "StackName": "amplify-productcatalog-main-31323-authproductcatalog90174ac4-1DKM3MK2JKRFC"
+      "StackName": "amplify-productcatalog-main-31323-authproductcatalog90174ac4-1DKM3MK2JKRFC",
+      "LogicalResourceId": "IdentityPool"
     },
     "Destination": {
-      "LogicalResourceId": "amplifyAuthIdentityPool3FDE84CC",
-      "StackName": "amplify-productcatalog-gen2main-branch-4b79ec0f9a-auth179371D7-1RF1TAQPAA1WW"
+      "StackName": "amplify-productcatalog-gen2main-branch-4b79ec0f9a-auth179371D7-1RF1TAQPAA1WW",
+      "LogicalResourceId": "amplifyAuthIdentityPool3FDE84CC"
     }
   },
   {
     "Source": {
-      "LogicalResourceId": "IdentityPoolRoleMap",
-      "StackName": "amplify-productcatalog-main-31323-authproductcatalog90174ac4-1DKM3MK2JKRFC"
+      "StackName": "amplify-productcatalog-main-31323-authproductcatalog90174ac4-1DKM3MK2JKRFC",
+      "LogicalResourceId": "IdentityPoolRoleMap"
     },
     "Destination": {
-      "LogicalResourceId": "amplifyAuthIdentityPoolRoleAttachment045F17C8",
-      "StackName": "amplify-productcatalog-gen2main-branch-4b79ec0f9a-auth179371D7-1RF1TAQPAA1WW"
+      "StackName": "amplify-productcatalog-gen2main-branch-4b79ec0f9a-auth179371D7-1RF1TAQPAA1WW",
+      "LogicalResourceId": "amplifyAuthIdentityPoolRoleAttachment045F17C8"
     }
   }
 ]

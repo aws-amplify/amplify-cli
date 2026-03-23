@@ -1,52 +1,52 @@
 [
   {
     "Source": {
-      "LogicalResourceId": "UserPool",
-      "StackName": "amplify-backendonly-main-5e0fa-authbackendonlyf8c4c57b-SC9H4E2DZU7A"
+      "StackName": "amplify-backendonly-main-5e0fa-authbackendonlyf8c4c57b-SC9H4E2DZU7A",
+      "LogicalResourceId": "UserPool"
     },
     "Destination": {
-      "LogicalResourceId": "amplifyAuthUserPool4BA7F805",
-      "StackName": "amplify-backendonly-gen2main-branch-8e0f260810-auth179371D7-SEM95NL3BKFT"
+      "StackName": "amplify-backendonly-gen2main-branch-8e0f260810-auth179371D7-SEM95NL3BKFT",
+      "LogicalResourceId": "amplifyAuthUserPool4BA7F805"
     }
   },
   {
     "Source": {
-      "LogicalResourceId": "UserPoolClientWeb",
-      "StackName": "amplify-backendonly-main-5e0fa-authbackendonlyf8c4c57b-SC9H4E2DZU7A"
+      "StackName": "amplify-backendonly-main-5e0fa-authbackendonlyf8c4c57b-SC9H4E2DZU7A",
+      "LogicalResourceId": "UserPoolClientWeb"
     },
     "Destination": {
-      "LogicalResourceId": "amplifyAuthUserPoolAppClient2626C6F8",
-      "StackName": "amplify-backendonly-gen2main-branch-8e0f260810-auth179371D7-SEM95NL3BKFT"
+      "StackName": "amplify-backendonly-gen2main-branch-8e0f260810-auth179371D7-SEM95NL3BKFT",
+      "LogicalResourceId": "amplifyAuthUserPoolAppClient2626C6F8"
     }
   },
   {
     "Source": {
-      "LogicalResourceId": "UserPoolClient",
-      "StackName": "amplify-backendonly-main-5e0fa-authbackendonlyf8c4c57b-SC9H4E2DZU7A"
+      "StackName": "amplify-backendonly-main-5e0fa-authbackendonlyf8c4c57b-SC9H4E2DZU7A",
+      "LogicalResourceId": "UserPoolClient"
     },
     "Destination": {
-      "LogicalResourceId": "amplifyAuthUserPoolNativeAppClient79534448",
-      "StackName": "amplify-backendonly-gen2main-branch-8e0f260810-auth179371D7-SEM95NL3BKFT"
+      "StackName": "amplify-backendonly-gen2main-branch-8e0f260810-auth179371D7-SEM95NL3BKFT",
+      "LogicalResourceId": "amplifyAuthUserPoolNativeAppClient79534448"
     }
   },
   {
     "Source": {
-      "LogicalResourceId": "IdentityPool",
-      "StackName": "amplify-backendonly-main-5e0fa-authbackendonlyf8c4c57b-SC9H4E2DZU7A"
+      "StackName": "amplify-backendonly-main-5e0fa-authbackendonlyf8c4c57b-SC9H4E2DZU7A",
+      "LogicalResourceId": "IdentityPool"
     },
     "Destination": {
-      "LogicalResourceId": "amplifyAuthIdentityPool3FDE84CC",
-      "StackName": "amplify-backendonly-gen2main-branch-8e0f260810-auth179371D7-SEM95NL3BKFT"
+      "StackName": "amplify-backendonly-gen2main-branch-8e0f260810-auth179371D7-SEM95NL3BKFT",
+      "LogicalResourceId": "amplifyAuthIdentityPool3FDE84CC"
     }
   },
   {
     "Source": {
-      "LogicalResourceId": "IdentityPoolRoleMap",
-      "StackName": "amplify-backendonly-main-5e0fa-authbackendonlyf8c4c57b-SC9H4E2DZU7A"
+      "StackName": "amplify-backendonly-main-5e0fa-authbackendonlyf8c4c57b-SC9H4E2DZU7A",
+      "LogicalResourceId": "IdentityPoolRoleMap"
     },
     "Destination": {
-      "LogicalResourceId": "amplifyAuthIdentityPoolRoleAttachment045F17C8",
-      "StackName": "amplify-backendonly-gen2main-branch-8e0f260810-auth179371D7-SEM95NL3BKFT"
+      "StackName": "amplify-backendonly-gen2main-branch-8e0f260810-auth179371D7-SEM95NL3BKFT",
+      "LogicalResourceId": "amplifyAuthIdentityPoolRoleAttachment045F17C8"
     }
   }
 ]

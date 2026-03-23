@@ -141,6 +141,9 @@
         "ServiceToken": "arn:aws:lambda:us-east-1:123456789012:function:amplify-productcatalog-gen2main-branch-4b79ec0f9a-storage0EC3F24A-13PB5LDXDDFTY/CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
         "BucketName": "amplify-productcatalog-ge-productcatalogf95af07481-vzyggfkxkyam"
       },
+      "DependsOn": [
+        "productcatalogf95af07481f845caa6594c26ac9c8ed331323gen2mainBucketPolicyF51DAA81"
+      ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
@@ -175,6 +178,10 @@
         "Managed": true,
         "SkipDestinationValidation": false
       },
+      "DependsOn": [
+        "productcatalogf95af07481f845caa6594c26ac9c8ed331323gen2mainBucketAllowBucketNotificationsToamplifyproductcataloggen2mainbranch4b79ec0f9afunctionS3Trigger1ef46783gen2mainlambda8226525A5BBBE747",
+        "productcatalogf95af07481f845caa6594c26ac9c8ed331323gen2mainBucketPolicyF51DAA81"
+      ],
       "Metadata": {
         "aws:cdk:path": "amplify-productcatalog-gen2main-branch-4b79ec0f9a/storage/productcatalogf95af07481f845caa6594c26ac9c8ed331323-gen2-main/Bucket/Notifications/Resource"
       }
@@ -246,6 +253,9 @@
           ]
         }
       },
+      "DependsOn": [
+        "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+      ],
       "Metadata": {
         "aws:cdk:path": "amplify-productcatalog-gen2main-branch-4b79ec0f9a/storage/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler",
         "aws:asset:path": "asset.faa95a81ae7d7373f3e1f242268f904eb748d8d0fdd306e8a6fe515a1905a7d6",
@@ -358,6 +368,10 @@
           }
         ]
       },
+      "DependsOn": [
+        "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36",
+        "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC"
+      ],
       "Metadata": {
         "aws:cdk:path": "amplify-productcatalog-gen2main-branch-4b79ec0f9a/storage/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Resource"
       }

@@ -274,6 +274,7 @@
           "amplify-productcatalog-main-31323-authRole"
         ]
       },
+      "DependsOn": [],
       "Condition": "CreateAuthPublic"
     },
     "S3AuthProtectedPolicy": {
@@ -310,6 +311,7 @@
           "amplify-productcatalog-main-31323-authRole"
         ]
       },
+      "DependsOn": [],
       "Condition": "CreateAuthProtected"
     },
     "S3AuthPrivatePolicy": {
@@ -346,6 +348,7 @@
           "amplify-productcatalog-main-31323-authRole"
         ]
       },
+      "DependsOn": [],
       "Condition": "CreateAuthPrivate"
     },
     "S3AuthUploadPolicy": {
@@ -382,6 +385,7 @@
           "amplify-productcatalog-main-31323-authRole"
         ]
       },
+      "DependsOn": [],
       "Condition": "CreateAuthUploads"
     },
     "S3AuthReadPolicy": {
@@ -436,6 +440,7 @@
           "amplify-productcatalog-main-31323-authRole"
         ]
       },
+      "DependsOn": [],
       "Condition": "AuthReadAndList"
     },
     "S3TriggerBucketPolicy": {
@@ -488,7 +493,8 @@
         "Roles": [
           "S3Trigger1ef46783LambdaRole1ef46783-main"
         ]
-      }
+      },
+      "DependsOn": []
     }
   }
 }

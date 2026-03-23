@@ -213,6 +213,7 @@
           "amplify-moodboard-main-1959a-authRole"
         ]
       },
+      "DependsOn": [],
       "Condition": "CreateAuthPublic"
     },
     "S3AuthProtectedPolicy": {
@@ -249,6 +250,7 @@
           "amplify-moodboard-main-1959a-authRole"
         ]
       },
+      "DependsOn": [],
       "Condition": "CreateAuthProtected"
     },
     "S3AuthPrivatePolicy": {
@@ -285,6 +287,7 @@
           "amplify-moodboard-main-1959a-authRole"
         ]
       },
+      "DependsOn": [],
       "Condition": "CreateAuthPrivate"
     },
     "S3AuthUploadPolicy": {
@@ -321,6 +324,7 @@
           "amplify-moodboard-main-1959a-authRole"
         ]
       },
+      "DependsOn": [],
       "Condition": "CreateAuthUploads"
     },
     "S3GuestPublicPolicy": {
@@ -357,6 +361,7 @@
           "amplify-moodboard-main-1959a-unauthRole"
         ]
       },
+      "DependsOn": [],
       "Condition": "CreateGuestPublic"
     },
     "S3AuthReadPolicy": {
@@ -411,6 +416,7 @@
           "amplify-moodboard-main-1959a-authRole"
         ]
       },
+      "DependsOn": [],
       "Condition": "AuthReadAndList"
     },
     "S3GuestReadPolicy": {
@@ -463,6 +469,7 @@
           "amplify-moodboard-main-1959a-unauthRole"
         ]
       },
+      "DependsOn": [],
       "Condition": "GuestReadAndList"
     }
   }

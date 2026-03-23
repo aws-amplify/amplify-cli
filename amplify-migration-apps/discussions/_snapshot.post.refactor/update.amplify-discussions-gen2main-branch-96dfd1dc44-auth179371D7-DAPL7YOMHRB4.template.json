@@ -308,6 +308,10 @@
           "authenticated": "arn:aws:iam::123456789012:role/amplify-discussions-gen-amplifyAuthauthenticatedU-cOJdlmnFCZS8"
         }
       },
+      "DependsOn": [
+        "amplifyAuthIdentityPool3FDE84CC",
+        "amplifyAuthUserPoolAppClient2626C6F8"
+      ],
       "Metadata": {
         "aws:cdk:path": "amplify-discussions-gen2main-branch-96dfd1dc44/auth/amplifyAuth/IdentityPoolRoleAttachment"
       }

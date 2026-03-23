@@ -300,6 +300,30 @@ npx amplify gen2-migration generate
 + branchName: "gen2-main"
 ```
 
+**Edit in `./amplify/backend.ts`:**
+
+Navigate to the Amplify Console to find the `<gen1-rest-api-id>` and `<gen1-root-resource-id>` on the ApiGateway AWS Console. For example:
+
+![](./images/gen1-rest-api-id.png)
+![](./images/gen1-root-resource-id.png)
+
+```diff
++ const gen1RestApi = RestApi.fromRestApiAttributes(restApiStack, "Gen1RestApi", {
++     restApiId: '<gen1-rest-api-id>',
++     rootResourceId: '<gen1-root-resource-id>',
++ })
++ const gen1RestApiPolicy = new Policy(restApiStack, "Gen1RestApiPolicy", {
++     statements: [
++         new PolicyStatement({
++             actions: ["execute-api:Invoke"],
++             resources: [`${gen1RestApi.arnForExecuteApi("*", "/*")}`]
++         })
++     ]
++ });
++ backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(gen1RestApiPolicy);
+```
+
+
 **Edit in `./amplify/function/lognutrition/resource.ts`:**
 
 ```diff
@@ -374,6 +398,7 @@ npx amplify gen2-migration generate
 - const bodyParser = require('body-parser');
 - const awsServerlessExpressMiddleware = require('aws-serverless-express/middleware');
 - const { CognitoIdentityProviderClient, ListUsersCommand } = require('@aws-sdk/client-cognito-identity-provider');
+- module.exports = app;
 + import express from 'express';
 + import bodyParser from 'body-parser';
 + import awsServerlessExpressMiddleware from 'aws-serverless-express/middleware';
@@ -395,7 +420,7 @@ npx amplify gen2-migration generate
 + resourceGroupName: 'auth',
 ```
 
-**Edit in `./amplify/auth/fitnesstrackerd21d4fcdd21d4fcdPreSignup/index.js`:**
+**Edit in `./amplify/auth/fitnesstrackerd21d4fcdd21d4fcdPreSignup/src/index.js`:**
 
 > Note: The hash value after `fitnesstracker` changes for each app; you will have a different one.
 
@@ -409,7 +434,7 @@ npx amplify gen2-migration generate
 + export async function handler(event, context) {
 ```
 
-**Edit in `./amplify/function/fitnesstrackerd21d4fcdd21d4fcdPreSignup/email-filter-allowlist.js`:**
+**Edit in `./amplify/function/fitnesstrackerd21d4fcdd21d4fcdPreSignup/src/email-filter-allowlist.js`:**
 
 > Note: The hash value after `fitnesstracker` changes for each app; you will have a different one.
 
