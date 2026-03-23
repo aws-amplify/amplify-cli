@@ -89,14 +89,6 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
     return { stackId, resolvedTemplate: originalTemplate, parameters };
   }
 
-  protected override async updateSource(_source: ResolvedStack): Promise<AmplifyMigrationOperation[]> {
-    return [];
-  }
-
-  protected override async updateTarget(_target: ResolvedStack): Promise<AmplifyMigrationOperation[]> {
-    return [];
-  }
-
   /**
    * Rollback: no pre-move operations.
    */
@@ -134,6 +126,7 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
             stackName: holdingStackName,
             parameters: [],
             templateBody: holdingTemplate,
+            resource: this.resource,
           });
         },
       },
@@ -148,7 +141,7 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
           return [`${header}\n\n${table}`];
         },
         execute: async () => {
-          await this.cfn.refactor(resourceMappings);
+          await this.cfn.refactor(resourceMappings, this.resource);
         },
       },
     ];

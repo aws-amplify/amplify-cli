@@ -49,14 +49,27 @@ const EMPTY_HOLDING_TEMPLATE: CFNTemplate = {
  * Wraps update, refactor, and change set APIs behind a single client instance.
  */
 export class Cfn {
-  constructor(
-    private readonly client: CloudFormationClient,
-    private readonly logger: SpinningLogger,
-    private readonly resource?: DiscoveredResource,
-  ) {
+  private readonly updateStackClaims = new Set<string>();
+
+  constructor(private readonly client: CloudFormationClient, private readonly logger: SpinningLogger) {
     if (!fs.existsSync(OUTPUT_DIRECTORY)) {
       fs.mkdirSync(OUTPUT_DIRECTORY, { recursive: true });
     }
+  }
+
+  /**
+   * Returns true if the stack has been claimed for update by a refactorer.
+   */
+  public isUpdateClaimed(stackName: string): boolean {
+    return this.updateStackClaims.has(stackName);
+  }
+
+  /**
+   * Marks a stack as claimed for update. Call at plan time to prevent
+   * duplicate update operations across refactorers sharing a stack.
+   */
+  public claimUpdate(stackName: string): void {
+    this.updateStackClaims.add(stackName);
   }
 
   /**
@@ -67,8 +80,9 @@ export class Cfn {
     readonly stackName: string;
     readonly parameters: Parameter[];
     readonly templateBody: CFNTemplate;
+    readonly resource?: DiscoveredResource;
   }): Promise<void> {
-    const { stackName, parameters, templateBody } = params;
+    const { stackName, parameters, templateBody, resource } = params;
     try {
       const input: UpdateStackCommandInput = {
         TemplateBody: JSON.stringify(templateBody),
@@ -78,7 +92,7 @@ export class Cfn {
         Tags: [],
       };
       writeUpdateSnapshot(input);
-      this.info(`Updating stack: ${extractStackNameFromId(stackName)}`);
+      this.info(`Updating stack: ${extractStackNameFromId(stackName)}`, resource);
       await this.client.send(new UpdateStackCommand(input));
     } catch (e) {
       if (e && typeof e === 'object' && 'message' in e && typeof e.message === 'string' && e.message.includes(NO_UPDATES_MESSAGE)) {
@@ -86,7 +100,7 @@ export class Cfn {
       }
       throw e;
     }
-    this.info(`Waiting for stack update to complete: ${extractStackNameFromId(stackName)}`);
+    this.info(`Waiting for stack update to complete: ${extractStackNameFromId(stackName)}`, resource);
     await waitUntilStackUpdateComplete({ client: this.client, maxWaitTime: MAX_WAIT_TIME_SECONDS }, { StackName: stackName });
   }
 
@@ -94,11 +108,11 @@ export class Cfn {
    * Creates and executes a CloudFormation stack refactor.
    * Throws on failure.
    */
-  public async refactor(resourceMappings: ResourceMapping[]): Promise<void> {
+  public async refactor(resourceMappings: ResourceMapping[], resource?: DiscoveredResource): Promise<void> {
     const sourceStackId = resourceMappings[0].Source.StackName;
     const targetStackId = resourceMappings[0].Destination.StackName;
 
-    this.info(`Creating stack refactor: ${extractStackNameFromId(sourceStackId)} → ${extractStackNameFromId(targetStackId)}`);
+    this.info(`Creating stack refactor: ${extractStackNameFromId(sourceStackId)} → ${extractStackNameFromId(targetStackId)}`, resource);
 
     const targetStack = await this.findStack(targetStackId);
 
@@ -136,19 +150,19 @@ export class Cfn {
       });
     }
 
-    this.info(`Waiting for stack refactor creation to complete: ${StackRefactorId}`);
+    this.info(`Waiting for stack refactor creation to complete: ${StackRefactorId}`, resource);
     await waitUntilStackRefactorCreateComplete({ client: this.client, maxWaitTime: MAX_WAIT_TIME_SECONDS }, { StackRefactorId });
 
     await this.client.send(new ExecuteStackRefactorCommand({ StackRefactorId }));
 
-    this.info(`Waiting for stack refactor execution to complete: ${StackRefactorId}`);
+    this.info(`Waiting for stack refactor execution to complete: ${StackRefactorId}`, resource);
     await waitUntilStackRefactorExecuteComplete({ client: this.client, maxWaitTime: MAX_WAIT_TIME_SECONDS }, { StackRefactorId });
 
-    this.info(`Waiting for source stack update: ${extractStackNameFromId(sourceStackId)}`);
+    this.info(`Waiting for source stack update: ${extractStackNameFromId(sourceStackId)}`, resource);
     await waitUntilStackUpdateComplete({ client: this.client, maxWaitTime: MAX_WAIT_TIME_SECONDS }, { StackName: sourceStackId });
 
     // Destination may be newly created (EnableStackCreation) or updated
-    this.info(`Waiting for destination stack: ${extractStackNameFromId(targetStackId)}`);
+    this.info(`Waiting for destination stack: ${extractStackNameFromId(targetStackId)}`, resource);
     if (targetStack) {
       await waitUntilStackUpdateComplete({ client: this.client, maxWaitTime: MAX_WAIT_TIME_SECONDS }, { StackName: targetStackId });
     } else {
@@ -242,11 +256,11 @@ export class Cfn {
    * Deletes a stack and waits for deletion to complete.
    * No-ops if the stack does not exist.
    */
-  public async deleteStack(stackName: string): Promise<void> {
+  public async deleteStack(stackName: string, resource?: DiscoveredResource): Promise<void> {
     try {
-      this.info(`Deleting stack: ${extractStackNameFromId(stackName)}`);
+      this.info(`Deleting stack: ${extractStackNameFromId(stackName)}`, resource);
       await this.client.send(new DeleteStackCommand({ StackName: stackName }));
-      this.info(`Waiting for stack deletion: ${extractStackNameFromId(stackName)}`);
+      this.info(`Waiting for stack deletion: ${extractStackNameFromId(stackName)}`, resource);
       await waitUntilStackDeleteComplete({ client: this.client, maxWaitTime: 300 }, { StackName: stackName });
     } catch (error: unknown) {
       if (
@@ -309,8 +323,9 @@ export class Cfn {
     return lines.join('\n');
   }
 
-  private info(message: string) {
-    this.logger.info(`${this.resource ? `[${this.resource.category}/${this.resource.resourceName}] ` : ''}${message}`);
+  private info(message: string, resource?: DiscoveredResource) {
+    const prefix = resource ? `[${resource.category}/${resource.resourceName}] ` : '';
+    this.logger.info(`${prefix}${message}`);
   }
 }
 

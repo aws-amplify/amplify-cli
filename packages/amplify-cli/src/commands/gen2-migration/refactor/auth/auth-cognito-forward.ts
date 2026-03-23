@@ -4,6 +4,7 @@ import { AwsClients } from '../../aws-clients';
 import { StackFacade } from '../stack-facade';
 import { retrieveOAuthValues } from '../oauth-values-retriever';
 import { ForwardCategoryRefactorer } from '../workflow/forward-category-refactorer';
+import { Cfn } from '../cfn';
 import { SpinningLogger } from '../../_spinning-logger';
 import { DiscoveredResource } from '../../generate/_infra/gen1-app';
 import { CFNResource } from '../../cfn-template';
@@ -44,8 +45,9 @@ export class AuthCognitoForwardRefactorer extends ForwardCategoryRefactorer {
     private readonly appId: string,
     private readonly environmentName: string,
     protected readonly resource: DiscoveredResource,
+    cfn: Cfn,
   ) {
-    super(gen1Env, gen2Branch, clients, region, accountId, logger, resource);
+    super(gen1Env, gen2Branch, clients, region, accountId, logger, resource, cfn);
   }
 
   protected resourceTypes(): string[] {

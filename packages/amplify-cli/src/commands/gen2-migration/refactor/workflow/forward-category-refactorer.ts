@@ -114,24 +114,6 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
     return { stackId, resolvedTemplate: resolved, parameters };
   }
 
-  protected override async updateSource(source: ResolvedStack): Promise<AmplifyMigrationOperation[]> {
-    if (this.gen1Env.isUpdated(source)) {
-      return [];
-    }
-    const operations = super.updateSource(source);
-    this.gen1Env.markUpdated(source);
-    return operations;
-  }
-
-  protected override async updateTarget(target: ResolvedStack): Promise<AmplifyMigrationOperation[]> {
-    if (this.gen2Branch.isUpdated(target)) {
-      return [];
-    }
-    const operations = super.updateTarget(target);
-    this.gen2Branch.markUpdated(target);
-    return operations;
-  }
-
   /**
    * Moves Gen2 resources to a holding stack before the main refactor.
    * Templates are fetched fresh at execution time.
@@ -154,7 +136,7 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
         validate: () => undefined,
         describe: async () => [`Delete stale holding stack '${extractStackNameFromId(holdingStackName)}'`],
         execute: async () => {
-          await this.cfn.deleteStack(holdingStackName);
+          await this.cfn.deleteStack(holdingStackName, this.resource);
         },
       });
     }
@@ -170,7 +152,7 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
         return [`${header}\n\n${table}`];
       },
       execute: async () => {
-        await this.cfn.refactor(resourceMappings);
+        await this.cfn.refactor(resourceMappings, this.resource);
       },
     });
 

@@ -64,11 +64,8 @@ export abstract class CategoryRefactorer implements Planner {
     protected readonly accountId: string,
     protected readonly logger: SpinningLogger,
     protected readonly resource: DiscoveredResource,
-  ) {
-    this.cfn = new Cfn(clients.cloudFormation, logger, resource);
-  }
-
-  protected readonly cfn: Cfn;
+    protected readonly cfn: Cfn,
+  ) {}
 
   /**
    * Computes the full operation plan for this category.
@@ -158,10 +155,12 @@ export abstract class CategoryRefactorer implements Planner {
 
   /**
    * Creates operations to update the source stack with the resolved template.
-   * Adds a placeholder resource if removing the mapped resources would leave the stack empty.
-   * Rollback overrides this to return [].
+   * Skips if the stack was already updated by a previous refactorer.
    */
   protected async updateSource(source: ResolvedStack): Promise<AmplifyMigrationOperation[]> {
+    if (this.cfn.isUpdateClaimed(source.stackId)) return [];
+    this.cfn.claimUpdate(source.stackId);
+
     const sourceStackName = extractStackNameFromId(source.stackId);
     const report = await this.createChangeSetReport(source);
     return [
@@ -180,6 +179,7 @@ export abstract class CategoryRefactorer implements Planner {
             stackName: source.stackId,
             parameters: source.parameters,
             templateBody: source.resolvedTemplate,
+            resource: this.resource,
           });
         },
       },
@@ -188,9 +188,12 @@ export abstract class CategoryRefactorer implements Planner {
 
   /**
    * Creates operations to update the target stack with the resolved template.
-   * Rollback overrides this to return [].
+   * Skips if the stack was already updated by a previous refactorer.
    */
   protected async updateTarget(target: ResolvedStack): Promise<AmplifyMigrationOperation[]> {
+    if (this.cfn.isUpdateClaimed(target.stackId)) return [];
+    this.cfn.claimUpdate(target.stackId);
+
     const targetStackName = extractStackNameFromId(target.stackId);
     const report = await this.createChangeSetReport(target);
     return [
@@ -209,6 +212,7 @@ export abstract class CategoryRefactorer implements Planner {
             stackName: target.stackId,
             parameters: target.parameters,
             templateBody: target.resolvedTemplate,
+            resource: this.resource,
           });
         },
       },
@@ -251,7 +255,7 @@ export abstract class CategoryRefactorer implements Planner {
           return [`${header}\n\n${table}`];
         },
         execute: async () => {
-          await this.cfn.refactor(blueprint.mappings);
+          await this.cfn.refactor(blueprint.mappings, this.resource);
         },
       },
     ];
