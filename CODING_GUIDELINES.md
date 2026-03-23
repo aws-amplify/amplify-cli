@@ -129,6 +129,43 @@ funcGenerator.setAuthGenerator(authGenerator);
 
 ---
 
+### Don't mutate module-level constant objects
+
+`const` prevents reassignment but does not prevent mutation of the object's properties. A module-level `const` object that gets passed to a function and mutated there silently becomes shared mutable state — every subsequent caller sees the mutations from previous calls.
+
+This is especially dangerous when the constant looks like a template or default value that multiple callers use as a starting point. The first caller mutates it, and the second caller unknowingly starts with the first caller's leftovers.
+
+```typescript
+// Bad — shared object mutated by callers
+const EMPTY_TEMPLATE = { Resources: {} };
+
+function createStack(resources: Record<string, Resource>) {
+  const template = EMPTY_TEMPLATE; // not a copy!
+  for (const [id, r] of Object.entries(resources)) {
+    template.Resources[id] = r; // mutates the shared constant
+  }
+  return template;
+}
+
+// Second call sees resources from the first call
+createStack({ BucketA: bucket });
+createStack({ BucketB: bucket }); // template now has both BucketA and BucketB
+```
+
+**Instead:** Clone the object before mutating it, or use a factory function that returns a fresh object each time.
+
+```typescript
+// Good — clone before use
+const template = JSON.parse(JSON.stringify(EMPTY_TEMPLATE));
+
+// Good — factory function
+function emptyTemplate() {
+  return { Resources: {} };
+}
+```
+
+---
+
 ### Prefer `const` over `let`
 
 Avoid `let` when the code can be restructured to use `const` instead. Even when `let` is technically correct (the variable is reassigned), the reassignment pattern itself is often the problem — it usually means branching logic is being used to populate variables that are consumed later, making it hard to reason about what values they hold at any given point.
