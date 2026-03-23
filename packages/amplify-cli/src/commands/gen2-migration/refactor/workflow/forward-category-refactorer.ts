@@ -53,8 +53,8 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
       }
       const targetId = matchedTargets[0];
       mappings.push({
-        Source: { LogicalResourceId: sourceId, StackName: sourceStackId },
-        Destination: { LogicalResourceId: targetId, StackName: targetStackId },
+        Source: { StackName: sourceStackId, LogicalResourceId: sourceId },
+        Destination: { StackName: targetStackId, LogicalResourceId: targetId },
       });
     }
     return mappings;
@@ -133,8 +133,8 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
     const holdingStackName = this.getHoldingStackName(gen2StackName);
 
     const resourceMappings: ResourceMapping[] = blueprint.mappings.map((m) => ({
-      Source: { LogicalResourceId: m.Destination.LogicalResourceId, StackName: gen2StackName },
-      Destination: { LogicalResourceId: m.Destination.LogicalResourceId, StackName: holdingStackName },
+      Source: { StackName: gen2StackName, LogicalResourceId: m.Destination.LogicalResourceId },
+      Destination: { StackName: holdingStackName, LogicalResourceId: m.Destination.LogicalResourceId },
     }));
     const holdingStack = await this.cfn.findStack(holdingStackName);
 

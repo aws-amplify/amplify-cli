@@ -1,12 +1,12 @@
 [
   {
     "Source": {
-      "LogicalResourceId": "S3Bucket",
-      "StackName": "amplify-backendonly-main-5e0fa-storages3c31471c3-MQFWTKK6ETYR"
+      "StackName": "amplify-backendonly-main-5e0fa-storages3c31471c3-MQFWTKK6ETYR",
+      "LogicalResourceId": "S3Bucket"
     },
     "Destination": {
-      "LogicalResourceId": "backendonlycb1a13ab81664ecaa7d015068ab2d0165e0fagen2mainBucket50DDE738",
-      "StackName": "amplify-backendonly-gen2main-branch-8e0f260810-storage0EC3F24A-1BTE7UH0TFE2I"
+      "StackName": "amplify-backendonly-gen2main-branch-8e0f260810-storage0EC3F24A-1BTE7UH0TFE2I",
+      "LogicalResourceId": "backendonlycb1a13ab81664ecaa7d015068ab2d0165e0fagen2mainBucket50DDE738"
     }
   }
 ]

@@ -45,8 +45,8 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
         continue;
       }
       mappings.push({
-        Source: { LogicalResourceId: sourceId, StackName: sourceStackId },
-        Destination: { LogicalResourceId: gen1LogicalId, StackName: targetStackId },
+        Source: { StackName: sourceStackId, LogicalResourceId: sourceId },
+        Destination: { StackName: targetStackId, LogicalResourceId: gen1LogicalId },
       });
     }
     return mappings;
@@ -113,8 +113,8 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
     if (!holdingStack) return [];
 
     const resourceMappings: ResourceMapping[] = blueprint.mappings.map((m) => ({
-      Source: { LogicalResourceId: m.Source.LogicalResourceId, StackName: holdingStackName },
-      Destination: { LogicalResourceId: m.Source.LogicalResourceId, StackName: gen2StackName },
+      Source: { StackName: holdingStackName, LogicalResourceId: m.Source.LogicalResourceId },
+      Destination: { StackName: gen2StackName, LogicalResourceId: m.Source.LogicalResourceId },
     }));
 
     return [
