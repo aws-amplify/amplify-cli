@@ -20,6 +20,8 @@
     "vite": "^7.2.2"
   },
   "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.936.0",
+    "@aws-sdk/lib-dynamodb": "^3.936.0",
     "aws-amplify": "^6.15.8"
   }
 }

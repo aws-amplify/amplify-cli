@@ -7,7 +7,9 @@
  * 3. Post CRUD Operations
  * 4. Comment CRUD Operations
  * 5. User Activity Tracking
- * 6. Cleanup (Delete Test Data)
+ * 6. S3 Storage (Avatars)
+ * 7. Bookmarks DDB
+ * 8. Cleanup (Delete Test Data)
  *
  * Credentials are provisioned automatically via Cognito AdminCreateUser + AdminSetUserPassword.
  */
@@ -40,7 +42,9 @@ async function runAllTests(): Promise<void> {
   console.log('  3. Post CRUD Operations');
   console.log('  4. Comment CRUD Operations');
   console.log('  5. User Activity Tracking');
-  console.log('  6. Cleanup (Delete Test Data)');
+  console.log('  6. S3 Storage (Avatars)');
+  console.log('  7. Bookmarks DDB');
+  console.log('  8. Cleanup (Delete Test Data)');
 
   // Provision user via admin APIs, then sign in here so tokens stay in this module's Amplify scope
   const { signinValue, testUser } = await provisionTestUser(amplifyconfig);
@@ -57,8 +61,16 @@ async function runAllTests(): Promise<void> {
 
   const runner = new TestRunner();
   const testFunctions = createTestFunctions();
-  const { runQueryTests, runTopicMutationTests, runPostMutationTests, runCommentMutationTests, runActivityTests, runCleanupTests } =
-    createTestOrchestrator(testFunctions, runner);
+  const {
+    runQueryTests,
+    runTopicMutationTests,
+    runPostMutationTests,
+    runCommentMutationTests,
+    runActivityTests,
+    runStorageTests,
+    runBookmarksTests,
+    runCleanupTests,
+  } = createTestOrchestrator(testFunctions, runner);
 
   // Get current user ID for activity tests
   const currentUser = await getCurrentUser();
@@ -84,7 +96,15 @@ async function runAllTests(): Promise<void> {
   // Part 5: Activity tests
   await runActivityTests(currentUser.userId);
 
-  // Part 6: Cleanup
+  // Part 6: S3 Storage (Avatars)
+  await runStorageTests();
+
+  // Part 7: Bookmarks DDB (requires a post to bookmark)
+  if (postId) {
+    await runBookmarksTests(currentUser.userId, postId);
+  }
+
+  // Part 8: Cleanup
   await runCleanupTests(topicId, postId, commentId);
 
   // Sign out
