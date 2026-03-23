@@ -62,9 +62,7 @@ export class DataGenerator implements Planner {
 
     return [
       {
-        validate: async () => {
-          return;
-        },
+        validate: () => undefined,
         describe: async () => ['Generate amplify/data/resource.ts'],
         execute: async () => {
           const nodes = this.defineData.render({

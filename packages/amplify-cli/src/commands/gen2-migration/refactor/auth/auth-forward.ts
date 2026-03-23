@@ -6,6 +6,7 @@ import { StackFacade } from '../stack-facade';
 import { retrieveOAuthValues } from '../oauth-values-retriever';
 import { ForwardCategoryRefactorer } from '../workflow/forward-category-refactorer';
 import { MoveMapping } from '../workflow/category-refactorer';
+import { SpinningLogger } from '../../_spinning-logger';
 import { GEN2_NATIVE_APP_CLIENT, discoverGen1AuthStacks } from './auth-utils';
 
 const GEN1_WEB_APP_CLIENT = 'UserPoolClientWeb';
@@ -34,10 +35,11 @@ export class AuthCognitoForwardRefactorer extends ForwardCategoryRefactorer {
     clients: AwsClients,
     region: string,
     accountId: string,
+    logger: SpinningLogger,
     private readonly appId: string,
     private readonly environmentName: string,
   ) {
-    super(gen1Env, gen2Branch, clients, region, accountId);
+    super(gen1Env, gen2Branch, clients, region, accountId, logger);
   }
 
   protected resourceTypes(): string[] {

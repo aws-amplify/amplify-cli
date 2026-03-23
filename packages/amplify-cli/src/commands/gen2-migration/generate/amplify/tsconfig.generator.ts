@@ -16,9 +16,7 @@ export class TsConfigGenerator implements Planner {
     const filePath = path.join(this.outputDir, 'amplify', 'tsconfig.json');
     return [
       {
-        validate: async () => {
-          return;
-        },
+        validate: () => undefined,
         describe: async () => ['Generate amplify/tsconfig.json'],
         execute: async () => {
           const tsconfig = {

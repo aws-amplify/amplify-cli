@@ -1,6 +1,7 @@
 import { ForwardCategoryRefactorer } from '../workflow/forward-category-refactorer';
 import { StackFacade } from '../stack-facade';
 import { AwsClients } from '../../aws-clients';
+import { SpinningLogger } from '../../_spinning-logger';
 
 /**
  * Forward refactorer for S3 storage resources.
@@ -9,8 +10,16 @@ import { AwsClients } from '../../aws-clients';
 export class StorageS3ForwardRefactorer extends ForwardCategoryRefactorer {
   private readonly resourceName: string;
 
-  constructor(gen1Env: StackFacade, gen2Branch: StackFacade, clients: AwsClients, region: string, accountId: string, resourceName: string) {
-    super(gen1Env, gen2Branch, clients, region, accountId);
+  constructor(
+    gen1Env: StackFacade,
+    gen2Branch: StackFacade,
+    clients: AwsClients,
+    region: string,
+    accountId: string,
+    logger: SpinningLogger,
+    resourceName: string,
+  ) {
+    super(gen1Env, gen2Branch, clients, region, accountId, logger);
     this.resourceName = resourceName;
   }
 

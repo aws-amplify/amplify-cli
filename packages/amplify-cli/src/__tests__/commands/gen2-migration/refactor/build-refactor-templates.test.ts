@@ -6,13 +6,14 @@ import {
   MoveMapping,
   MIGRATION_PLACEHOLDER_LOGICAL_ID,
 } from '../../../../commands/gen2-migration/refactor/workflow/category-refactorer';
+import { noOpLogger } from '../_framework/logger';
 
 // Minimal concrete subclass to access protected methods
 class TestRefactorer extends (CategoryRefactorer as any) {
   private mappingsToReturn: MoveMapping[] = [];
 
   constructor() {
-    super(null, null, null, 'us-east-1', '123');
+    super(null, null, null, 'us-east-1', '123', noOpLogger());
   }
 
   setMappings(mappings: MoveMapping[]) {

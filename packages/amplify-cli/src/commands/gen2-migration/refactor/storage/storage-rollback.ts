@@ -1,6 +1,7 @@
 import { RollbackCategoryRefactorer } from '../workflow/rollback-category-refactorer';
 import { StackFacade } from '../stack-facade';
 import { AwsClients } from '../../aws-clients';
+import { SpinningLogger } from '../../_spinning-logger';
 import { findS3NestedStack } from './storage-forward';
 
 /**
@@ -12,8 +13,16 @@ export class StorageS3RollbackRefactorer extends RollbackCategoryRefactorer {
 
   private readonly resourceName: string;
 
-  constructor(gen1Env: StackFacade, gen2Branch: StackFacade, clients: AwsClients, region: string, accountId: string, resourceName: string) {
-    super(gen1Env, gen2Branch, clients, region, accountId);
+  constructor(
+    gen1Env: StackFacade,
+    gen2Branch: StackFacade,
+    clients: AwsClients,
+    region: string,
+    accountId: string,
+    logger: SpinningLogger,
+    resourceName: string,
+  ) {
+    super(gen1Env, gen2Branch, clients, region, accountId, logger);
     this.resourceName = resourceName;
   }
 

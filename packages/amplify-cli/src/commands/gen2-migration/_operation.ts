@@ -1,25 +1,50 @@
 /**
+ * Result of a validation check.
+ */
+export interface ValidationResult {
+  /**
+   * Whether the validation passed.
+   */
+  readonly valid: boolean;
+
+  /**
+   * Optional detailed output shown below the status line.
+   */
+  readonly report?: string;
+}
+
+/**
+ * Declarative validation: description for the spinner + a run callback.
+ * The Plan drives the lifecycle (push description → run → pop).
+ */
+export interface Validation {
+  /**
+   * Text shown on the spinner while this validation runs.
+   */
+  readonly description: string;
+
+  /**
+   * Executes the validation.
+   */
+  run(): Promise<ValidationResult>;
+}
+
+/**
  * Interface for atomic operations that can be executed as part of a migration step.
  */
 export interface AmplifyMigrationOperation {
   /**
    * Returns human-readable strings describing what the operation will do.
-   * Used to display an operations summary to users before execution.
-   * Each string should be a concise, actionable description (e.g., "Enable deletion protection for table 'MyTable'").
    */
   describe(): Promise<string[]>;
 
   /**
-   * Validates that this operation can proceed without causing harm.
-   * Called on ALL operations before any execute() runs.
-   * Throws AmplifyError if validation fails.
+   * Returns a validation to run before execution, or undefined if none.
    */
-  validate(): Promise<void>;
+  validate(): Validation | undefined;
 
   /**
-   * Executes the operation.
-   * Should be idempotent where possible and throw descriptive errors on failure.
-   * Called sequentially for each operation after user confirmation.
+   * Executes the operation. Should be idempotent where possible.
    */
   execute(): Promise<void>;
 }

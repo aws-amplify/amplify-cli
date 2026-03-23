@@ -2,7 +2,7 @@ import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { Assessment } from './_assessment';
 import { AmplifyMigrationGenerateStep } from './generate';
 import { AmplifyMigrationRefactorStep } from './refactor';
-import { Logger } from '../gen2-migration';
+import { SpinningLogger } from '../gen2-migration/_spinning-logger';
 
 /**
  * Evaluates migration readiness by calling assess() on the generate
@@ -10,7 +10,7 @@ import { Logger } from '../gen2-migration';
  */
 export class AmplifyMigrationAssessor {
   constructor(
-    private readonly logger: Logger,
+    private readonly logger: SpinningLogger,
     private readonly currentEnvName: string,
     private readonly appName: string,
     private readonly appId: string,

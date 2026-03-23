@@ -88,9 +88,7 @@ export async function executeLegacyRefactor(params: {
 
   return [
     {
-      validate: async () => {
-        return;
-      },
+      validate: () => undefined,
       describe: async () => ['Move stateful resources from your Gen1 app to be managed by your Gen2 app'],
       execute: async () => {
         const templateGenerator = await initializeLegacyTemplateGenerator(TemplateGenerator, params);

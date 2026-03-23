@@ -16,9 +16,7 @@ export class BackendPackageJsonGenerator implements Planner {
     const filePath = path.join(this.outputDir, 'amplify', 'package.json');
     return [
       {
-        validate: async () => {
-          return;
-        },
+        validate: () => undefined,
         describe: async () => ['Generate amplify/package.json'],
         execute: async () => {
           await fs.mkdir(path.dirname(filePath), { recursive: true });

@@ -1,7 +1,7 @@
 import { AmplifyMigrationAssessor } from '../../../commands/gen2-migration/assess';
 import { Gen1App, DiscoveredResource } from '../../../commands/gen2-migration/generate/_infra/gen1-app';
 import { Assessment } from '../../../commands/gen2-migration/_assessment';
-import { Logger } from '../../../commands/gen2-migration';
+import { SpinningLogger } from '../../../commands/gen2-migration/_spinning-logger';
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
 
 jest.mock('../../../commands/gen2-migration/generate/_infra/gen1-app', () => {
@@ -27,7 +27,7 @@ function mockDiscover(resources: DiscoveredResource[]): void {
 }
 
 function createAssessor(): AmplifyMigrationAssessor {
-  const logger = new Logger('assess', 'test-app', 'dev');
+  const logger = new SpinningLogger('assess', { debug: true });
   return new AmplifyMigrationAssessor(logger, 'dev', 'test-app', 'app-123', 'root-stack', 'us-east-1', {} as $TSContext);
 }
 

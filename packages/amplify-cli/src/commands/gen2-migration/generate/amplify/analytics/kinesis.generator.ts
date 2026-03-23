@@ -54,9 +54,7 @@ export class AnalyticsKinesisGenerator implements Planner {
 
     return [
       {
-        validate: async () => {
-          return;
-        },
+        validate: () => undefined,
         describe: async () => [`Generate amplify/analytics/${this.resourceName}/resource.ts`],
         execute: async () => {
           const fileWriter = async (content: string, filePath: string) => {

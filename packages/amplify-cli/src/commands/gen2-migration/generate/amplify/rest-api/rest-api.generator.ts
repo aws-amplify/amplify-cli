@@ -39,9 +39,7 @@ export class RestApiGenerator implements Planner {
 
     return [
       {
-        validate: async () => {
-          return;
-        },
+        validate: () => undefined,
         describe: async () => [`Generate REST API ${restApi.apiName} in amplify/backend.ts`],
         execute: async () => {
           this.addRestApiImports();
