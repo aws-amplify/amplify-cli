@@ -2,13 +2,37 @@ import { AmplifyMigrationStep } from './_step';
 import { AmplifyMigrationOperation, ValidationResult } from './_operation';
 import { Plan } from './_plan';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
-import { CloudFormationClient, SetStackPolicyCommand } from '@aws-sdk/client-cloudformation';
+import { CloudFormationClient, SetStackPolicyCommand, GetStackPolicyCommand } from '@aws-sdk/client-cloudformation';
 import { AmplifyClient, UpdateAppCommand, GetAppCommand } from '@aws-sdk/client-amplify';
 import { DynamoDBClient, UpdateTableCommand, paginateListTables } from '@aws-sdk/client-dynamodb';
 import { AppSyncClient, paginateListGraphqlApis } from '@aws-sdk/client-appsync';
 import { AmplifyGen2MigrationValidations } from './_validations';
 
 const GEN2_MIGRATION_ENVIRONMENT_NAME = 'GEN2_MIGRATION_ENVIRONMENT_NAME';
+
+const LOCK_STATEMENT = {
+  Effect: 'Deny',
+  Action: 'Update:*',
+  Principal: '*',
+  Resource: '*',
+};
+
+const isLockStatement = (statement: Record<string, string>): boolean =>
+  statement.Effect === LOCK_STATEMENT.Effect &&
+  statement.Action === LOCK_STATEMENT.Action &&
+  statement.Principal === LOCK_STATEMENT.Principal &&
+  statement.Resource === LOCK_STATEMENT.Resource;
+
+const ALLOW_ALL_POLICY = {
+  Statement: [
+    {
+      Effect: 'Allow',
+      Action: 'Update:*',
+      Principal: '*',
+      Resource: '*',
+    },
+  ],
+};
 
 export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
   private _dynamoTableNames: string[];
@@ -61,28 +85,27 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
       },
     });
 
-    const stackPolicy = JSON.stringify({
-      Statement: [
-        {
-          Effect: 'Deny',
-          Action: 'Update:*',
-          Principal: '*',
-          Resource: '*',
-        },
-      ],
-    });
-
     operations.push({
       validate: () => undefined,
-      describe: async () => [`Set a policy on stack '${this.rootStackName}': ${stackPolicy}`],
+      describe: async () => {
+        return [`Add lock statement to stack policy on '${this.rootStackName}': ${JSON.stringify(LOCK_STATEMENT)}`];
+      },
       execute: async () => {
+        const existingPolicy = await this.getExistingStackPolicy();
+        const alreadyLocked = existingPolicy.Statement.some(isLockStatement);
+        if (alreadyLocked) {
+          this.logger.info(`Lock statement already exists in stack policy on '${this.rootStackName}', skipping`);
+          return;
+        }
+        existingPolicy.Statement.push(LOCK_STATEMENT);
+        const mergedPolicy = JSON.stringify(existingPolicy);
         await this.cfnClient().send(
           new SetStackPolicyCommand({
             StackName: this.rootStackName,
-            StackPolicyBody: stackPolicy,
+            StackPolicyBody: mergedPolicy,
           }),
         );
-        this.logger.info(`Successfully set policy on stack '${this.rootStackName}': ${stackPolicy}`);
+        this.logger.info(`Successfully added lock statement to stack policy on '${this.rootStackName}'`);
       },
     });
 
@@ -121,28 +144,29 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
       },
     });
 
-    const stackPolicy = JSON.stringify({
-      Statement: [
-        {
-          Effect: 'Allow',
-          Action: 'Update:*',
-          Principal: '*',
-          Resource: '*',
-        },
-      ],
-    });
-
     operations.push({
       validate: () => undefined,
-      describe: async () => [`Set a policy on stack '${this.rootStackName}': ${stackPolicy}`],
+      describe: async () => {
+        return [`Remove lock statement from stack policy on '${this.rootStackName}': ${JSON.stringify(LOCK_STATEMENT)}`];
+      },
       execute: async () => {
+        const existingPolicy = await this.getExistingStackPolicy();
+        const index = existingPolicy.Statement.findIndex(isLockStatement);
+        if (index === -1) {
+          this.logger.info(`Lock statement not found in stack policy on '${this.rootStackName}'`);
+          return;
+        }
+        existingPolicy.Statement.splice(index, 1);
+        const restoredPolicy = existingPolicy.Statement.length > 0 ? JSON.stringify(existingPolicy) : JSON.stringify(ALLOW_ALL_POLICY);
         await this.cfnClient().send(
           new SetStackPolicyCommand({
             StackName: this.rootStackName,
-            StackPolicyBody: stackPolicy,
+            StackPolicyBody: restoredPolicy,
           }),
         );
-        this.logger.info(`Successfully set policy on stack '${this.rootStackName}': ${stackPolicy}`);
+        this.logger.info(
+          `Successfully removed lock statement from stack policy on '${this.rootStackName}': ${JSON.stringify(LOCK_STATEMENT)}`,
+        );
       },
     });
 
@@ -233,5 +257,17 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
       this._cfnClient = new CloudFormationClient({});
     }
     return this._cfnClient;
+  }
+
+  private async getExistingStackPolicy(): Promise<{ Statement: Record<string, string>[] }> {
+    const response = await this.cfnClient().send(
+      new GetStackPolicyCommand({
+        StackName: this.rootStackName,
+      }),
+    );
+    if (response.StackPolicyBody) {
+      return JSON.parse(response.StackPolicyBody) as { Statement: Record<string, string>[] };
+    }
+    return { Statement: [] };
   }
 }
