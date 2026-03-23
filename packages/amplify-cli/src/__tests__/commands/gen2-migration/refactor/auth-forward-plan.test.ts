@@ -186,6 +186,7 @@ describe('AuthCognitoForwardRefactorer.plan() — operation sequence', () => {
     cfnMock.on(GetTemplateCommand, { StackName: 'gen2-auth-stack' }).resolves({ TemplateBody: JSON.stringify(gen2AuthTemplate) });
     cfnMock.on(CreateChangeSetCommand).resolves({});
     cfnMock.on(DescribeChangeSetCommand).resolves({ Status: 'CREATE_COMPLETE', Changes: [] });
+    cfnMock.on(DeleteChangeSetCommand).resolves({});
 
     const cognitoMock = mockClient(CognitoIdentityProviderClient);
     cognitoMock.on(DescribeIdentityProviderCommand).resolves({

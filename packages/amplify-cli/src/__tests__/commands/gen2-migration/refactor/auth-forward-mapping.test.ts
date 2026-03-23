@@ -35,13 +35,16 @@ describe('AuthCognitoForwardRefactorer.buildResourceMappings - UserPoolClient di
           null as unknown as Cfn,
         );
       }
-      public testBuildResourceMappings(source: Map<string, CFNResource>, target: Map<string, CFNResource>): ResourceMapping[] {
-        return this.buildResourceMappings(source, target, 'gen1-auth', 'gen2-auth') as unknown as ResourceMapping[];
+      public async testBuildResourceMappings(
+        source: Map<string, CFNResource>,
+        target: Map<string, CFNResource>,
+      ): Promise<ResourceMapping[]> {
+        return this.buildResourceMappings(source, target, 'gen1-auth', 'gen2-auth');
       }
     })();
   }
 
-  it('maps main auth resources with correct Web/Native disambiguation', () => {
+  it('maps main auth resources with correct Web/Native disambiguation', async () => {
     const refactorer = createRefactorer();
 
     const targetResources = new Map<string, CFNResource>([
@@ -60,7 +63,7 @@ describe('AuthCognitoForwardRefactorer.buildResourceMappings - UserPoolClient di
       ['IdentityPoolRoleMap', { Type: 'AWS::Cognito::IdentityPoolRoleAttachment', Properties: {} }],
     ]);
 
-    const mappings = refactorer.testBuildResourceMappings(mainAuthSource, targetResources);
+    const mappings = await refactorer.testBuildResourceMappings(mainAuthSource, targetResources);
     const map = toIdMap(mappings);
 
     // All source resources are mapped

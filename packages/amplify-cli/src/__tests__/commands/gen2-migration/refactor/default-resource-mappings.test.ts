@@ -15,8 +15,8 @@ class TestForwardRefactorer extends ForwardCategoryRefactorer {
   protected resourceTypes() {
     return ['AWS::S3::Bucket'];
   }
-  public testBuildResourceMappings(source: Map<string, CFNResource>, target: Map<string, CFNResource>): ResourceMapping[] {
-    return this.buildResourceMappings(source, target, 'gen1-stack', 'gen2-stack') as unknown as ResourceMapping[];
+  public async testBuildResourceMappings(source: Map<string, CFNResource>, target: Map<string, CFNResource>): Promise<ResourceMapping[]> {
+    return this.buildResourceMappings(source, target, 'gen1-stack', 'gen2-stack');
   }
 }
 
@@ -49,8 +49,8 @@ class TestRollbackRefactorer extends RollbackCategoryRefactorer {
   protected resourceTypes() {
     return [];
   }
-  public testBuildResourceMappings(source: Map<string, CFNResource>, target: Map<string, CFNResource>): ResourceMapping[] {
-    return this.buildResourceMappings(source, target, 'gen2-stack', 'gen1-stack') as unknown as ResourceMapping[];
+  public async testBuildResourceMappings(source: Map<string, CFNResource>, target: Map<string, CFNResource>): Promise<ResourceMapping[]> {
+    return this.buildResourceMappings(source, target, 'gen2-stack', 'gen1-stack');
   }
 }
 
@@ -72,8 +72,8 @@ describe('ForwardCategoryRefactorer.buildResourceMappings (default type-matching
     null as unknown as Cfn,
   );
 
-  it('maps single resource per type', () => {
-    const mappings = refactorer.testBuildResourceMappings(
+  it('maps single resource per type', async () => {
+    const mappings = await refactorer.testBuildResourceMappings(
       new Map([['S3Bucket', r('AWS::S3::Bucket')]]),
       new Map([['amplifyBucket', r('AWS::S3::Bucket')]]),
     );
@@ -82,8 +82,8 @@ describe('ForwardCategoryRefactorer.buildResourceMappings (default type-matching
     expect(map.get('S3Bucket')).toBe('amplifyBucket');
   });
 
-  it('maps multiple types independently', () => {
-    const mappings = refactorer.testBuildResourceMappings(
+  it('maps multiple types independently', async () => {
+    const mappings = await refactorer.testBuildResourceMappings(
       new Map([
         ['Bucket', r('AWS::S3::Bucket')],
         ['Table', r('AWS::DynamoDB::Table')],
@@ -99,22 +99,22 @@ describe('ForwardCategoryRefactorer.buildResourceMappings (default type-matching
     expect(map.get('Table')).toBe('GenTable');
   });
 
-  it('throws when no types match', () => {
-    expect(() =>
+  it('throws when no types match', async () => {
+    await expect(
       refactorer.testBuildResourceMappings(new Map([['Stream', r('AWS::Kinesis::Stream')]]), new Map([['Bucket', r('AWS::S3::Bucket')]])),
-    ).toThrow("Source resource 'Stream' (AWS::Kinesis::Stream) has no corresponding target resource");
+    ).rejects.toThrow("Source resource 'Stream' (AWS::Kinesis::Stream) has no corresponding target resource");
   });
 });
 
 describe('RollbackCategoryRefactorer.buildResourceMappings (gen1LogicalIds-based)', () => {
-  it('maps source resources to Gen1 logical IDs', () => {
+  it('maps source resources to Gen1 logical IDs', async () => {
     const refactorer = new TestRollbackRefactorer(
       new Map([
         ['amplifyBucket', 'S3Bucket'],
         ['amplifyTable', 'DynamoDBTable'],
       ]),
     );
-    const mappings = refactorer.testBuildResourceMappings(
+    const mappings = await refactorer.testBuildResourceMappings(
       new Map([
         ['amplifyBucket', r('AWS::S3::Bucket')],
         ['amplifyTable', r('AWS::DynamoDB::Table')],
@@ -127,9 +127,9 @@ describe('RollbackCategoryRefactorer.buildResourceMappings (gen1LogicalIds-based
     expect(map.get('amplifyTable')).toBe('DynamoDBTable');
   });
 
-  it('throws for resource with no known Gen1 logical ID', () => {
+  it('throws for resource with no known Gen1 logical ID', async () => {
     const refactorer = new TestRollbackRefactorer(new Map());
-    expect(() => refactorer.testBuildResourceMappings(new Map([['amplifyTopic', r('AWS::SNS::Topic')]]), new Map())).toThrow(
+    await expect(refactorer.testBuildResourceMappings(new Map([['amplifyTopic', r('AWS::SNS::Topic')]]), new Map())).rejects.toThrow(
       'Unable to determine target id of resource amplifyTopic',
     );
   });
