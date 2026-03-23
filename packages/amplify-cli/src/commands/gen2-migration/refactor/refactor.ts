@@ -177,6 +177,9 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
     );
   }
 
+  /**
+   * Creates shared AWS clients, stack facades, and the Cfn instance.
+   */
   private async createInfrastructure(toStack: string): Promise<{
     clients: AwsClients;
     accountId: string;

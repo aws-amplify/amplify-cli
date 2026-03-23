@@ -2,6 +2,9 @@ import { DiscoveredResource } from './generate/_infra/gen1-app';
 
 export const NO_OP_MESSAGE = 'No-op\n';
 
+/**
+ * Creates a no-op operation for a resource with nothing to migrate.
+ */
 export function buildNoopOperation(resource: DiscoveredResource): AmplifyMigrationOperation {
   return {
     resource: resource,

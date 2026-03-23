@@ -47,13 +47,13 @@ export interface RefactorBlueprint {
 /**
  * Abstract base class implementing the shared refactor workflow.
  *
- * Concrete plan() enforces a rigid phase sequence. Category-specific methods
- * (fetchSourceStackId, fetchDestStackId, buildResourceMappings, resourceTypes)
- * are abstract. Direction-specific methods (resolveSource, resolveTarget,
- * beforeMovePlan, afterMovePlan) are abstract.
+ * plan() enforces a rigid phase sequence: resolve → build mappings →
+ * update stacks → beforeMove → move → afterMove.
  *
- * Shared workflow methods (updateSource, updateTarget, buildBlueprint, buildMoveOperations)
- * are concrete on this base class.
+ * Category-specific methods (fetchSourceStackId, fetchDestStackId,
+ * buildResourceMappings, resourceTypes) are abstract.
+ * Direction-specific methods (resolveSource, resolveTarget,
+ * beforeMove, afterMove) are abstract.
  */
 export abstract class CategoryRefactorer implements Planner {
   constructor(
@@ -123,7 +123,6 @@ export abstract class CategoryRefactorer implements Planner {
 
   /**
    * Builds the resource mappings from source to destination.
-   * Called internally by buildBlueprint() with already-filtered resources.
    */
   protected abstract buildResourceMappings(
     sourceResources: Map<string, CFNResource>,

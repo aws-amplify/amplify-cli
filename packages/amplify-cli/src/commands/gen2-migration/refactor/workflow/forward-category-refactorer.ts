@@ -18,6 +18,10 @@ import { CategoryRefactorer, RefactorBlueprint, ResolvedStack } from './category
  * afterMovePlan: empty (holding stack survives for rollback)
  */
 export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
+  /**
+   * Matches source resources to target resources by type.
+   * Subclasses can override match() for custom disambiguation.
+   */
   protected async buildResourceMappings(
     sourceResources: Map<string, CFNResource>,
     targetResources: Map<string, CFNResource>,
@@ -56,6 +60,10 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
     return mappings;
   }
 
+  /**
+   * Returns true if a source resource corresponds to a target resource.
+   * Default: matches by type. Override for disambiguation (e.g., UserPoolClient).
+   */
   protected match(_sourceId: string, sourceResource: CFNResource, _targetId: string, targetResource: CFNResource): boolean {
     // default matching - assumes one resource per type in source/target
     return sourceResource.Type === targetResource.Type;

@@ -49,6 +49,10 @@ const EMPTY_HOLDING_TEMPLATE: CFNTemplate = {
  * Wraps update, refactor, and change set APIs behind a single client instance.
  */
 export class Cfn {
+  /**
+   * Stack IDs claimed for update at plan time. Prevents duplicate update operations
+   * when multiple refactorers share a stack.
+   */
   private readonly updateStackClaims = new Set<string>();
 
   constructor(private readonly client: CloudFormationClient, private readonly logger: SpinningLogger) {

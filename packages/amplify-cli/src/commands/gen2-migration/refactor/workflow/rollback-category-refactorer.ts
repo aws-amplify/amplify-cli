@@ -19,12 +19,14 @@ import {
  *
  * resolveSource: Gen2 resolution — params → outputs → deps
  * resolveTarget: Gen1 — reads template as-is, no resolution needed
- * beforeMovePlan: empty
- * afterMovePlan: restores holding stack resources into Gen2, deletes holding stack
- *
- * Does NOT pre-update stacks (overrides updateSource/updateTarget to return []).
+ * beforeMove: empty
+ * afterMove: restores holding stack resources into Gen2
  */
 export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
+  /**
+   * Maps Gen2 source resources to Gen1 target logical IDs via targetLogicalId().
+   * Skips resources that already exist in the target stack.
+   */
   protected async buildResourceMappings(
     sourceResources: Map<string, CFNResource>,
     targetResources: Map<string, CFNResource>,
@@ -50,6 +52,9 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
     return mappings;
   }
 
+  /**
+   * Returns the Gen1 logical ID for a Gen2 resource. Subclasses implement per category.
+   */
   protected abstract targetLogicalId(sourceId: string, sourceResource: CFNResource): string | undefined;
 
   /**
