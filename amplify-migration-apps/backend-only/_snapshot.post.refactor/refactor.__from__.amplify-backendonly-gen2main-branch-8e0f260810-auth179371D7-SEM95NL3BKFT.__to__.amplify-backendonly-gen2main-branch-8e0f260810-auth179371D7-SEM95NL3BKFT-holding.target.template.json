@@ -1,5 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Temporary holding stack for Gen2 migration",
   "Resources": {
     "amplifyAuthUserPool4BA7F805": {
       "Type": "AWS::Cognito::UserPool",
@@ -96,9 +97,7 @@
         "SupportedIdentityProviders": [
           "COGNITO"
         ],
-        "UserPoolId": {
-          "Ref": "amplifyAuthUserPool4BA7F805"
-        }
+        "UserPoolId": "us-east-1_W9u2NBSRe"
       },
       "Metadata": {
         "aws:cdk:path": "amplify-backendonly-gen2main-branch-8e0f260810/auth/amplifyAuth/UserPoolAppClient/Resource"
@@ -119,9 +118,7 @@
         "TokenValidityUnits": {
           "RefreshToken": "minutes"
         },
-        "UserPoolId": {
-          "Ref": "amplifyAuthUserPool4BA7F805"
-        }
+        "UserPoolId": "us-east-1_W9u2NBSRe"
       },
       "Metadata": {
         "aws:cdk:path": "amplify-backendonly-gen2main-branch-8e0f260810/auth/amplifyAuth/UserPool/NativeAppClient/Resource"
@@ -133,9 +130,7 @@
         "AllowUnauthenticatedIdentities": true,
         "CognitoIdentityProviders": [
           {
-            "ClientId": {
-              "Ref": "amplifyAuthUserPoolAppClient2626C6F8"
-            },
+            "ClientId": "55m5602upkjiv7819hcf2ht5v3",
             "ProviderName": {
               "Fn::Join": [
                 "",
@@ -145,9 +140,7 @@
                     "Ref": "AWS::Region"
                   },
                   ".amazonaws.com/",
-                  {
-                    "Ref": "amplifyAuthUserPool4BA7F805"
-                  }
+                  "us-east-1_W9u2NBSRe"
                 ]
               ]
             }
@@ -184,9 +177,7 @@
     "amplifyAuthIdentityPoolRoleAttachment045F17C8": {
       "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
       "Properties": {
-        "IdentityPoolId": {
-          "Ref": "amplifyAuthIdentityPool3FDE84CC"
-        },
+        "IdentityPoolId": "us-east-1:33a8fea2-6293-4bec-8726-31e6b5817de5",
         "RoleMappings": {
           "UserPoolWebClientRoleMapping": {
             "AmbiguousRoleResolution": "AuthenticatedRole",
@@ -199,13 +190,9 @@
                     "Ref": "AWS::Region"
                   },
                   ".amazonaws.com/",
-                  {
-                    "Ref": "amplifyAuthUserPool4BA7F805"
-                  },
+                  "us-east-1_W9u2NBSRe",
                   ":",
-                  {
-                    "Ref": "amplifyAuthUserPoolAppClient2626C6F8"
-                  }
+                  "55m5602upkjiv7819hcf2ht5v3"
                 ]
               ]
             },
@@ -213,26 +200,156 @@
           }
         },
         "Roles": {
-          "unauthenticated": {
-            "Fn::GetAtt": [
-              "amplifyAuthunauthenticatedUserRole2B524D9E",
-              "Arn"
-            ]
-          },
-          "authenticated": {
-            "Fn::GetAtt": [
-              "amplifyAuthauthenticatedUserRoleD8DA3689",
-              "Arn"
-            ]
-          }
+          "unauthenticated": "arn:aws:iam::123456789012:role/amplify-backendonly-ge-amplifyAuthunauthenticate-mFzNB8V2DE4J",
+          "authenticated": "arn:aws:iam::123456789012:role/amplify-backendonly-ge-amplifyAuthauthenticatedU-NrnOsacJVeCr"
         }
       },
-      "DependsOn": [
-        "amplifyAuthIdentityPool3FDE84CC",
-        "amplifyAuthUserPoolAppClient2626C6F8"
-      ],
       "Metadata": {
         "aws:cdk:path": "amplify-backendonly-gen2main-branch-8e0f260810/auth/amplifyAuth/IdentityPoolRoleAttachment"
+      }
+    },
+    "productcatalogf95af07481f845caa6594c26ac9c8ed331323gen2mainBucket67A98B83": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "BucketKeyEnabled": false,
+              "ServerSideEncryptionByDefault": {
+                "SSEAlgorithm": "AES256"
+              }
+            }
+          ]
+        },
+        "CorsConfiguration": {
+          "CorsRules": [
+            {
+              "AllowedHeaders": [
+                "*"
+              ],
+              "AllowedMethods": [
+                "GET",
+                "HEAD",
+                "PUT",
+                "POST",
+                "DELETE"
+              ],
+              "AllowedOrigins": [
+                "*"
+              ],
+              "ExposedHeaders": [
+                "x-amz-server-side-encryption",
+                "x-amz-request-id",
+                "x-amz-id-2",
+                "ETag"
+              ],
+              "MaxAge": 3000
+            }
+          ]
+        },
+        "Tags": [
+          {
+            "Key": "amplify:app-id",
+            "Value": "productcatalog"
+          },
+          {
+            "Key": "amplify:branch-name",
+            "Value": "gen2-main"
+          },
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "branch"
+          },
+          {
+            "Key": "amplify:friendly-name",
+            "Value": "productcatalogf95af07481f845caa6594c26ac9c8ed331323-gen2-main"
+          },
+          {
+            "Key": "aws-cdk:auto-delete-objects",
+            "Value": "true"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-productcatalog-gen2main-branch-4b79ec0f9a/storage/productcatalogf95af07481f845caa6594c26ac9c8ed331323-gen2-main/Bucket/Resource"
+      }
+    },
+    "projectboards34b9a7f3c2ca489293910116c994688b02940gen2mainBucketC790823F": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "BucketKeyEnabled": false,
+              "ServerSideEncryptionByDefault": {
+                "SSEAlgorithm": "AES256"
+              }
+            }
+          ]
+        },
+        "CorsConfiguration": {
+          "CorsRules": [
+            {
+              "AllowedHeaders": [
+                "*"
+              ],
+              "AllowedMethods": [
+                "GET",
+                "HEAD",
+                "PUT",
+                "POST",
+                "DELETE"
+              ],
+              "AllowedOrigins": [
+                "*"
+              ],
+              "ExposedHeaders": [
+                "x-amz-server-side-encryption",
+                "x-amz-request-id",
+                "x-amz-id-2",
+                "ETag"
+              ],
+              "MaxAge": 3000
+            }
+          ]
+        },
+        "Tags": [
+          {
+            "Key": "amplify:app-id",
+            "Value": "projectboards"
+          },
+          {
+            "Key": "amplify:branch-name",
+            "Value": "gen2-main"
+          },
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "branch"
+          },
+          {
+            "Key": "amplify:friendly-name",
+            "Value": "projectboards34b9a7f3c2ca489293910116c994688b02940-gen2-main"
+          },
+          {
+            "Key": "aws-cdk:auto-delete-objects",
+            "Value": "true"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-projectboards-gen2main-branch-886dbd2dec/storage/projectboards34b9a7f3c2ca489293910116c994688b02940-gen2-main/Bucket/Resource"
       }
     }
   },

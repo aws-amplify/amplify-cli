@@ -1,90 +1,10 @@
 {
   "Description": "{\"createdOn\":\"Linux\",\"createdBy\":\"AmplifyPipelineDeploy\",\"createdWith\":\"1.4.3\",\"stackType\":\"storage-S3\",\"metadata\":{}}",
   "Resources": {
-    "backendonlycb1a13ab81664ecaa7d015068ab2d0165e0fagen2mainBucket50DDE738": {
-      "Type": "AWS::S3::Bucket",
-      "Properties": {
-        "BucketName": {
-          "Fn::If": [
-            "ShouldNotCreateEnvResources",
-            {
-              "Ref": "bucketName"
-            },
-            {
-              "Fn::Join": [
-                "",
-                [
-                  {
-                    "Ref": "bucketName"
-                  },
-                  {
-                    "Fn::Select": [
-                      3,
-                      {
-                        "Fn::Split": [
-                          "-",
-                          {
-                            "Ref": "AWS::StackName"
-                          }
-                        ]
-                      }
-                    ]
-                  },
-                  "-",
-                  {
-                    "Ref": "env"
-                  }
-                ]
-              ]
-            }
-          ]
-        },
-        "CorsConfiguration": {
-          "CorsRules": [
-            {
-              "AllowedHeaders": [
-                "*"
-              ],
-              "AllowedMethods": [
-                "GET",
-                "HEAD",
-                "PUT",
-                "POST",
-                "DELETE"
-              ],
-              "AllowedOrigins": [
-                "*"
-              ],
-              "ExposedHeaders": [
-                "x-amz-server-side-encryption",
-                "x-amz-request-id",
-                "x-amz-id-2",
-                "ETag"
-              ],
-              "Id": "S3CORSRuleId1",
-              "MaxAge": 3000
-            }
-          ]
-        },
-        "BucketEncryption": {
-          "ServerSideEncryptionConfiguration": [
-            {
-              "ServerSideEncryptionByDefault": {
-                "SSEAlgorithm": "AES256"
-              }
-            }
-          ]
-        }
-      },
-      "UpdateReplacePolicy": "Retain",
-      "DeletionPolicy": "Retain"
-    },
     "backendonlycb1a13ab81664ecaa7d015068ab2d0165e0fagen2mainBucketPolicy14D90AB6": {
       "Type": "AWS::S3::BucketPolicy",
       "Properties": {
-        "Bucket": {
-          "Ref": "backendonlycb1a13ab81664ecaa7d015068ab2d0165e0fagen2mainBucket50DDE738"
-        },
+        "Bucket": "amplify-backendonly-ge-backendonlycb1a13ab81664-hysxrjfwrstc",
         "PolicyDocument": {
           "Statement": [
             {
@@ -99,22 +19,12 @@
                 "AWS": "*"
               },
               "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "backendonlycb1a13ab81664ecaa7d015068ab2d0165e0fagen2mainBucket50DDE738",
-                    "Arn"
-                  ]
-                },
+                "arn:aws:s3:::amplify-backendonly-ge-backendonlycb1a13ab81664-hysxrjfwrstc",
                 {
                   "Fn::Join": [
                     "",
                     [
-                      {
-                        "Fn::GetAtt": [
-                          "backendonlycb1a13ab81664ecaa7d015068ab2d0165e0fagen2mainBucket50DDE738",
-                          "Arn"
-                        ]
-                      },
+                      "arn:aws:s3:::amplify-backendonly-ge-backendonlycb1a13ab81664-hysxrjfwrstc",
                       "/*"
                     ]
                   ]
@@ -130,30 +40,15 @@
               ],
               "Effect": "Allow",
               "Principal": {
-                "AWS": {
-                  "Fn::GetAtt": [
-                    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
-                    "Arn"
-                  ]
-                }
+                "AWS": "arn:aws:iam::123456789012:role/amplify-backendonly-gen2main-branch-8e0f260810-storage0EC3F24A-1BTE7UH0TFE2I/CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
               },
               "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "backendonlycb1a13ab81664ecaa7d015068ab2d0165e0fagen2mainBucket50DDE738",
-                    "Arn"
-                  ]
-                },
+                "arn:aws:s3:::amplify-backendonly-ge-backendonlycb1a13ab81664-hysxrjfwrstc",
                 {
                   "Fn::Join": [
                     "",
                     [
-                      {
-                        "Fn::GetAtt": [
-                          "backendonlycb1a13ab81664ecaa7d015068ab2d0165e0fagen2mainBucket50DDE738",
-                          "Arn"
-                        ]
-                      },
+                      "arn:aws:s3:::amplify-backendonly-ge-backendonlycb1a13ab81664-hysxrjfwrstc",
                       "/*"
                     ]
                   ]
@@ -171,19 +66,9 @@
     "backendonlycb1a13ab81664ecaa7d015068ab2d0165e0fagen2mainBucketAutoDeleteObjectsCustomResource31970782": {
       "Type": "Custom::S3AutoDeleteObjects",
       "Properties": {
-        "ServiceToken": {
-          "Fn::GetAtt": [
-            "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
-            "Arn"
-          ]
-        },
-        "BucketName": {
-          "Ref": "backendonlycb1a13ab81664ecaa7d015068ab2d0165e0fagen2mainBucket50DDE738"
-        }
+        "ServiceToken": "arn:aws:lambda:us-east-1:123456789012:function:amplify-backendonly-gen2main-branch-8e0f260810-storage0EC3F24A-1BTE7UH0TFE2I/CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
+        "BucketName": "amplify-backendonly-ge-backendonlycb1a13ab81664-hysxrjfwrstc"
       },
-      "DependsOn": [
-        "backendonlycb1a13ab81664ecaa7d015068ab2d0165e0fagen2mainBucketPolicy14D90AB6"
-      ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
@@ -227,29 +112,19 @@
         "Timeout": 900,
         "MemorySize": 128,
         "Handler": "index.handler",
-        "Role": {
-          "Fn::GetAtt": [
-            "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
-            "Arn"
-          ]
-        },
+        "Role": "arn:aws:iam::123456789012:role/amplify-backendonly-gen2main-branch-8e0f260810-storage0EC3F24A-1BTE7UH0TFE2I/CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
         "Runtime": "nodejs22.x",
         "Description": {
           "Fn::Join": [
             "",
             [
               "Lambda function for auto-deleting objects in ",
-              {
-                "Ref": "backendonlycb1a13ab81664ecaa7d015068ab2d0165e0fagen2mainBucket50DDE738"
-              },
+              "amplify-backendonly-ge-backendonlycb1a13ab81664-hysxrjfwrstc",
               " S3 bucket."
             ]
           ]
         }
       },
-      "DependsOn": [
-        "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
-      ],
       "Metadata": {
         "aws:cdk:path": "amplify-backendonly-gen2main-branch-8e0f260810/storage/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler",
         "aws:asset:path": "asset.faa95a81ae7d7373f3e1f242268f904eb748d8d0fdd306e8a6fe515a1905a7d6",
@@ -267,9 +142,7 @@
           "created-by": "amplify"
         },
         "Type": "String",
-        "Value": {
-          "Ref": "backendonlycb1a13ab81664ecaa7d015068ab2d0165e0fagen2mainBucket50DDE738"
-        }
+        "Value": "amplify-backendonly-ge-backendonlycb1a13ab81664-hysxrjfwrstc"
       },
       "Metadata": {
         "aws:cdk:path": "amplify-backendonly-gen2main-branch-8e0f260810/storage/BACKENDONLYCB_1_A_13_AB_81664_ECAA_7_D_015068_AB_2_D_0165_E_0_FA_GEN_2_MAIN_BUCKET_NAMEParameter/Resource"
@@ -287,12 +160,7 @@
                 "Fn::Join": [
                   "",
                   [
-                    {
-                      "Fn::GetAtt": [
-                        "backendonlycb1a13ab81664ecaa7d015068ab2d0165e0fagen2mainBucket50DDE738",
-                        "Arn"
-                      ]
-                    },
+                    "arn:aws:s3:::amplify-backendonly-ge-backendonlycb1a13ab81664-hysxrjfwrstc",
                     "/public/*"
                   ]
                 ]
@@ -309,12 +177,7 @@
                 }
               },
               "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "backendonlycb1a13ab81664ecaa7d015068ab2d0165e0fagen2mainBucket50DDE738",
-                  "Arn"
-                ]
-              }
+              "Resource": "arn:aws:s3:::amplify-backendonly-ge-backendonlycb1a13ab81664-hysxrjfwrstc"
             }
           ],
           "Version": "2012-10-17"
@@ -343,12 +206,7 @@
                   "Fn::Join": [
                     "",
                     [
-                      {
-                        "Fn::GetAtt": [
-                          "backendonlycb1a13ab81664ecaa7d015068ab2d0165e0fagen2mainBucket50DDE738",
-                          "Arn"
-                        ]
-                      },
+                      "arn:aws:s3:::amplify-backendonly-ge-backendonlycb1a13ab81664-hysxrjfwrstc",
                       "/public/*"
                     ]
                   ]
@@ -357,12 +215,7 @@
                   "Fn::Join": [
                     "",
                     [
-                      {
-                        "Fn::GetAtt": [
-                          "backendonlycb1a13ab81664ecaa7d015068ab2d0165e0fagen2mainBucket50DDE738",
-                          "Arn"
-                        ]
-                      },
+                      "arn:aws:s3:::amplify-backendonly-ge-backendonlycb1a13ab81664-hysxrjfwrstc",
                       "/protected/*"
                     ]
                   ]
@@ -371,12 +224,7 @@
                   "Fn::Join": [
                     "",
                     [
-                      {
-                        "Fn::GetAtt": [
-                          "backendonlycb1a13ab81664ecaa7d015068ab2d0165e0fagen2mainBucket50DDE738",
-                          "Arn"
-                        ]
-                      },
+                      "arn:aws:s3:::amplify-backendonly-ge-backendonlycb1a13ab81664-hysxrjfwrstc",
                       "/private/*"
                     ]
                   ]
@@ -391,12 +239,7 @@
                   "Fn::Join": [
                     "",
                     [
-                      {
-                        "Fn::GetAtt": [
-                          "backendonlycb1a13ab81664ecaa7d015068ab2d0165e0fagen2mainBucket50DDE738",
-                          "Arn"
-                        ]
-                      },
+                      "arn:aws:s3:::amplify-backendonly-ge-backendonlycb1a13ab81664-hysxrjfwrstc",
                       "/public/*"
                     ]
                   ]
@@ -405,12 +248,7 @@
                   "Fn::Join": [
                     "",
                     [
-                      {
-                        "Fn::GetAtt": [
-                          "backendonlycb1a13ab81664ecaa7d015068ab2d0165e0fagen2mainBucket50DDE738",
-                          "Arn"
-                        ]
-                      },
+                      "arn:aws:s3:::amplify-backendonly-ge-backendonlycb1a13ab81664-hysxrjfwrstc",
                       "/protected/*"
                     ]
                   ]
@@ -419,12 +257,7 @@
                   "Fn::Join": [
                     "",
                     [
-                      {
-                        "Fn::GetAtt": [
-                          "backendonlycb1a13ab81664ecaa7d015068ab2d0165e0fagen2mainBucket50DDE738",
-                          "Arn"
-                        ]
-                      },
+                      "arn:aws:s3:::amplify-backendonly-ge-backendonlycb1a13ab81664-hysxrjfwrstc",
                       "/private/*"
                     ]
                   ]
@@ -446,12 +279,7 @@
                 }
               },
               "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "backendonlycb1a13ab81664ecaa7d015068ab2d0165e0fagen2mainBucket50DDE738",
-                  "Arn"
-                ]
-              }
+              "Resource": "arn:aws:s3:::amplify-backendonly-ge-backendonlycb1a13ab81664-hysxrjfwrstc"
             },
             {
               "Action": "s3:DeleteObject",
@@ -461,12 +289,7 @@
                   "Fn::Join": [
                     "",
                     [
-                      {
-                        "Fn::GetAtt": [
-                          "backendonlycb1a13ab81664ecaa7d015068ab2d0165e0fagen2mainBucket50DDE738",
-                          "Arn"
-                        ]
-                      },
+                      "arn:aws:s3:::amplify-backendonly-ge-backendonlycb1a13ab81664-hysxrjfwrstc",
                       "/public/*"
                     ]
                   ]
@@ -475,12 +298,7 @@
                   "Fn::Join": [
                     "",
                     [
-                      {
-                        "Fn::GetAtt": [
-                          "backendonlycb1a13ab81664ecaa7d015068ab2d0165e0fagen2mainBucket50DDE738",
-                          "Arn"
-                        ]
-                      },
+                      "arn:aws:s3:::amplify-backendonly-ge-backendonlycb1a13ab81664-hysxrjfwrstc",
                       "/protected/*"
                     ]
                   ]
@@ -489,12 +307,7 @@
                   "Fn::Join": [
                     "",
                     [
-                      {
-                        "Fn::GetAtt": [
-                          "backendonlycb1a13ab81664ecaa7d015068ab2d0165e0fagen2mainBucket50DDE738",
-                          "Arn"
-                        ]
-                      },
+                      "arn:aws:s3:::amplify-backendonly-ge-backendonlycb1a13ab81664-hysxrjfwrstc",
                       "/private/*"
                     ]
                   ]
@@ -524,6 +337,70 @@
         "aws:cdk:path": "amplify-backendonly-gen2main-branch-8e0f260810/storage/CDKMetadata/Default"
       },
       "Condition": "CDKMetadataAvailable"
+    },
+    "backendonlycb1a13ab81664ecaa7d015068ab2d0165e0fagen2mainBucket50DDE738": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": {
+          "Fn::Join": [
+            "",
+            [
+              "backendonlycb1a13ab81664ecaa7d015068ab2d016",
+              {
+                "Fn::Select": [
+                  3,
+                  {
+                    "Fn::Split": [
+                      "-",
+                      "amplify-backendonly-main-5e0fa-storages3c31471c3-MQFWTKK6ETYR"
+                    ]
+                  }
+                ]
+              },
+              "-",
+              "main"
+            ]
+          ]
+        },
+        "CorsConfiguration": {
+          "CorsRules": [
+            {
+              "AllowedHeaders": [
+                "*"
+              ],
+              "AllowedMethods": [
+                "GET",
+                "HEAD",
+                "PUT",
+                "POST",
+                "DELETE"
+              ],
+              "AllowedOrigins": [
+                "*"
+              ],
+              "ExposedHeaders": [
+                "x-amz-server-side-encryption",
+                "x-amz-request-id",
+                "x-amz-id-2",
+                "ETag"
+              ],
+              "Id": "S3CORSRuleId1",
+              "MaxAge": 3000
+            }
+          ]
+        },
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "ServerSideEncryptionByDefault": {
+                "SSEAlgorithm": "AES256"
+              }
+            }
+          ]
+        }
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
     }
   },
   "Conditions": {
@@ -802,9 +679,7 @@
   },
   "Outputs": {
     "amplifybackendonlygen2mainbranch8e0f260810storagebackendonlycb1a13ab81664ecaa7d015068ab2d0165e0fagen2mainBucket8CDA8E49Ref": {
-      "Value": {
-        "Ref": "backendonlycb1a13ab81664ecaa7d015068ab2d0165e0fagen2mainBucket50DDE738"
-      }
+      "Value": "amplify-backendonly-ge-backendonlycb1a13ab81664-hysxrjfwrstc"
     }
   }
 }

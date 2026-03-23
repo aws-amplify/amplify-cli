@@ -1,6 +1,16 @@
 {
   "Description": "{\"createdOn\":\"Linux\",\"createdBy\":\"AmplifyPipelineDeploy\",\"createdWith\":\"1.21.0\",\"stackType\":\"custom\",\"metadata\":{}}",
   "Resources": {
+    "CDKMetadata": {
+      "Type": "AWS::CDK::Metadata",
+      "Properties": {
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/yXGOwqEMBAA0LPYJ6MGi+3tLdReJplZiJ8EnERZxLsvaPWeAdPUUBV4ina06NVbuDqWxDQkdIvCUyb6BdwiWbhGtCur9hue3KpniXl3fKsQiWGW8jAG6g9UxSze6z2H5DeG/vUPUV/XUG4AAAA="
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-discussions-gen2main-branch-96dfd1dc44/storage/CDKMetadata/Default"
+      },
+      "Condition": "CDKMetadataAvailable"
+    },
     "activity1E902D9C": {
       "Type": "AWS::DynamoDB::Table",
       "Properties": {
@@ -58,38 +68,16 @@
           "StreamViewType": "NEW_IMAGE"
         },
         "TableName": {
-          "Fn::If": [
-            "ShouldNotCreateEnvResources",
-            {
-              "Ref": "tableName"
-            },
-            {
-              "Fn::Join": [
-                "",
-                [
-                  {
-                    "Ref": "tableName"
-                  },
-                  "-",
-                  {
-                    "Ref": "env"
-                  }
-                ]
-              ]
-            }
+          "Fn::Join": [
+            "",
+            [
+              "activity",
+              "-",
+              "main"
+            ]
           ]
         }
       }
-    },
-    "CDKMetadata": {
-      "Type": "AWS::CDK::Metadata",
-      "Properties": {
-        "Analytics": "v2:deflate64:H4sIAAAAAAAA/yXGOwqEMBAA0LPYJ6MGi+3tLdReJplZiJ8EnERZxLsvaPWeAdPUUBV4ina06NVbuDqWxDQkdIvCUyb6BdwiWbhGtCur9hue3KpniXl3fKsQiWGW8jAG6g9UxSze6z2H5DeG/vUPUV/XUG4AAAA="
-      },
-      "Metadata": {
-        "aws:cdk:path": "amplify-discussions-gen2main-branch-96dfd1dc44/storage/CDKMetadata/Default"
-      },
-      "Condition": "CDKMetadataAvailable"
     }
   },
   "Conditions": {
@@ -360,25 +348,13 @@
   },
   "Outputs": {
     "amplifydiscussionsgen2mainbranch96dfd1dc44storageactivityEF3255CDArn": {
-      "Value": {
-        "Fn::GetAtt": [
-          "activity1E902D9C",
-          "Arn"
-        ]
-      }
+      "Value": "arn:aws:dynamodb:us-east-1:123456789012:table/amplify-discussions-gen2main-branch-96dfd1dc44-storage0EC3F24A-QQN18S0SITDH-activity1E902D9C-TT6R2GXJ05FS"
     },
     "amplifydiscussionsgen2mainbranch96dfd1dc44storageactivityEF3255CDStreamArn": {
-      "Value": {
-        "Fn::GetAtt": [
-          "activity1E902D9C",
-          "StreamArn"
-        ]
-      }
+      "Value": "arn:aws:dynamodb:us-east-1:123456789012:table/amplify-discussions-gen2main-branch-96dfd1dc44-storage0EC3F24A-QQN18S0SITDH-activity1E902D9C-TT6R2GXJ05FS/stream/2026-03-07T18:02:23.205"
     },
     "amplifydiscussionsgen2mainbranch96dfd1dc44storageactivityEF3255CDRef": {
-      "Value": {
-        "Ref": "activity1E902D9C"
-      }
+      "Value": "amplify-discussions-gen2main-branch-96dfd1dc44-storage0EC3F24A-QQN18S0SITDH-activity1E902D9C-TT6R2GXJ05FS"
     }
   }
 }

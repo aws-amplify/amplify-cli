@@ -10,9 +10,7 @@
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": {
                 "StringEquals": {
-                  "cognito-identity.amazonaws.com:aud": {
-                    "Ref": "amplifyAuthIdentityPool3FDE84CC"
-                  }
+                  "cognito-identity.amazonaws.com:aud": "us-east-1:f8ab7c96-56f6-46d4-8346-0a5235221fba"
                 },
                 "ForAnyValue:StringLike": {
                   "cognito-identity.amazonaws.com:amr": "authenticated"
@@ -62,9 +60,7 @@
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": {
                 "StringEquals": {
-                  "cognito-identity.amazonaws.com:aud": {
-                    "Ref": "amplifyAuthIdentityPool3FDE84CC"
-                  }
+                  "cognito-identity.amazonaws.com:aud": "us-east-1:f8ab7c96-56f6-46d4-8346-0a5235221fba"
                 },
                 "ForAnyValue:StringLike": {
                   "cognito-identity.amazonaws.com:amr": "unauthenticated"
@@ -384,29 +380,19 @@
   },
   "Outputs": {
     "amplifyprojectboardsgen2mainbranch886dbd2decauthamplifyAuthUserPool33BA12FBRef": {
-      "Value": {
-        "Ref": "amplifyAuthUserPool4BA7F805"
-      }
+      "Value": "us-east-1_pXlpWF7QY"
     },
     "amplifyprojectboardsgen2mainbranch886dbd2decauthamplifyAuthUserPoolAppClient0435B83FRef": {
-      "Value": {
-        "Ref": "amplifyAuthUserPoolAppClient2626C6F8"
-      }
+      "Value": "oqgm3faeod0cr1b4v63iv4a7a"
     },
     "amplifyprojectboardsgen2mainbranch886dbd2decauthamplifyAuthIdentityPool16941F52Ref": {
-      "Value": {
-        "Ref": "amplifyAuthIdentityPool3FDE84CC"
-      }
+      "Value": "us-east-1:f8ab7c96-56f6-46d4-8346-0a5235221fba"
     },
     "amplifyprojectboardsgen2mainbranch886dbd2decauthamplifyAuthauthenticatedUserRole9FF894EARef": {
-      "Value": {
-        "Ref": "amplifyAuthauthenticatedUserRoleD8DA3689"
-      }
+      "Value": "amplify-projectboards-ge-amplifyAuthauthenticatedU-HuWvFKttqdhF"
     },
     "amplifyprojectboardsgen2mainbranch886dbd2decauthamplifyAuthunauthenticatedUserRole5DB50FFARef": {
-      "Value": {
-        "Ref": "amplifyAuthunauthenticatedUserRole2B524D9E"
-      }
+      "Value": "amplify-projectboards-ge-amplifyAuthunauthenticate-GHLvLgqZHYnT"
     }
   }
 }

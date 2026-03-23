@@ -114,9 +114,7 @@
   "Conditions": {
     "ShouldNotCreateEnvResources": {
       "Fn::Equals": [
-        {
-          "Ref": "env"
-        },
+        "main",
         "NONE"
       ]
     }
@@ -138,36 +136,24 @@
           ]
         },
         "RoleName": {
-          "Fn::If": [
-            "ShouldNotCreateEnvResources",
-            {
-              "Ref": "userpoolClientLambdaRole"
-            },
-            {
-              "Fn::Join": [
-                "",
-                [
-                  "upClientLambdaRolef8c4c57b",
+          "Fn::Join": [
+            "",
+            [
+              "upClientLambdaRolef8c4c57b",
+              {
+                "Fn::Select": [
+                  3,
                   {
-                    "Fn::Select": [
-                      3,
-                      {
-                        "Fn::Split": [
-                          "-",
-                          {
-                            "Ref": "AWS::StackName"
-                          }
-                        ]
-                      }
+                    "Fn::Split": [
+                      "-",
+                      "amplify-backendonly-main-5e0fa-authbackendonlyf8c4c57b-SC9H4E2DZU7A"
                     ]
-                  },
-                  "-",
-                  {
-                    "Ref": "env"
                   }
                 ]
-              ]
-            }
+              },
+              "-",
+              "main"
+            ]
           ]
         }
       }
@@ -176,49 +162,29 @@
   "Outputs": {
     "IdentityPoolId": {
       "Description": "Id for the identity pool",
-      "Value": {
-        "Ref": "IdentityPool"
-      }
+      "Value": "us-east-1:3d2fd52c-2247-42b8-8773-3102fce814b8"
     },
     "IdentityPoolName": {
-      "Value": {
-        "Fn::GetAtt": [
-          "IdentityPool",
-          "Name"
-        ]
-      }
+      "Value": "backendonlyf8c4c57b_identitypool_f8c4c57b__main"
     },
     "UserPoolId": {
       "Description": "Id for the user pool",
-      "Value": {
-        "Ref": "UserPool"
-      }
+      "Value": "us-east-1_1rvCNKN5B"
     },
     "UserPoolArn": {
       "Description": "Arn for the user pool",
-      "Value": {
-        "Fn::GetAtt": [
-          "UserPool",
-          "Arn"
-        ]
-      }
+      "Value": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_1rvCNKN5B"
     },
     "UserPoolName": {
-      "Value": {
-        "Ref": "userPoolName"
-      }
+      "Value": "backendonlyf8c4c57b_userpool_f8c4c57b"
     },
     "AppClientIDWeb": {
       "Description": "The user pool app client id for web",
-      "Value": {
-        "Ref": "UserPoolClientWeb"
-      }
+      "Value": "2udsup370on7n0b1gdf8hpijc6"
     },
     "AppClientID": {
       "Description": "The user pool app client id",
-      "Value": {
-        "Ref": "UserPoolClient"
-      }
+      "Value": "773c808k3864f2k0sqk4j71gsj"
     }
   }
 }

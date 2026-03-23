@@ -10,9 +10,7 @@
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": {
                 "StringEquals": {
-                  "cognito-identity.amazonaws.com:aud": {
-                    "Ref": "amplifyAuthIdentityPool3FDE84CC"
-                  }
+                  "cognito-identity.amazonaws.com:aud": "us-east-1:820c5910-56e0-4010-b0c4-b457a728acfb"
                 },
                 "ForAnyValue:StringLike": {
                   "cognito-identity.amazonaws.com:amr": "authenticated"
@@ -62,9 +60,7 @@
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": {
                 "StringEquals": {
-                  "cognito-identity.amazonaws.com:aud": {
-                    "Ref": "amplifyAuthIdentityPool3FDE84CC"
-                  }
+                  "cognito-identity.amazonaws.com:aud": "us-east-1:820c5910-56e0-4010-b0c4-b457a728acfb"
                 },
                 "ForAnyValue:StringLike": {
                   "cognito-identity.amazonaws.com:amr": "unauthenticated"
@@ -384,29 +380,19 @@
   },
   "Outputs": {
     "amplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthUserPoolAE38F854Ref": {
-      "Value": {
-        "Ref": "amplifyAuthUserPool4BA7F805"
-      }
+      "Value": "us-east-1_1A4RMvPNr"
     },
     "amplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthUserPoolAppClientA69935A4Ref": {
-      "Value": {
-        "Ref": "amplifyAuthUserPoolAppClient2626C6F8"
-      }
+      "Value": "2otm0qh3fj270k5tdn95cgjlm5"
     },
     "amplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthIdentityPoolA9AA7B9FRef": {
-      "Value": {
-        "Ref": "amplifyAuthIdentityPool3FDE84CC"
-      }
+      "Value": "us-east-1:820c5910-56e0-4010-b0c4-b457a728acfb"
     },
     "amplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthauthenticatedUserRole0AA19633Ref": {
-      "Value": {
-        "Ref": "amplifyAuthauthenticatedUserRoleD8DA3689"
-      }
+      "Value": "amplify-moodboard-ge-amplifyAuthauthenticatedU-UANJImTyKZ7p"
     },
     "amplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthunauthenticatedUserRoleBEC4D39ARef": {
-      "Value": {
-        "Ref": "amplifyAuthunauthenticatedUserRole2B524D9E"
-      }
+      "Value": "amplify-moodboard-ge-amplifyAuthunauthenticate-rp3r1qUbAKVV"
     }
   }
 }

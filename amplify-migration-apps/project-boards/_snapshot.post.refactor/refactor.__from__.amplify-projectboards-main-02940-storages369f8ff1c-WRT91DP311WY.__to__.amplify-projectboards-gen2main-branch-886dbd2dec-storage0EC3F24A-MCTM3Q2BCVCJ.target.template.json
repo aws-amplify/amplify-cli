@@ -1,90 +1,10 @@
 {
   "Description": "{\"createdOn\":\"Linux\",\"createdBy\":\"AmplifyPipelineDeploy\",\"createdWith\":\"1.4.3\",\"stackType\":\"storage-S3\",\"metadata\":{}}",
   "Resources": {
-    "projectboards34b9a7f3c2ca489293910116c994688b02940gen2mainBucketC790823F": {
-      "Type": "AWS::S3::Bucket",
-      "Properties": {
-        "BucketName": {
-          "Fn::If": [
-            "ShouldNotCreateEnvResources",
-            {
-              "Ref": "bucketName"
-            },
-            {
-              "Fn::Join": [
-                "",
-                [
-                  {
-                    "Ref": "bucketName"
-                  },
-                  {
-                    "Fn::Select": [
-                      3,
-                      {
-                        "Fn::Split": [
-                          "-",
-                          {
-                            "Ref": "AWS::StackName"
-                          }
-                        ]
-                      }
-                    ]
-                  },
-                  "-",
-                  {
-                    "Ref": "env"
-                  }
-                ]
-              ]
-            }
-          ]
-        },
-        "CorsConfiguration": {
-          "CorsRules": [
-            {
-              "AllowedHeaders": [
-                "*"
-              ],
-              "AllowedMethods": [
-                "GET",
-                "HEAD",
-                "PUT",
-                "POST",
-                "DELETE"
-              ],
-              "AllowedOrigins": [
-                "*"
-              ],
-              "ExposedHeaders": [
-                "x-amz-server-side-encryption",
-                "x-amz-request-id",
-                "x-amz-id-2",
-                "ETag"
-              ],
-              "Id": "S3CORSRuleId1",
-              "MaxAge": 3000
-            }
-          ]
-        },
-        "BucketEncryption": {
-          "ServerSideEncryptionConfiguration": [
-            {
-              "ServerSideEncryptionByDefault": {
-                "SSEAlgorithm": "AES256"
-              }
-            }
-          ]
-        }
-      },
-      "UpdateReplacePolicy": "Retain",
-      "DeletionPolicy": "Retain"
-    },
     "projectboards34b9a7f3c2ca489293910116c994688b02940gen2mainBucketPolicy8CF7A616": {
       "Type": "AWS::S3::BucketPolicy",
       "Properties": {
-        "Bucket": {
-          "Ref": "projectboards34b9a7f3c2ca489293910116c994688b02940gen2mainBucketC790823F"
-        },
+        "Bucket": "amplify-projectboards-ge-projectboards34b9a7f3c2c-3ojawjs7ffmv",
         "PolicyDocument": {
           "Statement": [
             {
@@ -99,22 +19,12 @@
                 "AWS": "*"
               },
               "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "projectboards34b9a7f3c2ca489293910116c994688b02940gen2mainBucketC790823F",
-                    "Arn"
-                  ]
-                },
+                "arn:aws:s3:::amplify-projectboards-ge-projectboards34b9a7f3c2c-3ojawjs7ffmv",
                 {
                   "Fn::Join": [
                     "",
                     [
-                      {
-                        "Fn::GetAtt": [
-                          "projectboards34b9a7f3c2ca489293910116c994688b02940gen2mainBucketC790823F",
-                          "Arn"
-                        ]
-                      },
+                      "arn:aws:s3:::amplify-projectboards-ge-projectboards34b9a7f3c2c-3ojawjs7ffmv",
                       "/*"
                     ]
                   ]
@@ -130,30 +40,15 @@
               ],
               "Effect": "Allow",
               "Principal": {
-                "AWS": {
-                  "Fn::GetAtt": [
-                    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
-                    "Arn"
-                  ]
-                }
+                "AWS": "arn:aws:iam::123456789012:role/amplify-projectboards-gen2main-branch-886dbd2dec-storage0EC3F24A-MCTM3Q2BCVCJ/CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
               },
               "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "projectboards34b9a7f3c2ca489293910116c994688b02940gen2mainBucketC790823F",
-                    "Arn"
-                  ]
-                },
+                "arn:aws:s3:::amplify-projectboards-ge-projectboards34b9a7f3c2c-3ojawjs7ffmv",
                 {
                   "Fn::Join": [
                     "",
                     [
-                      {
-                        "Fn::GetAtt": [
-                          "projectboards34b9a7f3c2ca489293910116c994688b02940gen2mainBucketC790823F",
-                          "Arn"
-                        ]
-                      },
+                      "arn:aws:s3:::amplify-projectboards-ge-projectboards34b9a7f3c2c-3ojawjs7ffmv",
                       "/*"
                     ]
                   ]
@@ -171,19 +66,9 @@
     "projectboards34b9a7f3c2ca489293910116c994688b02940gen2mainBucketAutoDeleteObjectsCustomResource1C396A89": {
       "Type": "Custom::S3AutoDeleteObjects",
       "Properties": {
-        "ServiceToken": {
-          "Fn::GetAtt": [
-            "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
-            "Arn"
-          ]
-        },
-        "BucketName": {
-          "Ref": "projectboards34b9a7f3c2ca489293910116c994688b02940gen2mainBucketC790823F"
-        }
+        "ServiceToken": "arn:aws:lambda:us-east-1:123456789012:function:amplify-projectboards-gen2main-branch-886dbd2dec-storage0EC3F24A-MCTM3Q2BCVCJ/CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
+        "BucketName": "amplify-projectboards-ge-projectboards34b9a7f3c2c-3ojawjs7ffmv"
       },
-      "DependsOn": [
-        "projectboards34b9a7f3c2ca489293910116c994688b02940gen2mainBucketPolicy8CF7A616"
-      ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
@@ -227,29 +112,19 @@
         "Timeout": 900,
         "MemorySize": 128,
         "Handler": "index.handler",
-        "Role": {
-          "Fn::GetAtt": [
-            "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
-            "Arn"
-          ]
-        },
+        "Role": "arn:aws:iam::123456789012:role/amplify-projectboards-gen2main-branch-886dbd2dec-storage0EC3F24A-MCTM3Q2BCVCJ/CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
         "Runtime": "nodejs22.x",
         "Description": {
           "Fn::Join": [
             "",
             [
               "Lambda function for auto-deleting objects in ",
-              {
-                "Ref": "projectboards34b9a7f3c2ca489293910116c994688b02940gen2mainBucketC790823F"
-              },
+              "amplify-projectboards-ge-projectboards34b9a7f3c2c-3ojawjs7ffmv",
               " S3 bucket."
             ]
           ]
         }
       },
-      "DependsOn": [
-        "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
-      ],
       "Metadata": {
         "aws:cdk:path": "amplify-projectboards-gen2main-branch-886dbd2dec/storage/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler",
         "aws:asset:path": "asset.faa95a81ae7d7373f3e1f242268f904eb748d8d0fdd306e8a6fe515a1905a7d6",
@@ -267,9 +142,7 @@
           "created-by": "amplify"
         },
         "Type": "String",
-        "Value": {
-          "Ref": "projectboards34b9a7f3c2ca489293910116c994688b02940gen2mainBucketC790823F"
-        }
+        "Value": "amplify-projectboards-ge-projectboards34b9a7f3c2c-3ojawjs7ffmv"
       },
       "Metadata": {
         "aws:cdk:path": "amplify-projectboards-gen2main-branch-886dbd2dec/storage/PROJECTBOARDS_34_B_9_A_7_F_3_C_2_CA_489293910116_C_994688_B_02940_GEN_2_MAIN_BUCKET_NAMEParameter/Resource"
@@ -287,12 +160,7 @@
                 "Fn::Join": [
                   "",
                   [
-                    {
-                      "Fn::GetAtt": [
-                        "projectboards34b9a7f3c2ca489293910116c994688b02940gen2mainBucketC790823F",
-                        "Arn"
-                      ]
-                    },
+                    "arn:aws:s3:::amplify-projectboards-ge-projectboards34b9a7f3c2c-3ojawjs7ffmv",
                     "/public/*"
                   ]
                 ]
@@ -309,12 +177,7 @@
                 }
               },
               "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "projectboards34b9a7f3c2ca489293910116c994688b02940gen2mainBucketC790823F",
-                  "Arn"
-                ]
-              }
+              "Resource": "arn:aws:s3:::amplify-projectboards-ge-projectboards34b9a7f3c2c-3ojawjs7ffmv"
             }
           ],
           "Version": "2012-10-17"
@@ -343,12 +206,7 @@
                   "Fn::Join": [
                     "",
                     [
-                      {
-                        "Fn::GetAtt": [
-                          "projectboards34b9a7f3c2ca489293910116c994688b02940gen2mainBucketC790823F",
-                          "Arn"
-                        ]
-                      },
+                      "arn:aws:s3:::amplify-projectboards-ge-projectboards34b9a7f3c2c-3ojawjs7ffmv",
                       "/public/*"
                     ]
                   ]
@@ -357,12 +215,7 @@
                   "Fn::Join": [
                     "",
                     [
-                      {
-                        "Fn::GetAtt": [
-                          "projectboards34b9a7f3c2ca489293910116c994688b02940gen2mainBucketC790823F",
-                          "Arn"
-                        ]
-                      },
+                      "arn:aws:s3:::amplify-projectboards-ge-projectboards34b9a7f3c2c-3ojawjs7ffmv",
                       "/protected/*"
                     ]
                   ]
@@ -371,12 +224,7 @@
                   "Fn::Join": [
                     "",
                     [
-                      {
-                        "Fn::GetAtt": [
-                          "projectboards34b9a7f3c2ca489293910116c994688b02940gen2mainBucketC790823F",
-                          "Arn"
-                        ]
-                      },
+                      "arn:aws:s3:::amplify-projectboards-ge-projectboards34b9a7f3c2c-3ojawjs7ffmv",
                       "/private/*"
                     ]
                   ]
@@ -391,12 +239,7 @@
                   "Fn::Join": [
                     "",
                     [
-                      {
-                        "Fn::GetAtt": [
-                          "projectboards34b9a7f3c2ca489293910116c994688b02940gen2mainBucketC790823F",
-                          "Arn"
-                        ]
-                      },
+                      "arn:aws:s3:::amplify-projectboards-ge-projectboards34b9a7f3c2c-3ojawjs7ffmv",
                       "/public/*"
                     ]
                   ]
@@ -405,12 +248,7 @@
                   "Fn::Join": [
                     "",
                     [
-                      {
-                        "Fn::GetAtt": [
-                          "projectboards34b9a7f3c2ca489293910116c994688b02940gen2mainBucketC790823F",
-                          "Arn"
-                        ]
-                      },
+                      "arn:aws:s3:::amplify-projectboards-ge-projectboards34b9a7f3c2c-3ojawjs7ffmv",
                       "/protected/*"
                     ]
                   ]
@@ -419,12 +257,7 @@
                   "Fn::Join": [
                     "",
                     [
-                      {
-                        "Fn::GetAtt": [
-                          "projectboards34b9a7f3c2ca489293910116c994688b02940gen2mainBucketC790823F",
-                          "Arn"
-                        ]
-                      },
+                      "arn:aws:s3:::amplify-projectboards-ge-projectboards34b9a7f3c2c-3ojawjs7ffmv",
                       "/private/*"
                     ]
                   ]
@@ -446,12 +279,7 @@
                 }
               },
               "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "projectboards34b9a7f3c2ca489293910116c994688b02940gen2mainBucketC790823F",
-                  "Arn"
-                ]
-              }
+              "Resource": "arn:aws:s3:::amplify-projectboards-ge-projectboards34b9a7f3c2c-3ojawjs7ffmv"
             },
             {
               "Action": "s3:DeleteObject",
@@ -461,12 +289,7 @@
                   "Fn::Join": [
                     "",
                     [
-                      {
-                        "Fn::GetAtt": [
-                          "projectboards34b9a7f3c2ca489293910116c994688b02940gen2mainBucketC790823F",
-                          "Arn"
-                        ]
-                      },
+                      "arn:aws:s3:::amplify-projectboards-ge-projectboards34b9a7f3c2c-3ojawjs7ffmv",
                       "/public/*"
                     ]
                   ]
@@ -475,12 +298,7 @@
                   "Fn::Join": [
                     "",
                     [
-                      {
-                        "Fn::GetAtt": [
-                          "projectboards34b9a7f3c2ca489293910116c994688b02940gen2mainBucketC790823F",
-                          "Arn"
-                        ]
-                      },
+                      "arn:aws:s3:::amplify-projectboards-ge-projectboards34b9a7f3c2c-3ojawjs7ffmv",
                       "/protected/*"
                     ]
                   ]
@@ -489,12 +307,7 @@
                   "Fn::Join": [
                     "",
                     [
-                      {
-                        "Fn::GetAtt": [
-                          "projectboards34b9a7f3c2ca489293910116c994688b02940gen2mainBucketC790823F",
-                          "Arn"
-                        ]
-                      },
+                      "arn:aws:s3:::amplify-projectboards-ge-projectboards34b9a7f3c2c-3ojawjs7ffmv",
                       "/private/*"
                     ]
                   ]
@@ -524,6 +337,70 @@
         "aws:cdk:path": "amplify-projectboards-gen2main-branch-886dbd2dec/storage/CDKMetadata/Default"
       },
       "Condition": "CDKMetadataAvailable"
+    },
+    "projectboards34b9a7f3c2ca489293910116c994688b02940gen2mainBucketC790823F": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": {
+          "Fn::Join": [
+            "",
+            [
+              "projectboards34b9a7f3c2ca489293910116c994688b",
+              {
+                "Fn::Select": [
+                  3,
+                  {
+                    "Fn::Split": [
+                      "-",
+                      "amplify-projectboards-main-02940-storages369f8ff1c-WRT91DP311WY"
+                    ]
+                  }
+                ]
+              },
+              "-",
+              "main"
+            ]
+          ]
+        },
+        "CorsConfiguration": {
+          "CorsRules": [
+            {
+              "AllowedHeaders": [
+                "*"
+              ],
+              "AllowedMethods": [
+                "GET",
+                "HEAD",
+                "PUT",
+                "POST",
+                "DELETE"
+              ],
+              "AllowedOrigins": [
+                "*"
+              ],
+              "ExposedHeaders": [
+                "x-amz-server-side-encryption",
+                "x-amz-request-id",
+                "x-amz-id-2",
+                "ETag"
+              ],
+              "Id": "S3CORSRuleId1",
+              "MaxAge": 3000
+            }
+          ]
+        },
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "ServerSideEncryptionByDefault": {
+                "SSEAlgorithm": "AES256"
+              }
+            }
+          ]
+        }
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
     }
   },
   "Conditions": {
@@ -802,9 +679,7 @@
   },
   "Outputs": {
     "amplifyprojectboardsgen2mainbranch886dbd2decstorageprojectboards34b9a7f3c2ca489293910116c994688b02940gen2mainBucket2623A05BRef": {
-      "Value": {
-        "Ref": "projectboards34b9a7f3c2ca489293910116c994688b02940gen2mainBucketC790823F"
-      }
+      "Value": "amplify-projectboards-ge-projectboards34b9a7f3c2c-3ojawjs7ffmv"
     }
   }
 }

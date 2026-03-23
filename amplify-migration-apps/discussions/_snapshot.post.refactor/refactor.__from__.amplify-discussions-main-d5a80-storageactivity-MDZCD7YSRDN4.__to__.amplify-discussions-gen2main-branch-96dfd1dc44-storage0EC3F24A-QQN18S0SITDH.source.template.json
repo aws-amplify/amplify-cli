@@ -24,60 +24,41 @@
   "Conditions": {
     "ShouldNotCreateEnvResources": {
       "Fn::Equals": [
-        {
-          "Ref": "env"
-        },
+        "main",
         "NONE"
       ]
     }
   },
-  "Resources": {},
+  "Resources": {
+    "MigrationPlaceholder": {
+      "Type": "AWS::CloudFormation::WaitConditionHandle",
+      "Properties": {}
+    }
+  },
   "Outputs": {
     "Name": {
-      "Value": {
-        "Ref": "DynamoDBTable"
-      }
+      "Value": "activity-main"
     },
     "Arn": {
-      "Value": {
-        "Fn::GetAtt": [
-          "DynamoDBTable",
-          "Arn"
-        ]
-      }
+      "Value": "arn:aws:dynamodb:us-east-1:123456789012:table/activity-main"
     },
     "StreamArn": {
-      "Value": {
-        "Fn::GetAtt": [
-          "DynamoDBTable",
-          "StreamArn"
-        ]
-      }
+      "Value": "arn:aws:dynamodb:us-east-1:123456789012:table/activity-main/stream/2026-03-07T17:11:10.591"
     },
     "PartitionKeyName": {
-      "Value": {
-        "Ref": "partitionKeyName"
-      }
+      "Value": "id"
     },
     "PartitionKeyType": {
-      "Value": {
-        "Ref": "partitionKeyType"
-      }
+      "Value": "S"
     },
     "SortKeyName": {
-      "Value": {
-        "Ref": "sortKeyName"
-      }
+      "Value": "userId"
     },
     "SortKeyType": {
-      "Value": {
-        "Ref": "sortKeyType"
-      }
+      "Value": "S"
     },
     "Region": {
-      "Value": {
-        "Ref": "AWS::Region"
-      }
+      "Value": "us-east-1"
     }
   }
 }

@@ -1,11 +1,11 @@
-import { StorageS3ForwardRefactorer } from '../../../../commands/gen2-migration/refactor/storage/storage-forward';
-import { StorageS3RollbackRefactorer } from '../../../../commands/gen2-migration/refactor/storage/storage-rollback';
-import { AnalyticsKinesisForwardRefactorer } from '../../../../commands/gen2-migration/refactor/analytics/analytics-forward';
-import { AnalyticsKinesisRollbackRefactorer } from '../../../../commands/gen2-migration/refactor/analytics/analytics-rollback';
-import { CFNTemplate } from '../../../../commands/gen2-migration/cfn-template';
-import { AwsClients } from '../../../../commands/gen2-migration/aws-clients';
-import { StackFacade } from '../../../../commands/gen2-migration/refactor/stack-facade';
-import { noOpLogger } from '../_framework/logger';
+import { StorageS3ForwardRefactorer } from '../../../../../commands/gen2-migration/refactor/storage/storage-forward';
+import { StorageS3RollbackRefactorer } from '../../../../../commands/gen2-migration/refactor/storage/storage-rollback';
+import { AnalyticsKinesisForwardRefactorer } from '../../../../../commands/gen2-migration/refactor/analytics/analytics-forward';
+import { AnalyticsKinesisRollbackRefactorer } from '../../../../../commands/gen2-migration/refactor/analytics/analytics-rollback';
+import { CFNTemplate } from '../../../../../commands/gen2-migration/cfn-template';
+import { AwsClients } from '../../../../../commands/gen2-migration/aws-clients';
+import { StackFacade } from '../../../../../commands/gen2-migration/refactor/stack-facade';
+import { noOpLogger } from '../../_framework/logger';
 import { mockClient } from 'aws-sdk-client-mock';
 import {
   CloudFormationClient,
@@ -17,7 +17,7 @@ import {
   DescribeChangeSetCommand,
   DeleteChangeSetCommand,
 } from '@aws-sdk/client-cloudformation';
-import { Cfn } from '../../../../commands/gen2-migration/refactor/cfn';
+import { Cfn } from '../../../../../commands/gen2-migration/refactor/cfn';
 
 const ts = new Date();
 const rs = ResourceStatus.CREATE_COMPLETE;
@@ -365,5 +365,20 @@ describe('Analytics wiring tests', () => {
 
     // Resources already exist in Gen1 target, so rollback produces no-op
     expect(ops).toHaveLength(1); // no-op operation
+  });
+});
+
+import {
+  MIGRATION_PLACEHOLDER_LOGICAL_ID,
+  PLACEHOLDER_RESOURCE,
+} from '../../../../../commands/gen2-migration/refactor/workflow/category-refactorer';
+
+describe('placeholder constants', () => {
+  it('placeholder resource is a WaitConditionHandle', () => {
+    expect(PLACEHOLDER_RESOURCE.Type).toBe('AWS::CloudFormation::WaitConditionHandle');
+  });
+
+  it('placeholder logical ID is MigrationPlaceholder', () => {
+    expect(MIGRATION_PLACEHOLDER_LOGICAL_ID).toBe('MigrationPlaceholder');
   });
 });

@@ -114,9 +114,7 @@
   "Conditions": {
     "ShouldNotCreateEnvResources": {
       "Fn::Equals": [
-        {
-          "Ref": "env"
-        },
+        "main",
         "NONE"
       ]
     }
@@ -138,36 +136,24 @@
           ]
         },
         "RoleName": {
-          "Fn::If": [
-            "ShouldNotCreateEnvResources",
-            {
-              "Ref": "userpoolClientLambdaRole"
-            },
-            {
-              "Fn::Join": [
-                "",
-                [
-                  "upClientLambdaRole90174ac4",
+          "Fn::Join": [
+            "",
+            [
+              "upClientLambdaRole90174ac4",
+              {
+                "Fn::Select": [
+                  3,
                   {
-                    "Fn::Select": [
-                      3,
-                      {
-                        "Fn::Split": [
-                          "-",
-                          {
-                            "Ref": "AWS::StackName"
-                          }
-                        ]
-                      }
+                    "Fn::Split": [
+                      "-",
+                      "amplify-productcatalog-main-31323-authproductcatalog90174ac4-1DKM3MK2JKRFC"
                     ]
-                  },
-                  "-",
-                  {
-                    "Ref": "env"
                   }
                 ]
-              ]
-            }
+              },
+              "-",
+              "main"
+            ]
           ]
         }
       }
@@ -176,49 +162,29 @@
   "Outputs": {
     "IdentityPoolId": {
       "Description": "Id for the identity pool",
-      "Value": {
-        "Ref": "IdentityPool"
-      }
+      "Value": "us-east-1:46acac6f-21d1-433c-93b9-d9d908c696fc"
     },
     "IdentityPoolName": {
-      "Value": {
-        "Fn::GetAtt": [
-          "IdentityPool",
-          "Name"
-        ]
-      }
+      "Value": "productcatalog90174ac4_identitypool_90174ac4__main"
     },
     "UserPoolId": {
       "Description": "Id for the user pool",
-      "Value": {
-        "Ref": "UserPool"
-      }
+      "Value": "us-east-1_66BkqNfdX"
     },
     "UserPoolArn": {
       "Description": "Arn for the user pool",
-      "Value": {
-        "Fn::GetAtt": [
-          "UserPool",
-          "Arn"
-        ]
-      }
+      "Value": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_66BkqNfdX"
     },
     "UserPoolName": {
-      "Value": {
-        "Ref": "userPoolName"
-      }
+      "Value": "productcatalog90174ac4_userpool_90174ac4"
     },
     "AppClientIDWeb": {
       "Description": "The user pool app client id for web",
-      "Value": {
-        "Ref": "UserPoolClientWeb"
-      }
+      "Value": "7ogg1fkk68io03i95o0viqhibk"
     },
     "AppClientID": {
       "Description": "The user pool app client id",
-      "Value": {
-        "Ref": "UserPoolClient"
-      }
+      "Value": "27jbakm3s7vgm116b36evi830d"
     }
   }
 }

@@ -99,9 +99,7 @@
   "Conditions": {
     "ShouldNotCreateEnvResources": {
       "Fn::Equals": [
-        {
-          "Ref": "env"
-        },
+        "main",
         "NONE"
       ]
     },
@@ -109,9 +107,7 @@
       "Fn::Not": [
         {
           "Fn::Equals": [
-            {
-              "Ref": "s3PermissionsAuthenticatedPublic"
-            },
+            "s3:PutObject,s3:GetObject,s3:DeleteObject",
             "DISALLOW"
           ]
         }
@@ -121,9 +117,7 @@
       "Fn::Not": [
         {
           "Fn::Equals": [
-            {
-              "Ref": "s3PermissionsAuthenticatedProtected"
-            },
+            "s3:PutObject,s3:GetObject,s3:DeleteObject",
             "DISALLOW"
           ]
         }
@@ -133,9 +127,7 @@
       "Fn::Not": [
         {
           "Fn::Equals": [
-            {
-              "Ref": "s3PermissionsAuthenticatedPrivate"
-            },
+            "s3:PutObject,s3:GetObject,s3:DeleteObject",
             "DISALLOW"
           ]
         }
@@ -145,9 +137,7 @@
       "Fn::Not": [
         {
           "Fn::Equals": [
-            {
-              "Ref": "s3PermissionsAuthenticatedUploads"
-            },
+            "s3:PutObject",
             "DISALLOW"
           ]
         }
@@ -157,9 +147,7 @@
       "Fn::Not": [
         {
           "Fn::Equals": [
-            {
-              "Ref": "s3PermissionsGuestPublic"
-            },
+            "DISALLOW",
             "DISALLOW"
           ]
         }
@@ -169,9 +157,7 @@
       "Fn::Not": [
         {
           "Fn::Equals": [
-            {
-              "Ref": "s3PermissionsGuestUploads"
-            },
+            "DISALLOW",
             "DISALLOW"
           ]
         }
@@ -181,9 +167,7 @@
       "Fn::Not": [
         {
           "Fn::Equals": [
-            {
-              "Ref": "AuthenticatedAllowList"
-            },
+            "ALLOW",
             "DISALLOW"
           ]
         }
@@ -193,9 +177,7 @@
       "Fn::Not": [
         {
           "Fn::Equals": [
-            {
-              "Ref": "GuestAllowList"
-            },
+            "DISALLOW",
             "DISALLOW"
           ]
         }
@@ -205,14 +187,10 @@
   "Outputs": {
     "BucketName": {
       "Description": "Bucket name for the S3 bucket",
-      "Value": {
-        "Ref": "S3Bucket"
-      }
+      "Value": "productcatalogf95af07481f845caa6594c26ac9c8ed331323-main"
     },
     "Region": {
-      "Value": {
-        "Ref": "AWS::Region"
-      }
+      "Value": "us-east-1"
     }
   },
   "Resources": {
@@ -220,9 +198,7 @@
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
-        "FunctionName": {
-          "Ref": "functionS3Trigger1ef46783Name"
-        },
+        "FunctionName": "S3Trigger1ef46783-main",
         "Principal": "s3.amazonaws.com",
         "SourceAccount": {
           "Ref": "AWS::AccountId"
@@ -235,33 +211,25 @@
               {
                 "Fn::If": [
                   "ShouldNotCreateEnvResources",
-                  {
-                    "Ref": "bucketName"
-                  },
+                  "productcatalogf95af07481f845caa6594c26ac9c8ed3",
                   {
                     "Fn::Join": [
                       "",
                       [
-                        {
-                          "Ref": "bucketName"
-                        },
+                        "productcatalogf95af07481f845caa6594c26ac9c8ed3",
                         {
                           "Fn::Select": [
                             3,
                             {
                               "Fn::Split": [
                                 "-",
-                                {
-                                  "Ref": "AWS::StackName"
-                                }
+                                "amplify-productcatalog-main-31323-storages338e5b439-DQ7IMC8LEGGI"
                               ]
                             }
                           ]
                         },
                         "-",
-                        {
-                          "Ref": "env"
-                        }
+                        "main"
                       ]
                     ]
                   }
@@ -283,9 +251,7 @@
               "Action": {
                 "Fn::Split": [
                   ",",
-                  {
-                    "Ref": "s3PermissionsAuthenticatedPublic"
-                  }
+                  "s3:PutObject,s3:GetObject,s3:DeleteObject"
                 ]
               },
               "Resource": [
@@ -294,9 +260,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      {
-                        "Ref": "S3Bucket"
-                      },
+                      "productcatalogf95af07481f845caa6594c26ac9c8ed331323-main",
                       "/public/*"
                     ]
                   ]
@@ -305,18 +269,11 @@
             }
           ]
         },
-        "PolicyName": {
-          "Ref": "s3PublicPolicy"
-        },
+        "PolicyName": "Public_policy_38e5b439",
         "Roles": [
-          {
-            "Ref": "authRoleName"
-          }
+          "amplify-productcatalog-main-31323-authRole"
         ]
       },
-      "DependsOn": [
-        "S3Bucket"
-      ],
       "Condition": "CreateAuthPublic"
     },
     "S3AuthProtectedPolicy": {
@@ -330,9 +287,7 @@
               "Action": {
                 "Fn::Split": [
                   ",",
-                  {
-                    "Ref": "s3PermissionsAuthenticatedProtected"
-                  }
+                  "s3:PutObject,s3:GetObject,s3:DeleteObject"
                 ]
               },
               "Resource": [
@@ -341,9 +296,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      {
-                        "Ref": "S3Bucket"
-                      },
+                      "productcatalogf95af07481f845caa6594c26ac9c8ed331323-main",
                       "/protected/${cognito-identity.amazonaws.com:sub}/*"
                     ]
                   ]
@@ -352,18 +305,11 @@
             }
           ]
         },
-        "PolicyName": {
-          "Ref": "s3ProtectedPolicy"
-        },
+        "PolicyName": "Protected_policy_38e5b439",
         "Roles": [
-          {
-            "Ref": "authRoleName"
-          }
+          "amplify-productcatalog-main-31323-authRole"
         ]
       },
-      "DependsOn": [
-        "S3Bucket"
-      ],
       "Condition": "CreateAuthProtected"
     },
     "S3AuthPrivatePolicy": {
@@ -377,9 +323,7 @@
               "Action": {
                 "Fn::Split": [
                   ",",
-                  {
-                    "Ref": "s3PermissionsAuthenticatedPrivate"
-                  }
+                  "s3:PutObject,s3:GetObject,s3:DeleteObject"
                 ]
               },
               "Resource": [
@@ -388,9 +332,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      {
-                        "Ref": "S3Bucket"
-                      },
+                      "productcatalogf95af07481f845caa6594c26ac9c8ed331323-main",
                       "/private/${cognito-identity.amazonaws.com:sub}/*"
                     ]
                   ]
@@ -399,18 +341,11 @@
             }
           ]
         },
-        "PolicyName": {
-          "Ref": "s3PrivatePolicy"
-        },
+        "PolicyName": "Private_policy_38e5b439",
         "Roles": [
-          {
-            "Ref": "authRoleName"
-          }
+          "amplify-productcatalog-main-31323-authRole"
         ]
       },
-      "DependsOn": [
-        "S3Bucket"
-      ],
       "Condition": "CreateAuthPrivate"
     },
     "S3AuthUploadPolicy": {
@@ -424,9 +359,7 @@
               "Action": {
                 "Fn::Split": [
                   ",",
-                  {
-                    "Ref": "s3PermissionsAuthenticatedUploads"
-                  }
+                  "s3:PutObject"
                 ]
               },
               "Resource": [
@@ -435,9 +368,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      {
-                        "Ref": "S3Bucket"
-                      },
+                      "productcatalogf95af07481f845caa6594c26ac9c8ed331323-main",
                       "/uploads/*"
                     ]
                   ]
@@ -446,18 +377,11 @@
             }
           ]
         },
-        "PolicyName": {
-          "Ref": "s3UploadsPolicy"
-        },
+        "PolicyName": "Uploads_policy_38e5b439",
         "Roles": [
-          {
-            "Ref": "authRoleName"
-          }
+          "amplify-productcatalog-main-31323-authRole"
         ]
       },
-      "DependsOn": [
-        "S3Bucket"
-      ],
       "Condition": "CreateAuthUploads"
     },
     "S3AuthReadPolicy": {
@@ -473,9 +397,7 @@
                   "",
                   [
                     "arn:aws:s3:::",
-                    {
-                      "Ref": "S3Bucket"
-                    },
+                    "productcatalogf95af07481f845caa6594c26ac9c8ed331323-main",
                     "/protected/*"
                   ]
                 ]
@@ -501,9 +423,7 @@
                   "",
                   [
                     "arn:aws:s3:::",
-                    {
-                      "Ref": "S3Bucket"
-                    }
+                    "productcatalogf95af07481f845caa6594c26ac9c8ed331323-main"
                   ]
                 ]
               }
@@ -511,82 +431,12 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": {
-          "Ref": "s3ReadPolicy"
-        },
+        "PolicyName": "read_policy_38e5b439",
         "Roles": [
-          {
-            "Ref": "authRoleName"
-          }
+          "amplify-productcatalog-main-31323-authRole"
         ]
       },
-      "DependsOn": [
-        "S3Bucket"
-      ],
       "Condition": "AuthReadAndList"
-    },
-    "S3GuestReadPolicy": {
-      "Type": "AWS::IAM::Policy",
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": "s3:GetObject",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::Join": [
-                  "",
-                  [
-                    "arn:aws:s3:::",
-                    {
-                      "Ref": "S3Bucket"
-                    },
-                    "/protected/*"
-                  ]
-                ]
-              }
-            },
-            {
-              "Action": "s3:ListBucket",
-              "Condition": {
-                "StringLike": {
-                  "s3:prefix": [
-                    "public/",
-                    "public/*",
-                    "protected/",
-                    "protected/*"
-                  ]
-                }
-              },
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::Join": [
-                  "",
-                  [
-                    "arn:aws:s3:::",
-                    {
-                      "Ref": "S3Bucket"
-                    }
-                  ]
-                ]
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        },
-        "PolicyName": {
-          "Ref": "s3ReadPolicy"
-        },
-        "Roles": [
-          {
-            "Ref": "unauthRoleName"
-          }
-        ]
-      },
-      "DependsOn": [
-        "S3Bucket"
-      ],
-      "Condition": "GuestReadAndList"
     },
     "S3TriggerBucketPolicy": {
       "Type": "AWS::IAM::Policy",
@@ -605,9 +455,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      {
-                        "Ref": "S3Bucket"
-                      }
+                      "productcatalogf95af07481f845caa6594c26ac9c8ed331323-main"
                     ]
                   ]
                 }
@@ -627,9 +475,7 @@
                     "",
                     [
                       "arn:aws:s3:::",
-                      {
-                        "Ref": "S3Bucket"
-                      },
+                      "productcatalogf95af07481f845caa6594c26ac9c8ed331323-main",
                       "/*"
                     ]
                   ]
@@ -640,14 +486,9 @@
         },
         "PolicyName": "amplify-lambda-execution-policy-storage",
         "Roles": [
-          {
-            "Ref": "functionS3Trigger1ef46783LambdaExecutionRole"
-          }
+          "S3Trigger1ef46783LambdaRole1ef46783-main"
         ]
-      },
-      "DependsOn": [
-        "S3Bucket"
-      ]
+      }
     }
   }
 }
