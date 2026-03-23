@@ -38,6 +38,9 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
         case 'function:Lambda':
         case 'api:AppSync':
         case 'api:API Gateway':
+        case 'geo:Map':
+        case 'geo:PlaceIndex':
+        case 'geo:GeofenceCollection':
           assessment.record('refactor', resource, { supported: true });
           break;
         case 'auth:Cognito-UserPool-Groups':
@@ -89,6 +92,9 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
         case 'function:Lambda':
         case 'api:AppSync':
         case 'api:API Gateway':
+        case 'geo:Map':
+        case 'geo:PlaceIndex':
+        case 'geo:GeofenceCollection':
           break;
         case 'auth:Cognito-UserPool-Groups':
         case 'unsupported':
@@ -138,6 +144,9 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
         case 'function:Lambda':
         case 'api:AppSync':
         case 'api:API Gateway':
+        case 'geo:Map':
+        case 'geo:PlaceIndex':
+        case 'geo:GeofenceCollection':
           break;
         case 'auth:Cognito-UserPool-Groups':
         case 'unsupported':
