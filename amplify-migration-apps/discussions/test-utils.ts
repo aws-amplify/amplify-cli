@@ -4,7 +4,7 @@ import { Amplify } from 'aws-amplify';
 import { generateClient } from 'aws-amplify/api';
 import { getCurrentUser } from 'aws-amplify/auth';
 import { uploadData, getUrl, remove } from 'aws-amplify/storage';
-import { DynamoDBClient, ListTablesCommand } from '@aws-sdk/client-dynamodb';
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient, PutCommand, GetCommand, DeleteCommand } from '@aws-sdk/lib-dynamodb';
 import { getTopic, listTopics, getPost, listPosts, getComment, listComments, fetchUserActivity } from './src/graphql/queries';
 import {
@@ -373,14 +373,15 @@ export function createTestFunctions() {
   // Bookmarks DDB Test Functions
   // ============================================================
 
+  const ddbClient = DynamoDBDocumentClient.from(
+    new DynamoDBClient({ region: (amplifyconfig as any).aws_project_region }),
+  );
+
   async function testCreateBookmark(tableName: string, userId: string, postId: string): Promise<void> {
     console.log('\n🔖 Testing PutItem (create bookmark)...');
     console.log(`   Table: ${tableName}`);
     console.log(`   userId: ${userId.substring(0, 8)}..., postId: ${postId.substring(0, 8)}...`);
 
-    const ddbClient = DynamoDBDocumentClient.from(
-      new DynamoDBClient({ region: (amplifyconfig as any).aws_project_region }),
-    );
     await ddbClient.send(
       new PutCommand({
         TableName: tableName,
@@ -395,9 +396,6 @@ export function createTestFunctions() {
     console.log(`   Table: ${tableName}`);
     console.log(`   userId: ${userId.substring(0, 8)}..., postId: ${postId.substring(0, 8)}...`);
 
-    const ddbClient = DynamoDBDocumentClient.from(
-      new DynamoDBClient({ region: (amplifyconfig as any).aws_project_region }),
-    );
     const result = await ddbClient.send(
       new GetCommand({
         TableName: tableName,
@@ -419,9 +417,6 @@ export function createTestFunctions() {
     console.log(`   Table: ${tableName}`);
     console.log(`   userId: ${userId.substring(0, 8)}..., postId: ${postId.substring(0, 8)}...`);
 
-    const ddbClient = DynamoDBDocumentClient.from(
-      new DynamoDBClient({ region: (amplifyconfig as any).aws_project_region }),
-    );
     await ddbClient.send(
       new DeleteCommand({
         TableName: tableName,
@@ -457,22 +452,13 @@ export function createTestFunctions() {
   };
 }
 
-// ============================================================
-// Bookmarks Table Discovery
-// ============================================================
-
-export async function discoverBookmarksTable(region: string): Promise<string> {
-  const client = new DynamoDBClient({ region });
-  const result = await client.send(new ListTablesCommand({}));
-  const tables = result.TableNames ?? [];
-  const bookmarksTables = tables.filter((t) => t.startsWith('bookmarks-'));
-  if (bookmarksTables.length === 0) {
-    throw new Error('No bookmarks table found. Expected a DynamoDB table starting with "bookmarks-".');
+function getBookmarksTableName(): string {
+  const schemas = (amplifyconfig as any).aws_dynamodb_table_schemas ?? [];
+  const entry = schemas.find((s: any) => s.tableName?.startsWith('bookmarks-'));
+  if (!entry) {
+    throw new Error('No bookmarks table found in amplifyconfiguration.json');
   }
-  if (bookmarksTables.length > 1) {
-    console.log(`⚠️ Found multiple bookmarks tables: ${bookmarksTables.join(', ')}. Using first one.`);
-  }
-  return bookmarksTables[0];
+  return entry.tableName;
 }
 
 // ============================================================
@@ -593,9 +579,8 @@ export function createTestOrchestrator(testFunctions: ReturnType<typeof createTe
     console.log('🔖 PART 7: Bookmarks DDB');
     console.log('='.repeat(60));
 
-    const region = (amplifyconfig as any).aws_project_region || 'us-east-1';
-    const tableName = await discoverBookmarksTable(region);
-    console.log(`   Discovered bookmarks table: ${tableName}`);
+    const tableName = getBookmarksTableName();
+    console.log(`   Bookmarks table: ${tableName}`);
 
     await runner.runTest('createBookmark', () => testFunctions.testCreateBookmark(tableName, userId, postId));
     await runner.runTest('getBookmark', () => testFunctions.testGetBookmark(tableName, userId, postId));
