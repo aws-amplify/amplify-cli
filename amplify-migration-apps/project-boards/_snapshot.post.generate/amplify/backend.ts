@@ -32,6 +32,15 @@ userPool.addClient('NativeAppClient', {
   disableOAuth: true,
   generateSecret: false,
 });
+const cfnGraphqlApi = backend.data.resources.cfnResources.cfnGraphqlApi;
+cfnGraphqlApi.additionalAuthenticationProviders = [
+  {
+    authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+    userPoolConfig: {
+      userPoolId: backend.auth.resources.userPool.userPoolId,
+    },
+  },
+];
 const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
 // Use this bucket name post refactor
 // s3Bucket.bucketName = 'projectboards34b9a7f3c2ca489293910116c994688b02940-main';
@@ -45,14 +54,5 @@ s3Bucket.bucketEncryption = {
     },
   ],
 };
-const cfnGraphqlApi = backend.data.resources.cfnResources.cfnGraphqlApi;
-cfnGraphqlApi.additionalAuthenticationProviders = [
-  {
-    authenticationType: 'AMAZON_COGNITO_USER_POOLS',
-    userPoolConfig: {
-      userPoolId: backend.auth.resources.userPool.userPoolId,
-    },
-  },
-];
 const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 backend.quotegenerator.resources.cfnResources.cfnFunction.functionName = `quotegenerator-${branchName}`;

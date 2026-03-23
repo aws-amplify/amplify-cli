@@ -163,6 +163,10 @@
       "^.+\\.tsx?$": "ts-jest"
     },
     "testRegex": "(/src/__tests__/.*|(\\.|/)test)\\.tsx?$",
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "src/__tests__/commands/gen2-migration/_framework/"
+    ],
     "coveragePathIgnorePatterns": [
       "/node_modules/",
       "/templates/"
@@ -175,10 +179,7 @@
       "json",
       "node"
     ],
-    "collectCoverage": true,
-    "setupFilesAfterEnv": [
-      "<rootDir>/src/__tests__/commands/gen2-migration/refactor/generators/setup-jest.ts"
-    ]
+    "collectCoverage": true
   },
   "amplify": {
     "officialPlugins": {

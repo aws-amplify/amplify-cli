@@ -21,6 +21,10 @@ user and ask for confirmation before continuing.
 
 ### 2. Implementation Stage
 
+For non-trivial features, exhaust the design discussion before writing code. If the user says "don't implement yet" or
+"let's brainstorm," take that seriously — iterating on a design in conversation is far cheaper than iterating in code.
+Only start implementing when the approach is settled and confirmed.
+
 Make the necessary code changes and follow the guidelines in [CODING_GUIDELINES](./CODING_GUIDELINES.md).
 For incremental validation, run `jest` commands directly and filter for the relevant tests.
 
@@ -32,11 +36,9 @@ Verify your changes by following these guidelines:
 
 ### 4. Commit Stage
 
-- **Always** update the appropriate README or design document when you make a change that impacts the contents of these documents.
-- **Always** update the appropriate skill files when you make a change that impacts the contents of the skill (path to docs for example).
 - **Always** update the appropriate JSDoc strings in the code you change. Be concise.
-- **Always** update the .md files that correspond to the code files you touched.
 - Do not create additional markdown files in the repository unless you are instructed explicitly to.
+- Never commit `.ai-generated` files (`.commit-message.ai-generated.txt`, `.pr-body.ai-generated.md`, etc.) — they are gitignored and are only used as local scratch files.
 - Commit your changes in git using a well-formed commit message following the Conventional Commits format. The message must start
   with a type prefix (e.g., `feat:`, `fix:`, `docs:`, `refactor:`, `test:`, `chore:`) followed by a single sentence summary and no more
   than a few paragraphs explaining the change and your testing. After this explanation, place the prompt the user used to trigger this
@@ -52,17 +54,30 @@ Verify your changes by following these guidelines:
 - Since this repo has a commit hook that takes quite a long time to run, don't immediately commit every
   change you were asked to do. Apply your judgment, if the diff is still fairly small just keep going.
   Otherwise, ask the user if they want to commit or keep going.
+- Committing after every incremental change wastes time on hooks and creates noisy history. Natural commit
+  points are: after a design discussion concludes, after tests pass, after a self-review finds no issues.
 - NEVER commit with --no-verify.
 - Before you actually commit, provide a (very) concise summary of changes to the user and ask for confirmation to commit.
 - **Before committing**, review your own diff (`git diff --cached`) against [CODING_GUIDELINES](./CODING_GUIDELINES.md). Look for and fix any violations you may have introduced.
 
-### 5. PR Body
+### 5. PR Stage
 
-When asked to create a PR body, write it to `.pr-body.ai-generated.md` and follow these guidelines:
+This stage prepares the PR description — the user is responsible for creating the actual PR.
+
+#### 5.1 Update Docs
+
+Documentation is updated at PR time — not per-commit — because code changes frequently between commits and updating docs mid-development creates churn that gets immediately outdated.
+
+- Update the .md files in `docs/` that correspond to the code files you touched.
+- Update the appropriate skill files when a change impacts the contents of the skill.
+
+#### 5.2 Create Body File
+
+When asked to create a PR, generate a body into `.pr-body.ai-generated.md` and follow these guidelines:
 
 - Use the PR template in `.github/PULL_REQUEST_TEMPLATE.md` as the structure.
 - Focus on **why** the change is being made and **what** it accomplishes, not the implementation details that are obvious from the diff.
-- Do not repeat information that already exists in README files included in the PR — link to them instead.
+- Do a 30 second summary of the important design information.
 - Do not go overboard on technical details. A reviewer can read the code.
 - Keep it concise and scannable.
 

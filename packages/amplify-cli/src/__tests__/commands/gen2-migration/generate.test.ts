@@ -82,10 +82,8 @@ async function testSnapshot(appName: string, appOptions?: MigrationAppOptions, c
         app.region,
         {} as $TSContext,
       );
-      const operations = await step.execute();
-      for (const operation of operations) {
-        await operation.execute();
-      }
+      const plan = await step.forward();
+      await plan.execute();
 
       const report = await app.snapshots.generate.compare(process.cwd());
       const isUpdatingSnapshots = expect.getState().snapshotState._updateSnapshot === 'all';
@@ -101,3 +99,74 @@ async function testSnapshot(appName: string, appOptions?: MigrationAppOptions, c
     appOptions,
   );
 }
+
+import { Gen1App, DiscoveredResource } from '../../../commands/gen2-migration/generate/_infra/gen1-app';
+import { Assessment } from '../../../commands/gen2-migration/_assessment';
+import { SpinningLogger } from '../../../commands/gen2-migration/_spinning-logger';
+
+function mockDiscover(resources: DiscoveredResource[]): jest.SpyInstance {
+  return jest.spyOn(Gen1App, 'create').mockResolvedValue({
+    discover: () => resources,
+    meta: () => undefined,
+  } as unknown as Gen1App);
+}
+
+function createStep(): AmplifyMigrationGenerateStep {
+  const logger = new SpinningLogger('generate', { debug: true });
+  return new AmplifyMigrationGenerateStep(logger, 'dev', 'test-app', 'app-123', 'root-stack', 'us-east-1', {} as $TSContext);
+}
+
+describe('AmplifyMigrationGenerateStep', () => {
+  let createSpy: jest.SpyInstance;
+
+  afterEach(() => {
+    createSpy?.mockRestore();
+  });
+
+  describe('assess()', () => {
+    it('records supported resources as supported', async () => {
+      createSpy = mockDiscover([
+        { category: 'auth', resourceName: 'myPool', service: 'Cognito', key: 'auth:Cognito' },
+        { category: 'storage', resourceName: 'myBucket', service: 'S3', key: 'storage:S3' },
+        { category: 'function', resourceName: 'myFunc', service: 'Lambda', key: 'function:Lambda' },
+      ]);
+
+      const recordSpy = jest.spyOn(Assessment.prototype, 'record');
+      const step = createStep();
+      await step.assess(new Assessment('test-app', 'dev'));
+
+      for (const name of ['myPool', 'myBucket', 'myFunc']) {
+        expect(recordSpy).toHaveBeenCalledWith('generate', expect.objectContaining({ resourceName: name }), {
+          supported: true,
+        });
+      }
+
+      recordSpy.mockRestore();
+    });
+
+    it('records unsupported key as not supported', async () => {
+      createSpy = mockDiscover([{ category: 'notifications', resourceName: 'push', service: 'Pinpoint', key: 'unsupported' }]);
+
+      const recordSpy = jest.spyOn(Assessment.prototype, 'record');
+      const step = createStep();
+      await step.assess(new Assessment('test-app', 'dev'));
+
+      expect(recordSpy).toHaveBeenCalledWith('generate', expect.objectContaining({ resourceName: 'push' }), {
+        supported: false,
+      });
+
+      recordSpy.mockRestore();
+    });
+  });
+
+  describe('execute()', () => {
+    it('warns and skips unsupported resources instead of throwing', async () => {
+      createSpy = mockDiscover([{ category: 'notifications', resourceName: 'push', service: 'Pinpoint', key: 'unsupported' }]);
+
+      const step = createStep();
+      // Should not throw — generate warns on unsupported, unlike refactor
+      const plan = await step.forward();
+      await plan.describe();
+    });
+  });
+});

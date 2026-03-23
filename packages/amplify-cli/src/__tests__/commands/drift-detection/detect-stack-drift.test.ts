@@ -1,15 +1,8 @@
 import { type StackResourceDrift, type PropertyDifference } from '@aws-sdk/client-cloudformation';
 import { isAmplifyRestApiDescriptionDrift, isAmplifyTriggerPolicyDrift } from '../../../commands/drift-detection/detect-stack-drift';
-import type { Printer } from '@aws-amplify/amplify-prompts';
+import { SpinningLogger } from '../../../commands/gen2-migration/_spinning-logger';
 
-const mockPrinter: Printer = {
-  info: jest.fn(),
-  debug: jest.fn(),
-  warn: jest.fn(),
-  blankLine: jest.fn(),
-  success: jest.fn(),
-  error: jest.fn(),
-};
+const mockPrinter = new SpinningLogger('test', { debug: true });
 
 function makeDrift(overrides: Partial<StackResourceDrift> = {}): StackResourceDrift {
   return {

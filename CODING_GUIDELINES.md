@@ -116,6 +116,17 @@ This applies at every level:
 
 - Interface properties and class fields should be `readonly`. Omitting `readonly` requires a clear, documented justification for why mutation is necessary. "Convenience" is not a justification.
 
+**Exception: post-construction wiring.** When objects have cross-references that can't be resolved at construction time — because the referenced object may not exist yet during an iteration — use post-construction setters rather than relying on iteration order. This is a controlled form of mutability: the field starts as `undefined`, gets set exactly once after the loop, and is never reassigned again. Document which fields must be wired before the object is used (e.g., "must be called before `plan()`").
+
+```typescript
+// Acceptable — cross-references wired after all objects are created
+const authGenerator = new AuthGenerator(...);
+const funcGenerator = new FunctionGenerator(...);
+
+// Wire after the loop — order-agnostic
+funcGenerator.setAuthGenerator(authGenerator);
+```
+
 ---
 
 ### Prefer `const` over `let`
@@ -398,6 +409,37 @@ Scattered branching means: adding a new case requires hunting every branch point
 If multiple call sites independently read the same file, call the same API, or derive the same value from raw data, you're paying the cost multiple times and creating multiple places that can diverge if the logic changes.
 
 **Instead:** Compute once, pass everywhere. Do the work at the top of the pipeline, extract what you need into a typed object, and inject it into every consumer.
+
+---
+
+### Don't guard at the top for edge cases that downstream functions should handle
+
+When an orchestrator checks for a trivial input (empty collection, zero count, no-op condition) and returns early to prevent downstream functions from receiving that input, the guard is compensating for fragile callees. The downstream functions should produce the correct result for trivial inputs on their own — an empty input should naturally yield an empty output without special-casing at the call site.
+
+A top-level guard like this creates two problems. First, it hides the fact that the downstream functions can't handle their own edge cases — if someone later calls those functions directly (in a new orchestrator, in tests, in a different composition), they'll hit the bug the guard was masking. Second, it misleads the reader: the guard implies the downstream code would _break_ on empty input, turning a simple "nothing to do" case into something that looks like it needs protection.
+
+```typescript
+// Bad — orchestrator guards because buildOperations doesn't handle empty input
+async plan(): Promise<Operation[]> {
+  const items = await this.fetchItems();
+  if (items.size === 0) {
+    return []; // early return to avoid passing empty items downstream
+  }
+  const mappings = this.buildMappings(items);
+  const ops = this.buildOperations(mappings); // would create a bogus API call with 0 mappings
+  return ops;
+}
+
+// Good — each function handles trivial input naturally
+async plan(): Promise<Operation[]> {
+  const items = await this.fetchItems();
+  const mappings = this.buildMappings(items);    // empty items → empty mappings
+  const ops = this.buildOperations(mappings);     // empty mappings → empty ops
+  return ops;
+}
+```
+
+The test: remove the guard and trace the function with the trivial input. If the result is correct, the guard was dead code. If the result is wrong, fix the downstream function — don't add a guard upstream.
 
 ---
 

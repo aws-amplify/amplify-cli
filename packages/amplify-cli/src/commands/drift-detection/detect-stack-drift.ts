@@ -15,7 +15,8 @@ import {
 } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { extractCategory } from '../gen2-migration/categories';
-import type { Printer } from '@aws-amplify/amplify-prompts';
+import type { SpinningLogger } from '../gen2-migration/_spinning-logger';
+import { extractStackNameFromId } from '../gen2-migration/refactor/utils';
 
 /**
  * Known false-positive filters applied to Phase 1 drift results.
@@ -68,10 +69,9 @@ function collectSkippedStacks(node: StackDriftNode, result: string[] = []): stri
 export async function detectStackDrift(
   cfn: CloudFormationClient,
   stackName: string,
-  print: Printer,
+  print: SpinningLogger,
 ): Promise<{ drifts: StackResourceDrift[]; driftDetectionId: string }> {
   // Start drift detection
-  print.debug(`detectStackDrift: ${stackName}`);
   const driftDetection = await cfn.send(
     new DetectStackDriftCommand({
       StackName: stackName,
@@ -122,7 +122,7 @@ export async function detectStackDrift(
 /**
  * Check if a property difference is an Amplify auth role Deny→Allow change (intended drift)
  */
-function isAmplifyAuthRoleDenyToAllowChange(_drift: StackResourceDrift, propDiff: PropertyDifference, print: Printer): boolean {
+function isAmplifyAuthRoleDenyToAllowChange(_drift: StackResourceDrift, propDiff: PropertyDifference, print: SpinningLogger): boolean {
   // Check if this is an AssumeRolePolicyDocument change
   if (!propDiff.PropertyPath || !propDiff.PropertyPath.includes('AssumeRolePolicyDocument')) {
     return false;
@@ -173,7 +173,7 @@ function isAmplifyAuthRoleDenyToAllowChange(_drift: StackResourceDrift, propDiff
  * Amplify may set Description during template generation but the deployed
  * resource reports it differently (or as null).
  */
-export function isAmplifyRestApiDescriptionDrift(drift: StackResourceDrift, propDiff: PropertyDifference, print: Printer): boolean {
+export function isAmplifyRestApiDescriptionDrift(drift: StackResourceDrift, propDiff: PropertyDifference, print: SpinningLogger): boolean {
   if (drift.ResourceType !== 'AWS::ApiGateway::RestApi') return false;
   if (!propDiff.PropertyPath || propDiff.PropertyPath !== '/Description') return false;
 
@@ -192,7 +192,7 @@ export function isAmplifyRestApiDescriptionDrift(drift: StackResourceDrift, prop
  * Lambda execution roles during push. These appear as /Policies/N diffs where
  * ExpectedValue is null and ActualValue contains a known Amplify policy.
  */
-export function isAmplifyTriggerPolicyDrift(drift: StackResourceDrift, propDiff: PropertyDifference, print: Printer): boolean {
+export function isAmplifyTriggerPolicyDrift(drift: StackResourceDrift, propDiff: PropertyDifference, print: SpinningLogger): boolean {
   if (drift.ResourceType !== 'AWS::IAM::Role') return false;
   if (!propDiff.PropertyPath || !/\/Policies\/\d+/.test(propDiff.PropertyPath)) return false;
 
@@ -226,7 +226,7 @@ export function isAmplifyTriggerPolicyDrift(drift: StackResourceDrift, propDiff:
 async function waitForDriftDetection(
   cfn: CloudFormationClient,
   driftDetectionId: string,
-  print: Printer,
+  print: SpinningLogger,
 ): Promise<DescribeStackDriftDetectionStatusCommandOutput | undefined> {
   const maxWaitForDrift = 300_000; // 5 minutes max
   const timeBetweenOutputs = 10_000; // User feedback every 10 seconds
@@ -278,11 +278,13 @@ async function buildDriftNode(
   cfn: CloudFormationClient,
   physicalName: string,
   logicalId: string | null,
-  print: Printer,
+  print: SpinningLogger,
   parentCategory?: string,
 ): Promise<StackDriftNode> {
   // Detect drift on this stack — filter to only drifted resources (MODIFIED/DELETED)
+  print.push(extractStackNameFromId(physicalName));
   const { drifts: allDrifts, driftDetectionId } = await detectStackDrift(cfn, physicalName, print);
+  print.pop();
   const drifts = allDrifts.filter(isDrifted);
 
   // Compute category — root stack (null logicalId) is always 'Core Infrastructure'
@@ -352,7 +354,7 @@ async function buildDriftNode(
 export async function detectStackDriftRecursive(
   cfn: CloudFormationClient,
   stackName: string,
-  print: Printer,
+  print: SpinningLogger,
 ): Promise<CloudFormationDriftResults> {
   print.debug(`detectStackDriftRecursive: ${stackName}`);
 
