@@ -16,14 +16,12 @@ export class DynamoDBGenerator implements Planner {
   private readonly gen1App: Gen1App;
   private readonly backendGenerator: BackendGenerator;
   private readonly resource: DiscoveredResource;
-  private readonly hasS3Bucket: boolean;
   private readonly renderer = new DynamoDBRenderer();
 
   public constructor(gen1App: Gen1App, backendGenerator: BackendGenerator, resource: DiscoveredResource, hasS3Bucket: boolean) {
     this.gen1App = gen1App;
     this.backendGenerator = backendGenerator;
     this.resource = resource;
-    this.hasS3Bucket = hasS3Bucket;
   }
 
   /**
@@ -40,9 +38,9 @@ export class DynamoDBGenerator implements Planner {
         execute: async () => {
           const imports = this.renderer.requiredImports();
           this.backendGenerator.addImport(imports.source, imports.identifiers);
-          this.backendGenerator.ensureStorageStack(this.hasS3Bucket);
+          const scopeVarName = this.backendGenerator.createDynamoDBStack(this.resource.resourceName);
 
-          for (const statement of this.renderer.renderTable(table)) {
+          for (const statement of this.renderer.renderTable(table, scopeVarName)) {
             this.backendGenerator.addEarlyStatement(statement);
           }
         },

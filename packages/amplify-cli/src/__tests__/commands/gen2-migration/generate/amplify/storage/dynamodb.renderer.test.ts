@@ -32,7 +32,7 @@ describe('DynamoDBRenderer', () => {
         partitionKey: { name: 'id', type: 'STRING' },
         billingMode: 'PAY_PER_REQUEST',
       };
-      const output = printStatements(renderer.renderTable(table));
+      const output = printStatements(renderer.renderTable(table, 'storageStack'));
 
       expect(output).toMatchInlineSnapshot(`
         "new Table(storageStack, "MyTable", { partitionKey: { name: "id", type: AttributeType.STRING }, billingMode: BillingMode.PAY_PER_REQUEST });
@@ -50,7 +50,7 @@ describe('DynamoDBRenderer', () => {
         readCapacity: 10,
         writeCapacity: 5,
       };
-      const output = printStatements(renderer.renderTable(table));
+      const output = printStatements(renderer.renderTable(table, 'storageStack'));
 
       expect(output).toMatchInlineSnapshot(`
         "new Table(storageStack, "MyTable", { partitionKey: { name: "pk", type: AttributeType.STRING }, billingMode: BillingMode.PROVISIONED, readCapacity: 10, writeCapacity: 5, sortKey: { name: "sk", type: AttributeType.NUMBER } });
@@ -66,7 +66,7 @@ describe('DynamoDBRenderer', () => {
         streamEnabled: true,
         streamViewType: 'NEW_AND_OLD_IMAGES',
       };
-      const output = printStatements(renderer.renderTable(table));
+      const output = printStatements(renderer.renderTable(table, 'storageStack'));
 
       expect(output).toMatchInlineSnapshot(`
         "new Table(storageStack, "StreamTable", { partitionKey: { name: "id", type: AttributeType.STRING }, billingMode: BillingMode.PROVISIONED, readCapacity: 5, writeCapacity: 5, stream: StreamViewType.NEW_AND_OLD_IMAGES });
@@ -81,7 +81,7 @@ describe('DynamoDBRenderer', () => {
         partitionKey: { name: 'id', type: 'STRING' },
         streamEnabled: false,
       };
-      const output = printStatements(renderer.renderTable(table));
+      const output = printStatements(renderer.renderTable(table, 'storageStack'));
 
       expect(output).not.toContain('StreamViewType');
     });
@@ -102,7 +102,7 @@ describe('DynamoDBRenderer', () => {
           },
         ],
       };
-      const output = printStatements(renderer.renderTable(table));
+      const output = printStatements(renderer.renderTable(table, 'storageStack'));
 
       expect(output).toMatchInlineSnapshot(`
         "const GsiTable = new Table(storageStack, "GsiTable", { partitionKey: { name: "id", type: AttributeType.STRING }, billingMode: BillingMode.PROVISIONED, readCapacity: 5, writeCapacity: 5 });
@@ -118,7 +118,7 @@ describe('DynamoDBRenderer', () => {
         tableName: 'SimpleTable-abc',
         partitionKey: { name: 'id', type: 'STRING' },
       };
-      const output = printStatements(renderer.renderTable(table));
+      const output = printStatements(renderer.renderTable(table, 'storageStack'));
 
       expect(output).not.toContain('const SimpleTable');
       expect(output).toContain('new Table');
@@ -132,7 +132,7 @@ describe('DynamoDBRenderer', () => {
         readCapacity: 10,
         writeCapacity: 5,
       };
-      const output = printStatements(renderer.renderTable(table));
+      const output = printStatements(renderer.renderTable(table, 'storageStack'));
 
       expect(output).not.toContain('readCapacity');
       expect(output).not.toContain('writeCapacity');
@@ -143,7 +143,7 @@ describe('DynamoDBRenderer', () => {
         tableName: 'my-special.table-abc',
         partitionKey: { name: 'id', type: 'STRING' },
       };
-      const output = printStatements(renderer.renderTable(table));
+      const output = printStatements(renderer.renderTable(table, 'storageStack'));
 
       expect(output).toMatchInlineSnapshot(`
         "new Table(storageStack, "my_special_table", { partitionKey: { name: "id", type: AttributeType.STRING }, billingMode: BillingMode.PROVISIONED, readCapacity: 5, writeCapacity: 5 });
@@ -157,7 +157,7 @@ describe('DynamoDBRenderer', () => {
         tableName: 'BinaryTable-abc',
         partitionKey: { name: 'data', type: 'BINARY' },
       };
-      const output = printStatements(renderer.renderTable(table));
+      const output = printStatements(renderer.renderTable(table, 'storageStack'));
 
       expect(output).toMatchInlineSnapshot(`
         "new Table(storageStack, "BinaryTable", { partitionKey: { name: "data", type: AttributeType.BINARY }, billingMode: BillingMode.PROVISIONED, readCapacity: 5, writeCapacity: 5 });

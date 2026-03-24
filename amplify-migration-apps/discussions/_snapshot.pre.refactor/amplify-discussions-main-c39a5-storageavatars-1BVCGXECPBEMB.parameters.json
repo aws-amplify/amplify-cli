@@ -1,0 +1,86 @@
+[
+  {
+    "ParameterKey": "s3PermissionsGuestPublic",
+    "ParameterValue": "DISALLOW"
+  },
+  {
+    "ParameterKey": "bucketName",
+    "ParameterValue": "discus-avatars"
+  },
+  {
+    "ParameterKey": "s3PublicPolicy",
+    "ParameterValue": "Public_policy_bf41454d"
+  },
+  {
+    "ParameterKey": "AuthenticatedAllowList",
+    "ParameterValue": "ALLOW"
+  },
+  {
+    "ParameterKey": "unauthRoleName",
+    "ParameterValue": "amplify-discussions-main-c39a5-unauthRole"
+  },
+  {
+    "ParameterKey": "s3PrivatePolicy",
+    "ParameterValue": "Private_policy_bf41454d"
+  },
+  {
+    "ParameterKey": "selectedGuestPermissions",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "s3PermissionsAuthenticatedPublic",
+    "ParameterValue": "s3:PutObject,s3:GetObject,s3:DeleteObject"
+  },
+  {
+    "ParameterKey": "s3PermissionsAuthenticatedPrivate",
+    "ParameterValue": "s3:PutObject,s3:GetObject,s3:DeleteObject"
+  },
+  {
+    "ParameterKey": "s3PermissionsAuthenticatedUploads",
+    "ParameterValue": "s3:PutObject"
+  },
+  {
+    "ParameterKey": "s3UploadsPolicy",
+    "ParameterValue": "Uploads_policy_bf41454d"
+  },
+  {
+    "ParameterKey": "env",
+    "ParameterValue": "main"
+  },
+  {
+    "ParameterKey": "unauthPolicyName",
+    "ParameterValue": "s3_amplify_bf41454d"
+  },
+  {
+    "ParameterKey": "authRoleName",
+    "ParameterValue": "amplify-discussions-main-c39a5-authRole"
+  },
+  {
+    "ParameterKey": "GuestAllowList",
+    "ParameterValue": "DISALLOW"
+  },
+  {
+    "ParameterKey": "authPolicyName",
+    "ParameterValue": "s3_amplify_bf41454d"
+  },
+  {
+    "ParameterKey": "s3ProtectedPolicy",
+    "ParameterValue": "Protected_policy_bf41454d"
+  },
+  {
+    "ParameterKey": "s3PermissionsAuthenticatedProtected",
+    "ParameterValue": "s3:PutObject,s3:GetObject,s3:DeleteObject"
+  },
+  {
+    "ParameterKey": "s3PermissionsGuestUploads",
+    "ParameterValue": "DISALLOW"
+  },
+  {
+    "ParameterKey": "s3ReadPolicy",
+    "ParameterValue": "read_policy_bf41454d"
+  },
+  {
+    "ParameterKey": "selectedAuthenticatedPermissions",
+    "ParameterValue": "s3:PutObject,s3:GetObject,s3:ListBucket,s3:DeleteObject"
+  }
+]

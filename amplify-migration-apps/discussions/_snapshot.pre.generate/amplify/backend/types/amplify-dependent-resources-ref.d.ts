@@ -7,7 +7,7 @@ export type AmplifyDependentResourcesAttributes = {
     }
   },
   "auth": {
-    "discussions22367c6822367c68": {
+    "discussionsc578c16ec578c16e": {
       "AppClientID": "string",
       "AppClientIDWeb": "string",
       "CreatedSNSRole": "string",
@@ -36,6 +36,20 @@ export type AmplifyDependentResourcesAttributes = {
   },
   "storage": {
     "activity": {
+      "Arn": "string",
+      "Name": "string",
+      "PartitionKeyName": "string",
+      "PartitionKeyType": "string",
+      "Region": "string",
+      "SortKeyName": "string",
+      "SortKeyType": "string",
+      "StreamArn": "string"
+    },
+    "avatars": {
+      "BucketName": "string",
+      "Region": "string"
+    },
+    "bookmarks": {
       "Arn": "string",
       "Name": "string",
       "PartitionKeyName": "string",

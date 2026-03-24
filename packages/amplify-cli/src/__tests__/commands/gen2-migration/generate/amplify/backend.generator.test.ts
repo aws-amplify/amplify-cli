@@ -86,35 +86,27 @@ describe('BackendGenerator', () => {
     });
   });
 
-  describe('ensureStorageStack', () => {
-    it('emits storageStack from backend.storage.stack when S3 exists', () => {
+  describe('createDynamoDBStack', () => {
+    it('returns unique variable names for different resources', () => {
       const gen = new BackendGenerator(outputDir);
-      gen.addImport('./storage/resource', ['storage']);
-      gen.addDefineBackendProperty(factory.createShorthandPropertyAssignment('storage'));
-      gen.ensureStorageStack(true);
+      const varName1 = gen.createDynamoDBStack('activity');
+      const varName2 = gen.createDynamoDBStack('bookmarks');
 
-      return verifyBackendTs(gen, (content) => {
-        expect(content).toContain('backend.storage.stack');
-      });
+      expect(varName1).toBe('storageActivityStack');
+      expect(varName2).toBe('storageBookmarksStack');
+      expect(varName1).not.toBe(varName2);
     });
 
-    it('emits storageStack via createStack when no S3', () => {
+    it('emits separate createStack calls for each DDB table', () => {
       const gen = new BackendGenerator(outputDir);
-      gen.ensureStorageStack(false);
+      gen.createDynamoDBStack('activity');
+      gen.createDynamoDBStack('bookmarks');
 
       return verifyBackendTs(gen, (content) => {
-        expect(content).toContain("backend.createStack('storage')");
-      });
-    });
-
-    it('emits storageStack exactly once', () => {
-      const gen = new BackendGenerator(outputDir);
-      gen.ensureStorageStack(false);
-      gen.ensureStorageStack(false);
-
-      return verifyBackendTs(gen, (content) => {
-        const matches = content.match(/const storageStack/g) || [];
-        expect(matches).toHaveLength(1);
+        expect(content).toContain("backend.createStack('storageactivity')");
+        expect(content).toContain("backend.createStack('storagebookmarks')");
+        expect(content).toContain('const storageActivityStack');
+        expect(content).toContain('const storageBookmarksStack');
       });
     });
   });

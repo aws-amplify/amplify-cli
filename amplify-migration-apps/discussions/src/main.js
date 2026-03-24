@@ -1,6 +1,7 @@
 import { Amplify } from 'aws-amplify';
 import { signUp, confirmSignUp, signIn, signOut, getCurrentUser } from 'aws-amplify/auth';
 import { generateClient } from 'aws-amplify/api';
+import { uploadData, getUrl } from 'aws-amplify/storage';
 import awsconfig from './aws-exports';
 import * as mutations from './graphql/mutations';
 import * as queries from './graphql/queries';
@@ -15,6 +16,7 @@ let currentTopicName = null;
 let currentPostId = null;
 let currentUserPhone = null;
 let currentUserId = null;
+let currentUserAvatarUrl = null;
 
 const DISCUSSIONS = [
   { id: 'tech', name: 'Technology', icon: '💻', color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' },
@@ -73,16 +75,16 @@ async function checkAuthState() {
     const user = await getCurrentUser();
     currentUserPhone = user.signInDetails.loginId;
     currentUserId = user.userId;
-    showMainApp();
+    await showMainApp();
   } catch {
     showPage('signinPage');
   }
 }
 
-function showMainApp() {
+async function showMainApp() {
   showPage('mainApp');
-  const initials = currentUserPhone ? currentUserPhone.substring(1, 3).toUpperCase() : 'U';
-  document.querySelectorAll('.avatar').forEach((el) => (el.textContent = initials));
+  await loadUserAvatar();
+  updateHeaderAvatar();
   showDiscussions();
 }
 
@@ -129,7 +131,7 @@ document.getElementById('signinBtn').addEventListener('click', async () => {
     const user = await getCurrentUser();
     currentUserPhone = phone;
     currentUserId = user.userId;
-    showMainApp();
+    await showMainApp();
   } catch (error) {
     alert('Error: ' + error.message);
   }
@@ -137,11 +139,101 @@ document.getElementById('signinBtn').addEventListener('click', async () => {
 
 document.getElementById('signoutBtn').addEventListener('click', async () => {
   await signOut();
+  currentUserAvatarUrl = null;
   showPage('signinPage');
 });
 
+// Profile
+document.getElementById('userAvatar').addEventListener('click', () => {
+  ['discussionsPage', 'topicsPage', 'postsPage', 'postDetailPage', 'activityPage'].forEach((id) => {
+    document.getElementById(id).classList.add('hidden');
+  });
+  document.getElementById('profilePage').classList.remove('hidden');
+  loadProfile();
+});
+
+document.getElementById('backFromProfile').addEventListener('click', () => {
+  document.getElementById('profilePage').classList.add('hidden');
+  showDiscussions();
+});
+
+document.getElementById('avatarInput').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const status = document.getElementById('avatarUploadStatus');
+  status.classList.remove('hidden', 'success', 'error');
+  status.classList.add('loading');
+  status.textContent = 'Uploading...';
+
+  try {
+    await uploadAvatar(file);
+    status.classList.remove('loading');
+    status.classList.add('success');
+    status.textContent = 'Avatar updated successfully!';
+
+    // Refresh avatar display
+    await loadUserAvatar();
+    updateHeaderAvatar();
+    loadProfile();
+  } catch (error) {
+    console.error('Upload error:', error);
+    status.classList.remove('loading');
+    status.classList.add('error');
+    status.textContent = 'Upload failed: ' + error.message;
+  }
+});
+
+async function loadProfile() {
+  document.getElementById('profilePhone').textContent = currentUserPhone || 'Unknown';
+
+  const profileAvatar = document.getElementById('profileAvatar');
+  if (currentUserAvatarUrl) {
+    profileAvatar.innerHTML = `<img src="${currentUserAvatarUrl}" class="avatar-img" alt="Avatar" />`;
+  } else {
+    const initials = currentUserPhone ? currentUserPhone.substring(1, 3).toUpperCase() : 'U';
+    profileAvatar.textContent = initials;
+  }
+}
+
+async function uploadAvatar(file) {
+  const path = `public/avatars/${currentUserId}`;
+
+  await uploadData({
+    path,
+    data: file,
+    options: {
+      contentType: file.type,
+    },
+  }).result;
+}
+
+async function loadUserAvatar() {
+  if (!currentUserId) return;
+
+  try {
+    const result = await getUrl({
+      path: `public/avatars/${currentUserId}`,
+      options: { validateObjectExistence: true },
+    });
+    currentUserAvatarUrl = result.url.toString();
+  } catch {
+    currentUserAvatarUrl = null;
+  }
+}
+
+function updateHeaderAvatar() {
+  const el = document.getElementById('userAvatar');
+  const initials = currentUserPhone ? currentUserPhone.substring(1, 3).toUpperCase() : 'U';
+  if (currentUserAvatarUrl) {
+    el.innerHTML = `<img src="${currentUserAvatarUrl}" class="avatar-img" alt="Avatar" />`;
+  } else {
+    el.textContent = initials;
+  }
+}
+
 document.getElementById('activityBtn').addEventListener('click', () => {
-  ['discussionsPage', 'topicsPage', 'postsPage', 'postDetailPage'].forEach((id) => {
+  ['discussionsPage', 'topicsPage', 'postsPage', 'postDetailPage', 'profilePage'].forEach((id) => {
     document.getElementById(id).classList.add('hidden');
   });
   document.getElementById('activityPage').classList.remove('hidden');
@@ -361,12 +453,12 @@ async function loadPosts(topicId) {
     }
 
     for (const post of result.data.listPosts.items) {
-      // Get comments count
       const commentsResult = await client.graphql({
         query: queries.listComments,
         variables: { filter: { postCommentsId: { eq: post.id } } },
       });
       const commentsCount = commentsResult.data.listComments.items.length;
+      const initials = post.createdByUserId.substring(0, 2).toUpperCase();
 
       const card = document.createElement('div');
       card.className = 'post-card';
@@ -374,7 +466,7 @@ async function loadPosts(topicId) {
       card.onclick = () => viewPost(post.id);
       card.innerHTML = `
         <div class="post-header">
-          <div class="avatar">U</div>
+          <div class="avatar">${initials}</div>
           <div class="post-content-area">
             <div class="post-author">
               <span class="username">${post.createdByUserId}</span>
@@ -422,6 +514,7 @@ async function loadPostDetail(postId) {
     });
 
     const post = result.data.getPost;
+    const initials = post.createdByUserId.substring(0, 2).toUpperCase();
 
     // Get fresh comments count
     const commentsResult = await client.graphql({
@@ -433,7 +526,7 @@ async function loadPostDetail(postId) {
     document.getElementById('postDetail').innerHTML = `
       <div class="post-card">
         <div class="post-header">
-          <div class="avatar">U</div>
+          <div class="avatar">${initials}</div>
           <div class="post-content-area">
             <div class="post-author">
               <span class="username">${post.createdByUserId}</span>
@@ -501,10 +594,11 @@ async function loadComments(postId) {
     }
 
     for (const comment of result.data.listComments.items) {
+      const initials = comment.createdByUserId.substring(0, 2).toUpperCase();
       const div = document.createElement('div');
       div.className = 'comment';
       div.innerHTML = `
-        <div class="avatar">U</div>
+        <div class="avatar">${initials}</div>
         <div class="comment-content">
           <div class="post-author">
             <span class="username">${comment.createdByUserId}</span>

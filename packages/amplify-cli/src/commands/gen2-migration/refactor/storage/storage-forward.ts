@@ -1,6 +1,5 @@
 import { ForwardCategoryRefactorer } from '../workflow/forward-category-refactorer';
-
-export const STORAGE_RESOURCE_TYPES = ['AWS::S3::Bucket', 'AWS::DynamoDB::Table'];
+import { StackFacade } from '../stack-facade';
 
 /**
  * Forward refactorer for S3 storage resources.
@@ -8,14 +7,32 @@ export const STORAGE_RESOURCE_TYPES = ['AWS::S3::Bucket', 'AWS::DynamoDB::Table'
  */
 export class StorageS3ForwardRefactorer extends ForwardCategoryRefactorer {
   protected async fetchSourceStackId(): Promise<string | undefined> {
-    return this.findNestedStack(this.gen1Env, 'storage');
+    return this.findNestedStack(this.gen1Env, 'storage' + this.resource.resourceName);
   }
 
   protected async fetchDestStackId(): Promise<string | undefined> {
-    return this.findNestedStack(this.gen2Branch, 'storage');
+    return findS3NestedStack(this.gen2Branch);
   }
 
   protected resourceTypes(): string[] {
     return ['AWS::S3::Bucket'];
   }
+}
+
+/**
+ * Finds the Gen2 S3 nested stack by fetching the template of each 'storage'-prefixed
+ * nested stack and checking whether it contains an AWS::S3::Bucket resource.
+ */
+export async function findS3NestedStack(facade: StackFacade): Promise<string | undefined> {
+  const stacks = await facade.fetchNestedStacks();
+  for (const s of stacks) {
+    const id = s.LogicalResourceId ?? '';
+    if (!id.startsWith('storage')) continue;
+    const stackId = s.PhysicalResourceId;
+    if (!stackId) continue;
+    const template = await facade.fetchTemplate(stackId);
+    const hasS3 = Object.values(template.Resources).some((r) => r.Type === 'AWS::S3::Bucket');
+    if (hasS3) return stackId;
+  }
+  return undefined;
 }

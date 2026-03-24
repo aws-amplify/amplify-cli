@@ -84,22 +84,19 @@ export class BackendGenerator implements Planner {
   }
 
   /**
-   * Ensures the `storageStack` variable is declared exactly once in backend.ts.
-   * Multiple DynamoDB generators share the same stack. When an S3 storage
-   * resource exists, the stack is reused from `backend.storage.stack`;
-   * otherwise a new stack is created.
+   * Creates a per-DDB-table stack via `backend.createStack('storage' + resourceName)`.
+   * Returns the variable name used to reference the stack (e.g., `storageActivityStack`).
+   * Each DDB table gets its own nested stack, enabling multi-table support.
    */
-  public ensureStorageStack(hasS3Bucket: boolean): void {
-    if (this.hasStorageStack) return;
-    this.hasStorageStack = true;
-
-    const stackExpression = hasS3Bucket
-      ? TS.propAccess('backend', 'storage', 'stack')
-      : factory.createCallExpression(TS.propAccess('backend', 'createStack') as ts.PropertyAccessExpression, undefined, [
-          factory.createStringLiteral('storage'),
-        ]);
-
-    this.earlyStatements.push(TS.constDecl('storageStack', stackExpression));
+  public createDynamoDBStack(resourceName: string): string {
+    const varName = `storage${resourceName.charAt(0).toUpperCase()}${resourceName.slice(1)}Stack`;
+    const stackExpression = factory.createCallExpression(
+      TS.propAccess('backend', 'createStack') as ts.PropertyAccessExpression,
+      undefined,
+      [factory.createStringLiteral('storage' + resourceName)],
+    );
+    this.earlyStatements.push(TS.constDecl(varName, stackExpression));
+    return varName;
   }
 
   /**
