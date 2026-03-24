@@ -114,7 +114,13 @@ describe('ForwardCategoryRefactorer.beforeMove', () => {
       .resolves({ Status: StackRefactorStatus.CREATE_COMPLETE, ExecutionStatus: StackRefactorExecutionStatus.EXECUTE_COMPLETE });
     cfnMock.on(ExecuteStackRefactorCommand).resolves({});
     cfnMock.on(DescribeStackResourcesCommand).resolves({ StackResources: [] });
-    cfnMock.on(GetTemplateCommand).resolves({ TemplateBody: GEN2_TEMPLATE_WITH_BUCKET });
+    cfnMock.on(GetTemplateCommand).callsFake(async (input: { StackName?: string }) => {
+      // REVIEW_IN_PROGRESS holding stack has no resources of interest
+      if (input.StackName?.endsWith('-holding')) {
+        return { TemplateBody: JSON.stringify({ AWSTemplateFormatVersion: '2010-09-09', Resources: {}, Outputs: {} }) };
+      }
+      return { TemplateBody: GEN2_TEMPLATE_WITH_BUCKET };
+    });
 
     const clients = new AwsClients({ region: 'us-east-1' });
     (clients as any).cloudFormation = new CloudFormationClient({});

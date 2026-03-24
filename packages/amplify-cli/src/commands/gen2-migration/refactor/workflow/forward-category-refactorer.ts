@@ -148,20 +148,31 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
 
     this.debug(`Fetching template of gen2 stack: ${gen2StackName}`);
     const gen2StackTemplate = await this.gen2Branch.fetchTemplate(gen2StackName);
+
+    this.debug(`Locating holding stack: ${holdingStackName}`);
+    const holdingStack = await this.cfn.findStack(holdingStackName);
+
     const resources = this.filterResourcesByType(gen2StackTemplate);
     this.debug(`Found ${resources.size} resources to move from stack: ${gen2StackName}`);
 
+    const holdingStackTemplate = holdingStack ? await this.cfn.fetchTemplate(holdingStackName) : undefined;
+    const holdingStackResources = holdingStackTemplate?.Resources ?? {};
+
     const resourceMappings: ResourceMapping[] = [];
     for (const logicalId of resources.keys()) {
-      this.debug(`Registering ${logicalId} to move from ${gen2StackName} to ${holdingStackName}`);
+      if (logicalId in holdingStackResources) {
+        // holding stack already contains this resource. can happen on a second
+        // subsequent execution of forward. the resources we discovered here
+        // are actually the gen1 resources that were moved.
+        this.debug(`Not registering ${logicalId} since it already exists in ${holdingStackName}`);
+        continue;
+      }
+      this.debug(`Registering ${logicalId} move to ${holdingStackName}`);
       resourceMappings.push({
         Source: { StackName: gen2StackName, LogicalResourceId: logicalId },
         Destination: { StackName: holdingStackName, LogicalResourceId: logicalId },
       });
     }
-
-    this.debug(`Locating holding stack: ${holdingStackName}`);
-    const holdingStack = await this.cfn.findStack(holdingStackName);
 
     const operations: AmplifyMigrationOperation[] = [];
 
