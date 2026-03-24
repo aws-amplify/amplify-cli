@@ -1,0 +1,22 @@
+[
+  {
+    "ParameterKey": "CloudWatchRule",
+    "ParameterValue": "NONE"
+  },
+  {
+    "ParameterKey": "apifitnesstrackerGraphQLAPIIdOutput",
+    "ParameterValue": "jzwb5p2vcbd2ldlnlxokgjcjby"
+  },
+  {
+    "ParameterKey": "s3Key",
+    "ParameterValue": "amplify-builds/lognutrition-554b5263566866516c6c-build.zip"
+  },
+  {
+    "ParameterKey": "deploymentBucketName",
+    "ParameterValue": "amplify-fitnesstracker-main-a0537-deployment"
+  },
+  {
+    "ParameterKey": "env",
+    "ParameterValue": "main"
+  }
+]

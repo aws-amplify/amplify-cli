@@ -122,12 +122,12 @@
         "RoleName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "fitnesstrackerLambdaRole8dc6052c",
+            "fitnesstrackerLambdaRole2824d4b4",
             {
               "Fn::Join": [
                 "",
                 [
-                  "fitnesstrackerLambdaRole8dc6052c",
+                  "fitnesstrackerLambdaRole2824d4b4",
                   "-",
                   {
                     "Ref": "env"

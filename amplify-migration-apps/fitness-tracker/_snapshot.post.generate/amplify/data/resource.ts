@@ -38,9 +38,9 @@ export const data = defineData({
       //The "branchname" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables
       branchName: 'main',
       modelNameToTableNameMapping: {
-        WorkoutProgram: 'WorkoutProgram-4ebr7lx7bbhnpeo5dbtcvdajdm-main',
-        Exercise: 'Exercise-4ebr7lx7bbhnpeo5dbtcvdajdm-main',
-        Meal: 'Meal-4ebr7lx7bbhnpeo5dbtcvdajdm-main',
+        WorkoutProgram: 'WorkoutProgram-jzwb5p2vcbd2ldlnlxokgjcjby-main',
+        Exercise: 'Exercise-jzwb5p2vcbd2ldlnlxokgjcjby-main',
+        Meal: 'Meal-jzwb5p2vcbd2ldlnlxokgjcjby-main',
       },
     },
   ],

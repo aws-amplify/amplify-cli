@@ -1,7 +1,7 @@
 import { auth } from './auth/resource';
 import { data } from './data/resource';
 import { admin } from './function/admin/resource';
-import { fitnesstracker9ceb2e7c9ceb2e7cPreSignup } from './auth/fitnesstracker9ceb2e7c9ceb2e7cPreSignup/resource';
+import { fitnesstracker33f5545533f55455PreSignup } from './auth/fitnesstracker33f5545533f55455PreSignup/resource';
 import { lognutrition } from './function/lognutrition/resource';
 import {
   RestApi,
@@ -18,7 +18,7 @@ const backend = defineBackend({
   auth,
   data,
   admin,
-  fitnesstracker9ceb2e7c9ceb2e7cPreSignup,
+  fitnesstracker33f5545533f55455PreSignup,
   lognutrition,
 });
 const branchName = process.env.AWS_BRANCH ?? 'sandbox';
@@ -51,8 +51,8 @@ const gen1adminapiApi = RestApi.fromRestApiAttributes(
   adminapiStack,
   'Gen1adminapiApi',
   {
-    restApiId: 'bbk7dedp01',
-    rootResourceId: 'bbk7dedp01-root',
+    restApiId: 'oxq86r59h6',
+    rootResourceId: 'gzkugf7nca',
   }
 );
 const gen1adminapiPolicy = new Policy(adminapiStack, 'Gen1adminapiPolicy', {
@@ -151,8 +151,8 @@ const gen1nutritionapiApi = RestApi.fromRestApiAttributes(
   nutritionapiStack,
   'Gen1nutritionapiApi',
   {
-    restApiId: 'ekto8iln0h',
-    rootResourceId: 'ekto8iln0h-root',
+    restApiId: 'hmydcaubcb',
+    rootResourceId: '038x4g299a',
   }
 );
 const gen1nutritionapiPolicy = new Policy(
@@ -276,10 +276,10 @@ userPool.addClient('NativeAppClient', {
 });
 backend.admin.resources.cfnResources.cfnFunction.functionName = `admin-${branchName}`;
 backend.admin.addEnvironment(
-  'AUTH_FITNESSTRACKER9CEB2E7C9CEB2E7C_USERPOOLID',
+  'AUTH_FITNESSTRACKER33F5545533F55455_USERPOOLID',
   backend.auth.resources.userPool.userPoolId
 );
-backend.fitnesstracker9ceb2e7c9ceb2e7cPreSignup.resources.cfnResources.cfnFunction.functionName = `fitnesstracker9ceb2e7c9ceb2e7cPreSignup-${branchName}`;
+backend.fitnesstracker33f5545533f55455PreSignup.resources.cfnResources.cfnFunction.functionName = `fitnesstracker33f5545533f55455PreSignup-${branchName}`;
 backend.lognutrition.resources.cfnResources.cfnFunction.functionName = `lognutrition-${branchName}`;
 backend.lognutrition.addEnvironment(
   'API_FITNESSTRACKER_GRAPHQLAPIIDOUTPUT',

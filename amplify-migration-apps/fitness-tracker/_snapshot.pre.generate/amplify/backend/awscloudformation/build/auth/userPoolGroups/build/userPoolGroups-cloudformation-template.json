@@ -1,5 +1,5 @@
 {
-  "Description": "Root Stack for AWS Amplify CLI",
+  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"Amplify\",\"createdWith\":\"14.2.5\",\"stackType\":\"auth-Cognito-UserPool-Groups\",\"metadata\":{\"whyContinueWithGen1\":\"Prefer not to answer\"}}",
   "AWSTemplateFormatVersion": "2010-09-09",
   "Parameters": {
     "env": {
@@ -11,21 +11,21 @@
     "UnauthRoleArn": {
       "Type": "String"
     },
-    "authfitnesstracker9ceb2e7c9ceb2e7cUserPoolId": {
+    "authfitnesstracker33f5545533f55455UserPoolId": {
       "Type": "String",
-      "Default": "authfitnesstracker9ceb2e7c9ceb2e7cUserPoolId"
+      "Default": "authfitnesstracker33f5545533f55455UserPoolId"
     },
-    "authfitnesstracker9ceb2e7c9ceb2e7cIdentityPoolId": {
+    "authfitnesstracker33f5545533f55455IdentityPoolId": {
       "Type": "String",
-      "Default": "authfitnesstracker9ceb2e7c9ceb2e7cIdentityPoolId"
+      "Default": "authfitnesstracker33f5545533f55455IdentityPoolId"
     },
-    "authfitnesstracker9ceb2e7c9ceb2e7cAppClientID": {
+    "authfitnesstracker33f5545533f55455AppClientID": {
       "Type": "String",
-      "Default": "authfitnesstracker9ceb2e7c9ceb2e7cAppClientID"
+      "Default": "authfitnesstracker33f5545533f55455AppClientID"
     },
-    "authfitnesstracker9ceb2e7c9ceb2e7cAppClientIDWeb": {
+    "authfitnesstracker33f5545533f55455AppClientIDWeb": {
       "Type": "String",
-      "Default": "authfitnesstracker9ceb2e7c9ceb2e7cAppClientIDWeb"
+      "Default": "authfitnesstracker33f5545533f55455AppClientIDWeb"
     }
   },
   "Conditions": {
@@ -52,7 +52,7 @@
           ]
         },
         "UserPoolId": {
-          "Ref": "authfitnesstracker9ceb2e7c9ceb2e7cUserPoolId"
+          "Ref": "authfitnesstracker33f5545533f55455UserPoolId"
         }
       }
     },
@@ -72,7 +72,7 @@
               "Condition": {
                 "StringEquals": {
                   "cognito-identity.amazonaws.com:aud": {
-                    "Ref": "authfitnesstracker9ceb2e7c9ceb2e7cIdentityPoolId"
+                    "Ref": "authfitnesstracker33f5545533f55455IdentityPoolId"
                   }
                 },
                 "ForAnyValue:StringLike": {
@@ -87,7 +87,7 @@
             "",
             [
               {
-                "Ref": "authfitnesstracker9ceb2e7c9ceb2e7cUserPoolId"
+                "Ref": "authfitnesstracker33f5545533f55455UserPoolId"
               },
               "-AdminGroupRole"
             ]

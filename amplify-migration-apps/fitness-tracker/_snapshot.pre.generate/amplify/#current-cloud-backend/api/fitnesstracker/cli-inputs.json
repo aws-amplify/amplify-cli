@@ -5,13 +5,13 @@
     "serviceName": "AppSync",
     "defaultAuthType": {
       "mode": "AMAZON_COGNITO_USER_POOLS",
-      "cognitoUserPoolId": "authfitnesstracker9ceb2e7c9ceb2e7c"
+      "cognitoUserPoolId": "authfitnesstracker33f5545533f55455"
     },
     "additionalAuthTypes": [
       {
         "mode": "API_KEY",
         "expirationTime": 7,
-        "apiKeyExpirationDate": "2026-03-29T02:07:08.737Z",
+        "apiKeyExpirationDate": "2026-03-31T02:59:49.009Z",
         "keyDescription": "graphql"
       }
     ]

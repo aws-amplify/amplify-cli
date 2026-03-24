@@ -1,5 +1,5 @@
 import { defineAuth } from '@aws-amplify/backend';
-import { fitnesstracker9ceb2e7c9ceb2e7cPreSignup } from './fitnesstracker9ceb2e7c9ceb2e7cPreSignup/resource';
+import { fitnesstracker33f5545533f55455PreSignup } from './fitnesstracker33f5545533f55455PreSignup/resource';
 import { admin } from '../function/admin/resource';
 
 export const auth = defineAuth({
@@ -17,7 +17,7 @@ export const auth = defineAuth({
   },
   groups: ['Admin'],
   triggers: {
-    preSignUp: fitnesstracker9ceb2e7c9ceb2e7cPreSignup,
+    preSignUp: fitnesstracker33f5545533f55455PreSignup,
   },
   multifactor: {
     mode: 'OFF',

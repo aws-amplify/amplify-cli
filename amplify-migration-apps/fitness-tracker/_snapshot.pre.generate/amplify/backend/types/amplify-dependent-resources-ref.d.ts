@@ -17,7 +17,7 @@ export type AmplifyDependentResourcesAttributes = {
     }
   },
   "auth": {
-    "fitnesstracker9ceb2e7c9ceb2e7c": {
+    "fitnesstracker33f5545533f55455": {
       "AppClientID": "string",
       "AppClientIDWeb": "string",
       "IdentityPoolId": "string",
@@ -38,7 +38,7 @@ export type AmplifyDependentResourcesAttributes = {
       "Name": "string",
       "Region": "string"
     },
-    "fitnesstracker9ceb2e7c9ceb2e7cPreSignup": {
+    "fitnesstracker33f5545533f55455PreSignup": {
       "Arn": "string",
       "LambdaExecutionRole": "string",
       "LambdaExecutionRoleArn": "string",

@@ -4,10 +4,10 @@
     "DynamoDBEnableServerSideEncryption": false,
     "AuthCognitoUserPoolId": {
         "Fn::GetAtt": [
-            "authfitnesstracker9ceb2e7c9ceb2e7c",
+            "authfitnesstracker33f5545533f55455",
             "Outputs.UserPoolId"
         ]
     },
-    "S3DeploymentBucket": "amplify-fitnesstracker-main-6fc9a-deployment",
-    "S3DeploymentRootKey": "amplify-appsync-files/4e96d1a40e125259298887f594df139304e5e3fa"
+    "S3DeploymentBucket": "amplify-fitnesstracker-main-a0537-deployment",
+    "S3DeploymentRootKey": "amplify-appsync-files/67310f5f0a68cc163f9cc58da56e1409a2c21b1d"
 }

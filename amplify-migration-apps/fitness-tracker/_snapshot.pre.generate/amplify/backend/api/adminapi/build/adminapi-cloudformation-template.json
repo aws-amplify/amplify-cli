@@ -1,10 +1,10 @@
 {
-  "Description": "API Gateway Resource for AWS Amplify CLI",
+  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"Amplify\",\"createdWith\":\"14.2.5\",\"stackType\":\"api-API Gateway\",\"metadata\":{\"whyContinueWithGen1\":\"Prefer not to answer\"}}",
   "AWSTemplateFormatVersion": "2010-09-09",
   "Parameters": {
-    "authfitnesstracker9ceb2e7c9ceb2e7cUserPoolId": {
+    "authfitnesstracker33f5545533f55455UserPoolId": {
       "Type": "String",
-      "Default": "authfitnesstracker9ceb2e7c9ceb2e7cUserPoolId"
+      "Default": "authfitnesstracker33f5545533f55455UserPoolId"
     },
     "authuserPoolGroupsAdminGroupRole": {
       "Type": "String",
@@ -104,7 +104,7 @@
               "-",
               [
                 {
-                  "Ref": "authfitnesstracker9ceb2e7c9ceb2e7cUserPoolId"
+                  "Ref": "authfitnesstracker33f5545533f55455UserPoolId"
                 },
                 "AdminGroupRole"
               ]
@@ -426,7 +426,7 @@
         "Name": "adminapi"
       }
     },
-    "adminapiDefault4XXResponse85f5ca6c": {
+    "adminapiDefault4XXResponse0e27c647": {
       "Type": "AWS::ApiGateway::GatewayResponse",
       "Properties": {
         "ResponseParameters": {
@@ -441,7 +441,7 @@
         }
       }
     },
-    "adminapiDefault5XXResponse85f5ca6c": {
+    "adminapiDefault5XXResponse0e27c647": {
       "Type": "AWS::ApiGateway::GatewayResponse",
       "Properties": {
         "ResponseParameters": {
@@ -456,7 +456,7 @@
         }
       }
     },
-    "DeploymentAPIGWadminapi7b0e0b8f": {
+    "DeploymentAPIGWadminapiad7711e6": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "Description": "The Development stage deployment of your API.",
@@ -474,8 +474,8 @@
         }
       },
       "DependsOn": [
-        "adminapiDefault4XXResponse85f5ca6c",
-        "adminapiDefault5XXResponse85f5ca6c"
+        "adminapiDefault4XXResponse0e27c647",
+        "adminapiDefault5XXResponse0e27c647"
       ]
     }
   },
