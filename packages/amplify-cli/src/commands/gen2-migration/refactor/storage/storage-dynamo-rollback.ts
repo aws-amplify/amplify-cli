@@ -1,4 +1,3 @@
-import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { CFNResource } from '../../cfn-template';
 import { RollbackCategoryRefactorer } from '../workflow/rollback-category-refactorer';
 

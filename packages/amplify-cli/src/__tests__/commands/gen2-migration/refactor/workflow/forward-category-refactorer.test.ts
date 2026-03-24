@@ -222,4 +222,31 @@ describe('ForwardCategoryRefactorer.buildResourceMappings (default type-matching
     const mappings = await refactorer.testBuildResourceMappings(new Map(), new Map([['amplifyBucket', r('AWS::S3::Bucket')]]));
     expect(mappings).toHaveLength(0);
   });
+
+  it('throws when two source resources match the same target', async () => {
+    await expect(
+      refactorer.testBuildResourceMappings(
+        new Map([
+          ['BucketA', r('AWS::S3::Bucket')],
+          ['BucketB', r('AWS::S3::Bucket')],
+        ]),
+        new Map([['GenBucket', r('AWS::S3::Bucket')]]),
+      ),
+    ).rejects.toThrow('has no corresponding target resource');
+  });
+
+  it('throws when both sides have multiple resources of the same type', async () => {
+    await expect(
+      refactorer.testBuildResourceMappings(
+        new Map([
+          ['BucketA', r('AWS::S3::Bucket')],
+          ['BucketB', r('AWS::S3::Bucket')],
+        ]),
+        new Map([
+          ['GenBucket1', r('AWS::S3::Bucket')],
+          ['GenBucket2', r('AWS::S3::Bucket')],
+        ]),
+      ),
+    ).rejects.toThrow('has multiple corresponding target resources');
+  });
 });

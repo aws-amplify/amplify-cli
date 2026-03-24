@@ -28,36 +28,52 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
     sourceStackId: string,
     targetStackId: string,
   ): Promise<ResourceMapping[]> {
+    const usedTargetIds = new Set<string>();
     const mappings: ResourceMapping[] = [];
     for (const [sourceId, sourceResource] of sourceResources) {
-      const matchedTargets = [];
-      for (const [targetId, targetResource] of targetResources) {
-        const matched = this.match(sourceId, sourceResource, targetId, targetResource);
-        if (matched) {
-          matchedTargets.push(targetId);
-        }
-      }
-      if (matchedTargets.length === 0) {
-        throw new AmplifyError('InvalidStackError', {
-          message: `Source resource '${sourceId}' (${
-            sourceResource.Type
-          }) has no corresponding target resource in stack: ${extractStackNameFromId(targetStackId)}`,
-        });
-      }
-      if (matchedTargets.length > 1) {
-        throw new AmplifyError('InvalidStackError', {
-          message: `Source resource '${sourceId}' (${
-            sourceResource.Type
-          }) has multiple corresponding target resources in stack: ${extractStackNameFromId(targetStackId)}`,
-        });
-      }
-      const targetId = matchedTargets[0];
+      const targetId = this.findMatchingTarget(sourceId, sourceResource, targetResources, usedTargetIds, targetStackId);
+      usedTargetIds.add(targetId);
       mappings.push({
         Source: { StackName: sourceStackId, LogicalResourceId: sourceId },
         Destination: { StackName: targetStackId, LogicalResourceId: targetId },
       });
     }
     return mappings;
+  }
+
+  /**
+   * Finds exactly one matching target for a source resource.
+   * Throws if zero or multiple matches are found.
+   */
+  private findMatchingTarget(
+    sourceId: string,
+    sourceResource: CFNResource,
+    targetResources: Map<string, CFNResource>,
+    usedTargetIds: Set<string>,
+    targetStackId: string,
+  ): string {
+    const matched: string[] = [];
+    for (const [targetId, targetResource] of targetResources) {
+      if (usedTargetIds.has(targetId)) continue;
+      if (this.match(sourceId, sourceResource, targetId, targetResource)) {
+        matched.push(targetId);
+      }
+    }
+    if (matched.length === 0) {
+      throw new AmplifyError('InvalidStackError', {
+        message: `Source resource '${sourceId}' (${
+          sourceResource.Type
+        }) has no corresponding target resource in stack: ${extractStackNameFromId(targetStackId)}`,
+      });
+    }
+    if (matched.length > 1) {
+      throw new AmplifyError('InvalidStackError', {
+        message: `Source resource '${sourceId}' (${
+          sourceResource.Type
+        }) has multiple corresponding target resources in stack: ${extractStackNameFromId(targetStackId)}`,
+      });
+    }
+    return matched[0];
   }
 
   /**

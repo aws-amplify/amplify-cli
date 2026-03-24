@@ -1,3 +1,4 @@
+import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { CFNResource } from '../../cfn-template';
 import { RollbackCategoryRefactorer } from '../workflow/rollback-category-refactorer';
 import {
@@ -36,7 +37,9 @@ export class AuthCognitoRollbackRefactorer extends RollbackCategoryRefactorer {
         if (sourceId.includes(GEN2_WEB_CLIENT)) {
           return GEN1_WEB_CLIENT;
         }
-        throw new Error();
+        throw new AmplifyError('MigrationError', {
+          message: `Unable to determine Gen1 logical ID for UserPoolClient '${sourceId}' — expected logical ID to contain '${GEN2_NATIVE_APP_CLIENT}' or '${GEN2_WEB_CLIENT}'`,
+        });
       }
       case 'AWS::Cognito::UserPool':
         return 'UserPool';
