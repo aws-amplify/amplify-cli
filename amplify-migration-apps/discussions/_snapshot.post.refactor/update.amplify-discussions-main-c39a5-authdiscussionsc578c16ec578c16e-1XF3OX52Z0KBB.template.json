@@ -233,7 +233,7 @@
           "ExternalId": "discusc578c16e_role_external_id",
           "SnsCallerArn": "arn:aws:iam::123456789012:role/snsc578c16ec39a5-main"
         },
-        "SmsVerificationMessage": "Here is your verification code {####}",
+        "SmsVerificationMessage": "Your verification code is {####}",
         "UserAttributeUpdateSettings": {
           "AttributesRequireVerificationBeforeUpdate": [
             "email"

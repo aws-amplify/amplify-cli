@@ -44,7 +44,7 @@
             "Required": true
           }
         ],
-        "SmsVerificationMessage": "Here is your verification code {####}",
+        "SmsVerificationMessage": "The verification code to your new account is {####}",
         "UserAttributeUpdateSettings": {
           "AttributesRequireVerificationBeforeUpdate": [
             "email"
@@ -67,7 +67,7 @@
           "DefaultEmailOption": "CONFIRM_WITH_CODE",
           "EmailMessage": "Here is your verification code {####}",
           "EmailSubject": "Verification",
-          "SmsMessage": "Here is your verification code {####}"
+          "SmsMessage": "The verification code to your new account is {####}"
         }
       },
       "UpdateReplacePolicy": "Delete",

@@ -21,7 +21,7 @@
   },
   {
     "ParameterKey": "smsVerificationMessage",
-    "ParameterValue": "Here is your verification code {####}"
+    "ParameterValue": "Your verification code is {####}"
   },
   {
     "ParameterKey": "userpoolClientReadAttributes",
