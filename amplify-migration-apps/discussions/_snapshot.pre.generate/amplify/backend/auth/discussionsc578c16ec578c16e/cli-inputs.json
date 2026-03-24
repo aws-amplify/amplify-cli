@@ -13,7 +13,7 @@
       "SMS Text Message"
     ],
     "smsAuthenticationMessage": "Your authentication code is {####}",
-    "smsVerificationMessage": "Your verification code is {####}",
+    "smsVerificationMessage": "Here is your verification code {####}",
     "emailVerificationSubject": "Verification",
     "emailVerificationMessage": "Here is your verification code {####}",
     "defaultPasswordPolicy": false,
