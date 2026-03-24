@@ -9,8 +9,5 @@
   "scripts": {
     "sanitize": "tsx ../sanitize.ts",
     "typecheck": "cd _snapshot.post.generate/amplify && npx tsc --noEmit"
-  },
-  "devDependencies": {
-    "typescript": "~5.9.3"
   }
 }
