@@ -1,12 +1,13 @@
 import { AmplifyMigrationStep } from './_step';
 import { AmplifyMigrationOperation } from './_operation';
 import { AmplifyError, stateManager } from '@aws-amplify/amplify-cli-core';
-import { CloudFormationClient, SetStackPolicyCommand } from '@aws-sdk/client-cloudformation';
+import { CloudFormationClient, SetStackPolicyCommand, paginateListStacks, StackStatus } from '@aws-sdk/client-cloudformation';
 import { AmplifyClient, UpdateAppCommand, GetAppCommand } from '@aws-sdk/client-amplify';
 import { DynamoDBClient, UpdateTableCommand, paginateListTables } from '@aws-sdk/client-dynamodb';
 import { AppSyncClient, paginateListGraphqlApis } from '@aws-sdk/client-appsync';
 import { CognitoIdentityProviderClient, UpdateUserPoolCommand } from '@aws-sdk/client-cognito-identity-provider';
 import { AmplifyGen2MigrationValidations } from './_validations';
+import { HOLDING_STACK_SUFFIX } from './refactor/holding-stack';
 
 const GEN2_MIGRATION_ENVIRONMENT_NAME = 'GEN2_MIGRATION_ENVIRONMENT_NAME';
 
@@ -40,8 +41,41 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
   }
 
   public async rollbackValidate(): Promise<void> {
-    // https://github.com/aws-amplify/amplify-cli/issues/14570
-    return;
+    const validations = new AmplifyGen2MigrationValidations(this.logger, this.rootStackName, this.currentEnvName, this.context);
+    await validations.validateDeploymentStatus();
+    await validations.validateLockStatus();
+
+    const holdingStacks = await this.findHoldingStacks();
+    if (holdingStacks.length > 0) {
+      throw new AmplifyError('MigrationError', {
+        message: `Cannot roll back lock: refactor has already moved resources into holding stacks (${holdingStacks.join(', ')})`,
+        resolution: "Run 'amplify gen2-migration refactor --rollback' to restore resources before rolling back the lock.",
+      });
+    }
+  }
+
+  private async findHoldingStacks(): Promise<string[]> {
+    const cfnClient = new CloudFormationClient({ region: this.region });
+    const holdingStacks: string[] = [];
+    const paginator = paginateListStacks(
+      { client: cfnClient },
+      {
+        StackStatusFilter: [
+          StackStatus.CREATE_COMPLETE,
+          StackStatus.UPDATE_COMPLETE,
+          StackStatus.ROLLBACK_COMPLETE,
+          StackStatus.REVIEW_IN_PROGRESS,
+        ],
+      },
+    );
+    for await (const page of paginator) {
+      for (const stack of page.StackSummaries ?? []) {
+        if (stack.StackName?.endsWith(HOLDING_STACK_SUFFIX) && stack.StackName.includes(this.appId)) {
+          holdingStacks.push(stack.StackName);
+        }
+      }
+    }
+    return holdingStacks;
   }
 
   public async execute(): Promise<AmplifyMigrationOperation[]> {
