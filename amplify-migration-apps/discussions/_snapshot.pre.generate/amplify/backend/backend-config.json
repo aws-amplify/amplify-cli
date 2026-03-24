@@ -18,7 +18,7 @@
     }
   },
   "auth": {
-    "discussions22367c6822367c68": {
+    "discussionsc578c16ec578c16e": {
       "customAuth": false,
       "dependsOn": [],
       "frontendAuthConfig": {
@@ -124,6 +124,15 @@
   },
   "storage": {
     "activity": {
+      "providerPlugin": "awscloudformation",
+      "service": "DynamoDB"
+    },
+    "avatars": {
+      "dependsOn": [],
+      "providerPlugin": "awscloudformation",
+      "service": "S3"
+    },
+    "bookmarks": {
       "providerPlugin": "awscloudformation",
       "service": "DynamoDB"
     }
