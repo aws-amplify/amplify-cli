@@ -1,5 +1,4 @@
 import { ForwardCategoryRefactorer } from '../../../../../commands/gen2-migration/refactor/workflow/forward-category-refactorer';
-import { RefactorBlueprint } from '../../../../../commands/gen2-migration/refactor/workflow/category-refactorer';
 import { AwsClients } from '../../../../../commands/gen2-migration/aws-clients';
 import { StackFacade } from '../../../../../commands/gen2-migration/refactor/stack-facade';
 import { Cfn } from '../../../../../commands/gen2-migration/refactor/cfn';
@@ -31,13 +30,17 @@ class TestForwardRefactorer extends ForwardCategoryRefactorer {
   }
 }
 
-function makeBlueprint(mappings: ResourceMapping[]): RefactorBlueprint {
-  return {
-    sourceStackId: 'gen1-stack',
-    targetStackId: 'gen2-stack',
-    mappings,
-  };
-}
+const GEN2_TEMPLATE_WITH_BUCKET = JSON.stringify({
+  AWSTemplateFormatVersion: '2010-09-09',
+  Resources: { MyBucket: { Type: 'AWS::S3::Bucket', Properties: {} } },
+  Outputs: {},
+});
+
+const GEN2_TEMPLATE_NO_BUCKET = JSON.stringify({
+  AWSTemplateFormatVersion: '2010-09-09',
+  Resources: { Lambda: { Type: 'AWS::Lambda::Function', Properties: {} } },
+  Outputs: {},
+});
 
 describe('ForwardCategoryRefactorer.beforeMove', () => {
   let cfnMock: ReturnType<typeof mockClient>;
@@ -47,40 +50,9 @@ describe('ForwardCategoryRefactorer.beforeMove', () => {
   });
   afterEach(() => cfnMock.restore());
 
-  it('returns empty operations when no mappings', async () => {
-    const clients = new AwsClients({ region: 'us-east-1' });
-    const cfn = new Cfn(new CloudFormationClient({}), noOpLogger());
-    const refactorer = new TestForwardRefactorer(
-      new StackFacade(clients, 'g1'),
-      new StackFacade(clients, 'g2'),
-      clients,
-      'us-east-1',
-      '123',
-      noOpLogger(),
-      { category: 'storage', resourceName: 'test', service: 'S3', key: 'storage:S3' as const },
-      cfn,
-    );
-    const blueprint = makeBlueprint([]);
-
-    const operations = await (refactorer as any).beforeMove(blueprint);
-    expect(operations).toHaveLength(0);
-  });
-
-  it('creates holding stack operation when mappings exist', async () => {
+  it('returns empty operations when gen2 stack has no matching resources', async () => {
+    cfnMock.on(GetTemplateCommand).resolves({ TemplateBody: GEN2_TEMPLATE_NO_BUCKET });
     cfnMock.on(DescribeStacksCommand).resolves({ Stacks: [] });
-    cfnMock.on(CreateStackRefactorCommand).resolves({ StackRefactorId: 'r1' });
-    cfnMock
-      .on(DescribeStackRefactorCommand)
-      .resolves({ Status: StackRefactorStatus.CREATE_COMPLETE, ExecutionStatus: StackRefactorExecutionStatus.EXECUTE_COMPLETE });
-    cfnMock.on(ExecuteStackRefactorCommand).resolves({});
-    cfnMock.on(DescribeStackResourcesCommand).resolves({ StackResources: [] });
-    cfnMock.on(GetTemplateCommand).resolves({
-      TemplateBody: JSON.stringify({
-        AWSTemplateFormatVersion: '2010-09-09',
-        Resources: { MyBucket: { Type: 'AWS::S3::Bucket', Properties: {} } },
-        Outputs: {},
-      }),
-    });
 
     const clients = new AwsClients({ region: 'us-east-1' });
     (clients as any).cloudFormation = new CloudFormationClient({});
@@ -96,14 +68,35 @@ describe('ForwardCategoryRefactorer.beforeMove', () => {
       cfn,
     );
 
-    const blueprint = makeBlueprint([
-      {
-        Source: { StackName: 'gen1-stack', LogicalResourceId: 'S3Bucket' },
-        Destination: { StackName: 'gen2-stack', LogicalResourceId: 'MyBucket' },
-      },
-    ]);
+    const operations = await (refactorer as any).beforeMove('gen2-stack');
+    expect(operations).toHaveLength(0);
+  });
 
-    const operations = await (refactorer as any).beforeMove(blueprint);
+  it('creates holding stack operation when gen2 stack has matching resources', async () => {
+    cfnMock.on(DescribeStacksCommand).resolves({ Stacks: [] });
+    cfnMock.on(CreateStackRefactorCommand).resolves({ StackRefactorId: 'r1' });
+    cfnMock
+      .on(DescribeStackRefactorCommand)
+      .resolves({ Status: StackRefactorStatus.CREATE_COMPLETE, ExecutionStatus: StackRefactorExecutionStatus.EXECUTE_COMPLETE });
+    cfnMock.on(ExecuteStackRefactorCommand).resolves({});
+    cfnMock.on(DescribeStackResourcesCommand).resolves({ StackResources: [] });
+    cfnMock.on(GetTemplateCommand).resolves({ TemplateBody: GEN2_TEMPLATE_WITH_BUCKET });
+
+    const clients = new AwsClients({ region: 'us-east-1' });
+    (clients as any).cloudFormation = new CloudFormationClient({});
+    const cfn = new Cfn(new CloudFormationClient({}), noOpLogger());
+    const refactorer = new TestForwardRefactorer(
+      new StackFacade(clients, 'g1'),
+      new StackFacade(clients, 'g2'),
+      clients,
+      'us-east-1',
+      '123',
+      noOpLogger(),
+      { category: 'storage', resourceName: 'test', service: 'S3', key: 'storage:S3' as const },
+      cfn,
+    );
+
+    const operations = await (refactorer as any).beforeMove('gen2-stack');
     expect(operations).toHaveLength(1);
     expect(await operations[0].describe()).toEqual([expect.stringContaining('holding')]);
   });
@@ -121,13 +114,7 @@ describe('ForwardCategoryRefactorer.beforeMove', () => {
       .resolves({ Status: StackRefactorStatus.CREATE_COMPLETE, ExecutionStatus: StackRefactorExecutionStatus.EXECUTE_COMPLETE });
     cfnMock.on(ExecuteStackRefactorCommand).resolves({});
     cfnMock.on(DescribeStackResourcesCommand).resolves({ StackResources: [] });
-    cfnMock.on(GetTemplateCommand).resolves({
-      TemplateBody: JSON.stringify({
-        AWSTemplateFormatVersion: '2010-09-09',
-        Resources: { MyBucket: { Type: 'AWS::S3::Bucket', Properties: {} } },
-        Outputs: {},
-      }),
-    });
+    cfnMock.on(GetTemplateCommand).resolves({ TemplateBody: GEN2_TEMPLATE_WITH_BUCKET });
 
     const clients = new AwsClients({ region: 'us-east-1' });
     (clients as any).cloudFormation = new CloudFormationClient({});
@@ -143,14 +130,7 @@ describe('ForwardCategoryRefactorer.beforeMove', () => {
       cfn,
     );
 
-    const blueprint = makeBlueprint([
-      {
-        Source: { StackName: 'gen1-stack', LogicalResourceId: 'S3Bucket' },
-        Destination: { StackName: 'gen2-stack', LogicalResourceId: 'MyBucket' },
-      },
-    ]);
-
-    const operations = await (refactorer as any).beforeMove(blueprint);
+    const operations = await (refactorer as any).beforeMove('gen2-stack');
     expect(operations).toHaveLength(2);
     await operations[0].execute();
 

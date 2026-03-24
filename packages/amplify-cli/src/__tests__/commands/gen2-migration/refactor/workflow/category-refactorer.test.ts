@@ -184,7 +184,7 @@ describe('CategoryRefactorer.plan() orchestration — via StorageS3ForwardRefact
       },
       cfn,
     ).plan();
-    expect(ops).toHaveLength(1); // no-op operation
+    expect(ops).toHaveLength(3); // updateSource + updateTarget + beforeMove (holding)
   });
 
   it('produces updateSource → updateTarget → beforeMove → move for forward plan', async () => {
@@ -272,7 +272,7 @@ describe('StorageS3RollbackRefactorer.plan() — rollback without holding stack'
     ).plan();
 
     // Resources already exist in Gen1 target, so rollback produces no-op
-    expect(ops).toHaveLength(1); // no-op operation
+    expect(ops).toHaveLength(2); // updateSource + updateTarget only
   });
 });
 
@@ -364,7 +364,7 @@ describe('Analytics wiring tests', () => {
     ).plan();
 
     // Resources already exist in Gen1 target, so rollback produces no-op
-    expect(ops).toHaveLength(1); // no-op operation
+    expect(ops).toHaveLength(2); // updateSource + updateTarget only
   });
 });
 

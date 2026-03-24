@@ -1,6 +1,5 @@
 import { RollbackCategoryRefactorer } from '../../../../../commands/gen2-migration/refactor/workflow/rollback-category-refactorer';
 import { CFNResource, CFNTemplate } from '../../../../../commands/gen2-migration/cfn-template';
-import { RefactorBlueprint } from '../../../../../commands/gen2-migration/refactor/workflow/category-refactorer';
 import { AwsClients } from '../../../../../commands/gen2-migration/aws-clients';
 import { StackFacade } from '../../../../../commands/gen2-migration/refactor/stack-facade';
 import { Cfn } from '../../../../../commands/gen2-migration/refactor/cfn';
@@ -34,14 +33,6 @@ class TestRollbackRefactorer extends RollbackCategoryRefactorer {
   protected resourceTypes() {
     return ['AWS::S3::Bucket'];
   }
-}
-
-function makeBlueprint(mappings: ResourceMapping[]): RefactorBlueprint {
-  return {
-    sourceStackId: 'gen2-auth-stack-id',
-    targetStackId: 'gen1-stack-id',
-    mappings,
-  };
 }
 
 describe('RollbackCategoryRefactorer.afterMove', () => {
@@ -89,14 +80,7 @@ describe('RollbackCategoryRefactorer.afterMove', () => {
       cfn,
     );
 
-    const blueprint = makeBlueprint([
-      {
-        Source: { StackName: 'gen2-auth-stack-id', LogicalResourceId: 'MyBucket' },
-        Destination: { StackName: 'gen1-stack-id', LogicalResourceId: 'S3Bucket' },
-      },
-    ]);
-
-    const operations = await (refactorer as any).afterMove(blueprint);
+    const operations = await (refactorer as any).afterMove('gen2-auth-stack-id');
 
     // 2 operations: update holding with placeholder, refactor back to Gen2
     expect(operations).toHaveLength(2);
@@ -121,9 +105,7 @@ describe('RollbackCategoryRefactorer.afterMove', () => {
       cfn,
     );
 
-    const blueprint = makeBlueprint([]);
-
-    const operations = await (refactorer as any).afterMove(blueprint);
+    const operations = await (refactorer as any).afterMove('gen2-auth-stack-id');
     expect(operations).toHaveLength(0);
   });
 });
