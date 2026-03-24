@@ -160,6 +160,17 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
         },
         execute: async () => {
           await this.cfn.refactor(resourceMappings, this.resource);
+
+          // this needs to happen here instead of during planning because
+          // each refactorer moves its own resources out of the holding stack.
+          const holdingStack = await this.cfn.findStack(holdingStackName);
+          if (holdingStack) {
+            const holdingStackTemplate = await this.cfn.fetchTemplate(holdingStackName);
+            const holdingStackResourceIds = Object.keys(holdingStackTemplate.Resources);
+            if (holdingStackResourceIds.length === 1 && holdingStackResourceIds[0] === MIGRATION_PLACEHOLDER_LOGICAL_ID) {
+              await this.cfn.deleteStack(holdingStackName, this.resource);
+            }
+          }
         },
       },
     ];
