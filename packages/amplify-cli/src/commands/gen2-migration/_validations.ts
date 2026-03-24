@@ -14,7 +14,6 @@ import execa from 'execa';
 import { Logger } from '../gen2-migration';
 import chalk from 'chalk';
 import { printer } from '@aws-amplify/amplify-prompts';
-import type { Printer } from '@aws-amplify/amplify-prompts';
 import { extractCategory } from './categories';
 import { detectTemplateDrift } from '../drift-detection/detect-template-drift';
 import { CloudFormationService } from '../drift-detection/services';
@@ -198,18 +197,7 @@ export class AmplifyGen2MigrationValidations {
   public async validateTemplateDrift(): Promise<void> {
     this.logger.info('Checking for template drift...');
 
-    const print: Printer = {
-      info: (msg: string) => this.logger.info(msg),
-      debug: (msg: string) => this.logger.debug(msg),
-      warn: (msg: string) => this.logger.warn(msg),
-      blankLine: () => {
-        return;
-      },
-      success: (msg: string) => this.logger.info(msg),
-      error: (msg: string) => this.logger.warn(msg),
-    };
-
-    const cfnService = new CloudFormationService(print);
+    const cfnService = new CloudFormationService(printer);
     const syncSuccess = await cfnService.syncCloudBackendFromS3(this.context);
     if (!syncSuccess) {
       throw new AmplifyError('MigrationError', {
@@ -219,7 +207,7 @@ export class AmplifyGen2MigrationValidations {
     }
 
     const cfn = await cfnService.getClient(this.context);
-    const results = await detectTemplateDrift(this.rootStackName, print, cfn);
+    const results = await detectTemplateDrift(this.rootStackName, printer, cfn);
 
     if (results.skipped) {
       throw new AmplifyError('MigrationError', {
