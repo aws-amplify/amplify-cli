@@ -121,7 +121,7 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
         case 'geo:GeofenceCollection':
           // All geo services share a single GeoGenerator instance.
           if (!geoGenerator) {
-            geoGenerator = new GeoGenerator(gen1App, backendGenerator, outputDir);
+            geoGenerator = new GeoGenerator(gen1App, backendGenerator, outputDir, resource);
             generators.push(geoGenerator);
           }
           break;

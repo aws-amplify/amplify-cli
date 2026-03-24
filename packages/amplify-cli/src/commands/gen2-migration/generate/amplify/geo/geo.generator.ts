@@ -4,7 +4,7 @@ import ts from 'typescript';
 import { Planner } from '../../../planner';
 import { AmplifyMigrationOperation } from '../../../_operation';
 import { BackendGenerator } from '../backend.generator';
-import { Gen1App } from '../../_infra/gen1-app';
+import { DiscoveredResource, Gen1App } from '../../_infra/gen1-app';
 import { TS } from '../../_infra/ts';
 import { GeoRenderer } from './geo.renderer';
 import { GeoCfnConverter, GeoCodegenResult, GeoServiceName, GeoProviderMetadata } from './geo-cfn-converter';
@@ -34,12 +34,14 @@ export class GeoGenerator implements Planner {
   private readonly backendGenerator: BackendGenerator;
   private readonly outputDir: string;
   private readonly renderer: GeoRenderer;
+  private readonly resource: DiscoveredResource;
 
-  public constructor(gen1App: Gen1App, backendGenerator: BackendGenerator, outputDir: string) {
+  public constructor(gen1App: Gen1App, backendGenerator: BackendGenerator, outputDir: string, resource: DiscoveredResource) {
     this.gen1App = gen1App;
     this.backendGenerator = backendGenerator;
     this.outputDir = outputDir;
     this.renderer = new GeoRenderer();
+    this.resource = resource;
   }
 
   /**
@@ -59,6 +61,7 @@ export class GeoGenerator implements Planner {
       const service = meta.service as GeoServiceName;
 
       operations.push({
+        resource: this.resource,
         validate: () => undefined,
         describe: async () => [`Generate amplify/geo/${resourceName}/resource.ts`],
         execute: async () => {

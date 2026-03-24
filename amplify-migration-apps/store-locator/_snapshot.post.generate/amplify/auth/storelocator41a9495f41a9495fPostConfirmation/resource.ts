@@ -1,0 +1,17 @@
+import { defineFunction } from '@aws-amplify/backend';
+
+const branchName = process.env.AWS_BRANCH ?? 'sandbox';
+
+export const storelocator41a9495f41a9495fPostConfirmation = defineFunction({
+  entry: './index.js',
+  name: `storelocator41a9495f41a9495fPostConfirmation-${branchName}`,
+  timeoutSeconds: 25,
+  memoryMB: 128,
+  environment: {
+    GROUP: 'storeLocatorAdmin',
+    MODULES: 'add-to-group',
+    ENV: `${branchName}`,
+    REGION: 'us-east-1',
+  },
+  runtime: 22,
+});
