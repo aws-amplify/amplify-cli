@@ -119,6 +119,31 @@ describe('BackendGenerator', () => {
     });
   });
 
+  describe('createDynamoDBStack', () => {
+    it('returns unique variable names for different resources', () => {
+      const gen = new BackendGenerator(outputDir);
+      const varName1 = gen.createDynamoDBStack('activity');
+      const varName2 = gen.createDynamoDBStack('bookmarks');
+
+      expect(varName1).toBe('storageActivityStack');
+      expect(varName2).toBe('storageBookmarksStack');
+      expect(varName1).not.toBe(varName2);
+    });
+
+    it('emits separate createStack calls for each DDB table', () => {
+      const gen = new BackendGenerator(outputDir);
+      gen.createDynamoDBStack('activity');
+      gen.createDynamoDBStack('bookmarks');
+
+      return verifyBackendTs(gen, (content) => {
+        expect(content).toContain("backend.createStack('storageactivity')");
+        expect(content).toContain("backend.createStack('storagebookmarks')");
+        expect(content).toContain('const storageActivityStack');
+        expect(content).toContain('const storageBookmarksStack');
+      });
+    });
+  });
+
   describe('import sorting', () => {
     it('sorts resource imports before CDK imports before @aws-amplify/backend', () => {
       const gen = new BackendGenerator(outputDir);

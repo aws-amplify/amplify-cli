@@ -1,0 +1,272 @@
+{
+  "Description": "{\"createdOn\":\"Linux\",\"createdBy\":\"Amplify\",\"createdWith\":\"14.2.5\",\"stackType\":\"auth-Cognito\",\"metadata\":{\"whyContinueWithGen1\":\"Prefer not to answer\"}}",
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Parameters": {
+    "env": {
+      "Type": "String"
+    },
+    "identityPoolName": {
+      "Type": "String"
+    },
+    "allowUnauthenticatedIdentities": {
+      "Type": "String"
+    },
+    "resourceNameTruncated": {
+      "Type": "String"
+    },
+    "userPoolName": {
+      "Type": "String"
+    },
+    "autoVerifiedAttributes": {
+      "Type": "CommaDelimitedList"
+    },
+    "mfaConfiguration": {
+      "Type": "String"
+    },
+    "mfaTypes": {
+      "Type": "CommaDelimitedList"
+    },
+    "smsAuthenticationMessage": {
+      "Type": "String"
+    },
+    "smsVerificationMessage": {
+      "Type": "String"
+    },
+    "emailVerificationSubject": {
+      "Type": "String"
+    },
+    "emailVerificationMessage": {
+      "Type": "String"
+    },
+    "defaultPasswordPolicy": {
+      "Type": "String"
+    },
+    "passwordPolicyMinLength": {
+      "Type": "String"
+    },
+    "passwordPolicyCharacters": {
+      "Type": "CommaDelimitedList"
+    },
+    "requiredAttributes": {
+      "Type": "CommaDelimitedList"
+    },
+    "aliasAttributes": {
+      "Type": "CommaDelimitedList"
+    },
+    "userpoolClientGenerateSecret": {
+      "Type": "String"
+    },
+    "userpoolClientRefreshTokenValidity": {
+      "Type": "String"
+    },
+    "userpoolClientWriteAttributes": {
+      "Type": "CommaDelimitedList"
+    },
+    "userpoolClientReadAttributes": {
+      "Type": "CommaDelimitedList"
+    },
+    "userpoolClientLambdaRole": {
+      "Type": "String"
+    },
+    "userpoolClientSetAttributes": {
+      "Type": "String"
+    },
+    "sharedId": {
+      "Type": "String"
+    },
+    "resourceName": {
+      "Type": "String"
+    },
+    "authSelections": {
+      "Type": "String"
+    },
+    "useDefault": {
+      "Type": "String"
+    },
+    "thirdPartyAuth": {
+      "Type": "String"
+    },
+    "usernameAttributes": {
+      "Type": "CommaDelimitedList"
+    },
+    "userPoolGroups": {
+      "Type": "String"
+    },
+    "adminQueries": {
+      "Type": "String"
+    },
+    "triggers": {
+      "Type": "String"
+    },
+    "hostedUI": {
+      "Type": "String"
+    },
+    "userPoolGroupList": {
+      "Type": "CommaDelimitedList"
+    },
+    "serviceName": {
+      "Type": "String"
+    },
+    "usernameCaseSensitive": {
+      "Type": "String"
+    },
+    "useEnabledMfas": {
+      "Type": "String"
+    },
+    "authRoleArn": {
+      "Type": "String"
+    },
+    "unauthRoleArn": {
+      "Type": "String"
+    },
+    "breakCircularDependency": {
+      "Type": "String"
+    },
+    "dependsOn": {
+      "Type": "CommaDelimitedList"
+    }
+  },
+  "Conditions": {
+    "ShouldNotCreateEnvResources": {
+      "Fn::Equals": [
+        "main",
+        "NONE"
+      ]
+    }
+  },
+  "Resources": {
+    "SNSRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Sid": "",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "cognito-idp.amazonaws.com"
+              },
+              "Action": [
+                "sts:AssumeRole"
+              ],
+              "Condition": {
+                "StringEquals": {
+                  "sts:ExternalId": "discusc578c16e_role_external_id"
+                }
+              }
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "sns:Publish"
+                  ],
+                  "Resource": "*"
+                }
+              ]
+            },
+            "PolicyName": "discusc578c16e-sns-policy"
+          }
+        ],
+        "RoleName": {
+          "Fn::Join": [
+            "",
+            [
+              "snsc578c16e",
+              {
+                "Fn::Select": [
+                  3,
+                  {
+                    "Fn::Split": [
+                      "-",
+                      "amplify-discussions-main-c39a5-authdiscussionsc578c16ec578c16e-1XF3OX52Z0KBB"
+                    ]
+                  }
+                ]
+              },
+              "-",
+              "main"
+            ]
+          ]
+        }
+      }
+    },
+    "UserPoolClientRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "RoleName": {
+          "Fn::Join": [
+            "",
+            [
+              "upClientLambdaRolec578c16e",
+              {
+                "Fn::Select": [
+                  3,
+                  {
+                    "Fn::Split": [
+                      "-",
+                      "amplify-discussions-main-c39a5-authdiscussionsc578c16ec578c16e-1XF3OX52Z0KBB"
+                    ]
+                  }
+                ]
+              },
+              "-",
+              "main"
+            ]
+          ]
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "IdentityPoolId": {
+      "Description": "Id for the identity pool",
+      "Value": "us-east-1:d588cc58-4459-4b1b-ac91-307079a54464"
+    },
+    "IdentityPoolName": {
+      "Value": "discussionsc578c16e_identitypool_c578c16e__main"
+    },
+    "UserPoolId": {
+      "Description": "Id for the user pool",
+      "Value": "us-east-1_vv2HFjwRK"
+    },
+    "UserPoolArn": {
+      "Description": "Arn for the user pool",
+      "Value": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_vv2HFjwRK"
+    },
+    "UserPoolName": {
+      "Value": "discussionsc578c16e_userpool_c578c16e"
+    },
+    "AppClientIDWeb": {
+      "Description": "The user pool app client id for web",
+      "Value": "7nhjrv5jepqc7kacqiknlj0siu"
+    },
+    "AppClientID": {
+      "Description": "The user pool app client id",
+      "Value": "7tbnnc27p4edfrp7m6bqqkh0gq"
+    },
+    "CreatedSNSRole": {
+      "Description": "role arn",
+      "Value": "arn:aws:iam::123456789012:role/snsc578c16ec39a5-main"
+    }
+  }
+}

@@ -1,5 +1,6 @@
 import { CFNResource } from '../../cfn-template';
 import { RollbackCategoryRefactorer } from '../workflow/rollback-category-refactorer';
+import { findS3NestedStack } from './storage-forward';
 
 /**
  * Rollback refactorer for S3 storage resources.
@@ -7,11 +8,11 @@ import { RollbackCategoryRefactorer } from '../workflow/rollback-category-refact
  */
 export class StorageS3RollbackRefactorer extends RollbackCategoryRefactorer {
   protected async fetchSourceStackId(): Promise<string | undefined> {
-    return this.findNestedStack(this.gen2Branch, 'storage');
+    return findS3NestedStack(this.gen2Branch);
   }
 
   protected async fetchDestStackId(): Promise<string | undefined> {
-    return this.findNestedStack(this.gen1Env, 'storage');
+    return this.findNestedStack(this.gen1Env, 'storage' + this.resource.resourceName);
   }
 
   protected resourceTypes(): string[] {

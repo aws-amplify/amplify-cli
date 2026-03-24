@@ -1,0 +1,26 @@
+[
+  {
+    "ParameterKey": "referencetoamplifydiscussionsgen2mainbrancha27e51c30astorageactivityNestedStackstorageactivityNestedStackResource59CA300COutputsamplifydiscussionsgen2mainbrancha27e51c30astorageactivity9EDFFE97StreamArn",
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/amplify-discussions-gen2main-branch-a27e51c30a-storageactivityA346F297-6KCEOSFCBCK1-activity1E902D9C-QYW2OKZ2EU7Z/stream/2026-03-20T21:41:02.189"
+  },
+  {
+    "ParameterKey": "referencetoamplifydiscussionsgen2mainbrancha27e51c30astorageactivityNestedStackstorageactivityNestedStackResource59CA300COutputsamplifydiscussionsgen2mainbrancha27e51c30astorageactivity9EDFFE97Ref",
+    "ParameterValue": "amplify-discussions-gen2main-branch-a27e51c30a-storageactivityA346F297-6KCEOSFCBCK1-activity1E902D9C-QYW2OKZ2EU7Z"
+  },
+  {
+    "ParameterKey": "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataNestedStackdataNestedStackResource907A4719Outputsamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataTopicNestedStackTopicNestedStackResourceBD3B6C61Outputsamplifyd2l28aset733CD677",
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Topic-u3jn2qbupzbyhc3h53673wdvim-main/stream/2026-03-20T21:20:17.537"
+  },
+  {
+    "ParameterKey": "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataNestedStackdataNestedStackResource907A4719Outputsamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataCommentNestedStackCommentNestedStackResource06709DCDOutputsamplifyd2l28483C8589",
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Comment-u3jn2qbupzbyhc3h53673wdvim-main/stream/2026-03-20T21:21:05.630"
+  },
+  {
+    "ParameterKey": "referencetoamplifydiscussionsgen2mainbrancha27e51c30astorageactivityNestedStackstorageactivityNestedStackResource59CA300COutputsamplifydiscussionsgen2mainbrancha27e51c30astorageactivity9EDFFE97Arn",
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/amplify-discussions-gen2main-branch-a27e51c30a-storageactivityA346F297-6KCEOSFCBCK1-activity1E902D9C-QYW2OKZ2EU7Z"
+  },
+  {
+    "ParameterKey": "referencetoamplifydiscussionsgen2mainbrancha27e51c30adataNestedStackdataNestedStackResource907A4719Outputsamplifydiscussionsgen2mainbrancha27e51c30adataamplifyDataPostNestedStackPostNestedStackResource3E8F8B99Outputsamplifyd2l28asetq99E749BF8",
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Post-u3jn2qbupzbyhc3h53673wdvim-main/stream/2026-03-20T21:21:05.591"
+  }
+]

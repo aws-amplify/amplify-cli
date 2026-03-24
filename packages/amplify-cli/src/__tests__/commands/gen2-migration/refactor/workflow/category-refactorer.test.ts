@@ -45,10 +45,10 @@ const gen2StorageTemplate: CFNTemplate = {
 
 function setupStorageMocks(cfnMock: ReturnType<typeof mockClient>) {
   cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen1-root' }).resolves({
-    StackResources: [nestedStack('storageGen1', 'gen1-storage-stack')],
+    StackResources: [nestedStack('storageavatars', 'gen1-storage-stack')],
   });
   cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen2-root' }).resolves({
-    StackResources: [nestedStack('storageGen2', 'gen2-storage-stack')],
+    StackResources: [nestedStack('storage0EC3F24A', 'gen2-storage-stack')],
   });
   cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen1-storage-stack' }).resolves({ StackResources: [] });
   cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen2-storage-stack' }).resolves({ StackResources: [] });
@@ -108,7 +108,7 @@ describe('CategoryRefactorer.plan() orchestration — via StorageS3ForwardRefact
 
   it('throws when source exists but destination does not (Path B)', async () => {
     cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen1-root' }).resolves({
-      StackResources: [nestedStack('storageGen1', 'gen1-storage-stack')],
+      StackResources: [nestedStack('storageavatars', 'gen1-storage-stack')],
     });
     cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen2-root' }).resolves({ StackResources: [] });
 
@@ -135,8 +135,9 @@ describe('CategoryRefactorer.plan() orchestration — via StorageS3ForwardRefact
   it('throws when destination exists but source does not (Path B reversed)', async () => {
     cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen1-root' }).resolves({ StackResources: [] });
     cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen2-root' }).resolves({
-      StackResources: [nestedStack('storageGen2', 'gen2-storage-stack')],
+      StackResources: [nestedStack('storage0EC3F24A', 'gen2-storage-stack')],
     });
+    cfnMock.on(GetTemplateCommand, { StackName: 'gen2-storage-stack' }).resolves({ TemplateBody: JSON.stringify(gen2StorageTemplate) });
 
     const { clients, gen1Env, gen2Branch, cfn } = makeInstances();
     await expect(
@@ -233,11 +234,11 @@ describe('StorageS3RollbackRefactorer.plan() — rollback without holding stack'
 
     // Gen2 nested stacks (source for rollback)
     cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen2-root' }).resolves({
-      StackResources: [nestedStack('storageGen2', 'gen2-storage-stack')],
+      StackResources: [nestedStack('storage0EC3F24A', 'gen2-storage-stack')],
     });
     // Gen1 nested stacks (destination for rollback)
     cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen1-root' }).resolves({
-      StackResources: [nestedStack('storageGen1', 'gen1-storage-stack')],
+      StackResources: [nestedStack('storageavatars', 'gen1-storage-stack')],
     });
     cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen2-storage-stack' }).resolves({ StackResources: [] });
     cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen1-storage-stack' }).resolves({ StackResources: [] });
