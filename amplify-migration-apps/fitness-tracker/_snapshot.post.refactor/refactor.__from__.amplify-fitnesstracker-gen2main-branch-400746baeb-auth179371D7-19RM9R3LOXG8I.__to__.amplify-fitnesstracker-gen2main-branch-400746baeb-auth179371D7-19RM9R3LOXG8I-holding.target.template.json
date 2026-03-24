@@ -2,6 +2,18 @@
   "AWSTemplateFormatVersion": "2010-09-09",
   "Description": "Temporary holding stack for Gen2 migration",
   "Resources": {
+    "amplifyAuthAdminGroupCC42FF04": {
+      "Type": "AWS::Cognito::UserPoolGroup",
+      "Properties": {
+        "GroupName": "Admin",
+        "Precedence": 0,
+        "RoleArn": "arn:aws:iam::123456789012:role/amplify-fitnesstracker-ge-amplifyAuthAdminGroupRole-jIdkeXSZarK4",
+        "UserPoolId": "us-east-1_KGveHFLxc"
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/auth/amplifyAuth/AdminGroup"
+      }
+    },
     "amplifyAuthUserPool4BA7F805": {
       "Type": "AWS::Cognito::UserPool",
       "Properties": {
@@ -206,18 +218,6 @@
       },
       "Metadata": {
         "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/auth/amplifyAuth/IdentityPoolRoleAttachment"
-      }
-    },
-    "amplifyAuthAdminGroupCC42FF04": {
-      "Type": "AWS::Cognito::UserPoolGroup",
-      "Properties": {
-        "GroupName": "Admin",
-        "Precedence": 0,
-        "RoleArn": "arn:aws:iam::123456789012:role/amplify-fitnesstracker-ge-amplifyAuthAdminGroupRole-jIdkeXSZarK4",
-        "UserPoolId": "us-east-1_KGveHFLxc"
-      },
-      "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/auth/amplifyAuth/AdminGroup"
       }
     }
   },

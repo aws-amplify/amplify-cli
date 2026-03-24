@@ -247,7 +247,7 @@
         "FunctionName": "fitnesstracker33f5545533f55455PreSignup-gen2-main",
         "Handler": "index.handler",
         "MemorySize": 128,
-        "Role": "arn:aws:iam::123456789012:role/amplify-fitnesstracker-ge-fitnesstracker33f5545533f-4xULtIdI9U7p",
+        "Role": "arn:aws:iam::123456789012:role/amplify-fitnesstracker-gen2main-branch-400746baeb-auth179371D7-19RM9R3LOXG8I/fitnesstracker33f5545533f55455PreSignupgen2mainlambdaServiceRole713FCE90",
         "Runtime": "nodejs22.x",
         "Tags": [
           {
@@ -423,7 +423,7 @@
         "FunctionName": "admin-gen2-main",
         "Handler": "index.handler",
         "MemorySize": 128,
-        "Role": "arn:aws:iam::123456789012:role/amplify-fitnesstracker-ge-admingen2mainlambdaServic-BeMjaVS7HTg0",
+        "Role": "arn:aws:iam::123456789012:role/amplify-fitnesstracker-gen2main-branch-400746baeb-auth179371D7-19RM9R3LOXG8I/admingen2mainlambdaServiceRole439B1792",
         "Runtime": "nodejs22.x",
         "Tags": [
           {
@@ -634,161 +634,14 @@
       },
       "Condition": "CDKMetadataAvailable"
     },
-    "amplifyAuthUserPool4BA7F805": {
-      "Type": "AWS::Cognito::UserPool",
+    "amplifyAuthAdminGroupCC42FF04": {
+      "Type": "AWS::Cognito::UserPoolGroup",
       "Properties": {
-        "AutoVerifiedAttributes": [
-          "email"
-        ],
-        "EmailVerificationMessage": "Your verification code is {####}",
-        "EmailVerificationSubject": "Your verification code",
-        "MfaConfiguration": "OFF",
-        "Policies": {
-          "PasswordPolicy": {
-            "MinimumLength": "8",
-            "RequireLowercase": false,
-            "RequireNumbers": false,
-            "RequireSymbols": false,
-            "RequireUppercase": false
-          }
-        },
-        "Schema": [
-          {
-            "Mutable": true,
-            "Name": "email",
-            "Required": true
-          }
-        ],
-        "UserAttributeUpdateSettings": {
-          "AttributesRequireVerificationBeforeUpdate": [
-            "email"
-          ]
-        },
-        "UserPoolName": {
-          "Fn::Join": [
-            "",
-            [
-              "fitnesstracker33f55455_userpool_33f55455",
-              "-",
-              "main"
-            ]
-          ]
-        },
-        "UsernameConfiguration": {
-          "CaseSensitive": false
-        }
-      }
-    },
-    "amplifyAuthUserPoolAppClient2626C6F8": {
-      "Type": "AWS::Cognito::UserPoolClient",
-      "Properties": {
-        "ClientName": "fitnes33f55455_app_clientWeb",
-        "RefreshTokenValidity": "30",
-        "TokenValidityUnits": {
-          "RefreshToken": "days"
-        },
+        "Description": "override success",
+        "GroupName": "Admin",
+        "Precedence": 1,
+        "RoleArn": "arn:aws:iam::123456789012:role/us-east-1_iguxCIcMS-AdminGroupRole",
         "UserPoolId": "us-east-1_iguxCIcMS"
-      }
-    },
-    "amplifyAuthUserPoolNativeAppClient79534448": {
-      "Type": "AWS::Cognito::UserPoolClient",
-      "Properties": {
-        "ClientName": "fitnes33f55455_app_client",
-        "GenerateSecret": "false",
-        "RefreshTokenValidity": "30",
-        "TokenValidityUnits": {
-          "RefreshToken": "days"
-        },
-        "UserPoolId": "us-east-1_iguxCIcMS"
-      }
-    },
-    "amplifyAuthIdentityPool3FDE84CC": {
-      "Type": "AWS::Cognito::IdentityPool",
-      "Properties": {
-        "AllowUnauthenticatedIdentities": "false",
-        "CognitoIdentityProviders": [
-          {
-            "ClientId": "3s8jcv7nflisr91emephrr2a9s",
-            "ProviderName": {
-              "Fn::Sub": [
-                "cognito-idp.${region}.amazonaws.com/${client}",
-                {
-                  "region": {
-                    "Ref": "AWS::Region"
-                  },
-                  "client": "us-east-1_iguxCIcMS"
-                }
-              ]
-            }
-          },
-          {
-            "ClientId": "29bubgvfbbqkp4k60rl7oaqd8s",
-            "ProviderName": {
-              "Fn::Sub": [
-                "cognito-idp.${region}.amazonaws.com/${client}",
-                {
-                  "region": {
-                    "Ref": "AWS::Region"
-                  },
-                  "client": "us-east-1_iguxCIcMS"
-                }
-              ]
-            }
-          }
-        ],
-        "IdentityPoolName": {
-          "Fn::Join": [
-            "",
-            [
-              "fitnesstracker33f55455_identitypool_33f55455__",
-              "main"
-            ]
-          ]
-        }
-      }
-    },
-    "amplifyAuthIdentityPoolRoleAttachment045F17C8": {
-      "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
-      "Properties": {
-        "IdentityPoolId": "us-east-1:157ae2f7-5e4e-42ad-83e8-22689e0c1022",
-        "RoleMappings": {
-          "UserPoolClientRoleMapping": {
-            "AmbiguousRoleResolution": "AuthenticatedRole",
-            "IdentityProvider": {
-              "Fn::Sub": [
-                "cognito-idp.${region}.amazonaws.com/${userPool}:${client}",
-                {
-                  "region": {
-                    "Ref": "AWS::Region"
-                  },
-                  "userPool": "us-east-1_iguxCIcMS",
-                  "client": "3s8jcv7nflisr91emephrr2a9s"
-                }
-              ]
-            },
-            "Type": "Token"
-          },
-          "UserPoolWebClientRoleMapping": {
-            "AmbiguousRoleResolution": "AuthenticatedRole",
-            "IdentityProvider": {
-              "Fn::Sub": [
-                "cognito-idp.${region}.amazonaws.com/${userPool}:${webClient}",
-                {
-                  "region": {
-                    "Ref": "AWS::Region"
-                  },
-                  "userPool": "us-east-1_iguxCIcMS",
-                  "webClient": "29bubgvfbbqkp4k60rl7oaqd8s"
-                }
-              ]
-            },
-            "Type": "Token"
-          }
-        },
-        "Roles": {
-          "unauthenticated": "arn:aws:iam::123456789012:role/amplify-fitnesstracker-main-a0537-unauthRole",
-          "authenticated": "arn:aws:iam::123456789012:role/amplify-fitnesstracker-main-a0537-authRole"
-        }
       }
     }
   },

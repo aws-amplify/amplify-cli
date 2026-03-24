@@ -163,18 +163,6 @@
         "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/auth/amplifyAuth/AdminGroupRole/Resource"
       }
     },
-    "amplifyAuthAdminGroupCC42FF04": {
-      "Type": "AWS::Cognito::UserPoolGroup",
-      "Properties": {
-        "GroupName": "Admin",
-        "Precedence": 0,
-        "RoleArn": "arn:aws:iam::123456789012:role/amplify-fitnesstracker-ge-amplifyAuthAdminGroupRole-jIdkeXSZarK4",
-        "UserPoolId": "us-east-1_KGveHFLxc"
-      },
-      "Metadata": {
-        "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/auth/amplifyAuth/AdminGroup"
-      }
-    },
     "fitnesstracker33f5545533f55455PreSignupgen2mainlambdaServiceRole713FCE90": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -259,7 +247,7 @@
         "FunctionName": "fitnesstracker33f5545533f55455PreSignup-gen2-main",
         "Handler": "index.handler",
         "MemorySize": 128,
-        "Role": "arn:aws:iam::123456789012:role/amplify-fitnesstracker-ge-fitnesstracker33f5545533f-4xULtIdI9U7p",
+        "Role": "arn:aws:iam::123456789012:role/amplify-fitnesstracker-gen2main-branch-400746baeb-auth179371D7-19RM9R3LOXG8I/fitnesstracker33f5545533f55455PreSignupgen2mainlambdaServiceRole713FCE90",
         "Runtime": "nodejs22.x",
         "Tags": [
           {
@@ -435,7 +423,7 @@
         "FunctionName": "admin-gen2-main",
         "Handler": "index.handler",
         "MemorySize": 128,
-        "Role": "arn:aws:iam::123456789012:role/amplify-fitnesstracker-ge-admingen2mainlambdaServic-BeMjaVS7HTg0",
+        "Role": "arn:aws:iam::123456789012:role/amplify-fitnesstracker-gen2main-branch-400746baeb-auth179371D7-19RM9R3LOXG8I/admingen2mainlambdaServiceRole439B1792",
         "Runtime": "nodejs22.x",
         "Tags": [
           {
@@ -645,6 +633,16 @@
         "aws:cdk:path": "amplify-fitnesstracker-gen2main-branch-400746baeb/auth/CDKMetadata/Default"
       },
       "Condition": "CDKMetadataAvailable"
+    },
+    "amplifyAuthAdminGroupCC42FF04": {
+      "Type": "AWS::Cognito::UserPoolGroup",
+      "Properties": {
+        "Description": "override success",
+        "GroupName": "Admin",
+        "Precedence": 1,
+        "RoleArn": "arn:aws:iam::123456789012:role/us-east-1_iguxCIcMS-AdminGroupRole",
+        "UserPoolId": "us-east-1_iguxCIcMS"
+      }
     },
     "amplifyAuthUserPool4BA7F805": {
       "Type": "AWS::Cognito::UserPool",

@@ -465,7 +465,7 @@
         "FunctionName": "fitnesstracker33f5545533f55455PreSignup-gen2-main",
         "Handler": "index.handler",
         "MemorySize": 128,
-        "Role": "arn:aws:iam::123456789012:role/amplify-fitnesstracker-ge-fitnesstracker33f5545533f-4xULtIdI9U7p",
+        "Role": "arn:aws:iam::123456789012:role/amplify-fitnesstracker-gen2main-branch-400746baeb-auth179371D7-19RM9R3LOXG8I/fitnesstracker33f5545533f55455PreSignupgen2mainlambdaServiceRole713FCE90",
         "Runtime": "nodejs22.x",
         "Tags": [
           {
@@ -641,7 +641,7 @@
         "FunctionName": "admin-gen2-main",
         "Handler": "index.handler",
         "MemorySize": 128,
-        "Role": "arn:aws:iam::123456789012:role/amplify-fitnesstracker-ge-admingen2mainlambdaServic-BeMjaVS7HTg0",
+        "Role": "arn:aws:iam::123456789012:role/amplify-fitnesstracker-gen2main-branch-400746baeb-auth179371D7-19RM9R3LOXG8I/admingen2mainlambdaServiceRole439B1792",
         "Runtime": "nodejs22.x",
         "Tags": [
           {
