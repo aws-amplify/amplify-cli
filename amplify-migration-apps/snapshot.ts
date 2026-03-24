@@ -128,7 +128,7 @@ function stackNameFromArn(arnOrName: string): string {
   return arnOrName;
 }
 
-async function downloadRecursive(stackNameOrArn: string, targetDir: string, appId: string, appName: string): Promise<void> {
+async function downloadRecursive(stackNameOrArn: string, targetDir: string): Promise<void> {
   const stackName = stackNameFromArn(stackNameOrArn);
 
   const template = await fetchTemplate(stackName);
@@ -148,7 +148,7 @@ async function downloadRecursive(stackNameOrArn: string, targetDir: string, appI
 
   const nestedIds = await fetchNestedStacks(stackName);
   for (const nestedId of nestedIds) {
-    await downloadRecursive(nestedId, targetDir, appId, appName);
+    await downloadRecursive(nestedId, targetDir);
   }
 }
 
@@ -160,13 +160,13 @@ async function capturePreRefactor(appName: string, amplifyAppName?: string, gen2
   const resolvedAppName = amplifyAppName ?? appName.replaceAll('-', '');
   const app = await findAppByName(resolvedAppName);
   const gen2RootStack = await findGen2RootStack(app.appId!, gen2Branch ?? 'gen2-main');
-  const gen1RootStack = await findGen1RootStack(app.name!, gen1Env ?? 'main');
+  const gen1RootStack = await findGen1RootStack('storelocator', gen1Env ?? 'main');
 
   const targetDir = path.resolve(path.join(__dirname, appName, '_snapshot.pre.refactor'));
   resetDir(targetDir);
 
-  await downloadRecursive(gen2RootStack, targetDir, app.appId!, app.name!);
-  await downloadRecursive(gen1RootStack, targetDir, app.appId!, app.name!);
+  await downloadRecursive(gen2RootStack, targetDir);
+  await downloadRecursive(gen1RootStack, targetDir);
 }
 
 async function capturePostRefactor(appName: string, deployedAppPath: string): Promise<void> {

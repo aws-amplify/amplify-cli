@@ -1,13 +1,18 @@
 {
-  "name": "storelocator",
+  "name": "@amplify-migration-apps/store-locator",
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "installConfig": {
+    "hoistingLimits": "workspaces"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "sanitize": "tsx ../sanitize.ts",
+    "typecheck": "cd _snapshot.post.generate/amplify && npx tsc --noEmit"
   },
   "dependencies": {
     "@aws-sdk/client-cognito-identity-provider": "^3.1016.0",

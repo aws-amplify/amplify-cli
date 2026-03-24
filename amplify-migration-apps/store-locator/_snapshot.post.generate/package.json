@@ -11,14 +11,14 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "sanitize": "cd _snapshot.generate.input && tsx ../sanitize.ts",
-    "typecheck": "cd _snapshot.generate.expected/amplify && npx tsc --noEmit"
+    "sanitize": "tsx ../sanitize.ts",
+    "typecheck": "cd _snapshot.post.generate/amplify && npx tsc --noEmit"
   },
   "dependencies": {
-    "@aws-sdk/client-cognito-identity-provider": "^3.1016.0",
     "@aws-amplify/geo": "^3.0.92",
     "@aws-amplify/ui-react": "^6.13.2",
     "@aws-amplify/ui-react-geo": "^2.2.13",
+    "@aws-sdk/client-cognito-identity-provider": "^3.1016.0",
     "aws-amplify": "^6.16.0",
     "axios": "latest",
     "maplibre-gl": "^2.4.0",
