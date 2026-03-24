@@ -1,0 +1,14 @@
+[
+  {
+    "OutputKey": "amplifyfitnesstrackergen2mainbrancha09655d799restapistackadminapiRestApiDeploymentStageprod3A54AD90Ref",
+    "OutputValue": "prod"
+  },
+  {
+    "OutputKey": "amplifyfitnesstrackergen2mainbrancha09655d799restapistackadminapiRestApi59ABC85BRef",
+    "OutputValue": "rr7ckdesd4"
+  },
+  {
+    "OutputKey": "RestApiEndpoint0551178A",
+    "OutputValue": "https://rr7ckdesd4.execute-api.us-east-1.amazonaws.com/prod/"
+  }
+]

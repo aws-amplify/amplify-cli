@@ -72,6 +72,10 @@ test('mood-board snapshot', async () => {
   await testSnapshot('mood-board');
 });
 
+test('fitness-tracker snapshot', async () => {
+  await testSnapshot('fitness-tracker');
+});
+
 async function testSnapshot(appName: string, appOptions?: MigrationAppOptions, customize?: (app: MigrationApp) => Promise<void>) {
   await MigrationApp.run(
     appName,

@@ -1,0 +1,22 @@
+[
+  {
+    "OutputKey": "GetAttExerciseTableName",
+    "OutputValue": "Exercise-4ebr7lx7bbhnpeo5dbtcvdajdm-main",
+    "Description": "Your DynamoDB table name.",
+    "ExportName": "uhg6hv7zmzav5doaroa4tocwv4:GetAtt:ExerciseTable:Name"
+  },
+  {
+    "OutputKey": "GetAttExerciseTableStreamArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Exercise-4ebr7lx7bbhnpeo5dbtcvdajdm-main/stream/2026-03-22T02:14:28.559",
+    "Description": "Your DynamoDB table StreamArn.",
+    "ExportName": "uhg6hv7zmzav5doaroa4tocwv4:GetAtt:ExerciseTable:StreamArn"
+  },
+  {
+    "OutputKey": "amplifyfitnesstrackergen2mainbrancha09655d799dataamplifyDataExerciseExerciseDataSourceDCCBFD77Name",
+    "OutputValue": "ExerciseTable"
+  },
+  {
+    "OutputKey": "amplifyfitnesstrackergen2mainbrancha09655d799dataamplifyDataExerciseExerciseTableECDBC610TableArn",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Exercise-4ebr7lx7bbhnpeo5dbtcvdajdm-main"
+  }
+]

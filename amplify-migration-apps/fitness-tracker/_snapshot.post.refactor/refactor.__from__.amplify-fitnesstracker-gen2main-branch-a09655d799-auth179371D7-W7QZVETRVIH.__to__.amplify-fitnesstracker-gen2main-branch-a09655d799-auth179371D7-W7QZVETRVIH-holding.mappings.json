@@ -1,0 +1,12 @@
+[
+  {
+    "Source": {
+      "LogicalResourceId": "amplifyAuthAdminGroupCC42FF04",
+      "StackName": "amplify-fitnesstracker-gen2main-branch-a09655d799-auth179371D7-W7QZVETRVIH"
+    },
+    "Destination": {
+      "LogicalResourceId": "amplifyAuthAdminGroupCC42FF04",
+      "StackName": "amplify-fitnesstracker-gen2main-branch-a09655d799-auth179371D7-W7QZVETRVIH-holding"
+    }
+  }
+]

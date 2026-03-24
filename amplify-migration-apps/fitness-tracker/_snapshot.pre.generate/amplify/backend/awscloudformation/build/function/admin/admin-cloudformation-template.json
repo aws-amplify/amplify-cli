@@ -16,9 +16,9 @@
     "s3Key": {
       "Type": "String"
     },
-    "authfitnesstracker6b0fc1196b0fc119UserPoolId": {
+    "authfitnesstracker9ceb2e7c9ceb2e7cUserPoolId": {
       "Type": "String",
-      "Default": "authfitnesstracker6b0fc1196b0fc119UserPoolId"
+      "Default": "authfitnesstracker9ceb2e7c9ceb2e7cUserPoolId"
     }
   },
   "Conditions": {
@@ -74,8 +74,8 @@
             "REGION": {
               "Ref": "AWS::Region"
             },
-            "AUTH_FITNESSTRACKER6B0FC1196B0FC119_USERPOOLID": {
-              "Ref": "authfitnesstracker6b0fc1196b0fc119UserPoolId"
+            "AUTH_FITNESSTRACKER9CEB2E7C9CEB2E7C_USERPOOLID": {
+              "Ref": "authfitnesstracker9ceb2e7c9ceb2e7cUserPoolId"
             }
           }
         },
@@ -96,12 +96,12 @@
         "RoleName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "fitnesstrackerLambdaRole8a95290d",
+            "fitnesstrackerLambdaRole64f55d16",
             {
               "Fn::Join": [
                 "",
                 [
-                  "fitnesstrackerLambdaRole8a95290d",
+                  "fitnesstrackerLambdaRole64f55d16",
                   "-",
                   {
                     "Ref": "env"
@@ -220,7 +220,7 @@
                       },
                       ":userpool/",
                       {
-                        "Ref": "authfitnesstracker6b0fc1196b0fc119UserPoolId"
+                        "Ref": "authfitnesstracker9ceb2e7c9ceb2e7cUserPoolId"
                       }
                     ]
                   ]

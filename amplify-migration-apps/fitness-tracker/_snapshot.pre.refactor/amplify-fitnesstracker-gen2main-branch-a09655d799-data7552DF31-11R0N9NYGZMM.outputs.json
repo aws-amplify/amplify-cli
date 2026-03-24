@@ -1,0 +1,26 @@
+[
+  {
+    "OutputKey": "amplifyfitnesstrackergen2mainbrancha09655d799datalognutritiongen2mainlambda739A6536Ref",
+    "OutputValue": "lognutrition-gen2-main"
+  },
+  {
+    "OutputKey": "amplifyfitnesstrackergen2mainbrancha09655d799dataamplifyDataGraphQLAPIC1F782FAApiId",
+    "OutputValue": "uhg6hv7zmzav5doaroa4tocwv4"
+  },
+  {
+    "OutputKey": "amplifyfitnesstrackergen2mainbrancha09655d799dataamplifyDataGraphQLAPIDefaultApiKeyE10BC731ApiKey",
+    "OutputValue": "da2-mpyed5y2pvbcjl2qcbxuq2rspe"
+  },
+  {
+    "OutputKey": "amplifyfitnesstrackergen2mainbrancha09655d799dataamplifyDataGraphQLAPIC1F782FAGraphQLUrl",
+    "OutputValue": "https://7ltandzu5zbxvcqrr24edz4hym.appsync-api.us-east-1.amazonaws.com/graphql"
+  },
+  {
+    "OutputKey": "amplifyfitnesstrackergen2mainbrancha09655d799datalognutritiongen2mainlambda739A6536Arn",
+    "OutputValue": "arn:aws:lambda:us-east-1:123456789012:function:lognutrition-gen2-main"
+  },
+  {
+    "OutputKey": "amplifyfitnesstrackergen2mainbrancha09655d799dataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiB8E4BD6ABDestinationBucketArn",
+    "OutputValue": "arn:aws:s3:::amplify-fitnesstracker-ge-amplifydataamplifycodege-cxlnc2wmwnpq"
+  }
+]

@@ -1,0 +1,38 @@
+[
+  {
+    "OutputKey": "amplifyfitnesstrackergen2mainbrancha09655d799authamplifyAuthUserPoolAppClientE9EEF58ARef",
+    "OutputValue": "dgddko7evul00or8262g7n9ub"
+  },
+  {
+    "OutputKey": "amplifyfitnesstrackergen2mainbrancha09655d799authamplifyAuthAdminGroupRole06BE9A34Ref",
+    "OutputValue": "amplify-fitnesstracker-ge-amplifyAuthAdminGroupRole-RZHpxrEYkgrR"
+  },
+  {
+    "OutputKey": "amplifyfitnesstrackergen2mainbrancha09655d799authadmingen2mainlambdaAFBC209FArn",
+    "OutputValue": "arn:aws:lambda:us-east-1:123456789012:function:admin-gen2-main"
+  },
+  {
+    "OutputKey": "amplifyfitnesstrackergen2mainbrancha09655d799authadmingen2mainlambdaAFBC209FRef",
+    "OutputValue": "admin-gen2-main"
+  },
+  {
+    "OutputKey": "amplifyfitnesstrackergen2mainbrancha09655d799authamplifyAuthIdentityPoolF929A427Ref",
+    "OutputValue": "us-east-1:ba67548f-183b-4887-96be-2b3e5c93c842"
+  },
+  {
+    "OutputKey": "amplifyfitnesstrackergen2mainbrancha09655d799authamplifyAuthauthenticatedUserRoleDC4EF599Ref",
+    "OutputValue": "amplify-fitnesstracker-ge-amplifyAuthauthenticatedU-Ko1Fb2NmvtwH"
+  },
+  {
+    "OutputKey": "amplifyfitnesstrackergen2mainbrancha09655d799authamplifyAuthunauthenticatedUserRole600599A6Ref",
+    "OutputValue": "amplify-fitnesstracker-ge-amplifyAuthunauthenticate-clvX5844lcZc"
+  },
+  {
+    "OutputKey": "amplifyfitnesstrackergen2mainbrancha09655d799authamplifyAuthUserPool8CF7C424Ref",
+    "OutputValue": "us-east-1_mQEsDQ1lC"
+  },
+  {
+    "OutputKey": "amplifyfitnesstrackergen2mainbrancha09655d799authfitnesstracker9ceb2e7c9ceb2e7cPreSignupgen2mainlambdaB4152CB6Ref",
+    "OutputValue": "fitnesstracker9ceb2e7c9ceb2e7cPreSignup-gen2-main"
+  }
+]

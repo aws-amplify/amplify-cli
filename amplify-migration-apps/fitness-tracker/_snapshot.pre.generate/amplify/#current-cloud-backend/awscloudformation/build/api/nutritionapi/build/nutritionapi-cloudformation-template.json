@@ -1,10 +1,10 @@
 {
-  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"Amplify\",\"createdWith\":\"14.2.5\",\"stackType\":\"api-API Gateway\",\"metadata\":{\"whyContinueWithGen1\":\"Prefer not to answer\"}}",
+  "Description": "API Gateway Resource for AWS Amplify CLI",
   "AWSTemplateFormatVersion": "2010-09-09",
   "Parameters": {
-    "authfitnesstracker6b0fc1196b0fc119UserPoolId": {
+    "authfitnesstracker9ceb2e7c9ceb2e7cUserPoolId": {
       "Type": "String",
-      "Default": "authfitnesstracker6b0fc1196b0fc119UserPoolId"
+      "Default": "authfitnesstracker9ceb2e7c9ceb2e7cUserPoolId"
     },
     "authuserPoolGroupsAdminGroupRole": {
       "Type": "String",
@@ -344,7 +344,7 @@
               "-",
               [
                 {
-                  "Ref": "authfitnesstracker6b0fc1196b0fc119UserPoolId"
+                  "Ref": "authfitnesstracker9ceb2e7c9ceb2e7cUserPoolId"
                 },
                 "AdminGroupRole"
               ]
@@ -666,7 +666,7 @@
         "Name": "nutritionapi"
       }
     },
-    "nutritionapiDefault4XXResponse7a61ed16": {
+    "nutritionapiDefault4XXResponse59a22bc9": {
       "Type": "AWS::ApiGateway::GatewayResponse",
       "Properties": {
         "ResponseParameters": {
@@ -681,7 +681,7 @@
         }
       }
     },
-    "nutritionapiDefault5XXResponse7a61ed16": {
+    "nutritionapiDefault5XXResponse59a22bc9": {
       "Type": "AWS::ApiGateway::GatewayResponse",
       "Properties": {
         "ResponseParameters": {
@@ -696,7 +696,7 @@
         }
       }
     },
-    "DeploymentAPIGWnutritionapi3a6bc816": {
+    "DeploymentAPIGWnutritionapifc67c40b": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "Description": "The Development stage deployment of your API.",
@@ -714,8 +714,8 @@
         }
       },
       "DependsOn": [
-        "nutritionapiDefault4XXResponse7a61ed16",
-        "nutritionapiDefault5XXResponse7a61ed16"
+        "nutritionapiDefault4XXResponse59a22bc9",
+        "nutritionapiDefault5XXResponse59a22bc9"
       ]
     }
   },

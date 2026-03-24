@@ -1,0 +1,12 @@
+[
+  {
+    "Source": {
+      "LogicalResourceId": "AdminGroup",
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-fitnesstracker-main-6fc9a-authuserPoolGroups-MXIW00J9KSSV/af7405c0-2594-11f1-8524-0affd2875eef"
+    },
+    "Destination": {
+      "LogicalResourceId": "amplifyAuthAdminGroupCC42FF04",
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-fitnesstracker-gen2main-branch-a09655d799-auth179371D7-W7QZVETRVIH/785891a0-25fd-11f1-b51f-0e3e40e955b5"
+    }
+  }
+]

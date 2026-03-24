@@ -1,0 +1,14 @@
+[
+  {
+    "OutputKey": "amplifyfitnesstrackergen2mainbrancha09655d799restapistacknutritionapiRestApiDeploymentStageprodD1246DCDRef",
+    "OutputValue": "prod"
+  },
+  {
+    "OutputKey": "amplifyfitnesstrackergen2mainbrancha09655d799restapistacknutritionapiRestApi1438AE73Ref",
+    "OutputValue": "e2y3anael5"
+  },
+  {
+    "OutputKey": "RestApiEndpoint0551178A",
+    "OutputValue": "https://e2y3anael5.execute-api.us-east-1.amazonaws.com/prod/"
+  }
+]

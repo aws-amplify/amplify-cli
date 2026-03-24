@@ -15,7 +15,7 @@
             "UserPoolId"
           ],
           "category": "auth",
-          "resourceName": "fitnesstracker6b0fc1196b0fc119"
+          "resourceName": "fitnesstracker9ceb2e7c9ceb2e7c"
         },
         {
           "attributes": [
@@ -35,7 +35,7 @@
             "UserPoolId"
           ],
           "category": "auth",
-          "resourceName": "fitnesstracker6b0fc1196b0fc119"
+          "resourceName": "fitnesstracker9ceb2e7c9ceb2e7c"
         }
       ],
       "output": {
@@ -43,7 +43,7 @@
           "additionalAuthenticationProviders": [
             {
               "apiKeyConfig": {
-                "apiKeyExpirationDate": "2026-03-14T19:43:17.245Z",
+                "apiKeyExpirationDate": "2026-03-29T02:07:08.737Z",
                 "apiKeyExpirationDays": 7,
                 "description": "graphql"
               },
@@ -53,7 +53,7 @@
           "defaultAuthentication": {
             "authenticationType": "AMAZON_COGNITO_USER_POOLS",
             "userPoolConfig": {
-              "userPoolId": "authfitnesstracker6b0fc1196b0fc119"
+              "userPoolId": "authfitnesstracker9ceb2e7c9ceb2e7c"
             }
           }
         }
@@ -76,7 +76,7 @@
             "UserPoolId"
           ],
           "category": "auth",
-          "resourceName": "fitnesstracker6b0fc1196b0fc119"
+          "resourceName": "fitnesstracker9ceb2e7c9ceb2e7c"
         },
         {
           "attributes": [
@@ -91,7 +91,7 @@
     }
   },
   "auth": {
-    "fitnesstracker6b0fc1196b0fc119": {
+    "fitnesstracker9ceb2e7c9ceb2e7c": {
       "customAuth": false,
       "dependsOn": [
         {
@@ -100,7 +100,7 @@
             "Name"
           ],
           "category": "function",
-          "resourceName": "fitnesstracker6b0fc1196b0fc119PreSignup",
+          "resourceName": "fitnesstracker9ceb2e7c9ceb2e7cPreSignup",
           "triggerProvider": "Cognito"
         }
       ],
@@ -135,7 +135,7 @@
             "IdentityPoolId"
           ],
           "category": "auth",
-          "resourceName": "fitnesstracker6b0fc1196b0fc119"
+          "resourceName": "fitnesstracker9ceb2e7c9ceb2e7c"
         }
       ],
       "providerPlugin": "awscloudformation",
@@ -151,13 +151,13 @@
             "UserPoolId"
           ],
           "category": "auth",
-          "resourceName": "fitnesstracker6b0fc1196b0fc119"
+          "resourceName": "fitnesstracker9ceb2e7c9ceb2e7c"
         }
       ],
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
     },
-    "fitnesstracker6b0fc1196b0fc119PreSignup": {
+    "fitnesstracker9ceb2e7c9ceb2e7cPreSignup": {
       "build": true,
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
@@ -194,27 +194,27 @@
         }
       ]
     },
-    "AMPLIFY_function_fitnesstracker6b0fc1196b0fc119PreSignup_DOMAINALLOWLIST": {
+    "AMPLIFY_function_fitnesstracker9ceb2e7c9ceb2e7cPreSignup_DOMAINALLOWLIST": {
       "usedBy": [
         {
           "category": "function",
-          "resourceName": "fitnesstracker6b0fc1196b0fc119PreSignup"
+          "resourceName": "fitnesstracker9ceb2e7c9ceb2e7cPreSignup"
         }
       ]
     },
-    "AMPLIFY_function_fitnesstracker6b0fc1196b0fc119PreSignup_deploymentBucketName": {
+    "AMPLIFY_function_fitnesstracker9ceb2e7c9ceb2e7cPreSignup_deploymentBucketName": {
       "usedBy": [
         {
           "category": "function",
-          "resourceName": "fitnesstracker6b0fc1196b0fc119PreSignup"
+          "resourceName": "fitnesstracker9ceb2e7c9ceb2e7cPreSignup"
         }
       ]
     },
-    "AMPLIFY_function_fitnesstracker6b0fc1196b0fc119PreSignup_s3Key": {
+    "AMPLIFY_function_fitnesstracker9ceb2e7c9ceb2e7cPreSignup_s3Key": {
       "usedBy": [
         {
           "category": "function",
-          "resourceName": "fitnesstracker6b0fc1196b0fc119PreSignup"
+          "resourceName": "fitnesstracker9ceb2e7c9ceb2e7cPreSignup"
         }
       ]
     },
