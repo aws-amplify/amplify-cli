@@ -94,6 +94,28 @@ Each `CategoryRefactorer.plan()` follows this sequence:
 7. **Move**: The main refactor — moves resources from source to target via `Cfn.refactor()`. Skipped if mappings are empty.
 8. **After move** (rollback only): Independently fetches the holding stack template, discovers matching resources, and restores them back to Gen2.
 
+### Resource Mapping
+
+Resource mappings determine which source resources move to which target logical IDs. The mapping strategy differs between forward and rollback.
+
+**Forward** uses type-based matching. For each source resource, it scans the target stack for resources of the same CloudFormation type. Each target can only be matched once (tracked via a `usedTargetIds` set to prevent two source resources from claiming the same target).
+
+Happy paths:
+
+- One source resource of type X, one target resource of type X → maps 1:1
+- Multiple source resources of different types, each with one target match → maps independently
+- Source has no resources of the declared types → empty mappings, move is skipped
+
+Unhappy paths:
+
+- Source resource has zero matching targets → throws "has no corresponding target resource"
+- Source resource has multiple matching targets → throws "has multiple corresponding target resources"
+- Two source resources of the same type, one target → first claims the target, second throws "has no corresponding target resource"
+
+Categories with multiple resources of the same type (e.g., auth with two `UserPoolClient` resources) must override `match()` to disambiguate. Auth Cognito uses the logical ID pattern (Web vs Native), and UserPoolGroups matches by `GroupName` property.
+
+**Rollback** uses `targetLogicalId()` — each subclass maps Gen2 resource types to known Gen1 logical IDs (e.g., `AWS::Cognito::UserPool` → `UserPool`). Resources whose Gen1 logical ID already exists in the target stack are skipped (they were never moved, or were already rolled back).
+
 ### Template Resolution
 
 Templates are resolved to replace CloudFormation intrinsic functions with literal values. This is necessary because the StackRefactor API submits new template bodies for both stacks, and any `Ref`/`Fn::GetAtt` pointing to a resource being moved would become a dangling reference.
