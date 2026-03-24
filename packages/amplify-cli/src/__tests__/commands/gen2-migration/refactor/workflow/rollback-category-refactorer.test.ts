@@ -177,4 +177,19 @@ describe('RollbackCategoryRefactorer.buildResourceMappings (gen1LogicalIds-based
       'Unable to determine target id of resource amplifyTopic',
     );
   });
+
+  it('skips resources that already exist in target stack', async () => {
+    const refactorer = new TestRollbackMappingRefactorer(new Map([['amplifyBucket', 'S3Bucket']]));
+    const mappings = await refactorer.testBuildResourceMappings(
+      new Map([['amplifyBucket', r('AWS::S3::Bucket')]]),
+      new Map([['S3Bucket', r('AWS::S3::Bucket')]]),
+    );
+    expect(mappings).toHaveLength(0);
+  });
+
+  it('returns empty mappings when source is empty', async () => {
+    const refactorer = new TestRollbackMappingRefactorer(new Map());
+    const mappings = await refactorer.testBuildResourceMappings(new Map(), new Map());
+    expect(mappings).toHaveLength(0);
+  });
 });

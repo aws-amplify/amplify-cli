@@ -205,4 +205,21 @@ describe('ForwardCategoryRefactorer.buildResourceMappings (default type-matching
       refactorer.testBuildResourceMappings(new Map([['Stream', r('AWS::Kinesis::Stream')]]), new Map([['Bucket', r('AWS::S3::Bucket')]])),
     ).rejects.toThrow("Source resource 'Stream' (AWS::Kinesis::Stream) has no corresponding target resource");
   });
+
+  it('throws when source resource has multiple matching target resources', async () => {
+    await expect(
+      refactorer.testBuildResourceMappings(
+        new Map([['S3Bucket', r('AWS::S3::Bucket')]]),
+        new Map([
+          ['Bucket1', r('AWS::S3::Bucket')],
+          ['Bucket2', r('AWS::S3::Bucket')],
+        ]),
+      ),
+    ).rejects.toThrow("Source resource 'S3Bucket' (AWS::S3::Bucket) has multiple corresponding target resources");
+  });
+
+  it('returns empty mappings when source is empty', async () => {
+    const mappings = await refactorer.testBuildResourceMappings(new Map(), new Map([['amplifyBucket', r('AWS::S3::Bucket')]]));
+    expect(mappings).toHaveLength(0);
+  });
 });
