@@ -86,39 +86,6 @@ describe('BackendGenerator', () => {
     });
   });
 
-  describe('ensureStorageStack', () => {
-    it('emits storageStack from backend.storage.stack when S3 exists', () => {
-      const gen = new BackendGenerator(outputDir);
-      gen.addImport('./storage/resource', ['storage']);
-      gen.addDefineBackendProperty(factory.createShorthandPropertyAssignment('storage'));
-      gen.ensureStorageStack(true);
-
-      return verifyBackendTs(gen, (content) => {
-        expect(content).toContain('backend.storage.stack');
-      });
-    });
-
-    it('emits storageStack via createStack when no S3', () => {
-      const gen = new BackendGenerator(outputDir);
-      gen.ensureStorageStack(false);
-
-      return verifyBackendTs(gen, (content) => {
-        expect(content).toContain("backend.createStack('storage')");
-      });
-    });
-
-    it('emits storageStack exactly once', () => {
-      const gen = new BackendGenerator(outputDir);
-      gen.ensureStorageStack(false);
-      gen.ensureStorageStack(false);
-
-      return verifyBackendTs(gen, (content) => {
-        const matches = content.match(/const storageStack/g) || [];
-        expect(matches).toHaveLength(1);
-      });
-    });
-  });
-
   describe('createDynamoDBStack', () => {
     it('returns unique variable names for different resources', () => {
       const gen = new BackendGenerator(outputDir);

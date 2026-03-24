@@ -97,7 +97,7 @@ describe('CategoryRefactorer.plan() orchestration — via StorageS3ForwardRefact
         noOpLogger(),
         {
           category: 'storage',
-          resourceName: 'test',
+          resourceName: 'avatars',
           service: 'S3',
           key: 'storage:S3' as const,
         },
@@ -123,7 +123,7 @@ describe('CategoryRefactorer.plan() orchestration — via StorageS3ForwardRefact
         noOpLogger(),
         {
           category: 'storage',
-          resourceName: 'test',
+          resourceName: 'avatars',
           service: 'S3',
           key: 'storage:S3' as const,
         },
@@ -150,7 +150,7 @@ describe('CategoryRefactorer.plan() orchestration — via StorageS3ForwardRefact
         noOpLogger(),
         {
           category: 'storage',
-          resourceName: 'test',
+          resourceName: 'avatars',
           service: 'S3',
           key: 'storage:S3' as const,
         },
@@ -179,7 +179,7 @@ describe('CategoryRefactorer.plan() orchestration — via StorageS3ForwardRefact
       noOpLogger(),
       {
         category: 'storage',
-        resourceName: 'test',
+        resourceName: 'avatars',
         service: 'S3',
         key: 'storage:S3' as const,
       },
@@ -201,7 +201,7 @@ describe('CategoryRefactorer.plan() orchestration — via StorageS3ForwardRefact
       noOpLogger(),
       {
         category: 'storage',
-        resourceName: 'test',
+        resourceName: 'avatars',
         service: 'S3',
         key: 'storage:S3' as const,
       },
@@ -265,7 +265,7 @@ describe('StorageS3RollbackRefactorer.plan() — rollback without holding stack'
       noOpLogger(),
       {
         category: 'storage',
-        resourceName: 'test',
+        resourceName: 'avatars',
         service: 'S3',
         key: 'storage:S3' as const,
       },

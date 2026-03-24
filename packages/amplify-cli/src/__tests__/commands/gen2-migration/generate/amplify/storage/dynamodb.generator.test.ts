@@ -220,8 +220,18 @@ describe('DynamoDBGenerator', () => {
 
     const createDynamoDBStackSpy = jest.spyOn(backendGenerator, 'createDynamoDBStack');
 
-    const gen1 = new DynamoDBGenerator(gen1App, backendGenerator, 'activity', false);
-    const gen2 = new DynamoDBGenerator(gen1App, backendGenerator, 'bookmarks', false);
+    const gen1 = new DynamoDBGenerator(
+      gen1App,
+      backendGenerator,
+      { category: 'storage', resourceName: 'activity', service: 'DynamoDB', key: 'storage:DynamoDB' },
+      false,
+    );
+    const gen2 = new DynamoDBGenerator(
+      gen1App,
+      backendGenerator,
+      { category: 'storage', resourceName: 'bookmarks', service: 'DynamoDB', key: 'storage:DynamoDB' },
+      false,
+    );
 
     const ops1 = await gen1.plan();
     await ops1[0].execute();
