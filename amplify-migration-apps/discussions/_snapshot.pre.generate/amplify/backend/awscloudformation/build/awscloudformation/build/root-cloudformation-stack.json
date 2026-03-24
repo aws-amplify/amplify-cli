@@ -228,7 +228,7 @@
           "smsAuthenticationMessage": "Your authentication code is {####}",
           "smsVerificationMessage": "Your verification code is {####}",
           "emailVerificationSubject": "Verification",
-          "emailVerificationMessage": "Your verification code is {####}",
+          "emailVerificationMessage": "Here is your verification code {####}",
           "defaultPasswordPolicy": false,
           "passwordPolicyMinLength": 8,
           "passwordPolicyCharacters": "",

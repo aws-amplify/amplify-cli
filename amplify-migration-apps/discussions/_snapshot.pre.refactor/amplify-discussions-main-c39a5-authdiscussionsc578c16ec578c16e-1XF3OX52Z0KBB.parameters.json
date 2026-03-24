@@ -129,7 +129,7 @@
   },
   {
     "ParameterKey": "emailVerificationMessage",
-    "ParameterValue": "Your verification code is {####}"
+    "ParameterValue": "Here is your verification code {####}"
   },
   {
     "ParameterKey": "userpoolClientRefreshTokenValidity",

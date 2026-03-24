@@ -117,7 +117,7 @@
         "AutoVerifiedAttributes": [
           "email"
         ],
-        "EmailVerificationMessage": "Your verification code is {####}",
+        "EmailVerificationMessage": "Here is your verification code {####}",
         "EmailVerificationSubject": "Verification",
         "MfaConfiguration": "OFF",
         "Policies": {
