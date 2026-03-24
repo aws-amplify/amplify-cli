@@ -48,16 +48,16 @@ AmplifyMigrationRefactorStep (refactor.ts)
 flowchart TD
     A[Resolve Gen1 source template] --> B[Resolve Gen2 target template]
     B --> C[Build resource mappings by type]
-    C --> D{mappings empty?}
-    D -- yes --> E[no-op]
-    D -- no --> F[Add placeholder if source would be empty]
-    F --> G["Update Gen1 stack (resolve refs)"]
-    G --> H["Update Gen2 stack (resolve refs)"]
-    H --> I[Move Gen2 resources → holding stack]
-    I --> J[Move Gen1 resources → Gen2 stack]
+    C --> D[Add placeholder if source would be empty]
+    D --> E["Update Gen1 stack (resolve refs)"]
+    E --> F["Update Gen2 stack (resolve refs)"]
+    F --> G["Move Gen2 resources → holding stack (discovers from Gen2 template)"]
+    G --> H{mappings empty?}
+    H -- yes --> I[done]
+    H -- no --> J[Move Gen1 resources → Gen2 stack]
 ```
 
-The forward workflow resolves both stack templates to replace `Ref`/`Fn::GetAtt` with literal values, then pushes those resolved templates via UpdateStack. This ensures no dangling references when resources are later removed. Gen2 resources are moved to a temporary holding stack first (preserving test data), then Gen1 resources are moved into the Gen2 stack.
+The forward workflow resolves both stack templates to replace `Ref`/`Fn::GetAtt` with literal values, then pushes those resolved templates via UpdateStack. This ensures no dangling references when resources are later removed. `beforeMove` independently fetches the Gen2 template and discovers which resources to move to the holding stack (preserving test data). The main move then transfers Gen1 resources into the Gen2 stack.
 
 ### Rollback (Gen2 → Gen1)
 
@@ -65,19 +65,21 @@ The forward workflow resolves both stack templates to replace `Ref`/`Fn::GetAtt`
 flowchart TD
     A[Resolve Gen2 source template] --> B[Resolve Gen1 target template]
     B --> C[Build resource mappings by Gen1 logical IDs]
-    C --> D{mappings empty?}
-    D -- yes --> E[no-op]
-    D -- no --> F[Add placeholder if source would be empty]
-    F --> G["Update Gen2 stack (resolve refs)"]
-    G --> H["Update Gen1 stack (resolve refs)"]
-    H --> I[Move Gen2 resources → Gen1 stack]
-    I --> J{holding stack exists?}
+    C --> D[Add placeholder if source would be empty]
+    D --> E["Update Gen2 stack (resolve refs)"]
+    E --> F["Update Gen1 stack (resolve refs)"]
+    F --> G{mappings empty?}
+    G -- yes --> H[skip main move]
+    G -- no --> I[Move Gen2 resources → Gen1 stack]
+    H --> J{holding stack exists?}
+    I --> J
     J -- no --> K[done]
-    J -- yes --> L[Add placeholder to holding stack]
-    L --> M[Move holding resources → Gen2 stack]
+    J -- yes --> L["Discover holding stack resources"]
+    L --> M[Add placeholder to holding stack]
+    M --> N[Move holding resources → Gen2 stack]
 ```
 
-The rollback workflow mirrors forward but in reverse. It resolves and updates both stacks (necessary if the Gen2 app was redeployed after forward, which introduces fresh `Fn::GetAtt` references). After moving resources back to Gen1, it restores any holding stack resources back to Gen2. The holding stack is left with just a placeholder resource — cleanup is handled by `amplify gen2-migration decommission`.
+The rollback workflow mirrors forward but in reverse. It resolves and updates both stacks (necessary if the Gen2 app was redeployed after forward, which introduces fresh `Fn::GetAtt` references). After moving resources back to Gen1, `afterMove` independently fetches the holding stack template and discovers which resources to restore back to Gen2. The holding stack is left with just a placeholder resource — cleanup is handled by `amplify gen2-migration decommission`.
 
 ### plan() Lifecycle
 
@@ -88,9 +90,9 @@ Each `CategoryRefactorer.plan()` follows this sequence:
 3. **Build mappings**: `buildResourceMappings()` matches source resources to target resources by type (forward) or by known Gen1 logical IDs (rollback). Returns `ResourceMapping[]` (SDK type).
 4. **Add placeholder**: If removing all mapped resources would leave the source stack empty, a `WaitConditionHandle` placeholder is added to the resolved template.
 5. **Update stacks**: `updateSource()` / `updateTarget()` push the resolved templates to CloudFormation via `Cfn.update()`. This replaces `Ref`/`Fn::GetAtt` with literal values so resources can be safely removed later. Dedup: if a stack was already claimed by a previous refactorer, the update is skipped.
-6. **Before move** (forward only): Moves Gen2 target resources to a temporary holding stack via `Cfn.refactor()`.
-7. **Move**: The main refactor — moves resources from source to target via `Cfn.refactor()`.
-8. **After move** (rollback only): Restores holding stack resources back to Gen2, then deletes the holding stack.
+6. **Before move** (forward only): Independently fetches the Gen2 template, discovers matching resources, and moves them to a temporary holding stack via `Cfn.refactor()`.
+7. **Move**: The main refactor — moves resources from source to target via `Cfn.refactor()`. Skipped if mappings are empty.
+8. **After move** (rollback only): Independently fetches the holding stack template, discovers matching resources, and restores them back to Gen2.
 
 ### Template Resolution
 
