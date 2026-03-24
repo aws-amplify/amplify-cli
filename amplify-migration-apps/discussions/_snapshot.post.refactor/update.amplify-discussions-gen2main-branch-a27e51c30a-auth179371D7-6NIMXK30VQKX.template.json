@@ -18,8 +18,8 @@
         "AutoVerifiedAttributes": [
           "email"
         ],
-        "EmailVerificationMessage": "The verification code to your new account is {####}",
-        "EmailVerificationSubject": "Verify your new account",
+        "EmailVerificationMessage": "Here is your verification code {####}",
+        "EmailVerificationSubject": "Verification",
         "MfaConfiguration": "OFF",
         "Policies": {
           "PasswordPolicy": {
@@ -43,7 +43,7 @@
             "Required": true
           }
         ],
-        "SmsVerificationMessage": "The verification code to your new account is {####}",
+        "SmsVerificationMessage": "Here is your verification code {####}",
         "UserAttributeUpdateSettings": {
           "AttributesRequireVerificationBeforeUpdate": [
             "email"
@@ -64,9 +64,9 @@
         },
         "VerificationMessageTemplate": {
           "DefaultEmailOption": "CONFIRM_WITH_CODE",
-          "EmailMessage": "The verification code to your new account is {####}",
-          "EmailSubject": "Verify your new account",
-          "SmsMessage": "The verification code to your new account is {####}"
+          "EmailMessage": "Here is your verification code {####}",
+          "EmailSubject": "Verification",
+          "SmsMessage": "Here is your verification code {####}"
         }
       },
       "UpdateReplacePolicy": "Delete",
