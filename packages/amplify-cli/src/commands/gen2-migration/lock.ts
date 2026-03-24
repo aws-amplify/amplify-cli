@@ -40,8 +40,10 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
   }
 
   public async rollbackValidate(): Promise<void> {
-    // https://github.com/aws-amplify/amplify-cli/issues/14570
-    return;
+    const validations = new AmplifyGen2MigrationValidations(this.logger, this.rootStackName, this.currentEnvName, this.context);
+    await validations.validateDeploymentStatus();
+    await validations.validateLockStatus();
+    await validations.validateTemplateDrift();
   }
 
   public async execute(): Promise<AmplifyMigrationOperation[]> {

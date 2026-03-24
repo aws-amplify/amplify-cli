@@ -14,7 +14,10 @@ import execa from 'execa';
 import { Logger } from '../gen2-migration';
 import chalk from 'chalk';
 import { printer } from '@aws-amplify/amplify-prompts';
+import type { Printer } from '@aws-amplify/amplify-prompts';
 import { extractCategory } from './categories';
+import { detectTemplateDrift } from '../drift-detection/detect-template-drift';
+import { CloudFormationService } from '../drift-detection/services';
 
 export class AmplifyGen2MigrationValidations {
   private limiter = new Bottleneck({
@@ -190,6 +193,50 @@ export class AmplifyGen2MigrationValidations {
     }
 
     this.logger.info(chalk.green(`Stack ${this.rootStackName} is locked ✔`));
+  }
+
+  public async validateTemplateDrift(): Promise<void> {
+    this.logger.info('Checking for template drift...');
+
+    const print: Printer = {
+      info: (msg: string) => this.logger.info(msg),
+      debug: (msg: string) => this.logger.debug(msg),
+      warn: (msg: string) => this.logger.warn(msg),
+      blankLine: () => {
+        return;
+      },
+      success: (msg: string) => this.logger.info(msg),
+      error: (msg: string) => this.logger.warn(msg),
+    };
+
+    const cfnService = new CloudFormationService(print);
+    const syncSuccess = await cfnService.syncCloudBackendFromS3(this.context);
+    if (!syncSuccess) {
+      throw new AmplifyError('MigrationError', {
+        message: 'Failed to sync cloud backend from S3',
+        resolution: 'Ensure the project is deployed and S3 bucket is accessible.',
+      });
+    }
+
+    const cfn = await cfnService.getClient(this.context);
+    const results = await detectTemplateDrift(this.rootStackName, print, cfn);
+
+    if (results.skipped) {
+      throw new AmplifyError('MigrationError', {
+        message: `Template drift detection was skipped: ${results.skipReason}`,
+        resolution: 'Ensure the project is deployed and templates are available.',
+      });
+    }
+
+    if (results.changes.length > 0) {
+      throw new AmplifyError('MigrationError', {
+        message: 'Template drift detected',
+        resolution:
+          'The CloudFormation templates have changed since the lock was applied. This may indicate that a refactor has already been performed. Resolve the drift before rolling back.',
+      });
+    }
+
+    this.logger.info(chalk.green('No template drift detected ✔'));
   }
 
   private async getStatefulResources(
