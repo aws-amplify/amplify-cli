@@ -1,0 +1,608 @@
+{
+  "Description": "{\"createdOn\":\"Linux\",\"createdBy\":\"AmplifyPipelineDeploy\",\"createdWith\":\"1.21.1\",\"stackType\":\"custom\",\"metadata\":{}}",
+  "Mappings": {
+    "storeLocatorSearchRegionMappingA7DF4548": {
+      "us-east-1": {
+        "locationServiceRegion": "us-east-1"
+      },
+      "us-east-2": {
+        "locationServiceRegion": "us-east-2"
+      },
+      "us-west-2": {
+        "locationServiceRegion": "us-west-2"
+      },
+      "ap-southeast-1": {
+        "locationServiceRegion": "ap-southeast-1"
+      },
+      "ap-southeast-2": {
+        "locationServiceRegion": "ap-southeast-2"
+      },
+      "ap-northeast-1": {
+        "locationServiceRegion": "ap-northeast-1"
+      },
+      "eu-central-1": {
+        "locationServiceRegion": "eu-central-1"
+      },
+      "eu-north-1": {
+        "locationServiceRegion": "eu-north-1"
+      },
+      "eu-west-1": {
+        "locationServiceRegion": "eu-west-1"
+      },
+      "sa-east-1": {
+        "locationServiceRegion": "us-east-1"
+      },
+      "ca-central-1": {
+        "locationServiceRegion": "us-east-1"
+      },
+      "us-west-1": {
+        "locationServiceRegion": "us-west-2"
+      },
+      "cn-north-1": {
+        "locationServiceRegion": "us-west-2"
+      },
+      "cn-northwest-1": {
+        "locationServiceRegion": "us-west-2"
+      },
+      "ap-south-1": {
+        "locationServiceRegion": "us-west-2"
+      },
+      "ap-northeast-3": {
+        "locationServiceRegion": "us-west-2"
+      },
+      "ap-northeast-2": {
+        "locationServiceRegion": "us-west-2"
+      },
+      "eu-west-2": {
+        "locationServiceRegion": "eu-west-1"
+      },
+      "eu-west-3": {
+        "locationServiceRegion": "eu-west-1"
+      },
+      "me-south-1": {
+        "locationServiceRegion": "ap-southeast-1"
+      }
+    }
+  },
+  "Resources": {
+    "storeLocatorSearchCustomPlaceIndexLambdaServiceRoleFD2F3C9D9AAF5F9F": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "amplify:app-id",
+            "Value": "storelocator"
+          },
+          {
+            "Key": "amplify:branch-name",
+            "Value": "gen2-main"
+          },
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "branch"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-storelocator-gen2main-branch-62d6167d4c/geostoreLocatorSearch/storeLocatorSearch/CustomPlaceIndexLambdaServiceRoleFD2F3C9D"
+      }
+    },
+    "storeLocatorSearchCustomPlaceIndexLambdaServiceRoleDefaultPolicy818068B11998631C": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "geo:CreatePlaceIndex",
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": [
+                "geo:UpdatePlaceIndex",
+                "geo:DeletePlaceIndex"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:aws:geo:",
+                    {
+                      "Fn::FindInMap": [
+                        "storeLocatorSearchRegionMappingA7DF4548",
+                        {
+                          "Ref": "AWS::Region"
+                        },
+                        "locationServiceRegion"
+                      ]
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":place-index/storeLocatorSearch-gen2-main"
+                  ]
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "CustomPlaceIndexLambdaServiceRoleDefaultPolicy818068B1",
+        "Roles": [
+          {
+            "Ref": "storeLocatorSearchCustomPlaceIndexLambdaServiceRoleFD2F3C9D9AAF5F9F"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-storelocator-gen2main-branch-62d6167d4c/geostoreLocatorSearch/storeLocatorSearch/CustomPlaceIndexLambdaServiceRoleDefaultPolicy818068B1"
+      }
+    },
+    "storeLocatorSearchCustomPlaceIndexLambda79813BB9A2F450FE": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "ZipFile": "const response = require('cfn-response');\nconst { LocationClient, CreatePlaceIndexCommand, DeletePlaceIndexCommand, UpdatePlaceIndexCommand } = require('@aws-sdk/client-location');\nexports.handler = async function (event, context) {\n  try {\n    console.log('REQUEST RECEIVED:' + JSON.stringify(event));\n    const pricingPlan = 'RequestBasedUsage';\n    if (event.RequestType === 'Create') {\n      const params = {\n        IndexName: event.ResourceProperties.indexName,\n        DataSource: event.ResourceProperties.dataSource,\n        DataSourceConfiguration: {\n          IntendedUse: event.ResourceProperties.dataSourceIntendedUse,\n        },\n        PricingPlan: pricingPlan,\n      };\n      const locationClient = new LocationClient({ region: event.ResourceProperties.region });\n      const res = await locationClient.send(new CreatePlaceIndexCommand(params));\n      console.log('create resource response data' + JSON.stringify(res));\n      if (res.IndexName && res.IndexArn) {\n        event.PhysicalResourceId = res.IndexName;\n        await response.send(event, context, response.SUCCESS, res, params.IndexName);\n      } else {\n        await response.send(event, context, response.FAILED, res, params.IndexName);\n      }\n    }\n    if (event.RequestType === 'Update') {\n      const params = {\n        IndexName: event.ResourceProperties.indexName,\n        DataSourceConfiguration: {\n          IntendedUse: event.ResourceProperties.dataSourceIntendedUse,\n        },\n        PricingPlan: pricingPlan,\n      };\n      const locationClient = new LocationClient({ region: event.ResourceProperties.region });\n      const res = await locationClient.send(new UpdatePlaceIndexCommand(params));\n      console.log('update resource response data' + JSON.stringify(res));\n      if (res.IndexName && res.IndexArn) {\n        event.PhysicalResourceId = res.IndexName;\n        await response.send(event, context, response.SUCCESS, res, params.IndexName);\n      } else {\n        await response.send(event, context, response.FAILED, res, params.IndexName);\n      }\n    }\n    if (event.RequestType === 'Delete') {\n      const params = {\n        IndexName: event.ResourceProperties.indexName,\n      };\n      const locationClient = new LocationClient({ region: event.ResourceProperties.region });\n      const res = await locationClient.send(new DeletePlaceIndexCommand(params));\n      event.PhysicalResourceId = event.ResourceProperties.indexName;\n      console.log('delete resource response data' + JSON.stringify(res));\n      await response.send(event, context, response.SUCCESS, res, params.IndexName);\n    }\n  } catch (err) {\n    console.log(err.stack);\n    const res = { Error: err };\n    await response.send(event, context, response.FAILED, res, event.ResourceProperties.indexName);\n    throw err;\n  }\n};\n"
+        },
+        "Handler": "index.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "storeLocatorSearchCustomPlaceIndexLambdaServiceRoleFD2F3C9D9AAF5F9F",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs22.x",
+        "Tags": [
+          {
+            "Key": "amplify:app-id",
+            "Value": "storelocator"
+          },
+          {
+            "Key": "amplify:branch-name",
+            "Value": "gen2-main"
+          },
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "branch"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ],
+        "Timeout": 300
+      },
+      "DependsOn": [
+        "storeLocatorSearchCustomPlaceIndexLambdaServiceRoleDefaultPolicy818068B11998631C",
+        "storeLocatorSearchCustomPlaceIndexLambdaServiceRoleFD2F3C9D9AAF5F9F"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "amplify-storelocator-gen2main-branch-62d6167d4c/geostoreLocatorSearch/storeLocatorSearch/CustomPlaceIndexLambda79813BB9"
+      }
+    },
+    "storeLocatorSearchCustomPlaceIndexF0192882": {
+      "Type": "Custom::LambdaCallout",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "storeLocatorSearchCustomPlaceIndexLambda79813BB9A2F450FE",
+            "Arn"
+          ]
+        },
+        "indexName": "storeLocatorSearch-gen2-main",
+        "dataSource": "Here",
+        "dataSourceIntendedUse": "SingleUse",
+        "region": {
+          "Fn::FindInMap": [
+            "storeLocatorSearchRegionMappingA7DF4548",
+            {
+              "Ref": "AWS::Region"
+            },
+            "locationServiceRegion"
+          ]
+        },
+        "env": "gen2-main"
+      },
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-storelocator-gen2main-branch-62d6167d4c/geostoreLocatorSearch/storeLocatorSearch/CustomPlaceIndex"
+      }
+    },
+    "storeLocatorSearchPlaceIndexPolicy9E8EFC93": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "geo:SearchPlaceIndexForPosition",
+                "geo:SearchPlaceIndexForText",
+                "geo:SearchPlaceIndexForSuggestions",
+                "geo:GetPlace"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "storeLocatorSearchCustomPlaceIndexF0192882",
+                  "IndexArn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "storeLocatorSearch-gen2-mainPolicy",
+        "Roles": [
+          {
+            "Ref": "referencetoamplifystorelocatorgen2mainbranch62d6167d4cauthNestedStackauthNestedStackResourceFD19A2FDOutputsamplifystorelocatorgen2mainbranch62d6167d4cauthamplifyAuthauthenticatedUserRoleE47B81E2Ref"
+          },
+          {
+            "Ref": "referencetoamplifystorelocatorgen2mainbranch62d6167d4cauthNestedStackauthNestedStackResourceFD19A2FDOutputsamplifystorelocatorgen2mainbranch62d6167d4cauthamplifyAuthunauthenticatedUserRole91ACCEF4Ref"
+          },
+          {
+            "Ref": "referencetoamplifystorelocatorgen2mainbranch62d6167d4cauthNestedStackauthNestedStackResourceFD19A2FDOutputsamplifystorelocatorgen2mainbranch62d6167d4cauthamplifyAuthstoreLocatorAdminGroupRole237CDBFDRef"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-storelocator-gen2main-branch-62d6167d4c/geostoreLocatorSearch/storeLocatorSearch/PlaceIndexPolicy"
+      }
+    },
+    "CDKMetadata": {
+      "Type": "AWS::CDK::Metadata",
+      "Properties": {
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/yXLTQ6DIBBA4bO4x6klLron6a4/sQdoRsBmFAYiUNMY797Yrt7iy5Mg2xaaCpdUazPVjnpYrzZlax4Z9STUwBeMkfglcEnPldDDqgbugrM73oMj/dmEQ98bBDXwubDOFHjbWZWUg+9sCmXWv+FWcix5ExyMhTEd3lLC8QRNNSaiei6cyVvo/v0C08sIKp8AAAA="
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-storelocator-gen2main-branch-62d6167d4c/geostoreLocatorSearch/CDKMetadata/Default"
+      },
+      "Condition": "CDKMetadataAvailable"
+    }
+  },
+  "Outputs": {
+    "Name": {
+      "Value": {
+        "Fn::GetAtt": [
+          "storeLocatorSearchCustomPlaceIndexF0192882",
+          "IndexName"
+        ]
+      }
+    },
+    "Region": {
+      "Value": {
+        "Fn::FindInMap": [
+          "storeLocatorSearchRegionMappingA7DF4548",
+          {
+            "Ref": "AWS::Region"
+          },
+          "locationServiceRegion"
+        ]
+      }
+    },
+    "Arn": {
+      "Value": {
+        "Fn::GetAtt": [
+          "storeLocatorSearchCustomPlaceIndexF0192882",
+          "IndexArn"
+        ]
+      }
+    },
+    "amplifystorelocatorgen2mainbranch62d6167d4cgeostoreLocatorSearchCustomPlaceIndexAEDF2721IndexName": {
+      "Value": {
+        "Fn::GetAtt": [
+          "storeLocatorSearchCustomPlaceIndexF0192882",
+          "IndexName"
+        ]
+      }
+    }
+  },
+  "Conditions": {
+    "CDKMetadataAvailable": {
+      "Fn::Or": [
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "af-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-3"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-south-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-3"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-4"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ca-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ca-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-northwest-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-central-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-south-2"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-3"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "il-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "me-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "me-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "sa-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-west-1"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "AWS::Region"
+            },
+            "us-west-2"
+          ]
+        }
+      ]
+    }
+  },
+  "Parameters": {
+    "referencetoamplifystorelocatorgen2mainbranch62d6167d4cauthNestedStackauthNestedStackResourceFD19A2FDOutputsamplifystorelocatorgen2mainbranch62d6167d4cauthamplifyAuthauthenticatedUserRoleE47B81E2Ref": {
+      "Type": "String"
+    },
+    "referencetoamplifystorelocatorgen2mainbranch62d6167d4cauthNestedStackauthNestedStackResourceFD19A2FDOutputsamplifystorelocatorgen2mainbranch62d6167d4cauthamplifyAuthunauthenticatedUserRole91ACCEF4Ref": {
+      "Type": "String"
+    },
+    "referencetoamplifystorelocatorgen2mainbranch62d6167d4cauthNestedStackauthNestedStackResourceFD19A2FDOutputsamplifystorelocatorgen2mainbranch62d6167d4cauthamplifyAuthstoreLocatorAdminGroupRole237CDBFDRef": {
+      "Type": "String"
+    }
+  }
+}
