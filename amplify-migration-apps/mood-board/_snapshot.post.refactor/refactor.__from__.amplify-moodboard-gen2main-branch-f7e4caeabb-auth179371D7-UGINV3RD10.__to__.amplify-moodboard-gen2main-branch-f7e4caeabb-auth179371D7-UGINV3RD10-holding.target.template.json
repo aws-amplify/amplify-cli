@@ -204,10 +204,6 @@
           "authenticated": "arn:aws:iam::123456789012:role/amplify-moodboard-ge-amplifyAuthauthenticatedU-UANJImTyKZ7p"
         }
       },
-      "DependsOn": [
-        "amplifyAuthIdentityPool3FDE84CC",
-        "amplifyAuthUserPoolAppClient2626C6F8"
-      ],
       "Metadata": {
         "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/auth/amplifyAuth/IdentityPoolRoleAttachment"
       }

@@ -11,21 +11,21 @@
     "UnauthRoleArn": {
       "Type": "String"
     },
-    "authfitnesstracker6b0fc1196b0fc119UserPoolId": {
+    "authfitnesstracker33f5545533f55455UserPoolId": {
       "Type": "String",
-      "Default": "authfitnesstracker6b0fc1196b0fc119UserPoolId"
+      "Default": "authfitnesstracker33f5545533f55455UserPoolId"
     },
-    "authfitnesstracker6b0fc1196b0fc119IdentityPoolId": {
+    "authfitnesstracker33f5545533f55455IdentityPoolId": {
       "Type": "String",
-      "Default": "authfitnesstracker6b0fc1196b0fc119IdentityPoolId"
+      "Default": "authfitnesstracker33f5545533f55455IdentityPoolId"
     },
-    "authfitnesstracker6b0fc1196b0fc119AppClientID": {
+    "authfitnesstracker33f5545533f55455AppClientID": {
       "Type": "String",
-      "Default": "authfitnesstracker6b0fc1196b0fc119AppClientID"
+      "Default": "authfitnesstracker33f5545533f55455AppClientID"
     },
-    "authfitnesstracker6b0fc1196b0fc119AppClientIDWeb": {
+    "authfitnesstracker33f5545533f55455AppClientIDWeb": {
       "Type": "String",
-      "Default": "authfitnesstracker6b0fc1196b0fc119AppClientIDWeb"
+      "Default": "authfitnesstracker33f5545533f55455AppClientIDWeb"
     }
   },
   "Conditions": {
@@ -52,7 +52,7 @@
           ]
         },
         "UserPoolId": {
-          "Ref": "authfitnesstracker6b0fc1196b0fc119UserPoolId"
+          "Ref": "authfitnesstracker33f5545533f55455UserPoolId"
         }
       }
     },
@@ -72,7 +72,7 @@
               "Condition": {
                 "StringEquals": {
                   "cognito-identity.amazonaws.com:aud": {
-                    "Ref": "authfitnesstracker6b0fc1196b0fc119IdentityPoolId"
+                    "Ref": "authfitnesstracker33f5545533f55455IdentityPoolId"
                   }
                 },
                 "ForAnyValue:StringLike": {
@@ -87,7 +87,7 @@
             "",
             [
               {
-                "Ref": "authfitnesstracker6b0fc1196b0fc119UserPoolId"
+                "Ref": "authfitnesstracker33f5545533f55455UserPoolId"
               },
               "-AdminGroupRole"
             ]

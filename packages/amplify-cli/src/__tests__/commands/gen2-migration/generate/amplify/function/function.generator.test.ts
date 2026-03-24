@@ -73,7 +73,7 @@ function createFunctionGenerator(overrides: {
     backendGenerator: overrides.backendGenerator,
     packageJsonGenerator: overrides.packageJsonGenerator,
     outputDir: overrides.outputDir,
-    resourceName: overrides.resourceName ?? 'myFunc',
+    resource: { category: 'function', resourceName: overrides.resourceName ?? 'myFunc', service: 'Lambda', key: 'function:Lambda' },
     category: 'function',
   });
 }

@@ -5,7 +5,7 @@ import { GraphqlApi } from '@aws-sdk/client-appsync';
 import { Planner } from '../../../planner';
 import { AmplifyMigrationOperation } from '../../../_operation';
 import { BackendGenerator } from '../backend.generator';
-import { Gen1App } from '../../_infra/gen1-app';
+import { Gen1App, DiscoveredResource } from '../../_infra/gen1-app';
 import { TS } from '../../_infra/ts';
 import { DataRenderer, DataTableMapping } from './data.renderer';
 
@@ -24,12 +24,14 @@ export class DataGenerator implements Planner {
   private readonly gen1App: Gen1App;
   private readonly backendGenerator: BackendGenerator;
   private readonly outputDir: string;
+  private readonly resource: DiscoveredResource;
   private readonly defineData: DataRenderer;
 
-  public constructor(gen1App: Gen1App, backendGenerator: BackendGenerator, outputDir: string) {
+  public constructor(gen1App: Gen1App, backendGenerator: BackendGenerator, outputDir: string, resource: DiscoveredResource) {
     this.gen1App = gen1App;
     this.backendGenerator = backendGenerator;
     this.outputDir = outputDir;
+    this.resource = resource;
     this.defineData = new DataRenderer(gen1App.envName);
   }
 
@@ -62,6 +64,7 @@ export class DataGenerator implements Planner {
 
     return [
       {
+        resource: this.resource,
         validate: () => undefined,
         describe: async () => ['Generate amplify/data/resource.ts'],
         execute: async () => {

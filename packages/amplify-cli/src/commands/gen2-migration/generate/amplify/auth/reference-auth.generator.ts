@@ -4,7 +4,7 @@ import ts from 'typescript';
 import { Planner } from '../../../planner';
 import { AmplifyMigrationOperation } from '../../../_operation';
 import { BackendGenerator } from '../backend.generator';
-import { Gen1App } from '../../_infra/gen1-app';
+import { Gen1App, DiscoveredResource } from '../../_infra/gen1-app';
 import { TS } from '../../_infra/ts';
 import { ReferenceAuth, ReferenceAuthRenderer } from './reference-auth.renderer';
 
@@ -19,12 +19,14 @@ export class ReferenceAuthGenerator implements Planner {
   private readonly gen1App: Gen1App;
   private readonly backendGenerator: BackendGenerator;
   private readonly outputDir: string;
+  private readonly resource: DiscoveredResource;
   private readonly renderer = new ReferenceAuthRenderer();
 
-  public constructor(gen1App: Gen1App, backendGenerator: BackendGenerator, outputDir: string) {
+  public constructor(gen1App: Gen1App, backendGenerator: BackendGenerator, outputDir: string, resource: DiscoveredResource) {
     this.gen1App = gen1App;
     this.backendGenerator = backendGenerator;
     this.outputDir = outputDir;
+    this.resource = resource;
   }
 
   public async plan(): Promise<AmplifyMigrationOperation[]> {
@@ -44,6 +46,7 @@ export class ReferenceAuthGenerator implements Planner {
 
     return [
       {
+        resource: this.resource,
         validate: () => undefined,
         describe: async () => ['Generate amplify/auth/resource.ts (reference auth)'],
         execute: async () => {

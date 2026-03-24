@@ -5,7 +5,7 @@ import { AmplifyMigrationOperation } from '../../../_operation';
 import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import { Planner } from '../../../planner';
 import { BackendGenerator } from '../backend.generator';
-import { Gen1App } from '../../_infra/gen1-app';
+import { Gen1App, DiscoveredResource } from '../../_infra/gen1-app';
 import { TS } from '../../_infra/ts';
 import { FunctionRenderer, RenderDefineFunctionOptions } from './function.renderer';
 import { RootPackageJsonGenerator } from '../../package.json.generator';
@@ -54,7 +54,7 @@ interface FunctionGeneratorOptions {
   readonly backendGenerator: BackendGenerator;
   readonly packageJsonGenerator: RootPackageJsonGenerator;
   readonly outputDir: string;
-  readonly resourceName: string;
+  readonly resource: DiscoveredResource;
   readonly category: string;
 }
 
@@ -76,7 +76,7 @@ export class FunctionGenerator implements Planner {
   private s3Generator: S3Generator | undefined;
   private readonly packageJsonGenerator: RootPackageJsonGenerator;
   private readonly outputDir: string;
-  private readonly resourceName: string;
+  private readonly resource: DiscoveredResource;
   private readonly category: string;
   private readonly renderer: FunctionRenderer;
 
@@ -85,7 +85,7 @@ export class FunctionGenerator implements Planner {
     this.backendGenerator = options.backendGenerator;
     this.packageJsonGenerator = options.packageJsonGenerator;
     this.outputDir = options.outputDir;
-    this.resourceName = options.resourceName;
+    this.resource = options.resource;
     this.category = options.category;
     this.renderer = new FunctionRenderer(options.gen1App.appId, options.gen1App.envName);
   }
@@ -124,6 +124,7 @@ export class FunctionGenerator implements Planner {
 
     return [
       {
+        resource: this.resource,
         validate: () => undefined,
         describe: async () => [`Generate amplify/${this.category}/${func.resourceName}/resource.ts`],
         execute: async () => {
@@ -143,15 +144,15 @@ export class FunctionGenerator implements Planner {
    */
   private async resolve(): Promise<ResolvedFunction> {
     const functionCategory = this.gen1App.meta('function');
-    if (!functionCategory || !functionCategory[this.resourceName]) {
-      throw new Error(`Function '${this.resourceName}' not found in amplify-meta.json`);
+    if (!functionCategory || !functionCategory[this.resource.resourceName]) {
+      throw new Error(`Function '${this.resource.resourceName}' not found in amplify-meta.json`);
     }
 
-    const resourceMeta = functionCategory[this.resourceName] as Record<string, unknown>;
+    const resourceMeta = functionCategory[this.resource.resourceName] as Record<string, unknown>;
     const output = resourceMeta.output as Record<string, string> | undefined;
     const deployedName = output?.Name;
     if (!deployedName) {
-      throw new Error(`Function '${this.resourceName}' has no deployed name in amplify-meta.json output`);
+      throw new Error(`Function '${this.resource.resourceName}' has no deployed name in amplify-meta.json output`);
     }
 
     const config = await this.gen1App.aws.fetchFunctionConfig(deployedName);
@@ -175,7 +176,7 @@ export class FunctionGenerator implements Planner {
     const { dynamoActions, kinesisActions, graphqlApiPermissions, authAccess } = this.extractCfnPermissions();
 
     return {
-      resourceName: this.resourceName,
+      resourceName: this.resource.resourceName,
       category: this.category,
       entry,
       deployedName,
@@ -248,18 +249,18 @@ export class FunctionGenerator implements Planner {
   private contributeAuthAccess(func: ResolvedFunction): void {
     if (!this.authGenerator) return;
     if (Object.keys(func.authAccess).length > 0) {
-      this.authGenerator.addFunctionAuthAccess({ resourceName: this.resourceName, permissions: func.authAccess });
+      this.authGenerator.addFunctionAuthAccess({ resourceName: this.resource.resourceName, permissions: func.authAccess });
     }
   }
 
   private contributeAuthTrigger(): void {
     if (!this.authGenerator || this.category !== 'auth') return;
     const authResourceName = this.gen1App.singleResourceName('auth', 'Cognito');
-    if (!this.resourceName.startsWith(authResourceName)) return;
-    const suffix = this.resourceName.slice(authResourceName.length);
+    if (!this.resource.resourceName.startsWith(authResourceName)) return;
+    const suffix = this.resource.resourceName.slice(authResourceName.length);
     const event = TRIGGER_SUFFIX_TO_EVENT[suffix];
     if (event) {
-      this.authGenerator.addTrigger({ event, resourceName: this.resourceName });
+      this.authGenerator.addTrigger({ event, resourceName: this.resource.resourceName });
     }
   }
 
@@ -277,7 +278,7 @@ export class FunctionGenerator implements Planner {
       's3:ListBucket': 'read',
     };
 
-    const templatePath = `function/${this.resourceName}/${this.resourceName}-cloudformation-template.json`;
+    const templatePath = `function/${this.resource.resourceName}/${this.resource.resourceName}-cloudformation-template.json`;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped CloudFormation template
     const template = this.gen1App.json(templatePath);
     const policy = template.Resources?.AmplifyResourcesPolicy;
@@ -297,7 +298,7 @@ export class FunctionGenerator implements Planner {
     }
 
     if (permissions.size > 0) {
-      this.s3Generator.addFunctionStorageAccess(this.resourceName, category, Array.from(permissions));
+      this.s3Generator.addFunctionStorageAccess(this.resource.resourceName, category, Array.from(permissions));
     }
   }
 
@@ -324,13 +325,13 @@ export class FunctionGenerator implements Planner {
 
     for (const config of lambdaConfigs) {
       const functionRef = config?.Function?.Ref as string | undefined;
-      if (!functionRef || !functionRef.includes(this.resourceName)) continue;
+      if (!functionRef || !functionRef.includes(this.resource.resourceName)) continue;
 
       const event = config.Event as string | undefined;
       if (event?.includes('ObjectCreated')) {
-        this.s3Generator.addTrigger('onUpload', this.resourceName);
+        this.s3Generator.addTrigger('onUpload', this.resource.resourceName);
       } else if (event?.includes('ObjectRemoved')) {
-        this.s3Generator.addTrigger('onDelete', this.resourceName);
+        this.s3Generator.addTrigger('onDelete', this.resource.resourceName);
       }
     }
   }
@@ -353,7 +354,7 @@ export class FunctionGenerator implements Planner {
         },
       });
     } catch (e) {
-      throw new Error(`Failed to copy source files for function '${this.resourceName}': ${e}`);
+      throw new Error(`Failed to copy source files for function '${this.resource.resourceName}': ${e}`);
     }
   }
 
@@ -377,7 +378,7 @@ export class FunctionGenerator implements Planner {
         }
       }
     } catch (e) {
-      throw new Error(`Failed to read package.json for function '${this.resourceName}': ${e}`);
+      throw new Error(`Failed to read package.json for function '${this.resource.resourceName}': ${e}`);
     }
   }
 
@@ -540,7 +541,7 @@ export class FunctionGenerator implements Planner {
     graphqlApiPermissions: { hasMutation: boolean; hasQuery: boolean };
     authAccess: AuthPermissions;
   } {
-    const templatePath = `function/${this.resourceName}/${this.resourceName}-cloudformation-template.json`;
+    const templatePath = `function/${this.resource.resourceName}/${this.resource.resourceName}-cloudformation-template.json`;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped CloudFormation template
     const template = this.gen1App.json(templatePath);
     const policy = template.Resources?.AmplifyResourcesPolicy;

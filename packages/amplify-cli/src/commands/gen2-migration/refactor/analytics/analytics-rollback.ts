@@ -1,3 +1,4 @@
+import { CFNResource } from '../../cfn-template';
 import { RollbackCategoryRefactorer } from '../workflow/rollback-category-refactorer';
 import { ANALYTICS_RESOURCE_TYPES } from './analytics-forward';
 
@@ -7,8 +8,6 @@ import { ANALYTICS_RESOURCE_TYPES } from './analytics-forward';
  * Uses the default gen1LogicalIds-based buildResourceMappings from RollbackCategoryRefactorer.
  */
 export class AnalyticsKinesisRollbackRefactorer extends RollbackCategoryRefactorer {
-  protected override readonly gen1LogicalIds = new Map<string, string>([['AWS::Kinesis::Stream', 'KinesisStream']]);
-
   protected async fetchSourceStackId(): Promise<string | undefined> {
     return this.findNestedStack(this.gen2Branch, 'analytics');
   }
@@ -19,5 +18,14 @@ export class AnalyticsKinesisRollbackRefactorer extends RollbackCategoryRefactor
 
   protected resourceTypes(): string[] {
     return ANALYTICS_RESOURCE_TYPES;
+  }
+
+  protected targetLogicalId(sourceId: string, sourceResource: CFNResource): string | undefined {
+    switch (sourceResource.Type) {
+      case 'AWS::Kinesis::Stream':
+        return 'KinesisStream';
+      default:
+        return undefined;
+    }
   }
 }

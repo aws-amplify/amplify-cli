@@ -1,3 +1,23 @@
+import { DiscoveredResource } from './generate/_infra/gen1-app';
+
+export const NO_OP_MESSAGE = 'No-op\n';
+
+/**
+ * Creates a no-op operation for a resource with nothing to migrate.
+ */
+export function buildNoopOperation(resource: DiscoveredResource): AmplifyMigrationOperation {
+  return {
+    resource: resource,
+    validate: () => undefined,
+    execute: async () => {
+      return;
+    },
+    describe: async () => {
+      return [NO_OP_MESSAGE];
+    },
+  };
+}
+
 /**
  * Result of a validation check.
  */
@@ -33,6 +53,12 @@ export interface Validation {
  * Interface for atomic operations that can be executed as part of a migration step.
  */
 export interface AmplifyMigrationOperation {
+  /**
+   * The discovered resource this operation belongs to, if any.
+   * Used by Plan.describe() to group operations by resource.
+   */
+  readonly resource?: DiscoveredResource;
+
   /**
    * Returns human-readable strings describing what the operation will do.
    */

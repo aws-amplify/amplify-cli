@@ -1,3 +1,4 @@
+import { CFNResource } from '../../cfn-template';
 import { RollbackCategoryRefactorer } from '../workflow/rollback-category-refactorer';
 
 /**
@@ -5,8 +6,6 @@ import { RollbackCategoryRefactorer } from '../workflow/rollback-category-refact
  * Moves S3 buckets from Gen2 back to Gen1.
  */
 export class StorageS3RollbackRefactorer extends RollbackCategoryRefactorer {
-  protected override readonly gen1LogicalIds = new Map<string, string>([['AWS::S3::Bucket', 'S3Bucket']]);
-
   protected async fetchSourceStackId(): Promise<string | undefined> {
     return this.findNestedStack(this.gen2Branch, 'storage');
   }
@@ -17,5 +16,14 @@ export class StorageS3RollbackRefactorer extends RollbackCategoryRefactorer {
 
   protected resourceTypes(): string[] {
     return ['AWS::S3::Bucket'];
+  }
+
+  protected targetLogicalId(sourceId: string, sourceResource: CFNResource): string | undefined {
+    switch (sourceResource.Type) {
+      case 'AWS::S3::Bucket':
+        return 'S3Bucket';
+      default:
+        return undefined;
+    }
   }
 }

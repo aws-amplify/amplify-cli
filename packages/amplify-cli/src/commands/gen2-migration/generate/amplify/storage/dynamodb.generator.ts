@@ -1,7 +1,7 @@
 import { Planner } from '../../../planner';
 import { AmplifyMigrationOperation } from '../../../_operation';
 import { BackendGenerator } from '../backend.generator';
-import { Gen1App } from '../../_infra/gen1-app';
+import { Gen1App, DiscoveredResource } from '../../_infra/gen1-app';
 import { DynamoDBRenderer, DynamoDBGSI, DynamoDBTableDefinition } from './dynamodb.renderer';
 import { TableDescription, KeySchemaElement, AttributeDefinition } from '@aws-sdk/client-dynamodb';
 
@@ -15,14 +15,14 @@ import { TableDescription, KeySchemaElement, AttributeDefinition } from '@aws-sd
 export class DynamoDBGenerator implements Planner {
   private readonly gen1App: Gen1App;
   private readonly backendGenerator: BackendGenerator;
-  private readonly resourceName: string;
+  private readonly resource: DiscoveredResource;
   private readonly hasS3Bucket: boolean;
   private readonly renderer = new DynamoDBRenderer();
 
-  public constructor(gen1App: Gen1App, backendGenerator: BackendGenerator, resourceName: string, hasS3Bucket: boolean) {
+  public constructor(gen1App: Gen1App, backendGenerator: BackendGenerator, resource: DiscoveredResource, hasS3Bucket: boolean) {
     this.gen1App = gen1App;
     this.backendGenerator = backendGenerator;
-    this.resourceName = resourceName;
+    this.resource = resource;
     this.hasS3Bucket = hasS3Bucket;
   }
 
@@ -34,8 +34,9 @@ export class DynamoDBGenerator implements Planner {
 
     return [
       {
+        resource: this.resource,
         validate: () => undefined,
-        describe: async () => [`Generate DynamoDB table ${this.resourceName} in amplify/backend.ts`],
+        describe: async () => [`Generate DynamoDB table ${this.resource.resourceName} in amplify/backend.ts`],
         execute: async () => {
           const imports = this.renderer.requiredImports();
           this.backendGenerator.addImport(imports.source, imports.identifiers);
@@ -51,9 +52,9 @@ export class DynamoDBGenerator implements Planner {
 
   private async fetchTable(): Promise<DynamoDBTableDefinition> {
     const storageMeta = this.gen1App.meta('storage');
-    const resourceMeta = storageMeta?.[this.resourceName] as Record<string, unknown> | undefined;
+    const resourceMeta = storageMeta?.[this.resource.resourceName] as Record<string, unknown> | undefined;
     const output = resourceMeta?.output as Record<string, string> | undefined;
-    const actualTableName = output?.Name || this.resourceName;
+    const actualTableName = output?.Name || this.resource.resourceName;
 
     const table = await this.gen1App.aws.fetchTableDescription(actualTableName);
     if (!table) {

@@ -1,5 +1,5 @@
 import { AmplifyMigrationRefactorStep } from '../../../../commands/gen2-migration/refactor';
-import { OUTPUT_DIRECTORY } from '../../../../commands/gen2-migration/refactor/snap';
+import { OUTPUT_DIRECTORY } from '../../../../commands/gen2-migration/refactor/cfn';
 import { MigrationApp, MigrationAppOptions } from '../_framework/app';
 import { Gen1App, DiscoveredResource } from '../../../../commands/gen2-migration/generate/_infra/gen1-app';
 import { Assessment } from '../../../../commands/gen2-migration/_assessment';
@@ -12,6 +12,22 @@ import * as path from 'path';
 const TIMEOUT_MINUTES = 60;
 
 jest.setTimeout(60 * 1000 * TIMEOUT_MINUTES);
+
+// Mock SDK waiters to resolve immediately. The underlying DescribeStacks/DescribeStackRefactor
+// mocks return the correct terminal status, but the SDK waiters have a 30-second minDelay
+// between polls. With multiple refactor operations per test, this adds minutes of dead time.
+jest.mock('@aws-sdk/client-cloudformation', () => {
+  const actual = jest.requireActual('@aws-sdk/client-cloudformation');
+  return {
+    ...actual,
+    waitUntilStackUpdateComplete: jest.fn().mockResolvedValue({ state: 'SUCCESS' }),
+    waitUntilStackCreateComplete: jest.fn().mockResolvedValue({ state: 'SUCCESS' }),
+    waitUntilStackDeleteComplete: jest.fn().mockResolvedValue({ state: 'SUCCESS' }),
+    waitUntilStackRefactorCreateComplete: jest.fn().mockResolvedValue({ state: 'SUCCESS' }),
+    waitUntilStackRefactorExecuteComplete: jest.fn().mockResolvedValue({ state: 'SUCCESS' }),
+    waitUntilChangeSetCreateComplete: jest.fn().mockResolvedValue({ state: 'SUCCESS' }),
+  };
+});
 
 // fs-extra is (for some reason) globally mocked in tests via the __mocks__ directory.
 // unmock it because we actually need the proper implementation.
@@ -54,6 +70,10 @@ test('discussions snapshot', async () => {
 
 test('mood-board snapshot', async () => {
   await testSnapshot('mood-board');
+});
+
+test('fitness-tracker snapshot', async () => {
+  await testSnapshot('fitness-tracker');
 });
 
 async function testSnapshot(appName: string, appOptions?: MigrationAppOptions, customize?: (app: MigrationApp) => Promise<void>) {
@@ -175,7 +195,7 @@ describe('AmplifyMigrationRefactorStep', () => {
       recordSpy.mockRestore();
     });
 
-    it('records Cognito-UserPool-Groups as not supported', async () => {
+    it('records Cognito-UserPool-Groups as supported', async () => {
       createSpy = mockDiscover([
         { category: 'auth', resourceName: 'userPoolGroups', service: 'Cognito-UserPool-Groups', key: 'auth:Cognito-UserPool-Groups' },
       ]);
@@ -185,7 +205,7 @@ describe('AmplifyMigrationRefactorStep', () => {
       await step.assess(new Assessment('test-app', 'dev'));
 
       expect(recordSpy).toHaveBeenCalledWith('refactor', expect.objectContaining({ resourceName: 'userPoolGroups' }), {
-        supported: false,
+        supported: true,
       });
 
       recordSpy.mockRestore();
@@ -201,16 +221,6 @@ describe('AmplifyMigrationRefactorStep', () => {
       await expect(step.forward()).rejects.toThrow(/Unsupported resource 'push'/);
     });
 
-    it('throws on Cognito-UserPool-Groups', async () => {
-      infraSpy = mockCreateInfrastructure();
-      createSpy = mockDiscover([
-        { category: 'auth', resourceName: 'userPoolGroups', service: 'Cognito-UserPool-Groups', key: 'auth:Cognito-UserPool-Groups' },
-      ]);
-
-      const step = createStep();
-      await expect(step.forward()).rejects.toThrow(/Unsupported resource 'userPoolGroups'/);
-    });
-
     it('does not throw for stateless-only resources', async () => {
       infraSpy = mockCreateInfrastructure();
       createSpy = mockDiscover([
@@ -221,17 +231,6 @@ describe('AmplifyMigrationRefactorStep', () => {
       const step = createStep();
       const plan = await step.forward();
       await plan.describe();
-    });
-
-    it('throws on multiple resources in the same refactor category', async () => {
-      infraSpy = mockCreateInfrastructure();
-      createSpy = mockDiscover([
-        { category: 'storage', resourceName: 'bucket1', service: 'S3', key: 'storage:S3' },
-        { category: 'storage', resourceName: 'bucket2', service: 'S3', key: 'storage:S3' },
-      ]);
-
-      const step = createStep();
-      await expect(step.forward()).rejects.toThrow(/Multiple resources in 'storage'/);
     });
   });
 
@@ -244,16 +243,6 @@ describe('AmplifyMigrationRefactorStep', () => {
       await expect(step.rollback()).rejects.toThrow(/Unsupported resource 'push'/);
     });
 
-    it('throws on Cognito-UserPool-Groups', async () => {
-      infraSpy = mockCreateInfrastructure();
-      createSpy = mockDiscover([
-        { category: 'auth', resourceName: 'userPoolGroups', service: 'Cognito-UserPool-Groups', key: 'auth:Cognito-UserPool-Groups' },
-      ]);
-
-      const step = createStep();
-      await expect(step.rollback()).rejects.toThrow(/Unsupported resource 'userPoolGroups'/);
-    });
-
     it('does not throw for stateless-only resources', async () => {
       infraSpy = mockCreateInfrastructure();
       createSpy = mockDiscover([
@@ -264,17 +253,6 @@ describe('AmplifyMigrationRefactorStep', () => {
       const step = createStep();
       const plan = await step.rollback();
       await plan.describe();
-    });
-
-    it('throws on multiple resources in the same refactor category', async () => {
-      infraSpy = mockCreateInfrastructure();
-      createSpy = mockDiscover([
-        { category: 'auth', resourceName: 'pool1', service: 'Cognito', key: 'auth:Cognito' },
-        { category: 'auth', resourceName: 'pool2', service: 'Cognito', key: 'auth:Cognito' },
-      ]);
-
-      const step = createStep();
-      await expect(step.rollback()).rejects.toThrow(/Multiple resources in 'auth'/);
     });
   });
 });
