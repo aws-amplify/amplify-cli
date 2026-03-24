@@ -154,17 +154,27 @@ export class Gen2MigrationExecutor {
    *
    * Runs `npx ampx sandbox --once` to do a single non-interactive deployment.
    * Returns the Gen2 root stack name by querying CloudFormation.
+   *
+   * @param appPath - Path to the app directory
+   * @param deploymentName - Unique deployment name for stack identification
+   * @param branchName - Branch name to set as AWS_BRANCH env var for unique resource naming
    */
-  public async deployGen2Sandbox(appPath: string, deploymentName: string): Promise<string> {
+  public async deployGen2Sandbox(appPath: string, deploymentName: string, branchName: string): Promise<string> {
     const context: LogContext = { operation: 'gen2-sandbox-deploy' };
 
     this.logger.info('Deploying Gen2 app using ampx sandbox...', context);
     this.logger.debug(`App path: ${appPath}`, context);
+    this.logger.debug(`Branch name (AWS_BRANCH): ${branchName}`, context);
 
     const startTime = Date.now();
 
-    // Set AWS_PROFILE env var if profile is specified
-    const env = this.profile ? { ...process.env, AWS_PROFILE: this.profile } : undefined;
+    // Set AWS_PROFILE and AWS_BRANCH env vars
+    // AWS_BRANCH ensures unique Lambda function names across sandbox deployments
+    const env: NodeJS.ProcessEnv = {
+      ...process.env,
+      AWS_BRANCH: branchName,
+      ...(this.profile && { AWS_PROFILE: this.profile }),
+    };
 
     const result = await execa('npx', ['ampx', 'sandbox', '--once'], {
       cwd: appPath,

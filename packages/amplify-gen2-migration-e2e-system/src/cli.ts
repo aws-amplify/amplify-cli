@@ -499,11 +499,11 @@ async function initializeAppFromCLI(params: InitializeAppFromCLIParams): Promise
 
     // Step 7: Deploy Gen2 using ampx sandbox
     logger.info(`Deploying Gen2 app using ampx sandbox for ${deploymentName}...`, context);
-    const gen2StackName = await gen2MigrationExecutor.deployGen2Sandbox(targetAppPath, deploymentName);
+    const gen2BranchName = `gen2-${envName}`;
+    const gen2StackName = await gen2MigrationExecutor.deployGen2Sandbox(targetAppPath, deploymentName, gen2BranchName);
     logger.info(`Gen2 app deployed with stack name: ${gen2StackName}`, context);
 
     // Step 8: Checkout back to main branch for refactor (refactor must run from Gen1 branch)
-    const gen2BranchName = `gen2-${envName}`;
     logger.info(`Checking out main branch for refactor (refactor requires Gen1 files)...`, context);
     await execa('git', ['checkout', 'main'], { cwd: targetAppPath });
 
@@ -527,7 +527,7 @@ async function initializeAppFromCLI(params: InitializeAppFromCLIParams): Promise
 
     // Step 13: Redeploy Gen2 to pick up post-refactor changes
     logger.info(`Redeploying Gen2 app after refactor for ${deploymentName}...`, context);
-    await gen2MigrationExecutor.deployGen2Sandbox(targetAppPath, deploymentName);
+    await gen2MigrationExecutor.deployGen2Sandbox(targetAppPath, deploymentName, gen2BranchName);
     logger.info(`Gen2 app redeployed successfully`, context);
 
     logger.info(`App ${deploymentName} fully initialized and migrated at ${targetAppPath}`, context);
