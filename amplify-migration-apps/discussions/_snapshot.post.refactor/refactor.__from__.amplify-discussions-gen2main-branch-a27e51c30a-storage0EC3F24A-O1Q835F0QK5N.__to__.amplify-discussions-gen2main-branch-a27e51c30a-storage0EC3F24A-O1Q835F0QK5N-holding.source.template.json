@@ -69,9 +69,6 @@
         "ServiceToken": "arn:aws:lambda:us-east-1:123456789012:function:amplify-discussions-gen2main-branch-a27e51c30a-storage0EC3F24A-O1Q835F0QK5N/CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
         "BucketName": "amplify-discussions-ge-discusavatarsc39a5gen2ma-tofeojsv2jx4"
       },
-      "DependsOn": [
-        "discusavatarsc39a5gen2mainBucketPolicy73EB7DB2"
-      ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
@@ -128,9 +125,6 @@
           ]
         }
       },
-      "DependsOn": [
-        "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
-      ],
       "Metadata": {
         "aws:cdk:path": "amplify-discussions-gen2main-branch-a27e51c30a/storage/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler",
         "aws:asset:path": "asset.faa95a81ae7d7373f3e1f242268f904eb748d8d0fdd306e8a6fe515a1905a7d6",
