@@ -7,7 +7,7 @@ import { resolveOutputs } from '../resolvers/cfn-output-resolver';
 import { resolveDependencies } from '../resolvers/cfn-dependency-resolver';
 import { resolveConditions } from '../resolvers/cfn-condition-resolver';
 import { extractStackNameFromId } from '../utils';
-import { CategoryRefactorer, RefactorBlueprint, ResolvedStack } from './category-refactorer';
+import { CategoryRefactorer, ResolvedStack } from './category-refactorer';
 
 /**
  * Forward direction base: moves resources from Gen1 (source) to Gen2 (target).
@@ -20,7 +20,7 @@ import { CategoryRefactorer, RefactorBlueprint, ResolvedStack } from './category
 export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
   /**
    * Matches source resources to target resources by type.
-   * Subclasses can override match() for custom disambiguation.
+   * Sub-classes can override match() for custom disambiguation.
    */
   protected async buildResourceMappings(
     sourceResources: Map<string, CFNResource>,
@@ -126,16 +126,25 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
    * Moves Gen2 resources to a holding stack before the main refactor.
    * Templates are fetched fresh at execution time.
    */
-  protected async beforeMove(blueprint: RefactorBlueprint): Promise<AmplifyMigrationOperation[]> {
-    if (blueprint.mappings.length === 0) return [];
-
-    const gen2StackName = extractStackNameFromId(blueprint.targetStackId);
+  protected async beforeMove(gen2StackId: string): Promise<AmplifyMigrationOperation[]> {
+    const gen2StackName = extractStackNameFromId(gen2StackId);
     const holdingStackName = this.getHoldingStackName(gen2StackName);
 
-    const resourceMappings: ResourceMapping[] = blueprint.mappings.map((m) => ({
-      Source: { StackName: gen2StackName, LogicalResourceId: m.Destination.LogicalResourceId },
-      Destination: { StackName: holdingStackName, LogicalResourceId: m.Destination.LogicalResourceId },
-    }));
+    this.debug(`Fetching template of gen2 stack: ${gen2StackName}`);
+    const gen2StackTemplate = await this.gen2Branch.fetchTemplate(gen2StackName);
+    const resources = this.filterResourcesByType(gen2StackTemplate);
+    this.debug(`Found ${resources.size} resources to move from stack: ${gen2StackName}`);
+
+    const resourceMappings: ResourceMapping[] = [];
+    for (const logicalId of resources.keys()) {
+      this.debug(`Registering ${logicalId} to move from ${gen2StackName} to ${holdingStackName}`);
+      resourceMappings.push({
+        Source: { StackName: gen2StackName, LogicalResourceId: logicalId },
+        Destination: { StackName: holdingStackName, LogicalResourceId: logicalId },
+      });
+    }
+
+    this.debug(`Locating holding stack: ${holdingStackName}`);
     const holdingStack = await this.cfn.findStack(holdingStackName);
 
     const operations: AmplifyMigrationOperation[] = [];
@@ -151,20 +160,22 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
       });
     }
 
-    operations.push({
-      resource: this.resource,
-      validate: () => undefined,
-      describe: async () => {
-        const header = `Move ${blueprint.mappings.length} resource(s) from '${gen2StackName}' to '${extractStackNameFromId(
-          holdingStackName,
-        )}'`;
-        const table = this.renderMappingTable(resourceMappings);
-        return [`${header}\n\n${table}`];
-      },
-      execute: async () => {
-        await this.cfn.refactor(resourceMappings, this.resource);
-      },
-    });
+    if (resourceMappings.length > 0) {
+      operations.push({
+        resource: this.resource,
+        validate: () => undefined,
+        describe: async () => {
+          const header = `Move ${resourceMappings.length} resource(s) from '${gen2StackName}' to '${extractStackNameFromId(
+            holdingStackName,
+          )}'`;
+          const table = this.renderMappingTable(resourceMappings);
+          return [`${header}\n\n${table}`];
+        },
+        execute: async () => {
+          await this.cfn.refactor(resourceMappings, this.resource);
+        },
+      });
+    }
 
     return operations;
   }
@@ -172,13 +183,15 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
   /**
    * Forward: no post-move operations. Holding stack survives for rollback.
    */
-  protected async afterMove(): Promise<AmplifyMigrationOperation[]> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  protected async afterMove(_gen2StackId: string): Promise<AmplifyMigrationOperation[]> {
     return [];
   }
 
   /**
    * Hook for OAuth parameter resolution. Override in auth category.
    */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   protected async resolveOAuthParameters(parameters: Parameter[], _outputs: Output[]): Promise<Parameter[]> {
     return parameters;
   }

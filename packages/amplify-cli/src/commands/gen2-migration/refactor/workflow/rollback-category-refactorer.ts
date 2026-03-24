@@ -6,13 +6,7 @@ import { resolveParameters } from '../resolvers/cfn-parameter-resolver';
 import { resolveOutputs } from '../resolvers/cfn-output-resolver';
 import { resolveDependencies } from '../resolvers/cfn-dependency-resolver';
 import { extractStackNameFromId } from '../utils';
-import {
-  CategoryRefactorer,
-  MIGRATION_PLACEHOLDER_LOGICAL_ID,
-  PLACEHOLDER_RESOURCE,
-  RefactorBlueprint,
-  ResolvedStack,
-} from './category-refactorer';
+import { CategoryRefactorer, MIGRATION_PLACEHOLDER_LOGICAL_ID, PLACEHOLDER_RESOURCE, ResolvedStack } from './category-refactorer';
 
 /**
  * Rollback direction base: moves resources from Gen2 (source) back to Gen1 (target).
@@ -53,7 +47,7 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
   }
 
   /**
-   * Returns the Gen1 logical ID for a Gen2 resource. Subclasses implement per category.
+   * Returns the Gen1 logical ID for a Gen2 resource. Sub-classes implement per category.
    */
   protected abstract targetLogicalId(sourceId: string, sourceResource: CFNResource): string | undefined;
 
@@ -97,7 +91,8 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
   /**
    * Rollback: no pre-move operations.
    */
-  protected beforeMove(_blueprint: RefactorBlueprint): AmplifyMigrationOperation[] {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  protected async beforeMove(_gen2StackId: string): Promise<AmplifyMigrationOperation[]> {
     return [];
   }
 
@@ -105,17 +100,35 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
    * Restores holding stack resources into Gen2.
    * Templates are fetched fresh at execution time.
    */
-  protected async afterMove(blueprint: RefactorBlueprint): Promise<AmplifyMigrationOperation[]> {
-    const gen2StackName = blueprint.sourceStackId;
-    const holdingStackName = this.getHoldingStackName(extractStackNameFromId(gen2StackName));
+  protected async afterMove(gen2StackId: string): Promise<AmplifyMigrationOperation[]> {
+    const gen2StackName = extractStackNameFromId(gen2StackId);
+    const holdingStackName = this.getHoldingStackName(gen2StackName);
 
+    this.debug(`Locating holding stack: ${holdingStackName}`);
     const holdingStack = await this.cfn.findStack(holdingStackName);
-    if (!holdingStack) return [];
+    if (!holdingStack) {
+      this.debug(`Holding stack ${holdingStackName} not found. Nothing to do.`);
+      return [];
+    }
 
-    const resourceMappings: ResourceMapping[] = blueprint.mappings.map((m) => ({
-      Source: { StackName: holdingStackName, LogicalResourceId: m.Source.LogicalResourceId },
-      Destination: { StackName: gen2StackName, LogicalResourceId: m.Source.LogicalResourceId },
-    }));
+    this.debug(`Fetching template of holding stack: ${holdingStackName}`);
+    const holdingStackTemplate = await this.gen2Branch.fetchTemplate(holdingStackName);
+    const resources = this.filterResourcesByType(holdingStackTemplate);
+    this.debug(`Found ${resources.size} resources to move from stack: ${holdingStackName}`);
+
+    const resourceMappings: ResourceMapping[] = [];
+    for (const logicalId of resources.keys()) {
+      this.debug(`Registering ${logicalId} to move from ${holdingStackName} to ${gen2StackName}`);
+      resourceMappings.push({
+        Source: { StackName: holdingStackName, LogicalResourceId: logicalId },
+        Destination: { StackName: gen2StackName, LogicalResourceId: logicalId },
+      });
+    }
+
+    if (resourceMappings.length === 0) {
+      this.debug(`No resources were registered for move from ${holdingStackName} to ${gen2StackName}. Nothing to do.`);
+      return [];
+    }
 
     return [
       {
@@ -139,7 +152,7 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
         resource: this.resource,
         validate: () => undefined,
         describe: async () => {
-          const header = `Move ${blueprint.mappings.length} resource(s) from '${extractStackNameFromId(
+          const header = `Move ${resourceMappings.length} resource(s) from '${extractStackNameFromId(
             holdingStackName,
           )}' to '${extractStackNameFromId(gen2StackName)}'`;
           const table = this.renderMappingTable(resourceMappings);

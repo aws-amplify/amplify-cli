@@ -71,6 +71,27 @@
         "aws:cdk:path": "amplify-backendonly-gen2main-branch-8e0f260810/auth/amplifyAuth/UserPool/Resource"
       }
     },
+    "amplifyAuthUserPoolNativeAppClient79534448": {
+      "Type": "AWS::Cognito::UserPoolClient",
+      "Properties": {
+        "AllowedOAuthFlowsUserPoolClient": false,
+        "AuthSessionValidity": 3,
+        "EnablePropagateAdditionalUserContextData": false,
+        "EnableTokenRevocation": true,
+        "GenerateSecret": false,
+        "RefreshTokenValidity": 43200,
+        "SupportedIdentityProviders": [
+          "COGNITO"
+        ],
+        "TokenValidityUnits": {
+          "RefreshToken": "minutes"
+        },
+        "UserPoolId": "us-east-1_W9u2NBSRe"
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-backendonly-gen2main-branch-8e0f260810/auth/amplifyAuth/UserPool/NativeAppClient/Resource"
+      }
+    },
     "amplifyAuthUserPoolAppClient2626C6F8": {
       "Type": "AWS::Cognito::UserPoolClient",
       "Properties": {
@@ -101,27 +122,6 @@
       },
       "Metadata": {
         "aws:cdk:path": "amplify-backendonly-gen2main-branch-8e0f260810/auth/amplifyAuth/UserPoolAppClient/Resource"
-      }
-    },
-    "amplifyAuthUserPoolNativeAppClient79534448": {
-      "Type": "AWS::Cognito::UserPoolClient",
-      "Properties": {
-        "AllowedOAuthFlowsUserPoolClient": false,
-        "AuthSessionValidity": 3,
-        "EnablePropagateAdditionalUserContextData": false,
-        "EnableTokenRevocation": true,
-        "GenerateSecret": false,
-        "RefreshTokenValidity": 43200,
-        "SupportedIdentityProviders": [
-          "COGNITO"
-        ],
-        "TokenValidityUnits": {
-          "RefreshToken": "minutes"
-        },
-        "UserPoolId": "us-east-1_W9u2NBSRe"
-      },
-      "Metadata": {
-        "aws:cdk:path": "amplify-backendonly-gen2main-branch-8e0f260810/auth/amplifyAuth/UserPool/NativeAppClient/Resource"
       }
     },
     "amplifyAuthIdentityPool3FDE84CC": {

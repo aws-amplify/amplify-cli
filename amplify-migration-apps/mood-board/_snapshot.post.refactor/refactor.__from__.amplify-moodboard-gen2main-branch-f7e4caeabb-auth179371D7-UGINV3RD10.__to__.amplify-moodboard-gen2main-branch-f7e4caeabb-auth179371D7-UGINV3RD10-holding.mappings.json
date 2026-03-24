@@ -12,21 +12,21 @@
   {
     "Source": {
       "StackName": "amplify-moodboard-gen2main-branch-f7e4caeabb-auth179371D7-UGINV3RD10",
-      "LogicalResourceId": "amplifyAuthUserPoolAppClient2626C6F8"
+      "LogicalResourceId": "amplifyAuthUserPoolNativeAppClient79534448"
     },
     "Destination": {
       "StackName": "amplify-moodboard-gen2main-branch-f7e4caeabb-auth179371D7-UGINV3RD10-holding",
-      "LogicalResourceId": "amplifyAuthUserPoolAppClient2626C6F8"
+      "LogicalResourceId": "amplifyAuthUserPoolNativeAppClient79534448"
     }
   },
   {
     "Source": {
       "StackName": "amplify-moodboard-gen2main-branch-f7e4caeabb-auth179371D7-UGINV3RD10",
-      "LogicalResourceId": "amplifyAuthUserPoolNativeAppClient79534448"
+      "LogicalResourceId": "amplifyAuthUserPoolAppClient2626C6F8"
     },
     "Destination": {
       "StackName": "amplify-moodboard-gen2main-branch-f7e4caeabb-auth179371D7-UGINV3RD10-holding",
-      "LogicalResourceId": "amplifyAuthUserPoolNativeAppClient79534448"
+      "LogicalResourceId": "amplifyAuthUserPoolAppClient2626C6F8"
     }
   },
   {

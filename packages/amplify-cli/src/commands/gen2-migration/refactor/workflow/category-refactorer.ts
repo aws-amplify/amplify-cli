@@ -2,7 +2,7 @@ import { Parameter, ResourceMapping } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { CFNResource, CFNTemplate } from '../../cfn-template';
 import { Planner } from '../../planner';
-import { AmplifyMigrationOperation, buildNoopOperation } from '../../_operation';
+import { AmplifyMigrationOperation } from '../../_operation';
 import { AwsClients } from '../../aws-clients';
 import { StackFacade } from '../stack-facade';
 import { Cfn } from '../cfn';
@@ -87,10 +87,6 @@ export abstract class CategoryRefactorer implements Planner {
     const targetResources = this.filterResourcesByType(target.resolvedTemplate);
 
     const mappings = await this.buildResourceMappings(sourceResources, targetResources, source.stackId, target.stackId);
-    if (mappings.length === 0) {
-      this.logger.pop();
-      return [buildNoopOperation(this.resource)];
-    }
 
     source = addPlaceHolderIfNeeded(source, mappings);
 
@@ -98,9 +94,9 @@ export abstract class CategoryRefactorer implements Planner {
 
     const updateSourceOps = await this.updateSource(source);
     const updateTargetOps = await this.updateTarget(target);
-    const beforeMoveOps = await this.beforeMove(blueprint);
+    const beforeMoveOps = await this.beforeMove(blueprint.targetStackId);
     const moveOps = await this.move(blueprint);
-    const afterMoveOps = await this.afterMove(blueprint);
+    const afterMoveOps = await this.afterMove(blueprint.sourceStackId);
 
     const operations = [...updateSourceOps, ...updateTargetOps, ...beforeMoveOps, ...moveOps, ...afterMoveOps];
     this.logger.pop();
@@ -133,14 +129,14 @@ export abstract class CategoryRefactorer implements Planner {
    * Forward: moves Gen2 resources to holding stack.
    * Rollback: no-op.
    */
-  protected abstract beforeMove(blueprint: RefactorBlueprint): Promise<AmplifyMigrationOperation[]> | AmplifyMigrationOperation[];
+  protected abstract beforeMove(gen2StackId: string): Promise<AmplifyMigrationOperation[]>;
 
   /**
    * Post-move operations.
    * Forward: empty.
    * Rollback: restores holding stack resources into Gen2.
    */
-  protected abstract afterMove(blueprint: RefactorBlueprint): Promise<AmplifyMigrationOperation[]>;
+  protected abstract afterMove(gen2StackId: string): Promise<AmplifyMigrationOperation[]>;
 
   // -- Shared workflow (concrete) --
 
@@ -233,6 +229,9 @@ export abstract class CategoryRefactorer implements Planner {
    * Templates are fetched and resolved fresh at execution time.
    */
   protected async move(blueprint: RefactorBlueprint): Promise<AmplifyMigrationOperation[]> {
+    if (blueprint.mappings.length === 0) {
+      return [];
+    }
     const sourceStackName = extractStackNameFromId(blueprint.sourceStackId);
     const targetStackName = extractStackNameFromId(blueprint.targetStackId);
 
@@ -293,6 +292,14 @@ export abstract class CategoryRefactorer implements Planner {
       table.push([m.Source.LogicalResourceId, m.Destination.LogicalResourceId]);
     }
     return `${table.toString()}\n`;
+  }
+
+  protected info(message: string) {
+    this.logger.info(`[${this.resource.category}/${this.resource.resourceName}] ${message}`);
+  }
+
+  protected debug(message: string) {
+    this.logger.debug(`[${this.resource.category}/${this.resource.resourceName}] ${message}`);
   }
 }
 

@@ -1,8 +1,8 @@
 import { auth } from './auth/resource';
 import { data } from './data/resource';
-import { fitnesstracker6b0fc1196b0fc119PreSignup } from './auth/fitnesstracker6b0fc1196b0fc119PreSignup/resource';
-import { lognutrition } from './function/lognutrition/resource';
 import { admin } from './function/admin/resource';
+import { fitnesstracker9ceb2e7c9ceb2e7cPreSignup } from './auth/fitnesstracker9ceb2e7c9ceb2e7cPreSignup/resource';
+import { lognutrition } from './function/lognutrition/resource';
 import {
   RestApi,
   LambdaIntegration,
@@ -12,77 +12,108 @@ import {
 } from 'aws-cdk-lib/aws-apigateway';
 import { Policy, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { defineBackend } from '@aws-amplify/backend';
-import { Duration, Stack } from 'aws-cdk-lib';
+import { Stack, Duration } from 'aws-cdk-lib';
 
 const backend = defineBackend({
   auth,
   data,
-  fitnesstracker6b0fc1196b0fc119PreSignup,
-  lognutrition,
   admin,
-});
-const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
-cfnUserPool.usernameAttributes = undefined;
-cfnUserPool.policies = {
-  passwordPolicy: {
-    minimumLength: 8,
-    requireUppercase: false,
-    requireLowercase: false,
-    requireNumbers: false,
-    requireSymbols: false,
-    temporaryPasswordValidityDays: 7,
-  },
-};
-const cfnIdentityPool = backend.auth.resources.cfnResources.cfnIdentityPool;
-cfnIdentityPool.allowUnauthenticatedIdentities = false;
-const userPool = backend.auth.resources.userPool;
-userPool.addClient('NativeAppClient', {
-  refreshTokenValidity: Duration.days(30),
-  enableTokenRevocation: true,
-  enablePropagateAdditionalUserContextData: false,
-  authSessionValidity: Duration.minutes(3),
-  disableOAuth: true,
-  generateSecret: false,
+  fitnesstracker9ceb2e7c9ceb2e7cPreSignup,
+  lognutrition,
 });
 const branchName = process.env.AWS_BRANCH ?? 'sandbox';
-backend.fitnesstracker6b0fc1196b0fc119PreSignup.resources.cfnResources.cfnFunction.functionName = `fitnesstracker6b0fc1196b0fc119PreSignup-${branchName}`;
-backend.lognutrition.resources.cfnResources.cfnFunction.functionName = `lognutrition-${branchName}`;
-backend.lognutrition.addEnvironment(
-  'API_FITNESSTRACKER_GRAPHQLAPIIDOUTPUT',
-  backend.data.apiId
+const adminapiStack = backend.createStack('rest-api-stack-adminapi');
+const adminapiApi = new RestApi(adminapiStack, 'RestApi', {
+  restApiName: `adminapi-${branchName}`,
+});
+adminapiApi.addGatewayResponse('Default4XX', {
+  type: ResponseType.DEFAULT_4XX,
+  responseHeaders: {
+    'Access-Control-Allow-Origin': "'*'",
+    'Access-Control-Allow-Headers':
+      "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+    'Access-Control-Allow-Methods': "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
+    'Access-Control-Expose-Headers': "'Date,X-Amzn-ErrorType'",
+  },
+});
+adminapiApi.addGatewayResponse('Default5XX', {
+  type: ResponseType.DEFAULT_5XX,
+  responseHeaders: {
+    'Access-Control-Allow-Origin': "'*'",
+    'Access-Control-Allow-Headers':
+      "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+    'Access-Control-Allow-Methods': "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
+    'Access-Control-Expose-Headers': "'Date,X-Amzn-ErrorType'",
+  },
+});
+const adminIntegration = new LambdaIntegration(backend.admin.resources.lambda);
+const gen1adminapiApi = RestApi.fromRestApiAttributes(
+  adminapiStack,
+  'Gen1adminapiApi',
+  {
+    restApiId: 'bbk7dedp01',
+    rootResourceId: 'bbk7dedp01-root',
+  }
 );
-backend.lognutrition.addEnvironment(
-  'API_FITNESSTRACKER_MEALTABLE_ARN',
-  backend.data.resources.tables['Meal'].tableArn
+const gen1adminapiPolicy = new Policy(adminapiStack, 'Gen1adminapiPolicy', {
+  statements: [
+    new PolicyStatement({
+      actions: ['execute-api:Invoke'],
+      resources: [`${gen1adminapiApi.arnForExecuteApi('GET', '/*')}`],
+    }),
+  ],
+});
+backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(
+  gen1adminapiPolicy
 );
-backend.lognutrition.addEnvironment(
-  'API_FITNESSTRACKER_MEALTABLE_NAME',
-  backend.data.resources.tables['Meal'].tableName
+const adminResource = adminapiApi.root.addResource('admin', {
+  defaultMethodOptions: {
+    authorizationType: AuthorizationType.IAM,
+  },
+  defaultCorsPreflightOptions: {
+    allowOrigins: Cors.ALL_ORIGINS,
+    allowMethods: Cors.ALL_METHODS,
+    allowHeaders: [
+      'Content-Type',
+      'X-Amz-Date',
+      'Authorization',
+      'X-Api-Key',
+      'X-Amz-Security-Token',
+      'X-Amz-User-Agent',
+    ],
+    statusCode: 200,
+  },
+});
+adminResource.addMethod('ANY', adminIntegration);
+adminResource.addProxy({
+  anyMethod: true,
+  defaultIntegration: adminIntegration,
+});
+// /admin - Admin group only
+backend.auth.resources.groups['Admin'].role.attachInlinePolicy(
+  new Policy(adminapiStack, 'adminAdminPolicy', {
+    statements: [
+      new PolicyStatement({
+        actions: ['execute-api:Invoke'],
+        resources: [
+          adminapiApi.arnForExecuteApi('GET', '/admin'),
+          adminapiApi.arnForExecuteApi('GET', '/admin/*'),
+        ],
+      }),
+    ],
+  })
 );
-backend.data.resources.tables['Meal'].grant(
-  backend.lognutrition.resources.lambda,
-  'dynamodb:Put*',
-  'dynamodb:Create*',
-  'dynamodb:BatchWriteItem',
-  'dynamodb:PartiQLInsert',
-  'dynamodb:Get*',
-  'dynamodb:BatchGetItem',
-  'dynamodb:List*',
-  'dynamodb:Describe*',
-  'dynamodb:Scan',
-  'dynamodb:Query',
-  'dynamodb:PartiQLSelect',
-  'dynamodb:Update*',
-  'dynamodb:RestoreTable*',
-  'dynamodb:PartiQLUpdate',
-  'dynamodb:Delete*',
-  'dynamodb:PartiQLDelete'
-);
-backend.admin.resources.cfnResources.cfnFunction.functionName = `admin-${branchName}`;
-backend.admin.addEnvironment(
-  'AUTH_FITNESSTRACKER6B0FC1196B0FC119_USERPOOLID',
-  backend.auth.resources.userPool.userPoolId
-);
+backend.addOutput({
+  custom: {
+    API: {
+      [adminapiApi.restApiName]: {
+        endpoint: adminapiApi.url.slice(0, -1),
+        region: Stack.of(adminapiApi).region,
+        apiName: adminapiApi.restApiName,
+      },
+    },
+  },
+});
 const cfnGraphqlApi = backend.data.resources.cfnResources.cfnGraphqlApi;
 cfnGraphqlApi.additionalAuthenticationProviders = [
   {
@@ -120,8 +151,8 @@ const gen1nutritionapiApi = RestApi.fromRestApiAttributes(
   nutritionapiStack,
   'Gen1nutritionapiApi',
   {
-    restApiId: '6smuxn28tb',
-    rootResourceId: '6smuxn28tb-root',
+    restApiId: 'ekto8iln0h',
+    rootResourceId: 'ekto8iln0h-root',
   }
 );
 const gen1nutritionapiPolicy = new Policy(
@@ -220,95 +251,64 @@ backend.addOutput({
     },
   },
 });
-const adminapiStack = backend.createStack('rest-api-stack-adminapi');
-const adminapiApi = new RestApi(adminapiStack, 'RestApi', {
-  restApiName: `adminapi-${branchName}`,
-});
-adminapiApi.addGatewayResponse('Default4XX', {
-  type: ResponseType.DEFAULT_4XX,
-  responseHeaders: {
-    'Access-Control-Allow-Origin': "'*'",
-    'Access-Control-Allow-Headers':
-      "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
-    'Access-Control-Allow-Methods': "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
-    'Access-Control-Expose-Headers': "'Date,X-Amzn-ErrorType'",
+const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
+cfnUserPool.usernameAttributes = undefined;
+cfnUserPool.policies = {
+  passwordPolicy: {
+    minimumLength: 8,
+    requireUppercase: false,
+    requireLowercase: false,
+    requireNumbers: false,
+    requireSymbols: false,
+    temporaryPasswordValidityDays: 7,
   },
+};
+const cfnIdentityPool = backend.auth.resources.cfnResources.cfnIdentityPool;
+cfnIdentityPool.allowUnauthenticatedIdentities = false;
+const userPool = backend.auth.resources.userPool;
+userPool.addClient('NativeAppClient', {
+  refreshTokenValidity: Duration.days(30),
+  enableTokenRevocation: true,
+  enablePropagateAdditionalUserContextData: false,
+  authSessionValidity: Duration.minutes(3),
+  disableOAuth: true,
+  generateSecret: false,
 });
-adminapiApi.addGatewayResponse('Default5XX', {
-  type: ResponseType.DEFAULT_5XX,
-  responseHeaders: {
-    'Access-Control-Allow-Origin': "'*'",
-    'Access-Control-Allow-Headers':
-      "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
-    'Access-Control-Allow-Methods': "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
-    'Access-Control-Expose-Headers': "'Date,X-Amzn-ErrorType'",
-  },
-});
-const adminIntegration = new LambdaIntegration(backend.admin.resources.lambda);
-const gen1adminapiApi = RestApi.fromRestApiAttributes(
-  adminapiStack,
-  'Gen1adminapiApi',
-  {
-    restApiId: 'kh5xa5hayh',
-    rootResourceId: 'kh5xa5hayh-root',
-  }
+backend.admin.resources.cfnResources.cfnFunction.functionName = `admin-${branchName}`;
+backend.admin.addEnvironment(
+  'AUTH_FITNESSTRACKER9CEB2E7C9CEB2E7C_USERPOOLID',
+  backend.auth.resources.userPool.userPoolId
 );
-const gen1adminapiPolicy = new Policy(adminapiStack, 'Gen1adminapiPolicy', {
-  statements: [
-    new PolicyStatement({
-      actions: ['execute-api:Invoke'],
-      resources: [`${gen1adminapiApi.arnForExecuteApi('GET', '/*')}`],
-    }),
-  ],
-});
-backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(
-  gen1adminapiPolicy
+backend.fitnesstracker9ceb2e7c9ceb2e7cPreSignup.resources.cfnResources.cfnFunction.functionName = `fitnesstracker9ceb2e7c9ceb2e7cPreSignup-${branchName}`;
+backend.lognutrition.resources.cfnResources.cfnFunction.functionName = `lognutrition-${branchName}`;
+backend.lognutrition.addEnvironment(
+  'API_FITNESSTRACKER_GRAPHQLAPIIDOUTPUT',
+  backend.data.apiId
 );
-const adminResource = adminapiApi.root.addResource('admin', {
-  defaultMethodOptions: {
-    authorizationType: AuthorizationType.IAM,
-  },
-  defaultCorsPreflightOptions: {
-    allowOrigins: Cors.ALL_ORIGINS,
-    allowMethods: Cors.ALL_METHODS,
-    allowHeaders: [
-      'Content-Type',
-      'X-Amz-Date',
-      'Authorization',
-      'X-Api-Key',
-      'X-Amz-Security-Token',
-      'X-Amz-User-Agent',
-    ],
-    statusCode: 200,
-  },
-});
-adminResource.addMethod('ANY', adminIntegration);
-adminResource.addProxy({
-  anyMethod: true,
-  defaultIntegration: adminIntegration,
-});
-// /admin - Admin group only
-backend.auth.resources.groups['Admin'].role.attachInlinePolicy(
-  new Policy(adminapiStack, 'adminAdminPolicy', {
-    statements: [
-      new PolicyStatement({
-        actions: ['execute-api:Invoke'],
-        resources: [
-          adminapiApi.arnForExecuteApi('GET', '/admin'),
-          adminapiApi.arnForExecuteApi('GET', '/admin/*'),
-        ],
-      }),
-    ],
-  })
+backend.lognutrition.addEnvironment(
+  'API_FITNESSTRACKER_MEALTABLE_ARN',
+  backend.data.resources.tables['Meal'].tableArn
 );
-backend.addOutput({
-  custom: {
-    API: {
-      [adminapiApi.restApiName]: {
-        endpoint: adminapiApi.url.slice(0, -1),
-        region: Stack.of(adminapiApi).region,
-        apiName: adminapiApi.restApiName,
-      },
-    },
-  },
-});
+backend.lognutrition.addEnvironment(
+  'API_FITNESSTRACKER_MEALTABLE_NAME',
+  backend.data.resources.tables['Meal'].tableName
+);
+backend.data.resources.tables['Meal'].grant(
+  backend.lognutrition.resources.lambda,
+  'dynamodb:Put*',
+  'dynamodb:Create*',
+  'dynamodb:BatchWriteItem',
+  'dynamodb:PartiQLInsert',
+  'dynamodb:Get*',
+  'dynamodb:BatchGetItem',
+  'dynamodb:List*',
+  'dynamodb:Describe*',
+  'dynamodb:Scan',
+  'dynamodb:Query',
+  'dynamodb:PartiQLSelect',
+  'dynamodb:Update*',
+  'dynamodb:RestoreTable*',
+  'dynamodb:PartiQLUpdate',
+  'dynamodb:Delete*',
+  'dynamodb:PartiQLDelete'
+);
