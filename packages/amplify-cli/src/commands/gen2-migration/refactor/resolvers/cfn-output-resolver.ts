@@ -25,12 +25,13 @@ export function resolveOutputs(params: {
 }): CFNTemplate {
   const { template, stackOutputs, stackResources, region, accountId } = params;
   const cloned = JSON.parse(JSON.stringify(template)) as CFNTemplate;
-  const templateOutputs = cloned.Outputs;
+  // CDK omits Outputs when a stack has no cross-stack references (e.g. a standalone DDB table).
+  const templateOutputs = cloned.Outputs ?? {};
   const templateResources = cloned.Resources;
 
-  if (!templateOutputs || !templateResources) {
+  if (!templateResources) {
     throw new AmplifyError('InvalidStackError', {
-      message: 'Template is missing Outputs or Resources section',
+      message: 'Template is missing Resources section',
     });
   }
 
@@ -101,7 +102,7 @@ export function resolveOutputs(params: {
   }) as Record<string, CFNResource>;
 
   // Phase 3: Replace Output values with runtime stack output values
-  for (const [outputKey, outputDef] of Object.entries(cloned.Outputs)) {
+  for (const [outputKey, outputDef] of Object.entries(templateOutputs)) {
     const runtimeOutput = stackOutputs.find((o) => o.OutputKey === outputKey);
     if (!runtimeOutput?.OutputValue) {
       throw new AmplifyError('InvalidStackError', {

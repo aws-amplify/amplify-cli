@@ -489,6 +489,89 @@
     /* Utilities */
     .hidden { display: none; }
     
+    /* Profile Page */
+    .profile-section {
+      display: flex;
+      align-items: center;
+      gap: 30px;
+      padding: 40px;
+      background: #f7fafc;
+      border-radius: 16px;
+      margin-bottom: 30px;
+    }
+    .profile-avatar-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+    }
+    .profile-avatar {
+      width: 120px;
+      height: 120px;
+      font-size: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    .avatar-upload-btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 25px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+    .avatar-upload-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+    .profile-info {
+      flex: 1;
+    }
+    .profile-name {
+      font-size: 24px;
+      font-weight: 700;
+      color: #2d3748;
+      margin-bottom: 5px;
+    }
+    .profile-meta {
+      color: #718096;
+      font-size: 16px;
+    }
+    .upload-status {
+      padding: 15px;
+      border-radius: 12px;
+      text-align: center;
+      font-weight: 600;
+    }
+    .upload-status.success {
+      background: #c6f6d5;
+      color: #276749;
+    }
+    .upload-status.error {
+      background: #fed7d7;
+      color: #c53030;
+    }
+    .upload-status.loading {
+      background: #e9d8fd;
+      color: #553c9a;
+    }
+    .clickable-avatar {
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .clickable-avatar:hover {
+      transform: scale(1.1);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    .avatar-img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    
     /* Page Header */
     .page-header {
       margin-bottom: 25px;
@@ -565,7 +648,7 @@
       </div>
       <div class="user-section">
         <button class="signout-btn" id="activityBtn" style="margin-right: 10px;">📊 Activity</button>
-        <div class="avatar" id="userAvatar">U</div>
+        <div class="avatar clickable-avatar" id="userAvatar" title="Edit Profile">U</div>
         <button class="signout-btn" id="signoutBtn">Sign Out</button>
       </div>
     </div>
@@ -621,6 +704,33 @@
           </div>
           
           <div class="post-feed" id="postsFeed"></div>
+        </div>
+      </div>
+
+      <!-- Profile Page -->
+      <div id="profilePage" class="hidden">
+        <div class="content-area">
+          <button class="back-btn" id="backFromProfile">← Back</button>
+          <div class="page-header">
+            <h1 class="page-title">Profile</h1>
+            <p class="page-subtitle">Manage your account</p>
+          </div>
+          
+          <div class="profile-section">
+            <div class="profile-avatar-container">
+              <div class="avatar profile-avatar" id="profileAvatar">U</div>
+              <label class="avatar-upload-btn" for="avatarInput">
+                📷 Change Photo
+              </label>
+              <input type="file" id="avatarInput" accept="image/*" style="display: none;" />
+            </div>
+            <div class="profile-info">
+              <div class="profile-name" id="profilePhone">+1234567890</div>
+              <div class="profile-meta">Member</div>
+            </div>
+          </div>
+          
+          <div id="avatarUploadStatus" class="upload-status hidden"></div>
         </div>
       </div>
 

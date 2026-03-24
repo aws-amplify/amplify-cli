@@ -78,7 +78,7 @@ describe('DynamoDBGenerator', () => {
     });
 
     const addImportSpy = jest.spyOn(backendGenerator, 'addImport');
-    const ensureStorageStackSpy = jest.spyOn(backendGenerator, 'ensureStorageStack');
+    const createDynamoDBStackSpy = jest.spyOn(backendGenerator, 'createDynamoDBStack');
     const addEarlyStatementSpy = jest.spyOn(backendGenerator, 'addEarlyStatement');
 
     const generator = new DynamoDBGenerator(gen1App, backendGenerator, 'myTable', false);
@@ -86,11 +86,11 @@ describe('DynamoDBGenerator', () => {
     await ops[0].execute();
 
     expect(addImportSpy).toHaveBeenCalledWith('aws-cdk-lib/aws-dynamodb', expect.arrayContaining(['Table', 'AttributeType']));
-    expect(ensureStorageStackSpy).toHaveBeenCalledWith(false);
+    expect(createDynamoDBStackSpy).toHaveBeenCalledWith('myTable');
     expect(addEarlyStatementSpy).toHaveBeenCalled();
   });
 
-  it('passes hasS3Bucket=true to ensureStorageStack', async () => {
+  it('creates per-table stack regardless of hasS3Bucket flag', async () => {
     const gen1App = createMockGen1App();
     (gen1App.meta as jest.Mock).mockReturnValue({
       myTable: {
@@ -105,13 +105,13 @@ describe('DynamoDBGenerator', () => {
       ProvisionedThroughput: {},
     });
 
-    const ensureStorageStackSpy = jest.spyOn(backendGenerator, 'ensureStorageStack');
+    const createDynamoDBStackSpy = jest.spyOn(backendGenerator, 'createDynamoDBStack');
 
     const generator = new DynamoDBGenerator(gen1App, backendGenerator, 'myTable', true);
     const ops = await generator.plan();
     await ops[0].execute();
 
-    expect(ensureStorageStackSpy).toHaveBeenCalledWith(true);
+    expect(createDynamoDBStackSpy).toHaveBeenCalledWith('myTable');
   });
 
   it('throws when table is not found in AWS', async () => {
@@ -162,6 +162,40 @@ describe('DynamoDBGenerator', () => {
     // Should have multiple early statements (table + GSI addGlobalSecondaryIndex)
     expect(addEarlyStatementSpy).toHaveBeenCalled();
     expect(addEarlyStatementSpy.mock.calls.length).toBeGreaterThanOrEqual(2);
+  });
+
+  it('creates separate stacks for two DDB tables', async () => {
+    const gen1App = createMockGen1App();
+    (gen1App.meta as jest.Mock).mockReturnValue({
+      activity: {
+        service: 'DynamoDB',
+        output: { Name: 'activity-abc123' },
+      },
+      bookmarks: {
+        service: 'DynamoDB',
+        output: { Name: 'bookmarks-abc123' },
+      },
+    });
+    (gen1App.aws.fetchTableDescription as jest.Mock).mockResolvedValue({
+      KeySchema: [{ AttributeName: 'id', KeyType: 'HASH' }],
+      AttributeDefinitions: [{ AttributeName: 'id', AttributeType: 'S' }],
+      BillingModeSummary: { BillingMode: 'PAY_PER_REQUEST' },
+      ProvisionedThroughput: {},
+    });
+
+    const createDynamoDBStackSpy = jest.spyOn(backendGenerator, 'createDynamoDBStack');
+
+    const gen1 = new DynamoDBGenerator(gen1App, backendGenerator, 'activity', false);
+    const gen2 = new DynamoDBGenerator(gen1App, backendGenerator, 'bookmarks', false);
+
+    const ops1 = await gen1.plan();
+    await ops1[0].execute();
+    const ops2 = await gen2.plan();
+    await ops2[0].execute();
+
+    expect(createDynamoDBStackSpy).toHaveBeenCalledTimes(2);
+    expect(createDynamoDBStackSpy).toHaveBeenCalledWith('activity');
+    expect(createDynamoDBStackSpy).toHaveBeenCalledWith('bookmarks');
   });
 
   it('uses resourceName as table name when output.Name is missing', async () => {

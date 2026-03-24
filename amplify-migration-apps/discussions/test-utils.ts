@@ -3,6 +3,9 @@
 import { Amplify } from 'aws-amplify';
 import { generateClient } from 'aws-amplify/api';
 import { getCurrentUser } from 'aws-amplify/auth';
+import { uploadData, getUrl, remove } from 'aws-amplify/storage';
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { DynamoDBDocumentClient, PutCommand, GetCommand, DeleteCommand } from '@aws-sdk/lib-dynamodb';
 import { getTopic, listTopics, getPost, listPosts, getComment, listComments, fetchUserActivity } from './src/graphql/queries';
 import {
   createTopic,
@@ -319,6 +322,110 @@ export function createTestFunctions() {
     console.log('✅ Deleted comment:', deleted.content?.substring(0, 30) + '...');
   }
 
+  // ============================================================
+  // S3 Avatar Test Functions
+  // ============================================================
+
+  async function testUploadAvatar(): Promise<string | null> {
+    console.log('\n📤 Testing uploadData (S3 avatar upload)...');
+    // 1x1 transparent PNG
+    const testImageBase64 =
+      'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
+    const imageBuffer = Buffer.from(testImageBase64, 'base64');
+    const fileName = `test-avatar-${Date.now()}.png`;
+
+    console.log(`   Uploading to: ${fileName}`);
+    console.log(`   File size: ${imageBuffer.length} bytes`);
+
+    const result = await uploadData({
+      key: fileName,
+      data: imageBuffer,
+      options: { contentType: 'image/png' },
+    }).result;
+
+    console.log('✅ Upload successful!');
+    console.log('   Key:', result.key);
+    return result.key;
+  }
+
+  async function testGetAvatarUrl(avatarKey: string): Promise<string | null> {
+    console.log(`\n🔗 Testing getUrl (S3 signed URL)...`);
+    console.log(`   Avatar key: ${avatarKey}`);
+
+    const result = await getUrl({
+      key: avatarKey,
+      options: { expiresIn: 3600 },
+    });
+    console.log('✅ Got signed URL!');
+    console.log('   URL:', result.url.toString().substring(0, 80) + '...');
+    return result.url.toString();
+  }
+
+  async function testRemoveAvatar(avatarKey: string): Promise<void> {
+    console.log(`\n🗑️ Testing remove (S3 avatar delete)...`);
+    console.log(`   Avatar key: ${avatarKey}`);
+
+    await remove({ key: avatarKey });
+    console.log('✅ Avatar removed successfully!');
+  }
+
+  // ============================================================
+  // Bookmarks DDB Test Functions
+  // ============================================================
+
+  const ddbClient = DynamoDBDocumentClient.from(
+    new DynamoDBClient({ region: (amplifyconfig as any).aws_project_region }),
+  );
+
+  async function testCreateBookmark(tableName: string, userId: string, postId: string): Promise<void> {
+    console.log('\n🔖 Testing PutItem (create bookmark)...');
+    console.log(`   Table: ${tableName}`);
+    console.log(`   userId: ${userId.substring(0, 8)}..., postId: ${postId.substring(0, 8)}...`);
+
+    await ddbClient.send(
+      new PutCommand({
+        TableName: tableName,
+        Item: { userId, postId, createdAt: new Date().toISOString() },
+      }),
+    );
+    console.log('✅ Bookmark created!');
+  }
+
+  async function testGetBookmark(tableName: string, userId: string, postId: string): Promise<void> {
+    console.log('\n🔖 Testing GetItem (read bookmark)...');
+    console.log(`   Table: ${tableName}`);
+    console.log(`   userId: ${userId.substring(0, 8)}..., postId: ${postId.substring(0, 8)}...`);
+
+    const result = await ddbClient.send(
+      new GetCommand({
+        TableName: tableName,
+        Key: { userId, postId },
+      }),
+    );
+    if (!result.Item) {
+      throw new Error('Bookmark not found');
+    }
+    console.log('✅ Bookmark found:', {
+      userId: result.Item.userId.substring(0, 8) + '...',
+      postId: result.Item.postId.substring(0, 8) + '...',
+      createdAt: result.Item.createdAt,
+    });
+  }
+
+  async function testDeleteBookmark(tableName: string, userId: string, postId: string): Promise<void> {
+    console.log('\n🗑️ Testing DeleteItem (remove bookmark)...');
+    console.log(`   Table: ${tableName}`);
+    console.log(`   userId: ${userId.substring(0, 8)}..., postId: ${postId.substring(0, 8)}...`);
+
+    await ddbClient.send(
+      new DeleteCommand({
+        TableName: tableName,
+        Key: { userId, postId },
+      }),
+    );
+    console.log('✅ Bookmark deleted!');
+  }
+
   return {
     testListTopics,
     testGetTopic,
@@ -336,7 +443,22 @@ export function createTestFunctions() {
     testCreateComment,
     testUpdateComment,
     testDeleteComment,
+    testUploadAvatar,
+    testGetAvatarUrl,
+    testRemoveAvatar,
+    testCreateBookmark,
+    testGetBookmark,
+    testDeleteBookmark,
   };
+}
+
+function getBookmarksTableName(): string {
+  const schemas = (amplifyconfig as any).aws_dynamodb_table_schemas ?? [];
+  const entry = schemas.find((s: any) => s.tableName?.startsWith('bookmarks-'));
+  if (!entry) {
+    throw new Error('No bookmarks table found in amplifyconfiguration.json');
+  }
+  return entry.tableName;
 }
 
 // ============================================================
@@ -440,9 +562,34 @@ export function createTestOrchestrator(testFunctions: ReturnType<typeof createTe
     await runner.runTest('fetchUserActivity', () => testFunctions.testFetchUserActivity(userId));
   }
 
+  async function runStorageTests(): Promise<void> {
+    console.log('\n' + '='.repeat(60));
+    console.log('📸 PART 6: S3 Storage (Avatars)');
+    console.log('='.repeat(60));
+
+    const avatarKey = await runner.runTest('uploadAvatar', testFunctions.testUploadAvatar);
+    if (avatarKey) {
+      await runner.runTest('getAvatarUrl', () => testFunctions.testGetAvatarUrl(avatarKey));
+      await runner.runTest('removeAvatar', () => testFunctions.testRemoveAvatar(avatarKey));
+    }
+  }
+
+  async function runBookmarksTests(userId: string, postId: string): Promise<void> {
+    console.log('\n' + '='.repeat(60));
+    console.log('🔖 PART 7: Bookmarks DDB');
+    console.log('='.repeat(60));
+
+    const tableName = getBookmarksTableName();
+    console.log(`   Bookmarks table: ${tableName}`);
+
+    await runner.runTest('createBookmark', () => testFunctions.testCreateBookmark(tableName, userId, postId));
+    await runner.runTest('getBookmark', () => testFunctions.testGetBookmark(tableName, userId, postId));
+    await runner.runTest('deleteBookmark', () => testFunctions.testDeleteBookmark(tableName, userId, postId));
+  }
+
   async function runCleanupTests(topicId: string | null, postId: string | null, commentId: string | null): Promise<void> {
     console.log('\n' + '='.repeat(60));
-    console.log('🧹 PART 6: Cleanup (Delete Test Data)');
+    console.log('🧹 PART 8: Cleanup (Delete Test Data)');
     console.log('='.repeat(60));
 
     // Delete in reverse order of creation (comments -> posts -> topics)
@@ -457,6 +604,8 @@ export function createTestOrchestrator(testFunctions: ReturnType<typeof createTe
     runPostMutationTests,
     runCommentMutationTests,
     runActivityTests,
+    runStorageTests,
+    runBookmarksTests,
     runCleanupTests,
   };
 }

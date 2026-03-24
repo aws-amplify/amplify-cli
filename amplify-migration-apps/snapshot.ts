@@ -104,7 +104,7 @@ async function findGen1RootStack(appName: string, envName: string): Promise<stri
 }
 
 async function fetchTemplate(stackName: string): Promise<string> {
-  const response = await cfnClient.send(new GetTemplateCommand({ StackName: stackName }));
+  const response = await cfnClient.send(new GetTemplateCommand({ StackName: stackName, TemplateStage: 'Original' }));
   return response.TemplateBody!;
 }
 

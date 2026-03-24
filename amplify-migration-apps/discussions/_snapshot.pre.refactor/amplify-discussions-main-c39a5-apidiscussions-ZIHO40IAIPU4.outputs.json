@@ -1,0 +1,20 @@
+[
+  {
+    "OutputKey": "GraphQLAPIIdOutput",
+    "OutputValue": "u3jn2qbupzbyhc3h53673wdvim",
+    "Description": "Your GraphQL API ID.",
+    "ExportName": "amplify-discussions-main-c39a5-apidiscussions-ZIHO40IAIPU4:GraphQLApiId"
+  },
+  {
+    "OutputKey": "GraphQLAPIEndpointOutput",
+    "OutputValue": "https://jsm5ex363jcy5fm2reylyox4te.appsync-api.us-east-1.amazonaws.com/graphql",
+    "Description": "Your GraphQL API endpoint.",
+    "ExportName": "amplify-discussions-main-c39a5-apidiscussions-ZIHO40IAIPU4:GraphQLApiEndpoint"
+  },
+  {
+    "OutputKey": "GraphQLAPIKeyOutput",
+    "OutputValue": "da2-fakeapikey00000000000000",
+    "Description": "Your GraphQL API ID.",
+    "ExportName": "amplify-discussions-main-c39a5-apidiscussions-ZIHO40IAIPU4:GraphQLApiKey"
+  }
+]
