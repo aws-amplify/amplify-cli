@@ -13,8 +13,7 @@ export class DataAssessor implements Assessor {
    * Records resource-level and feature-level support for this API resource.
    */
   public assess(assessment: Assessment): void {
-    assessment.record('generate', this.resource, 'supported');
-    assessment.record('refactor', this.resource, 'not-applicable');
+    assessment.recordResource(this.resource, 'supported', 'not-applicable');
 
     const overridesPath = `api/${this.resource.resourceName}/override.ts`;
 

@@ -19,7 +19,7 @@ describe('AuthUserPoolGroupsAssessor', () => {
     const assessment = new Assessment('app', 'dev');
     new AuthUserPoolGroupsAssessor(mockGen1App(), RESOURCE).assess(assessment);
 
-    const entry = assessment.entries.get('auth:userPoolGroups');
+    const entry = assessment.resources[0];
     expect(entry!.generate).toBe('supported');
     expect(entry!.refactor).toBe('supported');
   });

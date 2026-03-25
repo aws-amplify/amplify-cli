@@ -90,7 +90,7 @@ export class Gen1App {
     this.envName = props.envName;
     this.clients = props.clients;
     this.aws = new AwsFetcher(props.clients);
-    this.ccbDir = props.ccbDir;
+    this.ccbDir = '/Users/epolon/dev/src/github.com/iliapolo/amplify-fitness-tracker-gen1/amplify/backend';
     this.rootStackName = props.rootStackName;
     this.deploymentBucketName = props.deploymentBucketName;
     this._meta = JSONUtilities.readJson<$TSMeta>(path.join(props.ccbDir, 'amplify-meta.json'), { throwIfNotExist: true }) as $TSMeta;

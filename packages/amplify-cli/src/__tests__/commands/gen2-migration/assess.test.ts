@@ -35,7 +35,7 @@ function createAssessor(): AmplifyMigrationAssessor {
 
 describe('AmplifyMigrationAssessor', () => {
   describe('run()', () => {
-    it('records all supported resources as supported for both generate and refactor', async () => {
+    it('records supported resources', async () => {
       mockGen1App([
         { category: 'auth', resourceName: 'myPool', service: 'Cognito', key: 'auth:Cognito' },
         { category: 'storage', resourceName: 'myBucket', service: 'S3', key: 'storage:S3' },
@@ -43,36 +43,31 @@ describe('AmplifyMigrationAssessor', () => {
       ]);
 
       const displaySpy = jest.spyOn(Assessment.prototype, 'display').mockImplementation(() => {});
-      const recordSpy = jest.spyOn(Assessment.prototype, 'record');
+      const recordSpy = jest.spyOn(Assessment.prototype, 'recordResource');
 
       await createAssessor().run();
 
-      expect(recordSpy).toHaveBeenCalledWith('generate', expect.objectContaining({ resourceName: 'myPool' }), 'supported');
-      expect(recordSpy).toHaveBeenCalledWith('refactor', expect.objectContaining({ resourceName: 'myPool' }), 'supported');
-      expect(recordSpy).toHaveBeenCalledWith('generate', expect.objectContaining({ resourceName: 'myBucket' }), 'supported');
-      expect(recordSpy).toHaveBeenCalledWith('refactor', expect.objectContaining({ resourceName: 'myBucket' }), 'supported');
-      expect(recordSpy).toHaveBeenCalledWith('generate', expect.objectContaining({ resourceName: 'myFunc' }), 'supported');
-      expect(recordSpy).toHaveBeenCalledWith('refactor', expect.objectContaining({ resourceName: 'myFunc' }), 'not-applicable');
-
+      expect(recordSpy).toHaveBeenCalledWith(expect.objectContaining({ resourceName: 'myPool' }), 'supported', 'supported');
+      expect(recordSpy).toHaveBeenCalledWith(expect.objectContaining({ resourceName: 'myBucket' }), 'supported', 'supported');
+      expect(recordSpy).toHaveBeenCalledWith(expect.objectContaining({ resourceName: 'myFunc' }), 'supported', 'not-applicable');
       expect(displaySpy).toHaveBeenCalled();
 
       displaySpy.mockRestore();
       recordSpy.mockRestore();
     });
 
-    it('records unsupported resources as not supported', async () => {
+    it('records unsupported resources', async () => {
       mockGen1App([
         { category: 'auth', resourceName: 'myPool', service: 'Cognito', key: 'auth:Cognito' },
         { category: 'notifications', resourceName: 'push', service: 'Pinpoint', key: 'unsupported' },
       ]);
 
       const displaySpy = jest.spyOn(Assessment.prototype, 'display').mockImplementation(() => {});
-      const recordSpy = jest.spyOn(Assessment.prototype, 'record');
+      const recordSpy = jest.spyOn(Assessment.prototype, 'recordResource');
 
       await createAssessor().run();
 
-      expect(recordSpy).toHaveBeenCalledWith('generate', expect.objectContaining({ resourceName: 'push' }), 'unsupported');
-      expect(recordSpy).toHaveBeenCalledWith('refactor', expect.objectContaining({ resourceName: 'push' }), 'unsupported');
+      expect(recordSpy).toHaveBeenCalledWith(expect.objectContaining({ resourceName: 'push' }), 'unsupported', 'unsupported');
 
       displaySpy.mockRestore();
       recordSpy.mockRestore();

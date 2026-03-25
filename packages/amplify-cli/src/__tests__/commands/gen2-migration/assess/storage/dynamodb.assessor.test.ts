@@ -9,7 +9,7 @@ describe('DynamoDBAssessor', () => {
     const assessment = new Assessment('app', 'dev');
     new DynamoDBAssessor({} as Gen1App, RESOURCE).assess(assessment);
 
-    const entry = assessment.entries.get('storage:myTable');
+    const entry = assessment.resources[0];
     expect(entry!.generate).toBe('supported');
     expect(entry!.refactor).toBe('supported');
   });

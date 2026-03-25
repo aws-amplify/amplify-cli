@@ -9,7 +9,7 @@ describe('AnalyticsKinesisAssessor', () => {
     const assessment = new Assessment('app', 'dev');
     new AnalyticsKinesisAssessor({} as Gen1App, RESOURCE).assess(assessment);
 
-    const entry = assessment.entries.get('analytics:myStream');
+    const entry = assessment.resources[0];
     expect(entry!.generate).toBe('supported');
     expect(entry!.refactor).toBe('supported');
   });

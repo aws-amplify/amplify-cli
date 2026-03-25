@@ -8,8 +8,8 @@ import { DiscoveredResource, SupportLevel } from './generate/_infra/gen1-app';
  */
 export interface ResourceAssessment {
   readonly resource: DiscoveredResource;
-  generate: SupportLevel;
-  refactor: SupportLevel;
+  readonly generate: SupportLevel;
+  readonly refactor: SupportLevel;
 }
 
 /**
@@ -29,21 +29,16 @@ export interface FeatureAssessment {
  * then renders both tables and a summary verdict.
  */
 export class Assessment {
-  private readonly _resources = new Map<string, ResourceAssessment>();
+  private readonly _resources: ResourceAssessment[] = [];
   private readonly _features: FeatureAssessment[] = [];
 
   public constructor(private readonly appName: string, private readonly envName: string) {}
 
   /**
-   * Records a step's support for a discovered resource.
+   * Records support for a discovered resource.
    */
-  public record(step: 'generate' | 'refactor', resource: DiscoveredResource, level: SupportLevel): void {
-    const key = `${resource.category}:${resource.resourceName}`;
-    if (!this._resources.has(key)) {
-      this._resources.set(key, { resource, generate: 'unsupported', refactor: 'unsupported' });
-    }
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- entry just created above if missing
-    this._resources.get(key)![step] = level;
+  public recordResource(resource: DiscoveredResource, generate: SupportLevel, refactor: SupportLevel): void {
+    this._resources.push({ resource, generate, refactor });
   }
 
   /**
@@ -56,7 +51,7 @@ export class Assessment {
   /**
    * Returns all recorded resource assessments.
    */
-  public get entries(): ReadonlyMap<string, ResourceAssessment> {
+  public get resources(): readonly ResourceAssessment[] {
     return this._resources;
   }
 
@@ -74,7 +69,7 @@ export class Assessment {
     printer.blankLine();
     printer.info(chalk.bold(chalk.cyan(`Assessment for "${this.appName}" (env: ${this.envName})`)));
 
-    if (this._resources.size > 0) {
+    if (this._resources.length > 0) {
       printer.blankLine();
       this.renderResourceTable();
     }
@@ -94,7 +89,7 @@ export class Assessment {
       style: { head: [] },
     });
 
-    for (const a of this._resources.values()) {
+    for (const a of this._resources) {
       table.push([
         a.resource.category,
         a.resource.resourceName,
@@ -116,7 +111,7 @@ export class Assessment {
       style: { head: [] },
     });
 
-    for (const f of this.features) {
+    for (const f of this._features) {
       table.push([f.feature, f.path, Assessment.statusText(f.generate), Assessment.statusText(f.refactor)]);
     }
 
@@ -131,9 +126,8 @@ export class Assessment {
         return unsupportedLabel ? `✘ ${unsupportedLabel}` : '✘';
       case 'not-applicable':
         return '—';
-      default: {
+      default:
         throw new Error(`Unexpected support level: ${level}`);
-      }
     }
   }
 }

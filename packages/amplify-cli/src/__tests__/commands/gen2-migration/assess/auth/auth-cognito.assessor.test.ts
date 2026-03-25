@@ -14,7 +14,7 @@ describe('AuthCognitoAssessor', () => {
     const assessment = new Assessment('app', 'dev');
     new AuthCognitoAssessor(mockGen1App(), RESOURCE).assess(assessment);
 
-    const entry = assessment.entries.get('auth:myPool');
+    const entry = assessment.resources[0];
     expect(entry!.generate).toBe('supported');
     expect(entry!.refactor).toBe('supported');
   });

@@ -12,7 +12,6 @@ export class RestApiAssessor implements Assessor {
    * Records resource-level support for this REST API resource.
    */
   public assess(assessment: Assessment): void {
-    assessment.record('generate', this.resource, 'supported');
-    assessment.record('refactor', this.resource, 'not-applicable');
+    assessment.recordResource(this.resource, 'supported', 'not-applicable');
   }
 }

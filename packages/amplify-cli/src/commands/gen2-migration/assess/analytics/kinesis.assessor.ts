@@ -12,7 +12,6 @@ export class AnalyticsKinesisAssessor implements Assessor {
    * Records resource-level support for this Kinesis resource.
    */
   public assess(assessment: Assessment): void {
-    assessment.record('generate', this.resource, 'supported');
-    assessment.record('refactor', this.resource, 'supported');
+    assessment.recordResource(this.resource, 'supported', 'supported');
   }
 }
