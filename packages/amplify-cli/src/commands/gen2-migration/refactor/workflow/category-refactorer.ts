@@ -229,6 +229,19 @@ export abstract class CategoryRefactorer implements Refactorer {
 
     if (sourceResources.size === 0) return undefined;
 
+    // Validate target has matching resources before starting refactor operations.
+    // Without this, buildResourceMappings would throw per-resource with a less clear message.
+    if (targetResources.size === 0) {
+      const sourceStackName = extractStackNameFromId(source.stackId);
+      const targetStackName = extractStackNameFromId(target.stackId);
+      throw new AmplifyError('InvalidStackError', {
+        message:
+          `Source stack '${sourceStackName}' has ${sourceResources.size} resource(s) to move ` +
+          `but target stack '${targetStackName}' has no resources of types [${this.resourceTypes().join(', ')}]. ` +
+          `Verify both stacks are in the expected state before refactoring.`,
+      });
+    }
+
     const mappings = this.buildResourceMappings(sourceResources, targetResources);
 
     // source.afterRemoval: clone source template, remove mapped resources, add placeholder if empty

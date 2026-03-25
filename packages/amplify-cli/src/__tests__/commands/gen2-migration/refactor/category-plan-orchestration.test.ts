@@ -222,6 +222,43 @@ describe('Analytics wiring tests', () => {
     mock.on(GetTemplateCommand, { StackName: 'gen2-analytics-stack' }).resolves({ TemplateBody: JSON.stringify(gen2AnalyticsTemplate) });
   }
 
+  it('throws early when source has resources but target has none of matching types', async () => {
+    const gen1WithKinesis: CFNTemplate = {
+      AWSTemplateFormatVersion: '2010-09-09',
+      Description: 'gen1 analytics',
+      Resources: { KinesisStream: { Type: 'AWS::Kinesis::Stream', Properties: {} } },
+      Outputs: {},
+    };
+    const gen2WithoutKinesis: CFNTemplate = {
+      AWSTemplateFormatVersion: '2010-09-09',
+      Description: 'gen2 analytics - no kinesis',
+      Resources: { SomeFunction: { Type: 'AWS::Lambda::Function', Properties: {} } },
+      Outputs: {},
+    };
+
+    cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen1-root' }).resolves({
+      StackResources: [nestedStack('analyticsGen1', 'gen1-analytics-stack')],
+    });
+    cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen2-root' }).resolves({
+      StackResources: [nestedStack('analyticsGen2', 'gen2-analytics-stack')],
+    });
+    cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen1-analytics-stack' }).resolves({ StackResources: [] });
+    cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen2-analytics-stack' }).resolves({ StackResources: [] });
+    cfnMock.on(DescribeStacksCommand, { StackName: 'gen1-analytics-stack' }).resolves({
+      Stacks: [{ StackName: 'gen1-analytics-stack', StackStatus: rs, CreationTime: ts, Parameters: [], Outputs: [] }],
+    });
+    cfnMock.on(DescribeStacksCommand, { StackName: 'gen2-analytics-stack' }).resolves({
+      Stacks: [{ StackName: 'gen2-analytics-stack', StackStatus: rs, CreationTime: ts, Parameters: [], Outputs: [] }],
+    });
+    cfnMock.on(GetTemplateCommand, { StackName: 'gen1-analytics-stack' }).resolves({ TemplateBody: JSON.stringify(gen1WithKinesis) });
+    cfnMock.on(GetTemplateCommand, { StackName: 'gen2-analytics-stack' }).resolves({ TemplateBody: JSON.stringify(gen2WithoutKinesis) });
+
+    const { clients, gen1Env, gen2Branch } = makeInstances();
+    await expect(
+      new AnalyticsKinesisForwardRefactorer(gen1Env, gen2Branch, clients, 'us-east-1', '123', noOpLogger()).plan(),
+    ).rejects.toThrow('has no resources of types');
+  });
+
   it('forward: discovers analytics stacks and maps Kinesis stream', async () => {
     setupAnalyticsMocks(cfnMock);
     const { clients, gen1Env, gen2Branch } = makeInstances();
