@@ -98,8 +98,7 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
           generators.push(s3Generator);
           break;
         case 'storage:DynamoDB': {
-          const hasS3Bucket = discovered.some((r) => r.category === 'storage' && r.service === 'S3');
-          generators.push(new DynamoDBGenerator(gen1App, backendGenerator, resource, hasS3Bucket));
+          generators.push(new DynamoDBGenerator(gen1App, backendGenerator, resource));
           break;
         }
         case 'api:AppSync':
