@@ -47,9 +47,21 @@ describe('AmplifyMigrationAssessor', () => {
 
       await createAssessor().run();
 
-      expect(recordSpy).toHaveBeenCalledWith(expect.objectContaining({ resourceName: 'myPool' }), 'supported', 'supported');
-      expect(recordSpy).toHaveBeenCalledWith(expect.objectContaining({ resourceName: 'myBucket' }), 'supported', 'supported');
-      expect(recordSpy).toHaveBeenCalledWith(expect.objectContaining({ resourceName: 'myFunc' }), 'supported', 'not-applicable');
+      expect(recordSpy).toHaveBeenCalledWith({
+        resource: expect.objectContaining({ resourceName: 'myPool' }),
+        generate: 'supported',
+        refactor: 'supported',
+      });
+      expect(recordSpy).toHaveBeenCalledWith({
+        resource: expect.objectContaining({ resourceName: 'myBucket' }),
+        generate: 'supported',
+        refactor: 'supported',
+      });
+      expect(recordSpy).toHaveBeenCalledWith({
+        resource: expect.objectContaining({ resourceName: 'myFunc' }),
+        generate: 'supported',
+        refactor: 'not-applicable',
+      });
       expect(displaySpy).toHaveBeenCalled();
 
       displaySpy.mockRestore();
@@ -67,7 +79,11 @@ describe('AmplifyMigrationAssessor', () => {
 
       await createAssessor().run();
 
-      expect(recordSpy).toHaveBeenCalledWith(expect.objectContaining({ resourceName: 'push' }), 'unsupported', 'unsupported');
+      expect(recordSpy).toHaveBeenCalledWith({
+        resource: expect.objectContaining({ resourceName: 'push' }),
+        generate: 'unsupported',
+        refactor: 'unsupported',
+      });
 
       displaySpy.mockRestore();
       recordSpy.mockRestore();
@@ -86,8 +102,7 @@ describe('AmplifyMigrationAssessor', () => {
       await createAssessor().run();
 
       expect(featureSpy).toHaveBeenCalledWith({
-        feature: 'Custom policies',
-        path: 'function/myFunc/custom-policies.json',
+        feature: { name: 'Custom policies', path: 'function/myFunc/custom-policies.json' },
         generate: 'unsupported',
         refactor: 'not-applicable',
       });
@@ -105,8 +120,7 @@ describe('AmplifyMigrationAssessor', () => {
       await createAssessor().run();
 
       expect(featureSpy).toHaveBeenCalledWith({
-        feature: 'Overrides',
-        path: 'auth/myPool/override.ts',
+        feature: { name: 'Overrides', path: 'auth/myPool/override.ts' },
         generate: 'unsupported',
         refactor: 'not-applicable',
       });

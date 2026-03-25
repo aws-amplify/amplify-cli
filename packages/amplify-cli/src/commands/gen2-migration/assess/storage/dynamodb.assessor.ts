@@ -12,6 +12,6 @@ export class DynamoDBAssessor implements Assessor {
    * Records resource-level support for this DynamoDB resource.
    */
   public assess(assessment: Assessment): void {
-    assessment.recordResource(this.resource, 'supported', 'supported');
+    assessment.recordResource({ resource: this.resource, generate: 'supported', refactor: 'supported' });
   }
 }

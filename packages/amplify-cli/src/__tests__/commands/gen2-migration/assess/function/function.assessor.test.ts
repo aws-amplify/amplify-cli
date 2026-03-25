@@ -31,8 +31,7 @@ describe('FunctionAssessor', () => {
 
     expect(assessment.features).toHaveLength(1);
     expect(assessment.features[0]).toEqual({
-      feature: 'Custom policies',
-      path: 'function/myFunc/custom-policies.json',
+      feature: { name: 'Custom policies', path: 'function/myFunc/custom-policies.json' },
       generate: 'unsupported',
       refactor: 'not-applicable',
     });

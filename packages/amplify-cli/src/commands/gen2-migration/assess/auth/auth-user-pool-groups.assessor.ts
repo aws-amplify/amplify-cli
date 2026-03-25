@@ -13,14 +13,13 @@ export class AuthUserPoolGroupsAssessor implements Assessor {
    * Records resource-level and feature-level support for this user pool groups resource.
    */
   public assess(assessment: Assessment): void {
-    assessment.recordResource(this.resource, 'supported', 'supported');
+    assessment.recordResource({ resource: this.resource, generate: 'supported', refactor: 'supported' });
 
     const overridesPath = `auth/${this.resource.resourceName}/override.ts`;
 
     if (this.gen1App.fileExists(overridesPath)) {
       assessment.recordFeature({
-        feature: 'Overrides',
-        path: overridesPath,
+        feature: { name: 'Overrides', path: overridesPath },
         generate: 'unsupported',
         refactor: 'not-applicable',
       });

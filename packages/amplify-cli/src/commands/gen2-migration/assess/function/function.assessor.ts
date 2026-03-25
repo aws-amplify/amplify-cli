@@ -13,14 +13,13 @@ export class FunctionAssessor implements Assessor {
    * Records resource-level and feature-level support for this function.
    */
   public assess(assessment: Assessment): void {
-    assessment.recordResource(this.resource, 'supported', 'not-applicable');
+    assessment.recordResource({ resource: this.resource, generate: 'supported', refactor: 'not-applicable' });
 
     const customPoliciesPath = `function/${this.resource.resourceName}/custom-policies.json`;
 
     if (this.hasCustomPolicies(customPoliciesPath)) {
       assessment.recordFeature({
-        feature: 'Custom policies',
-        path: customPoliciesPath,
+        feature: { name: 'Custom policies', path: customPoliciesPath },
         generate: 'unsupported',
         refactor: 'not-applicable',
       });

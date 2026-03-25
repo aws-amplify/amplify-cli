@@ -112,6 +112,10 @@ When a class, interface, or module has two or more fields, methods, or data path
 
 Asymmetry is a code smell even when the code is functionally correct. A reader scanning the class sees two fields that should be peers but are shaped differently, and has to figure out _why_ — is there a semantic reason, or is it accidental? That investigation costs time and often reveals that the difference is accidental.
 
+This applies to naming too. When two sibling interfaces represent the same kind of thing for different domains, their property names should follow the same pattern. If one wraps its identity in a typed object (`resource: DiscoveredResource`), the other should too (`feature: DiscoveredFeature`) — not flatten it into loose fields (`feature: string; path: string`). And within those identity objects, analogous fields should use the same naming convention — if one has `resourceName`, the other should have `name`, not repeat the type (`feature.feature` stutters, `feature.name` doesn't).
+
+This extends to method signatures. Sibling methods that do the same thing for different domains should accept the same number of arguments in the same shape. If `recordFeature` takes a single `FeatureAssessment` object, `recordResource` should take a single `ResourceAssessment` object — not three positional arguments. And the parameter names should follow the same convention: if one is `feature: FeatureAssessment`, the other should be `resource: ResourceAssessment`, not `assessment: ResourceAssessment`.
+
 ```typescript
 // Bad — two collections serving the same role, different types
 class Assessment {
@@ -124,9 +128,46 @@ class Assessment {
   private readonly _resources: ResourceAssessment[] = [];
   private readonly _features: FeatureAssessment[] = [];
 }
+
+// Bad — sibling interfaces with asymmetric identity shapes
+interface ResourceAssessment {
+  readonly resource: DiscoveredResource; // wrapped in typed object
+  readonly generate: SupportLevel;
+  readonly refactor: SupportLevel;
+}
+interface FeatureAssessment {
+  readonly feature: string; // flat string — asymmetric
+  readonly path: string; // flat string — asymmetric
+  readonly generate: SupportLevel;
+  readonly refactor: SupportLevel;
+}
+
+// Good — both wrap identity in a typed object, same pattern
+interface ResourceAssessment {
+  readonly resource: DiscoveredResource;
+  readonly generate: SupportLevel;
+  readonly refactor: SupportLevel;
+}
+interface FeatureAssessment {
+  readonly feature: DiscoveredFeature;
+  readonly generate: SupportLevel;
+  readonly refactor: SupportLevel;
+}
+
+// Bad — sibling methods with asymmetric signatures
+class Assessment {
+  recordResource(resource: DiscoveredResource, generate: SupportLevel, refactor: SupportLevel): void { ... }
+  recordFeature(feature: FeatureAssessment): void { ... }
+}
+
+// Good — both take a single typed object, parameter named after the type
+class Assessment {
+  recordResource(resource: ResourceAssessment): void { ... }
+  recordFeature(feature: FeatureAssessment): void { ... }
+}
 ```
 
-The test: look at sibling fields, sibling methods, or sibling parameters. If they serve analogous roles but differ in type, shape, or access pattern, ask whether the difference is justified by a real semantic distinction. If not, align them.
+The test: look at sibling fields, sibling methods, sibling interfaces, or sibling parameters. If they serve analogous roles but differ in type, shape, naming pattern, or access pattern, ask whether the difference is justified by a real semantic distinction. If not, align them.
 
 ---
 

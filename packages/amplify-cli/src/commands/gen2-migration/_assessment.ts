@@ -1,7 +1,12 @@
 import chalk from 'chalk';
 import { printer } from '@aws-amplify/amplify-prompts';
 import CLITable from 'cli-table3';
-import { DiscoveredResource, SupportLevel } from './generate/_infra/gen1-app';
+import { DiscoveredResource } from './generate/_infra/gen1-app';
+
+/**
+ * Support level for a resource or feature dimension.
+ */
+export type SupportLevel = 'supported' | 'unsupported' | 'not-applicable';
 
 /**
  * Per-resource assessment combining generate and refactor support.
@@ -13,12 +18,19 @@ export interface ResourceAssessment {
 }
 
 /**
+ * A detected sub-feature within a resource.
+ */
+export interface DiscoveredFeature {
+  readonly name: string;
+  readonly path: string;
+}
+
+/**
  * A detected sub-feature within a resource that the migration tool
  * may or may not handle.
  */
 export interface FeatureAssessment {
-  readonly feature: string;
-  readonly path: string;
+  readonly feature: DiscoveredFeature;
   readonly generate: SupportLevel;
   readonly refactor: SupportLevel;
 }
@@ -37,8 +49,8 @@ export class Assessment {
   /**
    * Records support for a discovered resource.
    */
-  public recordResource(resource: DiscoveredResource, generate: SupportLevel, refactor: SupportLevel): void {
-    this._resources.push({ resource, generate, refactor });
+  public recordResource(resource: ResourceAssessment): void {
+    this._resources.push(resource);
   }
 
   /**
@@ -112,7 +124,7 @@ export class Assessment {
     });
 
     for (const f of this._features) {
-      table.push([f.feature, f.path, Assessment.statusText(f.generate), Assessment.statusText(f.refactor)]);
+      table.push([f.feature.name, f.feature.path, Assessment.statusText(f.generate), Assessment.statusText(f.refactor)]);
     }
 
     printer.info(table.toString());

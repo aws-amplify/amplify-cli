@@ -55,11 +55,6 @@ export interface DiscoveredResource {
 }
 
 /**
- * Support level for a resource or feature dimension.
- */
-export type SupportLevel = 'supported' | 'unsupported' | 'not-applicable';
-
-/**
  * Facade for all Gen1 app state — both local files and AWS resources.
  *
  * Provides generic, category-agnostic access to the Gen1 project.
@@ -90,7 +85,7 @@ export class Gen1App {
     this.envName = props.envName;
     this.clients = props.clients;
     this.aws = new AwsFetcher(props.clients);
-    this.ccbDir = '/Users/epolon/dev/src/github.com/iliapolo/amplify-fitness-tracker-gen1/amplify/backend';
+    this.ccbDir = props.ccbDir;
     this.rootStackName = props.rootStackName;
     this.deploymentBucketName = props.deploymentBucketName;
     this._meta = JSONUtilities.readJson<$TSMeta>(path.join(props.ccbDir, 'amplify-meta.json'), { throwIfNotExist: true }) as $TSMeta;

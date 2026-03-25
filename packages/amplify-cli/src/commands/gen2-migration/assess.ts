@@ -64,7 +64,7 @@ export class AmplifyMigrationAssessor {
           assessors.push(new FunctionAssessor(gen1App, resource));
           break;
         case 'unsupported':
-          assessment.recordResource(resource, 'unsupported', 'unsupported');
+          assessment.recordResource({ resource, generate: 'unsupported', refactor: 'unsupported' });
           break;
       }
     }
