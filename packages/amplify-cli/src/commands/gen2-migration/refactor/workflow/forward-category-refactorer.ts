@@ -121,9 +121,9 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
   protected async resolveTarget(stackId: string): Promise<ResolvedStack> {
     const facade = this.gen2Branch;
     const originalTemplate = await facade.fetchTemplate(stackId);
-    const description = await facade.fetchStack(stackId);
-    const parameters = description.Parameters ?? [];
-    const outputs = description.Outputs ?? [];
+    const stack = await facade.fetchStack(stackId);
+    const parameters = stack.Parameters ?? [];
+    const outputs = stack.Outputs ?? [];
 
     const stackResources = await facade.fetchStackResources(stackId);
     const withDeps = resolveDependencies(originalTemplate);

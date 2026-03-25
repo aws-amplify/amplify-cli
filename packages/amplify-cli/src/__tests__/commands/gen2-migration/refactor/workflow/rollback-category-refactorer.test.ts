@@ -44,6 +44,15 @@ describe('RollbackCategoryRefactorer.afterMove', () => {
   afterEach(() => cfnMock.restore());
 
   it('returns operations to update holding stack and move resources back', async () => {
+    const gen2Template: CFNTemplate = {
+      AWSTemplateFormatVersion: '2010-09-09',
+      Description: 'gen2',
+      Resources: {
+        MigrationPlaceholder: { Type: 'AWS::CloudFormation::WaitConditionHandle', Properties: {} },
+      },
+      Outputs: {},
+    };
+
     const holdingTemplate: CFNTemplate = {
       AWSTemplateFormatVersion: '2010-09-09',
       Description: 'holding',
@@ -56,7 +65,13 @@ describe('RollbackCategoryRefactorer.afterMove', () => {
     cfnMock.on(DescribeStacksCommand).resolves({
       Stacks: [{ StackName: 'holding', StackStatus: 'UPDATE_COMPLETE', CreationTime: new Date() }],
     });
-    cfnMock.on(GetTemplateCommand).resolves({ TemplateBody: JSON.stringify(holdingTemplate) });
+    cfnMock.on(GetTemplateCommand).callsFake((input) => {
+      const stackName = input.StackName ?? '';
+      if (stackName.includes('holding')) {
+        return { TemplateBody: JSON.stringify(holdingTemplate) };
+      }
+      return { TemplateBody: JSON.stringify(gen2Template) };
+    });
     cfnMock.on(UpdateStackCommand).resolves({});
     cfnMock.on(CreateStackRefactorCommand).resolves({ StackRefactorId: 'refactor-123' });
     cfnMock.on(DescribeStackRefactorCommand).resolves({

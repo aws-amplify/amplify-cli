@@ -111,13 +111,33 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
       return [];
     }
 
+    if (holdingStack.StackStatus === 'REVIEW_IN_PROGRESS') {
+      return [
+        {
+          resource: this.resource,
+          validate: () => undefined,
+          describe: async () => [`Delete stale holding stack '${extractStackNameFromId(holdingStackName)}'`],
+          execute: async () => {
+            await this.cfn.deleteStack(holdingStackName, this.resource);
+          },
+        },
+      ];
+    }
+
     this.debug(`Fetching template of holding stack: ${holdingStackName}`);
     const holdingStackTemplate = await this.gen2Branch.fetchTemplate(holdingStackName);
     const resources = this.filterResourcesByType(holdingStackTemplate);
     this.debug(`Found ${resources.size} resources to move from stack: ${holdingStackName}`);
 
+    const gen2Template = await this.gen2Branch.fetchTemplate(gen2StackName);
+
     const resourceMappings: ResourceMapping[] = [];
     for (const logicalId of resources.keys()) {
+      if (logicalId in gen2Template.Resources) {
+        throw new AmplifyError('MigrationError', {
+          message: `Resource '${logicalId}' already exists in Gen2 stack '${gen2StackName}' — the Gen2 → Gen1 move should have removed it`,
+        });
+      }
       this.debug(`Registering ${logicalId} to move from ${holdingStackName} to ${gen2StackName}`);
       resourceMappings.push({
         Source: { StackName: holdingStackName, LogicalResourceId: logicalId },
