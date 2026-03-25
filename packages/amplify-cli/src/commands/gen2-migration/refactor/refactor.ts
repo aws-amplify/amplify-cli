@@ -206,8 +206,9 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
       const validations = new AmplifyGen2MigrationValidations(this.logger, this.rootStackName, this.currentEnvName, this.context);
       await validations.validateLockStatus();
       return { valid: true };
-    } catch (e) {
-      return { valid: false, report: e.message };
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : String(e);
+      return { valid: false, report: message };
     }
   }
 

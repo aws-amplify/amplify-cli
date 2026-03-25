@@ -23,7 +23,11 @@ export function resolveConditions(template: CFNTemplate, parameters: Parameter[]
   const conditionValues = new Map<string, boolean>();
   for (const [conditionKey, conditionDef] of Object.entries(conditions)) {
     const fnType = Object.keys(conditionDef)[0] as CFNFunction;
-    if (!Object.values(CFNFunction).includes(fnType)) continue;
+    if (!Object.values(CFNFunction).includes(fnType)) {
+      throw new AmplifyError('CloudFormationTemplateError', {
+        message: `Unsupported condition function '${fnType}' in condition '${conditionKey}'`,
+      });
+    }
 
     const statements = conditionDef[fnType as keyof CFNConditionFunction] as CFNConditionFunctionStatement[];
     if ((fnType === CFNFunction.Or || fnType === CFNFunction.And) && statements.length > 2) {

@@ -220,4 +220,9 @@ describe('resolveConditions - edge cases', () => {
     const template = makeConditionTemplate({ 'Fn::Equals': [{ 'Fn::Select': [0, ['a', 'b']] }, 'a'] }, {});
     expect(() => resolveConditions(template, [])).toThrow('Unsupported condition statement');
   });
+
+  it('throws on unsupported condition function type', () => {
+    const template = makeConditionTemplate({ 'Fn::Contains': ['a', 'b'] }, {});
+    expect(() => resolveConditions(template, [])).toThrow("Unsupported condition function 'Fn::Contains'");
+  });
 });
