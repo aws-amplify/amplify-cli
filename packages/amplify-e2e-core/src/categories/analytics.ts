@@ -53,6 +53,30 @@ export function addKinesis(cwd: string, settings: any): Promise<void> {
   });
 }
 
+export function addKinesisStream(cwd: string, settings: { name: string; shards?: number }): Promise<void> {
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(), ['add', 'analytics'], { cwd, stripColors: true })
+      .wait('Select an Analytics provider')
+      .send(KEY_DOWN_ARROW)
+      .sendCarriageReturn()
+      .wait('Enter a Stream name')
+      .sendLine(settings.name)
+      .wait('Enter number of shards')
+      .sendLine(String(settings.shards ?? 1))
+      .wait('Apps need authorization to send analytics events. Do you want to allow guests')
+      .sendConfirmNo()
+      .wait(`Successfully added resource ${settings.name} locally`)
+      .sendEof()
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
 export function removeAnalytics(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['remove', 'analytics'], { cwd, stripColors: true })

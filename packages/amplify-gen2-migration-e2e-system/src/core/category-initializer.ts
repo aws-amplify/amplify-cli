@@ -12,6 +12,7 @@ import {
   StorageConfiguration,
   FunctionConfiguration,
   RestApiConfiguration,
+  AnalyticsConfiguration,
 } from '../types';
 import {
   addAuthWithDefault,
@@ -27,6 +28,7 @@ import {
   addS3WithTrigger,
   addDynamoDBWithGSIWithSettings,
   addFunction,
+  addKinesisStream,
   updateSchema,
 } from '@aws-amplify/amplify-e2e-core';
 import * as fs from 'fs';
@@ -70,12 +72,17 @@ export class CategoryInitializer {
 
     // Initialize categories in the correct order:
     // 1. Auth first (other categories may depend on it)
-    // 2. Functions before REST API (REST API requires existing Lambda)
-    // 3. Storage (may have triggers that reference functions)
-    // 4. GraphQL API
-    // 5. REST API last (needs functions to exist)
+    // 2. Analytics before functions (functions may reference analytics resources)
+    // 3. Functions before REST API (REST API requires existing Lambda)
+    // 4. Storage (may have triggers that reference functions)
+    // 5. GraphQL API
+    // 6. REST API last (needs functions to exist)
     if (categories.auth) {
       await this.initializeAuthCategory(appPath, categories.auth, result, context);
+    }
+
+    if (categories.analytics) {
+      await this.initializeAnalyticsCategory(appPath, categories.analytics, result, context);
     }
 
     // Initialize functions before API (REST API requires existing Lambda functions)
@@ -538,6 +545,39 @@ export class CategoryInitializer {
       return null;
     } catch {
       return null;
+    }
+  }
+
+  /**
+   * Initialize the analytics category
+   * Supports: Kinesis Data Streams
+   */
+  private async initializeAnalyticsCategory(
+    appPath: string,
+    analyticsConfig: AnalyticsConfiguration,
+    result: InitializeCategoriesResult,
+    context: LogContext,
+  ): Promise<void> {
+    this.logger.info(`Initializing analytics category (${analyticsConfig.type}: ${analyticsConfig.name})...`, context);
+
+    if (analyticsConfig.type !== 'kinesis') {
+      this.logger.warn(`Analytics type '${analyticsConfig.type}' is not yet supported, skipping`, context);
+      result.skippedCategories.push('analytics');
+      return;
+    }
+
+    try {
+      await addKinesisStream(appPath, {
+        name: analyticsConfig.name,
+        shards: analyticsConfig.shards,
+      });
+
+      result.initializedCategories.push('analytics');
+      this.logger.info('Analytics category initialized successfully', context);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      this.logger.error(`Failed to initialize analytics category: ${errorMessage}`, error as Error, context);
+      result.errors.push({ category: 'analytics', error: errorMessage });
     }
   }
 }

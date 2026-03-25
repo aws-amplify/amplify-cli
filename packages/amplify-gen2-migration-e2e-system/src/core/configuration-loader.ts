@@ -97,6 +97,12 @@ export class ConfigurationLoader implements IConfigurationLoader {
         const hostingErrors = this.validateHostingConfiguration(config.categories.hosting);
         errors.push(...hostingErrors);
       }
+
+      // Validate Analytics configuration
+      if (config.categories.analytics) {
+        const analyticsErrors = this.validateAnalyticsConfiguration(config.categories.analytics);
+        errors.push(...analyticsErrors);
+      }
     }
 
     return { errors };
@@ -246,6 +252,27 @@ export class ConfigurationLoader implements IConfigurationLoader {
 
     if (!hostingConfig.type || !['amplify-console', 's3-cloudfront'].includes(hostingConfig.type as string)) {
       errors.push('Hosting type must be either amplify-console or s3-cloudfront');
+    }
+
+    return errors;
+  }
+
+  private validateAnalyticsConfiguration(config: unknown): string[] {
+    const errors: string[] = [];
+
+    if (!config || typeof config !== 'object') {
+      errors.push('Analytics configuration must be an object');
+      return errors;
+    }
+
+    const analyticsConfig = config as Record<string, unknown>;
+
+    if (!analyticsConfig.type || !['kinesis', 'pinpoint'].includes(analyticsConfig.type as string)) {
+      errors.push('Analytics type must be either kinesis or pinpoint');
+    }
+
+    if (!analyticsConfig.name) {
+      errors.push('Analytics name is required');
     }
 
     return errors;
