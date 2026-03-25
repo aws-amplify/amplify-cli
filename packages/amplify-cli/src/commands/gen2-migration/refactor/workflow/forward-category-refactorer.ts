@@ -6,7 +6,7 @@ import { resolveParameters } from '../resolvers/cfn-parameter-resolver';
 import { resolveOutputs } from '../resolvers/cfn-output-resolver';
 import { resolveDependencies } from '../resolvers/cfn-dependency-resolver';
 import { resolveConditions } from '../resolvers/cfn-condition-resolver';
-import { extractStackNameFromId } from '../utils';
+import { extractStackNameFromId, shortenStackName } from '../utils';
 import { getHoldingStackName, findHoldingStack, deleteHoldingStack } from '../holding-stack';
 import { tryRefactorStack, RefactorFailure } from '../cfn-stack-refactor-updater';
 import { CategoryRefactorer, MoveMapping, RefactorBlueprint, ResolvedStack, ResourceMapping } from './category-refactorer';
@@ -138,7 +138,7 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
     return [
       {
         validate: () => undefined,
-        describe: async () => [`Move Gen2 resources to holding stack '${holdingStackName}'`],
+        describe: async () => [`Move Gen2 resources to holding stack '${shortenStackName(holdingStackName)}'`],
         execute: async () => {
           const existing = await findHoldingStack(this.clients.cloudFormation, holdingStackName);
           if (existing?.StackStatus === 'REVIEW_IN_PROGRESS') {

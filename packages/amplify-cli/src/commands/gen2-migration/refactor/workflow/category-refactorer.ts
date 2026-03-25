@@ -8,6 +8,7 @@ import { StackFacade } from '../stack-facade';
 import { tryUpdateStack } from '../cfn-stack-updater';
 import { tryRefactorStack, RefactorFailure } from '../cfn-stack-refactor-updater';
 import { SpinningLogger } from '../../_spinning-logger';
+import { shortenStackName } from '../utils';
 
 export const MIGRATION_PLACEHOLDER_LOGICAL_ID = 'MigrationPlaceholder';
 export const PLACEHOLDER_RESOURCE: CFNResource = { Type: 'AWS::CloudFormation::WaitConditionHandle', Properties: {} };
@@ -168,7 +169,7 @@ export abstract class CategoryRefactorer implements Refactorer {
             return { valid: true };
           },
         }),
-        describe: async () => [`Update source stack '${sourceStackName}' with resolved references`],
+        describe: async () => [`Update source stack '${shortenStackName(sourceStackName)}' with resolved references`],
         execute: async () => {
           const status = await tryUpdateStack({
             cfnClient: this.clients.cloudFormation,
@@ -200,7 +201,7 @@ export abstract class CategoryRefactorer implements Refactorer {
             return { valid: true };
           },
         }),
-        describe: async () => [`Update target stack '${targetStackName}' with resolved references`],
+        describe: async () => [`Update target stack '${shortenStackName(targetStackName)}' with resolved references`],
         execute: async () => {
           const status = await tryUpdateStack({
             cfnClient: this.clients.cloudFormation,
@@ -332,7 +333,11 @@ export abstract class CategoryRefactorer implements Refactorer {
     return [
       {
         validate: () => undefined,
-        describe: async () => [`Move ${resourceMappings.length} resource(s) from '${source.stackName}' to '${target.stackName}'`],
+        describe: async () => [
+          `Move ${resourceMappings.length} resource(s) from '${shortenStackName(source.stackName)}' to '${shortenStackName(
+            target.stackName,
+          )}'`,
+        ],
         execute: async () => {
           const result = await tryRefactorStack(this.clients.cloudFormation, {
             StackDefinitions: [

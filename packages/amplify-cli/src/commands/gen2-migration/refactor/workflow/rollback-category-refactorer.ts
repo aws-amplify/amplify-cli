@@ -5,7 +5,7 @@ import { AmplifyMigrationOperation } from '../../_operation';
 import { resolveParameters } from '../resolvers/cfn-parameter-resolver';
 import { resolveOutputs } from '../resolvers/cfn-output-resolver';
 import { resolveDependencies } from '../resolvers/cfn-dependency-resolver';
-import { extractStackNameFromId } from '../utils';
+import { extractStackNameFromId, shortenStackName } from '../utils';
 import { getHoldingStackName, findHoldingStack, deleteHoldingStack } from '../holding-stack';
 import { tryUpdateStack } from '../cfn-stack-updater';
 import { tryRefactorStack, RefactorFailure } from '../cfn-stack-refactor-updater';
@@ -160,7 +160,7 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
     return [
       {
         validate: () => undefined,
-        describe: async () => [`Update ${holdingStackName} to include placeholder resource`],
+        describe: async () => [`Update '${shortenStackName(holdingStackName)}' to include placeholder resource`],
         execute: async () => {
           await tryUpdateStack({
             cfnClient: this.clients.cloudFormation,
@@ -196,7 +196,7 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
   private buildDeleteHoldingStackOp(holdingStackName: string): AmplifyMigrationOperation {
     return {
       validate: () => undefined,
-      describe: async () => [`Delete holding stack '${holdingStackName}'`],
+      describe: async () => [`Delete holding stack '${shortenStackName(holdingStackName)}'`],
       execute: async () => {
         await deleteHoldingStack(this.clients.cloudFormation, holdingStackName);
       },
