@@ -17,40 +17,11 @@ import { StorageDynamoRollbackRefactorer } from './storage/storage-dynamo-rollba
 import { AnalyticsKinesisForwardRefactorer } from './analytics/analytics-forward';
 import { AnalyticsKinesisRollbackRefactorer } from './analytics/analytics-rollback';
 import { Gen1App } from '../generate/_infra/gen1-app';
-import { Assessment } from '../_assessment';
 import { AuthUserPoolGroupsForwardRefactorer } from './auth/auth-user-pool-groups-forward';
 import { AuthUserPoolGroupsRollbackRefactorer } from './auth/auth-user-pool-groups-rollback';
 import { Cfn } from './cfn';
 
 export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
-  /**
-   * Records refactor support for each discovered resource into the assessment.
-   */
-  public async assess(assessment: Assessment): Promise<void> {
-    const clients = new AwsClients({ region: this.region });
-    const gen1App = await Gen1App.create({ appId: this.appId, region: this.region, envName: this.currentEnvName, clients });
-    const discovered = gen1App.discover();
-
-    for (const resource of discovered) {
-      switch (resource.key) {
-        case 'auth:Cognito':
-        case 'auth:Cognito-UserPool-Groups':
-        case 'storage:S3':
-        case 'storage:DynamoDB':
-        case 'analytics:Kinesis':
-        // falls through — stateless categories, nothing to refactor
-        case 'function:Lambda':
-        case 'api:AppSync':
-        case 'api:API Gateway':
-          assessment.record('refactor', resource, { supported: true });
-          break;
-        case 'unsupported':
-          assessment.record('refactor', resource, { supported: false });
-          break;
-      }
-    }
-  }
-
   public async forward(): Promise<Plan> {
     const toStack = this.extractParameters();
     const { clients, accountId, gen1Env, gen2Branch, cfn } = await this.createInfrastructure(toStack);

@@ -55,11 +55,9 @@ export interface DiscoveredResource {
 }
 
 /**
- * Response from a migration step's assess method.
+ * Support level for a resource or feature dimension.
  */
-export interface SupportResponse {
-  readonly supported: boolean;
-}
+export type SupportLevel = 'supported' | 'unsupported' | 'not-applicable';
 
 /**
  * Facade for all Gen1 app state — both local files and AWS resources.
@@ -184,6 +182,19 @@ export class Gen1App {
 
   public file(relativePath: string): string {
     return readFileSync(path.join(this.ccbDir, relativePath), 'utf8');
+  }
+
+  /**
+   * Returns true if a file exists in the cloud backend directory.
+   */
+  public fileExists(relativePath: string): boolean {
+    try {
+      readFileSync(path.join(this.ccbDir, relativePath));
+      return true;
+    } catch {
+      // File does not exist — expected for optional feature files.
+      return false;
+    }
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped Gen1 cli-inputs.json

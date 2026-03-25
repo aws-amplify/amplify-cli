@@ -2,7 +2,6 @@ import { AmplifyMigrationAssessor } from '../../../commands/gen2-migration/asses
 import { Gen1App, DiscoveredResource } from '../../../commands/gen2-migration/generate/_infra/gen1-app';
 import { Assessment } from '../../../commands/gen2-migration/_assessment';
 import { SpinningLogger } from '../../../commands/gen2-migration/_spinning-logger';
-import { $TSContext } from '@aws-amplify/amplify-cli-core';
 
 jest.mock('../../../commands/gen2-migration/generate/_infra/gen1-app', () => {
   const actual = jest.requireActual('../../../commands/gen2-migration/generate/_infra/gen1-app');
@@ -19,22 +18,25 @@ jest.mock('../../../commands/gen2-migration/aws-clients', () => ({
   AwsClients: jest.fn(),
 }));
 
-function mockDiscover(resources: DiscoveredResource[]): void {
+function mockGen1App(resources: DiscoveredResource[], existingFiles: string[] = [], jsonFiles: Record<string, unknown> = {}): void {
+  const fileSet = new Set(existingFiles);
   (Gen1App.create as jest.Mock).mockResolvedValue({
     discover: () => resources,
     meta: () => undefined,
+    fileExists: (path: string) => fileSet.has(path),
+    json: (path: string) => jsonFiles[path],
   });
 }
 
 function createAssessor(): AmplifyMigrationAssessor {
   const logger = new SpinningLogger('assess', { debug: true });
-  return new AmplifyMigrationAssessor(logger, 'dev', 'test-app', 'app-123', 'root-stack', 'us-east-1', {} as $TSContext);
+  return new AmplifyMigrationAssessor(logger, 'dev', 'test-app', 'app-123', 'us-east-1');
 }
 
 describe('AmplifyMigrationAssessor', () => {
   describe('run()', () => {
     it('records all supported resources as supported for both generate and refactor', async () => {
-      mockDiscover([
+      mockGen1App([
         { category: 'auth', resourceName: 'myPool', service: 'Cognito', key: 'auth:Cognito' },
         { category: 'storage', resourceName: 'myBucket', service: 'S3', key: 'storage:S3' },
         { category: 'function', resourceName: 'myFunc', service: 'Lambda', key: 'function:Lambda' },
@@ -45,27 +47,12 @@ describe('AmplifyMigrationAssessor', () => {
 
       await createAssessor().run();
 
-      // Generate records all three as supported
-      expect(recordSpy).toHaveBeenCalledWith('generate', expect.objectContaining({ resourceName: 'myPool' }), {
-        supported: true,
-      });
-      expect(recordSpy).toHaveBeenCalledWith('generate', expect.objectContaining({ resourceName: 'myBucket' }), {
-        supported: true,
-      });
-      expect(recordSpy).toHaveBeenCalledWith('generate', expect.objectContaining({ resourceName: 'myFunc' }), {
-        supported: true,
-      });
-
-      // Refactor records all three as supported
-      expect(recordSpy).toHaveBeenCalledWith('refactor', expect.objectContaining({ resourceName: 'myPool' }), {
-        supported: true,
-      });
-      expect(recordSpy).toHaveBeenCalledWith('refactor', expect.objectContaining({ resourceName: 'myBucket' }), {
-        supported: true,
-      });
-      expect(recordSpy).toHaveBeenCalledWith('refactor', expect.objectContaining({ resourceName: 'myFunc' }), {
-        supported: true,
-      });
+      expect(recordSpy).toHaveBeenCalledWith('generate', expect.objectContaining({ resourceName: 'myPool' }), 'supported');
+      expect(recordSpy).toHaveBeenCalledWith('refactor', expect.objectContaining({ resourceName: 'myPool' }), 'supported');
+      expect(recordSpy).toHaveBeenCalledWith('generate', expect.objectContaining({ resourceName: 'myBucket' }), 'supported');
+      expect(recordSpy).toHaveBeenCalledWith('refactor', expect.objectContaining({ resourceName: 'myBucket' }), 'supported');
+      expect(recordSpy).toHaveBeenCalledWith('generate', expect.objectContaining({ resourceName: 'myFunc' }), 'supported');
+      expect(recordSpy).toHaveBeenCalledWith('refactor', expect.objectContaining({ resourceName: 'myFunc' }), 'not-applicable');
 
       expect(displaySpy).toHaveBeenCalled();
 
@@ -74,7 +61,7 @@ describe('AmplifyMigrationAssessor', () => {
     });
 
     it('records unsupported resources as not supported', async () => {
-      mockDiscover([
+      mockGen1App([
         { category: 'auth', resourceName: 'myPool', service: 'Cognito', key: 'auth:Cognito' },
         { category: 'notifications', resourceName: 'push', service: 'Pinpoint', key: 'unsupported' },
       ]);
@@ -84,20 +71,92 @@ describe('AmplifyMigrationAssessor', () => {
 
       await createAssessor().run();
 
-      // Notifications is unsupported for both
-      expect(recordSpy).toHaveBeenCalledWith('generate', expect.objectContaining({ resourceName: 'push' }), {
-        supported: false,
-      });
-      expect(recordSpy).toHaveBeenCalledWith('refactor', expect.objectContaining({ resourceName: 'push' }), {
-        supported: false,
-      });
+      expect(recordSpy).toHaveBeenCalledWith('generate', expect.objectContaining({ resourceName: 'push' }), 'unsupported');
+      expect(recordSpy).toHaveBeenCalledWith('refactor', expect.objectContaining({ resourceName: 'push' }), 'unsupported');
 
       displaySpy.mockRestore();
       recordSpy.mockRestore();
     });
 
+    it('detects custom-policies.json for function resources', async () => {
+      mockGen1App(
+        [{ category: 'function', resourceName: 'myFunc', service: 'Lambda', key: 'function:Lambda' }],
+        ['function/myFunc/custom-policies.json'],
+        { 'function/myFunc/custom-policies.json': [{ Action: ['s3:GetObject'], Resource: ['arn:aws:s3:::my-bucket/*'] }] },
+      );
+
+      const displaySpy = jest.spyOn(Assessment.prototype, 'display').mockImplementation(() => {});
+      const featureSpy = jest.spyOn(Assessment.prototype, 'recordFeature');
+
+      await createAssessor().run();
+
+      expect(featureSpy).toHaveBeenCalledWith({
+        feature: 'Custom policies',
+        path: 'function/myFunc/custom-policies.json',
+        generate: 'unsupported',
+        refactor: 'not-applicable',
+      });
+
+      displaySpy.mockRestore();
+      featureSpy.mockRestore();
+    });
+
+    it('detects override.ts for auth resources', async () => {
+      mockGen1App([{ category: 'auth', resourceName: 'myPool', service: 'Cognito', key: 'auth:Cognito' }], ['auth/myPool/override.ts']);
+
+      const displaySpy = jest.spyOn(Assessment.prototype, 'display').mockImplementation(() => {});
+      const featureSpy = jest.spyOn(Assessment.prototype, 'recordFeature');
+
+      await createAssessor().run();
+
+      expect(featureSpy).toHaveBeenCalledWith({
+        feature: 'Overrides',
+        path: 'auth/myPool/override.ts',
+        generate: 'unsupported',
+        refactor: 'not-applicable',
+      });
+
+      displaySpy.mockRestore();
+      featureSpy.mockRestore();
+    });
+
+    it('ignores empty custom-policies.json', async () => {
+      mockGen1App(
+        [{ category: 'function', resourceName: 'myFunc', service: 'Lambda', key: 'function:Lambda' }],
+        ['function/myFunc/custom-policies.json'],
+        { 'function/myFunc/custom-policies.json': [{ Action: [], Resource: [] }] },
+      );
+
+      const displaySpy = jest.spyOn(Assessment.prototype, 'display').mockImplementation(() => {});
+      const featureSpy = jest.spyOn(Assessment.prototype, 'recordFeature');
+
+      await createAssessor().run();
+
+      expect(featureSpy).not.toHaveBeenCalled();
+
+      displaySpy.mockRestore();
+      featureSpy.mockRestore();
+    });
+
+    it('does not record features when feature files are absent', async () => {
+      mockGen1App([
+        { category: 'function', resourceName: 'myFunc', service: 'Lambda', key: 'function:Lambda' },
+        { category: 'auth', resourceName: 'myPool', service: 'Cognito', key: 'auth:Cognito' },
+      ]);
+
+      const displaySpy = jest.spyOn(Assessment.prototype, 'display').mockImplementation(() => {});
+      const featureSpy = jest.spyOn(Assessment.prototype, 'recordFeature');
+
+      await createAssessor().run();
+
+      expect(featureSpy).not.toHaveBeenCalled();
+
+      displaySpy.mockRestore();
+      featureSpy.mockRestore();
+    });
+
     it('calls display after recording all resources', async () => {
-      mockDiscover([{ category: 'auth', resourceName: 'myPool', service: 'Cognito', key: 'auth:Cognito' }]);
+      mockGen1App([{ category: 'auth', resourceName: 'myPool', service: 'Cognito', key: 'auth:Cognito' }]);
 
       const displaySpy = jest.spyOn(Assessment.prototype, 'display').mockImplementation(() => {});
 

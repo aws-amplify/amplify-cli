@@ -1,113 +1,139 @@
 import chalk from 'chalk';
 import { printer } from '@aws-amplify/amplify-prompts';
-import { DiscoveredResource, SupportResponse } from './generate/_infra/gen1-app';
+import CLITable from 'cli-table3';
+import { DiscoveredResource, SupportLevel } from './generate/_infra/gen1-app';
 
 /**
  * Per-resource assessment combining generate and refactor support.
  */
 export interface ResourceAssessment {
   readonly resource: DiscoveredResource;
-  generate: SupportResponse;
-  refactor: SupportResponse;
+  generate: SupportLevel;
+  refactor: SupportLevel;
 }
 
 /**
- * Collector that steps contribute to during assess().
- * Each step calls record() for every discovered resource,
- * reporting whether it supports that resource.
+ * A detected sub-feature within a resource that the migration tool
+ * may or may not handle.
+ */
+export interface FeatureAssessment {
+  readonly feature: string;
+  readonly path: string;
+  readonly generate: SupportLevel;
+  readonly refactor: SupportLevel;
+}
+
+/**
+ * Collector that assessors contribute to during assess().
+ * Accumulates both resource-level and feature-level entries,
+ * then renders both tables and a summary verdict.
  */
 export class Assessment {
-  private readonly _entries = new Map<string, ResourceAssessment>();
+  private readonly _resources = new Map<string, ResourceAssessment>();
+  private readonly _features: FeatureAssessment[] = [];
 
-  constructor(private readonly appName: string, private readonly envName: string) {}
+  public constructor(private readonly appName: string, private readonly envName: string) {}
 
   /**
    * Records a step's support for a discovered resource.
    */
-  public record(step: 'generate' | 'refactor', resource: DiscoveredResource, response: SupportResponse): void {
+  public record(step: 'generate' | 'refactor', resource: DiscoveredResource, level: SupportLevel): void {
     const key = `${resource.category}:${resource.resourceName}`;
-    if (!this._entries.has(key)) {
-      this._entries.set(key, {
-        resource,
-        generate: { supported: false },
-        refactor: { supported: false },
-      });
+    if (!this._resources.has(key)) {
+      this._resources.set(key, { resource, generate: 'unsupported', refactor: 'unsupported' });
     }
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- entry just created above if missing
-    this._entries.get(key)![step] = response;
+    this._resources.get(key)![step] = level;
   }
 
   /**
-   * Returns all recorded assessments.
+   * Records a detected feature that the migration tool does not fully support.
+   */
+  public recordFeature(feature: FeatureAssessment): void {
+    this._features.push(feature);
+  }
+
+  /**
+   * Returns all recorded resource assessments.
    */
   public get entries(): ReadonlyMap<string, ResourceAssessment> {
-    return this._entries;
+    return this._resources;
   }
 
   /**
-   * Displays the assessment as a single flat table with a compact summary.
+   * Returns all recorded feature assessments.
+   */
+  public get features(): readonly FeatureAssessment[] {
+    return this._features;
+  }
+
+  /**
+   * Displays the assessment as resource and feature tables with a summary.
    */
   public display(): void {
-    const assessments = [...this._entries.values()];
-
     printer.blankLine();
-    printer.info(chalk.bold(`Assessment for "${this.appName}" (env: ${this.envName})`));
-    printer.blankLine();
+    printer.info(chalk.bold(chalk.cyan(`Assessment for "${this.appName}" (env: ${this.envName})`)));
 
-    Assessment.renderTable(assessments);
-    printer.blankLine();
-    Assessment.renderSummary(assessments);
-  }
-
-  private static renderTable(assessments: readonly ResourceAssessment[]): void {
-    const rows = assessments.map((a) => ({
-      category: a.resource.category,
-      resource: a.resource.resourceName,
-      service: a.resource.service,
-      generate: Assessment.statusText(a.generate, 'manual code needed'),
-      refactor: Assessment.statusText(a.refactor, 'blocks migration'),
-    }));
-
-    const colWidths = {
-      category: Math.max(8, ...rows.map((r) => r.category.length)) + 2,
-      resource: Math.max(8, ...rows.map((r) => r.resource.length)) + 2,
-      service: Math.max(7, ...rows.map((r) => r.service.length)) + 2,
-      generate: Math.max(8, ...rows.map((r) => r.generate.length)) + 2,
-      refactor: Math.max(8, ...rows.map((r) => r.refactor.length)) + 2,
-    };
-
-    const hr = (char: string, left: string, mid: string, right: string) =>
-      `${left}${''.padEnd(colWidths.category, char)}${mid}${''.padEnd(colWidths.resource, char)}${mid}${''.padEnd(
-        colWidths.service,
-        char,
-      )}${mid}${''.padEnd(colWidths.generate, char)}${mid}${''.padEnd(colWidths.refactor, char)}${right}`;
-
-    const row = (cat: string, res: string, svc: string, gen: string, ref: string) =>
-      `│ ${cat.padEnd(colWidths.category - 2)} │ ${res.padEnd(colWidths.resource - 2)} │ ${svc.padEnd(
-        colWidths.service - 2,
-      )} │ ${gen.padEnd(colWidths.generate - 2)} │ ${ref.padEnd(colWidths.refactor - 2)} │`;
-
-    printer.info(hr('─', '┌', '┬', '┐'));
-    printer.info(row('Category', 'Resource', 'Service', 'Generate', 'Refactor'));
-    printer.info(hr('─', '├', '┼', '┤'));
-    for (const r of rows) {
-      printer.info(row(r.category, r.resource, r.service, r.generate, r.refactor));
+    if (this._resources.size > 0) {
+      printer.blankLine();
+      this.renderResourceTable();
     }
-    printer.info(hr('─', '└', '┴', '┘'));
-  }
 
-  private static renderSummary(assessments: readonly ResourceAssessment[]): void {
-    const refactorUnsupported = assessments.filter((a) => !a.refactor.supported).length;
-
-    if (refactorUnsupported > 0) {
-      printer.info(chalk.red('✘ Migration blocked.'));
-    } else {
-      printer.info(chalk.green('✔ Migration can proceed.'));
+    if (this._features.length > 0) {
+      printer.blankLine();
+      this.renderFeatureTable();
     }
   }
 
-  private static statusText(response: SupportResponse, unsupportedLabel: string): string {
-    if (!response.supported) return `✘ ${unsupportedLabel}`;
-    return '✔';
+  private renderResourceTable(): void {
+    printer.info(chalk.bold('Resources'));
+    printer.blankLine();
+
+    const table = new CLITable({
+      head: ['Category', 'Resource', 'Service', 'Generate', 'Refactor'],
+      style: { head: [] },
+    });
+
+    for (const a of this._resources.values()) {
+      table.push([
+        a.resource.category,
+        a.resource.resourceName,
+        a.resource.service,
+        Assessment.statusText(a.generate, 'manual code needed'),
+        Assessment.statusText(a.refactor, 'blocks migration'),
+      ]);
+    }
+
+    printer.info(table.toString());
+  }
+
+  private renderFeatureTable(): void {
+    printer.info(chalk.bold('Features'));
+    printer.blankLine();
+
+    const table = new CLITable({
+      head: ['Feature', 'Path', 'Generate', 'Refactor'],
+      style: { head: [] },
+    });
+
+    for (const f of this.features) {
+      table.push([f.feature, f.path, Assessment.statusText(f.generate), Assessment.statusText(f.refactor)]);
+    }
+
+    printer.info(table.toString());
+  }
+
+  private static statusText(level: SupportLevel, unsupportedLabel?: string): string {
+    switch (level) {
+      case 'supported':
+        return '✔';
+      case 'unsupported':
+        return unsupportedLabel ? `✘ ${unsupportedLabel}` : '✘';
+      case 'not-applicable':
+        return '—';
+      default: {
+        throw new Error(`Unexpected support level: ${level}`);
+      }
+    }
   }
 }

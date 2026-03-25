@@ -1,0 +1,18 @@
+import { Assessor } from '../assessor';
+import { Assessment } from '../../_assessment';
+import { Gen1App, DiscoveredResource } from '../../generate/_infra/gen1-app';
+
+/**
+ * Assesses migration readiness for a Kinesis analytics resource.
+ */
+export class AnalyticsKinesisAssessor implements Assessor {
+  public constructor(private readonly gen1App: Gen1App, private readonly resource: DiscoveredResource) {}
+
+  /**
+   * Records resource-level support for this Kinesis resource.
+   */
+  public assess(assessment: Assessment): void {
+    assessment.record('generate', this.resource, 'supported');
+    assessment.record('refactor', this.resource, 'supported');
+  }
+}

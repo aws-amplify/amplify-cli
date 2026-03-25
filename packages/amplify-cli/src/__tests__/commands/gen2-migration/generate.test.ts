@@ -101,7 +101,6 @@ async function testSnapshot(appName: string, appOptions?: MigrationAppOptions, c
 }
 
 import { Gen1App, DiscoveredResource } from '../../../commands/gen2-migration/generate/_infra/gen1-app';
-import { Assessment } from '../../../commands/gen2-migration/_assessment';
 import { SpinningLogger } from '../../../commands/gen2-migration/_spinning-logger';
 
 function mockDiscover(resources: DiscoveredResource[]): jest.SpyInstance {
@@ -121,42 +120,6 @@ describe('AmplifyMigrationGenerateStep', () => {
 
   afterEach(() => {
     createSpy?.mockRestore();
-  });
-
-  describe('assess()', () => {
-    it('records supported resources as supported', async () => {
-      createSpy = mockDiscover([
-        { category: 'auth', resourceName: 'myPool', service: 'Cognito', key: 'auth:Cognito' },
-        { category: 'storage', resourceName: 'myBucket', service: 'S3', key: 'storage:S3' },
-        { category: 'function', resourceName: 'myFunc', service: 'Lambda', key: 'function:Lambda' },
-      ]);
-
-      const recordSpy = jest.spyOn(Assessment.prototype, 'record');
-      const step = createStep();
-      await step.assess(new Assessment('test-app', 'dev'));
-
-      for (const name of ['myPool', 'myBucket', 'myFunc']) {
-        expect(recordSpy).toHaveBeenCalledWith('generate', expect.objectContaining({ resourceName: name }), {
-          supported: true,
-        });
-      }
-
-      recordSpy.mockRestore();
-    });
-
-    it('records unsupported key as not supported', async () => {
-      createSpy = mockDiscover([{ category: 'notifications', resourceName: 'push', service: 'Pinpoint', key: 'unsupported' }]);
-
-      const recordSpy = jest.spyOn(Assessment.prototype, 'record');
-      const step = createStep();
-      await step.assess(new Assessment('test-app', 'dev'));
-
-      expect(recordSpy).toHaveBeenCalledWith('generate', expect.objectContaining({ resourceName: 'push' }), {
-        supported: false,
-      });
-
-      recordSpy.mockRestore();
-    });
   });
 
   describe('execute()', () => {

@@ -8,7 +8,6 @@ import { Plan } from './_plan';
 import { AmplifyGen2MigrationValidations } from './_validations';
 import { AwsClients } from './aws-clients';
 import { Gen1App } from './generate/_infra/gen1-app';
-import { Assessment } from './_assessment';
 import { Planner } from './planner';
 import { BackendGenerator } from './generate/amplify/backend.generator';
 import { RootPackageJsonGenerator } from './generate/package.json.generator';
@@ -29,33 +28,6 @@ import { fileOrDirectoryExists } from './generate/_infra/files';
 const AMPLIFY_DIR = 'amplify';
 
 export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
-  /**
-   * Records generate support for each discovered resource into the assessment.
-   */
-  public async assess(assessment: Assessment): Promise<void> {
-    const clients = new AwsClients({ region: this.region });
-    const gen1App = await Gen1App.create({ appId: this.appId, region: this.region, envName: this.currentEnvName, clients });
-    const discovered = gen1App.discover();
-
-    for (const resource of discovered) {
-      switch (resource.key) {
-        case 'auth:Cognito':
-        case 'auth:Cognito-UserPool-Groups':
-        case 'storage:S3':
-        case 'storage:DynamoDB':
-        case 'api:AppSync':
-        case 'api:API Gateway':
-        case 'analytics:Kinesis':
-        case 'function:Lambda':
-          assessment.record('generate', resource, { supported: true });
-          break;
-        case 'unsupported':
-          assessment.record('generate', resource, { supported: false });
-          break;
-      }
-    }
-  }
-
   public async forward(): Promise<Plan> {
     const clients = new AwsClients({ region: this.region });
     const gen1App = await Gen1App.create({ appId: this.appId, region: this.region, envName: this.currentEnvName, clients });
