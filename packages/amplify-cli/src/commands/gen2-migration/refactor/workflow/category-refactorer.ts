@@ -8,7 +8,6 @@ import { StackFacade } from '../stack-facade';
 import { tryUpdateStack } from '../cfn-stack-updater';
 import { tryRefactorStack, RefactorFailure } from '../cfn-stack-refactor-updater';
 import { SpinningLogger } from '../../_spinning-logger';
-import { extractStackNameFromId } from '../utils';
 
 export const MIGRATION_PLACEHOLDER_LOGICAL_ID = 'MigrationPlaceholder';
 export const PLACEHOLDER_RESOURCE: CFNResource = { Type: 'AWS::CloudFormation::WaitConditionHandle', Properties: {} };
@@ -19,6 +18,7 @@ export const PLACEHOLDER_RESOURCE: CFNResource = { Type: 'AWS::CloudFormation::W
  */
 export interface ResolvedStack {
   readonly stackId: string;
+  readonly stackName: string;
   readonly resolvedTemplate: CFNTemplate;
   readonly parameters: Parameter[];
 }
@@ -47,12 +47,14 @@ export interface MoveMapping {
 export interface RefactorBlueprint {
   readonly source: {
     readonly stackId: string;
+    readonly stackName: string;
     readonly parameters: Parameter[];
     readonly resolvedTemplate: CFNTemplate;
     readonly afterRemoval: CFNTemplate;
   };
   readonly target: {
     readonly stackId: string;
+    readonly stackName: string;
     readonly parameters: Parameter[];
     readonly resolvedTemplate: CFNTemplate;
     readonly afterRemoval: CFNTemplate;
@@ -157,7 +159,7 @@ export abstract class CategoryRefactorer implements Refactorer {
    * Rollback overrides this to return [].
    */
   protected updateSource(source: ResolvedStack): AmplifyMigrationOperation[] {
-    const sourceStackName = extractStackNameFromId(source.stackId);
+    const sourceStackName = source.stackName;
     return [
       {
         validate: () => ({
@@ -189,7 +191,7 @@ export abstract class CategoryRefactorer implements Refactorer {
    * Rollback overrides this to return [].
    */
   protected updateTarget(target: ResolvedStack): AmplifyMigrationOperation[] {
-    const targetStackName = extractStackNameFromId(target.stackId);
+    const targetStackName = target.stackName;
     return [
       {
         validate: () => ({
@@ -231,12 +233,14 @@ export abstract class CategoryRefactorer implements Refactorer {
       return {
         source: {
           stackId: source.stackId,
+          stackName: source.stackName,
           parameters: source.parameters,
           resolvedTemplate: source.resolvedTemplate,
           afterRemoval: source.resolvedTemplate,
         },
         target: {
           stackId: target.stackId,
+          stackName: target.stackName,
           parameters: target.parameters,
           resolvedTemplate: target.resolvedTemplate,
           afterRemoval: target.resolvedTemplate,
@@ -249,12 +253,10 @@ export abstract class CategoryRefactorer implements Refactorer {
     // Validate target has matching resources before starting refactor operations.
     // Without this, buildResourceMappings would throw per-resource with a less clear message.
     if (targetResources.size === 0) {
-      const sourceStackName = extractStackNameFromId(source.stackId);
-      const targetStackName = extractStackNameFromId(target.stackId);
       throw new AmplifyError('InvalidStackError', {
         message:
-          `Source stack '${sourceStackName}' has ${sourceResources.size} resource(s) to move ` +
-          `but target stack '${targetStackName}' has no resources of types [${this.resourceTypes().join(', ')}]. ` +
+          `Source stack '${source.stackName}' has ${sourceResources.size} resource(s) to move ` +
+          `but target stack '${target.stackName}' has no resources of types [${this.resourceTypes().join(', ')}]. ` +
           `Verify both stacks are in the expected state before refactoring.`,
       });
     }
@@ -300,12 +302,14 @@ export abstract class CategoryRefactorer implements Refactorer {
     return {
       source: {
         stackId: source.stackId,
+        stackName: source.stackName,
         parameters: source.parameters,
         resolvedTemplate: sourceResolved,
         afterRemoval,
       },
       target: {
         stackId: target.stackId,
+        stackName: target.stackName,
         parameters: target.parameters,
         resolvedTemplate: target.resolvedTemplate,
         afterRemoval: targetAfterRemoval,
@@ -321,18 +325,14 @@ export abstract class CategoryRefactorer implements Refactorer {
   protected buildMoveOperations(blueprint: RefactorBlueprint): AmplifyMigrationOperation[] {
     const { source, target, mappings } = blueprint;
     const resourceMappings: ResourceMapping[] = mappings.map(({ sourceId, targetId }) => ({
-      Source: { StackName: extractStackNameFromId(source.stackId), LogicalResourceId: sourceId },
-      Destination: { StackName: extractStackNameFromId(target.stackId), LogicalResourceId: targetId },
+      Source: { StackName: source.stackName, LogicalResourceId: sourceId },
+      Destination: { StackName: target.stackName, LogicalResourceId: targetId },
     }));
 
     return [
       {
         validate: () => undefined,
-        describe: async () => [
-          `Move ${resourceMappings.length} resource(s) from '${extractStackNameFromId(source.stackId)}' to '${extractStackNameFromId(
-            target.stackId,
-          )}'`,
-        ],
+        describe: async () => [`Move ${resourceMappings.length} resource(s) from '${source.stackName}' to '${target.stackName}'`],
         execute: async () => {
           const result = await tryRefactorStack(this.clients.cloudFormation, {
             StackDefinitions: [

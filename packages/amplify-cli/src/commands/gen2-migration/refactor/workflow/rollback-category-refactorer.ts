@@ -80,7 +80,7 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
     });
     const resolved = resolveDependencies(withOutputs, resourceIds);
 
-    return { stackId, resolvedTemplate: resolved, parameters };
+    return { stackId, stackName: extractStackNameFromId(stackId), resolvedTemplate: resolved, parameters };
   }
 
   /**
@@ -92,7 +92,7 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
     const description = await facade.fetchStackDescription(stackId);
     const parameters = description.Parameters ?? [];
 
-    return { stackId, resolvedTemplate: originalTemplate, parameters };
+    return { stackId, stackName: extractStackNameFromId(stackId), resolvedTemplate: originalTemplate, parameters };
   }
 
   protected override updateSource(): AmplifyMigrationOperation[] {
@@ -115,7 +115,7 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
    */
   protected async afterMovePlan(blueprint: RefactorBlueprint): Promise<AmplifyMigrationOperation[]> {
     const gen2StackId = blueprint.source.stackId;
-    const holdingStackName = getHoldingStackName(extractStackNameFromId(gen2StackId));
+    const holdingStackName = getHoldingStackName(blueprint.source.stackName);
 
     const holdingStack = await findHoldingStack(this.clients.cloudFormation, holdingStackName);
     if (!holdingStack) return [];
@@ -153,8 +153,8 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
     };
 
     const restoreMappings: ResourceMapping[] = resourcesToRestore.map(([logicalId]) => ({
-      Source: { StackName: extractStackNameFromId(holdingStackName), LogicalResourceId: logicalId },
-      Destination: { StackName: extractStackNameFromId(gen2StackId), LogicalResourceId: logicalId },
+      Source: { StackName: holdingStackName, LogicalResourceId: logicalId },
+      Destination: { StackName: blueprint.source.stackName, LogicalResourceId: logicalId },
     }));
 
     return [

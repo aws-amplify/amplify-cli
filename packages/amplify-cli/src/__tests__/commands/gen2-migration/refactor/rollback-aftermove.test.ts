@@ -47,12 +47,14 @@ function makeBlueprint(sourceAfterRemoval: CFNTemplate): RefactorBlueprint {
   return {
     source: {
       stackId: 'gen2-auth-stack-id',
+      stackName: 'gen2-auth-stack-id',
       parameters: [],
       resolvedTemplate: emptyTemplate,
       afterRemoval: sourceAfterRemoval,
     },
     target: {
       stackId: 'gen1-stack-id',
+      stackName: 'gen1-stack-id',
       parameters: [],
       resolvedTemplate: emptyTemplate,
       afterRemoval: emptyTemplate,

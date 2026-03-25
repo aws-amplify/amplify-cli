@@ -75,7 +75,7 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
 
     const updatedParameters = await this.resolveOAuthParameters(parameters, outputs);
 
-    return { stackId, resolvedTemplate: resolved, parameters: updatedParameters };
+    return { stackId, stackName, resolvedTemplate: resolved, parameters: updatedParameters };
   }
 
   /**
@@ -101,7 +101,7 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
       accountId: this.accountId,
     });
 
-    return { stackId, resolvedTemplate: resolved, parameters };
+    return { stackId, stackName: extractStackNameFromId(stackId), resolvedTemplate: resolved, parameters };
   }
 
   /**
@@ -119,7 +119,7 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
       holdingResources[logicalId] = blueprint.target.resolvedTemplate.Resources[logicalId];
     }
 
-    const holdingStackName = getHoldingStackName(extractStackNameFromId(blueprint.target.stackId));
+    const holdingStackName = getHoldingStackName(blueprint.target.stackName);
     const holdingTemplate: CFNTemplate = {
       AWSTemplateFormatVersion: '2010-09-09',
       Description: 'Temporary holding stack for Gen2 migration',
@@ -131,8 +131,8 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
     const postTargetTemplate = blueprint.target.afterRemoval;
 
     const holdingMappings: ResourceMapping[] = [...targetResources.keys()].map((id) => ({
-      Source: { StackName: extractStackNameFromId(blueprint.target.stackId), LogicalResourceId: id },
-      Destination: { StackName: extractStackNameFromId(holdingStackName), LogicalResourceId: id },
+      Source: { StackName: blueprint.target.stackName, LogicalResourceId: id },
+      Destination: { StackName: holdingStackName, LogicalResourceId: id },
     }));
 
     return [

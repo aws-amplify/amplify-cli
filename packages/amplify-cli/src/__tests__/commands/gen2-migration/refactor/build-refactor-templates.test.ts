@@ -63,6 +63,7 @@ describe('buildBlueprint', () => {
   it('returns blueprint with empty mappings when source has no matching resources', () => {
     const source: ResolvedStack = {
       stackId: 'source-stack',
+      stackName: 'source-stack',
       resolvedTemplate: makeTemplate({
         Lambda: { Type: 'AWS::Lambda::Function', Properties: {} },
       }),
@@ -70,6 +71,7 @@ describe('buildBlueprint', () => {
     };
     const target: ResolvedStack = {
       stackId: 'target-stack',
+      stackName: 'target-stack',
       resolvedTemplate: makeTemplate({}),
       parameters: [],
     };
@@ -82,6 +84,7 @@ describe('buildBlueprint', () => {
     const bucket: CFNResource = { Type: 'AWS::S3::Bucket', Properties: { BucketName: 'my-bucket' } };
     const source: ResolvedStack = {
       stackId: 'source-stack',
+      stackName: 'source-stack',
       resolvedTemplate: makeTemplate({
         S3Bucket: bucket,
         OtherResource: { Type: 'AWS::Lambda::Function', Properties: {} },
@@ -90,6 +93,7 @@ describe('buildBlueprint', () => {
     };
     const target: ResolvedStack = {
       stackId: 'target-stack',
+      stackName: 'target-stack',
       resolvedTemplate: makeTemplate({
         amplifyStorageBucket12345678: { Type: 'AWS::S3::Bucket', Properties: {} },
       }),
@@ -115,11 +119,13 @@ describe('buildBlueprint', () => {
 
     const source: ResolvedStack = {
       stackId: 'source-stack',
+      stackName: 'source-stack',
       resolvedTemplate: makeTemplate({ S3Bucket: bucket, BucketPolicy: bucketPolicy, IamPolicy: iamPolicy }),
       parameters: [],
     };
     const target: ResolvedStack = {
       stackId: 'target-stack',
+      stackName: 'target-stack',
       resolvedTemplate: makeTemplate({
         TargetBucket: { Type: 'AWS::S3::Bucket', Properties: {} },
         TargetBucketPolicy: { Type: 'AWS::S3::BucketPolicy', Properties: {} },
@@ -146,11 +152,13 @@ describe('buildBlueprint', () => {
     const bucket: CFNResource = { Type: 'AWS::S3::Bucket', Properties: {} };
     const source: ResolvedStack = {
       stackId: 'source-stack',
+      stackName: 'source-stack',
       resolvedTemplate: makeTemplate({ OnlyBucket: bucket }),
       parameters: [],
     };
     const target: ResolvedStack = {
       stackId: 'target-stack',
+      stackName: 'target-stack',
       resolvedTemplate: makeTemplate({ TargetBucket: { Type: 'AWS::S3::Bucket', Properties: {} } }),
       parameters: [],
     };
@@ -164,6 +172,7 @@ describe('buildBlueprint', () => {
     const bucket: CFNResource = { Type: 'AWS::S3::Bucket', Properties: {} };
     const source: ResolvedStack = {
       stackId: 'source-stack',
+      stackName: 'source-stack',
       resolvedTemplate: makeTemplate({
         SourceBucket: bucket,
         Lambda: { Type: 'AWS::Lambda::Function', Properties: {} },
@@ -172,6 +181,7 @@ describe('buildBlueprint', () => {
     };
     const target: ResolvedStack = {
       stackId: 'target-stack',
+      stackName: 'target-stack',
       resolvedTemplate: makeTemplate({ TargetBucket: { Type: 'AWS::S3::Bucket', Properties: {} } }),
       parameters: [],
     };

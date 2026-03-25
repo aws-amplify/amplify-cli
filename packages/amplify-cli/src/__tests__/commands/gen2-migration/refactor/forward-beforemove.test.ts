@@ -58,12 +58,14 @@ function makeBlueprint(overrides: {
   return {
     source: {
       stackId: 'gen1-stack',
+      stackName: 'gen1-stack',
       parameters: [],
       resolvedTemplate: sourceTemplate,
       afterRemoval: sourceTemplate,
     },
     target: {
       stackId: 'gen2-stack',
+      stackName: 'gen2-stack',
       parameters: [],
       resolvedTemplate: targetTemplate,
       afterRemoval,
