@@ -160,7 +160,7 @@ async function capturePreRefactor(appName: string, amplifyAppName?: string, gen2
   const resolvedAppName = amplifyAppName ?? appName.replaceAll('-', '');
   const app = await findAppByName(resolvedAppName);
   const gen2RootStack = await findGen2RootStack(app.appId!, gen2Branch ?? 'gen2-main');
-  const gen1RootStack = await findGen1RootStack('storelocator', gen1Env ?? 'main');
+  const gen1RootStack = await findGen1RootStack(app.name!, gen1Env ?? 'main');
 
   const targetDir = path.resolve(path.join(__dirname, appName, '_snapshot.pre.refactor'));
   resetDir(targetDir);
