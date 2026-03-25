@@ -105,8 +105,8 @@ export abstract class CategoryRefactorer implements Refactorer {
     const target = await this.resolveTarget(destStackId);
 
     const blueprint = this.buildBlueprint(source, target);
-    if (!blueprint) {
-      return []; // Nothing to move — skip this category
+    if (blueprint.mappings.length === 0) {
+      return []; // No resources to move — skip this category
     }
 
     const beforeMoveOps = this.beforeMovePlan(blueprint);
@@ -223,11 +223,28 @@ export abstract class CategoryRefactorer implements Refactorer {
    * This consolidates buildResourceMappings + template manipulation + placeholder logic
    * into one function, ensuring resourcesToMove and logicalIdMap are always in sync.
    */
-  protected buildBlueprint(source: ResolvedStack, target: ResolvedStack): RefactorBlueprint | undefined {
+  protected buildBlueprint(source: ResolvedStack, target: ResolvedStack): RefactorBlueprint {
     const sourceResources = this.filterResourcesByType(source.resolvedTemplate);
     const targetResources = this.filterResourcesByType(target.resolvedTemplate);
 
-    if (sourceResources.size === 0) return undefined;
+    if (sourceResources.size === 0) {
+      return {
+        source: {
+          stackId: source.stackId,
+          parameters: source.parameters,
+          resolvedTemplate: source.resolvedTemplate,
+          afterRemoval: source.resolvedTemplate,
+        },
+        target: {
+          stackId: target.stackId,
+          parameters: target.parameters,
+          resolvedTemplate: target.resolvedTemplate,
+          afterRemoval: target.resolvedTemplate,
+          afterAddition: target.resolvedTemplate,
+        },
+        mappings: [],
+      };
+    }
 
     // Validate target has matching resources before starting refactor operations.
     // Without this, buildResourceMappings would throw per-resource with a less clear message.

@@ -20,7 +20,7 @@ class TestRefactorer extends (CategoryRefactorer as any) {
     this.mappingsToReturn = mappings;
   }
 
-  public testBuildBlueprint(source: ResolvedStack, target: ResolvedStack): RefactorBlueprint | undefined {
+  public testBuildBlueprint(source: ResolvedStack, target: ResolvedStack): RefactorBlueprint {
     return (this as any).buildBlueprint(source, target);
   }
 
@@ -60,7 +60,7 @@ const makeTemplate = (resources: Record<string, CFNResource>): CFNTemplate => ({
 describe('buildBlueprint', () => {
   const refactorer = new TestRefactorer();
 
-  it('returns undefined when source has no matching resources', () => {
+  it('returns blueprint with empty mappings when source has no matching resources', () => {
     const source: ResolvedStack = {
       stackId: 'source-stack',
       resolvedTemplate: makeTemplate({
@@ -74,7 +74,8 @@ describe('buildBlueprint', () => {
       parameters: [],
     };
     refactorer.setMappings([]);
-    expect(refactorer.testBuildBlueprint(source, target)).toBeUndefined();
+    const blueprint = refactorer.testBuildBlueprint(source, target);
+    expect(blueprint.mappings).toEqual([]);
   });
 
   it('removes resources from source and adds them to target with remapped IDs', () => {
