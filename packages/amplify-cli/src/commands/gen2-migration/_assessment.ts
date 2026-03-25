@@ -1,5 +1,4 @@
 import chalk from 'chalk';
-import { printer } from '@aws-amplify/amplify-prompts';
 import CLITable from 'cli-table3';
 import { DiscoveredResource } from './generate/_infra/gen1-app';
 
@@ -38,7 +37,7 @@ export interface FeatureAssessment {
 /**
  * Collector that assessors contribute to during assess().
  * Accumulates both resource-level and feature-level entries,
- * then renders both tables and a summary verdict.
+ * and renders both tables as a string report.
  */
 export class Assessment {
   private readonly _resources: ResourceAssessment[] = [];
@@ -75,33 +74,38 @@ export class Assessment {
   }
 
   /**
-   * Displays the assessment as resource and feature tables with a summary.
+   * Renders the assessment as a string containing resource and feature tables.
    */
-  public display(): void {
-    printer.blankLine();
-    printer.info(chalk.bold(chalk.cyan(`Assessment for "${this.appName}" (env: ${this.envName})`)));
+  public render(): string {
+    const lines: string[] = [];
+
+    lines.push('');
+    lines.push(chalk.bold(chalk.cyan(`Assessment for "${this.appName}" (env: ${this.envName})`)));
 
     if (this._resources.length > 0) {
-      printer.blankLine();
-      this.renderResourceTable();
+      lines.push('');
+      lines.push(chalk.bold('Resources'));
+      lines.push('');
+      lines.push(Assessment.renderResourceTable(this._resources));
     }
 
     if (this._features.length > 0) {
-      printer.blankLine();
-      this.renderFeatureTable();
+      lines.push('');
+      lines.push(chalk.bold('Features'));
+      lines.push('');
+      lines.push(Assessment.renderFeatureTable(this._features));
     }
+
+    return lines.join('\n');
   }
 
-  private renderResourceTable(): void {
-    printer.info(chalk.bold('Resources'));
-    printer.blankLine();
-
+  private static renderResourceTable(resources: readonly ResourceAssessment[]): string {
     const table = new CLITable({
       head: ['Category', 'Resource', 'Service', 'Generate', 'Refactor'],
       style: { head: [] },
     });
 
-    for (const a of this._resources) {
+    for (const a of resources) {
       table.push([
         a.resource.category,
         a.resource.resourceName,
@@ -111,23 +115,20 @@ export class Assessment {
       ]);
     }
 
-    printer.info(table.toString());
+    return table.toString();
   }
 
-  private renderFeatureTable(): void {
-    printer.info(chalk.bold('Features'));
-    printer.blankLine();
-
+  private static renderFeatureTable(features: readonly FeatureAssessment[]): string {
     const table = new CLITable({
       head: ['Feature', 'Path', 'Generate', 'Refactor'],
       style: { head: [] },
     });
 
-    for (const f of this._features) {
+    for (const f of features) {
       table.push([f.feature.name, f.feature.path, Assessment.statusText(f.generate), Assessment.statusText(f.refactor)]);
     }
 
-    printer.info(table.toString());
+    return table.toString();
   }
 
   private static statusText(level: SupportLevel, unsupportedLabel?: string): string {

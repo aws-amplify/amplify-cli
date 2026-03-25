@@ -59,29 +59,10 @@ describe('Assessment', () => {
     });
   });
 
-  describe('display()', () => {
-    let output: string[];
-
-    beforeEach(() => {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports -- capturing printer output for snapshot tests
-      const { printer } = require('@aws-amplify/amplify-prompts');
-      output = [];
-      jest.spyOn(printer, 'info').mockImplementation((...args: unknown[]) => output.push(String(args[0])));
-      jest.spyOn(printer, 'blankLine').mockImplementation(() => output.push(''));
-    });
-
-    afterEach(() => {
-      jest.restoreAllMocks();
-    });
-
+  describe('render()', () => {
     function stripAnsi(str: string): string {
       // eslint-disable-next-line no-control-regex -- stripping ANSI escape codes for snapshot comparison
       return str.replace(/\u001b\[[0-9;]*m/g, '');
-    }
-
-    function displayed(assessment: Assessment): string {
-      assessment.display();
-      return output.map(stripAnsi).join('\n');
     }
 
     it('renders a fully supported app', () => {
@@ -97,7 +78,7 @@ describe('Assessment', () => {
         refactor: 'supported',
       });
 
-      expect(displayed(assessment)).toMatchSnapshot();
+      expect(stripAnsi(assessment.render())).toMatchSnapshot();
     });
 
     it('renders an app blocked by unsupported refactor', () => {
@@ -113,7 +94,7 @@ describe('Assessment', () => {
         refactor: 'unsupported',
       });
 
-      expect(displayed(assessment)).toMatchSnapshot();
+      expect(stripAnsi(assessment.render())).toMatchSnapshot();
     });
 
     it('renders an app with unsupported generate but supported refactor', () => {
@@ -129,7 +110,7 @@ describe('Assessment', () => {
         refactor: 'supported',
       });
 
-      expect(displayed(assessment)).toMatchSnapshot();
+      expect(stripAnsi(assessment.render())).toMatchSnapshot();
     });
 
     it('renders features table when features are detected', () => {
@@ -145,7 +126,7 @@ describe('Assessment', () => {
         refactor: 'not-applicable',
       });
 
-      expect(displayed(assessment)).toMatchSnapshot();
+      expect(stripAnsi(assessment.render())).toMatchSnapshot();
     });
   });
 });

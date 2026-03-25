@@ -1,7 +1,6 @@
 import { Assessment } from './_assessment';
-import { AwsClients } from './aws-clients';
-import { Gen1App } from './generate/_infra/gen1-app';
-import { SpinningLogger } from '../gen2-migration/_spinning-logger';
+import { DiscoveredResource, Gen1App } from './generate/_infra/gen1-app';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { Assessor } from './assess/assessor';
 import { AuthCognitoAssessor } from './assess/auth/auth-cognito.assessor';
 import { AuthUserPoolGroupsAssessor } from './assess/auth/auth-user-pool-groups.assessor';
@@ -18,61 +17,70 @@ import { FunctionAssessor } from './assess/function/function.assessor';
  * feature-level support detection.
  */
 export class AmplifyMigrationAssessor {
-  public constructor(
-    private readonly logger: SpinningLogger,
-    private readonly currentEnvName: string,
-    private readonly appName: string,
-    private readonly appId: string,
-    private readonly region: string,
-  ) {}
+  public constructor(private readonly gen1App: Gen1App) {}
 
   /**
-   * Runs assessment and renders the result to the terminal.
+   * Assesses a single discovered resource.
+   * Returns an Assessment containing one resource entry and any detected features.
    */
-  public async run(): Promise<void> {
-    const assessment = new Assessment(this.appName, this.currentEnvName);
-    const clients = new AwsClients({ region: this.region });
-    const gen1App = await Gen1App.create({ appId: this.appId, region: this.region, envName: this.currentEnvName, clients });
-    const discovered = gen1App.discover();
-
+  public assess(resource: DiscoveredResource, appName: string, envName: string): Assessment {
+    const assessment = new Assessment(appName, envName);
     const assessors: Assessor[] = [];
 
-    for (const resource of discovered) {
-      switch (resource.key) {
-        case 'auth:Cognito':
-          assessors.push(new AuthCognitoAssessor(gen1App, resource));
-          break;
-        case 'auth:Cognito-UserPool-Groups':
-          assessors.push(new AuthUserPoolGroupsAssessor(gen1App, resource));
-          break;
-        case 'storage:S3':
-          assessors.push(new S3Assessor(gen1App, resource));
-          break;
-        case 'storage:DynamoDB':
-          assessors.push(new DynamoDBAssessor(gen1App, resource));
-          break;
-        case 'api:AppSync':
-          assessors.push(new DataAssessor(gen1App, resource));
-          break;
-        case 'api:API Gateway':
-          assessors.push(new RestApiAssessor(gen1App, resource));
-          break;
-        case 'analytics:Kinesis':
-          assessors.push(new AnalyticsKinesisAssessor(gen1App, resource));
-          break;
-        case 'function:Lambda':
-          assessors.push(new FunctionAssessor(gen1App, resource));
-          break;
-        case 'unsupported':
-          assessment.recordResource({ resource, generate: 'unsupported', refactor: 'unsupported' });
-          break;
-      }
+    switch (resource.key) {
+      case 'auth:Cognito':
+        assessors.push(new AuthCognitoAssessor(this.gen1App, resource));
+        break;
+      case 'auth:Cognito-UserPool-Groups':
+        assessors.push(new AuthUserPoolGroupsAssessor(this.gen1App, resource));
+        break;
+      case 'storage:S3':
+        assessors.push(new S3Assessor(this.gen1App, resource));
+        break;
+      case 'storage:DynamoDB':
+        assessors.push(new DynamoDBAssessor(this.gen1App, resource));
+        break;
+      case 'api:AppSync':
+        assessors.push(new DataAssessor(this.gen1App, resource));
+        break;
+      case 'api:API Gateway':
+        assessors.push(new RestApiAssessor(this.gen1App, resource));
+        break;
+      case 'analytics:Kinesis':
+        assessors.push(new AnalyticsKinesisAssessor(this.gen1App, resource));
+        break;
+      case 'function:Lambda':
+        assessors.push(new FunctionAssessor(this.gen1App, resource));
+        break;
+      case 'unsupported':
+        assessment.recordResource({ resource, generate: 'unsupported', refactor: 'unsupported' });
+        break;
     }
 
     for (const assessor of assessors) {
       assessor.assess(assessment);
     }
 
-    assessment.display();
+    return assessment;
+  }
+
+  /**
+   * Assesses all discovered resources and prints the report.
+   */
+  public run(appName: string, envName: string): void {
+    const discovered = this.gen1App.discover();
+    const combined = new Assessment(appName, envName);
+
+    for (const resource of discovered) {
+      const result = this.assess(resource, appName, envName);
+      for (const r of result.resources) {
+        combined.recordResource(r);
+      }
+      for (const f of result.features) {
+        combined.recordFeature(f);
+      }
+    }
+
+    printer.info(combined.render());
   }
 }

@@ -12,6 +12,8 @@ import { stateManager } from '@aws-amplify/amplify-cli-core';
 import { AmplifyClient, GetAppCommand } from '@aws-sdk/client-amplify';
 import chalk from 'chalk';
 import { AmplifyMigrationAssessor } from './gen2-migration/assess';
+import { AwsClients } from './gen2-migration/aws-clients';
+import { Gen1App } from './gen2-migration/generate/_infra/gen1-app';
 import { Plan } from './gen2-migration/_plan';
 
 const STEPS = {
@@ -108,8 +110,10 @@ export const run = async (context: $TSContext) => {
 
   // Assess is not a migration step — handle it separately.
   if (stepName === 'assess') {
-    const assessor = new AmplifyMigrationAssessor(logger, envName, appName, appId, region);
-    await assessor.run();
+    const clients = new AwsClients({ region });
+    const gen1App = await Gen1App.create({ appId, region, envName, clients });
+    const assessor = new AmplifyMigrationAssessor(gen1App);
+    assessor.run(appName, envName);
     return;
   }
 
