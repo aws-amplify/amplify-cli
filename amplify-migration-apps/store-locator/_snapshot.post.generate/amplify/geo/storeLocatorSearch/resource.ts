@@ -4,7 +4,7 @@ import { Backend } from '@aws-amplify/backend';
 const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 
 export const defineStoreLocatorSearch = (backend: Backend<any>) => {
-  const storeLocatorSearchStack = backend.createStack('storeLocatorSearch');
+  const storeLocatorSearchStack = backend.createStack('geostoreLocatorSearch');
   const storeLocatorSearch = new geostoreLocatorSearch(
     storeLocatorSearchStack,
     'storeLocatorSearch',

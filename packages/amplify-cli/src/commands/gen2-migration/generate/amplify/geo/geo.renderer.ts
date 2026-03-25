@@ -44,7 +44,7 @@ export class GeoRenderer {
     const createStackCall = TS.constDecl(
       `${resourceName}Stack`,
       factory.createCallExpression(TS.propAccess('backend', 'createStack') as ts.PropertyAccessExpression, undefined, [
-        factory.createStringLiteral(resourceName),
+        factory.createStringLiteral(`geo${resourceName}`),
       ]),
     );
 
