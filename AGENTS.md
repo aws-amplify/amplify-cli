@@ -57,6 +57,12 @@ Verify your changes by following these guidelines:
   Always set `NODE_OPTIONS="--max-old-space-size=8192"` when committing to prevent OOM failures in the lint-staged hook.
   After a successful commit, delete the scratch file: `rm -f .commit-message.ai-generated.txt`.
 
+- **CRITICAL: The `-F` path in `git commit -F` is resolved relative to the cwd, not the workspace root.** Always write
+  `.commit-message.ai-generated.txt` to the same directory you run `git commit` from (typically `packages/amplify-cli/`). If you write
+  the file to the repo root but commit from a subdirectory, git will pick up a stale file from a previous session instead of your new one.
+- The commit message subject line must be lowercase (commitlint enforces `subject-case`). Write `feat(scope): add feature` not
+  `feat(scope): Add feature`.
+
 - Since this repo has a commit hook that takes quite a long time to run, don't immediately commit every
   change you were asked to do. Apply your judgment, if the diff is still fairly small just keep going.
   Otherwise, ask the user if they want to commit or keep going.
