@@ -142,9 +142,9 @@ describe('isAmplifyTriggerPolicyDrift', () => {
     expect(isAmplifyTriggerPolicyDrift(drift, propDiff, mockPrinter)).toBe(false);
   });
 
-  it('throws on malformed JSON', () => {
+  it('returns false on malformed JSON instead of throwing', () => {
     const drift = makeDrift({ ResourceType: 'AWS::IAM::Role' });
     const propDiff = makePropDiff({ PropertyPath: '/Policies/0', ExpectedValue: 'null', ActualValue: 'not-json' });
-    expect(() => isAmplifyTriggerPolicyDrift(drift, propDiff, mockPrinter)).toThrow();
+    expect(isAmplifyTriggerPolicyDrift(drift, propDiff, mockPrinter)).toBe(false);
   });
 });

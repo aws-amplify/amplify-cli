@@ -199,22 +199,27 @@ export function isAmplifyTriggerPolicyDrift(drift: StackResourceDrift, propDiff:
   // The template has null, the deployed resource has the policy
   if (propDiff.ExpectedValue !== 'null') return false;
 
-  const actualPolicy = JSON.parse(propDiff.ActualValue ?? '');
-  const policyName: string = actualPolicy.PolicyName;
-  const policyDoc = JSON.parse(actualPolicy.PolicyDocument as string);
-  const actions = new Set(policyDoc.Statement.flatMap((s) => [s.Action].flat()));
+  try {
+    const actualPolicy = JSON.parse(propDiff.ActualValue ?? '');
+    const policyName: string = actualPolicy.PolicyName;
+    const policyDoc = JSON.parse(actualPolicy.PolicyDocument as string);
+    const actions = new Set(policyDoc.Statement.flatMap((s) => [s.Action].flat()));
 
-  // Auth trigger policies: known Cognito trigger policy pattern
-  const cognitoActions = ['cognito-idp:AdminAddUserToGroup', 'cognito-idp:GetGroup', 'cognito-idp:CreateGroup'];
-  const isCognitoTriggerPolicy = policyName === 'AddToGroupCognito' && cognitoActions.every((a) => actions.has(a));
+    // Auth trigger policies: known Cognito trigger policy pattern
+    const cognitoActions = ['cognito-idp:AdminAddUserToGroup', 'cognito-idp:GetGroup', 'cognito-idp:CreateGroup'];
+    const isCognitoTriggerPolicy = policyName === 'AddToGroupCognito' && cognitoActions.every((a) => actions.has(a));
 
-  // S3 storage trigger policies: known S3 trigger policy pattern
-  const s3Actions = ['s3:ListBucket', 's3:PutObject', 's3:GetObject', 's3:DeleteObject'];
-  const isS3TriggerPolicy = policyName === 'amplify-lambda-execution-policy-storage' && s3Actions.every((a) => actions.has(a));
+    // S3 storage trigger policies: known S3 trigger policy pattern
+    const s3Actions = ['s3:ListBucket', 's3:PutObject', 's3:GetObject', 's3:DeleteObject'];
+    const isS3TriggerPolicy = policyName === 'amplify-lambda-execution-policy-storage' && s3Actions.every((a) => actions.has(a));
 
-  if (isCognitoTriggerPolicy || isS3TriggerPolicy) {
-    print.debug(`Filtering false positive: trigger policy drift on ${drift.LogicalResourceId} (${policyName})`);
-    return true;
+    if (isCognitoTriggerPolicy || isS3TriggerPolicy) {
+      print.debug(`Filtering false positive: trigger policy drift on ${drift.LogicalResourceId} (${policyName})`);
+      return true;
+    }
+  } catch (e: any) {
+    print.debug(`Failed to parse trigger policy JSON: ${e.message || 'Unknown error'}`);
+    return false;
   }
 
   return false;
