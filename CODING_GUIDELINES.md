@@ -106,6 +106,30 @@ Scattered client usage also risks inconsistent instantiation. For example, if AP
 
 ---
 
+### Keep parallel structures symmetric
+
+When a class, interface, or module has two or more fields, methods, or data paths that serve the same role for different concerns, they should use the same types, the same access patterns, and the same naming conventions. Asymmetry — one field is a `Map` while its sibling is an `Array`, one uses a setter while its sibling uses a constructor parameter, one is optional while its sibling is required — signals that the design has drifted or that one path was added as an afterthought without aligning it with the existing one.
+
+Asymmetry is a code smell even when the code is functionally correct. A reader scanning the class sees two fields that should be peers but are shaped differently, and has to figure out _why_ — is there a semantic reason, or is it accidental? That investigation costs time and often reveals that the difference is accidental.
+
+```typescript
+// Bad — two collections serving the same role, different types
+class Assessment {
+  private readonly _resources = new Map<string, ResourceAssessment>();
+  private readonly _features: FeatureAssessment[] = [];
+}
+
+// Good — both are arrays, same access pattern
+class Assessment {
+  private readonly _resources: ResourceAssessment[] = [];
+  private readonly _features: FeatureAssessment[] = [];
+}
+```
+
+The test: look at sibling fields, sibling methods, or sibling parameters. If they serve analogous roles but differ in type, shape, or access pattern, ask whether the difference is justified by a real semantic distinction. If not, align them.
+
+---
+
 ## Mutability & State Management
 
 ### Minimize mutability
