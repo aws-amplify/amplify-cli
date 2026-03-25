@@ -43,7 +43,7 @@ export class Assessment {
   private readonly _resources: ResourceAssessment[] = [];
   private readonly _features: FeatureAssessment[] = [];
 
-  public constructor(private readonly appName: string, private readonly envName: string) {}
+  public constructor(private readonly appName?: string, private readonly envName?: string) {}
 
   /**
    * Records support for a discovered resource.
@@ -79,8 +79,10 @@ export class Assessment {
   public render(): string {
     const lines: string[] = [];
 
-    lines.push('');
-    lines.push(chalk.bold(chalk.cyan(`Assessment for "${this.appName}" (env: ${this.envName})`)));
+    if (this.appName && this.envName) {
+      lines.push('');
+      lines.push(chalk.bold(chalk.cyan(`Assessment for "${this.appName}" (env: ${this.envName})`)));
+    }
 
     if (this._resources.length > 0) {
       lines.push('');

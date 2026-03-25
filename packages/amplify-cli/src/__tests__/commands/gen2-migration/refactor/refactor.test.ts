@@ -131,6 +131,7 @@ function mockDiscover(resources: DiscoveredResource[]): jest.SpyInstance {
   return jest.spyOn(Gen1App, 'create').mockResolvedValue({
     discover: () => resources,
     meta: () => undefined,
+    fileExists: () => false,
   } as unknown as Gen1App);
 }
 

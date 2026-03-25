@@ -12,29 +12,13 @@ function mockGen1App(resources: DiscoveredResource[], existingFiles: string[] = 
 }
 
 describe('AmplifyMigrationAssessor', () => {
-  describe('assess()', () => {
-    it('records supported resources', () => {
+  describe('assessFeatures()', () => {
+    it('returns empty array when no features detected', () => {
       const gen1App = mockGen1App([]);
       const assessor = new AmplifyMigrationAssessor(gen1App);
       const resource: DiscoveredResource = { category: 'auth', resourceName: 'myPool', service: 'Cognito', key: 'auth:Cognito' };
 
-      const result = assessor.assess(resource, 'app', 'dev');
-
-      expect(result.resources).toHaveLength(1);
-      expect(result.resources[0].generate).toBe('supported');
-      expect(result.resources[0].refactor).toBe('supported');
-    });
-
-    it('records unsupported resources', () => {
-      const gen1App = mockGen1App([]);
-      const assessor = new AmplifyMigrationAssessor(gen1App);
-      const resource: DiscoveredResource = { category: 'notifications', resourceName: 'push', service: 'Pinpoint', key: 'unsupported' };
-
-      const result = assessor.assess(resource, 'app', 'dev');
-
-      expect(result.resources).toHaveLength(1);
-      expect(result.resources[0].generate).toBe('unsupported');
-      expect(result.resources[0].refactor).toBe('unsupported');
+      expect(assessor.assessFeatures(resource)).toHaveLength(0);
     });
 
     it('detects custom-policies.json for function resources', () => {
@@ -44,10 +28,10 @@ describe('AmplifyMigrationAssessor', () => {
       const assessor = new AmplifyMigrationAssessor(gen1App);
       const resource: DiscoveredResource = { category: 'function', resourceName: 'myFunc', service: 'Lambda', key: 'function:Lambda' };
 
-      const result = assessor.assess(resource, 'app', 'dev');
+      const features = assessor.assessFeatures(resource);
 
-      expect(result.features).toHaveLength(1);
-      expect(result.features[0].feature.name).toBe('Custom policies');
+      expect(features).toHaveLength(1);
+      expect(features[0].feature.name).toBe('Custom policies');
     });
 
     it('detects override.ts for auth resources', () => {
@@ -55,10 +39,10 @@ describe('AmplifyMigrationAssessor', () => {
       const assessor = new AmplifyMigrationAssessor(gen1App);
       const resource: DiscoveredResource = { category: 'auth', resourceName: 'myPool', service: 'Cognito', key: 'auth:Cognito' };
 
-      const result = assessor.assess(resource, 'app', 'dev');
+      const features = assessor.assessFeatures(resource);
 
-      expect(result.features).toHaveLength(1);
-      expect(result.features[0].feature.name).toBe('Overrides');
+      expect(features).toHaveLength(1);
+      expect(features[0].feature.name).toBe('Overrides');
     });
 
     it('ignores empty custom-policies.json', () => {
@@ -68,19 +52,15 @@ describe('AmplifyMigrationAssessor', () => {
       const assessor = new AmplifyMigrationAssessor(gen1App);
       const resource: DiscoveredResource = { category: 'function', resourceName: 'myFunc', service: 'Lambda', key: 'function:Lambda' };
 
-      const result = assessor.assess(resource, 'app', 'dev');
-
-      expect(result.features).toHaveLength(0);
+      expect(assessor.assessFeatures(resource)).toHaveLength(0);
     });
 
-    it('records no features when feature files are absent', () => {
+    it('returns empty for unsupported resources', () => {
       const gen1App = mockGen1App([]);
       const assessor = new AmplifyMigrationAssessor(gen1App);
-      const resource: DiscoveredResource = { category: 'function', resourceName: 'myFunc', service: 'Lambda', key: 'function:Lambda' };
+      const resource: DiscoveredResource = { category: 'notifications', resourceName: 'push', service: 'Pinpoint', key: 'unsupported' };
 
-      const result = assessor.assess(resource, 'app', 'dev');
-
-      expect(result.features).toHaveLength(0);
+      expect(assessor.assessFeatures(resource)).toHaveLength(0);
     });
   });
 

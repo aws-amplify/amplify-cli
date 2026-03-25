@@ -18,6 +18,7 @@ import { AnalyticsKinesisForwardRefactorer } from './analytics/analytics-forward
 import { AnalyticsKinesisRollbackRefactorer } from './analytics/analytics-rollback';
 import { Gen1App } from '../generate/_infra/gen1-app';
 import { AmplifyMigrationAssessor } from '../assess';
+import { Assessment } from '../_assessment';
 import { AuthUserPoolGroupsForwardRefactorer } from './auth/auth-user-pool-groups-forward';
 import { AuthUserPoolGroupsRollbackRefactorer } from './auth/auth-user-pool-groups-rollback';
 import { Cfn } from './cfn';
@@ -31,8 +32,31 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
     const discovered = gen1App.discover();
 
     const refactorers: Planner[] = [];
+    const assessmentOps: AmplifyMigrationOperation[] = [];
+    const assessor = new AmplifyMigrationAssessor(gen1App);
 
     for (const resource of discovered) {
+      // Feature assessment validation for this resource.
+      const features = assessor.assessFeatures(resource);
+      assessmentOps.push({
+        resource,
+        describe: async () => [],
+        validate: () => ({
+          description: `Feature assessment: ${resource.category}/${resource.resourceName} (${resource.service})`,
+          run: async () => {
+            const unsupported = features.filter((f) => f.refactor === 'unsupported');
+            if (unsupported.length > 0) {
+              const report = new Assessment();
+              for (const f of unsupported) report.recordFeature(f);
+              return { valid: false, report: report.render() };
+            }
+            return { valid: true };
+          },
+        }),
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        execute: async () => {},
+      });
+
       switch (resource.key) {
         case 'auth:Cognito':
           refactorers.push(
@@ -85,12 +109,12 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
 
     return this.buildPlan(
       refactorers,
+      assessmentOps,
       [
         'Stateful resources (Cognito, S3, DynamoDB, etc...) will be moved from Gen1 to Gen2 CloudFormation stacks',
         'Your Gen1 app will no longer manage these resources',
       ],
       'Execute',
-      gen1App,
     );
   }
 
@@ -102,8 +126,31 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
     const discovered = gen1App.discover();
 
     const refactorers: Planner[] = [];
+    const assessmentOps: AmplifyMigrationOperation[] = [];
+    const assessor = new AmplifyMigrationAssessor(gen1App);
 
     for (const resource of discovered) {
+      // Feature assessment validation for this resource.
+      const features = assessor.assessFeatures(resource);
+      assessmentOps.push({
+        resource,
+        describe: async () => [],
+        validate: () => ({
+          description: `Feature assessment: ${resource.category}/${resource.resourceName} (${resource.service})`,
+          run: async () => {
+            const unsupported = features.filter((f) => f.refactor === 'unsupported');
+            if (unsupported.length > 0) {
+              const report = new Assessment();
+              for (const f of unsupported) report.recordFeature(f);
+              return { valid: false, report: report.render() };
+            }
+            return { valid: true };
+          },
+        }),
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        execute: async () => {},
+      });
+
       switch (resource.key) {
         case 'auth:Cognito':
           refactorers.push(
@@ -145,9 +192,9 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
 
     return this.buildPlan(
       refactorers,
+      assessmentOps,
       ['Stateful resources will be moved back to Gen1 CloudFormation stacks', 'Your Gen2 app will no longer manage these resources'],
       'Rollback',
-      gen1App,
     );
   }
 
@@ -178,7 +225,12 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
   /**
    * Collects operations from all refactorers.
    */
-  private async buildPlan(refactorers: Planner[], implications: string[], title: string, gen1App: Gen1App): Promise<Plan> {
+  private async buildPlan(
+    refactorers: Planner[],
+    assessmentOps: AmplifyMigrationOperation[],
+    implications: string[],
+    title: string,
+  ): Promise<Plan> {
     const operations: AmplifyMigrationOperation[] = [];
 
     operations.push({
@@ -188,15 +240,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
       execute: async () => {},
     });
 
-    operations.push({
-      describe: async () => [],
-      validate: () => ({
-        description: 'Feature assessment',
-        run: async () => this.validateFeatures(gen1App),
-      }),
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
-      execute: async () => {},
-    });
+    operations.push(...assessmentOps);
 
     for (const refactorer of refactorers) {
       operations.push(...(await refactorer.plan()));
@@ -213,32 +257,6 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
     } catch (e) {
       return { valid: false, report: e.message };
     }
-  }
-
-  /**
-   * Runs feature assessment on all discovered resources and fails if any
-   * unsupported features are detected for the refactor step.
-   */
-  private validateFeatures(gen1App: Gen1App): ValidationResult {
-    const assessor = new AmplifyMigrationAssessor(gen1App);
-    const discovered = gen1App.discover();
-    const unsupported: string[] = [];
-
-    for (const resource of discovered) {
-      const result = assessor.assess(resource, this.appName, this.currentEnvName);
-      for (const f of result.features) {
-        if (f.refactor === 'unsupported') {
-          unsupported.push(`${f.feature.name} (${f.feature.path})`);
-        }
-      }
-    }
-
-    if (unsupported.length === 0) return { valid: true };
-
-    return {
-      valid: false,
-      report: `Unsupported features detected:\n${unsupported.map((f) => `  - ${f}`).join('\n')}`,
-    };
   }
 
   private extractParameters(): string {

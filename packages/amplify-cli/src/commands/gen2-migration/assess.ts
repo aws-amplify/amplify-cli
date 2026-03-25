@@ -1,4 +1,4 @@
-import { Assessment } from './_assessment';
+import { Assessment, FeatureAssessment } from './_assessment';
 import { DiscoveredResource, Gen1App } from './generate/_infra/gen1-app';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { Assessor } from './assess/assessor';
@@ -20,11 +20,33 @@ export class AmplifyMigrationAssessor {
   public constructor(private readonly gen1App: Gen1App) {}
 
   /**
-   * Assesses a single discovered resource.
-   * Returns an Assessment containing one resource entry and any detected features.
+   * Assesses features for a single discovered resource.
+   * Returns only the detected feature assessments.
    */
-  public assess(resource: DiscoveredResource, appName: string, envName: string): Assessment {
-    const assessment = new Assessment(appName, envName);
+  public assessFeatures(resource: DiscoveredResource): readonly FeatureAssessment[] {
+    const assessment = new Assessment();
+    this.runAssessor(resource, assessment);
+    return assessment.features;
+  }
+
+  /**
+   * Assesses all discovered resources and prints the full report.
+   */
+  public run(appName: string, envName: string): void {
+    const discovered = this.gen1App.discover();
+    const combined = new Assessment(appName, envName);
+
+    for (const resource of discovered) {
+      this.runAssessor(resource, combined);
+    }
+
+    printer.info(combined.render());
+  }
+
+  /**
+   * Runs the appropriate assessor for a resource, recording into the given assessment.
+   */
+  private runAssessor(resource: DiscoveredResource, assessment: Assessment): void {
     const assessors: Assessor[] = [];
 
     switch (resource.key) {
@@ -60,27 +82,5 @@ export class AmplifyMigrationAssessor {
     for (const assessor of assessors) {
       assessor.assess(assessment);
     }
-
-    return assessment;
-  }
-
-  /**
-   * Assesses all discovered resources and prints the report.
-   */
-  public run(appName: string, envName: string): void {
-    const discovered = this.gen1App.discover();
-    const combined = new Assessment(appName, envName);
-
-    for (const resource of discovered) {
-      const result = this.assess(resource, appName, envName);
-      for (const r of result.resources) {
-        combined.recordResource(r);
-      }
-      for (const f of result.features) {
-        combined.recordFeature(f);
-      }
-    }
-
-    printer.info(combined.render());
   }
 }
