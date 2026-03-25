@@ -257,6 +257,40 @@ describe('resolveOutputs - ARN construction (phase 2 fallback)', () => {
   });
 });
 
+describe('resolveOutputs - unsupported attributes', () => {
+  it('throws on unsupported Fn::GetAtt attributes instead of silently returning physical ID', () => {
+    const template: CFNTemplate = {
+      AWSTemplateFormatVersion: '2010-09-09',
+      Description: 'test',
+      Resources: {
+        MyDistribution: { Type: 'AWS::CloudFront::Distribution', Properties: {} },
+        Consumer: {
+          Type: 'AWS::Lambda::Function',
+          Properties: { Domain: { 'Fn::GetAtt': ['MyDistribution', 'DomainName'] } },
+        },
+      },
+      Outputs: {},
+    };
+    expect(() =>
+      resolveOutputs({
+        template,
+        stackOutputs: [],
+        stackResources: [
+          {
+            LogicalResourceId: 'MyDistribution',
+            PhysicalResourceId: 'E1234567890',
+            ResourceType: 'AWS::CloudFront::Distribution',
+            Timestamp: new Date(),
+            ResourceStatus: 'CREATE_COMPLETE',
+          },
+        ],
+        region: 'us-east-1',
+        accountId: '123',
+      }),
+    ).toThrow("Unsupported Fn::GetAtt attribute 'DomainName'");
+  });
+});
+
 describe('resolveOutputs - error paths', () => {
   it('throws when a stack output has no runtime value', () => {
     const template: CFNTemplate = {

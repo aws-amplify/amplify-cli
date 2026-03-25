@@ -95,7 +95,11 @@ export function resolveOutputs(params: {
         return arn ?? physicalId;
       }
 
-      return physicalId;
+      throw new AmplifyError('InvalidStackError', {
+        message:
+          `Unsupported Fn::GetAtt attribute '${attrName}' on resource '${logicalId}' (${resourceType}). ` +
+          `Only 'Arn' is supported for resolution via physical resource ID.`,
+      });
     }
 
     return undefined;
