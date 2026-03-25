@@ -17,6 +17,7 @@ import { StorageDynamoRollbackRefactorer } from './storage/storage-dynamo-rollba
 import { AnalyticsKinesisForwardRefactorer } from './analytics/analytics-forward';
 import { AnalyticsKinesisRollbackRefactorer } from './analytics/analytics-rollback';
 import { Gen1App } from '../generate/_infra/gen1-app';
+import { AmplifyMigrationAssessor } from '../assess';
 import { AuthUserPoolGroupsForwardRefactorer } from './auth/auth-user-pool-groups-forward';
 import { AuthUserPoolGroupsRollbackRefactorer } from './auth/auth-user-pool-groups-rollback';
 import { Cfn } from './cfn';
@@ -89,6 +90,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
         'Your Gen1 app will no longer manage these resources',
       ],
       'Execute',
+      gen1App,
     );
   }
 
@@ -145,6 +147,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
       refactorers,
       ['Stateful resources will be moved back to Gen1 CloudFormation stacks', 'Your Gen2 app will no longer manage these resources'],
       'Rollback',
+      gen1App,
     );
   }
 
@@ -175,12 +178,22 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
   /**
    * Collects operations from all refactorers.
    */
-  private async buildPlan(refactorers: Planner[], implications: string[], title: string): Promise<Plan> {
+  private async buildPlan(refactorers: Planner[], implications: string[], title: string, gen1App: Gen1App): Promise<Plan> {
     const operations: AmplifyMigrationOperation[] = [];
 
     operations.push({
       describe: async () => [],
       validate: () => ({ description: 'Lock status', run: () => this.validateLockStatus() }),
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      execute: async () => {},
+    });
+
+    operations.push({
+      describe: async () => [],
+      validate: () => ({
+        description: 'Feature assessment',
+        run: async () => this.validateFeatures(gen1App),
+      }),
       // eslint-disable-next-line @typescript-eslint/no-empty-function
       execute: async () => {},
     });
@@ -200,6 +213,32 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
     } catch (e) {
       return { valid: false, report: e.message };
     }
+  }
+
+  /**
+   * Runs feature assessment on all discovered resources and fails if any
+   * unsupported features are detected for the refactor step.
+   */
+  private validateFeatures(gen1App: Gen1App): ValidationResult {
+    const assessor = new AmplifyMigrationAssessor(gen1App);
+    const discovered = gen1App.discover();
+    const unsupported: string[] = [];
+
+    for (const resource of discovered) {
+      const result = assessor.assess(resource, this.appName, this.currentEnvName);
+      for (const f of result.features) {
+        if (f.refactor === 'unsupported') {
+          unsupported.push(`${f.feature.name} (${f.feature.path})`);
+        }
+      }
+    }
+
+    if (unsupported.length === 0) return { valid: true };
+
+    return {
+      valid: false,
+      report: `Unsupported features detected:\n${unsupported.map((f) => `  - ${f}`).join('\n')}`,
+    };
   }
 
   private extractParameters(): string {

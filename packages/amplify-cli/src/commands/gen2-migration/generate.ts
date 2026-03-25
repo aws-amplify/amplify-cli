@@ -7,8 +7,9 @@ import { AmplifyMigrationOperation, ValidationResult } from './_operation';
 import { Plan } from './_plan';
 import { AmplifyGen2MigrationValidations } from './_validations';
 import { AwsClients } from './aws-clients';
-import { Gen1App } from './generate/_infra/gen1-app';
+import { Gen1App, DiscoveredResource } from './generate/_infra/gen1-app';
 import { Planner } from './planner';
+import { AmplifyMigrationAssessor } from './assess';
 import { BackendGenerator } from './generate/amplify/backend.generator';
 import { RootPackageJsonGenerator } from './generate/package.json.generator';
 import { BackendPackageJsonGenerator } from './generate/amplify/package.json.generator';
@@ -133,6 +134,15 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
         execute: async () => {},
       },
       {
+        describe: async () => [],
+        validate: () => ({
+          description: 'Feature assessment',
+          run: async () => this.validateFeatures(gen1App, discovered),
+        }),
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        execute: async () => {},
+      },
+      {
         validate: () => undefined,
         describe: async () => [`Delete directory: ${path.join(process.cwd(), 'amplify')}`],
         // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -213,6 +223,31 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
     } catch (e) {
       return { valid: false, report: e.message };
     }
+  }
+
+  /**
+   * Runs feature assessment on all discovered resources and fails if any
+   * unsupported features are detected for the generate step.
+   */
+  private validateFeatures(gen1App: Gen1App, discovered: readonly DiscoveredResource[]): ValidationResult {
+    const assessor = new AmplifyMigrationAssessor(gen1App);
+    const unsupported: string[] = [];
+
+    for (const resource of discovered) {
+      const result = assessor.assess(resource, this.appName, this.currentEnvName);
+      for (const f of result.features) {
+        if (f.generate === 'unsupported') {
+          unsupported.push(`${f.feature.name} (${f.feature.path})`);
+        }
+      }
+    }
+
+    if (unsupported.length === 0) return { valid: true };
+
+    return {
+      valid: false,
+      report: `Unsupported features detected:\n${unsupported.map((f) => `  - ${f}`).join('\n')}`,
+    };
   }
 }
 
