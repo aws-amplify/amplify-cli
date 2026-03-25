@@ -186,5 +186,5 @@ export function copySync(options: CopySyncOptions): void {
         return !ignorePatterns.some((pattern) => pattern.test(name));
       }
     : undefined;
-  fs.copySync(src, dest, { filter });
+  fs.copySync(src, dest, { filter, recursive: true });
 }

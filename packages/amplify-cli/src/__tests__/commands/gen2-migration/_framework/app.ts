@@ -3,8 +3,8 @@ import * as fs from 'fs-extra';
 import * as os from 'os';
 import { MockClients } from './clients';
 import { copySync } from './directories';
-import { Logger } from '../../../../commands/gen2-migration';
-import { BackendDownloader } from '../../../../commands/gen2-migration/generate/codegen-head/backend_downloader';
+import { SpinningLogger } from '../../../../commands/gen2-migration/_spinning-logger';
+import { Gen1App } from '../../../../commands/gen2-migration/generate/_infra/gen1-app';
 import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import { Snapshot } from './snapshot';
 
@@ -206,7 +206,7 @@ export class MigrationApp {
    * Logs are prefixed with the command name, app name, and environment name
    * for easy identification in test output.
    */
-  public readonly logger: Logger;
+  public readonly logger: SpinningLogger;
 
   /**
    * Generate and refactor snapshots for this app.
@@ -272,11 +272,48 @@ export class MigrationApp {
 
     this.environmentName = environments[0];
     this.clients = new MockClients(this);
-    this.logger = new Logger('generate', this.name, this.environmentName);
+    this.logger = new SpinningLogger('generate', { debug: true });
+
+    // Pre-populate the CloudFormation mock's resource map so that
+    // mocks (e.g. Cognito) can resolve physical IDs to stack names.
+    // The new Gen1App code path reads resource IDs from amplify-meta.json
+    // directly instead of calling DescribeStackResources first.
+    this.prePopulateCloudFormationResources();
 
     // prevents the code from downloading ccb from s3 and instead
     // point to the local input file.
-    (BackendDownloader as any).ccbDir = this.ccbPath;
+    (Gen1App as any).downloadCloudBackend = async () => this.ccbPath;
+  }
+
+  /**
+   * Walks the root CloudFormation template and all nested stack templates,
+   * registering every physical resource ID in the CloudFormation mock.
+   *
+   * The new Gen1App reads resource IDs from amplify-meta.json directly
+   * instead of calling DescribeStackResources, so the mock's internal
+   * physicalId → stackName map would otherwise be empty when downstream
+   * mocks (e.g. Cognito) try to resolve a user pool ID to its stack.
+   */
+  private prePopulateCloudFormationResources(): void {
+    const registerStack = (stackName: string) => {
+      const templatePath = this.templatePathForStack(stackName);
+      if (!fs.existsSync(templatePath)) return;
+      const template = JSONUtilities.readJson<any>(templatePath);
+      for (const logicalId of Object.keys(template.Resources ?? {})) {
+        const resource = template.Resources[logicalId];
+        if (resource.Type === 'AWS::CloudFormation::Stack') {
+          const nestedName = this.nestedStackName(stackName, logicalId);
+          this.clients.cloudformation.registerResource(nestedName, stackName);
+          registerStack(nestedName);
+        } else {
+          const physId = this.physicalId(stackName, logicalId);
+          if (physId) {
+            this.clients.cloudformation.registerResource(physId, stackName);
+          }
+        }
+      }
+    };
+    registerStack(this.rootStackName);
   }
 
   /**

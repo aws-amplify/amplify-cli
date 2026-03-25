@@ -54,6 +54,14 @@ export class CloudFormationMock {
     return stackName;
   }
 
+  /**
+   * Pre-registers a physical resource ID → stack name mapping.
+   * Used when the new Gen1App code path bypasses DescribeStackResources.
+   */
+  public registerResource(physicalId: string, stackName: string): void {
+    this._stackNameForResource.set(physicalId, stackName);
+  }
+
   private mockDescribeStackResources() {
     this.mock
       .on(cloudformation.DescribeStackResourcesCommand)

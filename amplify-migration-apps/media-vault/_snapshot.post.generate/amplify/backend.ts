@@ -64,19 +64,6 @@ const userPoolClient = userPool.addClient('NativeAppClient', {
   disableOAuth: false,
   generateSecret: false,
 });
-const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
-// Use this bucket name post refactor
-// s3Bucket.bucketName = 'mediavaultb574f210f1634e3a8d1934f263da5bed61114-main';
-s3Bucket.bucketEncryption = {
-  serverSideEncryptionConfiguration: [
-    {
-      serverSideEncryptionByDefault: {
-        sseAlgorithm: 'AES256',
-      },
-      bucketKeyEnabled: false,
-    },
-  ],
-};
 const providerSetupResult = (
   backend.auth.stack.node.children.find(
     (child) => child.node.id === 'amplifyAuth'
@@ -98,6 +85,19 @@ cfnGraphqlApi.additionalAuthenticationProviders = [
     authenticationType: 'API_KEY',
   },
 ];
+const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
+// Use this bucket name post refactor
+// s3Bucket.bucketName = 'mediavaultb574f210f1634e3a8d1934f263da5bed61114-main';
+s3Bucket.bucketEncryption = {
+  serverSideEncryptionConfiguration: [
+    {
+      serverSideEncryptionByDefault: {
+        sseAlgorithm: 'AES256',
+      },
+      bucketKeyEnabled: false,
+    },
+  ],
+};
 const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 backend.thumbnailgen.resources.cfnResources.cfnFunction.functionName = `thumbnailgen-${branchName}`;
 backend.thumbnailgen.addEnvironment(

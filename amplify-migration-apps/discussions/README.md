@@ -2,7 +2,7 @@
 
 ![](./images/app.png)
 
-A discussion application built featuring authentication, GraphQL API, Lambda functions, and DynamoDB storage.
+A discussion application built featuring authentication, GraphQL API, Lambda functions, multiple DynamoDB storage tables (activity + bookmarks), and S3.
 
 > [!NOTICE]
 > Since amplify operations add files to your local directory, its better not to operate within this repo.
@@ -116,8 +116,9 @@ amplify add api
 
 ### Storage
 
-DynamoDB table for storing user activity logs with partition key, sort key,
-and global secondary index for querying by activity type.
+Two DynamoDB tables: `activity` for storing user activity logs, and `bookmarks` for storing user bookmarks on posts.
+
+#### Activity Table
 
 ```console
 amplify add storage
@@ -167,6 +168,59 @@ https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.Core
 ✔ Choose sort key for the GSI · timestamp
 ✔ Do you want to add more global secondary indexes to your table? (Y/n) · no
 ✔ Do you want to add a Lambda Trigger for your Table? (y/N) · no
+```
+
+#### Bookmarks Table
+
+```console
+amplify add storage
+```
+
+```console
+? Select from one of the below mentioned services: NoSQL Database
+
+Welcome to the NoSQL DynamoDB database wizard
+This wizard asks you a series of questions to help determine how to set up your NoSQL database table.
+
+✔ Provide a friendly name · bookmarks
+✔ Provide table name · bookmarks
+
+You can now add columns to the table.
+
+✔ What would you like to name this column · userId
+✔ Choose the data type · string
+✔ Would you like to add another column? (Y/n) · yes
+✔ What would you like to name this column · postId
+✔ Choose the data type · string
+✔ Would you like to add another column? (Y/n) · no
+
+✔ Choose partition key for the table · userId
+✔ Do you want to add a sort key to your table? (Y/n) · yes
+✔ Choose sort key for the table · postId
+
+✔ Do you want to add global secondary indexes to your table? (Y/n) · yes
+✔ Provide the GSI name · byPost
+✔ Choose partition key for the GSI · postId
+✔ Do you want to add a sort key to your global secondary index? (Y/n) · no
+✔ Do you want to add more global secondary indexes to your table? (Y/n) · no
+✔ Do you want to add a Lambda Trigger for your Table? (y/N) · no
+```
+
+### Storage (S3 Avatars)
+
+S3 bucket for storing user profile pictures.
+
+```console
+amplify add storage
+```
+
+```console
+? Select from one of the below mentioned services: Content (Images, audio, video, etc.)
+✔ Provide a friendly name for your resource that will be used to label this category in the project: · avatars
+✔ Provide bucket name: · discus-avatars
+✔ Who should have access: · Auth users only
+✔ What kind of access do you want for Authenticated users? · create/update, read, delete
+✔ Do you want to add a Lambda Trigger for your S3 Bucket? (y/N) · no
 ```
 
 ### Function
@@ -280,6 +334,10 @@ amplify push
 ├──────────┼─────────────────────────────┼───────────┼───────────────────┤
 │ Storage  │ activity                    │ Create    │ awscloudformation │
 ├──────────┼─────────────────────────────┼───────────┼───────────────────┤
+│ Storage  │ bookmarks                   │ Create    │ awscloudformation │
+├──────────┼─────────────────────────────┼───────────┼───────────────────┤
+│ Storage  │ avatars                     │ Create    │ awscloudformation │
+├──────────┼─────────────────────────────┼───────────┼───────────────────┤
 │ Function │ fetchuseractivity           │ Create    │ awscloudformation │
 ├──────────┼─────────────────────────────┼───────────┼───────────────────┤
 │ Function │ recorduseractivity          │ Create    │ awscloudformation │
@@ -332,7 +390,7 @@ this process for any number of users.
 
 > Based on https://github.com/aws-amplify/amplify-cli/blob/gen2-migration/GEN2_MIGRATION_GUIDE.md
 
-First and install the experimental CLI package the provides the new commands:
+First install the experimental amplify CLI package that provides the migration commands.
 
 ```console
 npm install --no-save @aws-amplify/cli-internal-gen2-migration-experimental-alpha
@@ -419,4 +477,3 @@ git push origin gen2-main
 ```
 
 Wait for the deployment to finish successfully.
-

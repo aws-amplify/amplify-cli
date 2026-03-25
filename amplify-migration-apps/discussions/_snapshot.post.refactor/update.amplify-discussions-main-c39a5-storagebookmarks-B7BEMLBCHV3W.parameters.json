@@ -1,0 +1,26 @@
+[
+  {
+    "ParameterKey": "partitionKeyType",
+    "ParameterValue": "S"
+  },
+  {
+    "ParameterKey": "partitionKeyName",
+    "ParameterValue": "userId"
+  },
+  {
+    "ParameterKey": "env",
+    "ParameterValue": "main"
+  },
+  {
+    "ParameterKey": "sortKeyName",
+    "ParameterValue": "postId"
+  },
+  {
+    "ParameterKey": "sortKeyType",
+    "ParameterValue": "S"
+  },
+  {
+    "ParameterKey": "tableName",
+    "ParameterValue": "bookmarks"
+  }
+]

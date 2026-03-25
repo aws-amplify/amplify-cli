@@ -1,26 +1,28 @@
 import { auth } from './auth/resource';
 import { data } from './data/resource';
+import { storage } from './storage/resource';
 import { fetchuseractivity } from './storage/fetchuseractivity/resource';
 import { recorduseractivity } from './storage/recorduseractivity/resource';
+import { DynamoEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
+import { StartingPosition } from 'aws-cdk-lib/aws-lambda';
 import {
   Table,
   AttributeType,
   BillingMode,
   StreamViewType,
 } from 'aws-cdk-lib/aws-dynamodb';
-import { DynamoEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
-import { StartingPosition } from 'aws-cdk-lib/aws-lambda';
 import { defineBackend } from '@aws-amplify/backend';
 import { Duration } from 'aws-cdk-lib';
 
 const backend = defineBackend({
   auth,
   data,
+  storage,
   fetchuseractivity,
   recorduseractivity,
 });
-const storageStack = backend.createStack('storage');
-const activity = new Table(storageStack, 'activity', {
+const storageActivityStack = backend.createStack('storageactivity');
+const activity = new Table(storageActivityStack, 'activity', {
   partitionKey: { name: 'id', type: AttributeType.STRING },
   billingMode: BillingMode.PROVISIONED,
   readCapacity: 5,
@@ -33,6 +35,22 @@ activity.addGlobalSecondaryIndex({
   indexName: 'byUserId',
   partitionKey: { name: 'userId', type: AttributeType.STRING },
   sortKey: { name: 'timestamp', type: AttributeType.STRING },
+  readCapacity: 5,
+  writeCapacity: 5,
+});
+const storageBookmarksStack = backend.createStack('storagebookmarks');
+const bookmarks = new Table(storageBookmarksStack, 'bookmarks', {
+  partitionKey: { name: 'userId', type: AttributeType.STRING },
+  billingMode: BillingMode.PROVISIONED,
+  readCapacity: 5,
+  writeCapacity: 5,
+  stream: StreamViewType.NEW_IMAGE,
+  sortKey: { name: 'postId', type: AttributeType.STRING },
+});
+// Add this property to the Table above post refactor: tableName: 'bookmarks-main'
+bookmarks.addGlobalSecondaryIndex({
+  indexName: 'byPost',
+  partitionKey: { name: 'postId', type: AttributeType.STRING },
   readCapacity: 5,
   writeCapacity: 5,
 });
@@ -62,27 +80,14 @@ userPool.addClient('NativeAppClient', {
 const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 backend.fetchuseractivity.resources.cfnResources.cfnFunction.functionName = `fetchuseractivity-${branchName}`;
 backend.fetchuseractivity.addEnvironment(
-  'STORAGE_ACTIVITY_ARN',
-  activity.tableArn
-);
-backend.fetchuseractivity.addEnvironment(
   'STORAGE_ACTIVITY_STREAMARN',
   activity.tableStreamArn!
 );
 backend.fetchuseractivity.addEnvironment(
-  'STORAGE_ACTIVITY_NAME',
-  activity.tableName
-);
-backend.recorduseractivity.resources.cfnResources.cfnFunction.functionName = `recorduseractivity-${branchName}`;
-backend.recorduseractivity.addEnvironment(
   'STORAGE_ACTIVITY_ARN',
   activity.tableArn
 );
-backend.recorduseractivity.addEnvironment(
-  'STORAGE_ACTIVITY_STREAMARN',
-  activity.tableStreamArn!
-);
-backend.recorduseractivity.addEnvironment(
+backend.fetchuseractivity.addEnvironment(
   'STORAGE_ACTIVITY_NAME',
   activity.tableName
 );
@@ -95,6 +100,19 @@ activity.grant(
   'dynamodb:Scan',
   'dynamodb:Query',
   'dynamodb:PartiQLSelect'
+);
+backend.recorduseractivity.resources.cfnResources.cfnFunction.functionName = `recorduseractivity-${branchName}`;
+backend.recorduseractivity.addEnvironment(
+  'STORAGE_ACTIVITY_STREAMARN',
+  activity.tableStreamArn!
+);
+backend.recorduseractivity.addEnvironment(
+  'STORAGE_ACTIVITY_ARN',
+  activity.tableArn
+);
+backend.recorduseractivity.addEnvironment(
+  'STORAGE_ACTIVITY_NAME',
+  activity.tableName
 );
 activity.grant(
   backend.recorduseractivity.resources.lambda,
@@ -125,3 +143,16 @@ for (const model of ['Topic', 'Post', 'Comment']) {
     backend.recorduseractivity.resources.lambda.role!
   );
 }
+const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
+// Use this bucket name post refactor
+// s3Bucket.bucketName = 'discus-avatarsc39a5-main';
+s3Bucket.bucketEncryption = {
+  serverSideEncryptionConfiguration: [
+    {
+      serverSideEncryptionByDefault: {
+        sseAlgorithm: 'AES256',
+      },
+      bucketKeyEnabled: false,
+    },
+  ],
+};
