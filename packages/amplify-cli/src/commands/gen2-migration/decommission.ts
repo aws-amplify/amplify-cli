@@ -14,8 +14,7 @@ import {
 } from '@aws-sdk/client-cloudformation';
 import { removeEnvFromCloud } from '../../extensions/amplify-helpers/remove-env-from-cloud';
 import { invokeDeleteEnvParamsFromService } from '../../extensions/amplify-helpers/invoke-delete-env-params';
-import { Cfn } from './refactor/cfn';
-import { HOLDING_STACK_SUFFIX } from './refactor/workflow/category-refactorer';
+import { Cfn, HOLDING_STACK_NAME_SUFFIX } from './refactor/cfn';
 
 export class AmplifyMigrationDecommissionStep extends AmplifyMigrationStep {
   public async forward(): Promise<Plan> {
@@ -101,7 +100,7 @@ export class AmplifyMigrationDecommissionStep extends AmplifyMigrationStep {
     );
     for await (const page of paginator) {
       for (const stack of page.StackSummaries ?? []) {
-        if (stack.StackName?.endsWith(HOLDING_STACK_SUFFIX) && stack.StackName.includes(this.appId)) {
+        if (stack.StackName?.endsWith(HOLDING_STACK_NAME_SUFFIX) && stack.StackName.includes(this.appId)) {
           holdingStacks.push(stack.StackName);
         }
       }
