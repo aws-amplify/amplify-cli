@@ -303,6 +303,20 @@ Error handling with:
 - Environment-specific error messages
 - Graceful degradation for optional features
 
+## FAQ
+
+### 🛑 The security token included in the request is invalid
+Please re-authenticate and get new admin credentials for your working environment
+
+### [ERROR] [CDKAssetPublishError] CDK failed to publish assets ∟ Caused by: [ToolkitError] Failed to publish asset 
+This is likely a problem with your bootstrap stack in the environment you're deploying to. Please take a look at CDKToolkit in your AWS account.
+
+### Issues with not being able to deploy AppSync APIs
+AppSync has a limit of 50 APIs per environment (account/region). Check to see if you have exceeded the limit, and delete the unnecessary ones before trying again.
+
+### Amplify init fails
+Consider which `amplify` binary you are using. We recommend building the one in the monorepo and passing it to the tool using `export AMPLIFY_CLI`. Also consider that the maximum number of app allowed by the Amplify console in an environment is 25. Check to see if you have exceeded the limit, and delete the unnecessary ones before trying again.
+
 ## License
 
 Apache-2.0
