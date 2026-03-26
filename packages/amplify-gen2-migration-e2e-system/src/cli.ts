@@ -445,7 +445,7 @@ async function initializeAppFromCLI(params: InitializeAppFromCLIParams): Promise
       profile,
     });
 
-    // Step 2: Initialize categories (auth, api, storage, function, etc.)
+    // Initialize categories (auth, api, storage, function, etc.)
     logger.info(`Initializing categories for ${deploymentName}...`, context);
     const categoryResult = await categoryInitializer.initializeCategories({
       appPath: targetAppPath,
@@ -467,72 +467,62 @@ async function initializeAppFromCLI(params: InitializeAppFromCLIParams): Promise
       throw new Error(`Failed to initialize ${categoryResult.errors.length} category(ies)`);
     }
 
-    // Step 3: Push the initialized app to AWS
+    // Push the initialized app to AWS
     logger.info(`Pushing ${deploymentName} to AWS...`, context);
     await amplifyPush(targetAppPath);
     logger.info(`Successfully pushed ${deploymentName} to AWS`, context);
 
-    // Step 3.5: Initialize git repo and commit the Gen1 state
+    // Initialize git repo and commit the Gen1 state
     logger.info(`Initializing git repository for ${deploymentName}...`, context);
     await execa('git', ['init'], { cwd: targetAppPath });
     await execa('git', ['add', '.'], { cwd: targetAppPath });
     await execa('git', ['commit', '-m', 'feat: gen1 initial commit'], { cwd: targetAppPath });
     logger.info(`Git repository initialized and Gen1 state committed`, context);
 
-    // TODO: remove early return when ready to test migration steps
-    // logger.info(`Stopping after push + git commit. App deployed at ${targetAppPath}`, context);
-    // return;
-
-    // Step 4: Run gen2-migration pre-deployment workflow (lock -> checkout -> generate)
+    // Run gen2-migration pre-deployment workflow (lock -> checkout -> generate)
     logger.info(`Running gen2-migration pre-deployment workflow for ${deploymentName}...`, context);
     await gen2MigrationExecutor.runPreDeploymentWorkflow(targetAppPath, envName);
     logger.info(`Successfully completed gen2-migration pre-deployment workflow for ${deploymentName}`, context);
 
-    // Step 5: Run app-specific post-generate script
+    // Run app-specific post-generate script
     await runPostGenerateScript(appName, targetAppPath, envName);
 
-    // Step 6: Commit Gen2 generated code
+    // Commit Gen2 generated code
     logger.info(`Committing Gen2 generated code for ${deploymentName}...`, context);
     await execa('git', ['add', '.'], { cwd: targetAppPath });
     await execa('git', ['commit', '-m', 'feat: gen2 migration generate'], { cwd: targetAppPath });
     logger.info(`Gen2 generated code committed`, context);
 
-    // Step 7: Deploy Gen2 using ampx sandbox
+    // Deploy Gen2 using ampx sandbox
     logger.info(`Deploying Gen2 app using ampx sandbox for ${deploymentName}...`, context);
     const gen2BranchName = `gen2-${envName}`;
     const gen2StackName = await gen2MigrationExecutor.deployGen2Sandbox(targetAppPath, deploymentName, gen2BranchName);
     logger.info(`Gen2 app deployed with stack name: ${gen2StackName}`, context);
 
-    // Step 8: Checkout back to main branch for refactor (refactor must run from Gen1 branch)
+    // Checkout back to main branch for refactor (refactor must run from Gen1 branch)
     logger.info(`Checking out main branch for refactor (refactor requires Gen1 files)...`, context);
     await execa('git', ['checkout', 'main'], { cwd: targetAppPath });
 
-    // Step 9: Run refactor to move stateful resources from Gen1 to Gen2
+    // Run refactor to move stateful resources from Gen1 to Gen2
     logger.info(`Running gen2-migration refactor for ${deploymentName}...`, context);
     await gen2MigrationExecutor.refactor(targetAppPath, gen2StackName);
     logger.info(`Successfully completed gen2-migration refactor for ${deploymentName}`, context);
 
-    // Step 10: Checkout back to Gen2 branch for post-refactor edits
+    // Checkout back to Gen2 branch for post-refactor edits
     logger.info(`Checking out ${gen2BranchName} branch for post-refactor edits...`, context);
     await execa('git', ['checkout', gen2BranchName], { cwd: targetAppPath });
 
-    // Step 11: Run app-specific post-refactor script
+    // Run app-specific post-refactor script
     await runPostRefactorScript(appName, targetAppPath, envName);
 
-    // Step 12: Commit post-refactor changes
-    logger.info(`Committing post-refactor changes for ${deploymentName}...`, context);
-    await execa('git', ['add', '.'], { cwd: targetAppPath });
-    await execa('git', ['commit', '-m', 'fix: post-refactor edits'], { cwd: targetAppPath });
-    logger.info(`Post-refactor changes committed`, context);
-
-    // Step 13: Redeploy Gen2 to pick up post-refactor changes
+    // Redeploy Gen2 to pick up post-refactor changes
     logger.info(`Redeploying Gen2 app after refactor for ${deploymentName}...`, context);
     await gen2MigrationExecutor.deployGen2Sandbox(targetAppPath, deploymentName, gen2BranchName);
     logger.info(`Gen2 app redeployed successfully`, context);
 
     logger.info(`App ${deploymentName} fully initialized and migrated at ${targetAppPath}`, context);
   } catch (error) {
-    logger.error(`Failed to initialize ${appName}`, error as Error, context);
+    logger.error(`Failed to initialize/migrate ${appName}`, error as Error, context);
     throw error;
   }
 }

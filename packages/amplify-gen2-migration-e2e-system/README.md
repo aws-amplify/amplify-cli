@@ -155,12 +155,79 @@ The system follows a modular architecture with:
 The CLI executes the following workflow:
 
 1. **Initialize**: Copy app source, run `amplify init`
-2. **Add Categories**: Add configured categories (auth, api, storage, function)
+2. **Add Categories**: Add configured categories (auth, api, storage, function, analytics)
 3. **Push**: Deploy Gen1 app to AWS via `amplify push`
-4. **Lock**: Lock Gen1 environment via `amplify gen2-migration lock`
-5. **Generate**: Generate Gen2 code via `amplify gen2-migration generate`
+4. **Git Init**: Initialize git repo and commit Gen1 state
+5. **Lock**: Lock Gen1 environment via `amplify gen2-migration lock`
+6. **Generate**: Generate Gen2 code via `amplify gen2-migration generate`
+7. **Post-Generate**: Run app-specific `post-generate.ts` script (if present)
+8. **Deploy Gen2**: Deploy Gen2 app via `npx ampx sandbox --once`
+9. **Refactor**: Move stateful resources via `amplify gen2-migration refactor`
+10. **Post-Refactor**: Run app-specific `post-refactor.ts` script (if present)
+11. **Redeploy Gen2**: Redeploy Gen2 app to pick up post-refactor changes
 
-Post-deployment steps (refactor, decommission) require Gen2 deployment and are not yet automated.
+### Post-Generate and Post-Refactor Scripts
+
+Each app in `amplify-migration-apps/` can have optional TypeScript scripts that apply manual edits required during migration:
+
+- **`post-generate.ts`**: Runs after `amplify gen2-migration generate` and before Gen2 deployment
+- **`post-refactor.ts`**: Runs after `amplify gen2-migration refactor` and before Gen2 redeployment
+
+These scripts handle app-specific transformations that the migration CLI cannot automate, such as:
+- Converting CommonJS Lambda functions to ESM syntax
+- Updating frontend imports from `aws-exports` to `amplify_outputs.json`
+- Adding IAM policies for cross-resource access (e.g., Kinesis permissions)
+- Setting resource names to preserve original Gen1 names after refactor
+
+#### Script Interface
+
+Both scripts must export a function with the following signature:
+
+```typescript
+// post-generate.ts
+interface PostGenerateOptions {
+  appPath: string;   // Path to the deployed app directory
+  envName?: string;  // Amplify environment name (e.g., "main", "dev")
+}
+
+export async function postGenerate(options: PostGenerateOptions): Promise<void>;
+
+// post-refactor.ts
+interface PostRefactorOptions {
+  appPath: string;
+  envName?: string;
+}
+
+export async function postRefactor(options: PostRefactorOptions): Promise<void>;
+```
+
+#### Example: post-generate.ts
+
+```typescript
+import fs from 'fs/promises';
+import path from 'path';
+
+export async function postGenerate(options: PostGenerateOptions): Promise<void> {
+  const { appPath } = options;
+
+  // Convert Lambda function from CommonJS to ESM
+  const handlerPath = path.join(appPath, 'amplify', 'function', 'myFunction', 'index.js');
+  let content = await fs.readFile(handlerPath, 'utf-8');
+  content = content.replace(
+    /exports\.handler\s*=\s*async\s*\((\w*)\)\s*=>\s*\{/g,
+    'export async function handler($1) {'
+  );
+  await fs.writeFile(handlerPath, content, 'utf-8');
+}
+```
+
+#### Loading Mechanism
+
+The CLI dynamically imports these scripts at runtime using `import()`. Scripts are located by path:
+- `amplify-migration-apps/<app-name>/post-generate.ts`
+- `amplify-migration-apps/<app-name>/post-refactor.ts`
+
+If a script doesn't exist, the step is silently skipped.
 
 ## Development
 

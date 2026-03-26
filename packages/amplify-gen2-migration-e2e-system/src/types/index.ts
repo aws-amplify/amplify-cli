@@ -155,7 +155,7 @@ export interface LambdaFunction {
 }
 
 export interface FunctionTrigger {
-  type: 'dynamodb-stream' | 's3' | 'cognito';
+  type: 'dynamodb-stream' | 's3' | 'cognito' | 'kinesis';
   source: string[];
 }
 

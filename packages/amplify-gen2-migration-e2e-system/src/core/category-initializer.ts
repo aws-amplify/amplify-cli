@@ -28,7 +28,9 @@ import {
   addS3WithTrigger,
   addDynamoDBWithGSIWithSettings,
   addFunction,
-  addKinesisStream,
+  addLambdaTrigger,
+  addLambdaTriggerWithModels,
+  addKinesis,
   updateSchema,
 } from '@aws-amplify/amplify-e2e-core';
 import * as fs from 'fs';
@@ -73,10 +75,11 @@ export class CategoryInitializer {
     // Initialize categories in the correct order:
     // 1. Auth first (other categories may depend on it)
     // 2. Analytics before functions (functions may reference analytics resources)
-    // 3. Functions before REST API (REST API requires existing Lambda)
+    // 3. Regular functions (non-trigger) before API
     // 4. Storage (may have triggers that reference functions)
-    // 5. GraphQL API
-    // 6. REST API last (needs functions to exist)
+    // 5. GraphQL API (creates AppSync tables that trigger functions may reference)
+    // 6. Trigger functions (need AppSync/DynamoDB tables to exist)
+    // 7. REST API last (needs functions to exist)
     if (categories.auth) {
       await this.initializeAuthCategory(appPath, categories.auth, result, context);
     }
@@ -85,9 +88,9 @@ export class CategoryInitializer {
       await this.initializeAnalyticsCategory(appPath, categories.analytics, result, context);
     }
 
-    // Initialize functions before API (REST API requires existing Lambda functions)
+    // Initialize regular (non-trigger) functions before API
     if (categories.function) {
-      await this.initializeFunctionCategory(appPath, categories.function, result, context);
+      await this.initializeRegularFunctions(appPath, categories.function, result, context);
     }
 
     if (categories.storage) {
@@ -96,6 +99,11 @@ export class CategoryInitializer {
 
     if (categories.api) {
       await this.initializeApiCategory(appPath, categories.api, categories.function, result, context);
+    }
+
+    // Initialize trigger functions after API (they need AppSync tables to exist)
+    if (categories.function) {
+      await this.initializeTriggerFunctions(appPath, categories.function, result, context);
     }
 
     // Initialize REST API separately if configured
@@ -433,40 +441,29 @@ export class CategoryInitializer {
   }
 
   /**
-   * Initialize the function category (Lambda functions)
-   * Supports: basic functions with various runtimes and templates
-   * Not yet supported: function triggers (DynamoDB streams, etc.)
+   * Initialize regular (non-trigger) Lambda functions
    */
-  private async initializeFunctionCategory(
+  private async initializeRegularFunctions(
     appPath: string,
     functionConfig: FunctionConfiguration,
     result: InitializeCategoriesResult,
     context: LogContext,
   ): Promise<void> {
-    this.logger.info('Initializing function category...', context);
+    const regularFunctions = functionConfig.functions.filter((f) => !f.trigger);
 
-    // Check for unsupported trigger configurations
-    const functionsWithTriggers = functionConfig.functions.filter((f) => f.trigger);
-    if (functionsWithTriggers.length > 0) {
-      this.logger.warn(
-        `Function triggers (DynamoDB streams, etc.) are not yet fully supported. ` +
-          `Functions with triggers: ${functionsWithTriggers.map((f) => f.name).join(', ')}`,
-        context,
-      );
+    if (regularFunctions.length === 0) {
+      this.logger.debug('No regular functions to initialize', context);
+      return;
     }
 
+    this.logger.info(`Initializing ${regularFunctions.length} regular function(s)...`, context);
+
     try {
-      for (const func of functionConfig.functions) {
+      for (const func of regularFunctions) {
         this.logger.debug(`Adding function: ${func.name}`, context);
 
         const runtime = this.mapRuntime(func.runtime);
         const template = this.mapTemplate(func.template);
-
-        // Skip functions that are trigger-based (they're created by other categories)
-        if (func.trigger) {
-          this.logger.debug(`Skipping trigger-based function: ${func.name} (will be created by trigger source)`, context);
-          continue;
-        }
 
         await addFunction(
           appPath,
@@ -481,11 +478,79 @@ export class CategoryInitializer {
       }
 
       result.initializedCategories.push('function');
-      this.logger.info('Function category initialized successfully', context);
+      this.logger.info('Regular functions initialized successfully', context);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
-      this.logger.error(`Failed to initialize function category: ${errorMessage}`, error as Error, context);
+      this.logger.error(`Failed to initialize regular functions: ${errorMessage}`, error as Error, context);
       result.errors.push({ category: 'function', error: errorMessage });
+    }
+  }
+
+  /**
+   * Initialize trigger-based Lambda functions (DynamoDB streams, Kinesis, etc.)
+   * Must be called after API category is initialized so AppSync tables exist.
+   */
+  private async initializeTriggerFunctions(
+    appPath: string,
+    functionConfig: FunctionConfiguration,
+    result: InitializeCategoriesResult,
+    context: LogContext,
+  ): Promise<void> {
+    const triggerFunctions = functionConfig.functions.filter((f) => f.trigger);
+
+    if (triggerFunctions.length === 0) {
+      this.logger.debug('No trigger functions to initialize', context);
+      return;
+    }
+
+    this.logger.info(`Initializing ${triggerFunctions.length} trigger function(s)...`, context);
+
+    try {
+      for (const func of triggerFunctions) {
+        this.logger.debug(`Adding trigger function: ${func.name}`, context);
+
+        const runtime = this.mapRuntime(func.runtime);
+        const triggerType = func.trigger?.type;
+
+        if (triggerType === 'dynamodb-stream') {
+          // DynamoDB stream trigger - use Lambda trigger template with model selection
+          await addFunction(
+            appPath,
+            {
+              name: func.name,
+              functionTemplate: 'Lambda trigger',
+              triggerType: 'DynamoDB',
+              eventSource: 'AppSync', // Use AppSync tables from GraphQL API
+            },
+            runtime,
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+            addLambdaTriggerWithModels,
+          );
+        } else if (triggerType === 'kinesis') {
+          // Kinesis stream trigger
+          await addFunction(
+            appPath,
+            {
+              name: func.name,
+              functionTemplate: 'Lambda trigger',
+              triggerType: 'Kinesis',
+            },
+            runtime,
+            addLambdaTrigger,
+          );
+        } else {
+          this.logger.warn(`Unsupported trigger type '${triggerType}' for function ${func.name}, skipping`, context);
+          continue;
+        }
+
+        this.logger.debug(`Trigger function ${func.name} added successfully`, context);
+      }
+
+      this.logger.info('Trigger functions initialized successfully', context);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      this.logger.error(`Failed to initialize trigger functions: ${errorMessage}`, error as Error, context);
+      result.errors.push({ category: 'function-triggers', error: errorMessage });
     }
   }
 
@@ -567,9 +632,11 @@ export class CategoryInitializer {
     }
 
     try {
-      await addKinesisStream(appPath, {
-        name: analyticsConfig.name,
-        shards: analyticsConfig.shards,
+      // addKinesis expects rightName (valid name) and wrongName (invalid name for validation test)
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      await addKinesis(appPath, {
+        rightName: analyticsConfig.name,
+        wrongName: '$', // Invalid name to trigger validation, then correct it
       });
 
       result.initializedCategories.push('analytics');
