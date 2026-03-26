@@ -149,6 +149,18 @@ export class DataGenerator implements Planner {
               ),
             ),
           );
+          userPoolConfigProps.push(
+            factory.createPropertyAssignment(
+              'awsRegion',
+              factory.createPropertyAccessExpression(
+                factory.createPropertyAccessExpression(
+                  factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier('auth')),
+                  factory.createIdentifier('stack'),
+                ),
+                factory.createIdentifier('region'),
+              ),
+            ),
+          );
         }
         props.push(factory.createPropertyAssignment('userPoolConfig', factory.createObjectLiteralExpression(userPoolConfigProps, true)));
       }
