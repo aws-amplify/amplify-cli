@@ -38,6 +38,7 @@ cfnGraphqlApi.additionalAuthenticationProviders = [
     authenticationType: 'AMAZON_COGNITO_USER_POOLS',
     userPoolConfig: {
       userPoolId: backend.auth.resources.userPool.userPoolId,
+      awsRegion: backend.auth.stack.region,
     },
   },
 ];
