@@ -6,7 +6,8 @@ import { resolveParameters } from '../resolvers/cfn-parameter-resolver';
 import { resolveOutputs } from '../resolvers/cfn-output-resolver';
 import { resolveDependencies } from '../resolvers/cfn-dependency-resolver';
 import { extractStackNameFromId } from '../utils';
-import { CategoryRefactorer, MIGRATION_PLACEHOLDER_LOGICAL_ID, PLACEHOLDER_RESOURCE, ResolvedStack } from './category-refactorer';
+import { CategoryRefactorer, ResolvedStack } from './category-refactorer';
+import { MIGRATION_PLACEHOLDER_LOGICAL_ID } from '../cfn';
 
 /**
  * Rollback direction base: moves resources from Gen2 (source) back to Gen1 (target).
@@ -151,23 +152,6 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
     }
 
     return [
-      {
-        resource: this.resource,
-        validate: () => undefined,
-        describe: async () => {
-          return [`Update holding stack '${extractStackNameFromId(holdingStackName)}' with placeholder resource`];
-        },
-        execute: async () => {
-          const holdingTemplate = await this.cfn.fetchTemplate(holdingStackName);
-          holdingTemplate.Resources[MIGRATION_PLACEHOLDER_LOGICAL_ID] = PLACEHOLDER_RESOURCE;
-          await this.cfn.update({
-            stackName: holdingStackName,
-            parameters: [],
-            templateBody: holdingTemplate,
-            resource: this.resource,
-          });
-        },
-      },
       {
         resource: this.resource,
         validate: () => undefined,
