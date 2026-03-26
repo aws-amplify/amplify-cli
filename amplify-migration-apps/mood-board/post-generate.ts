@@ -10,6 +10,7 @@
  * 5. Update frontend import from amplifyconfiguration.json to amplify_outputs.json
  * 6. Update SurpriseMeButton stream name to use gen2 prefix
  * 7. Add Kinesis IAM policy and environment variable to backend.ts
+ * 8. Fix missing awsRegion in GraphQL API userPoolConfig
  */
 
 import fs from 'fs/promises';
@@ -235,6 +236,39 @@ backend.moodboardKinesisReader.addEnvironment('ANALYTICS_MOODBOARDKINESIS_KINESI
   console.log('  Added Kinesis IAM policy and environment variable');
 }
 
+async function fixUserPoolRegionInGraphqlApi(appPath: string): Promise<void> {
+  const backendPath = path.join(appPath, 'amplify', 'backend.ts');
+
+  console.log(`Fixing user pool region in GraphQL API config in ${backendPath}...`);
+
+  let content: string;
+  try {
+    content = await fs.readFile(backendPath, 'utf-8');
+  } catch {
+    console.log('  backend.ts not found, skipping');
+    return;
+  }
+
+  // The generated code sets additionalAuthenticationProviders with userPoolConfig
+  // but is missing the awsRegion property. We need to add it.
+  // Pattern: userPoolConfig: { userPoolId: backend.auth.resources.userPool.userPoolId, }
+  const updated = content.replace(
+    /userPoolConfig:\s*\{\s*userPoolId:\s*backend\.auth\.resources\.userPool\.userPoolId,?\s*\}/g,
+    `userPoolConfig: {
+      userPoolId: backend.auth.resources.userPool.userPoolId,
+      awsRegion: backend.auth.stack.region,
+    }`,
+  );
+
+  if (updated === content) {
+    console.log('  No userPoolConfig found to fix, skipping');
+    return;
+  }
+
+  await fs.writeFile(backendPath, updated, 'utf-8');
+  console.log('  Added awsRegion to userPoolConfig');
+}
+
 export async function postGenerate(options: PostGenerateOptions): Promise<void> {
   const { appPath, envName = 'sandbox' } = options;
 
@@ -249,6 +283,7 @@ export async function postGenerate(options: PostGenerateOptions): Promise<void> 
   await updateFrontendConfig(appPath);
   await updateSurpriseMeStreamName(appPath, envName);
   await addKinesisConfigToBackend(appPath);
+  await fixUserPoolRegionInGraphqlApi(appPath);
 
   console.log('');
   console.log('Post-generate completed');
