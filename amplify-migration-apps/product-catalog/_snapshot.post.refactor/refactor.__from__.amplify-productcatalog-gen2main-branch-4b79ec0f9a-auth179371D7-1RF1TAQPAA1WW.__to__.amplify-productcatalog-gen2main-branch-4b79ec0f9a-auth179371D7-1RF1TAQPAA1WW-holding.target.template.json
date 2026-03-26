@@ -204,10 +204,6 @@
           "authenticated": "arn:aws:iam::123456789012:role/amplify-productcatalog-ge-amplifyAuthauthenticatedU-7u6GoubHxSy7"
         }
       },
-      "DependsOn": [
-        "amplifyAuthIdentityPool3FDE84CC",
-        "amplifyAuthUserPoolAppClient2626C6F8"
-      ],
       "Metadata": {
         "aws:cdk:path": "amplify-productcatalog-gen2main-branch-4b79ec0f9a/auth/amplifyAuth/IdentityPoolRoleAttachment"
       }

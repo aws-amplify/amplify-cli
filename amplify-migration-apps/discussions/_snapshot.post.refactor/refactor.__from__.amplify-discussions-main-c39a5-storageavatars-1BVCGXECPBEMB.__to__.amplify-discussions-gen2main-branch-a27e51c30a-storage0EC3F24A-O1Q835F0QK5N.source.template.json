@@ -213,7 +213,6 @@
           "amplify-discussions-main-c39a5-authRole"
         ]
       },
-      "DependsOn": [],
       "Condition": "CreateAuthPublic"
     },
     "S3AuthProtectedPolicy": {
@@ -250,7 +249,6 @@
           "amplify-discussions-main-c39a5-authRole"
         ]
       },
-      "DependsOn": [],
       "Condition": "CreateAuthProtected"
     },
     "S3AuthPrivatePolicy": {
@@ -287,7 +285,6 @@
           "amplify-discussions-main-c39a5-authRole"
         ]
       },
-      "DependsOn": [],
       "Condition": "CreateAuthPrivate"
     },
     "S3AuthUploadPolicy": {
@@ -324,7 +321,6 @@
           "amplify-discussions-main-c39a5-authRole"
         ]
       },
-      "DependsOn": [],
       "Condition": "CreateAuthUploads"
     },
     "S3AuthReadPolicy": {
@@ -379,7 +375,6 @@
           "amplify-discussions-main-c39a5-authRole"
         ]
       },
-      "DependsOn": [],
       "Condition": "AuthReadAndList"
     }
   }

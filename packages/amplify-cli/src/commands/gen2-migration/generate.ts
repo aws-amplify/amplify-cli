@@ -83,9 +83,9 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
             });
 
           if (isReferenceAuth) {
-            generators.push(new ReferenceAuthGenerator(gen1App, backendGenerator, outputDir));
+            generators.push(new ReferenceAuthGenerator(gen1App, backendGenerator, outputDir, resource));
           } else {
-            authGenerator = new AuthGenerator(gen1App, backendGenerator, outputDir);
+            authGenerator = new AuthGenerator(gen1App, backendGenerator, outputDir, resource);
             generators.push(authGenerator);
           }
           break;
@@ -94,22 +94,21 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
           // Handled by the AuthGenerator created for the main Cognito resource.
           break;
         case 'storage:S3':
-          s3Generator = new S3Generator(gen1App, backendGenerator, outputDir);
+          s3Generator = new S3Generator(gen1App, backendGenerator, outputDir, resource);
           generators.push(s3Generator);
           break;
         case 'storage:DynamoDB': {
-          const hasS3Bucket = discovered.some((r) => r.category === 'storage' && r.service === 'S3');
-          generators.push(new DynamoDBGenerator(gen1App, backendGenerator, resource.resourceName, hasS3Bucket));
+          generators.push(new DynamoDBGenerator(gen1App, backendGenerator, resource));
           break;
         }
         case 'api:AppSync':
-          generators.push(new DataGenerator(gen1App, backendGenerator, outputDir));
+          generators.push(new DataGenerator(gen1App, backendGenerator, outputDir, resource));
           break;
         case 'api:API Gateway':
-          generators.push(new RestApiGenerator(gen1App, backendGenerator, resource.resourceName));
+          generators.push(new RestApiGenerator(gen1App, backendGenerator, resource));
           break;
         case 'analytics:Kinesis':
-          generators.push(new AnalyticsKinesisGenerator(gen1App, backendGenerator, outputDir, resource.resourceName));
+          generators.push(new AnalyticsKinesisGenerator(gen1App, backendGenerator, outputDir, resource));
           break;
         case 'function:Lambda': {
           const functionCategoryMap = computeFunctionCategories(gen1App);
@@ -118,7 +117,7 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
             backendGenerator,
             packageJsonGenerator,
             outputDir,
-            resourceName: resource.resourceName,
+            resource,
             category: functionCategoryMap.get(resource.resourceName) ?? 'function',
           });
           generators.push(funcGen);

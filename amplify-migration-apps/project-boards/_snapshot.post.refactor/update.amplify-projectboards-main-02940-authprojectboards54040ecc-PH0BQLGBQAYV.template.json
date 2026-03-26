@@ -177,10 +177,7 @@
           "RefreshToken": "days"
         },
         "UserPoolId": "us-east-1_ct5s4IEz3"
-      },
-      "DependsOn": [
-        "UserPool"
-      ]
+      }
     },
     "UserPoolClient": {
       "Type": "AWS::Cognito::UserPoolClient",
@@ -192,10 +189,7 @@
           "RefreshToken": "days"
         },
         "UserPoolId": "us-east-1_ct5s4IEz3"
-      },
-      "DependsOn": [
-        "UserPool"
-      ]
+      }
     },
     "UserPoolClientRole": {
       "Type": "AWS::IAM::Role",
@@ -288,10 +282,7 @@
           "unauthenticated": "arn:aws:iam::123456789012:role/amplify-projectboards-main-02940-unauthRole",
           "authenticated": "arn:aws:iam::123456789012:role/amplify-projectboards-main-02940-authRole"
         }
-      },
-      "DependsOn": [
-        "IdentityPool"
-      ]
+      }
     }
   },
   "Outputs": {

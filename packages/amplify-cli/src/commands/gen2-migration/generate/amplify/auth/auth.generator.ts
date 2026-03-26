@@ -5,7 +5,7 @@ import { UserPoolClientType } from '@aws-sdk/client-cognito-identity-provider';
 import { Planner } from '../../../planner';
 import { AmplifyMigrationOperation } from '../../../_operation';
 import { BackendGenerator } from '../backend.generator';
-import { Gen1App } from '../../_infra/gen1-app';
+import { Gen1App, DiscoveredResource } from '../../_infra/gen1-app';
 import { TS } from '../../_infra/ts';
 import { AuthRenderOptions, AuthRenderer, AuthTrigger, FunctionAccess } from './auth.renderer';
 
@@ -24,14 +24,16 @@ export class AuthGenerator implements Planner {
   private readonly gen1App: Gen1App;
   private readonly backendGenerator: BackendGenerator;
   private readonly outputDir: string;
+  private readonly resource: DiscoveredResource;
   private readonly defineAuth: AuthRenderer;
   private readonly access: FunctionAccess[] = [];
   private readonly triggers: AuthTrigger[] = [];
 
-  public constructor(gen1App: Gen1App, backendGenerator: BackendGenerator, outputDir: string) {
+  public constructor(gen1App: Gen1App, backendGenerator: BackendGenerator, outputDir: string, resource: DiscoveredResource) {
     this.gen1App = gen1App;
     this.backendGenerator = backendGenerator;
     this.outputDir = outputDir;
+    this.resource = resource;
     this.defineAuth = new AuthRenderer();
   }
 
@@ -86,6 +88,7 @@ export class AuthGenerator implements Planner {
 
     return [
       {
+        resource: this.resource,
         validate: () => undefined,
         describe: async () => ['Generate amplify/auth/resource.ts'],
         execute: async () => {

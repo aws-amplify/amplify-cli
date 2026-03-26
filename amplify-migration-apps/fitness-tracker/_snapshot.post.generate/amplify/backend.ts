@@ -1,6 +1,6 @@
 import { auth } from './auth/resource';
 import { data } from './data/resource';
-import { fitnesstracker6b0fc1196b0fc119PreSignup } from './auth/fitnesstracker6b0fc1196b0fc119PreSignup/resource';
+import { fitnesstracker33f5545533f55455PreSignup } from './auth/fitnesstracker33f5545533f55455PreSignup/resource';
 import { lognutrition } from './function/lognutrition/resource';
 import { admin } from './function/admin/resource';
 import {
@@ -17,7 +17,7 @@ import { Duration, Stack } from 'aws-cdk-lib';
 const backend = defineBackend({
   auth,
   data,
-  fitnesstracker6b0fc1196b0fc119PreSignup,
+  fitnesstracker33f5545533f55455PreSignup,
   lognutrition,
   admin,
 });
@@ -45,7 +45,7 @@ userPool.addClient('NativeAppClient', {
   generateSecret: false,
 });
 const branchName = process.env.AWS_BRANCH ?? 'sandbox';
-backend.fitnesstracker6b0fc1196b0fc119PreSignup.resources.cfnResources.cfnFunction.functionName = `fitnesstracker6b0fc1196b0fc119PreSignup-${branchName}`;
+backend.fitnesstracker33f5545533f55455PreSignup.resources.cfnResources.cfnFunction.functionName = `fitnesstracker33f5545533f55455PreSignup-${branchName}`;
 backend.lognutrition.resources.cfnResources.cfnFunction.functionName = `lognutrition-${branchName}`;
 backend.lognutrition.addEnvironment(
   'API_FITNESSTRACKER_GRAPHQLAPIIDOUTPUT',
@@ -80,7 +80,7 @@ backend.data.resources.tables['Meal'].grant(
 );
 backend.admin.resources.cfnResources.cfnFunction.functionName = `admin-${branchName}`;
 backend.admin.addEnvironment(
-  'AUTH_FITNESSTRACKER6B0FC1196B0FC119_USERPOOLID',
+  'AUTH_FITNESSTRACKER33F5545533F55455_USERPOOLID',
   backend.auth.resources.userPool.userPoolId
 );
 const cfnGraphqlApi = backend.data.resources.cfnResources.cfnGraphqlApi;
@@ -120,8 +120,8 @@ const gen1nutritionapiApi = RestApi.fromRestApiAttributes(
   nutritionapiStack,
   'Gen1nutritionapiApi',
   {
-    restApiId: '6smuxn28tb',
-    rootResourceId: '6smuxn28tb-root',
+    restApiId: 'hmydcaubcb',
+    rootResourceId: 'hmydcaubcb-root',
   }
 );
 const gen1nutritionapiPolicy = new Policy(
@@ -249,8 +249,8 @@ const gen1adminapiApi = RestApi.fromRestApiAttributes(
   adminapiStack,
   'Gen1adminapiApi',
   {
-    restApiId: 'kh5xa5hayh',
-    rootResourceId: 'kh5xa5hayh-root',
+    restApiId: 'oxq86r59h6',
+    rootResourceId: 'oxq86r59h6-root',
   }
 );
 const gen1adminapiPolicy = new Policy(adminapiStack, 'Gen1adminapiPolicy', {

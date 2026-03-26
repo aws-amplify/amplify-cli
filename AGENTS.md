@@ -39,8 +39,11 @@ Verify your changes by following these guidelines:
 - **Always** update the appropriate JSDoc strings in the code you change. Be concise.
 - Do not create additional markdown files in the repository unless you are instructed explicitly to.
 - Never commit `.ai-generated` files (`.commit-message.ai-generated.txt`, `.pr-body.ai-generated.md`, etc.) — they are gitignored and are only used as local scratch files.
-- Commit your changes in git using a well-formed commit message following the Conventional Commits format. The message must start
-  with a type prefix (e.g., `feat:`, `fix:`, `docs:`, `refactor:`, `test:`, `chore:`) followed by a single sentence summary and no more
+- Commit your changes in git using a well-formed commit message following the Conventional Commits format. The message must include
+  a scope when the change is scoped to a specific package: `type(scope): subject`. The scope is derived from the package's `name`
+  field in `package.json` with the `@aws-amplify/` prefix stripped. For example, `@aws-amplify/cli-internal` → `cli-internal`,
+  `@aws-amplify/amplify-prompts` → `amplify-prompts`. Valid scopes are enforced by commitlint via `commitlint.config.js`. The
+  message must start with a type prefix (e.g., `feat:`, `fix:`, `docs:`, `refactor:`, `test:`, `chore:`) followed by a single sentence summary and no more
   than a few paragraphs explaining the change and your testing. After this explanation, place the prompt the user used to trigger this
   work prefixed with a "Prompt: " after a single line consisting of '---'. Make sure there are no empty lines before or after this line.
   Word wrap all paragraphs at 72 columns including the prompt. For the author of the commit, use the configured username in git with
@@ -48,8 +51,11 @@ Verify your changes by following these guidelines:
   To avoid issues with multi-line commit messages, write the message to `.commit-message.ai-generated.txt` and use `-F`:
 
   ```bash
-  git commit --author="John Doe (AI) <john@bigco.com>" -F .commit-message.ai-generated.txt
+  NODE_OPTIONS="--max-old-space-size=8192" git commit --author="John Doe (AI) <john@bigco.com>" -F .commit-message.ai-generated.txt
   ```
+
+  Always set `NODE_OPTIONS="--max-old-space-size=8192"` when committing to prevent OOM failures in the lint-staged hook.
+  After a successful commit, delete the scratch file: `rm -f .commit-message.ai-generated.txt`.
 
 - Since this repo has a commit hook that takes quite a long time to run, don't immediately commit every
   change you were asked to do. Apply your judgment, if the diff is still fairly small just keep going.

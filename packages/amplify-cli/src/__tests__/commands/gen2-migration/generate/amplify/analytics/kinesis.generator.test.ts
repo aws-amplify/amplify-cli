@@ -38,7 +38,12 @@ describe('AnalyticsKinesisGenerator', () => {
     const gen1App = createMockGen1App();
     (gen1App.meta as jest.Mock).mockReturnValue(undefined);
 
-    const generator = new AnalyticsKinesisGenerator(gen1App, backendGenerator, outputDir, 'myKinesis');
+    const generator = new AnalyticsKinesisGenerator(gen1App, backendGenerator, outputDir, {
+      category: 'analytics',
+      resourceName: 'myKinesis',
+      service: 'Kinesis',
+      key: 'analytics:Kinesis',
+    });
 
     await expect(generator.plan()).rejects.toThrow('not found in amplify-meta.json');
   });
@@ -49,7 +54,12 @@ describe('AnalyticsKinesisGenerator', () => {
       otherResource: { service: 'Kinesis' },
     });
 
-    const generator = new AnalyticsKinesisGenerator(gen1App, backendGenerator, outputDir, 'myKinesis');
+    const generator = new AnalyticsKinesisGenerator(gen1App, backendGenerator, outputDir, {
+      category: 'analytics',
+      resourceName: 'myKinesis',
+      service: 'Kinesis',
+      key: 'analytics:Kinesis',
+    });
 
     await expect(generator.plan()).rejects.toThrow('not found in amplify-meta.json');
   });

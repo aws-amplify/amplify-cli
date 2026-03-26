@@ -1,30 +1,15 @@
 import { ForwardCategoryRefactorer } from '../workflow/forward-category-refactorer';
 import { StackFacade } from '../stack-facade';
-import { AwsClients } from '../../aws-clients';
-import { SpinningLogger } from '../../_spinning-logger';
+
+export const S3_BUCKET_TYPE = 'AWS::S3::Bucket';
 
 /**
  * Forward refactorer for S3 storage resources.
  * Moves S3 buckets from Gen1 to Gen2.
  */
 export class StorageS3ForwardRefactorer extends ForwardCategoryRefactorer {
-  private readonly resourceName: string;
-
-  constructor(
-    gen1Env: StackFacade,
-    gen2Branch: StackFacade,
-    clients: AwsClients,
-    region: string,
-    accountId: string,
-    logger: SpinningLogger,
-    resourceName: string,
-  ) {
-    super(gen1Env, gen2Branch, clients, region, accountId, logger);
-    this.resourceName = resourceName;
-  }
-
   protected async fetchSourceStackId(): Promise<string | undefined> {
-    return this.findNestedStack(this.gen1Env, 'storage' + this.resourceName);
+    return this.findNestedStack(this.gen1Env, 'storage' + this.resource.resourceName);
   }
 
   protected async fetchDestStackId(): Promise<string | undefined> {
@@ -32,7 +17,7 @@ export class StorageS3ForwardRefactorer extends ForwardCategoryRefactorer {
   }
 
   protected resourceTypes(): string[] {
-    return ['AWS::S3::Bucket'];
+    return [S3_BUCKET_TYPE];
   }
 }
 
@@ -48,7 +33,7 @@ export async function findS3NestedStack(facade: StackFacade): Promise<string | u
     const stackId = s.PhysicalResourceId;
     if (!stackId) continue;
     const template = await facade.fetchTemplate(stackId);
-    const hasS3 = Object.values(template.Resources).some((r) => r.Type === 'AWS::S3::Bucket');
+    const hasS3 = Object.values(template.Resources).some((r) => r.Type === S3_BUCKET_TYPE);
     if (hasS3) return stackId;
   }
   return undefined;

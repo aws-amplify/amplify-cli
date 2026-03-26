@@ -1,7 +1,6 @@
+import { CFNResource } from '../../cfn-template';
 import { RollbackCategoryRefactorer } from '../workflow/rollback-category-refactorer';
-import { StackFacade } from '../stack-facade';
-import { AwsClients } from '../../aws-clients';
-import { SpinningLogger } from '../../_spinning-logger';
+import { DYNAMO_TABLE_TYPE } from './storage-dynamo-forward';
 
 /**
  * Rollback refactorer for DynamoDB storage resources.
@@ -9,32 +8,24 @@ import { SpinningLogger } from '../../_spinning-logger';
  * Each table gets its own nested stack using 'storage' + resourceName as prefix.
  */
 export class StorageDynamoRollbackRefactorer extends RollbackCategoryRefactorer {
-  protected override readonly gen1LogicalIds = new Map<string, string>([['AWS::DynamoDB::Table', 'DynamoDBTable']]);
-
-  private readonly resourceName: string;
-
-  constructor(
-    gen1Env: StackFacade,
-    gen2Branch: StackFacade,
-    clients: AwsClients,
-    region: string,
-    accountId: string,
-    logger: SpinningLogger,
-    resourceName: string,
-  ) {
-    super(gen1Env, gen2Branch, clients, region, accountId, logger);
-    this.resourceName = resourceName;
-  }
-
   protected async fetchSourceStackId(): Promise<string | undefined> {
-    return this.findNestedStack(this.gen2Branch, 'storage' + this.resourceName);
+    return this.findNestedStack(this.gen2Branch, 'storage' + this.resource.resourceName);
   }
 
   protected async fetchDestStackId(): Promise<string | undefined> {
-    return this.findNestedStack(this.gen1Env, 'storage' + this.resourceName);
+    return this.findNestedStack(this.gen1Env, 'storage' + this.resource.resourceName);
   }
 
   protected resourceTypes(): string[] {
-    return ['AWS::DynamoDB::Table'];
+    return [DYNAMO_TABLE_TYPE];
+  }
+
+  protected targetLogicalId(_sourceId: string, sourceResource: CFNResource): string | undefined {
+    switch (sourceResource.Type) {
+      case DYNAMO_TABLE_TYPE:
+        return 'DynamoDBTable';
+      default:
+        return undefined;
+    }
   }
 }

@@ -16,31 +16,20 @@ describe('StackFacade', () => {
 
   afterEach(() => cfnMock.restore());
 
-  it('returns cached template on second call without hitting AWS', async () => {
+  it('fetches and parses template from CloudFormation', async () => {
     cfnMock.on(GetTemplateCommand).resolves({
       TemplateBody: JSON.stringify({ AWSTemplateFormatVersion: '2010-09-09', Description: 'test', Resources: {}, Outputs: {} }),
     });
 
-    const first = await facade.fetchTemplate('stack-1');
-    const second = await facade.fetchTemplate('stack-1');
-
-    expect(first).toBe(second);
+    const result = await facade.fetchTemplate('stack-1');
+    expect(result.Description).toBe('test');
     expect(cfnMock.commandCalls(GetTemplateCommand)).toHaveLength(1);
   });
 
-  it('evicts cache entry on rejection and retries on next call', async () => {
-    cfnMock
-      .on(GetTemplateCommand)
-      .rejectsOnce(new Error('throttle'))
-      .resolves({
-        TemplateBody: JSON.stringify({ AWSTemplateFormatVersion: '2010-09-09', Description: 'ok', Resources: {}, Outputs: {} }),
-      });
+  it('throws when template body is empty', async () => {
+    cfnMock.on(GetTemplateCommand).resolves({ TemplateBody: undefined });
 
-    await expect(facade.fetchTemplate('stack-1')).rejects.toThrow('throttle');
-
-    const result = await facade.fetchTemplate('stack-1');
-    expect(result.Description).toBe('ok');
-    expect(cfnMock.commandCalls(GetTemplateCommand)).toHaveLength(2);
+    await expect(facade.fetchTemplate('stack-1')).rejects.toThrow('returned an empty template');
   });
 
   it('fetchNestedStacks filters to AWS::CloudFormation::Stack resources only', async () => {

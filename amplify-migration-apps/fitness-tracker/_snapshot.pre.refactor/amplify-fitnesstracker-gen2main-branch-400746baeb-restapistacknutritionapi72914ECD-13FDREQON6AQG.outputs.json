@@ -1,0 +1,14 @@
+[
+  {
+    "OutputKey": "amplifyfitnesstrackergen2mainbranch400746baebrestapistacknutritionapiRestApiEC7FBBC7Ref",
+    "OutputValue": "klqsuoycl8"
+  },
+  {
+    "OutputKey": "RestApiEndpoint0551178A",
+    "OutputValue": "https://klqsuoycl8.execute-api.us-east-1.amazonaws.com/prod/"
+  },
+  {
+    "OutputKey": "amplifyfitnesstrackergen2mainbranch400746baebrestapistacknutritionapiRestApiDeploymentStageprod41F1D9FFRef",
+    "OutputValue": "prod"
+  }
+]

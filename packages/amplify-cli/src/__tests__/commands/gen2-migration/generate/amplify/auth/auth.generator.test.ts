@@ -83,7 +83,12 @@ describe('AuthGenerator', () => {
       throw new Error("Category 'auth' not found in amplify-meta.json");
     });
 
-    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir);
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, {
+      category: 'auth',
+      resourceName: 'testAuth',
+      service: 'Cognito',
+      key: 'auth:Cognito',
+    });
 
     await expect(generator.plan()).rejects.toThrow("Category 'auth' not found");
   });
@@ -93,7 +98,12 @@ describe('AuthGenerator', () => {
     (gen1App.metaOutput as jest.Mock).mockReturnValue('us-east-1_abc123');
     (gen1App.aws.fetchUserPool as jest.Mock).mockRejectedValue(new Error("User pool 'us-east-1_abc123' not found"));
 
-    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir);
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, {
+      category: 'auth',
+      resourceName: 'testAuth',
+      service: 'Cognito',
+      key: 'auth:Cognito',
+    });
 
     await expect(generator.plan()).rejects.toThrow("User pool 'us-east-1_abc123' not found");
   });
@@ -122,7 +132,12 @@ describe('AuthGenerator', () => {
     const addImportSpy = jest.spyOn(backendGenerator, 'addImport');
     const addPropertySpy = jest.spyOn(backendGenerator, 'addDefineBackendProperty');
 
-    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir);
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, {
+      category: 'auth',
+      resourceName: 'testAuth',
+      service: 'Cognito',
+      key: 'auth:Cognito',
+    });
     const ops = await generator.plan();
 
     expect(ops).toHaveLength(1);
@@ -160,7 +175,12 @@ describe('AuthGenerator', () => {
     (gen1App.aws.fetchIdentityGroups as jest.Mock).mockResolvedValue([]);
     (gen1App.aws.fetchIdentityPool as jest.Mock).mockResolvedValue(undefined);
 
-    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir);
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, {
+      category: 'auth',
+      resourceName: 'testAuth',
+      service: 'Cognito',
+      key: 'auth:Cognito',
+    });
     generator.addFunctionAuthAccess({ resourceName: 'adminFunc', permissions: { manageUsers: true } });
 
     const ops = await generator.plan();
@@ -201,7 +221,12 @@ describe('ReferenceAuthGenerator', () => {
 
     const addImportSpy = jest.spyOn(backendGenerator, 'addImport');
 
-    const generator = new ReferenceAuthGenerator(gen1App, backendGenerator, outputDir);
+    const generator = new ReferenceAuthGenerator(gen1App, backendGenerator, outputDir, {
+      category: 'auth',
+      resourceName: 'testAuth',
+      service: 'Cognito',
+      key: 'auth:Cognito',
+    });
     const ops = await generator.plan();
 
     expect(ops).toHaveLength(1);
