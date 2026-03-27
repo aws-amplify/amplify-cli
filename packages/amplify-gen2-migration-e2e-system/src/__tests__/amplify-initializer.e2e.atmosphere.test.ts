@@ -286,6 +286,7 @@ describe('AmplifyInitializer + CDK Atmosphere Integration', () => {
             appPath: testDir,
             config,
             deploymentName: 'atmosphereAmplifyApp',
+            envName: 'testenv',
             profile: profileName,
           }),
           timeoutPromise,
@@ -392,6 +393,7 @@ describe('AmplifyInitializer + CDK Atmosphere Integration', () => {
           appPath: invalidTestDir,
           config,
           deploymentName: 'invalidPathApp',
+          envName: 'testenv',
           profile: profileName,
         });
         // If we get here, the test should fail

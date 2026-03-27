@@ -20,6 +20,8 @@ export interface CategoryConfiguration {
   storage?: StorageConfiguration;
   function?: FunctionConfiguration;
   hosting?: HostingConfiguration;
+  restApi?: RestApiConfiguration;
+  analytics?: AnalyticsConfiguration;
 }
 
 export interface APIConfiguration {
@@ -30,16 +32,64 @@ export interface APIConfiguration {
   customMutations?: string[];
 }
 
+export interface RestApiConfiguration {
+  name: string;
+  paths: string[];
+  lambdaSource: string;
+}
+
 export interface AuthConfiguration {
   signInMethods: SignInMethod[];
   socialProviders: SocialProvider[];
+  userPoolGroups?: string[];
+  triggers?: AuthTriggers;
   userPoolConfig?: UserPoolConfiguration;
   identityPoolConfig?: IdentityPoolConfiguration;
 }
 
+export interface AuthTriggers {
+  preSignUp?: PreSignUpTrigger;
+  postConfirmation?: PostConfirmationTrigger;
+  preAuthentication?: PreAuthenticationTrigger;
+  postAuthentication?: PostAuthenticationTrigger;
+}
+
+export interface PreSignUpTrigger {
+  type: 'email-filter-allowlist' | 'custom';
+  allowedDomains?: string[];
+}
+
+export interface PostConfirmationTrigger {
+  type: 'add-to-group' | 'custom';
+  groupName?: string;
+}
+
+export interface PreAuthenticationTrigger {
+  type: 'custom';
+}
+
+export interface PostAuthenticationTrigger {
+  type: 'custom';
+}
+
 export interface StorageConfiguration {
-  buckets: StorageBucket[];
+  type?: 'dynamodb';
+  buckets?: StorageBucket[];
+  tables?: DynamoDBTable[];
   triggers?: StorageTrigger[];
+}
+
+export interface DynamoDBTable {
+  name: string;
+  partitionKey: string;
+  sortKey?: string;
+  gsi?: GlobalSecondaryIndex[];
+}
+
+export interface GlobalSecondaryIndex {
+  name: string;
+  partitionKey: string;
+  sortKey?: string;
 }
 
 export interface FunctionConfiguration {
@@ -51,6 +101,12 @@ export interface HostingConfiguration {
   customDomain?: string;
   sslCertificate?: string;
   buildSettings?: BuildSettings;
+}
+
+export interface AnalyticsConfiguration {
+  type: 'kinesis' | 'pinpoint';
+  name: string;
+  shards?: number;
 }
 
 export interface DependencyConfiguration {
@@ -95,6 +151,12 @@ export interface LambdaFunction {
   handler?: string;
   environment?: Record<string, string>;
   permissions?: string[];
+  trigger?: FunctionTrigger;
+}
+
+export interface FunctionTrigger {
+  type: 'dynamodb-stream' | 's3' | 'cognito' | 'kinesis';
+  source: string[];
 }
 
 export interface BuildSettings {
@@ -180,7 +242,8 @@ export interface CLIOptions {
 export interface InitializeAppFromCLIParams {
   appName: string;
   deploymentName: string;
-  envName?: string;
+  /** Amplify environment name (required, 2-10 lowercase letters) */
+  envName: string;
   config: AppConfiguration;
   migrationTargetPath: string;
   profile: string;
