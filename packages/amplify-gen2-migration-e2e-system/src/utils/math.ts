@@ -9,7 +9,6 @@ export const generateTimeBasedE2EAmplifyAppName = (appName?: string): string => 
   const now = new Date();
 
   // Format: YYMMDDHHMMSSMM (human-readable, sortable) - 14 chars
-  // Using only 2 digits of milliseconds to save space
   const timestamp = [
     String(now.getFullYear()).slice(-2), // YY
     String(now.getMonth() + 1).padStart(2, '0'), // MM
