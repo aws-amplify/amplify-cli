@@ -6,9 +6,10 @@
  * 2. Geofence Operations -- save, get, list, delete
  *
  * Credentials are provisioned automatically via Cognito
- * AdminCreateUser + AdminSetUserPassword. The PostConfirmation
- * Lambda auto-adds the user to the storeLocatorAdmin group,
- * granting geofence CRUD permissions.
+ * AdminCreateUser + AdminSetUserPassword. Since AdminCreateUser
+ * does not trigger the PostConfirmation Lambda, the script
+ * manually adds the user to the storeLocatorAdmin group to
+ * grant geofence CRUD permissions.
  */
 
 // Polyfill crypto for Node.js environment (required for Amplify Auth)
@@ -19,6 +20,10 @@ if (typeof globalThis.crypto === 'undefined') {
 
 import { Amplify } from 'aws-amplify';
 import { signIn, signOut, getCurrentUser } from 'aws-amplify/auth';
+import {
+  CognitoIdentityProviderClient,
+  AdminAddUserToGroupCommand,
+} from '@aws-sdk/client-cognito-identity-provider';
 import amplifyconfig from './src/amplifyconfiguration.json';
 import { TestRunner } from '../_test-common/test-apps-test-utils';
 import { provisionTestUser } from '../_test-common/signup';
@@ -39,6 +44,25 @@ async function runAllTests(): Promise<void> {
 
   // Provision user via admin APIs, then sign in here so tokens stay in this module's Amplify scope
   const { signinValue, testUser } = await provisionTestUser(amplifyconfig);
+
+  // AdminCreateUser does not fire the PostConfirmation trigger, so
+  // manually add the user to storeLocatorAdmin for geofence permissions.
+  try {
+    const cognitoClient = new CognitoIdentityProviderClient({
+      region: (amplifyconfig as any).aws_cognito_region,
+    });
+    await cognitoClient.send(
+      new AdminAddUserToGroupCommand({
+        UserPoolId: (amplifyconfig as any).aws_user_pools_id,
+        Username: signinValue,
+        GroupName: 'storeLocatorAdmin',
+      }),
+    );
+    console.log('✅ Added user to storeLocatorAdmin group');
+  } catch (error: any) {
+    console.error('❌ Failed to add user to group:', error.message || error);
+    process.exit(1);
+  }
 
   // Sign in from this module so the auth tokens are available to Geo
   try {
