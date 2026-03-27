@@ -1,20 +1,20 @@
 /**
  * Gen2 Migration Executor
  *
- * Executes gen2-migration CLI commands (lock, generate, refactor, decommission)
+ * Executes gen2-migration CLI commands (lock, generate, refactor)
  * from the amplify-cli package to migrate Gen1 apps to Gen2.
  */
 
 import execa from 'execa';
-import fs from 'fs';
 import os from 'os';
 import { ILogger } from '../interfaces';
 import { LogContext } from '../types';
+import { getCLIPath } from '@aws-amplify/amplify-e2e-core';
 
 /**
  * Available gen2-migration steps
  */
-export type Gen2MigrationStep = 'lock' | 'generate' | 'refactor' | 'decommission';
+export type Gen2MigrationStep = 'lock' | 'generate' | 'refactor';
 
 /**
  * Options for Gen2MigrationExecutor
@@ -31,14 +31,13 @@ export interface Gen2MigrationExecutorOptions {
  * 1. lock - Lock the Gen1 environment to prevent updates during migration
  * 2. generate - Generate Gen2 code from Gen1 configuration
  * 3. refactor - Move stateful resources from Gen1 to Gen2 stacks
- * 4. decommission - Delete the Gen1 environment post-migration
  */
 export class Gen2MigrationExecutor {
   private readonly amplifyPath: string;
   private readonly profile?: string;
 
   constructor(private readonly logger: ILogger, options?: Gen2MigrationExecutorOptions) {
-    this.amplifyPath = this.getAmplifyCliPath();
+    this.amplifyPath = getCLIPath(true);
     this.profile = options?.profile;
   }
 
@@ -64,9 +63,25 @@ export class Gen2MigrationExecutor {
       cwd: appPath,
       reject: false,
       env,
+      all: true, // Combine stdout and stderr
     });
 
     const durationMs = Date.now() - startTime;
+    const combinedOutput = result.all ?? `${result.stdout}\n${result.stderr}`;
+
+    // Always log output for debugging
+    if (combinedOutput.trim()) {
+      const outputLines = combinedOutput.split('\n');
+      const lastLines = outputLines.slice(-100).join('\n');
+      this.logger.info(`gen2-migration ${step} output:\n${lastLines}`, context);
+    }
+
+    // Check for command not found - CLI returns exit code 0 but prints help
+    const commandNotFound = this.checkForCommandNotFound(combinedOutput);
+    if (commandNotFound) {
+      this.logger.error(`gen2-migration ${step} command not recognized by CLI`, undefined, context);
+      throw new Error(`gen2-migration ${step} failed: command not found. Ensure you are using the correct amplify CLI version.`);
+    }
 
     if (result.exitCode !== 0) {
       const errorMessage = result.stderr || result.stdout || `Exit code ${result.exitCode}`;
@@ -75,6 +90,14 @@ export class Gen2MigrationExecutor {
     }
 
     this.logger.info(`gen2-migration ${step} completed (${durationMs}ms)`, context);
+  }
+
+  /**
+   * Check if the CLI output indicates the command was not found.
+   * The CLI returns exit code 0 but prints a warning when command is not recognized.
+   */
+  private checkForCommandNotFound(output: string): boolean {
+    return output.includes('The Amplify CLI can NOT find command');
   }
 
   /**
@@ -107,15 +130,6 @@ export class Gen2MigrationExecutor {
   }
 
   /**
-   * Delete the Gen1 environment.
-   *
-   * Should only be run after successful refactor.
-   */
-  public async decommission(appPath: string): Promise<void> {
-    await this.executeStep('decommission', appPath);
-  }
-
-  /**
    * Run pre-deployment workflow: lock -> checkout gen2 branch -> generate
    */
   public async runPreDeploymentWorkflow(appPath: string, envName = 'main'): Promise<void> {
@@ -134,19 +148,6 @@ export class Gen2MigrationExecutor {
     await this.generate(appPath);
 
     this.logger.info('Pre-deployment workflow completed', context);
-  }
-
-  /**
-   * Run post-deployment workflow: refactor -> decommission
-   */
-  public async runPostDeploymentWorkflow(appPath: string, gen2StackName: string): Promise<void> {
-    const context: LogContext = { operation: 'gen2-migration-workflow' };
-    this.logger.info('Starting post-deployment workflow (refactor -> decommission)...', context);
-
-    await this.refactor(appPath, gen2StackName);
-    await this.decommission(appPath);
-
-    this.logger.info('Post-deployment workflow completed', context);
   }
 
   /**
@@ -277,13 +278,5 @@ export class Gen2MigrationExecutor {
 
     // Return the most recently created (should only be one)
     return rootStacks[0];
-  }
-
-  private getAmplifyCliPath(): string {
-    const amplifyPath = process.env.AMPLIFY_PATH;
-    if (amplifyPath && fs.existsSync(amplifyPath)) {
-      return amplifyPath;
-    }
-    return process.platform === 'win32' ? 'amplify.exe' : 'amplify';
   }
 }

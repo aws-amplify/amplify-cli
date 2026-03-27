@@ -56,9 +56,9 @@ yarn build
 
 ```shell
 
-# set AMPLIFY_PATH to your development Amplify CLI
-# if you do not set this, the next command will use the global installation of amplify
-export AMPLIFY_PATH={YOUR_WORKPLACE}/amplify-cli/.bin/amplify-dev
+# this tool will use your development Amplify CLI by default: {YOUR_WORKPLACE}/amplify-cli/.bin/amplify-dev
+# if your development Amplify CLI is not built, then the tool will fall back to your global install of amplify
+# you can override the default behavior by setting AMPLIFY_PATH
 
 # Migrate an app (Project Boards) using the default profile
 npx tsx src/cli.ts --app project-boards --profile default
@@ -146,7 +146,7 @@ The system follows a modular architecture with:
 - **ConfigurationLoader**: Manages app-specific configurations
 - **EnvironmentDetector**: Detects Atmosphere vs Local environments
 - **AppSelector**: Handles app discovery and selection
-- **Gen2MigrationExecutor**: Executes gen2-migration CLI commands (lock, generate, refactor, decommission)
+- **Gen2MigrationExecutor**: Executes gen2-migration CLI commands (lock, generate, refactor)
 - **Logger**: Formatted logging with file output
 - **FileManager**, **DirectryManager**: File system operations
 

@@ -23,6 +23,7 @@ import { generateTimeBasedE2EAmplifyAppName } from './utils/math';
 import path from 'path';
 import os from 'os';
 import fs from 'fs';
+import { getCLIPath } from '@aws-amplify/amplify-e2e-core';
 
 /** Options passed to app-specific post-generate scripts */
 interface PostGenerateOptions {
@@ -311,18 +312,6 @@ async function showDryRunSummary(selectedApp: string, config?: AppConfiguration)
 }
 
 /**
- * Get the path to the amplify CLI binary.
- * Checks AMPLIFY_PATH env var first, then falls back to 'amplify' in PATH.
- */
-function getAmplifyCliPath(): string {
-  const amplifyPath = process.env.AMPLIFY_PATH;
-  if (amplifyPath && fs.existsSync(amplifyPath)) {
-    return amplifyPath;
-  }
-  return process.platform === 'win32' ? 'amplify.exe' : 'amplify';
-}
-
-/**
  * Run the app-specific post-generate script if it exists.
  * Each app in amplify-migration-apps can have a post-generate.ts that applies
  * manual edits required after `amplify gen2-migration generate`.
@@ -378,10 +367,10 @@ async function runPostRefactorScript(appName: string, targetAppPath: string, env
  * Spawn the amplify CLI directly to run amplify push --yes.
  *
  * Uses AMPLIFY_PATH env var if set, otherwise
- * falls back to amplify in PATH.
+ * falls back to the amplify CLI built in the monorepo, then amplify in PATH.
  */
 async function amplifyPush(targetAppPath: string): Promise<void> {
-  const amplifyPath = getAmplifyCliPath();
+  const amplifyPath = getCLIPath(true);
   logger.info(`Using amplify CLI at: ${amplifyPath}`);
   const originalCwd = process.cwd();
 
