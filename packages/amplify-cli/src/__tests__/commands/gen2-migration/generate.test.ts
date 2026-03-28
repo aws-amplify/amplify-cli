@@ -77,15 +77,14 @@ async function testSnapshot(appName: string, appOptions?: MigrationAppOptions, c
       if (customize) {
         await customize(app);
       }
-      const step = new AmplifyMigrationGenerateStep(
-        app.logger,
-        app.environmentName,
-        app.name,
-        app.id,
-        app.rootStackName,
-        app.region,
-        {} as $TSContext,
-      );
+      const gen1App = await Gen1App.create({
+        appId: app.id,
+        appName: app.name,
+        region: app.region,
+        envName: app.environmentName,
+        clients: new AwsClients({ region: app.region }),
+      });
+      const step = new AmplifyMigrationGenerateStep(app.logger, gen1App, {} as $TSContext);
       const plan = await step.forward();
       await plan.execute();
 
@@ -105,32 +104,33 @@ async function testSnapshot(appName: string, appOptions?: MigrationAppOptions, c
 }
 
 import { Gen1App, DiscoveredResource } from '../../../commands/gen2-migration/generate/_infra/gen1-app';
+import { AwsClients } from '../../../commands/gen2-migration/aws-clients';
 import { SpinningLogger } from '../../../commands/gen2-migration/_spinning-logger';
 
-function mockDiscover(resources: DiscoveredResource[]): jest.SpyInstance {
-  return jest.spyOn(Gen1App, 'create').mockResolvedValue({
-    discover: () => resources,
+/** Creates a minimal mock Gen1App for unit tests. */
+function mockGen1App(overrides: Partial<Gen1App> = {}): Gen1App {
+  return {
+    appId: 'app-123',
+    appName: 'test-app',
+    region: 'us-east-1',
+    envName: 'dev',
+    rootStackName: 'root-stack',
+    discover: () => [],
     meta: () => undefined,
-  } as unknown as Gen1App);
+    ...overrides,
+  } as unknown as Gen1App;
 }
 
-function createStep(): AmplifyMigrationGenerateStep {
-  const logger = new SpinningLogger('generate', { debug: true });
-  return new AmplifyMigrationGenerateStep(logger, 'dev', 'test-app', 'app-123', 'root-stack', 'us-east-1', {} as $TSContext);
+function mockDiscover(resources: DiscoveredResource[]): Gen1App {
+  return mockGen1App({ discover: () => resources });
 }
 
 describe('AmplifyMigrationGenerateStep', () => {
-  let createSpy: jest.SpyInstance;
-
-  afterEach(() => {
-    createSpy?.mockRestore();
-  });
-
   describe('execute()', () => {
     it('warns and skips unsupported resources instead of throwing', async () => {
-      createSpy = mockDiscover([{ category: 'notifications', resourceName: 'push', service: 'Pinpoint', key: 'unsupported' }]);
-
-      const step = createStep();
+      const gen1 = mockDiscover([{ category: 'notifications', resourceName: 'push', service: 'Pinpoint', key: 'UNKNOWN' }]);
+      const logger = new SpinningLogger('generate', { debug: true });
+      const step = new AmplifyMigrationGenerateStep(logger, gen1, {} as $TSContext);
       // Should not throw — generate warns on unsupported, unlike refactor
       const plan = await step.forward();
       await plan.describe();

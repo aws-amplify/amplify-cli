@@ -11,6 +11,7 @@ import { AwsFetcher } from './aws-fetcher';
 
 export interface Gen1CreateOptions {
   readonly appId: string;
+  readonly appName: string;
   readonly region: string;
   readonly envName: string;
   readonly clients: AwsClients;
@@ -20,6 +21,7 @@ interface Gen1AppProps extends Gen1CreateOptions {
   readonly ccbDir: string;
   readonly rootStackName: string;
   readonly deploymentBucketName: string;
+  readonly appName: string;
 }
 
 /**
@@ -27,7 +29,7 @@ interface Gen1AppProps extends Gen1CreateOptions {
  * Adding a new pair here forces every exhaustive switch on ResourceKey
  * to handle it — the compiler will error on any switch that misses a case.
  */
-export const SUPPORTED_RESOURCE_KEYS = [
+export const KNOWN_RESOURCE_KEYS = [
   'auth:Cognito',
   'auth:Cognito-UserPool-Groups',
   'storage:S3',
@@ -45,7 +47,7 @@ export const SUPPORTED_RESOURCE_KEYS = [
  * Union of all known category:service pairs, plus 'unsupported' for
  * resources the tool has no migration logic for.
  */
-export type ResourceKey = (typeof SUPPORTED_RESOURCE_KEYS)[number] | 'unsupported';
+export type ResourceKey = (typeof KNOWN_RESOURCE_KEYS)[number] | 'UNKNOWN';
 
 /**
  * A resource discovered from amplify-meta.json.
@@ -71,6 +73,7 @@ export interface DiscoveredResource {
  */
 export class Gen1App {
   public readonly appId: string;
+  public readonly appName: string;
   public readonly region: string;
   public readonly envName: string;
   public readonly clients: AwsClients;
@@ -84,6 +87,7 @@ export class Gen1App {
 
   private constructor(props: Gen1AppProps) {
     this.appId = props.appId;
+    this.appName = props.appName;
     this.region = props.region;
     this.envName = props.envName;
     this.clients = props.clients;
@@ -138,7 +142,7 @@ export class Gen1App {
           });
         }
         const rawKey = `${category}:${service}`;
-        const key: ResourceKey = (SUPPORTED_RESOURCE_KEYS as readonly string[]).includes(rawKey) ? (rawKey as ResourceKey) : 'unsupported';
+        const key: ResourceKey = (KNOWN_RESOURCE_KEYS as readonly string[]).includes(rawKey) ? (rawKey as ResourceKey) : 'UNKNOWN';
         resources.push({ category, resourceName, service, key });
       }
     }

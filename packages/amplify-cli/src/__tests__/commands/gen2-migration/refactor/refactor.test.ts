@@ -2,6 +2,7 @@ import { AmplifyMigrationRefactorStep } from '../../../../commands/gen2-migratio
 import { OUTPUT_DIRECTORY } from '../../../../commands/gen2-migration/refactor/cfn';
 import { MigrationApp, MigrationAppOptions } from '../_framework/app';
 import { Gen1App, DiscoveredResource } from '../../../../commands/gen2-migration/generate/_infra/gen1-app';
+import { AwsClients } from '../../../../commands/gen2-migration/aws-clients';
 import { SpinningLogger } from '../../../../commands/gen2-migration/_spinning-logger';
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import * as fs from 'fs-extra';
@@ -84,15 +85,14 @@ async function testSnapshot(appName: string, appOptions?: MigrationAppOptions, c
       }
 
       const context: any = { parameters: { options: { to: findGen2RootStackName(app) } } };
-      const refactorStep = new AmplifyMigrationRefactorStep(
-        app.logger,
-        app.environmentName,
-        app.name,
-        app.id,
-        app.rootStackName,
-        app.region,
-        context,
-      );
+      const gen1App = await Gen1App.create({
+        appId: app.id,
+        appName: app.name,
+        region: app.region,
+        envName: app.environmentName,
+        clients: new AwsClients({ region: app.region }),
+      });
+      const refactorStep = new AmplifyMigrationRefactorStep(app.logger, gen1App, context);
 
       const plan = await refactorStep.forward();
       await plan.execute();
@@ -127,12 +127,23 @@ function findGen2RootStackName(app: MigrationApp) {
   throw new Error(`Unable to find Gen2 root stack name for app: ${app.name}`);
 }
 
-function mockDiscover(resources: DiscoveredResource[]): jest.SpyInstance {
-  return jest.spyOn(Gen1App, 'create').mockResolvedValue({
-    discover: () => resources,
+/** Creates a minimal mock Gen1App for unit tests. */
+function mockGen1App(overrides: Partial<Gen1App> = {}): Gen1App {
+  return {
+    appId: 'app-123',
+    appName: 'test-app',
+    region: 'us-east-1',
+    envName: 'dev',
+    rootStackName: 'root-stack',
+    discover: () => [],
     meta: () => undefined,
     fileExists: () => false,
-  } as unknown as Gen1App);
+    ...overrides,
+  } as unknown as Gen1App;
+}
+
+function mockDiscover(resources: DiscoveredResource[]): Gen1App {
+  return mockGen1App({ discover: () => resources });
 }
 
 function mockCreateInfrastructure(): jest.SpyInstance {
@@ -145,38 +156,34 @@ function mockCreateInfrastructure(): jest.SpyInstance {
   });
 }
 
-function createStep(toStack = 'gen2-stack'): AmplifyMigrationRefactorStep {
-  const logger = new SpinningLogger('refactor', { debug: true });
-  const context = { parameters: { options: { to: toStack } } } as unknown as $TSContext;
-  return new AmplifyMigrationRefactorStep(logger, 'dev', 'test-app', 'app-123', 'root-stack', 'us-east-1', context);
-}
-
 describe('AmplifyMigrationRefactorStep', () => {
-  let createSpy: jest.SpyInstance;
   let infraSpy: jest.SpyInstance;
 
   afterEach(() => {
-    createSpy?.mockRestore();
     infraSpy?.mockRestore();
   });
 
   describe('execute()', () => {
     it('throws on unsupported resource key', async () => {
       infraSpy = mockCreateInfrastructure();
-      createSpy = mockDiscover([{ category: 'notifications', resourceName: 'push', service: 'Pinpoint', key: 'unsupported' }]);
+      const gen1 = mockDiscover([{ category: 'notifications', resourceName: 'push', service: 'Pinpoint', key: 'UNKNOWN' }]);
+      const logger = new SpinningLogger('refactor', { debug: true });
+      const context = { parameters: { options: { to: 'gen2-stack' } } } as unknown as $TSContext;
+      const step = new AmplifyMigrationRefactorStep(logger, gen1, context);
 
-      const step = createStep();
       await expect(step.forward()).rejects.toThrow(/Unsupported resource 'push'/);
     });
 
     it('does not throw for stateless-only resources', async () => {
       infraSpy = mockCreateInfrastructure();
-      createSpy = mockDiscover([
+      const gen1 = mockDiscover([
         { category: 'function', resourceName: 'myFunc', service: 'Lambda', key: 'function:Lambda' },
         { category: 'api', resourceName: 'myApi', service: 'AppSync', key: 'api:AppSync' },
       ]);
+      const logger = new SpinningLogger('refactor', { debug: true });
+      const context = { parameters: { options: { to: 'gen2-stack' } } } as unknown as $TSContext;
+      const step = new AmplifyMigrationRefactorStep(logger, gen1, context);
 
-      const step = createStep();
       const plan = await step.forward();
       await plan.describe();
     });
@@ -185,20 +192,24 @@ describe('AmplifyMigrationRefactorStep', () => {
   describe('rollback()', () => {
     it('throws on unsupported resource key', async () => {
       infraSpy = mockCreateInfrastructure();
-      createSpy = mockDiscover([{ category: 'notifications', resourceName: 'push', service: 'Pinpoint', key: 'unsupported' }]);
+      const gen1 = mockDiscover([{ category: 'notifications', resourceName: 'push', service: 'Pinpoint', key: 'UNKNOWN' }]);
+      const logger = new SpinningLogger('refactor', { debug: true });
+      const context = { parameters: { options: { to: 'gen2-stack' } } } as unknown as $TSContext;
+      const step = new AmplifyMigrationRefactorStep(logger, gen1, context);
 
-      const step = createStep();
       await expect(step.rollback()).rejects.toThrow(/Unsupported resource 'push'/);
     });
 
     it('does not throw for stateless-only resources', async () => {
       infraSpy = mockCreateInfrastructure();
-      createSpy = mockDiscover([
+      const gen1 = mockDiscover([
         { category: 'function', resourceName: 'myFunc', service: 'Lambda', key: 'function:Lambda' },
         { category: 'api', resourceName: 'myGateway', service: 'API Gateway', key: 'api:API Gateway' },
       ]);
+      const logger = new SpinningLogger('refactor', { debug: true });
+      const context = { parameters: { options: { to: 'gen2-stack' } } } as unknown as $TSContext;
+      const step = new AmplifyMigrationRefactorStep(logger, gen1, context);
 
-      const step = createStep();
       const plan = await step.rollback();
       await plan.describe();
     });

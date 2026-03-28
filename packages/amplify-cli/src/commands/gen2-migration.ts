@@ -103,21 +103,21 @@ export const run = async (context: $TSContext) => {
 
   const envName = localEnvName ?? migratingEnvName;
 
-  const stackName = stateManager.getTeamProviderInfo()[envName].awscloudformation.StackName;
   const region = stateManager.getTeamProviderInfo()[envName].awscloudformation.Region;
+
+  const clients = new AwsClients({ region });
+  const gen1App = await Gen1App.create({ appId, appName, region, envName, clients });
 
   const logger = new SpinningLogger(`${stepName}] [${appName}/${envName}`, { debug: isDebug });
 
   // Assess is not a migration step — handle it separately.
   if (stepName === 'assess') {
-    const clients = new AwsClients({ region });
-    const gen1App = await Gen1App.create({ appId, region, envName, clients });
     const assessor = new AmplifyMigrationAssessor(gen1App);
-    assessor.run(appName, envName);
+    assessor.run();
     return;
   }
 
-  const implementation: AmplifyMigrationStep = new step.class(logger, envName, appName, appId, stackName, region, context);
+  const implementation: AmplifyMigrationStep = new step.class(logger, gen1App, context);
 
   // Plan
   printer.blankLine();

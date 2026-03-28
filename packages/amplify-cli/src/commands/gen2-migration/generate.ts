@@ -6,11 +6,9 @@ import { AmplifyMigrationStep } from './_step';
 import { AmplifyMigrationOperation, ValidationResult } from './_operation';
 import { Plan } from './_plan';
 import { AmplifyGen2MigrationValidations } from './_validations';
-import { AwsClients } from './aws-clients';
 import { Gen1App } from './generate/_infra/gen1-app';
 import { Planner } from './planner';
 import { AmplifyMigrationAssessor } from './assess';
-import { Assessment } from './_assessment';
 import { BackendGenerator } from './generate/amplify/backend.generator';
 import { RootPackageJsonGenerator } from './generate/package.json.generator';
 import { BackendPackageJsonGenerator } from './generate/amplify/package.json.generator';
@@ -32,16 +30,13 @@ const AMPLIFY_DIR = 'amplify';
 
 export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
   public async forward(): Promise<Plan> {
-    const clients = new AwsClients({ region: this.region });
-    const gen1App = await Gen1App.create({ appId: this.appId, region: this.region, envName: this.currentEnvName, clients });
-
     const outputDir = await fs.mkdtemp(path.join(os.tmpdir(), 'amplify-gen2-'));
     const backendGenerator = new BackendGenerator(outputDir);
     const packageJsonGenerator = new RootPackageJsonGenerator(outputDir);
 
     const generators: Planner[] = [];
-    const discovered = gen1App.discover();
-    const assessor = new AmplifyMigrationAssessor(gen1App);
+    const assessor = new AmplifyMigrationAssessor(this.gen1App);
+    const assessment = assessor.assess();
 
     const operations: AmplifyMigrationOperation[] = [
       {
@@ -56,6 +51,18 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
         // eslint-disable-next-line @typescript-eslint/no-empty-function
         execute: async () => {},
       },
+      {
+        describe: async () => [],
+        validate: () => ({
+          description: 'Assessment',
+          run: async () => {
+            const valid = assessment.validFor('generate');
+            return { valid, report: valid ? undefined : assessment.reportFor('generate') };
+          },
+        }),
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        execute: async () => {},
+      },
     ];
 
     // Cross-category state captured during the loop.
@@ -64,41 +71,22 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
     let geoGenerator: GeoGenerator | undefined;
     const functionGenerators: FunctionGenerator[] = [];
 
-    for (const resource of discovered) {
-      // Feature assessment validation for this resource.
-      const features = assessor.assessFeatures(resource);
-      operations.push({
-        resource,
-        describe: async () => [],
-        validate: () => ({
-          description: `Feature assessment: ${resource.category}/${resource.resourceName} (${resource.service})`,
-          run: async () => {
-            const unsupported = features.filter((f) => f.generate === 'unsupported');
-            if (unsupported.length > 0) {
-              const report = new Assessment();
-              for (const f of unsupported) report.recordFeature(f);
-              return { valid: false, report: report.render() };
-            }
-            return { valid: true };
-          },
-        }),
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
-        execute: async () => {},
-      });
+    const discovered = this.gen1App.discover();
 
+    for (const resource of discovered) {
       switch (resource.key) {
         case 'auth:Cognito': {
           const isReferenceAuth = discovered
             .filter((r) => r.category === 'auth')
             .some((r) => {
-              const meta = (gen1App.meta('auth') ?? {})[r.resourceName] as Record<string, unknown> | undefined;
+              const meta = (this.gen1App.meta('auth') ?? {})[r.resourceName] as Record<string, unknown> | undefined;
               return meta?.serviceType === 'imported';
             });
 
           if (isReferenceAuth) {
-            generators.push(new ReferenceAuthGenerator(gen1App, backendGenerator, outputDir, resource));
+            generators.push(new ReferenceAuthGenerator(this.gen1App, backendGenerator, outputDir, resource));
           } else {
-            authGenerator = new AuthGenerator(gen1App, backendGenerator, outputDir, resource);
+            authGenerator = new AuthGenerator(this.gen1App, backendGenerator, outputDir, resource);
             generators.push(authGenerator);
           }
           break;
@@ -107,35 +95,35 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
           // Handled by the AuthGenerator created for the main Cognito resource.
           break;
         case 'storage:S3':
-          s3Generator = new S3Generator(gen1App, backendGenerator, outputDir, resource);
+          s3Generator = new S3Generator(this.gen1App, backendGenerator, outputDir, resource);
           generators.push(s3Generator);
           break;
         case 'storage:DynamoDB': {
-          generators.push(new DynamoDBGenerator(gen1App, backendGenerator, resource));
+          generators.push(new DynamoDBGenerator(this.gen1App, backendGenerator, resource));
           break;
         }
         case 'api:AppSync':
-          generators.push(new DataGenerator(gen1App, backendGenerator, outputDir, resource));
+          generators.push(new DataGenerator(this.gen1App, backendGenerator, outputDir, resource));
           break;
         case 'api:API Gateway':
-          generators.push(new RestApiGenerator(gen1App, backendGenerator, resource));
+          generators.push(new RestApiGenerator(this.gen1App, backendGenerator, resource));
           break;
         case 'analytics:Kinesis':
-          generators.push(new AnalyticsKinesisGenerator(gen1App, backendGenerator, outputDir, resource));
+          generators.push(new AnalyticsKinesisGenerator(this.gen1App, backendGenerator, outputDir, resource));
           break;
         case 'geo:Map':
         case 'geo:PlaceIndex':
         case 'geo:GeofenceCollection':
           // All geo services share a single GeoGenerator instance.
           if (!geoGenerator) {
-            geoGenerator = new GeoGenerator(gen1App, backendGenerator, outputDir, resource);
+            geoGenerator = new GeoGenerator(this.gen1App, backendGenerator, outputDir, resource);
             generators.push(geoGenerator);
           }
           break;
         case 'function:Lambda': {
-          const functionCategoryMap = computeFunctionCategories(gen1App);
+          const functionCategoryMap = computeFunctionCategories(this.gen1App);
           const funcGen = new FunctionGenerator({
-            gen1App,
+            gen1App: this.gen1App,
             backendGenerator,
             packageJsonGenerator,
             outputDir,
@@ -146,10 +134,11 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
           functionGenerators.push(funcGen);
           break;
         }
-        case 'unsupported':
-          this.logger.warn(
-            `Skipping unsupported resource '${resource.resourceName}' (${resource.category}:${resource.service}). You will need to write Gen2 code for this resource manually.`,
-          );
+
+        // unsupported/unknown resources - skip them.
+        // the assessment validation will surface these to the user
+        // and require confirmation of missing capabilities.
+        case 'UNKNOWN':
           break;
       }
     }
@@ -166,7 +155,7 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
     generators.push(packageJsonGenerator);
     generators.push(new BackendPackageJsonGenerator(outputDir));
     generators.push(new TsConfigGenerator(outputDir));
-    generators.push(new AmplifyYmlGenerator(gen1App));
+    generators.push(new AmplifyYmlGenerator(this.gen1App));
     generators.push(new GitIgnoreGenerator());
 
     operations.push({
@@ -233,7 +222,7 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
 
   private async validateLockStatus(): Promise<ValidationResult> {
     try {
-      const validations = new AmplifyGen2MigrationValidations(this.logger, this.rootStackName, this.currentEnvName, this.context);
+      const validations = new AmplifyGen2MigrationValidations(this.logger, this.gen1App.rootStackName, this.gen1App.envName, this.context);
       await validations.validateLockStatus();
       return { valid: true };
     } catch (e) {
@@ -243,7 +232,7 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
 
   private async validateWorkingDirectory(): Promise<ValidationResult> {
     try {
-      const validations = new AmplifyGen2MigrationValidations(this.logger, this.rootStackName, this.currentEnvName, this.context);
+      const validations = new AmplifyGen2MigrationValidations(this.logger, this.gen1App.rootStackName, this.gen1App.envName, this.context);
       await validations.validateWorkingDirectory();
       return { valid: true };
     } catch (e) {
