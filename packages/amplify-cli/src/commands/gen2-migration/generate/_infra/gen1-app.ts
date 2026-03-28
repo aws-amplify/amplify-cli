@@ -36,6 +36,9 @@ export const SUPPORTED_RESOURCE_KEYS = [
   'api:API Gateway',
   'analytics:Kinesis',
   'function:Lambda',
+  'geo:Map',
+  'geo:PlaceIndex',
+  'geo:GeofenceCollection',
 ] as const;
 
 /**

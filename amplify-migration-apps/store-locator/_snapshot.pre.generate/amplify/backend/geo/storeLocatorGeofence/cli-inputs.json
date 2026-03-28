@@ -1,0 +1,10 @@
+{
+  "groupPermissions": {
+    "storeLocatorAdmin": [
+      "Read geofence",
+      "Create/Update geofence",
+      "Delete geofence",
+      "List geofences"
+    ]
+  }
+}
