@@ -76,36 +76,36 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
 
     operations.push({
       validate: () => undefined,
-      describe: async () => [`Add environment variable '${GEN2_MIGRATION_ENVIRONMENT_NAME}' (value: ${this.currentEnvName})`],
+      describe: async () => [`Add environment variable '${GEN2_MIGRATION_ENVIRONMENT_NAME}' (value: ${this.gen1App.envName})`],
       execute: async () => {
-        const app = await this.amplifyClient().send(new GetAppCommand({ appId: this.appId }));
-        const environmentVariables = { ...(app.app.environmentVariables ?? {}), [GEN2_MIGRATION_ENVIRONMENT_NAME]: this.currentEnvName };
-        await this.amplifyClient().send(new UpdateAppCommand({ appId: this.appId, environmentVariables }));
-        this.logger.info(`Added '${GEN2_MIGRATION_ENVIRONMENT_NAME}' environment variable (value: ${this.currentEnvName})`);
+        const app = await this.amplifyClient().send(new GetAppCommand({ appId: this.gen1App.appId }));
+        const environmentVariables = { ...(app.app.environmentVariables ?? {}), [GEN2_MIGRATION_ENVIRONMENT_NAME]: this.gen1App.envName };
+        await this.amplifyClient().send(new UpdateAppCommand({ appId: this.gen1App.appId, environmentVariables }));
+        this.logger.info(`Added '${GEN2_MIGRATION_ENVIRONMENT_NAME}' environment variable (value: ${this.gen1App.envName})`);
       },
     });
 
     operations.push({
       validate: () => undefined,
       describe: async () => {
-        return [`Add lock statement to stack policy on '${this.rootStackName}': ${JSON.stringify(LOCK_STATEMENT)}`];
+        return [`Add lock statement to stack policy on '${this.gen1App.rootStackName}': ${JSON.stringify(LOCK_STATEMENT)}`];
       },
       execute: async () => {
         const existingPolicy = await this.getExistingStackPolicy();
         const alreadyLocked = existingPolicy.Statement.some(isLockStatement);
         if (alreadyLocked) {
-          this.logger.info(`Lock statement already exists in stack policy on '${this.rootStackName}', skipping`);
+          this.logger.info(`Lock statement already exists in stack policy on '${this.gen1App.rootStackName}', skipping`);
           return;
         }
         existingPolicy.Statement.push(LOCK_STATEMENT);
         const mergedPolicy = JSON.stringify(existingPolicy);
         await this.cfnClient().send(
           new SetStackPolicyCommand({
-            StackName: this.rootStackName,
+            StackName: this.gen1App.rootStackName,
             StackPolicyBody: mergedPolicy,
           }),
         );
-        this.logger.info(`Successfully added lock statement to stack policy on '${this.rootStackName}'`);
+        this.logger.info(`Successfully added lock statement to stack policy on '${this.gen1App.rootStackName}'`);
       },
     });
 
@@ -114,8 +114,8 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
       logger: this.logger,
       title: 'Execute',
       implications: [
-        `You will not be able to run 'amplify push' on environment '${this.currentEnvName}'`,
-        `You will not be able to migrate another environment until migration of '${this.currentEnvName}' is complete or rolled back`,
+        `You will not be able to run 'amplify push' on environment '${this.gen1App.envName}'`,
+        `You will not be able to migrate another environment until migration of '${this.gen1App.envName}' is complete or rolled back`,
       ],
     });
   }
@@ -136,10 +136,10 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
       validate: () => undefined,
       describe: async () => [`Remove environment variable '${GEN2_MIGRATION_ENVIRONMENT_NAME}'`],
       execute: async () => {
-        const app = await this.amplifyClient().send(new GetAppCommand({ appId: this.appId }));
+        const app = await this.amplifyClient().send(new GetAppCommand({ appId: this.gen1App.appId }));
         const environmentVariables = app.app.environmentVariables ?? {};
         delete environmentVariables[GEN2_MIGRATION_ENVIRONMENT_NAME];
-        await this.amplifyClient().send(new UpdateAppCommand({ appId: this.appId, environmentVariables }));
+        await this.amplifyClient().send(new UpdateAppCommand({ appId: this.gen1App.appId, environmentVariables }));
         this.logger.info(`Removed ${GEN2_MIGRATION_ENVIRONMENT_NAME} environment variable`);
       },
     });
@@ -147,25 +147,25 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
     operations.push({
       validate: () => undefined,
       describe: async () => {
-        return [`Remove lock statement from stack policy on '${this.rootStackName}': ${JSON.stringify(LOCK_STATEMENT)}`];
+        return [`Remove lock statement from stack policy on '${this.gen1App.rootStackName}': ${JSON.stringify(LOCK_STATEMENT)}`];
       },
       execute: async () => {
         const existingPolicy = await this.getExistingStackPolicy();
         const index = existingPolicy.Statement.findIndex(isLockStatement);
         if (index === -1) {
-          this.logger.info(`Lock statement not found in stack policy on '${this.rootStackName}'`);
+          this.logger.info(`Lock statement not found in stack policy on '${this.gen1App.rootStackName}'`);
           return;
         }
         existingPolicy.Statement.splice(index, 1);
         const restoredPolicy = existingPolicy.Statement.length > 0 ? JSON.stringify(existingPolicy) : JSON.stringify(ALLOW_ALL_POLICY);
         await this.cfnClient().send(
           new SetStackPolicyCommand({
-            StackName: this.rootStackName,
+            StackName: this.gen1App.rootStackName,
             StackPolicyBody: restoredPolicy,
           }),
         );
         this.logger.info(
-          `Successfully removed lock statement from stack policy on '${this.rootStackName}': ${JSON.stringify(LOCK_STATEMENT)}`,
+          `Successfully removed lock statement from stack policy on '${this.gen1App.rootStackName}': ${JSON.stringify(LOCK_STATEMENT)}`,
         );
       },
     });
@@ -175,7 +175,7 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
       logger: this.logger,
       title: 'Rollback',
       implications: [
-        `You will be able to run 'amplify push' on environment '${this.currentEnvName}'`,
+        `You will be able to run 'amplify push' on environment '${this.gen1App.envName}'`,
         `You will be able to start migration of another environment`,
       ],
     });
@@ -183,7 +183,7 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
 
   private async validateDeploymentStatus(): Promise<ValidationResult> {
     try {
-      const validations = new AmplifyGen2MigrationValidations(this.logger, this.rootStackName, this.currentEnvName, this.context);
+      const validations = new AmplifyGen2MigrationValidations(this.logger, this.gen1App.rootStackName, this.gen1App.envName, this.context);
       await validations.validateDeploymentStatus();
       return { valid: true };
     } catch (e) {
@@ -193,7 +193,7 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
 
   private async validateDrift(): Promise<ValidationResult> {
     try {
-      const validations = new AmplifyGen2MigrationValidations(this.logger, this.rootStackName, this.currentEnvName, this.context);
+      const validations = new AmplifyGen2MigrationValidations(this.logger, this.gen1App.rootStackName, this.gen1App.envName, this.context);
       await validations.validateDrift();
       return { valid: true };
     } catch (e) {
@@ -206,7 +206,7 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
     const appSyncClient = new AppSyncClient();
     for await (const page of paginateListGraphqlApis({ client: appSyncClient }, {})) {
       for (const api of page.graphqlApis ?? []) {
-        if (api.name === `${this.appName}-${this.currentEnvName}`) {
+        if (api.name === `${this.gen1App.appName}-${this.gen1App.envName}`) {
           apis.push(api.apiId);
         }
       }
@@ -222,7 +222,7 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
     const dynamoClient = new DynamoDBClient();
     for await (const page of paginateListTables({ client: dynamoClient }, {})) {
       for (const tableName of page.TableNames ?? []) {
-        if (tableName.includes(`-${graphQLApiId}-${this.currentEnvName}`)) {
+        if (tableName.includes(`-${graphQLApiId}-${this.gen1App.envName}`)) {
           tables.push(tableName);
         }
       }
@@ -262,7 +262,7 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
   private async getExistingStackPolicy(): Promise<{ Statement: Record<string, string>[] }> {
     const response = await this.cfnClient().send(
       new GetStackPolicyCommand({
-        StackName: this.rootStackName,
+        StackName: this.gen1App.rootStackName,
       }),
     );
     if (response.StackPolicyBody) {

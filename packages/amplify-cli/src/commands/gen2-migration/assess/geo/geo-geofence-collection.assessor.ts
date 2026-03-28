@@ -12,6 +12,6 @@ export class GeoFenceCollectionAssessor implements Assessor {
    * Records resource-level support for this DynamoDB resource.
    */
   public assess(assessment: Assessment): void {
-    assessment.recordResource({ resource: this.resource, generate: 'supported', refactor: 'supported' });
+    assessment.recordResource({ resource: this.resource, generate: 'supported', refactor: 'unsupported' });
   }
 }

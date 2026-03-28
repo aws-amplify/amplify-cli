@@ -117,6 +117,7 @@ function mockGen1App(overrides: Partial<Gen1App> = {}): Gen1App {
     rootStackName: 'root-stack',
     discover: () => [],
     meta: () => undefined,
+    fileExists: () => false,
     ...overrides,
   } as unknown as Gen1App;
 }
@@ -126,14 +127,35 @@ function mockDiscover(resources: DiscoveredResource[]): Gen1App {
 }
 
 describe('AmplifyMigrationGenerateStep', () => {
-  describe('execute()', () => {
-    it('warns and skips unsupported resources instead of throwing', async () => {
+  describe('forward()', () => {
+    it('fails validation when assessment contains unsupported resources', async () => {
       const gen1 = mockDiscover([{ category: 'notifications', resourceName: 'push', service: 'Pinpoint', key: 'UNKNOWN' }]);
       const logger = new SpinningLogger('generate', { debug: true });
       const step = new AmplifyMigrationGenerateStep(logger, gen1, {} as $TSContext);
-      // Should not throw — generate warns on unsupported, unlike refactor
+
       const plan = await step.forward();
-      await plan.describe();
+      const passed = await plan.validate();
+      expect(passed).toBe(false);
+    });
+
+    it('passes validation when all resources are supported', async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- mocking private methods for unit tests
+      const lockSpy = jest.spyOn(AmplifyMigrationGenerateStep.prototype as any, 'validateLockStatus').mockResolvedValue({ valid: true });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- mocking private methods for unit tests
+      const wdSpy = jest
+        .spyOn(AmplifyMigrationGenerateStep.prototype as any, 'validateWorkingDirectory')
+        .mockResolvedValue({ valid: true });
+      const gen1 = mockDiscover([
+        { category: 'auth', resourceName: 'userPoolGroups', service: 'Cognito-UserPool-Groups', key: 'auth:Cognito-UserPool-Groups' },
+      ]);
+      const logger = new SpinningLogger('generate', { debug: true });
+      const step = new AmplifyMigrationGenerateStep(logger, gen1, {} as $TSContext);
+
+      const plan = await step.forward();
+      const passed = await plan.validate();
+      expect(passed).toBe(true);
+      lockSpy.mockRestore();
+      wdSpy.mockRestore();
     });
   });
 });

@@ -66,10 +66,10 @@ export class Assessment {
     let valid = undefined;
     switch (step) {
       case 'generate':
-        valid = this._resources.every((ar) => ar.generate === 'supported') && this._features.every((fr) => fr.generate === 'supported');
+        valid = this._resources.every((ar) => ar.generate !== 'unsupported') && this._features.every((fr) => fr.generate !== 'unsupported');
         break;
       case 'refactor':
-        valid = this._resources.every((ar) => ar.refactor === 'supported') && this._features.every((fr) => fr.refactor === 'supported');
+        valid = this._resources.every((ar) => ar.refactor !== 'unsupported') && this._features.every((fr) => fr.refactor !== 'unsupported');
         break;
     }
     return valid;

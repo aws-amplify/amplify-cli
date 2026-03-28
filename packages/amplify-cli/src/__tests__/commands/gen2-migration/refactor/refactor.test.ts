@@ -153,6 +153,7 @@ function mockCreateInfrastructure(): jest.SpyInstance {
     accountId: '123456789012',
     gen1Env: {},
     gen2Branch: {},
+    cfn: {},
   });
 }
 
@@ -163,55 +164,61 @@ describe('AmplifyMigrationRefactorStep', () => {
     infraSpy?.mockRestore();
   });
 
-  describe('execute()', () => {
-    it('throws on unsupported resource key', async () => {
+  describe('forward()', () => {
+    it('fails validation when assessment contains unsupported resources', async () => {
       infraSpy = mockCreateInfrastructure();
       const gen1 = mockDiscover([{ category: 'notifications', resourceName: 'push', service: 'Pinpoint', key: 'UNKNOWN' }]);
-      const logger = new SpinningLogger('refactor', { debug: true });
-      const context = { parameters: { options: { to: 'gen2-stack' } } } as unknown as $TSContext;
-      const step = new AmplifyMigrationRefactorStep(logger, gen1, context);
-
-      await expect(step.forward()).rejects.toThrow(/Unsupported resource 'push'/);
-    });
-
-    it('does not throw for stateless-only resources', async () => {
-      infraSpy = mockCreateInfrastructure();
-      const gen1 = mockDiscover([
-        { category: 'function', resourceName: 'myFunc', service: 'Lambda', key: 'function:Lambda' },
-        { category: 'api', resourceName: 'myApi', service: 'AppSync', key: 'api:AppSync' },
-      ]);
       const logger = new SpinningLogger('refactor', { debug: true });
       const context = { parameters: { options: { to: 'gen2-stack' } } } as unknown as $TSContext;
       const step = new AmplifyMigrationRefactorStep(logger, gen1, context);
 
       const plan = await step.forward();
-      await plan.describe();
+      const passed = await plan.validate();
+      expect(passed).toBe(false);
+    });
+
+    it('passes validation for supported resources', async () => {
+      infraSpy = mockCreateInfrastructure();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- mocking private method for unit tests
+      const lockSpy = jest.spyOn(AmplifyMigrationRefactorStep.prototype as any, 'validateLockStatus').mockResolvedValue({ valid: true });
+      const gen1 = mockDiscover([{ category: 'geo', resourceName: 'myMap', service: 'Map', key: 'geo:Map' }]);
+      const logger = new SpinningLogger('refactor', { debug: true });
+      const context = { parameters: { options: { to: 'gen2-stack' } } } as unknown as $TSContext;
+      const step = new AmplifyMigrationRefactorStep(logger, gen1, context);
+
+      const plan = await step.forward();
+      const passed = await plan.validate();
+      expect(passed).toBe(true);
+      lockSpy.mockRestore();
     });
   });
 
   describe('rollback()', () => {
-    it('throws on unsupported resource key', async () => {
+    it('fails validation when assessment contains unsupported resources', async () => {
       infraSpy = mockCreateInfrastructure();
       const gen1 = mockDiscover([{ category: 'notifications', resourceName: 'push', service: 'Pinpoint', key: 'UNKNOWN' }]);
       const logger = new SpinningLogger('refactor', { debug: true });
       const context = { parameters: { options: { to: 'gen2-stack' } } } as unknown as $TSContext;
       const step = new AmplifyMigrationRefactorStep(logger, gen1, context);
 
-      await expect(step.rollback()).rejects.toThrow(/Unsupported resource 'push'/);
+      const plan = await step.rollback();
+      const passed = await plan.validate();
+      expect(passed).toBe(false);
     });
 
-    it('does not throw for stateless-only resources', async () => {
+    it('passes validation for supported resources', async () => {
       infraSpy = mockCreateInfrastructure();
-      const gen1 = mockDiscover([
-        { category: 'function', resourceName: 'myFunc', service: 'Lambda', key: 'function:Lambda' },
-        { category: 'api', resourceName: 'myGateway', service: 'API Gateway', key: 'api:API Gateway' },
-      ]);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- mocking private method for unit tests
+      const lockSpy = jest.spyOn(AmplifyMigrationRefactorStep.prototype as any, 'validateLockStatus').mockResolvedValue({ valid: true });
+      const gen1 = mockDiscover([{ category: 'geo', resourceName: 'myMap', service: 'Map', key: 'geo:Map' }]);
       const logger = new SpinningLogger('refactor', { debug: true });
       const context = { parameters: { options: { to: 'gen2-stack' } } } as unknown as $TSContext;
       const step = new AmplifyMigrationRefactorStep(logger, gen1, context);
 
       const plan = await step.rollback();
-      await plan.describe();
+      const passed = await plan.validate();
+      expect(passed).toBe(true);
+      lockSpy.mockRestore();
     });
   });
 });
