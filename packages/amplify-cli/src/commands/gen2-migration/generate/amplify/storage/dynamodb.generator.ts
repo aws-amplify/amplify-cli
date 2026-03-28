@@ -18,7 +18,7 @@ export class DynamoDBGenerator implements Planner {
   private readonly resource: DiscoveredResource;
   private readonly renderer = new DynamoDBRenderer();
 
-  public constructor(gen1App: Gen1App, backendGenerator: BackendGenerator, resource: DiscoveredResource, hasS3Bucket: boolean) {
+  public constructor(gen1App: Gen1App, backendGenerator: BackendGenerator, resource: DiscoveredResource) {
     this.gen1App = gen1App;
     this.backendGenerator = backendGenerator;
     this.resource = resource;

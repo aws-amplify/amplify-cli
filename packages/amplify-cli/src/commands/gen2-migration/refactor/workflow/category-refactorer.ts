@@ -5,15 +5,12 @@ import { Planner } from '../../planner';
 import { AmplifyMigrationOperation } from '../../_operation';
 import { AwsClients } from '../../aws-clients';
 import { StackFacade } from '../stack-facade';
-import { Cfn } from '../cfn';
+import { Cfn, HOLDING_STACK_NAME_SUFFIX } from '../cfn';
 import { SpinningLogger } from '../../_spinning-logger';
 import { extractStackNameFromId } from '../utils';
 import { DiscoveredResource } from '../../generate/_infra/gen1-app';
 import CLITable from 'cli-table3';
 
-export const MIGRATION_PLACEHOLDER_LOGICAL_ID = 'MigrationPlaceholder';
-export const PLACEHOLDER_RESOURCE: CFNResource = { Type: 'AWS::CloudFormation::WaitConditionHandle', Properties: {} };
-export const HOLDING_STACK_SUFFIX = '-holding';
 const MAX_STACK_NAME_LENGTH = 128;
 
 /**
@@ -80,15 +77,13 @@ export abstract class CategoryRefactorer implements Planner {
       });
     }
 
-    let source = await this.resolveSource(sourceStackId);
+    const source = await this.resolveSource(sourceStackId);
     const target = await this.resolveTarget(destStackId);
 
     const sourceResources = this.filterResourcesByType(source.resolvedTemplate);
     const targetResources = this.filterResourcesByType(target.resolvedTemplate);
 
     const mappings = await this.buildResourceMappings(sourceResources, targetResources, source.stackId, target.stackId);
-
-    source = addPlaceHolderIfNeeded(source, mappings);
 
     const blueprint: RefactorBlueprint = { sourceStackId, targetStackId: destStackId, mappings };
 
@@ -275,7 +270,7 @@ export abstract class CategoryRefactorer implements Planner {
     const lastDashIndex = gen2CategoryStackId.lastIndexOf('-');
     const prefix = gen2CategoryStackId.substring(0, lastDashIndex);
     const hashSuffix = gen2CategoryStackId.substring(lastDashIndex);
-    const tail = `${hashSuffix}${HOLDING_STACK_SUFFIX}`;
+    const tail = `${hashSuffix}${HOLDING_STACK_NAME_SUFFIX}`;
     const maxPrefixLength = MAX_STACK_NAME_LENGTH - tail.length;
     return `${prefix.substring(0, maxPrefixLength)}${tail}`;
   }
@@ -301,18 +296,4 @@ export abstract class CategoryRefactorer implements Planner {
   protected debug(message: string) {
     this.logger.debug(`[${this.resource.category}/${this.resource.resourceName}] ${message}`);
   }
-}
-
-function addPlaceHolderIfNeeded(source: ResolvedStack, mappings: ResourceMapping[]): ResolvedStack {
-  const movedLogicalIds = new Set(mappings.map((m) => m.Source.LogicalResourceId));
-  const allRemoved = Object.keys(source.resolvedTemplate.Resources).every((id) => movedLogicalIds.has(id));
-  if (!allRemoved) return source;
-
-  const resolved = JSON.parse(JSON.stringify(source.resolvedTemplate)) as CFNTemplate;
-  resolved.Resources[MIGRATION_PLACEHOLDER_LOGICAL_ID] = PLACEHOLDER_RESOURCE;
-  return {
-    stackId: source.stackId,
-    parameters: source.parameters,
-    resolvedTemplate: resolved,
-  };
 }

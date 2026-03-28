@@ -3,7 +3,7 @@ import { generateClient } from 'aws-amplify/api';
 import { record } from 'aws-amplify/analytics/kinesis';
 import { getRandomEmoji, getKinesisEvents } from '../graphql/queries';
 
-const STREAM_NAME = 'moodBoardKinesis-main';
+const STREAM_NAME = 'moodboardKinesis-main';
 
 type KinesisEvent = {
   data: string | null;

@@ -20,13 +20,17 @@ export const GEN2_NATIVE_APP_CLIENT = 'UserPoolNativeAppClient';
 export const GEN2_WEB_CLIENT = 'UserPoolAppClient';
 
 export const USER_POOL_CLIENT_TYPE = 'AWS::Cognito::UserPoolClient';
+export const USER_POOL_TYPE = 'AWS::Cognito::UserPool';
+export const IDENTITY_POOL_TYPE = 'AWS::Cognito::IdentityPool';
+export const IDENTITY_POOL_ROLE_ATTACHMENT_TYPE = 'AWS::Cognito::IdentityPoolRoleAttachment';
+export const USER_POOL_DOMAIN_TYPE = 'AWS::Cognito::UserPoolDomain';
 
 export const RESOURCE_TYPES = [
-  'AWS::Cognito::UserPool',
+  USER_POOL_TYPE,
   USER_POOL_CLIENT_TYPE,
-  'AWS::Cognito::IdentityPool',
-  'AWS::Cognito::IdentityPoolRoleAttachment',
-  'AWS::Cognito::UserPoolDomain',
+  IDENTITY_POOL_TYPE,
+  IDENTITY_POOL_ROLE_ATTACHMENT_TYPE,
+  USER_POOL_DOMAIN_TYPE,
 ];
 
 /**

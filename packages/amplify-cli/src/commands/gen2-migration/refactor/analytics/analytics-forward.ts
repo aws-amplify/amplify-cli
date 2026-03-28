@@ -1,6 +1,8 @@
 import { ForwardCategoryRefactorer } from '../workflow/forward-category-refactorer';
 
-export const ANALYTICS_RESOURCE_TYPES = ['AWS::Kinesis::Stream'];
+export const KINESIS_STREAM_TYPE = 'AWS::Kinesis::Stream';
+
+export const ANALYTICS_RESOURCE_TYPES = [KINESIS_STREAM_TYPE];
 
 /**
  * Forward refactorer for the analytics category (Kinesis).

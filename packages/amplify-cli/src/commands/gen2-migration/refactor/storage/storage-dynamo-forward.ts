@@ -1,5 +1,7 @@
 import { ForwardCategoryRefactorer } from '../workflow/forward-category-refactorer';
 
+export const DYNAMO_TABLE_TYPE = 'AWS::DynamoDB::Table';
+
 /**
  * Forward refactorer for DynamoDB storage resources.
  * Moves DynamoDB tables from Gen1 to Gen2.
@@ -15,6 +17,6 @@ export class StorageDynamoForwardRefactorer extends ForwardCategoryRefactorer {
   }
 
   protected resourceTypes(): string[] {
-    return ['AWS::DynamoDB::Table'];
+    return [DYNAMO_TABLE_TYPE];
   }
 }

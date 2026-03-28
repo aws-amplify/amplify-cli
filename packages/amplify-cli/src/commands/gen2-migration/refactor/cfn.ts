@@ -24,7 +24,7 @@ import {
   waitUntilStackUpdateComplete,
 } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
-import { CFNTemplate } from '../cfn-template';
+import { CFNResource, CFNTemplate } from '../cfn-template';
 import { extractStackNameFromId } from './utils';
 import { SpinningLogger } from '../_spinning-logger';
 import chalk from 'chalk';
@@ -43,6 +43,10 @@ const EMPTY_HOLDING_TEMPLATE: CFNTemplate = {
   Resources: {},
   Outputs: {},
 };
+
+export const HOLDING_STACK_NAME_SUFFIX = '-holding';
+export const MIGRATION_PLACEHOLDER_LOGICAL_ID = 'MigrationPlaceholder';
+export const MIGRATION_PLACEHOLDER_RESOURCE: CFNResource = { Type: 'AWS::CloudFormation::WaitConditionHandle', Properties: {} };
 
 /**
  * Centralized CloudFormation operations for the refactor workflow.
@@ -116,22 +120,47 @@ export class Cfn {
     const sourceStackId = resourceMappings[0].Source.StackName;
     const targetStackId = resourceMappings[0].Destination.StackName;
 
-    this.info(`Creating stack refactor: ${extractStackNameFromId(sourceStackId)} → ${extractStackNameFromId(targetStackId)}`, resource);
+    const sourceStackName = extractStackNameFromId(sourceStackId);
+    const targetStackName = extractStackNameFromId(targetStackId);
+
+    this.info(`Refactoring ${sourceStackName} → ${targetStackName}`, resource);
 
     const targetStack = await this.findStack(targetStackId);
+    const sourceStack = await this.findStack(sourceStackId);
 
-    if (!targetStack && !targetStackId.endsWith('-holding')) {
-      // only holding stacks may be absent because they are
-      // created by the refactor operation.
-      throw new AmplifyError('MigrationError', { message: `Stack with id ${targetStackId} not found` });
+    if (!targetStack && !targetStackName.endsWith(HOLDING_STACK_NAME_SUFFIX)) {
+      // only holding stacks may be absent because they don't exist prior
+      // to refactor.
+      throw new AmplifyError('MigrationError', { message: `Target stack ${targetStackName} does not exist` });
+    }
+
+    if (!sourceStack) {
+      // should never happen
+      throw new AmplifyError('MigrationError', { message: `Source stack ${sourceStackName} does not exist` });
     }
 
     const sourceTemplate = await this.fetchTemplate(sourceStackId);
+    const sourceTemplateClone = JSON.parse(JSON.stringify(sourceTemplate)) as CFNTemplate;
     const targetTemplate = targetStack ? await this.fetchTemplate(targetStackId) : JSON.parse(JSON.stringify(EMPTY_HOLDING_TEMPLATE));
 
     for (const mapping of resourceMappings) {
       targetTemplate.Resources[mapping.Destination.LogicalResourceId] = sourceTemplate.Resources[mapping.Source.LogicalResourceId];
       delete sourceTemplate.Resources[mapping.Source.LogicalResourceId];
+    }
+
+    if (Object.keys(sourceTemplate.Resources).length === 0) {
+      // the refactor will remove all resources from the source.
+      // CloudFormation doesn't allow this so we need a placeholder resource first.
+      sourceTemplateClone.Resources[MIGRATION_PLACEHOLDER_LOGICAL_ID] = MIGRATION_PLACEHOLDER_RESOURCE;
+      sourceTemplate.Resources[MIGRATION_PLACEHOLDER_LOGICAL_ID] = MIGRATION_PLACEHOLDER_RESOURCE;
+      this.info(`Adding placeholder resource to source stack '${sourceStackName}'`);
+      await this.update({
+        stackName: sourceStackId,
+        templateBody: sourceTemplateClone,
+        parameters: sourceStack.Parameters ?? [],
+        resource,
+      });
+      this.info(`Finished adding placeholder to source stack '${sourceStackName}'`);
     }
 
     const input: CreateStackRefactorCommandInput = {
@@ -146,6 +175,8 @@ export class Cfn {
     input.Description = buildRefactorDescription(input);
 
     writeRefactorSnapshot(input);
+
+    this.info(`Creating stack refactor: ${extractStackNameFromId(sourceStackId)} → ${extractStackNameFromId(targetStackId)}`, resource);
 
     const { StackRefactorId } = await this.client.send(new CreateStackRefactorCommand(input));
     if (!StackRefactorId) {
@@ -172,6 +203,8 @@ export class Cfn {
     } else {
       await waitUntilStackCreateComplete({ client: this.client, maxWaitTime: MAX_WAIT_TIME_SECONDS }, { StackName: targetStackId });
     }
+
+    this.info(`Finished refactoring ${sourceStackName} → ${targetStackName}`, resource);
   }
 
   /**

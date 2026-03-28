@@ -6,7 +6,8 @@ import { resolveParameters } from '../resolvers/cfn-parameter-resolver';
 import { resolveOutputs } from '../resolvers/cfn-output-resolver';
 import { resolveDependencies } from '../resolvers/cfn-dependency-resolver';
 import { extractStackNameFromId } from '../utils';
-import { CategoryRefactorer, MIGRATION_PLACEHOLDER_LOGICAL_ID, PLACEHOLDER_RESOURCE, ResolvedStack } from './category-refactorer';
+import { CategoryRefactorer, ResolvedStack } from './category-refactorer';
+import { MIGRATION_PLACEHOLDER_LOGICAL_ID } from '../cfn';
 
 /**
  * Rollback direction base: moves resources from Gen2 (source) back to Gen1 (target).
@@ -111,13 +112,33 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
       return [];
     }
 
+    if (holdingStack.StackStatus === 'REVIEW_IN_PROGRESS') {
+      return [
+        {
+          resource: this.resource,
+          validate: () => undefined,
+          describe: async () => [`Delete stale holding stack '${extractStackNameFromId(holdingStackName)}'`],
+          execute: async () => {
+            await this.cfn.deleteStack(holdingStackName, this.resource);
+          },
+        },
+      ];
+    }
+
     this.debug(`Fetching template of holding stack: ${holdingStackName}`);
     const holdingStackTemplate = await this.gen2Branch.fetchTemplate(holdingStackName);
     const resources = this.filterResourcesByType(holdingStackTemplate);
     this.debug(`Found ${resources.size} resources to move from stack: ${holdingStackName}`);
 
+    const gen2Template = await this.gen2Branch.fetchTemplate(gen2StackName);
+
     const resourceMappings: ResourceMapping[] = [];
     for (const logicalId of resources.keys()) {
+      if (logicalId in gen2Template.Resources) {
+        throw new AmplifyError('MigrationError', {
+          message: `Resource '${logicalId}' already exists in Gen2 stack '${gen2StackName}' — the Gen2 → Gen1 move should have removed it`,
+        });
+      }
       this.debug(`Registering ${logicalId} to move from ${holdingStackName} to ${gen2StackName}`);
       resourceMappings.push({
         Source: { StackName: holdingStackName, LogicalResourceId: logicalId },
@@ -131,23 +152,6 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
     }
 
     return [
-      {
-        resource: this.resource,
-        validate: () => undefined,
-        describe: async () => {
-          return [`Update holding stack '${extractStackNameFromId(holdingStackName)}' with placeholder resource`];
-        },
-        execute: async () => {
-          const holdingTemplate = await this.cfn.fetchTemplate(holdingStackName);
-          holdingTemplate.Resources[MIGRATION_PLACEHOLDER_LOGICAL_ID] = PLACEHOLDER_RESOURCE;
-          await this.cfn.update({
-            stackName: holdingStackName,
-            parameters: [],
-            templateBody: holdingTemplate,
-            resource: this.resource,
-          });
-        },
-      },
       {
         resource: this.resource,
         validate: () => undefined,

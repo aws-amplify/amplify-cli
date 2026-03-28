@@ -44,6 +44,15 @@ describe('RollbackCategoryRefactorer.afterMove', () => {
   afterEach(() => cfnMock.restore());
 
   it('returns operations to update holding stack and move resources back', async () => {
+    const gen2Template: CFNTemplate = {
+      AWSTemplateFormatVersion: '2010-09-09',
+      Description: 'gen2',
+      Resources: {
+        MigrationPlaceholder: { Type: 'AWS::CloudFormation::WaitConditionHandle', Properties: {} },
+      },
+      Outputs: {},
+    };
+
     const holdingTemplate: CFNTemplate = {
       AWSTemplateFormatVersion: '2010-09-09',
       Description: 'holding',
@@ -56,7 +65,13 @@ describe('RollbackCategoryRefactorer.afterMove', () => {
     cfnMock.on(DescribeStacksCommand).resolves({
       Stacks: [{ StackName: 'holding', StackStatus: 'UPDATE_COMPLETE', CreationTime: new Date() }],
     });
-    cfnMock.on(GetTemplateCommand).resolves({ TemplateBody: JSON.stringify(holdingTemplate) });
+    cfnMock.on(GetTemplateCommand).callsFake((input) => {
+      const stackName = input.StackName ?? '';
+      if (stackName.includes('holding')) {
+        return { TemplateBody: JSON.stringify(holdingTemplate) };
+      }
+      return { TemplateBody: JSON.stringify(gen2Template) };
+    });
     cfnMock.on(UpdateStackCommand).resolves({});
     cfnMock.on(CreateStackRefactorCommand).resolves({ StackRefactorId: 'refactor-123' });
     cfnMock.on(DescribeStackRefactorCommand).resolves({
@@ -82,10 +97,9 @@ describe('RollbackCategoryRefactorer.afterMove', () => {
 
     const operations = await (refactorer as any).afterMove('gen2-auth-stack-id');
 
-    // 2 operations: update holding with placeholder, refactor back to Gen2
-    expect(operations).toHaveLength(2);
-    expect(await operations[0].describe()).toEqual([expect.stringContaining('placeholder')]);
-    expect(await operations[1].describe()).toEqual([expect.stringContaining('Move')]);
+    // 1 operation: refactor back to Gen2 (placeholder handled by Cfn.refactor)
+    expect(operations).toHaveLength(1);
+    expect(await operations[0].describe()).toEqual([expect.stringContaining('Move')]);
   });
 
   it('returns empty operations when no holding stack exists', async () => {

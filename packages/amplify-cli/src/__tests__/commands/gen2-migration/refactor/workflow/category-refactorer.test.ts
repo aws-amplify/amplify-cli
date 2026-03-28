@@ -369,14 +369,11 @@ describe('Analytics wiring tests', () => {
   });
 });
 
-import {
-  MIGRATION_PLACEHOLDER_LOGICAL_ID,
-  PLACEHOLDER_RESOURCE,
-} from '../../../../../commands/gen2-migration/refactor/workflow/category-refactorer';
+import { MIGRATION_PLACEHOLDER_LOGICAL_ID, MIGRATION_PLACEHOLDER_RESOURCE } from '../../../../../commands/gen2-migration/refactor/cfn';
 
 describe('placeholder constants', () => {
   it('placeholder resource is a WaitConditionHandle', () => {
-    expect(PLACEHOLDER_RESOURCE.Type).toBe('AWS::CloudFormation::WaitConditionHandle');
+    expect(MIGRATION_PLACEHOLDER_RESOURCE.Type).toBe('AWS::CloudFormation::WaitConditionHandle');
   });
 
   it('placeholder logical ID is MigrationPlaceholder', () => {
