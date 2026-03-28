@@ -17,7 +17,6 @@ import { StorageDynamoRollbackRefactorer } from './storage/storage-dynamo-rollba
 import { AnalyticsKinesisForwardRefactorer } from './analytics/analytics-forward';
 import { AnalyticsKinesisRollbackRefactorer } from './analytics/analytics-rollback';
 import { Gen1App } from '../generate/_infra/gen1-app';
-import { AmplifyMigrationAssessor } from '../assess';
 import { Assessment } from '../_assessment';
 import { AuthUserPoolGroupsForwardRefactorer } from './auth/auth-user-pool-groups-forward';
 import { AuthUserPoolGroupsRollbackRefactorer } from './auth/auth-user-pool-groups-rollback';
@@ -99,7 +98,13 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
         case 'function:Lambda':
         case 'api:AppSync':
         case 'api:API Gateway':
+        case 'geo:Map':
+        case 'geo:PlaceIndex':
           break;
+        case 'geo:GeofenceCollection':
+          throw new AmplifyError('MigrationError', {
+            message: `Unsupported resource '${resource.resourceName}' (${resource.category}:${resource.service}). GeofenceCollection refactor is not supported.`,
+          });
         case 'unsupported':
           throw new AmplifyError('MigrationError', {
             message: `Unsupported resource '${resource.resourceName}' (${resource.category}:${resource.service}). Run 'amplify gen2-migration assess' to check migration readiness.`,
@@ -182,7 +187,13 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
         case 'function:Lambda':
         case 'api:AppSync':
         case 'api:API Gateway':
+        case 'geo:Map':
+        case 'geo:PlaceIndex':
           break;
+        case 'geo:GeofenceCollection':
+          throw new AmplifyError('MigrationError', {
+            message: `Unsupported resource '${resource.resourceName}' (${resource.category}:${resource.service}). GeofenceCollection refactor is not supported. Cannot rollback.`,
+          });
         case 'unsupported':
           throw new AmplifyError('MigrationError', {
             message: `Unsupported resource '${resource.resourceName}' (${resource.category}:${resource.service}). Cannot rollback.`,

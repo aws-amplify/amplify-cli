@@ -66,6 +66,10 @@ test('mood-board snapshot', async () => {
   await testSnapshot('mood-board', { buildSpec: BUILDSPEC });
 });
 
+test('store-locator snapshot', async () => {
+  await testSnapshot('store-locator', { buildSpec: BUILDSPEC });
+});
+
 async function testSnapshot(appName: string, appOptions?: MigrationAppOptions, customize?: (app: MigrationApp) => Promise<void>) {
   await MigrationApp.run(
     appName,

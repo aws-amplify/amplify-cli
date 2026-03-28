@@ -8,6 +8,10 @@ import {
   GEN2_NATIVE_APP_CLIENT,
   GEN2_WEB_CLIENT,
   USER_POOL_CLIENT_TYPE,
+  USER_POOL_TYPE,
+  IDENTITY_POOL_TYPE,
+  IDENTITY_POOL_ROLE_ATTACHMENT_TYPE,
+  USER_POOL_DOMAIN_TYPE,
 } from './auth-cognito-forward';
 
 /**
@@ -41,13 +45,13 @@ export class AuthCognitoRollbackRefactorer extends RollbackCategoryRefactorer {
           message: `Unable to determine Gen1 logical ID for UserPoolClient '${sourceId}' — expected logical ID to contain '${GEN2_NATIVE_APP_CLIENT}' or '${GEN2_WEB_CLIENT}'`,
         });
       }
-      case 'AWS::Cognito::UserPool':
+      case USER_POOL_TYPE:
         return 'UserPool';
-      case 'AWS::Cognito::IdentityPool':
+      case IDENTITY_POOL_TYPE:
         return 'IdentityPool';
-      case 'AWS::Cognito::IdentityPoolRoleAttachment':
+      case IDENTITY_POOL_ROLE_ATTACHMENT_TYPE:
         return 'IdentityPoolRoleMap';
-      case 'AWS::Cognito::UserPoolDomain':
+      case USER_POOL_DOMAIN_TYPE:
         return 'UserPoolDomain';
       default:
         return undefined;

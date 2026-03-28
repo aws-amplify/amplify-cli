@@ -1,5 +1,6 @@
 import { CFNResource } from '../../cfn-template';
 import { RollbackCategoryRefactorer } from '../workflow/rollback-category-refactorer';
+import { DYNAMO_TABLE_TYPE } from './storage-dynamo-forward';
 
 /**
  * Rollback refactorer for DynamoDB storage resources.
@@ -16,7 +17,16 @@ export class StorageDynamoRollbackRefactorer extends RollbackCategoryRefactorer 
   }
 
   protected resourceTypes(): string[] {
-    return ['AWS::DynamoDB::Table'];
+    return [DYNAMO_TABLE_TYPE];
+  }
+
+  protected targetLogicalId(_sourceId: string, sourceResource: CFNResource): string | undefined {
+    switch (sourceResource.Type) {
+      case DYNAMO_TABLE_TYPE:
+        return 'DynamoDBTable';
+      default:
+        return undefined;
+    }
   }
 
   protected targetLogicalId(_sourceId: string, sourceResource: CFNResource): string | undefined {

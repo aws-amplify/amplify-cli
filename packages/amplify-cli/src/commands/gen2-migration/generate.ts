@@ -25,6 +25,7 @@ import { S3Generator } from './generate/amplify/storage/s3.generator';
 import { DynamoDBGenerator } from './generate/amplify/storage/dynamodb.generator';
 import { FunctionGenerator } from './generate/amplify/function/function.generator';
 import { AnalyticsKinesisGenerator } from './generate/amplify/analytics/kinesis.generator';
+import { GeoGenerator } from './generate/amplify/geo/geo.generator';
 import { fileOrDirectoryExists } from './generate/_infra/files';
 
 const AMPLIFY_DIR = 'amplify';
@@ -60,6 +61,7 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
     // Cross-category state captured during the loop.
     let authGenerator: AuthGenerator | undefined;
     let s3Generator: S3Generator | undefined;
+    let geoGenerator: GeoGenerator | undefined;
     const functionGenerators: FunctionGenerator[] = [];
 
     for (const resource of discovered) {
@@ -120,6 +122,15 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
           break;
         case 'analytics:Kinesis':
           generators.push(new AnalyticsKinesisGenerator(gen1App, backendGenerator, outputDir, resource));
+          break;
+        case 'geo:Map':
+        case 'geo:PlaceIndex':
+        case 'geo:GeofenceCollection':
+          // All geo services share a single GeoGenerator instance.
+          if (!geoGenerator) {
+            geoGenerator = new GeoGenerator(gen1App, backendGenerator, outputDir, resource);
+            generators.push(geoGenerator);
+          }
           break;
         case 'function:Lambda': {
           const functionCategoryMap = computeFunctionCategories(gen1App);

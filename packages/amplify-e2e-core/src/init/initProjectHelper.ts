@@ -20,7 +20,6 @@ import { amplifyRegions } from '../configure';
 function getProfileIndex(profileName: string): number {
   try {
     const configPath = pathManager.getAWSConfigFilePath();
-
     const configContents = ini.parse(fs.readFileSync(configPath, 'utf-8'));
     // Config file uses "default" and "profile <name>" as section names
     // Extract actual profile names from section names
@@ -81,6 +80,7 @@ export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof 
   const cliArgs = ['init'];
   const providerConfigSpecified = !!s.providerConfig && typeof s.providerConfig === 'object';
   if (providerConfigSpecified) {
+    console.log('initJSProjectWithProfile: provider config specified: ', s.providerConfig);
     cliArgs.push('--providers', JSON.stringify(s.providerConfig));
   }
 

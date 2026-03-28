@@ -19,7 +19,8 @@ Each app directory should contain a `migration-config.json` file with the follow
     "storage": { /* Storage Configuration */ },
     "function": { /* Function Configuration */ },
     "hosting": { /* Hosting Configuration */ },
-    "restApi": { /* REST API Configuration */ }
+    "restApi": { /* REST API Configuration */ },
+    "analytics": { /* Analytics Configuration */ }
   }
 }
 ```
@@ -265,6 +266,22 @@ Storage can be either S3 buckets or DynamoDB tables.
 - **sslCertificate**: SSL certificate ARN (optional)
 - **buildSettings**: Build configuration (optional)
 
+## Analytics Category
+
+```json
+{
+  "analytics": {
+    "type": "kinesis",
+    "name": "moodboardKinesis",
+    "shards": 1
+  }
+}
+```
+
+- **type**: Analytics provider - `kinesis` or `pinpoint` (required, only `kinesis` currently supported)
+- **name**: Stream or resource name (required)
+- **shards**: Number of Kinesis shards (optional, defaults to 1)
+
 ## Complete Examples
 
 ### Simple App (project-boards)
@@ -481,3 +498,4 @@ Storage can be either S3 buckets or DynamoDB tables.
 5. **Function Category**: If present, must have `functions` array with valid function objects
 6. **Hosting Category**: If present, must have valid `type`
 7. **REST API Category**: If present, must have `name`, `paths`, and `lambdaSource`
+8. **Analytics Category**: If present, must have valid `type` and `name`
