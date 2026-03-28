@@ -27,13 +27,4 @@ export class StorageS3RollbackRefactorer extends RollbackCategoryRefactorer {
         return undefined;
     }
   }
-
-  protected targetLogicalId(sourceId: string, sourceResource: CFNResource): string | undefined {
-    switch (sourceResource.Type) {
-      case 'AWS::S3::Bucket':
-        return 'S3Bucket';
-      default:
-        return undefined;
-    }
-  }
 }

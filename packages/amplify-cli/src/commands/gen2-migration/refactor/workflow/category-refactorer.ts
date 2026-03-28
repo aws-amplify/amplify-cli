@@ -297,17 +297,3 @@ export abstract class CategoryRefactorer implements Planner {
     this.logger.debug(`[${this.resource.category}/${this.resource.resourceName}] ${message}`);
   }
 }
-
-function addPlaceHolderIfNeeded(source: ResolvedStack, mappings: ResourceMapping[]): ResolvedStack {
-  const movedLogicalIds = new Set(mappings.map((m) => m.Source.LogicalResourceId));
-  const allRemoved = Object.keys(source.resolvedTemplate.Resources).every((id) => movedLogicalIds.has(id));
-  if (!allRemoved) return source;
-
-  const resolved = JSON.parse(JSON.stringify(source.resolvedTemplate)) as CFNTemplate;
-  resolved.Resources[MIGRATION_PLACEHOLDER_LOGICAL_ID] = PLACEHOLDER_RESOURCE;
-  return {
-    stackId: source.stackId,
-    parameters: source.parameters,
-    resolvedTemplate: resolved,
-  };
-}

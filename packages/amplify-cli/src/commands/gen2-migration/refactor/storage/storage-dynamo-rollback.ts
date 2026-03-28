@@ -28,13 +28,4 @@ export class StorageDynamoRollbackRefactorer extends RollbackCategoryRefactorer 
         return undefined;
     }
   }
-
-  protected targetLogicalId(_sourceId: string, sourceResource: CFNResource): string | undefined {
-    switch (sourceResource.Type) {
-      case 'AWS::DynamoDB::Table':
-        return 'DynamoDBTable';
-      default:
-        return undefined;
-    }
-  }
 }
