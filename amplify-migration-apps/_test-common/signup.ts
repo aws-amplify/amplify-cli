@@ -32,8 +32,9 @@ function getErrorMessage(error: unknown): string {
 }
 
 function resolveSigninIdentifier(usernameAttributes: string[]): SigninIdentifier {
-  if (usernameAttributes.includes('PHONE_NUMBER')) return 'phone';
-  if (usernameAttributes.includes('EMAIL')) return 'email';
+  const normalized = usernameAttributes.map((a) => a.toUpperCase());
+  if (normalized.includes('PHONE_NUMBER') || normalized.includes('PHONE')) return 'phone';
+  if (normalized.includes('EMAIL')) return 'email';
   return 'username';
 }
 
@@ -41,9 +42,10 @@ function resolveSignupAttributes(signupAttributes: string[]): SignupAttribute[] 
   const mapping: Record<string, SignupAttribute> = {
     EMAIL: 'email',
     PHONE_NUMBER: 'phone',
+    PHONE: 'phone',
     USERNAME: 'username',
   };
-  const mapped = signupAttributes.map((attr) => mapping[attr]).filter((a): a is SignupAttribute => a !== undefined);
+  const mapped = signupAttributes.map((attr) => mapping[attr.toUpperCase()]).filter((a): a is SignupAttribute => a !== undefined);
   return mapped.length > 0 ? mapped : ['email'];
 }
 
@@ -154,11 +156,14 @@ function generateTestPassword(): string {
  * Returns the username to use for signIn.
  */
 export async function provisionTestUser(config: AmplifyConfig): Promise<{ signinValue: string; testUser: TestUser }> {
-  const { aws_user_pools_id: userPoolId, aws_cognito_region: region } = config;
+  // Support both Gen1 (aws_user_pools_id) and Gen2 (auth.user_pool_id) config formats
+  const gen2Auth = (config as any)?.auth;
+  const userPoolId = config.aws_user_pools_id ?? gen2Auth?.user_pool_id;
+  const region = config.aws_cognito_region ?? gen2Auth?.aws_region;
 
   const resolved: ResolvedAuthConfig = {
-    signinIdentifier: resolveSigninIdentifier(config.aws_cognito_username_attributes ?? []),
-    signupAttributes: resolveSignupAttributes(config.aws_cognito_signup_attributes ?? []),
+    signinIdentifier: resolveSigninIdentifier(config.aws_cognito_username_attributes ?? gen2Auth?.username_attributes ?? []),
+    signupAttributes: resolveSignupAttributes(config.aws_cognito_signup_attributes ?? gen2Auth?.standard_required_attributes ?? []),
   };
 
   const credentials = generateCredentials(resolved);
