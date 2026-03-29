@@ -7,8 +7,7 @@
  * 2. Add aws_iam import and appsync:GraphQL policy to amplify/backend.ts
  * 3. Fix missing awsRegion in GraphQL API userPoolConfig
  * 4. Convert lowstockproducts function from CommonJS to ESM and use secret()
- * 5. Convert S3 trigger function from CommonJS to ESM
- * 6. Update frontend import from amplifyconfiguration.json to amplify_outputs.json
+ * 5. Update frontend import from amplifyconfiguration.json to amplify_outputs.json
  */
 
 import fs from 'fs/promises';
@@ -193,56 +192,6 @@ async function updateLowstockproductsResource(appPath: string): Promise<void> {
   console.log('  Updated to use secret()');
 }
 
-/**
- * Convert S3 trigger function from CommonJS to ESM.
- */
-async function convertS3TriggerToESM(appPath: string): Promise<void> {
-  // Find the S3 trigger directory (name varies)
-  const functionDir = path.join(appPath, 'amplify', 'function');
-  let triggerDir: string | undefined;
-
-  try {
-    const entries = await fs.readdir(functionDir);
-    triggerDir = entries.find((e) => e.toLowerCase().includes('s3trigger'));
-  } catch {
-    console.log('  amplify/function directory not found, skipping');
-    return;
-  }
-
-  if (!triggerDir) {
-    console.log('  No S3 trigger function found, skipping');
-    return;
-  }
-
-  const handlerPath = path.join(functionDir, triggerDir, 'index.js');
-  console.log(`Converting S3 trigger to ESM in ${handlerPath}...`);
-
-  let content: string;
-  try {
-    content = await fs.readFile(handlerPath, 'utf-8');
-  } catch {
-    console.log('  index.js not found, skipping');
-    return;
-  }
-
-  // Convert CommonJS exports to ESM (handles both arrow and function forms)
-  let updated = content.replace(
-    /exports\.handler\s*=\s*async\s*function\s*\((\w*)\)\s*\{/g,
-    'export async function handler($1) {',
-  );
-  updated = updated.replace(
-    /exports\.handler\s*=\s*async\s*\((\w*)\)\s*=>\s*\{/g,
-    'export async function handler($1) {',
-  );
-
-  if (updated === content) {
-    console.log('  No CommonJS exports found, skipping');
-    return;
-  }
-
-  await fs.writeFile(handlerPath, updated, 'utf-8');
-  console.log('  Converted to ESM syntax');
-}
 
 /**
  * Fix missing awsRegion in GraphQL API userPoolConfig.
@@ -316,7 +265,6 @@ export async function postGenerate(options: PostGenerateOptions): Promise<void> 
   await fixUserPoolRegionInGraphqlApi(appPath);
   await convertLowstockproductsToESM(appPath);
   await updateLowstockproductsResource(appPath);
-  await convertS3TriggerToESM(appPath);
   await updateFrontendConfig(appPath);
 
   console.log('');
