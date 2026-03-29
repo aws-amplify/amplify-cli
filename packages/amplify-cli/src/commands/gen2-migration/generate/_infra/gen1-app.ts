@@ -113,8 +113,14 @@ export class Gen1App {
 
     const envName = await Gen1App.currentEnvName(app.app);
     const envInfo = tpi[envName];
+    if (!envInfo) {
+      throw new AmplifyError('MigrationError', {
+        message: `Environment ${envName} does not exist in ${tpiRelPath}`,
+        resolution: `Checkout to the branch corresponding to environment ${envName} and rerun the command`,
+      });
+    }
 
-    const cfnProvider = envInfo?.awscloudformation;
+    const cfnProvider = envInfo.awscloudformation;
     if (!cfnProvider?.StackName || !cfnProvider?.DeploymentBucketName) {
       throw new AmplifyError('MigrationError', {
         message: `Missing StackName or DeploymentBucketName for environment '${envName}' in '${tpiRelPath}'`,
