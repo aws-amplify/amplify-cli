@@ -15,8 +15,8 @@ describe('S3Assessor', () => {
     new S3Assessor(mockGen1App(), RESOURCE).record(assessment);
 
     const entry = assessment.resources[0];
-    expect(entry!.generate).toBe('supported');
-    expect(entry!.refactor).toBe('supported');
+    expect(entry!.generate.level).toBe('supported');
+    expect(entry!.refactor.level).toBe('supported');
   });
 
   it('detects override.ts', () => {
@@ -26,8 +26,8 @@ describe('S3Assessor', () => {
     expect(assessment.features).toHaveLength(1);
     expect(assessment.features[0]).toEqual({
       feature: { name: 'overrides', path: 'storage/myBucket/override.ts' },
-      generate: 'unsupported',
-      refactor: 'not-applicable',
+      generate: { level: 'unsupported', note: expect.any(String) },
+      refactor: { level: 'not-applicable' },
     });
   });
 

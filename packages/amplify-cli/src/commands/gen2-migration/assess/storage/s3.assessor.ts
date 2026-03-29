@@ -1,5 +1,5 @@
 import { Assessor } from '../assessor';
-import { Assessment } from '../assessment';
+import { Assessment, supported, unsupported, notApplicable } from '../assessment';
 import { Gen1App, DiscoveredResource, KNOWN_FEATURES } from '../../generate/_infra/gen1-app';
 
 /**
@@ -13,15 +13,15 @@ export class S3Assessor implements Assessor {
    * Records resource-level and feature-level support for this S3 resource.
    */
   public record(assessment: Assessment): void {
-    assessment.recordResource({ resource: this.resource, generate: 'supported', refactor: 'supported' });
+    assessment.recordResource({ resource: this.resource, generate: supported(), refactor: supported() });
 
     const overridesPath = `storage/${this.resource.resourceName}/override.ts`;
 
     if (this.gen1App.fileExists(overridesPath)) {
       assessment.recordFeature({
         feature: { name: KNOWN_FEATURES.OVERRIDES, path: overridesPath },
-        generate: 'unsupported',
-        refactor: 'not-applicable',
+        generate: unsupported('requires manual code changes'),
+        refactor: notApplicable(),
       });
     }
   }

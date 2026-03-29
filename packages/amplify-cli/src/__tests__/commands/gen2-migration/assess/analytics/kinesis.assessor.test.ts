@@ -10,8 +10,8 @@ describe('AnalyticsKinesisAssessor', () => {
     new AnalyticsKinesisAssessor({} as Gen1App, RESOURCE).record(assessment);
 
     const entry = assessment.resources[0];
-    expect(entry!.generate).toBe('supported');
-    expect(entry!.refactor).toBe('supported');
+    expect(entry!.generate.level).toBe('supported');
+    expect(entry!.refactor.level).toBe('supported');
   });
 
   it('records no features', () => {

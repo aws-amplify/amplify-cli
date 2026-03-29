@@ -6,8 +6,8 @@ describe('Assessment', () => {
       const assessment = new Assessment('app', 'dev');
       assessment.recordResource({
         resource: { category: 'auth', resourceName: 'myPool', service: 'Cognito', key: 'auth:Cognito' },
-        generate: 'supported',
-        refactor: 'supported',
+        generate: { level: 'supported' },
+        refactor: { level: 'supported' },
       });
 
       expect(assessment.validFor('generate')).toBe(true);
@@ -18,13 +18,13 @@ describe('Assessment', () => {
       const assessment = new Assessment('app', 'dev');
       assessment.recordResource({
         resource: { category: 'auth', resourceName: 'pool', service: 'Cognito', key: 'auth:Cognito' },
-        generate: 'supported',
-        refactor: 'supported',
+        generate: { level: 'supported' },
+        refactor: { level: 'supported' },
       });
       assessment.recordResource({
         resource: { category: 'geo', resourceName: 'map', service: 'Location', key: 'UNKNOWN' },
-        generate: 'unsupported',
-        refactor: 'unsupported',
+        generate: { level: 'unsupported', note: expect.any(String) },
+        refactor: { level: 'unsupported', note: expect.any(String) },
       });
 
       expect(assessment.validFor('generate')).toBe(false);
@@ -35,13 +35,13 @@ describe('Assessment', () => {
       const assessment = new Assessment('app', 'dev');
       assessment.recordResource({
         resource: { category: 'function', resourceName: 'myFunc', service: 'Lambda', key: 'function:Lambda' },
-        generate: 'supported',
-        refactor: 'not-applicable',
+        generate: { level: 'supported' },
+        refactor: { level: 'not-applicable' },
       });
       assessment.recordFeature({
         feature: { name: 'custom-policies', path: 'function/myFunc/custom-policies.json' },
-        generate: 'unsupported',
-        refactor: 'not-applicable',
+        generate: { level: 'unsupported', note: expect.any(String) },
+        refactor: { level: 'not-applicable' },
       });
 
       expect(assessment.validFor('generate')).toBe(false);
@@ -52,8 +52,8 @@ describe('Assessment', () => {
       const assessment = new Assessment('app', 'dev');
       assessment.recordResource({
         resource: { category: 'function', resourceName: 'myFunc', service: 'Lambda', key: 'function:Lambda' },
-        generate: 'supported',
-        refactor: 'not-applicable',
+        generate: { level: 'supported' },
+        refactor: { level: 'not-applicable' },
       });
 
       expect(assessment.validFor('refactor')).toBe(true);
@@ -70,13 +70,13 @@ describe('Assessment', () => {
       const assessment = new Assessment('myapp', 'dev');
       assessment.recordResource({
         resource: { category: 'auth', resourceName: 'pool', service: 'Cognito', key: 'auth:Cognito' },
-        generate: 'supported',
-        refactor: 'supported',
+        generate: { level: 'supported' },
+        refactor: { level: 'supported' },
       });
       assessment.recordResource({
         resource: { category: 'storage', resourceName: 'bucket', service: 'S3', key: 'storage:S3' },
-        generate: 'supported',
-        refactor: 'supported',
+        generate: { level: 'supported' },
+        refactor: { level: 'supported' },
       });
 
       expect(stripAnsi(assessment.render())).toMatchSnapshot();
@@ -86,13 +86,13 @@ describe('Assessment', () => {
       const assessment = new Assessment('myapp', 'dev');
       assessment.recordResource({
         resource: { category: 'auth', resourceName: 'pool', service: 'Cognito', key: 'auth:Cognito' },
-        generate: 'supported',
-        refactor: 'supported',
+        generate: { level: 'supported' },
+        refactor: { level: 'supported' },
       });
       assessment.recordResource({
         resource: { category: 'geo', resourceName: 'map', service: 'Location', key: 'UNKNOWN' },
-        generate: 'unsupported',
-        refactor: 'unsupported',
+        generate: { level: 'unsupported', note: expect.any(String) },
+        refactor: { level: 'unsupported', note: expect.any(String) },
       });
 
       expect(stripAnsi(assessment.render())).toMatchSnapshot();

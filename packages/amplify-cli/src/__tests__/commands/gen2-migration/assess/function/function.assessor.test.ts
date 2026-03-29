@@ -18,8 +18,8 @@ describe('FunctionAssessor', () => {
     new FunctionAssessor(mockGen1App(), RESOURCE).record(assessment);
 
     const entry = assessment.resources[0];
-    expect(entry!.generate).toBe('unsupported');
-    expect(entry!.refactor).toBe('unsupported');
+    expect(entry!.generate.level).toBe('unsupported');
+    expect(entry!.refactor.level).toBe('unsupported');
   });
 
   it('detects non-empty custom-policies.json', () => {
@@ -32,8 +32,8 @@ describe('FunctionAssessor', () => {
     expect(assessment.features).toHaveLength(1);
     expect(assessment.features[0]).toEqual({
       feature: { name: 'custom-policies', path: 'function/myFunc/custom-policies.json' },
-      generate: 'unsupported',
-      refactor: 'not-applicable',
+      generate: { level: 'unsupported', note: expect.any(String) },
+      refactor: { level: 'not-applicable' },
     });
   });
 

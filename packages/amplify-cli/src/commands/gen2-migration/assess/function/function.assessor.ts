@@ -1,5 +1,5 @@
 import { Assessor } from '../assessor';
-import { Assessment } from '../assessment';
+import { Assessment, unsupported, notApplicable } from '../assessment';
 import { Gen1App, DiscoveredResource, KNOWN_FEATURES } from '../../generate/_infra/gen1-app';
 
 /**
@@ -13,15 +13,19 @@ export class FunctionAssessor implements Assessor {
    * Records resource-level and feature-level support for this function.
    */
   public record(assessment: Assessment): void {
-    assessment.recordResource({ resource: this.resource, generate: 'unsupported', refactor: 'unsupported' });
+    assessment.recordResource({
+      resource: this.resource,
+      generate: unsupported('requires manual code changes'),
+      refactor: unsupported('requires manual data replication'),
+    });
 
     const customPoliciesPath = `function/${this.resource.resourceName}/custom-policies.json`;
 
     if (this.hasCustomPolicies(customPoliciesPath)) {
       assessment.recordFeature({
         feature: { name: KNOWN_FEATURES.CUSTOM_FUNCTION_POLICIES, path: customPoliciesPath },
-        generate: 'unsupported',
-        refactor: 'not-applicable',
+        generate: unsupported('requires manual code changes'),
+        refactor: notApplicable(),
       });
     }
   }

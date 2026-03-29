@@ -10,8 +10,8 @@ describe('RestApiAssessor', () => {
     new RestApiAssessor({ fileExists: () => false } as unknown as Gen1App, RESOURCE).record(assessment);
 
     const entry = assessment.resources[0];
-    expect(entry!.generate).toBe('supported');
-    expect(entry!.refactor).toBe('not-applicable');
+    expect(entry!.generate.level).toBe('supported');
+    expect(entry!.refactor.level).toBe('not-applicable');
   });
 
   it('records no features', () => {

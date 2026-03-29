@@ -1,5 +1,5 @@
 import { Assessor } from '../assessor';
-import { Assessment } from '../assessment';
+import { Assessment, supported, unsupported } from '../assessment';
 import { Gen1App, DiscoveredResource } from '../../generate/_infra/gen1-app';
 
 /**
@@ -12,6 +12,10 @@ export class GeoFenceCollectionAssessor implements Assessor {
    * Records resource-level support for this DynamoDB resource.
    */
   public record(assessment: Assessment): void {
-    assessment.recordResource({ resource: this.resource, generate: 'supported', refactor: 'unsupported' });
+    assessment.recordResource({
+      resource: this.resource,
+      generate: supported(),
+      refactor: unsupported('geofence collection refactor not supported'),
+    });
   }
 }

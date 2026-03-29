@@ -7,9 +7,27 @@ import { DiscoveredResource } from '../generate/_infra/gen1-app';
  */
 export type SupportLevel = 'supported' | 'unsupported' | 'not-applicable';
 
+/**
+ * Support entry combining a level with an optional note.
+ * The note is displayed in the assessment table when the level is unsupported.
+ */
+export interface Support {
+  readonly level: SupportLevel;
+  readonly note?: string;
+}
+
+/** Shorthand for a supported entry. */
+export const supported = (): Support => ({ level: 'supported' });
+
+/** Shorthand for an unsupported entry with a note. */
+export const unsupported = (note: string): Support => ({ level: 'unsupported', note });
+
+/** Shorthand for a not-applicable entry. */
+export const notApplicable = (): Support => ({ level: 'not-applicable' });
+
 interface _Assessment {
-  readonly generate: SupportLevel;
-  readonly refactor: SupportLevel;
+  readonly generate: Support;
+  readonly refactor: Support;
 }
 
 /**
@@ -46,16 +64,12 @@ export class Assessment {
 
   public constructor(private readonly appName: string, private readonly envName: string) {}
 
-  /**
-   * Records support for a discovered resource.
-   */
+  /** Records support for a discovered resource. */
   public recordResource(resource: ResourceAssessment): void {
     this._resources.push(resource);
   }
 
-  /**
-   * Records a detected feature that the migration tool does not fully support.
-   */
+  /** Records a detected feature that the migration tool does not fully support. */
   public recordFeature(feature: FeatureAssessment): void {
     this._features.push(feature);
   }
@@ -70,22 +84,25 @@ export class Assessment {
     return this._features;
   }
 
+  /** Returns true if all resources and features are supported for the given step. */
   public validFor(step: 'generate' | 'refactor'): boolean {
-    let valid = undefined;
     switch (step) {
       case 'generate':
-        valid = this._resources.every((ar) => ar.generate !== 'unsupported') && this._features.every((fr) => fr.generate !== 'unsupported');
-        break;
+        return (
+          this._resources.every((ar) => ar.generate.level !== 'unsupported') &&
+          this._features.every((fr) => fr.generate.level !== 'unsupported')
+        );
       case 'refactor':
-        valid = this._resources.every((ar) => ar.refactor !== 'unsupported') && this._features.every((fr) => fr.refactor !== 'unsupported');
-        break;
+        return (
+          this._resources.every((ar) => ar.refactor.level !== 'unsupported') &&
+          this._features.every((fr) => fr.refactor.level !== 'unsupported')
+        );
+      default:
+        return false;
     }
-    return valid;
   }
 
-  /**
-   * Renders the assessment as a string containing resource and feature tables.
-   */
+  /** Renders the assessment as a string containing resource and feature tables. */
   public render(): string {
     const lines: string[] = [];
 
@@ -116,8 +133,8 @@ export class Assessment {
         ra.resource.category,
         ra.resource.service,
         ra.resource.resourceName,
-        Assessment.support(ra, 'generate'),
-        Assessment.support(ra, 'refactor'),
+        Assessment.supportText(ra.generate),
+        Assessment.supportText(ra.refactor),
       ]);
     }
 
@@ -131,38 +148,22 @@ export class Assessment {
     });
 
     for (const fr of this._features) {
-      table.push([fr.feature.name, fr.feature.path, Assessment.support(fr, 'generate'), Assessment.support(fr, 'refactor')]);
+      table.push([fr.feature.name, fr.feature.path, Assessment.supportText(fr.generate), Assessment.supportText(fr.refactor)]);
     }
 
     return table.toString();
   }
 
-  private static support(assessment: _Assessment, step: 'generate' | 'refactor'): string {
-    let status = undefined;
-    switch (step) {
-      case 'generate':
-        status = Assessment.supportText(assessment.generate, 'requires manual code editing');
-        break;
-      case 'refactor':
-        status = Assessment.supportText(assessment.refactor, 'requires manual data replication');
-        break;
-    }
-    return status;
-  }
-
-  private static supportText(level: SupportLevel, unsupportedLabel: string): string {
-    let text = undefined;
-    switch (level) {
+  private static supportText(support: Support): string {
+    switch (support.level) {
       case 'supported':
-        text = '✔';
-        break;
+        return '✔';
       case 'unsupported':
-        text = `✘ ${unsupportedLabel}`;
-        break;
+        return support.note ? `✘ ${support.note}` : '✘';
       case 'not-applicable':
-        text = '—';
-        break;
+        return '—';
+      default:
+        return '?';
     }
-    return text;
   }
 }

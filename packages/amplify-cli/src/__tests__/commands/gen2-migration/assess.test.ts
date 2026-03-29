@@ -69,8 +69,8 @@ describe('AmplifyMigrationAssessor', () => {
       const assessment = assessor.assess();
 
       expect(assessment.resources).toHaveLength(1);
-      expect(assessment.resources[0].generate).toBe('unsupported');
-      expect(assessment.resources[0].refactor).toBe('unsupported');
+      expect(assessment.resources[0].generate.level).toBe('unsupported');
+      expect(assessment.resources[0].refactor.level).toBe('unsupported');
     });
   });
 

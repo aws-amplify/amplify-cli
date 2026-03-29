@@ -1,4 +1,4 @@
-import { Assessment } from './assess/assessment';
+import { Assessment, unsupported } from './assess/assessment';
 import { Gen1App } from './generate/_infra/gen1-app';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { Assessor } from './assess/assessor';
@@ -64,7 +64,11 @@ export class AmplifyMigrationAssessor {
           assessors.push(new GeoPlaceIndexAssessor(this.gen1App, resource));
           break;
         case 'UNKNOWN':
-          combined.recordResource({ resource, generate: 'unsupported', refactor: 'unsupported' });
+          combined.recordResource({
+            resource,
+            generate: unsupported('unknown resource type'),
+            refactor: unsupported('unknown resource type'),
+          });
           break;
       }
 
