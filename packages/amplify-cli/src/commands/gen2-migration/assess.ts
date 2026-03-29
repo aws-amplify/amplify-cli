@@ -1,4 +1,4 @@
-import { Assessment } from './_assessment';
+import { Assessment } from './assess/assessment';
 import { Gen1App } from './generate/_infra/gen1-app';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { Assessor } from './assess/assessor';
@@ -69,7 +69,7 @@ export class AmplifyMigrationAssessor {
       }
 
       for (const assessor of assessors) {
-        assessor.assess(combined);
+        assessor.record(combined);
       }
     }
     return combined;

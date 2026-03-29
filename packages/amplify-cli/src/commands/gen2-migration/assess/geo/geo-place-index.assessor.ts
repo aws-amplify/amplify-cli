@@ -1,5 +1,5 @@
 import { Assessor } from '../assessor';
-import { Assessment } from '../../_assessment';
+import { Assessment } from '../assessment';
 import { Gen1App, DiscoveredResource } from '../../generate/_infra/gen1-app';
 
 /**
@@ -11,7 +11,7 @@ export class GeoPlaceIndexAssessor implements Assessor {
   /**
    * Records resource-level support for this DynamoDB resource.
    */
-  public assess(assessment: Assessment): void {
+  public record(assessment: Assessment): void {
     assessment.recordResource({ resource: this.resource, generate: 'supported', refactor: 'supported' });
   }
 }

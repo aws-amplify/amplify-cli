@@ -1,9 +1,9 @@
-import { Assessment } from '../_assessment';
+import { Assessment } from './assessment';
 
 /**
  * Evaluates migration readiness for a single discovered resource.
  * Each assessor records resource-level and feature-level support.
  */
 export interface Assessor {
-  assess(assessment: Assessment): void;
+  record(assessment: Assessment): void;
 }

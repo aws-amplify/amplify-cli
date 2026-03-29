@@ -1,5 +1,5 @@
 import { S3Assessor } from '../../../../../commands/gen2-migration/assess/storage/s3.assessor';
-import { Assessment } from '../../../../../commands/gen2-migration/_assessment';
+import { Assessment } from '../../../../../commands/gen2-migration/assess/assessment';
 import { Gen1App, DiscoveredResource } from '../../../../../commands/gen2-migration/generate/_infra/gen1-app';
 
 function mockGen1App(existingFiles: string[] = []): Gen1App {
@@ -12,7 +12,7 @@ const RESOURCE: DiscoveredResource = { category: 'storage', resourceName: 'myBuc
 describe('S3Assessor', () => {
   it('records resource as supported', () => {
     const assessment = new Assessment('app', 'dev');
-    new S3Assessor(mockGen1App(), RESOURCE).assess(assessment);
+    new S3Assessor(mockGen1App(), RESOURCE).record(assessment);
 
     const entry = assessment.resources[0];
     expect(entry!.generate).toBe('supported');
@@ -21,7 +21,7 @@ describe('S3Assessor', () => {
 
   it('detects override.ts', () => {
     const assessment = new Assessment('app', 'dev');
-    new S3Assessor(mockGen1App(['storage/myBucket/override.ts']), RESOURCE).assess(assessment);
+    new S3Assessor(mockGen1App(['storage/myBucket/override.ts']), RESOURCE).record(assessment);
 
     expect(assessment.features).toHaveLength(1);
     expect(assessment.features[0]).toEqual({
@@ -33,7 +33,7 @@ describe('S3Assessor', () => {
 
   it('records no features when override.ts is absent', () => {
     const assessment = new Assessment('app', 'dev');
-    new S3Assessor(mockGen1App(), RESOURCE).assess(assessment);
+    new S3Assessor(mockGen1App(), RESOURCE).record(assessment);
 
     expect(assessment.features).toHaveLength(0);
   });

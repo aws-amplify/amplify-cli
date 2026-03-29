@@ -1,4 +1,4 @@
-import { Assessment } from '../../../commands/gen2-migration/_assessment';
+import { Assessment } from '../../../commands/gen2-migration/assess/assessment';
 
 describe('Assessment', () => {
   describe('validFor()', () => {

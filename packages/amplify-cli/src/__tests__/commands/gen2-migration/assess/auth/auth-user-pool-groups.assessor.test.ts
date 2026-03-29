@@ -1,5 +1,5 @@
 import { AuthUserPoolGroupsAssessor } from '../../../../../commands/gen2-migration/assess/auth/auth-user-pool-groups.assessor';
-import { Assessment } from '../../../../../commands/gen2-migration/_assessment';
+import { Assessment } from '../../../../../commands/gen2-migration/assess/assessment';
 import { Gen1App, DiscoveredResource } from '../../../../../commands/gen2-migration/generate/_infra/gen1-app';
 
 function mockGen1App(existingFiles: string[] = []): Gen1App {
@@ -17,7 +17,7 @@ const RESOURCE: DiscoveredResource = {
 describe('AuthUserPoolGroupsAssessor', () => {
   it('records resource as supported', () => {
     const assessment = new Assessment('app', 'dev');
-    new AuthUserPoolGroupsAssessor(mockGen1App(), RESOURCE).assess(assessment);
+    new AuthUserPoolGroupsAssessor(mockGen1App(), RESOURCE).record(assessment);
 
     const entry = assessment.resources[0];
     expect(entry!.generate).toBe('supported');
@@ -26,7 +26,7 @@ describe('AuthUserPoolGroupsAssessor', () => {
 
   it('detects override.ts', () => {
     const assessment = new Assessment('app', 'dev');
-    new AuthUserPoolGroupsAssessor(mockGen1App(['auth/userPoolGroups/override.ts']), RESOURCE).assess(assessment);
+    new AuthUserPoolGroupsAssessor(mockGen1App(['auth/userPoolGroups/override.ts']), RESOURCE).record(assessment);
 
     expect(assessment.features).toHaveLength(1);
     expect(assessment.features[0]).toEqual({
@@ -38,7 +38,7 @@ describe('AuthUserPoolGroupsAssessor', () => {
 
   it('records no features when override.ts is absent', () => {
     const assessment = new Assessment('app', 'dev');
-    new AuthUserPoolGroupsAssessor(mockGen1App(), RESOURCE).assess(assessment);
+    new AuthUserPoolGroupsAssessor(mockGen1App(), RESOURCE).record(assessment);
 
     expect(assessment.features).toHaveLength(0);
   });

@@ -1,5 +1,5 @@
 import { Assessor } from '../assessor';
-import { Assessment } from '../../_assessment';
+import { Assessment } from '../assessment';
 import { Gen1App, DiscoveredResource, KNOWN_FEATURES } from '../../generate/_infra/gen1-app';
 
 /**
@@ -12,7 +12,7 @@ export class S3Assessor implements Assessor {
   /**
    * Records resource-level and feature-level support for this S3 resource.
    */
-  public assess(assessment: Assessment): void {
+  public record(assessment: Assessment): void {
     assessment.recordResource({ resource: this.resource, generate: 'supported', refactor: 'supported' });
 
     const overridesPath = `storage/${this.resource.resourceName}/override.ts`;

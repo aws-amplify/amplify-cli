@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import CLITable from 'cli-table3';
-import { DiscoveredResource } from './generate/_infra/gen1-app';
+import { DiscoveredResource } from '../generate/_infra/gen1-app';
 
 /**
  * Support level for a resource or feature dimension.
@@ -116,8 +116,8 @@ export class Assessment {
         ra.resource.category,
         ra.resource.service,
         ra.resource.resourceName,
-        Assessment.status(ra, 'generate'),
-        Assessment.status(ra, 'refactor'),
+        Assessment.support(ra, 'generate'),
+        Assessment.support(ra, 'refactor'),
       ]);
     }
 
@@ -131,26 +131,26 @@ export class Assessment {
     });
 
     for (const fr of this._features) {
-      table.push([fr.feature.name, fr.feature.path, Assessment.status(fr, 'generate'), Assessment.status(fr, 'refactor')]);
+      table.push([fr.feature.name, fr.feature.path, Assessment.support(fr, 'generate'), Assessment.support(fr, 'refactor')]);
     }
 
     return table.toString();
   }
 
-  private static status(assessment: _Assessment, step: 'generate' | 'refactor'): string {
+  private static support(assessment: _Assessment, step: 'generate' | 'refactor'): string {
     let status = undefined;
     switch (step) {
       case 'generate':
-        status = Assessment.statusText(assessment.generate, 'requires manual code editing');
+        status = Assessment.supportText(assessment.generate, 'requires manual code editing');
         break;
       case 'refactor':
-        status = Assessment.statusText(assessment.refactor, 'requires manual data replication');
+        status = Assessment.supportText(assessment.refactor, 'requires manual data replication');
         break;
     }
     return status;
   }
 
-  private static statusText(level: SupportLevel, unsupportedLabel: string): string {
+  private static supportText(level: SupportLevel, unsupportedLabel: string): string {
     let text = undefined;
     switch (level) {
       case 'supported':

@@ -15,7 +15,7 @@ import { StorageDynamoForwardRefactorer } from './storage/storage-dynamo-forward
 import { StorageDynamoRollbackRefactorer } from './storage/storage-dynamo-rollback';
 import { AnalyticsKinesisForwardRefactorer } from './analytics/analytics-forward';
 import { AnalyticsKinesisRollbackRefactorer } from './analytics/analytics-rollback';
-import { Assessment } from '../_assessment';
+import { Assessment } from '../assess/assessment';
 import { AuthUserPoolGroupsForwardRefactorer } from './auth/auth-user-pool-groups-forward';
 import { AuthUserPoolGroupsRollbackRefactorer } from './auth/auth-user-pool-groups-rollback';
 import { Cfn } from './cfn';

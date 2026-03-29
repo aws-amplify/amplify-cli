@@ -1,5 +1,5 @@
 import { FunctionAssessor } from '../../../../../commands/gen2-migration/assess/function/function.assessor';
-import { Assessment } from '../../../../../commands/gen2-migration/_assessment';
+import { Assessment } from '../../../../../commands/gen2-migration/assess/assessment';
 import { Gen1App, DiscoveredResource } from '../../../../../commands/gen2-migration/generate/_infra/gen1-app';
 
 function mockGen1App(existingFiles: string[] = [], jsonFiles: Record<string, unknown> = {}): Gen1App {
@@ -15,7 +15,7 @@ const RESOURCE: DiscoveredResource = { category: 'function', resourceName: 'myFu
 describe('FunctionAssessor', () => {
   it('records resource as unsupported', () => {
     const assessment = new Assessment('app', 'dev');
-    new FunctionAssessor(mockGen1App(), RESOURCE).assess(assessment);
+    new FunctionAssessor(mockGen1App(), RESOURCE).record(assessment);
 
     const entry = assessment.resources[0];
     expect(entry!.generate).toBe('unsupported');
@@ -27,7 +27,7 @@ describe('FunctionAssessor', () => {
       'function/myFunc/custom-policies.json': [{ Action: ['s3:GetObject'], Resource: ['arn:aws:s3:::bucket/*'] }],
     });
     const assessment = new Assessment('app', 'dev');
-    new FunctionAssessor(gen1App, RESOURCE).assess(assessment);
+    new FunctionAssessor(gen1App, RESOURCE).record(assessment);
 
     expect(assessment.features).toHaveLength(1);
     expect(assessment.features[0]).toEqual({
@@ -42,14 +42,14 @@ describe('FunctionAssessor', () => {
       'function/myFunc/custom-policies.json': [{ Action: [], Resource: [] }],
     });
     const assessment = new Assessment('app', 'dev');
-    new FunctionAssessor(gen1App, RESOURCE).assess(assessment);
+    new FunctionAssessor(gen1App, RESOURCE).record(assessment);
 
     expect(assessment.features).toHaveLength(0);
   });
 
   it('records no features when custom-policies.json is absent', () => {
     const assessment = new Assessment('app', 'dev');
-    new FunctionAssessor(mockGen1App(), RESOURCE).assess(assessment);
+    new FunctionAssessor(mockGen1App(), RESOURCE).record(assessment);
 
     expect(assessment.features).toHaveLength(0);
   });
