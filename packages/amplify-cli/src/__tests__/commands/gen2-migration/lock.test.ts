@@ -4,6 +4,7 @@ import { CloudFormationClient, SetStackPolicyCommand } from '@aws-sdk/client-clo
 import { AmplifyClient, UpdateAppCommand } from '@aws-sdk/client-amplify';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { SpinningLogger } from '../../../commands/gen2-migration/_spinning-logger';
+import { Gen1App } from '../../../commands/gen2-migration/generate/_infra/gen1-app';
 
 jest.mock('@aws-sdk/client-cloudformation', () => ({
   ...jest.requireActual('@aws-sdk/client-cloudformation'),
@@ -70,11 +71,13 @@ describe('AmplifyMigrationLockStep', () => {
 
     lockStep = new AmplifyMigrationLockStep(
       mockLogger,
-      'testEnv',
-      'testApp',
-      'test-app-id',
-      'test-root-stack',
-      'us-east-1',
+      {
+        appId: 'test-app-id',
+        appName: 'testApp',
+        rootStackName: 'test-root-stack',
+        region: 'us-east-1',
+        envName: 'testEnv',
+      } as unknown as Gen1App,
       {} as $TSContext,
     );
   });

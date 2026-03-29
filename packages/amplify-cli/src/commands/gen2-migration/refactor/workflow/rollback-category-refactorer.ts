@@ -69,7 +69,7 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
       template: withParams,
       stackOutputs: outputs,
       stackResources,
-      region: this.region,
+      region: this.gen1App.region,
       accountId: this.accountId,
     });
     const resolved = resolveDependencies(withOutputs);

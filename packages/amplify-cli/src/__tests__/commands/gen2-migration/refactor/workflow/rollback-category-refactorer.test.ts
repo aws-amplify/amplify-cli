@@ -97,10 +97,9 @@ describe('RollbackCategoryRefactorer.afterMove', () => {
 
     const operations = await (refactorer as any).afterMove('gen2-auth-stack-id');
 
-    // 2 operations: update holding with placeholder, refactor back to Gen2
-    expect(operations).toHaveLength(2);
-    expect(await operations[0].describe()).toEqual([expect.stringContaining('placeholder')]);
-    expect(await operations[1].describe()).toEqual([expect.stringContaining('Move')]);
+    // 1 operation: move resources from holding stack back to Gen2
+    expect(operations).toHaveLength(1);
+    expect(await operations[0].describe()).toEqual([expect.stringContaining('Move')]);
   });
 
   it('returns empty operations when no holding stack exists', async () => {

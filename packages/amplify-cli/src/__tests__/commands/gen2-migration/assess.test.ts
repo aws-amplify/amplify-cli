@@ -4,6 +4,8 @@ import { Gen1App, DiscoveredResource } from '../../../commands/gen2-migration/ge
 function mockGen1App(resources: DiscoveredResource[], existingFiles: string[] = [], jsonFiles: Record<string, unknown> = {}): Gen1App {
   const fileSet = new Set(existingFiles);
   return {
+    appName: 'test-app',
+    envName: 'dev',
     discover: () => resources,
     meta: () => undefined,
     fileExists: (path: string) => fileSet.has(path),
@@ -12,55 +14,63 @@ function mockGen1App(resources: DiscoveredResource[], existingFiles: string[] = 
 }
 
 describe('AmplifyMigrationAssessor', () => {
-  describe('assessFeatures()', () => {
-    it('returns empty array when no features detected', () => {
+  describe('assess()', () => {
+    it('returns empty assessment when no resources discovered', () => {
       const gen1App = mockGen1App([]);
       const assessor = new AmplifyMigrationAssessor(gen1App);
-      const resource: DiscoveredResource = { category: 'auth', resourceName: 'myPool', service: 'Cognito', key: 'auth:Cognito' };
+      const assessment = assessor.assess();
 
-      expect(assessor.assessFeatures(resource)).toHaveLength(0);
+      expect(assessment.resources).toHaveLength(0);
+      expect(assessment.features).toHaveLength(0);
+      expect(assessment.validFor('generate')).toBe(true);
+      expect(assessment.validFor('refactor')).toBe(true);
     });
 
     it('detects custom-policies.json for function resources', () => {
-      const gen1App = mockGen1App([], ['function/myFunc/custom-policies.json'], {
-        'function/myFunc/custom-policies.json': [{ Action: ['s3:GetObject'], Resource: ['arn:aws:s3:::my-bucket/*'] }],
-      });
+      const gen1App = mockGen1App(
+        [{ category: 'function', resourceName: 'myFunc', service: 'Lambda', key: 'function:Lambda' }],
+        ['function/myFunc/custom-policies.json'],
+        { 'function/myFunc/custom-policies.json': [{ Action: ['s3:GetObject'], Resource: ['arn:aws:s3:::my-bucket/*'] }] },
+      );
       const assessor = new AmplifyMigrationAssessor(gen1App);
-      const resource: DiscoveredResource = { category: 'function', resourceName: 'myFunc', service: 'Lambda', key: 'function:Lambda' };
+      const assessment = assessor.assess();
 
-      const features = assessor.assessFeatures(resource);
-
-      expect(features).toHaveLength(1);
-      expect(features[0].feature.name).toBe('Custom policies');
+      expect(assessment.features).toHaveLength(1);
+      expect(assessment.features[0].feature.name).toBe('Custom policies');
     });
 
     it('detects override.ts for auth resources', () => {
-      const gen1App = mockGen1App([], ['auth/myPool/override.ts']);
+      const gen1App = mockGen1App(
+        [{ category: 'auth', resourceName: 'myPool', service: 'Cognito', key: 'auth:Cognito' }],
+        ['auth/myPool/override.ts'],
+      );
       const assessor = new AmplifyMigrationAssessor(gen1App);
-      const resource: DiscoveredResource = { category: 'auth', resourceName: 'myPool', service: 'Cognito', key: 'auth:Cognito' };
+      const assessment = assessor.assess();
 
-      const features = assessor.assessFeatures(resource);
-
-      expect(features).toHaveLength(1);
-      expect(features[0].feature.name).toBe('Overrides');
+      expect(assessment.features).toHaveLength(1);
+      expect(assessment.features[0].feature.name).toBe('Overrides');
     });
 
     it('ignores empty custom-policies.json', () => {
-      const gen1App = mockGen1App([], ['function/myFunc/custom-policies.json'], {
-        'function/myFunc/custom-policies.json': [{ Action: [], Resource: [] }],
-      });
+      const gen1App = mockGen1App(
+        [{ category: 'function', resourceName: 'myFunc', service: 'Lambda', key: 'function:Lambda' }],
+        ['function/myFunc/custom-policies.json'],
+        { 'function/myFunc/custom-policies.json': [{ Action: [], Resource: [] }] },
+      );
       const assessor = new AmplifyMigrationAssessor(gen1App);
-      const resource: DiscoveredResource = { category: 'function', resourceName: 'myFunc', service: 'Lambda', key: 'function:Lambda' };
+      const assessment = assessor.assess();
 
-      expect(assessor.assessFeatures(resource)).toHaveLength(0);
+      expect(assessment.features).toHaveLength(0);
     });
 
-    it('returns empty for unsupported resources', () => {
-      const gen1App = mockGen1App([]);
+    it('marks UNKNOWN resources as unsupported', () => {
+      const gen1App = mockGen1App([{ category: 'notifications', resourceName: 'push', service: 'Pinpoint', key: 'UNKNOWN' }]);
       const assessor = new AmplifyMigrationAssessor(gen1App);
-      const resource: DiscoveredResource = { category: 'notifications', resourceName: 'push', service: 'Pinpoint', key: 'unsupported' };
+      const assessment = assessor.assess();
 
-      expect(assessor.assessFeatures(resource)).toHaveLength(0);
+      expect(assessment.resources).toHaveLength(1);
+      expect(assessment.resources[0].generate).toBe('unsupported');
+      expect(assessment.resources[0].refactor).toBe('unsupported');
     });
   });
 
@@ -75,7 +85,7 @@ describe('AmplifyMigrationAssessor', () => {
       const { printer } = require('@aws-amplify/amplify-prompts');
       const infoSpy = jest.spyOn(printer, 'info').mockImplementation(() => {});
 
-      new AmplifyMigrationAssessor(gen1App).run('test-app', 'dev');
+      new AmplifyMigrationAssessor(gen1App).run();
 
       expect(infoSpy).toHaveBeenCalled();
 

@@ -1,6 +1,6 @@
 import { Assessor } from '../assessor';
 import { Assessment } from '../../_assessment';
-import { Gen1App, DiscoveredResource } from '../../generate/_infra/gen1-app';
+import { Gen1App, DiscoveredResource, KNOWN_FEATURES } from '../../generate/_infra/gen1-app';
 
 /**
  * Assesses migration readiness for a single Lambda function resource.
@@ -19,7 +19,7 @@ export class FunctionAssessor implements Assessor {
 
     if (this.hasCustomPolicies(customPoliciesPath)) {
       assessment.recordFeature({
-        feature: { name: 'Custom policies', path: customPoliciesPath },
+        feature: { name: KNOWN_FEATURES.CUSTOM_FUNCTION_POLICIES, path: customPoliciesPath },
         generate: 'unsupported',
         refactor: 'not-applicable',
       });

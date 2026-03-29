@@ -2,8 +2,6 @@ import chalk from 'chalk';
 import CLITable from 'cli-table3';
 import { DiscoveredResource } from './generate/_infra/gen1-app';
 
-type GEN2_MIGRATION_STEP = 'generate' | 'refactor' | 'all';
-
 /**
  * Support level for a resource or feature dimension.
  */
@@ -75,14 +73,10 @@ export class Assessment {
     return valid;
   }
 
-  public reportFor(step: GEN2_MIGRATION_STEP): string {
-    return this.render(step);
-  }
-
   /**
    * Renders the assessment as a string containing resource and feature tables.
    */
-  public render(step: GEN2_MIGRATION_STEP): string {
+  public render(): string {
     const lines: string[] = [];
 
     lines.push('');
@@ -91,81 +85,45 @@ export class Assessment {
     lines.push('');
     lines.push(chalk.bold('Resources'));
     lines.push('');
-    lines.push(this.renderResourceTable(step));
+    lines.push(this.renderResourceTable());
 
     lines.push('');
     lines.push(chalk.bold('Features'));
     lines.push('');
-    lines.push(this.renderFeatureTable(step));
+    lines.push(this.renderFeatureTable());
 
     return lines.join('\n');
   }
 
-  private renderResourceTable(step: GEN2_MIGRATION_STEP): string {
-    let table = undefined;
+  private renderResourceTable(): string {
+    const table = new CLITable({
+      head: ['Category', 'Service', 'Resource', 'Generate', 'Refactor'],
+      style: { head: [] },
+    });
 
-    switch (step) {
-      case 'generate':
-      case 'refactor': {
-        table = new CLITable({
-          head: ['Category', 'Resource', 'Service', 'Support'],
-          style: { head: [] },
-        });
-
-        for (const a of this._resources) {
-          table.push([a.resource.category, a.resource.resourceName, a.resource.service, Assessment.status(a, step)]);
-        }
-        break;
-      }
-      case 'all': {
-        table = new CLITable({
-          head: ['Category', 'Resource', 'Service', 'Generate', 'Refactor'],
-          style: { head: [] },
-        });
-
-        for (const ra of this._resources) {
-          table.push([
-            ra.resource.category,
-            ra.resource.resourceName,
-            ra.resource.service,
-            Assessment.status(ra, 'generate'),
-            Assessment.status(ra, 'refactor'),
-          ]);
-        }
-        break;
-      }
+    for (const ra of this._resources) {
+      table.push([
+        ra.resource.category,
+        ra.resource.service,
+        ra.resource.resourceName,
+        Assessment.status(ra, 'generate'),
+        Assessment.status(ra, 'refactor'),
+      ]);
     }
+
     return table.toString();
   }
 
-  private renderFeatureTable(step: GEN2_MIGRATION_STEP): string {
-    let table = undefined;
+  private renderFeatureTable(): string {
+    const table = new CLITable({
+      head: ['Name', 'Path', 'Generate', 'Refactor'],
+      style: { head: [] },
+    });
 
-    switch (step) {
-      case 'generate':
-      case 'refactor': {
-        table = new CLITable({
-          head: ['Name', 'Path', 'Support'],
-          style: { head: [] },
-        });
-
-        for (const fr of this._features) {
-          table.push([fr.feature.name, fr.feature.path, Assessment.status(fr, step)]);
-        }
-        break;
-      }
-      case 'all': {
-        table = new CLITable({
-          head: ['Name', 'Path', 'Generate', 'Refactor'],
-          style: { head: [] },
-        });
-
-        for (const fr of this._features) {
-          table.push([fr.feature.name, fr.feature.path, Assessment.status(fr, 'generate'), Assessment.status(fr, 'refactor')]);
-        }
-        break;
-      }
+    for (const fr of this._features) {
+      table.push([fr.feature.name, fr.feature.path, Assessment.status(fr, 'generate'), Assessment.status(fr, 'refactor')]);
     }
+
     return table.toString();
   }
 

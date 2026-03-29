@@ -9,6 +9,8 @@ import { CloudWatchEventsClient } from '@aws-sdk/client-cloudwatch-events';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { APIGatewayClient } from '@aws-sdk/client-api-gateway';
 import { SSMClient } from '@aws-sdk/client-ssm';
+import { AwsSdkConfig, loadConfiguration } from '@aws-amplify/amplify-provider-awscloudformation';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 
 /**
  * Single instantiation point for all AWS SDK clients used during Gen2 migration.
@@ -27,17 +29,22 @@ export class AwsClients {
   public readonly apiGateway: APIGatewayClient;
   public readonly ssm: SSMClient;
 
-  constructor(params: { readonly region: string }) {
-    this.amplify = new AmplifyClient({ region: params.region });
-    this.appSync = new AppSyncClient({ region: params.region });
-    this.cloudFormation = new CloudFormationClient({ region: params.region });
-    this.cognitoIdentityProvider = new CognitoIdentityProviderClient({ region: params.region });
-    this.cognitoIdentity = new CognitoIdentityClient({ region: params.region });
-    this.s3 = new S3Client({ region: params.region });
-    this.lambda = new LambdaClient({ region: params.region });
-    this.cloudWatchEvents = new CloudWatchEventsClient({ region: params.region });
-    this.dynamoDB = new DynamoDBClient({ region: params.region });
-    this.apiGateway = new APIGatewayClient({ region: params.region });
-    this.ssm = new SSMClient({ region: params.region });
+  private constructor(creds: AwsSdkConfig) {
+    this.amplify = new AmplifyClient(creds);
+    this.appSync = new AppSyncClient(creds);
+    this.cloudFormation = new CloudFormationClient(creds);
+    this.cognitoIdentityProvider = new CognitoIdentityProviderClient(creds);
+    this.cognitoIdentity = new CognitoIdentityClient(creds);
+    this.s3 = new S3Client(creds);
+    this.lambda = new LambdaClient(creds);
+    this.cloudWatchEvents = new CloudWatchEventsClient(creds);
+    this.dynamoDB = new DynamoDBClient(creds);
+    this.apiGateway = new APIGatewayClient(creds);
+    this.ssm = new SSMClient(creds);
+  }
+
+  public static async create(context: $TSContext): Promise<AwsClients> {
+    const configuration = await loadConfiguration(context);
+    return new AwsClients(configuration);
   }
 }

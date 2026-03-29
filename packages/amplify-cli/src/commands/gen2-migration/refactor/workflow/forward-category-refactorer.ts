@@ -103,7 +103,7 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
       template: withParams,
       stackOutputs: outputs,
       stackResources,
-      region: this.region,
+      region: this.gen1App.region,
       accountId: this.accountId,
     });
     const withDeps = resolveDependencies(withOutputs);
@@ -131,7 +131,7 @@ export abstract class ForwardCategoryRefactorer extends CategoryRefactorer {
       template: withDeps,
       stackOutputs: outputs,
       stackResources,
-      region: this.region,
+      region: this.gen1App.region,
       accountId: this.accountId,
     });
 

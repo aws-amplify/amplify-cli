@@ -5,7 +5,6 @@ import { Plan } from '../_plan';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { GetCallerIdentityCommand, STSClient } from '@aws-sdk/client-sts';
 import { AmplifyGen2MigrationValidations } from '../_validations';
-import { AwsClients } from '../aws-clients';
 import { StackFacade } from './stack-facade';
 import { Planner } from '../planner';
 import { AuthCognitoForwardRefactorer } from './auth/auth-cognito-forward';
@@ -25,7 +24,7 @@ import { AmplifyMigrationAssessor } from '../assess';
 export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
   public async forward(): Promise<Plan> {
     const toStack = this.extractParameters();
-    const { clients, accountId, gen1Env, gen2Branch, cfn } = await this.createInfrastructure(toStack);
+    const { accountId, gen1Env, gen2Branch, cfn } = await this.createInfrastructure(toStack);
 
     const refactorers: Planner[] = [];
     const assessor = new AmplifyMigrationAssessor(this.gen1App);
@@ -36,49 +35,21 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
     for (const resource of discovered) {
       switch (resource.key) {
         case 'auth:Cognito':
-          refactorers.push(
-            new AuthCognitoForwardRefactorer(
-              gen1Env,
-              gen2Branch,
-              clients,
-              this.gen1App.region,
-              accountId,
-              this.logger,
-              this.gen1App.appId,
-              this.gen1App.envName,
-              resource,
-              cfn,
-            ),
-          );
+          refactorers.push(new AuthCognitoForwardRefactorer(gen1Env, gen2Branch, this.gen1App, accountId, this.logger, resource, cfn));
           break;
         case 'auth:Cognito-UserPool-Groups':
           refactorers.push(
-            new AuthUserPoolGroupsForwardRefactorer(
-              gen1Env,
-              gen2Branch,
-              clients,
-              this.gen1App.region,
-              accountId,
-              this.logger,
-              resource,
-              cfn,
-            ),
+            new AuthUserPoolGroupsForwardRefactorer(gen1Env, gen2Branch, this.gen1App, accountId, this.logger, resource, cfn),
           );
           break;
         case 'storage:S3':
-          refactorers.push(
-            new StorageS3ForwardRefactorer(gen1Env, gen2Branch, clients, this.gen1App.region, accountId, this.logger, resource, cfn),
-          );
+          refactorers.push(new StorageS3ForwardRefactorer(gen1Env, gen2Branch, this.gen1App, accountId, this.logger, resource, cfn));
           break;
         case 'storage:DynamoDB':
-          refactorers.push(
-            new StorageDynamoForwardRefactorer(gen1Env, gen2Branch, clients, this.gen1App.region, accountId, this.logger, resource, cfn),
-          );
+          refactorers.push(new StorageDynamoForwardRefactorer(gen1Env, gen2Branch, this.gen1App, accountId, this.logger, resource, cfn));
           break;
         case 'analytics:Kinesis':
-          refactorers.push(
-            new AnalyticsKinesisForwardRefactorer(gen1Env, gen2Branch, clients, this.gen1App.region, accountId, this.logger, resource, cfn),
-          );
+          refactorers.push(new AnalyticsKinesisForwardRefactorer(gen1Env, gen2Branch, this.gen1App, accountId, this.logger, resource, cfn));
           break;
 
         // stateless resources — nothing to refactor
@@ -111,7 +82,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
 
   public async rollback(): Promise<Plan> {
     const toStack = this.extractParameters();
-    const { clients, accountId, gen1Env, gen2Branch, cfn } = await this.createInfrastructure(toStack);
+    const { accountId, gen1Env, gen2Branch, cfn } = await this.createInfrastructure(toStack);
 
     const refactorers: Planner[] = [];
     const assessor = new AmplifyMigrationAssessor(this.gen1App);
@@ -122,46 +93,22 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
     for (const resource of discovered) {
       switch (resource.key) {
         case 'auth:Cognito':
-          refactorers.push(
-            new AuthCognitoRollbackRefactorer(gen1Env, gen2Branch, clients, this.gen1App.region, accountId, this.logger, resource, cfn),
-          );
+          refactorers.push(new AuthCognitoRollbackRefactorer(gen1Env, gen2Branch, this.gen1App, accountId, this.logger, resource, cfn));
           break;
         case 'auth:Cognito-UserPool-Groups':
           refactorers.push(
-            new AuthUserPoolGroupsRollbackRefactorer(
-              gen1Env,
-              gen2Branch,
-              clients,
-              this.gen1App.region,
-              accountId,
-              this.logger,
-              resource,
-              cfn,
-            ),
+            new AuthUserPoolGroupsRollbackRefactorer(gen1Env, gen2Branch, this.gen1App, accountId, this.logger, resource, cfn),
           );
           break;
         case 'storage:S3':
-          refactorers.push(
-            new StorageS3RollbackRefactorer(gen1Env, gen2Branch, clients, this.gen1App.region, accountId, this.logger, resource, cfn),
-          );
+          refactorers.push(new StorageS3RollbackRefactorer(gen1Env, gen2Branch, this.gen1App, accountId, this.logger, resource, cfn));
           break;
         case 'storage:DynamoDB':
-          refactorers.push(
-            new StorageDynamoRollbackRefactorer(gen1Env, gen2Branch, clients, this.gen1App.region, accountId, this.logger, resource, cfn),
-          );
+          refactorers.push(new StorageDynamoRollbackRefactorer(gen1Env, gen2Branch, this.gen1App, accountId, this.logger, resource, cfn));
           break;
         case 'analytics:Kinesis':
           refactorers.push(
-            new AnalyticsKinesisRollbackRefactorer(
-              gen1Env,
-              gen2Branch,
-              clients,
-              this.gen1App.region,
-              accountId,
-              this.logger,
-              resource,
-              cfn,
-            ),
+            new AnalyticsKinesisRollbackRefactorer(gen1Env, gen2Branch, this.gen1App, accountId, this.logger, resource, cfn),
           );
           break;
 
@@ -194,7 +141,6 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
    * Creates shared AWS clients, stack facades, and the Cfn instance.
    */
   private async createInfrastructure(toStack: string): Promise<{
-    clients: AwsClients;
     accountId: string;
     gen1Env: StackFacade;
     gen2Branch: StackFacade;
@@ -206,12 +152,12 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
       throw new AmplifyError('ConfigurationError', { message: 'Unable to determine AWS account ID' });
     }
 
-    const clients = new AwsClients({ region: this.gen1App.region });
+    const clients = this.gen1App.clients;
     const gen1Env = new StackFacade(clients, this.gen1App.rootStackName);
     const gen2Branch = new StackFacade(clients, toStack);
     const cfn = new Cfn(clients.cloudFormation, this.logger);
 
-    return { clients, accountId, gen1Env, gen2Branch, cfn };
+    return { accountId, gen1Env, gen2Branch, cfn };
   }
 
   /**
@@ -233,7 +179,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
         description: 'Assessment',
         run: async () => {
           const valid = assessment.validFor('refactor');
-          return { valid, report: valid ? undefined : assessment.reportFor('refactor') };
+          return { valid, report: valid ? undefined : assessment.render() };
         },
       }),
       // eslint-disable-next-line @typescript-eslint/no-empty-function

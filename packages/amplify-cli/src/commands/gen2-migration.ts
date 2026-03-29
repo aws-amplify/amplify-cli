@@ -8,11 +8,8 @@ import { AmplifyMigrationLockStep } from './gen2-migration/lock';
 import { AmplifyMigrationRefactorStep } from './gen2-migration/refactor';
 import { AmplifyMigrationShiftStep } from './gen2-migration/shift';
 import { SpinningLogger } from './gen2-migration/_spinning-logger';
-import { stateManager } from '@aws-amplify/amplify-cli-core';
-import { AmplifyClient, GetAppCommand } from '@aws-sdk/client-amplify';
 import chalk from 'chalk';
 import { AmplifyMigrationAssessor } from './gen2-migration/assess';
-import { AwsClients } from './gen2-migration/aws-clients';
 import { Gen1App } from './gen2-migration/generate/_infra/gen1-app';
 import { Plan } from './gen2-migration/_plan';
 
@@ -77,38 +74,9 @@ export const run = async (context: $TSContext) => {
     });
   }
 
-  // assuming all environment are deployed within the same app - can it be different?
-  const appId = (Object.values(stateManager.getTeamProviderInfo())[0] as any).awscloudformation.AmplifyAppId;
+  const gen1App = await Gen1App.create(context);
 
-  const amplifyClient = new AmplifyClient();
-  const app = await amplifyClient.send(new GetAppCommand({ appId }));
-  const appName = app.app.name;
-
-  const migratingEnvName = (app.app.environmentVariables ?? {})['GEN2_MIGRATION_ENVIRONMENT_NAME'];
-  const localEnvName = stateManager.getCurrentEnvName();
-
-  if (!localEnvName && !migratingEnvName) {
-    throw new AmplifyError('EnvironmentNotInitializedError', {
-      message: `No environment configured for app '${appName}'`,
-      resolution: 'Run "amplify pull" to configure an environment.',
-    });
-  }
-
-  if (migratingEnvName && localEnvName && migratingEnvName !== localEnvName) {
-    throw new AmplifyError('MigrationError', {
-      message: `Environment mismatch: Your local env (${localEnvName}) does 
-      not match the environment you marked for migration (${migratingEnvName})`,
-    });
-  }
-
-  const envName = localEnvName ?? migratingEnvName;
-
-  const region = stateManager.getTeamProviderInfo()[envName].awscloudformation.Region;
-
-  const clients = new AwsClients({ region });
-  const gen1App = await Gen1App.create({ appId, appName, region, envName, clients });
-
-  const logger = new SpinningLogger(`${stepName}] [${appName}/${envName}`, { debug: isDebug });
+  const logger = new SpinningLogger(`${stepName}] [${gen1App.appName}/${gen1App.envName}`, { debug: isDebug });
 
   // Assess is not a migration step — handle it separately.
   if (stepName === 'assess') {
@@ -149,7 +117,9 @@ export const run = async (context: $TSContext) => {
 
   printer.blankLine();
   printer.info(
-    chalk.yellow(`You are about to ${rollingBack ? 'rollback' : 'execute'} '${stepName}' on environment '${appId}/${envName}'.`),
+    chalk.yellow(
+      `You are about to ${rollingBack ? 'rollback' : 'execute'} '${stepName}' on environment '${gen1App.appId}/${gen1App.envName}'.`,
+    ),
   );
   printer.blankLine();
 

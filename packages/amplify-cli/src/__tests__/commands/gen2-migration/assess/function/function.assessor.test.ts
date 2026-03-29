@@ -13,13 +13,13 @@ function mockGen1App(existingFiles: string[] = [], jsonFiles: Record<string, unk
 const RESOURCE: DiscoveredResource = { category: 'function', resourceName: 'myFunc', service: 'Lambda', key: 'function:Lambda' };
 
 describe('FunctionAssessor', () => {
-  it('records resource as supported', () => {
+  it('records resource as unsupported', () => {
     const assessment = new Assessment('app', 'dev');
     new FunctionAssessor(mockGen1App(), RESOURCE).assess(assessment);
 
     const entry = assessment.resources[0];
-    expect(entry!.generate).toBe('supported');
-    expect(entry!.refactor).toBe('not-applicable');
+    expect(entry!.generate).toBe('unsupported');
+    expect(entry!.refactor).toBe('unsupported');
   });
 
   it('detects non-empty custom-policies.json', () => {

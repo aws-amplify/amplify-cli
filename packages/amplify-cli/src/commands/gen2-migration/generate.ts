@@ -57,7 +57,7 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
           description: 'Assessment',
           run: async () => {
             const valid = assessment.validFor('generate');
-            return { valid, report: valid ? undefined : assessment.reportFor('generate') };
+            return { valid, report: valid ? undefined : assessment.render() };
           },
         }),
         // eslint-disable-next-line @typescript-eslint/no-empty-function

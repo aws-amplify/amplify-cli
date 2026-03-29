@@ -80,6 +80,6 @@ export class AmplifyMigrationAssessor {
    */
   public run(): void {
     const assessment = this.assess();
-    printer.info(assessment.render('all'));
+    printer.info(assessment.render());
   }
 }

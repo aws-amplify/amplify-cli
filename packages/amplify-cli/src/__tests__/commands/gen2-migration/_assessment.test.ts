@@ -1,8 +1,8 @@
 import { Assessment } from '../../../commands/gen2-migration/_assessment';
 
 describe('Assessment', () => {
-  describe('recordResource()', () => {
-    it('records a resource assessment', () => {
+  describe('validFor()', () => {
+    it('returns true when all resources are supported', () => {
       const assessment = new Assessment('app', 'dev');
       assessment.recordResource({
         resource: { category: 'auth', resourceName: 'myPool', service: 'Cognito', key: 'auth:Cognito' },
@@ -10,12 +10,11 @@ describe('Assessment', () => {
         refactor: 'supported',
       });
 
-      expect(assessment.resources).toHaveLength(1);
-      expect(assessment.resources[0].generate).toBe('supported');
-      expect(assessment.resources[0].refactor).toBe('supported');
+      expect(assessment.validFor('generate')).toBe(true);
+      expect(assessment.validFor('refactor')).toBe(true);
     });
 
-    it('handles multiple resources across categories', () => {
+    it('returns false when a resource is unsupported for generate', () => {
       const assessment = new Assessment('app', 'dev');
       assessment.recordResource({
         resource: { category: 'auth', resourceName: 'pool', service: 'Cognito', key: 'auth:Cognito' },
@@ -23,39 +22,41 @@ describe('Assessment', () => {
         refactor: 'supported',
       });
       assessment.recordResource({
-        resource: { category: 'storage', resourceName: 'bucket', service: 'S3', key: 'storage:S3' },
-        generate: 'supported',
-        refactor: 'supported',
-      });
-      assessment.recordResource({
-        resource: { category: 'geo', resourceName: 'map', service: 'Location', key: 'unsupported' },
+        resource: { category: 'geo', resourceName: 'map', service: 'Location', key: 'UNKNOWN' },
         generate: 'unsupported',
         refactor: 'unsupported',
       });
 
-      expect(assessment.resources).toHaveLength(3);
-      expect(assessment.resources[0].generate).toBe('supported');
-      expect(assessment.resources[2].generate).toBe('unsupported');
+      expect(assessment.validFor('generate')).toBe(false);
+      expect(assessment.validFor('refactor')).toBe(false);
     });
-  });
 
-  describe('recordFeature()', () => {
-    it('accumulates feature assessments', () => {
+    it('returns false when a feature is unsupported', () => {
       const assessment = new Assessment('app', 'dev');
+      assessment.recordResource({
+        resource: { category: 'function', resourceName: 'myFunc', service: 'Lambda', key: 'function:Lambda' },
+        generate: 'supported',
+        refactor: 'not-applicable',
+      });
       assessment.recordFeature({
         feature: { name: 'Custom policies', path: 'function/myFunc/custom-policies.json' },
         generate: 'unsupported',
         refactor: 'not-applicable',
       });
-      assessment.recordFeature({
-        feature: { name: 'Overrides', path: 'auth/myPool/override.ts' },
-        generate: 'unsupported',
+
+      expect(assessment.validFor('generate')).toBe(false);
+      expect(assessment.validFor('refactor')).toBe(true);
+    });
+
+    it('treats not-applicable as valid', () => {
+      const assessment = new Assessment('app', 'dev');
+      assessment.recordResource({
+        resource: { category: 'function', resourceName: 'myFunc', service: 'Lambda', key: 'function:Lambda' },
+        generate: 'supported',
         refactor: 'not-applicable',
       });
 
-      expect(assessment.features).toHaveLength(2);
-      expect(assessment.features[0].feature.name).toBe('Custom policies');
-      expect(assessment.features[1].feature.name).toBe('Overrides');
+      expect(assessment.validFor('refactor')).toBe(true);
     });
   });
 
@@ -89,41 +90,9 @@ describe('Assessment', () => {
         refactor: 'supported',
       });
       assessment.recordResource({
-        resource: { category: 'geo', resourceName: 'map', service: 'Location', key: 'unsupported' },
+        resource: { category: 'geo', resourceName: 'map', service: 'Location', key: 'UNKNOWN' },
         generate: 'unsupported',
         refactor: 'unsupported',
-      });
-
-      expect(stripAnsi(assessment.render())).toMatchSnapshot();
-    });
-
-    it('renders an app with unsupported generate but supported refactor', () => {
-      const assessment = new Assessment('myapp', 'dev');
-      assessment.recordResource({
-        resource: { category: 'auth', resourceName: 'pool', service: 'Cognito', key: 'auth:Cognito' },
-        generate: 'supported',
-        refactor: 'supported',
-      });
-      assessment.recordResource({
-        resource: { category: 'custom', resourceName: 'alarms', service: 'CloudFormation', key: 'unsupported' },
-        generate: 'unsupported',
-        refactor: 'supported',
-      });
-
-      expect(stripAnsi(assessment.render())).toMatchSnapshot();
-    });
-
-    it('renders features table when features are detected', () => {
-      const assessment = new Assessment('myapp', 'dev');
-      assessment.recordResource({
-        resource: { category: 'function', resourceName: 'myFunc', service: 'Lambda', key: 'function:Lambda' },
-        generate: 'supported',
-        refactor: 'not-applicable',
-      });
-      assessment.recordFeature({
-        feature: { name: 'Custom policies', path: 'function/myFunc/custom-policies.json' },
-        generate: 'unsupported',
-        refactor: 'not-applicable',
       });
 
       expect(stripAnsi(assessment.render())).toMatchSnapshot();

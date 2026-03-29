@@ -1,6 +1,6 @@
 import { Assessor } from '../assessor';
 import { Assessment } from '../../_assessment';
-import { Gen1App, DiscoveredResource } from '../../generate/_infra/gen1-app';
+import { Gen1App, DiscoveredResource, KNOWN_FEATURES } from '../../generate/_infra/gen1-app';
 
 /**
  * Assesses migration readiness for a DynamoDB storage resource.
@@ -13,5 +13,15 @@ export class DynamoDBAssessor implements Assessor {
    */
   public assess(assessment: Assessment): void {
     assessment.recordResource({ resource: this.resource, generate: 'supported', refactor: 'supported' });
+
+    const overridesPath = `storage/${this.resource.resourceName}/override.ts`;
+
+    if (this.gen1App.fileExists(overridesPath)) {
+      assessment.recordFeature({
+        feature: { name: KNOWN_FEATURES.OVERRIDES, path: overridesPath },
+        generate: 'unsupported',
+        refactor: 'not-applicable',
+      });
+    }
   }
 }
