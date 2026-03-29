@@ -74,7 +74,12 @@ Verify your changes by following these guidelines:
 
 ### 5. PR Stage
 
-This stage prepares the PR description — the user is responsible for creating the actual PR.
+Creating the PR means making sure everything meets our high bar and is
+ready for peer review and merge. The user is responsible for actually
+creating the PR, you are just preparing it.
+
+Ask the user which branch the PR will be targetting and inspect the entire diff.
+Then, run the following phases, taking into account all the changes that were made:
 
 #### 5.1 Update Docs
 
@@ -83,7 +88,7 @@ Documentation is updated at PR time — not per-commit — because code changes 
 - Update the .md files in `docs/` that correspond to the code files you touched.
 - Update the appropriate skill files when a change impacts the contents of the skill.
 
-#### 5.2 Final Review
+#### 5.2 Code Review
 
 Before creating the PR body, do a final pass over every file you touched:
 
