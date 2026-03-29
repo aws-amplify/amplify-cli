@@ -2,6 +2,7 @@ import 'aws-sdk-client-mock-jest';
 import { AmplifyMigrationGenerateStep, DependenciesInstaller } from '../../../commands/gen2-migration/generate';
 import { MigrationAppOptions, MigrationApp } from './_framework/app';
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
+import { AmplifyGen2MigrationValidations } from '../../../commands/gen2-migration/_validations';
 
 // high to allow for debugging in the IDE
 const TIMEOUT_MINUTES = 60;
@@ -78,7 +79,7 @@ async function testSnapshot(appName: string, appOptions?: MigrationAppOptions, c
         await customize(app);
       }
       const gen1App = app.createGen1App();
-      const step = new AmplifyMigrationGenerateStep(app.logger, gen1App, {} as $TSContext);
+      const step = new AmplifyMigrationGenerateStep(app.logger, gen1App, {} as $TSContext, {} as AmplifyGen2MigrationValidations);
       const plan = await step.forward();
       await plan.execute();
 
@@ -124,7 +125,7 @@ describe('AmplifyMigrationGenerateStep', () => {
     it('fails validation when assessment contains unsupported resources', async () => {
       const gen1 = mockDiscover([{ category: 'notifications', resourceName: 'push', service: 'Pinpoint', key: 'UNKNOWN' }]);
       const logger = new SpinningLogger('generate', { debug: true });
-      const step = new AmplifyMigrationGenerateStep(logger, gen1, {} as $TSContext);
+      const step = new AmplifyMigrationGenerateStep(logger, gen1, {} as $TSContext, {} as AmplifyGen2MigrationValidations);
 
       const plan = await step.forward();
       const passed = await plan.validate();
@@ -142,7 +143,7 @@ describe('AmplifyMigrationGenerateStep', () => {
         { category: 'auth', resourceName: 'userPoolGroups', service: 'Cognito-UserPool-Groups', key: 'auth:Cognito-UserPool-Groups' },
       ]);
       const logger = new SpinningLogger('generate', { debug: true });
-      const step = new AmplifyMigrationGenerateStep(logger, gen1, {} as $TSContext);
+      const step = new AmplifyMigrationGenerateStep(logger, gen1, {} as $TSContext, {} as AmplifyGen2MigrationValidations);
 
       const plan = await step.forward();
       const passed = await plan.validate();

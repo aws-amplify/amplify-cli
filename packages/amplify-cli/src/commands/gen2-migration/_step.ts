@@ -2,12 +2,18 @@ import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { SpinningLogger } from './_spinning-logger';
 import { Plan } from './_plan';
 import { Gen1App } from './generate/_infra/gen1-app';
+import { AmplifyGen2MigrationValidations } from './_validations';
 
 /**
  * Abstract base class that defines the lifecycle contract for all migration steps.
  */
 export abstract class AmplifyMigrationStep {
-  constructor(protected readonly logger: SpinningLogger, protected readonly gen1App: Gen1App, protected readonly context: $TSContext) {}
+  constructor(
+    protected readonly logger: SpinningLogger,
+    protected readonly gen1App: Gen1App,
+    protected readonly context: $TSContext,
+    protected readonly validations: AmplifyGen2MigrationValidations,
+  ) {}
 
   /**
    * Returns a Plan for forward execution.

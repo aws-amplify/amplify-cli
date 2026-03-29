@@ -1,8 +1,8 @@
 import { AmplifyDriftDetector } from '../drift';
 import { $TSContext, AmplifyError, stateManager } from '@aws-amplify/amplify-cli-core';
 import {
-  DescribeChangeSetOutput,
   CloudFormationClient,
+  DescribeChangeSetOutput,
   DescribeStacksCommand,
   ListStackResourcesCommand,
   GetStackPolicyCommand,
@@ -22,11 +22,12 @@ export class AmplifyGen2MigrationValidations {
     minTime: 50,
   });
 
-  constructor(
+  public constructor(
     private readonly logger: SpinningLogger,
     private readonly rootStackName: string,
     private readonly envName,
     private readonly context: $TSContext,
+    private readonly cloudFormation: CloudFormationClient,
   ) {}
 
   public async validateDrift(): Promise<void> {
@@ -53,8 +54,7 @@ export class AmplifyGen2MigrationValidations {
 
   public async validateDeploymentStatus(): Promise<void> {
     this.logger.debug(`Inspecting root stack '${this.rootStackName}' status`);
-    const cfnClient = new CloudFormationClient({});
-    const response = await cfnClient.send(new DescribeStacksCommand({ StackName: this.rootStackName }));
+    const response = await this.cloudFormation.send(new DescribeStacksCommand({ StackName: this.rootStackName }));
 
     if (!response.Stacks || response.Stacks.length === 0) {
       throw new AmplifyError('StackNotFoundError', {
@@ -153,9 +153,8 @@ export class AmplifyGen2MigrationValidations {
   }
 
   public async validateLockStatus(): Promise<void> {
-    const cfnClient = new CloudFormationClient({});
     this.logger.debug(`Inspecting stack policy for ${this.rootStackName}`);
-    const { StackPolicyBody } = await cfnClient.send(new GetStackPolicyCommand({ StackName: this.rootStackName }));
+    const { StackPolicyBody } = await this.cloudFormation.send(new GetStackPolicyCommand({ StackName: this.rootStackName }));
 
     if (!StackPolicyBody) {
       throw new AmplifyError('MigrationError', {
@@ -191,17 +190,13 @@ export class AmplifyGen2MigrationValidations {
     parentLogicalId?: string,
   ): Promise<Array<{ category: string; resourceType: string; physicalId: string }>> {
     const statefulResources: Array<{ category: string; resourceType: string; physicalId: string }> = [];
-    const cfn = new CloudFormationClient({
-      maxAttempts: 5,
-      retryMode: 'adaptive',
-    });
     const parentCategory = parentLogicalId ? extractCategory(parentLogicalId) : undefined;
 
     let nextToken: string | undefined;
     const nestedStackTasks: Array<{ physicalId: string; logicalId: string | undefined }> = [];
 
     do {
-      const response = await cfn.send(new ListStackResourcesCommand({ StackName: stackName, NextToken: nextToken }));
+      const response = await this.cloudFormation.send(new ListStackResourcesCommand({ StackName: stackName, NextToken: nextToken }));
       nextToken = response.NextToken;
 
       for (const resource of response.StackResourceSummaries ?? []) {

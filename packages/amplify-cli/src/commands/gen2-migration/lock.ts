@@ -2,11 +2,10 @@ import { AmplifyMigrationStep } from './_step';
 import { AmplifyMigrationOperation, ValidationResult } from './_operation';
 import { Plan } from './_plan';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
-import { CloudFormationClient, SetStackPolicyCommand, GetStackPolicyCommand } from '@aws-sdk/client-cloudformation';
-import { AmplifyClient, UpdateAppCommand, GetAppCommand } from '@aws-sdk/client-amplify';
-import { DynamoDBClient, UpdateTableCommand, paginateListTables } from '@aws-sdk/client-dynamodb';
-import { AppSyncClient, paginateListGraphqlApis } from '@aws-sdk/client-appsync';
-import { AmplifyGen2MigrationValidations } from './_validations';
+import { SetStackPolicyCommand, GetStackPolicyCommand } from '@aws-sdk/client-cloudformation';
+import { UpdateAppCommand, GetAppCommand } from '@aws-sdk/client-amplify';
+import { UpdateTableCommand, paginateListTables } from '@aws-sdk/client-dynamodb';
+import { paginateListGraphqlApis } from '@aws-sdk/client-appsync';
 
 const GEN2_MIGRATION_ENVIRONMENT_NAME = 'GEN2_MIGRATION_ENVIRONMENT_NAME';
 
@@ -37,10 +36,6 @@ const ALLOW_ALL_POLICY = {
 export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
   private _dynamoTableNames: string[];
 
-  private _ddbClient: DynamoDBClient;
-  private _amplifyClient: AmplifyClient;
-  private _cfnClient: CloudFormationClient;
-
   public async forward(): Promise<Plan> {
     const operations: AmplifyMigrationOperation[] = [];
 
@@ -63,7 +58,7 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
         validate: () => undefined,
         describe: async () => [`Enable deletion protection for table '${tableName}'`],
         execute: async () => {
-          await this.ddbClient().send(
+          await this.gen1App.clients.dynamoDB.send(
             new UpdateTableCommand({
               TableName: tableName,
               DeletionProtectionEnabled: true,
@@ -78,9 +73,9 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
       validate: () => undefined,
       describe: async () => [`Add environment variable '${GEN2_MIGRATION_ENVIRONMENT_NAME}' (value: ${this.gen1App.envName})`],
       execute: async () => {
-        const app = await this.amplifyClient().send(new GetAppCommand({ appId: this.gen1App.appId }));
+        const app = await this.gen1App.clients.amplify.send(new GetAppCommand({ appId: this.gen1App.appId }));
         const environmentVariables = { ...(app.app.environmentVariables ?? {}), [GEN2_MIGRATION_ENVIRONMENT_NAME]: this.gen1App.envName };
-        await this.amplifyClient().send(new UpdateAppCommand({ appId: this.gen1App.appId, environmentVariables }));
+        await this.gen1App.clients.amplify.send(new UpdateAppCommand({ appId: this.gen1App.appId, environmentVariables }));
         this.logger.info(`Added '${GEN2_MIGRATION_ENVIRONMENT_NAME}' environment variable (value: ${this.gen1App.envName})`);
       },
     });
@@ -99,7 +94,7 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
         }
         existingPolicy.Statement.push(LOCK_STATEMENT);
         const mergedPolicy = JSON.stringify(existingPolicy);
-        await this.cfnClient().send(
+        await this.gen1App.clients.cloudFormation.send(
           new SetStackPolicyCommand({
             StackName: this.gen1App.rootStackName,
             StackPolicyBody: mergedPolicy,
@@ -136,10 +131,10 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
       validate: () => undefined,
       describe: async () => [`Remove environment variable '${GEN2_MIGRATION_ENVIRONMENT_NAME}'`],
       execute: async () => {
-        const app = await this.amplifyClient().send(new GetAppCommand({ appId: this.gen1App.appId }));
+        const app = await this.gen1App.clients.amplify.send(new GetAppCommand({ appId: this.gen1App.appId }));
         const environmentVariables = app.app.environmentVariables ?? {};
         delete environmentVariables[GEN2_MIGRATION_ENVIRONMENT_NAME];
-        await this.amplifyClient().send(new UpdateAppCommand({ appId: this.gen1App.appId, environmentVariables }));
+        await this.gen1App.clients.amplify.send(new UpdateAppCommand({ appId: this.gen1App.appId, environmentVariables }));
         this.logger.info(`Removed ${GEN2_MIGRATION_ENVIRONMENT_NAME} environment variable`);
       },
     });
@@ -158,7 +153,7 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
         }
         existingPolicy.Statement.splice(index, 1);
         const restoredPolicy = existingPolicy.Statement.length > 0 ? JSON.stringify(existingPolicy) : JSON.stringify(ALLOW_ALL_POLICY);
-        await this.cfnClient().send(
+        await this.gen1App.clients.cloudFormation.send(
           new SetStackPolicyCommand({
             StackName: this.gen1App.rootStackName,
             StackPolicyBody: restoredPolicy,
@@ -183,8 +178,7 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
 
   private async validateDeploymentStatus(): Promise<ValidationResult> {
     try {
-      const validations = new AmplifyGen2MigrationValidations(this.logger, this.gen1App.rootStackName, this.gen1App.envName, this.context);
-      await validations.validateDeploymentStatus();
+      await this.validations.validateDeploymentStatus();
       return { valid: true };
     } catch (e) {
       return { valid: false, report: e.message };
@@ -193,8 +187,7 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
 
   private async validateDrift(): Promise<ValidationResult> {
     try {
-      const validations = new AmplifyGen2MigrationValidations(this.logger, this.gen1App.rootStackName, this.gen1App.envName, this.context);
-      await validations.validateDrift();
+      await this.validations.validateDrift();
       return { valid: true };
     } catch (e) {
       return { valid: false, report: e.message };
@@ -203,8 +196,7 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
 
   private async fetchGraphQLApiId(): Promise<string> {
     const apis = [];
-    const appSyncClient = new AppSyncClient();
-    for await (const page of paginateListGraphqlApis({ client: appSyncClient }, {})) {
+    for await (const page of paginateListGraphqlApis({ client: this.gen1App.clients.appSync }, {})) {
       for (const api of page.graphqlApis ?? []) {
         if (api.name === `${this.gen1App.appName}-${this.gen1App.envName}`) {
           apis.push(api.apiId);
@@ -219,8 +211,7 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
 
   private async fetchGraphQLModelTables(graphQLApiId: string): Promise<string[]> {
     const tables = [];
-    const dynamoClient = new DynamoDBClient();
-    for await (const page of paginateListTables({ client: dynamoClient }, {})) {
+    for await (const page of paginateListTables({ client: this.gen1App.clients.dynamoDB }, {})) {
       for (const tableName of page.TableNames ?? []) {
         if (tableName.includes(`-${graphQLApiId}-${this.gen1App.envName}`)) {
           tables.push(tableName);
@@ -238,29 +229,8 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
     return this._dynamoTableNames;
   }
 
-  private ddbClient() {
-    if (!this._ddbClient) {
-      this._ddbClient = new DynamoDBClient();
-    }
-    return this._ddbClient;
-  }
-
-  private amplifyClient() {
-    if (!this._amplifyClient) {
-      this._amplifyClient = new AmplifyClient();
-    }
-    return this._amplifyClient;
-  }
-
-  private cfnClient() {
-    if (!this._cfnClient) {
-      this._cfnClient = new CloudFormationClient({});
-    }
-    return this._cfnClient;
-  }
-
   private async getExistingStackPolicy(): Promise<{ Statement: Record<string, string>[] }> {
-    const response = await this.cfnClient().send(
+    const response = await this.gen1App.clients.cloudFormation.send(
       new GetStackPolicyCommand({
         StackName: this.gen1App.rootStackName,
       }),

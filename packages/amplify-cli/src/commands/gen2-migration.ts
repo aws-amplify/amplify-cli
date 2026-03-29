@@ -12,6 +12,7 @@ import chalk from 'chalk';
 import { AmplifyMigrationAssessor } from './gen2-migration/assess';
 import { Gen1App } from './gen2-migration/generate/_infra/gen1-app';
 import { Plan } from './gen2-migration/_plan';
+import { AmplifyGen2MigrationValidations } from './gen2-migration/_validations';
 
 const STEPS = {
   clone: {
@@ -85,7 +86,12 @@ export const run = async (context: $TSContext) => {
     return;
   }
 
-  const implementation: AmplifyMigrationStep = new step.class(logger, gen1App, context);
+  const implementation: AmplifyMigrationStep = new step.class(
+    logger,
+    gen1App,
+    context,
+    new AmplifyGen2MigrationValidations(logger, gen1App.rootStackName, gen1App.envName, context, gen1App.clients.cloudFormation),
+  );
 
   // Plan
   printer.blankLine();

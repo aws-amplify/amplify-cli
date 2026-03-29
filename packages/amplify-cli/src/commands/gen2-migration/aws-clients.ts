@@ -9,6 +9,7 @@ import { CloudWatchEventsClient } from '@aws-sdk/client-cloudwatch-events';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { APIGatewayClient } from '@aws-sdk/client-api-gateway';
 import { SSMClient } from '@aws-sdk/client-ssm';
+import { STSClient } from '@aws-sdk/client-sts';
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
 
 /**
@@ -27,6 +28,7 @@ export class AwsClients {
   public readonly dynamoDB: DynamoDBClient;
   public readonly apiGateway: APIGatewayClient;
   public readonly ssm: SSMClient;
+  public readonly sts: STSClient;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- SDK config type from dynamic import
   private constructor(creds: any) {
@@ -41,6 +43,7 @@ export class AwsClients {
     this.dynamoDB = new DynamoDBClient(creds);
     this.apiGateway = new APIGatewayClient(creds);
     this.ssm = new SSMClient(creds);
+    this.sts = new STSClient(creds);
   }
 
   public static async create(context: $TSContext): Promise<AwsClients> {

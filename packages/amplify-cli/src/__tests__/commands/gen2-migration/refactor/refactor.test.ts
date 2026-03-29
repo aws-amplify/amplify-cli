@@ -4,6 +4,7 @@ import { MigrationApp, MigrationAppOptions } from '../_framework/app';
 import { Gen1App, DiscoveredResource } from '../../../../commands/gen2-migration/generate/_infra/gen1-app';
 import { SpinningLogger } from '../../../../commands/gen2-migration/_spinning-logger';
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
+import { AmplifyGen2MigrationValidations } from '../../../../commands/gen2-migration/_validations';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
@@ -85,7 +86,7 @@ async function testSnapshot(appName: string, appOptions?: MigrationAppOptions, c
 
       const context: any = { parameters: { options: { to: findGen2RootStackName(app) } } };
       const gen1App = app.createGen1App();
-      const refactorStep = new AmplifyMigrationRefactorStep(app.logger, gen1App, context);
+      const refactorStep = new AmplifyMigrationRefactorStep(app.logger, gen1App, context, {} as AmplifyGen2MigrationValidations);
 
       const plan = await refactorStep.forward();
       await plan.execute();
@@ -163,7 +164,7 @@ describe('AmplifyMigrationRefactorStep', () => {
       const gen1 = mockDiscover([{ category: 'notifications', resourceName: 'push', service: 'Pinpoint', key: 'UNKNOWN' }]);
       const logger = new SpinningLogger('refactor', { debug: true });
       const context = { parameters: { options: { to: 'gen2-stack' } } } as unknown as $TSContext;
-      const step = new AmplifyMigrationRefactorStep(logger, gen1, context);
+      const step = new AmplifyMigrationRefactorStep(logger, gen1, context, {} as AmplifyGen2MigrationValidations);
 
       const plan = await step.forward();
       const passed = await plan.validate();
@@ -177,7 +178,7 @@ describe('AmplifyMigrationRefactorStep', () => {
       const gen1 = mockDiscover([{ category: 'geo', resourceName: 'myMap', service: 'Map', key: 'geo:Map' }]);
       const logger = new SpinningLogger('refactor', { debug: true });
       const context = { parameters: { options: { to: 'gen2-stack' } } } as unknown as $TSContext;
-      const step = new AmplifyMigrationRefactorStep(logger, gen1, context);
+      const step = new AmplifyMigrationRefactorStep(logger, gen1, context, {} as AmplifyGen2MigrationValidations);
 
       const plan = await step.forward();
       const passed = await plan.validate();
@@ -192,7 +193,7 @@ describe('AmplifyMigrationRefactorStep', () => {
       const gen1 = mockDiscover([{ category: 'notifications', resourceName: 'push', service: 'Pinpoint', key: 'UNKNOWN' }]);
       const logger = new SpinningLogger('refactor', { debug: true });
       const context = { parameters: { options: { to: 'gen2-stack' } } } as unknown as $TSContext;
-      const step = new AmplifyMigrationRefactorStep(logger, gen1, context);
+      const step = new AmplifyMigrationRefactorStep(logger, gen1, context, {} as AmplifyGen2MigrationValidations);
 
       const plan = await step.rollback();
       const passed = await plan.validate();
@@ -206,7 +207,7 @@ describe('AmplifyMigrationRefactorStep', () => {
       const gen1 = mockDiscover([{ category: 'geo', resourceName: 'myMap', service: 'Map', key: 'geo:Map' }]);
       const logger = new SpinningLogger('refactor', { debug: true });
       const context = { parameters: { options: { to: 'gen2-stack' } } } as unknown as $TSContext;
-      const step = new AmplifyMigrationRefactorStep(logger, gen1, context);
+      const step = new AmplifyMigrationRefactorStep(logger, gen1, context, {} as AmplifyGen2MigrationValidations);
 
       const plan = await step.rollback();
       const passed = await plan.validate();

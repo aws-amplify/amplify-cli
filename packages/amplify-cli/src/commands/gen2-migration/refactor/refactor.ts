@@ -3,8 +3,7 @@ import { AmplifyMigrationStep } from '../_step';
 import { AmplifyMigrationOperation, ValidationResult } from '../_operation';
 import { Plan } from '../_plan';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
-import { GetCallerIdentityCommand, STSClient } from '@aws-sdk/client-sts';
-import { AmplifyGen2MigrationValidations } from '../_validations';
+import { GetCallerIdentityCommand } from '@aws-sdk/client-sts';
 import { StackFacade } from './stack-facade';
 import { Planner } from '../planner';
 import { AuthCognitoForwardRefactorer } from './auth/auth-cognito-forward';
@@ -146,8 +145,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
     gen2Branch: StackFacade;
     cfn: Cfn;
   }> {
-    const stsClient = new STSClient({});
-    const { Account: accountId } = await stsClient.send(new GetCallerIdentityCommand({}));
+    const { Account: accountId } = await this.gen1App.clients.sts.send(new GetCallerIdentityCommand({}));
     if (!accountId) {
       throw new AmplifyError('ConfigurationError', { message: 'Unable to determine AWS account ID' });
     }
@@ -195,8 +193,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
 
   private async validateLockStatus(): Promise<ValidationResult> {
     try {
-      const validations = new AmplifyGen2MigrationValidations(this.logger, this.gen1App.rootStackName, this.gen1App.envName, this.context);
-      await validations.validateLockStatus();
+      await this.validations.validateLockStatus();
       return { valid: true };
     } catch (e) {
       return { valid: false, report: e.message };

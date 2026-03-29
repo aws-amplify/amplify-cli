@@ -1,9 +1,7 @@
 import { AmplifyMigrationStep } from './_step';
 import { AmplifyMigrationOperation, ValidationResult } from './_operation';
 import { Plan } from './_plan';
-import { AmplifyGen2MigrationValidations } from './_validations';
 import {
-  CloudFormationClient,
   CreateChangeSetCommand,
   DescribeChangeSetCommand,
   DeleteChangeSetCommand,
@@ -18,9 +16,8 @@ import { Cfn, HOLDING_STACK_NAME_SUFFIX } from './refactor/cfn';
 
 export class AmplifyMigrationDecommissionStep extends AmplifyMigrationStep {
   public async forward(): Promise<Plan> {
-    const cfnClient = new CloudFormationClient({ region: this.gen1App.region });
-    const cfn = new Cfn(cfnClient, this.logger);
-    const holdingStacks = await this.findHoldingStacks(cfnClient);
+    const cfn = new Cfn(this.gen1App.clients.cloudFormation, this.logger);
+    const holdingStacks = await this.findHoldingStacks();
 
     const operations: AmplifyMigrationOperation[] = [];
 
@@ -76,19 +73,18 @@ export class AmplifyMigrationDecommissionStep extends AmplifyMigrationStep {
   private async validateStatefulResources(): Promise<ValidationResult> {
     try {
       const changeSet = await this.createChangeSet();
-      const validations = new AmplifyGen2MigrationValidations(this.logger, this.gen1App.rootStackName, this.gen1App.envName, this.context);
       // eslint-disable-next-line spellcheck/spell-checker
-      await validations.validateStatefulResources(changeSet, true);
+      await this.validations.validateStatefulResources(changeSet, true);
       return { valid: true };
     } catch (e) {
       return { valid: false, report: e.message };
     }
   }
 
-  private async findHoldingStacks(cfnClient: CloudFormationClient): Promise<string[]> {
+  private async findHoldingStacks(): Promise<string[]> {
     const holdingStacks: string[] = [];
     const paginator = paginateListStacks(
-      { client: cfnClient },
+      { client: this.gen1App.clients.cloudFormation },
       {
         StackStatusFilter: [
           StackStatus.CREATE_COMPLETE,
@@ -109,7 +105,7 @@ export class AmplifyMigrationDecommissionStep extends AmplifyMigrationStep {
   }
 
   private async createChangeSet(): Promise<DescribeChangeSetOutput> {
-    const cfn = new CloudFormationClient({});
+    const cfn = this.gen1App.clients.cloudFormation;
     const changeSetName = `decommission-${Date.now()}`;
 
     await cfn.send(
