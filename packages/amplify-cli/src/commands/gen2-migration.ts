@@ -86,12 +86,8 @@ export const run = async (context: $TSContext) => {
     return;
   }
 
-  const implementation: AmplifyMigrationStep = new step.class(
-    logger,
-    gen1App,
-    context,
-    new AmplifyGen2MigrationValidations(logger, gen1App.rootStackName, gen1App.envName, context, gen1App.clients.cloudFormation),
-  );
+  const validations = new AmplifyGen2MigrationValidations(logger, gen1App, context);
+  const implementation: AmplifyMigrationStep = new step.class(logger, gen1App, context, validations);
 
   // Plan
   printer.blankLine();

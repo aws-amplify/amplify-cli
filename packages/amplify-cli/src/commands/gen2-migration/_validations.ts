@@ -1,7 +1,6 @@
 import { AmplifyDriftDetector } from '../drift';
 import { $TSContext, AmplifyError, stateManager } from '@aws-amplify/amplify-cli-core';
 import {
-  CloudFormationClient,
   DescribeChangeSetOutput,
   DescribeStacksCommand,
   ListStackResourcesCommand,
@@ -15,6 +14,7 @@ import { SpinningLogger } from './_spinning-logger';
 import chalk from 'chalk';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { extractCategory } from './categories';
+import { Gen1App } from './generate/_infra/gen1-app';
 
 export class AmplifyGen2MigrationValidations {
   private readonly limiter = new Bottleneck({
@@ -22,13 +22,7 @@ export class AmplifyGen2MigrationValidations {
     minTime: 50,
   });
 
-  public constructor(
-    private readonly logger: SpinningLogger,
-    private readonly rootStackName: string,
-    private readonly envName,
-    private readonly context: $TSContext,
-    private readonly cloudFormation: CloudFormationClient,
-  ) {}
+  public constructor(private readonly logger: SpinningLogger, private readonly gen1App: Gen1App, private readonly context: $TSContext) {}
 
   public async validateDrift(): Promise<void> {
     const result = await new AmplifyDriftDetector(this.context, this.logger).detect();
@@ -53,12 +47,12 @@ export class AmplifyGen2MigrationValidations {
   }
 
   public async validateDeploymentStatus(): Promise<void> {
-    this.logger.debug(`Inspecting root stack '${this.rootStackName}' status`);
-    const response = await this.cloudFormation.send(new DescribeStacksCommand({ StackName: this.rootStackName }));
+    this.logger.debug(`Inspecting root stack '${this.gen1App.rootStackName}' status`);
+    const response = await this.gen1App.clients.cloudFormation.send(new DescribeStacksCommand({ StackName: this.gen1App.rootStackName }));
 
     if (!response.Stacks || response.Stacks.length === 0) {
       throw new AmplifyError('StackNotFoundError', {
-        message: `Stack ${this.rootStackName} not found in CloudFormation`,
+        message: `Stack ${this.gen1App.rootStackName} not found in CloudFormation`,
         resolution: 'Ensure the project is deployed.',
       });
     }
@@ -89,7 +83,7 @@ export class AmplifyGen2MigrationValidations {
     if (!changeSet.Changes) return;
 
     const deploymentBucketName = excludeDeploymentBucket
-      ? stateManager.getTeamProviderInfo()[this.envName].awscloudformation.DeploymentBucketName
+      ? stateManager.getTeamProviderInfo()[this.gen1App.envName].awscloudformation.DeploymentBucketName
       : undefined;
 
     this.logger.info('Scanning for stateful resources...');
@@ -153,8 +147,10 @@ export class AmplifyGen2MigrationValidations {
   }
 
   public async validateLockStatus(): Promise<void> {
-    this.logger.debug(`Inspecting stack policy for ${this.rootStackName}`);
-    const { StackPolicyBody } = await this.cloudFormation.send(new GetStackPolicyCommand({ StackName: this.rootStackName }));
+    this.logger.debug(`Inspecting stack policy for ${this.gen1App.rootStackName}`);
+    const { StackPolicyBody } = await this.gen1App.clients.cloudFormation.send(
+      new GetStackPolicyCommand({ StackName: this.gen1App.rootStackName }),
+    );
 
     if (!StackPolicyBody) {
       throw new AmplifyError('MigrationError', {
@@ -182,7 +178,7 @@ export class AmplifyGen2MigrationValidations {
       });
     }
 
-    this.logger.debug(chalk.green(`Stack ${this.rootStackName} is locked ✔`));
+    this.logger.debug(chalk.green(`Stack ${this.gen1App.rootStackName} is locked ✔`));
   }
 
   private async getStatefulResources(
@@ -196,7 +192,9 @@ export class AmplifyGen2MigrationValidations {
     const nestedStackTasks: Array<{ physicalId: string; logicalId: string | undefined }> = [];
 
     do {
-      const response = await this.cloudFormation.send(new ListStackResourcesCommand({ StackName: stackName, NextToken: nextToken }));
+      const response = await this.gen1App.clients.cloudFormation.send(
+        new ListStackResourcesCommand({ StackName: stackName, NextToken: nextToken }),
+      );
       nextToken = response.NextToken;
 
       for (const resource of response.StackResourceSummaries ?? []) {
