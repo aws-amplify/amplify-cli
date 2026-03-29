@@ -3,10 +3,10 @@ import * as fs from 'fs-extra';
 import * as os from 'os';
 import { MockClients } from './clients';
 import { copySync } from './directories';
-import { SpinningLogger } from '../../../../commands/gen2-migration/_spinning-logger';
+import { SpinningLogger } from '../../../../commands/gen2-migration/_infra/spinning-logger';
 import { Gen1App } from '../../../../commands/gen2-migration/generate/_infra/gen1-app';
 import { AwsFetcher } from '../../../../commands/gen2-migration/generate/_infra/aws-fetcher';
-import { AwsClients } from '../../../../commands/gen2-migration/aws-clients';
+import { AwsClients } from '../../../../commands/gen2-migration/_infra/aws-clients';
 import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import { Snapshot } from './snapshot';
 

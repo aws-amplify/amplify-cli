@@ -11,8 +11,12 @@ import { APIGatewayClient } from '@aws-sdk/client-api-gateway';
 import { SSMClient } from '@aws-sdk/client-ssm';
 import { STSClient } from '@aws-sdk/client-sts';
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
-import type { AwsSdkConfig } from '@aws-amplify/amplify-provider-awscloudformation';
 import { NodeHttpHandler } from '@smithy/node-http-handler';
+import type { AmplifyClientConfig } from '@aws-sdk/client-amplify';
+
+// all clients share the same config so we just use one of them
+// to encapsulate all properties we need.
+type ClientConfig = AmplifyClientConfig;
 
 /**
  * Single instantiation point for all AWS SDK clients used during Gen2 migration.
@@ -32,7 +36,7 @@ export class AwsClients {
   public readonly ssm: SSMClient;
   public readonly sts: STSClient;
 
-  private constructor(config: Partial<AwsSdkConfig>) {
+  private constructor(config: ClientConfig) {
     this.amplify = new AmplifyClient(config);
     this.appSync = new AppSyncClient(config);
     this.cloudFormation = new CloudFormationClient(config);
@@ -48,20 +52,21 @@ export class AwsClients {
   }
 
   public static async create(context: $TSContext): Promise<AwsClients> {
-    context.amplify.constructExeInfo(context);
-
     const providerPlugins = context.amplify.getProviderPlugins(context);
     const provider = require(providerPlugins['awscloudformation']);
 
     let cred = {};
     try {
+      context.amplify.constructExeInfo(context);
       cred = await provider.loadConfiguration(context);
     } catch (error) {
-      // ignore missing config
+      // ignore missing config, the user may have default credentials configured,
+      // which is enough for us. it will fail later on if not.
     }
 
-    const config = {
+    const config: ClientConfig = {
       ...cred,
+      customUserAgent: provider.formUserAgentParam(context, 'gen2-migration'),
       requestHandler: new NodeHttpHandler({
         httpAgent: provider.proxyAgent(),
         httpsAgent: provider.proxyAgent(),
