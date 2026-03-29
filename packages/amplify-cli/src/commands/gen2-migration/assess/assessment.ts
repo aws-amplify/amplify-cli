@@ -126,15 +126,19 @@ export class Assessment {
     lines.push('');
     lines.push(chalk.bold(chalk.cyan(`Assessment for "${this.appName}" (env: ${this.envName})`)));
 
-    lines.push('');
-    lines.push(chalk.bold('Resources'));
-    lines.push('');
-    lines.push(this.renderResourceTable());
+    if (this._resources.length > 0) {
+      lines.push('');
+      lines.push(chalk.bold('Resources'));
+      lines.push('');
+      lines.push(this.renderResourceTable());
+    }
 
-    lines.push('');
-    lines.push(chalk.bold('Features'));
-    lines.push('');
-    lines.push(this.renderFeatureTable());
+    if (this._features.length > 0) {
+      lines.push('');
+      lines.push(chalk.bold('Features'));
+      lines.push('');
+      lines.push(this.renderFeatureTable());
+    }
 
     return lines.join('\n');
   }
