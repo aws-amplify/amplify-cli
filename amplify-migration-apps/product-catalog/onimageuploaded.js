@@ -13,7 +13,8 @@ const { HttpRequest } = require('@aws-sdk/protocol-http');
 
 const Sha256 = crypto.Sha256;
 
-const GRAPHQL_ENDPOINT = process.env.API_PRODUCTCATALOG_GRAPHQLAPIENDPOINTOUTPUT;
+const GRAPHQL_ENDPOINT = process.env.API_PRODUCTCATALOG_GRAPHQLAPIENDPOINTOUTPUT
+  || Object.entries(process.env).find(([k]) => k.startsWith('API_') && k.endsWith('_GRAPHQLAPIENDPOINTOUTPUT'))?.[1];
 const AWS_REGION = process.env.AWS_REGION || 'us-east-1';
 
 function updateProductImageUploadedAtMutation(productId, date) {

@@ -6,9 +6,31 @@ const { SSMClient, GetParametersCommand } = require('@aws-sdk/client-ssm');
 
 const Sha256 = crypto.Sha256;
 
-const GRAPHQL_ENDPOINT = process.env.API_PRODUCTCATALOG_GRAPHQLAPIENDPOINTOUTPUT;
 const AWS_REGION = process.env.AWS_REGION || 'us-east-1';
 const LOW_STOCK_THRESHOLD = parseInt(process.env.LOW_STOCK_THRESHOLD) || 5;
+
+// Resolve the GraphQL endpoint from (in order):
+// 1. Environment variable (works when Amplify CLI wires up API access)
+// 2. The invoking AppSync event's host header (works for @function invocations)
+function getGraphQLEndpoint(event) {
+  // Try the standard env var name
+  const fromEnv = process.env.API_PRODUCTCATALOG_GRAPHQLAPIENDPOINTOUTPUT
+    || Object.entries(process.env).find(([k]) => k.startsWith('API_') && k.endsWith('_GRAPHQLAPIENDPOINTOUTPUT'))?.[1];
+
+  if (fromEnv && fromEnv.startsWith('http')) return fromEnv;
+
+  // Extract from the invoking AppSync API's host header.
+  // When AppSync invokes a Lambda via @function, the event contains the
+  // request headers from the original GraphQL call, including the host.
+  const host = event?.request?.headers?.host;
+  if (host && host.includes('appsync-api')) {
+    const endpoint = `https://${host}/graphql`;
+    console.log(`Using endpoint from event host header: ${endpoint}`);
+    return endpoint;
+  }
+
+  throw new Error('Could not determine GraphQL endpoint from env vars or event');
+}
 
 const listProductsQuery = `
   query ListProducts {
@@ -29,7 +51,7 @@ exports.handler = async (event) => {
 
   try {
     const secretValue = await fetchSecret();
-    const products = await fetchProducts();
+    const products = await fetchProducts(event);
     const lowStockProducts = products.filter((product) => product.stock !== null && product.stock < LOW_STOCK_THRESHOLD);
 
     console.log(`Found ${lowStockProducts.length} low stock products`);
@@ -48,8 +70,9 @@ exports.handler = async (event) => {
   }
 };
 
-async function fetchProducts() {
-  const endpoint = new URL(GRAPHQL_ENDPOINT);
+async function fetchProducts(event) {
+  const graphqlEndpoint = getGraphQLEndpoint(event);
+  const endpoint = new URL(graphqlEndpoint);
 
   const signer = new SignatureV4({
     credentials: defaultProvider(),
@@ -70,7 +93,7 @@ async function fetchProducts() {
   });
 
   const signed = await signer.sign(requestToBeSigned);
-  const request = new Request(GRAPHQL_ENDPOINT, signed);
+  const request = new Request(graphqlEndpoint, signed);
 
   const response = await fetch(request);
   const status = response.status;

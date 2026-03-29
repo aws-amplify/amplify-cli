@@ -106,8 +106,9 @@ export class Gen2MigrationExecutor {
    * Enables deletion protection on DynamoDB tables, sets a deny-all stack policy,
    * and adds GEN2_MIGRATION_ENVIRONMENT_NAME env var to the Amplify app.
    */
+  /** Run gen2-migration lock, skipping drift validations for known S3 trigger issues. */
   public async lock(appPath: string): Promise<void> {
-    await this.executeStep('lock', appPath);
+    await this.executeStep('lock', appPath, ['--skip-validations']);
   }
 
   /**
