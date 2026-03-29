@@ -1,6 +1,6 @@
-import { AmplifyMigrationStep } from './_step';
-import { AmplifyMigrationOperation, ValidationResult } from './_operation';
-import { Plan } from './_plan';
+import { AmplifyMigrationStep } from './_infra/step';
+import { AmplifyMigrationOperation, ValidationResult } from './_infra/operation';
+import { Plan } from './_infra/plan';
 import {
   CreateChangeSetCommand,
   DescribeChangeSetCommand,

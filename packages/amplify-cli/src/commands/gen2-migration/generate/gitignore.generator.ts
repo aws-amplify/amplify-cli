@@ -1,7 +1,7 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
-import { Planner } from '../planner';
-import { AmplifyMigrationOperation } from '../_operation';
+import { Planner } from '../_infra/planner';
+import { AmplifyMigrationOperation } from '../_infra/operation';
 
 const GEN2_GITIGNORE_ENTRIES = ['.amplify', 'amplify_outputs*', 'amplifyconfiguration*', 'aws-exports*', 'node_modules', 'build', 'dist'];
 

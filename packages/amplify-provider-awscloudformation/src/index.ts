@@ -216,4 +216,5 @@ module.exports = {
   formUserAgentParam,
   loadConfiguration,
   resolveRegion,
+  proxyAgent,
 };

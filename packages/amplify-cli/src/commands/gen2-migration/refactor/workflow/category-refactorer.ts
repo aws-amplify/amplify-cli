@@ -1,12 +1,12 @@
 import { Parameter, ResourceMapping } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
-import { CFNResource, CFNTemplate } from '../../cfn-template';
-import { Planner } from '../../planner';
-import { AmplifyMigrationOperation } from '../../_operation';
-import { AwsClients } from '../../aws-clients';
+import { CFNResource, CFNTemplate } from '../../_infra/cfn-template';
+import { Planner } from '../../_infra/planner';
+import { AmplifyMigrationOperation } from '../../_infra/operation';
+import { AwsClients } from '../../_infra/aws-clients';
 import { StackFacade } from '../stack-facade';
 import { Cfn, HOLDING_STACK_NAME_SUFFIX } from '../cfn';
-import { SpinningLogger } from '../../_spinning-logger';
+import { SpinningLogger } from '../../_infra/spinning-logger';
 import { extractStackNameFromId } from '../utils';
 import { DiscoveredResource, Gen1App } from '../../generate/_infra/gen1-app';
 import CLITable from 'cli-table3';

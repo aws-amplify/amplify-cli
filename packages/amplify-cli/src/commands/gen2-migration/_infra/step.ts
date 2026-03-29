@@ -1,8 +1,8 @@
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
-import { SpinningLogger } from './_spinning-logger';
-import { Plan } from './_plan';
-import { Gen1App } from './generate/_infra/gen1-app';
-import { AmplifyGen2MigrationValidations } from './_validations';
+import { SpinningLogger } from './spinning-logger';
+import { Plan } from './plan';
+import { Gen1App } from '../generate/_infra/gen1-app';
+import { AmplifyGen2MigrationValidations } from './validations';
 
 /**
  * Abstract base class that defines the lifecycle contract for all migration steps.

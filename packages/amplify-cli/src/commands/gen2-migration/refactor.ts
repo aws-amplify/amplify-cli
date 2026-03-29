@@ -1,24 +1,24 @@
 /* eslint-disable spellcheck/spell-checker */
-import { AmplifyMigrationStep } from '../_step';
-import { AmplifyMigrationOperation, ValidationResult } from '../_operation';
-import { Plan } from '../_plan';
+import { AmplifyMigrationStep } from './_infra/step';
+import { AmplifyMigrationOperation, ValidationResult } from './_infra/operation';
+import { Plan } from './_infra/plan';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { GetCallerIdentityCommand } from '@aws-sdk/client-sts';
-import { StackFacade } from './stack-facade';
-import { Planner } from '../planner';
-import { AuthCognitoForwardRefactorer } from './auth/auth-cognito-forward';
-import { AuthCognitoRollbackRefactorer } from './auth/auth-cognito-rollback';
-import { StorageS3ForwardRefactorer } from './storage/storage-forward';
-import { StorageS3RollbackRefactorer } from './storage/storage-rollback';
-import { StorageDynamoForwardRefactorer } from './storage/storage-dynamo-forward';
-import { StorageDynamoRollbackRefactorer } from './storage/storage-dynamo-rollback';
-import { AnalyticsKinesisForwardRefactorer } from './analytics/analytics-forward';
-import { AnalyticsKinesisRollbackRefactorer } from './analytics/analytics-rollback';
-import { Assessment } from '../assess/assessment';
-import { AuthUserPoolGroupsForwardRefactorer } from './auth/auth-user-pool-groups-forward';
-import { AuthUserPoolGroupsRollbackRefactorer } from './auth/auth-user-pool-groups-rollback';
-import { Cfn } from './cfn';
-import { AmplifyMigrationAssessor } from '../assess';
+import { StackFacade } from './refactor/stack-facade';
+import { Planner } from './_infra/planner';
+import { AuthCognitoForwardRefactorer } from './refactor/auth/auth-cognito-forward';
+import { AuthCognitoRollbackRefactorer } from './refactor/auth/auth-cognito-rollback';
+import { StorageS3ForwardRefactorer } from './refactor/storage/storage-forward';
+import { StorageS3RollbackRefactorer } from './refactor/storage/storage-rollback';
+import { StorageDynamoForwardRefactorer } from './refactor/storage/storage-dynamo-forward';
+import { StorageDynamoRollbackRefactorer } from './refactor/storage/storage-dynamo-rollback';
+import { AnalyticsKinesisForwardRefactorer } from './refactor/analytics/analytics-forward';
+import { AnalyticsKinesisRollbackRefactorer } from './refactor/analytics/analytics-rollback';
+import { Assessment } from './assess/assessment';
+import { AuthUserPoolGroupsForwardRefactorer } from './refactor/auth/auth-user-pool-groups-forward';
+import { AuthUserPoolGroupsRollbackRefactorer } from './refactor/auth/auth-user-pool-groups-rollback';
+import { Cfn } from './refactor/cfn';
+import { AmplifyMigrationAssessor } from './assess';
 
 export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
   public async forward(): Promise<Plan> {

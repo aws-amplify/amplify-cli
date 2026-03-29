@@ -1,5 +1,5 @@
-import { AmplifyMigrationOperation } from './_operation';
-import { SpinningLogger } from './_spinning-logger';
+import { AmplifyMigrationOperation } from './operation';
+import { SpinningLogger } from './spinning-logger';
 import { printer } from '@aws-amplify/amplify-prompts';
 import chalk from 'chalk';
 import CLITable from 'cli-table3';

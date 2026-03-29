@@ -1,6 +1,6 @@
-import { AmplifyMigrationStep } from './_step';
-import { AmplifyMigrationOperation, ValidationResult } from './_operation';
-import { Plan } from './_plan';
+import { AmplifyMigrationStep } from './_infra/step';
+import { AmplifyMigrationOperation, ValidationResult } from './_infra/operation';
+import { Plan } from './_infra/plan';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { SetStackPolicyCommand, GetStackPolicyCommand } from '@aws-sdk/client-cloudformation';
 import { UpdateAppCommand, GetAppCommand } from '@aws-sdk/client-amplify';

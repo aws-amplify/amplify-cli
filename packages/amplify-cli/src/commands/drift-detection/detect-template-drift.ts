@@ -12,7 +12,7 @@ import {
 import { paginateListChangeSets } from '@aws-sdk/client-cloudformation';
 import fs from 'fs-extra';
 import * as path from 'path';
-import type { SpinningLogger } from '../gen2-migration/_spinning-logger';
+import type { SpinningLogger } from '../gen2-migration/_infra/spinning-logger';
 
 export interface ResourceChangeWithNested extends ResourceChange {
   nestedChanges?: ResourceChangeWithNested[];

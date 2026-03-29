@@ -9,7 +9,7 @@ import { detectStackDriftRecursive, type CloudFormationDriftResults } from './dr
 import { detectLocalDrift, type LocalDriftResults } from './drift-detection/detect-local-drift';
 import { detectTemplateDrift, type TemplateDriftResults } from './drift-detection/detect-template-drift';
 import { CloudFormationService, AmplifyConfigService, createUnifiedCategoryView } from './drift-detection/services';
-import { SpinningLogger } from './gen2-migration/_spinning-logger';
+import { SpinningLogger } from './gen2-migration/_infra/spinning-logger';
 
 /**
  * Result of drift detection.

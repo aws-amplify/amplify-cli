@@ -11,6 +11,8 @@ import { APIGatewayClient } from '@aws-sdk/client-api-gateway';
 import { SSMClient } from '@aws-sdk/client-ssm';
 import { STSClient } from '@aws-sdk/client-sts';
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
+import type { AwsSdkConfig } from '@aws-amplify/amplify-provider-awscloudformation';
+import { NodeHttpHandler } from '@smithy/node-http-handler';
 
 /**
  * Single instantiation point for all AWS SDK clients used during Gen2 migration.
@@ -30,26 +32,42 @@ export class AwsClients {
   public readonly ssm: SSMClient;
   public readonly sts: STSClient;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- SDK config type from dynamic import
-  private constructor(creds: any) {
-    this.amplify = new AmplifyClient(creds);
-    this.appSync = new AppSyncClient(creds);
-    this.cloudFormation = new CloudFormationClient(creds);
-    this.cognitoIdentityProvider = new CognitoIdentityProviderClient(creds);
-    this.cognitoIdentity = new CognitoIdentityClient(creds);
-    this.s3 = new S3Client(creds);
-    this.lambda = new LambdaClient(creds);
-    this.cloudWatchEvents = new CloudWatchEventsClient(creds);
-    this.dynamoDB = new DynamoDBClient(creds);
-    this.apiGateway = new APIGatewayClient(creds);
-    this.ssm = new SSMClient(creds);
-    this.sts = new STSClient(creds);
+  private constructor(config: Partial<AwsSdkConfig>) {
+    this.amplify = new AmplifyClient(config);
+    this.appSync = new AppSyncClient(config);
+    this.cloudFormation = new CloudFormationClient(config);
+    this.cognitoIdentityProvider = new CognitoIdentityProviderClient(config);
+    this.cognitoIdentity = new CognitoIdentityClient(config);
+    this.s3 = new S3Client(config);
+    this.lambda = new LambdaClient(config);
+    this.cloudWatchEvents = new CloudWatchEventsClient(config);
+    this.dynamoDB = new DynamoDBClient(config);
+    this.apiGateway = new APIGatewayClient(config);
+    this.ssm = new SSMClient(config);
+    this.sts = new STSClient(config);
   }
 
   public static async create(context: $TSContext): Promise<AwsClients> {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports -- lazy require to avoid FeatureFlags side-effect at module load time
-    const { loadConfiguration } = require('@aws-amplify/amplify-provider-awscloudformation');
-    const configuration = await loadConfiguration(context);
-    return new AwsClients(configuration);
+    context.amplify.constructExeInfo(context);
+
+    const providerPlugins = context.amplify.getProviderPlugins(context);
+    const provider = require(providerPlugins['awscloudformation']);
+
+    let cred = {};
+    try {
+      cred = await provider.loadConfiguration(context);
+    } catch (error) {
+      // ignore missing config
+    }
+
+    const config = {
+      ...cred,
+      requestHandler: new NodeHttpHandler({
+        httpAgent: provider.proxyAgent(),
+        httpsAgent: provider.proxyAgent(),
+      }),
+    };
+
+    return new AwsClients(config);
   }
 }

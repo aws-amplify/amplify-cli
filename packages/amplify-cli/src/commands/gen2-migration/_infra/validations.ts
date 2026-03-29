@@ -1,4 +1,4 @@
-import { AmplifyDriftDetector } from '../drift';
+import { AmplifyDriftDetector } from '../../drift';
 import { $TSContext, AmplifyError, stateManager } from '@aws-amplify/amplify-cli-core';
 import {
   DescribeChangeSetOutput,
@@ -10,11 +10,11 @@ import { STATEFUL_RESOURCES } from './stateful-resources';
 import CLITable from 'cli-table3';
 import Bottleneck from 'bottleneck';
 import execa from 'execa';
-import { SpinningLogger } from './_spinning-logger';
+import { SpinningLogger } from './spinning-logger';
 import chalk from 'chalk';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { extractCategory } from './categories';
-import { Gen1App } from './generate/_infra/gen1-app';
+import { Gen1App } from '../generate/_infra/gen1-app';
 
 export class AmplifyGen2MigrationValidations {
   private readonly limiter = new Bottleneck({

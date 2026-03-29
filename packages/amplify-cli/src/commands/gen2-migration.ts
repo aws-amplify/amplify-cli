@@ -1,44 +1,34 @@
-import { AmplifyMigrationCloneStep } from './gen2-migration/clone';
 import { $TSContext, AmplifyError } from '@aws-amplify/amplify-cli-core';
-import { AmplifyMigrationStep } from './gen2-migration/_step';
+import { AmplifyMigrationStep } from './gen2-migration/_infra/step';
 import { printer, prompter, isDebug } from '@aws-amplify/amplify-prompts';
 import { AmplifyMigrationDecommissionStep } from './gen2-migration/decommission';
 import { AmplifyMigrationGenerateStep } from './gen2-migration/generate';
 import { AmplifyMigrationLockStep } from './gen2-migration/lock';
 import { AmplifyMigrationRefactorStep } from './gen2-migration/refactor';
-import { AmplifyMigrationShiftStep } from './gen2-migration/shift';
-import { SpinningLogger } from './gen2-migration/_spinning-logger';
+import { SpinningLogger } from './gen2-migration/_infra/spinning-logger';
 import chalk from 'chalk';
 import { AmplifyMigrationAssessor } from './gen2-migration/assess';
 import { Gen1App } from './gen2-migration/generate/_infra/gen1-app';
-import { Plan } from './gen2-migration/_plan';
-import { AmplifyGen2MigrationValidations } from './gen2-migration/_validations';
+import { Plan } from './gen2-migration/_infra/plan';
+import { AmplifyGen2MigrationValidations } from './gen2-migration/_infra/validations';
 
 const STEPS = {
-  clone: {
-    class: AmplifyMigrationCloneStep,
-    description: 'Not Implemented',
-  },
-  decommission: {
-    class: AmplifyMigrationDecommissionStep,
-    description: 'Decommission the Gen1 environment post migration',
+  lock: {
+    class: AmplifyMigrationLockStep,
+    description: 'Locks your Gen1 environment to prevent updates during migration',
   },
   generate: {
     class: AmplifyMigrationGenerateStep,
     description: 'Generate Gen2 application code from your existing Gen1 environment',
-  },
-  lock: {
-    class: AmplifyMigrationLockStep,
-    description: 'Locks your Gen1 environment to prevent updates during migration',
   },
   refactor: {
     class: AmplifyMigrationRefactorStep,
     // eslint-disable-next-line spellcheck/spell-checker
     description: 'Move stateful resources from your Gen1 environment to your newly deployed Gen2 branch',
   },
-  shift: {
-    class: AmplifyMigrationShiftStep,
-    description: 'Not Implemented',
+  decommission: {
+    class: AmplifyMigrationDecommissionStep,
+    description: 'Decommission the Gen1 environment post migration',
   },
 };
 
