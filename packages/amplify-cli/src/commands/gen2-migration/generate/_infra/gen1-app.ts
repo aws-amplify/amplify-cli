@@ -8,7 +8,7 @@ import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { $TSAny, $TSContext, $TSMeta, AmplifyError, JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import { AwsClients } from '../../_infra/aws-clients';
 import { AwsFetcher } from './aws-fetcher';
-import { stateManager } from '@aws-amplify/amplify-cli-core';
+import { stateManager, pathManager } from '@aws-amplify/amplify-cli-core';
 import { App, GetAppCommand } from '@aws-sdk/client-amplify';
 
 interface Gen1AppProps {
@@ -97,6 +97,14 @@ export class Gen1App {
 
   public static async create(context: $TSContext): Promise<Gen1App> {
     const clients = await AwsClients.create(context);
+
+    const tpiRelPath = `./${path.relative(process.cwd(), pathManager.getTeamProviderInfoFilePath())}`;
+    if (!stateManager.teamProviderInfoExists()) {
+      throw new AmplifyError('MigrationError', {
+        message: `Unable to find '${tpiRelPath}' - Are you sure you're on the right branch?`,
+        resolution: 'Checkout to the Gen1 branch and rerun the command',
+      });
+    }
     const tpi = stateManager.getTeamProviderInfo();
 
     // assuming all environment are deployed within the same app - can it be different?
@@ -109,7 +117,7 @@ export class Gen1App {
     const cfnProvider = envInfo?.awscloudformation;
     if (!cfnProvider?.StackName || !cfnProvider?.DeploymentBucketName) {
       throw new AmplifyError('MigrationError', {
-        message: `Missing StackName or DeploymentBucketName for environment '${envName}' in team-provider-info.json`,
+        message: `Missing StackName or DeploymentBucketName for environment '${envName}' in '${tpiRelPath}'`,
       });
     }
 
