@@ -48,18 +48,19 @@ Verify your changes by following these guidelines:
   work prefixed with a "Prompt: " after a single line consisting of '---'. Make sure there are no empty lines before or after this line.
   Word wrap all paragraphs at 72 columns including the prompt. For the author of the commit, use the configured username in git with
   ' (AI)' appended and the user email. For example, `git commit --author="John Doe (AI) <john@bigco.com>" -m "docs: update configuration guide"`.
-  To avoid issues with multi-line commit messages, write the message to `.commit-message.ai-generated.txt` and use `-F`:
+  To avoid issues with multi-line commit messages, write the message to `.commit-message.ai-generated.txt` **at the repository root** and use `-F` with the path relative to your cwd:
 
   ```bash
-  NODE_OPTIONS="--max-old-space-size=8192" git commit --author="John Doe (AI) <john@bigco.com>" -F .commit-message.ai-generated.txt
+  # From packages/amplify-cli/:
+  NODE_OPTIONS="--max-old-space-size=8192" git commit --author="John Doe (AI) <john@bigco.com>" -F ../../.commit-message.ai-generated.txt
   ```
 
   Always set `NODE_OPTIONS="--max-old-space-size=8192"` when committing to prevent OOM failures in the lint-staged hook.
-  After a successful commit, delete the scratch file: `rm -f .commit-message.ai-generated.txt`.
+  After a successful commit, delete the scratch file: `rm -f ../../.commit-message.ai-generated.txt` (adjust the relative path to point to the repo root).
 
-- **CRITICAL: The `-F` path in `git commit -F` is resolved relative to the cwd, not the workspace root.** Always write
-  `.commit-message.ai-generated.txt` to the same directory you run `git commit` from (typically `packages/amplify-cli/`). If you write
-  the file to the repo root but commit from a subdirectory, git will pick up a stale file from a previous session instead of your new one.
+- **CRITICAL: Always write `.commit-message.ai-generated.txt` to the repository root**, not inside a package directory. The `-F` path
+  in `git commit -F` is resolved relative to the cwd, so adjust the relative path accordingly (e.g., `../../.commit-message.ai-generated.txt`
+  when committing from `packages/amplify-cli/`). This prevents stale files from accumulating in package directories.
 - The commit message subject line must be lowercase (commitlint enforces `subject-case`). Write `feat(scope): add feature` not
   `feat(scope): Add feature`.
 
@@ -97,7 +98,7 @@ Before creating the PR body, do a final pass over every file you touched:
 
 #### 5.3 Create Body File
 
-When asked to create a PR, generate a body into `.pr-body.ai-generated.md` and follow these guidelines:
+When asked to create a PR, generate a body into `.pr-body.ai-generated.md` **at the repository root** (not inside a package directory) and follow these guidelines:
 
 - Use the PR template in `.github/PULL_REQUEST_TEMPLATE.md` as the structure.
 - Focus on **why** the change is being made and **what** it accomplishes, not the implementation details that are obvious from the diff.
