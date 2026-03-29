@@ -83,7 +83,14 @@ Documentation is updated at PR time — not per-commit — because code changes 
 - Update the .md files in `docs/` that correspond to the code files you touched.
 - Update the appropriate skill files when a change impacts the contents of the skill.
 
-#### 5.2 Create Body File
+#### 5.2 Final Review
+
+Before creating the PR body, do a final pass over every file you touched:
+
+- Verify all code follows [CODING_GUIDELINES](./CODING_GUIDELINES.md) — read the guidelines file and check every rule against the code you touched.
+- Update JSDoc on every public member that was added or changed. Be concise.
+
+#### 5.3 Create Body File
 
 When asked to create a PR, generate a body into `.pr-body.ai-generated.md` and follow these guidelines:
 

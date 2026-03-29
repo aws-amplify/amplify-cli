@@ -15,7 +15,7 @@ export class GeoFenceCollectionAssessor implements Assessor {
     assessment.recordResource({
       resource: this.resource,
       generate: supported(),
-      refactor: unsupported('geofence collection refactor not supported'),
+      refactor: unsupported('requires manual data replication'),
     });
   }
 }

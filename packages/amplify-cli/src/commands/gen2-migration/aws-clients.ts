@@ -44,8 +44,8 @@ export class AwsClients {
   }
 
   public static async create(context: $TSContext): Promise<AwsClients> {
-    // Dynamic import to avoid FeatureFlags initialization side-effect at module load time.
-    const { loadConfiguration } = await import('@aws-amplify/amplify-provider-awscloudformation');
+    // eslint-disable-next-line @typescript-eslint/no-require-imports -- lazy require to avoid FeatureFlags side-effect at module load time
+    const { loadConfiguration } = require('@aws-amplify/amplify-provider-awscloudformation');
     const configuration = await loadConfiguration(context);
     return new AwsClients(configuration);
   }

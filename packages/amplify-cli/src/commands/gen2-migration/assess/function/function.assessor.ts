@@ -1,5 +1,5 @@
 import { Assessor } from '../assessor';
-import { Assessment, unsupported, notApplicable } from '../assessment';
+import { Assessment, supported, unsupported, notApplicable } from '../assessment';
 import { Gen1App, DiscoveredResource, KNOWN_FEATURES } from '../../generate/_infra/gen1-app';
 
 /**
@@ -15,8 +15,8 @@ export class FunctionAssessor implements Assessor {
   public record(assessment: Assessment): void {
     assessment.recordResource({
       resource: this.resource,
-      generate: unsupported('requires manual code changes'),
-      refactor: unsupported('requires manual data replication'),
+      generate: supported(),
+      refactor: supported(),
     });
 
     const customPoliciesPath = `function/${this.resource.resourceName}/custom-policies.json`;
