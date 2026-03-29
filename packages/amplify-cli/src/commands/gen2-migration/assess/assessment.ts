@@ -85,6 +85,7 @@ export class Assessment {
   }
 
   /** Returns true if all resources and features are supported for the given step. */
+  // eslint-disable-next-line consistent-return -- exhaustive switch; compiler enforces all cases
   public validFor(step: 'generate' | 'refactor'): boolean {
     switch (step) {
       case 'generate':
@@ -97,8 +98,6 @@ export class Assessment {
           this._resources.every((ar) => ar.refactor.level !== 'unsupported') &&
           this._features.every((fr) => fr.refactor.level !== 'unsupported')
         );
-      default:
-        return false;
     }
   }
 
@@ -154,6 +153,7 @@ export class Assessment {
     return table.toString();
   }
 
+  // eslint-disable-next-line consistent-return -- exhaustive switch; compiler enforces all cases
   private static supportText(support: Support): string {
     switch (support.level) {
       case 'supported':
@@ -162,8 +162,6 @@ export class Assessment {
         return support.note ? `✘ ${support.note}` : '✘';
       case 'not-applicable':
         return '—';
-      default:
-        return '?';
     }
   }
 }
