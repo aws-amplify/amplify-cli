@@ -7,7 +7,7 @@ const RESOURCE: DiscoveredResource = { category: 'storage', resourceName: 'myTab
 describe('DynamoDBAssessor', () => {
   it('records resource as supported', () => {
     const assessment = new Assessment('app', 'dev');
-    new DynamoDBAssessor({} as Gen1App, RESOURCE).assess(assessment);
+    new DynamoDBAssessor({ fileExists: () => false } as unknown as Gen1App, RESOURCE).assess(assessment);
 
     const entry = assessment.resources[0];
     expect(entry!.generate).toBe('supported');
@@ -16,7 +16,7 @@ describe('DynamoDBAssessor', () => {
 
   it('records no features', () => {
     const assessment = new Assessment('app', 'dev');
-    new DynamoDBAssessor({} as Gen1App, RESOURCE).assess(assessment);
+    new DynamoDBAssessor({ fileExists: () => false } as unknown as Gen1App, RESOURCE).assess(assessment);
 
     expect(assessment.features).toHaveLength(0);
   });

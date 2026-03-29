@@ -25,7 +25,7 @@ describe('S3Assessor', () => {
 
     expect(assessment.features).toHaveLength(1);
     expect(assessment.features[0]).toEqual({
-      feature: { name: 'Overrides', path: 'storage/myBucket/override.ts' },
+      feature: { name: 'overrides', path: 'storage/myBucket/override.ts' },
       generate: 'unsupported',
       refactor: 'not-applicable',
     });

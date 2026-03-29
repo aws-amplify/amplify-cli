@@ -9,7 +9,7 @@ describe('StackFacade', () => {
 
   beforeEach(() => {
     cfnMock = mockClient(CloudFormationClient);
-    const clients = new AwsClients({ region: 'us-east-1' });
+    const clients = new (AwsClients as any)({ region: 'us-east-1' });
     (clients as any).cloudFormation = new CloudFormationClient({});
     facade = new StackFacade(clients, 'root-stack');
   });

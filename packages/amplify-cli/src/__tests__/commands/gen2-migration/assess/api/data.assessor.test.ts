@@ -25,7 +25,7 @@ describe('DataAssessor', () => {
 
     expect(assessment.features).toHaveLength(1);
     expect(assessment.features[0]).toEqual({
-      feature: { name: 'Overrides', path: 'api/myApi/override.ts' },
+      feature: { name: 'overrides', path: 'api/myApi/override.ts' },
       generate: 'unsupported',
       refactor: 'not-applicable',
     });

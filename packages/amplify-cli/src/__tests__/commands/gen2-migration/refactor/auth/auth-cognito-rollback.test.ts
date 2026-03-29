@@ -1,6 +1,7 @@
 import { AuthCognitoRollbackRefactorer } from '../../../../../commands/gen2-migration/refactor/auth/auth-cognito-rollback';
 import { CFNTemplate } from '../../../../../commands/gen2-migration/cfn-template';
 import { AwsClients } from '../../../../../commands/gen2-migration/aws-clients';
+import { Gen1App } from '../../../../../commands/gen2-migration/generate/_infra/gen1-app';
 import { StackFacade } from '../../../../../commands/gen2-migration/refactor/stack-facade';
 import { noOpLogger } from '../../_framework/logger';
 import { mockClient } from 'aws-sdk-client-mock';
@@ -97,14 +98,13 @@ describe('AuthCognitoRollbackRefactorer.plan()', () => {
 
   it('main auth: produces updateSource → updateTarget → move → afterMove', async () => {
     setupBasicMocks();
-    const clients = new AwsClients({ region: 'us-east-1' });
+    const clients = new (AwsClients as any)({ region: 'us-east-1' });
     (clients as any).cloudFormation = new CloudFormationClient({});
     const cfn = new Cfn(new CloudFormationClient({}), noOpLogger());
     const refactorer = new AuthCognitoRollbackRefactorer(
       new StackFacade(clients, 'gen1-root'),
       new StackFacade(clients, 'gen2-root'),
-      clients,
-      'us-east-1',
+      { region: 'us-east-1', clients } as unknown as Gen1App,
       '123',
       noOpLogger(),
       { category: 'auth', resourceName: 'test', service: 'Cognito', key: 'auth:Cognito' as const },
@@ -130,8 +130,7 @@ describe('AuthCognitoRollbackRefactorer.targetLogicalId', () => {
     })(
       null as any,
       null as any,
-      null as any,
-      'us-east-1',
+      { region: 'us-east-1' } as unknown as Gen1App,
       '123',
       noOpLogger(),
       { category: 'auth', resourceName: 'test', service: 'Cognito', key: 'auth:Cognito' as const },

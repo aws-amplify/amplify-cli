@@ -77,13 +77,7 @@ async function testSnapshot(appName: string, appOptions?: MigrationAppOptions, c
       if (customize) {
         await customize(app);
       }
-      const gen1App = await Gen1App.create({
-        appId: app.id,
-        appName: app.name,
-        region: app.region,
-        envName: app.environmentName,
-        clients: new AwsClients({ region: app.region }),
-      });
+      const gen1App = app.createGen1App();
       const step = new AmplifyMigrationGenerateStep(app.logger, gen1App, {} as $TSContext);
       const plan = await step.forward();
       await plan.execute();
@@ -104,7 +98,6 @@ async function testSnapshot(appName: string, appOptions?: MigrationAppOptions, c
 }
 
 import { Gen1App, DiscoveredResource } from '../../../commands/gen2-migration/generate/_infra/gen1-app';
-import { AwsClients } from '../../../commands/gen2-migration/aws-clients';
 import { SpinningLogger } from '../../../commands/gen2-migration/_spinning-logger';
 
 /** Creates a minimal mock Gen1App for unit tests. */

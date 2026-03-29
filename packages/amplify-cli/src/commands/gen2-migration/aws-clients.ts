@@ -9,7 +9,6 @@ import { CloudWatchEventsClient } from '@aws-sdk/client-cloudwatch-events';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { APIGatewayClient } from '@aws-sdk/client-api-gateway';
 import { SSMClient } from '@aws-sdk/client-ssm';
-import { AwsSdkConfig, loadConfiguration } from '@aws-amplify/amplify-provider-awscloudformation';
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
 
 /**
@@ -29,7 +28,8 @@ export class AwsClients {
   public readonly apiGateway: APIGatewayClient;
   public readonly ssm: SSMClient;
 
-  private constructor(creds: AwsSdkConfig) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- SDK config type from dynamic import
+  private constructor(creds: any) {
     this.amplify = new AmplifyClient(creds);
     this.appSync = new AppSyncClient(creds);
     this.cloudFormation = new CloudFormationClient(creds);
@@ -44,6 +44,8 @@ export class AwsClients {
   }
 
   public static async create(context: $TSContext): Promise<AwsClients> {
+    // Dynamic import to avoid FeatureFlags initialization side-effect at module load time.
+    const { loadConfiguration } = await import('@aws-amplify/amplify-provider-awscloudformation');
     const configuration = await loadConfiguration(context);
     return new AwsClients(configuration);
   }

@@ -2,7 +2,6 @@ import { AmplifyMigrationRefactorStep } from '../../../../commands/gen2-migratio
 import { OUTPUT_DIRECTORY } from '../../../../commands/gen2-migration/refactor/cfn';
 import { MigrationApp, MigrationAppOptions } from '../_framework/app';
 import { Gen1App, DiscoveredResource } from '../../../../commands/gen2-migration/generate/_infra/gen1-app';
-import { AwsClients } from '../../../../commands/gen2-migration/aws-clients';
 import { SpinningLogger } from '../../../../commands/gen2-migration/_spinning-logger';
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import * as fs from 'fs-extra';
@@ -85,13 +84,7 @@ async function testSnapshot(appName: string, appOptions?: MigrationAppOptions, c
       }
 
       const context: any = { parameters: { options: { to: findGen2RootStackName(app) } } };
-      const gen1App = await Gen1App.create({
-        appId: app.id,
-        appName: app.name,
-        region: app.region,
-        envName: app.environmentName,
-        clients: new AwsClients({ region: app.region }),
-      });
+      const gen1App = app.createGen1App();
       const refactorStep = new AmplifyMigrationRefactorStep(app.logger, gen1App, context);
 
       const plan = await refactorStep.forward();

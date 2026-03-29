@@ -1,4 +1,5 @@
 import { AuthUserPoolGroupsRollbackRefactorer } from '../../../../../commands/gen2-migration/refactor/auth/auth-user-pool-groups-rollback';
+import { Gen1App } from '../../../../../commands/gen2-migration/generate/_infra/gen1-app';
 import { Cfn } from '../../../../../commands/gen2-migration/refactor/cfn';
 import { noOpLogger } from '../../_framework/logger';
 
@@ -10,8 +11,7 @@ describe('AuthUserPoolGroupsRollbackRefactorer.targetLogicalId', () => {
   })(
     null as any,
     null as any,
-    null as any,
-    'us-east-1',
+    { region: 'us-east-1' } as unknown as Gen1App,
     '123',
     noOpLogger(),
     { category: 'auth', resourceName: 'userPoolGroups', service: 'Cognito-UserPool-Groups', key: 'auth:Cognito-UserPool-Groups' as const },

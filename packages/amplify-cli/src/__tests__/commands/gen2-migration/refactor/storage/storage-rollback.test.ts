@@ -1,4 +1,5 @@
 import { StorageS3RollbackRefactorer } from '../../../../../commands/gen2-migration/refactor/storage/storage-rollback';
+import { Gen1App } from '../../../../../commands/gen2-migration/generate/_infra/gen1-app';
 import { Cfn } from '../../../../../commands/gen2-migration/refactor/cfn';
 import { noOpLogger } from '../../_framework/logger';
 
@@ -10,8 +11,7 @@ describe('StorageS3RollbackRefactorer.targetLogicalId', () => {
   })(
     null as any,
     null as any,
-    null as any,
-    'us-east-1',
+    { region: 'us-east-1' } as unknown as Gen1App,
     '123',
     noOpLogger(),
     { category: 'storage', resourceName: 'test', service: 'S3', key: 'storage:S3' as const },

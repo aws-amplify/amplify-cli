@@ -30,7 +30,7 @@ describe('AuthUserPoolGroupsAssessor', () => {
 
     expect(assessment.features).toHaveLength(1);
     expect(assessment.features[0]).toEqual({
-      feature: { name: 'Overrides', path: 'auth/userPoolGroups/override.ts' },
+      feature: { name: 'overrides', path: 'auth/userPoolGroups/override.ts' },
       generate: 'unsupported',
       refactor: 'not-applicable',
     });

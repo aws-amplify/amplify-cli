@@ -60,6 +60,16 @@ export class Assessment {
     this._features.push(feature);
   }
 
+  /** All recorded resource assessments. */
+  public get resources(): readonly ResourceAssessment[] {
+    return this._resources;
+  }
+
+  /** All recorded feature assessments. */
+  public get features(): readonly FeatureAssessment[] {
+    return this._features;
+  }
+
   public validFor(step: 'generate' | 'refactor'): boolean {
     let valid = undefined;
     switch (step) {

@@ -39,7 +39,7 @@ describe('Assessment', () => {
         refactor: 'not-applicable',
       });
       assessment.recordFeature({
-        feature: { name: 'Custom policies', path: 'function/myFunc/custom-policies.json' },
+        feature: { name: 'custom-policies', path: 'function/myFunc/custom-policies.json' },
         generate: 'unsupported',
         refactor: 'not-applicable',
       });

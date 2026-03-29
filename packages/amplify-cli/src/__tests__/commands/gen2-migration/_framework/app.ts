@@ -5,6 +5,8 @@ import { MockClients } from './clients';
 import { copySync } from './directories';
 import { SpinningLogger } from '../../../../commands/gen2-migration/_spinning-logger';
 import { Gen1App } from '../../../../commands/gen2-migration/generate/_infra/gen1-app';
+import { AwsFetcher } from '../../../../commands/gen2-migration/generate/_infra/aws-fetcher';
+import { AwsClients } from '../../../../commands/gen2-migration/aws-clients';
 import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import { Snapshot } from './snapshot';
 
@@ -283,6 +285,43 @@ export class MigrationApp {
     // prevents the code from downloading ccb from s3 and instead
     // point to the local input file.
     (Gen1App as any).downloadCloudBackend = async () => this.ccbPath;
+  }
+
+  /**
+   * Creates a Gen1App instance wired to this MigrationApp's mock data.
+   * Bypasses Gen1App.create() which requires real AWS credentials.
+   */
+  public createGen1App(): Gen1App {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- bypassing private constructor for tests
+    const clients = new (AwsClients as any)({ region: this.region });
+    return {
+      appId: this.id,
+      appName: this.name,
+      region: this.region,
+      envName: this.environmentName,
+      rootStackName: this.rootStackName,
+      clients,
+      aws: new AwsFetcher(clients),
+      ccbDir: this.ccbPath,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- binding to private _meta field
+      meta: Gen1App.prototype.meta.bind({ _meta: this.meta } as any),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- binding to private _meta field
+      discover: Gen1App.prototype.discover.bind({ _meta: this.meta } as any),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- binding to private _meta field
+      metaOutput: Gen1App.prototype.metaOutput.bind({ _meta: this.meta } as any),
+      json: Gen1App.prototype.json.bind({ ccbDir: this.ccbPath }),
+      file: Gen1App.prototype.file.bind({ ccbDir: this.ccbPath }),
+      fileExists: Gen1App.prototype.fileExists.bind({ ccbDir: this.ccbPath }),
+      cliInputs: (category: string, resourceName: string) =>
+        Gen1App.prototype.json.call({ ccbDir: this.ccbPath }, path.join(category, resourceName, 'cli-inputs.json')),
+      singleResourceName: (category: string, service: string) => {
+        const block = this.meta[category];
+        if (!block) throw new Error(`Category '${category}' not found`);
+        const names = Object.keys(block).filter((n: string) => (block[n] as Record<string, unknown>).service === service);
+        if (names.length !== 1) throw new Error(`Expected 1 '${service}' in '${category}', found ${names.length}`);
+        return names[0];
+      },
+    } as unknown as Gen1App;
   }
 
   /**

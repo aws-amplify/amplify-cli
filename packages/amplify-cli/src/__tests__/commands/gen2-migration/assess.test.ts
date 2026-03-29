@@ -36,7 +36,7 @@ describe('AmplifyMigrationAssessor', () => {
       const assessment = assessor.assess();
 
       expect(assessment.features).toHaveLength(1);
-      expect(assessment.features[0].feature.name).toBe('Custom policies');
+      expect(assessment.features[0].feature.name).toBe('custom-policies');
     });
 
     it('detects override.ts for auth resources', () => {
@@ -48,7 +48,7 @@ describe('AmplifyMigrationAssessor', () => {
       const assessment = assessor.assess();
 
       expect(assessment.features).toHaveLength(1);
-      expect(assessment.features[0].feature.name).toBe('Overrides');
+      expect(assessment.features[0].feature.name).toBe('overrides');
     });
 
     it('ignores empty custom-policies.json', () => {

@@ -25,7 +25,7 @@ describe('AuthCognitoAssessor', () => {
 
     expect(assessment.features).toHaveLength(1);
     expect(assessment.features[0]).toEqual({
-      feature: { name: 'Overrides', path: 'auth/myPool/override.ts' },
+      feature: { name: 'overrides', path: 'auth/myPool/override.ts' },
       generate: 'unsupported',
       refactor: 'not-applicable',
     });

@@ -6,13 +6,13 @@ Assessment for "myapp" (env: dev)
 
 Resources
 
-┌──────────┬──────────┬─────────┬──────────┬──────────┐
-│ Category │ Resource │ Service │ Generate │ Refactor │
-├──────────┼──────────┼─────────┼──────────┼──────────┤
-│ auth     │ pool     │ Cognito │ ✔        │ ✔        │
-├──────────┼──────────┼─────────┼──────────┼──────────┤
-│ storage  │ bucket   │ S3      │ ✔        │ ✔        │
-└──────────┴──────────┴─────────┴──────────┴──────────┘
+┌──────────┬─────────┬──────────┬──────────┬──────────┐
+│ Category │ Service │ Resource │ Generate │ Refactor │
+├──────────┼─────────┼──────────┼──────────┼──────────┤
+│ auth     │ Cognito │ pool     │ ✔        │ ✔        │
+├──────────┼─────────┼──────────┼──────────┼──────────┤
+│ storage  │ S3      │ bucket   │ ✔        │ ✔        │
+└──────────┴─────────┴──────────┴──────────┴──────────┘
 
 Features
 
@@ -28,11 +28,11 @@ Assessment for "myapp" (env: dev)
 Resources
 
 ┌──────────┬──────────┬──────────┬────────────────────────────────┬────────────────────────────────────┐
-│ Category │ Resource │ Service  │ Generate                       │ Refactor                           │
+│ Category │ Service  │ Resource │ Generate                       │ Refactor                           │
 ├──────────┼──────────┼──────────┼────────────────────────────────┼────────────────────────────────────┤
-│ auth     │ pool     │ Cognito  │ ✔                              │ ✔                                  │
+│ auth     │ Cognito  │ pool     │ ✔                              │ ✔                                  │
 ├──────────┼──────────┼──────────┼────────────────────────────────┼────────────────────────────────────┤
-│ geo      │ map      │ Location │ ✘ requires manual code editing │ ✘ requires manual data replication │
+│ geo      │ Location │ map      │ ✘ requires manual code editing │ ✘ requires manual data replication │
 └──────────┴──────────┴──────────┴────────────────────────────────┴────────────────────────────────────┘
 
 Features
@@ -40,46 +40,4 @@ Features
 ┌──────┬──────┬──────────┬──────────┐
 │ Name │ Path │ Generate │ Refactor │
 └──────┴──────┴──────────┴──────────┘"
-`;
-
-exports[`Assessment render() renders features table when features are detected 1`] = `
-"
-Assessment for "myapp" (env: dev)
-
-Resources
-
-┌──────────┬──────────┬─────────┬──────────┬──────────┐
-│ Category │ Resource │ Service │ Generate │ Refactor │
-├──────────┼──────────┼─────────┼──────────┼──────────┤
-│ function │ myFunc   │ Lambda  │ ✔        │ —        │
-└──────────┴──────────┴─────────┴──────────┴──────────┘
-
-Features
-
-┌─────────────────┬──────────────────────────────────────┬────────────────────────────────┬──────────┐
-│ Name            │ Path                                 │ Generate                       │ Refactor │
-├─────────────────┼──────────────────────────────────────┼────────────────────────────────┼──────────┤
-│ Custom policies │ function/myFunc/custom-policies.json │ ✘ requires manual code editing │ —        │
-└─────────────────┴──────────────────────────────────────┴────────────────────────────────┴──────────┘"
-`;
-
-exports[`Assessment render() renders step-scoped view for generate 1`] = `
-"
-Assessment for "myapp" (env: dev)
-
-Resources
-
-┌──────────┬──────────┬────────────────┬────────────────────────────────┐
-│ Category │ Resource │ Service        │ Support                        │
-├──────────┼──────────┼────────────────┼────────────────────────────────┤
-│ auth     │ pool     │ Cognito        │ ✔                              │
-├──────────┼──────────┼────────────────┼────────────────────────────────┤
-│ custom   │ alarms   │ CloudFormation │ ✘ requires manual code editing │
-└──────────┴──────────┴────────────────┴────────────────────────────────┘
-
-Features
-
-┌──────┬──────┬─────────┐
-│ Name │ Path │ Support │
-└──────┴──────┴─────────┘"
 `;

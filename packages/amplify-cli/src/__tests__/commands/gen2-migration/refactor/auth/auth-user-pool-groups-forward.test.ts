@@ -1,5 +1,6 @@
 import { AuthUserPoolGroupsForwardRefactorer } from '../../../../../commands/gen2-migration/refactor/auth/auth-user-pool-groups-forward';
 import { CFNResource } from '../../../../../commands/gen2-migration/cfn-template';
+import { Gen1App } from '../../../../../commands/gen2-migration/generate/_infra/gen1-app';
 import { Cfn } from '../../../../../commands/gen2-migration/refactor/cfn';
 import { ResourceMapping } from '@aws-sdk/client-cloudformation';
 import { noOpLogger } from '../../_framework/logger';
@@ -18,8 +19,7 @@ describe('AuthUserPoolGroupsForwardRefactorer.buildResourceMappings — GroupNam
     })(
       null as any,
       null as any,
-      null as any,
-      'us-east-1',
+      { region: 'us-east-1' } as unknown as Gen1App,
       '123',
       noOpLogger(),
       {
