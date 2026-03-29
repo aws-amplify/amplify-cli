@@ -61,7 +61,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
           break;
 
         // unsupported/unknown resources - skip them.
-        // the assessement validation will surface these to the user
+        // the assessment validation will surface these to the user
         // and require confirmation of missing capabilities.
         case 'geo:GeofenceCollection':
         case 'UNKNOWN':
@@ -195,12 +195,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
 
   private async validateLockStatus(): Promise<ValidationResult> {
     try {
-      const validations = new AmplifyGen2MigrationValidations(
-        this.logger,
-        this.gen1App.rootStackName,
-        this.gen1App.rootStackName,
-        this.context,
-      );
+      const validations = new AmplifyGen2MigrationValidations(this.logger, this.gen1App.rootStackName, this.gen1App.envName, this.context);
       await validations.validateLockStatus();
       return { valid: true };
     } catch (e) {

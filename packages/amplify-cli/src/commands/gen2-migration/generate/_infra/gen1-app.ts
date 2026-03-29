@@ -35,7 +35,7 @@ export const KNOWN_RESOURCE_KEYS = [
   'geo:Map',
   'geo:PlaceIndex',
   'geo:GeofenceCollection',
-];
+] as const;
 
 export enum KNOWN_FEATURES {
   OVERRIDES = 'overrides',
@@ -117,7 +117,9 @@ export class Gen1App {
     return new Gen1App({ ccbDir, clients, envName, app: app.app });
   }
 
-  /** Returns the category block from amplify-meta.json, or undefined if empty/absent. */
+  /**
+   * Returns the category block from amplify-meta.json, or undefined if empty/absent.
+   */
   public meta(category: string): Record<string, unknown> | undefined {
     const block = (this._meta as Record<string, unknown>)[category];
     if (block && typeof block === 'object' && Object.keys(block as object).length > 0) {
@@ -156,7 +158,9 @@ export class Gen1App {
     return resources;
   }
 
-  /** Returns a resource output value from amplify-meta.json. */
+  /**
+   * Returns a resource output value from amplify-meta.json.
+   */
   public metaOutput(category: string, resourceName: string, outputKey: string): string {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped amplify-meta.json
     const value = (this._meta as any)[category]?.[resourceName]?.output?.[outputKey];
@@ -168,7 +172,9 @@ export class Gen1App {
     return value;
   }
 
-  /** Returns the name of the single resource in a category matching a service type. */
+  /**
+   * Returns the name of the single resource in a category matching a service type.
+   */
   public singleResourceName(category: string, service: string): string {
     const categoryBlock = this.meta(category);
     if (!categoryBlock) {

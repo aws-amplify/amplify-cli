@@ -16,13 +16,19 @@ export interface Support {
   readonly note?: string;
 }
 
-/** Shorthand for a supported entry. */
+/**
+ * Shorthand for a supported entry.
+ */
 export const supported = (): Support => ({ level: 'supported' });
 
-/** Shorthand for an unsupported entry with a note. */
+/**
+ * Shorthand for an unsupported entry with a note.
+ */
 export const unsupported = (note: string): Support => ({ level: 'unsupported', note });
 
-/** Shorthand for a not-applicable entry. */
+/**
+ * Shorthand for a not-applicable entry.
+ */
 export const notApplicable = (): Support => ({ level: 'not-applicable' });
 
 interface _Assessment {
@@ -64,27 +70,37 @@ export class Assessment {
 
   public constructor(private readonly appName: string, private readonly envName: string) {}
 
-  /** Records support for a discovered resource. */
+  /**
+   * Records support for a discovered resource.
+   */
   public recordResource(resource: ResourceAssessment): void {
     this._resources.push(resource);
   }
 
-  /** Records a detected feature that the migration tool does not fully support. */
+  /**
+   * Records a detected feature that the migration tool does not fully support.
+   */
   public recordFeature(feature: FeatureAssessment): void {
     this._features.push(feature);
   }
 
-  /** All recorded resource assessments. */
+  /**
+   * All recorded resource assessments.
+   */
   public get resources(): readonly ResourceAssessment[] {
     return this._resources;
   }
 
-  /** All recorded feature assessments. */
+  /**
+   * All recorded feature assessments.
+   */
   public get features(): readonly FeatureAssessment[] {
     return this._features;
   }
 
-  /** Returns true if all resources and features are supported for the given step. */
+  /**
+   * Returns true if all resources and features are supported for the given step.
+   */
   // eslint-disable-next-line consistent-return -- exhaustive switch; compiler enforces all cases
   public validFor(step: 'generate' | 'refactor'): boolean {
     switch (step) {
@@ -101,7 +117,9 @@ export class Assessment {
     }
   }
 
-  /** Renders the assessment as a string containing resource and feature tables. */
+  /**
+   * Renders the assessment as a string containing resource and feature tables.
+   */
   public render(): string {
     const lines: string[] = [];
 
