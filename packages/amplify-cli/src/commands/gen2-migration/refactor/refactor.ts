@@ -67,22 +67,32 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
 
     for (const resource of discovered) {
       switch (resource.key) {
-        case 'auth:Cognito':
-          refactorers.push(
-            new AuthCognitoForwardRefactorer(
-              gen1Env,
-              gen2Branch,
-              clients,
-              this.region,
-              accountId,
-              this.logger,
-              this.appId,
-              this.currentEnvName,
-              resource,
-              cfn,
-            ),
-          );
+        case 'auth:Cognito': {
+          // Imported auth resources have no CloudFormation stack to move — skip.
+          const isReferenceAuth = discovered
+            .filter((r) => r.category === 'auth')
+            .some((r) => {
+              const meta = (gen1App.meta('auth') ?? {})[r.resourceName] as Record<string, unknown> | undefined;
+              return meta?.serviceType === 'imported';
+            });
+          if (!isReferenceAuth) {
+            refactorers.push(
+              new AuthCognitoForwardRefactorer(
+                gen1Env,
+                gen2Branch,
+                clients,
+                this.region,
+                accountId,
+                this.logger,
+                this.appId,
+                this.currentEnvName,
+                resource,
+                cfn,
+              ),
+            );
+          }
           break;
+        }
         case 'auth:Cognito-UserPool-Groups':
           refactorers.push(
             new AuthUserPoolGroupsForwardRefactorer(gen1Env, gen2Branch, clients, this.region, accountId, this.logger, resource, cfn),
@@ -143,11 +153,21 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
 
     for (const resource of discovered) {
       switch (resource.key) {
-        case 'auth:Cognito':
-          refactorers.push(
-            new AuthCognitoRollbackRefactorer(gen1Env, gen2Branch, clients, this.region, accountId, this.logger, resource, cfn),
-          );
+        case 'auth:Cognito': {
+          // Imported auth resources have no CloudFormation stack to move — skip.
+          const isReferenceAuth = discovered
+            .filter((r) => r.category === 'auth')
+            .some((r) => {
+              const meta = (gen1App.meta('auth') ?? {})[r.resourceName] as Record<string, unknown> | undefined;
+              return meta?.serviceType === 'imported';
+            });
+          if (!isReferenceAuth) {
+            refactorers.push(
+              new AuthCognitoRollbackRefactorer(gen1Env, gen2Branch, clients, this.region, accountId, this.logger, resource, cfn),
+            );
+          }
           break;
+        }
         case 'auth:Cognito-UserPool-Groups':
           refactorers.push(
             new AuthUserPoolGroupsRollbackRefactorer(gen1Env, gen2Branch, clients, this.region, accountId, this.logger, resource, cfn),

@@ -23,6 +23,7 @@ import { generateTimeBasedE2EAmplifyAppName } from './utils/math';
 import path from 'path';
 import os from 'os';
 import fs from 'fs';
+import * as fsExtra from 'fs-extra';
 import { getCLIPath } from '@aws-amplify/amplify-e2e-core';
 import * as fsExtra from 'fs-extra';
 
@@ -392,21 +393,14 @@ async function runGen1TestScript(targetAppPath: string, migrationTargetPath: str
   const result = await execa('npx', ['tsx', testScriptName], {
     cwd: targetAppPath,
     reject: false,
+    env: { ...process.env, AWS_SDK_LOAD_CONFIG: '1' },
   });
 
   const stdout = result.stdout || '';
   const stderr = result.stderr || '';
 
-  // Always log full output at DEBUG level (visible with --verbose)
-  if (stdout) {
-    logger.debug(`[test-script] stdout:\n${stdout}`);
-  }
-  if (stderr) {
-    logger.debug(`[test-script] stderr:\n${stderr}`);
-  }
-
-  // At INFO level, surface the meaningful test result lines
-  const testResultLines = stdout.split('\n').filter((line) => {
+  // Partition stdout into test-result summary lines (INFO) and everything else (DEBUG)
+  const isTestResultLine = (line: string): boolean => {
     const trimmed = line.trim();
     return (
       trimmed.startsWith('✅') ||
@@ -544,7 +538,7 @@ async function initializeAppFromCLI(params: InitializeAppFromCLIParams): Promise
   const sourceAppsBasePath = path.dirname(sourceAppPath);
 
   try {
-    // Step 1: Create target directory and copy source
+    // Create target directory and copy source
     const targetAppPath = await directoryManager.createAppDirectory({
       basePath: migrationTargetPath,
       appName: deploymentName,
@@ -560,7 +554,9 @@ async function initializeAppFromCLI(params: InitializeAppFromCLIParams): Promise
     await fs.promises.writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2) + '\n', 'utf-8');
     logger.debug(`Updated package.json name to ${deploymentName}`, context);
 
-    // Step 2: Amplify init
+    logger.debug(`Running amplify init in ${targetAppPath}`, context);
+
+    // Amplify init
     logger.debug(`Using AWS profile '${profile}' for Amplify initialization`, context);
     await amplifyInitializer.initializeApp({
       appPath: targetAppPath,
@@ -591,7 +587,7 @@ async function initializeAppFromCLI(params: InitializeAppFromCLIParams): Promise
       throw new Error(`Failed to initialize ${categoryResult.errors.length} category(ies)`);
     }
 
-    // Step 4: Run configure.sh if present (copies custom source files into amplify/backend/)
+    // Run configure.sh if present (copies custom source files into amplify/backend/)
     const configureScriptPath = path.join(targetAppPath, 'configure.sh');
     if (fs.existsSync(configureScriptPath)) {
       logger.info(`Running configure.sh for ${deploymentName}...`, context);
@@ -601,17 +597,17 @@ async function initializeAppFromCLI(params: InitializeAppFromCLIParams): Promise
       logger.debug(`No configure.sh found for ${deploymentName}, skipping`, context);
     }
 
-    // Step 5: Push the initialized app to AWS
+    // Push the initialized app to AWS
     logger.info(`Pushing ${deploymentName} to AWS...`, context);
     await amplifyPush(targetAppPath);
     logger.info(`Successfully pushed ${deploymentName} to AWS`, context);
 
-    // Step 6: Run gen1 test script to validate the Gen1 deployment
+    // Run gen1 test script to validate the Gen1 deployment
     logger.info(`Running gen1 test script (post-push) for ${deploymentName}...`, context);
     await runGen1TestScript(targetAppPath, migrationTargetPath, sourceAppsBasePath);
     logger.info(`Gen1 test script passed (post-push) for ${deploymentName}`, context);
 
-    // Step 7: Initialize git repo and commit the Gen1 state
+    // Initialize git repo and commit the Gen1 state
     logger.info(`Initializing git repository for ${deploymentName}...`, context);
     await execa('git', ['init'], { cwd: targetAppPath });
     await execa('git', ['add', '.'], { cwd: targetAppPath });
@@ -652,34 +648,30 @@ async function initializeAppFromCLI(params: InitializeAppFromCLIParams): Promise
     await gen2MigrationExecutor.refactor(targetAppPath, gen2StackName);
     logger.info(`Successfully completed gen2-migration refactor for ${deploymentName}`, context);
 
-    // Step 14: Run gen1 test script to validate post-refactor state
+    // Run gen1 test script to validate post-refactor state
     logger.info(`Running gen1 test script (post-refactor) for ${deploymentName}...`, context);
     await runGen1TestScript(targetAppPath, migrationTargetPath, sourceAppsBasePath);
     logger.info(`Gen1 test script passed (post-refactor) for ${deploymentName}`, context);
 
-    // Step 15: Checkout back to Gen2 branch for post-refactor edits
+    // Checkout back to Gen2 branch for post-refactor edits
     logger.info(`Checking out ${gen2BranchName} branch for post-refactor edits...`, context);
     await execa('git', ['checkout', gen2BranchName], { cwd: targetAppPath });
 
     // Step 16: Run app-specific post-refactor script
     await runPostRefactorScript(appName, targetAppPath, envName);
 
-    // Step 17: Commit post-refactor changes
+    // Commit post-refactor changes
     logger.info(`Committing post-refactor changes for ${deploymentName}...`, context);
     await execa('git', ['add', '.'], { cwd: targetAppPath });
     await execa('git', ['commit', '-m', 'fix: post-refactor edits'], { cwd: targetAppPath });
     logger.info(`Post-refactor changes committed`, context);
 
-    // Step 18: Redeploy Gen2 to pick up post-refactor changes
-    // Re-install Gen2 deps — npm install during the post-refactor test script
-    // (step 14) runs on the main branch and may wipe Gen2 node_modules.
-    logger.info(`Re-installing Gen2 dependencies before redeploy...`, context);
-    await execa('npm', ['install'], { cwd: targetAppPath });
+    // Redeploy Gen2 to pick up post-refactor changes
     logger.info(`Redeploying Gen2 app after refactor for ${deploymentName}...`, context);
     await gen2MigrationExecutor.deployGen2Sandbox(targetAppPath, deploymentName, gen2BranchName);
     logger.info(`Gen2 app redeployed successfully`, context);
 
-    // Step 19: Run gen1 test script to validate final deployment
+    // Run gen1 test script to validate final deployment
     logger.info(`Running gen1 test script (post-redeployment) for ${deploymentName}...`, context);
     await runGen1TestScript(targetAppPath, migrationTargetPath, sourceAppsBasePath);
     logger.info(`Gen1 test script passed (post-redeployment) for ${deploymentName}`, context);
