@@ -357,6 +357,7 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
             ChangeSetName: changeSetName,
             TemplateBody: JSON.stringify(template),
             Parameters: parameters,
+            Capabilities: ['CAPABILITY_NAMED_IAM'],
           }),
         );
 
