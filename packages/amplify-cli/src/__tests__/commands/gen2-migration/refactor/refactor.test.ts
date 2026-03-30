@@ -128,10 +128,10 @@ function findGen2RootStackName(app: MigrationApp) {
   throw new Error(`Unable to find Gen2 root stack name for app: ${app.name}`);
 }
 
-function mockDiscover(resources: DiscoveredResource[]): jest.SpyInstance {
+function mockDiscover(resources: DiscoveredResource[], metaOverrides?: Record<string, unknown>): jest.SpyInstance {
   return jest.spyOn(Gen1App, 'create').mockResolvedValue({
     discover: () => resources,
-    meta: () => undefined,
+    meta: (category: string) => metaOverrides?.[category] as Record<string, unknown> | undefined,
   } as unknown as Gen1App);
 }
 
@@ -232,6 +232,17 @@ describe('AmplifyMigrationRefactorStep', () => {
       const plan = await step.forward();
       await plan.describe();
     });
+
+    it('skips imported auth resources', async () => {
+      infraSpy = mockCreateInfrastructure();
+      createSpy = mockDiscover([{ category: 'auth', resourceName: 'myImportedPool', service: 'Cognito', key: 'auth:Cognito' }], {
+        auth: { myImportedPool: { service: 'Cognito', serviceType: 'imported' } },
+      });
+
+      const step = createStep();
+      const plan = await step.forward();
+      await plan.describe();
+    });
   });
 
   describe('rollback()', () => {
@@ -249,6 +260,17 @@ describe('AmplifyMigrationRefactorStep', () => {
         { category: 'function', resourceName: 'myFunc', service: 'Lambda', key: 'function:Lambda' },
         { category: 'api', resourceName: 'myGateway', service: 'API Gateway', key: 'api:API Gateway' },
       ]);
+
+      const step = createStep();
+      const plan = await step.rollback();
+      await plan.describe();
+    });
+
+    it('skips imported auth resources', async () => {
+      infraSpy = mockCreateInfrastructure();
+      createSpy = mockDiscover([{ category: 'auth', resourceName: 'myImportedPool', service: 'Cognito', key: 'auth:Cognito' }], {
+        auth: { myImportedPool: { service: 'Cognito', serviceType: 'imported' } },
+      });
 
       const step = createStep();
       const plan = await step.rollback();
