@@ -409,7 +409,7 @@ async function runGen1TestScript(targetAppPath: string, migrationTargetPath: str
       trimmed.includes('All tests passed') ||
       trimmed.includes('test(s) failed')
     );
-  });
+  };
 
   for (const line of testResultLines) {
     logger.info(`[test-script] ${line.trim()}`);
