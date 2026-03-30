@@ -1,0 +1,164 @@
+{
+  "api": {
+    "importedresources": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "UserPoolId"
+          ],
+          "category": "auth",
+          "resourceName": "importedresources2c7c1c40"
+        }
+      ],
+      "output": {
+        "authConfig": {
+          "additionalAuthenticationProviders": [
+            {
+              "authenticationType": "AMAZON_COGNITO_USER_POOLS",
+              "userPoolConfig": {
+                "userPoolId": "authimportedresources2c7c1c40"
+              }
+            }
+          ],
+          "defaultAuthentication": {
+            "apiKeyConfig": {
+              "apiKeyExpirationDays": 7
+            },
+            "authenticationType": "API_KEY"
+          }
+        }
+      },
+      "providerPlugin": "awscloudformation",
+      "service": "AppSync"
+    }
+  },
+  "auth": {
+    "importedresources2c7c1c40": {
+      "customAuth": false,
+      "dependsOn": [],
+      "providerPlugin": "awscloudformation",
+      "service": "Cognito",
+      "serviceType": "imported"
+    }
+  },
+  "function": {
+    "importedresourcequotegenerator": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    }
+  },
+  "parameters": {
+    "AMPLIFY_auth_importedresources2c7c1c40_allowUnauthenticatedIdentities": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "importedresources2c7c1c40"
+        }
+      ]
+    },
+    "AMPLIFY_auth_importedresources2c7c1c40_authRoleArn": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "importedresources2c7c1c40"
+        }
+      ]
+    },
+    "AMPLIFY_auth_importedresources2c7c1c40_authRoleName": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "importedresources2c7c1c40"
+        }
+      ]
+    },
+    "AMPLIFY_auth_importedresources2c7c1c40_identityPoolId": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "importedresources2c7c1c40"
+        }
+      ]
+    },
+    "AMPLIFY_auth_importedresources2c7c1c40_identityPoolName": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "importedresources2c7c1c40"
+        }
+      ]
+    },
+    "AMPLIFY_auth_importedresources2c7c1c40_nativeClientId": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "importedresources2c7c1c40"
+        }
+      ]
+    },
+    "AMPLIFY_auth_importedresources2c7c1c40_unauthRoleArn": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "importedresources2c7c1c40"
+        }
+      ]
+    },
+    "AMPLIFY_auth_importedresources2c7c1c40_unauthRoleName": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "importedresources2c7c1c40"
+        }
+      ]
+    },
+    "AMPLIFY_auth_importedresources2c7c1c40_userPoolId": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "importedresources2c7c1c40"
+        }
+      ]
+    },
+    "AMPLIFY_auth_importedresources2c7c1c40_userPoolName": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "importedresources2c7c1c40"
+        }
+      ]
+    },
+    "AMPLIFY_auth_importedresources2c7c1c40_webClientId": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "importedresources2c7c1c40"
+        }
+      ]
+    },
+    "AMPLIFY_function_importedresourcequotegenerator_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "importedresourcequotegenerator"
+        }
+      ]
+    },
+    "AMPLIFY_function_importedresourcequotegenerator_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "importedresourcequotegenerator"
+        }
+      ]
+    }
+  },
+  "storage": {
+    "s34ebf8874": {
+      "dependsOn": [],
+      "providerPlugin": "awscloudformation",
+      "service": "S3"
+    }
+  }
+}
