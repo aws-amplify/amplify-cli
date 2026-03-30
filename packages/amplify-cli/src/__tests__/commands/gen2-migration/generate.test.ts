@@ -2,7 +2,7 @@ import 'aws-sdk-client-mock-jest';
 import { AmplifyMigrationGenerateStep, DependenciesInstaller } from '../../../commands/gen2-migration/generate';
 import { MigrationAppOptions, MigrationApp } from './_framework/app';
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
-import { AmplifyGen2MigrationValidations } from '../../../commands/gen2-migration/_validations';
+import { AmplifyGen2MigrationValidations } from '../../../commands/gen2-migration/_infra/validations';
 
 // high to allow for debugging in the IDE
 const TIMEOUT_MINUTES = 60;
@@ -99,7 +99,7 @@ async function testSnapshot(appName: string, appOptions?: MigrationAppOptions, c
 }
 
 import { Gen1App, DiscoveredResource } from '../../../commands/gen2-migration/generate/_infra/gen1-app';
-import { SpinningLogger } from '../../../commands/gen2-migration/_spinning-logger';
+import { SpinningLogger } from '../../../commands/gen2-migration/_infra/spinning-logger';
 
 /** Creates a minimal mock Gen1App for unit tests. */
 function mockGen1App(overrides: Partial<Gen1App> = {}): Gen1App {

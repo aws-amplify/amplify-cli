@@ -1,6 +1,6 @@
 import { AuthCognitoForwardRefactorer } from '../../../../../commands/gen2-migration/refactor/auth/auth-cognito-forward';
-import { CFNResource, CFNTemplate } from '../../../../../commands/gen2-migration/cfn-template';
-import { AwsClients } from '../../../../../commands/gen2-migration/aws-clients';
+import { CFNResource, CFNTemplate } from '../../../../../commands/gen2-migration/_infra/cfn-template';
+import { AwsClients } from '../../../../../commands/gen2-migration/_infra/aws-clients';
 import { Gen1App } from '../../../../../commands/gen2-migration/generate/_infra/gen1-app';
 import { StackFacade } from '../../../../../commands/gen2-migration/refactor/stack-facade';
 import { noOpLogger } from '../../_framework/logger';

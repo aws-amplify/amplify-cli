@@ -2,9 +2,9 @@ import { AmplifyMigrationLockStep } from '../../../commands/gen2-migration/lock'
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { SetStackPolicyCommand } from '@aws-sdk/client-cloudformation';
 import { UpdateAppCommand } from '@aws-sdk/client-amplify';
-import { SpinningLogger } from '../../../commands/gen2-migration/_spinning-logger';
+import { SpinningLogger } from '../../../commands/gen2-migration/_infra/spinning-logger';
 import { Gen1App } from '../../../commands/gen2-migration/generate/_infra/gen1-app';
-import { AmplifyGen2MigrationValidations } from '../../../commands/gen2-migration/_validations';
+import { AmplifyGen2MigrationValidations } from '../../../commands/gen2-migration/_infra/validations';
 
 jest.mock('@aws-sdk/client-appsync', () => ({
   ...jest.requireActual('@aws-sdk/client-appsync'),

@@ -1,5 +1,5 @@
 import { AuthUserPoolGroupsForwardRefactorer } from '../../../../../commands/gen2-migration/refactor/auth/auth-user-pool-groups-forward';
-import { CFNResource } from '../../../../../commands/gen2-migration/cfn-template';
+import { CFNResource } from '../../../../../commands/gen2-migration/_infra/cfn-template';
 import { Gen1App } from '../../../../../commands/gen2-migration/generate/_infra/gen1-app';
 import { Cfn } from '../../../../../commands/gen2-migration/refactor/cfn';
 import { ResourceMapping } from '@aws-sdk/client-cloudformation';

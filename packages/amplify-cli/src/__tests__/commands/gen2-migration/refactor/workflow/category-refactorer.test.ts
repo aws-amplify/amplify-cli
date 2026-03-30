@@ -2,8 +2,8 @@ import { StorageS3ForwardRefactorer } from '../../../../../commands/gen2-migrati
 import { StorageS3RollbackRefactorer } from '../../../../../commands/gen2-migration/refactor/storage/storage-rollback';
 import { AnalyticsKinesisForwardRefactorer } from '../../../../../commands/gen2-migration/refactor/analytics/analytics-forward';
 import { AnalyticsKinesisRollbackRefactorer } from '../../../../../commands/gen2-migration/refactor/analytics/analytics-rollback';
-import { CFNTemplate } from '../../../../../commands/gen2-migration/cfn-template';
-import { AwsClients } from '../../../../../commands/gen2-migration/aws-clients';
+import { CFNTemplate } from '../../../../../commands/gen2-migration/_infra/cfn-template';
+import { AwsClients } from '../../../../../commands/gen2-migration/_infra/aws-clients';
 import { Gen1App } from '../../../../../commands/gen2-migration/generate/_infra/gen1-app';
 import { StackFacade } from '../../../../../commands/gen2-migration/refactor/stack-facade';
 import { noOpLogger } from '../../_framework/logger';

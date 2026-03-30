@@ -1,5 +1,5 @@
 import { StackFacade } from '../../../../commands/gen2-migration/refactor/stack-facade';
-import { AwsClients } from '../../../../commands/gen2-migration/aws-clients';
+import { AwsClients } from '../../../../commands/gen2-migration/_infra/aws-clients';
 import { mockClient } from 'aws-sdk-client-mock';
 import { CloudFormationClient, GetTemplateCommand, DescribeStackResourcesCommand } from '@aws-sdk/client-cloudformation';
 

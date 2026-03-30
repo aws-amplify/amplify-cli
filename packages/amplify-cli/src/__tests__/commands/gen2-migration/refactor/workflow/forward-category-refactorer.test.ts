@@ -1,5 +1,5 @@
 import { ForwardCategoryRefactorer } from '../../../../../commands/gen2-migration/refactor/workflow/forward-category-refactorer';
-import { AwsClients } from '../../../../../commands/gen2-migration/aws-clients';
+import { AwsClients } from '../../../../../commands/gen2-migration/_infra/aws-clients';
 import { Gen1App } from '../../../../../commands/gen2-migration/generate/_infra/gen1-app';
 import { StackFacade } from '../../../../../commands/gen2-migration/refactor/stack-facade';
 import { Cfn } from '../../../../../commands/gen2-migration/refactor/cfn';
@@ -142,7 +142,7 @@ describe('ForwardCategoryRefactorer.beforeMove', () => {
   });
 });
 
-import { CFNResource } from '../../../../../commands/gen2-migration/cfn-template';
+import { CFNResource } from '../../../../../commands/gen2-migration/_infra/cfn-template';
 
 class TestForwardMappingRefactorer extends ForwardCategoryRefactorer {
   protected async fetchSourceStackId() {
