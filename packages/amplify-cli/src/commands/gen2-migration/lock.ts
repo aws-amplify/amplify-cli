@@ -5,14 +5,20 @@ import { extractCategory } from './categories';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import {
   CloudFormationClient,
+  CreateChangeSetCommand,
+  DeleteChangeSetCommand,
+  DescribeChangeSetCommand,
+  type DescribeChangeSetOutput,
   DescribeStackResourcesCommand,
   DescribeStacksCommand,
   GetStackPolicyCommand,
   GetTemplateCommand,
   ListStackResourcesCommand,
   SetStackPolicyCommand,
+  UpdateStackCommand,
+  waitUntilChangeSetCreateComplete,
+  waitUntilStackUpdateComplete,
 } from '@aws-sdk/client-cloudformation';
-import { tryUpdateStack } from './refactor/cfn-stack-updater';
 import { AmplifyClient, UpdateAppCommand, GetAppCommand } from '@aws-sdk/client-amplify';
 import { DynamoDBClient, UpdateTableCommand, paginateListTables } from '@aws-sdk/client-dynamodb';
 import { AppSyncClient, paginateListGraphqlApis } from '@aws-sdk/client-appsync';
@@ -343,10 +349,71 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
           UsePreviousValue: true,
         }));
 
+        const changeSetName = `deletion-policy-retain-${Date.now()}`;
+
+        await this.cfnClient().send(
+          new CreateChangeSetCommand({
+            StackName: modelStackId,
+            ChangeSetName: changeSetName,
+            TemplateBody: JSON.stringify(template),
+            Parameters: parameters,
+          }),
+        );
+
+        await waitUntilChangeSetCreateComplete(
+          { client: this.cfnClient(), maxWaitTime: 120 },
+          { StackName: modelStackId, ChangeSetName: changeSetName },
+        );
+
+        const changeSet = await this.cfnClient().send(
+          new DescribeChangeSetCommand({ StackName: modelStackId, ChangeSetName: changeSetName }),
+        );
+
+        this.validateDeletionPolicyChangeset(changeSet, modelStackId, changeSetName);
+
+        await this.cfnClient().send(new DeleteChangeSetCommand({ StackName: modelStackId, ChangeSetName: changeSetName }));
+
         this.logger.info(`Updating stack ${modelStackId} with DeletionPolicy changes...`);
-        await tryUpdateStack({ cfnClient: this.cfnClient(), stackName: modelStackId, parameters, templateBody: template });
+        await this.cfnClient().send(
+          new UpdateStackCommand({
+            StackName: modelStackId,
+            TemplateBody: JSON.stringify(template),
+            Parameters: parameters,
+            Capabilities: ['CAPABILITY_NAMED_IAM'],
+          }),
+        );
+        await waitUntilStackUpdateComplete({ client: this.cfnClient(), maxWaitTime: 900 }, { StackName: modelStackId });
         this.logger.info(`Successfully updated stack ${modelStackId}`);
       }
+    }
+  }
+
+  /** Validates that a changeset only contains Modify actions on DynamoDB tables. */
+  private validateDeletionPolicyChangeset(changeSet: DescribeChangeSetOutput, stackId: string, changeSetName: string): void {
+    const changes = changeSet.Changes ?? [];
+
+    const unexpected = changes.filter((change) => {
+      const rc = change.ResourceChange;
+      return rc.Action !== 'Modify' || rc.ResourceType !== 'AWS::DynamoDB::Table';
+    });
+
+    if (unexpected.length > 0) {
+      const descriptions = unexpected.map((c) => {
+        const rc = c.ResourceChange;
+        return `${rc.Action} ${rc.ResourceType} (${rc.LogicalResourceId})`;
+      });
+
+      void this.cfnClient().send(new DeleteChangeSetCommand({ StackName: stackId, ChangeSetName: changeSetName }));
+
+      throw new AmplifyError('MigrationError', {
+        message: [
+          `Changeset for stack '${stackId}' contains unexpected changes:`,
+          ...descriptions.map((d) => `  - ${d}`),
+          '',
+          'Expected only Modify actions on AWS::DynamoDB::Table resources.',
+        ].join('\n'),
+        resolution: 'This may indicate template drift. Resolve the drift before proceeding with migration.',
+      });
     }
   }
 
