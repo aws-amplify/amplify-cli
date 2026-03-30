@@ -5,11 +5,11 @@
   },
   {
     "ParameterKey": "bucketName",
-    "ParameterValue": "projectboards34b9a7f3c2ca489293910116c994688b"
+    "ParameterValue": "importedresources8c81d8d7ede741f3b102b3e1686abe"
   },
   {
     "ParameterKey": "s3PublicPolicy",
-    "ParameterValue": "Public_policy_69f8ff1c"
+    "ParameterValue": "Public_policy_4ebf8874"
   },
   {
     "ParameterKey": "AuthenticatedAllowList",
@@ -17,11 +17,11 @@
   },
   {
     "ParameterKey": "unauthRoleName",
-    "ParameterValue": "amplify-projectboards-main-02940-unauthRole"
+    "ParameterValue": "importedresources-unauth-role"
   },
   {
     "ParameterKey": "s3PrivatePolicy",
-    "ParameterValue": "Private_policy_69f8ff1c"
+    "ParameterValue": "Private_policy_4ebf8874"
   },
   {
     "ParameterKey": "selectedGuestPermissions",
@@ -41,7 +41,7 @@
   },
   {
     "ParameterKey": "s3UploadsPolicy",
-    "ParameterValue": "Uploads_policy_69f8ff1c"
+    "ParameterValue": "Uploads_policy_4ebf8874"
   },
   {
     "ParameterKey": "env",
@@ -49,11 +49,11 @@
   },
   {
     "ParameterKey": "unauthPolicyName",
-    "ParameterValue": "s3_amplify_69f8ff1c"
+    "ParameterValue": "s3_amplify_4ebf8874"
   },
   {
     "ParameterKey": "authRoleName",
-    "ParameterValue": "amplify-projectboards-main-02940-authRole"
+    "ParameterValue": "importedresources-auth-role"
   },
   {
     "ParameterKey": "GuestAllowList",
@@ -61,11 +61,11 @@
   },
   {
     "ParameterKey": "authPolicyName",
-    "ParameterValue": "s3_amplify_69f8ff1c"
+    "ParameterValue": "s3_amplify_4ebf8874"
   },
   {
     "ParameterKey": "s3ProtectedPolicy",
-    "ParameterValue": "Protected_policy_69f8ff1c"
+    "ParameterValue": "Protected_policy_4ebf8874"
   },
   {
     "ParameterKey": "s3PermissionsAuthenticatedProtected",
@@ -77,7 +77,7 @@
   },
   {
     "ParameterKey": "s3ReadPolicy",
-    "ParameterValue": "read_policy_69f8ff1c"
+    "ParameterValue": "read_policy_4ebf8874"
   },
   {
     "ParameterKey": "selectedAuthenticatedPermissions",

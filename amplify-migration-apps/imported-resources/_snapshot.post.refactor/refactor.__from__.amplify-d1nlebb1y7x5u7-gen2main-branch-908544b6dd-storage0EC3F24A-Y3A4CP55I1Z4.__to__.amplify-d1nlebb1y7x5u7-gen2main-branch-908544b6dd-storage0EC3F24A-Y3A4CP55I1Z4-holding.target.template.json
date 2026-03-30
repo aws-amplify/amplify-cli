@@ -2,7 +2,7 @@
   "AWSTemplateFormatVersion": "2010-09-09",
   "Description": "Temporary holding stack for Gen2 migration",
   "Resources": {
-    "projectboards34b9a7f3c2ca489293910116c994688b02940gen2mainBucketC790823F": {
+    "importedresources8c81d8d7ede741f3b102b3e1686abe8a9e9gen2mainBucket7C2850AF": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
         "BucketEncryption": {
@@ -44,7 +44,7 @@
         "Tags": [
           {
             "Key": "amplify:app-id",
-            "Value": "projectboards"
+            "Value": "d1nlebb1y7x5u7"
           },
           {
             "Key": "amplify:branch-name",
@@ -56,7 +56,7 @@
           },
           {
             "Key": "amplify:friendly-name",
-            "Value": "projectboards34b9a7f3c2ca489293910116c994688b02940-gen2-main"
+            "Value": "importedresources8c81d8d7ede741f3b102b3e1686abe8a9e9-gen2-main"
           },
           {
             "Key": "aws-cdk:auto-delete-objects",
@@ -71,7 +71,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-gen2main-branch-886dbd2dec/storage/projectboards34b9a7f3c2ca489293910116c994688b02940-gen2-main/Bucket/Resource"
+        "aws:cdk:path": "amplify-d1nlebb1y7x5u7-gen2main-branch-908544b6dd/storage/importedresources8c81d8d7ede741f3b102b3e1686abe8a9e9-gen2-main/Bucket/Resource"
       }
     }
   },
