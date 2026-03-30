@@ -60,20 +60,33 @@ export class Plan {
 
   /**
    * Renders the operations summary and implications to the terminal.
+   * Operations with a resource are grouped under a resource header;
+   * ungrouped operations render as a flat list.
    */
   public async describe(): Promise<void> {
-    const descriptions: string[] = [];
+    const grouped = new Map<string, string[]>();
+
     for (const op of this.operations) {
-      descriptions.push(...(await op.describe()));
+      const lines = await op.describe();
+      if (lines.length === 0) continue;
+      const label = op.resource ? `Resource: ${op.resource.category}/${op.resource.resourceName} (${op.resource.service})` : 'Project';
+      if (!grouped.has(label)) grouped.set(label, []);
+      grouped.get(label)!.push(...lines);
     }
 
-    if (descriptions.length > 0) {
+    if (grouped.size > 0) {
       printer.info(chalk.bold(chalk.underline('Operations Summary')));
       printer.blankLine();
-      for (const description of descriptions) {
-        printer.info(`• ${description}`);
+
+      for (const [label, descriptions] of grouped) {
+        printer.info(chalk.bold(label));
+        printer.blankLine();
+        let step = 1;
+        for (const description of descriptions) {
+          printer.info(`${step}. ${description}`);
+          step++;
+        }
       }
-      printer.blankLine();
     }
 
     if (this.implications.length > 0) {
@@ -107,9 +120,9 @@ export class Plan {
       printer.info(chalk.bold(chalk.underline('Failed Validations Report')));
       printer.blankLine();
       for (let i = 0; i < failed.length; i++) {
-        printer.info(chalk.red(failed[i].description));
+        printer.info(chalk.bold(chalk.red(`✘ ${failed[i].description}`)));
         printer.blankLine();
-        printer.info(failed[i].report ?? '');
+        printer.info(failed[i].report!.trimStart());
         if (i < failed.length - 1) {
           printer.blankLine();
         }

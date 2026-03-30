@@ -24,6 +24,7 @@ import { S3Generator } from './generate/amplify/storage/s3.generator';
 import { DynamoDBGenerator } from './generate/amplify/storage/dynamodb.generator';
 import { FunctionGenerator } from './generate/amplify/function/function.generator';
 import { AnalyticsKinesisGenerator } from './generate/amplify/analytics/kinesis.generator';
+import { GeoGenerator } from './generate/amplify/geo/geo.generator';
 import { fileOrDirectoryExists } from './generate/_infra/files';
 
 const AMPLIFY_DIR = 'amplify';
@@ -47,6 +48,9 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
         case 'api:API Gateway':
         case 'analytics:Kinesis':
         case 'function:Lambda':
+        case 'geo:Map':
+        case 'geo:PlaceIndex':
+        case 'geo:GeofenceCollection':
           assessment.record('generate', resource, { supported: true });
           break;
         case 'unsupported':
@@ -70,6 +74,7 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
     // Cross-category state captured during the loop.
     let authGenerator: AuthGenerator | undefined;
     let s3Generator: S3Generator | undefined;
+    let geoGenerator: GeoGenerator | undefined;
     const functionGenerators: FunctionGenerator[] = [];
 
     for (const resource of discovered) {
@@ -83,9 +88,9 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
             });
 
           if (isReferenceAuth) {
-            generators.push(new ReferenceAuthGenerator(gen1App, backendGenerator, outputDir));
+            generators.push(new ReferenceAuthGenerator(gen1App, backendGenerator, outputDir, resource));
           } else {
-            authGenerator = new AuthGenerator(gen1App, backendGenerator, outputDir);
+            authGenerator = new AuthGenerator(gen1App, backendGenerator, outputDir, resource);
             generators.push(authGenerator);
           }
           break;
@@ -94,22 +99,30 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
           // Handled by the AuthGenerator created for the main Cognito resource.
           break;
         case 'storage:S3':
-          s3Generator = new S3Generator(gen1App, backendGenerator, outputDir);
+          s3Generator = new S3Generator(gen1App, backendGenerator, outputDir, resource);
           generators.push(s3Generator);
           break;
         case 'storage:DynamoDB': {
-          const hasS3Bucket = discovered.some((r) => r.category === 'storage' && r.service === 'S3');
-          generators.push(new DynamoDBGenerator(gen1App, backendGenerator, resource.resourceName, hasS3Bucket));
+          generators.push(new DynamoDBGenerator(gen1App, backendGenerator, resource));
           break;
         }
         case 'api:AppSync':
-          generators.push(new DataGenerator(gen1App, backendGenerator, outputDir));
+          generators.push(new DataGenerator(gen1App, backendGenerator, outputDir, resource));
           break;
         case 'api:API Gateway':
-          generators.push(new RestApiGenerator(gen1App, backendGenerator, resource.resourceName));
+          generators.push(new RestApiGenerator(gen1App, backendGenerator, resource));
           break;
         case 'analytics:Kinesis':
-          generators.push(new AnalyticsKinesisGenerator(gen1App, backendGenerator, outputDir, resource.resourceName));
+          generators.push(new AnalyticsKinesisGenerator(gen1App, backendGenerator, outputDir, resource));
+          break;
+        case 'geo:Map':
+        case 'geo:PlaceIndex':
+        case 'geo:GeofenceCollection':
+          // All geo services share a single GeoGenerator instance.
+          if (!geoGenerator) {
+            geoGenerator = new GeoGenerator(gen1App, backendGenerator, outputDir, resource);
+            generators.push(geoGenerator);
+          }
           break;
         case 'function:Lambda': {
           const functionCategoryMap = computeFunctionCategories(gen1App);
@@ -118,7 +131,7 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
             backendGenerator,
             packageJsonGenerator,
             outputDir,
-            resourceName: resource.resourceName,
+            resource,
             category: functionCategoryMap.get(resource.resourceName) ?? 'function',
           });
           generators.push(funcGen);

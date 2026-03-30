@@ -7,17 +7,20 @@ import { GetCallerIdentityCommand, STSClient } from '@aws-sdk/client-sts';
 import { AmplifyGen2MigrationValidations } from '../_validations';
 import { AwsClients } from '../aws-clients';
 import { StackFacade } from './stack-facade';
-import { Refactorer } from './refactorer';
-import { AuthCognitoForwardRefactorer } from './auth/auth-forward';
-import { AuthCognitoRollbackRefactorer } from './auth/auth-rollback';
+import { Planner } from '../planner';
+import { AuthCognitoForwardRefactorer } from './auth/auth-cognito-forward';
+import { AuthCognitoRollbackRefactorer } from './auth/auth-cognito-rollback';
 import { StorageS3ForwardRefactorer } from './storage/storage-forward';
 import { StorageS3RollbackRefactorer } from './storage/storage-rollback';
 import { StorageDynamoForwardRefactorer } from './storage/storage-dynamo-forward';
 import { StorageDynamoRollbackRefactorer } from './storage/storage-dynamo-rollback';
 import { AnalyticsKinesisForwardRefactorer } from './analytics/analytics-forward';
 import { AnalyticsKinesisRollbackRefactorer } from './analytics/analytics-rollback';
-import { Gen1App, DiscoveredResource } from '../generate/_infra/gen1-app';
+import { Gen1App } from '../generate/_infra/gen1-app';
 import { Assessment } from '../_assessment';
+import { AuthUserPoolGroupsForwardRefactorer } from './auth/auth-user-pool-groups-forward';
+import { AuthUserPoolGroupsRollbackRefactorer } from './auth/auth-user-pool-groups-rollback';
+import { Cfn } from './cfn';
 
 export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
   /**
@@ -31,6 +34,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
     for (const resource of discovered) {
       switch (resource.key) {
         case 'auth:Cognito':
+        case 'auth:Cognito-UserPool-Groups':
         case 'storage:S3':
         case 'storage:DynamoDB':
         case 'analytics:Kinesis':
@@ -38,9 +42,13 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
         case 'function:Lambda':
         case 'api:AppSync':
         case 'api:API Gateway':
+        case 'geo:Map':
+        case 'geo:PlaceIndex':
           assessment.record('refactor', resource, { supported: true });
           break;
-        case 'auth:Cognito-UserPool-Groups':
+        case 'geo:GeofenceCollection':
+          assessment.record('refactor', resource, { supported: false });
+          break;
         case 'unsupported':
           assessment.record('refactor', resource, { supported: false });
           break;
@@ -50,14 +58,12 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
 
   public async forward(): Promise<Plan> {
     const toStack = this.extractParameters();
-    const { clients, accountId, gen1Env, gen2Branch } = await this.createInfrastructure(toStack);
+    const { clients, accountId, gen1Env, gen2Branch, cfn } = await this.createInfrastructure(toStack);
 
     const gen1App = await Gen1App.create({ appId: this.appId, region: this.region, envName: this.currentEnvName, clients });
     const discovered = gen1App.discover();
 
-    const refactorers: Refactorer[] = [];
-
-    validateSingleResourcePerStack(discovered);
+    const refactorers: Planner[] = [];
 
     for (const resource of discovered) {
       switch (resource.key) {
@@ -72,29 +78,43 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
               this.logger,
               this.appId,
               this.currentEnvName,
+              resource,
+              cfn,
             ),
+          );
+          break;
+        case 'auth:Cognito-UserPool-Groups':
+          refactorers.push(
+            new AuthUserPoolGroupsForwardRefactorer(gen1Env, gen2Branch, clients, this.region, accountId, this.logger, resource, cfn),
           );
           break;
         case 'storage:S3':
           refactorers.push(
-            new StorageS3ForwardRefactorer(gen1Env, gen2Branch, clients, this.region, accountId, this.logger, resource.resourceName),
+            new StorageS3ForwardRefactorer(gen1Env, gen2Branch, clients, this.region, accountId, this.logger, resource, cfn),
           );
           break;
         case 'storage:DynamoDB':
           refactorers.push(
-            new StorageDynamoForwardRefactorer(gen1Env, gen2Branch, clients, this.region, accountId, this.logger, resource.resourceName),
+            new StorageDynamoForwardRefactorer(gen1Env, gen2Branch, clients, this.region, accountId, this.logger, resource, cfn),
           );
           break;
         case 'analytics:Kinesis':
-          refactorers.push(new AnalyticsKinesisForwardRefactorer(gen1Env, gen2Branch, clients, this.region, accountId, this.logger));
+          refactorers.push(
+            new AnalyticsKinesisForwardRefactorer(gen1Env, gen2Branch, clients, this.region, accountId, this.logger, resource, cfn),
+          );
           break;
         // Stateless categories — nothing to refactor
         // falls through
         case 'function:Lambda':
         case 'api:AppSync':
         case 'api:API Gateway':
+        case 'geo:Map':
+        case 'geo:PlaceIndex':
           break;
-        case 'auth:Cognito-UserPool-Groups':
+        case 'geo:GeofenceCollection':
+          throw new AmplifyError('MigrationError', {
+            message: `Unsupported resource '${resource.resourceName}' (${resource.category}:${resource.service}). GeofenceCollection refactor is not supported.`,
+          });
         case 'unsupported':
           throw new AmplifyError('MigrationError', {
             message: `Unsupported resource '${resource.resourceName}' (${resource.category}:${resource.service}). Run 'amplify gen2-migration assess' to check migration readiness.`,
@@ -114,40 +134,52 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
 
   public async rollback(): Promise<Plan> {
     const toStack = this.extractParameters();
-    const { clients, accountId, gen1Env, gen2Branch } = await this.createInfrastructure(toStack);
+    const { clients, accountId, gen1Env, gen2Branch, cfn } = await this.createInfrastructure(toStack);
 
     const gen1App = await Gen1App.create({ appId: this.appId, region: this.region, envName: this.currentEnvName, clients });
     const discovered = gen1App.discover();
 
-    const refactorers: Refactorer[] = [];
-
-    validateSingleResourcePerStack(discovered);
+    const refactorers: Planner[] = [];
 
     for (const resource of discovered) {
       switch (resource.key) {
         case 'auth:Cognito':
-          refactorers.push(new AuthCognitoRollbackRefactorer(gen1Env, gen2Branch, clients, this.region, accountId, this.logger));
+          refactorers.push(
+            new AuthCognitoRollbackRefactorer(gen1Env, gen2Branch, clients, this.region, accountId, this.logger, resource, cfn),
+          );
+          break;
+        case 'auth:Cognito-UserPool-Groups':
+          refactorers.push(
+            new AuthUserPoolGroupsRollbackRefactorer(gen1Env, gen2Branch, clients, this.region, accountId, this.logger, resource, cfn),
+          );
           break;
         case 'storage:S3':
           refactorers.push(
-            new StorageS3RollbackRefactorer(gen1Env, gen2Branch, clients, this.region, accountId, this.logger, resource.resourceName),
+            new StorageS3RollbackRefactorer(gen1Env, gen2Branch, clients, this.region, accountId, this.logger, resource, cfn),
           );
           break;
         case 'storage:DynamoDB':
           refactorers.push(
-            new StorageDynamoRollbackRefactorer(gen1Env, gen2Branch, clients, this.region, accountId, this.logger, resource.resourceName),
+            new StorageDynamoRollbackRefactorer(gen1Env, gen2Branch, clients, this.region, accountId, this.logger, resource, cfn),
           );
           break;
         case 'analytics:Kinesis':
-          refactorers.push(new AnalyticsKinesisRollbackRefactorer(gen1Env, gen2Branch, clients, this.region, accountId, this.logger));
+          refactorers.push(
+            new AnalyticsKinesisRollbackRefactorer(gen1Env, gen2Branch, clients, this.region, accountId, this.logger, resource, cfn),
+          );
           break;
         // Stateless categories — nothing to rollback
         // falls through
         case 'function:Lambda':
         case 'api:AppSync':
         case 'api:API Gateway':
+        case 'geo:Map':
+        case 'geo:PlaceIndex':
           break;
-        case 'auth:Cognito-UserPool-Groups':
+        case 'geo:GeofenceCollection':
+          throw new AmplifyError('MigrationError', {
+            message: `Unsupported resource '${resource.resourceName}' (${resource.category}:${resource.service}). GeofenceCollection refactor is not supported. Cannot rollback.`,
+          });
         case 'unsupported':
           throw new AmplifyError('MigrationError', {
             message: `Unsupported resource '${resource.resourceName}' (${resource.category}:${resource.service}). Cannot rollback.`,
@@ -162,11 +194,15 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
     );
   }
 
+  /**
+   * Creates shared AWS clients, stack facades, and the Cfn instance.
+   */
   private async createInfrastructure(toStack: string): Promise<{
     clients: AwsClients;
     accountId: string;
     gen1Env: StackFacade;
     gen2Branch: StackFacade;
+    cfn: Cfn;
   }> {
     const stsClient = new STSClient({});
     const { Account: accountId } = await stsClient.send(new GetCallerIdentityCommand({}));
@@ -177,14 +213,15 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
     const clients = new AwsClients({ region: this.region });
     const gen1Env = new StackFacade(clients, this.rootStackName);
     const gen2Branch = new StackFacade(clients, toStack);
+    const cfn = new Cfn(clients.cloudFormation, this.logger);
 
-    return { clients, accountId, gen1Env, gen2Branch };
+    return { clients, accountId, gen1Env, gen2Branch, cfn };
   }
 
   /**
    * Collects operations from all refactorers.
    */
-  private async buildPlan(refactorers: Refactorer[], implications: string[], title: string): Promise<Plan> {
+  private async buildPlan(refactorers: Planner[], implications: string[], title: string): Promise<Plan> {
     const operations: AmplifyMigrationOperation[] = [];
 
     operations.push({
@@ -219,42 +256,5 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
     }
 
     return toStack;
-  }
-}
-
-/**
- * Throws if any two discovered resources would produce the same stack name.
- *
- * Storage resources (both S3 and DDB) use 'storage' + resourceName as their
- * Gen1 stack prefix. Other stateful categories (auth, analytics) use the bare
- * category name. If two resources would map to the same stack name, the
- * refactor would be ambiguous.
- */
-function validateSingleResourcePerStack(discovered: readonly DiscoveredResource[]): void {
-  const stackNameCounts = new Map<string, number>();
-  for (const r of discovered) {
-    let stackName: string;
-    switch (r.key) {
-      case 'storage:DynamoDB':
-      case 'storage:S3':
-        stackName = 'storage' + r.resourceName;
-        break;
-      case 'auth:Cognito':
-        stackName = 'auth';
-        break;
-      case 'analytics:Kinesis':
-        stackName = 'analytics';
-        break;
-      default:
-        continue; // non-stateful categories — no stack conflict possible
-    }
-    stackNameCounts.set(stackName, (stackNameCounts.get(stackName) ?? 0) + 1);
-  }
-  for (const [stackName, count] of stackNameCounts) {
-    if (count > 1) {
-      throw new AmplifyError('MigrationError', {
-        message: `Multiple resources map to stack '${stackName}'. Each resource must have a unique stack name.`,
-      });
-    }
   }
 }

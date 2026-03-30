@@ -202,7 +202,7 @@
     "APIGatewayAuthStack": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-fitnesstracker-main-0683c-deployment/amplify-cfn-templates/api/APIGatewayAuthStack.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-fitnesstracker-main-a0537-deployment/amplify-cfn-templates/api/APIGatewayAuthStack.json",
         "Parameters": {
           "authRoleName": {
             "Ref": "AuthRoleName"
@@ -229,50 +229,50 @@
     "AuthTriggerCustomLambdaStack": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-fitnesstracker-main-0683c-deployment/amplify-cfn-templates/auth/auth-trigger-cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-fitnesstracker-main-a0537-deployment/amplify-cfn-templates/auth/auth-trigger-cloudformation-template.json",
         "Parameters": {
           "env": "main",
           "userpoolId": {
             "Fn::GetAtt": [
-              "authfitnesstracker6b0fc1196b0fc119",
+              "authfitnesstracker33f5545533f55455",
               "Outputs.UserPoolId"
             ]
           },
           "userpoolArn": {
             "Fn::GetAtt": [
-              "authfitnesstracker6b0fc1196b0fc119",
+              "authfitnesstracker33f5545533f55455",
               "Outputs.UserPoolArn"
             ]
           },
-          "functionfitnesstracker6b0fc1196b0fc119PreSignupLambdaExecutionRole": {
+          "functionfitnesstracker33f5545533f55455PreSignupLambdaExecutionRole": {
             "Fn::GetAtt": [
-              "functionfitnesstracker6b0fc1196b0fc119PreSignup",
+              "functionfitnesstracker33f5545533f55455PreSignup",
               "Outputs.LambdaExecutionRoleArn"
             ]
           },
-          "functionfitnesstracker6b0fc1196b0fc119PreSignupArn": {
+          "functionfitnesstracker33f5545533f55455PreSignupArn": {
             "Fn::GetAtt": [
-              "functionfitnesstracker6b0fc1196b0fc119PreSignup",
+              "functionfitnesstracker33f5545533f55455PreSignup",
               "Outputs.Arn"
             ]
           },
-          "functionfitnesstracker6b0fc1196b0fc119PreSignupName": {
+          "functionfitnesstracker33f5545533f55455PreSignupName": {
             "Fn::GetAtt": [
-              "functionfitnesstracker6b0fc1196b0fc119PreSignup",
+              "functionfitnesstracker33f5545533f55455PreSignup",
               "Outputs.Name"
             ]
           }
         }
       },
       "DependsOn": [
-        "authfitnesstracker6b0fc1196b0fc119",
-        "functionfitnesstracker6b0fc1196b0fc119PreSignup"
+        "authfitnesstracker33f5545533f55455",
+        "functionfitnesstracker33f5545533f55455PreSignup"
       ]
     },
     "authuserPoolGroups": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-fitnesstracker-main-0683c-deployment/amplify-cfn-templates/auth/userPoolGroups-cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-fitnesstracker-main-a0537-deployment/amplify-cfn-templates/auth/userPoolGroups-cloudformation-template.json",
         "Parameters": {
           "AuthRoleArn": {
             "Fn::GetAtt": [
@@ -286,27 +286,27 @@
               "Arn"
             ]
           },
-          "authfitnesstracker6b0fc1196b0fc119UserPoolId": {
+          "authfitnesstracker33f5545533f55455UserPoolId": {
             "Fn::GetAtt": [
-              "authfitnesstracker6b0fc1196b0fc119",
+              "authfitnesstracker33f5545533f55455",
               "Outputs.UserPoolId"
             ]
           },
-          "authfitnesstracker6b0fc1196b0fc119AppClientIDWeb": {
+          "authfitnesstracker33f5545533f55455AppClientIDWeb": {
             "Fn::GetAtt": [
-              "authfitnesstracker6b0fc1196b0fc119",
+              "authfitnesstracker33f5545533f55455",
               "Outputs.AppClientIDWeb"
             ]
           },
-          "authfitnesstracker6b0fc1196b0fc119AppClientID": {
+          "authfitnesstracker33f5545533f55455AppClientID": {
             "Fn::GetAtt": [
-              "authfitnesstracker6b0fc1196b0fc119",
+              "authfitnesstracker33f5545533f55455",
               "Outputs.AppClientID"
             ]
           },
-          "authfitnesstracker6b0fc1196b0fc119IdentityPoolId": {
+          "authfitnesstracker33f5545533f55455IdentityPoolId": {
             "Fn::GetAtt": [
-              "authfitnesstracker6b0fc1196b0fc119",
+              "authfitnesstracker33f5545533f55455",
               "Outputs.IdentityPoolId"
             ]
           },
@@ -314,15 +314,15 @@
         }
       }
     },
-    "authfitnesstracker6b0fc1196b0fc119": {
+    "authfitnesstracker33f5545533f55455": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-fitnesstracker-main-0683c-deployment/amplify-cfn-templates/auth/fitnesstracker6b0fc1196b0fc119-cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-fitnesstracker-main-a0537-deployment/amplify-cfn-templates/auth/fitnesstracker33f5545533f55455-cloudformation-template.json",
         "Parameters": {
-          "identityPoolName": "fitnesstracker6b0fc119_identitypool_6b0fc119",
+          "identityPoolName": "fitnesstracker33f55455_identitypool_33f55455",
           "allowUnauthenticatedIdentities": false,
-          "resourceNameTruncated": "fitnes6b0fc119",
-          "userPoolName": "fitnesstracker6b0fc119_userpool_6b0fc119",
+          "resourceNameTruncated": "fitnes33f55455",
+          "userPoolName": "fitnesstracker33f55455_userpool_33f55455",
           "autoVerifiedAttributes": "email",
           "mfaConfiguration": "OFF",
           "mfaTypes": "SMS Text Message",
@@ -336,13 +336,13 @@
           "requiredAttributes": "email",
           "aliasAttributes": "",
           "userpoolClientGenerateSecret": false,
-          "userpoolClientRefreshTokenValidity": "30",
+          "userpoolClientRefreshTokenValidity": 30,
           "userpoolClientWriteAttributes": "email",
           "userpoolClientReadAttributes": "email",
-          "userpoolClientLambdaRole": "fitnes6b0fc119_userpoolclient_lambda_role",
+          "userpoolClientLambdaRole": "fitnes33f55455_userpoolclient_lambda_role",
           "userpoolClientSetAttributes": false,
-          "sharedId": "6b0fc119",
-          "resourceName": "fitnesstracker6b0fc1196b0fc119",
+          "sharedId": "33f55455",
+          "resourceName": "fitnesstracker33f5545533f55455",
           "authSelections": "identityPoolAndUserPool",
           "useDefault": "manual",
           "thirdPartyAuth": false,
@@ -369,21 +369,21 @@
           "breakCircularDependency": true,
           "dependsOn": "[object Object]",
           "permissions": "",
-          "authTriggerConnections": "{\"triggerType\":\"PreSignUp\",\"lambdaFunctionName\":\"fitnesstracker6b0fc1196b0fc119PreSignup\"}",
+          "authTriggerConnections": "{\"triggerType\":\"PreSignUp\",\"lambdaFunctionName\":\"fitnesstracker33f5545533f55455PreSignup\"}",
           "env": "main"
         }
       }
     },
-    "functionfitnesstracker6b0fc1196b0fc119PreSignup": {
+    "functionfitnesstracker33f5545533f55455PreSignup": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-fitnesstracker-main-0683c-deployment/amplify-cfn-templates/function/fitnesstracker6b0fc1196b0fc119PreSignup-cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-fitnesstracker-main-a0537-deployment/amplify-cfn-templates/function/fitnesstracker33f5545533f55455PreSignup-cloudformation-template.json",
         "Parameters": {
           "modules": "email-filter-allowlist",
-          "resourceName": "fitnesstracker6b0fc1196b0fc119PreSignup",
+          "resourceName": "fitnesstracker33f5545533f55455PreSignup",
           "DOMAINALLOWLIST": "amazon.com",
-          "deploymentBucketName": "amplify-fitnesstracker-main-0683c-deployment",
-          "s3Key": "amplify-builds/fitnesstracker6b0fc1196b0fc119PreSignup-555a623867446f4a3843-build.zip",
+          "deploymentBucketName": "amplify-fitnesstracker-main-a0537-deployment",
+          "s3Key": "amplify-builds/fitnesstracker33f5545533f55455PreSignup-68374859444c45627749-build.zip",
           "env": "main"
         }
       }
@@ -391,9 +391,9 @@
     "functionlognutrition": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-fitnesstracker-main-0683c-deployment/amplify-cfn-templates/function/lognutrition-cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-fitnesstracker-main-a0537-deployment/amplify-cfn-templates/function/lognutrition-cloudformation-template.json",
         "Parameters": {
-          "deploymentBucketName": "amplify-fitnesstracker-main-0683c-deployment",
+          "deploymentBucketName": "amplify-fitnesstracker-main-a0537-deployment",
           "s3Key": "amplify-builds/lognutrition-554b5263566866516c6c-build.zip",
           "apifitnesstrackerGraphQLAPIIdOutput": {
             "Fn::GetAtt": [
@@ -408,13 +408,13 @@
     "functionadmin": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-fitnesstracker-main-0683c-deployment/amplify-cfn-templates/function/admin-cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-fitnesstracker-main-a0537-deployment/amplify-cfn-templates/function/admin-cloudformation-template.json",
         "Parameters": {
-          "deploymentBucketName": "amplify-fitnesstracker-main-0683c-deployment",
-          "s3Key": "amplify-builds/admin-536f797874787247392f-build.zip",
-          "authfitnesstracker6b0fc1196b0fc119UserPoolId": {
+          "deploymentBucketName": "amplify-fitnesstracker-main-a0537-deployment",
+          "s3Key": "amplify-builds/admin-7934694b6d366c486d32-build.zip",
+          "authfitnesstracker33f5545533f55455UserPoolId": {
             "Fn::GetAtt": [
-              "authfitnesstracker6b0fc1196b0fc119",
+              "authfitnesstracker33f5545533f55455",
               "Outputs.UserPoolId"
             ]
           },
@@ -425,19 +425,19 @@
     "apifitnesstracker": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-fitnesstracker-main-0683c-deployment/amplify-cfn-templates/api/cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-fitnesstracker-main-a0537-deployment/amplify-cfn-templates/api/cloudformation-template.json",
         "Parameters": {
           "AppSyncApiName": "fitnesstracker",
           "DynamoDBBillingMode": "PAY_PER_REQUEST",
           "DynamoDBEnableServerSideEncryption": false,
           "AuthCognitoUserPoolId": {
             "Fn::GetAtt": [
-              "authfitnesstracker6b0fc1196b0fc119",
+              "authfitnesstracker33f5545533f55455",
               "Outputs.UserPoolId"
             ]
           },
-          "S3DeploymentBucket": "amplify-fitnesstracker-main-0683c-deployment",
-          "S3DeploymentRootKey": "amplify-appsync-files/96fdcde6a80859ead18d697e115cb9bd809fa98a",
+          "S3DeploymentBucket": "amplify-fitnesstracker-main-a0537-deployment",
+          "S3DeploymentRootKey": "amplify-appsync-files/67310f5f0a68cc163f9cc58da56e1409a2c21b1d",
           "env": "main"
         }
       }
@@ -445,7 +445,7 @@
     "apinutritionapi": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-fitnesstracker-main-0683c-deployment/amplify-cfn-templates/api/nutritionapi-cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-fitnesstracker-main-a0537-deployment/amplify-cfn-templates/api/nutritionapi-cloudformation-template.json",
         "Parameters": {
           "functionlognutritionName": {
             "Fn::GetAtt": [
@@ -459,9 +459,9 @@
               "Outputs.Arn"
             ]
           },
-          "authfitnesstracker6b0fc1196b0fc119UserPoolId": {
+          "authfitnesstracker33f5545533f55455UserPoolId": {
             "Fn::GetAtt": [
-              "authfitnesstracker6b0fc1196b0fc119",
+              "authfitnesstracker33f5545533f55455",
               "Outputs.UserPoolId"
             ]
           },
@@ -478,7 +478,7 @@
     "apiadminapi": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-fitnesstracker-main-0683c-deployment/amplify-cfn-templates/api/adminapi-cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-fitnesstracker-main-a0537-deployment/amplify-cfn-templates/api/adminapi-cloudformation-template.json",
         "Parameters": {
           "functionadminName": {
             "Fn::GetAtt": [
@@ -492,9 +492,9 @@
               "Outputs.Arn"
             ]
           },
-          "authfitnesstracker6b0fc1196b0fc119UserPoolId": {
+          "authfitnesstracker33f5545533f55455UserPoolId": {
             "Fn::GetAtt": [
-              "authfitnesstracker6b0fc1196b0fc119",
+              "authfitnesstracker33f5545533f55455",
               "Outputs.UserPoolId"
             ]
           },
@@ -512,7 +512,7 @@
       "DependsOn": [
         "AuthRole",
         "UnauthRole",
-        "authfitnesstracker6b0fc1196b0fc119"
+        "authfitnesstracker33f5545533f55455"
       ],
       "Type": "AWS::Lambda::Function",
       "Properties": {
@@ -622,7 +622,7 @@
         },
         "idpId": {
           "Fn::GetAtt": [
-            "authfitnesstracker6b0fc1196b0fc119",
+            "authfitnesstracker33f5545533f55455",
             "Outputs.IdentityPoolId"
           ]
         },

@@ -168,10 +168,7 @@
           "RefreshToken": "days"
         },
         "UserPoolId": "us-east-1_1rvCNKN5B"
-      },
-      "DependsOn": [
-        "amplifyAuthUserPool4BA7F805"
-      ]
+      }
     },
     "amplifyAuthUserPoolNativeAppClient79534448": {
       "Type": "AWS::Cognito::UserPoolClient",
@@ -183,10 +180,7 @@
           "RefreshToken": "days"
         },
         "UserPoolId": "us-east-1_1rvCNKN5B"
-      },
-      "DependsOn": [
-        "amplifyAuthUserPool4BA7F805"
-      ]
+      }
     },
     "amplifyAuthIdentityPool3FDE84CC": {
       "Type": "AWS::Cognito::IdentityPool",
@@ -241,10 +235,7 @@
           "unauthenticated": "arn:aws:iam::123456789012:role/amplify-backendonly-main-5e0fa-unauthRole",
           "authenticated": "arn:aws:iam::123456789012:role/amplify-backendonly-main-5e0fa-authRole"
         }
-      },
-      "DependsOn": [
-        "amplifyAuthIdentityPool3FDE84CC"
-      ]
+      }
     }
   },
   "Conditions": {

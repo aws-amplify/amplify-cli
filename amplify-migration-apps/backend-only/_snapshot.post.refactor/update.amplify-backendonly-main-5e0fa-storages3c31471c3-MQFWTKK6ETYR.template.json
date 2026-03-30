@@ -277,7 +277,6 @@
           "amplify-backendonly-main-5e0fa-authRole"
         ]
       },
-      "DependsOn": [],
       "Condition": "CreateAuthPublic"
     },
     "S3AuthProtectedPolicy": {
@@ -314,7 +313,6 @@
           "amplify-backendonly-main-5e0fa-authRole"
         ]
       },
-      "DependsOn": [],
       "Condition": "CreateAuthProtected"
     },
     "S3AuthPrivatePolicy": {
@@ -351,7 +349,6 @@
           "amplify-backendonly-main-5e0fa-authRole"
         ]
       },
-      "DependsOn": [],
       "Condition": "CreateAuthPrivate"
     },
     "S3AuthUploadPolicy": {
@@ -388,7 +385,6 @@
           "amplify-backendonly-main-5e0fa-authRole"
         ]
       },
-      "DependsOn": [],
       "Condition": "CreateAuthUploads"
     },
     "S3GuestPublicPolicy": {
@@ -425,7 +421,6 @@
           "amplify-backendonly-main-5e0fa-unauthRole"
         ]
       },
-      "DependsOn": [],
       "Condition": "CreateGuestPublic"
     },
     "S3AuthReadPolicy": {
@@ -480,7 +475,6 @@
           "amplify-backendonly-main-5e0fa-authRole"
         ]
       },
-      "DependsOn": [],
       "Condition": "AuthReadAndList"
     },
     "S3GuestReadPolicy": {
@@ -533,7 +527,6 @@
           "amplify-backendonly-main-5e0fa-unauthRole"
         ]
       },
-      "DependsOn": [],
       "Condition": "GuestReadAndList"
     }
   }

@@ -4,7 +4,7 @@ import ts from 'typescript';
 import { Planner } from '../../../planner';
 import { AmplifyMigrationOperation } from '../../../_operation';
 import { BackendGenerator } from '../backend.generator';
-import { Gen1App } from '../../_infra/gen1-app';
+import { Gen1App, DiscoveredResource } from '../../_infra/gen1-app';
 import { TS } from '../../_infra/ts';
 import { AnalyticsRenderer } from './kinesis.renderer';
 import { KinesisCfnConverter, KinesisAnalyticsDefinition } from './kinesis-cfn-converter';
@@ -22,14 +22,14 @@ export class AnalyticsKinesisGenerator implements Planner {
   private readonly gen1App: Gen1App;
   private readonly backendGenerator: BackendGenerator;
   private readonly outputDir: string;
-  private readonly resourceName: string;
+  private readonly resource: DiscoveredResource;
   private readonly renderer: AnalyticsRenderer;
 
-  public constructor(gen1App: Gen1App, backendGenerator: BackendGenerator, outputDir: string, resourceName: string) {
+  public constructor(gen1App: Gen1App, backendGenerator: BackendGenerator, outputDir: string, resource: DiscoveredResource) {
     this.gen1App = gen1App;
     this.backendGenerator = backendGenerator;
     this.outputDir = outputDir;
-    this.resourceName = resourceName;
+    this.resource = resource;
     this.renderer = new AnalyticsRenderer();
   }
 
@@ -38,24 +38,25 @@ export class AnalyticsKinesisGenerator implements Planner {
    */
   public async plan(): Promise<AmplifyMigrationOperation[]> {
     const analyticsCategory = this.gen1App.meta('analytics');
-    const resourceMeta = analyticsCategory?.[this.resourceName] as Record<string, unknown> | undefined;
+    const resourceMeta = analyticsCategory?.[this.resource.resourceName] as Record<string, unknown> | undefined;
     if (!resourceMeta) {
-      throw new Error(`Analytics resource '${this.resourceName}' not found in amplify-meta.json`);
+      throw new Error(`Analytics resource '${this.resource.resourceName}' not found in amplify-meta.json`);
     }
 
     const rootStackName = this.gen1App.rootStackName;
     const analyticsDir = path.join(this.outputDir, 'amplify', 'analytics');
 
     const definition: KinesisAnalyticsDefinition = {
-      name: this.resourceName,
+      name: this.resource.resourceName,
       service: 'Kinesis',
       providerMetadata: resourceMeta.providerMetadata as KinesisAnalyticsDefinition['providerMetadata'],
     };
 
     return [
       {
+        resource: this.resource,
         validate: () => undefined,
-        describe: async () => [`Generate amplify/analytics/${this.resourceName}/resource.ts`],
+        describe: async () => [`Generate amplify/analytics/${this.resource.resourceName}/resource.ts`],
         execute: async () => {
           const fileWriter = async (content: string, filePath: string) => {
             await fs.mkdir(path.dirname(filePath), { recursive: true });

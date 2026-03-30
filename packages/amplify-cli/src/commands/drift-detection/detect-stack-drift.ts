@@ -19,6 +19,12 @@ import type { SpinningLogger } from '../gen2-migration/_spinning-logger';
 import { extractStackNameFromId } from '../gen2-migration/refactor/utils';
 
 /**
+ * Known false-positive filters applied to Phase 1 drift results.
+ * Add new filters here instead of modifying the detection loop.
+ */
+const FALSE_POSITIVE_FILTERS = [isAmplifyAuthRoleDenyToAllowChange, isAmplifyRestApiDescriptionDrift, isAmplifyTriggerPolicyDrift] as const;
+
+/**
  * Enriched drift tree node — one per stack (root or nested)
  */
 export interface StackDriftNode {
@@ -92,16 +98,16 @@ export async function detectStackDrift(
     if (page.StackResourceDrifts) allDrifts.push(...page.StackResourceDrifts);
   }
 
-  // Filter out known Amplify Auth IdP Deny→Allow changes
+  // Filter out known Amplify-introduced false positives
   const filteredDrifts = allDrifts.map((drift) => {
     if (
       drift.StackResourceDriftStatus === StackResourceDriftStatus.MODIFIED &&
       drift.PropertyDifferences &&
       drift.PropertyDifferences.length > 0
     ) {
-      drift.PropertyDifferences = drift.PropertyDifferences.filter((propDiff) => {
-        return !isAmplifyAuthRoleDenyToAllowChange(propDiff, print);
-      });
+      drift.PropertyDifferences = drift.PropertyDifferences.filter(
+        (propDiff) => !FALSE_POSITIVE_FILTERS.some((filter) => filter(drift, propDiff, print)),
+      );
 
       if (drift.PropertyDifferences.length === 0) {
         drift.StackResourceDriftStatus = StackResourceDriftStatus.IN_SYNC;
@@ -116,7 +122,7 @@ export async function detectStackDrift(
 /**
  * Check if a property difference is an Amplify auth role Deny→Allow change (intended drift)
  */
-function isAmplifyAuthRoleDenyToAllowChange(propDiff: PropertyDifference, print: SpinningLogger): boolean {
+function isAmplifyAuthRoleDenyToAllowChange(_drift: StackResourceDrift, propDiff: PropertyDifference, print: SpinningLogger): boolean {
   // Check if this is an AssumeRolePolicyDocument change
   if (!propDiff.PropertyPath || !propDiff.PropertyPath.includes('AssumeRolePolicyDocument')) {
     return false;
@@ -163,7 +169,63 @@ function isAmplifyAuthRoleDenyToAllowChange(propDiff: PropertyDifference, print:
 }
 
 /**
- * Wait for a drift detection operation to complete
+ * Check if a property difference is a REST API Description false positive.
+ * Amplify may set Description during template generation but the deployed
+ * resource reports it differently (or as null).
+ */
+export function isAmplifyRestApiDescriptionDrift(drift: StackResourceDrift, propDiff: PropertyDifference, print: SpinningLogger): boolean {
+  if (drift.ResourceType !== 'AWS::ApiGateway::RestApi') return false;
+  if (!propDiff.PropertyPath || propDiff.PropertyPath !== '/Description') return false;
+
+  // The known false positive: actual is null, expected is empty
+  if (propDiff.ActualValue === 'null' && propDiff.ExpectedValue === '') {
+    print.debug(`Filtering false positive: REST API Description drift on ${drift.LogicalResourceId}`);
+    return true;
+  }
+
+  return false;
+}
+
+/**
+ * Check if a property difference is an Amplify trigger policy false positive.
+ * Auth triggers and S3 storage triggers dynamically attach IAM policies to
+ * Lambda execution roles during push. These appear as /Policies/N diffs where
+ * ExpectedValue is null and ActualValue contains a known Amplify policy.
+ */
+export function isAmplifyTriggerPolicyDrift(drift: StackResourceDrift, propDiff: PropertyDifference, print: SpinningLogger): boolean {
+  if (drift.ResourceType !== 'AWS::IAM::Role') return false;
+  if (!propDiff.PropertyPath || !/\/Policies\/\d+/.test(propDiff.PropertyPath)) return false;
+
+  // The template has null, the deployed resource has the policy
+  if (propDiff.ExpectedValue !== 'null') return false;
+
+  try {
+    const actualPolicy = JSON.parse(propDiff.ActualValue ?? '');
+    const policyName: string = actualPolicy.PolicyName;
+    const policyDoc = JSON.parse(actualPolicy.PolicyDocument as string);
+    const actions = new Set(policyDoc.Statement.flatMap((s) => [s.Action].flat()));
+
+    // Auth trigger policies: known Cognito trigger policy pattern
+    const cognitoActions = ['cognito-idp:AdminAddUserToGroup', 'cognito-idp:GetGroup', 'cognito-idp:CreateGroup'];
+    const isCognitoTriggerPolicy = policyName === 'AddToGroupCognito' && cognitoActions.every((a) => actions.has(a));
+
+    // S3 storage trigger policies: known S3 trigger policy pattern
+    const s3Actions = ['s3:ListBucket', 's3:PutObject', 's3:GetObject', 's3:DeleteObject'];
+    const isS3TriggerPolicy = policyName === 'amplify-lambda-execution-policy-storage' && s3Actions.every((a) => actions.has(a));
+
+    if (isCognitoTriggerPolicy || isS3TriggerPolicy) {
+      print.debug(`Filtering false positive: trigger policy drift on ${drift.LogicalResourceId} (${policyName})`);
+      return true;
+    }
+  } catch (e: any) {
+    print.debug(`Failed to parse trigger policy JSON: ${e.message || 'Unknown error'}`);
+    return false;
+  }
+
+  return false;
+}
+
+/**
  * Based on CDK's polling strategy: 5-minute timeout, 2-second polling interval, 10-second user feedback
  */
 async function waitForDriftDetection(

@@ -1,3 +1,5 @@
+Needs manual edits to enable Kinesis.
+
 # Mood Board App (Amplify Gen1)
 
 ![](./images/app.png)

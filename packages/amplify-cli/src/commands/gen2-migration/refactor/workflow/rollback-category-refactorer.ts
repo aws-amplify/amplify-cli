@@ -1,60 +1,56 @@
-import { GetTemplateCommand } from '@aws-sdk/client-cloudformation';
+import { ResourceMapping } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
-import { CFNResource, CFNTemplate } from '../../cfn-template';
+import { CFNResource } from '../../cfn-template';
 import { AmplifyMigrationOperation } from '../../_operation';
 import { resolveParameters } from '../resolvers/cfn-parameter-resolver';
 import { resolveOutputs } from '../resolvers/cfn-output-resolver';
 import { resolveDependencies } from '../resolvers/cfn-dependency-resolver';
 import { extractStackNameFromId } from '../utils';
-import { getHoldingStackName, findHoldingStack, deleteHoldingStack } from '../holding-stack';
-import { tryUpdateStack } from '../cfn-stack-updater';
-import { tryRefactorStack, RefactorFailure } from '../cfn-stack-refactor-updater';
-import {
-  CategoryRefactorer,
-  MIGRATION_PLACEHOLDER_LOGICAL_ID,
-  PLACEHOLDER_RESOURCE,
-  MoveMapping,
-  RefactorBlueprint,
-  ResolvedStack,
-  ResourceMapping,
-} from './category-refactorer';
+import { CategoryRefactorer, ResolvedStack } from './category-refactorer';
+import { MIGRATION_PLACEHOLDER_LOGICAL_ID } from '../cfn';
 
 /**
  * Rollback direction base: moves resources from Gen2 (source) back to Gen1 (target).
  *
  * resolveSource: Gen2 resolution — params → outputs → deps
  * resolveTarget: Gen1 — reads template as-is, no resolution needed
- * beforeMovePlan: empty
- * afterMovePlan: restores holding stack resources into Gen2, deletes holding stack
- *
- * Does NOT pre-update stacks (overrides updateSource/updateTarget to return []).
+ * beforeMove: empty
+ * afterMove: restores holding stack resources into Gen2
  */
 export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
   /**
-   * Map of CFN resource type → Gen1 logical resource ID.
-   * Subclasses override this with their category-specific map.
-   * Used by the default buildResourceMappings implementation.
+   * Maps Gen2 source resources to Gen1 target logical IDs via targetLogicalId().
+   * Skips resources that already exist in the target stack.
    */
-  protected readonly gen1LogicalIds: ReadonlyMap<string, string> = new Map();
-
-  /**
-   * Default rollback mapping: looks up Gen1 logical ID by resource type.
-   * Throws AmplifyError if a source resource's type is not in gen1LogicalIds.
-   * Auth overrides this entirely.
-   */
-  protected buildResourceMappings(sourceResources: Map<string, CFNResource>, _targetResources: Map<string, CFNResource>): MoveMapping[] {
-    const mappings: MoveMapping[] = [];
+  protected async buildResourceMappings(
+    sourceResources: Map<string, CFNResource>,
+    targetResources: Map<string, CFNResource>,
+    sourceStackId: string,
+    targetStackId: string,
+  ): Promise<ResourceMapping[]> {
+    const mappings: ResourceMapping[] = [];
     for (const [sourceId, resource] of sourceResources) {
-      const gen1LogicalId = this.gen1LogicalIds.get(resource.Type);
+      const gen1LogicalId = this.targetLogicalId(sourceId, resource);
       if (!gen1LogicalId) {
-        throw new AmplifyError('InvalidStackError', {
-          message: `No known Gen1 logical ID for resource type '${resource.Type}' (source: '${sourceId}')`,
+        throw new AmplifyError('MigrationError', {
+          message: `Failed building mappings: Unable to determine target id of resource ${sourceId} (${resource.Type})`,
         });
       }
-      mappings.push({ sourceId, targetId: gen1LogicalId, resource });
+      if (targetResources.has(gen1LogicalId)) {
+        continue;
+      }
+      mappings.push({
+        Source: { StackName: sourceStackId, LogicalResourceId: sourceId },
+        Destination: { StackName: targetStackId, LogicalResourceId: gen1LogicalId },
+      });
     }
     return mappings;
   }
+
+  /**
+   * Returns the Gen1 logical ID for a Gen2 resource. Sub-classes implement per category.
+   */
+  protected abstract targetLogicalId(sourceId: string, sourceResource: CFNResource): string | undefined;
 
   /**
    * Resolves the Gen2 source stack template for rollback.
@@ -63,11 +59,9 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
   protected async resolveSource(stackId: string): Promise<ResolvedStack> {
     const facade = this.gen2Branch;
     const originalTemplate = await facade.fetchTemplate(stackId);
-    const description = await facade.fetchStackDescription(stackId);
+    const description = await facade.fetchStack(stackId);
     const parameters = description.Parameters ?? [];
     const outputs = description.Outputs ?? [];
-
-    const resourceIds = [...this.filterResourcesByType(originalTemplate).keys()];
 
     const withParams = resolveParameters(originalTemplate, parameters);
     const stackResources = await facade.fetchStackResources(stackId);
@@ -78,7 +72,7 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
       region: this.region,
       accountId: this.accountId,
     });
-    const resolved = resolveDependencies(withOutputs, resourceIds);
+    const resolved = resolveDependencies(withOutputs);
 
     return { stackId, resolvedTemplate: resolved, parameters };
   }
@@ -89,117 +83,100 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
   protected async resolveTarget(stackId: string): Promise<ResolvedStack> {
     const facade = this.gen1Env;
     const originalTemplate = await facade.fetchTemplate(stackId);
-    const description = await facade.fetchStackDescription(stackId);
+    const description = await facade.fetchStack(stackId);
     const parameters = description.Parameters ?? [];
 
     return { stackId, resolvedTemplate: originalTemplate, parameters };
   }
 
-  protected override updateSource(): AmplifyMigrationOperation[] {
-    return [];
-  }
-
-  protected override updateTarget(): AmplifyMigrationOperation[] {
-    return [];
-  }
-
   /**
    * Rollback: no pre-move operations.
    */
-  protected beforeMovePlan(_blueprint: RefactorBlueprint): AmplifyMigrationOperation[] {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  protected async beforeMove(_gen2StackId: string): Promise<AmplifyMigrationOperation[]> {
     return [];
   }
 
   /**
-   * Restores holding stack resources into Gen2 and deletes the holding stack.
+   * Restores holding stack resources into Gen2.
+   * Templates are fetched fresh at execution time.
    */
-  protected async afterMovePlan(blueprint: RefactorBlueprint): Promise<AmplifyMigrationOperation[]> {
-    const gen2StackId = blueprint.source.stackId;
-    const holdingStackName = getHoldingStackName(extractStackNameFromId(gen2StackId));
+  protected async afterMove(gen2StackId: string): Promise<AmplifyMigrationOperation[]> {
+    const gen2StackName = extractStackNameFromId(gen2StackId);
+    const holdingStackName = this.getHoldingStackName(gen2StackName);
 
-    const holdingStack = await findHoldingStack(this.clients.cloudFormation, holdingStackName);
-    if (!holdingStack) return [];
+    this.debug(`Locating holding stack: ${holdingStackName}`);
+    const holdingStack = await this.cfn.findStack(holdingStackName);
+    if (!holdingStack) {
+      this.debug(`Holding stack ${holdingStackName} not found. Nothing to do.`);
+      return [];
+    }
 
-    const holdingTemplateResponse = await this.clients.cloudFormation.send(
-      new GetTemplateCommand({ StackName: holdingStackName, TemplateStage: 'Original' }),
-    );
-    if (!holdingTemplateResponse.TemplateBody) {
-      throw new AmplifyError('InvalidStackError', {
-        message: `Holding stack '${holdingStackName}' returned an empty template`,
+    if (holdingStack.StackStatus === 'REVIEW_IN_PROGRESS') {
+      return [
+        {
+          resource: this.resource,
+          validate: () => undefined,
+          describe: async () => [`Delete stale holding stack '${extractStackNameFromId(holdingStackName)}'`],
+          execute: async () => {
+            await this.cfn.deleteStack(holdingStackName, this.resource);
+          },
+        },
+      ];
+    }
+
+    this.debug(`Fetching template of holding stack: ${holdingStackName}`);
+    const holdingStackTemplate = await this.gen2Branch.fetchTemplate(holdingStackName);
+    const resources = this.filterResourcesByType(holdingStackTemplate);
+    this.debug(`Found ${resources.size} resources to move from stack: ${holdingStackName}`);
+
+    const gen2Template = await this.gen2Branch.fetchTemplate(gen2StackName);
+
+    const resourceMappings: ResourceMapping[] = [];
+    for (const logicalId of resources.keys()) {
+      if (logicalId in gen2Template.Resources) {
+        throw new AmplifyError('MigrationError', {
+          message: `Resource '${logicalId}' already exists in Gen2 stack '${gen2StackName}' — the Gen2 → Gen1 move should have removed it`,
+        });
+      }
+      this.debug(`Registering ${logicalId} to move from ${holdingStackName} to ${gen2StackName}`);
+      resourceMappings.push({
+        Source: { StackName: holdingStackName, LogicalResourceId: logicalId },
+        Destination: { StackName: gen2StackName, LogicalResourceId: logicalId },
       });
     }
-    const holdingTemplate = JSON.parse(holdingTemplateResponse.TemplateBody) as CFNTemplate;
 
-    const resourcesToRestore = Object.entries(holdingTemplate.Resources).filter(([id]) => id !== MIGRATION_PLACEHOLDER_LOGICAL_ID);
-    if (resourcesToRestore.length === 0) {
-      return [this.buildDeleteHoldingStackOp(holdingStackName)];
+    if (resourceMappings.length === 0) {
+      this.debug(`No resources were registered for move from ${holdingStackName} to ${gen2StackName}. Nothing to do.`);
+      return [];
     }
-
-    const holdingWithPlaceholder: CFNTemplate = {
-      ...holdingTemplate,
-      Resources: { [MIGRATION_PLACEHOLDER_LOGICAL_ID]: PLACEHOLDER_RESOURCE, ...holdingTemplate.Resources },
-    };
-
-    const restoreTarget = JSON.parse(JSON.stringify(blueprint.source.afterRemoval)) as CFNTemplate;
-    for (const [logicalId, resource] of resourcesToRestore) {
-      restoreTarget.Resources[logicalId] = resource;
-    }
-
-    const emptyHolding: CFNTemplate = {
-      AWSTemplateFormatVersion: '2010-09-09',
-      Description: 'Temporary holding stack for Gen2 migration',
-      Resources: { [MIGRATION_PLACEHOLDER_LOGICAL_ID]: PLACEHOLDER_RESOURCE },
-      Outputs: {},
-    };
-
-    const restoreMappings: ResourceMapping[] = resourcesToRestore.map(([logicalId]) => ({
-      Source: { StackName: extractStackNameFromId(holdingStackName), LogicalResourceId: logicalId },
-      Destination: { StackName: extractStackNameFromId(gen2StackId), LogicalResourceId: logicalId },
-    }));
 
     return [
       {
+        resource: this.resource,
         validate: () => undefined,
-        describe: async () => [`Update ${holdingStackName} to include placeholder resource`],
-        execute: async () => {
-          await tryUpdateStack({
-            cfnClient: this.clients.cloudFormation,
-            stackName: holdingStackName,
-            parameters: [],
-            templateBody: holdingWithPlaceholder,
-          });
+        describe: async () => {
+          const header = `Move ${resourceMappings.length} resource(s) from '${extractStackNameFromId(
+            holdingStackName,
+          )}' to '${extractStackNameFromId(gen2StackName)}'`;
+          const table = this.renderMappingTable(resourceMappings);
+          return [`${header}\n\n${table}`];
         },
-      },
-      {
-        validate: () => undefined,
-        describe: async () => [`Restore ${resourcesToRestore.length} resource(s) from holding stack to Gen2`],
         execute: async () => {
-          const result = await tryRefactorStack(this.clients.cloudFormation, {
-            StackDefinitions: [
-              { TemplateBody: JSON.stringify(emptyHolding), StackName: holdingStackName },
-              { TemplateBody: JSON.stringify(restoreTarget), StackName: gen2StackId },
-            ],
-            ResourceMappings: restoreMappings,
-          });
-          if (!result.success) {
-            const failure = result as RefactorFailure;
-            throw new AmplifyError('StackStateError', {
-              message: `Failed to restore Gen2 resources from holding stack: ${failure.reason}`,
-            });
+          await this.cfn.refactor(resourceMappings, this.resource);
+
+          // this needs to happen here instead of during planning because
+          // each refactorer moves its own resources out of the holding stack.
+          const holdingStack = await this.cfn.findStack(holdingStackName);
+          if (holdingStack) {
+            const holdingStackTemplate = await this.cfn.fetchTemplate(holdingStackName);
+            const holdingStackResourceIds = Object.keys(holdingStackTemplate.Resources);
+            if (holdingStackResourceIds.length === 1 && holdingStackResourceIds[0] === MIGRATION_PLACEHOLDER_LOGICAL_ID) {
+              await this.cfn.deleteStack(holdingStackName, this.resource);
+            }
           }
         },
       },
-      this.buildDeleteHoldingStackOp(holdingStackName),
     ];
-  }
-
-  private buildDeleteHoldingStackOp(holdingStackName: string): AmplifyMigrationOperation {
-    return {
-      validate: () => undefined,
-      describe: async () => [`Delete holding stack '${holdingStackName}'`],
-      execute: async () => {
-        await deleteHoldingStack(this.clients.cloudFormation, holdingStackName);
-      },
-    };
   }
 }

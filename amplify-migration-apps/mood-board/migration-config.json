@@ -1,0 +1,49 @@
+{
+  "app": {
+    "name": "mood-board",
+    "description": "Visual board app with emoji generator, Kinesis analytics, and S3 image storage",
+    "framework": "react"
+  },
+  "categories": {
+    "auth": {
+      "signInMethods": ["email"],
+      "socialProviders": []
+    },
+    "api": {
+      "type": "GraphQL",
+      "schema": "schema.graphql",
+      "authModes": ["API_KEY", "COGNITO_USER_POOLS"],
+      "customQueries": ["getRandomEmoji", "getKinesisEvents"]
+    },
+    "storage": {
+      "buckets": [
+        {
+          "name": "moodboardStorage",
+          "access": ["auth", "guest"]
+        }
+      ]
+    },
+    "function": {
+      "functions": [
+        {
+          "name": "moodboardGetRandomEmoji",
+          "runtime": "nodejs",
+          "template": "hello-world"
+        },
+        {
+          "name": "moodboardKinesisReader",
+          "runtime": "nodejs",
+          "template": "hello-world"
+        }
+      ]
+    },
+    "hosting": {
+      "type": "amplify-console"
+    },
+    "analytics": {
+      "type": "kinesis",
+      "name": "moodboardKinesis",
+      "shards": 1
+    }
+  }
+}

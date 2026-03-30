@@ -98,7 +98,6 @@ export class AmplifyGen2MigrationValidations {
     const statefulRemoves: Array<{ category: string; resourceType: string; physicalId: string }> = [];
     for (const change of changeSet.Changes) {
       if (change.Type === 'Resource' && change.ResourceChange?.Action === 'Remove' && change.ResourceChange?.ResourceType) {
-        // Skip deployment bucket only when explicitly requested (e.g., during decommission)
         if (
           deploymentBucketName &&
           change.ResourceChange.ResourceType === 'AWS::S3::Bucket' &&

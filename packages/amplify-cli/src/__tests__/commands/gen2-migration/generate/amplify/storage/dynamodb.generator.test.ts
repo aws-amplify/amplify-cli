@@ -23,7 +23,12 @@ describe('DynamoDBGenerator', () => {
     const gen1App = createMockGen1App();
     (gen1App.meta as jest.Mock).mockReturnValue(undefined);
 
-    const generator = new DynamoDBGenerator(gen1App, backendGenerator, 'myTable', false);
+    const generator = new DynamoDBGenerator(gen1App, backendGenerator, {
+      category: 'storage',
+      resourceName: 'myTable',
+      service: 'DynamoDB',
+      key: 'storage:DynamoDB',
+    });
 
     await expect(generator.plan()).rejects.toThrow();
   });
@@ -34,7 +39,12 @@ describe('DynamoDBGenerator', () => {
       otherTable: { service: 'DynamoDB' },
     });
 
-    const generator = new DynamoDBGenerator(gen1App, backendGenerator, 'myTable', false);
+    const generator = new DynamoDBGenerator(gen1App, backendGenerator, {
+      category: 'storage',
+      resourceName: 'myTable',
+      service: 'DynamoDB',
+      key: 'storage:DynamoDB',
+    });
 
     await expect(generator.plan()).rejects.toThrow();
   });
@@ -54,7 +64,12 @@ describe('DynamoDBGenerator', () => {
       ProvisionedThroughput: {},
     });
 
-    const generator = new DynamoDBGenerator(gen1App, backendGenerator, 'myTable', false);
+    const generator = new DynamoDBGenerator(gen1App, backendGenerator, {
+      category: 'storage',
+      resourceName: 'myTable',
+      service: 'DynamoDB',
+      key: 'storage:DynamoDB',
+    });
     const ops = await generator.plan();
 
     expect(ops).toHaveLength(1);
@@ -81,37 +96,18 @@ describe('DynamoDBGenerator', () => {
     const createDynamoDBStackSpy = jest.spyOn(backendGenerator, 'createDynamoDBStack');
     const addEarlyStatementSpy = jest.spyOn(backendGenerator, 'addEarlyStatement');
 
-    const generator = new DynamoDBGenerator(gen1App, backendGenerator, 'myTable', false);
+    const generator = new DynamoDBGenerator(gen1App, backendGenerator, {
+      category: 'storage',
+      resourceName: 'myTable',
+      service: 'DynamoDB',
+      key: 'storage:DynamoDB',
+    });
     const ops = await generator.plan();
     await ops[0].execute();
 
     expect(addImportSpy).toHaveBeenCalledWith('aws-cdk-lib/aws-dynamodb', expect.arrayContaining(['Table', 'AttributeType']));
     expect(createDynamoDBStackSpy).toHaveBeenCalledWith('myTable');
     expect(addEarlyStatementSpy).toHaveBeenCalled();
-  });
-
-  it('creates per-table stack regardless of hasS3Bucket flag', async () => {
-    const gen1App = createMockGen1App();
-    (gen1App.meta as jest.Mock).mockReturnValue({
-      myTable: {
-        service: 'DynamoDB',
-        output: { Name: 'myTable-abc123' },
-      },
-    });
-    (gen1App.aws.fetchTableDescription as jest.Mock).mockResolvedValue({
-      KeySchema: [{ AttributeName: 'id', KeyType: 'HASH' }],
-      AttributeDefinitions: [{ AttributeName: 'id', AttributeType: 'S' }],
-      BillingModeSummary: { BillingMode: 'PAY_PER_REQUEST' },
-      ProvisionedThroughput: {},
-    });
-
-    const createDynamoDBStackSpy = jest.spyOn(backendGenerator, 'createDynamoDBStack');
-
-    const generator = new DynamoDBGenerator(gen1App, backendGenerator, 'myTable', true);
-    const ops = await generator.plan();
-    await ops[0].execute();
-
-    expect(createDynamoDBStackSpy).toHaveBeenCalledWith('myTable');
   });
 
   it('throws when table is not found in AWS', async () => {
@@ -124,7 +120,12 @@ describe('DynamoDBGenerator', () => {
     });
     (gen1App.aws.fetchTableDescription as jest.Mock).mockResolvedValue(undefined);
 
-    const generator = new DynamoDBGenerator(gen1App, backendGenerator, 'myTable', false);
+    const generator = new DynamoDBGenerator(gen1App, backendGenerator, {
+      category: 'storage',
+      resourceName: 'myTable',
+      service: 'DynamoDB',
+      key: 'storage:DynamoDB',
+    });
 
     await expect(generator.plan()).rejects.toThrow("DynamoDB table 'myTable-abc123' not found");
   });
@@ -155,7 +156,12 @@ describe('DynamoDBGenerator', () => {
 
     const addEarlyStatementSpy = jest.spyOn(backendGenerator, 'addEarlyStatement');
 
-    const generator = new DynamoDBGenerator(gen1App, backendGenerator, 'myTable', false);
+    const generator = new DynamoDBGenerator(gen1App, backendGenerator, {
+      category: 'storage',
+      resourceName: 'myTable',
+      service: 'DynamoDB',
+      key: 'storage:DynamoDB',
+    });
     const ops = await generator.plan();
     await ops[0].execute();
 
@@ -185,8 +191,18 @@ describe('DynamoDBGenerator', () => {
 
     const createDynamoDBStackSpy = jest.spyOn(backendGenerator, 'createDynamoDBStack');
 
-    const gen1 = new DynamoDBGenerator(gen1App, backendGenerator, 'activity', false);
-    const gen2 = new DynamoDBGenerator(gen1App, backendGenerator, 'bookmarks', false);
+    const gen1 = new DynamoDBGenerator(gen1App, backendGenerator, {
+      category: 'storage',
+      resourceName: 'activity',
+      service: 'DynamoDB',
+      key: 'storage:DynamoDB',
+    });
+    const gen2 = new DynamoDBGenerator(gen1App, backendGenerator, {
+      category: 'storage',
+      resourceName: 'bookmarks',
+      service: 'DynamoDB',
+      key: 'storage:DynamoDB',
+    });
 
     const ops1 = await gen1.plan();
     await ops1[0].execute();
@@ -212,7 +228,12 @@ describe('DynamoDBGenerator', () => {
       ProvisionedThroughput: {},
     });
 
-    const generator = new DynamoDBGenerator(gen1App, backendGenerator, 'myTable', false);
+    const generator = new DynamoDBGenerator(gen1App, backendGenerator, {
+      category: 'storage',
+      resourceName: 'myTable',
+      service: 'DynamoDB',
+      key: 'storage:DynamoDB',
+    });
     const ops = await generator.plan();
 
     expect(ops).toHaveLength(1);

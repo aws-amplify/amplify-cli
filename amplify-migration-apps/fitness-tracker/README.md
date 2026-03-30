@@ -300,30 +300,6 @@ npx amplify gen2-migration generate
 + branchName: "gen2-main"
 ```
 
-**Edit in `./amplify/backend.ts`:**
-
-Navigate to the Amplify Console to find the `<gen1-rest-api-id>` and `<gen1-root-resource-id>` on the ApiGateway AWS Console. For example:
-
-![](./images/gen1-rest-api-id.png)
-![](./images/gen1-root-resource-id.png)
-
-```diff
-+ const gen1RestApi = RestApi.fromRestApiAttributes(restApiStack, "Gen1RestApi", {
-+     restApiId: '<gen1-rest-api-id>',
-+     rootResourceId: '<gen1-root-resource-id>',
-+ })
-+ const gen1RestApiPolicy = new Policy(restApiStack, "Gen1RestApiPolicy", {
-+     statements: [
-+         new PolicyStatement({
-+             actions: ["execute-api:Invoke"],
-+             resources: [`${gen1RestApi.arnForExecuteApi("*", "/*")}`]
-+         })
-+     ]
-+ });
-+ backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(gen1RestApiPolicy);
-```
-
-
 **Edit in `./amplify/function/lognutrition/resource.ts`:**
 
 ```diff
@@ -488,10 +464,6 @@ Now connect the `gen2-main` branch to the hosting service:
 
 ![](./images/add-gen2-main-branch.png)
 ![](./images/deploying-gen2-main-branch.png)
-
-> Note: REST API currently cannot be accessed via the Gen2 app due to some CORS misconfiguration that is 
-unrelated to the automatic migration process. It is likely a problem with the manually written REST API definitions 
-and needs to be addressed for the app to fully work.
 
 Wait for the deployment to finish successfully. Next, locate the root stack of the Gen2 branch:
 

@@ -14,11 +14,12 @@ import {
 } from '@aws-sdk/client-cloudformation';
 import { removeEnvFromCloud } from '../../extensions/amplify-helpers/remove-env-from-cloud';
 import { invokeDeleteEnvParamsFromService } from '../../extensions/amplify-helpers/invoke-delete-env-params';
-import { deleteHoldingStack, HOLDING_STACK_SUFFIX } from './refactor/holding-stack';
+import { Cfn, HOLDING_STACK_NAME_SUFFIX } from './refactor/cfn';
 
 export class AmplifyMigrationDecommissionStep extends AmplifyMigrationStep {
   public async forward(): Promise<Plan> {
     const cfnClient = new CloudFormationClient({ region: this.region });
+    const cfn = new Cfn(cfnClient, this.logger);
     const holdingStacks = await this.findHoldingStacks(cfnClient);
 
     const operations: AmplifyMigrationOperation[] = [];
@@ -36,7 +37,7 @@ export class AmplifyMigrationDecommissionStep extends AmplifyMigrationStep {
         describe: async () => [`Delete holding stack: ${stackName}`],
         execute: async () => {
           this.logger.info(`Deleting holding stack: ${stackName}`);
-          await deleteHoldingStack(cfnClient, stackName);
+          await cfn.deleteStack(stackName);
           this.logger.info(`Deleted holding stack: ${stackName}`);
         },
       });
@@ -99,7 +100,7 @@ export class AmplifyMigrationDecommissionStep extends AmplifyMigrationStep {
     );
     for await (const page of paginator) {
       for (const stack of page.StackSummaries ?? []) {
-        if (stack.StackName?.endsWith(HOLDING_STACK_SUFFIX) && stack.StackName.includes(this.appId)) {
+        if (stack.StackName?.endsWith(HOLDING_STACK_NAME_SUFFIX) && stack.StackName.includes(this.appId)) {
           holdingStacks.push(stack.StackName);
         }
       }

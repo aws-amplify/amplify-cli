@@ -1,3 +1,5 @@
+import { DiscoveredResource } from './generate/_infra/gen1-app';
+
 /**
  * Result of a validation check.
  */
@@ -33,6 +35,12 @@ export interface Validation {
  * Interface for atomic operations that can be executed as part of a migration step.
  */
 export interface AmplifyMigrationOperation {
+  /**
+   * The discovered resource this operation belongs to, if any.
+   * Used by Plan.describe() to group operations by resource.
+   */
+  readonly resource?: DiscoveredResource;
+
   /**
    * Returns human-readable strings describing what the operation will do.
    */
