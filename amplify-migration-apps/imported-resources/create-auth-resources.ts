@@ -1,11 +1,23 @@
-import { execSync } from 'child_process';
+/**
+ * Creates Cognito auth resources (User Pool, Identity Pool, IAM roles)
+ * outside of Amplify, for use with `amplify import auth`.
+ */
+
+import {
+  CognitoIdentityProviderClient,
+  CreateUserPoolCommand,
+  DescribeUserPoolCommand,
+  CreateUserPoolClientCommand,
+} from '@aws-sdk/client-cognito-identity-provider';
+import {
+  CognitoIdentityClient,
+  CreateIdentityPoolCommand,
+  SetIdentityPoolRolesCommand,
+} from '@aws-sdk/client-cognito-identity';
+import { IAMClient, CreateRoleCommand } from '@aws-sdk/client-iam';
 
 const DEFAULT_REGION = 'us-east-1';
 const DEFAULT_PREFIX = 'importedresources';
-
-function awsCli(args: string): string {
-  return execSync(`aws ${args}`, { encoding: 'utf-8' }).trim();
-}
 
 function parseArgs(): { region: string; prefix: string } {
   const args = process.argv.slice(2);
@@ -25,24 +37,25 @@ function parseArgs(): { region: string; prefix: string } {
   return { region, prefix };
 }
 
-function createUserPool(region: string, prefix: string): { id: string; arn: string } {
+async function createUserPool(
+  client: CognitoIdentityProviderClient,
+  prefix: string,
+): Promise<{ id: string; arn: string }> {
   console.log('\nCreating User Pool...');
-  const id = awsCli([
-    `cognito-idp create-user-pool`,
-    `--pool-name "${prefix}_userpool"`,
-    `--region ${region}`,
-    `--username-attributes email`,
-    `--username-configuration CaseSensitive=false`,
-    `--auto-verified-attributes email`,
-    `--mfa-configuration OFF`,
-    `--verification-message-template '${JSON.stringify({
+  const { UserPool } = await client.send(new CreateUserPoolCommand({
+    PoolName: `${prefix}_userpool`,
+    UsernameAttributes: ['email'],
+    UsernameConfiguration: { CaseSensitive: false },
+    AutoVerifiedAttributes: ['email'],
+    MfaConfiguration: 'OFF',
+    VerificationMessageTemplate: {
       DefaultEmailOption: 'CONFIRM_WITH_CODE',
       EmailMessage: 'Your verification code is {####}',
       EmailSubject: 'Your verification code',
       SmsMessage: 'The verification code to your new account is {####}',
-    })}'`,
-    `--schema '${JSON.stringify([{ Name: 'email', Required: true, Mutable: true, AttributeDataType: 'String' }])}'`,
-    `--policies '${JSON.stringify({
+    },
+    Schema: [{ Name: 'email', Required: true, Mutable: true, AttributeDataType: 'String' }],
+    Policies: {
       PasswordPolicy: {
         MinimumLength: 8,
         RequireUppercase: false,
@@ -51,82 +64,80 @@ function createUserPool(region: string, prefix: string): { id: string; arn: stri
         RequireSymbols: false,
         TemporaryPasswordValidityDays: 7,
       },
-    })}'`,
-    `--admin-create-user-config AllowAdminCreateUserOnly=false`,
-    `--account-recovery-setting '${JSON.stringify({
+    },
+    AdminCreateUserConfig: { AllowAdminCreateUserOnly: false },
+    AccountRecoverySetting: {
       RecoveryMechanisms: [{ Name: 'verified_email', Priority: 1 }],
-    })}'`,
-    `--user-attribute-update-settings '${JSON.stringify({
+    },
+    UserAttributeUpdateSettings: {
       AttributesRequireVerificationBeforeUpdate: ['email'],
-    })}'`,
-    `--query 'UserPool.Id'`,
-    `--output text`,
-  ].join(' '));
+    },
+  }));
 
+  const id = UserPool!.Id!;
   console.log(`User Pool created: ${id}`);
 
-  const arn = awsCli([
-    `cognito-idp describe-user-pool`,
-    `--user-pool-id ${id}`,
-    `--region ${region}`,
-    `--query 'UserPool.Arn'`,
-    `--output text`,
-  ].join(' '));
+  const { UserPool: described } = await client.send(
+    new DescribeUserPoolCommand({ UserPoolId: id }),
+  );
 
-  return { id, arn };
+  return { id, arn: described!.Arn! };
 }
 
-function createUserPoolClient(
-  region: string,
+async function createUserPoolClient(
+  client: CognitoIdentityProviderClient,
   userPoolId: string,
   clientName: string,
-): string {
+): Promise<string> {
   console.log(`\nCreating App Client: ${clientName}...`);
-  const clientId = awsCli([
-    `cognito-idp create-user-pool-client`,
-    `--user-pool-id ${userPoolId}`,
-    `--region ${region}`,
-    `--client-name "${clientName}"`,
-    `--no-generate-secret`,
-    `--explicit-auth-flows ALLOW_CUSTOM_AUTH ALLOW_USER_SRP_AUTH ALLOW_REFRESH_TOKEN_AUTH`,
-    `--supported-identity-providers COGNITO`,
-    `--prevent-user-existence-errors ENABLED`,
-    `--refresh-token-validity 30`,
-    `--token-validity-units '${JSON.stringify({ RefreshToken: 'days' })}'`,
-    `--read-attributes email`,
-    `--write-attributes email`,
-    `--query 'UserPoolClient.ClientId'`,
-    `--output text`,
-  ].join(' '));
+  const { UserPoolClient } = await client.send(new CreateUserPoolClientCommand({
+    UserPoolId: userPoolId,
+    ClientName: clientName,
+    GenerateSecret: false,
+    ExplicitAuthFlows: ['ALLOW_CUSTOM_AUTH', 'ALLOW_USER_SRP_AUTH', 'ALLOW_REFRESH_TOKEN_AUTH'],
+    SupportedIdentityProviders: ['COGNITO'],
+    PreventUserExistenceErrors: 'ENABLED',
+    RefreshTokenValidity: 30,
+    TokenValidityUnits: { RefreshToken: 'days' },
+    ReadAttributes: ['email'],
+    WriteAttributes: ['email'],
+  }));
 
+  const clientId = UserPoolClient!.ClientId!;
   console.log(`App Client created: ${clientId}`);
   return clientId;
 }
 
-function createIdentityPool(
+async function createIdentityPool(
+  client: CognitoIdentityClient,
   region: string,
   prefix: string,
   userPoolId: string,
   webClientId: string,
   nativeClientId: string,
-): string {
+): Promise<string> {
   console.log('\nCreating Identity Pool...');
   const providerName = `cognito-idp.${region}.amazonaws.com/${userPoolId}`;
-  const identityPoolId = awsCli([
-    `cognito-identity create-identity-pool`,
-    `--identity-pool-name "${prefix}_identitypool"`,
-    `--region ${region}`,
-    `--allow-unauthenticated-identities`,
-    `--cognito-identity-providers ProviderName="${providerName}",ClientId="${webClientId}" ProviderName="${providerName}",ClientId="${nativeClientId}"`,
-    `--query 'IdentityPoolId'`,
-    `--output text`,
-  ].join(' '));
+  const result = await client.send(new CreateIdentityPoolCommand({
+    IdentityPoolName: `${prefix}_identitypool`,
+    AllowUnauthenticatedIdentities: true,
+    CognitoIdentityProviders: [
+      { ProviderName: providerName, ClientId: webClientId },
+      { ProviderName: providerName, ClientId: nativeClientId },
+    ],
+  }));
 
+  const identityPoolId = result.IdentityPoolId!;
   console.log(`Identity Pool created: ${identityPoolId}`);
   return identityPoolId;
 }
 
-function createIamRole(roleName: string, identityPoolId: string, amrCondition: string): string {
+async function createIamRole(
+  client: IAMClient,
+  roleName: string,
+  identityPoolId: string,
+  amrCondition: string,
+): Promise<string> {
   console.log(`\nCreating IAM role: ${roleName}...`);
   const trustPolicy = JSON.stringify({
     Version: '2012-10-17',
@@ -143,47 +154,41 @@ function createIamRole(roleName: string, identityPoolId: string, amrCondition: s
     ],
   });
 
-  const roleArn = awsCli([
-    `iam create-role`,
-    `--role-name "${roleName}"`,
-    `--assume-role-policy-document '${trustPolicy}'`,
-    `--query 'Role.Arn'`,
-    `--output text`,
-  ].join(' '));
+  const { Role } = await client.send(new CreateRoleCommand({
+    RoleName: roleName,
+    AssumeRolePolicyDocument: trustPolicy,
+  }));
 
+  const roleArn = Role!.Arn!;
   console.log(`Role created: ${roleArn}`);
   return roleArn;
 }
 
-function main(): void {
+async function main(): Promise<void> {
   const { region, prefix } = parseArgs();
   console.log(`Creating Cognito resources in region: ${region} with prefix: ${prefix}`);
 
-  // User Pool
-  const userPool = createUserPool(region, prefix);
+  const idpClient = new CognitoIdentityProviderClient({ region });
+  const identityClient = new CognitoIdentityClient({ region });
+  const iamClient = new IAMClient({ region });
 
-  // App Clients
-  const webClientId = createUserPoolClient(region, userPool.id, `${prefix}_app_clientWeb`);
-  const nativeClientId = createUserPoolClient(region, userPool.id, `${prefix}_app_client`);
+  const userPool = await createUserPool(idpClient, prefix);
+  const webClientId = await createUserPoolClient(idpClient, userPool.id, `${prefix}_app_clientWeb`);
+  const nativeClientId = await createUserPoolClient(idpClient, userPool.id, `${prefix}_app_client`);
+  const identityPoolId = await createIdentityPool(identityClient, region, prefix, userPool.id, webClientId, nativeClientId);
+  const authRoleArn = await createIamRole(iamClient, `${prefix}-auth-role`, identityPoolId, 'authenticated');
+  const unauthRoleArn = await createIamRole(iamClient, `${prefix}-unauth-role`, identityPoolId, 'unauthenticated');
 
-  // Identity Pool
-  const identityPoolId = createIdentityPool(region, prefix, userPool.id, webClientId, nativeClientId);
-
-  // IAM Roles
-  const authRoleArn = createIamRole(`${prefix}-auth-role`, identityPoolId, 'authenticated');
-  const unauthRoleArn = createIamRole(`${prefix}-unauth-role`, identityPoolId, 'unauthenticated');
-
-  // Attach roles to identity pool
-  awsCli([
-    `cognito-identity set-identity-pool-roles`,
-    `--identity-pool-id ${identityPoolId}`,
-    `--region ${region}`,
-    `--roles "authenticated=${authRoleArn},unauthenticated=${unauthRoleArn}"`,
-  ].join(' '));
+  await identityClient.send(new SetIdentityPoolRolesCommand({
+    IdentityPoolId: identityPoolId,
+    Roles: {
+      authenticated: authRoleArn,
+      unauthenticated: unauthRoleArn,
+    },
+  }));
 
   console.log('Roles attached to Identity Pool.');
 
-  // Summary
   console.log(`
 ============================================
   Auth resources created successfully
@@ -209,4 +214,7 @@ Then run 'amplify push' to update your backend.
 `);
 }
 
-main();
+main().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});
