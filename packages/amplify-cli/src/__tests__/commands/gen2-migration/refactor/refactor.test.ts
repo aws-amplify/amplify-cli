@@ -76,6 +76,10 @@ test('fitness-tracker snapshot', async () => {
   await testSnapshot('fitness-tracker');
 });
 
+test('imported-resources snapshot', async () => {
+  await testSnapshot('imported-resources');
+});
+
 async function testSnapshot(appName: string, appOptions?: MigrationAppOptions, customize?: (app: MigrationApp) => Promise<void>) {
   await MigrationApp.run(
     appName,
