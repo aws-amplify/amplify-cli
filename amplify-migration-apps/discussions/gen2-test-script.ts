@@ -59,7 +59,7 @@ async function runAllTests(): Promise<void> {
   }
 
   const runner = new TestRunner();
-  const testFunctions = createTestFunctions(amplifyconfig);
+  const testFunctions = createTestFunctions();
   const {
     runQueryTests,
     runTopicMutationTests,
