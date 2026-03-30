@@ -69,7 +69,7 @@ async function runAllTests(): Promise<void> {
     runStorageTests,
     runBookmarksTests,
     runCleanupTests,
-  } = createTestOrchestrator(testFunctions, runner, amplifyconfig);
+  } = createTestOrchestrator(testFunctions, runner);
 
   // Get current user ID for activity tests
   const currentUser = await getCurrentUser();
