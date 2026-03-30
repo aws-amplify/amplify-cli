@@ -25,7 +25,6 @@ import os from 'os';
 import fs from 'fs';
 import * as fsExtra from 'fs-extra';
 import { getCLIPath } from '@aws-amplify/amplify-e2e-core';
-import * as fsExtra from 'fs-extra';
 
 /** Options passed to app-specific post-generate scripts */
 interface PostGenerateOptions {
@@ -400,7 +399,7 @@ async function runGen1TestScript(targetAppPath: string, migrationTargetPath: str
   const stderr = result.stderr || '';
 
   // Partition stdout into test-result summary lines (INFO) and everything else (DEBUG)
-  const isTestResultLine = (line: string): boolean => {
+  const testResultLines = stdout.split('\n').filter((line) => {
     const trimmed = line.trim();
     return (
       trimmed.startsWith('✅') ||
