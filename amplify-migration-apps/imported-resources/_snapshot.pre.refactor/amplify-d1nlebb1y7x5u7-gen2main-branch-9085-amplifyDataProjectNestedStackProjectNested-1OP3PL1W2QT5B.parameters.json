@@ -1,0 +1,34 @@
+[
+  {
+    "ParameterKey": "DynamoDBModelTableReadIOPS",
+    "ParameterValue": "5"
+  },
+  {
+    "ParameterKey": "DynamoDBEnableServerSideEncryption",
+    "ParameterValue": "true"
+  },
+  {
+    "ParameterKey": "DynamoDBEnablePointInTimeRecovery",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "referencetoamplifyd1nlebb1y7x5u7gen2mainbranch908544b6dddataamplifyDataGraphQLAPI71E636C3ApiId",
+    "ParameterValue": "wl2oasglxvbnza7q3obncdxijq"
+  },
+  {
+    "ParameterKey": "DynamoDBBillingMode",
+    "ParameterValue": "PAY_PER_REQUEST"
+  },
+  {
+    "ParameterKey": "DynamoDBModelTableWriteIOPS",
+    "ParameterValue": "5"
+  },
+  {
+    "ParameterKey": "referencetoamplifyd1nlebb1y7x5u7gen2mainbranch908544b6dddataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResource1677455BOutputsamplifyd1nlebb1y7x5u7gen2mainbranch908544b6dddataamplifyDataAmplifyTableManagerTableMa593D9686",
+    "ParameterValue": "arn:aws:lambda:us-east-1:615368094448:function:amplify-d1nlebb1y7x5u7-ge-TableManagerCustomProvid-Hm4FhFmwgqLs"
+  },
+  {
+    "ParameterKey": "referencetoamplifyd1nlebb1y7x5u7gen2mainbranch908544b6dddataamplifyDataGraphQLAPINONEDSE0F1315CName",
+    "ParameterValue": "NONE_DS"
+  }
+]
