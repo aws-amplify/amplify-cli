@@ -312,11 +312,14 @@ describe('AmplifyMigrationLockStep', () => {
       mockCfnSend.mockResolvedValueOnce({});
     }
 
-    it('should validate and proceed when only DynamoDB Modify changes', async () => {
+    it('should validate and proceed when only DynamoDB and IAM Policy Modify changes', async () => {
       setupApiStackMocks();
-      // DescribeChangeSet — only Modify on DynamoDB::Table
+      // DescribeChangeSet — Modify on DynamoDB table + IAM policy (expected side effect)
       mockCfnSend.mockResolvedValueOnce({
-        Changes: [{ ResourceChange: { Action: 'Modify', ResourceType: 'AWS::DynamoDB::Table', LogicalResourceId: 'TodoTable' } }],
+        Changes: [
+          { ResourceChange: { Action: 'Modify', ResourceType: 'AWS::DynamoDB::Table', LogicalResourceId: 'TodoTable' } },
+          { ResourceChange: { Action: 'Modify', ResourceType: 'AWS::IAM::Policy', LogicalResourceId: 'TodoIAMRoleDefaultPolicy' } },
+        ],
       });
       // DeleteChangeSet (cleanup)
       mockCfnSend.mockResolvedValueOnce({});
@@ -337,7 +340,7 @@ describe('AmplifyMigrationLockStep', () => {
       expect(deleteCalls).toHaveLength(1);
     });
 
-    it('should abort when changeset contains non-DynamoDB changes', async () => {
+    it('should abort when changeset contains Add action', async () => {
       setupApiStackMocks();
       // DescribeChangeSet — unexpected Lambda change
       mockCfnSend.mockResolvedValueOnce({
@@ -363,6 +366,30 @@ describe('AmplifyMigrationLockStep', () => {
       // DescribeChangeSet — Remove on DynamoDB table
       mockCfnSend.mockResolvedValueOnce({
         Changes: [{ ResourceChange: { Action: 'Remove', ResourceType: 'AWS::DynamoDB::Table', LogicalResourceId: 'TodoTable' } }],
+      });
+      // DeleteChangeSet (cleanup in validation)
+      mockCfnSend.mockResolvedValueOnce({});
+      // GetStackPolicy + SetStackPolicy
+      mockCfnSend.mockResolvedValueOnce({ StackPolicyBody: undefined });
+      mockCfnSend.mockResolvedValueOnce({});
+      // Amplify env var
+      mockAmplifySend.mockResolvedValueOnce({ app: { environmentVariables: {} } }).mockResolvedValueOnce({});
+
+      const plan = await lockStep.forward();
+      await expect(plan.execute()).rejects.toMatchObject({
+        name: 'MigrationError',
+        message: expect.stringContaining('unexpected changes'),
+      });
+    });
+
+    it('should abort when changeset contains Modify on unexpected resource type', async () => {
+      setupApiStackMocks();
+      // DescribeChangeSet — Modify on AppSync resolver (not in allowed set)
+      mockCfnSend.mockResolvedValueOnce({
+        Changes: [
+          { ResourceChange: { Action: 'Modify', ResourceType: 'AWS::DynamoDB::Table', LogicalResourceId: 'TodoTable' } },
+          { ResourceChange: { Action: 'Modify', ResourceType: 'AWS::AppSync::Resolver', LogicalResourceId: 'GetTodoResolver' } },
+        ],
       });
       // DeleteChangeSet (cleanup in validation)
       mockCfnSend.mockResolvedValueOnce({});

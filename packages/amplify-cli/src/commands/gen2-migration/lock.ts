@@ -389,13 +389,15 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
     }
   }
 
-  /** Validates that a changeset only contains Modify actions on DynamoDB tables. */
+  /** Validates that a changeset only contains expected changes from setting DeletionPolicy on DynamoDB tables. */
   private validateDeletionPolicyChangeset(changeSet: DescribeChangeSetOutput, stackId: string, changeSetName: string): void {
     const changes = changeSet.Changes ?? [];
 
+    const allowedModifyTypes = new Set(['AWS::DynamoDB::Table', 'AWS::IAM::Policy']);
+
     const unexpected = changes.filter((change) => {
       const rc = change.ResourceChange;
-      return rc.Action !== 'Modify' || rc.ResourceType !== 'AWS::DynamoDB::Table';
+      return rc.Action !== 'Modify' || !allowedModifyTypes.has(rc.ResourceType);
     });
 
     if (unexpected.length > 0) {
@@ -411,7 +413,7 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
           `Changeset for stack '${stackId}' contains unexpected changes:`,
           ...descriptions.map((d) => `  - ${d}`),
           '',
-          'Expected only Modify actions on AWS::DynamoDB::Table resources.',
+          'Expected only Modify actions on AWS::DynamoDB::Table and AWS::IAM::Policy resources.',
         ].join('\n'),
         resolution: 'This may indicate template drift. Resolve the drift before proceeding with migration.',
       });
