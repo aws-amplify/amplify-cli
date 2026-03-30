@@ -70,6 +70,10 @@ test('store-locator snapshot', async () => {
   await testSnapshot('store-locator', { buildSpec: BUILDSPEC });
 });
 
+test('imported-resources snapshot', async () => {
+  await testSnapshot('imported-resources', { buildSpec: BUILDSPEC });
+});
+
 async function testSnapshot(appName: string, appOptions?: MigrationAppOptions, customize?: (app: MigrationApp) => Promise<void>) {
   await MigrationApp.run(
     appName,
