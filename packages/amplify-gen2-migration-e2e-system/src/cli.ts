@@ -566,7 +566,7 @@ async function initializeAppFromCLI(params: InitializeAppFromCLIParams): Promise
       profile,
     });
 
-    // Step 3: Initialize categories (auth, api, storage, function, etc.)
+    // Initialize categories (auth, api, storage, function, etc.)
     logger.info(`Initializing categories for ${deploymentName}...`, context);
     const categoryResult = await categoryInitializer.initializeCategories({
       appPath: targetAppPath,
@@ -614,21 +614,21 @@ async function initializeAppFromCLI(params: InitializeAppFromCLIParams): Promise
     await execa('git', ['commit', '-m', 'feat: gen1 initial commit'], { cwd: targetAppPath });
     logger.info(`Git repository initialized and Gen1 state committed`, context);
 
-    // Step 8: Run gen2-migration pre-deployment workflow (lock -> checkout -> generate)
+    // Run gen2-migration pre-deployment workflow (lock -> checkout -> generate)
     logger.info(`Running gen2-migration pre-deployment workflow for ${deploymentName}...`, context);
     await gen2MigrationExecutor.runPreDeploymentWorkflow(targetAppPath, envName);
     logger.info(`Successfully completed gen2-migration pre-deployment workflow for ${deploymentName}`, context);
 
-    // Step 9: Run app-specific post-generate script
+    // Run app-specific post-generate script
     await runPostGenerateScript(appName, targetAppPath, envName);
 
-    // Step 10: Commit Gen2 generated code
+    // Commit Gen2 generated code
     logger.info(`Committing Gen2 generated code for ${deploymentName}...`, context);
     await execa('git', ['add', '.'], { cwd: targetAppPath });
     await execa('git', ['commit', '-m', 'feat: gen2 migration generate'], { cwd: targetAppPath });
     logger.info(`Gen2 generated code committed`, context);
 
-    // Step 11: Deploy Gen2 using ampx sandbox
+    // Deploy Gen2 using ampx sandbox
     logger.info(`Deploying Gen2 app using ampx sandbox for ${deploymentName}...`, context);
     const gen2BranchName = `gen2-${envName}`;
     const gen2StackName = await gen2MigrationExecutor.deployGen2Sandbox(targetAppPath, deploymentName, gen2BranchName);
@@ -639,11 +639,11 @@ async function initializeAppFromCLI(params: InitializeAppFromCLIParams): Promise
     await runGen2TestScript(targetAppPath, migrationTargetPath, sourceAppsBasePath);
     logger.info(`Gen2 test script passed (post-generate) for ${deploymentName}`, context);
 
-    // Step 12: Checkout back to main branch for refactor (refactor must run from Gen1 branch)
+    // Checkout back to main branch for refactor (refactor must run from Gen1 branch)
     logger.info(`Checking out main branch for refactor (refactor requires Gen1 files)...`, context);
     await execa('git', ['checkout', 'main'], { cwd: targetAppPath });
 
-    // Step 13: Run refactor to move stateful resources from Gen1 to Gen2
+    // Run refactor to move stateful resources from Gen1 to Gen2
     logger.info(`Running gen2-migration refactor for ${deploymentName}...`, context);
     await gen2MigrationExecutor.refactor(targetAppPath, gen2StackName);
     logger.info(`Successfully completed gen2-migration refactor for ${deploymentName}`, context);
@@ -657,7 +657,7 @@ async function initializeAppFromCLI(params: InitializeAppFromCLIParams): Promise
     logger.info(`Checking out ${gen2BranchName} branch for post-refactor edits...`, context);
     await execa('git', ['checkout', gen2BranchName], { cwd: targetAppPath });
 
-    // Step 16: Run app-specific post-refactor script
+    // Run app-specific post-refactor script
     await runPostRefactorScript(appName, targetAppPath, envName);
 
     // Commit post-refactor changes
