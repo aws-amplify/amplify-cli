@@ -203,27 +203,56 @@ async function createAndPollChangeset(
     return { changes: [], skipped: true, skipReason: `Polling failed: ${err.message}` };
   }
 
-  // Phase 4: Interpret result and clean up
+  // Phase 4: Interpret result
   if (finalStatus.Status === 'FAILED') {
-    cfn.send(new DeleteChangeSetCommand({ StackName: stackName, ChangeSetName: changeSetName })).catch(() => {});
     if (finalStatus.StatusReason?.includes("didn't contain changes") || finalStatus.StatusReason?.includes('No updates')) {
       return { changes: [], skipped: false };
+    }
+    // EarlyValidation::ResourceExistenceCheck means a resource was moved between stacks — this IS drift
+    if (finalStatus.StatusReason?.includes('EarlyValidation') || finalStatus.StatusReason?.includes('ResourceExistenceCheck')) {
+      print.debug(`EarlyValidation drift detected on ${stackName}: ${finalStatus.StatusReason}`);
+      const syntheticChange: ResourceChange = {
+        Action: 'Modify',
+        ResourceType: 'AWS::CloudFormation::Stack',
+        LogicalResourceId: stackName,
+        Replacement: 'False',
+        Scope: ['Properties'],
+      };
+      return { changes: [syntheticChange], skipped: false, changeSetId };
     }
     return { changes: [], skipped: true, skipReason: `Changeset failed: ${finalStatus.StatusReason}` };
   }
 
+  // Paginate DescribeChangeSet to collect all changes (NextToken support)
   const changes: ResourceChange[] = [];
-  for (const c of finalStatus.Changes ?? []) {
-    if (c.Type === 'Resource' && c.ResourceChange) {
-      changes.push(c.ResourceChange);
+  let currentPage: DescribeChangeSetCommandOutput = finalStatus;
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    for (const c of currentPage.Changes ?? []) {
+      if (c.Type === 'Resource' && c.ResourceChange) {
+        changes.push(c.ResourceChange);
+      }
     }
+    if (!currentPage.NextToken) break;
+    currentPage = await cfn.send(new DescribeChangeSetCommand({ StackName: stackName, ChangeSetName: changeSetName, NextToken: currentPage.NextToken }));
   }
 
-  // Always delete the changeset — drift data is captured in the result
-  print.debug(`Deleting changeset ${changeSetName} on ${stackName} (${changes.length} change(s) captured)`);
-  cfn.send(new DeleteChangeSetCommand({ StackName: stackName, ChangeSetName: changeSetName })).catch(() => {});
+  // Do NOT delete changesets after analysis — let cleanupStaleChangesets handle
+  // cleanup on the next run so changeset IDs in the output remain inspectable.
 
   return { changes, skipped: false, changeSetId };
+}
+
+/**
+ * Check if a resource change is solely a DeletionPolicy addition (e.g. from `amplify lock`).
+ * These are intentional and should be filtered out of drift results.
+ */
+function isDeletionPolicyOnlyChange(change: ResourceChange): boolean {
+  if (!change.Details || change.Details.length === 0) {
+    // No details — check Scope as a fallback
+    return change.Scope?.length === 1 && change.Scope[0] === 'DeletionPolicy';
+  }
+  return change.Details.every((detail) => detail.Target?.Attribute === 'DeletionPolicy');
 }
 
 /**
@@ -247,7 +276,12 @@ export async function detectTemplateDrift(stackName: string, print: Printer, cfn
     }
 
     const rootTemplate = await fs.readJson(templatePath);
+    const rootTemplateBody = JSON.stringify(rootTemplate);
     const buildDir = path.join(currentCloudBackendPath, 'awscloudformation', 'build');
+
+    // Step 0: Create a root changeset (IncludeNestedStacks defaults to false)
+    print.debug('Creating root stack changeset for template drift detection');
+    const rootResult = await createAndPollChangeset(cfn, stackName, rootTemplateBody, print);
 
     // Step 1: resolve cached templates (sync), then enumerate deployed nested stacks
     const templateResolution = resolveNestedTemplates(rootTemplate, buildDir);
@@ -306,6 +340,17 @@ export async function detectTemplateDrift(stackName: string, print: Printer, cfn
     const changes: ResourceChangeWithNested[] = [];
     const skippedStacks: string[] = [...templateResolution.skipped];
 
+    // Include root stack changes (non-nested resources like DeploymentBucket, AuthRole, UnauthRole)
+    if (rootResult.skipped) {
+      print.debug(`Root stack changeset skipped: ${rootResult.skipReason}`);
+    } else if (rootResult.changes.length > 0) {
+      for (const c of rootResult.changes) {
+        if (!isDeletionPolicyOnlyChange(c)) {
+          changes.push({ ...c });
+        }
+      }
+    }
+
     for (const target of targets) {
       const result = resultMap.get(target.logicalId)!;
       if (result.skipped) {
@@ -313,6 +358,10 @@ export async function detectTemplateDrift(stackName: string, print: Printer, cfn
         continue;
       }
       if (result.changes.length === 0) continue;
+
+      // Filter out DeletionPolicy-only changes (e.g. from `amplify lock`)
+      const filteredChanges = result.changes.filter((c) => !isDeletionPolicyOnlyChange(c));
+      if (filteredChanges.length === 0) continue;
 
       // Synthetic ResourceChangeWithNested entry — the formatter expects this shape
       // to recurse into nestedChanges and extract category from LogicalResourceId
@@ -322,7 +371,7 @@ export async function detectTemplateDrift(stackName: string, print: Printer, cfn
         PhysicalResourceId: target.physicalId,
         ChangeSetId: result.changeSetId,
         Action: 'Modify',
-        nestedChanges: result.changes.map((c) => ({ ...c })),
+        nestedChanges: filteredChanges.map((c) => ({ ...c })),
       };
       changes.push(entry);
     }
