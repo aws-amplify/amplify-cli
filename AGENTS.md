@@ -51,8 +51,7 @@ Verify your changes by following these guidelines:
   To avoid issues with multi-line commit messages, write the message to `.commit-message.ai-generated.txt` **at the repository root** and use `-F` with the path relative to your cwd:
 
   ```bash
-  # From packages/amplify-cli/:
-  NODE_OPTIONS="--max-old-space-size=8192" git commit --author="John Doe (AI) <john@bigco.com>" -F ../../.commit-message.ai-generated.txt
+  NODE_OPTIONS="--max-old-space-size=8192" git commit --author="John Doe (AI) <john@bigco.com>" -F <repo-root>/.commit-message.ai-generated.txt
   ```
 
   Always set `NODE_OPTIONS="--max-old-space-size=8192"` when committing to prevent OOM failures in the lint-staged hook.
