@@ -1,6 +1,7 @@
 import { RollbackCategoryRefactorer } from '../../../../../commands/gen2-migration/refactor/workflow/rollback-category-refactorer';
-import { CFNResource, CFNTemplate } from '../../../../../commands/gen2-migration/cfn-template';
-import { AwsClients } from '../../../../../commands/gen2-migration/aws-clients';
+import { CFNResource, CFNTemplate } from '../../../../../commands/gen2-migration/_infra/cfn-template';
+import { AwsClients } from '../../../../../commands/gen2-migration/_infra/aws-clients';
+import { Gen1App } from '../../../../../commands/gen2-migration/generate/_infra/gen1-app';
 import { StackFacade } from '../../../../../commands/gen2-migration/refactor/stack-facade';
 import { Cfn } from '../../../../../commands/gen2-migration/refactor/cfn';
 import { noOpLogger } from '../../_framework/logger';
@@ -81,14 +82,13 @@ describe('RollbackCategoryRefactorer.afterMove', () => {
     cfnMock.on(ExecuteStackRefactorCommand).resolves({});
     cfnMock.on(DescribeStackResourcesCommand).resolves({ StackResources: [] });
 
-    const clients = new AwsClients({ region: 'us-east-1' });
+    const clients = new (AwsClients as any)({ region: 'us-east-1' });
     (clients as any).cloudFormation = new CloudFormationClient({});
     const cfn = new Cfn(new CloudFormationClient({}), noOpLogger());
     const refactorer = new TestRollbackRefactorer(
       new StackFacade(clients, 'gen1-root'),
       new StackFacade(clients, 'gen2-root'),
-      clients,
-      'us-east-1',
+      { region: 'us-east-1', clients } as unknown as Gen1App,
       '123456789',
       noOpLogger(),
       { category: 'storage', resourceName: 'test', service: 'S3', key: 'storage:S3' },
@@ -97,7 +97,7 @@ describe('RollbackCategoryRefactorer.afterMove', () => {
 
     const operations = await (refactorer as any).afterMove('gen2-auth-stack-id');
 
-    // 1 operation: refactor back to Gen2 (placeholder handled by Cfn.refactor)
+    // 1 operation: move resources from holding stack back to Gen2
     expect(operations).toHaveLength(1);
     expect(await operations[0].describe()).toEqual([expect.stringContaining('Move')]);
   });
@@ -105,14 +105,13 @@ describe('RollbackCategoryRefactorer.afterMove', () => {
   it('returns empty operations when no holding stack exists', async () => {
     cfnMock.on(DescribeStacksCommand).resolves({ Stacks: [] });
 
-    const clients = new AwsClients({ region: 'us-east-1' });
+    const clients = new (AwsClients as any)({ region: 'us-east-1' });
     (clients as any).cloudFormation = new CloudFormationClient({});
     const cfn = new Cfn(new CloudFormationClient({}), noOpLogger());
     const refactorer = new TestRollbackRefactorer(
       new StackFacade(clients, 'gen1-root'),
       new StackFacade(clients, 'gen2-root'),
-      clients,
-      'us-east-1',
+      { region: 'us-east-1', clients } as unknown as Gen1App,
       '123456789',
       noOpLogger(),
       { category: 'storage', resourceName: 'test', service: 'S3', key: 'storage:S3' },
@@ -131,8 +130,7 @@ class TestRollbackMappingRefactorer extends RollbackCategoryRefactorer {
     super(
       null as any,
       null as any,
-      null as any,
-      'us-east-1',
+      { region: 'us-east-1' } as unknown as Gen1App,
       '123',
       noOpLogger(),
       { category: 'storage', resourceName: 'test', service: 'S3', key: 'storage:S3' as const },

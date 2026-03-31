@@ -1,4 +1,4 @@
-import { CFNResource } from '../../cfn-template';
+import { CFNResource } from '../../_infra/cfn-template';
 import { RollbackCategoryRefactorer } from '../workflow/rollback-category-refactorer';
 import { RESOURCE_TYPES, USER_POOL_GROUP_TYPE } from './auth-user-pool-groups-forward';
 

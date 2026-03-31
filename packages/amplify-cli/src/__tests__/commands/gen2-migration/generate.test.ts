@@ -2,6 +2,7 @@ import 'aws-sdk-client-mock-jest';
 import { AmplifyMigrationGenerateStep, DependenciesInstaller } from '../../../commands/gen2-migration/generate';
 import { MigrationAppOptions, MigrationApp } from './_framework/app';
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
+import { AmplifyGen2MigrationValidations } from '../../../commands/gen2-migration/_infra/validations';
 
 // high to allow for debugging in the IDE
 const TIMEOUT_MINUTES = 60;
@@ -81,15 +82,8 @@ async function testSnapshot(appName: string, appOptions?: MigrationAppOptions, c
       if (customize) {
         await customize(app);
       }
-      const step = new AmplifyMigrationGenerateStep(
-        app.logger,
-        app.environmentName,
-        app.name,
-        app.id,
-        app.rootStackName,
-        app.region,
-        {} as $TSContext,
-      );
+      const gen1App = app.createGen1App();
+      const step = new AmplifyMigrationGenerateStep(app.logger, gen1App, {} as $TSContext, {} as AmplifyGen2MigrationValidations);
       const plan = await step.forward();
       await plan.execute();
 
@@ -109,72 +103,57 @@ async function testSnapshot(appName: string, appOptions?: MigrationAppOptions, c
 }
 
 import { Gen1App, DiscoveredResource } from '../../../commands/gen2-migration/generate/_infra/gen1-app';
-import { Assessment } from '../../../commands/gen2-migration/_assessment';
-import { SpinningLogger } from '../../../commands/gen2-migration/_spinning-logger';
+import { SpinningLogger } from '../../../commands/gen2-migration/_infra/spinning-logger';
 
-function mockDiscover(resources: DiscoveredResource[]): jest.SpyInstance {
-  return jest.spyOn(Gen1App, 'create').mockResolvedValue({
-    discover: () => resources,
+/** Creates a minimal mock Gen1App for unit tests. */
+function mockGen1App(overrides: Partial<Gen1App> = {}): Gen1App {
+  return {
+    appId: 'app-123',
+    appName: 'test-app',
+    region: 'us-east-1',
+    envName: 'dev',
+    rootStackName: 'root-stack',
+    discover: () => [],
     meta: () => undefined,
-  } as unknown as Gen1App);
+    fileExists: () => false,
+    ...overrides,
+  } as unknown as Gen1App;
 }
 
-function createStep(): AmplifyMigrationGenerateStep {
-  const logger = new SpinningLogger('generate', { debug: true });
-  return new AmplifyMigrationGenerateStep(logger, 'dev', 'test-app', 'app-123', 'root-stack', 'us-east-1', {} as $TSContext);
+function mockDiscover(resources: DiscoveredResource[]): Gen1App {
+  return mockGen1App({ discover: () => resources });
 }
 
 describe('AmplifyMigrationGenerateStep', () => {
-  let createSpy: jest.SpyInstance;
+  describe('forward()', () => {
+    it('fails validation when assessment contains unsupported resources', async () => {
+      const gen1 = mockDiscover([{ category: 'notifications', resourceName: 'push', service: 'Pinpoint', key: 'UNKNOWN' }]);
+      const logger = new SpinningLogger('generate', { debug: true });
+      const step = new AmplifyMigrationGenerateStep(logger, gen1, {} as $TSContext, {} as AmplifyGen2MigrationValidations);
 
-  afterEach(() => {
-    createSpy?.mockRestore();
-  });
-
-  describe('assess()', () => {
-    it('records supported resources as supported', async () => {
-      createSpy = mockDiscover([
-        { category: 'auth', resourceName: 'myPool', service: 'Cognito', key: 'auth:Cognito' },
-        { category: 'storage', resourceName: 'myBucket', service: 'S3', key: 'storage:S3' },
-        { category: 'function', resourceName: 'myFunc', service: 'Lambda', key: 'function:Lambda' },
-      ]);
-
-      const recordSpy = jest.spyOn(Assessment.prototype, 'record');
-      const step = createStep();
-      await step.assess(new Assessment('test-app', 'dev'));
-
-      for (const name of ['myPool', 'myBucket', 'myFunc']) {
-        expect(recordSpy).toHaveBeenCalledWith('generate', expect.objectContaining({ resourceName: name }), {
-          supported: true,
-        });
-      }
-
-      recordSpy.mockRestore();
-    });
-
-    it('records unsupported key as not supported', async () => {
-      createSpy = mockDiscover([{ category: 'notifications', resourceName: 'push', service: 'Pinpoint', key: 'unsupported' }]);
-
-      const recordSpy = jest.spyOn(Assessment.prototype, 'record');
-      const step = createStep();
-      await step.assess(new Assessment('test-app', 'dev'));
-
-      expect(recordSpy).toHaveBeenCalledWith('generate', expect.objectContaining({ resourceName: 'push' }), {
-        supported: false,
-      });
-
-      recordSpy.mockRestore();
-    });
-  });
-
-  describe('execute()', () => {
-    it('warns and skips unsupported resources instead of throwing', async () => {
-      createSpy = mockDiscover([{ category: 'notifications', resourceName: 'push', service: 'Pinpoint', key: 'unsupported' }]);
-
-      const step = createStep();
-      // Should not throw — generate warns on unsupported, unlike refactor
       const plan = await step.forward();
-      await plan.describe();
+      const passed = await plan.validate();
+      expect(passed).toBe(false);
+    });
+
+    it('passes validation when all resources are supported', async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- mocking private methods for unit tests
+      const lockSpy = jest.spyOn(AmplifyMigrationGenerateStep.prototype as any, 'validateLockStatus').mockResolvedValue({ valid: true });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- mocking private methods for unit tests
+      const wdSpy = jest
+        .spyOn(AmplifyMigrationGenerateStep.prototype as any, 'validateWorkingDirectory')
+        .mockResolvedValue({ valid: true });
+      const gen1 = mockDiscover([
+        { category: 'auth', resourceName: 'userPoolGroups', service: 'Cognito-UserPool-Groups', key: 'auth:Cognito-UserPool-Groups' },
+      ]);
+      const logger = new SpinningLogger('generate', { debug: true });
+      const step = new AmplifyMigrationGenerateStep(logger, gen1, {} as $TSContext, {} as AmplifyGen2MigrationValidations);
+
+      const plan = await step.forward();
+      const passed = await plan.validate();
+      expect(passed).toBe(true);
+      lockSpy.mockRestore();
+      wdSpy.mockRestore();
     });
   });
 });

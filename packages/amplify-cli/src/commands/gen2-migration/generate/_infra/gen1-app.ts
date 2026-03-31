@@ -5,21 +5,17 @@ import { readFileSync } from 'node:fs';
 import { Stream } from 'node:stream';
 import unzipper from 'unzipper';
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
-import { $TSMeta, $TSTeamProviderInfo, AmplifyError, JSONUtilities } from '@aws-amplify/amplify-cli-core';
-import { AwsClients } from '../../aws-clients';
+import { $TSAny, $TSContext, $TSMeta, AmplifyError, JSONUtilities } from '@aws-amplify/amplify-cli-core';
+import { AwsClients } from '../../_infra/aws-clients';
 import { AwsFetcher } from './aws-fetcher';
+import { stateManager, pathManager } from '@aws-amplify/amplify-cli-core';
+import { App, GetAppCommand } from '@aws-sdk/client-amplify';
 
-export interface Gen1CreateOptions {
-  readonly appId: string;
-  readonly region: string;
-  readonly envName: string;
-  readonly clients: AwsClients;
-}
-
-interface Gen1AppProps extends Gen1CreateOptions {
+interface Gen1AppProps {
   readonly ccbDir: string;
-  readonly rootStackName: string;
-  readonly deploymentBucketName: string;
+  readonly clients: AwsClients;
+  readonly app: App;
+  readonly envName: string;
 }
 
 /**
@@ -27,7 +23,7 @@ interface Gen1AppProps extends Gen1CreateOptions {
  * Adding a new pair here forces every exhaustive switch on ResourceKey
  * to handle it — the compiler will error on any switch that misses a case.
  */
-export const SUPPORTED_RESOURCE_KEYS = [
+export const KNOWN_RESOURCE_KEYS = [
   'auth:Cognito',
   'auth:Cognito-UserPool-Groups',
   'storage:S3',
@@ -41,11 +37,16 @@ export const SUPPORTED_RESOURCE_KEYS = [
   'geo:GeofenceCollection',
 ] as const;
 
+export enum KNOWN_FEATURES {
+  OVERRIDES = 'overrides',
+  CUSTOM_FUNCTION_POLICIES = 'custom-policies',
+}
+
 /**
  * Union of all known category:service pairs, plus 'unsupported' for
  * resources the tool has no migration logic for.
  */
-export type ResourceKey = (typeof SUPPORTED_RESOURCE_KEYS)[number] | 'unsupported';
+export type ResourceKey = (typeof KNOWN_RESOURCE_KEYS)[number] | 'UNKNOWN';
 
 /**
  * A resource discovered from amplify-meta.json.
@@ -55,13 +56,6 @@ export interface DiscoveredResource {
   readonly resourceName: string;
   readonly service: string;
   readonly key: ResourceKey;
-}
-
-/**
- * Response from a migration step's assess method.
- */
-export interface SupportResponse {
-  readonly supported: boolean;
 }
 
 /**
@@ -78,43 +72,68 @@ export interface SupportResponse {
  */
 export class Gen1App {
   public readonly appId: string;
+  public readonly appName: string;
   public readonly region: string;
   public readonly envName: string;
   public readonly clients: AwsClients;
   public readonly aws: AwsFetcher;
   public readonly ccbDir: string;
   public readonly rootStackName: string;
-  public readonly deploymentBucketName: string;
 
   // eslint-disable-next-line @typescript-eslint/naming-convention -- private backing field for meta()
   private readonly _meta: $TSMeta;
 
   private constructor(props: Gen1AppProps) {
-    this.appId = props.appId;
-    this.region = props.region;
+    this.appId = props.app.appId;
+    this.appName = props.app.name;
     this.envName = props.envName;
     this.clients = props.clients;
-    this.aws = new AwsFetcher(props.clients);
     this.ccbDir = props.ccbDir;
-    this.rootStackName = props.rootStackName;
-    this.deploymentBucketName = props.deploymentBucketName;
+    this.aws = new AwsFetcher(this.clients);
     this._meta = JSONUtilities.readJson<$TSMeta>(path.join(props.ccbDir, 'amplify-meta.json'), { throwIfNotExist: true }) as $TSMeta;
+    this.rootStackName = this._meta.providers.awscloudformation.StackName;
+    this.region = this._meta.providers.awscloudformation.Region;
   }
 
-  public static async create(props: Gen1CreateOptions): Promise<Gen1App> {
-    const tpiPath = path.join('amplify', 'team-provider-info.json');
-    const tpi = JSONUtilities.readJson<$TSTeamProviderInfo>(tpiPath, { throwIfNotExist: true }) as $TSTeamProviderInfo;
-    const envConfig = tpi[props.envName]?.awscloudformation;
-    if (!envConfig?.StackName || !envConfig?.DeploymentBucketName) {
+  public static async create(context: $TSContext): Promise<Gen1App> {
+    const clients = await AwsClients.create(context);
+
+    const tpiRelPath = `./${path.relative(process.cwd(), pathManager.getTeamProviderInfoFilePath())}`;
+    if (!stateManager.teamProviderInfoExists()) {
       throw new AmplifyError('MigrationError', {
-        message: `Missing StackName or DeploymentBucketName for environment '${props.envName}' in team-provider-info.json`,
+        message: `Unable to find '${tpiRelPath}' - Are you sure you're on the right branch?`,
+        resolution: 'Checkout to the Gen1 branch and rerun the command',
       });
     }
-    const ccbDir = await Gen1App.downloadCloudBackend(props.clients.s3, envConfig.DeploymentBucketName);
-    return new Gen1App({ ...props, ccbDir, rootStackName: envConfig.StackName, deploymentBucketName: envConfig.DeploymentBucketName });
+    const tpi = stateManager.getTeamProviderInfo();
+
+    // assuming all environment are deployed within the same app - can it be different?
+    const appId = (Object.values(tpi)[0] as $TSAny).awscloudformation.AmplifyAppId;
+    const app = await clients.amplify.send(new GetAppCommand({ appId }));
+
+    const envName = await Gen1App.currentEnvName(app.app);
+    const envInfo = tpi[envName];
+    if (!envInfo) {
+      throw new AmplifyError('MigrationError', {
+        message: `Environment ${envName} does not exist in ${tpiRelPath}`,
+        resolution: `Checkout to the branch corresponding to environment ${envName} and rerun the command`,
+      });
+    }
+
+    const cfnProvider = envInfo.awscloudformation;
+    if (!cfnProvider?.StackName || !cfnProvider?.DeploymentBucketName) {
+      throw new AmplifyError('MigrationError', {
+        message: `Missing StackName or DeploymentBucketName for environment '${envName}' in '${tpiRelPath}'`,
+      });
+    }
+
+    const ccbDir = await Gen1App.downloadCloudBackend(clients.s3, cfnProvider.DeploymentBucketName);
+    return new Gen1App({ ccbDir, clients, envName, app: app.app });
   }
 
-  /** Returns the category block from amplify-meta.json, or undefined if empty/absent. */
+  /**
+   * Returns the category block from amplify-meta.json, or undefined if empty/absent.
+   */
   public meta(category: string): Record<string, unknown> | undefined {
     const block = (this._meta as Record<string, unknown>)[category];
     if (block && typeof block === 'object' && Object.keys(block as object).length > 0) {
@@ -145,7 +164,7 @@ export class Gen1App {
           });
         }
         const rawKey = `${category}:${service}`;
-        const key: ResourceKey = (SUPPORTED_RESOURCE_KEYS as readonly string[]).includes(rawKey) ? (rawKey as ResourceKey) : 'unsupported';
+        const key: ResourceKey = (KNOWN_RESOURCE_KEYS as readonly string[]).includes(rawKey) ? (rawKey as ResourceKey) : 'UNKNOWN';
         resources.push({ category, resourceName, service, key });
       }
     }
@@ -153,7 +172,9 @@ export class Gen1App {
     return resources;
   }
 
-  /** Returns a resource output value from amplify-meta.json. */
+  /**
+   * Returns a resource output value from amplify-meta.json.
+   */
   public metaOutput(category: string, resourceName: string, outputKey: string): string {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped amplify-meta.json
     const value = (this._meta as any)[category]?.[resourceName]?.output?.[outputKey];
@@ -165,7 +186,9 @@ export class Gen1App {
     return value;
   }
 
-  /** Returns the name of the single resource in a category matching a service type. */
+  /**
+   * Returns the name of the single resource in a category matching a service type.
+   */
   public singleResourceName(category: string, service: string): string {
     const categoryBlock = this.meta(category);
     if (!categoryBlock) {
@@ -189,9 +212,43 @@ export class Gen1App {
     return readFileSync(path.join(this.ccbDir, relativePath), 'utf8');
   }
 
+  /**
+   * Returns true if a file exists in the cloud backend directory.
+   */
+  public fileExists(relativePath: string): boolean {
+    try {
+      readFileSync(path.join(this.ccbDir, relativePath));
+      return true;
+    } catch {
+      // File does not exist — expected for optional feature files.
+      return false;
+    }
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped Gen1 cli-inputs.json
   public cliInputs(category: string, resourceName: string): any {
     return this.json(path.join(category, resourceName, 'cli-inputs.json'));
+  }
+
+  private static async currentEnvName(app: App): Promise<string> {
+    const migratingEnvName = (app.environmentVariables ?? {})['GEN2_MIGRATION_ENVIRONMENT_NAME'];
+    const localEnvName = stateManager.getCurrentEnvName();
+
+    if (!localEnvName && !migratingEnvName) {
+      throw new AmplifyError('EnvironmentNotInitializedError', {
+        message: `No environment configured for app '${app.name}'`,
+        resolution: 'Run "amplify pull" to configure an environment.',
+      });
+    }
+
+    if (migratingEnvName && localEnvName && migratingEnvName !== localEnvName) {
+      throw new AmplifyError('MigrationError', {
+        message: `Environment mismatch: Your local env (${localEnvName}) does 
+      not match the environment you marked for migration (${migratingEnvName})`,
+      });
+    }
+
+    return localEnvName ?? migratingEnvName;
   }
 
   private static async downloadCloudBackend(s3Client: S3Client, bucket: string): Promise<string> {

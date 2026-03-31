@@ -1,5 +1,5 @@
 import { StackFacade } from '../../../../commands/gen2-migration/refactor/stack-facade';
-import { AwsClients } from '../../../../commands/gen2-migration/aws-clients';
+import { AwsClients } from '../../../../commands/gen2-migration/_infra/aws-clients';
 import { mockClient } from 'aws-sdk-client-mock';
 import { CloudFormationClient, GetTemplateCommand, DescribeStackResourcesCommand } from '@aws-sdk/client-cloudformation';
 
@@ -9,7 +9,7 @@ describe('StackFacade', () => {
 
   beforeEach(() => {
     cfnMock = mockClient(CloudFormationClient);
-    const clients = new AwsClients({ region: 'us-east-1' });
+    const clients = new (AwsClients as any)({ region: 'us-east-1' });
     (clients as any).cloudFormation = new CloudFormationClient({});
     facade = new StackFacade(clients, 'root-stack');
   });

@@ -1,9 +1,9 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import ts from 'typescript';
-import { AmplifyMigrationOperation } from '../../../_operation';
+import { AmplifyMigrationOperation } from '../../../_infra/operation';
 import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
-import { Planner } from '../../../planner';
+import { Planner } from '../../../_infra/planner';
 import { BackendGenerator } from '../backend.generator';
 import { Gen1App, DiscoveredResource } from '../../_infra/gen1-app';
 import { TS } from '../../_infra/ts';

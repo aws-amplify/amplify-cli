@@ -26,22 +26,17 @@ const rollingBack = (context.input.options ?? {})['rollback'] ?? false;
 
 ### Common Gen1 Configuration Extraction
 
-Extracts shared Gen1 configuration (`appId`, `appName`, `envName`, `stackName`, `region`) once from state manager and Amplify service,
-then passes these values to step constructors. This establishes a single source of truth; subcommands should use the injected values
-rather than re-extracting them independently.
+Creates a `Gen1App` facade that encapsulates all Gen1 app state — AWS clients, environment config, and the cloud backend snapshot. `Gen1App.create(context)` reads `team-provider-info.json`, fetches the app from the Amplify service, downloads the cloud backend from S3, and reads `amplify-meta.json`. The resulting instance is passed to all step constructors.
 
 ```ts
-const appId = (Object.values(stateManager.getTeamProviderInfo())[0] as any).awscloudformation.AmplifyAppId;
-const envName = localEnvName ?? migratingEnvName;
-// ... extract other config values
-const implementation: AmplifyMigrationStep = new step.class(logger, envName, appName, appId, stackName, region, context);
+const gen1App = await Gen1App.create(context);
+const implementation: AmplifyMigrationStep = new step.class(logger, gen1App, context);
 ```
 
 ### Subcommand Dispatching
 
 Maps the subcommand name to its implementation class via the `STEPS` registry, then instantiates the step with extracted configuration.
-The `assess` subcommand is intercepted before the `STEPS` lookup — it creates an `AmplifyMigrationAssessor` instead of a step,
-calls `assess()` on the generate and refactor steps, and renders the result.
+The `assess` subcommand is intercepted before the `STEPS` lookup — it creates an `AmplifyMigrationAssessor` with the `Gen1App` instance, calls `assess()` to collect resource and feature support levels, and prints the report.
 
 ### Plan-Based Execution
 
@@ -116,7 +111,7 @@ flowchart LR
 
 [`src/commands/gen2-migration/_step.ts`](../../../packages/amplify-cli/src/commands/gen2-migration/_step.ts)
 
-Abstract base class that defines the lifecycle contract for all migration steps. Each step returns a `Plan` from `forward()` and `rollback()`.
+Abstract base class that defines the lifecycle contract for all migration steps. Constructor takes `(logger, gen1App, context)` — the `Gen1App` facade provides all app state. Each step returns a `Plan` from `forward()` and `rollback()`.
 
 ### `AmplifyMigrationOperation`
 
@@ -173,6 +168,10 @@ amplify gen2-migration <step> [options]
 - `SpinningLogger` is the only logger class — the deprecated `Logger` subclass has been removed. Import directly from `_spinning-logger.ts`.
 - Automatic rollback is enabled by default but can be disabled with `--no-rollback`.
 - The `--rollback` flag explicitly executes rollback operations for a step.
+- `Gen1App` is the single facade for all Gen1 app state. It is created once in the dispatcher via `Gen1App.create(context)` and passed to all steps. Steps access `gen1App.appId`, `gen1App.region`, `gen1App.envName`, etc. instead of individual constructor params.
+- `AwsClients` has a private constructor — use `AwsClients.create(context)` in production. Tests bypass this with `new (AwsClients as any)(...)`.
+- Assessment uses a `Support` type with `level` and `note` fields. Each assessor provides its own note for unsupported entries. Use the `supported()`, `unsupported(note)`, `notApplicable()` helpers.
+- `KNOWN_RESOURCE_KEYS` (in `gen1-app.ts`) defines all supported category:service pairs. Unknown resources get the `'UNKNOWN'` key.
 
 **Common pitfalls:**
 

@@ -1,4 +1,4 @@
-import { AmplifyMigrationOperation } from './_operation';
+import { AmplifyMigrationOperation } from './operation';
 
 /**
  * Shared interface for units of work in the migration pipeline.

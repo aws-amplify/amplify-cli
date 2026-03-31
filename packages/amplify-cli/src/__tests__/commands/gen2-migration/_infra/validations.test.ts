@@ -1,9 +1,9 @@
-import { AmplifyGen2MigrationValidations } from '../../../commands/gen2-migration/_validations';
+import { AmplifyGen2MigrationValidations } from '../../../../commands/gen2-migration/_infra/validations';
 import { $TSContext, stateManager } from '@aws-amplify/amplify-cli-core';
-import { CloudFormationClient, DescribeChangeSetOutput } from '@aws-sdk/client-cloudformation';
-import { SpinningLogger } from '../../../commands/gen2-migration/_spinning-logger';
+import { DescribeChangeSetOutput } from '@aws-sdk/client-cloudformation';
+import { SpinningLogger } from '../../../../commands/gen2-migration/_infra/spinning-logger';
+import { Gen1App } from '../../../../commands/gen2-migration/generate/_infra/gen1-app';
 
-jest.mock('@aws-sdk/client-cloudformation');
 jest.mock('bottleneck', () => {
   return jest.fn().mockImplementation(() => ({
     schedule: jest.fn((fn) => fn()),
@@ -20,19 +20,22 @@ describe('AmplifyGen2MigrationValidations', () => {
   let mockContext: $TSContext;
   let validations: AmplifyGen2MigrationValidations;
 
+  let mockCfnSend: jest.Mock;
+
   beforeEach(() => {
     mockContext = {} as $TSContext;
-    validations = new AmplifyGen2MigrationValidations(new SpinningLogger('mock', { debug: true }), 'mock', 'mock', mockContext);
+    mockCfnSend = jest.fn();
+    const mockGen1App = {
+      rootStackName: 'mock',
+      envName: 'mock',
+      clients: { cloudFormation: { send: mockCfnSend } },
+    } as unknown as Gen1App;
+    validations = new AmplifyGen2MigrationValidations(new SpinningLogger('mock', { debug: true }), mockGen1App, mockContext);
   });
 
   describe('validateStatefulResources', () => {
-    let mockSend: jest.Mock;
-
     beforeEach(() => {
-      mockSend = jest.fn();
-      (CloudFormationClient as jest.Mock).mockImplementation(() => ({
-        send: mockSend,
-      }));
+      // mockCfnSend is already wired via gen1App.clients.cloudFormation
     });
 
     afterEach(() => {
@@ -344,7 +347,7 @@ describe('AmplifyGen2MigrationValidations', () => {
     });
 
     it('should throw when nested stack contains stateful resources', async () => {
-      mockSend.mockResolvedValueOnce({
+      mockCfnSend.mockResolvedValueOnce({
         StackResourceSummaries: [
           {
             ResourceType: 'AWS::DynamoDB::Table',
@@ -376,7 +379,7 @@ describe('AmplifyGen2MigrationValidations', () => {
     });
 
     it('should pass when nested stack contains only stateless resources', async () => {
-      mockSend.mockResolvedValueOnce({
+      mockCfnSend.mockResolvedValueOnce({
         StackResourceSummaries: [
           {
             ResourceType: 'AWS::Lambda::Function',
@@ -405,7 +408,7 @@ describe('AmplifyGen2MigrationValidations', () => {
     });
 
     it('should handle multiple levels of nested stacks', async () => {
-      mockSend.mockResolvedValueOnce({
+      mockCfnSend.mockResolvedValueOnce({
         StackResourceSummaries: [
           {
             ResourceType: 'AWS::CloudFormation::Stack',
@@ -416,7 +419,7 @@ describe('AmplifyGen2MigrationValidations', () => {
         NextToken: undefined,
       });
 
-      mockSend.mockResolvedValueOnce({
+      mockCfnSend.mockResolvedValueOnce({
         StackResourceSummaries: [
           {
             ResourceType: 'AWS::S3::Bucket',
@@ -465,7 +468,7 @@ describe('AmplifyGen2MigrationValidations', () => {
     });
 
     it('should handle mixed direct and nested stateful resources', async () => {
-      mockSend.mockResolvedValueOnce({
+      mockCfnSend.mockResolvedValueOnce({
         StackResourceSummaries: [
           {
             ResourceType: 'AWS::Cognito::UserPool',
@@ -560,21 +563,12 @@ describe('AmplifyGen2MigrationValidations', () => {
   });
 
   describe('validateDeploymentStatus', () => {
-    let mockSend: jest.Mock;
-
-    beforeEach(() => {
-      mockSend = jest.fn();
-      (CloudFormationClient as jest.Mock).mockImplementation(() => ({
-        send: mockSend,
-      }));
-    });
-
     afterEach(() => {
       jest.clearAllMocks();
     });
 
     it('should throw StackNotFoundError when stack not found in CloudFormation', async () => {
-      mockSend.mockResolvedValue({ Stacks: [] });
+      mockCfnSend.mockResolvedValue({ Stacks: [] });
 
       await expect(validations.validateDeploymentStatus()).rejects.toMatchObject({
         name: 'StackNotFoundError',
@@ -592,7 +586,7 @@ describe('AmplifyGen2MigrationValidations', () => {
         },
       });
 
-      mockSend.mockResolvedValue({
+      mockCfnSend.mockResolvedValue({
         Stacks: [{ StackStatus: 'UPDATE_COMPLETE' }],
       });
 
@@ -608,7 +602,7 @@ describe('AmplifyGen2MigrationValidations', () => {
         },
       });
 
-      mockSend.mockResolvedValue({
+      mockCfnSend.mockResolvedValue({
         Stacks: [{ StackStatus: 'CREATE_COMPLETE' }],
       });
 
@@ -624,7 +618,7 @@ describe('AmplifyGen2MigrationValidations', () => {
         },
       });
 
-      mockSend.mockResolvedValue({
+      mockCfnSend.mockResolvedValue({
         Stacks: [{ StackStatus: 'UPDATE_IN_PROGRESS' }],
       });
 
@@ -644,7 +638,7 @@ describe('AmplifyGen2MigrationValidations', () => {
         },
       });
 
-      mockSend.mockResolvedValue({
+      mockCfnSend.mockResolvedValue({
         Stacks: [{ StackStatus: 'ROLLBACK_COMPLETE' }],
       });
 
@@ -657,15 +651,6 @@ describe('AmplifyGen2MigrationValidations', () => {
   });
 
   describe('validateLockStatus', () => {
-    let mockSend: jest.Mock;
-
-    beforeEach(() => {
-      mockSend = jest.fn();
-      (CloudFormationClient as jest.Mock).mockImplementation(() => ({
-        send: mockSend,
-      }));
-    });
-
     afterEach(() => {
       jest.clearAllMocks();
     });
@@ -679,7 +664,7 @@ describe('AmplifyGen2MigrationValidations', () => {
         },
       });
 
-      mockSend.mockResolvedValue({ StackPolicyBody: undefined });
+      mockCfnSend.mockResolvedValue({ StackPolicyBody: undefined });
 
       await expect(validations.validateLockStatus()).rejects.toMatchObject({
         name: 'MigrationError',
@@ -708,7 +693,7 @@ describe('AmplifyGen2MigrationValidations', () => {
         ],
       };
 
-      mockSend.mockResolvedValue({
+      mockCfnSend.mockResolvedValue({
         StackPolicyBody: JSON.stringify(expectedPolicy),
       });
 
@@ -735,7 +720,7 @@ describe('AmplifyGen2MigrationValidations', () => {
         ],
       };
 
-      mockSend.mockResolvedValue({
+      mockCfnSend.mockResolvedValue({
         StackPolicyBody: JSON.stringify(wrongPolicy),
       });
 
@@ -766,7 +751,7 @@ describe('AmplifyGen2MigrationValidations', () => {
         ],
       };
 
-      mockSend.mockResolvedValue({
+      mockCfnSend.mockResolvedValue({
         StackPolicyBody: JSON.stringify(wrongPolicy),
       });
 
