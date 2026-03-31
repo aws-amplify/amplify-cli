@@ -643,16 +643,16 @@ by the CLI setting that configures them.
     - 🟢 `API Key`
     - 🟢 `Amazon Cognito User Pool`
     - 🟢 `IAM`
-    - 🔴 `OpenID Connect`
-    - 🔴 `Lambda`
+    - ⚠️ `OpenID Connect`
+    - ⚠️ `Lambda`
 
   - ➤ **Additional Authorization Type**
 
     - 🟢 `API Key`
     - 🟢 `Amazon Cognito User Pool`
-    - 🔴 `IAM`
-    - 🔴 `OpenID Connect`
-    - 🔴 `Lambda`
+    - ⚠️ `IAM`
+    - ⚠️ `OpenID Connect`
+    - ⚠️ `Lambda`
 
 - 🟢 **REST**
 
