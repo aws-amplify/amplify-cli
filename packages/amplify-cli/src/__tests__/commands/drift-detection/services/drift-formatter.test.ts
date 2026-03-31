@@ -165,7 +165,6 @@ describe('createUnifiedCategoryView', () => {
         },
       ],
       skipped: false,
-      changeSetId: 'arn:aws:cloudformation:us-east-1:123:changeSet/drift-detect-123/abc',
     };
 
     const output = createUnifiedCategoryView(phase1, phase2, emptyPhase3);

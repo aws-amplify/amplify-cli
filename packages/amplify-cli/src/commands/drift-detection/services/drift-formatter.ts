@@ -131,7 +131,7 @@ function collectDriftBlocks(phase1: CloudFormationDriftResults, phase2: Template
       }
     };
 
-    flattenChanges(phase2.changes, 'Other', phase2.changeSetId);
+    flattenChanges(phase2.changes, 'Other');
   }
 
   // Phase 3: One block per category (no logical ID)
