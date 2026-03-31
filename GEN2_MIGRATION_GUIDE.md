@@ -586,23 +586,23 @@ by the CLI setting that configures them.
 
 - ➤ **What attributes are required for signing up**
 
-  - ⚠️ `Birthdate (This attribute is not supported by Login With Amazon, Sign in with Apple.)`
+  - 🟢 `Birthdate (This attribute is not supported by Login With Amazon, Sign in with Apple.)`
   - 🟢 `Email`
-  - ⚠️ `Family Name (This attribute is not supported by Login With Amazon.)`
-  - ⚠️ `Middle Name (This attribute is not supported by Google, Login With Amazon, Sign in with Apple.)`
-  - ⚠️ `Gender (This attribute is not supported by Login With Amazon, Sign in with Apple.)`
-  - ⚠️ `Locale (This attribute is not supported by Facebook, Google, Sign in with Apple.)`
-  - ⚠️ `Given Name (This attribute is not supported by Login With Amazon.)`
-  - ⚠️ `Name`
-  - ⚠️ `Nickname (This attribute is not supported by Facebook, Google, Login With Amazon, Sign in with Apple.)`
-  - ⚠️ `Phone Number (This attribute is not supported by Facebook, Login With Amazon, Sign in with Apple.)`
-  - ⚠️ `Preferred Username (This attribute is not supported by Facebook, Google, Login With Amazon, Sign in with Apple.)`
-  - ⚠️ `Picture (This attribute is not supported by Login With Amazon, Sign in with Apple.)`
-  - ⚠️ `Profile (This attribute is not supported by Facebook, Google, Login With Amazon, Sign in with Apple.)`
-  - ⚠️ `Updated At (This attribute is not supported by Google, Login With Amazon, Sign in with Apple.)`
-  - ⚠️ `Website (This attribute is not supported by Facebook, Google, Login With Amazon, Sign in with Apple.)`
-  - ⚠️ `Zone Info (This attribute is not supported by Facebook, Google, Login With Amazon, Sign in with Apple.)`
-  - ⚠️ `Address (This attribute is not supported by Facebook, Google, Login With Amazon, Sign in with Apple.)`
+  - 🟢 `Family Name (This attribute is not supported by Login With Amazon.)`
+  - 🟢 `Middle Name (This attribute is not supported by Google, Login With Amazon, Sign in with Apple.)`
+  - 🟢 `Gender (This attribute is not supported by Login With Amazon, Sign in with Apple.)`
+  - 🟢 `Locale (This attribute is not supported by Facebook, Google, Sign in with Apple.)`
+  - 🟢 `Given Name (This attribute is not supported by Login With Amazon.)`
+  - 🟢 `Name`
+  - 🟢 `Nickname (This attribute is not supported by Facebook, Google, Login With Amazon, Sign in with Apple.)`
+  - 🟢 `Phone Number (This attribute is not supported by Facebook, Login With Amazon, Sign in with Apple.)`
+  - 🟢 `Preferred Username (This attribute is not supported by Facebook, Google, Login With Amazon, Sign in with Apple.)`
+  - 🟢 `Picture (This attribute is not supported by Login With Amazon, Sign in with Apple.)`
+  - 🟢 `Profile (This attribute is not supported by Facebook, Google, Login With Amazon, Sign in with Apple.)`
+  - 🟢 `Updated At (This attribute is not supported by Google, Login With Amazon, Sign in with Apple.)`
+  - 🟢 `Website (This attribute is not supported by Facebook, Google, Login With Amazon, Sign in with Apple.)`
+  - 🟢 `Zone Info (This attribute is not supported by Facebook, Google, Login With Amazon, Sign in with Apple.)`
+  - 🟢 `Address (This attribute is not supported by Facebook, Google, Login With Amazon, Sign in with Apple.)`
 
 - 🟢 **Specify the app's refresh token expiration period (in days)**
 
