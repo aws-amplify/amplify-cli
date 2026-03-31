@@ -1,7 +1,7 @@
 import { AmplifyMigrationRefactorStep } from '../../../../commands/gen2-migration/refactor';
 import { OUTPUT_DIRECTORY } from '../../../../commands/gen2-migration/refactor/cfn';
 import { MigrationApp, MigrationAppOptions } from '../_framework/app';
-import { Gen1App, DiscoveredResource } from '../../../../commands/gen2-migration/generate/_infra/gen1-app';
+import { Gen1App } from '../../../../commands/gen2-migration/generate/_infra/gen1-app';
 import { SpinningLogger } from '../../../../commands/gen2-migration/_infra/spinning-logger';
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { AmplifyGen2MigrationValidations } from '../../../../commands/gen2-migration/_infra/validations';
@@ -136,10 +136,6 @@ function mockGen1App(overrides: Partial<Gen1App> = {}): Gen1App {
   } as unknown as Gen1App;
 }
 
-function mockDiscover(resources: DiscoveredResource[]): Gen1App {
-  return mockGen1App({ discover: () => resources });
-}
-
 function mockCreateInfrastructure(): jest.SpyInstance {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- mocking private method for unit tests
   return jest.spyOn(AmplifyMigrationRefactorStep.prototype as any, 'createInfrastructure').mockResolvedValue({
@@ -149,6 +145,12 @@ function mockCreateInfrastructure(): jest.SpyInstance {
     gen2Branch: {},
     cfn: {},
   });
+}
+
+function createStep(gen1App: Gen1App, toStack = 'gen2-stack'): AmplifyMigrationRefactorStep {
+  const logger = new SpinningLogger('refactor', { debug: true });
+  const context = { parameters: { options: { to: toStack } } } as unknown as $TSContext;
+  return new AmplifyMigrationRefactorStep(logger, gen1App, context, {} as AmplifyGen2MigrationValidations);
 }
 
 describe('AmplifyMigrationRefactorStep', () => {
@@ -161,10 +163,10 @@ describe('AmplifyMigrationRefactorStep', () => {
   describe('forward()', () => {
     it('fails validation when assessment contains unsupported resources', async () => {
       infraSpy = mockCreateInfrastructure();
-      const gen1 = mockDiscover([{ category: 'notifications', resourceName: 'push', service: 'Pinpoint', key: 'UNKNOWN' }]);
-      const logger = new SpinningLogger('refactor', { debug: true });
-      const context = { parameters: { options: { to: 'gen2-stack' } } } as unknown as $TSContext;
-      const step = new AmplifyMigrationRefactorStep(logger, gen1, context, {} as AmplifyGen2MigrationValidations);
+      const gen1 = mockGen1App({
+        discover: () => [{ category: 'notifications', resourceName: 'push', service: 'Pinpoint', key: 'UNKNOWN' }],
+      });
+      const step = createStep(gen1);
 
       const plan = await step.forward();
       const passed = await plan.validate();
@@ -175,25 +177,37 @@ describe('AmplifyMigrationRefactorStep', () => {
       infraSpy = mockCreateInfrastructure();
       // eslint-disable-next-line @typescript-eslint/no-explicit-any -- mocking private method for unit tests
       const lockSpy = jest.spyOn(AmplifyMigrationRefactorStep.prototype as any, 'validateLockStatus').mockResolvedValue({ valid: true });
-      const gen1 = mockDiscover([{ category: 'geo', resourceName: 'myMap', service: 'Map', key: 'geo:Map' }]);
-      const logger = new SpinningLogger('refactor', { debug: true });
-      const context = { parameters: { options: { to: 'gen2-stack' } } } as unknown as $TSContext;
-      const step = new AmplifyMigrationRefactorStep(logger, gen1, context, {} as AmplifyGen2MigrationValidations);
+      const gen1 = mockGen1App({
+        discover: () => [{ category: 'geo', resourceName: 'myMap', service: 'Map', key: 'geo:Map' }],
+      });
+      const step = createStep(gen1);
 
       const plan = await step.forward();
       const passed = await plan.validate();
       expect(passed).toBe(true);
       lockSpy.mockRestore();
+    });
+
+    it('skips imported auth resources', async () => {
+      infraSpy = mockCreateInfrastructure();
+      const gen1 = mockGen1App({
+        discover: () => [{ category: 'auth', resourceName: 'myImportedPool', service: 'Cognito', key: 'auth:Cognito' }],
+        meta: (category: string) => (category === 'auth' ? { myImportedPool: { service: 'Cognito', serviceType: 'imported' } } : undefined),
+      });
+
+      const step = createStep(gen1);
+      const plan = await step.forward();
+      await plan.describe();
     });
   });
 
   describe('rollback()', () => {
     it('fails validation when assessment contains unsupported resources', async () => {
       infraSpy = mockCreateInfrastructure();
-      const gen1 = mockDiscover([{ category: 'notifications', resourceName: 'push', service: 'Pinpoint', key: 'UNKNOWN' }]);
-      const logger = new SpinningLogger('refactor', { debug: true });
-      const context = { parameters: { options: { to: 'gen2-stack' } } } as unknown as $TSContext;
-      const step = new AmplifyMigrationRefactorStep(logger, gen1, context, {} as AmplifyGen2MigrationValidations);
+      const gen1 = mockGen1App({
+        discover: () => [{ category: 'notifications', resourceName: 'push', service: 'Pinpoint', key: 'UNKNOWN' }],
+      });
+      const step = createStep(gen1);
 
       const plan = await step.rollback();
       const passed = await plan.validate();
@@ -204,15 +218,27 @@ describe('AmplifyMigrationRefactorStep', () => {
       infraSpy = mockCreateInfrastructure();
       // eslint-disable-next-line @typescript-eslint/no-explicit-any -- mocking private method for unit tests
       const lockSpy = jest.spyOn(AmplifyMigrationRefactorStep.prototype as any, 'validateLockStatus').mockResolvedValue({ valid: true });
-      const gen1 = mockDiscover([{ category: 'geo', resourceName: 'myMap', service: 'Map', key: 'geo:Map' }]);
-      const logger = new SpinningLogger('refactor', { debug: true });
-      const context = { parameters: { options: { to: 'gen2-stack' } } } as unknown as $TSContext;
-      const step = new AmplifyMigrationRefactorStep(logger, gen1, context, {} as AmplifyGen2MigrationValidations);
+      const gen1 = mockGen1App({
+        discover: () => [{ category: 'geo', resourceName: 'myMap', service: 'Map', key: 'geo:Map' }],
+      });
+      const step = createStep(gen1);
 
       const plan = await step.rollback();
       const passed = await plan.validate();
       expect(passed).toBe(true);
       lockSpy.mockRestore();
+    });
+
+    it('skips imported auth resources', async () => {
+      infraSpy = mockCreateInfrastructure();
+      const gen1 = mockGen1App({
+        discover: () => [{ category: 'auth', resourceName: 'myImportedPool', service: 'Cognito', key: 'auth:Cognito' }],
+        meta: (category: string) => (category === 'auth' ? { myImportedPool: { service: 'Cognito', serviceType: 'imported' } } : undefined),
+      });
+
+      const step = createStep(gen1);
+      const plan = await step.rollback();
+      await plan.describe();
     });
   });
 });
