@@ -399,7 +399,7 @@ async function runGen1TestScript(targetAppPath: string, migrationTargetPath: str
   const stderr = result.stderr || '';
 
   // Partition stdout into test-result summary lines (INFO) and everything else (DEBUG)
-  const isTestResultLine = (line: string): boolean => {
+  const testResultLines = stdout.split('\n').filter((line) => {
     const trimmed = line.trim();
     return (
       trimmed.startsWith('✅') ||
@@ -408,24 +408,82 @@ async function runGen1TestScript(targetAppPath: string, migrationTargetPath: str
       trimmed.includes('All tests passed') ||
       trimmed.includes('test(s) failed')
     );
-  };
+  });
 
-  if (stdout) {
-    const lines = stdout.split('\n');
-    const debugLines = lines.filter((l) => !isTestResultLine(l)).join('\n');
-    if (debugLines.trim()) {
-      logger.debug(`[test-script] stdout:\n${debugLines}`);
-    }
-    for (const line of lines.filter(isTestResultLine)) {
-      logger.info(`[test-script] ${line.trim()}`);
-    }
-  }
-  if (stderr) {
-    logger.debug(`[test-script] stderr:\n${stderr}`);
+  for (const line of testResultLines) {
+    logger.info(`[test-script] ${line.trim()}`);
   }
 
   if (result.exitCode !== 0) {
     // Include output in the error so it's visible even without --verbose
+    const combinedOutput = [stdout, stderr].filter(Boolean).join('\n');
+    throw new Error(`${testScriptName} failed with exit code ${result.exitCode}\n${combinedOutput}`);
+  }
+
+  logger.info(`${testScriptName} completed successfully`);
+}
+
+/**
+ * Run the app's gen2-test-script.ts to validate the Gen2 deployment.
+ *
+ * Same pattern as runGen1TestScript but runs gen2-test-script.ts instead.
+ * Copies _test-common and installs deps before executing.
+ */
+async function runGen2TestScript(targetAppPath: string, migrationTargetPath: string, sourceAppsBasePath: string): Promise<void> {
+  const testScriptName = 'gen2-test-script.ts';
+
+  // Check if the gen2 test script exists
+  if (!fs.existsSync(path.join(targetAppPath, testScriptName))) {
+    logger.debug(`No ${testScriptName} found in ${targetAppPath}, skipping`);
+    return;
+  }
+
+  // Copy _test-common so ../_test-common imports resolve from the target app dir
+  const testCommonSource = path.join(sourceAppsBasePath, '_test-common');
+  const testCommonDest = path.join(migrationTargetPath, '_test-common');
+  logger.info(`Copying _test-common to ${testCommonDest}`);
+  await fsExtra.copy(testCommonSource, testCommonDest, { overwrite: true });
+
+  // Install dependencies for the test script
+  logger.info(`Installing dependencies in ${targetAppPath}`);
+  await execa('npm', ['install'], { cwd: targetAppPath });
+
+  // Install dependencies for _test-common
+  logger.info(`Installing _test-common dependencies in ${testCommonDest}`);
+  await execa('npm', ['install'], { cwd: testCommonDest });
+
+  logger.info(`Running ${testScriptName} in ${targetAppPath}`);
+  const result = await execa('npx', ['tsx', testScriptName], {
+    cwd: targetAppPath,
+    reject: false,
+  });
+
+  const stdout = result.stdout || '';
+  const stderr = result.stderr || '';
+
+  if (stdout) {
+    logger.debug(`[gen2-test-script] stdout:\n${stdout}`);
+  }
+  if (stderr) {
+    logger.debug(`[gen2-test-script] stderr:\n${stderr}`);
+  }
+
+  const testResultLines = stdout.split('\n').filter((line) => {
+    const trimmed = line.trim();
+    return (
+      trimmed.startsWith('✅') ||
+      trimmed.startsWith('❌') ||
+      trimmed.includes('TEST SUMMARY') ||
+      trimmed.includes('All tests passed') ||
+      trimmed.includes('test(s) failed')
+    );
+  });
+
+  for (const line of testResultLines) {
+    logger.info(`[gen2-test-script] ${line.trim()}`);
+  }
+
+  if (result.exitCode !== 0) {
     const combinedOutput = [stdout, stderr].filter(Boolean).join('\n');
     throw new Error(`${testScriptName} failed with exit code ${result.exitCode}\n${combinedOutput}`);
   }
@@ -460,9 +518,10 @@ async function amplifyPush(targetAppPath: string): Promise<void> {
 }
 
 /**
- * Initialize a single app
+ * Initialize a single app.
  * Copies the source directory to the migration target, runs amplify init,
- * and initializes all configured categories
+ * initializes categories, pushes, runs test scripts, and executes the
+ * full gen2-migration workflow.
  */
 async function initializeAppFromCLI(params: InitializeAppFromCLIParams): Promise<void> {
   const { appName, deploymentName, config, migrationTargetPath, envName, profile } = params;
@@ -514,7 +573,6 @@ async function initializeAppFromCLI(params: InitializeAppFromCLIParams): Promise
       deploymentName,
     });
 
-    // Log category initialization results
     if (categoryResult.initializedCategories.length > 0) {
       logger.info(`Successfully initialized categories: ${categoryResult.initializedCategories.join(', ')}`, context);
     }
@@ -574,6 +632,11 @@ async function initializeAppFromCLI(params: InitializeAppFromCLIParams): Promise
     const gen2BranchName = `gen2-${envName}`;
     const gen2StackName = await gen2MigrationExecutor.deployGen2Sandbox(targetAppPath, deploymentName, gen2BranchName);
     logger.info(`Gen2 app deployed with stack name: ${gen2StackName}`, context);
+
+    // Run gen2 test script to validate the Gen2 code before deploying
+    logger.info(`Running gen2 test script (post-generate) for ${deploymentName}...`, context);
+    await runGen2TestScript(targetAppPath, migrationTargetPath, sourceAppsBasePath);
+    logger.info(`Gen2 test script passed (post-generate) for ${deploymentName}`, context);
 
     // Checkout back to main branch for refactor (refactor must run from Gen1 branch)
     logger.info(`Checking out main branch for refactor (refactor requires Gen1 files)...`, context);
