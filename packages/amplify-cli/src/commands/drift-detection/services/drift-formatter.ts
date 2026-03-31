@@ -114,7 +114,7 @@ function collectDriftBlocks(phase1: CloudFormationDriftResults, phase2: Template
   }
 
   // Phase 2: One block per template change (flatten nested stacks to leaf resources)
-  if (!phase2.skipped && phase2.changes.length > 0) {
+  if (phase2.changes.length > 0) {
     const flattenChanges = (changes: ResourceChangeWithNested[], fallbackCategory: string, fallbackChangeSetId?: string, fallbackStackId?: string): void => {
       for (const change of changes) {
         if (change.ResourceType === 'AWS::CloudFormation::Stack' && change.nestedChanges && change.nestedChanges.length > 0) {

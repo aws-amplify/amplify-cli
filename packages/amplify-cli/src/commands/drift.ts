@@ -1,9 +1,9 @@
 /**
  * Amplify drift detection command
+ * Based on AWS CDK CLI drift implementation
  */
 
 import { $TSContext, AmplifyError } from '@aws-amplify/amplify-cli-core';
-import { printer } from '@aws-amplify/amplify-prompts';
 import chalk from 'chalk';
 import { detectStackDriftRecursive, type CloudFormationDriftResults } from './drift-detection';
 import { detectLocalDrift, type LocalDriftResults } from './drift-detection/detect-local-drift';
@@ -22,22 +22,11 @@ export interface DriftDetectionResult {
 }
 
 /**
- * Executes the drift detection command.
+ * Executes the drift detection command
  */
 export const run = async (context: $TSContext): Promise<void> => {
-  const logger = new SpinningLogger('drift');
-  const detector = new AmplifyDriftDetector(context, logger);
-
-  logger.start('Drift detection');
+  const detector = new AmplifyDriftDetector(context);
   const result = await detector.detect();
-  logger.succeed('Drift detection');
-
-  if (result.report) {
-    printer.info(result.report);
-    printer.info(chalk.yellow('Drift detected'));
-  } else {
-    printer.info(chalk.green('No drift detected'));
-  }
 
   if (result.code !== 0) {
     process.exitCode = result.code;
@@ -45,30 +34,43 @@ export const run = async (context: $TSContext): Promise<void> => {
 };
 
 /**
- * Coordinates services to perform drift detection.
- * Accepts a SpinningLogger; the caller owns the spinner lifecycle.
+ * Amplify drift detector - Coordinator class
+ * Coordinates services to perform drift detection
  */
 export class AmplifyDriftDetector {
   private readonly cfnService: CloudFormationService;
   private readonly configService: AmplifyConfigService;
+  private readonly printer: SpinningLogger;
 
-  constructor(private readonly context: $TSContext, private readonly logger: SpinningLogger) {
-    this.cfnService = new CloudFormationService(this.logger);
+  constructor(private readonly context: $TSContext, logger?: SpinningLogger) {
+    this.printer = logger ?? new SpinningLogger('Drift');
+    this.cfnService = new CloudFormationService(this.printer);
     this.configService = new AmplifyConfigService();
   }
 
-  /** Detects drift for the current Amplify project. */
+  /**
+   * Detect drift for the current Amplify project
+   * Orchestrates the drift detection process using services
+   */
   public async detect(): Promise<DriftDetectionResult> {
+    // Validate Amplify project exists and is initialized
     this.configService.validateAmplifyProject();
-    this.logger.debug('Amplify project validated');
+    this.printer.debug('Amplify project validated');
 
+    // Get stack name and project info, init environment info
+    // constructExeInfo is necessary to initialize env info used in getClient's CloudFormation object
     this.context.amplify.constructExeInfo(this.context);
     const stackName = this.configService.getRootStackName();
-    this.logger.debug(`Root Stack: ${stackName}`);
+    const projectName = this.configService.getProjectName();
+    this.printer.debug(`Root Stack: ${stackName}`);
+    this.printer.info(chalk.cyan.bold(`Started Drift Detection for Project: ${projectName}`));
+    this.printer.debug('Phase 1: CloudFormation drift \nPhase 2: Template changes \nPhase 3: Local vs cloud files\n');
 
+    // Get CloudFormation client
     const cfn = await this.cfnService.getClient(this.context);
-    this.logger.debug('CloudFormation client initialized');
+    this.printer.debug('CloudFormation client initialized');
 
+    // Validate root stack exists
     if (!(await this.cfnService.validateStackExists(cfn, stackName))) {
       throw new AmplifyError('StackNotFoundError', {
         message: `Stack ${stackName} does not exist.`,
@@ -76,72 +78,84 @@ export class AmplifyDriftDetector {
       });
     }
 
+    // Start drift detection phases with spinner
     let phase1Results: CloudFormationDriftResults;
     let phase2Results: TemplateDriftResults;
     let phase3Results: LocalDriftResults;
 
-    this.logger.debug('Syncing cloud backend');
-    const syncSuccess = await this.cfnService.syncCloudBackendFromS3(this.context);
-
     try {
-      this.logger.push('CloudFormation drift');
-      phase1Results = await detectStackDriftRecursive(cfn, stackName, this.logger);
-      this.logger.pop();
-      this.logger.debug('Phase 1 complete');
+      // Sync cloud backend from S3 before running any phases
+      this.printer.start('Syncing cloud backend from S3...');
+      const syncSuccess = await this.cfnService.syncCloudBackendFromS3(this.context);
+
+      // Phase 1: Detect CloudFormation drift recursively
+      this.printer.push('Detecting CloudFormation drift...');
+      phase1Results = await detectStackDriftRecursive(cfn, stackName, this.printer);
+      this.printer.debug('Phase 1 complete');
 
       if (!syncSuccess) {
         phase2Results = {
           changes: [],
-          skipped: true,
+          incomplete: true,
           skipReason: 'S3 backend sync failed - cannot compare templates',
         };
         phase3Results = {
           skipped: true,
           skipReason: 'S3 backend sync failed - cannot compare local vs cloud',
         };
-        this.logger.warn(chalk.yellow('Cloud backend sync failed - template drift and local drift will be skipped'));
+        this.printer.warn(chalk.yellow('Cloud backend sync failed - template drift and local drift will be skipped'));
       } else {
-        this.logger.debug('S3 sync completed successfully');
+        this.printer.debug('S3 sync completed successfully');
 
-        // eslint-disable-next-line spellcheck/spell-checker
-        this.logger.push('Template changes');
-        // eslint-disable-next-line spellcheck/spell-checker
-        this.logger.debug('Checking for template drift using changesets...');
-        phase2Results = await detectTemplateDrift(stackName, this.logger, cfn);
-        this.logger.pop();
-        this.logger.debug(`Phase 2 complete: ${phase2Results.changes.length} changes`);
+        // Phase 2: Template drift detection
+        this.printer.push('Analyzing template changes...');
+        this.printer.debug('Checking for template drift using changesets...');
+        phase2Results = await detectTemplateDrift(stackName, this.printer, cfn);
+        this.printer.debug(`Phase 2 complete: ${phase2Results.changes.length} changes`);
 
-        this.logger.push('Local changes');
-        this.logger.debug('Checking local files vs cloud backend...');
+        // Phase 3: Local drift detection
+        this.printer.push('Checking local changes...');
+        this.printer.debug('Checking local files vs cloud backend...');
         phase3Results = await detectLocalDrift(this.context);
-        this.logger.pop();
-        this.logger.debug('Phase 3 complete');
+        this.printer.debug('Phase 3 complete');
       }
+
+      this.printer.succeed('Drift detection completed');
     } catch (error) {
-      this.logger.pop();
+      this.printer.stop();
       throw error;
     }
 
     const driftReport = createUnifiedCategoryView(phase1Results, phase2Results, phase3Results);
-    const hasAnyErrors = phase1Results.incomplete || phase2Results.skipped || phase3Results.skipped;
+    if (driftReport) {
+      this.printer.info(driftReport);
+      this.printer.info(chalk.yellow('Drift detected'));
+    } else {
+      this.printer.info(chalk.green('No drift detected'));
+    }
+
+    const hasAnyErrors = phase1Results.incomplete || phase2Results.incomplete || phase3Results.skipped;
 
     if (hasAnyErrors) {
-      this.logger.warn(chalk.yellow('Drift detection encountered errors, results may be incomplete:'));
+      this.printer.warn(chalk.yellow('Drift detection encountered errors, results may be incomplete:'));
       if (phase1Results.incomplete) {
-        this.logger.warn(
+        this.printer.warn(
           chalk.yellow(`CloudFormation drift check incomplete - ${phase1Results.skippedStacks.length} nested stack(s) skipped`),
         );
         for (const skippedStack of phase1Results.skippedStacks) {
-          this.logger.debug(`  - ${skippedStack}`);
+          this.printer.debug(`  - ${skippedStack}`);
         }
       }
-      if (phase2Results.skipped) {
-        this.logger.warn(chalk.yellow(`Template drift error: ${phase2Results.skipReason}`));
+      if (phase2Results.incomplete) {
+        const reason = phase2Results.skipReason
+          ? `Template drift error: ${phase2Results.skipReason}`
+          : `Template drift incomplete - ${phase2Results.skippedStacks?.length ?? 0} nested stack(s) skipped`;
+        this.printer.warn(chalk.yellow(reason));
       }
       if (phase3Results.skipped) {
-        this.logger.warn(chalk.yellow(`Local drift error: ${phase3Results.skipReason}`));
+        this.printer.warn(chalk.yellow(`Local drift error: ${phase3Results.skipReason}`));
       }
-      this.logger.debug('Exit code 1: Incomplete drift detection - cannot guarantee no drift');
+      this.printer.debug('Exit code 1: Incomplete drift detection - cannot guarantee no drift');
       return { code: 1, report: driftReport ?? undefined };
     }
     return { code: driftReport ? 1 : 0, report: driftReport };

@@ -10,11 +10,11 @@ import {
   paginateListChangeSets,
   type ResourceChange,
 } from '@aws-sdk/client-cloudformation';
+import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
 import Bottleneck from 'bottleneck';
 import fs from 'fs-extra';
 import * as path from 'path';
-import { globSync } from 'glob';
-import type { Printer } from '@aws-amplify/amplify-prompts';
+import type { SpinningLogger } from '../gen2-migration/_infra/spinning-logger';
 
 export interface ResourceChangeWithNested extends ResourceChange {
   nestedChanges?: ResourceChangeWithNested[];
@@ -22,36 +22,58 @@ export interface ResourceChangeWithNested extends ResourceChange {
 
 export interface TemplateDriftResults {
   changes: ResourceChangeWithNested[];
-  skipped: boolean;
+  incomplete: boolean;
   skipReason?: string;
   skippedStacks?: string[];
 }
 
 const CHANGESET_PREFIX = 'amplify-drift-detection-';
 
-const S3_TEMPLATE_PATH_PREFIX = 'amplify-cfn-templates/';
+/**
+ * Parse an S3 URL into bucket and key components.
+ * Supports common S3 URL formats:
+ *   - https://s3.amazonaws.com/{bucket}/{key}
+ *   - https://{bucket}.s3.amazonaws.com/{key}
+ *   - https://s3.{region}.amazonaws.com/{bucket}/{key}
+ *   - https://{bucket}.s3.{region}.amazonaws.com/{key}
+ *
+ * Returns undefined for unrecognizable URLs (e.g. Fn::Sub / Fn::Join intrinsics).
+ */
+function parseS3Url(url: string): { Bucket: string; Key: string } | undefined {
+  try {
+    const parsed = new URL(url);
+    const host = parsed.hostname;
+    const pathParts = parsed.pathname.replace(/^\//, '').split('/');
 
-interface NestedTemplateInfo {
-  templateBody: string;
-  category: string;
-}
+    // https://s3.amazonaws.com/{bucket}/{key} or https://s3.{region}.amazonaws.com/{bucket}/{key}
+    if (host.startsWith('s3.') || host === 's3.amazonaws.com') {
+      if (pathParts.length < 2) return undefined;
+      return { Bucket: pathParts[0], Key: pathParts.slice(1).join('/') };
+    }
 
-interface NestedTemplateResolution {
-  resolved: Map<string, NestedTemplateInfo>;
-  skipped: string[];
+    // https://{bucket}.s3.amazonaws.com/{key} or https://{bucket}.s3.{region}.amazonaws.com/{key}
+    const bucketMatch = host.match(/^(.+?)\.s3[.\-]/);
+    if (bucketMatch) {
+      if (pathParts.length < 1 || !pathParts[0]) return undefined;
+      return { Bucket: bucketMatch[1], Key: pathParts.join('/') };
+    }
+
+    return undefined;
+  } catch {
+    return undefined;
+  }
 }
 
 /**
- * Resolve cached templates for nested stacks by matching TemplateURL filenames
- * from the root template against files in the local build directory.
- *
- * Pure function — no API calls, no logging.
+ * Fetch nested stack templates from S3 by parsing TemplateURL values in the root template.
+ * This mirrors how CloudFormation's IncludeNestedStacks worked — fetching actual deployed templates from S3.
  */
-function resolveNestedTemplates(
+async function fetchNestedTemplatesFromS3(
   rootTemplate: Record<string, any>,
-  buildDir: string,
-): NestedTemplateResolution {
-  const resolved = new Map<string, NestedTemplateInfo>();
+  s3: S3Client,
+  print: SpinningLogger,
+): Promise<{ resolved: Map<string, string>; skipped: string[] }> {
+  const resolved = new Map<string, string>();
   const skipped: string[] = [];
 
   for (const [logicalId, resource] of Object.entries(rootTemplate.Resources || {})) {
@@ -60,31 +82,28 @@ function resolveNestedTemplates(
 
     const templateUrl = res.Properties?.TemplateURL;
     if (typeof templateUrl !== 'string') {
+      // Intrinsic function (Fn::Sub, Fn::Join) — cannot resolve statically
       skipped.push(logicalId);
       continue;
     }
 
-    // Extract relative path after "amplify-cfn-templates/" → e.g. "storage/cloudformation-template.json"
-    const prefixIdx = templateUrl.indexOf(S3_TEMPLATE_PATH_PREFIX);
-    if (prefixIdx === -1) {
-      skipped.push(logicalId);
-      continue;
-    }
-    const relativePath = templateUrl.slice(prefixIdx + S3_TEMPLATE_PATH_PREFIX.length);
-    const category = relativePath.split('/')[0];
-    const filename = relativePath.split('/').pop()!;
-
-    // Glob for the filename under the category subdirectory
-    const matches = globSync(`${category}/**/${filename}`, { cwd: buildDir });
-    if (matches.length !== 1) {
+    const s3Location = parseS3Url(templateUrl);
+    if (!s3Location) {
+      print.debug(`Cannot parse TemplateURL for ${logicalId}: ${templateUrl}`);
       skipped.push(logicalId);
       continue;
     }
 
     try {
-      const templateBody = fs.readFileSync(path.join(buildDir, matches[0]), 'utf-8');
-      resolved.set(logicalId, { templateBody, category });
-    } catch {
+      const response = await s3.send(new GetObjectCommand(s3Location));
+      const body = await response.Body?.transformToString();
+      if (body) {
+        resolved.set(logicalId, body);
+      } else {
+        skipped.push(logicalId);
+      }
+    } catch (err: any) {
+      print.debug(`S3 fetch failed for ${logicalId} (${s3Location.Bucket}/${s3Location.Key}): ${err.message}`);
       skipped.push(logicalId);
     }
   }
@@ -103,7 +122,6 @@ interface NestedStackTarget {
   logicalId: string;
   physicalId: string;
   templateBody: string;
-  category: string;
 }
 
 const POLL_INTERVAL_MS = 2_000;
@@ -113,7 +131,7 @@ const PER_STACK_TIMEOUT_MS = 60_000;
  * Delete any existing `amplify-drift-detection-*` changesets on a stack.
  * Prevents hitting the 50-changeset-per-stack CloudFormation limit across repeated runs.
  */
-async function cleanupStaleChangesets(cfn: CloudFormationClient, stackName: string, print: Printer): Promise<void> {
+async function cleanupStaleChangesets(cfn: CloudFormationClient, stackName: string, print: SpinningLogger): Promise<void> {
   const staleIds: string[] = [];
   const paginator = paginateListChangeSets({ client: cfn }, { StackName: stackName });
   for await (const page of paginator) {
@@ -139,7 +157,7 @@ async function createAndPollChangeset(
   cfn: CloudFormationClient,
   stackName: string,
   templateBody: string,
-  print: Printer,
+  print: SpinningLogger,
 ): Promise<NestedChangeSetResult> {
   // Phase 0: Clean up stale drift changesets from prior runs
   try {
@@ -208,8 +226,8 @@ async function createAndPollChangeset(
     if (finalStatus.StatusReason?.includes("didn't contain changes") || finalStatus.StatusReason?.includes('No updates')) {
       return { changes: [], skipped: false };
     }
-    // EarlyValidation::ResourceExistenceCheck means a resource was moved between stacks — this IS drift
-    if (finalStatus.StatusReason?.includes('EarlyValidation') || finalStatus.StatusReason?.includes('ResourceExistenceCheck')) {
+    // EarlyValidation / ResourceNotFound / "resource does not exist" means a resource was moved between stacks — this IS drift
+    if (/EarlyValidation|ResourceNotFound|resource.*does not exist/i.test(finalStatus.StatusReason ?? '')) {
       print.debug(`EarlyValidation drift detected on ${stackName}: ${finalStatus.StatusReason}`);
       const syntheticChange: ResourceChange = {
         Action: 'Modify',
@@ -262,29 +280,29 @@ function isDeletionPolicyOnlyChange(change: ResourceChange): boolean {
  * IncludeNestedStacks changeset, avoiding EarlyValidation failures that
  * discard all results when one nested stack fails.
  */
-export async function detectTemplateDrift(stackName: string, print: Printer, cfn: CloudFormationClient): Promise<TemplateDriftResults> {
+export async function detectTemplateDrift(stackName: string, print: SpinningLogger, cfn: CloudFormationClient, s3?: S3Client): Promise<TemplateDriftResults> {
+  const s3Client = s3 ?? new S3Client({});
   try {
     // Check prerequisites
     const currentCloudBackendPath = pathManager.getCurrentCloudBackendDirPath();
     if (!fs.existsSync(currentCloudBackendPath)) {
-      return { changes: [], skipped: true, skipReason: 'No #current-cloud-backend found. Run "amplify pull" first.' };
+      return { changes: [], incomplete: true, skipReason: 'No #current-cloud-backend found. Run "amplify pull" first.' };
     }
 
     const templatePath = path.join(currentCloudBackendPath, 'awscloudformation', 'build', 'root-cloudformation-stack.json');
     if (!fs.existsSync(templatePath)) {
-      return { changes: [], skipped: true, skipReason: 'No cached CloudFormation template found' };
+      return { changes: [], incomplete: true, skipReason: 'No cached CloudFormation template found' };
     }
 
     const rootTemplate = await fs.readJson(templatePath);
     const rootTemplateBody = JSON.stringify(rootTemplate);
-    const buildDir = path.join(currentCloudBackendPath, 'awscloudformation', 'build');
 
     // Step 0: Create a root changeset (IncludeNestedStacks defaults to false)
     print.debug('Creating root stack changeset for template drift detection');
     const rootResult = await createAndPollChangeset(cfn, stackName, rootTemplateBody, print);
 
-    // Step 1: resolve cached templates (sync), then enumerate deployed nested stacks
-    const templateResolution = resolveNestedTemplates(rootTemplate, buildDir);
+    // Step 1: Fetch nested stack templates from S3, then enumerate deployed nested stacks
+    const templateResolution = await fetchNestedTemplatesFromS3(rootTemplate, s3Client, print);
     const stackResources = await cfn.send(new DescribeStackResourcesCommand({ StackName: stackName }));
 
     // Build physical ID map from deployed nested stacks (skip deleted)
@@ -302,36 +320,35 @@ export async function detectTemplateDrift(stackName: string, print: Printer, cfn
 
     // Step 2: Join — only process stacks present in both maps
     const targets: NestedStackTarget[] = [];
-    for (const [logicalId, info] of templateResolution.resolved) {
+    for (const [logicalId, templateBody] of templateResolution.resolved) {
       const physicalId = physicalIds.get(logicalId);
       if (physicalId) {
-        targets.push({ logicalId, physicalId, templateBody: info.templateBody, category: info.category });
+        targets.push({ logicalId, physicalId, templateBody });
       } else {
         templateResolution.skipped.push(logicalId);
       }
     }
 
     if (targets.length === 0) {
-      return { changes: [], skipped: true, skipReason: 'Could not resolve any nested stack templates' };
+      return { changes: [], incomplete: true, skipReason: 'Could not resolve any nested stack templates' };
     }
 
     print.debug(`Template drift: ${targets.length} nested stacks to analyze, ${templateResolution.skipped.length} skipped`);
 
     // Step 3: Create per-nested-stack changesets with concurrency limit
     const limiter = new Bottleneck({ maxConcurrent: 3, minTime: 50 });
-    const resultMap = new Map<string, NestedChangeSetResult>();
 
-    await Promise.all(
+    const settledResults = await Promise.allSettled(
       targets.map((t) =>
         limiter.schedule(async () => {
           print.debug(`Analyzing nested stack: ${t.logicalId}`);
           const result = await createAndPollChangeset(cfn, t.physicalId, t.templateBody, print);
-          resultMap.set(t.logicalId, result);
           if (result.skipped) {
             print.debug(`  ${t.logicalId}: skipped — ${result.skipReason}`);
           } else {
             print.debug(`  ${t.logicalId}: ${result.changes.length} changes`);
           }
+          return { logicalId: t.logicalId, physicalId: t.physicalId, result };
         }),
       ),
     );
@@ -351,10 +368,15 @@ export async function detectTemplateDrift(stackName: string, print: Printer, cfn
       }
     }
 
-    for (const target of targets) {
-      const result = resultMap.get(target.logicalId)!;
+    for (const settled of settledResults) {
+      if (settled.status === 'rejected') {
+        // Promise itself rejected (unexpected) — record as skipped
+        print.debug(`Nested stack processing rejected: ${settled.reason}`);
+        continue;
+      }
+      const { logicalId, physicalId, result } = settled.value;
       if (result.skipped) {
-        skippedStacks.push(target.logicalId);
+        skippedStacks.push(logicalId);
         continue;
       }
       if (result.changes.length === 0) continue;
@@ -367,8 +389,8 @@ export async function detectTemplateDrift(stackName: string, print: Printer, cfn
       // to recurse into nestedChanges and extract category from LogicalResourceId
       const entry: ResourceChangeWithNested = {
         ResourceType: 'AWS::CloudFormation::Stack',
-        LogicalResourceId: target.logicalId,
-        PhysicalResourceId: target.physicalId,
+        LogicalResourceId: logicalId,
+        PhysicalResourceId: physicalId,
         ChangeSetId: result.changeSetId,
         Action: 'Modify',
         nestedChanges: filteredChanges.map((c) => ({ ...c })),
@@ -378,11 +400,11 @@ export async function detectTemplateDrift(stackName: string, print: Printer, cfn
 
     return {
       changes,
-      skipped: false,
+      incomplete: skippedStacks.length > 0,
       skippedStacks: skippedStacks.length > 0 ? skippedStacks : undefined,
     };
   } catch (error: any) {
     print.debug(error.stack ?? error.message);
-    return { changes: [], skipped: true, skipReason: `Error during template drift detection: ${error.message}` };
+    return { changes: [], incomplete: true, skipReason: `Error during template drift detection: ${error.message}` };
   }
 }

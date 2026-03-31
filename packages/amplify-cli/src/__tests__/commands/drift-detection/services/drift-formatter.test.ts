@@ -52,7 +52,7 @@ function makePhase1(overrides: Partial<CloudFormationDriftResults> = {}): CloudF
   };
 }
 
-const emptyPhase2: TemplateDriftResults = { changes: [], skipped: false };
+const emptyPhase2: TemplateDriftResults = { changes: [], incomplete: false };
 
 const emptyPhase3: LocalDriftResults = { skipped: false };
 
@@ -164,7 +164,7 @@ describe('createUnifiedCategoryView', () => {
           ],
         },
       ],
-      skipped: false,
+      incomplete: false,
     };
 
     const output = createUnifiedCategoryView(phase1, phase2, emptyPhase3);
@@ -188,7 +188,7 @@ describe('createUnifiedCategoryView', () => {
     const phase1 = makePhase1();
     const phase2: TemplateDriftResults = {
       changes: [{ LogicalResourceId: 'storageS3Bucket', ResourceType: 'AWS::S3::Bucket', Action: ChangeAction.Remove }],
-      skipped: false,
+      incomplete: false,
     };
 
     const output = createUnifiedCategoryView(phase1, phase2, emptyPhase3);
@@ -263,7 +263,7 @@ describe('createUnifiedCategoryView', () => {
     const phase1 = makePhase1();
     const phase2: TemplateDriftResults = {
       changes: [{ LogicalResourceId: 'apiEndpoint', ResourceType: 'AWS::ApiGateway::RestApi', Action: ChangeAction.Modify }],
-      skipped: false,
+      incomplete: false,
     };
 
     const output = createUnifiedCategoryView(phase1, phase2, emptyPhase3);
@@ -390,7 +390,7 @@ describe('createUnifiedCategoryView', () => {
           ],
         },
       ],
-      skipped: false,
+      incomplete: false,
     };
 
     const output = createUnifiedCategoryView(phase1, phase2, emptyPhase3);
