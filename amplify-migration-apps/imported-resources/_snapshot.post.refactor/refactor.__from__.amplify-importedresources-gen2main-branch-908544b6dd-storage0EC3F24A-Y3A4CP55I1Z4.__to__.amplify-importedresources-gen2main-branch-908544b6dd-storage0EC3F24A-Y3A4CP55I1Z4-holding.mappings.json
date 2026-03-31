@@ -1,0 +1,12 @@
+[
+  {
+    "Source": {
+      "StackName": "amplify-importedresources-gen2main-branch-908544b6dd-storage0EC3F24A-Y3A4CP55I1Z4",
+      "LogicalResourceId": "importedresources8c81d8d7ede741f3b102b3e1686abe8a9e9gen2mainBucket7C2850AF"
+    },
+    "Destination": {
+      "StackName": "amplify-importedresources-gen2main-branch-908544b6dd-storage0EC3F24A-Y3A4CP55I1Z4-holding",
+      "LogicalResourceId": "importedresources8c81d8d7ede741f3b102b3e1686abe8a9e9gen2mainBucket7C2850AF"
+    }
+  }
+]
