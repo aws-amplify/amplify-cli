@@ -1,8 +1,8 @@
-import { AmplifyGen2MigrationValidations } from '../../../commands/gen2-migration/_infra/validations';
+import { AmplifyGen2MigrationValidations } from '../../../../commands/gen2-migration/_infra/validations';
 import { $TSContext, stateManager } from '@aws-amplify/amplify-cli-core';
 import { DescribeChangeSetOutput } from '@aws-sdk/client-cloudformation';
-import { SpinningLogger } from '../../../commands/gen2-migration/_infra/spinning-logger';
-import { Gen1App } from '../../../commands/gen2-migration/generate/_infra/gen1-app';
+import { SpinningLogger } from '../../../../commands/gen2-migration/_infra/spinning-logger';
+import { Gen1App } from '../../../../commands/gen2-migration/generate/_infra/gen1-app';
 
 jest.mock('bottleneck', () => {
   return jest.fn().mockImplementation(() => ({

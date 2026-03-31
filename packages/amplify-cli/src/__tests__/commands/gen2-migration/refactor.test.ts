@@ -1,10 +1,10 @@
-import { AmplifyMigrationRefactorStep } from '../../../../commands/gen2-migration/refactor';
-import { OUTPUT_DIRECTORY } from '../../../../commands/gen2-migration/refactor/cfn';
-import { MigrationApp, MigrationAppOptions } from '../_framework/app';
-import { Gen1App } from '../../../../commands/gen2-migration/generate/_infra/gen1-app';
-import { SpinningLogger } from '../../../../commands/gen2-migration/_infra/spinning-logger';
+import { AmplifyMigrationRefactorStep } from '../../../commands/gen2-migration/refactor';
+import { OUTPUT_DIRECTORY } from '../../../commands/gen2-migration/refactor/cfn';
+import { MigrationApp, MigrationAppOptions } from './_framework/app';
+import { Gen1App } from '../../../commands/gen2-migration/generate/_infra/gen1-app';
+import { SpinningLogger } from '../../../commands/gen2-migration/_infra/spinning-logger';
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
-import { AmplifyGen2MigrationValidations } from '../../../../commands/gen2-migration/_infra/validations';
+import { AmplifyGen2MigrationValidations } from '../../../commands/gen2-migration/_infra/validations';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
@@ -74,6 +74,10 @@ test('mood-board snapshot', async () => {
 
 test('fitness-tracker snapshot', async () => {
   await testSnapshot('fitness-tracker');
+});
+
+test('imported-resources snapshot', async () => {
+  await testSnapshot('imported-resources');
 });
 
 async function testSnapshot(appName: string, appOptions?: MigrationAppOptions, customize?: (app: MigrationApp) => Promise<void>) {
