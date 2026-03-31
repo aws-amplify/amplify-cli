@@ -654,7 +654,7 @@ by the CLI setting that configures them.
     - 🔴 `OpenID Connect`
     - 🔴 `Lambda`
 
-- 🟡 **REST** (_generate_ ✗ _refactor_ ✔)
+- 🟢 **REST**
 
 ## Storage
 
