@@ -613,7 +613,7 @@ by the CLI setting that configures them.
   - ⚠️ `Add Google reCaptcha Challenge`
   - ⚠️ `Email Verification Link with Redirect`
   - ⚠️ `Add User to Group`
-  - ⚠️ `Email Domain Filtering (denylist)`
+  - 🟢 `Email Domain Filtering (denylist)`
   - 🟢 `Email Domain Filtering (allowlist)`
   - ⚠️ `Custom Auth Challenge Flow (basic scaffolding - not for production)`
   - ⚠️ `Override ID Token Claims`
