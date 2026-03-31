@@ -1,14 +1,13 @@
 import { Parameter, ResourceMapping } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
-import { CFNResource, CFNTemplate } from '../../cfn-template';
-import { Planner } from '../../planner';
-import { AmplifyMigrationOperation, ValidationResult } from '../../_operation';
-import { AwsClients } from '../../aws-clients';
+import { CFNResource, CFNTemplate } from '../../_infra/cfn-template';
+import { Planner } from '../../_infra/planner';
+import { AmplifyMigrationOperation, ValidationResult } from '../../_infra/operation';
 import { StackFacade } from '../stack-facade';
 import { Cfn, HOLDING_STACK_NAME_SUFFIX } from '../cfn';
-import { SpinningLogger } from '../../_spinning-logger';
+import { SpinningLogger } from '../../_infra/spinning-logger';
 import { extractStackNameFromId } from '../utils';
-import { DiscoveredResource } from '../../generate/_infra/gen1-app';
+import { DiscoveredResource, Gen1App } from '../../generate/_infra/gen1-app';
 import CLITable from 'cli-table3';
 
 const MAX_STACK_NAME_LENGTH = 128;
@@ -48,8 +47,7 @@ export abstract class CategoryRefactorer implements Planner {
   constructor(
     protected readonly gen1Env: StackFacade,
     protected readonly gen2Branch: StackFacade,
-    protected readonly clients: AwsClients,
-    protected readonly region: string,
+    protected readonly gen1App: Gen1App,
     protected readonly accountId: string,
     protected readonly logger: SpinningLogger,
     protected readonly resource: DiscoveredResource,

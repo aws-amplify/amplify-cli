@@ -1,4 +1,4 @@
-import { CFNTemplate } from '../../cfn-template';
+import { CFNTemplate } from '../../_infra/cfn-template';
 
 /**
  * Strips all DependsOn references from a CloudFormation template.

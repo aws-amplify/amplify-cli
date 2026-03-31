@@ -1,4 +1,4 @@
-import { CFNResource } from '../../cfn-template';
+import { CFNResource } from '../../_infra/cfn-template';
 import { ForwardCategoryRefactorer } from '../workflow/forward-category-refactorer';
 
 export const USER_POOL_GROUP_TYPE = 'AWS::Cognito::UserPoolGroup';

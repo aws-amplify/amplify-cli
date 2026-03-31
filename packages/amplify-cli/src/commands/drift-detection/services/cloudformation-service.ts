@@ -8,7 +8,7 @@ import type { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { AmplifyError, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import type { SpinningLogger } from '../../gen2-migration/_spinning-logger';
+import type { SpinningLogger } from '../../gen2-migration/_infra/spinning-logger';
 
 import CloudFormation from '@aws-amplify/amplify-provider-awscloudformation/lib/aws-utils/aws-cfn';
 import { downloadZip, extractZip } from '@aws-amplify/amplify-provider-awscloudformation/lib/zip-util';

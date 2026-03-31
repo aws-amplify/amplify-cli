@@ -1,4 +1,4 @@
-import { CFNResource } from '../../cfn-template';
+import { CFNResource } from '../../_infra/cfn-template';
 import { RollbackCategoryRefactorer } from '../workflow/rollback-category-refactorer';
 import { ANALYTICS_RESOURCE_TYPES, KINESIS_STREAM_TYPE } from './analytics-forward';
 

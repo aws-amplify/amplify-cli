@@ -24,9 +24,9 @@ import {
   waitUntilStackUpdateComplete,
 } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
-import { CFNResource, CFNTemplate } from '../cfn-template';
+import { CFNResource, CFNTemplate } from '../_infra/cfn-template';
 import { extractStackNameFromId } from './utils';
-import { SpinningLogger } from '../_spinning-logger';
+import { SpinningLogger } from '../_infra/spinning-logger';
 import chalk from 'chalk';
 import * as fs from 'fs';
 import * as path from 'path';

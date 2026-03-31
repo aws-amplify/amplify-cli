@@ -289,6 +289,13 @@ export class CognitoIdentityProviderMock {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     this.mock.on(idp.ListGroupsCommand).callsFake(async (input: idp.ListGroupsCommandInput): Promise<idp.ListGroupsCommandOutput> => {
       const authResourceName = this.app.singleResourceName('auth', 'Cognito');
+      const authMeta = this.app.meta.auth[authResourceName];
+
+      // Imported auth resources don't have cli-inputs.json — return no groups.
+      if (authMeta.serviceType === 'imported') {
+        return { Groups: [], $metadata: {} };
+      }
+
       const authCliInputs = this.app.cliInputsForResource(authResourceName, 'auth');
       const userPoolGroupList: string[] = authCliInputs.cognitoConfig.userPoolGroupList ?? [];
 

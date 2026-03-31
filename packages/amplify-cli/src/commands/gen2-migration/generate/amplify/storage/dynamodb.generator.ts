@@ -1,5 +1,5 @@
-import { Planner } from '../../../planner';
-import { AmplifyMigrationOperation } from '../../../_operation';
+import { Planner } from '../../../_infra/planner';
+import { AmplifyMigrationOperation } from '../../../_infra/operation';
 import { BackendGenerator } from '../backend.generator';
 import { Gen1App, DiscoveredResource } from '../../_infra/gen1-app';
 import { DynamoDBRenderer, DynamoDBGSI, DynamoDBTableDefinition } from './dynamodb.renderer';

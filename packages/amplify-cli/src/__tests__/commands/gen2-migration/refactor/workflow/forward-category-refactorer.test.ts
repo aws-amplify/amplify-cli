@@ -1,5 +1,6 @@
 import { ForwardCategoryRefactorer } from '../../../../../commands/gen2-migration/refactor/workflow/forward-category-refactorer';
-import { AwsClients } from '../../../../../commands/gen2-migration/aws-clients';
+import { AwsClients } from '../../../../../commands/gen2-migration/_infra/aws-clients';
+import { Gen1App } from '../../../../../commands/gen2-migration/generate/_infra/gen1-app';
 import { StackFacade } from '../../../../../commands/gen2-migration/refactor/stack-facade';
 import { Cfn } from '../../../../../commands/gen2-migration/refactor/cfn';
 import { noOpLogger } from '../../_framework/logger';
@@ -54,14 +55,13 @@ describe('ForwardCategoryRefactorer.beforeMove', () => {
     cfnMock.on(GetTemplateCommand).resolves({ TemplateBody: GEN2_TEMPLATE_NO_BUCKET });
     cfnMock.on(DescribeStacksCommand).resolves({ Stacks: [] });
 
-    const clients = new AwsClients({ region: 'us-east-1' });
+    const clients = new (AwsClients as any)({ region: 'us-east-1' });
     (clients as any).cloudFormation = new CloudFormationClient({});
     const cfn = new Cfn(new CloudFormationClient({}), noOpLogger());
     const refactorer = new TestForwardRefactorer(
       new StackFacade(clients, 'g1'),
       new StackFacade(clients, 'g2'),
-      clients,
-      'us-east-1',
+      { region: 'us-east-1', clients } as unknown as Gen1App,
       '123',
       noOpLogger(),
       { category: 'storage', resourceName: 'test', service: 'S3', key: 'storage:S3' as const },
@@ -82,14 +82,13 @@ describe('ForwardCategoryRefactorer.beforeMove', () => {
     cfnMock.on(DescribeStackResourcesCommand).resolves({ StackResources: [] });
     cfnMock.on(GetTemplateCommand).resolves({ TemplateBody: GEN2_TEMPLATE_WITH_BUCKET });
 
-    const clients = new AwsClients({ region: 'us-east-1' });
+    const clients = new (AwsClients as any)({ region: 'us-east-1' });
     (clients as any).cloudFormation = new CloudFormationClient({});
     const cfn = new Cfn(new CloudFormationClient({}), noOpLogger());
     const refactorer = new TestForwardRefactorer(
       new StackFacade(clients, 'g1'),
       new StackFacade(clients, 'g2'),
-      clients,
-      'us-east-1',
+      { region: 'us-east-1', clients } as unknown as Gen1App,
       '123',
       noOpLogger(),
       { category: 'storage', resourceName: 'test', service: 'S3', key: 'storage:S3' as const },
@@ -122,14 +121,13 @@ describe('ForwardCategoryRefactorer.beforeMove', () => {
       return { TemplateBody: GEN2_TEMPLATE_WITH_BUCKET };
     });
 
-    const clients = new AwsClients({ region: 'us-east-1' });
+    const clients = new (AwsClients as any)({ region: 'us-east-1' });
     (clients as any).cloudFormation = new CloudFormationClient({});
     const cfn = new Cfn(new CloudFormationClient({}), noOpLogger());
     const refactorer = new TestForwardRefactorer(
       new StackFacade(clients, 'g1'),
       new StackFacade(clients, 'g2'),
-      clients,
-      'us-east-1',
+      { region: 'us-east-1', clients } as unknown as Gen1App,
       '123',
       noOpLogger(),
       { category: 'storage', resourceName: 'test', service: 'S3', key: 'storage:S3' as const },
@@ -144,7 +142,7 @@ describe('ForwardCategoryRefactorer.beforeMove', () => {
   });
 });
 
-import { CFNResource } from '../../../../../commands/gen2-migration/cfn-template';
+import { CFNResource } from '../../../../../commands/gen2-migration/_infra/cfn-template';
 
 class TestForwardMappingRefactorer extends ForwardCategoryRefactorer {
   protected async fetchSourceStackId() {
@@ -171,8 +169,7 @@ describe('ForwardCategoryRefactorer.buildResourceMappings (default type-matching
   const refactorer = new TestForwardMappingRefactorer(
     null as any,
     null as any,
-    null as any,
-    'us-east-1',
+    { region: 'us-east-1' } as unknown as Gen1App,
     '123',
     noOpLogger(),
     { category: 'storage', resourceName: 'test', service: 'S3', key: 'storage:S3' as const },
