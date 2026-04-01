@@ -306,7 +306,9 @@ export abstract class CategoryRefactorer implements Planner {
     this.logger.debug(`[${this.resource.category}/${this.resource.resourceName}] ${message}`);
   }
 
-  /** Builds a no-op operation whose validate() checks a single stack's status. */
+  /**
+   * Builds a no-op operation whose validate() checks a single stack's status.
+   */
   private buildStackStatusValidation(stackId: string): AmplifyMigrationOperation {
     const stackName = extractStackNameFromId(stackId);
     return {

@@ -397,12 +397,11 @@ describe('stack status validation', () => {
   }
 
   function createRefactorer() {
-    const { clients, gen1Env, gen2Branch, cfn } = makeInstances();
+    const { gen1Env, gen2Branch, gen1App, cfn } = makeInstances();
     return new StorageS3ForwardRefactorer(
       gen1Env,
       gen2Branch,
-      clients,
-      'us-east-1',
+      gen1App,
       '123',
       noOpLogger(),
       { category: 'storage', resourceName: 'avatars', service: 'S3', key: 'storage:S3' as const },
