@@ -344,6 +344,7 @@ npx jest --no-coverage src/__tests__/commands/gen2-migration/generate.test.ts -t
 
 Always review the diff after updating to make sure the changes are intentional.
 
+
 > [!NOTE]
 > When updating snapshots, the first run with `--updateSnapshot` will still report a failure
 > because it detects the diff before writing the updated files. Run the tests a second time
