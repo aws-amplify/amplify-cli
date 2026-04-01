@@ -276,6 +276,19 @@ export class Cfn {
   }
 
   /**
+   * Describes a stack by name. Throws if the stack does not exist or has been deleted.
+   */
+  public async describeStack(stackName: string): Promise<Stack> {
+    const stack = await this.findStack(stackName);
+    if (!stack) {
+      throw new AmplifyError('StackNotFoundError', {
+        message: `Stack '${extractStackNameFromId(stackName)}' does not exist`,
+      });
+    }
+    return stack;
+  }
+
+  /**
    * Fetches and parses the original template for a stack.
    * Throws if the stack returns an empty template.
    */
