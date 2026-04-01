@@ -223,7 +223,8 @@ describe('AuthCognitoForwardRefactorer.plan() — operation sequence', () => {
       Stacks: [{ StackName: 'gen1-auth-stack', StackStatus: 'UPDATE_COMPLETE', CreationTime: ts }],
     });
     cfnMock.on(UpdateStackCommand).resolves({});
-    await ops[0].execute();
+    // ops[0] and ops[1] are stack status validations; ops[2] is updateSource
+    await ops[2].execute();
 
     const updateCalls = cfnMock.commandCalls(UpdateStackCommand);
     expect(updateCalls).toHaveLength(1);
