@@ -10,6 +10,7 @@ function mockGen1App(resources: DiscoveredResource[], existingFiles: string[] = 
     meta: () => undefined,
     fileExists: (path: string) => fileSet.has(path),
     json: (path: string) => jsonFiles[path],
+    ensureCliInputs: () => undefined,
   } as unknown as Gen1App;
 }
 

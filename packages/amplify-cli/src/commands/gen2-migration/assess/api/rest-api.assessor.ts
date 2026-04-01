@@ -12,6 +12,7 @@ export class RestApiAssessor implements Assessor {
    * Records resource-level support for this REST API resource.
    */
   public record(assessment: Assessment): void {
+    this.gen1App.ensureCliInputs(this.resource.category, this.resource.resourceName);
     assessment.recordResource({ resource: this.resource, generate: supported(), refactor: notApplicable() });
 
     const overridesPath = `api/${this.resource.resourceName}/override.ts`;

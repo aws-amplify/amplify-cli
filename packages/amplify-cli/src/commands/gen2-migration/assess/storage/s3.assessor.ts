@@ -13,6 +13,7 @@ export class S3Assessor implements Assessor {
    * Records resource-level and feature-level support for this S3 resource.
    */
   public record(assessment: Assessment): void {
+    this.gen1App.ensureCliInputs(this.resource.category, this.resource.resourceName);
     assessment.recordResource({ resource: this.resource, generate: supported(), refactor: supported() });
 
     const overridesPath = `storage/${this.resource.resourceName}/override.ts`;

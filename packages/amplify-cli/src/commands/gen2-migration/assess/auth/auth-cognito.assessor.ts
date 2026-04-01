@@ -13,6 +13,13 @@ export class AuthCognitoAssessor implements Assessor {
    * Records resource-level and feature-level support for this auth resource.
    */
   public record(assessment: Assessment): void {
+    const meta = (this.gen1App.meta('auth') ?? {})[this.resource.resourceName] as Record<string, unknown> | undefined;
+    const isImported = meta?.serviceType === 'imported';
+
+    if (!isImported) {
+      this.gen1App.ensureCliInputs(this.resource.category, this.resource.resourceName);
+    }
+
     assessment.recordResource({ resource: this.resource, generate: supported(), refactor: supported() });
 
     const overridesPath = `auth/${this.resource.resourceName}/override.ts`;

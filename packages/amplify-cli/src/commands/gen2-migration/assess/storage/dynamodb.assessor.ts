@@ -12,6 +12,7 @@ export class DynamoDBAssessor implements Assessor {
    * Records resource-level support for this DynamoDB resource.
    */
   public record(assessment: Assessment): void {
+    this.gen1App.ensureCliInputs(this.resource.category, this.resource.resourceName);
     assessment.recordResource({ resource: this.resource, generate: supported(), refactor: supported() });
 
     const overridesPath = `storage/${this.resource.resourceName}/override.ts`;
