@@ -201,17 +201,22 @@ export class CategoryInitializer {
         IAM: 'IAM',
         API_KEY: 'API key',
         COGNITO_USER_POOLS: 'Amazon Cognito User Pool',
+        AMAZON_COGNITO_USER_POOLS: 'Amazon Cognito User Pool',
       };
 
       const authTypesConfig: Record<string, Record<string, unknown>> = {};
       for (const mode of apiConfig.authModes ?? []) {
         const mapped = authModeMap[mode];
-        if (mapped) authTypesConfig[mapped] = {};
+        if (!mapped) {
+          throw new Error(
+            `Unsupported auth mode '${mode}' in migration-config.json. Supported modes: ${Object.keys(authModeMap).join(', ')}`,
+          );
+        }
+        authTypesConfig[mapped] = {};
       }
 
-      // Fallback: ensure at least API key is present
       if (Object.keys(authTypesConfig).length === 0) {
-        authTypesConfig['API key'] = {};
+        throw new Error('migration-config.json must specify at least one authMode for the GraphQL API');
       }
 
       // Pass requireAuthSetup = false because the auth category is already initialized
