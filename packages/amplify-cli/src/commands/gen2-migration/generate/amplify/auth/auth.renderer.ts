@@ -435,6 +435,9 @@ export class AuthRenderer {
     } else {
       overrides.usernameAttributes = userPool.UsernameAttributes;
     }
+    if (userPool.AliasAttributes !== undefined && userPool.AliasAttributes.length > 0) {
+      overrides.aliasAttributes = userPool.AliasAttributes;
+    }
     return overrides;
   }
 

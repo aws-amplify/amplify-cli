@@ -243,3 +243,69 @@ describe('ReferenceAuthGenerator', () => {
     expect(addImportSpy).toHaveBeenCalledWith('./auth/resource', ['auth']);
   });
 });
+
+describe('AuthGenerator backend.ts output', () => {
+  let backendGenerator: BackendGenerator;
+  const outputDir = '/fake/output';
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    backendGenerator = new BackendGenerator(outputDir);
+  });
+
+  it('generates backend.ts with aliasAttributes override', async () => {
+    const realTS = jest.requireActual('../../../../../../commands/gen2-migration/generate/_infra/ts').TS;
+    mockPrintNodes.mockImplementation((...args: unknown[]) => realTS.printNodes(...args));
+
+    const gen1App = createMockGen1App();
+    (gen1App.metaOutput as jest.Mock).mockImplementation((_cat: string, _res: string, key: string) => {
+      if (key === 'UserPoolId') return 'us-east-1_abc123';
+      return undefined;
+    });
+    (gen1App.aws.fetchUserPool as jest.Mock).mockResolvedValue({
+      Policies: { PasswordPolicy: { MinimumLength: 8 } },
+      AliasAttributes: ['email', 'preferred_username'],
+      SchemaAttributes: [],
+    });
+    (gen1App.aws.fetchMfaConfig as jest.Mock).mockResolvedValue({ MfaConfiguration: 'OFF' });
+    (gen1App.aws.fetchUserPoolClient as jest.Mock).mockResolvedValue(undefined);
+    (gen1App.aws.fetchIdentityProviders as jest.Mock).mockResolvedValue([]);
+    (gen1App.aws.fetchIdentityGroups as jest.Mock).mockResolvedValue([]);
+    (gen1App.aws.fetchIdentityPool as jest.Mock).mockResolvedValue(undefined);
+
+    const generator = new AuthGenerator(gen1App, backendGenerator, outputDir, {
+      category: 'auth',
+      resourceName: 'testAuth',
+      service: 'Cognito',
+      key: 'auth:Cognito',
+    });
+
+    const authOps = await generator.plan();
+    await authOps[0].execute();
+
+    const backendOps = await backendGenerator.plan();
+    await backendOps[0].execute();
+
+    const backendTsCall = mockWriteFile.mock.calls.find((call: unknown[]) => (call[0] as string).endsWith('backend.ts'));
+    expect(backendTsCall).toBeDefined();
+    const backendContent = backendTsCall![1] as string;
+
+    expect(backendContent).toMatchInlineSnapshot(`
+      "import { auth } from './auth/resource';
+      import { defineBackend } from '@aws-amplify/backend';
+
+      const backend = defineBackend({
+        auth,
+      });
+      const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
+      cfnUserPool.usernameAttributes = undefined;
+      cfnUserPool.aliasAttributes = ['email', 'preferred_username'];
+      cfnUserPool.policies = {
+        passwordPolicy: {
+          minimumLength: 8,
+        },
+      };
+      "
+    `);
+  });
+});

@@ -227,7 +227,18 @@ export class Gen1App {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped Gen1 cli-inputs.json
   public cliInputs(category: string, resourceName: string): any {
-    return this.json(path.join(category, resourceName, 'cli-inputs.json'));
+    const relativePath = path.join(category, resourceName, 'cli-inputs.json');
+    const fullPath = path.join(this.ccbDir, relativePath);
+    try {
+      return JSONUtilities.readJson(fullPath, { throwIfNotExist: true });
+    } catch {
+      throw new AmplifyError('MigrationError', {
+        message: `Could not find cli-inputs.json for '${resourceName}' in category '${category}'.`,
+        resolution:
+          'This usually means the app was created with an older CLI version that did not generate cli-inputs.json files. ' +
+          'Such apps are not supported for migration.',
+      });
+    }
   }
 
   private static async currentEnvName(app: App): Promise<string> {

@@ -93,4 +93,21 @@ describe('Gen1App', () => {
       ]);
     });
   });
+
+  describe('cliInputs()', () => {
+    it('throws AmplifyError with resolution when cli-inputs.json is missing', () => {
+      const app = createGen1AppWithMeta({});
+      // Set ccbDir to a path that won't contain the file.
+      (app as any).ccbDir = '/nonexistent/path';
+
+      try {
+        app.cliInputs('storage', 'myResource');
+        fail('Expected cliInputs to throw');
+      } catch (e: any) {
+        expect(e.name).toBe('MigrationError');
+        expect(e.message).toContain("Could not find cli-inputs.json for 'myResource'");
+        expect(e.resolution).toContain('older CLI version');
+      }
+    });
+  });
 });

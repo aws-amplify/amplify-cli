@@ -123,6 +123,7 @@ export class CognitoIdentityProviderMock {
         }
 
         const usernameAttributes: string[] = authCliInputs.cognitoConfig.usernameAttributes ?? [];
+        const aliasAttributes: string[] = authCliInputs.cognitoConfig.aliasAttributes ?? [];
         return {
           UserPool: {
             Id: input.UserPoolId,
@@ -130,6 +131,7 @@ export class CognitoIdentityProviderMock {
             EmailVerificationSubject: authCliInputs.cognitoConfig.emailVerificationSubject,
             SchemaAttributes: template.Resources.UserPool.Properties.Schema,
             UsernameAttributes: normalizeUsernameAttributes(usernameAttributes) as idp.UsernameAttributeType[],
+            AliasAttributes: aliasAttributes.length > 0 ? (aliasAttributes as idp.AliasAttributeType[]) : undefined,
             LambdaConfig: lambdaConfig,
             Policies: {
               PasswordPolicy: {
