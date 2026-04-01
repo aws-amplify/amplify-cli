@@ -20,7 +20,6 @@ import {
   addAuthWithEmail,
   addAuthWithGroups,
   addApi,
-  addApiWithBlankSchema,
   addRestApi,
   addS3Storage,
   addS3StorageWithAuthOnly,
@@ -196,22 +195,32 @@ export class CategoryInitializer {
     this.logger.info('Initializing GraphQL API category...', context);
 
     try {
-      // Determine which auth modes the API needs based on config
-      const needsCognitoAuth = apiConfig.authModes?.includes('COGNITO_USER_POOLS');
-      const needsIamAuth = apiConfig.authModes?.includes('IAM');
+      // Build authTypesConfig in the order specified by migration-config.json so the
+      // first auth mode becomes the default (addApi uses the first key as default).
+      const authModeMap: Record<string, string> = {
+        IAM: 'IAM',
+        API_KEY: 'API key',
+        COGNITO_USER_POOLS: 'Amazon Cognito User Pool',
+        AMAZON_COGNITO_USER_POOLS: 'Amazon Cognito User Pool',
+      };
 
-      if (needsCognitoAuth || needsIamAuth) {
-        // Use addApi with explicit auth types config.
-        // Pass requireAuthSetup = false because the auth category is already initialized,
-        // so the CLI won't prompt for Cognito setup — it reuses the existing user pool.
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const authTypesConfig: Record<string, Record<string, unknown>> = { 'API key': {} };
-        if (needsCognitoAuth) authTypesConfig['Amazon Cognito User Pool'] = {};
-        if (needsIamAuth) authTypesConfig['IAM'] = {};
-        await addApi(appPath, authTypesConfig, false);
-      } else {
-        await addApiWithBlankSchema(appPath);
+      const authTypesConfig: Record<string, Record<string, unknown>> = {};
+      for (const mode of apiConfig.authModes ?? []) {
+        const mapped = authModeMap[mode];
+        if (!mapped) {
+          throw new Error(
+            `Unsupported auth mode '${mode}' in migration-config.json. Supported modes: ${Object.keys(authModeMap).join(', ')}`,
+          );
+        }
+        authTypesConfig[mapped] = {};
       }
+
+      if (Object.keys(authTypesConfig).length === 0) {
+        throw new Error('migration-config.json must specify at least one authMode for the GraphQL API');
+      }
+
+      // Pass requireAuthSetup = false because the auth category is already initialized
+      await addApi(appPath, authTypesConfig, false);
 
       // If a schema file is specified, update the schema
       if (apiConfig.schema) {
