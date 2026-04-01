@@ -33,8 +33,29 @@ import {
   addKinesis,
   updateSchema,
 } from '@aws-amplify/amplify-e2e-core';
+import type { CoreFunctionSettings } from '@aws-amplify/amplify-e2e-core';
 import * as fs from 'fs';
 import * as path from 'path';
+
+/** Minimal shape of a CloudFormation template used for CFN patching. */
+interface CfnTemplate {
+  Parameters?: Record<string, Record<string, unknown>>;
+  Resources?: Record<string, unknown> & {
+    LambdaFunction?: {
+      Properties?: {
+        Environment?: {
+          Variables?: Record<string, unknown>;
+        };
+      };
+    };
+  };
+}
+
+/** Minimal shape of backend-config.json / amplify-meta.json used for patching. */
+interface AmplifyBackendConfig {
+  api?: Record<string, unknown>;
+  function?: Record<string, { dependsOn?: unknown[] }>;
+}
 
 export interface CategoryInitializerOptions {
   appPath: string;
@@ -51,9 +72,7 @@ export interface InitializeCategoriesResult {
 export class CategoryInitializer {
   constructor(private readonly logger: ILogger) {}
 
-  /**
-   * Initialize all categories defined in the configuration
-   */
+  /** Initialize all categories defined in the configuration. */
   async initializeCategories(options: CategoryInitializerOptions): Promise<InitializeCategoriesResult> {
     const { appPath, config, deploymentName } = options;
     const context: LogContext = { appName: deploymentName, operation: 'initializeCategories' };
@@ -75,11 +94,12 @@ export class CategoryInitializer {
     // Initialize categories in the correct order:
     // 1. Auth first (other categories may depend on it)
     // 2. Analytics before functions (functions may reference analytics resources)
-    // 3. Regular functions (non-trigger) before API
+    // 3. Regular functions WITHOUT API access before storage/API
     // 4. Storage (may have triggers that reference functions)
     // 5. GraphQL API (creates AppSync tables that trigger functions may reference)
-    // 6. Trigger functions (need AppSync/DynamoDB tables to exist)
-    // 7. REST API last (needs functions to exist)
+    // 6. Regular functions WITH API access (need API to exist for additionalPermissions)
+    // 7. Trigger functions (need AppSync/DynamoDB tables to exist)
+    // 8. REST API last (needs functions to exist)
     if (categories.auth) {
       await this.initializeAuthCategory(appPath, categories.auth, result, context);
     }
@@ -88,9 +108,9 @@ export class CategoryInitializer {
       await this.initializeAnalyticsCategory(appPath, categories.analytics, result, context);
     }
 
-    // Initialize regular (non-trigger) functions before API
+    // Initialize regular functions that do NOT need API access (before API)
     if (categories.function) {
-      await this.initializeRegularFunctions(appPath, categories.function, result, context);
+      await this.initializeRegularFunctions(appPath, categories.function, false, result, context);
     }
 
     if (categories.storage) {
@@ -101,12 +121,15 @@ export class CategoryInitializer {
       await this.initializeApiCategory(appPath, categories.api, categories.function, result, context);
     }
 
-    // Initialize trigger functions after API (they need AppSync tables to exist)
+    // Initialize regular functions that need API access (after API exists)
+    if (categories.function && categories.api) {
+      await this.initializeRegularFunctions(appPath, categories.function, true, result, context);
+    }
+
     if (categories.function) {
       await this.initializeTriggerFunctions(appPath, categories.function, result, context);
     }
 
-    // Initialize REST API separately if configured
     if (categories.restApi) {
       await this.initializeRestApiCategory(appPath, categories.restApi, categories.function, result, context);
     }
@@ -117,9 +140,9 @@ export class CategoryInitializer {
   }
 
   /**
-   * Initialize the auth category based on configuration
-   * Supports: social providers, user pool groups
-   * Not yet supported: auth triggers (preSignUp, etc.)
+   * Initialize the auth category based on configuration.
+   * Supports: social providers, user pool groups.
+   * Not yet supported: auth triggers (preSignUp, etc.).
    */
   private async initializeAuthCategory(
     appPath: string,
@@ -131,7 +154,6 @@ export class CategoryInitializer {
     const hasUserPoolGroups = authConfig.userPoolGroups && authConfig.userPoolGroups.length > 0;
     const hasAuthTriggers = authConfig.triggers && Object.keys(authConfig.triggers).length > 0;
 
-    // Log what we're configuring
     const features: string[] = [];
     if (hasSocialProviders) features.push('social providers');
     if (hasUserPoolGroups) features.push('user pool groups');
@@ -140,28 +162,21 @@ export class CategoryInitializer {
     const authType = features.length > 0 ? `with ${features.join(', ')}` : 'with default settings';
     this.logger.info(`Initializing auth category ${authType}...`, context);
 
-    // Warn about unsupported features
     if (hasAuthTriggers) {
       this.logger.warn('Auth triggers (preSignUp, postConfirmation, etc.) are not yet supported by category-initializer', context);
     }
 
     try {
       if (hasUserPoolGroups) {
-        // Use auth with groups (creates Admins and Users groups by default)
-        // Note: addAuthWithGroups creates hardcoded "Admins" and "Users" groups
         this.logger.debug(`User pool groups configured: ${authConfig.userPoolGroups?.join(', ')}`, context);
         await addAuthWithGroups(appPath);
       } else if (hasSocialProviders) {
-        // Use social auth when social providers are configured
-        // This sets up Cognito with Facebook, Google, and Amazon OAuth
         this.logger.debug(`Social providers configured: ${authConfig.socialProviders.join(', ')}`, context);
         await addAuthWithDefaultSocial(appPath);
       } else if (authConfig.signInMethods?.includes('email')) {
-        // Use email sign-in when explicitly configured
         this.logger.debug('Using email sign-in method', context);
         await addAuthWithEmail(appPath);
       } else {
-        // Use default auth configuration (username sign-in)
         await addAuthWithDefault(appPath);
       }
 
@@ -174,9 +189,7 @@ export class CategoryInitializer {
     }
   }
 
-  /**
-   * Initialize the GraphQL API category
-   */
+  /** Initialize the GraphQL API category. */
   private async initializeApiCategory(
     appPath: string,
     apiConfig: APIConfiguration,
@@ -186,7 +199,6 @@ export class CategoryInitializer {
   ): Promise<void> {
     // Only handle GraphQL here; REST is handled separately
     if (apiConfig.type !== 'GraphQL') {
-      // If type is REST but no restApi config, use legacy behavior
       if (apiConfig.type === 'REST') {
         await this.initializeRestApiFromLegacyConfig(appPath, functionConfig, result, context);
       }
@@ -196,18 +208,30 @@ export class CategoryInitializer {
     this.logger.info('Initializing GraphQL API category...', context);
 
     try {
-      // Determine which auth modes the API needs based on config
       const needsCognitoAuth = apiConfig.authModes?.includes('COGNITO_USER_POOLS');
       const needsIamAuth = apiConfig.authModes?.includes('IAM');
 
       if (needsCognitoAuth || needsIamAuth) {
-        // Use addApi with explicit auth types config.
-        // Pass requireAuthSetup = false because the auth category is already initialized,
-        // so the CLI won't prompt for Cognito setup — it reuses the existing user pool.
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const authTypesConfig: Record<string, Record<string, unknown>> = { 'API key': {} };
-        if (needsCognitoAuth) authTypesConfig['Amazon Cognito User Pool'] = {};
-        if (needsIamAuth) authTypesConfig['IAM'] = {};
+        // Build authTypesConfig in the order specified by migration-config.json so the
+        // first auth mode becomes the default (addApi uses the first key as default).
+        const authModeMap: Record<string, string> = {
+          IAM: 'IAM',
+          API_KEY: 'API key',
+          COGNITO_USER_POOLS: 'Amazon Cognito User Pool',
+        };
+
+        const authTypesConfig: Record<string, Record<string, unknown>> = {};
+        for (const mode of apiConfig.authModes ?? []) {
+          const mapped = authModeMap[mode];
+          if (mapped) authTypesConfig[mapped] = {};
+        }
+
+        // Fallback: ensure at least API key is present
+        if (Object.keys(authTypesConfig).length === 0) {
+          authTypesConfig['API key'] = {};
+        }
+
+        // Pass requireAuthSetup = false because the auth category is already initialized
         await addApi(appPath, authTypesConfig, false);
       } else {
         await addApiWithBlankSchema(appPath);
@@ -218,7 +242,6 @@ export class CategoryInitializer {
         const schemaPath = path.join(appPath, apiConfig.schema);
         if (fs.existsSync(schemaPath)) {
           const schemaContent = fs.readFileSync(schemaPath, 'utf-8');
-          // Get the API name from the amplify backend config
           const apiName = this.getApiNameFromBackend(appPath);
           if (apiName) {
             updateSchema(appPath, apiName, schemaContent);
@@ -238,9 +261,7 @@ export class CategoryInitializer {
     }
   }
 
-  /**
-   * Initialize REST API from the new restApi configuration
-   */
+  /** Initialize REST API from the new restApi configuration. */
   private async initializeRestApiCategory(
     appPath: string,
     restApiConfig: RestApiConfiguration,
@@ -250,7 +271,6 @@ export class CategoryInitializer {
   ): Promise<void> {
     this.logger.info(`Initializing REST API category (${restApiConfig.name})...`, context);
 
-    // REST API requires at least one Lambda function to exist
     const hasFunctions = functionConfig && functionConfig.functions.length > 0;
     if (!hasFunctions) {
       this.logger.warn('REST API requires at least one Lambda function, skipping', context);
@@ -258,7 +278,6 @@ export class CategoryInitializer {
       return;
     }
 
-    // Check if the specified lambda source exists
     const lambdaExists = functionConfig.functions.some((f) => f.name === restApiConfig.lambdaSource);
     if (!lambdaExists) {
       this.logger.warn(`REST API lambda source '${restApiConfig.lambdaSource}' not found in functions, skipping`, context);
@@ -285,9 +304,7 @@ export class CategoryInitializer {
     }
   }
 
-  /**
-   * Initialize REST API from legacy api.type: "REST" configuration
-   */
+  /** Initialize REST API from legacy api.type: "REST" configuration. */
   private async initializeRestApiFromLegacyConfig(
     appPath: string,
     functionConfig: FunctionConfiguration | undefined,
@@ -322,8 +339,8 @@ export class CategoryInitializer {
   }
 
   /**
-   * Initialize the storage category based on configuration
-   * Supports: S3 buckets (auth-only, auth+guest, with triggers), DynamoDB tables
+   * Initialize the storage category based on configuration.
+   * Supports: S3 buckets (auth-only, auth+guest, with triggers), DynamoDB tables.
    */
   private async initializeStorageCategory(
     appPath: string,
@@ -332,26 +349,19 @@ export class CategoryInitializer {
     result: InitializeCategoriesResult,
     context: LogContext,
   ): Promise<void> {
-    // Check if this is DynamoDB storage
     if (storageConfig.type === 'dynamodb' && storageConfig.tables && storageConfig.tables.length > 0) {
       await this.initializeDynamoDBStorage(appPath, storageConfig, result, context);
       return;
     }
 
-    // S3 storage
     if (!storageConfig.buckets || storageConfig.buckets.length === 0) {
       this.logger.warn('No storage buckets configured, skipping storage category', context);
       result.skippedCategories.push('storage');
       return;
     }
 
-    // When user pool groups exist, the CLI prompts "Restrict access by?" instead of
-    // "Who should have access:". Use the group-aware helper to avoid a prompt timeout.
     const hasUserPoolGroups = authConfig?.userPoolGroups && authConfig.userPoolGroups.length > 0;
-
-    // Check if guest access is configured for any bucket
     const hasGuestAccess = storageConfig.buckets.some((bucket) => bucket.access.includes('guest') || bucket.access.includes('public'));
-    // Check if triggers are configured
     const hasTriggers = storageConfig.triggers && storageConfig.triggers.length > 0;
 
     const accessType = hasGuestAccess ? 'auth and guest' : 'auth-only';
@@ -361,21 +371,15 @@ export class CategoryInitializer {
 
     try {
       if (hasTriggers) {
-        // Add S3 storage with Lambda trigger (creates a new trigger function)
         const projectHasFunctions = result.initializedCategories.includes('function');
         this.logger.debug(`Adding S3 storage with Lambda trigger (projectHasFunctions: ${projectHasFunctions})`, context);
         await addS3WithTrigger(appPath, { projectHasFunctions });
       } else if (hasUserPoolGroups) {
-        // Use group-aware helper when user pool groups are configured.
-        // addAuthWithGroups creates hardcoded "Admins" and "Users" groups regardless
-        // of what the config specifies, so we must pass those names here.
         this.logger.debug(`Adding S3 storage with group access (Admins, Users)`, context);
         await addS3WithGroupAccess(appPath);
       } else if (hasGuestAccess) {
-        // Add S3 storage with auth and guest access
         await addS3Storage(appPath);
       } else {
-        // Add S3 storage with auth-only access
         await addS3StorageWithAuthOnly(appPath);
       }
 
@@ -388,9 +392,7 @@ export class CategoryInitializer {
     }
   }
 
-  /**
-   * Initialize DynamoDB storage
-   */
+  /** Initialize DynamoDB storage. */
   private async initializeDynamoDBStorage(
     appPath: string,
     storageConfig: StorageConfiguration,
@@ -410,7 +412,6 @@ export class CategoryInitializer {
       for (const table of tables) {
         this.logger.debug(`Adding DynamoDB table: ${table.name}`, context);
 
-        // Use addDynamoDBWithGSIWithSettings if GSI is configured
         if (table.gsi && table.gsi.length > 0) {
           await addDynamoDBWithGSIWithSettings(appPath, {
             resourceName: table.name,
@@ -418,8 +419,6 @@ export class CategoryInitializer {
             gsiName: table.gsi[0].name,
           });
         } else {
-          // For tables without GSI, we still use the GSI function but it will create default columns
-          // This is a limitation of the e2e-core helpers
           this.logger.warn(`DynamoDB table '${table.name}' without GSI - using default schema`, context);
           await addDynamoDBWithGSIWithSettings(appPath, {
             resourceName: table.name,
@@ -441,22 +440,27 @@ export class CategoryInitializer {
   }
 
   /**
-   * Initialize regular (non-trigger) Lambda functions
+   * Initialize regular (non-trigger) Lambda functions.
+   * When withApiAccess is false, creates functions that don't need API access.
+   * When withApiAccess is true, creates functions that need API access (must be called after API init).
    */
   private async initializeRegularFunctions(
     appPath: string,
     functionConfig: FunctionConfiguration,
+    withApiAccess: boolean,
     result: InitializeCategoriesResult,
     context: LogContext,
   ): Promise<void> {
-    const regularFunctions = functionConfig.functions.filter((f) => !f.trigger);
+    const regularFunctions = functionConfig.functions
+      .filter((f) => !f.trigger)
+      .filter((f) => (withApiAccess ? !!f.apiAccess : !f.apiAccess));
 
     if (regularFunctions.length === 0) {
-      this.logger.debug('No regular functions to initialize', context);
       return;
     }
 
-    this.logger.info(`Initializing ${regularFunctions.length} regular function(s)...`, context);
+    const label = withApiAccess ? 'regular function(s) with API access' : 'regular function(s)';
+    this.logger.info(`Initializing ${regularFunctions.length} ${label}...`, context);
 
     try {
       for (const func of regularFunctions) {
@@ -465,29 +469,69 @@ export class CategoryInitializer {
         const runtime = this.mapRuntime(func.runtime);
         const template = this.mapTemplate(func.template);
 
-        await addFunction(
-          appPath,
-          {
-            name: func.name,
-            functionTemplate: template,
-          },
-          runtime,
-        );
+        // Build advanced settings from migration-config.json
+        const settings: Record<string, unknown> = {
+          name: func.name,
+          functionTemplate: template,
+        };
+
+        // Wire environment variables (addFunction supports one at a time)
+        if (func.environmentVariables) {
+          const entries = Object.entries(func.environmentVariables);
+          if (entries.length > 0) {
+            const [key, value] = entries[0];
+            settings.environmentVariables = { key, value };
+            this.logger.debug(`Adding env var ${key}=${value} to ${func.name}`, context);
+          }
+        }
+
+        // Wire secrets (addFunction supports one at a time)
+        if (func.secrets) {
+          const entries = Object.entries(func.secrets);
+          if (entries.length > 0) {
+            const [name, value] = entries[0];
+            settings.secretsConfig = { operation: 'add', name, value };
+            this.logger.debug(`Adding secret ${name} to ${func.name}`, context);
+          }
+        }
+
+        // Wire API access permissions (only when withApiAccess=true, API must exist)
+        if (withApiAccess && func.apiAccess) {
+          const apiName = this.getApiNameFromBackend(appPath);
+          if (apiName) {
+            settings.additionalPermissions = {
+              permissions: ['api'],
+              choices: ['api', 'auth', 'function', 'storage'],
+              resources: [apiName],
+              operations: func.apiAccess.operations,
+            };
+            this.logger.debug(`Adding API access (${func.apiAccess.operations.join(', ')}) to ${func.name}`, context);
+          }
+        }
+
+        await addFunction(appPath, settings as CoreFunctionSettings, runtime);
+
+        // Patch CFN template with appsync:GraphQL permission for functions that call back to AppSync
+        if (withApiAccess && func.apiAccess) {
+          this.patchFunctionAppsyncPermission(appPath, func.name, context);
+        }
 
         this.logger.debug(`Function ${func.name} added successfully`, context);
       }
 
-      result.initializedCategories.push('function');
-      this.logger.info('Regular functions initialized successfully', context);
+      if (!result.initializedCategories.includes('function')) {
+        result.initializedCategories.push('function');
+      }
+      this.logger.info(`${label} initialized successfully`, context);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
-      this.logger.error(`Failed to initialize regular functions: ${errorMessage}`, error as Error, context);
+      this.logger.error(`Failed to initialize ${label}: ${errorMessage}`, error as Error, context);
       result.errors.push({ category: 'function', error: errorMessage });
     }
   }
 
   /**
-   * Initialize trigger-based Lambda functions (DynamoDB streams, Kinesis, etc.)
+   * Initialize trigger-based Lambda functions (DynamoDB streams, Kinesis, etc.).
    * Must be called after API category is initialized so AppSync tables exist.
    */
   private async initializeTriggerFunctions(
@@ -513,21 +557,19 @@ export class CategoryInitializer {
         const triggerType = func.trigger?.type;
 
         if (triggerType === 'dynamodb-stream') {
-          // DynamoDB stream trigger - use Lambda trigger template with model selection
           await addFunction(
             appPath,
             {
               name: func.name,
               functionTemplate: 'Lambda trigger',
               triggerType: 'DynamoDB',
-              eventSource: 'AppSync', // Use AppSync tables from GraphQL API
+              eventSource: 'AppSync',
             },
             runtime,
             // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
             addLambdaTriggerWithModels,
           );
         } else if (triggerType === 'kinesis') {
-          // Kinesis stream trigger
           await addFunction(
             appPath,
             {
@@ -554,9 +596,7 @@ export class CategoryInitializer {
     }
   }
 
-  /**
-   * Map runtime string to e2e-core runtime type
-   */
+  /** Map runtime string to e2e-core runtime type. */
   private mapRuntime(runtime: string): 'nodejs' | 'python' | 'java' | 'dotnet8' | 'go' {
     switch (runtime.toLowerCase()) {
       case 'nodejs':
@@ -576,9 +616,7 @@ export class CategoryInitializer {
     }
   }
 
-  /**
-   * Map template string to e2e-core template name
-   */
+  /** Map template string to e2e-core template name. */
   private mapTemplate(template?: string): string {
     if (!template) return 'Hello World';
 
@@ -596,10 +634,8 @@ export class CategoryInitializer {
     }
   }
 
-  /**
-   * Get the API name from the amplify backend configuration
-   */
-  private getApiNameFromBackend(appPath: string): string | null {
+  /** Get the API name from the amplify backend configuration. */
+  public getApiNameFromBackend(appPath: string): string | null {
     try {
       const backendConfigPath = path.join(appPath, 'amplify', 'backend', 'backend-config.json');
       if (fs.existsSync(backendConfigPath)) {
@@ -614,9 +650,142 @@ export class CategoryInitializer {
   }
 
   /**
-   * Initialize the analytics category
-   * Supports: Kinesis Data Streams
+   * Patch a function's CFN template to add appsync:GraphQL permission.
+   * Required for functions that make IAM-signed callbacks to AppSync (e.g. lowstockproducts
+   * querying listProducts). The addFunction walkthrough grants access to the API's underlying
+   * resources (DynamoDB, Cognito) but not the GraphQL endpoint itself.
    */
+  private patchFunctionAppsyncPermission(appPath: string, functionName: string, context: LogContext): void {
+    const cfnPath = path.join(appPath, 'amplify', 'backend', 'function', functionName, `${functionName}-cloudformation-template.json`);
+    if (!fs.existsSync(cfnPath)) {
+      this.logger.warn(`CFN template not found for ${functionName}, skipping appsync:GraphQL patch`, context);
+      return;
+    }
+
+    const cfn = JSON.parse(fs.readFileSync(cfnPath, 'utf-8')) as CfnTemplate;
+
+    // Add an IAM policy granting appsync:GraphQL on all APIs in the account
+    cfn.Resources = cfn.Resources ?? {};
+    cfn.Resources.AppSyncGraphQLPolicy = {
+      Type: 'AWS::IAM::Policy',
+      Properties: {
+        PolicyName: 'appsync-graphql-policy',
+        Roles: [{ Ref: 'LambdaExecutionRole' }],
+        PolicyDocument: {
+          Version: '2012-10-17',
+          Statement: [
+            {
+              Effect: 'Allow',
+              Action: ['appsync:GraphQL'],
+              Resource: {
+                'Fn::Sub': 'arn:aws:appsync:${AWS::Region}:${AWS::AccountId}:apis/*',
+              },
+            },
+          ],
+        },
+      },
+      DependsOn: ['LambdaExecutionRole'],
+    };
+
+    fs.writeFileSync(cfnPath, JSON.stringify(cfn, null, 2) + '\n', 'utf-8');
+    this.logger.debug(`Patched ${functionName} CFN template with appsync:GraphQL permission`, context);
+  }
+
+  /**
+   * Patch backend-config.json and function-parameters.json for a function with API access.
+   * addFunction sets dependsOn to auth by default; the migration tool needs api dependsOn
+   * to emit grantQuery/grantMutation and API env vars in the generated backend.ts.
+   */
+  public patchRegularFunctionApiAccess(
+    appPath: string,
+    functionName: string,
+    apiName: string,
+    operations: string[],
+    context: LogContext,
+  ): void {
+    // Fix backend-config.json: replace auth dependsOn with api dependsOn
+    const apiDependsOn = [
+      {
+        category: 'api',
+        resourceName: apiName,
+        attributes: ['GraphQLAPIIdOutput', 'GraphQLAPIEndpointOutput', 'GraphQLAPIKeyOutput'],
+      },
+    ];
+
+    // Patch all locations where dependsOn is stored
+    const configPaths = [
+      path.join(appPath, 'amplify', 'backend', 'backend-config.json'),
+      path.join(appPath, 'amplify', '#current-cloud-backend', 'backend-config.json'),
+    ];
+    for (const configPath of configPaths) {
+      if (!fs.existsSync(configPath)) continue;
+      const config = JSON.parse(fs.readFileSync(configPath, 'utf-8')) as AmplifyBackendConfig;
+      if (config.function?.[functionName]) {
+        config.function[functionName].dependsOn = apiDependsOn;
+        fs.writeFileSync(configPath, JSON.stringify(config, null, 2) + '\n', 'utf-8');
+      }
+    }
+    this.logger.debug(`Patched backend-config.json: set ${functionName} dependsOn to api/${apiName}`, context);
+
+    // Patch amplify-meta.json (both local and cloud-backend copies)
+    const metaPaths = [
+      path.join(appPath, 'amplify', 'backend', 'amplify-meta.json'),
+      path.join(appPath, 'amplify', '#current-cloud-backend', 'amplify-meta.json'),
+    ];
+    for (const metaPath of metaPaths) {
+      if (!fs.existsSync(metaPath)) continue;
+      const meta = JSON.parse(fs.readFileSync(metaPath, 'utf-8')) as AmplifyBackendConfig;
+      if (meta.function?.[functionName]) {
+        meta.function[functionName].dependsOn = apiDependsOn;
+        fs.writeFileSync(metaPath, JSON.stringify(meta, null, 2) + '\n', 'utf-8');
+      }
+    }
+
+    // Fix function-parameters.json: set api permissions
+    const funcParamsPath = path.join(appPath, 'amplify', 'backend', 'function', functionName, 'function-parameters.json');
+    let funcParams: Record<string, unknown> = {};
+    if (fs.existsSync(funcParamsPath)) {
+      funcParams = JSON.parse(fs.readFileSync(funcParamsPath, 'utf-8')) as Record<string, unknown>;
+    }
+    funcParams.permissions = { api: { [apiName]: operations } };
+    delete funcParams.dependsOn;
+    fs.writeFileSync(funcParamsPath, JSON.stringify(funcParams, null, 2) + '\n', 'utf-8');
+    this.logger.debug(`Patched function-parameters.json for ${functionName}`, context);
+
+    // Fix CFN template: add API parameters and env vars so the migration tool
+    // sees them and emits grantQuery/grantMutation + addEnvironment in backend.ts
+    const cfnPath = path.join(appPath, 'amplify', 'backend', 'function', functionName, `${functionName}-cloudformation-template.json`);
+    if (!fs.existsSync(cfnPath)) {
+      return;
+    }
+
+    const cfn = JSON.parse(fs.readFileSync(cfnPath, 'utf-8')) as CfnTemplate;
+
+    // Add API CFN parameters (these get populated by the root stack during push)
+    const apiParams: Record<string, string> = {
+      [`api${apiName}GraphQLAPIIdOutput`]: `api${apiName}GraphQLAPIIdOutput`,
+      [`api${apiName}GraphQLAPIEndpointOutput`]: `api${apiName}GraphQLAPIEndpointOutput`,
+      [`api${apiName}GraphQLAPIKeyOutput`]: `api${apiName}GraphQLAPIKeyOutput`,
+    };
+
+    cfn.Parameters = cfn.Parameters ?? {};
+    for (const [paramName, defaultValue] of Object.entries(apiParams)) {
+      cfn.Parameters[paramName] = { Type: 'String', Default: defaultValue };
+    }
+
+    // Add API env vars to the Lambda function
+    const envVars = cfn.Resources?.LambdaFunction?.Properties?.Environment?.Variables;
+    if (envVars) {
+      envVars[`API_${apiName.toUpperCase()}_GRAPHQLAPIIDOUTPUT`] = { Ref: `api${apiName}GraphQLAPIIdOutput` };
+      envVars[`API_${apiName.toUpperCase()}_GRAPHQLAPIENDPOINTOUTPUT`] = { Ref: `api${apiName}GraphQLAPIEndpointOutput` };
+      envVars[`API_${apiName.toUpperCase()}_GRAPHQLAPIKEYOUTPUT`] = { Ref: `api${apiName}GraphQLAPIKeyOutput` };
+    }
+
+    fs.writeFileSync(cfnPath, JSON.stringify(cfn, null, 2) + '\n', 'utf-8');
+    this.logger.debug(`Patched ${functionName} CFN template with API parameters and env vars`, context);
+  }
+
+  /** Initialize the analytics category. Supports: Kinesis Data Streams. */
   private async initializeAnalyticsCategory(
     appPath: string,
     analyticsConfig: AnalyticsConfiguration,
@@ -632,7 +801,6 @@ export class CategoryInitializer {
     }
 
     try {
-      // addKinesis expects rightName (valid name) and wrongName (invalid name for validation test)
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       await addKinesis(appPath, {
         rightName: analyticsConfig.name,
