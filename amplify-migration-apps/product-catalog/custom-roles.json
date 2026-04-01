@@ -1,7 +1,0 @@
-{
-  "adminRoleNames": [
-    "amplify-${appId}",
-    "${appId}LambdaRole",
-    "amplifyAuthauthenticatedU"
-  ]
-}
