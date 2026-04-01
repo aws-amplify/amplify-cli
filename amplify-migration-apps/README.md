@@ -283,7 +283,7 @@ are needed, and adding a new app automatically gets correct mocks without extra 
 ### Adding a Snapshot Test | `generate`
 
 To add a snapshot test that validates the `gen2-migration generate` command for a new app,
-add a new test to [`command-handlers.test.ts`](../packages/amplify-cli/src/__tests__/commands/gen2-migration/generate/codegen-head/command-handlers.test.ts):
+add a new test to [`generate.test.ts`](../packages/amplify-cli/src/__tests__/commands/gen2-migration/generate.test.ts):
 
 ```typescript
 // For apps WITH Amplify Hosting:
@@ -312,8 +312,8 @@ test('<app-name> snapshot', async () => {
 
 ```console
 cd packages/amplify-cli
-npx jest --no-coverage src/__tests__/commands/gen2-migration/generate/codegen-head/command-handlers.test.ts -t '<app-name> snapshot'
-npx jest --no-coverage src/__tests__/commands/gen2-migration/refactor/refactor.test.ts -t '<app-name> snapshot'
+npx jest --no-coverage src/__tests__/commands/gen2-migration/generate.test.ts -t '<app-name> snapshot'
+npx jest --no-coverage src/__tests__/commands/gen2-migration/refactor.test.ts -t '<app-name> snapshot'
 ```
 
 The tests should pass with no differences. They could fail for two reasons:
@@ -333,14 +333,20 @@ When the migration tool code changes and you need to update expected snapshots:
 
 ```console
 cd packages/amplify-cli
-npx jest --no-coverage src/__tests__/commands/gen2-migration/generate/codegen-head/command-handlers.test.ts --updateSnapshot
+npx jest --no-coverage src/__tests__/commands/gen2-migration/generate.test.ts --updateSnapshot
 ```
 
 This updates all snapshots. You can also target a specific app:
 
 ```console
-npx jest --no-coverage src/__tests__/commands/gen2-migration/generate/codegen-head/command-handlers.test.ts \
-  -t '<app-name> snapshot' --updateSnapshot
+npx jest --no-coverage src/__tests__/commands/gen2-migration/generate.test.ts -t '<app-name> snapshot' --updateSnapshot
 ```
 
 Always review the diff after updating to make sure the changes are intentional.
+
+
+> [!NOTE]
+> When updating snapshots, the first run with `--updateSnapshot` will still report a failure
+> because it detects the diff before writing the updated files. Run the tests a second time
+> (without `--updateSnapshot`) to verify the snapshots are now correct.
+
