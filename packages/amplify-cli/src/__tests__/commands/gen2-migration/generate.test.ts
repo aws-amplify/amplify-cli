@@ -1,5 +1,5 @@
 import 'aws-sdk-client-mock-jest';
-import { AmplifyMigrationGenerateStep, DependenciesInstaller } from '../../../commands/gen2-migration/generate';
+import { AmplifyMigrationGenerateStep } from '../../../commands/gen2-migration/generate';
 import { MigrationAppOptions, MigrationApp } from './_framework/app';
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { AmplifyGen2MigrationValidations } from '../../../commands/gen2-migration/_infra/validations';
@@ -15,10 +15,7 @@ jest.setTimeout(60 * 1000 * TIMEOUT_MINUTES);
 // executes prior to any module loading.
 jest.unmock('fs-extra');
 
-beforeEach(() => {
-  // avoid running npm install during tests
-  jest.spyOn(DependenciesInstaller, 'install').mockResolvedValue();
-});
+// no beforeEach needed — DependenciesInstaller was removed.
 
 afterEach(() => {
   jest.restoreAllMocks();

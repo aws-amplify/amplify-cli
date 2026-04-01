@@ -1,7 +1,6 @@
 import path from 'node:path';
 import os from 'node:os';
 import fs from 'node:fs/promises';
-import execa from 'execa';
 import { AmplifyMigrationStep } from './_infra/step';
 import { AmplifyMigrationOperation, ValidationResult } from './_infra/operation';
 import { Plan } from './_infra/plan';
@@ -23,7 +22,6 @@ import { DynamoDBGenerator } from './generate/amplify/storage/dynamodb.generator
 import { FunctionGenerator } from './generate/amplify/function/function.generator';
 import { AnalyticsKinesisGenerator } from './generate/amplify/analytics/kinesis.generator';
 import { GeoGenerator } from './generate/amplify/geo/geo.generator';
-import { fileOrDirectoryExists } from './generate/_infra/files';
 
 const AMPLIFY_DIR = 'amplify';
 
@@ -183,27 +181,15 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
       },
     });
 
-    // Post-generation: reinstall dependencies.
+    // Post-generation: instruct user to install dependencies.
     operations.push({
       validate: () => undefined,
-      describe: async () => ['Install Gen2 dependencies'],
+      describe: async () => ['Instruct user to install Gen2 dependencies'],
       execute: async () => {
-        const cwd = process.cwd();
-        const packageLockPath = path.join(cwd, 'package-lock.json');
-        const nodeModulesPath = path.join(cwd, 'node_modules');
-
-        if (await fileOrDirectoryExists(packageLockPath)) {
-          this.logger.info('Deleting package-lock.json');
-          await fs.rm(packageLockPath, { recursive: true });
-        }
-
-        if (await fileOrDirectoryExists(nodeModulesPath)) {
-          this.logger.info('Deleting node_modules');
-          await fs.rm(nodeModulesPath, { recursive: true });
-        }
-
-        this.logger.info('Installing dependencies');
-        await DependenciesInstaller.install();
+        this.logger.info(
+          'Run "npm install" to install the new Gen2 dependencies. ' +
+            'If you encounter version conflicts, check the npm logs and resolve them manually.',
+        );
       },
     });
 
@@ -211,7 +197,7 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
       operations,
       logger: this.logger,
       title: 'Execute',
-      implications: ["Your local 'amplify/' directory will be replaced with Gen2 code", 'Dependencies will be reinstalled'],
+      implications: ["Your local 'amplify/' directory will be replaced with Gen2 code"],
     });
   }
 
@@ -235,19 +221,6 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
     } catch (e) {
       return { valid: false, report: e.message };
     }
-  }
-}
-
-/**
- * Handles npm dependency installation with retry.
- */
-export class DependenciesInstaller {
-  /**
-   * Runs npm install twice to resolve transient dependency conflicts.
-   */
-  public static async install(): Promise<void> {
-    await execa('npm', ['install']);
-    await execa('npm', ['install']);
   }
 }
 

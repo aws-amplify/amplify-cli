@@ -90,7 +90,7 @@ export class Gen1App {
     this.clients = props.clients;
     this.ccbDir = props.ccbDir;
     this.aws = new AwsFetcher(this.clients);
-    this._meta = JSONUtilities.readJson<$TSMeta>(path.join(props.ccbDir, 'amplify-meta.json'), { throwIfNotExist: true }) as $TSMeta;
+    this._meta = JSONUtilities.readJson<$TSMeta>(path.join(this.ccbDir, 'amplify-meta.json'), { throwIfNotExist: true }) as $TSMeta;
     this.rootStackName = this._meta.providers.awscloudformation.StackName;
     this.region = this._meta.providers.awscloudformation.Region;
   }
@@ -225,9 +225,25 @@ export class Gen1App {
     }
   }
 
+  public ensureCliInputs(category: string, resourceName: string) {
+    const relativePath = path.join(category, resourceName, 'cli-inputs.json');
+    const fullPath = path.join(this.ccbDir, relativePath);
+    try {
+      JSONUtilities.readJson(fullPath, { throwIfNotExist: true });
+    } catch {
+      throw new AmplifyError('MigrationError', {
+        message: `Unable to find ${relativePath}. Your app was created with an old Gen1 CLI version (<=v6) that did not produce this file.`,
+        resolution:
+          'You must first migrate to the latest Gen1 CLI version by following https://docs.amplify.aws/gen1/javascript/tools/cli/migration/override/',
+      });
+    }
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped Gen1 cli-inputs.json
   public cliInputs(category: string, resourceName: string): any {
-    return this.json(path.join(category, resourceName, 'cli-inputs.json'));
+    const relativePath = path.join(category, resourceName, 'cli-inputs.json');
+    const fullPath = path.join(this.ccbDir, relativePath);
+    return JSONUtilities.readJson(fullPath, { throwIfNotExist: true });
   }
 
   private static async currentEnvName(app: App): Promise<string> {

@@ -692,6 +692,45 @@ describe('AuthRenderer', () => {
     });
   });
 
+  describe('deriveUserPoolOverrides', () => {
+    it('includes aliasAttributes when present', () => {
+      const overrides = AuthRenderer.deriveUserPoolOverrides({
+        AliasAttributes: ['email', 'preferred_username'],
+      });
+      expect(overrides.aliasAttributes).toEqual(['email', 'preferred_username']);
+    });
+
+    it('omits aliasAttributes when undefined', () => {
+      const overrides = AuthRenderer.deriveUserPoolOverrides({});
+      expect(overrides).not.toHaveProperty('aliasAttributes');
+    });
+
+    it('omits aliasAttributes when empty array', () => {
+      const overrides = AuthRenderer.deriveUserPoolOverrides({ AliasAttributes: [] });
+      expect(overrides).not.toHaveProperty('aliasAttributes');
+    });
+
+    it('includes usernameAttributes when present', () => {
+      const overrides = AuthRenderer.deriveUserPoolOverrides({
+        UsernameAttributes: ['email'],
+      });
+      expect(overrides.usernameAttributes).toEqual(['email']);
+    });
+
+    it('sets usernameAttributes to undefined when absent', () => {
+      const overrides = AuthRenderer.deriveUserPoolOverrides({});
+      expect(overrides.usernameAttributes).toBeUndefined();
+    });
+
+    it('includes password policy overrides', () => {
+      const overrides = AuthRenderer.deriveUserPoolOverrides({
+        Policies: { PasswordPolicy: { MinimumLength: 12, RequireUppercase: true } },
+      });
+      expect(overrides['Policies.PasswordPolicy.MinimumLength']).toBe(12);
+      expect(overrides['Policies.PasswordPolicy.RequireUppercase']).toBe(true);
+    });
+  });
+
   describe('empty/minimal definitions', () => {
     it('renders MFA OFF when not provided', () => {
       const output = render({ userPool: { SchemaAttributes: [] } });

@@ -7,7 +7,7 @@ const RESOURCE: DiscoveredResource = { category: 'api', resourceName: 'myApi', s
 describe('RestApiAssessor', () => {
   it('records resource as supported', () => {
     const assessment = new Assessment('app', 'dev');
-    new RestApiAssessor({ fileExists: () => false } as unknown as Gen1App, RESOURCE).record(assessment);
+    new RestApiAssessor({ fileExists: () => false, ensureCliInputs: () => undefined } as unknown as Gen1App, RESOURCE).record(assessment);
 
     const entry = assessment.resources[0];
     expect(entry!.generate.level).toBe('supported');
@@ -16,7 +16,7 @@ describe('RestApiAssessor', () => {
 
   it('records no features', () => {
     const assessment = new Assessment('app', 'dev');
-    new RestApiAssessor({ fileExists: () => false } as unknown as Gen1App, RESOURCE).record(assessment);
+    new RestApiAssessor({ fileExists: () => false, ensureCliInputs: () => undefined } as unknown as Gen1App, RESOURCE).record(assessment);
 
     expect(assessment.features).toHaveLength(0);
   });

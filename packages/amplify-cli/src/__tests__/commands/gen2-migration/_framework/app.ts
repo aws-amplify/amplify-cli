@@ -314,6 +314,7 @@ export class MigrationApp {
       fileExists: Gen1App.prototype.fileExists.bind({ ccbDir: this.ccbPath }),
       cliInputs: (category: string, resourceName: string) =>
         Gen1App.prototype.json.call({ ccbDir: this.ccbPath }, path.join(category, resourceName, 'cli-inputs.json')),
+      ensureCliInputs: Gen1App.prototype.ensureCliInputs.bind({ ccbDir: this.ccbPath }),
       singleResourceName: (category: string, service: string) => {
         const block = this.meta[category];
         if (!block) throw new Error(`Category '${category}' not found`);
