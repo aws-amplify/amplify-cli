@@ -11,6 +11,7 @@ import {
   FunctionConfiguration,
   RestApiConfiguration,
   AnalyticsConfiguration,
+  DynamoDBTable,
 } from '../types';
 import {
   addAuthWithDefault,
@@ -330,16 +331,22 @@ export class CategoryInitializer {
     authConfig: AuthConfiguration | undefined,
     result: InitializeCategoriesResult,
   ): Promise<void> {
-    // Check if this is DynamoDB storage
-    if (storageConfig.type === 'dynamodb' && storageConfig.tables && storageConfig.tables.length > 0) {
-      await this.initializeDynamoDBStorage(appPath, storageConfig, result);
+    const hasTables = storageConfig.tables && storageConfig.tables.length > 0;
+    const hasBuckets = storageConfig.buckets && storageConfig.buckets.length > 0;
+
+    if (!hasTables && !hasBuckets) {
+      this.logger.warn('No storage buckets or tables configured, skipping storage category');
+      result.skippedCategories.push('storage');
       return;
     }
 
-    // S3 storage
-    if (!storageConfig.buckets || storageConfig.buckets.length === 0) {
-      this.logger.warn('No storage buckets configured, skipping storage category');
-      result.skippedCategories.push('storage');
+    // Initialize DynamoDB tables if configured
+    if (hasTables) {
+      await this.initializeDynamoDBStorage(appPath, storageConfig, result);
+    }
+
+    // Initialize S3 buckets if configured
+    if (!hasBuckets) {
       return;
     }
 
@@ -377,12 +384,14 @@ export class CategoryInitializer {
         await addS3StorageWithAuthOnly(appPath);
       }
 
-      result.initializedCategories.push('storage');
-      this.logger.info('Storage category initialized successfully');
+      if (!result.initializedCategories.includes('storage')) {
+        result.initializedCategories.push('storage');
+      }
+      this.logger.info('S3 storage initialized successfully');
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
-      this.logger.error(`Failed to initialize storage category: ${errorMessage}`, error as Error);
-      result.errors.push({ category: 'storage', error: errorMessage });
+      this.logger.error(`Failed to initialize S3 storage: ${errorMessage}`, error as Error);
+      result.errors.push({ category: 'storage (S3)', error: errorMessage });
     }
   }
 
@@ -407,34 +416,62 @@ export class CategoryInitializer {
       for (const table of tables) {
         this.logger.debug(`Adding DynamoDB table: ${table.name}`);
 
-        // Use addDynamoDBWithGSIWithSettings if GSI is configured
-        if (table.gsi && table.gsi.length > 0) {
-          await addDynamoDBWithGSIWithSettings(appPath, {
-            resourceName: table.name,
-            tableName: table.name,
-            gsiName: table.gsi[0].name,
-          });
-        } else {
-          // For tables without GSI, we still use the GSI function but it will create default columns
-          // This is a limitation of the e2e-core helpers
-          this.logger.warn(`DynamoDB table '${table.name}' without GSI - using default schema`);
-          await addDynamoDBWithGSIWithSettings(appPath, {
-            resourceName: table.name,
-            tableName: table.name,
-            gsiName: `${table.name}GSI`,
-          });
-        }
+        // Use addDynamoDBWithGSIWithSettings to scaffold the resource via the CLI.
+        // The helper hardcodes generic column names (pk, sk, gsi-pk, gsi-sk), so we
+        // overwrite cli-inputs.json afterwards with the actual key names from config.
+        await addDynamoDBWithGSIWithSettings(appPath, {
+          resourceName: table.name,
+          tableName: table.name,
+          gsiName: table.gsi?.[0]?.name ?? `${table.name}GSI`,
+        });
 
+        this.writeDynamoDBCliInputs(appPath, table);
         this.logger.debug(`DynamoDB table ${table.name} added successfully`);
       }
 
       result.initializedCategories.push('storage');
-      this.logger.info('DynamoDB storage category initialized successfully');
+      this.logger.info('DynamoDB storage initialized successfully');
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
       this.logger.error(`Failed to initialize DynamoDB storage: ${errorMessage}`, error as Error);
       result.errors.push({ category: 'storage', error: errorMessage });
     }
+  }
+
+  /**
+   * Overwrite the cli-inputs.json for a DynamoDB table with the actual
+   * partition key, sort key, and GSI definitions from the migration config.
+   */
+  private writeDynamoDBCliInputs(appPath: string, table: DynamoDBTable): void {
+    const cliInputsPath = path.join(appPath, 'amplify', 'backend', 'storage', table.name, 'cli-inputs.json');
+
+    const cliInputs: Record<string, unknown> = {
+      resourceName: table.name,
+      tableName: table.name,
+      partitionKey: { fieldName: table.partitionKey, fieldType: 'string' },
+    };
+
+    if (table.sortKey) {
+      cliInputs.sortKey = { fieldName: table.sortKey, fieldType: 'string' };
+    }
+
+    if (table.gsi && table.gsi.length > 0) {
+      cliInputs.gsi = table.gsi.map((gsi) => {
+        const entry: Record<string, unknown> = {
+          name: gsi.name,
+          partitionKey: { fieldName: gsi.partitionKey, fieldType: 'string' },
+        };
+        if (gsi.sortKey) {
+          entry.sortKey = { fieldName: gsi.sortKey, fieldType: 'string' };
+        }
+        return entry;
+      });
+    }
+
+    cliInputs.triggerFunctions = [];
+
+    fs.writeFileSync(cliInputsPath, JSON.stringify(cliInputs, null, 2) + '\n');
+    this.logger.debug(`Wrote cli-inputs.json for DynamoDB table ${table.name}`);
   }
 
   /**
