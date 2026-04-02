@@ -69,10 +69,12 @@ The pipeline has two layers plus an orchestrator:
 - **Orchestrator** (`generate.ts`) — Uses `Gen1App.discover()` to iterate
   all resources from `amplify-meta.json`, dispatches by `resource.key`
   (a typed `ResourceKey`) via an exhaustive switch statement, and
-  instantiates one generator per resource. Collects all operations and
-  appends final operations for folder replacement + npm install. The same
-  switch is used by the `assess()` method to record support into an
-  `Assessment` collector.
+  instantiates one generator per resource. Resources marked as unsupported
+  by the assessment are skipped before the switch — no generator is
+  instantiated for them. Collects all operations and appends final
+  operations for folder replacement + npm install. The same switch is used
+  by the `assess()` method to record support into an `Assessment`
+  collector.
 
 ## Key Abstractions
 

@@ -14,6 +14,10 @@ function mockGen1App(resources: DiscoveredResource[], existingFiles: string[] = 
   } as unknown as Gen1App;
 }
 
+const NODEJS_TEMPLATE = {
+  Resources: { LambdaFunction: { Properties: { Runtime: 'nodejs18.x' } } },
+};
+
 describe('AmplifyMigrationAssessor', () => {
   describe('assess()', () => {
     it('returns empty assessment when no resources discovered', () => {
@@ -31,7 +35,10 @@ describe('AmplifyMigrationAssessor', () => {
       const gen1App = mockGen1App(
         [{ category: 'function', resourceName: 'myFunc', service: 'Lambda', key: 'function:Lambda' }],
         ['function/myFunc/custom-policies.json'],
-        { 'function/myFunc/custom-policies.json': [{ Action: ['s3:GetObject'], Resource: ['arn:aws:s3:::my-bucket/*'] }] },
+        {
+          'function/myFunc/myFunc-cloudformation-template.json': NODEJS_TEMPLATE,
+          'function/myFunc/custom-policies.json': [{ Action: ['s3:GetObject'], Resource: ['arn:aws:s3:::my-bucket/*'] }],
+        },
       );
       const assessor = new AmplifyMigrationAssessor(gen1App);
       const assessment = assessor.assess();
@@ -56,7 +63,10 @@ describe('AmplifyMigrationAssessor', () => {
       const gen1App = mockGen1App(
         [{ category: 'function', resourceName: 'myFunc', service: 'Lambda', key: 'function:Lambda' }],
         ['function/myFunc/custom-policies.json'],
-        { 'function/myFunc/custom-policies.json': [{ Action: [], Resource: [] }] },
+        {
+          'function/myFunc/myFunc-cloudformation-template.json': NODEJS_TEMPLATE,
+          'function/myFunc/custom-policies.json': [{ Action: [], Resource: [] }],
+        },
       );
       const assessor = new AmplifyMigrationAssessor(gen1App);
       const assessment = assessor.assess();
@@ -72,6 +82,26 @@ describe('AmplifyMigrationAssessor', () => {
       expect(assessment.resources).toHaveLength(1);
       expect(assessment.resources[0].generate.level).toBe('unsupported');
       expect(assessment.resources[0].refactor.level).toBe('unsupported');
+    });
+
+    it('marks function with non-JS runtime as unsupported for generate', () => {
+      const gen1App = mockGen1App(
+        [{ category: 'function', resourceName: 'myPythonFunc', service: 'Lambda', key: 'function:Lambda' }],
+        ['function/myPythonFunc/myPythonFunc-cloudformation-template.json'],
+        {
+          'function/myPythonFunc/myPythonFunc-cloudformation-template.json': {
+            Resources: { LambdaFunction: { Properties: { Runtime: 'python3.11' } } },
+          },
+        },
+      );
+      const assessor = new AmplifyMigrationAssessor(gen1App);
+      const assessment = assessor.assess();
+
+      expect(assessment.resources).toHaveLength(1);
+      expect(assessment.resources[0].generate.level).toBe('unsupported');
+      expect(assessment.resources[0].refactor.level).toBe('supported');
+      expect(assessment.validFor('generate')).toBe(false);
+      expect(assessment.validFor('refactor')).toBe(true);
     });
   });
 

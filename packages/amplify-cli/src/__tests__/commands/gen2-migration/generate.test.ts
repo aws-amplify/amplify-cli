@@ -152,5 +152,28 @@ describe('AmplifyMigrationGenerateStep', () => {
       lockSpy.mockRestore();
       wdSpy.mockRestore();
     });
+
+    it('skips unsupported resources without instantiating generators', async () => {
+      const gen1 = mockGen1App({
+        discover: () => [{ category: 'function', resourceName: 'myPythonFunc', service: 'Lambda', key: 'function:Lambda' as const }],
+        json: (p: string) => {
+          if (p.endsWith('-cloudformation-template.json')) {
+            return { Resources: { LambdaFunction: { Properties: { Runtime: 'python3.11' } } } };
+          }
+          return undefined;
+        },
+      });
+      const logger = new SpinningLogger('generate', { debug: true });
+
+      const plan = await new AmplifyMigrationGenerateStep(logger, gen1, {} as $TSContext, {} as AmplifyGen2MigrationValidations).forward();
+
+      // 3 validation ops (lock, working dir, assessment)
+      // 1 delete amplify dir
+      // 6 infrastructure generators (backend, root package.json, backend package.json, tsconfig, amplify.yml, gitignore)
+      // 2 post-generation ops (replace folder, install deps)
+      // = 12 total — the unsupported function contributes zero operations.
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- accessing private field to assert operation count
+      expect((plan as any).operations).toHaveLength(12);
+    });
   });
 });
