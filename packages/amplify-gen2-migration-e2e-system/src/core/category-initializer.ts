@@ -3,10 +3,8 @@
  * Uses the e2e-core utilities for reliable category initialization
  */
 
-import { ILogger } from '../interfaces';
 import {
   AppConfiguration,
-  LogContext,
   APIConfiguration,
   AuthConfiguration,
   StorageConfiguration,
@@ -34,6 +32,7 @@ import {
 } from '@aws-amplify/amplify-e2e-core';
 import * as fs from 'fs';
 import * as path from 'path';
+import { Logger } from '../utils/logger';
 
 export interface CategoryInitializerOptions {
   appPath: string;
@@ -48,14 +47,13 @@ export interface InitializeCategoriesResult {
 }
 
 export class CategoryInitializer {
-  constructor(private readonly logger: ILogger) {}
+  constructor(private readonly logger: Logger) {}
 
   /**
    * Initialize all categories defined in the configuration
    */
   async initializeCategories(options: CategoryInitializerOptions): Promise<InitializeCategoriesResult> {
     const { appPath, config, deploymentName } = options;
-    const context: LogContext = { appName: deploymentName, operation: 'initializeCategories' };
 
     const result: InitializeCategoriesResult = {
       initializedCategories: [],
@@ -63,11 +61,11 @@ export class CategoryInitializer {
       errors: [],
     };
 
-    this.logger.info(`Starting category initialization for ${deploymentName}`, context);
+    this.logger.info(`Starting category initialization for ${deploymentName}`);
 
     const categories = config.categories;
     if (!categories) {
-      this.logger.info('No categories defined in configuration', context);
+      this.logger.info('No categories defined in configuration');
       return result;
     }
 
@@ -80,37 +78,37 @@ export class CategoryInitializer {
     // 6. Trigger functions (need AppSync/DynamoDB tables to exist)
     // 7. REST API last (needs functions to exist)
     if (categories.auth) {
-      await this.initializeAuthCategory(appPath, categories.auth, result, context);
+      await this.initializeAuthCategory(appPath, categories.auth, result);
     }
 
     if (categories.analytics) {
-      await this.initializeAnalyticsCategory(appPath, categories.analytics, result, context);
+      await this.initializeAnalyticsCategory(appPath, categories.analytics, result);
     }
 
     // Initialize regular (non-trigger) functions before API
     if (categories.function) {
-      await this.initializeRegularFunctions(appPath, categories.function, result, context);
+      await this.initializeRegularFunctions(appPath, categories.function, result);
     }
 
     if (categories.storage) {
-      await this.initializeStorageCategory(appPath, categories.storage, categories.auth, result, context);
+      await this.initializeStorageCategory(appPath, categories.storage, categories.auth, result);
     }
 
     if (categories.api) {
-      await this.initializeApiCategory(appPath, categories.api, categories.function, result, context);
+      await this.initializeApiCategory(appPath, categories.api, categories.function, result);
     }
 
     // Initialize trigger functions after API (they need AppSync tables to exist)
     if (categories.function) {
-      await this.initializeTriggerFunctions(appPath, categories.function, result, context);
+      await this.initializeTriggerFunctions(appPath, categories.function, result);
     }
 
     // Initialize REST API separately if configured
     if (categories.restApi) {
-      await this.initializeRestApiCategory(appPath, categories.restApi, categories.function, result, context);
+      await this.initializeRestApiCategory(appPath, categories.restApi, categories.function, result);
     }
 
-    this.logger.info(`Category initialization complete. Initialized: ${result.initializedCategories.join(', ') || 'none'}`, context);
+    this.logger.info(`Category initialization complete. Initialized: ${result.initializedCategories.join(', ') || 'none'}`);
 
     return result;
   }
@@ -120,12 +118,7 @@ export class CategoryInitializer {
    * Supports: social providers, user pool groups
    * Not yet supported: auth triggers (preSignUp, etc.)
    */
-  private async initializeAuthCategory(
-    appPath: string,
-    authConfig: AuthConfiguration,
-    result: InitializeCategoriesResult,
-    context: LogContext,
-  ): Promise<void> {
+  private async initializeAuthCategory(appPath: string, authConfig: AuthConfiguration, result: InitializeCategoriesResult): Promise<void> {
     const hasSocialProviders = authConfig.socialProviders && authConfig.socialProviders.length > 0;
     const hasUserPoolGroups = authConfig.userPoolGroups && authConfig.userPoolGroups.length > 0;
     const hasAuthTriggers = authConfig.triggers && Object.keys(authConfig.triggers).length > 0;
@@ -137,27 +130,27 @@ export class CategoryInitializer {
     if (hasAuthTriggers) features.push('triggers (not yet supported)');
 
     const authType = features.length > 0 ? `with ${features.join(', ')}` : 'with default settings';
-    this.logger.info(`Initializing auth category ${authType}...`, context);
+    this.logger.info(`Initializing auth category ${authType}...`);
 
     // Warn about unsupported features
     if (hasAuthTriggers) {
-      this.logger.warn('Auth triggers (preSignUp, postConfirmation, etc.) are not yet supported by category-initializer', context);
+      this.logger.warn('Auth triggers (preSignUp, postConfirmation, etc.) are not yet supported by category-initializer');
     }
 
     try {
       if (hasUserPoolGroups) {
         // Use auth with groups (creates Admins and Users groups by default)
         // Note: addAuthWithGroups creates hardcoded "Admins" and "Users" groups
-        this.logger.debug(`User pool groups configured: ${authConfig.userPoolGroups?.join(', ')}`, context);
+        this.logger.debug(`User pool groups configured: ${authConfig.userPoolGroups?.join(', ')}`);
         await addAuthWithGroups(appPath);
       } else if (hasSocialProviders) {
         // Use social auth when social providers are configured
         // This sets up Cognito with Facebook, Google, and Amazon OAuth
-        this.logger.debug(`Social providers configured: ${authConfig.socialProviders.join(', ')}`, context);
+        this.logger.debug(`Social providers configured: ${authConfig.socialProviders.join(', ')}`);
         await addAuthWithDefaultSocial(appPath);
       } else if (authConfig.signInMethods?.includes('email')) {
         // Use email sign-in when explicitly configured
-        this.logger.debug('Using email sign-in method', context);
+        this.logger.debug('Using email sign-in method');
         await addAuthWithEmail(appPath);
       } else {
         // Use default auth configuration (username sign-in)
@@ -165,10 +158,10 @@ export class CategoryInitializer {
       }
 
       result.initializedCategories.push('auth');
-      this.logger.info('Auth category initialized successfully', context);
+      this.logger.info('Auth category initialized successfully');
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
-      this.logger.error(`Failed to initialize auth category: ${errorMessage}`, error as Error, context);
+      this.logger.error(`Failed to initialize auth category: ${errorMessage}`, error as Error);
       result.errors.push({ category: 'auth', error: errorMessage });
     }
   }
@@ -181,18 +174,17 @@ export class CategoryInitializer {
     apiConfig: APIConfiguration,
     functionConfig: FunctionConfiguration | undefined,
     result: InitializeCategoriesResult,
-    context: LogContext,
   ): Promise<void> {
     // Only handle GraphQL here; REST is handled separately
     if (apiConfig.type !== 'GraphQL') {
       // If type is REST but no restApi config, use legacy behavior
       if (apiConfig.type === 'REST') {
-        await this.initializeRestApiFromLegacyConfig(appPath, functionConfig, result, context);
+        await this.initializeRestApiFromLegacyConfig(appPath, functionConfig, result);
       }
       return;
     }
 
-    this.logger.info('Initializing GraphQL API category...', context);
+    this.logger.info('Initializing GraphQL API category...');
 
     try {
       // Build authTypesConfig in the order specified by migration-config.json so the
@@ -231,18 +223,18 @@ export class CategoryInitializer {
           const apiName = this.getApiNameFromBackend(appPath);
           if (apiName) {
             updateSchema(appPath, apiName, schemaContent);
-            this.logger.debug(`Updated schema from ${apiConfig.schema}`, context);
+            this.logger.debug(`Updated schema from ${apiConfig.schema}`);
           }
         } else {
-          this.logger.warn(`Schema file not found: ${schemaPath}`, context);
+          this.logger.warn(`Schema file not found: ${schemaPath}`);
         }
       }
 
       result.initializedCategories.push('api');
-      this.logger.info('GraphQL API category initialized successfully', context);
+      this.logger.info('GraphQL API category initialized successfully');
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
-      this.logger.error(`Failed to initialize GraphQL API category: ${errorMessage}`, error as Error, context);
+      this.logger.error(`Failed to initialize GraphQL API category: ${errorMessage}`, error as Error);
       result.errors.push({ category: 'api', error: errorMessage });
     }
   }
@@ -255,14 +247,13 @@ export class CategoryInitializer {
     restApiConfig: RestApiConfiguration,
     functionConfig: FunctionConfiguration | undefined,
     result: InitializeCategoriesResult,
-    context: LogContext,
   ): Promise<void> {
-    this.logger.info(`Initializing REST API category (${restApiConfig.name})...`, context);
+    this.logger.info(`Initializing REST API category (${restApiConfig.name})...`);
 
     // REST API requires at least one Lambda function to exist
     const hasFunctions = functionConfig && functionConfig.functions.length > 0;
     if (!hasFunctions) {
-      this.logger.warn('REST API requires at least one Lambda function, skipping', context);
+      this.logger.warn('REST API requires at least one Lambda function, skipping');
       result.skippedCategories.push('restApi');
       return;
     }
@@ -270,7 +261,7 @@ export class CategoryInitializer {
     // Check if the specified lambda source exists
     const lambdaExists = functionConfig.functions.some((f) => f.name === restApiConfig.lambdaSource);
     if (!lambdaExists) {
-      this.logger.warn(`REST API lambda source '${restApiConfig.lambdaSource}' not found in functions, skipping`, context);
+      this.logger.warn(`REST API lambda source '${restApiConfig.lambdaSource}' not found in functions, skipping`);
       result.skippedCategories.push('restApi');
       return;
     }
@@ -286,10 +277,10 @@ export class CategoryInitializer {
       });
 
       result.initializedCategories.push('restApi');
-      this.logger.info('REST API category initialized successfully', context);
+      this.logger.info('REST API category initialized successfully');
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
-      this.logger.error(`Failed to initialize REST API category: ${errorMessage}`, error as Error, context);
+      this.logger.error(`Failed to initialize REST API category: ${errorMessage}`, error as Error);
       result.errors.push({ category: 'restApi', error: errorMessage });
     }
   }
@@ -301,13 +292,12 @@ export class CategoryInitializer {
     appPath: string,
     functionConfig: FunctionConfiguration | undefined,
     result: InitializeCategoriesResult,
-    context: LogContext,
   ): Promise<void> {
-    this.logger.info('Initializing REST API category (legacy config)...', context);
+    this.logger.info('Initializing REST API category (legacy config)...');
 
     const hasFunctions = functionConfig && functionConfig.functions.length > 0;
     if (!hasFunctions) {
-      this.logger.warn('REST API requires at least one Lambda function, skipping', context);
+      this.logger.warn('REST API requires at least one Lambda function, skipping');
       result.skippedCategories.push('api');
       return;
     }
@@ -322,10 +312,10 @@ export class CategoryInitializer {
       });
 
       result.initializedCategories.push('api');
-      this.logger.info('REST API category initialized successfully', context);
+      this.logger.info('REST API category initialized successfully');
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
-      this.logger.error(`Failed to initialize REST API category: ${errorMessage}`, error as Error, context);
+      this.logger.error(`Failed to initialize REST API category: ${errorMessage}`, error as Error);
       result.errors.push({ category: 'api', error: errorMessage });
     }
   }
@@ -339,17 +329,16 @@ export class CategoryInitializer {
     storageConfig: StorageConfiguration,
     authConfig: AuthConfiguration | undefined,
     result: InitializeCategoriesResult,
-    context: LogContext,
   ): Promise<void> {
     // Check if this is DynamoDB storage
     if (storageConfig.type === 'dynamodb' && storageConfig.tables && storageConfig.tables.length > 0) {
-      await this.initializeDynamoDBStorage(appPath, storageConfig, result, context);
+      await this.initializeDynamoDBStorage(appPath, storageConfig, result);
       return;
     }
 
     // S3 storage
     if (!storageConfig.buckets || storageConfig.buckets.length === 0) {
-      this.logger.warn('No storage buckets configured, skipping storage category', context);
+      this.logger.warn('No storage buckets configured, skipping storage category');
       result.skippedCategories.push('storage');
       return;
     }
@@ -366,19 +355,19 @@ export class CategoryInitializer {
     const accessType = hasGuestAccess ? 'auth and guest' : 'auth-only';
     const triggerInfo = hasTriggers ? ' with Lambda trigger' : '';
     const groupInfo = hasUserPoolGroups ? ' (with user pool groups)' : '';
-    this.logger.info(`Initializing S3 storage category with ${accessType} access${triggerInfo}${groupInfo}...`, context);
+    this.logger.info(`Initializing S3 storage category with ${accessType} access${triggerInfo}${groupInfo}...`);
 
     try {
       if (hasTriggers) {
         // Add S3 storage with Lambda trigger (creates a new trigger function)
         const projectHasFunctions = result.initializedCategories.includes('function');
-        this.logger.debug(`Adding S3 storage with Lambda trigger (projectHasFunctions: ${projectHasFunctions})`, context);
+        this.logger.debug(`Adding S3 storage with Lambda trigger (projectHasFunctions: ${projectHasFunctions})`);
         await addS3WithTrigger(appPath, { projectHasFunctions });
       } else if (hasUserPoolGroups) {
         // Use group-aware helper when user pool groups are configured.
         // addAuthWithGroups creates hardcoded "Admins" and "Users" groups regardless
         // of what the config specifies, so we must pass those names here.
-        this.logger.debug(`Adding S3 storage with group access (Admins, Users)`, context);
+        this.logger.debug(`Adding S3 storage with group access (Admins, Users)`);
         await addS3WithGroupAccess(appPath);
       } else if (hasGuestAccess) {
         // Add S3 storage with auth and guest access
@@ -389,10 +378,10 @@ export class CategoryInitializer {
       }
 
       result.initializedCategories.push('storage');
-      this.logger.info('Storage category initialized successfully', context);
+      this.logger.info('Storage category initialized successfully');
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
-      this.logger.error(`Failed to initialize storage category: ${errorMessage}`, error as Error, context);
+      this.logger.error(`Failed to initialize storage category: ${errorMessage}`, error as Error);
       result.errors.push({ category: 'storage', error: errorMessage });
     }
   }
@@ -404,20 +393,19 @@ export class CategoryInitializer {
     appPath: string,
     storageConfig: StorageConfiguration,
     result: InitializeCategoriesResult,
-    context: LogContext,
   ): Promise<void> {
     const tables = storageConfig.tables;
     if (!tables || tables.length === 0) {
-      this.logger.warn('No DynamoDB tables configured, skipping storage category', context);
+      this.logger.warn('No DynamoDB tables configured, skipping storage category');
       result.skippedCategories.push('storage');
       return;
     }
 
-    this.logger.info(`Initializing DynamoDB storage with ${tables.length} table(s)...`, context);
+    this.logger.info(`Initializing DynamoDB storage with ${tables.length} table(s)...`);
 
     try {
       for (const table of tables) {
-        this.logger.debug(`Adding DynamoDB table: ${table.name}`, context);
+        this.logger.debug(`Adding DynamoDB table: ${table.name}`);
 
         // Use addDynamoDBWithGSIWithSettings if GSI is configured
         if (table.gsi && table.gsi.length > 0) {
@@ -429,7 +417,7 @@ export class CategoryInitializer {
         } else {
           // For tables without GSI, we still use the GSI function but it will create default columns
           // This is a limitation of the e2e-core helpers
-          this.logger.warn(`DynamoDB table '${table.name}' without GSI - using default schema`, context);
+          this.logger.warn(`DynamoDB table '${table.name}' without GSI - using default schema`);
           await addDynamoDBWithGSIWithSettings(appPath, {
             resourceName: table.name,
             tableName: table.name,
@@ -437,14 +425,14 @@ export class CategoryInitializer {
           });
         }
 
-        this.logger.debug(`DynamoDB table ${table.name} added successfully`, context);
+        this.logger.debug(`DynamoDB table ${table.name} added successfully`);
       }
 
       result.initializedCategories.push('storage');
-      this.logger.info('DynamoDB storage category initialized successfully', context);
+      this.logger.info('DynamoDB storage category initialized successfully');
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
-      this.logger.error(`Failed to initialize DynamoDB storage: ${errorMessage}`, error as Error, context);
+      this.logger.error(`Failed to initialize DynamoDB storage: ${errorMessage}`, error as Error);
       result.errors.push({ category: 'storage', error: errorMessage });
     }
   }
@@ -456,20 +444,19 @@ export class CategoryInitializer {
     appPath: string,
     functionConfig: FunctionConfiguration,
     result: InitializeCategoriesResult,
-    context: LogContext,
   ): Promise<void> {
     const regularFunctions = functionConfig.functions.filter((f) => !f.trigger);
 
     if (regularFunctions.length === 0) {
-      this.logger.debug('No regular functions to initialize', context);
+      this.logger.debug('No regular functions to initialize');
       return;
     }
 
-    this.logger.info(`Initializing ${regularFunctions.length} regular function(s)...`, context);
+    this.logger.info(`Initializing ${regularFunctions.length} regular function(s)...`);
 
     try {
       for (const func of regularFunctions) {
-        this.logger.debug(`Adding function: ${func.name}`, context);
+        this.logger.debug(`Adding function: ${func.name}`);
 
         const runtime = this.mapRuntime(func.runtime);
         const template = this.mapTemplate(func.template);
@@ -483,14 +470,14 @@ export class CategoryInitializer {
           runtime,
         );
 
-        this.logger.debug(`Function ${func.name} added successfully`, context);
+        this.logger.debug(`Function ${func.name} added successfully`);
       }
 
       result.initializedCategories.push('function');
-      this.logger.info('Regular functions initialized successfully', context);
+      this.logger.info('Regular functions initialized successfully');
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
-      this.logger.error(`Failed to initialize regular functions: ${errorMessage}`, error as Error, context);
+      this.logger.error(`Failed to initialize regular functions: ${errorMessage}`, error as Error);
       result.errors.push({ category: 'function', error: errorMessage });
     }
   }
@@ -503,20 +490,19 @@ export class CategoryInitializer {
     appPath: string,
     functionConfig: FunctionConfiguration,
     result: InitializeCategoriesResult,
-    context: LogContext,
   ): Promise<void> {
     const triggerFunctions = functionConfig.functions.filter((f) => f.trigger);
 
     if (triggerFunctions.length === 0) {
-      this.logger.debug('No trigger functions to initialize', context);
+      this.logger.debug('No trigger functions to initialize');
       return;
     }
 
-    this.logger.info(`Initializing ${triggerFunctions.length} trigger function(s)...`, context);
+    this.logger.info(`Initializing ${triggerFunctions.length} trigger function(s)...`);
 
     try {
       for (const func of triggerFunctions) {
-        this.logger.debug(`Adding trigger function: ${func.name}`, context);
+        this.logger.debug(`Adding trigger function: ${func.name}`);
 
         const runtime = this.mapRuntime(func.runtime);
         const triggerType = func.trigger?.type;
@@ -548,17 +534,17 @@ export class CategoryInitializer {
             addLambdaTrigger,
           );
         } else {
-          this.logger.warn(`Unsupported trigger type '${triggerType}' for function ${func.name}, skipping`, context);
+          this.logger.warn(`Unsupported trigger type '${triggerType}' for function ${func.name}, skipping`);
           continue;
         }
 
-        this.logger.debug(`Trigger function ${func.name} added successfully`, context);
+        this.logger.debug(`Trigger function ${func.name} added successfully`);
       }
 
-      this.logger.info('Trigger functions initialized successfully', context);
+      this.logger.info('Trigger functions initialized successfully');
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
-      this.logger.error(`Failed to initialize trigger functions: ${errorMessage}`, error as Error, context);
+      this.logger.error(`Failed to initialize trigger functions: ${errorMessage}`, error as Error);
       result.errors.push({ category: 'function-triggers', error: errorMessage });
     }
   }
@@ -630,12 +616,11 @@ export class CategoryInitializer {
     appPath: string,
     analyticsConfig: AnalyticsConfiguration,
     result: InitializeCategoriesResult,
-    context: LogContext,
   ): Promise<void> {
-    this.logger.info(`Initializing analytics category (${analyticsConfig.type}: ${analyticsConfig.name})...`, context);
+    this.logger.info(`Initializing analytics category (${analyticsConfig.type}: ${analyticsConfig.name})...`);
 
     if (analyticsConfig.type !== 'kinesis') {
-      this.logger.warn(`Analytics type '${analyticsConfig.type}' is not yet supported, skipping`, context);
+      this.logger.warn(`Analytics type '${analyticsConfig.type}' is not yet supported, skipping`);
       result.skippedCategories.push('analytics');
       return;
     }
@@ -649,10 +634,10 @@ export class CategoryInitializer {
       });
 
       result.initializedCategories.push('analytics');
-      this.logger.info('Analytics category initialized successfully', context);
+      this.logger.info('Analytics category initialized successfully');
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
-      this.logger.error(`Failed to initialize analytics category: ${errorMessage}`, error as Error, context);
+      this.logger.error(`Failed to initialize analytics category: ${errorMessage}`, error as Error);
       result.errors.push({ category: 'analytics', error: errorMessage });
     }
   }

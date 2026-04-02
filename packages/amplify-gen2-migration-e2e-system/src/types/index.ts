@@ -5,7 +5,6 @@
 export interface AppConfiguration {
   app: AppMetadata;
   categories: CategoryConfiguration;
-  dependencies?: DependencyConfiguration;
 }
 
 export interface AppMetadata {
@@ -19,7 +18,6 @@ export interface CategoryConfiguration {
   auth?: AuthConfiguration;
   storage?: StorageConfiguration;
   function?: FunctionConfiguration;
-  hosting?: HostingConfiguration;
   restApi?: RestApiConfiguration;
   analytics?: AnalyticsConfiguration;
 }
@@ -96,23 +94,10 @@ export interface FunctionConfiguration {
   functions: LambdaFunction[];
 }
 
-export interface HostingConfiguration {
-  type: 'amplify-console' | 's3-cloudfront';
-  customDomain?: string;
-  sslCertificate?: string;
-  buildSettings?: BuildSettings;
-}
-
 export interface AnalyticsConfiguration {
   type: 'kinesis' | 'pinpoint';
   name: string;
   shards?: number;
-}
-
-export interface DependencyConfiguration {
-  nodeVersion?: string;
-  npmPackages?: Record<string, string>;
-  amplifyVersion?: string;
 }
 
 // Supporting types
@@ -211,7 +196,6 @@ export interface LogEntry {
   timestamp: Date;
   level: LogLevel;
   message: string;
-  context?: LogContext;
   error?: Error;
 }
 
@@ -220,13 +204,6 @@ export enum LogLevel {
   INFO = 'info',
   WARN = 'warn',
   ERROR = 'error',
-}
-
-export interface LogContext {
-  appName?: string;
-  category?: string;
-  step?: string;
-  operation?: string;
 }
 
 // CLI types

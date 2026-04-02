@@ -4,20 +4,21 @@
 
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { IConfigurationLoader, ILogger, IFileManager } from '../interfaces';
 import { AppConfiguration, ValidationResult } from '../types';
+import { Logger } from '../utils/logger';
+import { FileManager } from '../utils/file-manager';
 
-export class ConfigurationLoader implements IConfigurationLoader {
+export class ConfigurationLoader implements ConfigurationLoader {
   private readonly appsBasePath: string;
   private readonly configFileName = 'migration-config.json';
 
-  constructor(private readonly logger: ILogger, private readonly fileManager: IFileManager, appsBasePath = '../../amplify-migration-apps') {
+  constructor(private readonly logger: Logger, private readonly fileManager: FileManager, appsBasePath = '../../amplify-migration-apps') {
     // Resolve path relative to the project root, not the current file
     this.appsBasePath = path.resolve(process.cwd(), appsBasePath);
   }
 
   async loadAppConfiguration(appName: string): Promise<AppConfiguration> {
-    this.logger.debug(`Loading configuration for app: ${appName}`, { appName });
+    this.logger.debug(`Loading configuration for app: ${appName}`);
 
     const configPath = this.getConfigPath(appName);
 
@@ -42,7 +43,7 @@ export class ConfigurationLoader implements IConfigurationLoader {
         throw Error('App configuration did not pass validation.');
       }
 
-      this.logger.info(`Successfully loaded configuration for ${appName}`, { appName });
+      this.logger.info(`Successfully loaded configuration for ${appName}`);
       return config;
     } catch (error) {
       throw new Error(`Failed to load configuration for ${appName}: ${(error as Error).message}`);

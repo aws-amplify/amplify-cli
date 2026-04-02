@@ -52,9 +52,6 @@ describe('ConfigurationLoader', () => {
               },
             ],
           },
-          hosting: {
-            type: 'amplify-console',
-          },
         },
       };
 
