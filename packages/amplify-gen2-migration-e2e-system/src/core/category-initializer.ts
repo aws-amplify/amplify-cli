@@ -672,10 +672,12 @@ export class CategoryInitializer {
    */
   public discoverS3TriggerFunctionName(appPath: string, triggerNamePrefix: string): string | null {
     const functionDir = path.join(appPath, 'amplify', 'backend', 'function');
-    if (!fs.existsSync(functionDir)) {
+    let entries: string[];
+    try {
+      entries = fs.readdirSync(functionDir);
+    } catch {
       return null;
     }
-    const entries = fs.readdirSync(functionDir);
     return entries.find((name) => name.startsWith(triggerNamePrefix)) ?? null;
   }
 
@@ -686,12 +688,16 @@ export class CategoryInitializer {
    */
   private patchFunctionAppsyncPermission(appPath: string, functionName: string, context: LogContext): void {
     const cfnPath = path.join(appPath, 'amplify', 'backend', 'function', functionName, `${functionName}-cloudformation-template.json`);
-    if (!fs.existsSync(cfnPath)) {
+
+    let cfnContent: string;
+    try {
+      cfnContent = fs.readFileSync(cfnPath, 'utf-8');
+    } catch {
       this.logger.warn(`CFN template not found for ${functionName}, skipping appsync:GraphQL patch`, context);
       return;
     }
 
-    const cfn = JSON.parse(fs.readFileSync(cfnPath, 'utf-8')) as CfnTemplate;
+    const cfn = JSON.parse(cfnContent) as CfnTemplate;
     cfn.Resources = cfn.Resources ?? {};
     cfn.Resources.AppSyncGraphQLPolicy = {
       Type: 'AWS::IAM::Policy',
@@ -741,11 +747,14 @@ export class CategoryInitializer {
       path.join(appPath, 'amplify', '#current-cloud-backend', 'backend-config.json'),
     ];
     for (const configPath of configPaths) {
-      if (!fs.existsSync(configPath)) continue;
-      const config = JSON.parse(fs.readFileSync(configPath, 'utf-8')) as AmplifyBackendConfig;
-      if (config.function?.[functionName]) {
-        config.function[functionName].dependsOn = apiDependsOn;
-        fs.writeFileSync(configPath, JSON.stringify(config, null, 2) + '\n', 'utf-8');
+      try {
+        const config = JSON.parse(fs.readFileSync(configPath, 'utf-8')) as AmplifyBackendConfig;
+        if (config.function?.[functionName]) {
+          config.function[functionName].dependsOn = apiDependsOn;
+          fs.writeFileSync(configPath, JSON.stringify(config, null, 2) + '\n', 'utf-8');
+        }
+      } catch {
+        // File doesn't exist, skip
       }
     }
     this.logger.debug(`Patched backend-config.json: set ${functionName} dependsOn to api/${apiName}`, context);
@@ -756,19 +765,24 @@ export class CategoryInitializer {
       path.join(appPath, 'amplify', '#current-cloud-backend', 'amplify-meta.json'),
     ];
     for (const metaPath of metaPaths) {
-      if (!fs.existsSync(metaPath)) continue;
-      const meta = JSON.parse(fs.readFileSync(metaPath, 'utf-8')) as AmplifyBackendConfig;
-      if (meta.function?.[functionName]) {
-        meta.function[functionName].dependsOn = apiDependsOn;
-        fs.writeFileSync(metaPath, JSON.stringify(meta, null, 2) + '\n', 'utf-8');
+      try {
+        const meta = JSON.parse(fs.readFileSync(metaPath, 'utf-8')) as AmplifyBackendConfig;
+        if (meta.function?.[functionName]) {
+          meta.function[functionName].dependsOn = apiDependsOn;
+          fs.writeFileSync(metaPath, JSON.stringify(meta, null, 2) + '\n', 'utf-8');
+        }
+      } catch {
+        // File doesn't exist, skip
       }
     }
 
     // Patch function-parameters.json
     const funcParamsPath = path.join(appPath, 'amplify', 'backend', 'function', functionName, 'function-parameters.json');
     let funcParams: Record<string, unknown> = {};
-    if (fs.existsSync(funcParamsPath)) {
+    try {
       funcParams = JSON.parse(fs.readFileSync(funcParamsPath, 'utf-8')) as Record<string, unknown>;
+    } catch {
+      // File doesn't exist, start with empty object
     }
     funcParams.permissions = { api: { [apiName]: operations } };
     delete funcParams.dependsOn;
@@ -777,9 +791,15 @@ export class CategoryInitializer {
 
     // Patch CFN template: add API parameters and env vars
     const cfnPath = path.join(appPath, 'amplify', 'backend', 'function', functionName, `${functionName}-cloudformation-template.json`);
-    if (!fs.existsSync(cfnPath)) return;
 
-    const cfn = JSON.parse(fs.readFileSync(cfnPath, 'utf-8')) as CfnTemplate;
+    let cfnContent: string;
+    try {
+      cfnContent = fs.readFileSync(cfnPath, 'utf-8');
+    } catch {
+      return;
+    }
+
+    const cfn = JSON.parse(cfnContent) as CfnTemplate;
 
     // Remove auth parameters
     if (cfn.Parameters) {
