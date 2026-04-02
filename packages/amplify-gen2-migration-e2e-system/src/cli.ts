@@ -606,7 +606,7 @@ async function initializeAppFromCLI(params: InitializeAppFromCLIParams): Promise
                 const functionMeta = amplifyMeta.function?.[func.name]?.output as Record<string, string> | undefined;
                 const lambdaName = functionMeta?.Name;
                 if (lambdaName) {
-                  logger.debug(`Updating ${lambdaName} env vars with API endpoint`, context);
+                  logger.debug(`Updating ${lambdaName} env vars with API endpoint`);
                   const upper = postPushApiName.toUpperCase();
                   // Get existing env vars first, then merge (update-function-configuration replaces all vars)
                   const getLambdaResult = await execa('aws', [
@@ -642,7 +642,7 @@ async function initializeAppFromCLI(params: InitializeAppFromCLIParams): Promise
                     '--profile',
                     profile,
                   ]);
-                  logger.info(`Updated ${func.name} Lambda with API env vars`, context);
+                  logger.info(`Updated ${func.name} Lambda with API env vars`);
                 }
               }
             }
@@ -692,7 +692,7 @@ async function initializeAppFromCLI(params: InitializeAppFromCLIParams): Promise
     logger.info(`Gen2 generated code committed`);
 
     // Reinstall dependencies to pick up Gen2 deps (ampx, @aws-amplify/backend, etc.)
-    logger.info(`Reinstalling dependencies before Gen2 deployment...`, context);
+    logger.info(`Reinstalling dependencies before Gen2 deployment...`);
     await execa('npm', ['install'], { cwd: targetAppPath });
 
     // Deploy Gen2 using ampx sandbox
