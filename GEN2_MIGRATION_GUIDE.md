@@ -626,7 +626,7 @@ by the CLI setting that configures them.
   - ⚠️ `Custom Message`
   - ⚠️ `Define Auth Challenge`
   - ⚠️ `Post Authentication`
-  - ⚠️ `Post Confirmation`
+  - 🟢 `Post Confirmation`
   - ⚠️ `Pre Authentication`
   - 🟢 `Pre Sign-up`
   - ⚠️ `Verify Auth Challenge Response`
