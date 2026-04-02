@@ -30,29 +30,10 @@ import {
   addKinesis,
   updateSchema,
 } from '@aws-amplify/amplify-e2e-core';
+import type { CoreFunctionSettings } from '@aws-amplify/amplify-e2e-core';
 import * as fs from 'fs';
 import * as path from 'path';
 import { Logger } from '../utils/logger';
-
-/** Minimal shape of a CloudFormation template used for CFN patching. */
-interface CfnTemplate {
-  Parameters?: Record<string, Record<string, unknown>>;
-  Resources?: Record<string, unknown> & {
-    LambdaFunction?: {
-      Properties?: {
-        Environment?: {
-          Variables?: Record<string, unknown>;
-        };
-      };
-    };
-  };
-}
-
-/** Minimal shape of backend-config.json / amplify-meta.json used for patching. */
-interface AmplifyBackendConfig {
-  api?: Record<string, unknown>;
-  function?: Record<string, { dependsOn?: unknown[] }>;
-}
 
 export interface CategoryInitializerOptions {
   appPath: string;
@@ -74,7 +55,6 @@ export class CategoryInitializer {
    */
   async initializeCategories(options: CategoryInitializerOptions): Promise<InitializeCategoriesResult> {
     const { appPath, config, deploymentName } = options;
-
     const result: InitializeCategoriesResult = {
       initializedCategories: [],
       skippedCategories: [],
@@ -89,15 +69,15 @@ export class CategoryInitializer {
       return result;
     }
 
-    // Initialize categories in the correct order:
+    // Initialize categories in the order matching the manual CLI workflow:
     // 1. Auth first (other categories may depend on it)
     // 2. Analytics before functions (functions may reference analytics resources)
-    // 3. Regular functions WITHOUT API access before storage/API
+    // 3. GraphQL API (must exist before functions that need API access)
     // 4. Storage (may have triggers that reference functions)
-    // 5. GraphQL API (creates AppSync tables that trigger functions may reference)
-    // 6. Regular functions WITH API access (need API to exist for env vars)
-    // 7. Trigger functions (need AppSync/DynamoDB tables to exist)
-    // 8. REST API last (needs functions to exist)
+    // 5. Regular functions (non-trigger) after API so they can request API access
+    // 6. Trigger functions (need AppSync/DynamoDB tables to exist)
+    // 7. REST API last (needs functions to exist)
+
     if (categories.auth) {
       await this.initializeAuthCategory(appPath, categories.auth, result);
     }
@@ -106,22 +86,17 @@ export class CategoryInitializer {
       await this.initializeAnalyticsCategory(appPath, categories.analytics, result);
     }
 
-    // Initialize regular functions that do NOT need API access (before API)
-    if (categories.function) {
-      await this.initializeRegularFunctions(appPath, categories.function, false, result);
+    if (categories.api) {
+      await this.initializeApiCategory(appPath, categories.api, categories.function, result);
     }
 
     if (categories.storage) {
       await this.initializeStorageCategory(appPath, categories.storage, categories.auth, result);
     }
 
-    if (categories.api) {
-      await this.initializeApiCategory(appPath, categories.api, categories.function, result);
-    }
-
-    // Initialize regular functions that need API access (after API exists)
-    if (categories.function && categories.api) {
-      await this.initializeRegularFunctions(appPath, categories.function, true, result);
+    // Initialize regular (non-trigger) functions after API so they can request API access
+    if (categories.function) {
+      await this.initializeRegularFunctions(appPath, categories.function, result);
     }
 
     // Initialize trigger functions after API (they need AppSync tables to exist)
@@ -135,7 +110,6 @@ export class CategoryInitializer {
     }
 
     this.logger.info(`Category initialization complete. Initialized: ${result.initializedCategories.join(', ') || 'none'}`);
-
     return result;
   }
 
@@ -375,6 +349,7 @@ export class CategoryInitializer {
 
     // Check if guest access is configured for any bucket
     const hasGuestAccess = storageConfig.buckets.some((bucket) => bucket.access.includes('guest') || bucket.access.includes('public'));
+
     // Check if triggers are configured
     const hasTriggers = storageConfig.triggers && storageConfig.triggers.length > 0;
 
@@ -465,18 +440,15 @@ export class CategoryInitializer {
 
   /**
    * Initialize regular (non-trigger) Lambda functions.
-   * When withApiAccess is false, creates functions that don't need API access.
-   * When withApiAccess is true, creates functions that need API access (must be called after API init).
+   * Passes additionalPermissions, environmentVariables, and secretsConfig
+   * when the migration config specifies apiAccess, environment, or secrets.
    */
   private async initializeRegularFunctions(
     appPath: string,
     functionConfig: FunctionConfiguration,
-    withApiAccess: boolean,
     result: InitializeCategoriesResult,
   ): Promise<void> {
-    const regularFunctions = functionConfig.functions
-      .filter((f) => !f.trigger)
-      .filter((f) => (withApiAccess ? !!f.apiAccess : !f.apiAccess));
+    const regularFunctions = functionConfig.functions.filter((f) => !f.trigger);
 
     if (regularFunctions.length === 0) {
       this.logger.debug('No regular functions to initialize');
@@ -488,45 +460,60 @@ export class CategoryInitializer {
     try {
       for (const func of regularFunctions) {
         this.logger.debug(`Adding function: ${func.name}`);
-
         const runtime = this.mapRuntime(func.runtime);
         const template = this.mapTemplate(func.template);
 
-        const settings: Record<string, unknown> = {
+        // Build settings matching the manual CLI prompts from the README
+        const settings: CoreFunctionSettings = {
           name: func.name,
           functionTemplate: template,
         };
 
-        // Wire secrets (addFunction supports one at a time)
-        if (func.secrets) {
-          const entries = Object.entries(func.secrets);
-          if (entries.length > 0) {
-            const [name, value] = entries[0];
-            settings.secretsConfig = { operation: 'add', name, value };
-            this.logger.debug(`Adding secret ${name} to ${func.name}`);
-          }
-        }
-
-        // Wire API access permissions (only when withApiAccess=true, API must exist)
-        if (withApiAccess && func.apiAccess) {
+        // API access: "Do you want to access other resources?" → Yes → api → operations
+        if (func.apiAccess) {
           const apiName = this.getApiNameFromBackend(appPath);
           if (apiName) {
+            const operations = func.apiAccess.operations; // e.g. ['Query']
+            // The choices list must match the order the CLI presents categories.
+            // The CLI reads Object.keys(amplifyMeta) filtered to exclude 'providers' and 'predictions'.
+            // We read the actual category order from amplify-meta.json to ensure correct multiSelect positioning.
+            const categoryChoices = this.getCategoryChoicesFromMeta(appPath);
             settings.additionalPermissions = {
               permissions: ['api'],
-              choices: ['api', 'auth', 'function', 'storage'],
+              choices: categoryChoices,
               resources: [apiName],
-              operations: func.apiAccess.operations,
+              operations,
             };
-            this.logger.debug(`Adding API access (${func.apiAccess.operations.join(', ')}) to ${func.name}`);
+            this.logger.debug(
+              `Function ${func.name}: API access configured (${operations.join(', ')}) with choices: [${categoryChoices.join(', ')}]`,
+            );
+          } else {
+            this.logger.warn(`Function ${func.name} has apiAccess but no API found in backend`);
           }
         }
 
-        await addFunction(appPath, settings as { name: string; functionTemplate: string }, runtime);
-
-        // Patch CFN template with appsync:GraphQL permission for functions that call back to AppSync
-        if (withApiAccess && func.apiAccess) {
-          this.patchFunctionAppsyncPermission(appPath, func.name);
+        // Environment variables: "Do you want to configure environment variables?" → Yes
+        if (func.environment && Object.keys(func.environment).length > 0) {
+          const firstKey = Object.keys(func.environment)[0];
+          settings.environmentVariables = {
+            key: firstKey,
+            value: func.environment[firstKey],
+          };
+          this.logger.debug(`Function ${func.name}: env var ${firstKey}=${func.environment[firstKey]}`);
         }
+
+        // Secrets: "Do you want to configure secret values?" → Yes
+        if (func.secrets && Object.keys(func.secrets).length > 0) {
+          const firstSecretName = Object.keys(func.secrets)[0];
+          settings.secretsConfig = {
+            operation: 'add',
+            name: firstSecretName,
+            value: func.secrets[firstSecretName],
+          };
+          this.logger.debug(`Function ${func.name}: secret ${firstSecretName} configured`);
+        }
+
+        await addFunction(appPath, settings, runtime);
 
         this.logger.debug(`Function ${func.name} added successfully`);
       }
@@ -561,7 +548,6 @@ export class CategoryInitializer {
     try {
       for (const func of triggerFunctions) {
         this.logger.debug(`Adding trigger function: ${func.name}`);
-
         const runtime = this.mapRuntime(func.runtime);
         const triggerType = func.trigger?.type;
 
@@ -652,7 +638,7 @@ export class CategoryInitializer {
   /**
    * Get the API name from the amplify backend configuration
    */
-  public getApiNameFromBackend(appPath: string): string | null {
+  private getApiNameFromBackend(appPath: string): string | null {
     try {
       const backendConfigPath = path.join(appPath, 'amplify', 'backend', 'backend-config.json');
       if (fs.existsSync(backendConfigPath)) {
@@ -667,169 +653,20 @@ export class CategoryInitializer {
   }
 
   /**
-   * Discover the actual S3 trigger function name from the backend directory.
-   * The trigger name in migration-config.json is a prefix; the actual function has a random suffix.
+   * Read category keys from amplify-meta.json in the order the CLI presents them.
+   * The CLI uses Object.keys(amplifyMeta) filtered to exclude 'providers' and 'predictions'.
    */
-  public discoverS3TriggerFunctionName(appPath: string, triggerNamePrefix: string): string | null {
-    const functionDir = path.join(appPath, 'amplify', 'backend', 'function');
-    let entries: string[];
+  private getCategoryChoicesFromMeta(appPath: string): string[] {
     try {
-      entries = fs.readdirSync(functionDir);
-    } catch {
-      return null;
-    }
-    return entries.find((name) => name.startsWith(triggerNamePrefix)) ?? null;
-  }
-
-  /**
-   * Patch a function's CFN template to add appsync:GraphQL permission.
-   * Required for functions that make IAM-signed callbacks to AppSync.
-   * Note: API env vars are wired by patchRegularFunctionApiAccess called from cli.ts.
-   */
-  private patchFunctionAppsyncPermission(appPath: string, functionName: string): void {
-    const cfnPath = path.join(appPath, 'amplify', 'backend', 'function', functionName, `${functionName}-cloudformation-template.json`);
-
-    let cfnContent: string;
-    try {
-      cfnContent = fs.readFileSync(cfnPath, 'utf-8');
-    } catch {
-      this.logger.warn(`CFN template not found for ${functionName}, skipping appsync:GraphQL patch`);
-      return;
-    }
-
-    const cfn = JSON.parse(cfnContent) as CfnTemplate;
-    cfn.Resources = cfn.Resources ?? {};
-    cfn.Resources.AppSyncGraphQLPolicy = {
-      Type: 'AWS::IAM::Policy',
-      Properties: {
-        PolicyName: 'appsync-graphql-policy',
-        Roles: [{ Ref: 'LambdaExecutionRole' }],
-        PolicyDocument: {
-          Version: '2012-10-17',
-          Statement: [
-            {
-              Effect: 'Allow',
-              Action: ['appsync:GraphQL'],
-              Resource: { 'Fn::Sub': 'arn:aws:appsync:${AWS::Region}:${AWS::AccountId}:apis/*' },
-            },
-          ],
-        },
-      },
-      DependsOn: ['LambdaExecutionRole'],
-    };
-
-    fs.writeFileSync(cfnPath, JSON.stringify(cfn, null, 2) + '\n', 'utf-8');
-    this.logger.debug(`Patched ${functionName} CFN template with appsync:GraphQL permission`);
-  }
-
-  /**
-   * Patch backend-config.json and CFN template for a function with API access.
-   * Replaces auth dependsOn with API dependsOn and adds API env vars.
-   */
-  public patchRegularFunctionApiAccess(appPath: string, functionName: string, apiName: string, operations: string[]): void {
-    const apiDependsOn = [
-      {
-        category: 'api',
-        resourceName: apiName,
-        attributes: ['GraphQLAPIIdOutput', 'GraphQLAPIEndpointOutput', 'GraphQLAPIKeyOutput'],
-      },
-    ];
-
-    // Patch backend-config.json
-    const configPaths = [
-      path.join(appPath, 'amplify', 'backend', 'backend-config.json'),
-      path.join(appPath, 'amplify', '#current-cloud-backend', 'backend-config.json'),
-    ];
-    for (const configPath of configPaths) {
-      try {
-        const config = JSON.parse(fs.readFileSync(configPath, 'utf-8')) as AmplifyBackendConfig;
-        if (config.function?.[functionName]) {
-          config.function[functionName].dependsOn = apiDependsOn;
-          fs.writeFileSync(configPath, JSON.stringify(config, null, 2) + '\n', 'utf-8');
-        }
-      } catch {
-        // File doesn't exist, skip
+      const metaPath = path.join(appPath, 'amplify', 'backend', 'amplify-meta.json');
+      if (fs.existsSync(metaPath)) {
+        const meta = JSON.parse(fs.readFileSync(metaPath, 'utf-8')) as Record<string, unknown>;
+        return Object.keys(meta).filter((k) => k !== 'providers' && k !== 'predictions');
       }
-    }
-    this.logger.debug(`Patched backend-config.json: set ${functionName} dependsOn to api/${apiName}`);
-
-    // Patch amplify-meta.json
-    const metaPaths = [
-      path.join(appPath, 'amplify', 'backend', 'amplify-meta.json'),
-      path.join(appPath, 'amplify', '#current-cloud-backend', 'amplify-meta.json'),
-    ];
-    for (const metaPath of metaPaths) {
-      try {
-        const meta = JSON.parse(fs.readFileSync(metaPath, 'utf-8')) as AmplifyBackendConfig;
-        if (meta.function?.[functionName]) {
-          meta.function[functionName].dependsOn = apiDependsOn;
-          fs.writeFileSync(metaPath, JSON.stringify(meta, null, 2) + '\n', 'utf-8');
-        }
-      } catch {
-        // File doesn't exist, skip
-      }
-    }
-
-    // Patch function-parameters.json
-    const funcParamsPath = path.join(appPath, 'amplify', 'backend', 'function', functionName, 'function-parameters.json');
-    let funcParams: Record<string, unknown> = {};
-    try {
-      funcParams = JSON.parse(fs.readFileSync(funcParamsPath, 'utf-8')) as Record<string, unknown>;
+      return ['api', 'auth', 'function', 'storage'];
     } catch {
-      // File doesn't exist, start with empty object
+      return ['api', 'auth', 'function', 'storage'];
     }
-    funcParams.permissions = { api: { [apiName]: operations } };
-    delete funcParams.dependsOn;
-    fs.writeFileSync(funcParamsPath, JSON.stringify(funcParams, null, 2) + '\n', 'utf-8');
-    this.logger.debug(`Patched function-parameters.json for ${functionName}`);
-
-    // Patch CFN template: add API parameters and env vars
-    const cfnPath = path.join(appPath, 'amplify', 'backend', 'function', functionName, `${functionName}-cloudformation-template.json`);
-
-    let cfnContent: string;
-    try {
-      cfnContent = fs.readFileSync(cfnPath, 'utf-8');
-    } catch {
-      return;
-    }
-
-    const cfn = JSON.parse(cfnContent) as CfnTemplate;
-
-    // Remove auth parameters
-    if (cfn.Parameters) {
-      for (const paramName of Object.keys(cfn.Parameters)) {
-        if (paramName.startsWith('auth')) {
-          delete cfn.Parameters[paramName];
-        }
-      }
-    }
-
-    // Add API CFN parameters
-    cfn.Parameters = cfn.Parameters ?? {};
-    const apiParams: Record<string, string> = {
-      [`api${apiName}GraphQLAPIIdOutput`]: `api${apiName}GraphQLAPIIdOutput`,
-      [`api${apiName}GraphQLAPIEndpointOutput`]: `api${apiName}GraphQLAPIEndpointOutput`,
-      [`api${apiName}GraphQLAPIKeyOutput`]: `api${apiName}GraphQLAPIKeyOutput`,
-    };
-    for (const [paramName, defaultValue] of Object.entries(apiParams)) {
-      cfn.Parameters[paramName] = { Type: 'String', Default: defaultValue };
-    }
-
-    // Remove auth env vars and add API env vars
-    const envVars = cfn.Resources?.LambdaFunction?.Properties?.Environment?.Variables;
-    if (envVars) {
-      for (const envKey of Object.keys(envVars as Record<string, unknown>)) {
-        if (envKey.startsWith('AUTH_')) {
-          delete (envVars as Record<string, unknown>)[envKey];
-        }
-      }
-      envVars[`API_${apiName.toUpperCase()}_GRAPHQLAPIIDOUTPUT`] = { Ref: `api${apiName}GraphQLAPIIdOutput` };
-      envVars[`API_${apiName.toUpperCase()}_GRAPHQLAPIENDPOINTOUTPUT`] = { Ref: `api${apiName}GraphQLAPIEndpointOutput` };
-      envVars[`API_${apiName.toUpperCase()}_GRAPHQLAPIKEYOUTPUT`] = { Ref: `api${apiName}GraphQLAPIKeyOutput` };
-    }
-
-    fs.writeFileSync(cfnPath, JSON.stringify(cfn, null, 2) + '\n', 'utf-8');
-    this.logger.debug(`Patched ${functionName} CFN template with API parameters and env vars`);
   }
 
   /**

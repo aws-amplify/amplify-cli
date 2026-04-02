@@ -36,6 +36,9 @@
           "name": "lowstockproducts",
           "runtime": "nodejs",
           "template": "hello-world",
+          "environment": {
+            "LOW_STOCK_THRESHOLD": "5"
+          },
           "secrets": {
             "PRODUCT_CATALOG_SECRET": "product-catalog-secret-value"
           },
