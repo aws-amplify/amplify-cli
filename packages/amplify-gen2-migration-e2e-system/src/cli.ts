@@ -679,7 +679,7 @@ async function initializeAppFromCLI(params: InitializeAppFromCLIParams): Promise
 
     // Run gen2-migration pre-deployment workflow (lock -> checkout -> generate)
     logger.info(`Running gen2-migration pre-deployment workflow for ${deploymentName}...`);
-    await gen2MigrationExecutor.runPreDeploymentWorkflow(targetAppPath, envName);
+    await gen2MigrationExecutor.runPreDeploymentWorkflow(targetAppPath, envName, didPostPushPatching);
     logger.info(`Successfully completed gen2-migration pre-deployment workflow for ${deploymentName}`);
 
     // Run app-specific post-generate script
