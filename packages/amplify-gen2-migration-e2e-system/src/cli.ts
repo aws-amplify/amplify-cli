@@ -492,6 +492,39 @@ async function runGen2TestScript(targetAppPath: string, migrationTargetPath: str
 }
 
 /**
+ * Resolve custom-roles.json for apps that use AppSync admin roles.
+ * Replaces the ${appId} placeholder with the deployment name and adds
+ * Lambda execution role prefixes so IAM-signed Lambda calls are authorized.
+ */
+async function resolveCustomRolesJson(sourceAppPath: string, targetAppPath: string, deploymentName: string): Promise<void> {
+  const customRolesSource = path.join(sourceAppPath, 'custom-roles.json');
+  if (!fs.existsSync(customRolesSource)) {
+    logger.debug('No custom-roles.json found in app source, skipping');
+    return;
+  }
+
+  const apiDir = path.join(targetAppPath, 'amplify', 'backend', 'api');
+  if (!fs.existsSync(apiDir)) return;
+  const apiEntries = fs.readdirSync(apiDir);
+  if (apiEntries.length === 0) return;
+  const apiName = apiEntries[0];
+
+  const projectConfigPath = path.join(targetAppPath, 'amplify', '.config', 'project-config.json');
+  let resolvedName = deploymentName;
+  if (fs.existsSync(projectConfigPath)) {
+    const projectConfig = JSON.parse(fs.readFileSync(projectConfigPath, 'utf-8')) as { projectName?: string };
+    if (projectConfig.projectName) resolvedName = projectConfig.projectName;
+  }
+
+  const customRoles = {
+    adminRoleNames: [`amplify-${resolvedName}`, `${resolvedName}LambdaRole`, 'amplifyAuthauthenticatedU'],
+  };
+  const targetPath = path.join(apiDir, apiName, 'custom-roles.json');
+  fs.writeFileSync(targetPath, JSON.stringify(customRoles, null, 2) + '\n', 'utf-8');
+  logger.info(`Resolved custom-roles.json with deployment name: ${resolvedName}`);
+}
+
+/**
  * Spawn the amplify CLI directly to run amplify push --yes.
  *
  * Uses AMPLIFY_PATH env var if set, otherwise
@@ -596,15 +629,96 @@ async function initializeAppFromCLI(params: InitializeAppFromCLIParams): Promise
       logger.debug(`No configure.sh found for ${deploymentName}, skipping`, context);
     }
 
+    // Resolve custom-roles.json if the app has one (must happen before push)
+    await resolveCustomRolesJson(sourceAppPath, targetAppPath, deploymentName);
+
     // Push the initialized app to AWS
     logger.info(`Pushing ${deploymentName} to AWS...`, context);
     await amplifyPush(targetAppPath);
     logger.info(`Successfully pushed ${deploymentName} to AWS`, context);
 
+    // Update deployed Lambda env vars for functions with API access.
+    // addFunction with additionalPermissions sets dependsOn to auth, so the deployed
+    // Lambda gets AUTH_* env vars but not API_* env vars. We read the GraphQL endpoint
+    // from amplify-meta.json and update the Lambda configuration directly.
+    if (config.categories?.function && config.categories?.api) {
+      const postPushApiName = categoryInitializer.getApiNameFromBackend(targetAppPath);
+      if (postPushApiName) {
+        const amplifyMetaPath = path.join(targetAppPath, 'amplify', 'backend', 'amplify-meta.json');
+        if (fs.existsSync(amplifyMetaPath)) {
+          const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetaPath, 'utf-8')) as Record<
+            string,
+            Record<string, Record<string, unknown>>
+          >;
+          const apiMeta = amplifyMeta.api?.[postPushApiName]?.output as Record<string, string> | undefined;
+          if (apiMeta?.GraphQLAPIEndpointOutput) {
+            const region = (amplifyMeta.providers?.awscloudformation?.Region as string) || 'us-east-1';
+            for (const func of config.categories.function.functions) {
+              if (func.apiAccess) {
+                const functionMeta = amplifyMeta.function?.[func.name]?.output as Record<string, string> | undefined;
+                const lambdaName = functionMeta?.Name;
+                if (lambdaName) {
+                  logger.debug(`Updating ${lambdaName} env vars with API endpoint`, context);
+                  const upper = postPushApiName.toUpperCase();
+                  // Get existing env vars first, then merge (update-function-configuration replaces all vars)
+                  const getLambdaResult = await execa('aws', [
+                    'lambda',
+                    'get-function-configuration',
+                    '--function-name',
+                    lambdaName,
+                    '--region',
+                    region,
+                    '--profile',
+                    profile,
+                    '--query',
+                    'Environment.Variables',
+                    '--output',
+                    'json',
+                  ]);
+                  const existingVars = JSON.parse(getLambdaResult.stdout || '{}') as Record<string, string>;
+                  const mergedVars = {
+                    ...existingVars,
+                    [`API_${upper}_GRAPHQLAPIIDOUTPUT`]: apiMeta.GraphQLAPIIdOutput || '',
+                    [`API_${upper}_GRAPHQLAPIENDPOINTOUTPUT`]: apiMeta.GraphQLAPIEndpointOutput,
+                    [`API_${upper}_GRAPHQLAPIKEYOUTPUT`]: apiMeta.GraphQLAPIKeyOutput || '',
+                  };
+                  await execa('aws', [
+                    'lambda',
+                    'update-function-configuration',
+                    '--function-name',
+                    lambdaName,
+                    '--environment',
+                    JSON.stringify({ Variables: mergedVars }),
+                    '--region',
+                    region,
+                    '--profile',
+                    profile,
+                  ]);
+                  logger.info(`Updated ${func.name} Lambda with API env vars`, context);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
     // Run gen1 test script to validate the Gen1 deployment
     logger.info(`Running gen1 test script (post-push) for ${deploymentName}...`, context);
     await runGen1TestScript(targetAppPath, migrationTargetPath, sourceAppsBasePath);
     logger.info(`Gen1 test script passed (post-push) for ${deploymentName}`, context);
+
+    // Patch backend-config.json and CFN templates for functions with API access.
+    // Must happen AFTER push (which needs auth dependsOn) but BEFORE git commit
+    // (so gen2-migration generate sees api dependsOn in the committed state).
+    const apiName = categoryInitializer.getApiNameFromBackend(targetAppPath);
+    if (apiName && config.categories?.function) {
+      for (const func of config.categories.function.functions) {
+        if (func.apiAccess) {
+          categoryInitializer.patchRegularFunctionApiAccess(targetAppPath, func.name, apiName, func.apiAccess.operations, context);
+        }
+      }
+    }
 
     // Initialize git repo and commit the Gen1 state
     logger.info(`Initializing git repository for ${deploymentName}...`, context);
@@ -626,6 +740,10 @@ async function initializeAppFromCLI(params: InitializeAppFromCLIParams): Promise
     await execa('git', ['add', '.'], { cwd: targetAppPath });
     await execa('git', ['commit', '-m', 'feat: gen2 migration generate'], { cwd: targetAppPath });
     logger.info(`Gen2 generated code committed`, context);
+
+    // Reinstall dependencies to pick up Gen2 deps (ampx, @aws-amplify/backend, etc.)
+    logger.info(`Reinstalling dependencies before Gen2 deployment...`, context);
+    await execa('npm', ['install'], { cwd: targetAppPath });
 
     // Deploy Gen2 using ampx sandbox
     logger.info(`Deploying Gen2 app using ampx sandbox for ${deploymentName}...`, context);

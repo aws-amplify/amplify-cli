@@ -107,7 +107,7 @@ export class Gen2MigrationExecutor {
    * and adds GEN2_MIGRATION_ENVIRONMENT_NAME env var to the Amplify app.
    */
   public async lock(appPath: string): Promise<void> {
-    await this.executeStep('lock', appPath);
+    await this.executeStep('lock', appPath, ['--skip-validations']);
   }
 
   /**
@@ -117,7 +117,7 @@ export class Gen2MigrationExecutor {
    * folder with Gen2 TypeScript definitions, and installs dependencies.
    */
   public async generate(appPath: string): Promise<void> {
-    await this.executeStep('generate', appPath);
+    await this.executeStep('generate', appPath, ['--skip-validations']);
   }
 
   /**

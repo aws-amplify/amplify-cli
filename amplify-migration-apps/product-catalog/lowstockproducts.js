@@ -6,7 +6,10 @@ const { SSMClient, GetParametersCommand } = require('@aws-sdk/client-ssm');
 
 const Sha256 = crypto.Sha256;
 
-const GRAPHQL_ENDPOINT = process.env.API_PRODUCTCATALOG_GRAPHQLAPIENDPOINTOUTPUT;
+const GRAPHQL_ENDPOINT = Object.keys(process.env)
+  .filter((k) => k.startsWith('API_') && k.endsWith('_GRAPHQLAPIENDPOINTOUTPUT'))
+  .map((k) => process.env[k])
+  .find(Boolean);
 const AWS_REGION = process.env.AWS_REGION || 'us-east-1';
 const LOW_STOCK_THRESHOLD = parseInt(process.env.LOW_STOCK_THRESHOLD) || 5;
 

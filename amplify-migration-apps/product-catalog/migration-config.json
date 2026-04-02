@@ -35,7 +35,13 @@
         {
           "name": "lowstockproducts",
           "runtime": "nodejs",
-          "template": "hello-world"
+          "template": "hello-world",
+          "secrets": {
+            "PRODUCT_CATALOG_SECRET": "product-catalog-secret-value"
+          },
+          "apiAccess": {
+            "operations": ["Query"]
+          }
         }
       ]
     },

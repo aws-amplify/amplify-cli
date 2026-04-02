@@ -152,6 +152,10 @@ export interface LambdaFunction {
   environment?: Record<string, string>;
   permissions?: string[];
   trigger?: FunctionTrigger;
+  secrets?: Record<string, string>;
+  apiAccess?: {
+    operations: string[];
+  };
 }
 
 export interface FunctionTrigger {
