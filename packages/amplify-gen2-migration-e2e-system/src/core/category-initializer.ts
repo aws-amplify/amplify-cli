@@ -108,7 +108,7 @@ export class CategoryInitializer {
 
     // Initialize regular functions that do NOT need API access (before API)
     if (categories.function) {
-      await this.initializeRegularFunctions(appPath, categories.function, result);
+      await this.initializeRegularFunctions(appPath, categories.function, false, result);
     }
 
     if (categories.storage) {
@@ -121,7 +121,7 @@ export class CategoryInitializer {
 
     // Initialize regular functions that need API access (after API exists)
     if (categories.function && categories.api) {
-      await this.initializeRegularFunctions(appPath, categories.function, true, result, context);
+      await this.initializeRegularFunctions(appPath, categories.function, true, result);
     }
 
     // Initialize trigger functions after API (they need AppSync tables to exist)
@@ -503,7 +503,7 @@ export class CategoryInitializer {
           if (entries.length > 0) {
             const [name, value] = entries[0];
             settings.secretsConfig = { operation: 'add', name, value };
-            this.logger.debug(`Adding secret ${name} to ${func.name}`, context);
+            this.logger.debug(`Adding secret ${name} to ${func.name}`);
           }
         }
 
@@ -517,7 +517,7 @@ export class CategoryInitializer {
               resources: [apiName],
               operations: func.apiAccess.operations,
             };
-            this.logger.debug(`Adding API access (${func.apiAccess.operations.join(', ')}) to ${func.name}`, context);
+            this.logger.debug(`Adding API access (${func.apiAccess.operations.join(', ')}) to ${func.name}`);
           }
         }
 
@@ -525,7 +525,7 @@ export class CategoryInitializer {
 
         // Patch CFN template with appsync:GraphQL permission for functions that call back to AppSync
         if (withApiAccess && func.apiAccess) {
-          this.patchFunctionAppsyncPermission(appPath, func.name, context);
+          this.patchFunctionAppsyncPermission(appPath, func.name);
         }
 
         this.logger.debug(`Function ${func.name} added successfully`);
@@ -686,14 +686,14 @@ export class CategoryInitializer {
    * Required for functions that make IAM-signed callbacks to AppSync.
    * Note: API env vars are wired by patchRegularFunctionApiAccess called from cli.ts.
    */
-  private patchFunctionAppsyncPermission(appPath: string, functionName: string, context: LogContext): void {
+  private patchFunctionAppsyncPermission(appPath: string, functionName: string): void {
     const cfnPath = path.join(appPath, 'amplify', 'backend', 'function', functionName, `${functionName}-cloudformation-template.json`);
 
     let cfnContent: string;
     try {
       cfnContent = fs.readFileSync(cfnPath, 'utf-8');
     } catch {
-      this.logger.warn(`CFN template not found for ${functionName}, skipping appsync:GraphQL patch`, context);
+      this.logger.warn(`CFN template not found for ${functionName}, skipping appsync:GraphQL patch`);
       return;
     }
 
@@ -719,20 +719,14 @@ export class CategoryInitializer {
     };
 
     fs.writeFileSync(cfnPath, JSON.stringify(cfn, null, 2) + '\n', 'utf-8');
-    this.logger.debug(`Patched ${functionName} CFN template with appsync:GraphQL permission`, context);
+    this.logger.debug(`Patched ${functionName} CFN template with appsync:GraphQL permission`);
   }
 
   /**
    * Patch backend-config.json and CFN template for a function with API access.
    * Replaces auth dependsOn with API dependsOn and adds API env vars.
    */
-  public patchRegularFunctionApiAccess(
-    appPath: string,
-    functionName: string,
-    apiName: string,
-    operations: string[],
-    context: LogContext,
-  ): void {
+  public patchRegularFunctionApiAccess(appPath: string, functionName: string, apiName: string, operations: string[]): void {
     const apiDependsOn = [
       {
         category: 'api',
@@ -757,7 +751,7 @@ export class CategoryInitializer {
         // File doesn't exist, skip
       }
     }
-    this.logger.debug(`Patched backend-config.json: set ${functionName} dependsOn to api/${apiName}`, context);
+    this.logger.debug(`Patched backend-config.json: set ${functionName} dependsOn to api/${apiName}`);
 
     // Patch amplify-meta.json
     const metaPaths = [
@@ -787,7 +781,7 @@ export class CategoryInitializer {
     funcParams.permissions = { api: { [apiName]: operations } };
     delete funcParams.dependsOn;
     fs.writeFileSync(funcParamsPath, JSON.stringify(funcParams, null, 2) + '\n', 'utf-8');
-    this.logger.debug(`Patched function-parameters.json for ${functionName}`, context);
+    this.logger.debug(`Patched function-parameters.json for ${functionName}`);
 
     // Patch CFN template: add API parameters and env vars
     const cfnPath = path.join(appPath, 'amplify', 'backend', 'function', functionName, `${functionName}-cloudformation-template.json`);
@@ -835,7 +829,7 @@ export class CategoryInitializer {
     }
 
     fs.writeFileSync(cfnPath, JSON.stringify(cfn, null, 2) + '\n', 'utf-8');
-    this.logger.debug(`Patched ${functionName} CFN template with API parameters and env vars`, context);
+    this.logger.debug(`Patched ${functionName} CFN template with API parameters and env vars`);
   }
 
   /**

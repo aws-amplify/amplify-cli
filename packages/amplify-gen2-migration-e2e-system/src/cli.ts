@@ -664,7 +664,7 @@ async function initializeAppFromCLI(params: InitializeAppFromCLIParams): Promise
     if (apiName && config.categories?.function) {
       for (const func of config.categories.function.functions) {
         if (func.apiAccess) {
-          categoryInitializer.patchRegularFunctionApiAccess(targetAppPath, func.name, apiName, func.apiAccess.operations, context);
+          categoryInitializer.patchRegularFunctionApiAccess(targetAppPath, func.name, apiName, func.apiAccess.operations);
           didPostPushPatching = true;
         }
       }
