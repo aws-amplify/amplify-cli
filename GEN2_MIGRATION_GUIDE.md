@@ -554,7 +554,7 @@ by the CLI setting that configures them.
 - ➤ **Select the authentication/authorization services that you want to use**
 
   - 🟢 `User Sign-Up, Sign-In, connected with AWS IAM controls`
-  - ⚠️ `User Sign-Up & Sign-In only`
+  - 🔴 `User Sign-Up & Sign-In only`
   
 - ➤ **Allow unauthenticated logins**
 
