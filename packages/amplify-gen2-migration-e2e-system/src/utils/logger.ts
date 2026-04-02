@@ -5,31 +5,35 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import chalk from 'chalk';
-import { ILogger } from '../interfaces';
-import { LogLevel, LogContext, LogEntry } from '../types';
+import { LogLevel, LogEntry } from '../types';
 
-export class Logger implements ILogger {
+export class Logger {
   private logLevel: LogLevel;
   private logFilePath?: string;
+  private appName?: string;
 
   constructor(logLevel: LogLevel = LogLevel.INFO) {
     this.logLevel = logLevel;
   }
 
-  debug(message: string, context?: LogContext): void {
-    this.log(LogLevel.DEBUG, message, undefined, context);
+  debug(message: string): void {
+    this.log(LogLevel.DEBUG, message, undefined);
   }
 
-  info(message: string, context?: LogContext): void {
-    this.log(LogLevel.INFO, message, undefined, context);
+  info(message: string): void {
+    this.log(LogLevel.INFO, message, undefined);
   }
 
-  warn(message: string, context?: LogContext): void {
-    this.log(LogLevel.WARN, message, undefined, context);
+  warn(message: string): void {
+    this.log(LogLevel.WARN, message, undefined);
   }
 
-  error(message: string, error?: Error, context?: LogContext): void {
-    this.log(LogLevel.ERROR, message, error, context);
+  error(message: string, error?: Error): void {
+    this.log(LogLevel.ERROR, message, error);
+  }
+
+  setAppName(appName: string): void {
+    this.appName = appName;
   }
 
   setLogLevel(level: LogLevel): void {
@@ -47,7 +51,7 @@ export class Logger implements ILogger {
     this.info(`File logging set: ${filePath}`);
   }
 
-  private log(level: LogLevel, message: string, error?: Error, context?: LogContext): void {
+  private log(level: LogLevel, message: string, error?: Error): void {
     if (!this.shouldLog(level)) {
       return;
     }
@@ -56,7 +60,6 @@ export class Logger implements ILogger {
       timestamp: new Date(),
       level,
       message,
-      context,
       error,
     };
 
@@ -81,24 +84,9 @@ export class Logger implements ILogger {
   private formatMessage(entry: LogEntry): string {
     const timestamp = entry.timestamp.toISOString();
     const level = this.colorizeLevel(entry.level);
-    const context = this.formatContext(entry.context);
     const errorInfo = this.formatError(entry.error);
 
-    return `[${timestamp}] ${level}${context} ${entry.message}${errorInfo}`;
-  }
-
-  private formatContext(context?: LogContext): string {
-    if (!context) {
-      return '';
-    }
-
-    const parts: string[] = [];
-    if (context.appName) parts.push(`app:${context.appName}`);
-    if (context.category) parts.push(`cat:${context.category}`);
-    if (context.step) parts.push(`step:${context.step}`);
-    if (context.operation) parts.push(`op:${context.operation}`);
-
-    return parts.length > 0 ? ` [${parts.join('|')}]` : '';
+    return `[${timestamp}] ${level} [${this.appName ?? ''}] ${entry.message}${errorInfo}`;
   }
 
   private formatError(error?: Error): string {
@@ -117,9 +105,9 @@ export class Logger implements ILogger {
       case LogLevel.DEBUG:
         return chalk.gray('[DEBUG]');
       case LogLevel.INFO:
-        return chalk.blue('[INFO] ');
+        return chalk.blue('[INFO]');
       case LogLevel.WARN:
-        return chalk.yellow('[WARN] ');
+        return chalk.yellow('[WARN]');
       case LogLevel.ERROR:
         return chalk.red('[ERROR]');
       default:

@@ -7,9 +7,8 @@
 
 import execa from 'execa';
 import os from 'os';
-import { ILogger } from '../interfaces';
-import { LogContext } from '../types';
 import { getCLIPath } from '@aws-amplify/amplify-e2e-core';
+import { Logger } from '../utils/logger';
 
 /**
  * Available gen2-migration steps
@@ -36,7 +35,7 @@ export class Gen2MigrationExecutor {
   private readonly amplifyPath: string;
   private readonly profile?: string;
 
-  constructor(private readonly logger: ILogger, options?: Gen2MigrationExecutorOptions) {
+  constructor(private readonly logger: Logger, options?: Gen2MigrationExecutorOptions) {
     this.amplifyPath = getCLIPath(true);
     this.profile = options?.profile;
   }
@@ -45,14 +44,12 @@ export class Gen2MigrationExecutor {
    * Execute a gen2-migration step. Throws on failure.
    */
   private async executeStep(step: Gen2MigrationStep, appPath: string, extraArgs: string[] = []): Promise<void> {
-    const context: LogContext = { operation: `gen2-migration-${step}` };
-
-    this.logger.info(`Executing gen2-migration ${step}...`, context);
-    this.logger.debug(`App path: ${appPath}`, context);
-    this.logger.debug(`Using amplify CLI at: ${this.amplifyPath}`, context);
+    this.logger.info(`Executing gen2-migration ${step}...`);
+    this.logger.debug(`App path: ${appPath}`);
+    this.logger.debug(`Using amplify CLI at: ${this.amplifyPath}`);
 
     const args = ['gen2-migration', step, '--yes', ...extraArgs];
-    this.logger.debug(`Command: ${this.amplifyPath} ${args.join(' ')}`, context);
+    this.logger.debug(`Command: ${this.amplifyPath} ${args.join(' ')}`);
 
     const startTime = Date.now();
 
@@ -61,43 +58,20 @@ export class Gen2MigrationExecutor {
 
     const result = await execa(this.amplifyPath, args, {
       cwd: appPath,
+      stdio: 'inherit',
       reject: false,
       env,
-      all: true, // Combine stdout and stderr
     });
 
     const durationMs = Date.now() - startTime;
-    const combinedOutput = result.all ?? `${result.stdout}\n${result.stderr}`;
-
-    // Always log output for debugging
-    if (combinedOutput.trim()) {
-      const outputLines = combinedOutput.split('\n');
-      const lastLines = outputLines.slice(-100).join('\n');
-      this.logger.info(`gen2-migration ${step} output:\n${lastLines}`, context);
-    }
-
-    // Check for command not found - CLI returns exit code 0 but prints help
-    const commandNotFound = this.checkForCommandNotFound(combinedOutput);
-    if (commandNotFound) {
-      this.logger.error(`gen2-migration ${step} command not recognized by CLI`, undefined, context);
-      throw new Error(`gen2-migration ${step} failed: command not found. Ensure you are using the correct amplify CLI version.`);
-    }
 
     if (result.exitCode !== 0) {
       const errorMessage = result.stderr || result.stdout || `Exit code ${result.exitCode}`;
-      this.logger.error(`gen2-migration ${step} failed: ${errorMessage}`, undefined, context);
+      this.logger.error(`gen2-migration ${step} failed: ${errorMessage}`, undefined);
       throw new Error(`gen2-migration ${step} failed: ${errorMessage}`);
     }
 
-    this.logger.info(`gen2-migration ${step} completed (${durationMs}ms)`, context);
-  }
-
-  /**
-   * Check if the CLI output indicates the command was not found.
-   * The CLI returns exit code 0 but prints a warning when command is not recognized.
-   */
-  private checkForCommandNotFound(output: string): boolean {
-    return output.includes('The Amplify CLI can NOT find command');
+    this.logger.info(`gen2-migration ${step} completed (${durationMs}ms)`);
   }
 
   /**
@@ -118,6 +92,8 @@ export class Gen2MigrationExecutor {
    */
   public async generate(appPath: string): Promise<void> {
     await this.executeStep('generate', appPath);
+    this.logger.info('Installing dependencies..');
+    await execa('npm', ['install'], { cwd: appPath });
   }
 
   /**
@@ -133,21 +109,22 @@ export class Gen2MigrationExecutor {
    * Run pre-deployment workflow: lock -> checkout gen2 branch -> generate
    */
   public async runPreDeploymentWorkflow(appPath: string, envName = 'main'): Promise<void> {
-    const context: LogContext = { operation: 'gen2-migration-workflow' };
-    this.logger.info('Starting pre-deployment workflow (lock -> checkout -> generate)...', context);
+    this.logger.info('Starting pre-deployment workflow (lock -> checkout -> generate)...');
 
     // Lock on the main branch
     await this.lock(appPath);
 
     // Create and checkout gen2 branch before generate
     const gen2BranchName = `gen2-${envName}`;
-    this.logger.info(`Creating and checking out branch '${gen2BranchName}'...`, context);
+    this.logger.info(`Creating and checking out branch '${gen2BranchName}'...`);
+    await execa('git', ['add', '.'], { cwd: appPath });
+    await execa('git', ['commit', '--allow-empty', '-m', 'chore: before generate'], { cwd: appPath });
     await execa('git', ['checkout', '-b', gen2BranchName], { cwd: appPath });
 
     // Generate Gen2 code
     await this.generate(appPath);
 
-    this.logger.info('Pre-deployment workflow completed', context);
+    this.logger.info('Pre-deployment workflow completed');
   }
 
   /**
@@ -161,11 +138,9 @@ export class Gen2MigrationExecutor {
    * @param branchName - Branch name to set as AWS_BRANCH env var for unique resource naming
    */
   public async deployGen2Sandbox(appPath: string, deploymentName: string, branchName: string): Promise<string> {
-    const context: LogContext = { operation: 'gen2-sandbox-deploy' };
-
-    this.logger.info('Deploying Gen2 app using ampx sandbox...', context);
-    this.logger.debug(`App path: ${appPath}`, context);
-    this.logger.debug(`Branch name (AWS_BRANCH): ${branchName}`, context);
+    this.logger.info('Deploying Gen2 app using ampx sandbox...');
+    this.logger.debug(`App path: ${appPath}`);
+    this.logger.debug(`Branch name (AWS_BRANCH): ${branchName}`);
 
     const startTime = Date.now();
 
@@ -177,28 +152,22 @@ export class Gen2MigrationExecutor {
       ...(this.profile && { AWS_PROFILE: this.profile }),
     };
 
+    this.logger.info('Installing dependencies...');
+    await execa('npm', ['install'], { cwd: appPath });
     const result = await execa('npx', ['ampx', 'sandbox', '--once'], {
       cwd: appPath,
       reject: false,
+      stdio: 'inherit',
       env,
-      all: true, // Combine stdout and stderr into result.all
     });
 
     const durationMs = Date.now() - startTime;
 
-    // Use result.all if available (combined output), otherwise combine manually
-    const combinedOutput = result.all ?? `${result.stdout}\n${result.stderr}`;
-
-    // Check for errors in output (ampx sandbox may return exit code 0 even on failure)
-    const hasError = this.checkForAmpxErrors(combinedOutput);
-
-    if (result.exitCode !== 0 || hasError) {
-      this.logAmpxOutput(combinedOutput, context);
-      const errorMessage = hasError ? 'ampx sandbox failed (found [ERROR] in output)' : `Exit code ${result.exitCode}`;
-      throw new Error(`ampx sandbox failed: ${errorMessage}`);
+    if (result.exitCode !== 0) {
+      throw new Error(`ampx sandbox failed`);
     }
 
-    this.logger.info(`ampx sandbox completed (${durationMs}ms)`, context);
+    this.logger.info(`ampx sandbox completed (${durationMs}ms)`);
 
     // Find the Gen2 root stack by querying CloudFormation
     // Pattern: amplify-<app-name>-<username>-sandbox-<hash>
@@ -206,36 +175,16 @@ export class Gen2MigrationExecutor {
     const stackPrefix = `amplify-${deploymentName}-${username}-sandbox`;
 
     const gen2StackName = await this.findGen2RootStack(stackPrefix);
-    this.logger.info(`Gen2 stack name: ${gen2StackName}`, context);
+    this.logger.info(`Gen2 stack name: ${gen2StackName}`);
 
     return gen2StackName;
-  }
-
-  /**
-   * Check ampx output for error indicators.
-   * ampx sandbox may return exit code 0 even on failure, so we check the output.
-   */
-  private checkForAmpxErrors(output: string): boolean {
-    // Check for [ERROR] pattern (with or without timestamp prefix)
-    return output.includes('[ERROR]');
-  }
-
-  /**
-   * Log the last 40 lines of ampx output for debugging.
-   */
-  private logAmpxOutput(output: string, context: LogContext): void {
-    const outputLines = output.split('\n');
-    const last40Lines = outputLines.slice(-40).join('\n');
-    this.logger.error(`ampx sandbox output (last 40 lines):\n${last40Lines}`, undefined, context);
   }
 
   /**
    * Find the Gen2 root stack by prefix using AWS CLI.
    */
   private async findGen2RootStack(stackPrefix: string): Promise<string> {
-    const context: LogContext = { operation: 'find-gen2-stack' };
-
-    this.logger.debug(`Looking for stack with prefix: ${stackPrefix}`, context);
+    this.logger.debug(`Looking for stack with prefix: ${stackPrefix}`);
 
     const env = this.profile ? { ...process.env, AWS_PROFILE: this.profile } : undefined;
 
