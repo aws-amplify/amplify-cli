@@ -711,11 +711,13 @@ async function initializeAppFromCLI(params: InitializeAppFromCLIParams): Promise
     // Patch backend-config.json and CFN templates for functions with API access.
     // Must happen AFTER push (which needs auth dependsOn) but BEFORE git commit
     // (so gen2-migration generate sees api dependsOn in the committed state).
+    let didPostPushPatching = false;
     const apiName = categoryInitializer.getApiNameFromBackend(targetAppPath);
     if (apiName && config.categories?.function) {
       for (const func of config.categories.function.functions) {
         if (func.apiAccess) {
           categoryInitializer.patchRegularFunctionApiAccess(targetAppPath, func.name, apiName, func.apiAccess.operations, context);
+          didPostPushPatching = true;
         }
       }
     }
@@ -729,7 +731,7 @@ async function initializeAppFromCLI(params: InitializeAppFromCLIParams): Promise
 
     // Run gen2-migration pre-deployment workflow (lock -> checkout -> generate)
     logger.info(`Running gen2-migration pre-deployment workflow for ${deploymentName}...`, context);
-    await gen2MigrationExecutor.runPreDeploymentWorkflow(targetAppPath, envName);
+    await gen2MigrationExecutor.runPreDeploymentWorkflow(targetAppPath, envName, didPostPushPatching);
     logger.info(`Successfully completed gen2-migration pre-deployment workflow for ${deploymentName}`, context);
 
     // Run app-specific post-generate script

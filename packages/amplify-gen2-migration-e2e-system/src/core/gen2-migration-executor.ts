@@ -106,8 +106,9 @@ export class Gen2MigrationExecutor {
    * Enables deletion protection on DynamoDB tables, sets a deny-all stack policy,
    * and adds GEN2_MIGRATION_ENVIRONMENT_NAME env var to the Amplify app.
    */
-  public async lock(appPath: string): Promise<void> {
-    await this.executeStep('lock', appPath, ['--skip-validations']);
+  public async lock(appPath: string, skipValidations = false): Promise<void> {
+    const extra = skipValidations ? ['--skip-validations'] : [];
+    await this.executeStep('lock', appPath, extra);
   }
 
   /**
@@ -116,8 +117,9 @@ export class Gen2MigrationExecutor {
    * Creates/updates package.json with Gen2 dependencies, replaces the amplify
    * folder with Gen2 TypeScript definitions, and installs dependencies.
    */
-  public async generate(appPath: string): Promise<void> {
-    await this.executeStep('generate', appPath, ['--skip-validations']);
+  public async generate(appPath: string, skipValidations = false): Promise<void> {
+    const extra = skipValidations ? ['--skip-validations'] : [];
+    await this.executeStep('generate', appPath, extra);
   }
 
   /**
@@ -132,12 +134,12 @@ export class Gen2MigrationExecutor {
   /**
    * Run pre-deployment workflow: lock -> checkout gen2 branch -> generate
    */
-  public async runPreDeploymentWorkflow(appPath: string, envName = 'main'): Promise<void> {
+  public async runPreDeploymentWorkflow(appPath: string, envName = 'main', skipValidations = false): Promise<void> {
     const context: LogContext = { operation: 'gen2-migration-workflow' };
     this.logger.info('Starting pre-deployment workflow (lock -> checkout -> generate)...', context);
 
     // Lock on the main branch
-    await this.lock(appPath);
+    await this.lock(appPath, skipValidations);
 
     // Create and checkout gen2 branch before generate
     const gen2BranchName = `gen2-${envName}`;
@@ -145,7 +147,7 @@ export class Gen2MigrationExecutor {
     await execa('git', ['checkout', '-b', gen2BranchName], { cwd: appPath });
 
     // Generate Gen2 code
-    await this.generate(appPath);
+    await this.generate(appPath, skipValidations);
 
     this.logger.info('Pre-deployment workflow completed', context);
   }
