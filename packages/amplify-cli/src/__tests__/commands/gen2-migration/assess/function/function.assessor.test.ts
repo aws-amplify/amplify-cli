@@ -10,12 +10,18 @@ function mockGen1App(existingFiles: string[] = [], jsonFiles: Record<string, unk
   } as unknown as Gen1App;
 }
 
+const NODEJS_TEMPLATE_PATH = 'function/myFunc/myFunc-cloudformation-template.json';
+const NODEJS_TEMPLATE = {
+  Resources: { LambdaFunction: { Properties: { Runtime: 'nodejs18.x' } } },
+};
+
 const RESOURCE: DiscoveredResource = { category: 'function', resourceName: 'myFunc', service: 'Lambda', key: 'function:Lambda' };
 
 describe('FunctionAssessor', () => {
   it('records resource as supported', () => {
+    const gen1App = mockGen1App([], { [NODEJS_TEMPLATE_PATH]: NODEJS_TEMPLATE });
     const assessment = new Assessment('app', 'dev');
-    new FunctionAssessor(mockGen1App(), RESOURCE).record(assessment);
+    new FunctionAssessor(gen1App, RESOURCE).record(assessment);
 
     const entry = assessment.resources[0];
     expect(entry!.generate.level).toBe('supported');
@@ -24,6 +30,7 @@ describe('FunctionAssessor', () => {
 
   it('detects non-empty custom-policies.json', () => {
     const gen1App = mockGen1App(['function/myFunc/custom-policies.json'], {
+      [NODEJS_TEMPLATE_PATH]: NODEJS_TEMPLATE,
       'function/myFunc/custom-policies.json': [{ Action: ['s3:GetObject'], Resource: ['arn:aws:s3:::bucket/*'] }],
     });
     const assessment = new Assessment('app', 'dev');
@@ -39,6 +46,7 @@ describe('FunctionAssessor', () => {
 
   it('ignores empty custom-policies.json', () => {
     const gen1App = mockGen1App(['function/myFunc/custom-policies.json'], {
+      [NODEJS_TEMPLATE_PATH]: NODEJS_TEMPLATE,
       'function/myFunc/custom-policies.json': [{ Action: [], Resource: [] }],
     });
     const assessment = new Assessment('app', 'dev');
@@ -48,9 +56,45 @@ describe('FunctionAssessor', () => {
   });
 
   it('records no features when custom-policies.json is absent', () => {
+    const gen1App = mockGen1App([], { [NODEJS_TEMPLATE_PATH]: NODEJS_TEMPLATE });
     const assessment = new Assessment('app', 'dev');
-    new FunctionAssessor(mockGen1App(), RESOURCE).record(assessment);
+    new FunctionAssessor(gen1App, RESOURCE).record(assessment);
 
     expect(assessment.features).toHaveLength(0);
+  });
+
+  describe('non-JS runtime detection', () => {
+    it('marks resource as unsupported for generate when runtime is Python', () => {
+      const gen1App = mockGen1App([], {
+        [NODEJS_TEMPLATE_PATH]: { Resources: { LambdaFunction: { Properties: { Runtime: 'python3.11' } } } },
+      });
+      const assessment = new Assessment('app', 'dev');
+      new FunctionAssessor(gen1App, RESOURCE).record(assessment);
+
+      const entry = assessment.resources[0];
+      expect(entry!.generate.level).toBe('unsupported');
+      expect(entry!.generate.note).toContain('python3.11');
+      expect(entry!.refactor.level).toBe('supported');
+    });
+
+    it('fails assessment validFor generate when runtime is non-JS', () => {
+      const gen1App = mockGen1App([], {
+        [NODEJS_TEMPLATE_PATH]: { Resources: { LambdaFunction: { Properties: { Runtime: 'dotnet8' } } } },
+      });
+      const assessment = new Assessment('app', 'dev');
+      new FunctionAssessor(gen1App, RESOURCE).record(assessment);
+
+      expect(assessment.validFor('generate')).toBe(false);
+      expect(assessment.validFor('refactor')).toBe(true);
+    });
+
+    it('treats nodejs runtimes as supported', () => {
+      const gen1App = mockGen1App([], { [NODEJS_TEMPLATE_PATH]: NODEJS_TEMPLATE });
+      const assessment = new Assessment('app', 'dev');
+      new FunctionAssessor(gen1App, RESOURCE).record(assessment);
+
+      expect(assessment.resources[0]!.generate.level).toBe('supported');
+      expect(assessment.features).toHaveLength(0);
+    });
   });
 });
