@@ -630,7 +630,7 @@ by the CLI setting that configures them.
   - ⚠️ `Pre Authentication`
   - 🟢 `Pre Sign-up`
   - ⚠️ `Verify Auth Challenge Response`
-  - 🟢 `Pre Token Generation`
+  - 🟡 `Pre Token Generation` (_generate_ ✔ _refactor_ ✗)
 
 ## Api
 
