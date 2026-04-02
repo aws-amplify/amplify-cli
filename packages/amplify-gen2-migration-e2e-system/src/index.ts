@@ -3,9 +3,6 @@
  * Exports all public interfaces and classes
  */
 
-// Core interfaces
-export * from './interfaces';
-
 // Types
 export * from './types';
 

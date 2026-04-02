@@ -67,10 +67,11 @@ export class RestApiRenderer {
    */
   public renderApi(restApi: RestApiDefinition): ts.Statement[] {
     const statements: ts.Statement[] = [];
-    const stackVarName = `${restApi.apiName}Stack`;
-    const apiVarName = `${restApi.apiName}Api`;
-    const gen1ApiVarName = `gen1${restApi.apiName}Api`;
-    const gen1PolicyVarName = `gen1${restApi.apiName}Policy`;
+    const sanitizedName = restApi.apiName.replace(/[^a-zA-Z0-9]/g, '');
+    const stackVarName = `${sanitizedName}Stack`;
+    const apiVarName = `${sanitizedName}Api`;
+    const gen1ApiVarName = `gen1${sanitizedName}Api`;
+    const gen1PolicyVarName = `gen1${sanitizedName}Policy`;
 
     statements.push(this.renderStack(restApi, stackVarName));
     statements.push(this.renderRestApiConstruct(restApi, stackVarName, apiVarName));
@@ -365,7 +366,7 @@ export class RestApiRenderer {
     for (const apiPath of restApi.paths) {
       const pathSegments = apiPath.path.split('/').filter((segment) => segment && segment !== '{proxy+}');
 
-      let resourceName = pathSegments.join('') || 'root';
+      let resourceName = pathSegments.join('').replace(/[^a-zA-Z0-9]/g, '') || 'root';
       if (this.functionNames.has(resourceName)) {
         resourceName = `${resourceName}Resource`;
       }

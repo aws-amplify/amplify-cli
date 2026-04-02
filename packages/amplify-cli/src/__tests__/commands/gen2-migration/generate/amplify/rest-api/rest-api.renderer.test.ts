@@ -574,6 +574,27 @@ describe('RestApiRenderer', () => {
     `);
   });
 
+  it('sanitizes hyphenated path names into valid variable names', () => {
+    const renderer = new RestApiRenderer(false, new Set(['myFunc']));
+    const restApi = createBasicRestApi({
+      paths: [{ path: '/auth-test', methods: ['GET'], lambdaFunction: 'myFunc' }],
+    });
+    const output = printStatements(renderer.renderApi(restApi));
+
+    expect(output).toContain('const authtest = ');
+    expect(output).not.toContain('const auth-test');
+  });
+
+  it('sanitizes hyphenated api names into valid variable names', () => {
+    const renderer = new RestApiRenderer(false, new Set(['myFunc']));
+    const restApi = createBasicRestApi({ apiName: 'my-api' });
+    const output = printStatements(renderer.renderApi(restApi));
+
+    expect(output).toContain('const myapiStack = ');
+    expect(output).toContain('const myapiApi = ');
+    expect(output).not.toContain('const my-api');
+  });
+
   it('handles no uniqueFunctions gracefully', () => {
     const renderer = new RestApiRenderer(false, new Set());
     const restApi = createBasicRestApi({ uniqueFunctions: undefined });

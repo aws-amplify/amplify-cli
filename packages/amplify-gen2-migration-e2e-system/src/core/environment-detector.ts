@@ -2,14 +2,14 @@
  * Environment detection for Atmosphere vs Local environments
  */
 
-import { IEnvironmentDetector, ILogger } from '../interfaces';
 import { EnvironmentType } from '../types';
+import { Logger } from '../utils/logger';
 
-export class EnvironmentDetector implements IEnvironmentDetector {
+export class EnvironmentDetector implements EnvironmentDetector {
   private detectedEnvironment?: EnvironmentType;
   private environmentVariables: Record<string, string>;
 
-  constructor(private readonly logger: ILogger) {
+  constructor(private readonly logger: Logger) {
     this.environmentVariables = Object.fromEntries(Object.entries(process.env).filter(([, value]) => value !== undefined)) as Record<
       string,
       string
@@ -55,16 +55,5 @@ export class EnvironmentDetector implements IEnvironmentDetector {
       this.environmentVariables.CIRCLECI ||
       this.environmentVariables.JENKINS_URL
     );
-  }
-
-  getEnvironmentSummary(): Record<string, unknown> {
-    return {
-      type: this.detectedEnvironment,
-      nodeVersion: process.version,
-      platform: process.platform,
-      architecture: process.arch,
-      workingDirectory: process.cwd(),
-      isCI: this.isCI(),
-    };
   }
 }
