@@ -616,7 +616,7 @@ by the CLI setting that configures them.
   - 🟢 `Email Domain Filtering (denylist)`
   - 🟢 `Email Domain Filtering (allowlist)`
   - ⚠️ `Custom Auth Challenge Flow (basic scaffolding - not for production)`
-  - ⚠️ `Override ID Token Claims`
+  - 🟢 `Override ID Token Claims`
 
 - ⚠️ **Do you want to use an OAuth flow**
 
@@ -630,7 +630,7 @@ by the CLI setting that configures them.
   - ⚠️ `Pre Authentication`
   - 🟢 `Pre Sign-up`
   - ⚠️ `Verify Auth Challenge Response`
-  - ⚠️ `Pre Token Generation`
+  - 🟢 `Pre Token Generation`
 
 ## Api
 
