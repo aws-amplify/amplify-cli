@@ -456,7 +456,7 @@ async function amplifyPush(targetAppPath: string): Promise<void> {
   try {
     const result = await execa(amplifyPath, ['push', '--yes', '--debug'], {
       cwd: targetAppPath,
-      stdio: 'inherit',
+      stdio: logger.isDebug() ? 'inherit' : 'pipe',
     });
 
     if (result.exitCode !== 0) {

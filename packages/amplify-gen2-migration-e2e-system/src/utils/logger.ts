@@ -16,6 +16,10 @@ export class Logger {
     this.logLevel = logLevel;
   }
 
+  public isDebug(): boolean {
+    return this.logLevel === LogLevel.DEBUG;
+  }
+
   debug(message: string): void {
     this.log(LogLevel.DEBUG, message, undefined);
   }
