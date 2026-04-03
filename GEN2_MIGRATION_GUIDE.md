@@ -610,26 +610,26 @@ by the CLI setting that configures them.
 
 - ➤ **Do you want to enable any of the following capabilities**
 
-  - ⚠️ `Add Google reCaptcha Challenge`
+  - 🟡 `Add Google reCaptcha Challenge`
   - ⚠️ `Email Verification Link with Redirect`
   - 🔴 `Add User to Group`
   - 🟢 `Email Domain Filtering (denylist)`
   - 🟢 `Email Domain Filtering (allowlist)`
   - ⚠️ `Custom Auth Challenge Flow (basic scaffolding - not for production)`
-  - 🟢 `Override ID Token Claims`
+  - 🟡 `Override ID Token Claims`
 
 - ⚠️ **Do you want to use an OAuth flow**
 
 - ➤ **Do you want to configure Lambda Triggers for Cognito**
 
-  - ⚠️ `Create Auth Challenge`
+  - 🟢 `Create Auth Challenge`
   - ⚠️ `Custom Message`
-  - ⚠️ `Define Auth Challenge`
+  - 🟢 `Define Auth Challenge`
   - ⚠️ `Post Authentication`
   - 🟢 `Post Confirmation`
   - ⚠️ `Pre Authentication`
   - 🟢 `Pre Sign-up`
-  - ⚠️ `Verify Auth Challenge Response`
+  - 🟢 `Verify Auth Challenge Response`
   - 🟡 `Pre Token Generation` (_generate_ ✔ _refactor_ ✗)
 
 ## Api
