@@ -57,13 +57,13 @@ Currently supports:
 
 ```json
 {
-  "frontest": "frontest.ts",
-  "postPush": "migration/post-push.ts"
+  "postPush": "migration/post-push.ts",
+  "lock": { "skipValidations": true }
 }
 ```
 
-- `frontest` — path (relative to the app root) of the frontend test script to run after each deployment.
 - `postPush` — path (relative to the app root) of a script to run after `amplify push` completes.
+- `lock.skipValidations` — pass `--skip-validations` to `gen2-migration lock`.
   If omitted or if the file doesn't exist, the E2E system skips test execution for that app.
 
 ### `frontest.ts`

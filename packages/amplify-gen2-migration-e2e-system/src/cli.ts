@@ -154,22 +154,19 @@ export const generateTimeBasedE2EAmplifyAppName = (appName: string): string => {
   return `${safePrefix}${timestamp}`;
 };
 
-async function runFrontest(targetAppPath: string, gen2BranchName: string, migrationConfig: MigrationConfig): Promise<void> {
-  if (!migrationConfig.frontest) return;
+const FRONTEST_SCRIPT = 'frontest.ts';
+
+async function runFrontest(targetAppPath: string, gen2BranchName: string): Promise<void> {
+  if (!fs.existsSync(path.join(targetAppPath, FRONTEST_SCRIPT))) return;
 
   await git.checkout(targetAppPath, 'main', false);
-  await runAppScript(targetAppPath, migrationConfig.frontest, [path.join('src', 'amplifyconfiguration.json')]);
+  await runAppScript(targetAppPath, FRONTEST_SCRIPT, [path.join('src', 'amplifyconfiguration.json')]);
 
   await git.checkout(targetAppPath, gen2BranchName, false);
-  await runAppScript(targetAppPath, migrationConfig.frontest, ['amplify_outputs.json']);
+  await runAppScript(targetAppPath, FRONTEST_SCRIPT, ['amplify_outputs.json']);
 }
 
 interface MigrationConfig {
-  /**
-   * Path (relative to app root) to the frontend test script run after each deployment.
-   */
-  readonly frontest?: string;
-
   /**
    * Path (relative to app root) to a script run after `amplify push` completes.
    */
@@ -338,7 +335,7 @@ async function initializeAppFromCLI(params: InitializeAppFromCLIParams): Promise
 
     const gen2StackName = await gen2MigrationExecutor.deployGen2Sandbox(targetAppPath, deploymentName, gen2BranchName);
 
-    await runFrontest(targetAppPath, gen2BranchName, migrationConfig);
+    await runFrontest(targetAppPath, gen2BranchName);
 
     await git.checkout(targetAppPath, 'main', false);
     await gen2MigrationExecutor.refactor(targetAppPath, gen2StackName);
@@ -347,11 +344,11 @@ async function initializeAppFromCLI(params: InitializeAppFromCLIParams): Promise
     await runAppScript(targetAppPath, path.join('migration', 'post-refactor.ts'), [targetAppPath]);
     await git.commit(targetAppPath, 'chore: post refactor');
 
-    await runFrontest(targetAppPath, gen2BranchName, migrationConfig);
+    await runFrontest(targetAppPath, gen2BranchName);
 
     await gen2MigrationExecutor.deployGen2Sandbox(targetAppPath, deploymentName, gen2BranchName);
 
-    await runFrontest(targetAppPath, gen2BranchName, migrationConfig);
+    await runFrontest(targetAppPath, gen2BranchName);
 
     logger.info(`App ${deploymentName} fully initialized and migrated at ${targetAppPath}`);
   } catch (error) {
