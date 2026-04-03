@@ -19,9 +19,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@amplify-migration-apps/backend-only@workspace:amplify-migration-apps/backend-only/_snapshot.post.generate":
+"@amplify-migration-apps/backend-only-snapshot@workspace:amplify-migration-apps/backend-only/_snapshot.post.generate":
   version: 0.0.0-use.local
-  resolution: "@amplify-migration-apps/backend-only@workspace:amplify-migration-apps/backend-only/_snapshot.post.generate"
+  resolution: "@amplify-migration-apps/backend-only-snapshot@workspace:amplify-migration-apps/backend-only/_snapshot.post.generate"
   dependencies:
     "@aws-amplify/backend": ^1.18.0
     "@aws-amplify/backend-cli": ^1.8.0
@@ -35,6 +35,14 @@ __metadata:
     constructs: ^10.0.0
     esbuild: ^0.27.0
     tsx: ^4.20.6
+  languageName: unknown
+  linkType: soft
+
+"@amplify-migration-apps/backend-only@workspace:amplify-migration-apps/backend-only":
+  version: 0.0.0-use.local
+  resolution: "@amplify-migration-apps/backend-only@workspace:amplify-migration-apps/backend-only"
+  dependencies:
+    "@aws-sdk/client-cognito-identity-provider": ^3.936.0
   languageName: unknown
   linkType: soft
 
@@ -72,9 +80,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@amplify-migration-apps/fitness-goal-tracker@workspace:amplify-migration-apps/fitness-tracker/_snapshot.post.generate":
+"@amplify-migration-apps/fitness-goal-tracker-snapshot@workspace:amplify-migration-apps/fitness-tracker/_snapshot.post.generate":
   version: 0.0.0-use.local
-  resolution: "@amplify-migration-apps/fitness-goal-tracker@workspace:amplify-migration-apps/fitness-tracker/_snapshot.post.generate"
+  resolution: "@amplify-migration-apps/fitness-goal-tracker-snapshot@workspace:amplify-migration-apps/fitness-tracker/_snapshot.post.generate"
   dependencies:
     "@aws-amplify/backend": ^1.18.0
     "@aws-amplify/backend-cli": ^1.8.0
@@ -111,9 +119,38 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@amplify-migration-apps/importedresources@workspace:amplify-migration-apps/imported-resources/_snapshot.post.generate":
+"@amplify-migration-apps/fitness-goal-tracker@workspace:amplify-migration-apps/fitness-tracker":
   version: 0.0.0-use.local
-  resolution: "@amplify-migration-apps/importedresources@workspace:amplify-migration-apps/imported-resources/_snapshot.post.generate"
+  resolution: "@amplify-migration-apps/fitness-goal-tracker@workspace:amplify-migration-apps/fitness-tracker"
+  dependencies:
+    "@aws-amplify/ui-react": ^6.13.1
+    "@aws-sdk/client-cognito-identity-provider": ^3.936.0
+    "@aws-sdk/client-dynamodb": ^3.969.0
+    "@aws-sdk/lib-dynamodb": ^3.969.0
+    "@eslint/js": ^9.39.1
+    "@types/node": ^24.10.1
+    "@types/react": ^19.2.5
+    "@types/react-dom": ^19.2.3
+    "@vitejs/plugin-react": ^5.1.1
+    aws-amplify: ^6.15.8
+    aws-serverless-express: ^3.3.5
+    body-parser: ^1.17.1
+    eslint: ^9.39.1
+    eslint-plugin-react-hooks: ^7.0.1
+    eslint-plugin-react-refresh: ^0.4.24
+    express: ^4.15.2
+    globals: ^16.5.0
+    react: ^19.2.0
+    react-dom: ^19.2.0
+    typescript: ~5.9.3
+    typescript-eslint: ^8.46.4
+    vite: ^7.2.4
+  languageName: unknown
+  linkType: soft
+
+"@amplify-migration-apps/importedresources-snapshot@workspace:amplify-migration-apps/imported-resources/_snapshot.post.generate":
+  version: 0.0.0-use.local
+  resolution: "@amplify-migration-apps/importedresources-snapshot@workspace:amplify-migration-apps/imported-resources/_snapshot.post.generate"
   dependencies:
     "@aws-amplify/backend": ^1.18.0
     "@aws-amplify/backend-cli": ^1.8.0
@@ -145,9 +182,37 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@amplify-migration-apps/media-vault@workspace:amplify-migration-apps/media-vault/_snapshot.post.generate":
+"@amplify-migration-apps/importedresources@workspace:amplify-migration-apps/imported-resources":
   version: 0.0.0-use.local
-  resolution: "@amplify-migration-apps/media-vault@workspace:amplify-migration-apps/media-vault/_snapshot.post.generate"
+  resolution: "@amplify-migration-apps/importedresources@workspace:amplify-migration-apps/imported-resources"
+  dependencies:
+    "@aws-amplify/ui-react": ^6.13.0
+    "@aws-amplify/ui-react-core": ^3.4.6
+    "@aws-sdk/client-cognito-identity": ^3.0.0
+    "@aws-sdk/client-cognito-identity-provider": ^3.0.0
+    "@aws-sdk/client-iam": ^3.0.0
+    "@eslint/js": ^9.36.0
+    "@types/node": ^24.6.0
+    "@types/react": ^19.1.16
+    "@types/react-dom": ^19.1.9
+    "@vitejs/plugin-react": ^5.0.4
+    aws-amplify: ^6.15.7
+    eslint: ^9.36.0
+    eslint-plugin-react-hooks: ^5.2.0
+    eslint-plugin-react-refresh: ^0.4.22
+    globals: ^16.4.0
+    react: ^19.1.1
+    react-dom: ^19.1.1
+    tsx: ^4.19.0
+    typescript: ~5.9.3
+    typescript-eslint: ^8.45.0
+    vite: ^7.1.7
+  languageName: unknown
+  linkType: soft
+
+"@amplify-migration-apps/media-vault-snapshot@workspace:amplify-migration-apps/media-vault/_snapshot.post.generate":
+  version: 0.0.0-use.local
+  resolution: "@amplify-migration-apps/media-vault-snapshot@workspace:amplify-migration-apps/media-vault/_snapshot.post.generate"
   dependencies:
     "@aws-amplify/backend": ^1.18.0
     "@aws-amplify/backend-cli": ^1.8.0
@@ -182,9 +247,36 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@amplify-migration-apps/mood-board-app@workspace:amplify-migration-apps/mood-board/_snapshot.post.generate":
+"@amplify-migration-apps/media-vault@workspace:amplify-migration-apps/media-vault":
   version: 0.0.0-use.local
-  resolution: "@amplify-migration-apps/mood-board-app@workspace:amplify-migration-apps/mood-board/_snapshot.post.generate"
+  resolution: "@amplify-migration-apps/media-vault@workspace:amplify-migration-apps/media-vault"
+  dependencies:
+    "@aws-amplify/storage": ^6.10.1
+    "@aws-amplify/ui-react": ^6.13.1
+    "@aws-sdk/client-cognito-identity-provider": ^3.936.0
+    "@aws-sdk/client-s3": 3.966.0
+    "@eslint/js": ^9.39.1
+    "@types/node": ^24.10.1
+    "@types/react": ^19.2.5
+    "@types/react-dom": ^19.2.3
+    "@vitejs/plugin-react": ^5.1.1
+    aws-amplify: ^6.15.8
+    eslint: ^9.39.1
+    eslint-plugin-react-hooks: ^7.0.1
+    eslint-plugin-react-refresh: ^0.4.24
+    globals: ^16.5.0
+    react: ^19.2.0
+    react-dom: ^19.2.0
+    sharp: ^0.34.5
+    typescript: ~5.9.3
+    typescript-eslint: ^8.46.4
+    vite: ^7.2.4
+  languageName: unknown
+  linkType: soft
+
+"@amplify-migration-apps/mood-board-app-snapshot@workspace:amplify-migration-apps/mood-board/_snapshot.post.generate":
+  version: 0.0.0-use.local
+  resolution: "@amplify-migration-apps/mood-board-app-snapshot@workspace:amplify-migration-apps/mood-board/_snapshot.post.generate"
   dependencies:
     "@aws-amplify/backend": ^1.18.0
     "@aws-amplify/backend-cli": ^1.8.0
@@ -209,9 +301,26 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@amplify-migration-apps/product-catalog@workspace:amplify-migration-apps/product-catalog/_snapshot.post.generate":
+"@amplify-migration-apps/mood-board-app@workspace:amplify-migration-apps/mood-board":
   version: 0.0.0-use.local
-  resolution: "@amplify-migration-apps/product-catalog@workspace:amplify-migration-apps/product-catalog/_snapshot.post.generate"
+  resolution: "@amplify-migration-apps/mood-board-app@workspace:amplify-migration-apps/mood-board"
+  dependencies:
+    "@aws-amplify/ui-react": ^6.10.1
+    "@aws-sdk/client-cognito-identity-provider": ^3.936.0
+    "@types/react": ^18.3.3
+    "@types/react-dom": ^18.3.0
+    "@vitejs/plugin-react": ^4.3.1
+    aws-amplify: ^6.14.1
+    react: ^18.3.1
+    react-dom: ^18.3.1
+    typescript: ^5.5.3
+    vite: ^5.4.2
+  languageName: unknown
+  linkType: soft
+
+"@amplify-migration-apps/product-catalog-snapshot@workspace:amplify-migration-apps/product-catalog/_snapshot.post.generate":
+  version: 0.0.0-use.local
+  resolution: "@amplify-migration-apps/product-catalog-snapshot@workspace:amplify-migration-apps/product-catalog/_snapshot.post.generate"
   dependencies:
     "@aws-amplify/backend": ^1.18.0
     "@aws-amplify/backend-cli": ^1.8.0
@@ -241,6 +350,30 @@ __metadata:
     react: ^19.2.0
     react-dom: ^19.2.0
     tsx: ^4.20.6
+    typescript: ~5.9.3
+    typescript-eslint: ^8.46.4
+    vite: ^7.2.4
+  languageName: unknown
+  linkType: soft
+
+"@amplify-migration-apps/product-catalog@workspace:amplify-migration-apps/product-catalog":
+  version: 0.0.0-use.local
+  resolution: "@amplify-migration-apps/product-catalog@workspace:amplify-migration-apps/product-catalog"
+  dependencies:
+    "@aws-amplify/ui-react": ^6.13.1
+    "@aws-sdk/client-cognito-identity-provider": ^3.936.0
+    "@eslint/js": ^9.39.1
+    "@types/node": ^24.10.1
+    "@types/react": ^19.2.5
+    "@types/react-dom": ^19.2.3
+    "@vitejs/plugin-react": ^5.1.1
+    aws-amplify: ^6.15.8
+    eslint: ^9.39.1
+    eslint-plugin-react-hooks: ^7.0.1
+    eslint-plugin-react-refresh: ^0.4.24
+    globals: ^16.5.0
+    react: ^19.2.0
+    react-dom: ^19.2.0
     typescript: ~5.9.3
     typescript-eslint: ^8.46.4
     vite: ^7.2.4
@@ -306,9 +439,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@amplify-migration-apps/store-locator@workspace:amplify-migration-apps/store-locator/_snapshot.post.generate":
+"@amplify-migration-apps/store-locator-snapshot@workspace:amplify-migration-apps/store-locator/_snapshot.post.generate":
   version: 0.0.0-use.local
-  resolution: "@amplify-migration-apps/store-locator@workspace:amplify-migration-apps/store-locator/_snapshot.post.generate"
+  resolution: "@amplify-migration-apps/store-locator-snapshot@workspace:amplify-migration-apps/store-locator/_snapshot.post.generate"
   dependencies:
     "@aws-amplify/backend": ^1.18.0
     "@aws-amplify/backend-cli": ^1.8.0
@@ -339,6 +472,34 @@ __metadata:
     react: ^19.2.0
     react-dom: ^19.2.0
     tsx: ^4.20.6
+    typescript: ~5.9.3
+    typescript-eslint: ^8.46.4
+    vite: ^7.2.4
+  languageName: unknown
+  linkType: soft
+
+"@amplify-migration-apps/store-locator@workspace:amplify-migration-apps/store-locator":
+  version: 0.0.0-use.local
+  resolution: "@amplify-migration-apps/store-locator@workspace:amplify-migration-apps/store-locator"
+  dependencies:
+    "@aws-amplify/geo": ^3.0.92
+    "@aws-amplify/ui-react": ^6.13.2
+    "@aws-amplify/ui-react-geo": ^2.2.13
+    "@aws-sdk/client-cognito-identity-provider": ^3.936.0
+    "@eslint/js": ^9.39.1
+    "@types/node": ^24.10.1
+    "@types/react": ^19.2.5
+    "@types/react-dom": ^19.2.3
+    "@vitejs/plugin-react": ^5.1.1
+    aws-amplify: ^6.16.0
+    eslint: ^9.39.1
+    eslint-plugin-react-hooks: ^7.0.1
+    eslint-plugin-react-refresh: ^0.4.24
+    globals: ^16.5.0
+    maplibre-gl: ^2.4.0
+    maplibre-gl-js-amplify: ^4.0.2
+    react: ^19.2.0
+    react-dom: ^19.2.0
     typescript: ~5.9.3
     typescript-eslint: ^8.46.4
     vite: ^7.2.4
@@ -5039,6 +5200,53 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-sdk/client-cognito-identity@npm:^3.0.0":
+  version: 3.1023.0
+  resolution: "@aws-sdk/client-cognito-identity@npm:3.1023.0"
+  dependencies:
+    "@aws-crypto/sha256-browser": 5.2.0
+    "@aws-crypto/sha256-js": 5.2.0
+    "@aws-sdk/core": ^3.973.26
+    "@aws-sdk/credential-provider-node": ^3.972.29
+    "@aws-sdk/middleware-host-header": ^3.972.8
+    "@aws-sdk/middleware-logger": ^3.972.8
+    "@aws-sdk/middleware-recursion-detection": ^3.972.9
+    "@aws-sdk/middleware-user-agent": ^3.972.28
+    "@aws-sdk/region-config-resolver": ^3.972.10
+    "@aws-sdk/types": ^3.973.6
+    "@aws-sdk/util-endpoints": ^3.996.5
+    "@aws-sdk/util-user-agent-browser": ^3.972.8
+    "@aws-sdk/util-user-agent-node": ^3.973.14
+    "@smithy/config-resolver": ^4.4.13
+    "@smithy/core": ^3.23.13
+    "@smithy/fetch-http-handler": ^5.3.15
+    "@smithy/hash-node": ^4.2.12
+    "@smithy/invalid-dependency": ^4.2.12
+    "@smithy/middleware-content-length": ^4.2.12
+    "@smithy/middleware-endpoint": ^4.4.28
+    "@smithy/middleware-retry": ^4.4.46
+    "@smithy/middleware-serde": ^4.2.16
+    "@smithy/middleware-stack": ^4.2.12
+    "@smithy/node-config-provider": ^4.3.12
+    "@smithy/node-http-handler": ^4.5.1
+    "@smithy/protocol-http": ^5.3.12
+    "@smithy/smithy-client": ^4.12.8
+    "@smithy/types": ^4.13.1
+    "@smithy/url-parser": ^4.2.12
+    "@smithy/util-base64": ^4.3.2
+    "@smithy/util-body-length-browser": ^4.2.2
+    "@smithy/util-body-length-node": ^4.2.3
+    "@smithy/util-defaults-mode-browser": ^4.3.44
+    "@smithy/util-defaults-mode-node": ^4.2.48
+    "@smithy/util-endpoints": ^3.3.3
+    "@smithy/util-middleware": ^4.2.12
+    "@smithy/util-retry": ^4.2.13
+    "@smithy/util-utf8": ^4.2.2
+    tslib: ^2.6.2
+  checksum: 5be8cac399da25ea91a1e90f56f621d980e3c3003f0b3639260b6bc733c2876dd5c527a58296fa73b76cc2d184e78423cf8086a439231af79edc38b758aae97c
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/client-comprehend@npm:3.6.1":
   version: 3.6.1
   resolution: "@aws-sdk/client-comprehend@npm:3.6.1"
@@ -5602,6 +5810,54 @@ __metadata:
     "@smithy/util-waiter": ^4.2.12
     tslib: ^2.6.2
   checksum: 76bcecb9f4bfb92af7b350c5e7cab94fa4c8eba4806f646ed322079e0c6fef4366715f2c029050db200b685a0dcbd203351c7c71ad18ec9ffec6c42a9c1f2099
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/client-iam@npm:^3.0.0":
+  version: 3.1023.0
+  resolution: "@aws-sdk/client-iam@npm:3.1023.0"
+  dependencies:
+    "@aws-crypto/sha256-browser": 5.2.0
+    "@aws-crypto/sha256-js": 5.2.0
+    "@aws-sdk/core": ^3.973.26
+    "@aws-sdk/credential-provider-node": ^3.972.29
+    "@aws-sdk/middleware-host-header": ^3.972.8
+    "@aws-sdk/middleware-logger": ^3.972.8
+    "@aws-sdk/middleware-recursion-detection": ^3.972.9
+    "@aws-sdk/middleware-user-agent": ^3.972.28
+    "@aws-sdk/region-config-resolver": ^3.972.10
+    "@aws-sdk/types": ^3.973.6
+    "@aws-sdk/util-endpoints": ^3.996.5
+    "@aws-sdk/util-user-agent-browser": ^3.972.8
+    "@aws-sdk/util-user-agent-node": ^3.973.14
+    "@smithy/config-resolver": ^4.4.13
+    "@smithy/core": ^3.23.13
+    "@smithy/fetch-http-handler": ^5.3.15
+    "@smithy/hash-node": ^4.2.12
+    "@smithy/invalid-dependency": ^4.2.12
+    "@smithy/middleware-content-length": ^4.2.12
+    "@smithy/middleware-endpoint": ^4.4.28
+    "@smithy/middleware-retry": ^4.4.46
+    "@smithy/middleware-serde": ^4.2.16
+    "@smithy/middleware-stack": ^4.2.12
+    "@smithy/node-config-provider": ^4.3.12
+    "@smithy/node-http-handler": ^4.5.1
+    "@smithy/protocol-http": ^5.3.12
+    "@smithy/smithy-client": ^4.12.8
+    "@smithy/types": ^4.13.1
+    "@smithy/url-parser": ^4.2.12
+    "@smithy/util-base64": ^4.3.2
+    "@smithy/util-body-length-browser": ^4.2.2
+    "@smithy/util-body-length-node": ^4.2.3
+    "@smithy/util-defaults-mode-browser": ^4.3.44
+    "@smithy/util-defaults-mode-node": ^4.2.48
+    "@smithy/util-endpoints": ^3.3.3
+    "@smithy/util-middleware": ^4.2.12
+    "@smithy/util-retry": ^4.2.13
+    "@smithy/util-utf8": ^4.2.2
+    "@smithy/util-waiter": ^4.2.14
+    tslib: ^2.6.2
+  checksum: 16fdee4717e0e0b4a0acf9225c2f42198e95d860afdcb1412159bb84bdb39f14663d036a86a344ed743a5c073f3e98fa8289ac58e02142d1c4c75605d683e02b
   languageName: node
   linkType: hard
 
@@ -21111,6 +21367,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@smithy/util-waiter@npm:^4.2.14":
+  version: 4.2.14
+  resolution: "@smithy/util-waiter@npm:4.2.14"
+  dependencies:
+    "@smithy/types": ^4.13.1
+    tslib: ^2.6.2
+  checksum: eb81051930829d324ff57c48f3a789b2dff1875c42fbc41107979c3494b88c152bc9bf917e7db8630b65b37c42276b4a894805f4ee3bde3f03f8c4f3c675301a
+  languageName: node
+  linkType: hard
+
 "@smithy/uuid@npm:^1.1.2":
   version: 1.1.2
   resolution: "@smithy/uuid@npm:1.1.2"
@@ -22281,6 +22547,15 @@ __metadata:
   dependencies:
     undici-types: ~6.21.0
   checksum: 8420353aee776ae5c1e9720058949909a0e908fa2af85501e9db2645bb9f9acd7d767890f8aaee34d375e6f8b5f550a9a169e908d2d8cf7d5daf63dce64092a0
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:^24.10.1":
+  version: 24.12.2
+  resolution: "@types/node@npm:24.12.2"
+  dependencies:
+    undici-types: ~7.16.0
+  checksum: 710050c42f89075c4479e4e1e4c2532486b0c41b1e2a8a13ad88641c88b88cdaea87414e19224f30028719737bd70e327edcaa184d50e86b9418941edd7eb02b
   languageName: node
   linkType: hard
 
@@ -43811,7 +44086,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tsx@npm:^4.20.6, tsx@npm:^4.21.0":
+"tsx@npm:^4.19.0, tsx@npm:^4.20.6, tsx@npm:^4.21.0":
   version: 4.21.0
   resolution: "tsx@npm:4.21.0"
   dependencies:

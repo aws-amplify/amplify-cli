@@ -12,8 +12,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "configure": "./configure.sh",
-    "configure-schema": "./configure-schema.sh",
+    "configure": "./backend/configure.sh",
     "sanitize": "tsx ../sanitize.ts",
     "typecheck": "cd _snapshot.post.generate/amplify && npx tsc --noEmit"
   },
@@ -29,6 +28,7 @@
     "react-dom": "^19.2.0"
   },
   "devDependencies": {
+    "@aws-sdk/client-cognito-identity-provider": "^3.936.0",
     "@eslint/js": "^9.39.1",
     "@types/node": "^24.10.1",
     "@types/react": "^19.2.5",

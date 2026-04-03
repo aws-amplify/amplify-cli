@@ -383,7 +383,11 @@ async function signUp(config: any): Promise<{ username: string; password: string
     UserPoolId: userPoolId,
     Username: username,
     TemporaryPassword: password,
-    MessageAction: 'SUPPRESS'
+    MessageAction: 'SUPPRESS',
+    UserAttributes: [
+      { Name: 'email', Value: username },
+      { Name: 'email_verified', Value: 'true' },
+    ],
   }));
 
   await cognitoClient.send(

@@ -11,7 +11,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "configure": "./configure.sh",
+    "configure": "./backend/configure.sh",
     "create-auth": "tsx create-auth-resources.ts",
     "sanitize": "tsx ../sanitize.ts",
     "typecheck": "cd _snapshot.post.generate/amplify && npx tsc --noEmit"
@@ -36,8 +36,8 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.22",
     "globals": "^16.4.0",
-    "typescript": "~5.9.3",
     "tsx": "^4.19.0",
+    "typescript": "~5.9.3",
     "typescript-eslint": "^8.45.0",
     "vite": "^7.1.7"
   }

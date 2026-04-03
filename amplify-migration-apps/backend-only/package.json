@@ -7,7 +7,11 @@
     "hoistingLimits": "workspaces"
   },
   "scripts": {
+    "configure": "./backend/configure.sh",
     "sanitize": "tsx ../sanitize.ts",
     "typecheck": "cd _snapshot.post.generate/amplify && npx tsc --noEmit"
+  },
+  "devDependencies": {
+    "@aws-sdk/client-cognito-identity-provider": "^3.936.0"
   }
 }

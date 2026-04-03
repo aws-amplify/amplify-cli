@@ -1,5 +1,5 @@
 {
-  "name": "@amplify-migration-apps/fitness-goal-tracker",
+  "name": "@amplify-migration-apps/fitness-goal-tracker-snapshot",
   "private": true,
   "version": "1.0.0",
   "type": "module",
