@@ -42,7 +42,6 @@ async function main(): Promise<void> {
   await signIn({ username, password });
 
   const currentUser = await getCurrentUser();
-  const authClient = generateClient();
 
   console.log('')
   console.log('='.repeat(60));
@@ -50,9 +49,9 @@ async function main(): Promise<void> {
   console.log('='.repeat(60));
   console.log('')
 
-  await testListTopics(authClient);
-  await testListPosts(authClient);
-  await testListComments(authClient);
+  await testListTopics();
+  await testListPosts();
+  await testListComments();
 
   console.log('')
   console.log('='.repeat(60));
@@ -61,7 +60,7 @@ async function main(): Promise<void> {
   console.log('')
 
   const topicId = await testCreateTopic(currentUser.userId);
-  await testGetTopic(authClient, topicId);
+  await testGetTopic(topicId);
   await testUpdateTopic(topicId);
 
   console.log('')
@@ -71,7 +70,7 @@ async function main(): Promise<void> {
   console.log('')
 
   const postId = await testCreatePost(topicId, currentUser.userId);
-  await testGetPost(authClient, postId);
+  await testGetPost(postId);
   await testUpdatePost(postId);
 
   console.log('')
@@ -81,7 +80,7 @@ async function main(): Promise<void> {
   console.log('')
 
   const commentId = await testCreateComment(postId, currentUser.userId);
-  await testGetComment(authClient, commentId);
+  await testGetComment(commentId);
   await testUpdateComment(commentId);
 
   console.log('')
@@ -90,7 +89,7 @@ async function main(): Promise<void> {
   console.log('='.repeat(60));
   console.log('')
 
-  await testFetchUserActivity(authClient, currentUser.userId);
+  await testFetchUserActivity(currentUser.userId);
 
   console.log('')
   console.log('='.repeat(60));
@@ -133,49 +132,56 @@ main().catch((error) => {
 // Query Tests
 // ============================================================
 
-async function testListTopics(client: any): Promise<void> {
+async function testListTopics(): Promise<void> {
   console.log('📋 Testing listTopics...');
+  const client = generateClient();
   const result = await client.graphql({ query: listTopics });
   const topics = (result as any).data.listTopics.items;
   console.log(`✅ Found ${topics.length} topics`);
 }
 
-async function testGetTopic(client: any, id: string): Promise<void> {
+async function testGetTopic(id: string): Promise<void> {
   console.log(`🔍 Testing getTopic (id: ${id.substring(0, 8)}...)...`);
+  const client = generateClient();
   const result = await client.graphql({ query: getTopic, variables: { id } });
   console.log('✅ Topic:', (result as any).data.getTopic.content);
 }
 
-async function testListPosts(client: any): Promise<void> {
+async function testListPosts(): Promise<void> {
   console.log('📋 Testing listPosts...');
+  const client = generateClient();
   const result = await client.graphql({ query: listPosts });
   const posts = (result as any).data.listPosts.items;
   console.log(`✅ Found ${posts.length} posts`);
 }
 
-async function testGetPost(client: any, id: string): Promise<void> {
+async function testGetPost(id: string): Promise<void> {
   console.log(`🔍 Testing getPost (id: ${id.substring(0, 8)}...)...`);
+  const client = generateClient();
   const result = await client.graphql({ query: getPost, variables: { id } });
   const post = (result as any).data.getPost;
   console.log('✅ Post:', post.content?.substring(0, 50));
 }
 
-async function testListComments(client: any): Promise<void> {
+async function testListComments(): Promise<void> {
   console.log('📋 Testing listComments...');
+  const client = generateClient();
   const result = await client.graphql({ query: listComments });
   const comments = (result as any).data.listComments.items;
   console.log(`✅ Found ${comments.length} comments`);
 }
 
-async function testGetComment(client: any, id: string): Promise<void> {
+async function testGetComment(id: string): Promise<void> {
   console.log(`🔍 Testing getComment (id: ${id.substring(0, 8)}...)...`);
+  const client = generateClient();
   const result = await client.graphql({ query: getComment, variables: { id } });
   const comment = (result as any).data.getComment;
   console.log('✅ Comment:', comment.content?.substring(0, 50));
 }
 
-async function testFetchUserActivity(client: any, userId: string): Promise<void> {
+async function testFetchUserActivity(userId: string): Promise<void> {
   console.log(`📊 Testing fetchUserActivity (userId: ${userId.substring(0, 8)}...)...`);
+  const client = generateClient();
   const result = await client.graphql({ query: fetchUserActivity, variables: { userId } });
   const activities = (result as any).data.fetchUserActivity || [];
   console.log(`✅ Found ${activities.length} activities`);

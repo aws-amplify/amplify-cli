@@ -41,7 +41,6 @@ async function main(): Promise<void> {
   await signIn({ username, password });
 
   const currentUser = await getCurrentUser();
-  const authClient = generateClient();
 
   console.log('')
   console.log('='.repeat(60));
@@ -49,13 +48,13 @@ async function main(): Promise<void> {
   console.log('='.repeat(60));
   console.log('')
 
-  const existingProductId = await testListProducts(authClient);
-  if (existingProductId) await testGetProduct(authClient, existingProductId);
-  const existingUserId = await testListUsers(authClient);
-  if (existingUserId) await testGetUser(authClient, existingUserId);
-  await testListComments(authClient);
-  if (existingProductId) await testCommentsByProductId(authClient, existingProductId);
-  await testCheckLowStock(authClient);
+  const existingProductId = await testListProducts();
+  if (existingProductId) await testGetProduct(existingProductId);
+  const existingUserId = await testListUsers();
+  if (existingUserId) await testGetUser(existingUserId);
+  await testListComments();
+  if (existingProductId) await testCommentsByProductId(existingProductId);
+  await testCheckLowStock();
 
   console.log('')
   console.log('='.repeat(60));
@@ -126,8 +125,9 @@ main().catch((error) => {
 // Query Tests
 // ============================================================
 
-async function testListProducts(client: any): Promise<string | null> {
+async function testListProducts(): Promise<string | null> {
   console.log('📋 Testing listProducts...');
+  const client = generateClient();
   const result = await client.graphql({ query: listProducts });
   const products = (result as any).data.listProducts.items;
   console.log(`✅ Found ${products.length} products`);
@@ -138,15 +138,17 @@ async function testListProducts(client: any): Promise<string | null> {
   return products.length > 0 ? products[0].id : null;
 }
 
-async function testGetProduct(client: any, id: string): Promise<void> {
+async function testGetProduct(id: string): Promise<void> {
   console.log(`🔍 Testing getProduct (id: ${id.substring(0, 8)}...)...`);
+  const client = generateClient();
   const result = await client.graphql({ query: getProduct, variables: { id } });
   const product = (result as any).data.getProduct;
   console.log('✅ Product:', product.engword, '| Price:', product.price, '| Stock:', product.stock);
 }
 
-async function testListUsers(client: any): Promise<string | null> {
+async function testListUsers(): Promise<string | null> {
   console.log('👥 Testing listUsers...');
+  const client = generateClient();
   const result = await client.graphql({ query: listUsers });
   const users = (result as any).data.listUsers.items;
   console.log(`✅ Found ${users.length} users`);
@@ -154,15 +156,17 @@ async function testListUsers(client: any): Promise<string | null> {
   return users.length > 0 ? users[0].id : null;
 }
 
-async function testGetUser(client: any, id: string): Promise<void> {
+async function testGetUser(id: string): Promise<void> {
   console.log(`🔍 Testing getUser (id: ${id.substring(0, 8)}...)...`);
+  const client = generateClient();
   const result = await client.graphql({ query: getUser, variables: { id } });
   const user = (result as any).data.getUser;
   console.log('✅ User:', user.name, '| Role:', user.role);
 }
 
-async function testListComments(client: any): Promise<void> {
+async function testListComments(): Promise<void> {
   console.log('💬 Testing listComments...');
+  const client = generateClient();
   const result = await client.graphql({ query: listComments });
   const comments = (result as any).data.listComments.items;
   console.log(`✅ Found ${comments.length} comments`);
@@ -171,15 +175,17 @@ async function testListComments(client: any): Promise<void> {
     .forEach((c: any) => console.log(`   - [${c.authorName}] "${c.content.substring(0, 50)}${c.content.length > 50 ? '...' : ''}"`));
 }
 
-async function testCommentsByProductId(client: any, productId: string): Promise<void> {
+async function testCommentsByProductId(productId: string): Promise<void> {
   console.log(`💬 Testing commentsByProductId (productId: ${productId.substring(0, 8)}...)...`);
+  const client = generateClient();
   const result = await client.graphql({ query: commentsByProductId, variables: { productId } });
   const comments = (result as any).data.commentsByProductId.items;
   console.log(`✅ Found ${comments.length} comments for this product`);
 }
 
-async function testCheckLowStock(client: any): Promise<void> {
+async function testCheckLowStock(): Promise<void> {
   console.log('⚠️ Testing checkLowStock (Lambda function)...');
+  const client = generateClient();
   const result = await client.graphql({ query: checkLowStock });
   const data = (result as any).data.checkLowStock;
   console.log(`✅ ${data.message}`);

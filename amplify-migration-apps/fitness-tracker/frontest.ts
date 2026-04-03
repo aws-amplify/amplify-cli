@@ -39,8 +39,6 @@ async function main(): Promise<void> {
   await signIn({ username, password });
 
   const currentUser = await getCurrentUser();
-  const authClient = generateClient({ authMode: 'userPool' });
-  const apiKeyClient = generateClient({ authMode: 'apiKey' });
 
   console.log('')
   console.log('='.repeat(60));
@@ -48,9 +46,9 @@ async function main(): Promise<void> {
   console.log('='.repeat(60));
   console.log('')
 
-  await testListWorkoutPrograms(authClient);
-  await testListExercises(authClient);
-  await testListMeals(apiKeyClient);
+  await testListWorkoutPrograms();
+  await testListExercises();
+  await testListMeals();
 
   console.log('')
   console.log('='.repeat(60));
@@ -58,9 +56,9 @@ async function main(): Promise<void> {
   console.log('='.repeat(60));
   console.log('')
 
-  const programId = await testCreateWorkoutProgram(authClient);
-  await testGetWorkoutProgram(authClient, programId);
-  await testUpdateWorkoutProgram(authClient, programId);
+  const programId = await testCreateWorkoutProgram();
+  await testGetWorkoutProgram(programId);
+  await testUpdateWorkoutProgram(programId);
 
   console.log('')
   console.log('='.repeat(60));
@@ -68,9 +66,9 @@ async function main(): Promise<void> {
   console.log('='.repeat(60));
   console.log('')
 
-  const exerciseId = await testCreateExercise(authClient, programId);
-  await testGetExercise(authClient, exerciseId);
-  await testUpdateExercise(authClient, exerciseId, programId);
+  const exerciseId = await testCreateExercise(programId);
+  await testGetExercise(exerciseId);
+  await testUpdateExercise(exerciseId, programId);
 
   console.log('')
   console.log('='.repeat(60));
@@ -78,9 +76,9 @@ async function main(): Promise<void> {
   console.log('='.repeat(60));
   console.log('')
 
-  const mealId = await testCreateMeal(apiKeyClient, currentUser.username);
-  await testGetMeal(apiKeyClient, mealId);
-  await testUpdateMeal(apiKeyClient, mealId);
+  const mealId = await testCreateMeal(currentUser.username);
+  await testGetMeal(mealId);
+  await testUpdateMeal(mealId);
 
   console.log('')
   console.log('='.repeat(60));
@@ -96,9 +94,9 @@ async function main(): Promise<void> {
   console.log('='.repeat(60));
   console.log('')
 
-  await testDeleteMeal(apiKeyClient, mealId);
-  await testDeleteExercise(authClient, exerciseId);
-  await testDeleteWorkoutProgram(authClient, programId);
+  await testDeleteMeal(mealId);
+  await testDeleteExercise(exerciseId);
+  await testDeleteWorkoutProgram(programId);
 
   await signOut();
 }
@@ -113,42 +111,48 @@ main().catch((error) => {
 // Query Tests
 // ============================================================
 
-async function testListWorkoutPrograms(client: any): Promise<void> {
+async function testListWorkoutPrograms(): Promise<void> {
+  const client = generateClient({ authMode: 'userPool' });
   console.log('📋 Testing listWorkoutPrograms...');
   const result = await client.graphql({ query: listWorkoutPrograms });
   const programs = (result as any).data.listWorkoutPrograms.items;
   console.log(`✅ Found ${programs.length} workout programs`);
 }
 
-async function testGetWorkoutProgram(client: any, id: string): Promise<void> {
+async function testGetWorkoutProgram(id: string): Promise<void> {
+  const client = generateClient({ authMode: 'userPool' });
   console.log(`🔍 Testing getWorkoutProgram (id: ${id.substring(0, 8)}...)...`);
   const result = await client.graphql({ query: getWorkoutProgram, variables: { id } });
   const program = (result as any).data.getWorkoutProgram;
   console.log('✅ WorkoutProgram:', program.title);
 }
 
-async function testListExercises(client: any): Promise<void> {
+async function testListExercises(): Promise<void> {
+  const client = generateClient({ authMode: 'userPool' });
   console.log('📋 Testing listExercises...');
   const result = await client.graphql({ query: listExercises });
   const exercises = (result as any).data.listExercises.items;
   console.log(`✅ Found ${exercises.length} exercises`);
 }
 
-async function testGetExercise(client: any, id: string): Promise<void> {
+async function testGetExercise(id: string): Promise<void> {
+  const client = generateClient({ authMode: 'userPool' });
   console.log(`🔍 Testing getExercise (id: ${id.substring(0, 8)}...)...`);
   const result = await client.graphql({ query: getExercise, variables: { id } });
   const exercise = (result as any).data.getExercise;
   console.log('✅ Exercise:', exercise.name);
 }
 
-async function testListMeals(client: any): Promise<void> {
+async function testListMeals(): Promise<void> {
+  const client = generateClient({ authMode: 'apiKey' });
   console.log('📋 Testing listMeals...');
   const result = await client.graphql({ query: listMeals });
   const meals = (result as any).data.listMeals.items;
   console.log(`✅ Found ${meals.length} meals`);
 }
 
-async function testGetMeal(client: any, id: string): Promise<void> {
+async function testGetMeal(id: string): Promise<void> {
+  const client = generateClient({ authMode: 'apiKey' });
   console.log(`🔍 Testing getMeal (id: ${id.substring(0, 8)}...)...`);
   const result = await client.graphql({ query: getMeal, variables: { id } });
   const meal = (result as any).data.getMeal;
@@ -160,7 +164,8 @@ async function testGetMeal(client: any, id: string): Promise<void> {
 // Mutation Tests
 // ============================================================
 
-async function testCreateWorkoutProgram(client: any): Promise<string> {
+async function testCreateWorkoutProgram(): Promise<string> {
+  const client = generateClient({ authMode: 'userPool' });
   console.log('🆕 Testing createWorkoutProgram...');
   const result = await client.graphql({
     query: createWorkoutProgram,
@@ -179,7 +184,8 @@ async function testCreateWorkoutProgram(client: any): Promise<string> {
   return program.id;
 }
 
-async function testUpdateWorkoutProgram(client: any, programId: string): Promise<void> {
+async function testUpdateWorkoutProgram(programId: string): Promise<void> {
+  const client = generateClient({ authMode: 'userPool' });
   console.log(`✏️ Testing updateWorkoutProgram (id: ${programId.substring(0, 8)}...)...`);
   await client.graphql({
     query: updateWorkoutProgram,
@@ -196,7 +202,8 @@ async function testUpdateWorkoutProgram(client: any, programId: string): Promise
   console.log('✅ Updated workout program');
 }
 
-async function testDeleteWorkoutProgram(client: any, programId: string): Promise<void> {
+async function testDeleteWorkoutProgram(programId: string): Promise<void> {
+  const client = generateClient({ authMode: 'userPool' });
   console.log(`🗑️ Testing deleteWorkoutProgram (id: ${programId.substring(0, 8)}...)...`);
   await client.graphql({
     query: deleteWorkoutProgram,
@@ -205,7 +212,8 @@ async function testDeleteWorkoutProgram(client: any, programId: string): Promise
   console.log('✅ Deleted workout program');
 }
 
-async function testCreateExercise(client: any, programId: string): Promise<string> {
+async function testCreateExercise(programId: string): Promise<string> {
+  const client = generateClient({ authMode: 'userPool' });
   console.log('🆕 Testing createExercise...');
   const result = await client.graphql({
     query: createExercise,
@@ -222,7 +230,8 @@ async function testCreateExercise(client: any, programId: string): Promise<strin
   return exercise.id;
 }
 
-async function testUpdateExercise(client: any, exerciseId: string, programId: string): Promise<void> {
+async function testUpdateExercise(exerciseId: string, programId: string): Promise<void> {
+  const client = generateClient({ authMode: 'userPool' });
   console.log(`✏️ Testing updateExercise (id: ${exerciseId.substring(0, 8)}...)...`);
   await client.graphql({
     query: updateExercise,
@@ -238,7 +247,8 @@ async function testUpdateExercise(client: any, exerciseId: string, programId: st
   console.log('✅ Updated exercise');
 }
 
-async function testDeleteExercise(client: any, exerciseId: string): Promise<void> {
+async function testDeleteExercise(exerciseId: string): Promise<void> {
+  const client = generateClient({ authMode: 'userPool' });
   console.log(`🗑️ Testing deleteExercise (id: ${exerciseId.substring(0, 8)}...)...`);
   await client.graphql({
     query: deleteExercise,
@@ -247,7 +257,8 @@ async function testDeleteExercise(client: any, exerciseId: string): Promise<void
   console.log('✅ Deleted exercise');
 }
 
-async function testCreateMeal(client: any, userName: string): Promise<string> {
+async function testCreateMeal(userName: string): Promise<string> {
+  const client = generateClient({ authMode: 'apiKey' });
   console.log('🆕 Testing createMeal...');
   const result = await client.graphql({
     query: createMeal,
@@ -264,7 +275,8 @@ async function testCreateMeal(client: any, userName: string): Promise<string> {
   return meal.id;
 }
 
-async function testUpdateMeal(client: any, mealId: string): Promise<void> {
+async function testUpdateMeal(mealId: string): Promise<void> {
+  const client = generateClient({ authMode: 'apiKey' });
   console.log(`✏️ Testing updateMeal (id: ${mealId.substring(0, 8)}...)...`);
   await client.graphql({
     query: updateMeal,
@@ -278,7 +290,8 @@ async function testUpdateMeal(client: any, mealId: string): Promise<void> {
   console.log('✅ Updated meal');
 }
 
-async function testDeleteMeal(client: any, mealId: string): Promise<void> {
+async function testDeleteMeal(mealId: string): Promise<void> {
+  const client = generateClient({ authMode: 'apiKey' });
   console.log(`🗑️ Testing deleteMeal (id: ${mealId.substring(0, 8)}...)...`);
   await client.graphql({
     query: deleteMeal,
