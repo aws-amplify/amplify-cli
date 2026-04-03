@@ -1,5 +1,5 @@
 {
-  "name": "@amplify-migration-apps/project-boards",
+  "name": "@amplify-migration-apps/project-boards-snapshot",
   "private": true,
   "version": "0.0.0",
   "type": "module",

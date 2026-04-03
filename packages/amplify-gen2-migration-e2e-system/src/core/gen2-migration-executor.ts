@@ -13,7 +13,7 @@ import { Logger } from '../utils/logger';
 /**
  * Available gen2-migration steps
  */
-export type Gen2MigrationStep = 'lock' | 'generate' | 'refactor';
+export type Gen2MigrationStep = 'assess' | 'lock' | 'generate' | 'refactor';
 
 /**
  * Options for Gen2MigrationExecutor
@@ -92,8 +92,13 @@ export class Gen2MigrationExecutor {
    */
   public async generate(appPath: string): Promise<void> {
     await this.executeStep('generate', appPath);
-    this.logger.info('Installing dependencies..');
+    this.logger.info('Installing dependencies...');
     await execa('npm', ['install'], { cwd: appPath });
+    this.logger.info('Finished installing dependencies');
+  }
+
+  public async assess(appPath: string): Promise<void> {
+    await this.executeStep('assess', appPath);
   }
 
   /**
@@ -103,28 +108,6 @@ export class Gen2MigrationExecutor {
    */
   public async refactor(appPath: string, gen2StackName: string): Promise<void> {
     await this.executeStep('refactor', appPath, ['--to', gen2StackName]);
-  }
-
-  /**
-   * Run pre-deployment workflow: lock -> checkout gen2 branch -> generate
-   */
-  public async runPreDeploymentWorkflow(appPath: string, envName = 'main'): Promise<void> {
-    this.logger.info('Starting pre-deployment workflow (lock -> checkout -> generate)...');
-
-    // Lock on the main branch
-    await this.lock(appPath);
-
-    // Create and checkout gen2 branch before generate
-    const gen2BranchName = `gen2-${envName}`;
-    this.logger.info(`Creating and checking out branch '${gen2BranchName}'...`);
-    await execa('git', ['add', '.'], { cwd: appPath });
-    await execa('git', ['commit', '--allow-empty', '-m', 'chore: before generate'], { cwd: appPath });
-    await execa('git', ['checkout', '-b', gen2BranchName], { cwd: appPath });
-
-    // Generate Gen2 code
-    await this.generate(appPath);
-
-    this.logger.info('Pre-deployment workflow completed');
   }
 
   /**
@@ -152,8 +135,6 @@ export class Gen2MigrationExecutor {
       ...(this.profile && { AWS_PROFILE: this.profile }),
     };
 
-    this.logger.info('Installing dependencies...');
-    await execa('npm', ['install'], { cwd: appPath });
     const result = await execa('npx', ['ampx', 'sandbox', '--once'], {
       cwd: appPath,
       reject: false,

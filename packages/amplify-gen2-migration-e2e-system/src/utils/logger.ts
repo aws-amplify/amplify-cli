@@ -5,7 +5,20 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import chalk from 'chalk';
-import { LogLevel, LogEntry } from '../types';
+
+export enum LogLevel {
+  DEBUG = 'debug',
+  INFO = 'info',
+  WARN = 'warn',
+  ERROR = 'error',
+}
+
+export interface LogEntry {
+  timestamp: Date;
+  level: LogLevel;
+  message: string;
+  error?: Error;
+}
 
 export class Logger {
   private logLevel: LogLevel;

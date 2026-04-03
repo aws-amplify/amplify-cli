@@ -98,7 +98,8 @@
   },
   "workspaces": [
     "packages/*",
-    "amplify-migration-apps/**/_snapshot.post.generate"
+    "amplify-migration-apps/**/_snapshot.post.generate",
+    "amplify-migration-apps/project-boards"
   ],
   "devDependencies": {
     "@babel/cli": "^7.27.0",
