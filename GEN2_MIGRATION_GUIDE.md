@@ -618,7 +618,7 @@ by the CLI setting that configures them.
   - ⚠️ `Custom Auth Challenge Flow (basic scaffolding - not for production)`
   - 🟡 `Override ID Token Claims` (_generate_ ✔ _refactor_ ✗)
 
-- ⚠️ **Do you want to use an OAuth flow**
+- 🔴 **Do you want to use an OAuth flow**
 
 - ➤ **Do you want to configure Lambda Triggers for Cognito**
 
