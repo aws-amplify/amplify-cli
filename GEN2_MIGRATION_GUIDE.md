@@ -610,13 +610,13 @@ by the CLI setting that configures them.
 
 - ➤ **Do you want to enable any of the following capabilities**
 
-  - 🟡 `Add Google reCaptcha Challenge`
-  - ⚠️ `Email Verification Link with Redirect`
+  - 🟡 `Add Google reCaptcha Challenge` (_generate_ ✔ _refactor_ ✗)
+  - ⚠️ `Email Verification Link with Redirect` 
   - 🔴 `Add User to Group`
   - 🟢 `Email Domain Filtering (denylist)`
   - 🟢 `Email Domain Filtering (allowlist)`
   - ⚠️ `Custom Auth Challenge Flow (basic scaffolding - not for production)`
-  - 🟡 `Override ID Token Claims`
+  - 🟡 `Override ID Token Claims` (_generate_ ✔ _refactor_ ✗)
 
 - ⚠️ **Do you want to use an OAuth flow**
 
@@ -630,7 +630,7 @@ by the CLI setting that configures them.
   - ⚠️ `Pre Authentication`
   - 🟢 `Pre Sign-up`
   - 🟢 `Verify Auth Challenge Response`
-  - 🟡 `Pre Token Generation` (_generate_ ✔ _refactor_ ✗)
+  - 🟢 `Pre Token Generation`
 
 ## Api
 
