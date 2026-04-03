@@ -8,7 +8,7 @@
 import execa from 'execa';
 import os from 'os';
 import { getCLIPath } from '@aws-amplify/amplify-e2e-core';
-import { Logger } from '../utils/logger';
+import { Logger } from './logger';
 
 /**
  * Available gen2-migration steps

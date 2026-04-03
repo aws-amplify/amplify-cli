@@ -7,4 +7,4 @@
 export { AmplifyInitializer } from './core/amplify-initializer';
 
 // Utilities
-export { Logger } from './utils/logger';
+export { Logger } from './core/logger';

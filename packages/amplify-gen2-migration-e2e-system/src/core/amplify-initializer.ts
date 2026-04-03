@@ -4,7 +4,7 @@
  */
 
 import { initJSProjectWithProfile } from '@aws-amplify/amplify-e2e-core';
-import { Logger } from '../utils/logger';
+import { Logger } from './logger';
 import path from 'path';
 import * as fs from 'fs-extra';
 

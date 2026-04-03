@@ -9,16 +9,17 @@
 // eslint-disable-next-line spellcheck/spell-checker
 import * as yargs from 'yargs';
 import chalk from 'chalk';
-import { Logger, LogLevel } from './utils/logger';
+import { Logger, LogLevel } from './core/logger';
 import { AmplifyInitializer } from './core/amplify-initializer';
 import { Gen2MigrationExecutor } from './core/gen2-migration-executor';
+import { AppScriptExecutor } from './core/app-script-executor';
 import execa from 'execa';
 import path from 'path';
 import os from 'os';
 import fs from 'fs';
 import * as fsExtra from 'fs-extra';
 import { getCLIPath } from '@aws-amplify/amplify-e2e-core';
-import * as git from './utils/git';
+import * as git from './core/git';
 
 // Initialize core components
 const logger = new Logger(LogLevel.INFO);
@@ -154,18 +155,6 @@ export const generateTimeBasedE2EAmplifyAppName = (appName: string): string => {
   return `${safePrefix}${timestamp}`;
 };
 
-const FRONTEST_SCRIPT = 'frontest.ts';
-
-async function runFrontest(targetAppPath: string, gen2BranchName: string): Promise<void> {
-  if (!fs.existsSync(path.join(targetAppPath, FRONTEST_SCRIPT))) return;
-
-  await git.checkout(targetAppPath, 'main', false);
-  await runAppScript(targetAppPath, FRONTEST_SCRIPT, [path.join('src', 'amplifyconfiguration.json')]);
-
-  await git.checkout(targetAppPath, gen2BranchName, false);
-  await runAppScript(targetAppPath, FRONTEST_SCRIPT, ['amplify_outputs.json']);
-}
-
 interface MigrationConfig {
   /**
    * Per-step configuration overrides.
@@ -184,27 +173,6 @@ function loadMigrationConfig(appPath: string): MigrationConfig {
   const configPath = path.join(appPath, 'migration', 'config.json');
   if (!fs.existsSync(configPath)) return {};
   return JSON.parse(fs.readFileSync(configPath, 'utf-8')) as MigrationConfig;
-}
-
-async function runAppScript(targetAppPath: string, scriptPath: string, args: string[]): Promise<void> {
-  const testScriptPath = path.join(targetAppPath, scriptPath);
-
-  logger.info(`Running ${scriptPath} in ${targetAppPath} with args: ${args.join(' ')}`);
-  const result = await execa('npx', ['tsx', scriptPath, ...args], {
-    cwd: targetAppPath,
-    stdio: 'inherit',
-    reject: false,
-    env: { ...process.env, AWS_SDK_LOAD_CONFIG: '1' },
-  });
-
-  if (result.exitCode !== 0) {
-    throw new Error(`${testScriptPath} failed with exit code ${result.exitCode}`);
-  }
-}
-
-async function runAppScriptIfExists(targetAppPath: string, scriptPath: string, args: string[]): Promise<void> {
-  if (!fs.existsSync(path.join(targetAppPath, scriptPath))) return;
-  await runAppScript(targetAppPath, scriptPath, args);
 }
 
 /**
@@ -283,6 +251,8 @@ async function initializeAppFromCLI(params: InitializeAppFromCLIParams): Promise
     });
 
     const migrationConfig = loadMigrationConfig(targetAppPath);
+    const gen2BranchName = `gen2-${envName}`;
+    const appScriptExecutor = new AppScriptExecutor(targetAppPath, 'main', gen2BranchName, logger);
 
     // Update package.json name to use deploymentName for predictable Gen2 stack naming
     const packageJsonPath = path.join(targetAppPath, 'package.json');
@@ -316,7 +286,8 @@ async function initializeAppFromCLI(params: InitializeAppFromCLIParams): Promise
     await amplifyPush(targetAppPath);
     logger.info(`Successfully pushed ${deploymentName} to AWS`);
 
-    await runAppScriptIfExists(targetAppPath, path.join('migration', 'post-push.ts'), [targetAppPath]);
+    await appScriptExecutor.postPush();
+    await appScriptExecutor.frontestGen1();
 
     await git.init(targetAppPath);
     await git.commit(targetAppPath, 'chore: post push');
@@ -324,29 +295,31 @@ async function initializeAppFromCLI(params: InitializeAppFromCLIParams): Promise
     await gen2MigrationExecutor.assess(targetAppPath);
     await gen2MigrationExecutor.lock(targetAppPath, migrationConfig.lock?.skipValidations);
 
-    const gen2BranchName = `gen2-${envName}`;
     await git.checkout(targetAppPath, gen2BranchName, true);
 
     await gen2MigrationExecutor.generate(targetAppPath);
-    await runAppScriptIfExists(targetAppPath, path.join('migration', 'post-generate.ts'), [targetAppPath]);
+    await appScriptExecutor.postGenerate();
     await git.commit(targetAppPath, 'chore: post generate');
 
     const gen2StackName = await gen2MigrationExecutor.deployGen2Sandbox(targetAppPath, deploymentName, gen2BranchName);
 
-    await runFrontest(targetAppPath, gen2BranchName);
+    await appScriptExecutor.frontestGen1();
+    await appScriptExecutor.frontestGen2();
 
     await git.checkout(targetAppPath, 'main', false);
     await gen2MigrationExecutor.refactor(targetAppPath, gen2StackName);
 
     await git.checkout(targetAppPath, gen2BranchName, false);
-    await runAppScriptIfExists(targetAppPath, path.join('migration', 'post-refactor.ts'), [targetAppPath]);
+    await appScriptExecutor.postRefactor();
     await git.commit(targetAppPath, 'chore: post refactor');
 
-    await runFrontest(targetAppPath, gen2BranchName);
+    await appScriptExecutor.frontestGen1();
+    await appScriptExecutor.frontestGen2();
 
     await gen2MigrationExecutor.deployGen2Sandbox(targetAppPath, deploymentName, gen2BranchName);
 
-    await runFrontest(targetAppPath, gen2BranchName);
+    await appScriptExecutor.frontestGen1();
+    await appScriptExecutor.frontestGen2();
 
     logger.info(`App ${deploymentName} fully initialized and migrated at ${targetAppPath}`);
   } catch (error) {
