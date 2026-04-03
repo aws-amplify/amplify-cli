@@ -24,6 +24,7 @@ Each app directory follows this layout:
 <app-name>/
 ├── backend/                          # Backend assets (schema, function code, configure.sh)
 ├── migration/
+│   ├── config.json                   # E2E system configuration (tester script path, etc.)
 │   ├── post-generate.ts              # Fixups after gen2-migration generate
 │   └── post-refactor.ts              # Fixups after gen2-migration refactor
 ├── frontest.ts                       # Self-contained E2E test script
@@ -48,6 +49,22 @@ Contains the backend source assets for the app: the GraphQL schema, Lambda funct
 and a `configure.sh` script that copies them into the Gen1 `amplify/` directory structure.
 The configure script uses `$BASH_SOURCE`-relative paths so it works regardless of the
 caller's working directory.
+
+### `migration/config.json`
+
+Configuration file read by the [E2E system](../packages/amplify-gen2-migration-e2e-system/) at runtime.
+Currently supports:
+
+```json
+{
+  "frontest": "frontest.ts",
+  "postPush": "migration/post-push.ts"
+}
+```
+
+- `frontest` — path (relative to the app root) of the frontend test script to run after each deployment.
+- `postPush` — path (relative to the app root) of a script to run after `amplify push` completes.
+  If omitted or if the file doesn't exist, the E2E system skips test execution for that app.
 
 ### `frontest.ts`
 

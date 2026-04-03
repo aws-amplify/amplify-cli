@@ -5,6 +5,7 @@ import { useEffect, useState, useRef } from 'react';
 
 import { generateClient } from 'aws-amplify/api';
 import { post, get } from 'aws-amplify/api';
+import { NUTRITION_API_NAME, ADMIN_API_NAME } from './api-config';
 
 import { Button, Heading, withAuthenticator } from '@aws-amplify/ui-react';
 import '@aws-amplify/ui-react/styles.css';
@@ -353,7 +354,7 @@ const MealLogger: React.FC<{ user?: AuthUser; onMealLogged: () => void }> = ({ u
     try {
       setLogging(true);
       await post({
-        apiName: 'nutritionapi',
+        apiName: NUTRITION_API_NAME,
         path: '/nutrition/log',
         options: {
           body: {
@@ -959,7 +960,7 @@ const App: React.FC<AppProps> = ({ signOut, user }) => {
     try {
       setLoadingUsers(true);
       const response = await get({
-        apiName: 'adminapi',
+        apiName: ADMIN_API_NAME,
         path: '/admin/users',
       }).response;
       const data = (await response.body.json()) as any;

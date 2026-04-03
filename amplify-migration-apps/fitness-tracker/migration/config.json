@@ -1,0 +1,7 @@
+{
+  "frontest": "frontest.ts",
+  "postPush": "migration/post-push.ts",
+  "lock": {
+    "skipValidations": true
+  }
+}

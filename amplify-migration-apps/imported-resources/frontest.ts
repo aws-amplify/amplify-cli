@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Amplify } from 'aws-amplify';
 import { generateClient } from 'aws-amplify/api';
-import { getCurrentUser, signIn, signOut } from 'aws-amplify/auth';
+import { signIn, signOut } from 'aws-amplify/auth';
 import { uploadData, getUrl, downloadData, getProperties } from 'aws-amplify/storage';
 import {
   CognitoIdentityProviderClient,
@@ -15,6 +15,7 @@ import {
   createProject, updateProject, deleteProject,
   createTodo, updateTodo, deleteTodo,
 } from './src/graphql/mutations';
+import { ProjectStatus } from './src/API';
 
 // Polyfill crypto for Node.js environment (required for Amplify Auth)
 import { webcrypto } from 'crypto';
@@ -45,8 +46,6 @@ async function main(): Promise<void> {
   const { username, password } = await signUp(config);
 
   await signIn({ username, password });
-
-  const currentUser = await getCurrentUser();
 
   console.log('')
   console.log('='.repeat(60));
@@ -174,7 +173,7 @@ async function testCreateProject(): Promise<string> {
     variables: {
       input: {
         title: `Test Project ${Date.now()}`,
-        status: 'ACTIVE',
+        status: ProjectStatus.ACTIVE,
         description: 'Test project created by frontest',
         color: '#007bff',
       },
@@ -196,7 +195,7 @@ async function testUpdateProject(projectId: string): Promise<void> {
         id: projectId,
         title: 'Updated Test Project',
         description: 'Updated by frontest',
-        status: 'ON_HOLD',
+        status: ProjectStatus.ON_HOLD,
         color: '#28a745',
       },
     },

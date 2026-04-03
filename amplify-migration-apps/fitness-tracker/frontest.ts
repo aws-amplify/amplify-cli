@@ -1,12 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Amplify } from 'aws-amplify';
 import { generateClient } from 'aws-amplify/api';
 import { getCurrentUser, signIn, signOut } from 'aws-amplify/auth';
-import { post } from 'aws-amplify/api';
+import { post, get } from 'aws-amplify/api';
+import { NUTRITION_API_NAME, ADMIN_API_NAME, configureAmplify } from './src/api-config';
 import {
   CognitoIdentityProviderClient,
   AdminCreateUserCommand,
   AdminSetUserPasswordCommand,
+  AdminAddUserToGroupCommand,
 } from '@aws-sdk/client-cognito-identity-provider';
 import * as fs from 'fs';
 import { randomBytes } from 'crypto';
@@ -32,7 +33,7 @@ async function main(): Promise<void> {
   const [configPath] = process.argv.slice(2);
   const config = JSON.parse(fs.readFileSync(configPath, { encoding: 'utf-8' }));
 
-  Amplify.configure(config);
+  configureAmplify(config);
 
   const { username, password } = await signUp(config);
 
@@ -87,6 +88,7 @@ async function main(): Promise<void> {
   console.log('')
 
   await testNutritionLogAPI(currentUser.username);
+  await testAdminListUsers();
 
   console.log('')
   console.log('='.repeat(60));
@@ -309,7 +311,7 @@ async function testNutritionLogAPI(userName: string): Promise<void> {
   console.log('🍔 Testing REST API - POST /nutrition/log...');
 
   const restOperation = post({
-    apiName: 'nutritionapi',
+    apiName: NUTRITION_API_NAME,
     path: '/nutrition/log',
     options: {
       body: {
@@ -324,6 +326,20 @@ async function testNutritionLogAPI(userName: string): Promise<void> {
 
   console.log('✅ REST API Response:', response);
   console.log('   Message:', (response as any).message);
+}
+
+async function testAdminListUsers(): Promise<void> {
+  console.log('👥 Testing REST API - GET /admin/users...');
+
+  const restOperation = get({
+    apiName: ADMIN_API_NAME,
+    path: '/admin/users',
+  });
+
+  const { body } = await restOperation.response;
+  const response = await body.json();
+
+  console.log(`✅ Found ${(response as any).count} users`);
 }
 
 
@@ -360,6 +376,12 @@ async function signUp(config: any): Promise<{ username: string; password: string
     Permanent: true,
   }));
 
+  await cognitoClient.send(new AdminAddUserToGroupCommand({
+    UserPoolId: userPoolId,
+    Username: username,
+    GroupName: 'Admin',
+  }));
+
   return { username, password };
 }
 
@@ -368,7 +390,7 @@ function generateTestPassword(): string {
 }
 
 function generateTestEmail(): string {
-  return `testuser-${randomSuffix()}@test.example.com`;
+  return `testuser-${randomSuffix()}@amazon.com`;
 }
 
 function generateTestUsername(): string {

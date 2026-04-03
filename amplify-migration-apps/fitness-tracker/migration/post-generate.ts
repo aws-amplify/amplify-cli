@@ -8,11 +8,13 @@
  * 3. Convert admin function from CommonJS to ESM
  * 4. Convert PreSignup trigger function from CommonJS to ESM
  * 5. Update frontend import from amplifyconfiguration.json to amplify_outputs.json
+ * 6. Add resourceGroupName to function resource.ts files to break circular dependencies
  */
 
 import fs from 'fs/promises';
 import path from 'path';
 import { glob } from 'glob';
+import { execSync } from 'child_process';
 
 async function updateBranchName(appPath: string): Promise<void> {
   const resourcePath = path.join(appPath, 'amplify', 'data', 'resource.ts');
@@ -122,25 +124,63 @@ async function convertPreSignupToESM(appPath: string): Promise<void> {
   await fs.writeFile(allowlistPath, allowlistContent, 'utf-8');
 }
 
-async function updateFrontendConfig(appPath: string): Promise<void> {
+async function updateFrontendConfig(appPath: string, branchName: string): Promise<void> {
+  // Rewrite api-config.ts with Gen2 API names and parseAmplifyConfig-based configure function
+  const apiConfigPath = path.join(appPath, 'src', 'api-config.ts');
+  await fs.writeFile(apiConfigPath, `import { Amplify } from 'aws-amplify';
+import { parseAmplifyConfig } from 'aws-amplify/utils';
+
+export const NUTRITION_API_NAME = 'nutritionapi-${branchName}';
+export const ADMIN_API_NAME = 'adminapi-${branchName}';
+
+export function configureAmplify(config: any): void {
+  const amplifyConfig = parseAmplifyConfig(config);
+  Amplify.configure({
+    ...amplifyConfig,
+    API: { ...amplifyConfig.API, REST: config.custom?.API },
+  });
+}
+`, 'utf-8');
+
+  // Update main.tsx: switch config import from amplifyconfiguration.json to amplify_outputs.json
   const mainPath = path.join(appPath, 'src', 'main.tsx');
-
-  const content = await fs.readFile(mainPath, 'utf-8');
-
-  const updated = content.replace(
+  let mainContent = await fs.readFile(mainPath, 'utf-8');
+  mainContent = mainContent.replace(
     /from\s*["']\.\/amplifyconfiguration\.json["']/g,
     "from '../amplify_outputs.json'",
   );
+  await fs.writeFile(mainPath, mainContent, 'utf-8');
+}
 
-  await fs.writeFile(mainPath, updated, 'utf-8');
+async function setResourceGroupName(resourceTsPath: string, groupName: string): Promise<void> {
+  const content = await fs.readFile(resourceTsPath, 'utf-8');
+
+  // Add resourceGroupName after the entry property in defineFunction({ entry: "...", })
+  const updated = content.replace(
+    /(entry:\s*["'][^"']+["'],?)/,
+    `$1\n  resourceGroupName: '${groupName}',`,
+  );
+
+  await fs.writeFile(resourceTsPath, updated, 'utf-8');
 }
 
 export async function postGenerate(appPath: string): Promise<void> {
+  const branchName = execSync('git branch --show-current', { cwd: appPath, encoding: 'utf-8' }).trim();
+
   await updateBranchName(appPath);
   await convertExpressFunctionToESM(appPath, 'lognutrition');
   await convertExpressFunctionToESM(appPath, 'admin');
   await convertPreSignupToESM(appPath);
-  await updateFrontendConfig(appPath);
+  await updateFrontendConfig(appPath, branchName);
+
+  // Break circular dependencies by assigning functions to the stack of the resource they access
+  await setResourceGroupName(path.join(appPath, 'amplify', 'function', 'lognutrition', 'resource.ts'), 'data');
+  await setResourceGroupName(path.join(appPath, 'amplify', 'function', 'admin', 'resource.ts'), 'auth');
+
+  const preSignupMatches = await glob('amplify/auth/fitnesstracker*PreSignup/resource.ts', { cwd: appPath });
+  if (preSignupMatches.length > 0) {
+    await setResourceGroupName(path.join(appPath, preSignupMatches[0]), 'auth');
+  }
 }
 
 async function main(): Promise<void> {

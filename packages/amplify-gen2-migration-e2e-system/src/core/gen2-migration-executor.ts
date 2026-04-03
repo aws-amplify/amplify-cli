@@ -80,8 +80,9 @@ export class Gen2MigrationExecutor {
    * Enables deletion protection on DynamoDB tables, sets a deny-all stack policy,
    * and adds GEN2_MIGRATION_ENVIRONMENT_NAME env var to the Amplify app.
    */
-  public async lock(appPath: string): Promise<void> {
-    await this.executeStep('lock', appPath);
+  public async lock(appPath: string, skipValidations?: boolean): Promise<void> {
+    const extraArgs = skipValidations ? ['--skip-validations'] : [];
+    await this.executeStep('lock', appPath, extraArgs);
   }
 
   /**
