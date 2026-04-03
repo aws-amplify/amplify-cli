@@ -45,6 +45,33 @@ The CLI executes the following steps for a given app:
 
 Test scripts run at multiple points to verify that both stacks remain functional throughout the migration.
 
+The system automatically runs app-specific scripts from the `migration/` directory at the
+appropriate points in the workflow. If a script does not exist, the step is silently skipped:
+
+- `migration/post-push.ts` — after `amplify push` (configured via `migration/config.json`)
+- `migration/post-generate.ts` — after `gen2-migration generate`
+- `migration/post-refactor.ts` — after `gen2-migration refactor`
+
+Similarly, `frontest.ts` is run automatically after each deployment if the file exists.
+
+### Migration Config
+
+Each app can optionally include a `migration/config.json` to customize the E2E workflow:
+
+```json
+{
+  "postPush": "migration/post-push.ts",
+  "lock": { "skipValidations": true }
+}
+```
+
+| Field                  | Description                                                       |
+| ---------------------- | ----------------------------------------------------------------- |
+| `postPush`             | Path (relative to app root) to a script run after `amplify push`. |
+| `lock.skipValidations` | Pass `--skip-validations` to `gen2-migration lock`.               |
+
+If the file does not exist, defaults are used (no post-push script, no skip-validations).
+
 For details on the app layout, test scripts, and migration scripts, see the [amplify-migration-apps README](../../amplify-migration-apps/README.md).
 
 ## Package Architecture

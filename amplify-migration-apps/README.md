@@ -24,8 +24,9 @@ Each app directory follows this layout:
 <app-name>/
 ├── backend/                          # Backend assets (schema, function code, configure.sh)
 ├── migration/
-│   ├── config.json                   # E2E system configuration (tester script path, etc.)
+│   ├── config.json                   # E2E system configuration (optional)
 │   ├── post-generate.ts              # Fixups after gen2-migration generate
+│   ├── post-push.ts                  # Fixups after amplify push (optional)
 │   └── post-refactor.ts              # Fixups after gen2-migration refactor
 ├── frontest.ts                       # Self-contained E2E test script
 ├── _snapshot.pre.generate/           # Input for `gen2-migration generate` test (Gen1 app state)
@@ -64,7 +65,8 @@ Currently supports:
 
 - `postPush` — path (relative to the app root) of a script to run after `amplify push` completes.
 - `lock.skipValidations` — pass `--skip-validations` to `gen2-migration lock`.
-  If omitted or if the file doesn't exist, the E2E system skips test execution for that app.
+
+If the file does not exist, defaults are used (no post-push script, no skip-validations).
 
 ### `frontest.ts`
 
@@ -428,6 +430,11 @@ This will:
 2. Run `frontest.ts` to validate the Gen1 stack
 3. Execute the full `gen2-migration` workflow (assess, lock, generate, deploy, refactor, redeploy)
 4. Run `frontest.ts` against both Gen1 and Gen2 configs after each deployment
+
+The system automatically runs scripts from the app's `migration/` directory at the right
+points in the workflow — `post-generate.ts` after generate, `post-refactor.ts` after refactor,
+and `post-push.ts` after push (if configured in `migration/config.json`). If a script doesn't
+exist, the step is silently skipped. `frontest.ts` is also run automatically if present.
 
 See the [E2E system README](../packages/amplify-gen2-migration-e2e-system/README.md) for
 CLI options and troubleshooting.
