@@ -58,15 +58,13 @@ Currently supports:
 
 ```json
 {
-  "postPush": "migration/post-push.ts",
   "lock": { "skipValidations": true }
 }
 ```
 
-- `postPush` — path (relative to the app root) of a script to run after `amplify push` completes.
 - `lock.skipValidations` — pass `--skip-validations` to `gen2-migration lock`.
 
-If the file does not exist, defaults are used (no post-push script, no skip-validations).
+If the file does not exist, defaults are used (no skip-validations).
 
 ### `frontest.ts`
 

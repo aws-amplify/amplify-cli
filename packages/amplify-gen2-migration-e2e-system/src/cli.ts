@@ -168,11 +168,6 @@ async function runFrontest(targetAppPath: string, gen2BranchName: string): Promi
 
 interface MigrationConfig {
   /**
-   * Path (relative to app root) to a script run after `amplify push` completes.
-   */
-  readonly postPush?: string;
-
-  /**
    * Per-step configuration overrides.
    */
   readonly lock?: StepConfig;
@@ -205,6 +200,11 @@ async function runAppScript(targetAppPath: string, scriptPath: string, args: str
   if (result.exitCode !== 0) {
     throw new Error(`${testScriptPath} failed with exit code ${result.exitCode}`);
   }
+}
+
+async function runAppScriptIfExists(targetAppPath: string, scriptPath: string, args: string[]): Promise<void> {
+  if (!fs.existsSync(path.join(targetAppPath, scriptPath))) return;
+  await runAppScript(targetAppPath, scriptPath, args);
 }
 
 /**
@@ -316,9 +316,7 @@ async function initializeAppFromCLI(params: InitializeAppFromCLIParams): Promise
     await amplifyPush(targetAppPath);
     logger.info(`Successfully pushed ${deploymentName} to AWS`);
 
-    if (migrationConfig.postPush) {
-      await runAppScript(targetAppPath, migrationConfig.postPush, [targetAppPath]);
-    }
+    await runAppScriptIfExists(targetAppPath, path.join('migration', 'post-push.ts'), [targetAppPath]);
 
     await git.init(targetAppPath);
     await git.commit(targetAppPath, 'chore: post push');
@@ -330,7 +328,7 @@ async function initializeAppFromCLI(params: InitializeAppFromCLIParams): Promise
     await git.checkout(targetAppPath, gen2BranchName, true);
 
     await gen2MigrationExecutor.generate(targetAppPath);
-    await runAppScript(targetAppPath, path.join('migration', 'post-generate.ts'), [targetAppPath]);
+    await runAppScriptIfExists(targetAppPath, path.join('migration', 'post-generate.ts'), [targetAppPath]);
     await git.commit(targetAppPath, 'chore: post generate');
 
     const gen2StackName = await gen2MigrationExecutor.deployGen2Sandbox(targetAppPath, deploymentName, gen2BranchName);
@@ -341,7 +339,7 @@ async function initializeAppFromCLI(params: InitializeAppFromCLIParams): Promise
     await gen2MigrationExecutor.refactor(targetAppPath, gen2StackName);
 
     await git.checkout(targetAppPath, gen2BranchName, false);
-    await runAppScript(targetAppPath, path.join('migration', 'post-refactor.ts'), [targetAppPath]);
+    await runAppScriptIfExists(targetAppPath, path.join('migration', 'post-refactor.ts'), [targetAppPath]);
     await git.commit(targetAppPath, 'chore: post refactor');
 
     await runFrontest(targetAppPath, gen2BranchName);

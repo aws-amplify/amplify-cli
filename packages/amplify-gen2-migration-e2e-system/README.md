@@ -48,9 +48,9 @@ Test scripts run at multiple points to verify that both stacks remain functional
 The system automatically runs app-specific scripts from the `migration/` directory at the
 appropriate points in the workflow. If a script does not exist, the step is silently skipped:
 
-- `migration/post-push.ts` — after `amplify push` (configured via `migration/config.json`)
-- `migration/post-generate.ts` — after `gen2-migration generate`
-- `migration/post-refactor.ts` — after `gen2-migration refactor`
+- `migration/post-push.ts` — after `amplify push` (if the file exists)
+- `migration/post-generate.ts` — after `gen2-migration generate` (if the file exists)
+- `migration/post-refactor.ts` — after `gen2-migration refactor` (if the file exists)
 
 Similarly, `frontest.ts` is run automatically after each deployment if the file exists.
 
@@ -60,17 +60,15 @@ Each app can optionally include a `migration/config.json` to customize the E2E w
 
 ```json
 {
-  "postPush": "migration/post-push.ts",
   "lock": { "skipValidations": true }
 }
 ```
 
-| Field                  | Description                                                       |
-| ---------------------- | ----------------------------------------------------------------- |
-| `postPush`             | Path (relative to app root) to a script run after `amplify push`. |
-| `lock.skipValidations` | Pass `--skip-validations` to `gen2-migration lock`.               |
+| Field                  | Description                                         |
+| ---------------------- | --------------------------------------------------- |
+| `lock.skipValidations` | Pass `--skip-validations` to `gen2-migration lock`. |
 
-If the file does not exist, defaults are used (no post-push script, no skip-validations).
+If the file does not exist, defaults are used.
 
 For details on the app layout, test scripts, and migration scripts, see the [amplify-migration-apps README](../../amplify-migration-apps/README.md).
 
