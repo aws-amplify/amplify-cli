@@ -582,7 +582,7 @@ by the CLI setting that configures them.
 
 - 🟢 **Specify an email verification message**
 
-- ⚠️ **Do you want to override the default password policy for this User Pool**
+- 🟢 **Do you want to override the default password policy for this User Pool**
 
 - ➤ **What attributes are required for signing up**
 
@@ -606,7 +606,7 @@ by the CLI setting that configures them.
 
 - 🟢 **Specify the app's refresh token expiration period (in days)**
 
-- ⚠️ **Do you want to specify the user attributes this app can read and write**
+- 🔴 **Do you want to specify the user attributes this app can read and write**
 
 - ➤ **Do you want to enable any of the following capabilities**
 
