@@ -22,6 +22,11 @@ Each app directory follows this layout:
 
 ```
 <app-name>/
+├── backend/                          # Backend assets (schema, function code, configure.sh)
+├── migration/
+│   ├── post-generate.ts              # Fixups after gen2-migration generate
+│   └── post-refactor.ts              # Fixups after gen2-migration refactor
+├── frontest.ts                       # Self-contained E2E test script
 ├── _snapshot.pre.generate/           # Input for `gen2-migration generate` test (Gen1 app state)
 ├── _snapshot.post.generate/          # Expected output of `gen2-migration generate`
 ├── _snapshot.pre.refactor/           # Input for `gen2-migration refactor` test (CFN templates)
@@ -30,13 +35,46 @@ Each app directory follows this layout:
 ├── .gitignore                        # Git ignore rules
 ├── package.json                      # Standard NodeJS based manifest
 ├── README.md                         # Deployment and migration instructions
-└── ...                               # App-specific source files (schema, configs, etc.)
+└── ...                               # App-specific source files
 ```
 
 The Gen1 Amplify project structure (the `amplify/` directory) lives inside
 `_snapshot.pre.generate/`, not at the top level. The top level only contains
-snapshot directories, the app manifest, and any source files needed for
-deployment (e.g., `schema.graphql`, `configure.sh`).
+snapshot directories, the app manifest, and source files needed for deployment.
+
+### `backend/`
+
+Contains the backend source assets for the app: the GraphQL schema, Lambda function code,
+and a `configure.sh` script that copies them into the Gen1 `amplify/` directory structure.
+The configure script uses `$BASH_SOURCE`-relative paths so it works regardless of the
+caller's working directory.
+
+### `frontest.ts`
+
+A single, self-contained test script that validates a deployed stack. It takes a config
+JSON path as its only argument, making it work for both Gen1 (`src/amplifyconfiguration.json`)
+and Gen2 (`amplify_outputs.json`) configs without any code changes.
+
+The script handles its own Cognito user provisioning via `AdminCreateUser` +
+`AdminSetUserPassword`, then exercises every API, storage, and data operation the app supports.
+
+### `migration/post-generate.ts` and `migration/post-refactor.ts`
+
+Optional scripts that apply app-specific fixups the migration CLI cannot automate. Examples:
+
+- Converting CommonJS Lambda functions to ESM syntax
+- Updating frontend imports from `aws-exports` to `amplify_outputs.json`
+- Setting `branchName` to `sandbox` for DynamoDB table mappings
+- Uncommenting resource names to preserve original Gen1 names after refactor
+
+Both scripts export a function and accept `appPath` as a CLI argument:
+
+```typescript
+export async function postGenerate(appPath: string): Promise<void>;
+export async function postRefactor(appPath: string): Promise<void>;
+```
+
+If a script does not exist for an app, the E2E system silently skips the step.
 
 > Some apps don't have `_snapshot.post.refactor/` because refactor doesn't work
 > for them yet.
@@ -349,3 +387,30 @@ Always review the diff after updating to make sure the changes are intentional.
 > because it detects the diff before writing the updated files. Run the tests a second time
 > (without `--updateSnapshot`) to verify the snapshots are now correct.
 
+
+## Integration Testing (E2E)
+
+The [E2E system](../packages/amplify-gen2-migration-e2e-system/) automates the full migration
+workflow for a single app: Gen1 deploy, migration, Gen2 deploy, and validation at each stage.
+It deploys real AWS resources, so you need valid credentials.
+
+```bash
+# Build the Amplify CLI (if using the development binary)
+cd packages/amplify-cli && yarn build
+
+# Optionally point to your dev CLI (falls back to monorepo build, then global install)
+export AMPLIFY_PATH=$(pwd)/.bin/amplify-dev
+
+# Run the full migration for a specific app
+cd packages/amplify-gen2-migration-e2e-system
+npx tsx src/cli.ts --app project-boards --profile default
+```
+
+This will:
+1. Deploy the Gen1 app via `amplify push`
+2. Run `frontest.ts` to validate the Gen1 stack
+3. Execute the full `gen2-migration` workflow (assess, lock, generate, deploy, refactor, redeploy)
+4. Run `frontest.ts` against both Gen1 and Gen2 configs after each deployment
+
+See the [E2E system README](../packages/amplify-gen2-migration-e2e-system/README.md) for
+CLI options and troubleshooting.

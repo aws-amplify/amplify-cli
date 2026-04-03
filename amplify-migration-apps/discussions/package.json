@@ -10,13 +10,12 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "configure": "./configure.sh",
-    "configure-schema": "./configure-schema.sh",
-    "configure-functions": "./configure-functions.sh",
+    "configure": "./backend/configure.sh",
     "sanitize": "tsx ../sanitize.ts",
     "typecheck": "cd _snapshot.post.generate/amplify && npx tsc --noEmit"
   },
   "devDependencies": {
+    "@aws-sdk/client-cognito-identity-provider": "^3.936.0",
     "vite": "^7.2.2"
   },
   "dependencies": {

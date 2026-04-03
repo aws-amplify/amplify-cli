@@ -38,9 +38,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@amplify-migration-apps/discussions@workspace:amplify-migration-apps/discussions/_snapshot.post.generate":
+"@amplify-migration-apps/discussions-snapshot@workspace:amplify-migration-apps/discussions/_snapshot.post.generate":
   version: 0.0.0-use.local
-  resolution: "@amplify-migration-apps/discussions@workspace:amplify-migration-apps/discussions/_snapshot.post.generate"
+  resolution: "@amplify-migration-apps/discussions-snapshot@workspace:amplify-migration-apps/discussions/_snapshot.post.generate"
   dependencies:
     "@aws-amplify/backend": ^1.18.0
     "@aws-amplify/backend-cli": ^1.8.0
@@ -56,6 +56,18 @@ __metadata:
     constructs: ^10.0.0
     esbuild: ^0.27.0
     tsx: ^4.20.6
+    vite: ^7.2.2
+  languageName: unknown
+  linkType: soft
+
+"@amplify-migration-apps/discussions@workspace:amplify-migration-apps/discussions":
+  version: 0.0.0-use.local
+  resolution: "@amplify-migration-apps/discussions@workspace:amplify-migration-apps/discussions"
+  dependencies:
+    "@aws-sdk/client-cognito-identity-provider": ^3.936.0
+    "@aws-sdk/client-dynamodb": ^3.936.0
+    "@aws-sdk/lib-dynamodb": ^3.936.0
+    aws-amplify: ^6.15.8
     vite: ^7.2.2
   languageName: unknown
   linkType: soft
