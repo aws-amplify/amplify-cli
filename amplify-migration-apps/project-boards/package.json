@@ -13,7 +13,9 @@
     "preview": "vite preview",
     "configure": "./backend/configure.sh",
     "sanitize": "tsx ../sanitize.ts",
-    "typecheck": "cd _snapshot.post.generate/amplify && npx tsc --noEmit"
+    "typecheck": "cd _snapshot.post.generate/amplify && npx tsc --noEmit",
+    "test:gen1": "APP_CONFIG_PATH=${APP_CONFIG_PATH:-src/amplifyconfiguration.json} NODE_OPTIONS='--experimental-vm-modules' jest --forceExit --detectOpenHandles --verbose",
+    "test:gen2": "APP_CONFIG_PATH=${APP_CONFIG_PATH:-amplify_outputs.json} NODE_OPTIONS='--experimental-vm-modules' jest --forceExit --detectOpenHandles --verbose"
   },
   "dependencies": {
     "@aws-amplify/ui-react": "^6.13.0",
@@ -24,6 +26,9 @@
   },
   "devDependencies": {
     "@aws-sdk/client-cognito-identity-provider": "^3.936.0",
+    "@types/jest": "^29.5.14",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.3.4",
     "@eslint/js": "^9.36.0",
     "@types/node": "^24.6.0",
     "@types/react": "^19.1.16",

@@ -28,8 +28,10 @@ if (typeof globalThis.crypto === 'undefined') {
   (globalThis as any).crypto = webcrypto;
 }
 
-const CONFIG_PATH =
-  '/var/folders/h1/jwrpxx4x66s6kz1qvl16p3h00000gq/T/amplify-gen2-migration-e2e-system/output-apps/fitnesstra2604032303/src/amplifyconfiguration.json';
+const CONFIG_PATH = process.env.APP_CONFIG_PATH;
+if (!CONFIG_PATH) {
+  throw new Error('APP_CONFIG_PATH environment variable is required');
+}
 
 const config = JSON.parse(fs.readFileSync(CONFIG_PATH, { encoding: 'utf-8' }));
 configureAmplify(config);

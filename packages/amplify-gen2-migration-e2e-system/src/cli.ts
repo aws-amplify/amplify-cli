@@ -55,7 +55,7 @@ async function main(): Promise<void> {
   await app.postPush();
   await app.gitCommit('chore: post push');
 
-  await app.frontestGen1();
+  await app.testGen1();
 
   await app.assess();
   await app.lock();
@@ -66,8 +66,8 @@ async function main(): Promise<void> {
   const gen2StackName = await app.deployGen2Sandbox();
   await app.gitCommit('chore: post generate');
 
-  await app.frontestGen1();
-  await app.frontestGen2();
+  await app.testGen1();
+  await app.testGen2();
 
   await app.gitCheckoutGen1();
   await app.refactor(gen2StackName);
@@ -75,13 +75,13 @@ async function main(): Promise<void> {
   await app.postRefactor();
   await app.gitCommit('chore: post refactor');
 
-  await app.frontestGen1();
-  await app.frontestGen2();
+  await app.testGen1();
+  await app.testGen2();
 
   await app.deployGen2Sandbox();
 
-  await app.frontestGen1();
-  await app.frontestGen2();
+  await app.testGen1();
+  await app.testGen2();
 
   app.logger.info(`Migration completed successfully`);
 }

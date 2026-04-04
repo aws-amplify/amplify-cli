@@ -13,7 +13,9 @@
     "preview": "vite preview",
     "configure": "./backend/configure.sh",
     "sanitize": "tsx ../sanitize.ts",
-    "typecheck": "cd _snapshot.post.generate/amplify && npx tsc --noEmit"
+    "typecheck": "cd _snapshot.post.generate/amplify && npx tsc --noEmit",
+    "test:gen1": "APP_CONFIG_PATH=${APP_CONFIG_PATH:-src/amplifyconfiguration.json} NODE_OPTIONS='--experimental-vm-modules' jest --forceExit --detectOpenHandles --verbose",
+    "test:gen2": "APP_CONFIG_PATH=${APP_CONFIG_PATH:-amplify_outputs.json} NODE_OPTIONS='--experimental-vm-modules' jest --forceExit --detectOpenHandles --verbose"
   },
   "dependencies": {
     "@aws-amplify/storage": "^6.10.1",
@@ -37,6 +39,9 @@
     "globals": "^16.5.0",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.46.4",
-    "vite": "^7.2.4"
+    "vite": "^7.2.4",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.3.4",
+    "@types/jest": "^29.5.14"
   }
 }

@@ -8,7 +8,6 @@ import { Git } from './git';
 
 const MIGRATION_TARGET_DIR = path.join(os.tmpdir(), 'amplify-gen2-migration-e2e-system', 'output-apps');
 const MIGRATION_APPS_DIR = path.join(__dirname, '..', '..', '..', '..', 'amplify-migration-apps');
-const FRONTEST_SCRIPT = 'frontest.ts';
 
 interface MigrationConfig {
   /**
@@ -221,19 +220,19 @@ export class App {
   // ============================================================
 
   /**
-   * Run the frontest script against the Gen1 config.
+   * Run the Jest tests against the Gen1 config.
    */
-  public async frontestGen1(): Promise<void> {
+  public async testGen1(): Promise<void> {
     await this.gitCheckoutGen1();
-    await this.runScriptIfExists(FRONTEST_SCRIPT, [path.join('src', 'amplifyconfiguration.json')]);
+    await this.runNpmScript('test:gen1');
   }
 
   /**
-   * Run the frontest script against the Gen2 config.
+   * Run the Jest tests against the Gen2 config.
    */
-  public async frontestGen2(): Promise<void> {
+  public async testGen2(): Promise<void> {
     await this.gitCheckoutGen2();
-    await this.runScriptIfExists(FRONTEST_SCRIPT, ['amplify_outputs.json']);
+    await this.runNpmScript('test:gen2');
   }
 
   /**
@@ -363,6 +362,24 @@ export class App {
       throw new Error(`${scriptPath} failed with exit code ${result.exitCode}`);
     }
     this.logger.info(`${scriptPath} completed`);
+  }
+
+  /**
+   * Run an npm script defined in the app's package.json.
+   */
+  private async runNpmScript(scriptName: string): Promise<void> {
+    this.logger.info(`Running npm run ${scriptName}...`);
+    const result = await execa('npm', ['run', scriptName], {
+      cwd: this.targetAppPath,
+      stdio: 'inherit',
+      reject: false,
+      env: { ...process.env, AWS_SDK_LOAD_CONFIG: '1' },
+    });
+
+    if (result.exitCode !== 0) {
+      throw new Error(`npm run ${scriptName} failed with exit code ${result.exitCode}`);
+    }
+    this.logger.info(`npm run ${scriptName} completed`);
   }
 
   private async findGen2RootStack(stackPrefix: string): Promise<string> {

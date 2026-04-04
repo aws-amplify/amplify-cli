@@ -18,7 +18,6 @@ const config: Config = {
     }],
   },
   testTimeout: 30_000,
-  // Run test files sequentially — they share a single Cognito user
   maxWorkers: 1,
 };
 
