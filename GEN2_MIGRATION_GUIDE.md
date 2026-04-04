@@ -882,7 +882,8 @@ by the CLI setting that configures them.
 
   - 🟢 Do you want to add a Lambda Trigger for your S3 Bucket
 
-- 🟢 NoSQL Database
+- 🟢 **NoSQL Database**
+
   - 🟢 `Do you want to add a sort key to your table`
   - 🟢 `Do you want to add global secondary indexes to your table`
   - 🟢 `Do you want to add a sort key to your global secondary index`
