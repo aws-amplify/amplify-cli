@@ -154,6 +154,8 @@ able to adapt them to fit your setup.
 > - [Feature Coverage](#feature-coverage)
 > - [Limitations](#limitations)
 > - [Pre Migration Operations](#pre-migration-operations)
+>
+> You can also run the [assess](#1-assess) command to programmatically evaluate your app's migration readiness.
 
 First obtain a fresh and up-to-date local copy of your Amplify Gen1 environment and install the experimental CLI package:
 
@@ -165,7 +167,77 @@ npm install --no-save @aws-amplify/cli-internal-gen2-migration-experimental-alph
 > Migration is still in early development stages and is therefore versioned with a `0.x` and is not yet
 > integrated into the standard Gen1 CLI.
 
-### 1. Lock
+### 1. Assess
+
+Before starting the migration, you can evaluate whether your Gen1 environment is ready by running:
+
+```bash
+npx amplify gen2-migration assess
+```
+
+This command is read-only and has no side effects. It discovers all resources in your Gen1 environment
+and produces a report showing migration support for each resource across the `generate` and `refactor` phases.
+
+The output contains two tables:
+
+- **Resources** — lists each discovered resource (category, service, name) with its generate and refactor support status.
+- **Features** — lists detected sub-features (e.g. `override.ts` files, custom IAM policies) that require manual attention.
+
+Support indicators:
+
+| Symbol | Meaning                                      |
+| ------ | -------------------------------------------- |
+| ✔      | Supported                                    |
+| ✘      | Unsupported (includes a note explaining why) |
+| —      | Not applicable for this phase                |
+
+If any resource or feature shows ✘ for a phase you intend to run, review the [Feature Coverage](#feature-coverage)
+section for workarounds or manual steps before proceeding.
+
+#### Example Report
+
+Running `assess` on an app with auth, a GraphQL API with an override, storage, and a Lambda function
+with custom IAM policies produces a report like this:
+
+```
+Assessment for "my-app" (env: main)
+
+Resources
+
+┌───────────┬─────────────────────────┬──────────────┬──────────┬──────────┐
+│ Category  │ Service                 │ Resource     │ Generate │ Refactor │
+├───────────┼─────────────────────────┼──────────────┼──────────┼──────────┤
+│ auth      │ Cognito                 │ myappAuth    │ ✔        │ ✔        │
+│ auth      │ Cognito-UserPool-Groups │ userPoolGrps │ ✔        │ ✔        │
+│ api       │ AppSync                 │ myappApi     │ ✔        │ —        │
+│ storage   │ S3                      │ myappBucket  │ ✔        │ ✔        │
+│ function  │ Lambda                  │ processOrder │ ✔        │ ✔        │
+└───────────┴─────────────────────────┴──────────────┴──────────┴──────────┘
+
+Features
+
+┌─────────────────┬─────────────────────────────────────────────────┬─────────────────────────────────┬──────────┐
+│ Name            │ Path                                            │ Generate                        │ Refactor │
+├─────────────────┼─────────────────────────────────────────────────┼─────────────────────────────────┼──────────┤
+│ overrides       │ api/myappApi/override.ts                        │ ✘ requires manual code changes  │ —        │
+│ custom-policies │ function/processOrder/custom-policies.json      │ ✘ requires manual code changes  │ —        │
+└─────────────────┴─────────────────────────────────────────────────┴─────────────────────────────────┴──────────┘
+```
+
+In this example, all resources are supported, but two features are flagged:
+
+- The GraphQL API has an `override.ts` file — the migration tool cannot automatically translate overrides, so you'll need to manually apply those customizations to the generated Gen2 CDK code.
+- The Lambda function has custom IAM policies — these need to be manually added to the function's resource definition in the Gen2 code.
+
+Both features show `—` for refactor because they only affect code generation.
+
+> [!NOTE]
+> The `generate` and `refactor` steps also run this assessment as part of their validation phase
+> and will fail if any entry is unsupported. Each step runs additional validations as well — see
+> the validation tables in each step section. You can bypass validations with `--skip-validations`,
+> or run only the validations without executing the step using `--validations-only`.
+
+### 2. Lock
 
 During the migration period your Gen1 environment should not undergo any changes; otherwise we run
 the risk of code-generating an incomplete application and possibly encountering unexpected migration failures.
@@ -175,7 +247,14 @@ To achieve this, run the following:
 npx amplify gen2-migration lock
 ```
 
-This command will first perform a few validations to analyze if your Gen1 environment is in a
+#### Validations
+
+| Validation         | Description                                                                                           |
+| ------------------ | ----------------------------------------------------------------------------------------------------- |
+| Environment Status | Verifies the root CloudFormation stack is in a stable state (`UPDATE_COMPLETE` or `CREATE_COMPLETE`). |
+| Drift              | Detects drift between your local project and the deployed CloudFormation stacks.                      |
+
+This command will first perform the above validations to analyze if your Gen1 environment is in a
 healthy state and proceed to lock your Gen1 environment by attaching a restrictive IAM policy on the root stack.
 
 ```json
@@ -187,7 +266,7 @@ You will need to remove this policy from the stack if you'd like to push updates
 > [!TIP]
 > It is also advisable to disable any automatic pipelines that deploy to your Gen1 environment.
 
-### 2. Generate
+### 3. Generate
 
 Next, generate your Gen2 definition files by running the following:
 
@@ -195,6 +274,14 @@ Next, generate your Gen2 definition files by running the following:
 git checkout -b gen2-main
 npx amplify gen2-migration generate
 ```
+
+#### Validations
+
+| Validation        | Description                                                                                              |
+| ----------------- | -------------------------------------------------------------------------------------------------------- |
+| Lock Status       | Verifies the Gen1 environment is locked (deny-all stack policy is in place).                             |
+| Working Directory | Verifies the git working directory has no uncommitted changes.                                           |
+| Assessment        | Runs the resource and feature assessment for the `generate` phase and fails if any entry is unsupported. |
 
 This command will override your local `./amplify` directory with Gen2 definition files. Once successful,
 perform the following manual edits:
@@ -388,7 +475,7 @@ type Query {
 
 Your schema is located in `./amplify/data/resource.ts`.
 
-### 3. Deploy
+### 4. Deploy
 
 Deploying the generated Gen2 application is done via [fullstack-branch-deployments](https://docs.amplify.aws/flutter/deploy-and-host/fullstack-branching/branch-deployments/).
 First, push the code:
@@ -421,7 +508,7 @@ the application has access only to the DynamoDB data from your Gen1 environment.
 however reuse other stateful resources such as user pools.** To grant it access to all
 stateful resources, a `refactor` is required.
 
-### 4. Refactor
+### 5. Refactor
 
 > [!CAUTION]
 > The `refactor` operation is currently not reversible. If it fails or
@@ -429,7 +516,16 @@ stateful resources, a `refactor` is required.
 > run it only on environments you can afford to delete**.
 
 Refactoring is the process of updating the underlying CloudFormation stacks of both your Gen1 and
-Gen2 applications such that all stateful resources are reused across both apps. In order to refactor,
+Gen2 applications such that all stateful resources are reused across both apps.
+
+#### Validations
+
+| Validation  | Description                                                                                              |
+| ----------- | -------------------------------------------------------------------------------------------------------- |
+| Lock Status | Verifies the Gen1 environment is locked (deny-all stack policy is in place).                             |
+| Assessment  | Runs the resource and feature assessment for the `refactor` phase and fails if any entry is unsupported. |
+
+In order to refactor,
 we first need to find the name of the Gen2 root CloudFormation stack:
 
 1. Login to the AWS CloudFormation console.
