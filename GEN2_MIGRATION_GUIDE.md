@@ -15,6 +15,7 @@ Following document describes how to migrate your Gen1 backend environment to a n
 - [Overall Approach](#overall-approach)
 - [Frontend Migration](#frontend-migration)
 - [Prerequisites](#prerequisites)
+- [Modernization](#modernization)
 - [Assumptions](#assumptions)
 - [Step By Step](#step-by-step)
 - [Feature Coverage](#feature-coverage)
@@ -167,6 +168,54 @@ To workaround this issue, you must pre allow the Gen2 `AuthRole` by [configuring
 
 Once added, redeploy the app by running `amplify push`.
 
+## Modernization
+
+The migration tool assumes a modern Gen1 deployment. Outdated packages in your Gen1 app can also
+cause peer dependency conflicts during `npm install` after `generate`. We recommend upgrading the
+following before starting migration.
+
+### Amplify CLI
+
+Deploy your Gen1 environment with the latest Gen1 CLI major version (v14) before migrating.
+The migration tool relies on CloudFormation template structures and metadata produced by
+recent CLI versions.
+
+```bash
+npm install -g @aws-amplify/cli@14
+amplify push
+```
+
+### Node.js
+
+`aws-cdk-lib` requires Node.js >= 20. Ensure your local environment and your CI/CD pipeline
+are running Node.js 20 or later.
+
+### `aws-amplify`
+
+Gen2 depends on `@aws-amplify/backend-cli`, which has a peer dependency on `@aws-sdk/types@^3.734.0`.
+Versions of `aws-amplify` below `6.16.2` ship with an older `@aws-sdk/types` that does not satisfy
+this requirement, causing peer dependency warnings.
+
+Upgrade to `aws-amplify@^6.16.2` or later. If you are on v5, this is a breaking change — see the
+[v5 to v6 migration guide](https://docs.amplify.aws/react/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/).
+
+### `@aws-amplify/ui-react`
+
+If your app uses `@aws-amplify/ui-react`, upgrade to `^6`. Recent versions require
+`aws-amplify@^6.14.3` as a peer dependency.
+
+### TypeScript
+
+Gen2 generated code uses modern TypeScript features. If your project includes TypeScript,
+upgrade to `^5.0.0`.
+
+### Lambda Function `@aws-sdk` Dependencies
+
+Gen1 Lambda functions may have their own `@aws-sdk/client-*` packages in their `package.json`.
+During `generate`, these are merged into the root `package.json` and can conflict with the
+newer `@aws-sdk` versions required by Gen2. Upgrade any `@aws-sdk` dependencies in your
+function source directories to `^3.734.0` or later.
+
 ## Assumptions
 
 These are a set of assumptions the guide makes in order to provide more readable instructions. You should be
@@ -182,6 +231,7 @@ able to adapt them to fit your setup.
 > - [Feature Coverage](#feature-coverage)
 > - [Limitations](#limitations)
 > - [Prerequisites](#prerequisites)
+> - [Modernization](#modernization)
 
 First obtain a fresh and up-to-date local copy of your Amplify Gen1 environment and install the experimental CLI package:
 
@@ -316,7 +366,15 @@ npx amplify gen2-migration generate
 | Assessment        | Runs the resource and feature assessment for the `generate` step and fails if any entry is unsupported. |
 
 This command will override your local `./amplify` directory with Gen2 definition files. Once successful,
-perform the following manual edits:
+delete `node_modules` and your lock file before installing dependencies:
+
+```bash
+rm -rf node_modules package-lock.json
+npm install
+```
+
+This avoids stale resolution artifacts from the Gen1 dependency tree that can cause
+peer dependency conflicts. Then, perform the following manual edits:
 
 #### Post Generate | Frontend Config
 
