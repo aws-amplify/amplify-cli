@@ -19,10 +19,9 @@ Following document describes how to migrate your Gen1 backend environment to a n
 - [Step By Step](#step-by-step)
 - [Feature Coverage](#feature-coverage)
 - [Limitations](#limitations)
-- [Pre Migration Operations](#pre-migration-operations)
 - [Example Apps](#example-apps)
 - [Feedback](#feedback)
-- [Known Issues](https://github.com/aws-amplify/amplify-cli/issues?q=is%3Aissue%20state%3Aopen%20label%3Agen2-migration)
+- [Known Issues](https://github.com/aws-amplify/amplify-cli/issues?q=is%3Aissue%20state%3Aopen%20label%3Agen2-migration%20type%3ABug)
 
 ---
 
@@ -116,28 +115,57 @@ Amplify client libraries will detect the different structure and adjust itself a
 
 ## Prerequisites
 
-Following are prerequisites the beta version of the tool relies. Some or all will be removed in the stable version.
+### AWS Credentials
 
-- You have a `default` AWS profile configured with an `AdministratorAccess` policy.
+The migration tool requires the following API actions in addition to the standard Amplify CLI permissions:
 
-  `+` _~/.aws/credentials_
+- `cloudformation:CreateStackRefactor`
+- `cloudformation:DescribeStackRefactor`
+- `cloudformation:ExecuteStackRefactor`
+- `cloudformation:GetStackPolicy`
+- `cloudformation:SetStackPolicy`
+- `cloudformation:DeleteChangeSet`
+- `dynamodb:UpdateTable`
+- `s3:GetBucketVersioning`
+- `s3:GetEncryptionConfiguration`
 
-  ```console
-  [default]
-  aws_access_key_id = <access-key-id>
-  aws_secret_access_key = <secret-access-key>
-  aws_session_token = <session-token>
-  ```
+> [!NOTE]
+> The managed `AdministratorAccess-Amplify` policy does not include these actions.
 
-  `+` _~/.aws/config_
+### CDK Readiness
 
-  ```console
-  [profile default]
-  region = <region>
-  ```
+Since Gen2 uses CDK under the hood, your account and region must be [bootstrapped with CDK](https://docs.aws.amazon.com/cdk/v2/guide/bootstrapping-env.html)
+in order for the Gen2 deployment to succeed.
 
-- Since Gen2 uses CDK under the hood, your account and region must be [bootstrapped with CDK](https://docs.aws.amazon.com/cdk/v2/guide/bootstrapping-env.html)
-  in order for the Gen2 deployment to succeed.
+### GraphQL Types Protected by the `iam` Auth Provider
+
+```graphql
+type Todo @model @auth(rules: [{ allow: private, provider: iam }]) {
+  id: ID!
+  name: String!
+  description: String
+}
+```
+
+Clients access such models using the `AuthRole` configured on the identity pool.
+After the refactor operation, the role is updated to point to the Gen2 role, which doesn't
+allow access to the Gen1 AppSync API. This means that after refactor your **Gen1** environment will
+lose IAM access to the API (but **Gen2** will work correctly).
+
+To workaround this issue, you must pre allow the Gen2 `AuthRole` by [configuring a custom admin role](https://docs.amplify.aws/gen1/javascript/build-a-backend/graphqlapi/customize-authorization-rules/#use-iam-authorization-within-the-appsync-console) on the Gen1 API.
+
+`+ ./amplify/api/<api-name>/custom-roles.json`
+
+```json
+{
+  "adminRoleNames": ["amplify-${appId}"]
+}
+```
+
+> Where `${appId}` should be replaced with the value of the Gen1 application id. This role name follows
+> the Gen2 `AuthRole` naming pattern and therefore allows access to **any** Gen2 environment (branch).
+
+Once added, redeploy the app by running `amplify push`.
 
 ## Assumptions
 
@@ -153,7 +181,7 @@ able to adapt them to fit your setup.
 >
 > - [Feature Coverage](#feature-coverage)
 > - [Limitations](#limitations)
-> - [Pre Migration Operations](#pre-migration-operations)
+> - [Prerequisites](#prerequisites)
 
 First obtain a fresh and up-to-date local copy of your Amplify Gen1 environment and install the experimental CLI package:
 
@@ -963,38 +991,6 @@ by the CLI setting that configures them.
   You may still follow the guide until the `generate` step.
 - You cannot migrate multiple environments of the same app at the same time.
 - If you have a function accessing a DynamoDB **model** table, the model name must be `PascalCased` (e.g `Comment` - not `comment`)
-
-# Pre Migration Operations
-
-## GraphQL types protected by the `iam` auth provider
-
-```graphql
-type Todo @model @auth(rules: [{ allow: private, provider: iam }]) {
-  id: ID!
-  name: String!
-  description: String
-}
-```
-
-Clients access such models using the `AuthRole` configured on the identity pool.
-After the refactor operation, the role is updated to point to the Gen2 role, which doesn't
-allow access to the Gen1 AppSync API. This means that after refactor your **Gen1** environment will
-lose IAM access to the API (but **Gen2** will work correctly).
-
-To workaround this issue, you must pre allow the Gen2 `AuthRole` by [configuring a custom admin role](https://docs.amplify.aws/gen1/javascript/build-a-backend/graphqlapi/customize-authorization-rules/#use-iam-authorization-within-the-appsync-console) on the Gen1 API.
-
-`+ ./amplify/api/<api-name>/custom-roles.json`
-
-```json
-{
-  "adminRoleNames": ["amplify-${appId}"]
-}
-```
-
-> Where `${appId}` should be replaced with the value of the Gen1 application id. This role name follows
-> the Gen2 `AuthRole` naming pattern and therefore allows access to **any** Gen2 environment (branch).
-
-Once added, redeploy the app by running `amplify push`.
 
 # Example Apps
 
