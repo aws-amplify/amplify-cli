@@ -219,47 +219,37 @@ export class App {
    * Run the frontest script against the Gen1 config.
    */
   public async frontestGen1(): Promise<void> {
-    this.logger.info('Running frontest against Gen1 config...');
     await git.checkout(this.targetAppPath, 'main', false);
     await this.runScriptIfExists(FRONTEST_SCRIPT, [path.join('src', 'amplifyconfiguration.json')]);
-    this.logger.info('frontestGen1 completed');
   }
 
   /**
    * Run the frontest script against the Gen2 config.
    */
   public async frontestGen2(): Promise<void> {
-    this.logger.info('Running frontest against Gen2 config...');
     await git.checkout(this.targetAppPath, this.gen2BranchName, false);
     await this.runScriptIfExists(FRONTEST_SCRIPT, ['amplify_outputs.json']);
-    this.logger.info('frontestGen2 completed');
   }
 
   /**
    * Run the post-push script.
    */
   public async postPush(): Promise<void> {
-    this.logger.info('Running post-push...');
     await this.runScriptIfExists(path.join('migration', 'post-push.ts'), [this.targetAppPath]);
-    this.logger.info('post-push completed');
   }
 
   /**
    * Run the post-generate script.
    */
   public async postGenerate(): Promise<void> {
-    this.logger.info('Running post-generate...');
     await this.runScriptIfExists(path.join('migration', 'post-generate.ts'), [this.targetAppPath]);
-    this.logger.info('post-generate completed');
   }
 
   /**
    * Run the post-refactor script.
    */
   public async postRefactor(): Promise<void> {
-    this.logger.info('Running post-refactor...');
     await this.runScriptIfExists(path.join('migration', 'post-refactor.ts'), [this.targetAppPath]);
-    this.logger.info('post-refactor completed');
   }
 
   // ============================================================
@@ -344,8 +334,12 @@ export class App {
   }
 
   private async runScriptIfExists(scriptPath: string, args: string[]): Promise<void> {
-    if (!fs.existsSync(path.join(this.targetAppPath, scriptPath))) return;
+    if (!fs.existsSync(path.join(this.targetAppPath, scriptPath))) {
+      this.logger.info(`Skipping ${scriptPath} (not found)`);
+      return;
+    }
 
+    this.logger.info(`Running ${scriptPath} ${args.join(' ')}...`);
     const result = await execa('npx', ['tsx', scriptPath, ...args], {
       cwd: this.targetAppPath,
       stdio: 'inherit',
@@ -356,6 +350,7 @@ export class App {
     if (result.exitCode !== 0) {
       throw new Error(`${scriptPath} failed with exit code ${result.exitCode}`);
     }
+    this.logger.info(`${scriptPath} completed`);
   }
 
   private async findGen2RootStack(stackPrefix: string): Promise<string> {
