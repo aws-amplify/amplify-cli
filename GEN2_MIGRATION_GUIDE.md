@@ -3,15 +3,14 @@
 Following document describes how to migrate your Gen1 backend environment to a new Gen2 backend application.
 
 > [!CAUTION]
-> The tools presented here are in early stages of development and **SHOULD NOT** be 
-> executed on any production or mission critical environments. Only run it for testing 
-purposes on environments you can afford to delete. 
+> The tools presented here are in early stages of development and **SHOULD NOT** be
+> executed on any production or mission critical environments. Only run it for testing
+> purposes on environments you can afford to delete.
 
 > [!NOTE]
 > Not all Gen1 apps are supported for migration. Refer to the rest of this document to determine if your app can be migrated.
 
-<!-- BEGIN TOC -->
---------------
+## <!-- BEGIN TOC -->
 
 - [Overall Approach](#overall-approach)
 - [Frontend Migration](#frontend-migration)
@@ -25,9 +24,9 @@ purposes on environments you can afford to delete.
 - [Feedback](#feedback)
 - [Known Issues](https://github.com/aws-amplify/amplify-cli/issues?q=is%3Aissue%20state%3Aopen%20label%3Agen2-migration)
 
---------------
-<!-- END TOC -->
+---
 
+<!-- END TOC -->
 
 ## Overall Approach
 
@@ -35,14 +34,15 @@ Migration to Gen2 is done in a (partial) blue/green deployment approach:
 
 1. Generate the necessary Gen2 definition files based on your deployed Gen1 environment.
 2. Deploy the new Gen2 code to create a new environment (in Gen2 they are referred to as branches).
-3. Refactor your underlying CloudFormation stacks such that any Gen1 stateful resource will be managed by the new Gen2 deployment. 
+3. Refactor your underlying CloudFormation stacks such that any Gen1 stateful resource will be managed by the new Gen2 deployment.
 
 > [!NOTE]
-> - Not all Gen1 features are natively supported in Gen2; in those cases, the migration tool will generate AWS CDK code to 
-> configure the appropriate resource settings. 
+>
+> - Not all Gen1 features are natively supported in Gen2; in those cases, the migration tool will generate AWS CDK code to
+>   configure the appropriate resource settings.
 > - Not everything can be codegenerated, you will need to perform some manual edits as well.
 
-An amplify backend environment consists of collection of _Stateless_ and _Statefull_ resources. Each group undergoes 
+An amplify backend environment consists of collection of _Stateless_ and _Statefull_ resources. Each group undergoes
 a different process during migration.
 
 ### Stateless Resources
@@ -55,7 +55,7 @@ Stateless resources are ones that don't store any user data. They include:
 - IAM Roles & Policies
 - ...
 
-Deploying the Gen2 code will create new instances of these resources, which will eventually be used instead of the Gen1 resources. 
+Deploying the Gen2 code will create new instances of these resources, which will eventually be used instead of the Gen1 resources.
 These resources are untouched during the refactoring phase.
 
 ### Statefull Resources
@@ -68,22 +68,22 @@ Stateful resources are ones that store user data. They include:
 - Cognito Identity Pool
 - ...
 
-Deploying the Gen2 code will create new empty instances of these resources and connect them to the new stateless resources. 
-This allows you to test your Gen2 application functionality in isolation from the Gen1 environment. Once you are satisfied 
-the Gen2 application works correctly, the refactoring phase will delete them and replace with your Gen1 
+Deploying the Gen2 code will create new empty instances of these resources and connect them to the new stateless resources.
+This allows you to test your Gen2 application functionality in isolation from the Gen1 environment. Once you are satisfied
+the Gen2 application works correctly, the refactoring phase will delete them and replace with your Gen1
 stateful resources. Your Gen2 application will now share and access all the Gen1 data.
 
 > [!NOTE]
-> DynamoDB tables that host your models are not cloned as part of the Gen2 deployment and therefore do not participate in the 
+> DynamoDB tables that host your models are not cloned as part of the Gen2 deployment and therefore do not participate in the
 > refactoring phase. **This means that your Gen2 application will have access to the Gen1 model data immediately after deployment.**
 
---------------
+---
 
 The following diagram describes the workflow and resource state in every step during migration.
 
 ![](./migration-guide-images/workflow.png)
 
-After completing this process you will have 2 functionally equivalent amplify applications that access the same data. Note that 
+After completing this process you will have 2 functionally equivalent amplify applications that access the same data. Note that
 you will no longer be able to update your Gen1 environment. To continue evolving your application, push updates to the Gen2 code.
 
 ## Frontend Migration
@@ -95,14 +95,14 @@ import amplifyconfig from './amplifyconfiguration.json';
 Amplify.configure(amplifyconfig);
 ```
 
-All values in this file (e.g AppSync endpoint URLs, User Pool IDs, etc...) remain valid and active throughout the 
-entire migration process. This means that Gen1 frontends continue to work without any change. The following diagram 
+All values in this file (e.g AppSync endpoint URLs, User Pool IDs, etc...) remain valid and active throughout the
+entire migration process. This means that Gen1 frontends continue to work without any change. The following diagram
 describes how existing frontend applications interact with your backend resources post migration:
 
 <img width="320" height="250" src="./migration-guide-images/gen1-frontend-post-migration.png" />
 
-Once you are satisfied the Gen2 application works correctly, you will publish a new version of 
-your frontend that connects to the Gen2 stateless resources. Note that in Gen2, the connecting file has a different 
+Once you are satisfied the Gen2 application works correctly, you will publish a new version of
+your frontend that connects to the Gen2 stateless resources. Note that in Gen2, the connecting file has a different
 structure and is called `amplify_outputs.json`, you'll need to edit your code. For example:
 
 ```ts
@@ -114,32 +114,34 @@ Amplify client libraries will detect the different structure and adjust itself a
 
 <img width="380" height="250" src="./migration-guide-images/two-frontends-post-migration.png" />
 
-## Prerequisites 
+## Prerequisites
 
 Following are prerequisites the beta version of the tool relies. Some or all will be removed in the stable version.
 
 - You have a `default` AWS profile configured with an `AdministratorAccess` policy.
 
-    `+` _~/.aws/credentials_
-    ```console
-    [default]
-    aws_access_key_id = <access-key-id>
-    aws_secret_access_key = <secret-access-key>
-    aws_session_token = <session-token>
-    ```
+  `+` _~/.aws/credentials_
 
-    `+` _~/.aws/config_
-    ```console
-    [profile default]
-    region = <region>
-    ```
+  ```console
+  [default]
+  aws_access_key_id = <access-key-id>
+  aws_secret_access_key = <secret-access-key>
+  aws_session_token = <session-token>
+  ```
 
-- Since Gen2 uses CDK under the hood, your account and region must be [bootstrapped with CDK](https://docs.aws.amazon.com/cdk/v2/guide/bootstrapping-env.html) 
-in order for the Gen2 deployment to succeed.
+  `+` _~/.aws/config_
+
+  ```console
+  [profile default]
+  region = <region>
+  ```
+
+- Since Gen2 uses CDK under the hood, your account and region must be [bootstrapped with CDK](https://docs.aws.amazon.com/cdk/v2/guide/bootstrapping-env.html)
+  in order for the Gen2 deployment to succeed.
 
 ## Assumptions
 
-These are a set of assumptions the guide makes in order to provide more readable instructions. You should be 
+These are a set of assumptions the guide makes in order to provide more readable instructions. You should be
 able to adapt them to fit your setup.
 
 - Your Gen1 environment is stored in the `main` branch of a `GitHub` repository.
@@ -160,24 +162,24 @@ npm install --no-save @aws-amplify/cli-internal-gen2-migration-experimental-alph
 ```
 
 > [!NOTE]  
-> Migration is still in early development stages and is therefore versioned with a `0.x` and is not yet 
-> integrated into the standard Gen1 CLI. 
+> Migration is still in early development stages and is therefore versioned with a `0.x` and is not yet
+> integrated into the standard Gen1 CLI.
 
 ### 1. Lock
 
-During the migration period your Gen1 environment should not undergo any changes; otherwise we run 
-the risk of code-generating an incomplete application and possibly encountering unexpected migration failures. 
+During the migration period your Gen1 environment should not undergo any changes; otherwise we run
+the risk of code-generating an incomplete application and possibly encountering unexpected migration failures.
 To achieve this, run the following:
 
 ```bash
 npx amplify gen2-migration lock
 ```
 
-This command will first perform a few validations to analyze if your Gen1 environment is in a 
-healthy state and proceed to lock your Gen1 environment by attaching a restrictive IAM policy on the root stack. 
+This command will first perform a few validations to analyze if your Gen1 environment is in a
+healthy state and proceed to lock your Gen1 environment by attaching a restrictive IAM policy on the root stack.
 
 ```json
-{"Statement":[{"Effect":"Deny","Action":"Update:*","Principal":"*","Resource":"*"}]}
+{ "Statement": [{ "Effect": "Deny", "Action": "Update:*", "Principal": "*", "Resource": "*" }] }
 ```
 
 You will need to remove this policy from the stack if you'd like to push updates to the Gen1 environment.
@@ -194,7 +196,7 @@ git checkout -b gen2-main
 npx amplify gen2-migration generate
 ```
 
-This command will override your local `./amplify` directory with Gen2 definition files. Once successful, 
+This command will override your local `./amplify` directory with Gen2 definition files. Once successful,
 perform the following manual edits:
 
 #### Post Generate | Frontend Config
@@ -208,11 +210,11 @@ If your frontend is stored within the same repo and consumes the `amplifyconfigu
 + import amplifyconfig from '../amplify_outputs.json';
 ```
 
-This is required because in Gen2 amplify generates an `amplify_outputs.json` file instead of the `amplifyconfiguration.json` file. 
+This is required because in Gen2 amplify generates an `amplify_outputs.json` file instead of the `amplifyconfiguration.json` file.
 Amplify client side libraries support both files so no additional change is needed.
 
-> Note: The `amplify_outputs.json` file **will not** exist on your local file system so you will see a compilation error. 
-Thats ok - it is generated at deploy time in the hosting service.
+> Note: The `amplify_outputs.json` file **will not** exist on your local file system so you will see a compilation error.
+> Thats ok - it is generated at deploy time in the hosting service.
 
 #### Post Generate | Reuse Model Tables
 
@@ -223,12 +225,12 @@ Thats ok - it is generated at deploy time in the hosting service.
 + branchName: "gen2-main"
 ```
 
-This is required in order to instruct the hosting service that the DynamoDB tables hosting your 
+This is required in order to instruct the hosting service that the DynamoDB tables hosting your
 models should be reused (imported) instead of recreated.
 
 #### Post Generate | NodeJS Function ESM Compatibility
 
-If you have a NodeJS Lambda function in your app, you need to port your code 
+If you have a NodeJS Lambda function in your app, you need to port your code
 to ESM instead of CommonsJS. For example:
 
 ```diff
@@ -236,10 +238,9 @@ to ESM instead of CommonsJS. For example:
 + export async function handler(event) {
 ```
 
-This is required because Gen2 adds lambda shims that conflict with CommonJS syntax. 
-Otherwise, you will see the following error when invoking the function: 
+This is required because Gen2 adds lambda shims that conflict with CommonJS syntax.
+Otherwise, you will see the following error when invoking the function:
 _"Cannot determine intended module format because both require() and top-level await are present"_
-
 
 > See [ESM/CJS Interoperability](https://www.typescriptlang.org/docs/handbook/modules/appendices/esm-cjs-interop.html)
 
@@ -251,7 +252,7 @@ _Hosting → Secrets → Manage Secrets → Add new_
 
 ![](./migration-guide-images/add-secret.png)
 
-Next, pass this secret in the function definition. For example, for a secret called `MY_SECRET`, 
+Next, pass this secret in the function definition. For example, for a secret called `MY_SECRET`,
 **Edit in `./amplify/<function-name>/resource.ts:**:
 
 ```diff
@@ -264,7 +265,7 @@ Next, pass this secret in the function definition. For example, for a secret cal
 
 **Then, in your function code, use `process.MY_SECRET` to obtain the secret value.**
 
-> See [Secrets](https://docs.amplify.aws/react/build-a-backend/functions/environment-variables-and-secrets/#secrets) 
+> See [Secrets](https://docs.amplify.aws/react/build-a-backend/functions/environment-variables-and-secrets/#secrets)
 > for more information.
 
 #### Post Generate | GraphQL IAM Access
@@ -289,8 +290,8 @@ This is required in order for your Gen1 environment to keep functioning correctl
 
 #### Post Generate | REST API
 
-Follow instructions to [Set up an Amplify REST API](https://docs.amplify.aws/react/build-a-backend/add-aws-services/rest-api/set-up-rest-api/). 
-Then, if your frontend accesses REST using IAM credentials, navigate to the Amplify Console to find the `<gen1-rest-api-id>` and `<gen1-root-resource-id>` 
+Follow instructions to [Set up an Amplify REST API](https://docs.amplify.aws/react/build-a-backend/add-aws-services/rest-api/set-up-rest-api/).
+Then, if your frontend accesses REST using IAM credentials, navigate to the Amplify Console to find the `<gen1-rest-api-id>` and `<gen1-root-resource-id>`
 on the ApiGateway AWS Console. For example:
 
 ![](./migration-guide-images/gen1-rest-api-id.png)
@@ -316,7 +317,7 @@ And add:
 
 > Where `restApiStack` is the variable name you assigned when creating the dedicated stack.
 
-This is required in order for your Gen1 environment to keep functioning correctly after the `refactor` step. You'll also need to change 
+This is required in order for your Gen1 environment to keep functioning correctly after the `refactor` step. You'll also need to change
 your frontend code to point to the new API name:
 
 **Edit in `./src/App.tsx` (or equivalent)**:
@@ -343,8 +344,8 @@ You may need to change it to use static requires instead:
 + const modules = [require('./email-filter-allowlist')]
 ```
 
-Gen2 functions are bundled with `esbuild`; if `esbuild` is unable to properly analyze the code, it may cause 
-unnecessary bundling and exceed the lambda memory limit. If that is the case, you will see `Out Of Memory` 
+Gen2 functions are bundled with `esbuild`; if `esbuild` is unable to properly analyze the code, it may cause
+unnecessary bundling and exceed the lambda memory limit. If that is the case, you will see `Out Of Memory`
 errors in your function execution logs.
 
 #### Post Generate | Models without an `@auth` directive
@@ -357,10 +358,10 @@ type Todo @model {
 }
 ```
 
-In Gen1, types like these are considered _public_ and are assigned the `@aws_api_key` directive when transformed into an 
+In Gen1, types like these are considered _public_ and are assigned the `@aws_api_key` directive when transformed into an
 AppSync compatible schema. In Gen2, they are considered _private_ and are assigned the `@aws_iam` directive.
 
-In order to preserve the same protections after migration, you must explicitly allow public access on 
+In order to preserve the same protections after migration, you must explicitly allow public access on
 the type by adding the `@auth` directive:
 
 ```graphql
@@ -371,7 +372,7 @@ type Todo @model @auth(rules: [{ allow: public }]) {
 }
 ```
 
-The same behavior applies to **non** `@model` types as well. For such types however, `@auth` cannot be 
+The same behavior applies to **non** `@model` types as well. For such types however, `@auth` cannot be
 applied on the type itself and therefore must be applied to each field. For example:
 
 ```graphql
@@ -389,7 +390,7 @@ Your schema is located in `./amplify/data/resource.ts`.
 
 ### 3. Deploy
 
-Deploying the generated Gen2 application is done via [fullstack-branch-deployments](https://docs.amplify.aws/flutter/deploy-and-host/fullstack-branching/branch-deployments/). 
+Deploying the generated Gen2 application is done via [fullstack-branch-deployments](https://docs.amplify.aws/flutter/deploy-and-host/fullstack-branching/branch-deployments/).
 First, push the code:
 
 ```bash
@@ -399,10 +400,10 @@ git push origin gen2-main
 ```
 
 > [!NOTE]
-> The migration tool generates an `amplify.yml` buildspec file that allows for 
-> branch deployments to deploy Gen2 backend applications even in the absence of a 
-> webapp published via amplify hosting. If you'd like to start using the hosting service to publish your Gen2 webapp, you'll 
-> need to manually add a `frontend` section to this file and provide the necessary configuration to build your webapp. 
+> The migration tool generates an `amplify.yml` buildspec file that allows for
+> branch deployments to deploy Gen2 backend applications even in the absence of a
+> webapp published via amplify hosting. If you'd like to start using the hosting service to publish your Gen2 webapp, you'll
+> need to manually add a `frontend` section to this file and provide the necessary configuration to build your webapp.
 > See [Build specification reference](https://docs.aws.amazon.com/amplify/latest/userguide/yml-specification-syntax.html) for more details.
 
 Next, login to the AWS Amplify console and connect your new branch to the existing application:
@@ -415,20 +416,20 @@ Once added the hosting service will start deploying this branch. Wait for it to 
 
 ![](./migration-guide-images/deploying-branch.png)
 
-Once completed you can login to your app via the newly dedicated amplify domain. At this point, 
-the application has access only to the DynamoDB data from your Gen1 environment. **It does not 
-however reuse other stateful resources such as user pools.** To grant it access to all 
+Once completed you can login to your app via the newly dedicated amplify domain. At this point,
+the application has access only to the DynamoDB data from your Gen1 environment. **It does not
+however reuse other stateful resources such as user pools.** To grant it access to all
 stateful resources, a `refactor` is required.
 
 ### 4. Refactor
 
 > [!CAUTION]
-> The `refactor` operation is currently not reversible. If it fails or 
-> produces undesired results, you will need to recreate the environment. **Make sure you 
+> The `refactor` operation is currently not reversible. If it fails or
+> produces undesired results, you will need to recreate the environment. **Make sure you
 > run it only on environments you can afford to delete**.
 
-Refactoring is the process of updating the underlying CloudFormation stacks of both your Gen1 and 
-Gen2 applications such that all stateful resources are reused across both apps. In order to refactor, 
+Refactoring is the process of updating the underlying CloudFormation stacks of both your Gen1 and
+Gen2 applications such that all stateful resources are reused across both apps. In order to refactor,
 we first need to find the name of the Gen2 root CloudFormation stack:
 
 1. Login to the AWS CloudFormation console.
@@ -451,8 +452,8 @@ git checkout main
 npx amplify gen2-migration refactor --to <gen2-root-stack-name>
 ```
 
-> Note: This operations makes use of 
-the [CloudFormation Refactor](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stack-refactoring.html) APIs
+> Note: This operations makes use of
+> the [CloudFormation Refactor](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stack-refactoring.html) APIs
 
 #### Post Refactor | S3 Storage
 
@@ -467,8 +468,8 @@ If your application contains an S3 bucket as part of the storage category, edit 
 + s3Bucket.bucketName = '...';
 ```
 
-> This is required in order to sync your local bucket name with the deployed template. 
-Otherwise, pushing changes to the `gen2-main` branch will result in a bucket replacement.
+> This is required in order to sync your local bucket name with the deployed template.
+> Otherwise, pushing changes to the `gen2-main` branch will result in a bucket replacement.
 
 Push the changes:
 
@@ -494,8 +495,8 @@ If your application contains a DynamoDB table as part of the storage category, e
 + new Table(storageStack, "myTable", { tableName: 'my-table-main', partitionKey: ... });
 ```
 
-> This is required in order to sync your local table name with the deployed template. 
-Otherwise, pushing changes to the `gen2-main` branch will result in a table replacement.
+> This is required in order to sync your local table name with the deployed template.
+> Otherwise, pushing changes to the `gen2-main` branch will result in a table replacement.
 
 Push the changes:
 
@@ -515,22 +516,22 @@ Login to the AWS Amplify console and redeploy the Gen2 branch:
 
 ![](./migration-guide-images/redeploy.png)
 
-This is required in order to regenerate the `amplify_outputs.json` file that corresponds to the stack 
+This is required in order to regenerate the `amplify_outputs.json` file that corresponds to the stack
 architecture that was updated during `refactor`.
 
 # Feature Coverage
 
-Following provides an overview of the supported (and unsupported) features for migration. Features are organized 
+Following provides an overview of the supported (and unsupported) features for migration. Features are organized
 by the CLI setting that configures them.
 
 > **Legend**
 >
 > - 🔴 | Unsupported.
 > - 🟢 | Fully automated.
-> - 🟡 | Partially supported. Includes indication whether it lacks support for `generate` or `refactor`. 
-> If a feature is not supported for `refactor` you will not be able to fully migrate the app. You can however still generate 
-> and deploy it to test whether code generation works properly. If a feature is not supported for `generate` you will be able 
-> to manually augment the generated code to add the necessary configuration.
+> - 🟡 | Partially supported. Includes indication whether it lacks support for `generate` or `refactor`.
+>   If a feature is not supported for `refactor` you will not be able to fully migrate the app. You can however still generate
+>   and deploy it to test whether code generation works properly. If a feature is not supported for `generate` you will be able
+>   to manually augment the generated code to add the necessary configuration.
 > - ⚠️ | Untested. You're welcome to try it out and let us know!
 
 ## Auth
@@ -555,7 +556,7 @@ by the CLI setting that configures them.
 
   - 🟢 `User Sign-Up, Sign-In, connected with AWS IAM controls`
   - ⚠️ `User Sign-Up & Sign-In only`
-  
+
 - ➤ **Allow unauthenticated logins**
 
   - ⚠️ `Yes`
@@ -621,7 +622,6 @@ by the CLI setting that configures them.
 - ⚠️ **Do you want to use an OAuth flow**
 
 - ➤ **Do you want to configure Lambda Triggers for Cognito**
-
   - ⚠️ `Create Auth Challenge`
   - ⚠️ `Custom Message`
   - ⚠️ `Define Auth Challenge`
@@ -647,14 +647,45 @@ by the CLI setting that configures them.
     - 🔴 `Lambda`
 
   - ➤ **Additional Authorization Type**
-
     - 🟢 `API Key`
     - 🟢 `Amazon Cognito User Pool`
     - 🔴 `IAM`
     - 🔴 `OpenID Connect`
     - 🔴 `Lambda`
 
-- 🟡 **REST** (_generate_ ✗ _refactor_ ✔)
+- ➤ **REST**
+
+  - ➤ **Restrict API access**
+
+    - 🟢 `Yes`
+    - ⚠️ `No`
+
+  - ➤ **Restrict access by**
+
+    - 🟢 `Both`
+    - 🟢 `Individual Groups`
+    - ⚠️ `Auth/Guest Users`
+
+  - ➤ **Who should have access**
+
+    - 🟢 `Authenticated users only`
+    - ⚠️ `Authenticated and Guest users`
+
+  - ➤ **What permissions do you want to grant to Authenticated users**
+
+    - 🟢 `create`
+    - 🟢 `read`
+    - 🟢 `update`
+    - 🟢 `delete`
+
+  - ➤ **What permissions do you want to grant to {Group} users**
+
+    - 🟢 `create`
+    - 🟢 `read`
+    - 🟢 `update`
+    - 🟢 `delete`
+
+  - 🟢 **Do you want to add another path**
 
 ## Storage
 
@@ -683,7 +714,6 @@ by the CLI setting that configures them.
   - 🟢 Do you want to add a Lambda Trigger for your S3 Bucket
 
 - ➤ NoSQL Database
-
   - 🟢 `Do you want to add a sort key to your table`
   - 🟢 `Do you want to add global secondary indexes to your table`
   - 🟢 `Do you want to add a sort key to your global secondary index`
@@ -713,7 +743,6 @@ by the CLI setting that configures them.
       - ➤ **Amazon DynamoDB Stream**
 
         - ➤ **Choose a DynamoDB event source option**
-
           - 🟢 `Use API category graphql @model backed DynamoDB table(s) in the current Amplify project`
           - 🔴 `Use storage category DynamoDB table configured in the current Amplify project`
           - 🔴 `Provide the ARN of DynamoDB stream directly`
@@ -760,7 +789,6 @@ by the CLI setting that configures them.
     - 🟢 **Do you want to configure environment variables for this function**
     - 🟡 **Do you want to configure secret values this function can access** (_generate_ ✗ _refactor_ ✔)
     - ➤ **Choose the package manager that you want to use**
-
       - 🟢 `NPM`
       - ⚠️ `Yarn`
       - ⚠️ `PNPM`
@@ -770,7 +798,48 @@ by the CLI setting that configures them.
 
 ## Geo
 
-### `amplify add geo` 🔴
+### `amplify add geo`
+
+- ➤ **Select which capability you want to add**
+
+  - 🟡 `Map (visualize the geospatial data)` (_generate_ ✔ _refactor_ ✔)
+
+    - ➤ **Restrict access by**
+
+      - 🟢 `Both`
+      - ⚠️ `Auth/Guest Users`
+      - ⚠️ `Individual Groups`
+
+    - ➤ **Who can access this Map**
+
+      - 🟢 `Authorized and Guest users`
+      - ⚠️ `Authorized users only`
+
+    - ⚠️ **Do you want to configure advanced settings**
+
+  - 🟡 `Location search (search by places, addresses, coordinates)` (_generate_ ✔ _refactor_ ✔)
+
+    - ➤ **Restrict access by**
+
+      - 🟢 `Both`
+      - ⚠️ `Auth/Guest Users`
+      - ⚠️ `Individual Groups`
+
+    - ➤ **Who can access this search index**
+
+      - 🟢 `Authorized and Guest users`
+      - ⚠️ `Authorized users only`
+
+    - ⚠️ **Do you want to configure advanced settings**
+
+  - 🟡 `Geofencing (visualize virtual perimeters)` (_generate_ ✔ _refactor_ ✗)
+
+    - ➤ **What kind of access do you want for {Group} users**
+
+      - 🟢 `Read geofence`
+      - 🟢 `Create/Update geofence`
+      - 🟢 `Delete geofence`
+      - 🟢 `List geofences`
 
 ## Interactions
 
@@ -786,24 +855,33 @@ by the CLI setting that configures them.
 
 ## Analytics
 
-### `amplify add analytics` 🔴
+### `amplify add analytics`
+
+- ➤ **Select an Analytics provider**
+
+  - 🟢 `Amazon Kinesis Streams` (_generate_ ✔ _refactor_ ✔)
+
+    - 🟢 **Enter a Stream name**
+    - 🟢 **Enter number of shards**
+
+  - 🔴 `Amazon Pinpoint`
 
 ## Hosting
 
 ### `amplify add hosting` 🔴
 
-## Custom 
+## Custom
 
 ### `amplify add custom` 🔴
 
-## Overrides 
+## Overrides
 
 ### `amplify override <category>` 🔴
 
 # Limitations
 
-- Apps with multiple storage resources (e.g S3 bucket **and** DynamoDB Table) are not supported for refactor. 
-You may still follow the guide until the `generate` step.
+- Apps with multiple storage resources (e.g S3 bucket **and** DynamoDB Table) are not supported for refactor.
+  You may still follow the guide until the `generate` step.
 - You cannot migrate multiple environments of the same app at the same time.
 - If you have a function accessing a DynamoDB **model** table, the model name must be `PascalCased` (e.g `Comment` - not `comment`)
 
@@ -819,9 +897,9 @@ type Todo @model @auth(rules: [{ allow: private, provider: iam }]) {
 }
 ```
 
-Clients access such models using the `AuthRole` configured on the identity pool. 
-After the refactor operation, the role is updated to point to the Gen2 role, which doesn't 
-allow access to the Gen1 AppSync API. This means that after refactor your **Gen1** environment will 
+Clients access such models using the `AuthRole` configured on the identity pool.
+After the refactor operation, the role is updated to point to the Gen2 role, which doesn't
+allow access to the Gen1 AppSync API. This means that after refactor your **Gen1** environment will
 lose IAM access to the API (but **Gen2** will work correctly).
 
 To workaround this issue, you must pre allow the Gen2 `AuthRole` by [configuring a custom admin role](https://docs.amplify.aws/gen1/javascript/build-a-backend/graphqlapi/customize-authorization-rules/#use-iam-authorization-within-the-appsync-console) on the Gen1 API.
@@ -830,11 +908,11 @@ To workaround this issue, you must pre allow the Gen2 `AuthRole` by [configuring
 
 ```json
 {
-  "adminRoleNames": [ "amplify-${appId}" ]
+  "adminRoleNames": ["amplify-${appId}"]
 }
 ```
 
-> Where `${appId}` should be replaced with the value of the Gen1 application id. This role name follows 
+> Where `${appId}` should be replaced with the value of the Gen1 application id. This role name follows
 > the Gen2 `AuthRole` naming pattern and therefore allows access to **any** Gen2 environment (branch).
 
 Once added, redeploy the app by running `amplify push`.
@@ -845,7 +923,7 @@ See [amplify-migration-apps](./amplify-migration-apps/)
 
 # Feedback
 
-Your feedback will significantly help the team improve and stabilize the tool. We welcome and encourage any 
+Your feedback will significantly help the team improve and stabilize the tool. We welcome and encourage any
 feedback on the migration process:
 
 - Success stories
@@ -857,4 +935,3 @@ Here is where you can share:
 
 - [Create an Issue](https://github.com/aws-amplify/amplify-cli/issues/new)
 - [Participate in the GitHub Discussion](https://github.com/aws-amplify/amplify-cli/discussions/14490)
-  
