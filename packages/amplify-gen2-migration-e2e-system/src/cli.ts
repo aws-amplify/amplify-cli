@@ -44,6 +44,16 @@ async function main(): Promise<void> {
   }
 
   const app = new App(argv.app, argv.profile, argv.verbose);
+  try {
+    await migrate(app);
+    app.logger.info('Migration completed successfully');
+  } catch (error) {
+    (error as Error).message = `Migration failed: ${chalk.red((error as Error).message)} (${app.targetAppPath})`;
+    throw error;
+  }
+}
+
+async function migrate(app: App): Promise<void> {
   app.logger.info(`Staring migration`);
 
   await app.gitInit();
@@ -86,8 +96,6 @@ async function main(): Promise<void> {
 
   await app.testGen1();
   await app.testGen2();
-
-  app.logger.info(`Migration completed successfully`);
 }
 
 function printBanner(): void {
@@ -104,9 +112,7 @@ function printBanner(): void {
   );
 }
 
-if (require.main === module) {
-  main().catch((error) => {
-    console.error(chalk.red('Fatal error:'), (error as Error).message);
-    process.exit(1);
-  });
-}
+main().catch((error) => {
+  console.error(error);
+  process.exit(1);
+});

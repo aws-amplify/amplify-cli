@@ -28,7 +28,6 @@ interface StepConfig {
  * Exposes all lifecycle operations as public methods.
  */
 export class App {
-  private readonly targetAppPath: string;
   private readonly deploymentName: string;
   private readonly gen2BranchName: string;
 
@@ -38,6 +37,8 @@ export class App {
   private readonly amplifyPath: string;
 
   public readonly logger: Logger;
+  public readonly targetAppPath: string;
+
   private readonly git: Git;
 
   constructor(public readonly appName: string, private readonly profile: string, verbose = false) {
@@ -55,7 +56,7 @@ export class App {
 
     // Copy source to temp directory
     this.targetAppPath = path.join(MIGRATION_TARGET_DIR, this.deploymentName);
-    fs.mkdirSync(this.targetAppPath);
+    fs.mkdirSync(this.targetAppPath, { recursive: true });
     fs.copySync(this.sourceAppPath, this.targetAppPath, {
       filter: (src: string) => !src.includes('_snapshot') && !src.includes('node_modules'),
     });

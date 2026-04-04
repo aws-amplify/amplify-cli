@@ -20,7 +20,7 @@ exports.handler = async (event) => {
 
   for (const record of event.Records ?? []) {
     const eventName = record.eventName;
-    const image = record.dynamodb.NewImage;
+    const image = record.dynamodb.NewImage ?? record.dynamodb.OldImage;
     const createdByUserId = image.createdByUserId.S;
     const typename = image.__typename.S;
     const activityType = `${eventName}_${typename}`;

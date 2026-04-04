@@ -21,4 +21,5 @@ export default {
     }],
   },
   testTimeout: 30_000,
+  setupFilesAfterEnv: ['<rootDir>/tests/jest.setup.ts'],
 };
