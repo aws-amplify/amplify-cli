@@ -56,7 +56,7 @@ Stateless resources are ones that don't store any user data. They include:
 - ...
 
 Deploying the Gen2 code will create new instances of these resources, which will eventually be used instead of the Gen1 resources.
-These resources are untouched during the refactoring phase.
+These resources are untouched during the refactoring step.
 
 ### Statefull Resources
 
@@ -70,12 +70,12 @@ Stateful resources are ones that store user data. They include:
 
 Deploying the Gen2 code will create new empty instances of these resources and connect them to the new stateless resources.
 This allows you to test your Gen2 application functionality in isolation from the Gen1 environment. Once you are satisfied
-the Gen2 application works correctly, the refactoring phase will delete them and replace with your Gen1
+the Gen2 application works correctly, the refactoring step will delete them and replace with your Gen1
 stateful resources. Your Gen2 application will now share and access all the Gen1 data.
 
 > [!NOTE]
 > DynamoDB tables that host your models are not cloned as part of the Gen2 deployment and therefore do not participate in the
-> refactoring phase. **This means that your Gen2 application will have access to the Gen1 model data immediately after deployment.**
+> refactoring step. **This means that your Gen2 application will have access to the Gen1 model data immediately after deployment.**
 
 ---
 
@@ -154,8 +154,6 @@ able to adapt them to fit your setup.
 > - [Feature Coverage](#feature-coverage)
 > - [Limitations](#limitations)
 > - [Pre Migration Operations](#pre-migration-operations)
->
-> You can also run the [assess](#1-assess) command to programmatically evaluate your app's migration readiness.
 
 First obtain a fresh and up-to-date local copy of your Amplify Gen1 environment and install the experimental CLI package:
 
@@ -176,23 +174,12 @@ npx amplify gen2-migration assess
 ```
 
 This command is read-only and has no side effects. It discovers all resources in your Gen1 environment
-and produces a report showing migration support for each resource across the `generate` and `refactor` phases.
+and produces a report showing migration support for each resource across the `generate` and `refactor` steps.
 
 The output contains two tables:
 
 - **Resources** — lists each discovered resource (category, service, name) with its generate and refactor support status.
 - **Features** — lists detected sub-features (e.g. `override.ts` files, custom IAM policies) that require manual attention.
-
-Support indicators:
-
-| Symbol | Meaning                                      |
-| ------ | -------------------------------------------- |
-| ✔      | Supported                                    |
-| ✘      | Unsupported (includes a note explaining why) |
-| —      | Not applicable for this phase                |
-
-If any resource or feature shows ✘ for a phase you intend to run, review the [Feature Coverage](#feature-coverage)
-section for workarounds or manual steps before proceeding.
 
 #### Example Report
 
@@ -224,6 +211,14 @@ Features
 └─────────────────┴─────────────────────────────────────────────────┴─────────────────────────────────┴──────────┘
 ```
 
+**Support indicators:**
+
+| Symbol | Meaning                                      |
+| ------ | -------------------------------------------- |
+| ✔      | Supported                                    |
+| ✘      | Unsupported (includes a note explaining why) |
+| —      | Not applicable for this step                 |
+
 In this example, all resources are supported, but two features are flagged:
 
 - The GraphQL API has an `override.ts` file — the migration tool cannot automatically translate overrides, so you'll need to manually apply those customizations to the generated Gen2 CDK code.
@@ -232,7 +227,7 @@ In this example, all resources are supported, but two features are flagged:
 Both features show `—` for refactor because they only affect code generation.
 
 > [!NOTE]
-> The `generate` and `refactor` steps also run this assessment as part of their validation phase
+> The `generate` and `refactor` steps also run this assessment as part of their validation step
 > and will fail if any entry is unsupported. Each step runs additional validations as well — see
 > the validation tables in each step section. You can bypass validations with `--skip-validations`,
 > or run only the validations without executing the step using `--validations-only`.
@@ -286,11 +281,11 @@ npx amplify gen2-migration generate
 
 #### Validations
 
-| Validation        | Description                                                                                              |
-| ----------------- | -------------------------------------------------------------------------------------------------------- |
-| Lock Status       | Verifies the Gen1 environment is locked (deny-all stack policy is in place).                             |
-| Working Directory | Verifies the git working directory has no uncommitted changes.                                           |
-| Assessment        | Runs the resource and feature assessment for the `generate` phase and fails if any entry is unsupported. |
+| Validation        | Description                                                                                             |
+| ----------------- | ------------------------------------------------------------------------------------------------------- |
+| Lock Status       | Verifies the Gen1 environment is locked (deny-all stack policy is in place).                            |
+| Working Directory | Verifies the git working directory has no uncommitted changes.                                          |
+| Assessment        | Runs the resource and feature assessment for the `generate` step and fails if any entry is unsupported. |
 
 This command will override your local `./amplify` directory with Gen2 definition files. Once successful,
 perform the following manual edits:
@@ -508,10 +503,10 @@ execution, auto-rollback is attempted automatically (disable with `--no-rollback
 
 #### Validations
 
-| Validation  | Description                                                                                              |
-| ----------- | -------------------------------------------------------------------------------------------------------- |
-| Lock Status | Verifies the Gen1 environment is locked (deny-all stack policy is in place).                             |
-| Assessment  | Runs the resource and feature assessment for the `refactor` phase and fails if any entry is unsupported. |
+| Validation  | Description                                                                                             |
+| ----------- | ------------------------------------------------------------------------------------------------------- |
+| Lock Status | Verifies the Gen1 environment is locked (deny-all stack policy is in place).                            |
+| Assessment  | Runs the resource and feature assessment for the `refactor` step and fails if any entry is unsupported. |
 
 In order to refactor,
 we first need to find the name of the Gen2 root CloudFormation stack:
