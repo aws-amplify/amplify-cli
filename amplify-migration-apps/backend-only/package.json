@@ -9,7 +9,9 @@
   "scripts": {
     "configure": "./backend/configure.sh",
     "sanitize": "tsx ../sanitize.ts",
-    "typecheck": "cd _snapshot.post.generate/amplify && npx tsc --noEmit"
+    "typecheck": "cd _snapshot.post.generate/amplify && npx tsc --noEmit",
+    "post-generate": "npx tsx migration/post-generate.ts",
+    "post-refactor": "npx tsx migration/post-refactor.ts"
   },
   "devDependencies": {
     "@aws-sdk/client-cognito-identity-provider": "^3.936.0"

@@ -27,7 +27,7 @@ export async function postRefactor(appPath: string): Promise<void> {
 }
 
 async function main(): Promise<void> {
-  const [appPath] = process.argv.slice(2);
+  const [appPath = process.cwd()] = process.argv.slice(2);
   await postRefactor(appPath);
 }
 

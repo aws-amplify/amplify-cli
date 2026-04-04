@@ -145,7 +145,7 @@ export async function postGenerate(appPath: string, envName = 'sandbox'): Promis
 }
 
 async function main(): Promise<void> {
-  const [appPath, envName] = process.argv.slice(2);
+  const [appPath = process.cwd(), envName] = process.argv.slice(2);
   await postGenerate(appPath, envName);
 }
 

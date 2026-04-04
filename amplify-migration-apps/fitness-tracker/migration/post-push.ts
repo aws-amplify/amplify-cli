@@ -16,7 +16,7 @@ import {
 } from '@aws-sdk/client-lambda';
 
 async function main(): Promise<void> {
-  const [appPath] = process.argv.slice(2);
+  const [appPath = process.cwd()] = process.argv.slice(2);
 
   const metaPath = path.join(appPath, 'amplify', 'backend', 'amplify-meta.json');
   const meta = JSON.parse(fs.readFileSync(metaPath, 'utf-8'));

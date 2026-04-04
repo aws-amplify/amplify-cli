@@ -239,21 +239,21 @@ export class App {
    * Run the post-push script.
    */
   public async postPush(): Promise<void> {
-    await this.runScriptIfExists(path.join('migration', 'post-push.ts'), [this.targetAppPath]);
+    await this.runNpmScript('post-push');
   }
 
   /**
    * Run the post-generate script.
    */
   public async postGenerate(): Promise<void> {
-    await this.runScriptIfExists(path.join('migration', 'post-generate.ts'), [this.targetAppPath]);
+    await this.runNpmScript('post-generate');
   }
 
   /**
    * Run the post-refactor script.
    */
   public async postRefactor(): Promise<void> {
-    await this.runScriptIfExists(path.join('migration', 'post-refactor.ts'), [this.targetAppPath]);
+    await this.runNpmScript('post-refactor');
   }
 
   // ============================================================
@@ -344,30 +344,18 @@ export class App {
     this.logger.info(`gen2-migration ${step} completed (${Date.now() - startTime}ms)`);
   }
 
-  private async runScriptIfExists(scriptPath: string, args: string[]): Promise<void> {
-    if (!fs.existsSync(path.join(this.targetAppPath, scriptPath))) {
-      this.logger.info(`Skipping ${scriptPath} (not found)`);
+  /**
+   * Run an npm script defined in the app's package.json.
+   * Silently skips if the script is not defined.
+   */
+  private async runNpmScript(scriptName: string): Promise<void> {
+    const packageJsonPath = path.join(this.targetAppPath, 'package.json');
+    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8')) as { scripts?: Record<string, string> };
+    if (!packageJson.scripts?.[scriptName]) {
+      this.logger.info(`Skipping npm run ${scriptName} (not defined in package.json)`);
       return;
     }
 
-    this.logger.info(`Running ${scriptPath} ${args.join(' ')}...`);
-    const result = await execa('npx', ['tsx', scriptPath, ...args], {
-      cwd: this.targetAppPath,
-      stdio: 'inherit',
-      reject: false,
-      env: { ...process.env, AWS_SDK_LOAD_CONFIG: '1' },
-    });
-
-    if (result.exitCode !== 0) {
-      throw new Error(`${scriptPath} failed with exit code ${result.exitCode}`);
-    }
-    this.logger.info(`${scriptPath} completed`);
-  }
-
-  /**
-   * Run an npm script defined in the app's package.json.
-   */
-  private async runNpmScript(scriptName: string): Promise<void> {
     this.logger.info(`Running npm run ${scriptName}...`);
     const result = await execa('npm', ['run', scriptName], {
       cwd: this.targetAppPath,
