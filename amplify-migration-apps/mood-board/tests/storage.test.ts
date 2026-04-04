@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { signIn, signOut } from 'aws-amplify/auth';
-import { uploadData, getUrl, remove } from 'aws-amplify/storage';
+import { uploadData, getUrl, downloadData, remove } from 'aws-amplify/storage';
 import { signUp, config } from './signup';
 
 const testImageBase64 =
@@ -16,9 +16,9 @@ afterAll(async () => {
 });
 
 describe('guest', () => {
-  it('gets a signed URL for a file', async () => {
+  it('can read a public file', async () => {
     const imageBuffer = Buffer.from(testImageBase64, 'base64');
-    const fileName = `test-guest-url-${Date.now()}.png`;
+    const fileName = `test-guest-read-${Date.now()}.png`;
 
     await uploadData({
       key: fileName,
@@ -28,10 +28,11 @@ describe('guest', () => {
 
     await signOut();
 
-    const result = await getUrl({ key: fileName, options: { expiresIn: 3600 } });
+    const downloadResult = await downloadData({ key: fileName }).result;
+    const blob = await downloadResult.body.blob();
+    const buffer = Buffer.from(await blob.arrayBuffer());
 
-    expect(result.url).toBeDefined();
-    expect(result.url.toString()).toContain('http');
+    expect(buffer.length).toBeGreaterThan(0);
 
     const creds = await signUp(config);
     await signIn({ username: creds.username, password: creds.password });

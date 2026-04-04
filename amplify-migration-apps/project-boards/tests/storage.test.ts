@@ -23,14 +23,15 @@ afterAll(async () => {
 });
 
 describe('guest', () => {
-  it('gets a signed URL for a public file', async () => {
+  it('can read a public file', async () => {
     const { path } = await uploadTestImage();
     await signOut();
 
-    const result = await getUrl({ path, options: { expiresIn: 3600 } });
+    const downloadResult = await downloadData({ path }).result;
+    const blob = await downloadResult.body.blob();
+    const buffer = Buffer.from(await blob.arrayBuffer());
 
-    expect(result.url).toBeDefined();
-    expect(result.url.toString()).toContain('http');
+    expect(buffer.length).toBeGreaterThan(0);
 
     const creds = await signUp(config);
     await signIn({ username: creds.username, password: creds.password });

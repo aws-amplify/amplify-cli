@@ -148,7 +148,7 @@ export class S3Renderer {
     const protectedPathAccess: CallExpression[] = [];
 
     if (accessPatterns.guest && accessPatterns.guest.length > 0) {
-      // publicPathAccess.push(this.createAllowPattern(allowIdentifier, 'guest', accessPatterns.guest));
+      publicPathAccess.push(this.createAllowPattern(allowIdentifier, 'guest', accessPatterns.guest));
     }
     if (accessPatterns.auth && accessPatterns.auth.length > 0) {
       const pattern = this.createAllowPattern(allowIdentifier, 'authenticated', accessPatterns.auth);

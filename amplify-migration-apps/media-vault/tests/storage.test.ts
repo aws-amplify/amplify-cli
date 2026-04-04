@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { signIn, signOut } from 'aws-amplify/auth';
+import { fetchAuthSession, signIn, signOut } from 'aws-amplify/auth';
 import { uploadData, getUrl, downloadData, getProperties, remove } from 'aws-amplify/storage';
 import { signUp, config } from './signup';
 
@@ -23,14 +23,15 @@ afterAll(async () => {
 });
 
 describe('guest', () => {
-  it('gets a signed URL for a public file', async () => {
+  it('can read a public file', async () => {
     const { path } = await uploadTestImage();
     await signOut();
 
-    const result = await getUrl({ path, options: { expiresIn: 3600 } });
+    const downloadResult = await downloadData({ path }).result;
+    const blob = await downloadResult.body.blob();
+    const buffer = Buffer.from(await blob.arrayBuffer());
 
-    expect(result.url).toBeDefined();
-    expect(result.url.toString()).toContain('http');
+    expect(buffer.length).toBeGreaterThan(0);
 
     const creds = await signUp(config);
     await signIn({ username: creds.username, password: creds.password });
@@ -94,5 +95,75 @@ describe('auth', () => {
     await remove({ path });
 
     await expect(getProperties({ path })).rejects.toBeDefined();
+  });
+});
+
+describe('private storage', () => {
+  it('uploads and downloads a private file', async () => {
+    const imageBuffer = Buffer.from(testImageBase64, 'base64');
+    const fileName = `media/test-private-${Date.now()}.png`;
+
+    const uploadResult = await uploadData({
+      path: ({ identityId }) => `private/${identityId}/${fileName}`,
+      data: imageBuffer,
+      options: { contentType: 'image/png' },
+    }).result;
+
+    expect(uploadResult.path).toBeDefined();
+    expect(uploadResult.path).toContain('private/');
+    expect(uploadResult.path).toContain(fileName);
+
+    const downloadResult = await downloadData({ path: uploadResult.path }).result;
+    const blob = await downloadResult.body.blob();
+    const buffer = Buffer.from(await blob.arrayBuffer());
+
+    expect(buffer.length).toBe(imageBuffer.length);
+  });
+
+  it('gets a signed URL for a private file', async () => {
+    const imageBuffer = Buffer.from(testImageBase64, 'base64');
+    const fileName = `media/test-private-url-${Date.now()}.png`;
+
+    const uploadResult = await uploadData({
+      path: ({ identityId }) => `private/${identityId}/${fileName}`,
+      data: imageBuffer,
+    }).result;
+
+    const result = await getUrl({ path: uploadResult.path, options: { expiresIn: 3600 } });
+
+    expect(result.url).toBeDefined();
+    expect(result.url.toString()).toContain('http');
+  });
+
+  it('deletes a private file', async () => {
+    const imageBuffer = Buffer.from(testImageBase64, 'base64');
+    const fileName = `media/test-private-delete-${Date.now()}.png`;
+
+    const uploadResult = await uploadData({
+      path: ({ identityId }) => `private/${identityId}/${fileName}`,
+      data: imageBuffer,
+    }).result;
+
+    await remove({ path: uploadResult.path });
+
+    await expect(getProperties({ path: uploadResult.path })).rejects.toBeDefined();
+  });
+
+  it('guest cannot read a private file', async () => {
+    const imageBuffer = Buffer.from(testImageBase64, 'base64');
+    const fileName = `media/test-private-guest-${Date.now()}.png`;
+
+    const uploadResult = await uploadData({
+      path: ({ identityId }) => `private/${identityId}/${fileName}`,
+      data: imageBuffer,
+    }).result;
+
+    const privatePath = uploadResult.path;
+    await signOut();
+
+    await expect(downloadData({ path: privatePath }).result).rejects.toBeDefined();
+
+    const creds = await signUp(config);
+    await signIn({ username: creds.username, password: creds.password });
   });
 });
