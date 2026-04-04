@@ -356,7 +356,6 @@ export class App {
       return;
     }
 
-    this.logger.info(`Running npm run ${scriptName}...`);
     const result = await execa('npm', ['run', scriptName], {
       cwd: this.targetAppPath,
       stdio: 'inherit',
@@ -367,7 +366,6 @@ export class App {
     if (result.exitCode !== 0) {
       throw new Error(`npm run ${scriptName} failed with exit code ${result.exitCode}`);
     }
-    this.logger.info(`npm run ${scriptName} completed`);
   }
 
   private async findGen2RootStack(stackPrefix: string): Promise<string> {
