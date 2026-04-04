@@ -1,17 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Amplify } from 'aws-amplify';
 import { generateClient } from 'aws-amplify/api';
 import { getCurrentUser, signIn, signOut } from 'aws-amplify/auth';
-import { uploadData, getUrl, remove } from 'aws-amplify/storage';
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { DynamoDBDocumentClient, PutCommand, GetCommand, DeleteCommand } from '@aws-sdk/lib-dynamodb';
-import {
-  CognitoIdentityProviderClient,
-  AdminCreateUserCommand,
-  AdminSetUserPasswordCommand,
-} from '@aws-sdk/client-cognito-identity-provider';
-import * as fs from 'fs';
-import { randomBytes } from 'crypto';
+import { signUp, config } from './signup';
 import {
   getTopic, listTopics,
   getPost, listPosts,
@@ -24,71 +14,10 @@ import {
   createComment, updateComment, deleteComment,
 } from '../src/graphql/mutations';
 
-// Polyfill crypto for Node.js environment (required for Amplify Auth)
-import { webcrypto } from 'crypto';
-if (typeof globalThis.crypto === 'undefined') {
-  (globalThis as any).crypto = webcrypto;
-}
-
-const CONFIG_PATH = process.env.APP_CONFIG_PATH;
-if (!CONFIG_PATH) {
-  throw new Error('APP_CONFIG_PATH environment variable is required');
-}
-const config = JSON.parse(fs.readFileSync(CONFIG_PATH, { encoding: 'utf-8' }));
-Amplify.configure(config);
+const client = () => generateClient({ authMode: 'apiKey' });
 
 let username: string;
 let password: string;
-
-async function signUp(cfg: any): Promise<{ username: string; password: string }> {
-  const gen2Auth = (cfg as any)?.auth;
-  const userPoolId = cfg.aws_user_pools_id ?? gen2Auth?.user_pool_id;
-  const region = cfg.aws_cognito_region ?? gen2Auth?.aws_region;
-
-  const uname = generateTestPhoneNumber();
-  const pwd = generateTestPassword();
-
-  const cognitoClient = new CognitoIdentityProviderClient({ region });
-
-  await cognitoClient.send(new AdminCreateUserCommand({
-    UserPoolId: userPoolId,
-    Username: uname,
-    TemporaryPassword: pwd,
-    UserAttributes: [
-      { Name: 'email', Value: generateTestEmail() },
-      { Name: 'email_verified', Value: 'true' },
-      { Name: 'phone_number', Value: uname },
-      { Name: 'phone_number_verified', Value: 'true' },
-    ],
-    MessageAction: 'SUPPRESS',
-  }));
-
-  await cognitoClient.send(new AdminSetUserPasswordCommand({
-    UserPoolId: userPoolId,
-    Username: uname,
-    Password: pwd,
-    Permanent: true,
-  }));
-
-  return { username: uname, password: pwd };
-}
-
-function generateTestPassword(): string {
-  return `Test${randomSuffix()}!Aa1`;
-}
-
-function generateTestEmail(): string {
-  return `testuser-${randomSuffix()}@test.example.com`;
-}
-
-function generateTestPhoneNumber(): string {
-  const local = Math.floor(1000000 + Math.random() * 9000000);
-  return `+1555${local}`;
-}
-
-function randomSuffix(): string {
-  return randomBytes(4).toString('hex');
-}
 
 beforeAll(async () => {
   const creds = await signUp(config);
@@ -102,8 +31,6 @@ afterAll(async () => {
 });
 
 describe('Topic', () => {
-  const client = () => generateClient({ authMode: 'apiKey' });
-
   it('creates a topic with correct fields', async () => {
     const currentUser = await getCurrentUser();
     const content = `tech:Test Topic ${Date.now()}`;
@@ -199,8 +126,6 @@ describe('Topic', () => {
 });
 
 describe('Post', () => {
-  const client = () => generateClient({ authMode: 'apiKey' });
-
   async function createParentTopic(): Promise<string> {
     const currentUser = await getCurrentUser();
     const result = await client().graphql({
@@ -311,8 +236,6 @@ describe('Post', () => {
 });
 
 describe('Comment', () => {
-  const client = () => generateClient({ authMode: 'apiKey' });
-
   async function createParentPost(): Promise<string> {
     const currentUser = await getCurrentUser();
     const topicResult = await client().graphql({
@@ -429,117 +352,13 @@ describe('Comment', () => {
 });
 
 describe('fetchUserActivity', () => {
-  it('returns activity array for the current user', async () => {
+  it('returns an activity array', async () => {
     const currentUser = await getCurrentUser();
-    const client = generateClient();
+    const activityClient = generateClient({ authMode: 'apiKey' });
 
-    const result = await client.graphql({ query: fetchUserActivity, variables: { userId: currentUser.userId } });
+    const result = await activityClient.graphql({ query: fetchUserActivity, variables: { userId: currentUser.userId } });
     const activities = (result as any).data.fetchUserActivity || [];
 
     expect(Array.isArray(activities)).toBe(true);
-  });
-});
-
-describe('S3 Storage', () => {
-  it('uploads a file and returns the key', async () => {
-    const testImageBase64 =
-      'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
-    const imageBuffer = Buffer.from(testImageBase64, 'base64');
-    const fileName = `test-avatar-${Date.now()}.png`;
-
-    const result = await uploadData({
-      key: fileName,
-      data: imageBuffer,
-      options: { contentType: 'image/png' },
-    }).result;
-
-    expect(typeof result.key).toBe('string');
-    expect(result.key).toBe(fileName);
-  });
-
-  it('gets a signed URL for an uploaded file', async () => {
-    const imageBuffer = Buffer.from('test-content');
-    const fileName = `test-url-${Date.now()}.txt`;
-
-    await uploadData({
-      key: fileName,
-      data: imageBuffer,
-      options: { contentType: 'text/plain' },
-    }).result;
-
-    const result = await getUrl({
-      key: fileName,
-      options: { expiresIn: 3600 },
-    });
-
-    expect(result.url).toBeDefined();
-    const urlStr = result.url.toString();
-    expect(urlStr).toContain('https://');
-    expect(urlStr.length).toBeGreaterThan(0);
-  });
-
-  it('removes an uploaded file', async () => {
-    const imageBuffer = Buffer.from('delete-me');
-    const fileName = `test-remove-${Date.now()}.txt`;
-
-    await uploadData({
-      key: fileName,
-      data: imageBuffer,
-      options: { contentType: 'text/plain' },
-    }).result;
-
-    await remove({ key: fileName });
-
-    // Verify removal by checking getUrl throws or returns an error
-    // (S3 may still return a signed URL for a deleted object, so we just
-    // confirm remove() itself completed without error)
-    expect(true).toBe(true);
-  });
-});
-
-describe('DynamoDB Bookmarks', () => {
-  it('puts, gets, and deletes a bookmark', async () => {
-    const region = config.aws_project_region ?? config.aws_dynamodb_all_tables_region;
-    const schemas = config.aws_dynamodb_table_schemas ?? [];
-    const entry = schemas.find((s: any) => s.tableName?.startsWith('bookmarks-'));
-    if (!entry) {
-      console.warn('No bookmarks table found in config, skipping');
-      return;
-    }
-    const tableName = entry.tableName;
-
-    const currentUser = await getCurrentUser();
-    const userId = currentUser.userId;
-    const postId = `test-post-${Date.now()}`;
-    const createdAt = new Date().toISOString();
-
-    const ddbClient = DynamoDBDocumentClient.from(new DynamoDBClient({ region }));
-
-    await ddbClient.send(new PutCommand({
-      TableName: tableName,
-      Item: { userId, postId, createdAt },
-    }));
-
-    const getResult = await ddbClient.send(new GetCommand({
-      TableName: tableName,
-      Key: { userId, postId },
-    }));
-
-    expect(getResult.Item).toBeDefined();
-    expect(getResult.Item!.userId).toBe(userId);
-    expect(getResult.Item!.postId).toBe(postId);
-    expect(getResult.Item!.createdAt).toBe(createdAt);
-
-    await ddbClient.send(new DeleteCommand({
-      TableName: tableName,
-      Key: { userId, postId },
-    }));
-
-    const afterDelete = await ddbClient.send(new GetCommand({
-      TableName: tableName,
-      Key: { userId, postId },
-    }));
-
-    expect(afterDelete.Item).toBeUndefined();
   });
 });

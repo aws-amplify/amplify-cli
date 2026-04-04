@@ -91,7 +91,7 @@ export class Plan {
 
     if (this.implications.length > 0) {
       printer.blankLine();
-      printer.info(chalk.bold(chalk.underline('Implications')));
+      printer.info(chalk.bold(chalk.underline(chalk.yellow('Implications'))));
       printer.blankLine();
       for (const implication of this.implications) {
         printer.info(`• ${implication}`);

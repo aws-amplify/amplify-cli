@@ -73,17 +73,17 @@ async function updateFrontendConfig(appPath: string): Promise<void> {
 }
 
 async function updateSurpriseMeStreamName(appPath: string, envName: string): Promise<void> {
-  const componentPath = path.join(appPath, 'src', 'components', 'SurpriseMeButton.tsx');
+  const constantsPath = path.join(appPath, 'src', 'constants.ts');
 
-  const content = await fs.readFile(componentPath, 'utf-8');
+  const content = await fs.readFile(constantsPath, 'utf-8');
 
   const gen2StreamName = `moodboardKinesis-gen2-${envName}`;
   const updated = content.replace(
-    /const STREAM_NAME\s*=\s*['"][^'"]+['"]/,
-    `const STREAM_NAME = '${gen2StreamName}'`,
+    /export const KINESIS_STREAM_NAME\s*=\s*['"][^'"]+['"]/,
+    `export const KINESIS_STREAM_NAME = '${gen2StreamName}'`,
   );
 
-  await fs.writeFile(componentPath, updated, 'utf-8');
+  await fs.writeFile(constantsPath, updated, 'utf-8');
 }
 
 async function addKinesisConfigToBackend(appPath: string): Promise<void> {

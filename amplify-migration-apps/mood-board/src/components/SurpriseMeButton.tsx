@@ -2,8 +2,7 @@ import { useState } from 'react';
 import { generateClient } from 'aws-amplify/api';
 import { record } from 'aws-amplify/analytics/kinesis';
 import { getRandomEmoji, getKinesisEvents } from '../graphql/queries';
-
-const STREAM_NAME = 'moodboardKinesis-main';
+import { KINESIS_STREAM_NAME } from '../constants';
 
 type KinesisEvent = {
   data: string | null;
@@ -38,7 +37,7 @@ export default function SurpriseMeButton() {
       record({
         data: eventData,
         partitionKey: 'surpriseMe',
-        streamName: STREAM_NAME,
+        streamName: KINESIS_STREAM_NAME,
       });
     } catch (analyticsErr) {
       console.warn('Analytics error:', analyticsErr);

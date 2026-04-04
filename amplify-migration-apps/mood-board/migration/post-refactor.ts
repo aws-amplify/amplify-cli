@@ -46,17 +46,17 @@ async function uncommentS3BucketName(appPath: string): Promise<void> {
 }
 
 async function updateSurpriseMeStreamName(appPath: string, envName: string): Promise<void> {
-  const componentPath = path.join(appPath, 'src', 'components', 'SurpriseMeButton.tsx');
+  const constantsPath = path.join(appPath, 'src', 'constants.ts');
 
-  const content = await fs.readFile(componentPath, 'utf-8');
+  const content = await fs.readFile(constantsPath, 'utf-8');
 
   const originalStreamName = `moodboardKinesis-${envName}`;
   const updated = content.replace(
-    /const STREAM_NAME\s*=\s*['"][^'"]+['"]/,
-    `const STREAM_NAME = '${originalStreamName}'`,
+    /export const KINESIS_STREAM_NAME\s*=\s*['"][^'"]+['"]/,
+    `export const KINESIS_STREAM_NAME = '${originalStreamName}'`,
   );
 
-  await fs.writeFile(componentPath, updated, 'utf-8');
+  await fs.writeFile(constantsPath, updated, 'utf-8');
 }
 
 export async function postRefactor(appPath: string, envName = 'main'): Promise<void> {

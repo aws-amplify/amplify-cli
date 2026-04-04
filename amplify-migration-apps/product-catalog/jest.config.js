@@ -1,7 +1,7 @@
 /** @type {import('jest').Config} */
 export default {
   testMatch: ['<rootDir>/tests/**/*.test.ts'],
-  modulePathIgnorePatterns: ['<rootDir>/_snapshot'],
+  modulePathIgnorePatterns: ['<rootDir>/_snapshot', '<rootDir>/amplify'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   transform: {
     '^.+\\.ts$': ['ts-jest', {
@@ -19,5 +19,4 @@ export default {
     }],
   },
   testTimeout: 30_000,
-  maxWorkers: 1,
 };

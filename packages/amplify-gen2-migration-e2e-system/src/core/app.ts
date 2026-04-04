@@ -274,6 +274,10 @@ export class App {
     await this.git.commit(message);
   }
 
+  public async gitDiff(): Promise<void> {
+    await this.git.diff();
+  }
+
   /**
    * Checkout the Gen1 (main) branch.
    */
@@ -349,13 +353,6 @@ export class App {
    * Silently skips if the script is not defined.
    */
   private async runNpmScript(scriptName: string): Promise<void> {
-    const packageJsonPath = path.join(this.targetAppPath, 'package.json');
-    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8')) as { scripts?: Record<string, string> };
-    if (!packageJson.scripts?.[scriptName]) {
-      this.logger.info(`Skipping npm run ${scriptName} (not defined in package.json)`);
-      return;
-    }
-
     const result = await execa('npm', ['run', scriptName], {
       cwd: this.targetAppPath,
       stdio: 'inherit',

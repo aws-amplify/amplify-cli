@@ -61,10 +61,13 @@ async function main(): Promise<void> {
   await app.lock();
   await app.gitCheckoutGen2(true);
   await app.generate();
+  await app.gitCommit('chore: generate');
   await app.installDeps();
+  await app.gitCommit('chore: install dependencies');
   await app.postGenerate();
-  const gen2StackName = await app.deployGen2Sandbox();
+  await app.gitDiff();
   await app.gitCommit('chore: post generate');
+  const gen2StackName = await app.deployGen2Sandbox();
 
   await app.testGen1();
   await app.testGen2();
@@ -73,6 +76,7 @@ async function main(): Promise<void> {
   await app.refactor(gen2StackName);
   await app.gitCheckoutGen2();
   await app.postRefactor();
+  await app.gitDiff();
   await app.gitCommit('chore: post refactor');
 
   await app.testGen1();
