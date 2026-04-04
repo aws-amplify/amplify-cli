@@ -295,7 +295,7 @@ export abstract class CategoryRefactorer implements Planner {
     for (const m of mappings) {
       table.push([m.Source.LogicalResourceId, m.Destination.LogicalResourceId]);
     }
-    return `${table.toString()}\n`;
+    return `${table.toString()}`;
   }
 
   protected info(message: string) {

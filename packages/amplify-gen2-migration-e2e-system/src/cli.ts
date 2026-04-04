@@ -44,16 +44,18 @@ async function main(): Promise<void> {
   }
 
   const app = new App(argv.app, argv.profile, argv.verbose);
+  app.logger.info(`Staring migration`);
 
+  await app.gitInit();
   await app.init();
   await app.configure();
   await app.installDeps();
   await app.status();
   await app.push();
   await app.postPush();
-  await app.frontestGen1();
-  await app.gitInit();
   await app.gitCommit('chore: post push');
+
+  await app.frontestGen1();
 
   await app.assess();
   await app.lock();
@@ -61,22 +63,27 @@ async function main(): Promise<void> {
   await app.generate();
   await app.installDeps();
   await app.postGenerate();
+  const gen2StackName = await app.deployGen2Sandbox();
   await app.gitCommit('chore: post generate');
 
-  const gen2StackName = await app.deployGen2Sandbox();
   await app.frontestGen1();
   await app.frontestGen2();
+
   await app.gitCheckoutGen1();
   await app.refactor(gen2StackName);
   await app.gitCheckoutGen2();
   await app.postRefactor();
-  await app.frontestGen1();
-  await app.frontestGen2();
   await app.gitCommit('chore: post refactor');
 
-  await app.deployGen2Sandbox();
   await app.frontestGen1();
   await app.frontestGen2();
+
+  await app.deployGen2Sandbox();
+
+  await app.frontestGen1();
+  await app.frontestGen2();
+
+  app.logger.info(`Migration completed successfully`);
 }
 
 function printBanner(): void {

@@ -4,10 +4,10 @@ import path from 'path';
 import os from 'os';
 import { getCLIPath, initJSProjectWithProfile } from '@aws-amplify/amplify-e2e-core';
 import { Logger, LogLevel } from './logger';
-import * as git from './git';
+import { Git } from './git';
 
 const MIGRATION_TARGET_DIR = path.join(os.tmpdir(), 'amplify-gen2-migration-e2e-system', 'output-apps');
-const MIGRATION_APPS_DIR = path.join(__dirname, '..', '..', '..', 'amplify-migration-apps');
+const MIGRATION_APPS_DIR = path.join(__dirname, '..', '..', '..', '..', 'amplify-migration-apps');
 const FRONTEST_SCRIPT = 'frontest.ts';
 
 interface MigrationConfig {
@@ -38,7 +38,8 @@ export class App {
   private readonly migrationConfig: MigrationConfig;
   private readonly amplifyPath: string;
 
-  private readonly logger: Logger;
+  public readonly logger: Logger;
+  private readonly git: Git;
 
   constructor(public readonly appName: string, private readonly profile: string, verbose = false) {
     this.sourceAppPath = path.join(MIGRATION_APPS_DIR, appName);
@@ -52,7 +53,6 @@ export class App {
     this.envName = generateRandomEnvName();
     this.gen2BranchName = `gen2-${this.envName}`;
     this.amplifyPath = getCLIPath(true);
-    this.migrationConfig = this.loadMigrationConfig();
 
     // Copy source to temp directory
     this.targetAppPath = path.join(MIGRATION_TARGET_DIR, this.deploymentName);
@@ -67,6 +67,9 @@ export class App {
     packageJson.name = this.deploymentName;
     fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2) + '\n', 'utf-8');
 
+    this.migrationConfig = this.loadMigrationConfig();
+    this.git = new Git(this.targetAppPath, this.logger);
+
     this.logger.info(`App ${appName} prepared at ${this.targetAppPath}`);
     this.logger.info(`Deployment name: ${this.deploymentName}, env: ${this.envName}`);
   }
@@ -79,7 +82,7 @@ export class App {
    * Run `amplify init` to initialize the Gen1 project.
    */
   public async init(): Promise<void> {
-    this.logger.info('Running amplify init...');
+    this.logger.info('amplify init');
     const mainTsx = path.join(this.sourceAppPath, 'src', 'main.tsx');
     const framework = fs.existsSync(mainTsx) ? 'react' : 'none';
 
@@ -122,6 +125,7 @@ export class App {
     newMeta.providers['awscloudformation'] = oldMeta.providers['awscloudformation'];
     fs.writeFileSync(metaPath, JSON.stringify(newMeta, null, 2));
     fs.removeSync(path.join(this.targetAppPath, '.amplify.init'));
+    this.removeGitignoreLine('amplifyconfiguration.json');
     this.logger.info('Categories configured');
   }
 
@@ -138,7 +142,7 @@ export class App {
    * Run `amplify status`.
    */
   public async status(): Promise<void> {
-    this.logger.info('Running amplify status...');
+    this.logger.info('amplify status');
     await this.runAmplify(['status'], { stdio: 'inherit' });
     this.logger.info('amplify status completed');
   }
@@ -147,9 +151,9 @@ export class App {
    * Run `amplify push --yes`.
    */
   public async push(): Promise<void> {
-    this.logger.info('Pushing to AWS...');
+    this.logger.info('amplify push');
     await this.runAmplify(['push', '--yes', '--debug']);
-    this.logger.info('Push completed');
+    this.logger.info('amplify push completed');
   }
 
   // ============================================================
@@ -176,6 +180,7 @@ export class App {
    */
   public async generate(): Promise<void> {
     await this.runMigrationStep('generate');
+    this.removeGitignoreLine('amplify_outputs*');
   }
 
   /**
@@ -219,7 +224,7 @@ export class App {
    * Run the frontest script against the Gen1 config.
    */
   public async frontestGen1(): Promise<void> {
-    await git.checkout(this.targetAppPath, 'main', false);
+    await this.gitCheckoutGen1();
     await this.runScriptIfExists(FRONTEST_SCRIPT, [path.join('src', 'amplifyconfiguration.json')]);
   }
 
@@ -227,7 +232,7 @@ export class App {
    * Run the frontest script against the Gen2 config.
    */
   public async frontestGen2(): Promise<void> {
-    await git.checkout(this.targetAppPath, this.gen2BranchName, false);
+    await this.gitCheckoutGen2();
     await this.runScriptIfExists(FRONTEST_SCRIPT, ['amplify_outputs.json']);
   }
 
@@ -260,38 +265,45 @@ export class App {
    * Initialize a git repo and create the initial commit.
    */
   public async gitInit(): Promise<void> {
-    this.logger.info('Initializing git repo...');
-    await git.init(this.targetAppPath);
-    this.logger.info('Git repo initialized');
+    await this.git.init();
   }
 
   /**
    * Commit all changes.
    */
   public async gitCommit(message: string): Promise<void> {
-    this.logger.info(`Git commit: ${message}`);
-    await git.commit(this.targetAppPath, message);
+    await this.git.commit(message);
   }
 
   /**
    * Checkout the Gen1 (main) branch.
    */
   public async gitCheckoutGen1(): Promise<void> {
-    this.logger.info('Checking out Gen1 branch (main)...');
-    await git.checkout(this.targetAppPath, 'main', false);
+    await this.git.checkout('main', false);
   }
 
   /**
    * Checkout the Gen2 branch (creates it if create is true).
    */
   public async gitCheckoutGen2(create = false): Promise<void> {
-    this.logger.info(`Checking out Gen2 branch (${this.gen2BranchName})...`);
-    await git.checkout(this.targetAppPath, this.gen2BranchName, create);
+    await this.git.checkout(this.gen2BranchName, create);
   }
 
   // ============================================================
   // Private Helpers
   // ============================================================
+
+  private removeGitignoreLine(line: string): void {
+    const gitignorePath = path.join(this.targetAppPath, '.gitignore');
+    if (!fs.existsSync(gitignorePath)) return;
+    const content = fs.readFileSync(gitignorePath, 'utf-8');
+    const updated = content
+      .split('\n')
+      .filter((l) => l.trim() !== line)
+      .join('\n');
+    fs.writeFileSync(gitignorePath, updated, 'utf-8');
+    this.logger.info(`Removed '${line}' from .gitignore`);
+  }
 
   private loadMigrationConfig(): MigrationConfig {
     const configPath = path.join(this.targetAppPath, 'migration', 'config.json');
