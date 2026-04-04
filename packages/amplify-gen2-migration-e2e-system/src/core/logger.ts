@@ -1,10 +1,13 @@
 /**
- * Comprehensive logging system for the Amplify Migration System
+ * Logging system for the Amplify Migration System.
  */
 
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import chalk from 'chalk';
+import os from 'os';
+
+const LOG_DIR = path.join(os.tmpdir(), 'amplify-gen2-migration-e2e-system', 'logs');
 
 export enum LogLevel {
   DEBUG = 'debug',
@@ -13,108 +16,68 @@ export enum LogLevel {
   ERROR = 'error',
 }
 
-export interface LogEntry {
-  timestamp: Date;
-  level: LogLevel;
-  message: string;
-  error?: Error;
+interface LogEntry {
+  readonly timestamp: Date;
+  readonly level: LogLevel;
+  readonly message: string;
+  readonly error?: Error;
 }
 
 export class Logger {
-  private logLevel: LogLevel;
-  private logFilePath?: string;
-  private appName?: string;
+  private readonly logLevel: LogLevel;
+  private readonly logFilePath: string;
 
-  constructor(logLevel: LogLevel = LogLevel.INFO) {
-    this.logLevel = logLevel;
+  constructor(private readonly appName: string, level: LogLevel = LogLevel.INFO) {
+    this.logLevel = level;
+    this.logFilePath = path.join(LOG_DIR, `${appName}.log`);
+    fs.ensureDirSync(LOG_DIR);
   }
 
   public isDebug(): boolean {
     return this.logLevel === LogLevel.DEBUG;
   }
 
-  debug(message: string): void {
-    this.log(LogLevel.DEBUG, message, undefined);
+  public debug(message: string): void {
+    this.log(LogLevel.DEBUG, message);
   }
 
-  info(message: string): void {
-    this.log(LogLevel.INFO, message, undefined);
+  public info(message: string): void {
+    this.log(LogLevel.INFO, message);
   }
 
-  warn(message: string): void {
-    this.log(LogLevel.WARN, message, undefined);
+  public warn(message: string): void {
+    this.log(LogLevel.WARN, message);
   }
 
-  error(message: string, error?: Error): void {
+  public error(message: string, error?: Error): void {
     this.log(LogLevel.ERROR, message, error);
   }
 
-  setAppName(appName: string): void {
-    this.appName = appName;
-  }
-
-  setLogLevel(level: LogLevel): void {
-    this.logLevel = level;
-    this.debug(`Log level set to: ${level}`);
-  }
-
-  setLogFilePath(filePath: string): void {
-    this.logFilePath = filePath;
-
-    // Ensure log directory exists
-    const logDir = path.dirname(filePath);
-    fs.ensureDirSync(logDir);
-
-    this.info(`File logging set: ${filePath}`);
-  }
-
   private log(level: LogLevel, message: string, error?: Error): void {
-    if (!this.shouldLog(level)) {
-      return;
-    }
+    if (!this.shouldLog(level)) return;
 
-    const entry: LogEntry = {
-      timestamp: new Date(),
-      level,
-      message,
-      error,
-    };
+    const entry: LogEntry = { timestamp: new Date(), level, message, error };
+    const formatted = this.formatMessage(entry);
 
-    // Console output
-    const formattedMessage = this.formatMessage(entry);
-    console.log(formattedMessage);
+    console.log(formatted);
 
-    // File output
-    if (this.logFilePath) {
-      this.writeToFile(entry);
+    try {
+      fs.appendFileSync(this.logFilePath, formatted + '\n');
+    } catch {
+      // Avoid infinite recursion
     }
   }
 
   private shouldLog(level: LogLevel): boolean {
     const levels = [LogLevel.DEBUG, LogLevel.INFO, LogLevel.WARN, LogLevel.ERROR];
-    const currentLevelIndex = levels.indexOf(this.logLevel);
-    const messageLevelIndex = levels.indexOf(level);
-
-    return messageLevelIndex >= currentLevelIndex;
+    return levels.indexOf(level) >= levels.indexOf(this.logLevel);
   }
 
   private formatMessage(entry: LogEntry): string {
     const timestamp = entry.timestamp.toISOString();
     const level = this.colorizeLevel(entry.level);
-    const errorInfo = this.formatError(entry.error);
-
-    return `[${timestamp}] ${level} [${this.appName ?? ''}] ${entry.message}${errorInfo}`;
-  }
-
-  private formatError(error?: Error): string {
-    if (!error) {
-      return '';
-    }
-
-    const message = ` | Error: ${error.message}`;
-    const stack = error.stack ? `\n${chalk.red(error.stack)}` : '';
-
-    return message + stack;
+    const errorInfo = entry.error ? ` | Error: ${entry.error.message}${entry.error.stack ? `\n${chalk.red(entry.error.stack)}` : ''}` : '';
+    return `[${timestamp}] ${level} [${this.appName}] ${entry.message}${errorInfo}`;
   }
 
   private colorizeLevel(level: LogLevel): string {
@@ -129,20 +92,6 @@ export class Logger {
         return chalk.red('[ERROR]');
       default:
         return chalk.blue('[INFO]');
-    }
-  }
-
-  private writeToFile(entry: LogEntry): void {
-    if (!this.logFilePath) {
-      return;
-    }
-
-    try {
-      const logLine = this.formatMessage(entry);
-      fs.appendFileSync(this.logFilePath, logLine + '\n');
-    } catch (error) {
-      // Avoid infinite recursion by not logging file write errors
-      console.error('Failed to write to log file:', error);
     }
   }
 }
