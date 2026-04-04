@@ -262,6 +262,15 @@ healthy state and proceed to lock your Gen1 environment by attaching a restricti
 ```
 
 You will need to remove this policy from the stack if you'd like to push updates to the Gen1 environment.
+To do so, run:
+
+```bash
+npx amplify gen2-migration lock --rollback
+```
+
+> [!WARNING]
+> Do not rollback the lock if the Gen1 stack has already been refactored (and not rolled back).
+> Pushing Gen1 updates to a refactored stack can cause resource conflicts.
 
 > [!TIP]
 > It is also advisable to disable any automatic pipelines that deploy to your Gen1 environment.
@@ -377,35 +386,10 @@ This is required in order for your Gen1 environment to keep functioning correctl
 
 #### Post Generate | REST API
 
-Follow instructions to [Set up an Amplify REST API](https://docs.amplify.aws/react/build-a-backend/add-aws-services/rest-api/set-up-rest-api/).
-Then, if your frontend accesses REST using IAM credentials, navigate to the Amplify Console to find the `<gen1-rest-api-id>` and `<gen1-root-resource-id>`
-on the ApiGateway AWS Console. For example:
+The migration tool automatically generates the full REST API CDK construct, including the Gen1 API reference,
+IAM policy, and policy attachment. No manual CDK setup is needed.
 
-![](./migration-guide-images/gen1-rest-api-id.png)
-![](./migration-guide-images/gen1-root-resource-id.png)
-
-And add:
-
-```diff
-+ const gen1RestApi = RestApi.fromRestApiAttributes(restApiStack, "Gen1RestApi", {
-+     restApiId: '<gen1-rest-api-id>',
-+     rootResourceId: '<gen1-root-resource-id>',
-+ })
-+ const gen1RestApiPolicy = new Policy(restApiStack, "Gen1RestApiPolicy", {
-+     statements: [
-+         new PolicyStatement({
-+             actions: ["execute-api:Invoke"],
-+             resources: [`${gen1RestApi.arnForExecuteApi("*", "/*")}`]
-+         })
-+     ]
-+ });
-+ backend.auth.resources.authenticatedUserIamRole.attachInlinePolicy(gen1RestApiPolicy);
-```
-
-> Where `restApiStack` is the variable name you assigned when creating the dedicated stack.
-
-This is required in order for your Gen1 environment to keep functioning correctly after the `refactor` step. You'll also need to change
-your frontend code to point to the new API name:
+However, you will need to update your frontend code to point to the new Gen2 API name:
 
 **Edit in `./src/App.tsx` (or equivalent)**:
 
@@ -510,13 +494,17 @@ stateful resources, a `refactor` is required.
 
 ### 5. Refactor
 
-> [!CAUTION]
-> The `refactor` operation is currently not reversible. If it fails or
-> produces undesired results, you will need to recreate the environment. **Make sure you
-> run it only on environments you can afford to delete**.
-
 Refactoring is the process of updating the underlying CloudFormation stacks of both your Gen1 and
 Gen2 applications such that all stateful resources are reused across both apps.
+
+If the refactor operation fails or produces undesired results, you can roll it back by running:
+
+```bash
+npx amplify gen2-migration refactor --to <gen2-root-stack-name> --rollback
+```
+
+This moves stateful resources back to the Gen1 CloudFormation stacks. If refactor fails during
+execution, auto-rollback is attempted automatically (disable with `--no-rollback`).
 
 #### Validations
 
