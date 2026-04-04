@@ -82,7 +82,7 @@ afterAll(async () => {
   await signOut();
 });
 
-describe('Note CRUD', () => {
+describe('Note', () => {
   const client = () => generateClient({ authMode: 'userPool' });
 
   it('creates a note with correct fields', async () => {

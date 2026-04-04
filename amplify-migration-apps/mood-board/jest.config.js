@@ -2,6 +2,7 @@
 export default {
   testMatch: ['<rootDir>/tests/**/*.test.ts'],
   modulePathIgnorePatterns: ['<rootDir>/_snapshot'],
+  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   transform: {
     '^.+\\.ts$': ['ts-jest', {
       tsconfig: {
@@ -9,6 +10,7 @@ export default {
         module: 'CommonJS',
         moduleResolution: 'node',
         esModuleInterop: true,
+        allowJs: true,
         noEmit: true,
         strict: true,
         skipLibCheck: true,

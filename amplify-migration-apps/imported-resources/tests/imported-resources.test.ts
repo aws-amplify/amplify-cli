@@ -119,7 +119,7 @@ describe('getRandomQuote', () => {
   });
 });
 
-describe('Project CRUD', () => {
+describe('Project', () => {
   const authClient = () => generateClient({ authMode: 'userPool' });
   const publicClient = () => generateClient({ authMode: 'apiKey' });
 
@@ -218,7 +218,7 @@ describe('Project CRUD', () => {
   });
 });
 
-describe('Todo CRUD', () => {
+describe('Todo', () => {
   const authClient = () => generateClient({ authMode: 'userPool' });
   const publicClient = () => generateClient({ authMode: 'apiKey' });
 

@@ -90,7 +90,7 @@ afterAll(async () => {
   await signOut();
 });
 
-describe('Board CRUD', () => {
+describe('Board', () => {
   const client = () => generateClient({ authMode: 'apiKey' });
 
   it('creates a board with correct fields', async () => {
@@ -176,7 +176,7 @@ describe('Board CRUD', () => {
 });
 
 
-describe('MoodItem CRUD', () => {
+describe('MoodItem', () => {
   const client = () => generateClient({ authMode: 'apiKey' });
   let boardId: string;
 

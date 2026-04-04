@@ -101,7 +101,7 @@ afterAll(async () => {
   await signOut();
 });
 
-describe('Topic CRUD', () => {
+describe('Topic', () => {
   const client = () => generateClient({ authMode: 'apiKey' });
 
   it('creates a topic with correct fields', async () => {
@@ -198,7 +198,7 @@ describe('Topic CRUD', () => {
   });
 });
 
-describe('Post CRUD', () => {
+describe('Post', () => {
   const client = () => generateClient({ authMode: 'apiKey' });
 
   async function createParentTopic(): Promise<string> {
@@ -310,7 +310,7 @@ describe('Post CRUD', () => {
   });
 });
 
-describe('Comment CRUD', () => {
+describe('Comment', () => {
   const client = () => generateClient({ authMode: 'apiKey' });
 
   async function createParentPost(): Promise<string> {

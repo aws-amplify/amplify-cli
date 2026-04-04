@@ -93,7 +93,7 @@ afterAll(async () => {
   await signOut();
 });
 
-describe('Product CRUD', () => {
+describe('Product', () => {
   const client = () => generateClient();
   let productId: string;
 
@@ -180,7 +180,7 @@ describe('Product CRUD', () => {
   });
 });
 
-describe('User CRUD', () => {
+describe('User', () => {
   const client = () => generateClient();
   let userId: string;
 
@@ -248,7 +248,7 @@ describe('User CRUD', () => {
   });
 });
 
-describe('Comment CRUD', () => {
+describe('Comment', () => {
   const client = () => generateClient();
   let commentProductId: string;
   let commentId: string;
