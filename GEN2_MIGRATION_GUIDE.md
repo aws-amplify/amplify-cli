@@ -805,7 +805,7 @@ by the CLI setting that configures them.
 
 ### `amplify add api`
 
-- ➤ **GraphQL**
+- 🟢 **GraphQL**
 
   - ➤ **Default Authorization Type**
 
@@ -822,7 +822,7 @@ by the CLI setting that configures them.
     - 🔴 `OpenID Connect`
     - 🔴 `Lambda`
 
-- ➤ **REST**
+- 🟢 **REST**
 
   - ➤ **Restrict API access**
 
@@ -860,7 +860,7 @@ by the CLI setting that configures them.
 
 ### `amplify add storage`
 
-- ➤ **Content (Images, audio, video, etc.)**
+- 🟢 **Content (Images, audio, video, etc.)**
 
   - **What kind of access do you want for Authenticated users?**
 
@@ -882,7 +882,7 @@ by the CLI setting that configures them.
 
   - 🟢 Do you want to add a Lambda Trigger for your S3 Bucket
 
-- ➤ NoSQL Database
+- 🟢 NoSQL Database
   - 🟢 `Do you want to add a sort key to your table`
   - 🟢 `Do you want to add global secondary indexes to your table`
   - 🟢 `Do you want to add a sort key to your global secondary index`
@@ -892,7 +892,7 @@ by the CLI setting that configures them.
 
 ### `amplify add function`
 
-- ➤ **Lambda function (serverless function)**
+- 🟢 **Lambda function (serverless function)**
 
   - ➤ Runtime
 
@@ -971,7 +971,7 @@ by the CLI setting that configures them.
 
 - ➤ **Select which capability you want to add**
 
-  - 🟡 `Map (visualize the geospatial data)` (_generate_ ✔ _refactor_ ✔)
+  - 🟢 `Map (visualize the geospatial data)`
 
     - ➤ **Restrict access by**
 
@@ -986,7 +986,7 @@ by the CLI setting that configures them.
 
     - ⚠️ **Do you want to configure advanced settings**
 
-  - 🟡 `Location search (search by places, addresses, coordinates)` (_generate_ ✔ _refactor_ ✔)
+  - 🟢 `Location search (search by places, addresses, coordinates)`
 
     - ➤ **Restrict access by**
 
@@ -1028,7 +1028,7 @@ by the CLI setting that configures them.
 
 - ➤ **Select an Analytics provider**
 
-  - 🟢 `Amazon Kinesis Streams` (_generate_ ✔ _refactor_ ✔)
+  - 🟢 `Amazon Kinesis Streams`
 
     - 🟢 **Enter a Stream name**
     - 🟢 **Enter number of shards**
