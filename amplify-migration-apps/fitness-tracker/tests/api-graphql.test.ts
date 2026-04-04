@@ -189,8 +189,19 @@ describe('auth', () => {
       const fetched = (getResult as any).data.getWorkoutProgram;
 
       expect(fetched.title).toBe('Updated Title');
-      expect(fetched.status).toBe(Work
-tProgram, variables: { input: { id: created.id } } });
+      expect(fetched.status).toBe(WorkoutProgramStatus.ON_HOLD);
+      expect(fetched.color).toBe('#28a745');
+      expect(fetched.description).toBe('Now updated');
+    });
+
+    it('deletes a workout program', async () => {
+      const createResult = await auth().graphql({
+        query: createWorkoutProgram,
+        variables: { input: { title: `Delete Test ${Date.now()}`, status: WorkoutProgramStatus.ARCHIVED } },
+      });
+      const created = (createResult as any).data.createWorkoutProgram;
+
+      await auth().graphql({ query: deleteWorkoutProgram, variables: { input: { id: created.id } } });
 
       const getResult = await auth().graphql({ query: getWorkoutProgram, variables: { id: created.id } });
       expect((getResult as any).data.getWorkoutProgram).toBeNull();

@@ -10,6 +10,9 @@
     "configure": "./backend/configure.sh",
     "sanitize": "tsx ../sanitize.ts",
     "typecheck": "cd _snapshot.post.generate/amplify && npx tsc --noEmit",
+    "test:gen1": "true",
+    "test:gen2": "true",
+    "test:e2e": "cd ../../packages/amplify-gen2-migration-e2e-system && npx tsx src/cli.ts --app backend-only --profile ${AWS_PROFILE:-default}",
     "post-generate": "npx tsx migration/post-generate.ts",
     "post-refactor": "npx tsx migration/post-refactor.ts",
     "post-push": "true"

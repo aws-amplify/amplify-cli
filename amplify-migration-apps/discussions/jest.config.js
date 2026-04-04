@@ -3,11 +3,13 @@ export default {
   testMatch: ['<rootDir>/tests/**/*.test.ts'],
   modulePathIgnorePatterns: ['<rootDir>/_snapshot', '<rootDir>/amplify'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
+  extensionsToTreatAsEsm: ['.ts'],
   transform: {
-    '^.+\\.ts$': ['ts-jest', {
+    '^.+\\.[tj]s$': ['ts-jest', {
+      useESM: true,
       tsconfig: {
         target: 'ES2022',
-        module: 'CommonJS',
+        module: 'ES2022',
         moduleResolution: 'node',
         esModuleInterop: true,
         allowJs: true,
