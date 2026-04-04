@@ -409,6 +409,10 @@ Amplify client side libraries support both files so no additional change is need
 This is required in order to instruct the hosting service that the DynamoDB tables hosting your
 models should be reused (imported) instead of recreated.
 
+> [!TIP]
+> If you want to test with [sandbox](#sandbox) and share Gen1 model data, set `branchName` to
+> `"sandbox"` instead. Change it back to `"gen2-main"` before deploying the branch.
+
 #### Post Generate | NodeJS Function ESM Compatibility
 
 If you have a NodeJS Lambda function in your app, you need to port your code
@@ -576,6 +580,20 @@ Once completed you can login to your app via the newly dedicated amplify domain.
 the application has access only to the DynamoDB data from your Gen1 environment. **It does not
 however reuse other stateful resources such as user pools.** To grant it access to all
 stateful resources, a `refactor` is required.
+
+#### Sandbox
+
+Alternatively, you can deploy using [sandbox](https://docs.amplify.aws/react/deploy-and-host/sandbox-environments/setup/)
+to test the Gen2 application in full isolation from your Gen1 environment.
+
+```bash
+npx ampx sandbox --once
+```
+
+> [!NOTE]
+> By default, sandbox creates its own DynamoDB tables and does not share Gen1 model data.
+> To share them, set `branchName` to `"sandbox"` in `./amplify/data/resource.ts`
+> (see [Post Generate | Reuse Model Tables](#post-generate--reuse-model-tables)).
 
 ### 5. Refactor
 
