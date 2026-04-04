@@ -1,6 +1,5 @@
-import type { Config } from 'jest';
-
-const config: Config = {
+/** @type {import('jest').Config} */
+export default {
   testMatch: ['<rootDir>/tests/**/*.test.ts'],
   modulePathIgnorePatterns: ['<rootDir>/_snapshot'],
   transform: {
@@ -18,8 +17,5 @@ const config: Config = {
     }],
   },
   testTimeout: 30_000,
-  // Run test files sequentially — they share a single Cognito user
   maxWorkers: 1,
 };
-
-export default config;

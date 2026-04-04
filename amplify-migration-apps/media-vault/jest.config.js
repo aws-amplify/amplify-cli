@@ -1,6 +1,5 @@
-import type { Config } from 'jest';
-
-const config: Config = {
+/** @type {import('jest').Config} */
+export default {
   testMatch: ['<rootDir>/tests/**/*.test.ts'],
   modulePathIgnorePatterns: ['<rootDir>/_snapshot'],
   transform: {
@@ -20,5 +19,3 @@ const config: Config = {
   testTimeout: 30_000,
   maxWorkers: 1,
 };
-
-export default config;
