@@ -309,6 +309,10 @@ Both features show `—` for refactor because they only affect code generation.
 > and will fail if any entry is unsupported. Each step runs additional validations as well — see
 > the validation tables in each step section. You can bypass validations with `--skip-validations`,
 > or run only the validations without executing the step using `--validations-only`.
+>
+> When skipping a failed assessment, any unsupported resource or feature is simply skipped by the
+> tool. You can still proceed with migration, but you will need to manually handle the skipped
+> items to complete it.
 
 ### 2. Lock
 
