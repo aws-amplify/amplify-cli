@@ -19,7 +19,6 @@ Following document describes how to migrate your Gen1 backend environment to a n
 - [Assumptions](#assumptions)
 - [Step By Step](#step-by-step)
 - [Feature Coverage](#feature-coverage)
-- [Limitations](#limitations)
 - [Example Apps](#example-apps)
 - [Feedback](#feedback)
 - [Known Issues](https://github.com/aws-amplify/amplify-cli/issues?q=is%3Aissue%20state%3Aopen%20label%3Agen2-migration%20type%3ABug)
@@ -1078,12 +1077,11 @@ by the CLI setting that configures them.
 
 ### `amplify override api` 🔴
 
-# Limitations
+### `amplify override auth` 🔴
 
-- Apps with multiple storage resources (e.g S3 bucket **and** DynamoDB Table) are not supported for refactor.
-  You may still follow the guide until the `generate` step.
-- You cannot migrate multiple environments of the same app at the same time.
-- If you have a function accessing a DynamoDB **model** table, the model name must be `PascalCased` (e.g `Comment` - not `comment`)
+### `amplify override storage` 🔴
+
+### `amplify override project` 🔴
 
 # Example Apps
 
