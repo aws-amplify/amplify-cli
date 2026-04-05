@@ -84,13 +84,14 @@ async function migrate(app: App): Promise<void> {
 
   await app.gitCheckoutGen1();
   await app.refactor(gen2StackName);
+
+  await app.testGen1();
+  await app.testGen2();
+
   await app.gitCheckoutGen2();
   await app.postRefactor();
   await app.gitDiff();
   await app.gitCommit('chore: post refactor');
-
-  await app.testGen1();
-  await app.testGen2();
 
   await app.deployGen2Sandbox();
 
