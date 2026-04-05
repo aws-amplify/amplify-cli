@@ -60,7 +60,6 @@ type LowStockResponse {
 
 type Query {
   checkLowStock: LowStockResponse @function(name: "lowstockproducts-${env}") @auth(rules: [
-    { allow: private, provider: iam },
-    { allow: public, provider: apiKey }
+    { allow: private, provider: iam }
   ])
 }
