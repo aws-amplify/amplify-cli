@@ -934,9 +934,14 @@ by the CLI setting that configures them.
 
 ### `amplify import storage`
 
+- ➤ **Select from one of the below mentioned services**
+
+  - 🔴 `S3 bucket - Content (Images, audio, video, etc.)`
+  - 🔴 `DynamoDB table - NoSQL Database`
+
 ## Function
 
-### 🔴 `amplify add function`
+### `amplify add function`
 
 - 🟢 **Lambda function (serverless function)**
 
