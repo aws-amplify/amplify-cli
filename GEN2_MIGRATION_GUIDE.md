@@ -842,6 +842,7 @@ by the CLI setting that configures them.
     - ⚠️ `Lambda`
 
   - ➤ **Additional Authorization Type**
+
     - 🟢 `API Key`
     - 🟢 `Amazon Cognito User Pool`
     - ⚠️ `IAM`
@@ -884,6 +885,12 @@ by the CLI setting that configures them.
     - 🟢 `read`
     - 🟢 `update`
     - 🟢 `delete`
+
+### Custom Business Logic
+
+- 🟡 [`AppSync JavaScript or VTL resolver`](https://docs.amplify.aws/gen1/react/build-a-backend/graphqlapi/custom-business-logic/#appsync-javascript-or-vtl-resolver) (_generate_ ✗ _refactor_ ✔)
+- 🟡 [`Override Amplify-generated resolvers`](https://docs.amplify.aws/gen1/react/build-a-backend/graphqlapi/custom-business-logic/#override-amplify-generated-resolvers) (_generate_ ✗ _refactor_ ✔)
+- 🟡 [`Extend Amplify-generated resolvers`](https://docs.amplify.aws/gen1/react/build-a-backend/graphqlapi/custom-business-logic/#extend-amplify-generated-resolvers) (_generate_ ✗ _refactor_ ✔)
 
 ## Storage
 
@@ -994,6 +1001,10 @@ by the CLI setting that configures them.
       - 🔴 `Custom Build Command or Script Path`
 
 - 🔴 **Lambda layer (shared code & resource used across functions)**
+
+### Custom Policies
+
+- 🟡 [`Access existing AWS resource from Lambda Function`](https://docs.amplify.aws/gen1/javascript/build-a-backend/functions/set-up-function/#access-existing-aws-resource-from-lambda-function) (_generate_ ✗ _refactor_ ✔)
 
 ## Analytics
 
