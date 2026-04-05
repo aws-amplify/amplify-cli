@@ -996,6 +996,19 @@ by the CLI setting that configures them.
 
 - 🔴 **Lambda layer (shared code & resource used across functions)**
 
+## Analytics
+
+### `amplify add analytics`
+
+- ➤ **Select an Analytics provider**
+
+  - 🟢 **Amazon Kinesis Streams**
+
+    - 🟢 `Enter a Stream name`
+    - 🟢 `Enter number of shards`
+
+  - 🔴 **Amazon Pinpoint**
+
 ## Geo
 
 ### `amplify add geo`
@@ -1053,19 +1066,6 @@ by the CLI setting that configures them.
 
 ### `amplify add notifications` 🔴
 
-## Analytics
-
-### `amplify add analytics`
-
-- ➤ **Select an Analytics provider**
-
-  - 🟢 **Amazon Kinesis Streams**
-
-    - 🟢 `Enter a Stream name`
-    - 🟢 `Enter number of shards`
-
-  - 🔴 **Amazon Pinpoint**
-
 ## Hosting
 
 ### `amplify add hosting` 🔴
@@ -1076,7 +1076,7 @@ by the CLI setting that configures them.
 
 ## Overrides
 
-### `amplify override <category>` 🔴
+### `amplify override api` 🔴
 
 # Limitations
 
