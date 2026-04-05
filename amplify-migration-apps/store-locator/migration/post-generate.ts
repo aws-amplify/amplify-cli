@@ -7,6 +7,7 @@
  * 2. Convert PostConfirmation trigger index.js from CommonJS to ESM
  * 3. Convert PostConfirmation trigger add-to-group.js from CommonJS to ESM
  * 4. Add auth resource access for the PostConfirmation trigger
+ * 5. Update PostConfirmation resource.ts (memoryMB, resourceGroupName)
  */
 
 import fs from 'fs/promises';
@@ -94,12 +95,31 @@ async function addAuthResourceAccess(appPath: string, dirName: string): Promise<
   await fs.writeFile(resourcePath, updated, 'utf-8');
 }
 
+async function updatePostConfirmationResource(appPath: string, dirName: string): Promise<void> {
+  const resourcePath = path.join(appPath, 'amplify', 'auth', dirName, 'resource.ts');
+  let content = await fs.readFile(resourcePath, 'utf-8');
+
+  // Update memoryMB from 128 to 512
+  content = content.replace(/memoryMB:\s*128/, 'memoryMB: 512');
+
+  // Add resourceGroupName if not present
+  if (!content.includes('resourceGroupName')) {
+    content = content.replace(
+      /(runtime:\s*\d+),?/,
+      "$1,\n  resourceGroupName: 'auth',",
+    );
+  }
+
+  await fs.writeFile(resourcePath, content, 'utf-8');
+}
+
 export async function postGenerate(appPath: string): Promise<void> {
   const dirName = findPostConfirmationDir(appPath);
   await updateFrontendConfig(appPath);
   await convertIndexToESM(appPath, dirName);
   await convertAddToGroupToESM(appPath, dirName);
   await addAuthResourceAccess(appPath, dirName);
+  await updatePostConfirmationResource(appPath, dirName);
 }
 
 async function main(): Promise<void> {

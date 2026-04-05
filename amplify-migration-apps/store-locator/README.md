@@ -218,86 +218,20 @@ git checkout -b gen2-main
 npx amplify gen2-migration generate
 ```
 
-**Edit in `./src/main.tsx`:**
+```console
+npm run post-generate
+```
 
-```diff
-- import amplifyconfig from './amplifyconfiguration.json';
-+ import amplifyconfig from '../amplify_outputs.json';
+```console
+rm -rf node_modules package-lock.json
+npm install
+npm install --package-lock-only
 ```
 
 ```console
 git add .
 git commit -m "feat: migrate to gen2"
 git push origin gen2-main
-```
-
-**Edit in `./amplify/auth/storelocatorcff4360fPostConfirmation/resource.ts`:**
-
-```diff
-- memoryMB: 128,
-- runtime: 22
-+ memoryMB: 512,
-+ runtime: 22,
-+ resourceGroupName: 'auth'
-```
-
-**Edit in `./amplify/auth/storelocatorcff4360fPostConfirmation/index.js`:**
-
-The Gen1 dynamic `require(`./${name}`)` doesn't work with esbuild bundling in the Amplify build pipeline (`Module not found in bundle: ./add-to-group`). Replace with a static import:
-
-```diff
-- const moduleNames = process.env.MODULES.split(',');
-- /**
--  * The array of imported modules.
--  */
-- const modules = moduleNames.map((name) => require(`./${name}`));
-+ import * as addToGroup from './add-to-group';
-+
-+ const modules = [addToGroup];
-```
-
-```diff
-- exports.handler = async (event, context) => {
-+ export async function handler(event, context) {
-```
-
-**Edit in `./amplify/auth/storelocatorcff4360fPostConfirmation/add-to-group.js`:**
-
-```diff
-- const {
--   CognitoIdentityProviderClient,
--   AdminAddUserToGroupCommand,
--   GetGroupCommand,
--   CreateGroupCommand,
-- } = require('@aws-sdk/client-cognito-identity-provider');
-+ import {
-+   CognitoIdentityProviderClient,
-+   AdminAddUserToGroupCommand,
-+   GetGroupCommand,
-+   CreateGroupCommand,
-+ } from '@aws-sdk/client-cognito-identity-provider';
-```
-
-```diff
-- exports.handler = async (event) => {
-+ export const handler = async (event) => {
-```
-
-**Edit in `./amplify/auth/resource.ts`:**
-
-```diff
--  triggers: {
--      postConfirmation: storelocatorcff4360fPostConfirmation
--  },
-+ triggers: {
-+      postConfirmation: storelocatorcff4360fPostConfirmation
-+  },
-+ access: (allow) => [
-+     allow.resource(storelocatorcff4360fPostConfirmation).to([
-+         "addUserToGroup",
-+         "manageGroups",
-+     ]),
-+ ],
 ```
 
 Now connect the `gen2-main` branch to the hosting service:
