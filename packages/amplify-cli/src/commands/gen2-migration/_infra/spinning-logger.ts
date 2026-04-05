@@ -16,6 +16,15 @@ export class SpinningLogger {
   constructor(private readonly prefix: string, options?: { readonly debug?: boolean }) {
     this.debugMode = options?.debug ?? globalIsDebug;
     this.spinner = new AmplifySpinner();
+
+    // Restore the cursor if the process is interrupted while the spinner is active
+    process.on('SIGINT', () => {
+      if (this.spinnerActive) {
+        this.spinner.stop();
+      }
+      // Registering a SIGINT handler disables the default exit behavior, so we must exit explicitly.
+      process.exit(130);
+    });
   }
 
   /**
