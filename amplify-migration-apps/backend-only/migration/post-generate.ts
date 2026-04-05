@@ -3,19 +3,28 @@
  * Post-generate script for backend-only app.
  *
  * Applies manual edits required after `amplify gen2-migration generate`:
- * 1. Update branchName in amplify/data/resource.ts to "sandbox"
+ * 1. Update branchName in amplify/data/resource.ts to the value of AWS_BRANCH
+ *    env var, or the current git branch if AWS_BRANCH is not set
  * 2. Convert quotegeneratorbe function from CommonJS to ESM
  */
 
+import { execSync } from 'child_process';
 import fs from 'fs/promises';
 import path from 'path';
+
+function resolveTargetBranch(): string {
+  if (process.env.AWS_BRANCH) {
+    return process.env.AWS_BRANCH;
+  }
+  return execSync('git rev-parse --abbrev-ref HEAD', { encoding: 'utf-8' }).trim();
+}
 
 async function updateBranchName(appPath: string): Promise<void> {
   const resourcePath = path.join(appPath, 'amplify', 'data', 'resource.ts');
 
   const content = await fs.readFile(resourcePath, 'utf-8');
 
-  const targetBranch = 'sandbox';
+  const targetBranch = resolveTargetBranch();
 
   const updated = content.replace(
     /branchName:\s*['"]([^'"]+)['"]/,

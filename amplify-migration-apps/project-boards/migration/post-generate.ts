@@ -3,29 +3,31 @@
  * Post-generate script for project-boards app.
  *
  * Applies manual edits required after `amplify gen2-migration generate`:
- * 1. Update branchName in amplify/data/resource.ts to "sandbox" (Gen2 hardcodes
- *    sandbox deployments to look for branchName='sandbox' in the mappings)
+ * 1. Update branchName in amplify/data/resource.ts to the value of AWS_BRANCH
+ *    env var, or the current git branch if AWS_BRANCH is not set
  * 2. Convert quotegenerator function from CommonJS to ESM
  * 3. Update frontend import from amplifyconfiguration.json to amplify_outputs.json
  * 4. Fix missing awsRegion in GraphQL API userPoolConfig
  */
 
+import { execSync } from 'child_process';
 import fs from 'fs/promises';
 import path from 'path';
+
+function resolveTargetBranch(): string {
+  if (process.env.AWS_BRANCH) {
+    return process.env.AWS_BRANCH;
+  }
+  return execSync('git rev-parse --abbrev-ref HEAD', { encoding: 'utf-8' }).trim();
+}
 
 async function updateBranchName(appPath: string): Promise<void> {
   const resourcePath = path.join(appPath, 'amplify', 'data', 'resource.ts');
 
   const content = await fs.readFile(resourcePath, 'utf-8');
 
-  // For sandbox deployments, Gen2 hardcodes the branch lookup to 'sandbox'
-  // See: https://github.com/aws-amplify/amplify-backend/blob/main/packages/backend-data/src/factory.ts
-  // The code does: isSandboxDeployment ? 'sandbox' : scope.node.tryGetContext(CDKContextKey.BACKEND_NAME)
-  // So we must use 'sandbox' as the branchName in migratedAmplifyGen1DynamoDbTableMappings
-  const targetBranch = 'sandbox';
+  const targetBranch = resolveTargetBranch();
 
-  // The generated code has branchName set to the env name (e.g., 'ippj')
-  // We need to change it to 'sandbox' for table reuse in sandbox deployments
   const updated = content.replace(
     /branchName:\s*['"]([^'"]+)['"]/,
     `branchName: '${targetBranch}'`,

@@ -247,7 +247,7 @@ export class App {
    * Run the post-generate script.
    */
   public async postGenerate(): Promise<void> {
-    await this.runNpmScript('post-generate');
+    await this.runNpmScript('post-generate', { AWS_BRANCH: 'sandbox' });
   }
 
   /**
@@ -353,12 +353,12 @@ export class App {
    * Run an npm script defined in the app's package.json.
    * Silently skips if the script is not defined.
    */
-  private async runNpmScript(scriptName: string): Promise<void> {
+  private async runNpmScript(scriptName: string, extraEnv?: Record<string, string>): Promise<void> {
     const result = await execa('npm', ['run', scriptName], {
       cwd: this.targetAppPath,
       stdio: 'inherit',
       reject: false,
-      env: { ...process.env, AWS_SDK_LOAD_CONFIG: '1' },
+      env: { ...process.env, AWS_SDK_LOAD_CONFIG: '1', ...extraEnv },
     });
 
     if (result.exitCode !== 0) {

@@ -3,7 +3,8 @@
  * Post-generate script for fitness-tracker app.
  *
  * Applies manual edits required after `amplify gen2-migration generate`:
- * 1. Update branchName in amplify/data/resource.ts to "sandbox"
+ * 1. Update branchName in amplify/data/resource.ts to the value of AWS_BRANCH
+ *    env var, or the current git branch if AWS_BRANCH is not set
  * 2. Convert lognutrition function from CommonJS to ESM
  * 3. Convert admin function from CommonJS to ESM
  * 4. Convert PreSignup trigger function from CommonJS to ESM
@@ -14,6 +15,13 @@
 import fs from 'fs/promises';
 import path from 'path';
 import { execSync } from 'child_process';
+
+function resolveTargetBranch(): string {
+  if (process.env.AWS_BRANCH) {
+    return process.env.AWS_BRANCH;
+  }
+  return execSync('git rev-parse --abbrev-ref HEAD', { encoding: 'utf-8' }).trim();
+}
 
 async function findPreSignupDir(appPath: string): Promise<string> {
   const authDir = path.join(appPath, 'amplify', 'auth');
@@ -28,7 +36,7 @@ async function updateBranchName(appPath: string): Promise<void> {
 
   const content = await fs.readFile(resourcePath, 'utf-8');
 
-  const targetBranch = 'sandbox';
+  const targetBranch = resolveTargetBranch();
 
   const updated = content.replace(
     /branchName:\s*['"]([^'"]+)['"]/,
