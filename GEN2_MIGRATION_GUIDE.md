@@ -637,6 +637,13 @@ And run:
 
 ```bash
 git checkout main
+```
+
+Since `generate` replaces the Gen1 `amplify/` directory, local AWS profile configuration is lost.
+If you are using a non-default profile, either set the `AWS_PROFILE` environment variable or run
+`amplify pull` to restore the local configuration before proceeding.
+
+```bash
 npx amplify gen2-migration refactor --to <gen2-root-stack-name>
 ```
 
