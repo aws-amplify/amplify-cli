@@ -375,6 +375,7 @@ delete `node_modules` and your lock file before installing dependencies:
 ```bash
 rm -rf node_modules package-lock.json
 npm install
+npm install --package-lock-only
 ```
 
 This avoids stale resolution artifacts from the Gen1 dependency tree that can cause
@@ -842,6 +843,11 @@ by the CLI setting that configures them.
 
 - 🟢 **REST**
 
+  - ➤ **Choose a Lambda source**
+
+    - 🟢 `Create a new Lambda function`
+    - ⚠️ `Use a Lambda function already added in the current Amplify project`
+
   - ➤ **Restrict API access**
 
     - 🟢 `Yes`
@@ -851,7 +857,7 @@ by the CLI setting that configures them.
 
     - 🟢 `Both`
     - 🟢 `Individual Groups`
-    - ⚠️ `Auth/Guest Users`
+    - 🟢 `Auth/Guest Users`
 
   - ➤ **Who should have access**
 
@@ -872,33 +878,31 @@ by the CLI setting that configures them.
     - 🟢 `update`
     - 🟢 `delete`
 
-  - 🟢 **Do you want to add another path**
-
 ## Storage
 
 ### `amplify add storage`
 
 - 🟢 **Content (Images, audio, video, etc.)**
 
-  - **What kind of access do you want for Authenticated users?**
+  - ➤ **What kind of access do you want for Authenticated users?**
 
     - 🟢 `create/update`
     - 🟢 `read`
     - 🟢 `delete`
 
-  - **What kind of access do you want for Guest users?**
+  - ➤ **What kind of access do you want for Guest users?**
 
     - 🟢 `create/update`
     - 🟢 `read`
     - 🟢 `delete`
 
-  - **What kind of access do you want for {Group} users**
+  - ➤ **What kind of access do you want for {Group} users**
 
     - 🟢 `create/update`
     - 🟢 `read`
     - 🟢 `delete`
 
-  - 🟢 Do you want to add a Lambda Trigger for your S3 Bucket
+  - 🟢 **Do you want to add a Lambda Trigger for your S3 Bucket**
 
 - 🟢 **NoSQL Database**
 
@@ -913,7 +917,7 @@ by the CLI setting that configures them.
 
 - 🟢 **Lambda function (serverless function)**
 
-  - ➤ Runtime
+  - ➤ **Runtime**
 
     - 🔴 `.NET 8`
     - 🔴 `Go`
@@ -921,7 +925,7 @@ by the CLI setting that configures them.
     - 🟢 `NodeJS`
     - 🔴 `Python`
 
-  - ➤ Choose the function template that you want to use
+  - ➤ **Choose the function template that you want to use**
 
     - 🟢 `Hello world function`
     - ⚠️ `CRUD function for Amazon DynamoDB table`
@@ -970,7 +974,7 @@ by the CLI setting that configures them.
         - 🟢 `update`
         - 🟢 `delete`
 
-      - 🔴 function
+      - 🔴 **function**
 
     - 🔴 **Do you want to invoke this function on a recurring schedule**
     - 🔴 **Do you want to enable Lambda layers for this function**
@@ -995,13 +999,13 @@ by the CLI setting that configures them.
     - ➤ **Restrict access by**
 
       - 🟢 `Both`
-      - ⚠️ `Auth/Guest Users`
-      - ⚠️ `Individual Groups`
+      - 🟢 `Auth/Guest Users`
+      - 🟢 `Individual Groups`
 
     - ➤ **Who can access this Map**
 
       - 🟢 `Authorized and Guest users`
-      - ⚠️ `Authorized users only`
+      - 🟢 `Authorized users only`
 
     - ⚠️ **Do you want to configure advanced settings**
 
@@ -1010,13 +1014,13 @@ by the CLI setting that configures them.
     - ➤ **Restrict access by**
 
       - 🟢 `Both`
-      - ⚠️ `Auth/Guest Users`
-      - ⚠️ `Individual Groups`
+      - 🟢 `Auth/Guest Users`
+      - 🟢 `Individual Groups`
 
     - ➤ **Who can access this search index**
 
       - 🟢 `Authorized and Guest users`
-      - ⚠️ `Authorized users only`
+      - 🟢 `Authorized users only`
 
     - ⚠️ **Do you want to configure advanced settings**
 
@@ -1047,12 +1051,12 @@ by the CLI setting that configures them.
 
 - ➤ **Select an Analytics provider**
 
-  - 🟢 `Amazon Kinesis Streams`
+  - 🟢 **Amazon Kinesis Streams**
 
-    - 🟢 **Enter a Stream name**
-    - 🟢 **Enter number of shards**
+    - 🟢 `Enter a Stream name`
+    - 🟢 `Enter number of shards`
 
-  - 🔴 `Amazon Pinpoint`
+  - 🔴 **Amazon Pinpoint**
 
 ## Hosting
 
