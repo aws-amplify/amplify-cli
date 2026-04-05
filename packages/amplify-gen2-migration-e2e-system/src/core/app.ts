@@ -14,11 +14,23 @@ interface MigrationConfig {
    * Per-step configuration overrides.
    */
   readonly lock?: StepConfig;
+  readonly refactor?: RefactorConfig;
 }
 
 interface StepConfig {
   /**
    * Pass --skip-validations to the step.
+   */
+  readonly skipValidations?: boolean;
+}
+
+interface RefactorConfig {
+  /**
+   * Skip the refactor step entirely (e.g., when a sub-feature breaks refactoring).
+   */
+  readonly skip?: boolean;
+  /**
+   * Pass --skip-validations to the refactor step.
    */
   readonly skipValidations?: boolean;
 }
@@ -34,6 +46,13 @@ export class App {
   private readonly sourceAppPath: string;
   private readonly envName: string;
   private readonly migrationConfig: MigrationConfig;
+
+  /**
+   * Whether the refactor step should be skipped entirely for this app.
+   */
+  public get skipRefactor(): boolean {
+    return this.migrationConfig.refactor?.skip === true;
+  }
   private readonly amplifyPath: string;
 
   public readonly logger: Logger;
@@ -187,7 +206,11 @@ export class App {
    * Run `amplify gen2-migration refactor`.
    */
   public async refactor(gen2StackName: string): Promise<void> {
-    await this.runMigrationStep('refactor', ['--to', gen2StackName]);
+    const extraArgs = ['--to', gen2StackName];
+    if (this.migrationConfig.refactor?.skipValidations) {
+      extraArgs.push('--skip-validations');
+    }
+    await this.runMigrationStep('refactor', extraArgs);
   }
 
   /**
@@ -237,6 +260,13 @@ export class App {
   }
 
   /**
+   * Run the pre-push script.
+   */
+  public async prePush(): Promise<void> {
+    await this.runNpmScript('pre-push');
+  }
+
+  /**
    * Run the post-push script.
    */
   public async postPush(): Promise<void> {
@@ -255,6 +285,13 @@ export class App {
    */
   public async postRefactor(): Promise<void> {
     await this.runNpmScript('post-refactor');
+  }
+
+  /**
+   * Run the post-sandbox script with the Gen2 root stack name.
+   */
+  public async postSandbox(gen2StackName: string): Promise<void> {
+    await this.runNpmScript('post-sandbox', { APP_GEN2_ROOT_STACK_NAME: gen2StackName });
   }
 
   // ============================================================

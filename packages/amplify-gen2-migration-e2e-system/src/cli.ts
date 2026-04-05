@@ -61,6 +61,7 @@ async function migrate(app: App): Promise<void> {
   await app.configure();
   await app.installDeps();
   await app.status();
+  await app.prePush();
   await app.push();
   await app.postPush();
   await app.gitCommit('chore: post push');
@@ -78,9 +79,15 @@ async function migrate(app: App): Promise<void> {
   await app.gitDiff();
   await app.gitCommit('chore: post generate');
   const gen2StackName = await app.deployGen2Sandbox();
+  await app.postSandbox(gen2StackName);
 
   await app.testGen1();
   await app.testGen2();
+
+  if (app.skipRefactor) {
+    app.logger.info('Skipping refactor (configured in migration/config.json)');
+    return;
+  }
 
   await app.gitCheckoutGen1();
   await app.refactor(gen2StackName);

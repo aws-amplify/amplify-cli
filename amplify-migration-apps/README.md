@@ -104,6 +104,20 @@ If a script does not exist for an app, the E2E system silently skips the step.
 > Some apps don't have `_snapshot.post.refactor/` because refactor doesn't work
 > for them yet.
 
+### `migration/pre-push.ts` and `migration/post-sandbox.ts`
+
+Optional scripts for additional lifecycle hooks:
+
+- `pre-push.ts` — runs before `amplify push`. Use for fixups that require the Amplify
+  app to be initialized but not yet deployed (e.g., substituting the real Amplify app ID
+  into configuration files).
+- `post-sandbox.ts` — runs after the first `npx ampx sandbox --once` deploy. Use for
+  fixups that require the Gen2 stack to exist (e.g., writing secrets to SSM Parameter
+  Store using the deployed stack name).
+
+Both accept `appPath` as a CLI argument. If a script does not exist for an app, the
+E2E system silently skips the step.
+
 ### `_snapshot.pre.generate/`
 
 A copy of the Gen1 app as it exists before running `gen2-migration generate`. This is the

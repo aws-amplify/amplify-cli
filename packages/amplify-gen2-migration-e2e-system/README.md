@@ -31,31 +31,35 @@ The CLI executes the following steps for a given app:
 2. `amplify init` — initialize the Gen1 project
 3. Configure categories by restoring the pre-generate snapshot into the `amplify/` directory
 4. `npm install`
-5. `amplify push` — deploy the Gen1 stack
-6. Run `post-push` npm script (app-specific fixups)
-7. Run `test:gen1` — validate the Gen1 deployment
-8. `amplify gen2-migration assess`
-9. `amplify gen2-migration lock`
-10. Checkout a new `gen2-<env>` branch
-11. `amplify gen2-migration generate`
-12. `npm install`
-13. Run `post-generate` npm script (app-specific fixups)
-14. `npx ampx sandbox --once` — deploy the Gen2 stack
-15. Run `test:gen1` and `test:gen2` — validate both stacks
-16. Checkout `main` branch (refactor requires Gen1 files)
-17. `amplify gen2-migration refactor` — move stateful resources to Gen2
-18. Checkout `gen2-<env>` branch
-19. Run `post-refactor` npm script (app-specific fixups)
-20. Run `test:gen1` and `test:gen2` — validate both stacks
-21. Redeploy Gen2 sandbox to pick up post-refactor changes
-22. Run `test:gen1` and `test:gen2` — final validation
+5. Run `pre-push` npm script (app-specific fixups before deployment)
+6. `amplify push` — deploy the Gen1 stack
+7. Run `post-push` npm script (app-specific fixups)
+8. Run `test:gen1` — validate the Gen1 deployment
+9. `amplify gen2-migration assess`
+10. `amplify gen2-migration lock`
+11. Checkout a new `gen2-<env>` branch
+12. `amplify gen2-migration generate`
+13. `npm install`
+14. Run `post-generate` npm script (app-specific fixups)
+15. `npx ampx sandbox --once` — deploy the Gen2 stack
+16. Run `post-sandbox` npm script (app-specific fixups after first sandbox deploy)
+17. Run `test:gen1` and `test:gen2` — validate both stacks
+18. Checkout `main` branch (refactor requires Gen1 files)
+19. `amplify gen2-migration refactor` — move stateful resources to Gen2
+20. Checkout `gen2-<env>` branch
+21. Run `post-refactor` npm script (app-specific fixups)
+22. Run `test:gen1` and `test:gen2` — validate both stacks
+23. Redeploy Gen2 sandbox to pick up post-refactor changes
+24. Run `test:gen1` and `test:gen2` — final validation
 
 Test scripts run at multiple points to verify that both stacks remain functional throughout the migration.
 
 The system runs npm scripts defined in each app's `package.json`:
 
+- `pre-push` — before `amplify push`
 - `post-push` — after `amplify push`
 - `post-generate` — after `gen2-migration generate`
+- `post-sandbox` — after the first `npx ampx sandbox --once` deploy
 - `post-refactor` — after `gen2-migration refactor`
 - `test:gen1` — Jest tests against the Gen1 config (`src/amplifyconfiguration.json`)
 - `test:gen2` — Jest tests against the Gen2 config (`amplify_outputs.json`)
@@ -72,9 +76,11 @@ Each app can optionally include a `migration/config.json` to customize the E2E w
 }
 ```
 
-| Field                  | Description                                         |
-| ---------------------- | --------------------------------------------------- |
-| `lock.skipValidations` | Pass `--skip-validations` to `gen2-migration lock`. |
+| Field                      | Description                                             |
+| -------------------------- | ------------------------------------------------------- |
+| `lock.skipValidations`     | Pass `--skip-validations` to `gen2-migration lock`.     |
+| `refactor.skip`            | Skip the refactor step entirely.                        |
+| `refactor.skipValidations` | Pass `--skip-validations` to `gen2-migration refactor`. |
 
 If the file does not exist, defaults are used.
 
