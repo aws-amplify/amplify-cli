@@ -827,6 +827,13 @@ by the CLI setting that configures them.
   - 🟢 `Verify Auth Challenge Response`
   - 🟢 `Pre Token Generation`
 
+### `amplify import auth`
+
+- ➤ **What type of auth resource do you want to import?**
+
+  - 🟢 `Cognito User Pool and Identity Pool`
+  - ⚠️ `Cognito User Pool only`
+
 ## Api
 
 ### `amplify add api`
@@ -925,9 +932,11 @@ by the CLI setting that configures them.
   - 🟢 `Do you want to add a sort key to your global secondary index`
   - 🟢 `Do you want to add a Lambda Trigger for your Table`
 
+### `amplify import storage`
+
 ## Function
 
-### `amplify add function`
+### 🔴 `amplify add function`
 
 - 🟢 **Lambda function (serverless function)**
 
@@ -1066,33 +1075,33 @@ by the CLI setting that configures them.
 
 ## Interactions
 
-### `amplify add interactions` 🔴
+### 🔴 `amplify add interactions`
 
 ## Predictions
 
-### `amplify add predictions` 🔴
+### 🔴 `amplify add predictions`
 
 ## Notifications
 
-### `amplify add notifications` 🔴
+### 🔴 `amplify add notifications`
 
 ## Hosting
 
-### `amplify add hosting` 🔴
+### 🔴 `amplify add hosting`
 
 ## Custom
 
-### `amplify add custom` 🔴
+### 🔴 `amplify add custom`
 
 ## Overrides
 
-### `amplify override api` 🔴
+### 🔴 `amplify override api`
 
-### `amplify override auth` 🔴
+### 🔴 `amplify override auth`
 
-### `amplify override storage` 🔴
+### 🔴 `amplify override storage`
 
-### `amplify override project` 🔴
+### 🔴 `amplify override project`
 
 # Example Apps
 
