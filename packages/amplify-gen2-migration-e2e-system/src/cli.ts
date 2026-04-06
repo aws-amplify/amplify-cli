@@ -54,7 +54,7 @@ async function main(): Promise<void> {
 }
 
 async function migrate(app: App): Promise<void> {
-  app.logger.info(`Staring migration`);
+  app.logger.info(`Starting migration`);
 
   await app.gitInit();
   await app.init();

@@ -61,11 +61,7 @@ export class Logger {
 
     console.log(formatted);
 
-    try {
-      fs.appendFileSync(this.logFilePath, formatted + '\n');
-    } catch {
-      // Avoid infinite recursion
-    }
+    fs.appendFileSync(this.logFilePath, formatted + '\n');
   }
 
   private shouldLog(level: LogLevel): boolean {

@@ -218,7 +218,12 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
   private async dynamoTableNames(): Promise<string[]> {
     if (!this._dynamoTableNames) {
       const graphQLApiId = await this.findGraphQLApiId();
-      this._dynamoTableNames = await this.fetchGraphQLModelTables(graphQLApiId);
+      if (!graphQLApiId) {
+        // not all apps have a graphql server
+        this._dynamoTableNames = [];
+      } else {
+        this._dynamoTableNames = await this.fetchGraphQLModelTables(graphQLApiId);
+      }
     }
     return this._dynamoTableNames;
   }
