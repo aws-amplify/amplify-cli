@@ -266,79 +266,14 @@ npx amplify gen2-migration lock
 git checkout -b gen2-main
 npx amplify gen2-migration generate
 ```
-**Edit in `./amplify/data/resource.ts`:**
-
-```diff
-- branchName: "main"
-+ branchName: "gen2-main"
+```console
+npm run post-generate
 ```
 
-**Edit in `./amplify/function/moodboardRandomEmojiGenerator/index.js`**
-
-```diff
-- exports.handler = async (event) => {
-+ export async function handler(event) {
-```
-
-**Edit in `./amplify/function/moodboardKinesisReader/index.js`**
-
-```diff
-- exports.handler = async (event) => {
-+ export async function handler(event) {
-```
-
-**Edit in `./amplify/function/moodboardKinesisReader/resource.ts`**
-
-```diff
-- environment: { ANALYTICS_MOODBOARDKINESIS_KINESISSTREAMARN: "arn:aws:kinesis:us-east-1:014148916658:stream/moodboardKinesis-main", ENV: `${branchName}`, REGION: "us-east-1" },
-```
-
-**Edit in `./src/main.tsx`:**
-
-```diff
-- import amplifyconfig from './amplifyconfiguration.json';
-+ import amplifyconfig from '../amplify_outputs.json';
-```
-
-**Edit in `./src/components/SurpriseMeButton.tsx`:**
-
-```diff
-- const STREAM_NAME = 'moodboardKinesis-main';
-+ const STREAM_NAME = 'moodboardKinesis-gen2-main';
-```
-
-**Edit in `./amplify/backend.ts`:**
-
-```diff
-- import { Duration } from "aws-cdk-lib";
-+ import { Duration, aws_iam } from "aws-cdk-lib";
-```
-
-```diff
-+ backend.moodboardKinesisReader.resources.lambda.addToRolePolicy(
-+     new aws_iam.PolicyStatement({
-+         actions: [
-+             "kinesis:ListShards",
-+             "kinesis:ListShards",
-+             "kinesis:ListStreams",
-+             "kinesis:ListStreamConsumers",
-+             "kinesis:DescribeStream",
-+             "kinesis:DescribeStreamSummary",
-+             "kinesis:DescribeStreamConsumer",
-+             "kinesis:GetRecords",
-+             "kinesis:GetShardIterator",
-+             "kinesis:SubscribeToShard",
-+             "kinesis:DescribeLimits",
-+             "kinesis:ListTagsForStream",
-+             "kinesis:SubscribeToShard"
-+         ],
-+         resources: [analytics.kinesisStreamArn]
-+     })
-+ );
-```
-
-```diff
-+ backend.moodboardKinesisReader.addEnvironment("ANALYTICS_MOODBOARDKINESIS_KINESISSTREAMARN",analytics.kinesisStreamArn)
+```console
+rm -rf node_modules package-lock.json
+npm install
+npm install --package-lock-only
 ```
 
 ```console

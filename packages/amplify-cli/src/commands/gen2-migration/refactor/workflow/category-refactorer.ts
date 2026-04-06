@@ -1,4 +1,4 @@
-import { Parameter, ResourceMapping } from '@aws-sdk/client-cloudformation';
+import { DescribeChangeSetOutput, Parameter, ResourceMapping } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { CFNResource, CFNTemplate } from '../../_infra/cfn-template';
 import { Planner } from '../../_infra/planner';
@@ -153,25 +153,22 @@ export abstract class CategoryRefactorer implements Planner {
     this.cfn.claimUpdate(source.stackId);
 
     const sourceStackName = extractStackNameFromId(source.stackId);
-    const report = await this.createChangeSetReport(source);
+    const change = await this.createChangeSetReport(source);
     return [
       {
         resource: this.resource,
         validate: () => ({
           description: `Ensure no unexpected changes to ${sourceStackName}`,
-          run: async () => ({ valid: report === undefined, report }),
+          run: async () => ({ valid: change?.report === undefined, report: change?.report }),
         }),
         describe: async () => {
+          if (!change) return [];
           const header = `Update source stack '${sourceStackName}' with resolved references`;
-          return [report ? `${header}\n\n${report.trimStart()}` : `${header} (empty change-set)`];
+          return [change.report ? `${header}\n\n${change.report.trimStart()}` : `${header} (empty change-set)`];
         },
         execute: async () => {
-          await this.cfn.update({
-            stackName: source.stackId,
-            parameters: source.parameters,
-            templateBody: source.resolvedTemplate,
-            resource: this.resource,
-          });
+          if (!change) return;
+          await this.cfn.executeChangeSet({ changeSet: change.changeSet, templateBody: source.resolvedTemplate, resource: this.resource });
         },
       },
     ];
@@ -186,34 +183,33 @@ export abstract class CategoryRefactorer implements Planner {
     this.cfn.claimUpdate(target.stackId);
 
     const targetStackName = extractStackNameFromId(target.stackId);
-    const report = await this.createChangeSetReport(target);
+    const change = await this.createChangeSetReport(target);
     return [
       {
         resource: this.resource,
         validate: () => ({
           description: `Ensure no unexpected changes to ${targetStackName}`,
-          run: async () => ({ valid: report === undefined, report }),
+          run: async () => ({ valid: change?.report === undefined, report: change?.report }),
         }),
         describe: async () => {
+          if (!change) return [];
           const header = `Update target stack '${targetStackName}' with resolved references`;
-          return [report ? `${header}\n\n${report.trimStart()}` : `${header} (empty change-set)`];
+          return [change.report ? `${header}\n\n${change.report.trimStart()}` : `${header} (empty change-set)`];
         },
         execute: async () => {
-          await this.cfn.update({
-            stackName: target.stackId,
-            parameters: target.parameters,
-            templateBody: target.resolvedTemplate,
-            resource: this.resource,
-          });
+          if (!change) return;
+          await this.cfn.executeChangeSet({ changeSet: change.changeSet, templateBody: target.resolvedTemplate, resource: this.resource });
         },
       },
     ];
   }
 
   /**
-   * Creates a changeset for the given stack and returns a formatted report.
+   * Creates a change set for the given stack and returns the described change set with a formatted report.
    */
-  protected async createChangeSetReport(stack: ResolvedStack): Promise<string | undefined> {
+  protected async createChangeSetReport(
+    stack: ResolvedStack,
+  ): Promise<{ readonly report: string | undefined; readonly changeSet: DescribeChangeSetOutput } | undefined> {
     const stackName = extractStackNameFromId(stack.stackId);
     this.logger.push(stackName);
     try {
@@ -222,7 +218,9 @@ export abstract class CategoryRefactorer implements Planner {
         parameters: stack.parameters,
         templateBody: stack.resolvedTemplate,
       });
-      return changeSet ? this.cfn.renderChangeSet(changeSet) : undefined;
+      if (!changeSet) return undefined;
+      const report = this.cfn.renderChangeSet(changeSet);
+      return { report, changeSet };
     } finally {
       this.logger.pop();
     }
@@ -295,7 +293,7 @@ export abstract class CategoryRefactorer implements Planner {
     for (const m of mappings) {
       table.push([m.Source.LogicalResourceId, m.Destination.LogicalResourceId]);
     }
-    return `${table.toString()}\n`;
+    return `${table.toString()}`;
   }
 
   protected info(message: string) {

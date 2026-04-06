@@ -394,92 +394,14 @@ git checkout -b gen2-main
 npx amplify gen2-migration generate
 ```
 
-**Edit in `./amplify/data/resource.ts`:**
-
-```diff
-- branchName: "main"
-+ branchName: "gen2-main"
+```console
+npm run post-generate
 ```
 
-**Edit in `./amplify/auth/resource.ts`:**
-
-```diff
-+ const branchName = process.env.AWS_BRANCH ?? "sandbox";
-```
-
-```diff
-- callbackUrls: ["https://main.d1086iitvfyy6.amplifyapp.com/"],
-+ callbackUrls: ["https://main.d1086iitvfyy6.amplifyapp.com/", `https://${branchName}.d1086iitvfyy6.amplifyapp.com/`],
-
-- logoutUrls: ["https://main.d1086iitvfyy6.amplifyapp.com/"],
-+ logoutUrls: ["https://main.d1086iitvfyy6.amplifyapp.com/", `https://${branchName}.d1086iitvfyy6.amplifyapp.com/`],
-```
-
-**Edit in `./amplify/storage/thumbnailgen/resource.ts`:**
-
-```diff
-- entry: "./index.js",
-+ entry: "./index.js",
-+ resourceGroupName: 'storage',
-```
-
-**Edit in `./amplify/function/addusertogroup/resource.ts`:**
-
-```diff
-- entry: "./index.js",
-+ entry: "./index.js",
-+ resourceGroupName: 'auth',
-```
-
-**Edit in `./amplify/function/removeuserfromgroup/resource.ts`:**
-
-```diff
-- entry: "./index.js",
-+ entry: "./index.js",
-+ resourceGroupName: 'auth',
-```
-
-**Edit in `./amplify/backend.ts`:**
-
-```diff
-- (L88) const branchName = process.env.AWS_BRANCH ?? "sandbox";
-+ (L11) const branchName = process.env.AWS_BRANCH ?? "sandbox";
-```
-
-```diff
-- callbackUrls: ["https://main.d1086iitvfyy6.amplifyapp.com/"],
-+ callbackUrls: ["https://main.d1086iitvfyy6.amplifyapp.com/", `https://${branchName}.d1086iitvfyy6.amplifyapp.com/`],
-
-- logoutUrls: ["https://main.d1086iitvfyy6.amplifyapp.com/"],
-+ logoutUrls: ["https://main.d1086iitvfyy6.amplifyapp.com/", `https://${branchName}.d1086iitvfyy6.amplifyapp.com/`],
-```
-
-**Edit in `./amplify/function/addusertogroup/index.js`:**
-
-```diff
-- exports.handler = async (event) => {
-+ export async function handler(event) {
-```
-
-**Edit in `./amplify/function/removeuserfromgroup/index.js`:**
-
-```diff
-- exports.handler = async (event) => {
-+ export async function handler(event) {
-```
-
-**Edit in `./amplify/storage/thumbnailgen/index.js`:**
-
-```diff
-- exports.handler = async (event) => {
-+ export async function handler(event) {
-```
-
-**Edit in `./src/main.tsx`:**
-
-```diff
-- import amplifyconfig from './amplifyconfiguration.json';
-+ import amplifyconfig from '../amplify_outputs.json';
+```console
+rm -rf node_modules package-lock.json
+npm install
+npm install --package-lock-only
 ```
 
 In the AWS Amplify console, navigate to _Hosting_ → _Secrets_ → _Manage secrets_ → _Add new_ and add the following secrets:

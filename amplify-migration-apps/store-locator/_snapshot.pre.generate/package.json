@@ -1,5 +1,5 @@
 {
-  "name": "@amplify-migration-apps/store-locator",
+  "name": "@amplify-migration-apps/store-locator-snapshot",
   "private": true,
   "version": "0.0.0",
   "type": "module",

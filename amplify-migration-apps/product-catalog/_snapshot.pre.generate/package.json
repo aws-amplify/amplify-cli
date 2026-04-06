@@ -1,5 +1,5 @@
 {
-  "name": "@amplify-migration-apps/product-catalog",
+  "name": "@amplify-migration-apps/product-catalog-snapshot",
   "private": true,
   "version": "0.0.0",
   "type": "module",

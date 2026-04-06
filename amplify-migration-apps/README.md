@@ -22,6 +22,19 @@ Each app directory follows this layout:
 
 ```
 <app-name>/
+├── backend/                          # Backend assets (schema, function code, configure.sh)
+├── migration/
+│   ├── config.json                   # E2E system configuration (optional)
+│   ├── post-generate.ts              # Fixups after gen2-migration generate
+│   ├── post-push.ts                  # Fixups after amplify push (optional)
+│   └── post-refactor.ts              # Fixups after gen2-migration refactor
+├── tests/                            # Jest test suites for validating deployed stacks
+│   ├── signup.ts                     # Cognito user provisioning (app-specific)
+│   ├── jest.setup.ts                 # Jest setup (retry config)
+│   ├── api.test.ts                   # GraphQL / REST API tests
+│   ├── storage.test.ts               # S3 / DynamoDB storage tests
+│   └── ...                           # Additional category-specific test files
+├── jest.config.js                    # Jest configuration
 ├── _snapshot.pre.generate/           # Input for `gen2-migration generate` test (Gen1 app state)
 ├── _snapshot.post.generate/          # Expected output of `gen2-migration generate`
 ├── _snapshot.pre.refactor/           # Input for `gen2-migration refactor` test (CFN templates)
@@ -30,16 +43,80 @@ Each app directory follows this layout:
 ├── .gitignore                        # Git ignore rules
 ├── package.json                      # Standard NodeJS based manifest
 ├── README.md                         # Deployment and migration instructions
-└── ...                               # App-specific source files (schema, configs, etc.)
+└── ...                               # App-specific source files
 ```
 
 The Gen1 Amplify project structure (the `amplify/` directory) lives inside
 `_snapshot.pre.generate/`, not at the top level. The top level only contains
-snapshot directories, the app manifest, and any source files needed for
-deployment (e.g., `schema.graphql`, `configure.sh`).
+snapshot directories, the app manifest, and source files needed for deployment.
+
+### `backend/`
+
+Contains the backend source assets for the app: the GraphQL schema, Lambda function code,
+and a `configure.sh` script that copies them into the Gen1 `amplify/` directory structure.
+The configure script uses `$BASH_SOURCE`-relative paths so it works regardless of the
+caller's working directory.
+
+### `migration/config.json`
+
+Configuration file read by the [E2E system](../packages/amplify-gen2-migration-e2e-system/) at runtime.
+Currently supports:
+
+```json
+{
+  "lock": { "skipValidations": true }
+}
+```
+
+- `lock.skipValidations` — pass `--skip-validations` to `gen2-migration lock`.
+
+If the file does not exist, defaults are used (no skip-validations).
+
+### `tests/`
+
+Jest test suites that validate a deployed stack. Each app has its own `jest.config.js` and
+test files under `tests/`. The config path is controlled by the `APP_CONFIG_PATH` environment
+variable, which the `test:gen1` and `test:gen2` npm scripts set to the appropriate file
+(`src/amplifyconfiguration.json` for Gen1, `amplify_outputs.json` for Gen2).
+
+Each app has its own `tests/signup.ts` that handles Cognito user provisioning via
+`AdminCreateUser` + `AdminSetUserPassword`, tailored to the app's specific auth
+configuration (email vs phone sign-in, user pool groups, etc.).
+
+### `migration/post-generate.ts` and `migration/post-refactor.ts`
+
+Optional scripts that apply app-specific fixups the migration CLI cannot automate. Examples:
+
+- Converting CommonJS Lambda functions to ESM syntax
+- Updating frontend imports from `aws-exports` to `amplify_outputs.json`
+- Setting `branchName` to `sandbox` for DynamoDB table mappings
+- Uncommenting resource names to preserve original Gen1 names after refactor
+
+Both scripts export a function and accept `appPath` as a CLI argument:
+
+```typescript
+export async function postGenerate(appPath: string): Promise<void>;
+export async function postRefactor(appPath: string): Promise<void>;
+```
+
+If a script does not exist for an app, the E2E system silently skips the step.
 
 > Some apps don't have `_snapshot.post.refactor/` because refactor doesn't work
 > for them yet.
+
+### `migration/pre-push.ts` and `migration/post-sandbox.ts`
+
+Optional scripts for additional lifecycle hooks:
+
+- `pre-push.ts` — runs before `amplify push`. Use for fixups that require the Amplify
+  app to be initialized but not yet deployed (e.g., substituting the real Amplify app ID
+  into configuration files).
+- `post-sandbox.ts` — runs after the first `npx ampx sandbox --once` deploy. Use for
+  fixups that require the Gen2 stack to exist (e.g., writing secrets to SSM Parameter
+  Store using the deployed stack name).
+
+Both accept `appPath` as a CLI argument. If a script does not exist for an app, the
+E2E system silently skips the step.
 
 ### `_snapshot.pre.generate/`
 
@@ -349,3 +426,34 @@ Always review the diff after updating to make sure the changes are intentional.
 > because it detects the diff before writing the updated files. Run the tests a second time
 > (without `--updateSnapshot`) to verify the snapshots are now correct.
 
+
+## Integration Testing (E2E)
+
+The [E2E system](../packages/amplify-gen2-migration-e2e-system/) automates the full migration
+workflow for a single app: Gen1 deploy, migration, Gen2 deploy, and validation at each stage.
+It deploys real AWS resources, so you need valid credentials.
+
+```bash
+# Build the Amplify CLI (if using the development binary)
+cd packages/amplify-cli && yarn build
+
+# Optionally point to your dev CLI (falls back to monorepo build, then global install)
+export AMPLIFY_PATH=$(pwd)/.bin/amplify-dev
+
+# Run the full migration for a specific app
+cd packages/amplify-gen2-migration-e2e-system
+npx tsx src/cli.ts --app project-boards --profile default
+```
+
+This will:
+1. Deploy the Gen1 app via `amplify push`
+2. Run `test:gen1` to validate the Gen1 stack
+3. Execute the full `gen2-migration` workflow (assess, lock, generate, deploy, refactor, redeploy)
+4. Run `test:gen1` and `test:gen2` after each deployment
+
+The system automatically runs npm scripts from the app's `package.json` at the right
+points in the workflow — `post-generate` after generate, `post-refactor` after refactor,
+and `post-push` after push. Scripts that resolve to `true` (no-op) are effectively skipped.
+
+See the [E2E system README](../packages/amplify-gen2-migration-e2e-system/README.md) for
+CLI options and troubleshooting.

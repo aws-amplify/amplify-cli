@@ -36,6 +36,7 @@ export class CloudFormationMock {
 
   private readonly _stackNameForResource: Map<string, string> = new Map<string, string>();
   private readonly _templateForStack: Map<string, string> = new Map<string, string>();
+  private readonly _pendingChangeSets: Map<string, cloudformation.CreateChangeSetCommandInput> = new Map();
 
   constructor(private readonly app: MigrationApp) {
     this.mock = mockClient(cloudformation.CloudFormationClient);
@@ -53,6 +54,7 @@ export class CloudFormationMock {
     this.mockDescribeStackRefactor();
     this.mockCreateChangeSet();
     this.mockDescribeChangeSet();
+    this.mockExecuteChangeSet();
     this.mockUpdateStack();
   }
 
@@ -173,21 +175,42 @@ export class CloudFormationMock {
   }
 
   private mockCreateChangeSet() {
-    this.mock.on(cloudformation.CreateChangeSetCommand).callsFake(
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      async (_input: cloudformation.CreateChangeSetCommandInput): Promise<cloudformation.CreateChangeSetCommandOutput> => {
+    this.mock
+      .on(cloudformation.CreateChangeSetCommand)
+      .callsFake(async (input: cloudformation.CreateChangeSetCommandInput): Promise<cloudformation.CreateChangeSetCommandOutput> => {
+        if (input.StackName) {
+          this._pendingChangeSets.set(input.StackName, input);
+        }
         return { $metadata: {} };
-      },
-    );
+      });
   }
 
   private mockDescribeChangeSet() {
-    this.mock.on(cloudformation.DescribeChangeSetCommand).callsFake(
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      async (_input: cloudformation.DescribeChangeSetCommandInput): Promise<cloudformation.DescribeChangeSetCommandOutput> => {
-        return { Status: 'CREATE_COMPLETE', Changes: [], $metadata: {} };
-      },
-    );
+    this.mock
+      .on(cloudformation.DescribeChangeSetCommand)
+      .callsFake(async (input: cloudformation.DescribeChangeSetCommandInput): Promise<cloudformation.DescribeChangeSetCommandOutput> => {
+        const pending = this._pendingChangeSets.get(input.StackName!);
+        return {
+          Status: 'CREATE_COMPLETE',
+          StackName: input.StackName,
+          Parameters: pending?.Parameters as cloudformation.Parameter[],
+          Changes: [],
+          $metadata: {},
+        };
+      });
+  }
+
+  private mockExecuteChangeSet() {
+    this.mock
+      .on(cloudformation.ExecuteChangeSetCommand)
+      .callsFake(async (input: cloudformation.ExecuteChangeSetCommandInput): Promise<cloudformation.ExecuteChangeSetCommandOutput> => {
+        const pending = this._pendingChangeSets.get(input.StackName!);
+        if (pending?.TemplateBody) {
+          this._setTemplate(input.StackName!, pending.TemplateBody);
+        }
+        this._pendingChangeSets.delete(input.StackName!);
+        return { $metadata: {} };
+      });
   }
 
   private mockUpdateStack() {

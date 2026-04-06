@@ -150,13 +150,14 @@ export class Assessment {
       lines.push(chalk.bold('Resources'));
       lines.push('');
       lines.push(this.renderResourceTable());
+      lines.push('');
     }
 
     if (this._features.length > 0) {
-      lines.push('');
       lines.push(chalk.bold('Features'));
       lines.push('');
       lines.push(this.renderFeatureTable());
+      lines.push('');
     }
 
     return lines.join('\n');

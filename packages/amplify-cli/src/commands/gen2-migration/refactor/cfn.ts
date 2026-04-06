@@ -9,6 +9,7 @@ import {
   DescribeChangeSetCommand,
   DescribeChangeSetOutput,
   DescribeStacksCommand,
+  ExecuteChangeSetCommand,
   ExecuteStackRefactorCommand,
   GetTemplateCommand,
   Parameter,
@@ -97,9 +98,8 @@ export class Cfn {
         Parameters: parameters,
         StackName: stackName,
         Capabilities: [CFN_IAM_CAPABILITY],
-        Tags: [],
       };
-      writeUpdateSnapshot(input);
+      writeUpdateSnapshot({ stackName, templateBody: input.TemplateBody, parameters });
       this.info(`Updating stack: ${extractStackNameFromId(stackName)}`, resource);
       await this.client.send(new UpdateStackCommand(input));
     } catch (e) {
@@ -144,6 +144,12 @@ export class Cfn {
     const targetTemplate = targetStack ? await this.fetchTemplate(targetStackId) : JSON.parse(JSON.stringify(EMPTY_HOLDING_TEMPLATE));
 
     for (const mapping of resourceMappings) {
+      if (mapping.Destination.LogicalResourceId in targetTemplate.Resources) {
+        // our refactoring is expected to move resources into vacancies, not override
+        throw new AmplifyError('MigrationError', {
+          message: `Unable to create stack refactor. Resource ${mapping.Destination.LogicalResourceId} already exists in stack ${targetStackName}`,
+        });
+      }
       targetTemplate.Resources[mapping.Destination.LogicalResourceId] = sourceTemplate.Resources[mapping.Source.LogicalResourceId];
       delete sourceTemplate.Resources[mapping.Source.LogicalResourceId];
     }
@@ -217,7 +223,7 @@ export class Cfn {
     readonly templateBody: CFNTemplate;
   }): Promise<DescribeChangeSetOutput | undefined> {
     const { stackName, parameters, templateBody } = params;
-    const changeSetName = `migration-preview-${Date.now()}`;
+    const changeSetName = `gen2-migration-${Date.now()}`;
 
     await this.client.send(
       new CreateChangeSetCommand({
@@ -230,25 +236,54 @@ export class Cfn {
     );
 
     try {
-      try {
-        await waitUntilChangeSetCreateComplete(
-          { client: this.client, maxWaitTime: 120 },
-          { StackName: stackName, ChangeSetName: changeSetName },
-        );
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } catch (e: any) {
-        if (e.message?.includes(`The submitted information didn't contain changes`)) {
-          return undefined;
-        }
-        throw e;
-      }
-
-      return await this.client.send(
-        new DescribeChangeSetCommand({ StackName: stackName, ChangeSetName: changeSetName, IncludePropertyValues: true }),
+      await waitUntilChangeSetCreateComplete(
+        { client: this.client, maxWaitTime: 120 },
+        { StackName: stackName, ChangeSetName: changeSetName },
       );
-    } finally {
-      await this.client.send(new DeleteChangeSetCommand({ StackName: stackName, ChangeSetName: changeSetName }));
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (e: any) {
+      if (e.message?.includes(`The submitted information didn't contain changes`)) {
+        await this.client.send(new DeleteChangeSetCommand({ StackName: stackName, ChangeSetName: changeSetName }));
+        return undefined;
+      }
+      throw e;
     }
+
+    return await this.client.send(
+      new DescribeChangeSetCommand({ StackName: stackName, ChangeSetName: changeSetName, IncludePropertyValues: true }),
+    );
+  }
+
+  /**
+   * Executes a previously created change set and waits for the stack update to complete.
+   * Returns the described change set, or undefined if no changes were detected.
+   */
+  public async executeChangeSet(params: {
+    readonly changeSet: DescribeChangeSetOutput;
+    readonly templateBody: CFNTemplate;
+    readonly resource?: DiscoveredResource;
+  }): Promise<void> {
+    const { changeSet, templateBody, resource } = params;
+    const displayName = extractStackNameFromId(changeSet.StackName);
+
+    writeUpdateSnapshot({
+      stackName: changeSet.StackName,
+      templateBody: JSON.stringify(templateBody),
+      parameters: changeSet.Parameters ?? [],
+    });
+
+    this.info(`Executing change set for stack: ${displayName}`, resource);
+    await this.client.send(new ExecuteChangeSetCommand({ StackName: changeSet.StackName, ChangeSetName: changeSet.ChangeSetName }));
+
+    this.info(`Waiting for stack update to complete: ${displayName}`, resource);
+    await waitUntilStackUpdateComplete({ client: this.client, maxWaitTime: MAX_WAIT_TIME_SECONDS }, { StackName: changeSet.StackName });
+  }
+
+  /**
+   * Deletes a change set without executing it.
+   */
+  public async deleteChangeSet(changeSet: DescribeChangeSetOutput): Promise<void> {
+    await this.client.send(new DeleteChangeSetCommand({ StackName: changeSet.StackName, ChangeSetName: changeSet.ChangeSetName }));
   }
 
   /**
@@ -390,10 +425,16 @@ function formatTemplateBody(templateBody: string): string {
   return JSON.stringify(JSON.parse(templateBody), null, 2);
 }
 
-function writeUpdateSnapshot(input: UpdateStackCommandInput): void {
-  const stackName = extractStackNameFromId(input.StackName);
-  fs.writeFileSync(path.join(OUTPUT_DIRECTORY, `update.${stackName}.template.json`), formatTemplateBody(input.TemplateBody));
-  fs.writeFileSync(path.join(OUTPUT_DIRECTORY, `update.${stackName}.parameters.json`), JSON.stringify(input.Parameters ?? [], null, 2));
+interface WriteUpdateSnapshotInput {
+  readonly stackName: string;
+  readonly templateBody: string;
+  readonly parameters: Parameter[];
+}
+
+function writeUpdateSnapshot(input: WriteUpdateSnapshotInput): void {
+  const stackName = extractStackNameFromId(input.stackName);
+  fs.writeFileSync(path.join(OUTPUT_DIRECTORY, `update.${stackName}.template.json`), formatTemplateBody(input.templateBody));
+  fs.writeFileSync(path.join(OUTPUT_DIRECTORY, `update.${stackName}.parameters.json`), JSON.stringify(input.parameters, null, 2));
 }
 
 function writeRefactorSnapshot(input: CreateStackRefactorCommandInput): void {

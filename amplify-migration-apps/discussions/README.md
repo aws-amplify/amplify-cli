@@ -407,32 +407,14 @@ git checkout -b gen2-main
 npx amplify gen2-migration generate
 ```
 
-**Edit in `./amplify/data/resource.ts`:**
-
-```diff
-- branchName: "main"
-+ branchName: "gen2-main"
+```console
+npm run post-generate
 ```
 
-**Edit in `./amplify/storage/fetchuseractivity/index.js`:**
-
-```diff
-- exports.handler = async (event) => {
-+ export async function handler(event) {
-```
-
-**Edit in `./amplify/storage/recorduseractivity/index.js`:**
-
-```diff
-- exports.handler = async (event) => {
-+ export async function handler(event) {
-```
-
-**Edit in `./src/main.js`:**
-
-```diff
-- import awsconfig from './aws-exports';
-+ import awsconfig from '../amplify_outputs.json';
+```console
+rm -rf node_modules package-lock.json
+npm install
+npm install --package-lock-only
 ```
 
 ```console

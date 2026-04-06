@@ -194,19 +194,13 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
     }
   }
 
-  private async fetchGraphQLApiId(): Promise<string> {
-    const apis = [];
-    for await (const page of paginateListGraphqlApis({ client: this.gen1App.clients.appSync }, {})) {
-      for (const api of page.graphqlApis ?? []) {
-        if (api.name === `${this.gen1App.appName}-${this.gen1App.envName}`) {
-          apis.push(api.apiId);
-        }
-      }
+  private async findGraphQLApiId(): Promise<string | undefined> {
+    const graphQL = this.gen1App.discover().find((r) => r.category === 'api' && r.service === 'AppSync');
+    if (!graphQL) {
+      // project doesn't have a GraphQL API
+      return undefined;
     }
-    if (apis.length > 1) {
-      throw new AmplifyError('MigrationError', { message: 'Unexpected count of GraphQL APIs' });
-    }
-    return apis[0];
+    return this.gen1App.metaOutput(graphQL.category, graphQL.resourceName, 'GraphQLAPIIdOutput');
   }
 
   private async fetchGraphQLModelTables(graphQLApiId: string): Promise<string[]> {
@@ -223,8 +217,13 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
 
   private async dynamoTableNames(): Promise<string[]> {
     if (!this._dynamoTableNames) {
-      const graphQLApiId = await this.fetchGraphQLApiId();
-      this._dynamoTableNames = await this.fetchGraphQLModelTables(graphQLApiId);
+      const graphQLApiId = await this.findGraphQLApiId();
+      if (!graphQLApiId) {
+        // not all apps have a graphql server
+        this._dynamoTableNames = [];
+      } else {
+        this._dynamoTableNames = await this.fetchGraphQLModelTables(graphQLApiId);
+      }
     }
     return this._dynamoTableNames;
   }

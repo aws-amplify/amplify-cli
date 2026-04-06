@@ -281,68 +281,20 @@ git checkout -b gen2-main
 npx amplify gen2-migration generate
 ```
 
-**Edit in `./amplify/data/resource.ts`:**
-
-```diff
-- branchName: "main"
-+ branchName: "gen2-main"
-```
-
-**Edit in `./amplify/backend.ts`:**
-
-```diff
-- import { Duration } from "aws-cdk-lib";
-+ import { Duration, aws_iam } from "aws-cdk-lib";
+```console
+npm run post-generate
 ```
 
 On the AppSync AWS Console, locate the ID of Gen1 API, it will be named `productcatalog-main`.
 
 ![](./images/gen1-appsync-api-id.png)
 
-**Edit in `./amplify/backend.ts`:**
+Update the placeholder `<gen1-appsync-api-id>` in `./amplify/backend.ts` with the actual API ID.
 
-```diff
-+ backend.auth.resources.authenticatedUserIamRole.addToPrincipalPolicy(new aws_iam.PolicyStatement({
-+     effect: aws_iam.Effect.ALLOW,
-+     actions: ['appsync:GraphQL'],
-+     resources: [`arn:aws:appsync:${backend.data.stack.region}:${backend.data.stack.account}:apis/<gen1-appsync-api-id>/*`]
-+ }))
-```
-
-**Edit in `./amplify/function/lowstockproducts/index.js`:**
-
-```diff
-- exports.handler = async (event) => {
-+ export async function handler(event) {
-```
-
-```diff
-- const secretValue = await fetchSecret();
-+ const secretValue = process.env['PRODUCT_CATALOG_SECRET'];
-```
-
-**Edit in `./amplify/function/lowstockproducts/resource.ts`:**
-
-```diff
-- import { defineFunction } from "@aws-amplify/backend";
-+ import { defineFunction, secret } from "@aws-amplify/backend";
-
-- PRODUCT_CATALOG_SECRET: "/amplify/d3ttwn44fldtgx/main/AMPLIFY_lowstockproducts_PRODUCT_CATALOG_SECRET"
-+ PRODUCT_CATALOG_SECRET: secret("PRODUCT_CATALOG_SECRET")
-```
-
-**Edit in `./amplify/storage/S3Trigger<suffix>/index.js`:**
-
-```diff
-- exports.handler = async function (event) {
-+ export async function handler(event) {
-```
-
-**Edit in `./src/main.tsx`:**
-
-```diff
-- import amplifyconfig from './amplifyconfiguration.json';
-+ import amplifyconfig from '../amplify_outputs.json';
+```console
+rm -rf node_modules package-lock.json
+npm install
+npm install --package-lock-only
 ```
 
 In the Amplify console, recreate the `PRODUCT_CATALOG_SECRET` secret:

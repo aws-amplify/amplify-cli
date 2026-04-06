@@ -57,6 +57,8 @@ describe('AmplifyMigrationLockStep', () => {
         rootStackName: 'test-root-stack',
         region: 'us-east-1',
         envName: 'testEnv',
+        discover: () => [{ category: 'api', service: 'AppSync', resourceName: 'testApp' }],
+        metaOutput: () => 'test-api-id',
         clients: {
           cloudFormation: { send: mockCfnSend },
           amplify: { send: mockAmplifySend },

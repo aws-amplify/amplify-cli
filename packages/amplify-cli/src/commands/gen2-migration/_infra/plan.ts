@@ -76,10 +76,10 @@ export class Plan {
 
     if (grouped.size > 0) {
       printer.info(chalk.bold(chalk.underline('Operations Summary')));
-      printer.blankLine();
 
       for (const [label, descriptions] of grouped) {
-        printer.info(chalk.bold(label));
+        printer.blankLine();
+        printer.info(chalk.green(chalk.bold(label)));
         printer.blankLine();
         let step = 1;
         for (const description of descriptions) {
@@ -90,7 +90,8 @@ export class Plan {
     }
 
     if (this.implications.length > 0) {
-      printer.info(chalk.bold(chalk.underline('Implications')));
+      printer.blankLine();
+      printer.info(chalk.bold(chalk.underline(chalk.yellow('Implications'))));
       printer.blankLine();
       for (const implication of this.implications) {
         printer.info(`• ${implication}`);

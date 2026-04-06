@@ -1,5 +1,5 @@
 {
-  "name": "@amplify-migration-apps/backend-only",
+  "name": "@amplify-migration-apps/backend-only-snapshot",
   "private": true,
   "version": "0.0.0",
   "type": "module",
