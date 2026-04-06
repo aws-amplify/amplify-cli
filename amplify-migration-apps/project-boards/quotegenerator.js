@@ -1,3 +1,5 @@
+const { getRandomItem, formatResponse } = require('/opt/nodejs/utils');
+
 /**
  * AppSync Lambda function handler
  * When using @function directive, return data directly (not API Gateway proxy format)
@@ -5,7 +7,6 @@
 exports.handler = async (event) => {
   console.log(`EVENT: ${JSON.stringify(event)}`);
 
-  // Array of motivational quotes
   const quotes = [
     { text: 'The only way to do great work is to love what you do.', author: 'Steve Jobs' },
     { text: 'Innovation distinguishes between a leader and a follower.', author: 'Steve Jobs' },
@@ -29,18 +30,11 @@ exports.handler = async (event) => {
     { text: 'Simplicity is the soul of efficiency.', author: 'Austin Freeman' },
   ];
 
-  // Get a random quote
-  const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+  const randomQuote = getRandomItem(quotes);
 
-  // Add timestamp for uniqueness
-  const timestamp = new Date().toISOString();
-
-  // For AppSync @function directive, return the data object directly
-  return {
-    message: 'Quote generated successfully! 🎯',
+  return formatResponse('Quote generated successfully! 🎯', {
     quote: randomQuote.text,
     author: randomQuote.author,
-    timestamp: timestamp,
     totalQuotes: quotes.length,
-  };
+  });
 };
