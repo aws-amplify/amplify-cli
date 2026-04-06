@@ -159,12 +159,12 @@ on the Gen1 API that matches the Gen2 `AuthRole` naming pattern:
 
 ```json
 {
-  "adminRoleNames": ["amplify-${trimmedAppName}"]
+  "adminRoleNames": ["amplify-${appId}"]
 }
 ```
 
-> Where `${trimmedAppName}` is the first 10 characters of your Gen1 application name. Gen2 role names
-> are trimmed to this prefix, so this pattern allows access from **any** Gen2 environment (branch).
+> Where `${appId}` is the amplify application id. Gen2 auth role names are prefixed with this,
+> so the pattern allows access from **any** Gen2 environment (branch).
 
 Once added, redeploy the app by running `amplify push`.
 
