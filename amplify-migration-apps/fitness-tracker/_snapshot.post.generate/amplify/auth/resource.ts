@@ -1,6 +1,8 @@
 import { defineAuth } from '@aws-amplify/backend';
 import { fitnesstracker33f5545533f55455PreSignup } from './fitnesstracker33f5545533f55455PreSignup/resource';
 import { admin } from '../function/admin/resource';
+import type { Backend } from '../backend';
+import { Duration } from 'aws-cdk-lib';
 
 export const auth = defineAuth({
   loginWith: {
@@ -32,3 +34,31 @@ export const auth = defineAuth({
     allow.resource(admin).to(['listGroups']),
   ],
 });
+
+export const escape = (backend: Backend) => {
+
+  const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
+  cfnUserPool.usernameAttributes = undefined;
+  cfnUserPool.policies = {
+    passwordPolicy: {
+      minimumLength: 8,
+      requireUppercase: false,
+      requireLowercase: false,
+      requireNumbers: false,
+      requireSymbols: false,
+      temporaryPasswordValidityDays: 7,
+    },
+  };
+  const cfnIdentityPool = backend.auth.resources.cfnResources.cfnIdentityPool;
+  cfnIdentityPool.allowUnauthenticatedIdentities = false;
+  const userPool = backend.auth.resources.userPool;
+  userPool.addClient('NativeAppClient', {
+    refreshTokenValidity: Duration.days(30),
+    enableTokenRevocation: true,
+    enablePropagateAdditionalUserContextData: false,
+    authSessionValidity: Duration.minutes(3),
+    disableOAuth: true,
+    generateSecret: false,
+  });
+
+};
