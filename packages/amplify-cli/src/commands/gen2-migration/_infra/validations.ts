@@ -160,18 +160,11 @@ export class AmplifyGen2MigrationValidations {
     }
 
     const currentPolicy = JSON.parse(StackPolicyBody);
-    const expectedPolicy = {
-      Statement: [
-        {
-          Effect: 'Deny',
-          Action: 'Update:*',
-          Principal: '*',
-          Resource: '*',
-        },
-      ],
-    };
+    const hasLockStatement = currentPolicy.Statement.some(
+      (s: Record<string, string>) => s.Effect === 'Deny' && s.Action === 'Update:*' && s.Principal === '*' && s.Resource === '*',
+    );
 
-    if (JSON.stringify(currentPolicy) !== JSON.stringify(expectedPolicy)) {
+    if (!hasLockStatement) {
       throw new AmplifyError('MigrationError', {
         message: 'Stack policy does not match expected lock policy',
         resolution: 'Run the lock command to set the correct stack policy.',

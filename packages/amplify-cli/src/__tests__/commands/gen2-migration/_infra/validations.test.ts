@@ -700,6 +700,39 @@ describe('AmplifyGen2MigrationValidations', () => {
       await expect(validations.validateLockStatus()).resolves.not.toThrow();
     });
 
+    it('should pass when lock statement exists alongside other statements', async () => {
+      jest.spyOn(stateManager, 'getTeamProviderInfo').mockReturnValue({
+        mock: {
+          awscloudformation: {
+            StackName: 'test-stack',
+          },
+        },
+      });
+
+      const policyWithBoth = {
+        Statement: [
+          {
+            Effect: 'Allow',
+            Action: 'Update:*',
+            Principal: '*',
+            Resource: '*',
+          },
+          {
+            Effect: 'Deny',
+            Action: 'Update:*',
+            Principal: '*',
+            Resource: '*',
+          },
+        ],
+      };
+
+      mockCfnSend.mockResolvedValue({
+        StackPolicyBody: JSON.stringify(policyWithBoth),
+      });
+
+      await expect(validations.validateLockStatus()).resolves.not.toThrow();
+    });
+
     it('should throw MigrationError when stack policy has wrong effect', async () => {
       jest.spyOn(stateManager, 'getTeamProviderInfo').mockReturnValue({
         mock: {
