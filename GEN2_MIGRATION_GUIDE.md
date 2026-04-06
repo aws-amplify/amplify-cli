@@ -147,23 +147,24 @@ type Todo @model @auth(rules: [{ allow: private, provider: iam }]) {
 }
 ```
 
-Clients access such models using the `AuthRole` configured on the identity pool.
-After the refactor operation, the role is updated to point to the Gen2 role, which doesn't
-allow access to the Gen1 AppSync API. This means that after refactor your **Gen1** environment will
-lose IAM access to the API (but **Gen2** will work correctly).
+Clients access such models using the `AuthRole` configured on the identity pool. After refactor,
+the identity pool's `AuthRole` is updated to point to the Gen2 role. Since this role is external
+to the Gen1 AppSync API, it is denied access by default. Your **Gen2** environment will work
+correctly, but your **Gen1** environment will lose IAM access to the API.
 
-To workaround this issue, you must pre allow the Gen2 `AuthRole` by [configuring a custom admin role](https://docs.amplify.aws/gen1/javascript/build-a-backend/graphqlapi/customize-authorization-rules/#use-iam-authorization-within-the-appsync-console) on the Gen1 API.
+To workaround this, [configure a custom admin role](https://docs.amplify.aws/gen1/javascript/build-a-backend/graphqlapi/customize-authorization-rules/#use-iam-authorization-within-the-appsync-console)
+on the Gen1 API that matches the Gen2 `AuthRole` naming pattern:
 
 `+ ./amplify/api/<api-name>/custom-roles.json`
 
 ```json
 {
-  "adminRoleNames": ["amplify-${appId}"]
+  "adminRoleNames": ["amplify-${appName}"]
 }
 ```
 
-> Where `${appId}` should be replaced with the value of the Gen1 application id. This role name follows
-> the Gen2 `AuthRole` naming pattern and therefore allows access to **any** Gen2 environment (branch).
+> Where `${appName}` is the first 10 characters of your Gen1 application name. Gen2 role names
+> are trimmed to this prefix, so this pattern allows access from **any** Gen2 environment (branch).
 
 Once added, redeploy the app by running `amplify push`.
 
