@@ -1,4 +1,4 @@
-import { SpinningLogger } from '../../../../commands/gen2-migration/_spinning-logger';
+import { SpinningLogger } from '../../../../commands/gen2-migration/_infra/spinning-logger';
 
 /** Creates a no-op SpinningLogger suitable for unit tests. */
 export function noOpLogger(): SpinningLogger {

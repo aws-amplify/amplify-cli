@@ -274,7 +274,7 @@ describe('AmplifyInitializer E2E', () => {
       console.log('✅ Amplify CLI is available, proceeding with test');
 
       // Generate a unique alphanumeric app name (3-20 chars, alphanumeric only)
-      const appName = generateTimeBasedE2EAmplifyAppName();
+      const appName = generateTimeBasedE2EAmplifyAppName('app-name');
       const profile = TEST_RUNNER_PROFILE;
 
       const config = {

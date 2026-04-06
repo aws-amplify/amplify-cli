@@ -3,14 +3,15 @@
  */
 
 import * as path from 'path';
-import { IAppSelector, ILogger, IFileManager } from '../interfaces';
 import { CLIOptions } from '../types';
+import { Logger } from '../utils/logger';
+import { FileManager } from '../utils/file-manager';
 
-export class AppSelector implements IAppSelector {
+export class AppSelector {
   private readonly appsBasePath: string;
   private availableApps?: string[];
 
-  constructor(private readonly logger: ILogger, private readonly fileManager: IFileManager, appsBasePath = '../../amplify-migration-apps') {
+  constructor(private readonly logger: Logger, private readonly fileManager: FileManager, appsBasePath = '../../amplify-migration-apps') {
     // Resolve path relative to the project root, not the current file
     this.appsBasePath = path.resolve(process.cwd(), appsBasePath);
   }
@@ -30,7 +31,7 @@ export class AppSelector implements IAppSelector {
       const appDirectories = await this.fileManager.listDirectories(this.appsBasePath);
 
       this.availableApps = appDirectories.sort();
-      this.logger.info(`Discovered ${this.availableApps.length} available apps: ${this.availableApps.join(', ')}`);
+      this.logger.debug(`Discovered ${this.availableApps.length} available apps: ${this.availableApps.join(', ')}`);
 
       return this.availableApps;
     } catch (error) {
@@ -38,7 +39,7 @@ export class AppSelector implements IAppSelector {
     }
   }
 
-  async validateAppExists(appName: string): Promise<boolean> {
+  public async validateAppExists(appName: string): Promise<boolean> {
     this.logger.debug(`Validating app exists: ${appName}`);
 
     const availableApps = await this.discoverAvailableApps();
@@ -52,7 +53,7 @@ export class AppSelector implements IAppSelector {
   }
 
   async selectApp(options: CLIOptions): Promise<string> {
-    this.logger.debug('Selecting app based on CLI option', { operation: 'selectApp' });
+    this.logger.debug('Selecting app based on CLI option');
 
     const availableApps = await this.discoverAvailableApps();
 

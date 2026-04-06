@@ -1,6 +1,7 @@
 import { AuthCognitoForwardRefactorer } from '../../../../../commands/gen2-migration/refactor/auth/auth-cognito-forward';
-import { CFNResource, CFNTemplate } from '../../../../../commands/gen2-migration/cfn-template';
-import { AwsClients } from '../../../../../commands/gen2-migration/aws-clients';
+import { CFNResource, CFNTemplate } from '../../../../../commands/gen2-migration/_infra/cfn-template';
+import { AwsClients } from '../../../../../commands/gen2-migration/_infra/aws-clients';
+import { Gen1App } from '../../../../../commands/gen2-migration/generate/_infra/gen1-app';
 import { StackFacade } from '../../../../../commands/gen2-migration/refactor/stack-facade';
 import { noOpLogger } from '../../_framework/logger';
 import { mockClient } from 'aws-sdk-client-mock';
@@ -105,19 +106,16 @@ describe('AuthCognitoForwardRefactorer.plan() — operation sequence', () => {
   it('main auth: produces updateSource → updateTarget → beforeMove → move', async () => {
     setupMocks(cfnMock);
 
-    const clients = new AwsClients({ region: 'us-east-1' });
+    const clients = new (AwsClients as any)({ region: 'us-east-1' });
     (clients as any).cloudFormation = new CloudFormationClient({});
     const gen1Env = new StackFacade(clients, 'gen1-root');
     const gen2Branch = new StackFacade(clients, 'gen2-root');
     const refactorer = new AuthCognitoForwardRefactorer(
       gen1Env,
       gen2Branch,
-      clients,
-      'us-east-1',
+      { region: 'us-east-1', clients, appId: 'appId', envName: 'main' } as unknown as Gen1App,
       '123456789',
       noOpLogger(),
-      'appId',
-      'main',
       { category: 'auth', resourceName: 'test', service: 'Cognito', key: 'auth:Cognito' as const },
       new Cfn(new CloudFormationClient({}), noOpLogger()),
     );
@@ -200,7 +198,7 @@ describe('AuthCognitoForwardRefactorer.plan() — operation sequence', () => {
       IdentityProvider: { ProviderDetails: { client_id: 'google-id', client_secret: 'google-secret' } },
     });
 
-    const clients = new AwsClients({ region: 'us-east-1' });
+    const clients = new (AwsClients as any)({ region: 'us-east-1' });
     (clients as any).cloudFormation = new CloudFormationClient({});
     (clients as any).cognitoIdentityProvider = new CognitoIdentityProviderClient({});
     const gen1Env = new StackFacade(clients, 'gen1-root');
@@ -208,12 +206,9 @@ describe('AuthCognitoForwardRefactorer.plan() — operation sequence', () => {
     const refactorer = new AuthCognitoForwardRefactorer(
       gen1Env,
       gen2Branch,
-      clients,
-      'us-east-1',
+      { region: 'us-east-1', clients, appId: 'appId', envName: 'main' } as unknown as Gen1App,
       '123456789',
       noOpLogger(),
-      'appId',
-      'main',
       { category: 'auth', resourceName: 'test', service: 'Cognito', key: 'auth:Cognito' as const },
       new Cfn(new CloudFormationClient({}), noOpLogger()),
     );
@@ -228,7 +223,8 @@ describe('AuthCognitoForwardRefactorer.plan() — operation sequence', () => {
       Stacks: [{ StackName: 'gen1-auth-stack', StackStatus: 'UPDATE_COMPLETE', CreationTime: ts }],
     });
     cfnMock.on(UpdateStackCommand).resolves({});
-    await ops[0].execute();
+    // ops[0] and ops[1] are stack status validations; ops[2] is updateSource
+    await ops[2].execute();
 
     const updateCalls = cfnMock.commandCalls(UpdateStackCommand);
     expect(updateCalls).toHaveLength(1);
@@ -258,19 +254,16 @@ describe('AuthCognitoForwardRefactorer.plan() — operation sequence', () => {
       Stacks: [{ StackName: 'gen1-auth-stack', StackStatus: rs, CreationTime: ts, Description: gen1AuthTemplate.Description }],
     });
 
-    const clients = new AwsClients({ region: 'us-east-1' });
+    const clients = new (AwsClients as any)({ region: 'us-east-1' });
     (clients as any).cloudFormation = new CloudFormationClient({});
     const gen1Env = new StackFacade(clients, 'gen1-root');
     const gen2Branch = new StackFacade(clients, 'gen2-root');
     const refactorer = new AuthCognitoForwardRefactorer(
       gen1Env,
       gen2Branch,
-      clients,
-      'us-east-1',
+      { region: 'us-east-1', clients, appId: 'appId', envName: 'main' } as unknown as Gen1App,
       '123456789',
       noOpLogger(),
-      'appId',
-      'main',
       { category: 'auth', resourceName: 'test', service: 'Cognito', key: 'auth:Cognito' as const },
       new Cfn(new CloudFormationClient({}), noOpLogger()),
     );
@@ -285,7 +278,7 @@ function toIdMap(mappings: ResourceMapping[]): Map<string, string> {
 
 describe('AuthCognitoForwardRefactorer.buildResourceMappings — UserPoolClient disambiguation', () => {
   function createRefactorer() {
-    const clients = new AwsClients({ region: 'us-east-1' });
+    const clients = new (AwsClients as any)({ region: 'us-east-1' });
     const gen1Env = new StackFacade(clients, 'gen1');
     const gen2Branch = new StackFacade(clients, 'gen2');
     return new (class extends AuthCognitoForwardRefactorer {
@@ -293,12 +286,9 @@ describe('AuthCognitoForwardRefactorer.buildResourceMappings — UserPoolClient 
         super(
           gen1Env,
           gen2Branch,
-          clients,
-          'us-east-1',
+          { region: 'us-east-1', clients, appId: 'appId', envName: 'main' } as unknown as Gen1App,
           '123456789',
           noOpLogger(),
-          'appId',
-          'main',
           {
             category: 'auth',
             resourceName: 'test',

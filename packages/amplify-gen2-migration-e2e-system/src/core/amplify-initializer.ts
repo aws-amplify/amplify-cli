@@ -3,9 +3,18 @@
  * Uses the e2e-core utilities for reliable amplify init execution
  */
 
-import { ILogger, IAppInitializer, InitializeAppOptions } from '../interfaces';
-import { AppConfiguration, LogContext } from '../types';
+import { AppConfiguration } from '../types';
 import { initJSProjectWithProfile } from '@aws-amplify/amplify-e2e-core';
+import { Logger } from '../utils/logger';
+
+export interface InitializeAppOptions {
+  appPath: string;
+  config: AppConfiguration;
+  deploymentName: string;
+  /** Amplify environment name (required, 2-10 lowercase letters) */
+  envName: string;
+  profile: string;
+}
 
 export interface AmplifyInitSettings {
   name: string;
@@ -31,18 +40,16 @@ interface BuildInitSettingsOptions {
   profile: string;
 }
 
-export class AmplifyInitializer implements IAppInitializer {
-  constructor(private readonly logger: ILogger) {}
+export class AmplifyInitializer {
+  constructor(private readonly logger: Logger) {}
 
   async initializeApp(options: InitializeAppOptions): Promise<void> {
     const { appPath, config, deploymentName, envName, profile } = options;
 
-    const context: LogContext = { appName: deploymentName, operation: 'initializeApp' };
-
-    this.logger.info(`Starting amplify init for ${deploymentName} (config: ${config.app.name})`, context);
-    this.logger.debug(`App path: ${appPath}`, context);
-    this.logger.debug(`Configuration: ${JSON.stringify(config, null, 2)}`, context);
-    this.logger.debug(`Deployment name: ${deploymentName}`, context);
+    this.logger.info(`Starting amplify init for ${deploymentName} (config: ${config.app.name})`);
+    this.logger.debug(`App path: ${appPath}`);
+    this.logger.debug(`Configuration: ${JSON.stringify(config, null, 2)}`);
+    this.logger.debug(`Deployment name: ${deploymentName}`);
 
     const appNameValidation = this.validateAppName(deploymentName);
     if (!appNameValidation.valid) {
@@ -56,16 +63,16 @@ export class AmplifyInitializer implements IAppInitializer {
 
     const startTime = Date.now();
     try {
-      this.logger.debug(`Calling initJSProjectWithProfile...`, context);
+      this.logger.debug(`Calling initJSProjectWithProfile...`);
       const settings = this.buildInitSettings({ config, deploymentName, profile, envName });
-      this.logger.debug(`Init settings: ${JSON.stringify(settings, null, 2)}`, context);
+      this.logger.debug(`Init settings: ${JSON.stringify(settings, null, 2)}`);
       await initJSProjectWithProfile(appPath, settings);
 
       const duration = Date.now() - startTime;
-      this.logger.info(`Successfully initialized Amplify app in ${appPath}, ${deploymentName} (took ${duration}ms)`, context);
+      this.logger.info(`Successfully initialized Amplify app in ${appPath} (${duration}ms)`);
     } catch (error) {
       const duration = Date.now() - startTime;
-      this.logger.error(`Failed to initialize Amplify app: ${deploymentName} (failed after ${duration}ms)`, error as Error, context);
+      this.logger.error(`Failed to initialize Amplify app: ${deploymentName} (failed after ${duration}ms)`, error as Error);
       throw error;
     }
   }
@@ -132,11 +139,10 @@ export class AmplifyInitializer implements IAppInitializer {
     };
 
     // Log the settings being used
-    const context: LogContext = { appName: deploymentName, operation: 'buildInitSettings' };
-    this.logger.debug(`Built init settings for ${deploymentName} (config: ${config.app.name}):`, context);
-    this.logger.debug(`- Name: ${settings.name}`, context);
-    this.logger.info(`Using Amplify environment name: ${settings.envName}`, context);
-    this.logger.debug(`- Using default selections for editor, framework, etc.`, context);
+    this.logger.debug(`Built init settings for ${deploymentName} (config: ${config.app.name}):`);
+    this.logger.debug(`- Name: ${settings.name}`);
+    this.logger.info(`Using Amplify environment name: ${settings.envName}`);
+    this.logger.debug(`- Using default selections for editor, framework, etc.`);
 
     return settings;
   }

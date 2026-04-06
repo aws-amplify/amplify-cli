@@ -1,9 +1,7 @@
-import { AmplifyMigrationStep } from './_step';
-import { AmplifyMigrationOperation, ValidationResult } from './_operation';
-import { Plan } from './_plan';
-import { AmplifyGen2MigrationValidations } from './_validations';
+import { AmplifyMigrationStep } from './_infra/step';
+import { AmplifyMigrationOperation, ValidationResult } from './_infra/operation';
+import { Plan } from './_infra/plan';
 import {
-  CloudFormationClient,
   CreateChangeSetCommand,
   DescribeChangeSetCommand,
   DeleteChangeSetCommand,
@@ -18,9 +16,8 @@ import { Cfn, HOLDING_STACK_NAME_SUFFIX } from './refactor/cfn';
 
 export class AmplifyMigrationDecommissionStep extends AmplifyMigrationStep {
   public async forward(): Promise<Plan> {
-    const cfnClient = new CloudFormationClient({ region: this.region });
-    const cfn = new Cfn(cfnClient, this.logger);
-    const holdingStacks = await this.findHoldingStacks(cfnClient);
+    const cfn = new Cfn(this.gen1App.clients.cloudFormation, this.logger);
+    const holdingStacks = await this.findHoldingStacks();
 
     const operations: AmplifyMigrationOperation[] = [];
 
@@ -47,14 +44,14 @@ export class AmplifyMigrationDecommissionStep extends AmplifyMigrationStep {
       validate: () => undefined,
       describe: async () => ['Delete the Gen1 environment'],
       execute: async () => {
-        this.logger.info(`Starting decommission of environment: ${this.currentEnvName}`);
+        this.logger.info(`Starting decommission of environment: ${this.gen1App.envName}`);
         this.logger.info('Preparing to delete Gen1 resources...');
         this.logger.info('Deleting Gen1 resources from the cloud. This will take a few minutes.');
-        await removeEnvFromCloud(this.context, this.currentEnvName, true);
+        await removeEnvFromCloud(this.context, this.gen1App.envName, true);
         this.logger.info('Cleaning up SSM parameters...');
-        await invokeDeleteEnvParamsFromService(this.context, this.currentEnvName);
+        await invokeDeleteEnvParamsFromService(this.context, this.gen1App.envName);
         this.logger.info('Successfully decommissioned Gen1 environment from the cloud');
-        this.logger.info(`Environment '${this.currentEnvName}' has been completely removed from AWS`);
+        this.logger.info(`Environment '${this.gen1App.envName}' has been completely removed from AWS`);
       },
     });
 
@@ -76,19 +73,18 @@ export class AmplifyMigrationDecommissionStep extends AmplifyMigrationStep {
   private async validateStatefulResources(): Promise<ValidationResult> {
     try {
       const changeSet = await this.createChangeSet();
-      const validations = new AmplifyGen2MigrationValidations(this.logger, this.rootStackName, this.currentEnvName, this.context);
       // eslint-disable-next-line spellcheck/spell-checker
-      await validations.validateStatefulResources(changeSet, true);
+      await this.validations.validateStatefulResources(changeSet, true);
       return { valid: true };
     } catch (e) {
       return { valid: false, report: e.message };
     }
   }
 
-  private async findHoldingStacks(cfnClient: CloudFormationClient): Promise<string[]> {
+  private async findHoldingStacks(): Promise<string[]> {
     const holdingStacks: string[] = [];
     const paginator = paginateListStacks(
-      { client: cfnClient },
+      { client: this.gen1App.clients.cloudFormation },
       {
         StackStatusFilter: [
           StackStatus.CREATE_COMPLETE,
@@ -100,7 +96,7 @@ export class AmplifyMigrationDecommissionStep extends AmplifyMigrationStep {
     );
     for await (const page of paginator) {
       for (const stack of page.StackSummaries ?? []) {
-        if (stack.StackName?.endsWith(HOLDING_STACK_NAME_SUFFIX) && stack.StackName.includes(this.appId)) {
+        if (stack.StackName?.endsWith(HOLDING_STACK_NAME_SUFFIX) && stack.StackName.includes(this.gen1App.appId)) {
           holdingStacks.push(stack.StackName);
         }
       }
@@ -109,12 +105,12 @@ export class AmplifyMigrationDecommissionStep extends AmplifyMigrationStep {
   }
 
   private async createChangeSet(): Promise<DescribeChangeSetOutput> {
-    const cfn = new CloudFormationClient({});
+    const cfn = this.gen1App.clients.cloudFormation;
     const changeSetName = `decommission-${Date.now()}`;
 
     await cfn.send(
       new CreateChangeSetCommand({
-        StackName: this.rootStackName,
+        StackName: this.gen1App.rootStackName,
         ChangeSetName: changeSetName,
         TemplateBody: JSON.stringify({
           Resources: {
@@ -129,7 +125,7 @@ export class AmplifyMigrationDecommissionStep extends AmplifyMigrationStep {
     this.logger.info('Analyzing environment resources...');
     await waitUntilChangeSetCreateComplete(
       { client: cfn, maxWaitTime: 120 },
-      { StackName: this.rootStackName, ChangeSetName: changeSetName },
+      { StackName: this.gen1App.rootStackName, ChangeSetName: changeSetName },
     );
 
     const allChanges = [];
@@ -138,7 +134,7 @@ export class AmplifyMigrationDecommissionStep extends AmplifyMigrationStep {
     do {
       changeSet = await cfn.send(
         new DescribeChangeSetCommand({
-          StackName: this.rootStackName,
+          StackName: this.gen1App.rootStackName,
           ChangeSetName: changeSetName,
           NextToken: nextToken,
         }),
@@ -151,7 +147,7 @@ export class AmplifyMigrationDecommissionStep extends AmplifyMigrationStep {
 
     await cfn.send(
       new DeleteChangeSetCommand({
-        StackName: this.rootStackName,
+        StackName: this.gen1App.rootStackName,
         ChangeSetName: changeSetName,
       }),
     );

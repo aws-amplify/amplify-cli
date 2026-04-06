@@ -1,1 +1,1 @@
-export { AmplifyMigrationRefactorStep } from './refactor';
+export { AmplifyMigrationRefactorStep } from '../refactor';

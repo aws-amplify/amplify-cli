@@ -81,14 +81,6 @@ export class Snapshot {
   public async compare(actualDir: string, ignorePatterns?: RegExp[]): Promise<Report> {
     const fullIgnorePatterns = [...(ignorePatterns ?? []), /node_modules/];
     const differences = await diff({ expectedDir: this.props.expectedPath, actualDir, ignorePatterns: fullIgnorePatterns });
-
-    // copy the temporary actual path to repo (ignored) for easy manual comparison
-    const ignoredActualPath = `${this.props.expectedPath}.actual.${Date.now()}`;
-    if (fs.existsSync(ignoredActualPath)) {
-      fs.rmSync(ignoredActualPath, { recursive: true, force: true });
-    }
-    copySync({ src: actualDir, dest: ignoredActualPath, ignorePatterns: fullIgnorePatterns });
-
     return new Report({
       app: this.props.app,
       expectedPath: this.props.expectedPath,
@@ -109,6 +101,7 @@ export class Snapshot {
   public update(actualDir: string) {
     console.log(`Updating snapshot: ${this.props.expectedPath}`);
     fs.rmSync(this.props.expectedPath, { recursive: true });
-    copySync({ src: actualDir, dest: this.props.expectedPath });
+    copySync({ src: actualDir, dest: this.props.expectedPath, ignorePatterns: [/node_modules/] });
+    console.log(`Finished updating snapshot: ${this.props.expectedPath}`);
   }
 }

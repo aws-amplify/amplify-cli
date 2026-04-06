@@ -6,8 +6,8 @@ import {
   StackResource,
 } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
-import { AwsClients } from '../aws-clients';
-import { CFNTemplate } from '../cfn-template';
+import { AwsClients } from '../_infra/aws-clients';
+import { CFNTemplate } from '../_infra/cfn-template';
 
 /**
  * Read-only facade over a CloudFormation stack hierarchy.

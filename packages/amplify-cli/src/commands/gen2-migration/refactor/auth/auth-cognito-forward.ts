@@ -1,13 +1,8 @@
 import { Output, Parameter } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
-import { AwsClients } from '../../aws-clients';
-import { StackFacade } from '../stack-facade';
 import { retrieveOAuthValues } from '../oauth-values-retriever';
 import { ForwardCategoryRefactorer } from '../workflow/forward-category-refactorer';
-import { Cfn } from '../cfn';
-import { SpinningLogger } from '../../_spinning-logger';
-import { DiscoveredResource } from '../../generate/_infra/gen1-app';
-import { CFNResource } from '../../cfn-template';
+import { CFNResource } from '../../_infra/cfn-template';
 
 const HOSTED_PROVIDER_META_PARAMETER_NAME = 'hostedUIProviderMeta';
 const HOSTED_PROVIDER_CREDENTIALS_PARAMETER_NAME = 'hostedUIProviderCreds';
@@ -39,21 +34,6 @@ export const RESOURCE_TYPES = [
  * Moves main auth resources from Gen1 to Gen2.
  */
 export class AuthCognitoForwardRefactorer extends ForwardCategoryRefactorer {
-  constructor(
-    gen1Env: StackFacade,
-    gen2Branch: StackFacade,
-    clients: AwsClients,
-    region: string,
-    accountId: string,
-    logger: SpinningLogger,
-    private readonly appId: string,
-    private readonly environmentName: string,
-    protected readonly resource: DiscoveredResource,
-    cfn: Cfn,
-  ) {
-    super(gen1Env, gen2Branch, clients, region, accountId, logger, resource, cfn);
-  }
-
   protected resourceTypes(): string[] {
     return RESOURCE_TYPES;
   }
@@ -73,12 +53,12 @@ export class AuthCognitoForwardRefactorer extends ForwardCategoryRefactorer {
     }
 
     const oAuthValues = await retrieveOAuthValues({
-      ssmClient: this.clients.ssm,
-      cognitoIdpClient: this.clients.cognitoIdentityProvider,
+      ssmClient: this.gen1App.clients.ssm,
+      cognitoIdpClient: this.gen1App.clients.cognitoIdentityProvider,
       oAuthParameter: oAuthParam,
       userPoolId,
-      appId: this.appId,
-      environmentName: this.environmentName,
+      appId: this.gen1App.appId,
+      environmentName: this.gen1App.envName,
     });
 
     const credsParam = parameters.find((p) => p.ParameterKey === HOSTED_PROVIDER_CREDENTIALS_PARAMETER_NAME);

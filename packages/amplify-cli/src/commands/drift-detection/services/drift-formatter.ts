@@ -11,7 +11,7 @@ import { parseArn } from '@aws-amplify/amplify-cli-core';
 import type { LocalDriftResults } from '../detect-local-drift';
 import type { TemplateDriftResults, ResourceChangeWithNested } from '../detect-template-drift';
 import { type StackDriftNode, type CloudFormationDriftResults } from '../detect-stack-drift';
-import { extractCategory } from '../../gen2-migration/categories';
+import { extractCategory } from '../../gen2-migration/_infra/categories';
 
 interface DriftBlock {
   categoryName: string;

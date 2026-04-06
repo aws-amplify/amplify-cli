@@ -1,37 +1,26 @@
 import { AmplifyMigrationLockStep } from '../../../commands/gen2-migration/lock';
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
-import {
-  CloudFormationClient,
-  CreateChangeSetCommand,
-  DeleteChangeSetCommand,
-  SetStackPolicyCommand,
-} from '@aws-sdk/client-cloudformation';
-import { AmplifyClient, UpdateAppCommand } from '@aws-sdk/client-amplify';
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { SpinningLogger } from '../../../commands/gen2-migration/_spinning-logger';
+import { CreateChangeSetCommand, DeleteChangeSetCommand, SetStackPolicyCommand } from '@aws-sdk/client-cloudformation';
+import { UpdateAppCommand } from '@aws-sdk/client-amplify';
+import { SpinningLogger } from '../../../commands/gen2-migration/_infra/spinning-logger';
+import { Gen1App } from '../../../commands/gen2-migration/generate/_infra/gen1-app';
+import { AmplifyGen2MigrationValidations } from '../../../commands/gen2-migration/_infra/validations';
 
-jest.mock('@aws-sdk/client-cloudformation', () => ({
-  ...jest.requireActual('@aws-sdk/client-cloudformation'),
-  CloudFormationClient: jest.fn(),
-  waitUntilChangeSetCreateComplete: jest.fn().mockResolvedValue({}),
-  waitUntilStackUpdateComplete: jest.fn().mockResolvedValue({}),
-}));
-jest.mock('@aws-sdk/client-amplify', () => ({
-  ...jest.requireActual('@aws-sdk/client-amplify'),
-  AmplifyClient: jest.fn(),
-}));
 jest.mock('@aws-sdk/client-appsync', () => ({
   ...jest.requireActual('@aws-sdk/client-appsync'),
-  AppSyncClient: jest.fn().mockImplementation(() => ({ send: jest.fn() })),
   paginateListGraphqlApis: jest.fn().mockImplementation(() => ({
     [Symbol.asyncIterator]: async function* () {
       yield { graphqlApis: [{ name: 'testApp-testEnv', apiId: 'test-api-id' }] };
     },
   })),
 }));
+jest.mock('@aws-sdk/client-cloudformation', () => ({
+  ...jest.requireActual('@aws-sdk/client-cloudformation'),
+  waitUntilChangeSetCreateComplete: jest.fn().mockResolvedValue({}),
+  waitUntilStackUpdateComplete: jest.fn().mockResolvedValue({}),
+}));
 jest.mock('@aws-sdk/client-dynamodb', () => ({
   ...jest.requireActual('@aws-sdk/client-dynamodb'),
-  DynamoDBClient: jest.fn().mockImplementation(() => ({ send: jest.fn() })),
   paginateListTables: jest.fn().mockImplementation(() => ({
     [Symbol.asyncIterator]: async function* () {
       yield { TableNames: ['Table1-test-api-id-testEnv', 'Table2-test-api-id-testEnv'] };
@@ -47,12 +36,6 @@ jest.mock('@aws-amplify/amplify-prompts', () => ({
   })),
   isDebug: false,
 }));
-jest.mock('../../../commands/gen2-migration/_validations', () => ({
-  AmplifyGen2MigrationValidations: jest.fn().mockImplementation(() => ({
-    validateDeploymentStatus: jest.fn().mockResolvedValue(undefined),
-    validateDrift: jest.fn().mockResolvedValue(undefined),
-  })),
-}));
 
 describe('AmplifyMigrationLockStep', () => {
   let lockStep: AmplifyMigrationLockStep;
@@ -64,10 +47,6 @@ describe('AmplifyMigrationLockStep', () => {
     mockCfnSend = jest.fn();
     mockAmplifySend = jest.fn();
 
-    (CloudFormationClient as jest.Mock).mockImplementation(() => ({ send: mockCfnSend }));
-    (AmplifyClient as jest.Mock).mockImplementation(() => ({ send: mockAmplifySend }));
-    (DynamoDBClient as jest.Mock).mockImplementation(() => ({ send: jest.fn() }));
-
     mockLogger = new SpinningLogger('mock');
     jest.spyOn(mockLogger, 'info').mockImplementation(() => {});
     jest.spyOn(mockLogger, 'start').mockImplementation(() => {});
@@ -77,12 +56,24 @@ describe('AmplifyMigrationLockStep', () => {
 
     lockStep = new AmplifyMigrationLockStep(
       mockLogger,
-      'testEnv',
-      'testApp',
-      'test-app-id',
-      'test-root-stack',
-      'us-east-1',
+      {
+        appId: 'test-app-id',
+        appName: 'testApp',
+        rootStackName: 'test-root-stack',
+        region: 'us-east-1',
+        envName: 'testEnv',
+        clients: {
+          cloudFormation: { send: mockCfnSend },
+          amplify: { send: mockAmplifySend },
+          appSync: { send: jest.fn() },
+          dynamoDB: { send: jest.fn() },
+        },
+      } as unknown as Gen1App,
       {} as $TSContext,
+      {
+        validateDeploymentStatus: jest.fn().mockResolvedValue(undefined),
+        validateDrift: jest.fn().mockResolvedValue(undefined),
+      } as unknown as AmplifyGen2MigrationValidations,
     );
   });
 

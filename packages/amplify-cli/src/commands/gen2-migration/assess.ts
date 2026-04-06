@@ -1,52 +1,89 @@
-import { $TSContext } from '@aws-amplify/amplify-cli-core';
-import { Assessment } from './_assessment';
-import { AmplifyMigrationGenerateStep } from './generate';
-import { AmplifyMigrationRefactorStep } from './refactor';
-import { SpinningLogger } from '../gen2-migration/_spinning-logger';
+import { Assessment, unsupported } from './assess/assessment';
+import { Gen1App } from './generate/_infra/gen1-app';
+import { printer } from '@aws-amplify/amplify-prompts';
+import { Assessor } from './assess/assessor';
+import { AuthCognitoAssessor } from './assess/auth/auth-cognito.assessor';
+import { AuthUserPoolGroupsAssessor } from './assess/auth/auth-user-pool-groups.assessor';
+import { S3Assessor } from './assess/storage/s3.assessor';
+import { DynamoDBAssessor } from './assess/storage/dynamodb.assessor';
+import { DataAssessor } from './assess/api/data.assessor';
+import { RestApiAssessor } from './assess/api/rest-api.assessor';
+import { AnalyticsKinesisAssessor } from './assess/analytics/kinesis.assessor';
+import { FunctionAssessor } from './assess/function/function.assessor';
+import { GeoFenceCollectionAssessor } from './assess/geo/geo-geofence-collection.assessor';
+import { GeoMapAssessor } from './assess/geo/geo-map.assessor';
+import { GeoPlaceIndexAssessor } from './assess/geo/geo-place-index.assessor';
 
 /**
- * Evaluates migration readiness by calling assess() on the generate
- * and refactor steps, then renders the result.
+ * Evaluates migration readiness by discovering resources and
+ * delegating to per-category assessors for resource-level and
+ * feature-level support detection.
  */
 export class AmplifyMigrationAssessor {
-  constructor(
-    private readonly logger: SpinningLogger,
-    private readonly currentEnvName: string,
-    private readonly appName: string,
-    private readonly appId: string,
-    private readonly rootStackName: string,
-    private readonly region: string,
-    private readonly context: $TSContext,
-  ) {}
+  public constructor(private readonly gen1App: Gen1App) {}
+
+  public assess(): Assessment {
+    const discovered = this.gen1App.discover();
+    const combined = new Assessment(this.gen1App.appName, this.gen1App.envName);
+
+    for (const resource of discovered) {
+      const assessors: Assessor[] = [];
+
+      switch (resource.key) {
+        case 'auth:Cognito':
+          assessors.push(new AuthCognitoAssessor(this.gen1App, resource));
+          break;
+        case 'auth:Cognito-UserPool-Groups':
+          assessors.push(new AuthUserPoolGroupsAssessor(this.gen1App, resource));
+          break;
+        case 'storage:S3':
+          assessors.push(new S3Assessor(this.gen1App, resource));
+          break;
+        case 'storage:DynamoDB':
+          assessors.push(new DynamoDBAssessor(this.gen1App, resource));
+          break;
+        case 'api:AppSync':
+          assessors.push(new DataAssessor(this.gen1App, resource));
+          break;
+        case 'api:API Gateway':
+          assessors.push(new RestApiAssessor(this.gen1App, resource));
+          break;
+        case 'analytics:Kinesis':
+          assessors.push(new AnalyticsKinesisAssessor(this.gen1App, resource));
+          break;
+        case 'function:Lambda':
+          assessors.push(new FunctionAssessor(this.gen1App, resource));
+          break;
+        case 'geo:GeofenceCollection':
+          assessors.push(new GeoFenceCollectionAssessor(this.gen1App, resource));
+          break;
+        case 'geo:Map':
+          assessors.push(new GeoMapAssessor(this.gen1App, resource));
+          break;
+        case 'geo:PlaceIndex':
+          assessors.push(new GeoPlaceIndexAssessor(this.gen1App, resource));
+          break;
+        case 'UNKNOWN':
+          combined.recordResource({
+            resource,
+            generate: unsupported('unknown resource type'),
+            refactor: unsupported('unknown resource type'),
+          });
+          break;
+      }
+
+      for (const assessor of assessors) {
+        assessor.record(combined);
+      }
+    }
+    return combined;
+  }
 
   /**
-   * Runs assessment and renders the result to the terminal.
+   * Assesses all discovered resources and prints the full report.
    */
-  public async run(): Promise<void> {
-    const assessment = new Assessment(this.appName, this.currentEnvName);
-
-    const generateStep = new AmplifyMigrationGenerateStep(
-      this.logger,
-      this.currentEnvName,
-      this.appName,
-      this.appId,
-      this.rootStackName,
-      this.region,
-      this.context,
-    );
-    await generateStep.assess(assessment);
-
-    const refactorStep = new AmplifyMigrationRefactorStep(
-      this.logger,
-      this.currentEnvName,
-      this.appName,
-      this.appId,
-      this.rootStackName,
-      this.region,
-      this.context,
-    );
-    await refactorStep.assess(assessment);
-
-    assessment.display();
+  public run(): void {
+    const assessment = this.assess();
+    printer.info(assessment.render());
   }
 }

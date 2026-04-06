@@ -1,12 +1,12 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import * as yaml from 'yaml';
-import { Planner } from '../planner';
-import { AmplifyMigrationOperation } from '../_operation';
+import { Planner } from '../_infra/planner';
+import { AmplifyMigrationOperation } from '../_infra/operation';
 import { Gen1App } from './_infra/gen1-app';
 import { fileOrDirectoryExists } from './_infra/files';
 
-const GEN1_COMMAND = '- amplifyPush --simple';
+const GEN1_COMMAND = '- amplifyPush\\b.*';
 const GEN2_INSTALL_COMMAND = '- npm ci --cache .npm --prefer-offline';
 const GEN2_COMMAND = '- npx ampx pipeline-deploy --branch $AWS_BRANCH --app-id $AWS_APP_ID';
 const GEN2_REPLACE_STRING = `${GEN2_INSTALL_COMMAND}\n${' '.repeat(8)}${GEN2_COMMAND}`;

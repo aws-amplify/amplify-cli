@@ -6,24 +6,33 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as os from 'os';
-import { IAWSProfileManager, AWSProfileData, AWSCredentials, ILogger } from '../interfaces';
-import { LogContext } from '../types';
+import { Logger } from './logger';
 
 type IniSections = Record<string, Record<string, string>>;
 
-export class AWSProfileManager implements IAWSProfileManager {
+export interface AWSCredentials {
+  accessKeyId: string;
+  secretAccessKey: string;
+  sessionToken?: string;
+}
+
+export interface AWSProfileData {
+  credentials: AWSCredentials;
+  region: string;
+}
+
+export class AWSProfileManager {
   private readonly credentialsPath: string;
   private readonly configPath: string;
 
-  constructor(private readonly logger: ILogger, homeDir?: string) {
+  constructor(private readonly logger: Logger, homeDir?: string) {
     const home = homeDir || os.homedir();
     this.credentialsPath = path.join(home, '.aws', 'credentials');
     this.configPath = path.join(home, '.aws', 'config');
   }
 
   async writeProfile(profileName: string, profileData: AWSProfileData): Promise<void> {
-    const context: LogContext = { operation: 'writeProfile' };
-    this.logger.debug(`Writing profile: ${profileName}`, context);
+    this.logger.debug(`Writing profile: ${profileName}`);
 
     await this.ensureAwsDirectory();
 
@@ -33,12 +42,11 @@ export class AWSProfileManager implements IAWSProfileManager {
     // Write config file
     await this.writeConfigFile(profileName, profileData.region);
 
-    this.logger.info(`Successfully wrote profile: ${profileName}`, context);
+    this.logger.info(`Successfully wrote profile: ${profileName}`);
   }
 
   async removeProfile(profileName: string): Promise<void> {
-    const context: LogContext = { operation: 'removeProfile' };
-    this.logger.debug(`Removing profile: ${profileName}`, context);
+    this.logger.debug(`Removing profile: ${profileName}`);
 
     // Remove from credentials file
     await this.removeFromCredentialsFile(profileName);
@@ -46,7 +54,7 @@ export class AWSProfileManager implements IAWSProfileManager {
     // Remove from config file
     await this.removeFromConfigFile(profileName);
 
-    this.logger.info(`Successfully removed profile: ${profileName}`, context);
+    this.logger.info(`Successfully removed profile: ${profileName}`);
   }
 
   private async ensureAwsDirectory(): Promise<void> {
@@ -57,8 +65,6 @@ export class AWSProfileManager implements IAWSProfileManager {
   }
 
   private async writeCredentialsFile(profileName: string, credentials: AWSCredentials): Promise<void> {
-    const context: LogContext = { operation: 'writeCredentialsFile' };
-
     let sections: IniSections = {};
 
     if (await fs.pathExists(this.credentialsPath)) {
@@ -79,12 +85,10 @@ export class AWSProfileManager implements IAWSProfileManager {
     const serialized = this.serializeIniFile(sections);
     await this.writeFileWithPermissions(this.credentialsPath, serialized);
 
-    this.logger.debug(`Wrote credentials for profile: ${profileName}`, context);
+    this.logger.debug(`Wrote credentials for profile: ${profileName}`);
   }
 
   private async writeConfigFile(profileName: string, region: string): Promise<void> {
-    const context: LogContext = { operation: 'writeConfigFile' };
-
     let sections: IniSections = {};
 
     if (await fs.pathExists(this.configPath)) {
@@ -102,14 +106,12 @@ export class AWSProfileManager implements IAWSProfileManager {
     const serialized = this.serializeIniFile(sections);
     await this.writeFileWithPermissions(this.configPath, serialized);
 
-    this.logger.debug(`Wrote config for profile: ${profileName}`, context);
+    this.logger.debug(`Wrote config for profile: ${profileName}`);
   }
 
   private async removeFromCredentialsFile(profileName: string): Promise<void> {
-    const context: LogContext = { operation: 'removeFromCredentialsFile' };
-
     if (!(await fs.pathExists(this.credentialsPath))) {
-      this.logger.debug('Credentials file does not exist, nothing to remove', context);
+      this.logger.debug('Credentials file does not exist, nothing to remove');
       return;
     }
 
@@ -117,7 +119,7 @@ export class AWSProfileManager implements IAWSProfileManager {
     const sections = this.parseIniFile(content);
 
     if (!(profileName in sections)) {
-      this.logger.debug(`Profile ${profileName} not found in credentials file`, context);
+      this.logger.debug(`Profile ${profileName} not found in credentials file`);
       return;
     }
 
@@ -126,14 +128,12 @@ export class AWSProfileManager implements IAWSProfileManager {
     const serialized = this.serializeIniFile(sections);
     await this.writeFileWithPermissions(this.credentialsPath, serialized);
 
-    this.logger.debug(`Removed profile ${profileName} from credentials file`, context);
+    this.logger.debug(`Removed profile ${profileName} from credentials file`);
   }
 
   private async removeFromConfigFile(profileName: string): Promise<void> {
-    const context: LogContext = { operation: 'removeFromConfigFile' };
-
     if (!(await fs.pathExists(this.configPath))) {
-      this.logger.debug('Config file does not exist, nothing to remove', context);
+      this.logger.debug('Config file does not exist, nothing to remove');
       return;
     }
 
@@ -144,7 +144,7 @@ export class AWSProfileManager implements IAWSProfileManager {
     const sectionName = profileName === 'default' ? 'default' : `profile ${profileName}`;
 
     if (!(sectionName in sections)) {
-      this.logger.debug(`Profile ${profileName} not found in config file`, context);
+      this.logger.debug(`Profile ${profileName} not found in config file`);
       return;
     }
 
@@ -153,7 +153,7 @@ export class AWSProfileManager implements IAWSProfileManager {
     const serialized = this.serializeIniFile(sections);
     await this.writeFileWithPermissions(this.configPath, serialized);
 
-    this.logger.debug(`Removed profile ${profileName} from config file`, context);
+    this.logger.debug(`Removed profile ${profileName} from config file`);
   }
 
   private async writeFileWithPermissions(filePath: string, content: string): Promise<void> {

@@ -5,8 +5,7 @@
 
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { ILogger } from '../interfaces';
-import { LogContext } from '../types';
+import { Logger } from './logger';
 
 export interface DirectoryCreationOptions {
   /** Base path where the app directory should be created */
@@ -17,24 +16,14 @@ export interface DirectoryCreationOptions {
   permissions?: string | number;
 }
 
-export interface IDirectoryManager {
-  createAppDirectory(options: DirectoryCreationOptions): Promise<string>;
-  copyDirectory(source: string, destination: string): Promise<void>;
-}
-
-export class DirectoryManager implements IDirectoryManager {
-  constructor(private readonly logger: ILogger) {}
+export class DirectoryManager {
+  constructor(private readonly logger: Logger) {}
 
   async createAppDirectory(options: DirectoryCreationOptions): Promise<string> {
-    const context: LogContext = {
-      appName: options.appName,
-      operation: 'createAppDirectory',
-    };
-
     try {
-      this.logger.info(`Creating app directory for ${options.appName}`, context);
-      this.logger.debug(`Base path: ${options.basePath}`, context);
-      this.logger.debug(`Options: ${JSON.stringify(options, null, 2)}`, context);
+      this.logger.info(`Creating app directory for ${options.appName}`);
+      this.logger.debug(`Base path: ${options.basePath}`);
+      this.logger.debug(`Options: ${JSON.stringify(options, null, 2)}`);
 
       // Ensure base path exists (create if needed for temp directories)
       await fs.ensureDir(options.basePath);
@@ -50,15 +39,15 @@ export class DirectoryManager implements IDirectoryManager {
 
       // Create the directory
       await fs.ensureDir(targetPath);
-      this.logger.debug(`Directory created: ${targetPath}`, context);
+      this.logger.debug(`Directory created: ${targetPath}`);
 
       // Set permissions if specified
       if (options.permissions !== undefined) {
         await fs.chmod(targetPath, options.permissions);
-        this.logger.debug(`Set permissions ${options.permissions} on: ${targetPath}`, context);
+        this.logger.debug(`Set permissions ${options.permissions} on: ${targetPath}`);
       }
 
-      this.logger.info(`Successfully created app directory: ${targetPath}`, context);
+      this.logger.info(`Successfully created app directory: ${targetPath}`);
 
       return targetPath;
     } catch (error) {
@@ -67,10 +56,8 @@ export class DirectoryManager implements IDirectoryManager {
   }
 
   async copyDirectory(source: string, destination: string): Promise<void> {
-    const context: LogContext = { operation: 'copyDirectory' };
-
     try {
-      this.logger.debug(`Copying directory: ${source} -> ${destination}`, context);
+      this.logger.debug(`Copying directory: ${source} -> ${destination}`);
 
       // Validate source exists and is a directory
       if (!(await fs.pathExists(source))) {
@@ -91,9 +78,13 @@ export class DirectoryManager implements IDirectoryManager {
         overwrite: false, // Don't overwrite existing files
         errorOnExist: true, // Throw error if destination exists
         preserveTimestamps: true, // Preserve file timestamps
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        filter: async (src: string, _dest: string) => {
+          return !src.includes('_snapshot') && !src.includes('node_modules');
+        },
       });
 
-      this.logger.debug(`Successfully copied directory: ${source} -> ${destination}`, context);
+      this.logger.debug(`Successfully copied directory: ${source} -> ${destination}`);
     } catch (error) {
       throw Error(`Failed to copy directory: ${source} -> ${destination}. Error: ${error}`);
     }

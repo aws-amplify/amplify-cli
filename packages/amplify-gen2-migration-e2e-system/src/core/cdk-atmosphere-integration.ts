@@ -3,11 +3,12 @@
  * Handles detection and integration with Atmosphere environments while supporting local AWS configurations
  */
 
-import { ICDKAtmosphereIntegration, ILogger, IEnvironmentDetector, IAWSProfileManager } from '../interfaces';
-import { EnvironmentType, LogContext, AtmosphereAllocation } from '../types';
+import { EnvironmentType, AtmosphereAllocation } from '../types';
 import { AtmosphereClient } from '@cdklabs/cdk-atmosphere-client';
 import { AWSProfileManager } from '../utils/aws-profile-manager';
 import * as crypto from 'crypto';
+import { Logger } from '../utils/logger';
+import { EnvironmentDetector } from './environment-detector';
 
 // Amplify supported regions (copied from @aws-amplify/amplify-e2e-core to avoid ESM import issues)
 const amplifyRegions = [
@@ -35,15 +36,15 @@ const amplifyRegions = [
 // Maximum number of allocation attempts to get a supported Amplify region
 const MAX_ALLOCATION_ATTEMPTS = 10;
 
-export class CDKAtmosphereIntegration implements ICDKAtmosphereIntegration {
+export class CDKAtmosphereIntegration {
   private atmosphereClient?: AtmosphereClient;
   private cachedAllocation?: AtmosphereAllocation;
   private allocationId?: string;
   private currentProfileName?: string;
-  private readonly profileManager: IAWSProfileManager;
+  private readonly profileManager: AWSProfileManager;
   private readonly supportedRegions: Set<string>;
 
-  constructor(private readonly logger: ILogger, private readonly environmentDetector: IEnvironmentDetector, homeDir?: string) {
+  constructor(private readonly logger: Logger, private readonly environmentDetector: EnvironmentDetector, homeDir?: string) {
     this.profileManager = new AWSProfileManager(logger, homeDir);
     this.supportedRegions = new Set(amplifyRegions);
   }
@@ -66,26 +67,23 @@ export class CDKAtmosphereIntegration implements ICDKAtmosphereIntegration {
   }
 
   async isAtmosphereEnvironment(): Promise<boolean> {
-    const context: LogContext = { operation: 'isAtmosphereEnvironment' };
-
     try {
       const envType = await this.environmentDetector.detectEnvironment();
       const isAtmosphere = envType === EnvironmentType.ATMOSPHERE;
 
-      this.logger.debug(`Environment type detected: ${envType}`, context);
+      this.logger.debug(`Environment type detected: ${envType}`);
       return isAtmosphere;
     } catch (error) {
-      this.logger.error('Failed to detect environment type', error as Error, context);
+      this.logger.error('Failed to detect environment type', error as Error);
       return false;
     }
   }
 
   async initializeForAtmosphere(): Promise<AtmosphereAllocation> {
-    const context: LogContext = { operation: 'initializeForAtmosphere' };
-    this.logger.info('Initializing CDK Atmosphere client for Atmosphere environment', context);
+    this.logger.info('Initializing CDK Atmosphere client for Atmosphere environment');
 
     if (this.cachedAllocation) {
-      this.logger.debug('Using cached Atmosphere credentials', context);
+      this.logger.debug('Using cached Atmosphere credentials');
       return this.cachedAllocation;
     }
 
@@ -97,13 +95,13 @@ export class CDKAtmosphereIntegration implements ICDKAtmosphereIntegration {
       logStream: process.stdout,
     });
 
-    this.logger.debug(`Initialized Atmosphere client with endpoint: ${atmosphereEndpoint}`, context);
+    this.logger.debug(`Initialized Atmosphere client with endpoint: ${atmosphereEndpoint}`);
 
     const allocation = await this.getAtmosphereAllocation();
 
     this.cachedAllocation = allocation;
 
-    this.logger.info('Successfully initialized CDK Atmosphere client', context);
+    this.logger.info('Successfully initialized CDK Atmosphere client');
     return allocation;
   }
 
@@ -112,8 +110,6 @@ export class CDKAtmosphereIntegration implements ICDKAtmosphereIntegration {
    * Returns the generated profile name that can be used with AWS CLI/SDK.
    */
   async getProfileFromAllocation(): Promise<string> {
-    const context: LogContext = { operation: 'getProfileFromAllocation' };
-
     const isAtmosphere = await this.isAtmosphereEnvironment();
 
     if (!isAtmosphere) {
@@ -137,7 +133,7 @@ export class CDKAtmosphereIntegration implements ICDKAtmosphereIntegration {
         region: allocation.region,
       });
 
-      this.logger.info(`Created AWS profile: ${profileName}`, context);
+      this.logger.info(`Created AWS profile: ${profileName}`);
       return profileName;
     } catch (atmosphereError) {
       throw Error(`Atmosphere credentials failed: ${(atmosphereError as Error).message}`);
@@ -145,7 +141,6 @@ export class CDKAtmosphereIntegration implements ICDKAtmosphereIntegration {
   }
 
   async cleanup(): Promise<void> {
-    const context: LogContext = { operation: 'cleanup' };
     const isAtmosphere = await this.isAtmosphereEnvironment();
 
     if (!isAtmosphere) {
@@ -153,14 +148,14 @@ export class CDKAtmosphereIntegration implements ICDKAtmosphereIntegration {
       return;
     }
 
-    this.logger.debug('Cleaning up CDK Atmosphere client', context);
+    this.logger.debug('Cleaning up CDK Atmosphere client');
 
     try {
       if (this.currentProfileName) {
-        this.logger.debug(`Removing AWS profile: ${this.currentProfileName}`, context);
+        this.logger.debug(`Removing AWS profile: ${this.currentProfileName}`);
         try {
           await this.profileManager.removeProfile(this.currentProfileName);
-          this.logger.debug(`Successfully removed AWS profile: ${this.currentProfileName}`, context);
+          this.logger.debug(`Successfully removed AWS profile: ${this.currentProfileName}`);
         } catch (profileError) {
           this.logger.warn(`Failed to remove AWS profile ${this.currentProfileName}: ${(profileError as Error).message}`);
         }
@@ -169,7 +164,7 @@ export class CDKAtmosphereIntegration implements ICDKAtmosphereIntegration {
 
       // Release the Atmosphere allocation if we have one
       if (this.atmosphereClient && this.allocationId) {
-        this.logger.debug(`Releasing Atmosphere allocation: ${this.allocationId}`, context);
+        this.logger.debug(`Releasing Atmosphere allocation: ${this.allocationId}`);
         await this.atmosphereClient.release(this.allocationId, 'success');
         this.allocationId = undefined;
       }
@@ -178,16 +173,14 @@ export class CDKAtmosphereIntegration implements ICDKAtmosphereIntegration {
       this.atmosphereClient = undefined;
       this.cachedAllocation = undefined;
 
-      this.logger.debug('Successfully cleaned up CDK Atmosphere client', context);
+      this.logger.debug('Successfully cleaned up CDK Atmosphere client');
     } catch (error) {
-      this.logger.error('Failed to cleanup CDK Atmosphere client', error as Error, context);
+      this.logger.error('Failed to cleanup CDK Atmosphere client', error as Error);
       throw error;
     }
   }
 
   private async getAtmosphereAllocation(): Promise<AtmosphereAllocation> {
-    const context: LogContext = { operation: 'getAtmosphereCredentials' };
-
     if (!this.atmosphereClient) {
       throw Error('Atmosphere client not initialized');
     }
@@ -202,10 +195,7 @@ export class CDKAtmosphereIntegration implements ICDKAtmosphereIntegration {
     // Retry loop to get an allocation in a supported Amplify region, Atmosphere doesn't support requesting a specific region
     for (let attempt = 1; attempt <= MAX_ALLOCATION_ATTEMPTS; attempt++) {
       try {
-        this.logger.debug(
-          `Attempt ${attempt}/${MAX_ALLOCATION_ATTEMPTS}: Acquiring environment allocation from pool: ${poolName}`,
-          context,
-        );
+        this.logger.debug(`Attempt ${attempt}/${MAX_ALLOCATION_ATTEMPTS}: Acquiring environment allocation from pool: ${poolName}`);
 
         const allocation = await this.atmosphereClient.acquire({
           pool: poolName,
@@ -233,10 +223,7 @@ export class CDKAtmosphereIntegration implements ICDKAtmosphereIntegration {
 
         // Check if the region is supported by Amplify
         if (!this.isRegionSupported(environment.region)) {
-          this.logger.warn(
-            `Allocation ${allocation.id} is in unsupported region ${environment.region}. Releasing and retrying...`,
-            context,
-          );
+          this.logger.warn(`Allocation ${allocation.id} is in unsupported region ${environment.region}. Releasing and retrying...`);
 
           // Release this allocation and try again
           await this.atmosphereClient.release(allocation.id, 'success');
@@ -255,9 +242,8 @@ export class CDKAtmosphereIntegration implements ICDKAtmosphereIntegration {
 
         this.logger.info(
           `Successfully acquired allocation ${allocation.id} in supported region ${environment.region} (attempt ${attempt})`,
-          context,
         );
-        this.logger.debug(`Account: ${environment.account}, Region: ${environment.region}`, context);
+        this.logger.debug(`Account: ${environment.account}, Region: ${environment.region}`);
 
         return atmosphereAllocation;
       } catch (error) {
@@ -266,13 +252,12 @@ export class CDKAtmosphereIntegration implements ICDKAtmosphereIntegration {
           this.logger.error(
             `Failed to get Atmosphere allocation in supported region after ${MAX_ALLOCATION_ATTEMPTS} attempts`,
             error as Error,
-            context,
           );
           throw error;
         }
 
         // Log and continue to next attempt
-        this.logger.warn(`Attempt ${attempt} failed: ${(error as Error).message}. Retrying...`, context);
+        this.logger.warn(`Attempt ${attempt} failed: ${(error as Error).message}. Retrying...`);
       }
     }
 

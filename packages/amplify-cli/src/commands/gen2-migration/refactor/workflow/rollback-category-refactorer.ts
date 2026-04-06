@@ -1,7 +1,7 @@
 import { ResourceMapping } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
-import { CFNResource } from '../../cfn-template';
-import { AmplifyMigrationOperation } from '../../_operation';
+import { CFNResource } from '../../_infra/cfn-template';
+import { AmplifyMigrationOperation } from '../../_infra/operation';
 import { resolveParameters } from '../resolvers/cfn-parameter-resolver';
 import { resolveOutputs } from '../resolvers/cfn-output-resolver';
 import { resolveDependencies } from '../resolvers/cfn-dependency-resolver';
@@ -69,7 +69,7 @@ export abstract class RollbackCategoryRefactorer extends CategoryRefactorer {
       template: withParams,
       stackOutputs: outputs,
       stackResources,
-      region: this.region,
+      region: this.gen1App.region,
       accountId: this.accountId,
     });
     const resolved = resolveDependencies(withOutputs);

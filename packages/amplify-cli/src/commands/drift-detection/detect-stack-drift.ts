@@ -14,8 +14,8 @@ import {
   type DescribeStackDriftDetectionStatusCommandOutput,
 } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
-import { extractCategory } from '../gen2-migration/categories';
-import type { SpinningLogger } from '../gen2-migration/_spinning-logger';
+import { extractCategory } from '../gen2-migration/_infra/categories';
+import type { SpinningLogger } from '../gen2-migration/_infra/spinning-logger';
 import { extractStackNameFromId } from '../gen2-migration/refactor/utils';
 
 /**

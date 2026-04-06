@@ -1,4 +1,4 @@
-import { CFNResource } from '../../cfn-template';
+import { CFNResource } from '../../_infra/cfn-template';
 import { RollbackCategoryRefactorer } from '../workflow/rollback-category-refactorer';
 import { findS3NestedStack, S3_BUCKET_TYPE } from './storage-forward';
 

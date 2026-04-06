@@ -1,0 +1,31 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Assessment render() renders a fully supported app 1`] = `
+"
+Assessment for "myapp" (env: dev)
+
+Resources
+
+┌──────────┬─────────┬──────────┬──────────┬──────────┐
+│ Category │ Service │ Resource │ Generate │ Refactor │
+├──────────┼─────────┼──────────┼──────────┼──────────┤
+│ auth     │ Cognito │ pool     │ ✔        │ ✔        │
+├──────────┼─────────┼──────────┼──────────┼──────────┤
+│ storage  │ S3      │ bucket   │ ✔        │ ✔        │
+└──────────┴─────────┴──────────┴──────────┴──────────┘"
+`;
+
+exports[`Assessment render() renders an app blocked by unsupported refactor 1`] = `
+"
+Assessment for "myapp" (env: dev)
+
+Resources
+
+┌──────────┬──────────┬──────────┬──────────┬──────────┐
+│ Category │ Service  │ Resource │ Generate │ Refactor │
+├──────────┼──────────┼──────────┼──────────┼──────────┤
+│ auth     │ Cognito  │ pool     │ ✔        │ ✔        │
+├──────────┼──────────┼──────────┼──────────┼──────────┤
+│ geo      │ Location │ map      │ ✘ Any    │ ✘ Any    │
+└──────────┴──────────┴──────────┴──────────┴──────────┘"
+`;

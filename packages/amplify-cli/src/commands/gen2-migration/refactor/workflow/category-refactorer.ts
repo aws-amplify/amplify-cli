@@ -1,14 +1,13 @@
 import { Parameter, ResourceMapping } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
-import { CFNResource, CFNTemplate } from '../../cfn-template';
-import { Planner } from '../../planner';
-import { AmplifyMigrationOperation } from '../../_operation';
-import { AwsClients } from '../../aws-clients';
+import { CFNResource, CFNTemplate } from '../../_infra/cfn-template';
+import { Planner } from '../../_infra/planner';
+import { AmplifyMigrationOperation, ValidationResult } from '../../_infra/operation';
 import { StackFacade } from '../stack-facade';
 import { Cfn, HOLDING_STACK_NAME_SUFFIX } from '../cfn';
-import { SpinningLogger } from '../../_spinning-logger';
+import { SpinningLogger } from '../../_infra/spinning-logger';
 import { extractStackNameFromId } from '../utils';
-import { DiscoveredResource } from '../../generate/_infra/gen1-app';
+import { DiscoveredResource, Gen1App } from '../../generate/_infra/gen1-app';
 import CLITable from 'cli-table3';
 
 const MAX_STACK_NAME_LENGTH = 128;
@@ -48,8 +47,7 @@ export abstract class CategoryRefactorer implements Planner {
   constructor(
     protected readonly gen1Env: StackFacade,
     protected readonly gen2Branch: StackFacade,
-    protected readonly clients: AwsClients,
-    protected readonly region: string,
+    protected readonly gen1App: Gen1App,
     protected readonly accountId: string,
     protected readonly logger: SpinningLogger,
     protected readonly resource: DiscoveredResource,
@@ -77,6 +75,9 @@ export abstract class CategoryRefactorer implements Planner {
       });
     }
 
+    const sourceStatusOp = this.buildStackStatusValidation(sourceStackId);
+    const destStatusOp = this.buildStackStatusValidation(destStackId);
+
     const source = await this.resolveSource(sourceStackId);
     const target = await this.resolveTarget(destStackId);
 
@@ -93,7 +94,15 @@ export abstract class CategoryRefactorer implements Planner {
     const moveOps = await this.move(blueprint);
     const afterMoveOps = await this.afterMove(blueprint.sourceStackId);
 
-    const operations = [...updateSourceOps, ...updateTargetOps, ...beforeMoveOps, ...moveOps, ...afterMoveOps];
+    const operations = [
+      sourceStatusOp,
+      destStatusOp,
+      ...updateSourceOps,
+      ...updateTargetOps,
+      ...beforeMoveOps,
+      ...moveOps,
+      ...afterMoveOps,
+    ];
     this.logger.pop();
     return operations;
   }
@@ -295,5 +304,32 @@ export abstract class CategoryRefactorer implements Planner {
 
   protected debug(message: string) {
     this.logger.debug(`[${this.resource.category}/${this.resource.resourceName}] ${message}`);
+  }
+
+  /**
+   * Builds a no-op operation whose validate() checks a single stack's status.
+   */
+  private buildStackStatusValidation(stackId: string): AmplifyMigrationOperation {
+    const stackName = extractStackNameFromId(stackId);
+    return {
+      resource: this.resource,
+      describe: async () => [],
+      validate: () => ({
+        description: `Stack status: ${stackName}`,
+        run: async (): Promise<ValidationResult> => {
+          const stack = await this.cfn.describeStack(stackId);
+          const status = stack.StackStatus;
+          if (status !== 'CREATE_COMPLETE' && status !== 'UPDATE_COMPLETE') {
+            return {
+              valid: false,
+              report: `Stack '${stackName}' is in ${status ?? 'UNKNOWN'} state, expected CREATE_COMPLETE or UPDATE_COMPLETE`,
+            };
+          }
+          return { valid: true };
+        },
+      }),
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      execute: async () => {},
+    };
   }
 }

@@ -24,9 +24,9 @@ import {
   waitUntilStackUpdateComplete,
 } from '@aws-sdk/client-cloudformation';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
-import { CFNResource, CFNTemplate } from '../cfn-template';
+import { CFNResource, CFNTemplate } from '../_infra/cfn-template';
 import { extractStackNameFromId } from './utils';
-import { SpinningLogger } from '../_spinning-logger';
+import { SpinningLogger } from '../_infra/spinning-logger';
 import chalk from 'chalk';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -273,6 +273,19 @@ export class Cfn {
       }
       throw error;
     }
+  }
+
+  /**
+   * Describes a stack by name. Throws if the stack does not exist or has been deleted.
+   */
+  public async describeStack(stackName: string): Promise<Stack> {
+    const stack = await this.findStack(stackName);
+    if (!stack) {
+      throw new AmplifyError('StackNotFoundError', {
+        message: `Stack '${extractStackNameFromId(stackName)}' does not exist`,
+      });
+    }
+    return stack;
   }
 
   /**

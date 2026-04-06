@@ -1,100 +1,92 @@
 # assess
 
-The assess subcommand evaluates migration readiness for a Gen1 application. It reads the user's `amplify-meta.json`, queries the generate and refactor steps for each discovered resource, and renders a flat table showing support status per resource.
+The assess subcommand evaluates migration readiness for a Gen1 application. It discovers all resources from `amplify-meta.json`, delegates to per-category assessors, and renders a table showing support status per resource and feature.
 
-Unlike other gen2-migration subcommands, assess does not follow the `AmplifyMigrationStep` lifecycle (`validate → execute → rollback`). It is read-only and has no side effects.
+Unlike other gen2-migration subcommands, assess does not follow the `AmplifyMigrationStep` lifecycle. It is read-only and has no side effects.
 
 ## Key Responsibilities
 
 - Discovers all resources from `amplify-meta.json` via `Gen1App.discover()`
-- Creates an `Assessment` collector and passes it to the generate and refactor steps' `assess()` methods
-- Each step iterates the discovered resources and records support via `assessment.record()`
-- Renders a single flat table with Category, Resource, Service, Generate, and Refactor columns
-- Displays a verdict: `✔ Migration can proceed.` or `✘ Migration blocked.`
+- Delegates to per-category `Assessor` implementations that record resource-level and feature-level support
+- Each assessor calls `assessment.recordResource()` and optionally `assessment.recordFeature()` for detected sub-features (overrides, custom policies)
+- Renders a table with Category, Service, Resource, Generate, and Refactor columns
+- The generate and refactor steps also use `Assessment.validFor(step)` during their validation phase
 
 ## Architecture
 
-The assess command is handled as a special case in the gen2-migration dispatcher, intercepted after the shared config extraction but before the step lifecycle:
+The assess command is handled as a special case in the gen2-migration dispatcher:
 
 ```mermaid
 flowchart TD
-    CLI["amplify gen2-migration assess"] --> DISPATCH["Dispatcher extracts appId, envName, etc."]
-    DISPATCH --> ASSESSOR["AmplifyMigrationAssessor"]
-    ASSESSOR --> ASSESSMENT["Assessment collector"]
-    ASSESSOR --> GEN["GenerateStep.assess(assessment)"]
-    ASSESSOR --> REF["RefactorStep.assess(assessment)"]
-    GEN -->|"record per resource"| ASSESSMENT
-    REF -->|"record per resource"| ASSESSMENT
-    ASSESSMENT --> DISPLAY["assessment.display()"]
-    DISPLAY --> TABLE["Flat table + verdict"]
+    CLI["amplify gen2-migration assess"] --> GEN1APP["Gen1App.create(context)"]
+    GEN1APP --> ASSESSOR["AmplifyMigrationAssessor(gen1App)"]
+    ASSESSOR --> DISCOVER["gen1App.discover()"]
+    DISCOVER --> SWITCH["Switch on resource.key"]
+    SWITCH --> AUTH["AuthCognitoAssessor"]
+    SWITCH --> S3["S3Assessor"]
+    SWITCH --> FUNC["FunctionAssessor"]
+    SWITCH --> OTHER["...other assessors"]
+    SWITCH --> UNKNOWN["UNKNOWN → unsupported"]
+    AUTH --> ASSESSMENT["Assessment collector"]
+    S3 --> ASSESSMENT
+    FUNC --> ASSESSMENT
+    OTHER --> ASSESSMENT
+    UNKNOWN --> ASSESSMENT
+    ASSESSMENT --> RENDER["assessment.render()"]
 ```
 
 ### `AmplifyMigrationAssessor`
 
 [`src/commands/gen2-migration/assess.ts`](../../../../packages/amplify-cli/src/commands/gen2-migration/assess.ts)
 
-Standalone class (not a step) that orchestrates the assessment. Creates generate and refactor step instances, calls `assess()` on each, then renders the result.
+Standalone class (not a step). `assess()` returns an `Assessment` instance. `run()` calls `assess()` and prints the report.
 
 ### `Assessment`
 
-[`src/commands/gen2-migration/_assessment.ts`](../../../../packages/amplify-cli/src/commands/gen2-migration/_assessment.ts)
+[`src/commands/gen2-migration/assess/assessment.ts`](../../../../packages/amplify-cli/src/commands/gen2-migration/assess/assessment.ts)
 
-Collector that steps contribute to during `assess()`. Each step calls `record('generate' | 'refactor', resource, response)` for every discovered resource. The `display()` method produces the terminal output.
+Collector that assessors contribute to. Exposes `validFor('generate' | 'refactor')` for step validation, `of(resource, step)` for per-resource support lookup, and `render()` for terminal output. Each entry uses the `Support` type with `level` and optional `note`.
 
-### `SupportResponse`
+### `Support`
 
 ```typescript
-interface SupportResponse {
-  readonly supported: boolean;
-  readonly notes: readonly string[];
+interface Support {
+  readonly level: SupportLevel; // 'supported' | 'unsupported' | 'not-applicable'
+  readonly note?: string; // displayed in the table for unsupported entries
 }
 ```
 
-- `supported: true`, empty notes → `✔`
-- `supported: true`, non-empty notes → `⚠` with notes
-- `supported: false` → `✘` with status label
+Helper functions: `supported()`, `unsupported(note)`, `notApplicable()`.
+
+### `Assessor`
+
+[`src/commands/gen2-migration/assess/assessor.ts`](../../../../packages/amplify-cli/src/commands/gen2-migration/assess/assessor.ts)
+
+Interface with a single `record(assessment)` method. Each category has its own implementation.
 
 ### `DiscoveredResource`
 
-```typescript
-interface DiscoveredResource {
-  readonly category: string;
-  readonly resourceName: string;
-  readonly service: string;
-  readonly key: ResourceKey;
-}
-```
-
-Produced by `Gen1App.discover()`, which iterates all categories in `amplify-meta.json` and extracts `(category, resourceName, service, key)` tuples. The `key` is a typed `category:service` pair from `SUPPORTED_RESOURCE_KEYS`, or `'unsupported'` for pairs the tool has no migration logic for. Skips internal categories (`providers`, `hosting`). Throws `AmplifyError` if a resource in a non-skipped category is missing the `service` field.
-
-## Blocker Condition
-
-Migration is blocked if any resource has `refactor.supported === false`. Missing generate support is not a blocker — the user can write Gen2 code manually.
+Produced by `Gen1App.discover()`. The `key` field is a typed `category:service` pair from `KNOWN_RESOURCE_KEYS`, or `'UNKNOWN'` for unrecognized pairs.
 
 ## Supported Resources
 
-The same switch cases in each step's `assess()` and `execute()` methods define what's supported:
-
-| Category  | Service                 | Generate | Refactor  |
-| --------- | ----------------------- | -------- | --------- |
-| auth      | Cognito                 | ✔        | ✔         |
-| auth      | Cognito-UserPool-Groups | ✔        | ✘         |
-| storage   | S3                      | ✔        | ✔         |
-| storage   | DynamoDB                | ✔        | ✔         |
-| api       | AppSync                 | ✔        | ✔ (no-op) |
-| api       | API Gateway             | ✔        | ✔ (no-op) |
-| analytics | Kinesis                 | ✔        | ✔         |
-| function  | Lambda                  | ✔        | ✔ (no-op) |
-
-Any other `(category, service)` pair gets `ResourceKey = 'unsupported'` and is marked unsupported for both steps.
-
-## ResourceKey and Exhaustive Switches
-
-`SUPPORTED_RESOURCE_KEYS` is a const array of all `category:service` pairs the tool supports. `ResourceKey` is the union of those pairs plus `'unsupported'`. Every switch on `resource.key` in the generate and refactor steps must handle all members — the ESLint `switch-exhaustiveness-check` rule enforces this at compile time. Adding a new pair to `SUPPORTED_RESOURCE_KEYS` forces every consumer to handle it.
+| Category  | Service                 | Generate         | Refactor    |
+| --------- | ----------------------- | ---------------- | ----------- |
+| auth      | Cognito                 | ✔                | ✔           |
+| auth      | Cognito-UserPool-Groups | ✔                | ✔           |
+| storage   | S3                      | ✔                | ✔           |
+| storage   | DynamoDB                | ✔                | ✔           |
+| api       | AppSync                 | ✔                | n/a         |
+| api       | API Gateway             | ✔                | n/a         |
+| analytics | Kinesis                 | ✔                | ✔           |
+| function  | Lambda                  | ✔ (Node.js only) | ✔           |
+| geo       | Map                     | ✔                | ✔           |
+| geo       | PlaceIndex              | ✔                | ✔           |
+| geo       | GeofenceCollection      | ✔                | unsupported |
 
 ## AI Development Notes
 
-- The assess command reuses the same config extraction as other steps (appId, envName, stackName, region, logger) — no duplication.
-- Adding support for a new resource type requires adding the pair to `SUPPORTED_RESOURCE_KEYS` in `gen1-app.ts`, then handling the new case in both `assess()` and `execute()` in the relevant step. The compiler enforces exhaustiveness.
-- The `Assessment` class owns rendering — it produces a flat table with dynamic column widths and status text baked into the Generate/Refactor cells.
-- `Gen1App.discover()` skips internal categories (`providers`, `hosting`) and throws on resources missing a `service` field.
+- Adding a new resource type: add the pair to `KNOWN_RESOURCE_KEYS` in `gen1-app.ts`, create an assessor, handle the case in `assess.ts`, and in the generate/refactor steps. The compiler enforces exhaustiveness.
+- The `Assessment` is also used by generate and refactor steps for validation — `validFor(step)` returns false if any resource or feature is unsupported for that step. The `of(resource, step)` method returns the `Support` for a specific resource, used by the generate orchestrator to skip unsupported resources before instantiating generators.
+- Feature detection (overrides, custom policies) is assessor-specific. Each assessor checks for files in the cloud backend directory via `gen1App.fileExists()`.
+- `FunctionAssessor` reads the Lambda runtime from the local CloudFormation template (`function/<name>/<name>-cloudformation-template.json`). Non-Node.js runtimes are marked as unsupported for generate, allowing `--skip-validations` to skip them.

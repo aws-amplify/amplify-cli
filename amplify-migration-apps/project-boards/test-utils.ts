@@ -1,6 +1,5 @@
 // test-utils.ts
 
-import { Amplify } from 'aws-amplify';
 import { generateClient } from 'aws-amplify/api';
 import { uploadData, getUrl, downloadData, getProperties } from 'aws-amplify/storage';
 import * as fs from 'fs';
@@ -8,10 +7,10 @@ import { getProject, getTodo, listProjects, listTodos } from './src/graphql/quer
 import { createProject, updateProject, deleteProject, createTodo, updateTodo, deleteTodo } from './src/graphql/mutations';
 import { ProjectStatus } from './src/API';
 import { TestRunner } from '../_test-common/test-apps-test-utils';
-import amplifyconfig from './src/amplifyconfiguration.json';
 
-// Configure Amplify in this module to ensure api/storage singletons see the config
-Amplify.configure(amplifyconfig);
+// NOTE: Amplify.configure() must be called by the importing script (gen1 or gen2)
+// before any test functions are invoked. The gen1 script configures with
+// amplifyconfiguration.json, the gen2 script with amplify_outputs.json.
 
 // Custom query for getRandomQuote (not in generated files)
 const getRandomQuote = /* GraphQL */ `

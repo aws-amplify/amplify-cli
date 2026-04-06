@@ -2,8 +2,9 @@ import { StorageS3ForwardRefactorer } from '../../../../../commands/gen2-migrati
 import { StorageS3RollbackRefactorer } from '../../../../../commands/gen2-migration/refactor/storage/storage-rollback';
 import { AnalyticsKinesisForwardRefactorer } from '../../../../../commands/gen2-migration/refactor/analytics/analytics-forward';
 import { AnalyticsKinesisRollbackRefactorer } from '../../../../../commands/gen2-migration/refactor/analytics/analytics-rollback';
-import { CFNTemplate } from '../../../../../commands/gen2-migration/cfn-template';
-import { AwsClients } from '../../../../../commands/gen2-migration/aws-clients';
+import { CFNTemplate } from '../../../../../commands/gen2-migration/_infra/cfn-template';
+import { AwsClients } from '../../../../../commands/gen2-migration/_infra/aws-clients';
+import { Gen1App } from '../../../../../commands/gen2-migration/generate/_infra/gen1-app';
 import { StackFacade } from '../../../../../commands/gen2-migration/refactor/stack-facade';
 import { noOpLogger } from '../../_framework/logger';
 import { mockClient } from 'aws-sdk-client-mock';
@@ -13,6 +14,7 @@ import {
   DescribeStacksCommand,
   DescribeStackResourcesCommand,
   ResourceStatus,
+  StackStatus,
   CreateChangeSetCommand,
   DescribeChangeSetCommand,
   DeleteChangeSetCommand,
@@ -63,12 +65,13 @@ function setupStorageMocks(cfnMock: ReturnType<typeof mockClient>) {
 }
 
 function makeInstances() {
-  const clients = new AwsClients({ region: 'us-east-1' });
+  const clients = new (AwsClients as any)({ region: 'us-east-1' });
   (clients as any).cloudFormation = new CloudFormationClient({});
   const gen1Env = new StackFacade(clients, 'gen1-root');
   const gen2Branch = new StackFacade(clients, 'gen2-root');
   const cfn = new Cfn(new CloudFormationClient({}), noOpLogger());
-  return { clients, gen1Env, gen2Branch, cfn };
+  const gen1App = { region: 'us-east-1', clients } as unknown as Gen1App;
+  return { clients, gen1Env, gen2Branch, cfn, gen1App };
 }
 
 describe('CategoryRefactorer.plan() orchestration — via StorageS3ForwardRefactorer', () => {
@@ -86,13 +89,12 @@ describe('CategoryRefactorer.plan() orchestration — via StorageS3ForwardRefact
     cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen1-root' }).resolves({ StackResources: [] });
     cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen2-root' }).resolves({ StackResources: [] });
 
-    const { clients, gen1Env, gen2Branch, cfn } = makeInstances();
+    const { gen1Env, gen2Branch, cfn, gen1App } = makeInstances();
     await expect(
       new StorageS3ForwardRefactorer(
         gen1Env,
         gen2Branch,
-        clients,
-        'us-east-1',
+        gen1App,
         '123',
         noOpLogger(),
         {
@@ -112,13 +114,12 @@ describe('CategoryRefactorer.plan() orchestration — via StorageS3ForwardRefact
     });
     cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen2-root' }).resolves({ StackResources: [] });
 
-    const { clients, gen1Env, gen2Branch, cfn } = makeInstances();
+    const { gen1Env, gen2Branch, cfn, gen1App } = makeInstances();
     await expect(
       new StorageS3ForwardRefactorer(
         gen1Env,
         gen2Branch,
-        clients,
-        'us-east-1',
+        gen1App,
         '123',
         noOpLogger(),
         {
@@ -139,13 +140,12 @@ describe('CategoryRefactorer.plan() orchestration — via StorageS3ForwardRefact
     });
     cfnMock.on(GetTemplateCommand, { StackName: 'gen2-storage-stack' }).resolves({ TemplateBody: JSON.stringify(gen2StorageTemplate) });
 
-    const { clients, gen1Env, gen2Branch, cfn } = makeInstances();
+    const { gen1Env, gen2Branch, cfn, gen1App } = makeInstances();
     await expect(
       new StorageS3ForwardRefactorer(
         gen1Env,
         gen2Branch,
-        clients,
-        'us-east-1',
+        gen1App,
         '123',
         noOpLogger(),
         {
@@ -169,12 +169,11 @@ describe('CategoryRefactorer.plan() orchestration — via StorageS3ForwardRefact
     setupStorageMocks(cfnMock);
     cfnMock.on(GetTemplateCommand, { StackName: 'gen1-storage-stack' }).resolves({ TemplateBody: JSON.stringify(noStorageTemplate) });
 
-    const { clients, gen1Env, gen2Branch, cfn } = makeInstances();
+    const { gen1Env, gen2Branch, cfn, gen1App } = makeInstances();
     const ops = await new StorageS3ForwardRefactorer(
       gen1Env,
       gen2Branch,
-      clients,
-      'us-east-1',
+      gen1App,
       '123',
       noOpLogger(),
       {
@@ -185,18 +184,17 @@ describe('CategoryRefactorer.plan() orchestration — via StorageS3ForwardRefact
       },
       cfn,
     ).plan();
-    expect(ops).toHaveLength(3); // updateSource + updateTarget + beforeMove (holding)
+    expect(ops).toHaveLength(5); // 2 status validations + updateSource + updateTarget + beforeMove (holding)
   });
 
   it('produces updateSource → updateTarget → beforeMove → move for forward plan', async () => {
     setupStorageMocks(cfnMock);
 
-    const { clients, gen1Env, gen2Branch, cfn } = makeInstances();
+    const { gen1Env, gen2Branch, cfn, gen1App } = makeInstances();
     const ops = await new StorageS3ForwardRefactorer(
       gen1Env,
       gen2Branch,
-      clients,
-      'us-east-1',
+      gen1App,
       '123',
       noOpLogger(),
       {
@@ -255,12 +253,11 @@ describe('StorageS3RollbackRefactorer.plan() — rollback without holding stack'
     });
     cfnMock.on(GetTemplateCommand, { StackName: 'gen1-storage-stack' }).resolves({ TemplateBody: JSON.stringify(gen1StorageTemplate) });
 
-    const { clients, gen1Env, gen2Branch, cfn } = makeInstances();
+    const { gen1Env, gen2Branch, cfn, gen1App } = makeInstances();
     const ops = await new StorageS3RollbackRefactorer(
       gen1Env,
       gen2Branch,
-      clients,
-      'us-east-1',
+      gen1App,
       '123',
       noOpLogger(),
       {
@@ -273,7 +270,7 @@ describe('StorageS3RollbackRefactorer.plan() — rollback without holding stack'
     ).plan();
 
     // Resources already exist in Gen1 target, so rollback produces no-op
-    expect(ops).toHaveLength(2); // updateSource + updateTarget only
+    expect(ops).toHaveLength(4); // 2 status validations + updateSource + updateTarget
   });
 });
 
@@ -322,12 +319,11 @@ describe('Analytics wiring tests', () => {
 
   it('forward: discovers analytics stacks and maps Kinesis stream', async () => {
     setupAnalyticsMocks(cfnMock);
-    const { clients, gen1Env, gen2Branch, cfn } = makeInstances();
+    const { gen1Env, gen2Branch, cfn, gen1App } = makeInstances();
     const ops = await new AnalyticsKinesisForwardRefactorer(
       gen1Env,
       gen2Branch,
-      clients,
-      'us-east-1',
+      gen1App,
       '123',
       noOpLogger(),
       {
@@ -347,12 +343,11 @@ describe('Analytics wiring tests', () => {
   it('rollback: discovers analytics stacks and maps to Gen1 KinesisStream ID', async () => {
     cfnMock.on(DescribeStacksCommand).resolves({ Stacks: [] }); // no holding stack
     setupAnalyticsMocks(cfnMock);
-    const { clients, gen1Env, gen2Branch, cfn } = makeInstances();
+    const { gen1Env, gen2Branch, cfn, gen1App } = makeInstances();
     const ops = await new AnalyticsKinesisRollbackRefactorer(
       gen1Env,
       gen2Branch,
-      clients,
-      'us-east-1',
+      gen1App,
       '123',
       noOpLogger(),
       {
@@ -365,11 +360,91 @@ describe('Analytics wiring tests', () => {
     ).plan();
 
     // Resources already exist in Gen1 target, so rollback produces no-op
-    expect(ops).toHaveLength(2); // updateSource + updateTarget only
+    expect(ops).toHaveLength(4); // 2 status validations + updateSource + updateTarget
   });
 });
 
 import { MIGRATION_PLACEHOLDER_LOGICAL_ID, MIGRATION_PLACEHOLDER_RESOURCE } from '../../../../../commands/gen2-migration/refactor/cfn';
+
+describe('stack status validation', () => {
+  let cfnMock: ReturnType<typeof mockClient>;
+  beforeEach(() => {
+    cfnMock = mockClient(CloudFormationClient);
+    cfnMock.on(CreateChangeSetCommand).resolves({});
+    cfnMock.on(DescribeChangeSetCommand).resolves({ Status: 'CREATE_COMPLETE', Changes: [] });
+    cfnMock.on(DeleteChangeSetCommand).resolves({});
+    cfnMock.on(DescribeStacksCommand).resolves({ Stacks: [] });
+  });
+  afterEach(() => cfnMock.restore());
+
+  function setupWithStatuses(sourceStatus: StackStatus, destStatus: StackStatus) {
+    cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen1-root' }).resolves({
+      StackResources: [nestedStack('storageavatars', 'gen1-storage-stack')],
+    });
+    cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen2-root' }).resolves({
+      StackResources: [nestedStack('storage0EC3F24A', 'gen2-storage-stack')],
+    });
+    cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen1-storage-stack' }).resolves({ StackResources: [] });
+    cfnMock.on(DescribeStackResourcesCommand, { StackName: 'gen2-storage-stack' }).resolves({ StackResources: [] });
+    cfnMock.on(DescribeStacksCommand, { StackName: 'gen1-storage-stack' }).resolves({
+      Stacks: [{ StackName: 'gen1-storage-stack', StackStatus: sourceStatus, CreationTime: ts, Parameters: [], Outputs: [] }],
+    });
+    cfnMock.on(DescribeStacksCommand, { StackName: 'gen2-storage-stack' }).resolves({
+      Stacks: [{ StackName: 'gen2-storage-stack', StackStatus: destStatus, CreationTime: ts, Parameters: [], Outputs: [] }],
+    });
+    cfnMock.on(GetTemplateCommand, { StackName: 'gen1-storage-stack' }).resolves({ TemplateBody: JSON.stringify(gen1StorageTemplate) });
+    cfnMock.on(GetTemplateCommand, { StackName: 'gen2-storage-stack' }).resolves({ TemplateBody: JSON.stringify(gen2StorageTemplate) });
+  }
+
+  function createRefactorer() {
+    const { gen1Env, gen2Branch, gen1App, cfn } = makeInstances();
+    return new StorageS3ForwardRefactorer(
+      gen1Env,
+      gen2Branch,
+      gen1App,
+      '123',
+      noOpLogger(),
+      { category: 'storage', resourceName: 'avatars', service: 'S3', key: 'storage:S3' as const },
+      cfn,
+    );
+  }
+
+  it('reports failure when source stack is in UPDATE_IN_PROGRESS', async () => {
+    setupWithStatuses('UPDATE_IN_PROGRESS' as StackStatus, StackStatus.CREATE_COMPLETE);
+    const ops = await createRefactorer().plan();
+    const validation = ops[0].validate();
+    const result = await validation!.run();
+    expect(result.valid).toBe(false);
+    expect(result.report).toMatch(/gen1-storage-stack.*UPDATE_IN_PROGRESS/);
+  });
+
+  it('reports failure when destination stack is in UPDATE_ROLLBACK_COMPLETE', async () => {
+    setupWithStatuses(StackStatus.CREATE_COMPLETE, 'UPDATE_ROLLBACK_COMPLETE' as StackStatus);
+    const ops = await createRefactorer().plan();
+    const validation = ops[1].validate();
+    const result = await validation!.run();
+    expect(result.valid).toBe(false);
+    expect(result.report).toMatch(/gen2-storage-stack.*UPDATE_ROLLBACK_COMPLETE/);
+  });
+
+  it('passes when both stacks are in CREATE_COMPLETE', async () => {
+    setupWithStatuses(StackStatus.CREATE_COMPLETE, StackStatus.CREATE_COMPLETE);
+    const ops = await createRefactorer().plan();
+    const sourceResult = await ops[0].validate()!.run();
+    const destResult = await ops[1].validate()!.run();
+    expect(sourceResult.valid).toBe(true);
+    expect(destResult.valid).toBe(true);
+  });
+
+  it('passes when both stacks are in UPDATE_COMPLETE', async () => {
+    setupWithStatuses(StackStatus.UPDATE_COMPLETE, StackStatus.UPDATE_COMPLETE);
+    const ops = await createRefactorer().plan();
+    const sourceResult = await ops[0].validate()!.run();
+    const destResult = await ops[1].validate()!.run();
+    expect(sourceResult.valid).toBe(true);
+    expect(destResult.valid).toBe(true);
+  });
+});
 
 describe('placeholder constants', () => {
   it('placeholder resource is a WaitConditionHandle', () => {
