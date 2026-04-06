@@ -16,8 +16,8 @@
 
 import { execSync } from 'child_process';
 import fs from 'fs/promises';
+import fsSync from 'fs';
 import path from 'path';
-import { glob } from 'glob';
 import { AppSyncClient, paginateListGraphqlApis } from '@aws-sdk/client-appsync';
 
 function resolveTargetBranch(): string {
@@ -84,11 +84,14 @@ async function updateLowstockproductsResource(appPath: string): Promise<void> {
 }
 
 async function convertS3TriggerToESM(appPath: string): Promise<void> {
-  // The S3 trigger has a dynamic suffix — find it via glob
-  const pattern = path.join(appPath, 'amplify', 'storage', 'S3Trigger*', 'index.js');
-  const matches = await glob(pattern);
+  const storageDir = path.join(appPath, 'amplify', 'storage');
+  const entries = fsSync.readdirSync(storageDir);
+  const triggerDirs = entries.filter((e) => e.startsWith('S3Trigger'));
 
-  for (const handlerPath of matches) {
+  for (const dir of triggerDirs) {
+    const handlerPath = path.join(storageDir, dir, 'index.js');
+    if (!fsSync.existsSync(handlerPath)) continue;
+
     const content = await fs.readFile(handlerPath, 'utf-8');
 
     let updated = content.replace(
@@ -96,7 +99,6 @@ async function convertS3TriggerToESM(appPath: string): Promise<void> {
       'export async function handler($2) {',
     );
 
-    // Also handle: exports.handler = async function (event) {
     updated = updated.replace(
       /exports\.handler\s*=\s*async\s+function\s*\((\w*)\)\s*\{/g,
       'export async function handler($1) {',

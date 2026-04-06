@@ -78,6 +78,7 @@ async function migrate(app: App): Promise<void> {
   await app.postGenerate();
   await app.gitDiff();
   await app.gitCommit('chore: post generate');
+  await app.preSandbox();
   const gen2StackName = await app.deployGen2Sandbox();
   await app.postSandbox(gen2StackName);
 

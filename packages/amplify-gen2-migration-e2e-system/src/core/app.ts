@@ -294,6 +294,13 @@ export class App {
     await this.runNpmScript('post-sandbox', { APP_GEN2_ROOT_STACK_NAME: gen2StackName });
   }
 
+  /**
+   * Run the pre-sandbox script.
+   */
+  public async preSandbox(): Promise<void> {
+    await this.runNpmScript('pre-sandbox');
+  }
+
   // ============================================================
   // Git
   // ============================================================

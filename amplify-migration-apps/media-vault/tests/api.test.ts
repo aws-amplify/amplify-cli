@@ -25,7 +25,7 @@ describe('guest', () => {
     const imageBuffer = Buffer.from(testImageBase64, 'base64');
 
     const uploadResult = await uploadData({
-      path: ({ identityId }: { identityId: string }) => `private/${identityId}/media/test-${Date.now()}.png`,
+      path: ({ identityId }) => `private/${identityId}/media/test-${Date.now()}.png`,
       data: imageBuffer,
     }).result;
 

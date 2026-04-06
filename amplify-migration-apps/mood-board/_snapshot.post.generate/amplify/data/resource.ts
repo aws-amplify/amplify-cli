@@ -18,7 +18,7 @@ type Board @model @auth(rules: [{ allow: public }]) {
 
 type Query {
   getRandomEmoji: String @function(name: "moodboardGetRandomEmoji-${branchName}") @auth(rules: [{ allow: private }])
-  getKinesisEvents: AWSJSON @function(name: "moodboardKinesisreader-${branchName}") @auth(rules: [{ allow: private }])
+  getKinesisEvents: AWSJSON @function(name: "moodboardKinesisReader-${branchName}") @auth(rules: [{ allow: private }])
 }
 `;
 

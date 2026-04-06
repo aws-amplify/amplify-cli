@@ -28,9 +28,17 @@ function readEnvName(appPath: string): string {
   return Object.keys(tpi)[0];
 }
 
-function updateCustomRoles(appPath: string, amplifyAppId: string): void {
+function readDeploymentName(appPath: string): string {
+  const packageJsonPath = path.join(appPath, 'package.json');
+  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
+  return packageJson.name as string;
+}
+
+function updateCustomRoles(appPath: string, appName: string): void {
   const filePath = path.join(appPath, 'amplify', 'backend', 'api', 'productcatalog', 'custom-roles.json');
-  fs.writeFileSync(filePath, JSON.stringify({ adminRoleNames: [`amplify-${amplifyAppId}`] }, null, 2), 'utf-8');
+  // Gen2 trims role name prefixes to 10 characters
+  const trimmedName = appName.slice(0, 10);
+  fs.writeFileSync(filePath, JSON.stringify({ adminRoleNames: [`amplify-${trimmedName}`] }, null, 2), 'utf-8');
 }
 
 function setFunctionParameters(appPath: string, envName: string, amplifyAppId: string): void {
@@ -63,8 +71,9 @@ async function main(): Promise<void> {
 
   const amplifyAppId = readAmplifyAppId(appPath);
   const envName = readEnvName(appPath);
+  const appName = readDeploymentName(appPath);
 
-  updateCustomRoles(appPath, amplifyAppId);
+  updateCustomRoles(appPath, appName);
   setFunctionParameters(appPath, envName, amplifyAppId);
   await createGen1Secret(amplifyAppId, envName);
 }

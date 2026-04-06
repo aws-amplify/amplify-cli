@@ -21,6 +21,7 @@
     "post-generate": "npx tsx migration/post-generate.ts",
     "post-refactor": "npx tsx migration/post-refactor.ts",
     "post-sandbox": "true",
+    "pre-sandbox": "true",
     "post-push": "true"
   },
   "devDependencies": {
