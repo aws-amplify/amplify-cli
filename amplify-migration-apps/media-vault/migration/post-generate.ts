@@ -10,6 +10,7 @@
  * 4. Convert thumbnailgen function from CommonJS to ESM
  * 5. Update frontend import from amplifyconfiguration.json to amplify_outputs.json
  * 6. Add resourceGroupName to function resource.ts files
+ * 7. Remove externalProviders from auth/resource.ts (social login not tested in e2e)
  */
 
 import { execSync } from 'child_process';
@@ -83,6 +84,37 @@ async function addResourceGroupName(appPath: string, functionPath: string, group
   await fs.writeFile(resourcePath, updated, 'utf-8');
 }
 
+async function removeExternalProviders(appPath: string): Promise<void> {
+  const resourcePath = path.join(appPath, 'amplify', 'auth', 'resource.ts');
+  let content = await fs.readFile(resourcePath, 'utf-8');
+
+  // Find the start of externalProviders
+  const startMatch = content.match(/(\s*)externalProviders:\s*\{/);
+  if (!startMatch) return;
+
+  const blockStart = content.indexOf(startMatch[0]);
+  const braceStart = content.indexOf('{', blockStart + 'externalProviders'.length);
+
+  // Walk forward counting braces to find the matching close
+  let depth = 0;
+  let i = braceStart;
+  for (; i < content.length; i++) {
+    if (content[i] === '{') depth++;
+    if (content[i] === '}') depth--;
+    if (depth === 0) break;
+  }
+
+  // Remove from externalProviders to the closing brace + trailing comma
+  const end = content[i + 1] === ',' ? i + 2 : i + 1;
+  content = content.slice(0, blockStart) + content.slice(end);
+
+  // Remove unused secret import
+  content = content.replace(/,\s*secret\b/, '');
+  content = content.replace(/\bsecret,\s*/, '');
+
+  await fs.writeFile(resourcePath, content, 'utf-8');
+}
+
 export async function postGenerate(appPath: string): Promise<void> {
   await updateBranchName(appPath);
   await convertFunctionToESM(appPath, 'function', 'addusertogroup');
@@ -92,6 +124,7 @@ export async function postGenerate(appPath: string): Promise<void> {
   await addResourceGroupName(appPath, 'storage/thumbnailgen', 'storage');
   await addResourceGroupName(appPath, 'function/addusertogroup', 'auth');
   await addResourceGroupName(appPath, 'function/removeuserfromgroup', 'auth');
+  await removeExternalProviders(appPath);
 }
 
 async function main(): Promise<void> {

@@ -21,7 +21,7 @@
     "post-generate": "npx tsx migration/post-generate.ts",
     "post-refactor": "true",
     "post-sandbox": "true",
-    "pre-sandbox": "npx tsx migration/pre-sandbox.ts",
+    "pre-sandbox": "true",
     "post-push": "true"
   },
   "dependencies": {
@@ -35,7 +35,6 @@
   },
   "devDependencies": {
     "@aws-sdk/client-cognito-identity-provider": "^3.936.0",
-    "@aws-sdk/client-ssm": "^3.936.0",
     "@eslint/js": "^9.39.1",
     "@types/node": "^24.10.1",
     "@types/react": "^19.2.5",
