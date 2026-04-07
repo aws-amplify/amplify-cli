@@ -565,7 +565,7 @@ by the CLI setting that configures them.
 
 - 🟢 **Do you want to add User Pool Groups**
 
-- ⚠️ **Do you want to add an admin queries API**
+- 🔴 **Do you want to add an admin queries API**
 
 - ➤ **Multifactor authentication (MFA) user login options**
 
