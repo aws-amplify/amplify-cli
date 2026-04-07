@@ -835,6 +835,8 @@ by the CLI setting that configures them.
   - 🟢 `Cognito User Pool and Identity Pool`
   - ⚠️ `Cognito User Pool only`
 
+### 🔴 `amplify override auth`
+
 ## Api
 
 ### `amplify add api`
@@ -894,6 +896,8 @@ by the CLI setting that configures them.
     - 🟢 `update`
     - 🟢 `delete`
 
+### 🔴 `amplify override api`
+
 ### Custom Business Logic
 
 - 🟡 [`AppSync JavaScript or VTL resolver`](https://docs.amplify.aws/gen1/react/build-a-backend/graphqlapi/custom-business-logic/#appsync-javascript-or-vtl-resolver) (_generate_ ✗ _refactor_ ✔)
@@ -933,12 +937,9 @@ by the CLI setting that configures them.
   - 🟢 `Do you want to add a sort key to your global secondary index`
   - 🟢 `Do you want to add a Lambda Trigger for your Table`
 
-### `amplify import storage`
+### 🔴 `amplify import storage`
 
-- ➤ **Select from one of the below mentioned services**
-
-  - 🔴 `S3 bucket - Content (Images, audio, video, etc.)`
-  - 🔴 `DynamoDB table - NoSQL Database`
+### 🔴 `amplify override storage`
 
 ## Function
 
@@ -1079,6 +1080,21 @@ by the CLI setting that configures them.
       - 🟢 `Delete geofence`
       - 🟢 `List geofences`
 
+## Hosting
+
+### `amplify add hosting`
+
+- ➤ **Select the plugin module to execute**
+
+  - ➤ **Hosting with Amplify Console (Managed hosting with custom domains, Continuous deployment)**
+
+    - ➤ **Choose a type**
+
+      - 🟢 `Continuous deployment (Git-based deployments)`
+      - ⚠️ `Manual deployment`
+
+  - ⚠️ **Amazon CloudFront and S3**
+
 ## Interactions
 
 ### 🔴 `amplify add interactions`
@@ -1091,32 +1107,11 @@ by the CLI setting that configures them.
 
 ### 🔴 `amplify add notifications`
 
-## Hosting
-
-### 🔴 `amplify add hosting`
-
-- ➤ **Select the plugin module to execute**
-  
-  - ➤ **Hosting with Amplify Console (Managed hosting with custom domains, Continuous deployment)**
- 
-    - ➤ **Choose a type**
-
-        - 🟢 `Continuous deployment (Git-based deployments)`
-        - ⚠️ `Manual deployment`
-          
-  - ⚠️ **Amazon CloudFront and S3**
-
 ## Custom
 
 ### 🔴 `amplify add custom`
 
-## Overrides
-
-### 🔴 `amplify override api`
-
-### 🔴 `amplify override auth`
-
-### 🔴 `amplify override storage`
+## Project-Level
 
 ### 🔴 `amplify override project`
 
