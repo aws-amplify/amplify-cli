@@ -650,7 +650,7 @@ npx amplify gen2-migration refactor --to <gen2-root-stack-name>
 > Note: This operations makes use of
 > the [CloudFormation Refactor](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stack-refactoring.html) APIs
 
-#### Post Refactor | S3 Storage
+#### [CRITICAL] Post Refactor | S3 Storage
 
 ```console
 git checkout gen2-main
@@ -664,19 +664,9 @@ If your application contains an S3 bucket as part of the storage category, edit 
 ```
 
 > This is required in order to sync your local bucket name with the deployed template.
-> Otherwise, pushing changes to the `gen2-main` branch will result in a bucket replacement.
+> **Otherwise, pushing changes to the `gen2-main` branch will result in a bucket replacement.**
 
-Push the changes:
-
-```console
-git add .
-git commit -m "fix: reuse gen1 storage bucket"
-git push origin gen2-main
-```
-
-Wait for the deployment to finish successfully.
-
-#### Post Refactor | DynamoDB Storage
+#### [CRITICAL] Post Refactor | DynamoDB Storage
 
 ```console
 git checkout gen2-main
@@ -685,13 +675,33 @@ git checkout gen2-main
 If your application contains a DynamoDB table as part of the storage category, edit in `./amplify/backend.ts`:
 
 ```diff
-- new Table(storageStack, "myTable", { partitionKey: ... });
-- // Add this property to the Table above post refactor: tableName: 'my-table-main'
-+ new Table(storageStack, "myTable", { tableName: 'my-table-main', partitionKey: ... });
+- new Table(storageStack, "myTable", {
+-   partitionKey: {...}
+-   ...,
+- });
++ new Table(storageStack, "myTable", {
++   tableName: 'my-table-main'
++   partitionKey: {...},
++.  ...,
++ });
 ```
 
 > This is required in order to sync your local table name with the deployed template.
-> Otherwise, pushing changes to the `gen2-main` branch will result in a table replacement.
+> **Otherwise, pushing changes to the `gen2-main` branch will result in a table replacement.**
+
+#### [CRITICAL] Post Refactor | Kinesis Stream
+
+If your application contains a Kinesis stream as part of the analytics category, edit in ``:
+
+```diff
+- // (analytics.node.findChild('KinesisStream') as CfnStream).name = "mystream-main"
++ (analytics.node.findChild('KinesisStream') as CfnStream).name = "mystream-main"
+```
+
+> This is required in order to sync your local stream name with the deployed template.
+> **Otherwise, pushing changes to the `gen2-main` branch will result in a stream replacement.**
+
+#### Post Refactor | Redeploy
 
 Push the changes:
 
@@ -701,18 +711,11 @@ git commit -m "fix: reuse gen1 dynamodb table"
 git push origin gen2-main
 ```
 
-Wait for the deployment to finish successfully.
-
-#### Post Refactor | Redeploy
-
-> Note: If you've already followed one of the other post refactor steps, this can be skipped.
-
 Login to the AWS Amplify console and redeploy the Gen2 branch:
 
 ![](./migration-guide-images/redeploy.png)
 
-This is required in order to regenerate the `amplify_outputs.json` file that corresponds to the stack
-architecture that was updated during `refactor`.
+Wait for the deployment to finish successfully.
 
 # Feature Coverage
 
@@ -1004,7 +1007,7 @@ by the CLI setting that configures them.
 
       - 🔴 **function**
 
-    - 🔴 **Do you want to invoke this function on a recurring schedule**
+    - ⚠️ **Do you want to invoke this function on a recurring schedule**
     - 🔴 **Do you want to enable Lambda layers for this function**
     - 🟢 **Do you want to configure environment variables for this function**
     - 🟡 **Do you want to configure secret values this function can access** (_generate_ ✗ _refactor_ ✔)
