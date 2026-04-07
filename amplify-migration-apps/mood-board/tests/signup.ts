@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Amplify } from 'aws-amplify';
+import { parseAmplifyConfig } from 'aws-amplify/utils';
 import {
   CognitoIdentityProviderClient,
   AdminCreateUserCommand,
@@ -19,7 +20,14 @@ if (!CONFIG_PATH) {
 }
 
 export const config = JSON.parse(fs.readFileSync(CONFIG_PATH, { encoding: 'utf-8' }));
-Amplify.configure(config);
+Amplify.configure({
+  ...parseAmplifyConfig(config),
+  Analytics: {
+    Kinesis: {
+      region: config.aws_project_region ?? config.auth?.aws_region ?? 'us-east-1',
+    },
+  },
+});
 
 export async function signUp(cfg: any): Promise<{ username: string; password: string }> {
   const gen2Auth = (cfg as any)?.auth;

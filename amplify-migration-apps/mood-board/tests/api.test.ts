@@ -6,6 +6,7 @@ import {
   getBoard, listBoards,
   moodItemsByBoardID,
   getRandomEmoji,
+  getKinesisEvents,
 } from '../src/graphql/queries';
 import {
   createMoodItem, updateMoodItem, deleteMoodItem,
@@ -238,6 +239,12 @@ describe('guest', () => {
   it('cannot call getRandomEmoji', async () => {
     await expect(
       guest().graphql({ query: getRandomEmoji }),
+    ).rejects.toBeDefined();
+  });
+
+  it('cannot call getKinesisEvents', async () => {
+    await expect(
+      guest().graphql({ query: getKinesisEvents }),
     ).rejects.toBeDefined();
   });
 });

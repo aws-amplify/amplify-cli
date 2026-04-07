@@ -3,7 +3,8 @@
  * Post-generate script for fitness-tracker app.
  *
  * Applies manual edits required after `amplify gen2-migration generate`:
- * 1. Update branchName in amplify/data/resource.ts to "sandbox"
+ * 1. Update branchName in amplify/data/resource.ts to the value of AWS_BRANCH
+ *    env var, or the current git branch if AWS_BRANCH is not set
  * 2. Convert lognutrition function from CommonJS to ESM
  * 3. Convert admin function from CommonJS to ESM
  * 4. Convert PreSignup trigger function from CommonJS to ESM
@@ -13,15 +14,29 @@
 
 import fs from 'fs/promises';
 import path from 'path';
-import { glob } from 'glob';
 import { execSync } from 'child_process';
+
+function resolveTargetBranch(): string {
+  if (process.env.AWS_BRANCH) {
+    return process.env.AWS_BRANCH;
+  }
+  return execSync('git rev-parse --abbrev-ref HEAD', { encoding: 'utf-8' }).trim();
+}
+
+async function findPreSignupDir(appPath: string): Promise<string> {
+  const authDir = path.join(appPath, 'amplify', 'auth');
+  const entries = await fs.readdir(authDir);
+  const match = entries.find((e) => e.startsWith('fitnesstracker') && e.includes('PreSignup'));
+  if (!match) throw new Error('PreSignup directory not found under amplify/auth/');
+  return path.join(authDir, match);
+}
 
 async function updateBranchName(appPath: string): Promise<void> {
   const resourcePath = path.join(appPath, 'amplify', 'data', 'resource.ts');
 
   const content = await fs.readFile(resourcePath, 'utf-8');
 
-  const targetBranch = 'sandbox';
+  const targetBranch = resolveTargetBranch();
 
   const updated = content.replace(
     /branchName:\s*['"]([^'"]+)['"]/,
@@ -89,9 +104,7 @@ async function convertExpressFunctionToESM(appPath: string, functionName: string
 
 async function convertPreSignupToESM(appPath: string): Promise<void> {
   // The PreSignup function name contains a hash that varies per deployment.
-  // Use a glob to find it under amplify/auth/.
-  const matches = await glob('amplify/auth/fitnesstracker*PreSignup', { cwd: appPath });
-  const preSignupDir = path.join(appPath, matches[0]);
+  const preSignupDir = await findPreSignupDir(appPath);
 
   // Convert index.js
   const indexPath = path.join(preSignupDir, 'index.js');
@@ -177,10 +190,8 @@ export async function postGenerate(appPath: string): Promise<void> {
   await setResourceGroupName(path.join(appPath, 'amplify', 'function', 'lognutrition', 'resource.ts'), 'data');
   await setResourceGroupName(path.join(appPath, 'amplify', 'function', 'admin', 'resource.ts'), 'auth');
 
-  const preSignupMatches = await glob('amplify/auth/fitnesstracker*PreSignup/resource.ts', { cwd: appPath });
-  if (preSignupMatches.length > 0) {
-    await setResourceGroupName(path.join(appPath, preSignupMatches[0]), 'auth');
-  }
+  const preSignupDir = await findPreSignupDir(appPath);
+  await setResourceGroupName(path.join(preSignupDir, 'resource.ts'), 'auth');
 }
 
 async function main(): Promise<void> {

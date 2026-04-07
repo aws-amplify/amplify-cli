@@ -99,6 +99,25 @@ export class Assessment {
   }
 
   /**
+   * Returns the support level for a specific resource in the given step.
+   */
+  // eslint-disable-next-line consistent-return -- exhaustive switch; compiler enforces all cases
+  public of(resource: DiscoveredResource, step: 'generate' | 'refactor'): Support {
+    const entry = this._resources.find(
+      (ra) => ra.resource.category === resource.category && ra.resource.resourceName === resource.resourceName,
+    );
+    if (!entry) {
+      throw new Error(`No assessment recorded for resource '${resource.category}/${resource.resourceName}'`);
+    }
+    switch (step) {
+      case 'generate':
+        return entry.generate;
+      case 'refactor':
+        return entry.refactor;
+    }
+  }
+
+  /**
    * Returns true if all resources and features are supported for the given step.
    */
   // eslint-disable-next-line consistent-return -- exhaustive switch; compiler enforces all cases

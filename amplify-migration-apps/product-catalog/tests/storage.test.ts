@@ -81,7 +81,7 @@ describe('auth', () => {
       'base64',
     );
     await uploadData({
-      key: `public/images/${product.id}_test.png`,
+      key: `images/${product.id}_test.png`,
       data: imageBuffer,
       options: { contentType: 'image/png' },
     }).result;

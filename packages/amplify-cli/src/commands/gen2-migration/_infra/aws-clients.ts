@@ -13,6 +13,16 @@ import { STSClient } from '@aws-sdk/client-sts';
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { NodeHttpHandler } from '@smithy/node-http-handler';
 import type { AmplifyClientConfig } from '@aws-sdk/client-amplify';
+import { ProxyAgent } from 'proxy-agent';
+
+export const proxyAgent = () => {
+  let httpAgent = undefined;
+  const httpProxy = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;
+  if (httpProxy) {
+    httpAgent = new ProxyAgent();
+  }
+  return httpAgent;
+};
 
 // all clients share the same config so we just use one of them
 // to encapsulate all properties we need.
@@ -68,8 +78,8 @@ export class AwsClients {
       ...cred,
       customUserAgent: provider.formUserAgentParam(context, 'gen2-migration'),
       requestHandler: new NodeHttpHandler({
-        httpAgent: provider.proxyAgent(),
-        httpsAgent: provider.proxyAgent(),
+        httpAgent: proxyAgent(),
+        httpsAgent: proxyAgent(),
       }),
     };
 

@@ -4,7 +4,7 @@ import { Gen1App, DiscoveredResource, KNOWN_FEATURES } from '../../generate/_inf
 
 /**
  * Assesses migration readiness for a single Lambda function resource.
- * Detects custom-policies.json usage.
+ * Detects non-JS runtimes and custom-policies.json usage.
  */
 export class FunctionAssessor implements Assessor {
   public constructor(private readonly gen1App: Gen1App, private readonly resource: DiscoveredResource) {}
@@ -13,9 +13,13 @@ export class FunctionAssessor implements Assessor {
    * Records resource-level and feature-level support for this function.
    */
   public record(assessment: Assessment): void {
+    const templatePath = `function/${this.resource.resourceName}/${this.resource.resourceName}-cloudformation-template.json`;
+    const template = this.gen1App.json(templatePath);
+    const runtime = template.Resources.LambdaFunction.Properties.Runtime;
+
     assessment.recordResource({
       resource: this.resource,
-      generate: supported(),
+      generate: this.isNonJsRuntime(runtime) ? unsupported(`uses non-JS runtime '${runtime}'`) : supported(),
       refactor: supported(),
     });
 
@@ -28,6 +32,13 @@ export class FunctionAssessor implements Assessor {
         refactor: notApplicable(),
       });
     }
+  }
+
+  /**
+   * Returns true if the runtime is present and is not a Node.js variant.
+   */
+  private isNonJsRuntime(runtime: string): boolean {
+    return !runtime.startsWith('nodejs');
   }
 
   /**

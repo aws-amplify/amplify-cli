@@ -14,6 +14,7 @@ interface MigrationConfig {
    * Per-step configuration overrides.
    */
   readonly lock?: StepConfig;
+  readonly refactor?: RefactorConfig;
 }
 
 interface StepConfig {
@@ -23,21 +24,40 @@ interface StepConfig {
   readonly skipValidations?: boolean;
 }
 
+interface RefactorConfig {
+  /**
+   * Skip the refactor step entirely (e.g., when a sub-feature breaks refactoring).
+   */
+  readonly skip?: boolean;
+  /**
+   * Pass --skip-validations to the refactor step.
+   */
+  readonly skipValidations?: boolean;
+}
+
 /**
  * Represents a migration app deployed to a temporary directory.
  * Exposes all lifecycle operations as public methods.
  */
 export class App {
-  private readonly targetAppPath: string;
   private readonly deploymentName: string;
   private readonly gen2BranchName: string;
 
   private readonly sourceAppPath: string;
   private readonly envName: string;
   private readonly migrationConfig: MigrationConfig;
+
+  /**
+   * Whether the refactor step should be skipped entirely for this app.
+   */
+  public get skipRefactor(): boolean {
+    return this.migrationConfig.refactor?.skip === true;
+  }
   private readonly amplifyPath: string;
 
   public readonly logger: Logger;
+  public readonly targetAppPath: string;
+
   private readonly git: Git;
 
   constructor(public readonly appName: string, private readonly profile: string, verbose = false) {
@@ -55,7 +75,7 @@ export class App {
 
     // Copy source to temp directory
     this.targetAppPath = path.join(MIGRATION_TARGET_DIR, this.deploymentName);
-    fs.mkdirSync(this.targetAppPath);
+    fs.mkdirSync(this.targetAppPath, { recursive: true });
     fs.copySync(this.sourceAppPath, this.targetAppPath, {
       filter: (src: string) => !src.includes('_snapshot') && !src.includes('node_modules'),
     });
@@ -186,7 +206,11 @@ export class App {
    * Run `amplify gen2-migration refactor`.
    */
   public async refactor(gen2StackName: string): Promise<void> {
-    await this.runMigrationStep('refactor', ['--to', gen2StackName]);
+    const extraArgs = ['--to', gen2StackName];
+    if (this.migrationConfig.refactor?.skipValidations) {
+      extraArgs.push('--skip-validations');
+    }
+    await this.runMigrationStep('refactor', extraArgs);
   }
 
   /**
@@ -236,6 +260,13 @@ export class App {
   }
 
   /**
+   * Run the pre-push script.
+   */
+  public async prePush(): Promise<void> {
+    await this.runNpmScript('pre-push');
+  }
+
+  /**
    * Run the post-push script.
    */
   public async postPush(): Promise<void> {
@@ -246,7 +277,7 @@ export class App {
    * Run the post-generate script.
    */
   public async postGenerate(): Promise<void> {
-    await this.runNpmScript('post-generate');
+    await this.runNpmScript('post-generate', { AWS_BRANCH: 'sandbox' });
   }
 
   /**
@@ -254,6 +285,20 @@ export class App {
    */
   public async postRefactor(): Promise<void> {
     await this.runNpmScript('post-refactor');
+  }
+
+  /**
+   * Run the post-sandbox script with the Gen2 root stack name.
+   */
+  public async postSandbox(gen2StackName: string): Promise<void> {
+    await this.runNpmScript('post-sandbox', { APP_GEN2_ROOT_STACK_NAME: gen2StackName });
+  }
+
+  /**
+   * Run the pre-sandbox script.
+   */
+  public async preSandbox(): Promise<void> {
+    await this.runNpmScript('pre-sandbox');
   }
 
   // ============================================================
@@ -352,12 +397,12 @@ export class App {
    * Run an npm script defined in the app's package.json.
    * Silently skips if the script is not defined.
    */
-  private async runNpmScript(scriptName: string): Promise<void> {
+  private async runNpmScript(scriptName: string, extraEnv?: Record<string, string>): Promise<void> {
     const result = await execa('npm', ['run', scriptName], {
       cwd: this.targetAppPath,
       stdio: 'inherit',
       reject: false,
-      env: { ...process.env, AWS_SDK_LOAD_CONFIG: '1' },
+      env: { ...process.env, AWS_SDK_LOAD_CONFIG: '1', ...extraEnv },
     });
 
     if (result.exitCode !== 0) {

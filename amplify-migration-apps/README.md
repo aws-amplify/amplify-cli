@@ -28,7 +28,13 @@ Each app directory follows this layout:
 │   ├── post-generate.ts              # Fixups after gen2-migration generate
 │   ├── post-push.ts                  # Fixups after amplify push (optional)
 │   └── post-refactor.ts              # Fixups after gen2-migration refactor
-├── frontest.ts                       # Self-contained E2E test script
+├── tests/                            # Jest test suites for validating deployed stacks
+│   ├── signup.ts                     # Cognito user provisioning (app-specific)
+│   ├── jest.setup.ts                 # Jest setup (retry config)
+│   ├── api.test.ts                   # GraphQL / REST API tests
+│   ├── storage.test.ts               # S3 / DynamoDB storage tests
+│   └── ...                           # Additional category-specific test files
+├── jest.config.js                    # Jest configuration
 ├── _snapshot.pre.generate/           # Input for `gen2-migration generate` test (Gen1 app state)
 ├── _snapshot.post.generate/          # Expected output of `gen2-migration generate`
 ├── _snapshot.pre.refactor/           # Input for `gen2-migration refactor` test (CFN templates)
@@ -66,14 +72,16 @@ Currently supports:
 
 If the file does not exist, defaults are used (no skip-validations).
 
-### `frontest.ts`
+### `tests/`
 
-A single, self-contained test script that validates a deployed stack. It takes a config
-JSON path as its only argument, making it work for both Gen1 (`src/amplifyconfiguration.json`)
-and Gen2 (`amplify_outputs.json`) configs without any code changes.
+Jest test suites that validate a deployed stack. Each app has its own `jest.config.js` and
+test files under `tests/`. The config path is controlled by the `APP_CONFIG_PATH` environment
+variable, which the `test:gen1` and `test:gen2` npm scripts set to the appropriate file
+(`src/amplifyconfiguration.json` for Gen1, `amplify_outputs.json` for Gen2).
 
-The script handles its own Cognito user provisioning via `AdminCreateUser` +
-`AdminSetUserPassword`, then exercises every API, storage, and data operation the app supports.
+Each app has its own `tests/signup.ts` that handles Cognito user provisioning via
+`AdminCreateUser` + `AdminSetUserPassword`, tailored to the app's specific auth
+configuration (email vs phone sign-in, user pool groups, etc.).
 
 ### `migration/post-generate.ts` and `migration/post-refactor.ts`
 
@@ -95,6 +103,20 @@ If a script does not exist for an app, the E2E system silently skips the step.
 
 > Some apps don't have `_snapshot.post.refactor/` because refactor doesn't work
 > for them yet.
+
+### `migration/pre-push.ts` and `migration/post-sandbox.ts`
+
+Optional scripts for additional lifecycle hooks:
+
+- `pre-push.ts` — runs before `amplify push`. Use for fixups that require the Amplify
+  app to be initialized but not yet deployed (e.g., substituting the real Amplify app ID
+  into configuration files).
+- `post-sandbox.ts` — runs after the first `npx ampx sandbox --once` deploy. Use for
+  fixups that require the Gen2 stack to exist (e.g., writing secrets to SSM Parameter
+  Store using the deployed stack name).
+
+Both accept `appPath` as a CLI argument. If a script does not exist for an app, the
+E2E system silently skips the step.
 
 ### `_snapshot.pre.generate/`
 
@@ -425,14 +447,13 @@ npx tsx src/cli.ts --app project-boards --profile default
 
 This will:
 1. Deploy the Gen1 app via `amplify push`
-2. Run `frontest.ts` to validate the Gen1 stack
+2. Run `test:gen1` to validate the Gen1 stack
 3. Execute the full `gen2-migration` workflow (assess, lock, generate, deploy, refactor, redeploy)
-4. Run `frontest.ts` against both Gen1 and Gen2 configs after each deployment
+4. Run `test:gen1` and `test:gen2` after each deployment
 
-The system automatically runs scripts from the app's `migration/` directory at the right
-points in the workflow — `post-generate.ts` after generate, `post-refactor.ts` after refactor,
-and `post-push.ts` after push (if configured in `migration/config.json`). If a script doesn't
-exist, the step is silently skipped. `frontest.ts` is also run automatically if present.
+The system automatically runs npm scripts from the app's `package.json` at the right
+points in the workflow — `post-generate` after generate, `post-refactor` after refactor,
+and `post-push` after push. Scripts that resolve to `true` (no-op) are effectively skipped.
 
 See the [E2E system README](../packages/amplify-gen2-migration-e2e-system/README.md) for
 CLI options and troubleshooting.

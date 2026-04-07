@@ -261,7 +261,7 @@
                     "HasEnvironmentParameter",
                     {
                       "Fn::Sub": [
-                        "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:moodboardKinesisreader-${env}",
+                        "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:moodboardKinesisReader-${env}",
                         {
                           "env": {
                             "Ref": "referencetotransformerrootstackenv10C5A902Ref"
@@ -270,7 +270,7 @@
                       ]
                     },
                     {
-                      "Fn::Sub": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:moodboardKinesisreader"
+                      "Fn::Sub": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:moodboardKinesisReader"
                     }
                   ]
                 },
@@ -283,7 +283,7 @@
                           "HasEnvironmentParameter",
                           {
                             "Fn::Sub": [
-                              "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:moodboardKinesisreader-${env}",
+                              "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:moodboardKinesisReader-${env}",
                               {
                                 "env": {
                                   "Ref": "referencetotransformerrootstackenv10C5A902Ref"
@@ -292,7 +292,7 @@
                             ]
                           },
                           {
-                            "Fn::Sub": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:moodboardKinesisreader"
+                            "Fn::Sub": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:moodboardKinesisReader"
                           }
                         ]
                       },
@@ -325,7 +325,7 @@
               "HasEnvironmentParameter",
               {
                 "Fn::Sub": [
-                  "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:moodboardKinesisreader-${env}",
+                  "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:moodboardKinesisReader-${env}",
                   {
                     "env": {
                       "Ref": "referencetotransformerrootstackenv10C5A902Ref"
@@ -334,7 +334,7 @@
                 ]
               },
               {
-                "Fn::Sub": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:moodboardKinesisreader"
+                "Fn::Sub": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:moodboardKinesisReader"
               }
             ]
           }

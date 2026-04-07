@@ -44,13 +44,24 @@ async function main(): Promise<void> {
   }
 
   const app = new App(argv.app, argv.profile, argv.verbose);
-  app.logger.info(`Staring migration`);
+  try {
+    await migrate(app);
+    app.logger.info('Migration completed successfully');
+  } catch (error) {
+    (error as Error).message = `Migration failed: ${chalk.red((error as Error).message)} (${app.targetAppPath})`;
+    throw error;
+  }
+}
+
+async function migrate(app: App): Promise<void> {
+  app.logger.info(`Starting migration`);
 
   await app.gitInit();
   await app.init();
   await app.configure();
   await app.installDeps();
   await app.status();
+  await app.prePush();
   await app.push();
   await app.postPush();
   await app.gitCommit('chore: post push');
@@ -67,27 +78,33 @@ async function main(): Promise<void> {
   await app.postGenerate();
   await app.gitDiff();
   await app.gitCommit('chore: post generate');
+  await app.preSandbox();
   const gen2StackName = await app.deployGen2Sandbox();
+  await app.postSandbox(gen2StackName);
 
   await app.testGen1();
   await app.testGen2();
 
+  if (app.skipRefactor) {
+    app.logger.info('Skipping refactor (configured in migration/config.json)');
+    return;
+  }
+
   await app.gitCheckoutGen1();
   await app.refactor(gen2StackName);
+
+  await app.testGen1();
+  await app.testGen2();
+
   await app.gitCheckoutGen2();
   await app.postRefactor();
   await app.gitDiff();
   await app.gitCommit('chore: post refactor');
 
-  await app.testGen1();
-  await app.testGen2();
-
   await app.deployGen2Sandbox();
 
   await app.testGen1();
   await app.testGen2();
-
-  app.logger.info(`Migration completed successfully`);
 }
 
 function printBanner(): void {
@@ -104,9 +121,7 @@ function printBanner(): void {
   );
 }
 
-if (require.main === module) {
-  main().catch((error) => {
-    console.error(chalk.red('Fatal error:'), (error as Error).message);
-    process.exit(1);
-  });
-}
+main().catch((error) => {
+  console.error(error);
+  process.exit(1);
+});

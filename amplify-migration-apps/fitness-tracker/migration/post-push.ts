@@ -42,8 +42,6 @@ async function main(): Promise<void> {
     FunctionName: functionName,
     Environment: { Variables: { ...env, DOMAINALLOWLIST: 'amazon.com' } },
   }));
-
-  console.log(`✅ Updated DOMAINALLOWLIST on ${functionName}`);
 }
 
 main().catch((error) => {

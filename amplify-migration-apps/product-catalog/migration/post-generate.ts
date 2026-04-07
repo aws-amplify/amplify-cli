@@ -3,24 +3,35 @@
  * Post-generate script for product-catalog app.
  *
  * Applies manual edits required after `amplify gen2-migration generate`:
- * 1. Update branchName in amplify/data/resource.ts to "sandbox"
+ * 1. Update branchName in amplify/data/resource.ts to the value of AWS_BRANCH
+ *    env var, or the current git branch if AWS_BRANCH is not set
  * 2. Convert lowstockproducts function from CommonJS to ESM
  * 3. Replace fetchSecret() with process.env in lowstockproducts
  * 4. Update lowstockproducts/resource.ts to use secret() instead of hardcoded SSM path
  * 5. Convert S3Trigger function from CommonJS to ESM
  * 6. Update frontend import from amplifyconfiguration.json to amplify_outputs.json
  * 7. Add IAM policy to backend.ts for authenticated user to access Gen1 AppSync API
+ * 8. Resolve the Gen1 AppSync API ID and replace the placeholder in backend.ts
  */
 
+import { execSync } from 'child_process';
 import fs from 'fs/promises';
+import fsSync from 'fs';
 import path from 'path';
-import { glob } from 'glob';
+import { AppSyncClient, paginateListGraphqlApis } from '@aws-sdk/client-appsync';
+
+function resolveTargetBranch(): string {
+  if (process.env.AWS_BRANCH) {
+    return process.env.AWS_BRANCH;
+  }
+  return execSync('git rev-parse --abbrev-ref HEAD', { encoding: 'utf-8' }).trim();
+}
 
 async function updateBranchName(appPath: string): Promise<void> {
   const resourcePath = path.join(appPath, 'amplify', 'data', 'resource.ts');
   const content = await fs.readFile(resourcePath, 'utf-8');
 
-  const targetBranch = 'sandbox';
+  const targetBranch = resolveTargetBranch();
 
   const updated = content.replace(
     /branchName:\s*['"]([^'"]+)['"]/,
@@ -73,11 +84,14 @@ async function updateLowstockproductsResource(appPath: string): Promise<void> {
 }
 
 async function convertS3TriggerToESM(appPath: string): Promise<void> {
-  // The S3 trigger has a dynamic suffix — find it via glob
-  const pattern = path.join(appPath, 'amplify', 'storage', 'S3Trigger*', 'index.js');
-  const matches = await glob(pattern);
+  const storageDir = path.join(appPath, 'amplify', 'storage');
+  const entries = fsSync.readdirSync(storageDir);
+  const triggerDirs = entries.filter((e) => e.startsWith('S3Trigger'));
 
-  for (const handlerPath of matches) {
+  for (const dir of triggerDirs) {
+    const handlerPath = path.join(storageDir, dir, 'index.js');
+    if (!fsSync.existsSync(handlerPath)) continue;
+
     const content = await fs.readFile(handlerPath, 'utf-8');
 
     let updated = content.replace(
@@ -85,7 +99,6 @@ async function convertS3TriggerToESM(appPath: string): Promise<void> {
       'export async function handler($2) {',
     );
 
-    // Also handle: exports.handler = async function (event) {
     updated = updated.replace(
       /exports\.handler\s*=\s*async\s+function\s*\((\w*)\)\s*\{/g,
       'export async function handler($1) {',
@@ -107,7 +120,27 @@ async function updateFrontendConfig(appPath: string): Promise<void> {
   await fs.writeFile(mainPath, updated, 'utf-8');
 }
 
-async function addGen1AppSyncPolicy(appPath: string): Promise<void> {
+/**
+ * Look up the Gen1 AppSync API ID by querying all APIs and finding
+ * the one tagged with "user:Application" matching the app name.
+ */
+async function resolveGen1AppSyncApiId(appName: string): Promise<string> {
+  const client = new AppSyncClient({});
+
+  for await (const page of paginateListGraphqlApis({ client }, {})) {
+    for (const api of page.graphqlApis ?? []) {
+      if (api.tags?.['user:Application'] === appName) {
+        return api.apiId!;
+      }
+    }
+  }
+
+  throw new Error(`No AppSync API found with tag user:Application=${appName}`);
+}
+
+async function addGen1AppSyncPolicy(appPath: string, appName: string): Promise<void> {
+  const apiId = await resolveGen1AppSyncApiId(appName);
+
   const backendPath = path.join(appPath, 'amplify', 'backend.ts');
   const content = await fs.readFile(backendPath, 'utf-8');
 
@@ -120,13 +153,11 @@ async function addGen1AppSyncPolicy(appPath: string): Promise<void> {
     },
   );
 
-  // Append the IAM policy statement before the last line or at the end of the file
-  // We add a placeholder that the user must fill in with their Gen1 AppSync API ID
   const policyBlock = `
 backend.auth.resources.authenticatedUserIamRole.addToPrincipalPolicy(new aws_iam.PolicyStatement({
     effect: aws_iam.Effect.ALLOW,
     actions: ['appsync:GraphQL'],
-    resources: [\`arn:aws:appsync:\${backend.data.stack.region}:\${backend.data.stack.account}:apis/<gen1-appsync-api-id>/*\`]
+    resources: [\`arn:aws:appsync:\${backend.data.stack.region}:\${backend.data.stack.account}:apis/${apiId}/*\`]
 }))
 `;
 
@@ -136,12 +167,15 @@ backend.auth.resources.authenticatedUserIamRole.addToPrincipalPolicy(new aws_iam
 }
 
 export async function postGenerate(appPath: string): Promise<void> {
+  const packageJson = JSON.parse(await fs.readFile(path.join(appPath, 'package.json'), 'utf-8'));
+  const appName = packageJson.name as string;
+
   await updateBranchName(appPath);
   await convertLowstockproductsToESM(appPath);
   await updateLowstockproductsResource(appPath);
   await convertS3TriggerToESM(appPath);
   await updateFrontendConfig(appPath);
-  await addGen1AppSyncPolicy(appPath);
+  await addGen1AppSyncPolicy(appPath, appName);
 }
 
 async function main(): Promise<void> {

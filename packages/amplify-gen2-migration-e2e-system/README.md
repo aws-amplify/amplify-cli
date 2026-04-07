@@ -28,31 +28,43 @@ npx tsx src/cli.ts --app project-boards --profile default --verbose
 The CLI executes the following steps for a given app:
 
 1. Copy app source to a temp directory (excluding `_snapshot*` and `node_modules`)
-2. `amplify init` - initialize the Gen1 project
+2. `amplify init` — initialize the Gen1 project
 3. Configure categories by restoring the pre-generate snapshot into the `amplify/` directory
-4. `amplify push` - deploy the Gen1 stack
-5. Run `frontest.ts` against the Gen1 config to validate the deployment
-6. `amplify gen2-migration assess`
-7. `amplify gen2-migration lock`
-8. `amplify gen2-migration generate`
-9. Run `migration/post-generate.ts` (app-specific fixups)
-10. `npx ampx sandbox --once` - deploy the Gen2 stack
-11. Run `frontest.ts` against both Gen1 and Gen2 configs
-12. `amplify gen2-migration refactor` - move stateful resources to Gen2
-13. Run `migration/post-refactor.ts` (app-specific fixups)
-14. Redeploy Gen2 sandbox to pick up post-refactor changes
-15. Run `frontest.ts` against both configs again
+4. `npm install`
+5. Run `pre-push` npm script (app-specific fixups before deployment)
+6. `amplify push` — deploy the Gen1 stack
+7. Run `post-push` npm script (app-specific fixups)
+8. Run `test:gen1` — validate the Gen1 deployment
+9. `amplify gen2-migration assess`
+10. `amplify gen2-migration lock`
+11. Checkout a new `gen2-<env>` branch
+12. `amplify gen2-migration generate`
+13. `npm install`
+14. Run `post-generate` npm script (app-specific fixups)
+15. `npx ampx sandbox --once` — deploy the Gen2 stack
+16. Run `post-sandbox` npm script (app-specific fixups after first sandbox deploy)
+17. Run `test:gen1` and `test:gen2` — validate both stacks
+18. Checkout `main` branch (refactor requires Gen1 files)
+19. `amplify gen2-migration refactor` — move stateful resources to Gen2
+20. Checkout `gen2-<env>` branch
+21. Run `post-refactor` npm script (app-specific fixups)
+22. Run `test:gen1` and `test:gen2` — validate both stacks
+23. Redeploy Gen2 sandbox to pick up post-refactor changes
+24. Run `test:gen1` and `test:gen2` — final validation
 
 Test scripts run at multiple points to verify that both stacks remain functional throughout the migration.
 
-The system automatically runs app-specific scripts from the `migration/` directory at the
-appropriate points in the workflow. If a script does not exist, the step is silently skipped:
+The system runs npm scripts defined in each app's `package.json`:
 
-- `migration/post-push.ts` — after `amplify push` (if the file exists)
-- `migration/post-generate.ts` — after `gen2-migration generate` (if the file exists)
-- `migration/post-refactor.ts` — after `gen2-migration refactor` (if the file exists)
+- `pre-push` — before `amplify push`
+- `post-push` — after `amplify push`
+- `post-generate` — after `gen2-migration generate`
+- `post-sandbox` — after the first `npx ampx sandbox --once` deploy
+- `post-refactor` — after `gen2-migration refactor`
+- `test:gen1` — Jest tests against the Gen1 config (`src/amplifyconfiguration.json`)
+- `test:gen2` — Jest tests against the Gen2 config (`amplify_outputs.json`)
 
-Similarly, `frontest.ts` is run automatically after each deployment if the file exists.
+Scripts set to `"true"` in `package.json` are effectively no-ops.
 
 ### Migration Config
 
@@ -64,9 +76,11 @@ Each app can optionally include a `migration/config.json` to customize the E2E w
 }
 ```
 
-| Field                  | Description                                         |
-| ---------------------- | --------------------------------------------------- |
-| `lock.skipValidations` | Pass `--skip-validations` to `gen2-migration lock`. |
+| Field                      | Description                                             |
+| -------------------------- | ------------------------------------------------------- |
+| `lock.skipValidations`     | Pass `--skip-validations` to `gen2-migration lock`.     |
+| `refactor.skip`            | Skip the refactor step entirely.                        |
+| `refactor.skipValidations` | Pass `--skip-validations` to `gen2-migration refactor`. |
 
 If the file does not exist, defaults are used.
 
@@ -76,13 +90,11 @@ For details on the app layout, test scripts, and migration scripts, see the [amp
 
 ```
 src/
-+-- cli.ts                          # CLI entry point (yargs-based)
-+-- core/
-|   +-- amplify-initializer.ts      # Amplify project initialization
-|   +-- gen2-migration-executor.ts  # Gen2 migration command orchestration
-+-- utils/
-    +-- git.ts                      # Git operations (init, commit, checkout)
-    +-- logger.ts                   # Logging with file output
+├── cli.ts                          # CLI entry point and migration workflow orchestration
+└── core/
+    ├── app.ts                      # App class — owns the full lifecycle of a migration app
+    ├── git.ts                      # Git operations (init, commit, checkout)
+    └── logger.ts                   # Logging with file output
 ```
 
 ## Development

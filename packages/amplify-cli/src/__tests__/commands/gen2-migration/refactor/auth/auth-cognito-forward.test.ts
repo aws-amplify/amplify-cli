@@ -13,6 +13,7 @@ import {
   ResourceStatus,
   CreateChangeSetCommand,
   DescribeChangeSetCommand,
+  ExecuteChangeSetCommand,
   DeleteChangeSetCommand,
   ResourceMapping,
 } from '@aws-sdk/client-cloudformation';
@@ -86,7 +87,8 @@ function setupMocks(cfnMock: ReturnType<typeof mockClient>) {
   cfnMock.on(GetTemplateCommand, { StackName: 'gen2-auth-stack' }).resolves({ TemplateBody: JSON.stringify(gen2AuthTemplate) });
 
   cfnMock.on(CreateChangeSetCommand).resolves({});
-  cfnMock.on(DescribeChangeSetCommand).resolves({ Status: 'CREATE_COMPLETE', Changes: [] });
+  cfnMock.on(DescribeChangeSetCommand).callsFake((input) => ({ Status: 'CREATE_COMPLETE', StackName: input.StackName, Changes: [] }));
+  cfnMock.on(ExecuteChangeSetCommand).resolves({});
   cfnMock.on(DeleteChangeSetCommand).resolves({});
 }
 
@@ -190,7 +192,8 @@ describe('AuthCognitoForwardRefactorer.plan() — operation sequence', () => {
     cfnMock.on(GetTemplateCommand, { StackName: 'gen1-auth-stack' }).resolves({ TemplateBody: JSON.stringify(oauthGen1Template) });
     cfnMock.on(GetTemplateCommand, { StackName: 'gen2-auth-stack' }).resolves({ TemplateBody: JSON.stringify(gen2AuthTemplate) });
     cfnMock.on(CreateChangeSetCommand).resolves({});
-    cfnMock.on(DescribeChangeSetCommand).resolves({ Status: 'CREATE_COMPLETE', Changes: [] });
+    cfnMock.on(DescribeChangeSetCommand).callsFake((input) => ({ Status: 'CREATE_COMPLETE', StackName: input.StackName, Changes: [] }));
+    cfnMock.on(ExecuteChangeSetCommand).resolves({});
     cfnMock.on(DeleteChangeSetCommand).resolves({});
 
     const cognitoMock = mockClient(CognitoIdentityProviderClient);
@@ -218,17 +221,16 @@ describe('AuthCognitoForwardRefactorer.plan() — operation sequence', () => {
     expect(cognitoMock.commandCalls(DescribeIdentityProviderCommand)).toHaveLength(1);
     expect(ops.length).toBeGreaterThanOrEqual(4);
 
-    const { UpdateStackCommand } = await import('@aws-sdk/client-cloudformation');
+    const { CreateChangeSetCommand: CreateCS } = await import('@aws-sdk/client-cloudformation');
     cfnMock.on(DescribeStacksCommand).resolves({
       Stacks: [{ StackName: 'gen1-auth-stack', StackStatus: 'UPDATE_COMPLETE', CreationTime: ts }],
     });
-    cfnMock.on(UpdateStackCommand).resolves({});
     // ops[0] and ops[1] are stack status validations; ops[2] is updateSource
     await ops[2].execute();
 
-    const updateCalls = cfnMock.commandCalls(UpdateStackCommand);
-    expect(updateCalls).toHaveLength(1);
-    const credsParam = updateCalls[0].args[0].input.Parameters?.find(
+    const createCsCalls = cfnMock.commandCalls(CreateCS);
+    expect(createCsCalls.length).toBeGreaterThanOrEqual(1);
+    const credsParam = createCsCalls[0].args[0].input.Parameters?.find(
       (p: { ParameterKey?: string }) => p.ParameterKey === 'hostedUIProviderCreds',
     );
     expect(credsParam?.ParameterValue).toContain('google-id');
