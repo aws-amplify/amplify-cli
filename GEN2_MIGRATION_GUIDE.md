@@ -988,8 +988,6 @@ by the CLI setting that configures them.
         - 🟢 `update`
         - 🟢 `delete`
 
-      - 🔴 **function**
-
       - ➤ **storage:dynamo**
 
         - 🟢 `create`
