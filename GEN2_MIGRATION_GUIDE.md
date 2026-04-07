@@ -754,7 +754,7 @@ by the CLI setting that configures them.
 
 - ➤ **Allow unauthenticated logins**
 
-  - ⚠️ `Yes`
+  - 🔴 `Yes`
   - 🟢 `No`
 
 - 🔴 **Do you want to enable 3rd party authentication providers in your identity pool**
