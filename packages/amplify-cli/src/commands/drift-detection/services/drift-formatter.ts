@@ -21,6 +21,7 @@ interface DriftBlock {
   driftDetectionId?: string;
   templateChange?: ResourceChangeWithNested;
   changeSetId?: string;
+  stackArn?: string;
 }
 
 /**
@@ -76,12 +77,12 @@ function cfnDriftConsoleUrl(stackArn: string): string | undefined {
 /**
  * Build CloudFormation console URL for a changeset details page
  */
-function cfnChangesetConsoleUrl(changeSetArn: string): string | undefined {
+function cfnChangesetConsoleUrl(changeSetArn: string, stackArn?: string): string | undefined {
   const region = regionFromArn(changeSetArn);
   if (!region) return undefined;
-  return `https://${region}.console.aws.amazon.com/cloudformation/home?region=${region}#/stacks/changesets/details?changeSetId=${encodeURIComponent(
-    changeSetArn,
-  )}`;
+  const encodedStackId = encodeURIComponent(stackArn || '');
+  const encodedChangeSetId = encodeURIComponent(changeSetArn);
+  return `https://${region}.console.aws.amazon.com/cloudformation/home?region=${region}#/stacks/changesets/changes?stackId=${encodedStackId}&changeSetId=${encodedChangeSetId}`;
 }
 
 /**
@@ -114,10 +115,20 @@ function collectDriftBlocks(phase1: CloudFormationDriftResults, phase2: Template
 
   // Phase 2: One block per template change (flatten nested stacks to leaf resources)
   if (!phase2.skipped && phase2.changes.length > 0) {
-    const flattenChanges = (changes: ResourceChangeWithNested[], fallbackCategory: string, fallbackChangeSetId?: string): void => {
+    const flattenChanges = (
+      changes: ResourceChangeWithNested[],
+      fallbackCategory: string,
+      fallbackChangeSetId?: string,
+      parentStackArn?: string,
+    ): void => {
       for (const change of changes) {
         if (change.ResourceType === 'AWS::CloudFormation::Stack' && change.nestedChanges && change.nestedChanges.length > 0) {
-          flattenChanges(change.nestedChanges, extractCategory(change.LogicalResourceId), change.ChangeSetId || fallbackChangeSetId);
+          flattenChanges(
+            change.nestedChanges,
+            extractCategory(change.LogicalResourceId),
+            change.ChangeSetId || fallbackChangeSetId,
+            change.PhysicalResourceId || parentStackArn,
+          );
         } else {
           const resourceCategory = extractCategory(change.LogicalResourceId);
           blocks.push({
@@ -126,6 +137,7 @@ function collectDriftBlocks(phase1: CloudFormationDriftResults, phase2: Template
             type: 'template',
             templateChange: change,
             changeSetId: change.ChangeSetId || fallbackChangeSetId,
+            stackArn: parentStackArn,
           });
         }
       }
@@ -210,7 +222,7 @@ function formatBlock(block: DriftBlock): string {
 
     output += `  Template Drift: S3 and deployed templates differ\n`;
     if (block.changeSetId) {
-      const changesetUrl = cfnChangesetConsoleUrl(block.changeSetId);
+      const changesetUrl = cfnChangesetConsoleUrl(block.changeSetId, block.stackArn);
       output += `  Changeset Id: ${changesetUrl || block.changeSetId}\n`;
     }
     output += `  ${colorResourceLine(symbol, `${symbol} ${change.ResourceType || 'Unknown'}`)}\n`;
