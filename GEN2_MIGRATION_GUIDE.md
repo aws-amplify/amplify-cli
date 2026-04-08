@@ -596,6 +596,11 @@ Once added the hosting service will start deploying this branch. Wait for it to 
 
 ![](./migration-guide-images/deploying-branch.png)
 
+> [!NOTE]
+>
+> Disconnecting the branch will trigger an asynchronous deletion of the associated CloudFormation stacks.
+> You must wait for those stack to be deleted before reconnecting the branch.
+
 Once completed you can login to your app via the newly dedicated amplify domain. At this point,
 the application has access only to the DynamoDB data from your Gen1 environment. **It does not
 however reuse other stateful resources such as user pools.** To grant it access to all
