@@ -1,5 +1,5 @@
 {
-  "bucketName": "moodboard20e29595008142e3ad16f01c4066e1c4",
+  "bucketName": "moodboarda9dff0b544a64459b29954a5cab78ace",
   "selectedGuestPermissions": [
     "s3:GetObject",
     "s3:ListBucket"
@@ -16,13 +16,13 @@
   "authRoleName": {
     "Ref": "AuthRoleName"
   },
-  "s3PrivatePolicy": "Private_policy_206c638b",
-  "s3ProtectedPolicy": "Protected_policy_206c638b",
-  "s3PublicPolicy": "Public_policy_206c638b",
-  "s3ReadPolicy": "read_policy_206c638b",
-  "s3UploadsPolicy": "Uploads_policy_206c638b",
-  "authPolicyName": "s3_amplify_206c638b",
-  "unauthPolicyName": "s3_amplify_206c638b",
+  "s3PrivatePolicy": "Private_policy_328f95a0",
+  "s3ProtectedPolicy": "Protected_policy_328f95a0",
+  "s3PublicPolicy": "Public_policy_328f95a0",
+  "s3ReadPolicy": "read_policy_328f95a0",
+  "s3UploadsPolicy": "Uploads_policy_328f95a0",
+  "authPolicyName": "s3_amplify_328f95a0",
+  "unauthPolicyName": "s3_amplify_328f95a0",
   "AuthenticatedAllowList": "ALLOW",
   "GuestAllowList": "ALLOW",
   "s3PermissionsAuthenticatedPrivate": "s3:PutObject,s3:GetObject,s3:DeleteObject",
