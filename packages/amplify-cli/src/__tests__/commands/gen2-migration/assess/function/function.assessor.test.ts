@@ -25,7 +25,7 @@ describe('FunctionAssessor', () => {
 
     const entry = assessment.resources[0];
     expect(entry!.generate.level).toBe('supported');
-    expect(entry!.refactor.level).toBe('supported');
+    expect(entry!.refactor.level).toBe('not-applicable');
   });
 
   it('detects non-empty custom-policies.json', () => {
@@ -73,8 +73,8 @@ describe('FunctionAssessor', () => {
 
       const entry = assessment.resources[0];
       expect(entry!.generate.level).toBe('unsupported');
-      expect(entry!.generate.note).toContain('python3.11');
-      expect(entry!.refactor.level).toBe('supported');
+      expect(entry!.generate.note).toContain('requires adding code after generate');
+      expect(entry!.refactor.level).toBe('not-applicable');
     });
 
     it('fails assessment validFor generate when runtime is non-JS', () => {

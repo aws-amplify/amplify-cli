@@ -45,7 +45,7 @@ Standalone class (not a step). `assess()` returns an `Assessment` instance. `run
 
 [`src/commands/gen2-migration/assess/assessment.ts`](../../../../packages/amplify-cli/src/commands/gen2-migration/assess/assessment.ts)
 
-Collector that assessors contribute to. Exposes `validFor('generate' | 'refactor')` for step validation, `of(resource, step)` for per-resource support lookup, and `render()` for terminal output. Each entry uses the `Support` type with `level` and optional `note`.
+Collector that assessors contribute to. Exposes `validFor('generate' | 'refactor')` for step validation, `of(resource, step)` for per-resource support lookup, and `render()` for terminal output. Renders a "Resources" table and an "Advanced Features" table (for detected sub-features like overrides and custom policies), followed by a link to the migration guide's feature coverage section. Each entry uses the `Support` type with `level` and optional `note`.
 
 ### `Support`
 
@@ -79,7 +79,7 @@ Produced by `Gen1App.discover()`. The `key` field is a typed `category:service` 
 | api       | AppSync                 | ✔                | n/a         |
 | api       | API Gateway             | ✔                | n/a         |
 | analytics | Kinesis                 | ✔                | ✔           |
-| function  | Lambda                  | ✔ (Node.js only) | ✔           |
+| function  | Lambda                  | ✔ (Node.js only) | n/a         |
 | geo       | Map                     | ✔                | ✔           |
 | geo       | PlaceIndex              | ✔                | ✔           |
 | geo       | GeofenceCollection      | ✔                | unsupported |
@@ -89,4 +89,4 @@ Produced by `Gen1App.discover()`. The `key` field is a typed `category:service` 
 - Adding a new resource type: add the pair to `KNOWN_RESOURCE_KEYS` in `gen1-app.ts`, create an assessor, handle the case in `assess.ts`, and in the generate/refactor steps. The compiler enforces exhaustiveness.
 - The `Assessment` is also used by generate and refactor steps for validation — `validFor(step)` returns false if any resource or feature is unsupported for that step. The `of(resource, step)` method returns the `Support` for a specific resource, used by the generate orchestrator to skip unsupported resources before instantiating generators.
 - Feature detection (overrides, custom policies) is assessor-specific. Each assessor checks for files in the cloud backend directory via `gen1App.fileExists()`.
-- `FunctionAssessor` reads the Lambda runtime from the local CloudFormation template (`function/<name>/<name>-cloudformation-template.json`). Non-Node.js runtimes are marked as unsupported for generate, allowing `--skip-validations` to skip them.
+- `FunctionAssessor` reads the Lambda runtime from the local CloudFormation template (`function/<name>/<name>-cloudformation-template.json`). Non-Node.js runtimes are marked as unsupported for generate. Function refactor is always not-applicable since functions are stateless.
