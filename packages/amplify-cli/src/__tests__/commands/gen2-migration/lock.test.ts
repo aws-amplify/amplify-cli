@@ -5,6 +5,11 @@ import { UpdateAppCommand } from '@aws-sdk/client-amplify';
 import { SpinningLogger } from '../../../commands/gen2-migration/_infra/spinning-logger';
 import { Gen1App } from '../../../commands/gen2-migration/generate/_infra/gen1-app';
 import { AmplifyGen2MigrationValidations } from '../../../commands/gen2-migration/_infra/validations';
+import { detectTemplateDrift } from '../../../commands/drift-detection/detect-template-drift';
+
+jest.mock('../../../commands/drift-detection/detect-template-drift', () => ({
+  detectTemplateDrift: jest.fn(),
+}));
 
 jest.mock('@aws-sdk/client-appsync', () => ({
   ...jest.requireActual('@aws-sdk/client-appsync'),
@@ -397,6 +402,188 @@ describe('AmplifyMigrationLockStep', () => {
         name: 'MigrationError',
         message: expect.stringContaining('unexpected changes'),
       });
+    });
+  });
+
+  describe('rollback drift validation', () => {
+    const mockDetectTemplateDrift = detectTemplateDrift as jest.MockedFunction<typeof detectTemplateDrift>;
+
+    it('should pass validation when no drift is detected', async () => {
+      mockDetectTemplateDrift.mockResolvedValueOnce({ changes: [], skipped: false });
+
+      const plan = await lockStep.rollback();
+      const valid = await plan.validate();
+
+      expect(valid).toBe(true);
+      expect(mockDetectTemplateDrift).toHaveBeenCalledWith('test-root-stack', mockLogger, expect.anything());
+    });
+
+    it('should pass validation when only DeletionPolicy drift exists', async () => {
+      mockDetectTemplateDrift.mockResolvedValueOnce({
+        changes: [
+          {
+            Action: 'Modify',
+            LogicalResourceId: 'MyTable',
+            ResourceType: 'AWS::DynamoDB::Table',
+            Scope: ['DeletionPolicy'],
+            Replacement: 'False',
+          },
+          {
+            Action: 'Modify',
+            LogicalResourceId: 'MyBucket',
+            ResourceType: 'AWS::S3::Bucket',
+            Scope: ['DeletionPolicy'],
+            Replacement: 'False',
+          },
+        ],
+        skipped: false,
+      });
+
+      const plan = await lockStep.rollback();
+      const valid = await plan.validate();
+
+      expect(valid).toBe(true);
+    });
+
+    it('should fail validation when real drift exists alongside DeletionPolicy drift', async () => {
+      mockDetectTemplateDrift.mockResolvedValueOnce({
+        changes: [
+          {
+            Action: 'Modify',
+            LogicalResourceId: 'MyTable',
+            ResourceType: 'AWS::DynamoDB::Table',
+            Scope: ['DeletionPolicy'],
+            Replacement: 'False',
+          },
+          {
+            Action: 'Modify',
+            LogicalResourceId: 'MyFunction',
+            ResourceType: 'AWS::Lambda::Function',
+            Scope: ['Properties'],
+            Replacement: 'False',
+          },
+        ],
+        skipped: false,
+      });
+
+      const plan = await lockStep.rollback();
+      const valid = await plan.validate();
+
+      expect(valid).toBe(false);
+    });
+
+    it('should fail validation when drift detection is skipped', async () => {
+      mockDetectTemplateDrift.mockResolvedValueOnce({
+        changes: [],
+        skipped: true,
+        skipReason: 'Changeset creation failed',
+      });
+
+      const plan = await lockStep.rollback();
+      const valid = await plan.validate();
+
+      expect(valid).toBe(false);
+    });
+
+    it('should fail validation when drift detection throws an error', async () => {
+      mockDetectTemplateDrift.mockRejectedValueOnce(new Error('CFN client error'));
+
+      const plan = await lockStep.rollback();
+      const valid = await plan.validate();
+
+      expect(valid).toBe(false);
+    });
+
+    it('should not filter out Modify changes with multiple Scope entries that include DeletionPolicy', async () => {
+      mockDetectTemplateDrift.mockResolvedValueOnce({
+        changes: [
+          {
+            Action: 'Modify',
+            LogicalResourceId: 'MyTable',
+            ResourceType: 'AWS::DynamoDB::Table',
+            Scope: ['DeletionPolicy', 'Properties'],
+            Replacement: 'False',
+          },
+        ],
+        skipped: false,
+      });
+
+      const plan = await lockStep.rollback();
+      const valid = await plan.validate();
+
+      expect(valid).toBe(false);
+    });
+
+    it('should not filter out Add or Remove actions even with DeletionPolicy scope', async () => {
+      mockDetectTemplateDrift.mockResolvedValueOnce({
+        changes: [
+          {
+            Action: 'Add',
+            LogicalResourceId: 'NewResource',
+            ResourceType: 'AWS::DynamoDB::Table',
+            Scope: ['DeletionPolicy'],
+          },
+        ],
+        skipped: false,
+      });
+
+      const plan = await lockStep.rollback();
+      const valid = await plan.validate();
+
+      expect(valid).toBe(false);
+    });
+
+    it('should fail validation when nested changes contain real drift at leaf level', async () => {
+      mockDetectTemplateDrift.mockResolvedValueOnce({
+        changes: [{
+          Action: 'Modify',
+          LogicalResourceId: 'authStack',
+          ResourceType: 'AWS::CloudFormation::Stack',
+          Scope: ['Properties'],
+          nestedChanges: [{
+            Action: 'Modify',
+            LogicalResourceId: 'UserPool',
+            ResourceType: 'AWS::Cognito::UserPool',
+            Scope: ['Properties'],
+          }],
+        }],
+        skipped: false,
+      });
+
+      const plan = await lockStep.rollback();
+      const valid = await plan.validate();
+
+      expect(valid).toBe(false);
+    });
+
+    it('should fail validation when incompleteStacks are reported', async () => {
+      mockDetectTemplateDrift.mockResolvedValueOnce({
+        changes: [],
+        skipped: false,
+        incompleteStacks: ['storageactivity'],
+      });
+
+      const plan = await lockStep.rollback();
+      const valid = await plan.validate();
+
+      expect(valid).toBe(false);
+    });
+
+    it('should pass validation when CloudFormation::Stack wrapper has no nestedChanges', async () => {
+      mockDetectTemplateDrift.mockResolvedValueOnce({
+        changes: [{
+          Action: 'Modify',
+          LogicalResourceId: 'apiStack',
+          ResourceType: 'AWS::CloudFormation::Stack',
+          Scope: ['Properties'],
+        }],
+        skipped: false,
+      });
+
+      const plan = await lockStep.rollback();
+      const valid = await plan.validate();
+
+      expect(valid).toBe(true)
     });
   });
 });

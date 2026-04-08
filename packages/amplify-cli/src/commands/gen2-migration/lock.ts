@@ -21,6 +21,7 @@ import {
 import { UpdateAppCommand, GetAppCommand } from '@aws-sdk/client-amplify';
 import { UpdateTableCommand, paginateListTables } from '@aws-sdk/client-dynamodb';
 import { paginateListGraphqlApis } from '@aws-sdk/client-appsync';
+import { detectTemplateDrift, type ResourceChangeWithNested } from '../drift-detection/detect-template-drift';
 
 const GEN2_MIGRATION_ENVIRONMENT_NAME = 'GEN2_MIGRATION_ENVIRONMENT_NAME';
 
@@ -47,6 +48,33 @@ const ALLOW_ALL_POLICY = {
     },
   ],
 };
+
+/**
+ * Identifies changeset changes that are expected DeletionPolicy drift from the lock step.
+ *
+ * The lock step adds `DeletionPolicy: Retain` to stateful resources. These show up as
+ * Modify changes in changesets with Scope limited to `['DeletionPolicy']`. For lock rollback
+ * to determine whether the environment is safe to revert, these expected changes must be
+ * filtered out so only real drift blocks the rollback.
+ */
+const isExpectedLockDrift = (change: ResourceChangeWithNested): boolean =>
+  change.Action === 'Modify' && change.Scope?.length === 1 && change.Scope[0] === 'DeletionPolicy';
+
+/**
+ * Recursively walks the change tree to find any leaf resource changes that are
+ * not expected lock drift. AWS::CloudFormation::Stack entries are structural
+ * wrappers — their nestedChanges contain the actual resource-level changes.
+ */
+function hasRealDrift(changes: ResourceChangeWithNested[]): boolean {
+  for (const change of changes) {
+    if (change.nestedChanges?.length) {
+      if (hasRealDrift(change.nestedChanges)) return true;
+    } else if (change.ResourceType !== 'AWS::CloudFormation::Stack') {
+      if (!isExpectedLockDrift(change)) return true;
+    }
+  }
+  return false;
+}
 
 export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
   private _dynamoTableNames: string[];
@@ -149,6 +177,13 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
   public async rollback(): Promise<Plan> {
     const operations: AmplifyMigrationOperation[] = [];
 
+    operations.push({
+      describe: async () => [],
+      validate: () => ({ description: 'Drift', run: () => this.validateLockRollbackDrift() }),
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      execute: async () => {},
+    });
+
     for (const tableName of await this.dynamoTableNames()) {
       operations.push({
         validate: () => undefined,
@@ -219,6 +254,46 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
   private async validateDrift(): Promise<ValidationResult> {
     try {
       await this.validations.validateDrift();
+      return { valid: true };
+    } catch (e) {
+      return { valid: false, report: e.message };
+    }
+  }
+
+  /**
+   * Validates that the environment is safe for lock rollback by running template drift
+   * detection and filtering out expected DeletionPolicy changes from the lock step.
+   *
+   * If only DeletionPolicy drift remains (from the lock step adding Retain), rollback
+   * is safe. If any real drift exists, rollback must be blocked — the environment is
+   * in an inconsistent state.
+   */
+  private async validateLockRollbackDrift(): Promise<ValidationResult> {
+    try {
+      const driftResults = await detectTemplateDrift(
+        this.gen1App.rootStackName,
+        this.logger,
+        this.gen1App.clients.cloudFormation,
+      );
+
+      if (driftResults.skipped) {
+        return { valid: false, report: `Template drift detection was skipped: ${driftResults.skipReason}` };
+      }
+
+      if (driftResults.incompleteStacks?.length) {
+        return {
+          valid: false,
+          report: `Could not verify all stacks for drift: ${driftResults.incompleteStacks.join(', ')}`,
+        };
+      }
+
+      if (hasRealDrift(driftResults.changes)) {
+        return {
+          valid: false,
+          report: 'Template drift detected beyond expected DeletionPolicy changes',
+        };
+      }
+
       return { valid: true };
     } catch (e) {
       return { valid: false, report: e.message };
