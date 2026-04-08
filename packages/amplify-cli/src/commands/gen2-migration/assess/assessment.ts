@@ -165,6 +165,7 @@ export class Assessment {
     lines.push(chalk.yellow('⚠️ Some features may not be reported by this assessment. More details are available in the migration guide.'));
     lines.push('');
     lines.push(chalk.yellow(GUIDE_LINK));
+    lines.push('');
 
     return lines.join('\n');
   }
