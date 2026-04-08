@@ -170,7 +170,7 @@ amplify gen2-migration <step> [options]
 - The `--rollback` flag explicitly executes rollback operations for a step.
 - `Gen1App` is the single facade for all Gen1 app state. It is created once in the dispatcher via `Gen1App.create(context)` and passed to all steps. Steps access `gen1App.appId`, `gen1App.region`, `gen1App.envName`, etc. instead of individual constructor params.
 - `AwsClients` has a private constructor — use `AwsClients.create(context)` in production. Tests bypass this with `new (AwsClients as any)(...)`.
-- Assessment uses a `Support` type with `level` and `note` fields. Each assessor provides its own note for unsupported entries. Use the `supported()`, `unsupported(note)`, `notApplicable()` helpers.
+- Assessment uses a `Support` type with `level` and `note` fields. Each assessor provides its own note for unsupported entries. Use the `supported()`, `unsupported(note)`, `notApplicable()` helpers. The standard unsupported note is `'requires adding code after generate'`.
 - `KNOWN_RESOURCE_KEYS` (in `gen1-app.ts`) defines all supported category:service pairs. Unknown resources get the `'UNKNOWN'` key.
 
 **Common pitfalls:**
