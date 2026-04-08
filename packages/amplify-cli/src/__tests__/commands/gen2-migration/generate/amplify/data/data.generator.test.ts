@@ -24,9 +24,18 @@ jest.mock('../../../../../../commands/gen2-migration/generate/_infra/ts', () => 
 
 const mockMkdir = jest.fn().mockResolvedValue(undefined);
 const mockWriteFile = jest.fn().mockResolvedValue(undefined);
+const mockCopyFile = jest.fn().mockResolvedValue(undefined);
 jest.mock('node:fs/promises', () => ({
   mkdir: (...args: unknown[]) => mockMkdir(...args),
   writeFile: (...args: unknown[]) => mockWriteFile(...args),
+  copyFile: (...args: unknown[]) => mockCopyFile(...args),
+}));
+
+const mockExistsSync = jest.fn().mockReturnValue(false);
+const mockReaddirSync = jest.fn().mockReturnValue([]);
+jest.mock('node:fs', () => ({
+  existsSync: (...args: unknown[]) => mockExistsSync(...args),
+  readdirSync: (...args: unknown[]) => mockReaddirSync(...args),
 }));
 
 function createMockGen1App(overrides?: Record<string, unknown>): Gen1App {
@@ -323,6 +332,124 @@ describe('DataGenerator', () => {
       await ops[0].execute();
 
       expect(addStatementSpy).not.toHaveBeenCalled();
+    });
+
+    describe('resolver overrides', () => {
+      it('does not add resolver operations when no resolvers directory exists', async () => {
+        mockExistsSync.mockReturnValue(false);
+
+        const generator = new DataGenerator(gen1App, backendGenerator, outputDir, {
+          category: 'api',
+          resourceName: 'testApi',
+          service: 'AppSync',
+          key: 'api:AppSync',
+        });
+        const ops = await generator.plan();
+
+        expect(ops).toHaveLength(1);
+        const addStatementSpy = jest.spyOn(backendGenerator, 'addStatement');
+        await ops[0].execute();
+        expect(addStatementSpy).not.toHaveBeenCalled();
+      });
+
+      it('does not add resolver operations when resolvers directory has no vtl files', async () => {
+        mockExistsSync.mockReturnValue(true);
+        mockReaddirSync.mockReturnValue(['readme.txt', 'notes.md']);
+
+        const generator = new DataGenerator(gen1App, backendGenerator, outputDir, {
+          category: 'api',
+          resourceName: 'testApi',
+          service: 'AppSync',
+          key: 'api:AppSync',
+        });
+        const ops = await generator.plan();
+
+        expect(ops).toHaveLength(1);
+      });
+
+      it('adds a copy operation when vtl files exist', async () => {
+        mockExistsSync.mockReturnValue(true);
+        mockReaddirSync.mockReturnValue(['Query.listProducts.res.vtl']);
+
+        const generator = new DataGenerator(gen1App, backendGenerator, outputDir, {
+          category: 'api',
+          resourceName: 'testApi',
+          service: 'AppSync',
+          key: 'api:AppSync',
+        });
+        const ops = await generator.plan();
+
+        expect(ops).toHaveLength(2);
+        const descriptions = await ops[1].describe();
+        expect(descriptions[0]).toContain('1 VTL resolver file(s)');
+      });
+
+      it('copies vtl files to amplify/data/resolvers/', async () => {
+        mockExistsSync.mockReturnValue(true);
+        mockReaddirSync.mockReturnValue(['Query.listProducts.res.vtl', 'Mutation.createProduct.req.vtl']);
+
+        const generator = new DataGenerator(gen1App, backendGenerator, outputDir, {
+          category: 'api',
+          resourceName: 'testApi',
+          service: 'AppSync',
+          key: 'api:AppSync',
+        });
+        const ops = await generator.plan();
+        await ops[1].execute();
+
+        expect(mockMkdir).toHaveBeenCalledWith(expect.stringContaining('resolvers'), { recursive: true });
+        expect(mockCopyFile).toHaveBeenCalledTimes(2);
+        expect(mockCopyFile).toHaveBeenCalledWith(
+          expect.stringContaining('Query.listProducts.res.vtl'),
+          expect.stringContaining('Query.listProducts.res.vtl'),
+        );
+        expect(mockCopyFile).toHaveBeenCalledWith(
+          expect.stringContaining('Mutation.createProduct.req.vtl'),
+          expect.stringContaining('Mutation.createProduct.req.vtl'),
+        );
+      });
+
+      it('contributes resolver override imports and statements to backendGenerator', async () => {
+        mockExistsSync.mockReturnValue(true);
+        mockReaddirSync.mockReturnValue(['Query.listProducts.res.vtl']);
+
+        const addImportSpy = jest.spyOn(backendGenerator, 'addImport');
+        const addStatementSpy = jest.spyOn(backendGenerator, 'addStatement');
+
+        const generator = new DataGenerator(gen1App, backendGenerator, outputDir, {
+          category: 'api',
+          resourceName: 'testApi',
+          service: 'AppSync',
+          key: 'api:AppSync',
+        });
+        const ops = await generator.plan();
+        await ops[0].execute();
+
+        // Resolver imports: fs, path, url
+        expect(addImportSpy).toHaveBeenCalledWith('fs', ['readFileSync', 'readdirSync']);
+        expect(addImportSpy).toHaveBeenCalledWith('path', ['join', 'dirname']);
+        expect(addImportSpy).toHaveBeenCalledWith('url', ['fileURLToPath']);
+
+        // 4 statements: __dirname, resolversDir, resolverFiles, for-of loop
+        expect(addStatementSpy).toHaveBeenCalledTimes(4);
+      });
+
+      it('handles multiple vtl files of both req and res types', async () => {
+        mockExistsSync.mockReturnValue(true);
+        mockReaddirSync.mockReturnValue(['Query.listProducts.res.vtl', 'Query.listProducts.req.vtl', 'Mutation.createProduct.res.vtl']);
+
+        const generator = new DataGenerator(gen1App, backendGenerator, outputDir, {
+          category: 'api',
+          resourceName: 'testApi',
+          service: 'AppSync',
+          key: 'api:AppSync',
+        });
+        const ops = await generator.plan();
+
+        expect(ops).toHaveLength(2);
+        const descriptions = await ops[1].describe();
+        expect(descriptions[0]).toContain('3 VTL resolver file(s)');
+      });
     });
   });
 });
