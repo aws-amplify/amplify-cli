@@ -143,7 +143,7 @@ export class Assessment {
     const lines: string[] = [];
 
     lines.push('');
-    lines.push(chalk.bold(chalk.cyan(`Assessment for "${this.appName}" (env: ${this.envName})`)));
+    lines.push(chalk.bold(chalk.cyan(`Assessment For Migrating "${this.appName}" (env: ${this.envName})`)));
 
     if (this._resources.length > 0) {
       lines.push('');

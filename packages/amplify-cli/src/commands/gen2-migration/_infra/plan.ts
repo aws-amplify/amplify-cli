@@ -38,6 +38,11 @@ export class Plan {
     this.implications = props.implications ?? [];
   }
 
+  /** Appends an operation to the plan. */
+  public addOperation(operation: AmplifyMigrationOperation): void {
+    this.operations.push(operation);
+  }
+
   /**
    * Runs validations with spinner context, renders the summary table,
    * and returns whether all validations passed.

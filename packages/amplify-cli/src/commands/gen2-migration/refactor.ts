@@ -18,7 +18,11 @@ import { Assessment } from './assess/assessment';
 import { AuthUserPoolGroupsForwardRefactorer } from './refactor/auth/auth-user-pool-groups-forward';
 import { AuthUserPoolGroupsRollbackRefactorer } from './refactor/auth/auth-user-pool-groups-rollback';
 import { Cfn } from './refactor/cfn';
+import { printer } from '@aws-amplify/amplify-prompts';
+import chalk from 'chalk';
 import { AmplifyMigrationAssessor } from './assess';
+
+const GUIDE_LINK = 'https://github.com/aws-amplify/amplify-cli/blob/gen2-migration/GEN2_MIGRATION_GUIDE.md#5-refactor';
 
 export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
   public async forward(): Promise<Plan> {
@@ -77,7 +81,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
       }
     }
 
-    return this.buildPlan(
+    const plan = await this.buildPlan(
       refactorers,
       assessment,
       [
@@ -86,6 +90,20 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
       ],
       'Execute',
     );
+
+    plan.addOperation({
+      describe: async () => [],
+      validate: () => undefined,
+      execute: async () => {
+        printer.blankLine();
+        printer.info(chalk.bold(chalk.yellow('⚠️ Follow the post-refactor manual steps to avoid resource replacement ⚠️')));
+        printer.blankLine();
+        printer.info(chalk.yellow(`  ${GUIDE_LINK}`));
+        printer.blankLine();
+      },
+    });
+
+    return plan;
   }
 
   public async rollback(): Promise<Plan> {
