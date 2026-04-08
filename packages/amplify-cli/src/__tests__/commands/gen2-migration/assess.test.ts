@@ -99,7 +99,7 @@ describe('AmplifyMigrationAssessor', () => {
 
       expect(assessment.resources).toHaveLength(1);
       expect(assessment.resources[0].generate.level).toBe('unsupported');
-      expect(assessment.resources[0].refactor.level).toBe('supported');
+      expect(assessment.resources[0].refactor.level).toBe('not-applicable');
       expect(assessment.validFor('generate')).toBe(false);
       expect(assessment.validFor('refactor')).toBe(true);
     });

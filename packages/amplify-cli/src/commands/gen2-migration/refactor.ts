@@ -98,8 +98,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
         printer.blankLine();
         printer.info(chalk.bold(chalk.yellow('⚠️ Follow the post-refactor manual steps to avoid resource replacement ⚠️')));
         printer.blankLine();
-        printer.info(chalk.yellow(`  ${GUIDE_LINK}`));
-        printer.blankLine();
+        printer.info(chalk.yellow(GUIDE_LINK));
       },
     });
 

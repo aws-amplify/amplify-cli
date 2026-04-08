@@ -156,16 +156,15 @@ export class Assessment {
     }
 
     if (this._features.length > 0) {
-      lines.push(chalk.bold('Features'));
+      lines.push(chalk.bold('Advanced Features'));
       lines.push('');
       lines.push(this.renderFeatureTable());
       lines.push('');
     }
 
-    lines.push(chalk.yellow('⚠️ Some features may not be reported by this assessment. More details are available in the migration guide:'));
+    lines.push(chalk.yellow('⚠️ Some features may not be reported by this assessment. More details are available in the migration guide.'));
     lines.push('');
-    lines.push(chalk.yellow(`    ${GUIDE_LINK}`));
-    lines.push('');
+    lines.push(chalk.yellow(GUIDE_LINK));
 
     return lines.join('\n');
   }

@@ -19,8 +19,8 @@ export class FunctionAssessor implements Assessor {
 
     assessment.recordResource({
       resource: this.resource,
-      generate: this.isNonJsRuntime(runtime) ? unsupported('requires adding code after generate') : notApplicable(),
-      refactor: supported(),
+      generate: this.isNonJsRuntime(runtime) ? unsupported('requires adding code after generate') : supported(),
+      refactor: notApplicable(),
     });
 
     const customPoliciesPath = `function/${this.resource.resourceName}/custom-policies.json`;

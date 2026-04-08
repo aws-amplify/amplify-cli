@@ -2,7 +2,7 @@
 
 exports[`Assessment render() renders a fully supported app 1`] = `
 "
-Assessment for "myapp" (env: dev)
+Assessment For Migrating "myapp" (env: dev)
 
 Resources
 
@@ -13,12 +13,15 @@ Resources
 ├──────────┼─────────┼──────────┼──────────┼──────────┤
 │ storage  │ S3      │ bucket   │ ✔        │ ✔        │
 └──────────┴─────────┴──────────┴──────────┴──────────┘
-"
+
+⚠️ Some features may not be reported by this assessment. More details are available in the migration guide.
+
+https://github.com/aws-amplify/amplify-cli/blob/gen2-migration/GEN2_MIGRATION_GUIDE.md#feature-coverage"
 `;
 
 exports[`Assessment render() renders an app blocked by unsupported refactor 1`] = `
 "
-Assessment for "myapp" (env: dev)
+Assessment For Migrating "myapp" (env: dev)
 
 Resources
 
@@ -29,5 +32,8 @@ Resources
 ├──────────┼──────────┼──────────┼──────────┼──────────┤
 │ geo      │ Location │ map      │ ✘ Any    │ ✘ Any    │
 └──────────┴──────────┴──────────┴──────────┴──────────┘
-"
+
+⚠️ Some features may not be reported by this assessment. More details are available in the migration guide.
+
+https://github.com/aws-amplify/amplify-cli/blob/gen2-migration/GEN2_MIGRATION_GUIDE.md#feature-coverage"
 `;

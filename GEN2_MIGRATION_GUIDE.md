@@ -250,7 +250,8 @@ and produces a report showing migration support for each resource across the `ge
 The output contains two tables:
 
 - **Resources** — lists each discovered resource (category, service, name) with its generate and refactor support status.
-- **Features** — lists detected sub-features (e.g. `override.ts` files, custom IAM policies) that require manual attention.
+- **Advanced Features** — lists detected sub-features that are configured outside the Gen1 CLI (e.g. `override.ts` files,
+  custom IAM policies). These features will require manual attention post migration.
 
 The assessment is informational only — migration can proceed regardless of what it produces.
 It provides insight into what the migration tool will do automatically and which steps and
@@ -281,7 +282,7 @@ Resources
 │ function  │ Lambda                  │ processOrder │ ✔        │ ✔        │
 └───────────┴─────────────────────────┴──────────────┴──────────┴──────────┘
 
-Features
+Advanced Features
 
 ┌─────────────────┬─────────────────────────────────────────────────┬────────────────────────────────────────────┬──────────┐
 │ Name            │ Path                                            │ Generate                                   │ Refactor │
@@ -289,11 +290,16 @@ Features
 │ overrides       │ api/myappApi/override.ts                        │ ✘ requires adding code after generate      │ —        │
 │ custom-policies │ function/processOrder/custom-policies.json      │ ✘ requires adding code after generate      │ —        │
 └─────────────────┴─────────────────────────────────────────────────┴────────────────────────────────────────────┴──────────┘
+
+⚠️ Some features may not be reported by this assessment. More details are available in the migration guide.
+
+https://github.com/aws-amplify/amplify-cli/blob/gen2-migration/GEN2_MIGRATION_GUIDE.md#feature-coverage
+
 ```
 
 **Support indicators:**
 
-| Symbol | Meaning                                      | Action   |
+| Symbol | Meaning                                      | Impact   |
 | ------ | -------------------------------------------- | -------- |
 | ✔      | Supported                                    | Executed |
 | ✘      | Unsupported (includes a note explaining why) | Skipped  |
@@ -430,7 +436,7 @@ models should be reused (imported) instead of recreated.
 #### Post Generate | NodeJS Function ESM Compatibility
 
 If you have a NodeJS Lambda function in your app, you need to port your code
-to ESM instead of CommonsJS. For example:
+to ESM instead of CommonJS. For example:
 
 ```diff
 - exports.handler = async (event) => {
