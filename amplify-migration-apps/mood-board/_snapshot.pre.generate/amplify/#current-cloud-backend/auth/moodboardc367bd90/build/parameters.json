@@ -1,8 +1,8 @@
 {
-  "identityPoolName": "moodboard759ae00a_identitypool_759ae00a",
+  "identityPoolName": "moodboardc367bd90_identitypool_c367bd90",
   "allowUnauthenticatedIdentities": true,
-  "resourceNameTruncated": "moodbo759ae00a",
-  "userPoolName": "moodboard759ae00a_userpool_759ae00a",
+  "resourceNameTruncated": "moodboc367bd90",
+  "userPoolName": "moodboardc367bd90_userpool_c367bd90",
   "autoVerifiedAttributes": [
     "email"
   ],
@@ -29,10 +29,10 @@
   "userpoolClientReadAttributes": [
     "email"
   ],
-  "userpoolClientLambdaRole": "moodbo759ae00a_userpoolclient_lambda_role",
+  "userpoolClientLambdaRole": "moodboc367bd90_userpoolclient_lambda_role",
   "userpoolClientSetAttributes": false,
-  "sharedId": "759ae00a",
-  "resourceName": "moodboard759ae00a",
+  "sharedId": "c367bd90",
+  "resourceName": "moodboardc367bd90",
   "authSelections": "identityPoolAndUserPool",
   "useDefault": "default",
   "usernameAttributes": [

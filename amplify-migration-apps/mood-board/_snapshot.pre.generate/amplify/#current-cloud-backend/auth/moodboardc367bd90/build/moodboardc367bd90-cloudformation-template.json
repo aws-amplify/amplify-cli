@@ -1,5 +1,5 @@
 {
-  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"Amplify\",\"createdWith\":\"14.2.5\",\"stackType\":\"auth-Cognito\",\"metadata\":{\"whyContinueWithGen1\":\"Prefer not to answer\"}}",
+  "Description": "Amplify Cognito Stack for AWS Amplify CLI",
   "AWSTemplateFormatVersion": "2010-09-09",
   "Parameters": {
     "env": {
@@ -193,7 +193,7 @@
     "UserPoolClientWeb": {
       "Type": "AWS::Cognito::UserPoolClient",
       "Properties": {
-        "ClientName": "moodbo759ae00a_app_clientWeb",
+        "ClientName": "moodboc367bd90_app_clientWeb",
         "RefreshTokenValidity": {
           "Ref": "userpoolClientRefreshTokenValidity"
         },
@@ -211,7 +211,7 @@
     "UserPoolClient": {
       "Type": "AWS::Cognito::UserPoolClient",
       "Properties": {
-        "ClientName": "moodbo759ae00a_app_client",
+        "ClientName": "moodboc367bd90_app_client",
         "GenerateSecret": {
           "Ref": "userpoolClientGenerateSecret"
         },
@@ -254,7 +254,7 @@
               "Fn::Join": [
                 "",
                 [
-                  "upClientLambdaRole759ae00a",
+                  "upClientLambdaRolec367bd90",
                   {
                     "Fn::Select": [
                       3,
@@ -326,12 +326,12 @@
         "IdentityPoolName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "moodboard759ae00a_identitypool_759ae00a",
+            "moodboardc367bd90_identitypool_c367bd90",
             {
               "Fn::Join": [
                 "",
                 [
-                  "moodboard759ae00a_identitypool_759ae00a__",
+                  "moodboardc367bd90_identitypool_c367bd90__",
                   {
                     "Ref": "env"
                   }
