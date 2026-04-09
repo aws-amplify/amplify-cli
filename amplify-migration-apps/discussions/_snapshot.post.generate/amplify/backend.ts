@@ -1,6 +1,7 @@
 import { auth } from './auth/resource';
 import { data } from './data/resource';
 import { storage } from './storage/resource';
+import { activityTrigger79c26ead } from './storage/activityTrigger79c26ead/resource';
 import { fetchuseractivity } from './storage/fetchuseractivity/resource';
 import { recorduseractivity } from './storage/recorduseractivity/resource';
 import { DynamoEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
@@ -18,6 +19,7 @@ const backend = defineBackend({
   auth,
   data,
   storage,
+  activityTrigger79c26ead,
   fetchuseractivity,
   recorduseractivity,
 });
@@ -78,6 +80,49 @@ userPool.addClient('NativeAppClient', {
   generateSecret: false,
 });
 const branchName = process.env.AWS_BRANCH ?? 'sandbox';
+backend.activityTrigger79c26ead.resources.cfnResources.cfnFunction.functionName = `activityTrigger79c26ead-${branchName}`;
+backend.activityTrigger79c26ead.addEnvironment(
+  'STORAGE_ACTIVITY_STREAMARN',
+  activity.tableStreamArn!
+);
+backend.activityTrigger79c26ead.addEnvironment(
+  'STORAGE_ACTIVITY_ARN',
+  activity.tableArn
+);
+backend.activityTrigger79c26ead.addEnvironment(
+  'STORAGE_ACTIVITY_NAME',
+  activity.tableName
+);
+activity.grant(
+  backend.activityTrigger79c26ead.resources.lambda,
+  'dynamodb:Put*',
+  'dynamodb:Create*',
+  'dynamodb:BatchWriteItem',
+  'dynamodb:PartiQLInsert',
+  'dynamodb:Get*',
+  'dynamodb:BatchGetItem',
+  'dynamodb:List*',
+  'dynamodb:Describe*',
+  'dynamodb:Scan',
+  'dynamodb:Query',
+  'dynamodb:PartiQLSelect',
+  'dynamodb:Update*',
+  'dynamodb:RestoreTable*',
+  'dynamodb:PartiQLUpdate',
+  'dynamodb:Delete*',
+  'dynamodb:PartiQLDelete'
+);
+backend.activityTrigger79c26ead.resources.lambda.addEventSource(
+  new DynamoEventSource(activity, {
+    startingPosition: StartingPosition.LATEST,
+  })
+);
+activity.grantStreamRead(
+  backend.activityTrigger79c26ead.resources.lambda.role!
+);
+activity.grantTableListStreams(
+  backend.activityTrigger79c26ead.resources.lambda.role!
+);
 backend.fetchuseractivity.resources.cfnResources.cfnFunction.functionName = `fetchuseractivity-${branchName}`;
 backend.fetchuseractivity.addEnvironment(
   'STORAGE_ACTIVITY_STREAMARN',
@@ -145,7 +190,7 @@ for (const model of ['Topic', 'Post', 'Comment']) {
 }
 const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
 // Use this bucket name post refactor
-// s3Bucket.bucketName = 'discus-avatarsc39a5-main';
+// s3Bucket.bucketName = 'discus-avatars223a2-main';
 s3Bucket.bucketEncryption = {
   serverSideEncryptionConfiguration: [
     {

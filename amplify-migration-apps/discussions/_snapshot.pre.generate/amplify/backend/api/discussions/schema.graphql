@@ -22,6 +22,11 @@ type Comment @model @auth(rules: [{ allow: public }]){
 
 type Query {
   fetchUserActivity(userId: ID!): [Activity] @function(name: "fetchuseractivity-${env}") @auth(rules: [{ allow: public }])
+  getActivityStats: ActivityStats @function(name: "fetchuseractivity-${env}") @auth(rules: [{ allow: public }])
+}
+
+type ActivityStats {
+  activityCount: Int! @auth(rules: [{ allow: public }])
 }
 
 type Activity {
@@ -30,3 +35,4 @@ type Activity {
   activityType: String! @auth(rules: [{ allow: public }])
   timestamp: String! @auth(rules: [{ allow: public }])
 }
+

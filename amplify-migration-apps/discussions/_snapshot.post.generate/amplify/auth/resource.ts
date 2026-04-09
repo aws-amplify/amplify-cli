@@ -3,16 +3,16 @@ import { defineAuth } from '@aws-amplify/backend';
 export const auth = defineAuth({
   loginWith: {
     email: {
-      verificationEmailSubject: 'Verification',
-      verificationEmailBody: () => 'Here is your verification code {####}',
+      verificationEmailSubject: 'Your verification code',
+      verificationEmailBody: () => 'Your verification code is {####}',
     },
   },
   userAttributes: {
-    email: {
+    phoneNumber: {
       required: true,
       mutable: true,
     },
-    phoneNumber: {
+    email: {
       required: true,
       mutable: true,
     },

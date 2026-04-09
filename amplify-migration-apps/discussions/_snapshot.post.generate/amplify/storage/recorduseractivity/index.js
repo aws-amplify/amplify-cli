@@ -15,7 +15,7 @@ const crypto = require("crypto");
 /**
  * @type {import('@types/aws-lambda').APIGatewayProxyHandler}
  */
-exports.handler = async (event) => {
+export async function handler(event) {
   console.log(`EVENT: ${JSON.stringify(event)}`);
 
   for (const record of event.Records ?? []) {

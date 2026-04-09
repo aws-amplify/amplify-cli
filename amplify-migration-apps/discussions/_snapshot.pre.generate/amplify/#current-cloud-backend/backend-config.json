@@ -18,7 +18,7 @@
     }
   },
   "auth": {
-    "discussionsc578c16ec578c16e": {
+    "discussions3e730a8c3e730a8c": {
       "customAuth": false,
       "dependsOn": [],
       "frontendAuthConfig": {
@@ -47,6 +47,22 @@
     }
   },
   "function": {
+    "activityTrigger79c26ead": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn",
+            "StreamArn"
+          ],
+          "category": "storage",
+          "resourceName": "activity"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
     "fetchuseractivity": {
       "build": true,
       "dependsOn": [
@@ -89,6 +105,22 @@
     }
   },
   "parameters": {
+    "AMPLIFY_function_activityTrigger79c26ead_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "activityTrigger79c26ead"
+        }
+      ]
+    },
+    "AMPLIFY_function_activityTrigger79c26ead_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "activityTrigger79c26ead"
+        }
+      ]
+    },
     "AMPLIFY_function_fetchuseractivity_deploymentBucketName": {
       "usedBy": [
         {

@@ -230,6 +230,50 @@
         "TypeName": "Query"
       }
     },
+    "QuerygetActivityStatsResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
+        },
+        "FieldName": "getActivityStats",
+        "Kind": "PIPELINE",
+        "PipelineConfig": {
+          "Functions": [
+            {
+              "Fn::GetAtt": [
+                "QueryFetchUserActivityAuthFNQueryFetchUserActivityAuthFNAppSyncFunctionC061F612",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "InvokeFetchuseractivityLambdaDataSourceInvokeFetchuseractivityLambdaDataSourceAppSyncFunction05F09D4C",
+                "FunctionId"
+              ]
+            }
+          ]
+        },
+        "RequestMappingTemplate": "## [Start] Stash resolver specific context.. **\n$util.qr($ctx.stash.put(\"typeName\", \"Query\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"getActivityStats\"))\n{}\n## [End] Stash resolver specific context.. **",
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Join": [
+            "",
+            [
+              "s3://",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef"
+              },
+              "/",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref"
+              },
+              "/resolvers/Query.getActivityStats.res.vtl"
+            ]
+          ]
+        },
+        "TypeName": "Query"
+      }
+    },
     "QueryFetchUserActivityAuthFNQueryFetchUserActivityAuthFNAppSyncFunctionC061F612": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {

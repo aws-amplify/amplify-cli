@@ -199,36 +199,22 @@
         }
       }
     },
-    "apidiscussions": {
+    "authdiscussions3e730a8c3e730a8c": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-discussions-main-c39a5-deployment/amplify-cfn-templates/api/cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-discussions-main-223a2-deployment/amplify-cfn-templates/auth/discussions3e730a8c3e730a8c-cloudformation-template.json",
         "Parameters": {
-          "AppSyncApiName": "discussions",
-          "DynamoDBBillingMode": "PAY_PER_REQUEST",
-          "DynamoDBEnableServerSideEncryption": false,
-          "S3DeploymentBucket": "amplify-discussions-main-c39a5-deployment",
-          "S3DeploymentRootKey": "amplify-appsync-files/db92bad357b2590353e82db2f2ec7d0fc9cfd30d",
-          "env": "main"
-        }
-      }
-    },
-    "authdiscussionsc578c16ec578c16e": {
-      "Type": "AWS::CloudFormation::Stack",
-      "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-discussions-main-c39a5-deployment/amplify-cfn-templates/auth/discussionsc578c16ec578c16e-cloudformation-template.json",
-        "Parameters": {
-          "identityPoolName": "discussionsc578c16e_identitypool_c578c16e",
+          "identityPoolName": "discussions3e730a8c_identitypool_3e730a8c",
           "allowUnauthenticatedIdentities": false,
-          "resourceNameTruncated": "discusc578c16e",
-          "userPoolName": "discussionsc578c16e_userpool_c578c16e",
+          "resourceNameTruncated": "discus3e730a8c",
+          "userPoolName": "discussions3e730a8c_userpool_3e730a8c",
           "autoVerifiedAttributes": "email",
           "mfaConfiguration": "OFF",
           "mfaTypes": "SMS Text Message",
           "smsAuthenticationMessage": "Your authentication code is {####}",
           "smsVerificationMessage": "Your verification code is {####}",
-          "emailVerificationSubject": "Verification",
-          "emailVerificationMessage": "Here is your verification code {####}",
+          "emailVerificationSubject": "Your verification code",
+          "emailVerificationMessage": "Your verification code is {####}",
           "defaultPasswordPolicy": false,
           "passwordPolicyMinLength": 8,
           "passwordPolicyCharacters": "",
@@ -238,10 +224,10 @@
           "userpoolClientRefreshTokenValidity": "120",
           "userpoolClientWriteAttributes": "email",
           "userpoolClientReadAttributes": "email",
-          "userpoolClientLambdaRole": "discusc578c16e_userpoolclient_lambda_role",
+          "userpoolClientLambdaRole": "discus3e730a8c_userpoolclient_lambda_role",
           "userpoolClientSetAttributes": false,
-          "sharedId": "c578c16e",
-          "resourceName": "discussionsc578c16ec578c16e",
+          "sharedId": "3e730a8c",
+          "resourceName": "discussions3e730a8c3e730a8c",
           "authSelections": "identityPoolAndUserPool",
           "useDefault": "manual",
           "thirdPartyAuth": false,
@@ -272,13 +258,56 @@
         }
       }
     },
+    "apidiscussions": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": "https://s3.amazonaws.com/amplify-discussions-main-223a2-deployment/amplify-cfn-templates/api/cloudformation-template.json",
+        "Parameters": {
+          "AppSyncApiName": "discussions",
+          "DynamoDBBillingMode": "PAY_PER_REQUEST",
+          "DynamoDBEnableServerSideEncryption": false,
+          "S3DeploymentBucket": "amplify-discussions-main-223a2-deployment",
+          "S3DeploymentRootKey": "amplify-appsync-files/5ea4f2944872a4a8c138cab8a1cc05758d76f884",
+          "env": "main"
+        }
+      }
+    },
+    "functionactivityTrigger79c26ead": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": "https://s3.amazonaws.com/amplify-discussions-main-223a2-deployment/amplify-cfn-templates/function/activityTrigger79c26ead-cloudformation-template.json",
+        "Parameters": {
+          "deploymentBucketName": "amplify-discussions-main-223a2-deployment",
+          "s3Key": "amplify-builds/activityTrigger79c26ead-54433156645267506773-build.zip",
+          "storageactivityName": {
+            "Fn::GetAtt": [
+              "storageactivity",
+              "Outputs.Name"
+            ]
+          },
+          "storageactivityArn": {
+            "Fn::GetAtt": [
+              "storageactivity",
+              "Outputs.Arn"
+            ]
+          },
+          "storageactivityStreamArn": {
+            "Fn::GetAtt": [
+              "storageactivity",
+              "Outputs.StreamArn"
+            ]
+          },
+          "env": "main"
+        }
+      }
+    },
     "functionfetchuseractivity": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-discussions-main-c39a5-deployment/amplify-cfn-templates/function/fetchuseractivity-cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-discussions-main-223a2-deployment/amplify-cfn-templates/function/fetchuseractivity-cloudformation-template.json",
         "Parameters": {
-          "deploymentBucketName": "amplify-discussions-main-c39a5-deployment",
-          "s3Key": "amplify-builds/fetchuseractivity-6e523036545438726f37-build.zip",
+          "deploymentBucketName": "amplify-discussions-main-223a2-deployment",
+          "s3Key": "amplify-builds/fetchuseractivity-6b674566646263635077-build.zip",
           "storageactivityName": {
             "Fn::GetAtt": [
               "storageactivity",
@@ -304,10 +333,10 @@
     "functionrecorduseractivity": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-discussions-main-c39a5-deployment/amplify-cfn-templates/function/recorduseractivity-cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-discussions-main-223a2-deployment/amplify-cfn-templates/function/recorduseractivity-cloudformation-template.json",
         "Parameters": {
-          "deploymentBucketName": "amplify-discussions-main-c39a5-deployment",
-          "s3Key": "amplify-builds/recorduseractivity-433947686f7145754543-build.zip",
+          "deploymentBucketName": "amplify-discussions-main-223a2-deployment",
+          "s3Key": "amplify-builds/recorduseractivity-42744a4e393579416f31-build.zip",
           "apidiscussionsGraphQLAPIIdOutput": {
             "Fn::GetAtt": [
               "apidiscussions",
@@ -345,7 +374,7 @@
     "storageactivity": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-discussions-main-c39a5-deployment/amplify-cfn-templates/storage/activity-cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-discussions-main-223a2-deployment/amplify-cfn-templates/storage/activity-cloudformation-template.json",
         "Parameters": {
           "tableName": "activity",
           "partitionKeyName": "id",
@@ -356,10 +385,24 @@
         }
       }
     },
+    "storagebookmarks": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": "https://s3.amazonaws.com/amplify-discussions-main-223a2-deployment/amplify-cfn-templates/storage/bookmarks-cloudformation-template.json",
+        "Parameters": {
+          "tableName": "bookmarks",
+          "partitionKeyName": "userId",
+          "partitionKeyType": "S",
+          "sortKeyName": "postId",
+          "sortKeyType": "S",
+          "env": "main"
+        }
+      }
+    },
     "storageavatars": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-discussions-main-c39a5-deployment/amplify-cfn-templates/storage/cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-discussions-main-223a2-deployment/amplify-cfn-templates/storage/cloudformation-template.json",
         "Parameters": {
           "bucketName": "discus-avatars",
           "selectedGuestPermissions": "",
@@ -370,13 +413,13 @@
           "authRoleName": {
             "Ref": "AuthRoleName"
           },
-          "s3PrivatePolicy": "Private_policy_bf41454d",
-          "s3ProtectedPolicy": "Protected_policy_bf41454d",
-          "s3PublicPolicy": "Public_policy_bf41454d",
-          "s3ReadPolicy": "read_policy_bf41454d",
-          "s3UploadsPolicy": "Uploads_policy_bf41454d",
-          "authPolicyName": "s3_amplify_bf41454d",
-          "unauthPolicyName": "s3_amplify_bf41454d",
+          "s3PrivatePolicy": "Private_policy_5f6a0280",
+          "s3ProtectedPolicy": "Protected_policy_5f6a0280",
+          "s3PublicPolicy": "Public_policy_5f6a0280",
+          "s3ReadPolicy": "read_policy_5f6a0280",
+          "s3UploadsPolicy": "Uploads_policy_5f6a0280",
+          "authPolicyName": "s3_amplify_5f6a0280",
+          "unauthPolicyName": "s3_amplify_5f6a0280",
           "AuthenticatedAllowList": "ALLOW",
           "GuestAllowList": "DISALLOW",
           "s3PermissionsAuthenticatedPrivate": "s3:PutObject,s3:GetObject,s3:DeleteObject",
@@ -389,25 +432,11 @@
         }
       }
     },
-    "storagebookmarks": {
-      "Type": "AWS::CloudFormation::Stack",
-      "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-discussions-main-c39a5-deployment/amplify-cfn-templates/storage/bookmarks-cloudformation-template.json",
-        "Parameters": {
-          "tableName": "bookmarks",
-          "partitionKeyName": "userId",
-          "partitionKeyType": "S",
-          "sortKeyName": "postId",
-          "sortKeyType": "S",
-          "env": "main"
-        }
-      }
-    },
     "UpdateRolesWithIDPFunction": {
       "DependsOn": [
         "AuthRole",
         "UnauthRole",
-        "authdiscussionsc578c16ec578c16e"
+        "authdiscussions3e730a8c3e730a8c"
       ],
       "Type": "AWS::Lambda::Function",
       "Properties": {
@@ -517,7 +546,7 @@
         },
         "idpId": {
           "Fn::GetAtt": [
-            "authdiscussionsc578c16ec578c16e",
+            "authdiscussions3e730a8c3e730a8c",
             "Outputs.IdentityPoolId"
           ]
         },
