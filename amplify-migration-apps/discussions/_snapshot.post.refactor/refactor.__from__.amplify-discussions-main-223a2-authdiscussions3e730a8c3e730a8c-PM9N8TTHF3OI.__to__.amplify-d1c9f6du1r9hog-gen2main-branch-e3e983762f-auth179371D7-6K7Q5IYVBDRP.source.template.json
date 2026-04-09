@@ -251,7 +251,7 @@
     },
     "UserPoolArn": {
       "Description": "Arn for the user pool",
-      "Value": "arn:aws:cognito-idp:us-east-1:014148916658:userpool/us-east-1_Ee8DhHcaS"
+      "Value": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_Ee8DhHcaS"
     },
     "UserPoolName": {
       "Value": "discussions3e730a8c_userpool_3e730a8c"
@@ -266,7 +266,7 @@
     },
     "CreatedSNSRole": {
       "Description": "role arn",
-      "Value": "arn:aws:iam::014148916658:role/sns3e730a8c223a2-main"
+      "Value": "arn:aws:iam::123456789012:role/sns3e730a8c223a2-main"
     }
   }
 }

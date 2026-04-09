@@ -1,7 +1,7 @@
 [
   {
     "OutputKey": "GetAttTopicTableStreamArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:014148916658:table/Topic-n6ixw7ql4bhglfwh7cxizw2k3e-main/stream/2026-04-08T15:46:43.106",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Topic-n6ixw7ql4bhglfwh7cxizw2k3e-main/stream/2026-04-08T15:46:43.106",
     "Description": "Your DynamoDB table StreamArn.",
     "ExportName": "n6ixw7ql4bhglfwh7cxizw2k3e:GetAtt:TopicTable:StreamArn"
   },

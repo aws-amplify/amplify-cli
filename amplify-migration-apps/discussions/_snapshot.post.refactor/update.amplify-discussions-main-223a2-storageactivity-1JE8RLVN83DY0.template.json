@@ -108,10 +108,10 @@
       "Value": "activity-main"
     },
     "Arn": {
-      "Value": "arn:aws:dynamodb:us-east-1:014148916658:table/activity-main"
+      "Value": "arn:aws:dynamodb:us-east-1:123456789012:table/activity-main"
     },
     "StreamArn": {
-      "Value": "arn:aws:dynamodb:us-east-1:014148916658:table/activity-main/stream/2026-04-08T15:46:22.655"
+      "Value": "arn:aws:dynamodb:us-east-1:123456789012:table/activity-main/stream/2026-04-08T15:46:22.655"
     },
     "PartitionKeyName": {
       "Value": "id"

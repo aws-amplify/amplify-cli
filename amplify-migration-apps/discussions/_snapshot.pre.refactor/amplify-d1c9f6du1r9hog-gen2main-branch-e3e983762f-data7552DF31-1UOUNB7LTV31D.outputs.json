@@ -1,7 +1,7 @@
 [
   {
     "OutputKey": "amplifyd1c9f6du1r9hoggen2mainbranche3e983762fdataamplifyDataTopicNestedStackTopicNestedStackResourceD803E943Outputsamplifyd1c9f6du1r9hoggen2mainbranche3e983762fdataamplifyDataTopicTopicTable8C002E4CTableStreamArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:014148916658:table/Topic-gtx5hixzhrfdpblkbo7dtrwo4m-NONE/stream/2026-04-09T04:37:45.182"
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Topic-gtx5hixzhrfdpblkbo7dtrwo4m-NONE/stream/2026-04-09T04:37:45.182"
   },
   {
     "OutputKey": "amplifyd1c9f6du1r9hoggen2mainbranche3e983762fdataamplifyDataGraphQLAPI6D5B0C14GraphQLUrl",
@@ -13,11 +13,11 @@
   },
   {
     "OutputKey": "amplifyd1c9f6du1r9hoggen2mainbranche3e983762fdataamplifyDataPostNestedStackPostNestedStackResource891E3CAEOutputsamplifyd1c9f6du1r9hoggen2mainbranche3e983762fdataamplifyDataPostPostTable89CB7053TableStreamArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:014148916658:table/Post-gtx5hixzhrfdpblkbo7dtrwo4m-NONE/stream/2026-04-09T04:37:44.655"
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Post-gtx5hixzhrfdpblkbo7dtrwo4m-NONE/stream/2026-04-09T04:37:44.655"
   },
   {
     "OutputKey": "amplifyd1c9f6du1r9hoggen2mainbranche3e983762fdataamplifyDataCommentNestedStackCommentNestedStackResource65E59889Outputsamplifyd1c9f6du1r9hoggen2mainbranche3e983762fdataamplifyDataCommentCommentTableBB67248BTableStreamArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:014148916658:table/Comment-gtx5hixzhrfdpblkbo7dtrwo4m-NONE/stream/2026-04-09T04:37:44.687"
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Comment-gtx5hixzhrfdpblkbo7dtrwo4m-NONE/stream/2026-04-09T04:37:44.687"
   },
   {
     "OutputKey": "amplifyd1c9f6du1r9hoggen2mainbranche3e983762fdataamplifyDataAmplifyCodegenAssetsAmplifyCodegenAssetsDeploymentCustomResource1536MiB2E76EDD9DestinationBucketArn",

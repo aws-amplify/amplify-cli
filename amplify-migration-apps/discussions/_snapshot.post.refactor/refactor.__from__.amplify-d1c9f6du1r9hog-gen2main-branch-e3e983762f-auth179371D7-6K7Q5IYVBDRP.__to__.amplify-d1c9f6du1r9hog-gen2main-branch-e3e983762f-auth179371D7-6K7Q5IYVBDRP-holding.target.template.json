@@ -205,8 +205,8 @@
           }
         },
         "Roles": {
-          "unauthenticated": "arn:aws:iam::014148916658:role/amplify-d1c9f6du1r9hog-ge-amplifyAuthunauthenticate-mmeDicXhSqYx",
-          "authenticated": "arn:aws:iam::014148916658:role/amplify-d1c9f6du1r9hog-ge-amplifyAuthauthenticatedU-9bOosoHTpq4A"
+          "unauthenticated": "arn:aws:iam::123456789012:role/amplify-d1c9f6du1r9hog-ge-amplifyAuthunauthenticate-mmeDicXhSqYx",
+          "authenticated": "arn:aws:iam::123456789012:role/amplify-d1c9f6du1r9hog-ge-amplifyAuthauthenticatedU-9bOosoHTpq4A"
         }
       },
       "Metadata": {

@@ -5,15 +5,15 @@
   },
   {
     "OutputKey": "amplifyd1c9f6du1r9hoggen2mainbranche3e983762fdataamplifyDataTopicTopicTable8C002E4CTableStreamArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:014148916658:table/Topic-gtx5hixzhrfdpblkbo7dtrwo4m-NONE/stream/2026-04-09T04:37:45.182"
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Topic-gtx5hixzhrfdpblkbo7dtrwo4m-NONE/stream/2026-04-09T04:37:45.182"
   },
   {
     "OutputKey": "amplifyd1c9f6du1r9hoggen2mainbranche3e983762fdataamplifyDataTopicTopicTable8C002E4CTableArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:014148916658:table/Topic-gtx5hixzhrfdpblkbo7dtrwo4m-NONE"
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Topic-gtx5hixzhrfdpblkbo7dtrwo4m-NONE"
   },
   {
     "OutputKey": "GetAttTopicTableStreamArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:014148916658:table/Topic-gtx5hixzhrfdpblkbo7dtrwo4m-NONE/stream/2026-04-09T04:37:45.182",
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Topic-gtx5hixzhrfdpblkbo7dtrwo4m-NONE/stream/2026-04-09T04:37:45.182",
     "Description": "Your DynamoDB table StreamArn.",
     "ExportName": "gtx5hixzhrfdpblkbo7dtrwo4m:GetAtt:TopicTable:StreamArn"
   },

@@ -144,7 +144,7 @@
         "SmsAuthenticationMessage": "Your authentication code is {####}",
         "SmsConfiguration": {
           "ExternalId": "discus3e730a8c_role_external_id",
-          "SnsCallerArn": "arn:aws:iam::014148916658:role/sns3e730a8c223a2-main"
+          "SnsCallerArn": "arn:aws:iam::123456789012:role/sns3e730a8c223a2-main"
         },
         "SmsVerificationMessage": "Your verification code is {####}",
         "UserAttributeUpdateSettings": {
@@ -243,8 +243,8 @@
       "Properties": {
         "IdentityPoolId": "us-east-1:8df78e61-bdd7-4400-b8ed-dbf5eef3a6ab",
         "Roles": {
-          "unauthenticated": "arn:aws:iam::014148916658:role/amplify-discussions-main-223a2-unauthRole",
-          "authenticated": "arn:aws:iam::014148916658:role/amplify-discussions-main-223a2-authRole"
+          "unauthenticated": "arn:aws:iam::123456789012:role/amplify-discussions-main-223a2-unauthRole",
+          "authenticated": "arn:aws:iam::123456789012:role/amplify-discussions-main-223a2-authRole"
         }
       }
     }

@@ -17,7 +17,7 @@
   },
   {
     "ParameterKey": "storageactivityStreamArn",
-    "ParameterValue": "arn:aws:dynamodb:us-east-1:014148916658:table/activity-main/stream/2026-04-08T15:46:22.655"
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/activity-main/stream/2026-04-08T15:46:22.655"
   },
   {
     "ParameterKey": "env",
@@ -25,6 +25,6 @@
   },
   {
     "ParameterKey": "storageactivityArn",
-    "ParameterValue": "arn:aws:dynamodb:us-east-1:014148916658:table/activity-main"
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/activity-main"
   }
 ]

@@ -1,7 +1,7 @@
 [
   {
     "OutputKey": "CreatedSNSRole",
-    "OutputValue": "arn:aws:iam::014148916658:role/sns3e730a8c223a2-main",
+    "OutputValue": "arn:aws:iam::123456789012:role/sns3e730a8c223a2-main",
     "Description": "role arn"
   },
   {
@@ -26,7 +26,7 @@
   },
   {
     "OutputKey": "UserPoolArn",
-    "OutputValue": "arn:aws:cognito-idp:us-east-1:014148916658:userpool/us-east-1_Ee8DhHcaS",
+    "OutputValue": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_Ee8DhHcaS",
     "Description": "Arn for the user pool"
   },
   {

@@ -1,7 +1,7 @@
 [
   {
     "ParameterKey": "referencetoamplifyd1c9f6du1r9hoggen2mainbranche3e983762fdataamplifyDataPostNestedStackPostNestedStackResource891E3CAEOutputsamplifyd1c9f6du1r9hoggen2mainbranche3e983762fdataamplifyDataPostPostTable89CB7053TableArn",
-    "ParameterValue": "arn:aws:dynamodb:us-east-1:014148916658:table/Post-gtx5hixzhrfdpblkbo7dtrwo4m-NONE"
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Post-gtx5hixzhrfdpblkbo7dtrwo4m-NONE"
   },
   {
     "ParameterKey": "referencetoamplifyd1c9f6du1r9hoggen2mainbranche3e983762fdataamplifyDataCommentNestedStackCommentNestedStackResource65E59889Outputsamplifyd1c9f6du1r9hoggen2mainbranche3e983762fdataamplifyDataCommentCommentDataSource585F5E6EName",
@@ -21,7 +21,7 @@
   },
   {
     "ParameterKey": "referencetoamplifyd1c9f6du1r9hoggen2mainbranche3e983762fdataamplifyDataTopicNestedStackTopicNestedStackResourceD803E943Outputsamplifyd1c9f6du1r9hoggen2mainbranche3e983762fdataamplifyDataTopicTopicTable8C002E4CTableArn",
-    "ParameterValue": "arn:aws:dynamodb:us-east-1:014148916658:table/Topic-gtx5hixzhrfdpblkbo7dtrwo4m-NONE"
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Topic-gtx5hixzhrfdpblkbo7dtrwo4m-NONE"
   },
   {
     "ParameterKey": "referencetoamplifyd1c9f6du1r9hoggen2mainbranche3e983762fdataamplifyDataGraphQLAPI6D5B0C14ApiId",
@@ -41,6 +41,6 @@
   },
   {
     "ParameterKey": "referencetoamplifyd1c9f6du1r9hoggen2mainbranche3e983762fdataamplifyDataCommentNestedStackCommentNestedStackResource65E59889Outputsamplifyd1c9f6du1r9hoggen2mainbranche3e983762fdataamplifyDataCommentCommentTableBB67248BTableArn",
-    "ParameterValue": "arn:aws:dynamodb:us-east-1:014148916658:table/Comment-gtx5hixzhrfdpblkbo7dtrwo4m-NONE"
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Comment-gtx5hixzhrfdpblkbo7dtrwo4m-NONE"
   }
 ]

@@ -17,11 +17,11 @@
   },
   {
     "OutputKey": "Arn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:014148916658:table/activity-main"
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/activity-main"
   },
   {
     "OutputKey": "StreamArn",
-    "OutputValue": "arn:aws:dynamodb:us-east-1:014148916658:table/activity-main/stream/2026-04-08T15:46:22.655"
+    "OutputValue": "arn:aws:dynamodb:us-east-1:123456789012:table/activity-main/stream/2026-04-08T15:46:22.655"
   },
   {
     "OutputKey": "PartitionKeyType",
