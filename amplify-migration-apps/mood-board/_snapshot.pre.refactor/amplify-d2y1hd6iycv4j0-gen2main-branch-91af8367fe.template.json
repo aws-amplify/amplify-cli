@@ -821,11 +821,15 @@
               {
                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
               },
+<<<<<<< HEAD
 <<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x.template.json
               "/5ba56677fbdb648c1c4e2ff08d6e3696d8defb8784643745b569cb54e581ba88.json"
 ========
               "/5f859b54bc1e95d3af2a45e2e42f77f539c096afe75ace9447884a40ebc0cdf2.json"
 >>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe.template.json
+=======
+              "/ebd197015ff92c48e2327554e34db62723853bb78230822aaae536a55fad3bc1.json"
+>>>>>>> 72dcdc345 (feat: update pre-refactor snapshots)
             ]
           ]
         }

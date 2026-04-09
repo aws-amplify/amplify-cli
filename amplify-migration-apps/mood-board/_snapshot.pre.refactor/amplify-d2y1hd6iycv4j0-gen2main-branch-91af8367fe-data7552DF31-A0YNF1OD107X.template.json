@@ -100,8 +100,12 @@
         "Expires": 1807834250
 ========
         "Description": "moodboard apiKey",
+<<<<<<< HEAD
         "Expires": 1807219129
 >>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-data7552DF31-A0YNF1OD107X.template.json
+=======
+        "Expires": 1807292712
+>>>>>>> 72dcdc345 (feat: update pre-refactor snapshots)
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
@@ -464,11 +468,15 @@
               {
                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
               },
+<<<<<<< HEAD
 <<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-data7552DF31-x.template.json
               "/170425ccf15f62ef45ba178f4b2734987a5ae1db4045578d1e91fc31d14edf8a.json"
 ========
               "/bafaea8ce60d66f58d0cba8d82ef3210bfc86064da9f921524d57606b1eeca84.json"
 >>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-data7552DF31-A0YNF1OD107X.template.json
+=======
+              "/f83085b8b6c7a07bc6afbb85e3f13b8f518073e25eea6352cd7f9051e93780ae.json"
+>>>>>>> 72dcdc345 (feat: update pre-refactor snapshots)
             ]
           ]
         }
