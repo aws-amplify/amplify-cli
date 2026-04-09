@@ -14,16 +14,18 @@ import fs from 'fs-extra';
 import * as path from 'path';
 import type { SpinningLogger } from '../gen2-migration/_infra/spinning-logger';
 
+/** A CloudFormation resource change that may contain recursive nested stack changes. */
 export interface ResourceChangeWithNested extends ResourceChange {
   nestedChanges?: ResourceChangeWithNested[];
 }
 
+/** Results from template drift detection via CloudFormation change sets. */
 export interface TemplateDriftResults {
-  changes: ResourceChangeWithNested[];
-  skipped: boolean;
-  skipReason?: string;
-  changeSetId?: string;
-  incompleteStacks?: string[];
+  readonly changes: ResourceChangeWithNested[];
+  readonly skipped: boolean;
+  readonly skipReason?: string;
+  readonly changeSetId?: string;
+  readonly incompleteStacks?: string[];
 }
 
 /**
@@ -228,8 +230,7 @@ export async function detectTemplateDrift(
 
     // Changeset is kept for user inspection via console URL — cleaned up on next run
     const result = await analyzeChangeSet(cfn, changeSet, print, true);
-    result.changeSetId = changeSet.ChangeSetId;
-    return result;
+    return { ...result, changeSetId: changeSet.ChangeSetId };
   } catch (error: any) {
     return {
       changes: [],
@@ -389,6 +390,7 @@ async function analyzeChangeSet(
         try {
           skippedStacks.push(extractStackNameFromArn(rc.PhysicalResourceId));
         } catch {
+          // extractStackNameFromArn failed on a malformed ARN — fall back to logical ID
           skippedStacks.push(rc.LogicalResourceId || 'unknown');
         }
       }
@@ -398,7 +400,7 @@ async function analyzeChangeSet(
   }
 
   if (skippedStacks.length > 0) {
-    result.incompleteStacks = skippedStacks;
+    return { ...result, incompleteStacks: skippedStacks };
   }
 
   return result;

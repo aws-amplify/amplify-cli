@@ -317,6 +317,8 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
         };
       }
 
+      // Check incompleteStacks before hasRealDrift — incomplete stacks mean we can't
+      // trust that the absence of real drift is accurate.
       if (hasRealDrift(driftResults.changes)) {
         return {
           valid: false,
