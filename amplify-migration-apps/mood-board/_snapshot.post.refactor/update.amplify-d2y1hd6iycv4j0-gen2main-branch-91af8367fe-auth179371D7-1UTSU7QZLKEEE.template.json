@@ -384,6 +384,7 @@
           }
         },
         "Roles": {
+<<<<<<< HEAD
 <<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.post.refactor/update.amplify-moodboard-e2e-sandbox-x-auth179371D7-x.template.json
           "unauthenticated": "arn:aws:iam::123456789012:role/amplify-moodboard26041519-amplifyAuthunauthenticate-Six3YvIOxgGy",
           "authenticated": "arn:aws:iam::123456789012:role/amplify-moodboard26041519-amplifyAuthauthenticatedU-hG08sRlsZcsb"
@@ -391,6 +392,10 @@
           "unauthenticated": "arn:aws:iam::615368094448:role/amplify-d2y1hd6iycv4j0-ge-amplifyAuthunauthenticate-DGODLmFKYFiE",
           "authenticated": "arn:aws:iam::615368094448:role/amplify-d2y1hd6iycv4j0-ge-amplifyAuthauthenticatedU-HTLk3DyxLtEw"
 >>>>>>>> e4218ece1 (feat: update post refactor):amplify-migration-apps/mood-board/_snapshot.post.refactor/update.amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-auth179371D7-1UTSU7QZLKEEE.template.json
+=======
+          "unauthenticated": "arn:aws:iam::123456789012:role/amplify-d2y1hd6iycv4j0-ge-amplifyAuthunauthenticate-DGODLmFKYFiE",
+          "authenticated": "arn:aws:iam::123456789012:role/amplify-d2y1hd6iycv4j0-ge-amplifyAuthauthenticatedU-HTLk3DyxLtEw"
+>>>>>>> f32865e9a (chore: sanitized snapshots)
         }
       },
       "UpdateReplacePolicy": "Delete",

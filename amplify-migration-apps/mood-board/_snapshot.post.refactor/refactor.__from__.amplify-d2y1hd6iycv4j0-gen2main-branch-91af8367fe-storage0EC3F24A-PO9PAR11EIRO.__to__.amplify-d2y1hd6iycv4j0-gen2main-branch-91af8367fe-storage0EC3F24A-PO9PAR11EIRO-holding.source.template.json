@@ -55,6 +55,7 @@
               ],
               "Effect": "Allow",
               "Principal": {
+<<<<<<< HEAD
 <<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.post.refactor/refactor.__from__.amplify-moodboard-e2e-sandbox-x-storage0EC3F24A-x.__to__.amplify-moodboard-e2e-sandbox-x-storage0EC3F24A-x-holding.source.template.json
                 "AWS": "arn:aws:iam::123456789012:role/amplify-moodboard-e2e-sandbox-x-storage0EC3F24A-x/CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
               },
@@ -62,6 +63,9 @@
                 "arn:aws:s3:::amplify-moodboard26041519-moodboard20e29595008142e-qpktfs41rj1z",
 ========
                 "AWS": "arn:aws:iam::615368094448:role/amplify-d2y1hd6iycv4j0-ge-CustomS3AutoDeleteObjects-T4ArXwVhKb5O"
+=======
+                "AWS": "arn:aws:iam::123456789012:role/amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-storage0EC3F24A-PO9PAR11EIRO/CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+>>>>>>> f32865e9a (chore: sanitized snapshots)
               },
               "Resource": [
                 "arn:aws:s3:::amplify-d2y1hd6iycv4j0-ge-moodboarda9dff0b544a6445-iajmrqsq3qco",
@@ -104,7 +108,7 @@
     "moodboarda9dff0b544a64459b29954a5cab78ace5c190gen2mainBucketAutoDeleteObjectsCustomResource74E5567E": {
       "Type": "Custom::S3AutoDeleteObjects",
       "Properties": {
-        "ServiceToken": "arn:aws:lambda:us-east-1:615368094448:function:amplify-d2y1hd6iycv4j0-ge-CustomS3AutoDeleteObject-Mq7wWTUgz2Ys",
+        "ServiceToken": "arn:aws:lambda:us-east-1:123456789012:function:amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-storage0EC3F24A-PO9PAR11EIRO/CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
         "BucketName": "amplify-d2y1hd6iycv4j0-ge-moodboarda9dff0b544a6445-iajmrqsq3qco"
 >>>>>>>> e4218ece1 (feat: update post refactor):amplify-migration-apps/mood-board/_snapshot.post.refactor/refactor.__from__.amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-storage0EC3F24A-PO9PAR11EIRO.__to__.amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-storage0EC3F24A-PO9PAR11EIRO-holding.source.template.json
       },
@@ -161,11 +165,15 @@
         "Timeout": 900,
         "MemorySize": 128,
         "Handler": "index.handler",
+<<<<<<< HEAD
 <<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.post.refactor/refactor.__from__.amplify-moodboard-e2e-sandbox-x-storage0EC3F24A-x.__to__.amplify-moodboard-e2e-sandbox-x-storage0EC3F24A-x-holding.source.template.json
         "Role": "arn:aws:iam::123456789012:role/amplify-moodboard-e2e-sandbox-x-storage0EC3F24A-x/CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
 ========
         "Role": "arn:aws:iam::615368094448:role/amplify-d2y1hd6iycv4j0-ge-CustomS3AutoDeleteObjects-T4ArXwVhKb5O",
 >>>>>>>> e4218ece1 (feat: update post refactor):amplify-migration-apps/mood-board/_snapshot.post.refactor/refactor.__from__.amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-storage0EC3F24A-PO9PAR11EIRO.__to__.amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-storage0EC3F24A-PO9PAR11EIRO-holding.source.template.json
+=======
+        "Role": "arn:aws:iam::123456789012:role/amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-storage0EC3F24A-PO9PAR11EIRO/CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+>>>>>>> f32865e9a (chore: sanitized snapshots)
         "Runtime": "nodejs22.x",
         "Description": {
           "Fn::Join": [

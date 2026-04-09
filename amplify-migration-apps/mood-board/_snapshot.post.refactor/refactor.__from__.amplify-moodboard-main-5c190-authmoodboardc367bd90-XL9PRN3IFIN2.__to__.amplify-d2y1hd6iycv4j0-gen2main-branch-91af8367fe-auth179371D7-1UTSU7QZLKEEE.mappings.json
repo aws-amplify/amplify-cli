@@ -1,51 +1,51 @@
 [
   {
     "Source": {
-      "StackName": "arn:aws:cloudformation:us-east-1:615368094448:stack/amplify-moodboard-main-5c190-authmoodboardc367bd90-XL9PRN3IFIN2/42922a80-337d-11f1-9d26-0affc013449b",
+      "StackName": "amplify-moodboard-main-5c190-authmoodboardc367bd90-XL9PRN3IFIN2",
       "LogicalResourceId": "UserPool"
     },
     "Destination": {
-      "StackName": "arn:aws:cloudformation:us-east-1:615368094448:stack/amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-auth179371D7-1UTSU7QZLKEEE/95153be0-3390-11f1-a7de-0affc113fc8f",
+      "StackName": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-auth179371D7-1UTSU7QZLKEEE",
       "LogicalResourceId": "amplifyAuthUserPool4BA7F805"
     }
   },
   {
     "Source": {
-      "StackName": "arn:aws:cloudformation:us-east-1:615368094448:stack/amplify-moodboard-main-5c190-authmoodboardc367bd90-XL9PRN3IFIN2/42922a80-337d-11f1-9d26-0affc013449b",
+      "StackName": "amplify-moodboard-main-5c190-authmoodboardc367bd90-XL9PRN3IFIN2",
       "LogicalResourceId": "UserPoolClientWeb"
     },
     "Destination": {
-      "StackName": "arn:aws:cloudformation:us-east-1:615368094448:stack/amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-auth179371D7-1UTSU7QZLKEEE/95153be0-3390-11f1-a7de-0affc113fc8f",
+      "StackName": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-auth179371D7-1UTSU7QZLKEEE",
       "LogicalResourceId": "amplifyAuthUserPoolAppClient2626C6F8"
     }
   },
   {
     "Source": {
-      "StackName": "arn:aws:cloudformation:us-east-1:615368094448:stack/amplify-moodboard-main-5c190-authmoodboardc367bd90-XL9PRN3IFIN2/42922a80-337d-11f1-9d26-0affc013449b",
+      "StackName": "amplify-moodboard-main-5c190-authmoodboardc367bd90-XL9PRN3IFIN2",
       "LogicalResourceId": "UserPoolClient"
     },
     "Destination": {
-      "StackName": "arn:aws:cloudformation:us-east-1:615368094448:stack/amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-auth179371D7-1UTSU7QZLKEEE/95153be0-3390-11f1-a7de-0affc113fc8f",
+      "StackName": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-auth179371D7-1UTSU7QZLKEEE",
       "LogicalResourceId": "amplifyAuthUserPoolNativeAppClient79534448"
     }
   },
   {
     "Source": {
-      "StackName": "arn:aws:cloudformation:us-east-1:615368094448:stack/amplify-moodboard-main-5c190-authmoodboardc367bd90-XL9PRN3IFIN2/42922a80-337d-11f1-9d26-0affc013449b",
+      "StackName": "amplify-moodboard-main-5c190-authmoodboardc367bd90-XL9PRN3IFIN2",
       "LogicalResourceId": "IdentityPool"
     },
     "Destination": {
-      "StackName": "arn:aws:cloudformation:us-east-1:615368094448:stack/amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-auth179371D7-1UTSU7QZLKEEE/95153be0-3390-11f1-a7de-0affc113fc8f",
+      "StackName": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-auth179371D7-1UTSU7QZLKEEE",
       "LogicalResourceId": "amplifyAuthIdentityPool3FDE84CC"
     }
   },
   {
     "Source": {
-      "StackName": "arn:aws:cloudformation:us-east-1:615368094448:stack/amplify-moodboard-main-5c190-authmoodboardc367bd90-XL9PRN3IFIN2/42922a80-337d-11f1-9d26-0affc013449b",
+      "StackName": "amplify-moodboard-main-5c190-authmoodboardc367bd90-XL9PRN3IFIN2",
       "LogicalResourceId": "IdentityPoolRoleMap"
     },
     "Destination": {
-      "StackName": "arn:aws:cloudformation:us-east-1:615368094448:stack/amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-auth179371D7-1UTSU7QZLKEEE/95153be0-3390-11f1-a7de-0affc113fc8f",
+      "StackName": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-auth179371D7-1UTSU7QZLKEEE",
       "LogicalResourceId": "amplifyAuthIdentityPoolRoleAttachment045F17C8"
     }
   }
