@@ -1,0 +1,905 @@
+{
+  "Resources": {
+    "AmplifyManagedTableIsCompleteRoleF825222C": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ],
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "dynamodb:CreateTable",
+                    "dynamodb:UpdateTable",
+                    "dynamodb:DeleteTable",
+                    "dynamodb:DescribeTable",
+                    "dynamodb:DescribeContinuousBackups",
+                    "dynamodb:DescribeTimeToLive",
+                    "dynamodb:UpdateContinuousBackups",
+                    "dynamodb:UpdateTimeToLive",
+                    "dynamodb:TagResource",
+                    "dynamodb:UntagResource",
+                    "dynamodb:ListTagsOfResource"
+                  ],
+                  "Effect": "Allow",
+                  "Resource": [
+                    {
+                      "Fn::Sub": [
+                        "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/*-${apiId}-${envName}",
+                        {
+                          "apiId": {
+<<<<<<<< HEAD:amplify-migration-apps/backend-only/_snapshot.pre.refactor/amplify-backendonly-e2e-sandbox-x-amplifyDataAmplifyTableManagerNestedStackA-x.template.json
+                            "Ref": "referencetoamplifybackendonlye2esandbox363d3cd24ddataamplifyDataGraphQLAPIC33E393DApiId"
+========
+                            "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPIE0C402A7ApiId"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataAmplifyTableManagerNestedStackA-P1KJHHUUMBS1.template.json
+                          },
+                          "envName": "NONE"
+                        }
+                      ]
+                    },
+                    {
+                      "Fn::Sub": [
+                        "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
+                        {
+<<<<<<<< HEAD:amplify-migration-apps/backend-only/_snapshot.pre.refactor/amplify-backendonly-e2e-sandbox-x-amplifyDataAmplifyTableManagerNestedStackA-x.template.json
+                          "tableName": "Project-q2d7oghxlbgxxj3fr2t6f2bpm4-x"
+========
+                          "tableName": "MoodItem-qy2hodyasjgidjuruysadaqj5a-main"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataAmplifyTableManagerNestedStackA-P1KJHHUUMBS1.template.json
+                        }
+                      ]
+                    },
+                    {
+                      "Fn::Sub": [
+                        "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
+                        {
+<<<<<<<< HEAD:amplify-migration-apps/backend-only/_snapshot.pre.refactor/amplify-backendonly-e2e-sandbox-x-amplifyDataAmplifyTableManagerNestedStackA-x.template.json
+                          "tableName": "Todo-q2d7oghxlbgxxj3fr2t6f2bpm4-x"
+========
+                          "tableName": "Board-qy2hodyasjgidjuruysadaqj5a-main"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataAmplifyTableManagerNestedStackA-P1KJHHUUMBS1.template.json
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Action": "lambda:ListTags",
+                  "Effect": "Allow",
+                  "Resource": {
+                    "Fn::Sub": [
+                      "arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:*TableManager*",
+                      {}
+                    ]
+                  }
+                }
+              ],
+              "Version": "2012-10-17"
+            },
+            "PolicyName": "CreateUpdateDeleteTablesPolicy"
+          }
+        ],
+        "Tags": [
+          {
+<<<<<<<< HEAD:amplify-migration-apps/backend-only/_snapshot.pre.refactor/amplify-backendonly-e2e-sandbox-x-amplifyDataAmplifyTableManagerNestedStackA-x.template.json
+========
+            "Key": "amplify:app-id",
+            "Value": "d2y1hd6iycv4j0"
+          },
+          {
+            "Key": "amplify:branch-name",
+            "Value": "gen2-main"
+          },
+          {
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataAmplifyTableManagerNestedStackA-P1KJHHUUMBS1.template.json
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "amplify:friendly-name",
+            "Value": "amplifyData"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+<<<<<<<< HEAD:amplify-migration-apps/backend-only/_snapshot.pre.refactor/amplify-backendonly-e2e-sandbox-x-amplifyDataAmplifyTableManagerNestedStackA-x.template.json
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/data/amplifyData/AmplifyTableManager/AmplifyManagedTableIsCompleteRole/Resource"
+========
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/data/amplifyData/AmplifyTableManager/AmplifyManagedTableIsCompleteRole/Resource"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataAmplifyTableManagerNestedStackA-P1KJHHUUMBS1.template.json
+      }
+    },
+    "AmplifyManagedTableOnEventRoleB4E71DEA": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ],
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "dynamodb:CreateTable",
+                    "dynamodb:UpdateTable",
+                    "dynamodb:DeleteTable",
+                    "dynamodb:DescribeTable",
+                    "dynamodb:DescribeContinuousBackups",
+                    "dynamodb:DescribeTimeToLive",
+                    "dynamodb:UpdateContinuousBackups",
+                    "dynamodb:UpdateTimeToLive",
+                    "dynamodb:TagResource",
+                    "dynamodb:UntagResource",
+                    "dynamodb:ListTagsOfResource"
+                  ],
+                  "Effect": "Allow",
+                  "Resource": [
+                    {
+                      "Fn::Sub": [
+                        "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/*-${apiId}-${envName}",
+                        {
+                          "apiId": {
+<<<<<<<< HEAD:amplify-migration-apps/backend-only/_snapshot.pre.refactor/amplify-backendonly-e2e-sandbox-x-amplifyDataAmplifyTableManagerNestedStackA-x.template.json
+                            "Ref": "referencetoamplifybackendonlye2esandbox363d3cd24ddataamplifyDataGraphQLAPIC33E393DApiId"
+========
+                            "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPIE0C402A7ApiId"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataAmplifyTableManagerNestedStackA-P1KJHHUUMBS1.template.json
+                          },
+                          "envName": "NONE"
+                        }
+                      ]
+                    },
+                    {
+                      "Fn::Sub": [
+                        "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
+                        {
+<<<<<<<< HEAD:amplify-migration-apps/backend-only/_snapshot.pre.refactor/amplify-backendonly-e2e-sandbox-x-amplifyDataAmplifyTableManagerNestedStackA-x.template.json
+                          "tableName": "Project-q2d7oghxlbgxxj3fr2t6f2bpm4-x"
+========
+                          "tableName": "MoodItem-qy2hodyasjgidjuruysadaqj5a-main"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataAmplifyTableManagerNestedStackA-P1KJHHUUMBS1.template.json
+                        }
+                      ]
+                    },
+                    {
+                      "Fn::Sub": [
+                        "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
+                        {
+<<<<<<<< HEAD:amplify-migration-apps/backend-only/_snapshot.pre.refactor/amplify-backendonly-e2e-sandbox-x-amplifyDataAmplifyTableManagerNestedStackA-x.template.json
+                          "tableName": "Todo-q2d7oghxlbgxxj3fr2t6f2bpm4-x"
+========
+                          "tableName": "Board-qy2hodyasjgidjuruysadaqj5a-main"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataAmplifyTableManagerNestedStackA-P1KJHHUUMBS1.template.json
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Action": "lambda:ListTags",
+                  "Effect": "Allow",
+                  "Resource": {
+                    "Fn::Sub": [
+                      "arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:*TableManager*",
+                      {}
+                    ]
+                  }
+                }
+              ],
+              "Version": "2012-10-17"
+            },
+            "PolicyName": "CreateUpdateDeleteTablesPolicy"
+          }
+        ],
+        "Tags": [
+          {
+<<<<<<<< HEAD:amplify-migration-apps/backend-only/_snapshot.pre.refactor/amplify-backendonly-e2e-sandbox-x-amplifyDataAmplifyTableManagerNestedStackA-x.template.json
+========
+            "Key": "amplify:app-id",
+            "Value": "d2y1hd6iycv4j0"
+          },
+          {
+            "Key": "amplify:branch-name",
+            "Value": "gen2-main"
+          },
+          {
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataAmplifyTableManagerNestedStackA-P1KJHHUUMBS1.template.json
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "amplify:friendly-name",
+            "Value": "amplifyData"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+<<<<<<<< HEAD:amplify-migration-apps/backend-only/_snapshot.pre.refactor/amplify-backendonly-e2e-sandbox-x-amplifyDataAmplifyTableManagerNestedStackA-x.template.json
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/data/amplifyData/AmplifyTableManager/AmplifyManagedTableOnEventRole/Resource"
+========
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/data/amplifyData/AmplifyTableManager/AmplifyManagedTableOnEventRole/Resource"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataAmplifyTableManagerNestedStackA-P1KJHHUUMBS1.template.json
+      }
+    },
+    "AmplifyManagedTableOnEventRoleDefaultPolicyF6DABCB6": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "states:StartExecution",
+              "Effect": "Allow",
+              "Resource": {
+                "Ref": "AmplifyTableWaiterStateMachine060600BC"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "AmplifyManagedTableOnEventRoleDefaultPolicyF6DABCB6",
+        "Roles": [
+          {
+            "Ref": "AmplifyManagedTableOnEventRoleB4E71DEA"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+<<<<<<<< HEAD:amplify-migration-apps/backend-only/_snapshot.pre.refactor/amplify-backendonly-e2e-sandbox-x-amplifyDataAmplifyTableManagerNestedStackA-x.template.json
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/data/amplifyData/AmplifyTableManager/AmplifyManagedTableOnEventRole/DefaultPolicy/Resource"
+========
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/data/amplifyData/AmplifyTableManager/AmplifyManagedTableOnEventRole/DefaultPolicy/Resource"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataAmplifyTableManagerNestedStackA-P1KJHHUUMBS1.template.json
+      }
+    },
+    "TableManagerCustomProviderframeworkonEvent1DFC2ECC": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+          },
+          "S3Key": "f2c5bec0e463cae18d0bf683be5923ae6bd676a06af1a994bdfa076a66ac07d6.zip"
+        },
+<<<<<<<< HEAD:amplify-migration-apps/backend-only/_snapshot.pre.refactor/amplify-backendonly-e2e-sandbox-x-amplifyDataAmplifyTableManagerNestedStackA-x.template.json
+        "Description": "AmplifyManagedTable - onEvent (amplify-backendonly-e2e-sandbox-x/data/amplifyData/AmplifyTableManager/TableManagerCustomProvider)",
+========
+        "Description": "AmplifyManagedTable - onEvent (amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/data/amplifyData/AmplifyTableManager/TableManagerCustomProvider)",
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataAmplifyTableManagerNestedStackA-P1KJHHUUMBS1.template.json
+        "Environment": {
+          "Variables": {
+            "WAITER_STATE_MACHINE_ARN": {
+              "Ref": "AmplifyTableWaiterStateMachine060600BC"
+            }
+          }
+        },
+        "Handler": "amplify-table-manager-handler.onEvent",
+        "Role": {
+          "Fn::GetAtt": [
+            "AmplifyManagedTableOnEventRoleB4E71DEA",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs24.x",
+        "Tags": [
+          {
+<<<<<<<< HEAD:amplify-migration-apps/backend-only/_snapshot.pre.refactor/amplify-backendonly-e2e-sandbox-x-amplifyDataAmplifyTableManagerNestedStackA-x.template.json
+========
+            "Key": "amplify:app-id",
+            "Value": "d2y1hd6iycv4j0"
+          },
+          {
+            "Key": "amplify:branch-name",
+            "Value": "gen2-main"
+          },
+          {
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataAmplifyTableManagerNestedStackA-P1KJHHUUMBS1.template.json
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "amplify:friendly-name",
+            "Value": "amplifyData"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ],
+        "Timeout": 840
+      },
+      "DependsOn": [
+        "AmplifyManagedTableOnEventRoleDefaultPolicyF6DABCB6",
+        "AmplifyManagedTableOnEventRoleB4E71DEA"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+<<<<<<<< HEAD:amplify-migration-apps/backend-only/_snapshot.pre.refactor/amplify-backendonly-e2e-sandbox-x-amplifyDataAmplifyTableManagerNestedStackA-x.template.json
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/data/amplifyData/AmplifyTableManager/TableManagerCustomProvider/framework-onEvent/Resource",
+========
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/data/amplifyData/AmplifyTableManager/TableManagerCustomProvider/framework-onEvent/Resource",
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataAmplifyTableManagerNestedStackA-P1KJHHUUMBS1.template.json
+        "aws:asset:path": "asset.f2c5bec0e463cae18d0bf683be5923ae6bd676a06af1a994bdfa076a66ac07d6",
+        "aws:asset:is-bundled": false,
+        "aws:asset:property": "Code"
+      }
+    },
+    "TableManagerCustomProviderframeworkisComplete2E51021B": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+          },
+          "S3Key": "f2c5bec0e463cae18d0bf683be5923ae6bd676a06af1a994bdfa076a66ac07d6.zip"
+        },
+<<<<<<<< HEAD:amplify-migration-apps/backend-only/_snapshot.pre.refactor/amplify-backendonly-e2e-sandbox-x-amplifyDataAmplifyTableManagerNestedStackA-x.template.json
+        "Description": "AmplifyManagedTable - isComplete (amplify-backendonly-e2e-sandbox-x/data/amplifyData/AmplifyTableManager/TableManagerCustomProvider)",
+========
+        "Description": "AmplifyManagedTable - isComplete (amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/data/amplifyData/AmplifyTableManager/TableManagerCustomProvider)",
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataAmplifyTableManagerNestedStackA-P1KJHHUUMBS1.template.json
+        "Handler": "amplify-table-manager-handler.isComplete",
+        "Role": {
+          "Fn::GetAtt": [
+            "AmplifyManagedTableIsCompleteRoleF825222C",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs24.x",
+        "Tags": [
+          {
+<<<<<<<< HEAD:amplify-migration-apps/backend-only/_snapshot.pre.refactor/amplify-backendonly-e2e-sandbox-x-amplifyDataAmplifyTableManagerNestedStackA-x.template.json
+========
+            "Key": "amplify:app-id",
+            "Value": "d2y1hd6iycv4j0"
+          },
+          {
+            "Key": "amplify:branch-name",
+            "Value": "gen2-main"
+          },
+          {
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataAmplifyTableManagerNestedStackA-P1KJHHUUMBS1.template.json
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "amplify:friendly-name",
+            "Value": "amplifyData"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ],
+        "Timeout": 840
+      },
+      "DependsOn": [
+        "AmplifyManagedTableIsCompleteRoleF825222C"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+<<<<<<<< HEAD:amplify-migration-apps/backend-only/_snapshot.pre.refactor/amplify-backendonly-e2e-sandbox-x-amplifyDataAmplifyTableManagerNestedStackA-x.template.json
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/data/amplifyData/AmplifyTableManager/TableManagerCustomProvider/framework-isComplete/Resource",
+========
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/data/amplifyData/AmplifyTableManager/TableManagerCustomProvider/framework-isComplete/Resource",
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataAmplifyTableManagerNestedStackA-P1KJHHUUMBS1.template.json
+        "aws:asset:path": "asset.f2c5bec0e463cae18d0bf683be5923ae6bd676a06af1a994bdfa076a66ac07d6",
+        "aws:asset:is-bundled": false,
+        "aws:asset:property": "Code"
+      }
+    },
+    "AmplifyTableWaiterStateMachineRole470BE899": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "states.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Tags": [
+          {
+<<<<<<<< HEAD:amplify-migration-apps/backend-only/_snapshot.pre.refactor/amplify-backendonly-e2e-sandbox-x-amplifyDataAmplifyTableManagerNestedStackA-x.template.json
+========
+            "Key": "amplify:app-id",
+            "Value": "d2y1hd6iycv4j0"
+          },
+          {
+            "Key": "amplify:branch-name",
+            "Value": "gen2-main"
+          },
+          {
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataAmplifyTableManagerNestedStackA-P1KJHHUUMBS1.template.json
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "amplify:friendly-name",
+            "Value": "amplifyData"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+<<<<<<<< HEAD:amplify-migration-apps/backend-only/_snapshot.pre.refactor/amplify-backendonly-e2e-sandbox-x-amplifyDataAmplifyTableManagerNestedStackA-x.template.json
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/data/amplifyData/AmplifyTableManager/AmplifyTableWaiterStateMachine/Role/Resource"
+========
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/data/amplifyData/AmplifyTableManager/AmplifyTableWaiterStateMachine/Role/Resource"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataAmplifyTableManagerNestedStackA-P1KJHHUUMBS1.template.json
+      }
+    },
+    "AmplifyTableWaiterStateMachineRoleDefaultPolicy89F3836A": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "TableManagerCustomProviderframeworkisComplete2E51021B",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "TableManagerCustomProviderframeworkisComplete2E51021B",
+                          "Arn"
+                        ]
+                      },
+                      ":*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "AmplifyTableWaiterStateMachineRoleDefaultPolicy89F3836A",
+        "Roles": [
+          {
+            "Ref": "AmplifyTableWaiterStateMachineRole470BE899"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+<<<<<<<< HEAD:amplify-migration-apps/backend-only/_snapshot.pre.refactor/amplify-backendonly-e2e-sandbox-x-amplifyDataAmplifyTableManagerNestedStackA-x.template.json
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/data/amplifyData/AmplifyTableManager/AmplifyTableWaiterStateMachine/Role/DefaultPolicy/Resource"
+========
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/data/amplifyData/AmplifyTableManager/AmplifyTableWaiterStateMachine/Role/DefaultPolicy/Resource"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataAmplifyTableManagerNestedStackA-P1KJHHUUMBS1.template.json
+      }
+    },
+    "AmplifyTableWaiterStateMachine060600BC": {
+      "Type": "AWS::StepFunctions::StateMachine",
+      "Properties": {
+        "DefinitionString": {
+          "Fn::Join": [
+            "",
+            [
+              "{\"StartAt\":\"framework-isComplete-task\",\"States\":{\"framework-isComplete-task\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":10,\"MaxAttempts\":360,\"BackoffRate\":1}],\"Type\":\"Task\",\"Resource\":\"",
+              {
+                "Fn::GetAtt": [
+                  "TableManagerCustomProviderframeworkisComplete2E51021B",
+                  "Arn"
+                ]
+              },
+              "\"}}}"
+            ]
+          ]
+        },
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "AmplifyTableWaiterStateMachineRole470BE899",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "AmplifyTableWaiterStateMachineRoleDefaultPolicy89F3836A",
+        "AmplifyTableWaiterStateMachineRole470BE899"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+<<<<<<<< HEAD:amplify-migration-apps/backend-only/_snapshot.pre.refactor/amplify-backendonly-e2e-sandbox-x-amplifyDataAmplifyTableManagerNestedStackA-x.template.json
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/data/amplifyData/AmplifyTableManager/AmplifyTableWaiterStateMachine/Resource"
+========
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/data/amplifyData/AmplifyTableManager/AmplifyTableWaiterStateMachine/Resource"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataAmplifyTableManagerNestedStackA-P1KJHHUUMBS1.template.json
+      }
+    },
+    "CDKMetadata": {
+      "Type": "AWS::CDK::Metadata",
+      "Properties": {
+<<<<<<<< HEAD:amplify-migration-apps/backend-only/_snapshot.pre.refactor/amplify-backendonly-e2e-sandbox-x-amplifyDataAmplifyTableManagerNestedStackA-x.template.json
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/zWNyw6CMBBFv8V9GbFE92Li0hj4ADK0IymPNmFaiWn67wbQ1Tk3Z3ElyHMO+QEXzpQestG0EB/EnnTtUQ0CF26iwQli5UYSt5fd+HSjUZ917pbEiFOrEeI9WOWNs2v7exJcNMhMnuG6QnABZVAD+RKZkqiIXZgVia3WHjtju+3sF5KwThP0fHxLCacL5IeejcnmYL2ZCKqdX3lj/13PAAAA"
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-backendonly-e2e-sandbox-x/data/amplifyData/AmplifyTableManager/CDKMetadata/Default"
+========
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/zWOwQ6CMBBEv8V7WbV48ComHo2BDyBLu5IKtAnbSkzTfzcFPb2ZvMOMBHk6w2GHCxdKD8VoOoh3Yk+68agGgQu30eAEsXYjievTrny40ahPrltKYsSp0wjxFqzyxtns/jkJLltkJs9wyRBcQhXUQL5CpiRqYhdmRWK1jcfe2H4d+4kkrNMEL96/pYRjvvxiY4o5WG8mgnrjFwjaNq3PAAAA"
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/data/amplifyData/AmplifyTableManager/CDKMetadata/Default"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataAmplifyTableManagerNestedStackA-P1KJHHUUMBS1.template.json
+      },
+      "Condition": "CDKMetadataAvailable"
+    }
+  },
+  "Conditions": {
+    "CDKMetadataAvailable": {
+      "Fn::Or": [
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "af-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-3"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-south-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-3"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-4"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ca-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ca-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-northwest-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-central-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-south-2"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-3"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "il-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "me-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "me-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "sa-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-west-1"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "AWS::Region"
+            },
+            "us-west-2"
+          ]
+        }
+      ]
+    }
+  },
+  "Parameters": {
+<<<<<<<< HEAD:amplify-migration-apps/backend-only/_snapshot.pre.refactor/amplify-backendonly-e2e-sandbox-x-amplifyDataAmplifyTableManagerNestedStackA-x.template.json
+    "referencetoamplifybackendonlye2esandbox363d3cd24ddataamplifyDataGraphQLAPIC33E393DApiId": {
+========
+    "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPIE0C402A7ApiId": {
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataAmplifyTableManagerNestedStackA-P1KJHHUUMBS1.template.json
+      "Type": "String"
+    }
+  },
+  "Outputs": {
+<<<<<<<< HEAD:amplify-migration-apps/backend-only/_snapshot.pre.refactor/amplify-backendonly-e2e-sandbox-x-amplifyDataAmplifyTableManagerNestedStackA-x.template.json
+    "amplifybackendonlye2esandbox363d3cd24ddataamplifyDataAmplifyTableManagerTableManagerCustomProviderframeworkonEventECB17234Arn": {
+========
+    "amplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataAmplifyTableManagerTableManagerCustomProviderframeworkonEvent62A67CB3Arn": {
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataAmplifyTableManagerNestedStackA-P1KJHHUUMBS1.template.json
+      "Value": {
+        "Fn::GetAtt": [
+          "TableManagerCustomProviderframeworkonEvent1DFC2ECC",
+          "Arn"
+        ]
+      }
+    }
+  }
+}

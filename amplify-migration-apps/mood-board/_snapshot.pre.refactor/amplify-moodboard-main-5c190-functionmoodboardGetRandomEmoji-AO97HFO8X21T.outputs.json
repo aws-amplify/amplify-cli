@@ -1,0 +1,34 @@
+[
+  {
+    "OutputKey": "LambdaExecutionRoleArn",
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-x-x-functionmoodboardKinesisReader-x.outputs.json
+    "OutputValue": "arn:aws:iam::123456789012:role/moodboardLambdaRole1f55eecd-x"
+========
+    "OutputValue": "arn:aws:iam::615368094448:role/moodboardLambdaRole2eb10c4c-main"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-main-5c190-functionmoodboardGetRandomEmoji-AO97HFO8X21T.outputs.json
+  },
+  {
+    "OutputKey": "Region",
+    "OutputValue": "us-east-1"
+  },
+  {
+    "OutputKey": "Arn",
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-x-x-functionmoodboardKinesisReader-x.outputs.json
+    "OutputValue": "arn:aws:lambda:us-east-1:123456789012:function:moodboardKinesisReader-x"
+========
+    "OutputValue": "arn:aws:lambda:us-east-1:615368094448:function:moodboardGetRandomEmoji-main"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-main-5c190-functionmoodboardGetRandomEmoji-AO97HFO8X21T.outputs.json
+  },
+  {
+    "OutputKey": "Name",
+    "OutputValue": "moodboardKinesisReader-x"
+  },
+  {
+    "OutputKey": "LambdaExecutionRole",
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-x-x-functionmoodboardKinesisReader-x.outputs.json
+    "OutputValue": "moodboardLambdaRole1f55eecd-x"
+========
+    "OutputValue": "moodboardLambdaRole2eb10c4c-main"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-main-5c190-functionmoodboardGetRandomEmoji-AO97HFO8X21T.outputs.json
+  }
+]

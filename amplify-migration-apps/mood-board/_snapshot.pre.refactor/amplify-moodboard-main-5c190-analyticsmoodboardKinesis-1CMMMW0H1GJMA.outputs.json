@@ -1,0 +1,18 @@
+[
+  {
+    "OutputKey": "kinesisStreamId",
+    "OutputValue": "moodboardKinesis-x"
+  },
+  {
+    "OutputKey": "kinesisStreamShardCount",
+    "OutputValue": "1"
+  },
+  {
+    "OutputKey": "kinesisStreamArn",
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-x-x-analyticsmoodboardKinesis-x.outputs.json
+    "OutputValue": "arn:aws:kinesis:us-east-1:123456789012:stream/moodboardKinesis-x"
+========
+    "OutputValue": "arn:aws:kinesis:us-east-1:615368094448:stream/moodboardKinesis-main"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-main-5c190-analyticsmoodboardKinesis-1CMMMW0H1GJMA.outputs.json
+  }
+]

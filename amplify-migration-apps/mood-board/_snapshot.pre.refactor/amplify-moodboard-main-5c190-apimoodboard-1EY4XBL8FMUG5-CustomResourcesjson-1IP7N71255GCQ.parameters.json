@@ -1,0 +1,34 @@
+[
+  {
+    "ParameterKey": "S3DeploymentBucket",
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-x-x-apimoodboard-x-CustomResourcesjson-x.parameters.json
+    "ParameterValue": "amplify-moodboard-x-x-deployment"
+  },
+  {
+    "ParameterKey": "AppSyncApiId",
+    "ParameterValue": "g26hrobfy5b5pniveska5ylg4u"
+========
+    "ParameterValue": "amplify-moodboard-main-5c190-deployment"
+  },
+  {
+    "ParameterKey": "AppSyncApiId",
+    "ParameterValue": "qy2hodyasjgidjuruysadaqj5a"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-main-5c190-apimoodboard-1EY4XBL8FMUG5-CustomResourcesjson-1IP7N71255GCQ.parameters.json
+  },
+  {
+    "ParameterKey": "env",
+    "ParameterValue": "x"
+  },
+  {
+    "ParameterKey": "S3DeploymentRootKey",
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-x-x-apimoodboard-x-CustomResourcesjson-x.parameters.json
+    "ParameterValue": "amplify-appsync-files/43e6fad4f7ae7e9b21954a41da4290129df61441"
+========
+    "ParameterValue": "amplify-appsync-files/d601691c7f86182af797167f0fb93e03a851d451"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-main-5c190-apimoodboard-1EY4XBL8FMUG5-CustomResourcesjson-1IP7N71255GCQ.parameters.json
+  },
+  {
+    "ParameterKey": "AppSyncApiName",
+    "ParameterValue": "moodboard"
+  }
+]

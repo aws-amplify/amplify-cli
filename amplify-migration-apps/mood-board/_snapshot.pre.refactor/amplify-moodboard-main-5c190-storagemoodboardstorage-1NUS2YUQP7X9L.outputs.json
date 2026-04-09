@@ -1,0 +1,15 @@
+[
+  {
+    "OutputKey": "BucketName",
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-x-x-storagemoodboardStorage-x.outputs.json
+    "OutputValue": "moodboard20e29595008142e3ad16f01c4066e1c4x-x",
+========
+    "OutputValue": "moodboarda9dff0b544a64459b29954a5cab78ace5c190-main",
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-main-5c190-storagemoodboardstorage-1NUS2YUQP7X9L.outputs.json
+    "Description": "Bucket name for the S3 bucket"
+  },
+  {
+    "OutputKey": "Region",
+    "OutputValue": "us-east-1"
+  }
+]

@@ -1,0 +1,54 @@
+[
+  {
+    "ParameterKey": "DynamoDBModelTableReadIOPS",
+    "ParameterValue": "5"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-x-x-apimoodboard-x-MoodItem-x.parameters.json
+    "ParameterValue": "amplify-appsync-files/43e6fad4f7ae7e9b21954a41da4290129df61441"
+========
+    "ParameterValue": "amplify-appsync-files/0cc3a1a2f56abaa3d09685dbb9add4c83797ca74"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-main-5c190-apimoodboard-1EY4XBL8FMUG5-MoodItem-1LUX763267C6J.parameters.json
+  },
+  {
+    "ParameterKey": "DynamoDBEnableServerSideEncryption",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "DynamoDBEnablePointInTimeRecovery",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name",
+    "ParameterValue": "NONE_DS"
+  },
+  {
+    "ParameterKey": "DynamoDBBillingMode",
+    "ParameterValue": "PAY_PER_REQUEST"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-x-x-apimoodboard-x-MoodItem-x.parameters.json
+    "ParameterValue": "g26hrobfy5b5pniveska5ylg4u"
+========
+    "ParameterValue": "qy2hodyasjgidjuruysadaqj5a"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-main-5c190-apimoodboard-1EY4XBL8FMUG5-MoodItem-1LUX763267C6J.parameters.json
+  },
+  {
+    "ParameterKey": "DynamoDBModelTableWriteIOPS",
+    "ParameterValue": "5"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-x-x-apimoodboard-x-MoodItem-x.parameters.json
+    "ParameterValue": "amplify-moodboard-x-x-deployment"
+========
+    "ParameterValue": "amplify-moodboard-main-5c190-deployment"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-main-5c190-apimoodboard-1EY4XBL8FMUG5-MoodItem-1LUX763267C6J.parameters.json
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackenv10C5A902Ref",
+    "ParameterValue": "x"
+  }
+]
