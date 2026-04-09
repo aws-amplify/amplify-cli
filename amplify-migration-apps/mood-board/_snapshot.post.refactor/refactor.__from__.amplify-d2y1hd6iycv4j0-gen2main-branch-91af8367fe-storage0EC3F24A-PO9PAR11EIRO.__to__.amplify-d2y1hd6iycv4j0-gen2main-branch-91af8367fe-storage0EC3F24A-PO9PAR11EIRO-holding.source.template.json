@@ -40,7 +40,7 @@
               ],
               "Effect": "Allow",
               "Principal": {
-                "AWS": "arn:aws:iam::615368094448:role/amplify-d2y1hd6iycv4j0-ge-CustomS3AutoDeleteObjects-T4ArXwVhKb5O"
+                "AWS": "arn:aws:iam::123456789012:role/amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-storage0EC3F24A-PO9PAR11EIRO/CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
               },
               "Resource": [
                 "arn:aws:s3:::amplify-d2y1hd6iycv4j0-ge-moodboarda9dff0b544a6445-iajmrqsq3qco",
@@ -66,7 +66,7 @@
     "moodboarda9dff0b544a64459b29954a5cab78ace5c190gen2mainBucketAutoDeleteObjectsCustomResource74E5567E": {
       "Type": "Custom::S3AutoDeleteObjects",
       "Properties": {
-        "ServiceToken": "arn:aws:lambda:us-east-1:615368094448:function:amplify-d2y1hd6iycv4j0-ge-CustomS3AutoDeleteObject-Mq7wWTUgz2Ys",
+        "ServiceToken": "arn:aws:lambda:us-east-1:123456789012:function:amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-storage0EC3F24A-PO9PAR11EIRO/CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
         "BucketName": "amplify-d2y1hd6iycv4j0-ge-moodboarda9dff0b544a6445-iajmrqsq3qco"
       },
       "UpdateReplacePolicy": "Delete",
@@ -112,7 +112,7 @@
         "Timeout": 900,
         "MemorySize": 128,
         "Handler": "index.handler",
-        "Role": "arn:aws:iam::615368094448:role/amplify-d2y1hd6iycv4j0-ge-CustomS3AutoDeleteObjects-T4ArXwVhKb5O",
+        "Role": "arn:aws:iam::123456789012:role/amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-storage0EC3F24A-PO9PAR11EIRO/CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
         "Runtime": "nodejs22.x",
         "Description": {
           "Fn::Join": [
