@@ -1,6 +1,6 @@
 import { AmplifyMigrationLockStep } from '../../../commands/gen2-migration/lock';
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
-import { SetStackPolicyCommand } from '@aws-sdk/client-cloudformation';
+import { CreateChangeSetCommand, DeleteChangeSetCommand, SetStackPolicyCommand } from '@aws-sdk/client-cloudformation';
 import { UpdateAppCommand } from '@aws-sdk/client-amplify';
 import { SpinningLogger } from '../../../commands/gen2-migration/_infra/spinning-logger';
 import { Gen1App } from '../../../commands/gen2-migration/generate/_infra/gen1-app';
@@ -13,6 +13,11 @@ jest.mock('@aws-sdk/client-appsync', () => ({
       yield { graphqlApis: [{ name: 'testApp-testEnv', apiId: 'test-api-id' }] };
     },
   })),
+}));
+jest.mock('@aws-sdk/client-cloudformation', () => ({
+  ...jest.requireActual('@aws-sdk/client-cloudformation'),
+  waitUntilChangeSetCreateComplete: jest.fn().mockResolvedValue({}),
+  waitUntilStackUpdateComplete: jest.fn().mockResolvedValue({}),
 }));
 jest.mock('@aws-sdk/client-dynamodb', () => ({
   ...jest.requireActual('@aws-sdk/client-dynamodb'),
@@ -80,7 +85,10 @@ describe('AmplifyMigrationLockStep', () => {
 
   describe('forward stack policy merge', () => {
     it('should append lock statement to empty stack policy', async () => {
-      mockCfnSend.mockResolvedValueOnce({ StackPolicyBody: undefined }).mockResolvedValueOnce({});
+      mockCfnSend
+        .mockResolvedValueOnce({ StackResources: [] }) // DescribeStackResources for DeletionPolicy operation
+        .mockResolvedValueOnce({ StackPolicyBody: undefined })
+        .mockResolvedValueOnce({});
       mockAmplifySend.mockResolvedValueOnce({ app: { environmentVariables: {} } }).mockResolvedValueOnce({});
 
       const plan = await lockStep.forward();
@@ -100,7 +108,10 @@ describe('AmplifyMigrationLockStep', () => {
       const existingPolicy = {
         Statement: [{ Effect: 'Deny', Action: 'Update:Replace', Principal: '*', Resource: 'LogicalResourceId/MyDB' }],
       };
-      mockCfnSend.mockResolvedValueOnce({ StackPolicyBody: JSON.stringify(existingPolicy) }).mockResolvedValueOnce({});
+      mockCfnSend
+        .mockResolvedValueOnce({ StackResources: [] }) // DescribeStackResources for DeletionPolicy operation
+        .mockResolvedValueOnce({ StackPolicyBody: JSON.stringify(existingPolicy) })
+        .mockResolvedValueOnce({});
       mockAmplifySend.mockResolvedValueOnce({ app: { environmentVariables: {} } }).mockResolvedValueOnce({});
 
       const plan = await lockStep.forward();
@@ -123,7 +134,9 @@ describe('AmplifyMigrationLockStep', () => {
       const alreadyLockedPolicy = {
         Statement: [{ Effect: 'Deny', Action: 'Update:*', Principal: '*', Resource: '*' }],
       };
-      mockCfnSend.mockResolvedValueOnce({ StackPolicyBody: JSON.stringify(alreadyLockedPolicy) });
+      mockCfnSend
+        .mockResolvedValueOnce({ StackResources: [] }) // DescribeStackResources for DeletionPolicy operation
+        .mockResolvedValueOnce({ StackPolicyBody: JSON.stringify(alreadyLockedPolicy) });
       mockAmplifySend.mockResolvedValueOnce({ app: { environmentVariables: {} } }).mockResolvedValueOnce({});
 
       const plan = await lockStep.forward();
@@ -136,7 +149,10 @@ describe('AmplifyMigrationLockStep', () => {
 
   describe('forward env var merge', () => {
     it('should merge new env var with existing env vars', async () => {
-      mockCfnSend.mockResolvedValueOnce({ StackPolicyBody: undefined }).mockResolvedValueOnce({});
+      mockCfnSend
+        .mockResolvedValueOnce({ StackResources: [] }) // DescribeStackResources for DeletionPolicy operation
+        .mockResolvedValueOnce({ StackPolicyBody: undefined })
+        .mockResolvedValueOnce({});
       mockAmplifySend.mockResolvedValueOnce({ app: { environmentVariables: { EXISTING: 'value' } } }).mockResolvedValueOnce({});
 
       const plan = await lockStep.forward();
@@ -246,6 +262,140 @@ describe('AmplifyMigrationLockStep', () => {
       expect(updateCalls[0][0].input).toEqual({
         appId: 'test-app-id',
         environmentVariables: { OTHER: 'keep' },
+      });
+    });
+  });
+
+  describe('forward DeletionPolicy changeset validation', () => {
+    const modelTemplate = {
+      Resources: {
+        TodoTable: { Type: 'AWS::DynamoDB::Table', Properties: {} },
+      },
+    };
+
+    function setupApiStackMocks() {
+      // DescribeStackResources — root stack has one API nested stack
+      mockCfnSend.mockResolvedValueOnce({
+        StackResources: [
+          {
+            ResourceType: 'AWS::CloudFormation::Stack',
+            LogicalResourceId: 'apitestapi',
+            PhysicalResourceId: 'arn:aws:cloudformation:us-east-1:123:stack/api-stack/abc',
+          },
+        ],
+      });
+      // ListStackResources — API stack has one model nested stack
+      mockCfnSend.mockResolvedValueOnce({
+        StackResourceSummaries: [
+          {
+            ResourceType: 'AWS::CloudFormation::Stack',
+            PhysicalResourceId: 'arn:aws:cloudformation:us-east-1:123:stack/model-stack/def',
+          },
+        ],
+      });
+      // GetTemplate — model stack template with DynamoDB table (no Retain)
+      mockCfnSend.mockResolvedValueOnce({
+        TemplateBody: JSON.stringify(modelTemplate),
+      });
+      // DescribeStacks — model stack parameters
+      mockCfnSend.mockResolvedValueOnce({
+        Stacks: [{ Parameters: [{ ParameterKey: 'env', ParameterValue: 'testEnv' }] }],
+      });
+      // CreateChangeSet
+      mockCfnSend.mockResolvedValueOnce({});
+    }
+
+    it('should validate and proceed when only DynamoDB and IAM Policy Modify changes', async () => {
+      setupApiStackMocks();
+      // DescribeChangeSet — Modify on DynamoDB table + IAM policy (expected side effect)
+      mockCfnSend.mockResolvedValueOnce({
+        Changes: [
+          { ResourceChange: { Action: 'Modify', ResourceType: 'AWS::DynamoDB::Table', LogicalResourceId: 'TodoTable' } },
+          { ResourceChange: { Action: 'Modify', ResourceType: 'AWS::IAM::Policy', LogicalResourceId: 'TodoIAMRoleDefaultPolicy' } },
+        ],
+      });
+      // DeleteChangeSet (cleanup)
+      mockCfnSend.mockResolvedValueOnce({});
+      // UpdateStack
+      mockCfnSend.mockResolvedValueOnce({});
+      // GetStackPolicy + SetStackPolicy for lock
+      mockCfnSend.mockResolvedValueOnce({ StackPolicyBody: undefined });
+      mockCfnSend.mockResolvedValueOnce({});
+      // Amplify env var
+      mockAmplifySend.mockResolvedValueOnce({ app: { environmentVariables: {} } }).mockResolvedValueOnce({});
+
+      const plan = await lockStep.forward();
+      await plan.execute();
+
+      const createCalls = mockCfnSend.mock.calls.filter(([cmd]: [unknown]) => cmd instanceof CreateChangeSetCommand);
+      expect(createCalls).toHaveLength(1);
+      const deleteCalls = mockCfnSend.mock.calls.filter(([cmd]: [unknown]) => cmd instanceof DeleteChangeSetCommand);
+      expect(deleteCalls).toHaveLength(1);
+    });
+
+    it('should abort when changeset contains Add action', async () => {
+      setupApiStackMocks();
+      // DescribeChangeSet — unexpected Lambda change
+      mockCfnSend.mockResolvedValueOnce({
+        Changes: [{ ResourceChange: { Action: 'Add', ResourceType: 'AWS::Lambda::Function', LogicalResourceId: 'NewFunction' } }],
+      });
+      // DeleteChangeSet (cleanup in validation)
+      mockCfnSend.mockResolvedValueOnce({});
+      // GetStackPolicy + SetStackPolicy for lock (still runs after error is caught by runner)
+      mockCfnSend.mockResolvedValueOnce({ StackPolicyBody: undefined });
+      mockCfnSend.mockResolvedValueOnce({});
+      // Amplify env var
+      mockAmplifySend.mockResolvedValueOnce({ app: { environmentVariables: {} } }).mockResolvedValueOnce({});
+
+      const plan = await lockStep.forward();
+      await expect(plan.execute()).rejects.toMatchObject({
+        name: 'MigrationError',
+        message: expect.stringContaining('unexpected changes'),
+      });
+    });
+
+    it('should abort when changeset contains Remove action on DynamoDB', async () => {
+      setupApiStackMocks();
+      // DescribeChangeSet — Remove on DynamoDB table
+      mockCfnSend.mockResolvedValueOnce({
+        Changes: [{ ResourceChange: { Action: 'Remove', ResourceType: 'AWS::DynamoDB::Table', LogicalResourceId: 'TodoTable' } }],
+      });
+      // DeleteChangeSet (cleanup in validation)
+      mockCfnSend.mockResolvedValueOnce({});
+      // GetStackPolicy + SetStackPolicy
+      mockCfnSend.mockResolvedValueOnce({ StackPolicyBody: undefined });
+      mockCfnSend.mockResolvedValueOnce({});
+      // Amplify env var
+      mockAmplifySend.mockResolvedValueOnce({ app: { environmentVariables: {} } }).mockResolvedValueOnce({});
+
+      const plan = await lockStep.forward();
+      await expect(plan.execute()).rejects.toMatchObject({
+        name: 'MigrationError',
+        message: expect.stringContaining('unexpected changes'),
+      });
+    });
+
+    it('should abort when changeset contains Modify on unexpected resource type', async () => {
+      setupApiStackMocks();
+      // DescribeChangeSet — Modify on AppSync resolver (not in allowed set)
+      mockCfnSend.mockResolvedValueOnce({
+        Changes: [
+          { ResourceChange: { Action: 'Modify', ResourceType: 'AWS::DynamoDB::Table', LogicalResourceId: 'TodoTable' } },
+          { ResourceChange: { Action: 'Modify', ResourceType: 'AWS::AppSync::Resolver', LogicalResourceId: 'GetTodoResolver' } },
+        ],
+      });
+      // DeleteChangeSet (cleanup in validation)
+      mockCfnSend.mockResolvedValueOnce({});
+      // GetStackPolicy + SetStackPolicy
+      mockCfnSend.mockResolvedValueOnce({ StackPolicyBody: undefined });
+      mockCfnSend.mockResolvedValueOnce({});
+      // Amplify env var
+      mockAmplifySend.mockResolvedValueOnce({ app: { environmentVariables: {} } }).mockResolvedValueOnce({});
+
+      const plan = await lockStep.forward();
+      await expect(plan.execute()).rejects.toMatchObject({
+        name: 'MigrationError',
+        message: expect.stringContaining('unexpected changes'),
       });
     });
   });
