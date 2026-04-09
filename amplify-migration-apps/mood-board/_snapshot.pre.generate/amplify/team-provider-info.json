@@ -36,43 +36,5 @@
         "moodboardKinesis": {}
       }
     }
-  },
-  "dev": {
-    "awscloudformation": {
-      "AuthRoleName": "amplify-moodboard-dev-edfbf-authRole",
-      "UnauthRoleArn": "arn:aws:iam::123456789012:role/amplify-moodboard-dev-edfbf-unauthRole",
-      "AuthRoleArn": "arn:aws:iam::123456789012:role/amplify-moodboard-dev-edfbf-authRole",
-      "Region": "us-east-1",
-      "DeploymentBucketName": "amplify-moodboard-dev-edfbf-deployment",
-      "UnauthRoleName": "amplify-moodboard-dev-edfbf-unauthRole",
-      "StackName": "amplify-moodboard-dev-edfbf",
-      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-moodboard-dev-edfbf/617230a0-3380-11f1-905f-0affc9a8a8a7",
-      "AmplifyAppId": "moodboard"
-    },
-    "categories": {
-      "auth": {
-        "moodboardc367bd90": {}
-      },
-      "function": {
-        "moodboardGetRandomEmoji": {
-          "deploymentBucketName": "amplify-moodboard-dev-edfbf-deployment",
-          "s3Key": "amplify-builds/moodboardGetRandomEmoji-59616d4f4b546a305a75-build.zip"
-        },
-        "moodboardKinesisReader": {
-          "deploymentBucketName": "amplify-moodboard-dev-edfbf-deployment",
-          "s3Key": "amplify-builds/moodboardKinesisReader-4934782b72546e51707a-build.zip"
-        },
-        "moodboardKinesis": {}
-      },
-      "analytics": {
-        "moodboardKinesis": {}
-      },
-      "api": {
-        "moodboard": {}
-      },
-      "storage": {
-        "moodboardstorage": {}
-      }
-    }
   }
 }

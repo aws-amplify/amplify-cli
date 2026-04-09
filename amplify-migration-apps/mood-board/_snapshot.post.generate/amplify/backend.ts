@@ -6,10 +6,10 @@ import { moodboardKinesisReader } from './function/moodboardKinesisReader/resour
 import { readdirSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
-import * as assets from 'aws-cdk-lib/aws-s3-assets';
 import { defineBackend } from '@aws-amplify/backend';
 import { defineAnalytics } from './analytics/resource';
 import { Duration, aws_iam } from 'aws-cdk-lib';
+import * as assets from 'aws-cdk-lib/aws-s3-assets';
 
 const backend = defineBackend({
   auth,
@@ -45,11 +45,15 @@ for (const file of resolverFiles) {
     backend.data.resources.cfnResources.cfnFunctionConfigurations[functionId];
   if (pipelineFunction) {
     const templatePath = join(resolversDir, file);
-    const vtlTemplate = new assets.Asset(backend.data, `VTLTemplate-${file}`, { path: templatePath });
+    const vtlTemplate = new assets.Asset(backend.data, `VTLTemplate-${file}`, {
+      path: templatePath,
+    });
     if (isRequest) {
-      pipelineFunction.requestMappingTemplateS3Location = vtlTemplate.s3ObjectUrl;
+      pipelineFunction.requestMappingTemplateS3Location =
+        vtlTemplate.s3ObjectUrl;
     } else {
-      pipelineFunction.responseMappingTemplateS3Location = vtlTemplate.s3ObjectUrl;
+      pipelineFunction.responseMappingTemplateS3Location =
+        vtlTemplate.s3ObjectUrl;
     }
   }
 }

@@ -1,5 +1,5 @@
 {
-  "name": "@amplify-migration-apps/mood-board-app",
+  "name": "@amplify-migration-apps/mood-board-snapshot",
   "private": true,
   "version": "0.0.1",
   "type": "module",
