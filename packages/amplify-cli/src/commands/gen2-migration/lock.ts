@@ -52,13 +52,32 @@ const ALLOW_ALL_POLICY = {
 /**
  * Identifies changeset changes that are expected DeletionPolicy drift from the lock step.
  *
- * The lock step adds `DeletionPolicy: Retain` to stateful resources. These show up as
- * Modify changes in changesets with Scope limited to `['DeletionPolicy']`. For lock rollback
- * to determine whether the environment is safe to revert, these expected changes must be
- * filtered out so only real drift blocks the rollback.
+ * The lock step adds `DeletionPolicy: Retain` to stateful resources. These show up as:
+ * 1. Direct DeletionPolicy changes — Modify with Scope exactly `['DeletionPolicy']`
+ * 2. Cascading IAM Policy changes — CFN flags IAM policies that reference the modified
+ *    table's attributes (e.g., `TodoTable.Arn` in PolicyDocument) as Dynamic re-evaluations.
+ *    These have `ChangeSource: ResourceAttribute`, `Evaluation: Dynamic`, and
+ *    `RequiresRecreation: Never` — they are harmless re-evaluations, not actual changes.
+ *
+ * For lock rollback to determine whether the environment is safe to revert, these expected
+ * changes must be filtered out so only real drift blocks the rollback.
  */
-const isExpectedLockDrift = (change: ResourceChangeWithNested): boolean =>
-  change.Action === 'Modify' && change.Scope?.length === 1 && change.Scope[0] === 'DeletionPolicy';
+const isExpectedLockDrift = (change: ResourceChangeWithNested): boolean => {
+  if (change.Action !== 'Modify') return false;
+
+  // Direct DeletionPolicy change on a resource
+  if (change.Scope?.length === 1 && change.Scope[0] === 'DeletionPolicy') return true;
+
+  // Cascading IAM Policy change caused by DeletionPolicy modification on a referenced resource.
+  // All Details must be Dynamic ResourceAttribute re-evaluations (no static/direct changes).
+  if (change.ResourceType === 'AWS::IAM::Policy' && change.Details?.length) {
+    return change.Details.every(
+      (d) => d.ChangeSource === 'ResourceAttribute' && d.Evaluation === 'Dynamic' && d.Target?.RequiresRecreation === 'Never',
+    );
+  }
+
+  return false;
+};
 
 /**
  * Recursively walks the change tree to find any leaf resource changes that are
@@ -270,11 +289,7 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
    */
   private async validateLockRollbackDrift(): Promise<ValidationResult> {
     try {
-      const driftResults = await detectTemplateDrift(
-        this.gen1App.rootStackName,
-        this.logger,
-        this.gen1App.clients.cloudFormation,
-      );
+      const driftResults = await detectTemplateDrift(this.gen1App.rootStackName, this.logger, this.gen1App.clients.cloudFormation);
 
       if (driftResults.skipped) {
         return { valid: false, report: `Template drift detection was skipped: ${driftResults.skipReason}` };

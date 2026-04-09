@@ -48,8 +48,15 @@ function extractChangeSetNameFromArn(changeSetArn: string): string {
   return resource.split('/')[1];
 }
 
-function isEarlyValidationFailure(reason?: string): boolean {
-  return !!reason?.includes('EarlyValidation');
+function isRecoverableFailure(reason?: string): boolean {
+  if (!reason) return false;
+  // EarlyValidation failures (e.g., ResourceExistenceCheck) — Changes are populated
+  if (reason.includes('EarlyValidation')) return true;
+  // Template format errors (e.g., duplicate Export names from Fn::Join in nested stacks) —
+  // Changes are partially populated. CFN validates exports after building the change list,
+  // so some changes are available even though the changeset ultimately failed.
+  if (reason.includes('Template format error')) return true;
+  return false;
 }
 
 const CHANGESET_PREFIX = 'amplify-drift-detection-';
@@ -220,7 +227,7 @@ export async function detectTemplateDrift(
     }
 
     // Changeset is kept for user inspection via console URL — cleaned up on next run
-    const result = await analyzeChangeSet(cfn, changeSet, print);
+    const result = await analyzeChangeSet(cfn, changeSet, print, true);
     result.changeSetId = changeSet.ChangeSetId;
     return result;
   } catch (error: any) {
@@ -236,6 +243,7 @@ async function analyzeChangeSet(
   cfn: CloudFormationClient,
   changeSet: DescribeChangeSetCommandOutput,
   print: SpinningLogger,
+  isRoot = false,
 ): Promise<TemplateDriftResults> {
   const result: TemplateDriftResults = {
     changes: [],
@@ -254,10 +262,16 @@ async function analyzeChangeSet(
     }
 
     // EarlyValidation failures still have Changes populated — fall through to process them
-    if (isEarlyValidationFailure(changeSet.StatusReason)) {
-      print.warn(`Nested changeset FAILED (EarlyValidation): ${changeSet.StatusReason}`);
+    if (isRecoverableFailure(changeSet.StatusReason)) {
+      print.warn(`Nested changeset FAILED (recoverable): ${changeSet.StatusReason}`);
+    } else if (isRoot) {
+      // Root changeset FAILED because a nested changeset failed. The root's StatusReason
+      // references the first failing nested changeset (e.g., "Nested change set <ARN> was
+      // not successfully created: Currently in FAILED.") but does NOT contain "EarlyValidation".
+      // Classification must happen per-nested-stack, so fall through to process Changes.
+      print.debug(`Root changeset FAILED due to nested failure — falling through to analyze nested changesets`);
     } else {
-      // Unknown failure — treat as genuine error, skip this stack
+      // Unknown failure on a nested stack — treat as genuine error, skip this stack
       print.warn(`ChangeSet failed with unexpected reason: ${changeSet.StatusReason || 'No reason provided'}`);
       return {
         changes: [],
