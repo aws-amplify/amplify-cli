@@ -261,8 +261,17 @@ async function analyzeChangeSet(
       return result;
     }
 
-    // EarlyValidation failures still have Changes populated — fall through to process them
+    // Recoverable failures (EarlyValidation, Template format errors) still have Changes populated.
+    // However, if Changes is empty despite the recoverable classification, treat as incomplete.
     if (isRecoverableFailure(changeSet.StatusReason)) {
+      if (!changeSet.Changes || changeSet.Changes.length === 0) {
+        print.warn(`Recoverable failure but no Changes populated: ${changeSet.StatusReason}`);
+        return {
+          changes: [],
+          skipped: true,
+          skipReason: `Changeset failed with no usable changes: ${changeSet.StatusReason}`,
+        };
+      }
       print.warn(`Nested changeset FAILED (recoverable): ${changeSet.StatusReason}`);
     } else if (isRoot) {
       // Root changeset FAILED because a nested changeset failed. The root's StatusReason
@@ -299,6 +308,16 @@ async function analyzeChangeSet(
     const changeInfo: ResourceChangeWithNested = { ...rc };
 
     // Check if this is a nested stack with its own changeset
+    if (rc.ResourceType === 'AWS::CloudFormation::Stack' && !rc.ChangeSetId) {
+      // Stack change without a nested changeset — can't inspect its contents.
+      // This happens when IncludeNestedStacks creates the root changeset but the
+      // nested changeset failed before being created. Track as incomplete.
+      const stackLabel = rc.LogicalResourceId || rc.PhysicalResourceId || 'unknown';
+      print.warn(`Nested stack ${stackLabel} has no changeset — tracking as incomplete`);
+      skippedStacks.push(stackLabel);
+      result.changes.push(changeInfo);
+      continue;
+    }
     if (rc.ResourceType === 'AWS::CloudFormation::Stack' && rc.ChangeSetId && rc.PhysicalResourceId) {
       try {
         // Extract stack name and changeset name from ARNs using parseArn utility
@@ -317,11 +336,12 @@ async function analyzeChangeSet(
             ChangeSetName: changeSetName,
           }),
         );
-        const terminalStatuses = ['CREATE_COMPLETE', 'FAILED', 'DELETE_COMPLETE'];
-        const maxPollAttempts = 30;
-        for (let attempt = 0; !terminalStatuses.includes(nestedChangeSet.Status!) && attempt < maxPollAttempts; attempt++) {
+        const terminalStatuses = ['CREATE_COMPLETE', 'FAILED', 'DELETE_COMPLETE', 'DELETE_FAILED'];
+        const NESTED_POLL_MAX_ATTEMPTS = 30;
+        const NESTED_POLL_INTERVAL_MS = 2000;
+        for (let attempt = 0; !terminalStatuses.includes(nestedChangeSet.Status ?? '') && attempt < NESTED_POLL_MAX_ATTEMPTS; attempt++) {
           print.debug(`Nested changeset ${stackName} is ${nestedChangeSet.Status}, waiting...`);
-          await new Promise((resolve) => setTimeout(resolve, 2000));
+          await new Promise((resolve) => setTimeout(resolve, NESTED_POLL_INTERVAL_MS));
           nestedChangeSet = await cfn.send(
             new DescribeChangeSetCommand({
               StackName: stackName,
@@ -329,8 +349,16 @@ async function analyzeChangeSet(
             }),
           );
         }
-        if (!terminalStatuses.includes(nestedChangeSet.Status!)) {
+        if (!terminalStatuses.includes(nestedChangeSet.Status ?? '')) {
           print.warn(`Nested changeset ${stackName} did not reach terminal status (${nestedChangeSet.Status})`);
+          skippedStacks.push(stackName);
+          result.changes.push(changeInfo);
+          continue;
+        }
+
+        // Deleted or failed-to-delete changesets can't be analyzed — track as incomplete
+        if (nestedChangeSet.Status === 'DELETE_COMPLETE' || nestedChangeSet.Status === 'DELETE_FAILED') {
+          print.warn(`Nested changeset ${stackName} was deleted (${nestedChangeSet.Status}) — tracking as incomplete`);
           skippedStacks.push(stackName);
           result.changes.push(changeInfo);
           continue;
@@ -371,11 +399,16 @@ async function analyzeChangeSet(
           print.debug(`Processed ${nestedResult.changes.length} nested changes`);
         }
       } catch (error: any) {
-        // Log error and track as incomplete
+        // Log error and track as incomplete. Use LogicalResourceId as fallback
+        // since extractStackNameFromArn could throw on malformed ARNs.
         print.warn(`⚠ Could not fetch nested changeset for ${rc.LogicalResourceId}: ${error.message}`);
         print.debug(`Stack ARN: ${rc.PhysicalResourceId}`);
         print.debug(`ChangeSet ID: ${rc.ChangeSetId}`);
-        skippedStacks.push(extractStackNameFromArn(rc.PhysicalResourceId));
+        try {
+          skippedStacks.push(extractStackNameFromArn(rc.PhysicalResourceId));
+        } catch {
+          skippedStacks.push(rc.LogicalResourceId || 'unknown');
+        }
       }
     }
 

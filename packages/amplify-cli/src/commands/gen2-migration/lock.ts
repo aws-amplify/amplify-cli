@@ -69,10 +69,20 @@ const isExpectedLockDrift = (change: ResourceChangeWithNested): boolean => {
   if (change.Scope?.length === 1 && change.Scope[0] === 'DeletionPolicy') return true;
 
   // Cascading IAM Policy change caused by DeletionPolicy modification on a referenced resource.
-  // All Details must be Dynamic ResourceAttribute re-evaluations (no static/direct changes).
-  if (change.ResourceType === 'AWS::IAM::Policy' && change.Details?.length) {
+  // Must be: Properties-only scope, all Details are Dynamic ResourceAttribute re-evaluations
+  // with CausingEntity referencing a table attribute (e.g., TodoTable.Arn, TodoTable.StreamArn).
+  if (
+    change.ResourceType === 'AWS::IAM::Policy' &&
+    change.Scope?.length === 1 &&
+    change.Scope[0] === 'Properties' &&
+    change.Details?.length
+  ) {
     return change.Details.every(
-      (d) => d.ChangeSource === 'ResourceAttribute' && d.Evaluation === 'Dynamic' && d.Target?.RequiresRecreation === 'Never',
+      (d) =>
+        d.ChangeSource === 'ResourceAttribute' &&
+        d.Evaluation === 'Dynamic' &&
+        d.Target?.RequiresRecreation === 'Never' &&
+        /Table\.(Arn|StreamArn)$/.test(d.CausingEntity ?? ''),
     );
   }
 
@@ -310,8 +320,8 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
       }
 
       return { valid: true };
-    } catch (e) {
-      return { valid: false, report: e.message };
+    } catch (e: any) {
+      return { valid: false, report: e?.message ?? String(e) };
     }
   }
 
