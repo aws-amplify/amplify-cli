@@ -182,6 +182,13 @@ export class AmplifyHelperTransformer {
               ts.isIdentifier(declaration.initializer.expression) &&
               removedModuleIdentifiers.has(declaration.initializer.expression.text)
             ) {
+              // Track the variable name as a dependency variable so that
+              // cdk.Fn.ref(retVal.api.xxx.attribute) and retVal.api.xxx.attribute
+              // property access chains are transformed to Gen2 equivalents.
+              if (ts.isIdentifier(declaration.name)) {
+                dependencyVariables.add(declaration.name.text);
+                hasDependencies = true;
+              }
               return undefined;
             }
 
