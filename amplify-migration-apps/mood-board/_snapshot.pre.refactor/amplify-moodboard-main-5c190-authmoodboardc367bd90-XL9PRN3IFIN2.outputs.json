@@ -1,0 +1,59 @@
+[
+  {
+    "OutputKey": "UserPoolId",
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-x-x-authmoodboard759ae00a-x.outputs.json
+    "OutputValue": "us-east-1_uFCFZxzU8",
+========
+    "OutputValue": "us-east-1_9ztx7trQ7",
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-main-5c190-authmoodboardc367bd90-XL9PRN3IFIN2.outputs.json
+    "Description": "Id for the user pool"
+  },
+  {
+    "OutputKey": "AppClientIDWeb",
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-x-x-authmoodboard759ae00a-x.outputs.json
+    "OutputValue": "74tvl72po139f1o6bp04rcs7s",
+========
+    "OutputValue": "ud9llev3tttr96b4apall3shp",
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-main-5c190-authmoodboardc367bd90-XL9PRN3IFIN2.outputs.json
+    "Description": "The user pool app client id for web"
+  },
+  {
+    "OutputKey": "AppClientID",
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-x-x-authmoodboard759ae00a-x.outputs.json
+    "OutputValue": "4jbh65m4dc0ipi3j8918a7d372",
+========
+    "OutputValue": "52rncfk9n4e7so3pjbi5pno6rr",
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-main-5c190-authmoodboardc367bd90-XL9PRN3IFIN2.outputs.json
+    "Description": "The user pool app client id"
+  },
+  {
+    "OutputKey": "IdentityPoolId",
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-x-x-authmoodboard759ae00a-x.outputs.json
+    "OutputValue": "us-east-1:6de0aef6-4b5a-4180-8f08-43c49990b843",
+========
+    "OutputValue": "us-east-1:c642f369-abf5-495e-9868-bdecd049d084",
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-main-5c190-authmoodboardc367bd90-XL9PRN3IFIN2.outputs.json
+    "Description": "Id for the identity pool"
+  },
+  {
+    "OutputKey": "UserPoolArn",
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-x-x-authmoodboard759ae00a-x.outputs.json
+    "OutputValue": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_uFCFZxzU8",
+========
+    "OutputValue": "arn:aws:cognito-idp:us-east-1:615368094448:userpool/us-east-1_9ztx7trQ7",
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-main-5c190-authmoodboardc367bd90-XL9PRN3IFIN2.outputs.json
+    "Description": "Arn for the user pool"
+  },
+  {
+    "OutputKey": "IdentityPoolName",
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-x-x-authmoodboard759ae00a-x.outputs.json
+    "OutputValue": "moodboard759ae00a_identitypool_759ae00a__x"
+========
+    "OutputValue": "moodboardc367bd90_identitypool_c367bd90__main"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-main-5c190-authmoodboardc367bd90-XL9PRN3IFIN2.outputs.json
+  },
+  {
+    "OutputKey": "UserPoolName",
+    "OutputValue": "moodboardc367bd90_userpool_c367bd90"
+  }
+]

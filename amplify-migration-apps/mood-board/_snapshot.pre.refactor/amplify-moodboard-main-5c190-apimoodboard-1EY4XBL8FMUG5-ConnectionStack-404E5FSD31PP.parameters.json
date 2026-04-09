@@ -1,0 +1,54 @@
+[
+  {
+    "ParameterKey": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-x-x-apimoodboard-x-ConnectionStack-x.parameters.json
+    "ParameterValue": "amplify-appsync-files/43e6fad4f7ae7e9b21954a41da4290129df61441"
+========
+    "ParameterValue": "amplify-appsync-files/0cc3a1a2f56abaa3d09685dbb9add4c83797ca74"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-main-5c190-apimoodboard-1EY4XBL8FMUG5-ConnectionStack-404E5FSD31PP.parameters.json
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackBoardNestedStackBoardNestedStackResource9E449E87OutputstransformerrootstackBoardBoardDataSource99BFC69FName",
+    "ParameterValue": "BoardTable"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name",
+    "ParameterValue": "NONE_DS"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-x-x-apimoodboard-x-ConnectionStack-x.parameters.json
+    "ParameterValue": "g26hrobfy5b5pniveska5ylg4u"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackBoardNestedStackBoardNestedStackResource9E449E87OutputstransformerrootstackBoardBoardTable30788E07Ref",
+    "ParameterValue": "Board-g26hrobfy5b5pniveska5ylg4u-x"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackMoodItemNestedStackMoodItemNestedStackResource1C28E2A1OutputstransformerrootstackMoodItemMoodItemTable5135EED9Ref",
+    "ParameterValue": "MoodItem-g26hrobfy5b5pniveska5ylg4u-x"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
+    "ParameterValue": "amplify-moodboard-x-x-deployment"
+========
+    "ParameterValue": "qy2hodyasjgidjuruysadaqj5a"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackBoardNestedStackBoardNestedStackResource9E449E87OutputstransformerrootstackBoardBoardTable30788E07Ref",
+    "ParameterValue": "Board-qy2hodyasjgidjuruysadaqj5a-main"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackMoodItemNestedStackMoodItemNestedStackResource1C28E2A1OutputstransformerrootstackMoodItemMoodItemTable5135EED9Ref",
+    "ParameterValue": "MoodItem-qy2hodyasjgidjuruysadaqj5a-main"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
+    "ParameterValue": "amplify-moodboard-main-5c190-deployment"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-main-5c190-apimoodboard-1EY4XBL8FMUG5-ConnectionStack-404E5FSD31PP.parameters.json
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackMoodItemNestedStackMoodItemNestedStackResource1C28E2A1OutputstransformerrootstackMoodItemMoodItemDataSource0777FF0CName",
+    "ParameterValue": "MoodItemTable"
+  }
+]

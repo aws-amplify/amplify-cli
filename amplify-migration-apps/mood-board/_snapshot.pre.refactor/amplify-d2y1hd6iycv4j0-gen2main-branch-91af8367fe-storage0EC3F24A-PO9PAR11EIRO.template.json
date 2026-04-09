@@ -1,0 +1,998 @@
+{
+  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"AmplifySandbox\",\"createdWith\":\"1.4.3\",\"stackType\":\"storage-S3\",\"metadata\":{}}",
+  "Resources": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-storage0EC3F24A-x.template.json
+    "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket56A4F200": {
+========
+    "moodboarda9dff0b544a64459b29954a5cab78ace5c190gen2mainBucket33EA37F9": {
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-storage0EC3F24A-PO9PAR11EIRO.template.json
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "BucketKeyEnabled": false,
+              "ServerSideEncryptionByDefault": {
+                "SSEAlgorithm": "AES256"
+              }
+            }
+          ]
+        },
+        "CorsConfiguration": {
+          "CorsRules": [
+            {
+              "AllowedHeaders": [
+                "*"
+              ],
+              "AllowedMethods": [
+                "GET",
+                "HEAD",
+                "PUT",
+                "POST",
+                "DELETE"
+              ],
+              "AllowedOrigins": [
+                "*"
+              ],
+              "ExposedHeaders": [
+                "x-amz-server-side-encryption",
+                "x-amz-request-id",
+                "x-amz-id-2",
+                "ETag"
+              ],
+              "MaxAge": 3000
+            }
+          ]
+        },
+        "Tags": [
+          {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-storage0EC3F24A-x.template.json
+========
+            "Key": "amplify:app-id",
+            "Value": "d2y1hd6iycv4j0"
+          },
+          {
+            "Key": "amplify:branch-name",
+            "Value": "gen2-main"
+          },
+          {
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-storage0EC3F24A-PO9PAR11EIRO.template.json
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "amplify:friendly-name",
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-storage0EC3F24A-x.template.json
+            "Value": "moodboard20e29595008142e3ad16f01c4066e1c4x-gen2-x"
+========
+            "Value": "moodboarda9dff0b544a64459b29954a5cab78ace5c190-gen2-main"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-storage0EC3F24A-PO9PAR11EIRO.template.json
+          },
+          {
+            "Key": "aws-cdk:auto-delete-objects",
+            "Value": "true"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-storage0EC3F24A-x.template.json
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/storage/moodboard20e29595008142e3ad16f01c4066e1c4x-gen2-x/Bucket/Resource"
+      }
+    },
+    "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucketPolicy3B9C9171": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": {
+          "Ref": "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket56A4F200"
+========
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/storage/moodboarda9dff0b544a64459b29954a5cab78ace5c190-gen2-main/Bucket/Resource"
+      }
+    },
+    "moodboarda9dff0b544a64459b29954a5cab78ace5c190gen2mainBucketPolicyB329C21D": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": {
+          "Ref": "moodboarda9dff0b544a64459b29954a5cab78ace5c190gen2mainBucket33EA37F9"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-storage0EC3F24A-PO9PAR11EIRO.template.json
+        },
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:*",
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": "false"
+                }
+              },
+              "Effect": "Deny",
+              "Principal": {
+                "AWS": "*"
+              },
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-storage0EC3F24A-x.template.json
+                    "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket56A4F200",
+========
+                    "moodboarda9dff0b544a64459b29954a5cab78ace5c190gen2mainBucket33EA37F9",
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-storage0EC3F24A-PO9PAR11EIRO.template.json
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-storage0EC3F24A-x.template.json
+                          "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket56A4F200",
+========
+                          "moodboarda9dff0b544a64459b29954a5cab78ace5c190gen2mainBucket33EA37F9",
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-storage0EC3F24A-PO9PAR11EIRO.template.json
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "s3:PutBucketPolicy",
+                "s3:GetBucket*",
+                "s3:List*",
+                "s3:DeleteObject*"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::GetAtt": [
+                    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+                    "Arn"
+                  ]
+                }
+              },
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-storage0EC3F24A-x.template.json
+                    "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket56A4F200",
+========
+                    "moodboarda9dff0b544a64459b29954a5cab78ace5c190gen2mainBucket33EA37F9",
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-storage0EC3F24A-PO9PAR11EIRO.template.json
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-storage0EC3F24A-x.template.json
+                          "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket56A4F200",
+========
+                          "moodboarda9dff0b544a64459b29954a5cab78ace5c190gen2mainBucket33EA37F9",
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-storage0EC3F24A-PO9PAR11EIRO.template.json
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-storage0EC3F24A-x.template.json
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/storage/moodboard20e29595008142e3ad16f01c4066e1c4x-gen2-x/Bucket/Policy/Resource"
+      }
+    },
+    "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucketAutoDeleteObjectsCustomResourceD9B4EAB6": {
+========
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/storage/moodboarda9dff0b544a64459b29954a5cab78ace5c190-gen2-main/Bucket/Policy/Resource"
+      }
+    },
+    "moodboarda9dff0b544a64459b29954a5cab78ace5c190gen2mainBucketAutoDeleteObjectsCustomResource74E5567E": {
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-storage0EC3F24A-PO9PAR11EIRO.template.json
+      "Type": "Custom::S3AutoDeleteObjects",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
+            "Arn"
+          ]
+        },
+        "BucketName": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-storage0EC3F24A-x.template.json
+          "Ref": "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket56A4F200"
+        }
+      },
+      "DependsOn": [
+        "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucketPolicy3B9C9171"
+========
+          "Ref": "moodboarda9dff0b544a64459b29954a5cab78ace5c190gen2mainBucket33EA37F9"
+        }
+      },
+      "DependsOn": [
+        "moodboarda9dff0b544a64459b29954a5cab78ace5c190gen2mainBucketPolicyB329C21D"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-storage0EC3F24A-PO9PAR11EIRO.template.json
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-storage0EC3F24A-x.template.json
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/storage/moodboard20e29595008142e3ad16f01c4066e1c4x-gen2-x/Bucket/AutoDeleteObjectsCustomResource/Default"
+========
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/storage/moodboarda9dff0b544a64459b29954a5cab78ace5c190-gen2-main/Bucket/AutoDeleteObjectsCustomResource/Default"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-storage0EC3F24A-PO9PAR11EIRO.template.json
+      }
+    },
+    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ]
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-storage0EC3F24A-x.template.json
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/storage/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role"
+========
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/storage/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-storage0EC3F24A-PO9PAR11EIRO.template.json
+      }
+    },
+    "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+          },
+          "S3Key": "faa95a81ae7d7373f3e1f242268f904eb748d8d0fdd306e8a6fe515a1905a7d6.zip"
+        },
+        "Timeout": 900,
+        "MemorySize": 128,
+        "Handler": "index.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs22.x",
+        "Description": {
+          "Fn::Join": [
+            "",
+            [
+              "Lambda function for auto-deleting objects in ",
+              {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-storage0EC3F24A-x.template.json
+                "Ref": "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket56A4F200"
+========
+                "Ref": "moodboarda9dff0b544a64459b29954a5cab78ace5c190gen2mainBucket33EA37F9"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-storage0EC3F24A-PO9PAR11EIRO.template.json
+              },
+              " S3 bucket."
+            ]
+          ]
+        }
+      },
+      "DependsOn": [
+        "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-storage0EC3F24A-x.template.json
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/storage/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler",
+========
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/storage/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler",
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-storage0EC3F24A-PO9PAR11EIRO.template.json
+        "aws:asset:path": "asset.faa95a81ae7d7373f3e1f242268f904eb748d8d0fdd306e8a6fe515a1905a7d6",
+        "aws:asset:property": "Code"
+      }
+    },
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-storage0EC3F24A-x.template.json
+    "MOODBOARD20E29595008142E3AD16F01C4066E1C47DE24GEN2DGPVVCWECQBUCKETNAMEParameterB3838DF7": {
+      "Type": "AWS::SSM::Parameter",
+      "Properties": {
+        "Name": "/amplify/resource_reference/moodboard/e2e-sandbox-x/MOODBOARD_20_E_29595008142_E_3_AD_16_F_01_C_4066_E_1_C_47_DE_24_GEN_2_DGPVVCWECQ_BUCKET_NAME",
+        "Tags": {
+          "amplify:deployment-type": "sandbox",
+========
+    "MOODBOARDA9DFF0B544A64459B29954A5CAB78ACE5C190GEN2MAINBUCKETNAMEParameterB6E319CD": {
+      "Type": "AWS::SSM::Parameter",
+      "Properties": {
+        "Name": "/amplify/resource_reference/d2y1hd6iycv4j0/gen2main-branch-91af8367fe/MOODBOARDA_9_DFF_0_B_544_A_64459_B_29954_A_5_CAB_78_ACE_5_C_190_GEN_2_MAIN_BUCKET_NAME",
+        "Tags": {
+          "amplify:app-id": "d2y1hd6iycv4j0",
+          "amplify:branch-name": "gen2-main",
+          "amplify:deployment-type": "branch",
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-storage0EC3F24A-PO9PAR11EIRO.template.json
+          "created-by": "amplify"
+        },
+        "Type": "String",
+        "Value": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-storage0EC3F24A-x.template.json
+          "Ref": "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket56A4F200"
+========
+          "Ref": "moodboarda9dff0b544a64459b29954a5cab78ace5c190gen2mainBucket33EA37F9"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-storage0EC3F24A-PO9PAR11EIRO.template.json
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-storage0EC3F24A-x.template.json
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/storage/MOODBOARD_20_E_29595008142_E_3_AD_16_F_01_C_4066_E_1_C_47_DE_24_GEN_2_DGPVVCWECQ_BUCKET_NAMEParameter/Resource"
+      }
+    },
+    "amplifymoodboarde2esandbox685dc54d14storageAccess3589DB9D8": {
+========
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/storage/MOODBOARDA_9_DFF_0_B_544_A_64459_B_29954_A_5_CAB_78_ACE_5_C_190_GEN_2_MAIN_BUCKET_NAMEParameter/Resource"
+      }
+    },
+    "amplifyd2y1hd6iycv4j0gen2mainbranch91af8367festorageAccess36F048F1F": {
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-storage0EC3F24A-PO9PAR11EIRO.template.json
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:GetObject",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    {
+                      "Fn::GetAtt": [
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-storage0EC3F24A-x.template.json
+                        "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket56A4F200",
+========
+                        "moodboarda9dff0b544a64459b29954a5cab78ace5c190gen2mainBucket33EA37F9",
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-storage0EC3F24A-PO9PAR11EIRO.template.json
+                        "Arn"
+                      ]
+                    },
+                    "/public/*"
+                  ]
+                ]
+              }
+            },
+            {
+              "Action": "s3:ListBucket",
+              "Condition": {
+                "StringLike": {
+                  "s3:prefix": [
+                    "public/*",
+                    "public/"
+                  ]
+                }
+              },
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-storage0EC3F24A-x.template.json
+                  "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket56A4F200",
+========
+                  "moodboarda9dff0b544a64459b29954a5cab78ace5c190gen2mainBucket33EA37F9",
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-storage0EC3F24A-PO9PAR11EIRO.template.json
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-storage0EC3F24A-x.template.json
+        "PolicyName": "amplifymoodboarde2esandbox685dc54d14storageAccess3589DB9D8",
+        "Roles": [
+          {
+            "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthunauthenticatedUserRole92D42D98Ref"
+========
+        "PolicyName": "amplifyd2y1hd6iycv4j0gen2mainbranch91af8367festorageAccess36F048F1F",
+        "Roles": [
+          {
+            "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthNestedStackauthNestedStackResourceC05563C6Outputsamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthamplifyAuthunauthenticatedUserRoleDFF7305BRef"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-storage0EC3F24A-PO9PAR11EIRO.template.json
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-storage0EC3F24A-x.template.json
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/storage/amplify-moodboard-e2e-sandbox-x--storageAccess3/Resource"
+      }
+    },
+    "amplifymoodboarde2esandbox685dc54d14storageAccess459CF4654": {
+========
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/storage/amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe--storageAccess3/Resource"
+      }
+    },
+    "amplifyd2y1hd6iycv4j0gen2mainbranch91af8367festorageAccess498A98DAB": {
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-storage0EC3F24A-PO9PAR11EIRO.template.json
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:PutObject",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-storage0EC3F24A-x.template.json
+                          "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket56A4F200",
+========
+                          "moodboarda9dff0b544a64459b29954a5cab78ace5c190gen2mainBucket33EA37F9",
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-storage0EC3F24A-PO9PAR11EIRO.template.json
+                          "Arn"
+                        ]
+                      },
+                      "/public/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-storage0EC3F24A-x.template.json
+                          "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket56A4F200",
+========
+                          "moodboarda9dff0b544a64459b29954a5cab78ace5c190gen2mainBucket33EA37F9",
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-storage0EC3F24A-PO9PAR11EIRO.template.json
+                          "Arn"
+                        ]
+                      },
+                      "/protected/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-storage0EC3F24A-x.template.json
+                          "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket56A4F200",
+========
+                          "moodboarda9dff0b544a64459b29954a5cab78ace5c190gen2mainBucket33EA37F9",
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-storage0EC3F24A-PO9PAR11EIRO.template.json
+                          "Arn"
+                        ]
+                      },
+                      "/private/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": "s3:GetObject",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-storage0EC3F24A-x.template.json
+                          "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket56A4F200",
+========
+                          "moodboarda9dff0b544a64459b29954a5cab78ace5c190gen2mainBucket33EA37F9",
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-storage0EC3F24A-PO9PAR11EIRO.template.json
+                          "Arn"
+                        ]
+                      },
+                      "/public/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-storage0EC3F24A-x.template.json
+                          "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket56A4F200",
+========
+                          "moodboarda9dff0b544a64459b29954a5cab78ace5c190gen2mainBucket33EA37F9",
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-storage0EC3F24A-PO9PAR11EIRO.template.json
+                          "Arn"
+                        ]
+                      },
+                      "/protected/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-storage0EC3F24A-x.template.json
+                          "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket56A4F200",
+========
+                          "moodboarda9dff0b544a64459b29954a5cab78ace5c190gen2mainBucket33EA37F9",
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-storage0EC3F24A-PO9PAR11EIRO.template.json
+                          "Arn"
+                        ]
+                      },
+                      "/private/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": "s3:ListBucket",
+              "Condition": {
+                "StringLike": {
+                  "s3:prefix": [
+                    "public/*",
+                    "public/",
+                    "protected/*",
+                    "protected/",
+                    "private/*",
+                    "private/"
+                  ]
+                }
+              },
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-storage0EC3F24A-x.template.json
+                  "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket56A4F200",
+========
+                  "moodboarda9dff0b544a64459b29954a5cab78ace5c190gen2mainBucket33EA37F9",
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-storage0EC3F24A-PO9PAR11EIRO.template.json
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": "s3:DeleteObject",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-storage0EC3F24A-x.template.json
+                          "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket56A4F200",
+========
+                          "moodboarda9dff0b544a64459b29954a5cab78ace5c190gen2mainBucket33EA37F9",
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-storage0EC3F24A-PO9PAR11EIRO.template.json
+                          "Arn"
+                        ]
+                      },
+                      "/public/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-storage0EC3F24A-x.template.json
+                          "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket56A4F200",
+========
+                          "moodboarda9dff0b544a64459b29954a5cab78ace5c190gen2mainBucket33EA37F9",
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-storage0EC3F24A-PO9PAR11EIRO.template.json
+                          "Arn"
+                        ]
+                      },
+                      "/protected/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-storage0EC3F24A-x.template.json
+                          "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket56A4F200",
+========
+                          "moodboarda9dff0b544a64459b29954a5cab78ace5c190gen2mainBucket33EA37F9",
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-storage0EC3F24A-PO9PAR11EIRO.template.json
+                          "Arn"
+                        ]
+                      },
+                      "/private/*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-storage0EC3F24A-x.template.json
+        "PolicyName": "amplifymoodboarde2esandbox685dc54d14storageAccess459CF4654",
+        "Roles": [
+          {
+            "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthauthenticatedUserRoleECA75B03Ref"
+========
+        "PolicyName": "amplifyd2y1hd6iycv4j0gen2mainbranch91af8367festorageAccess498A98DAB",
+        "Roles": [
+          {
+            "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthNestedStackauthNestedStackResourceC05563C6Outputsamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthamplifyAuthauthenticatedUserRole136A40AFRef"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-storage0EC3F24A-PO9PAR11EIRO.template.json
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-storage0EC3F24A-x.template.json
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/storage/amplify-moodboard-e2e-sandbox-x--storageAccess4/Resource"
+========
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/storage/amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe--storageAccess4/Resource"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-storage0EC3F24A-PO9PAR11EIRO.template.json
+      }
+    },
+    "CDKMetadata": {
+      "Type": "AWS::CDK::Metadata",
+      "Properties": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-storage0EC3F24A-x.template.json
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/5WNTU/DMAyGf8t6Tk3pxIXbNs5QrccJoSw1ldsmkWJ3G4ry31EXicKRk1/reT9qqJ8qqDb6yqXpxnKiM8RXZMGuFW1Gpa/8EXkLcT+bEUUdPl1Wp1hYupErnovf4cXPW7gjhmzdzeJfcELBt/OARrhI7yqjxk9kvtbW/P+jOwda0YIW3b06KWYLsZVArm900BYFw7Lx8yRF2kJc17NKSR1mFm+PyH4OBhe06j+oCf5CHYa9ZlQ7ZpRWdE+uT8r5DmHgh0tdQ/0I1WZgojLMTsgiHPP9BuZ0Chp6AQAA"
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/storage/CDKMetadata/Default"
+========
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/5VQTUvEMBD9Lfacjtr1IN7246xlexSRbDqWaZsEMpNdJeS/Szdg9ehp3uN9wTTQPDzC3Y2+cG36qZ7pBOkZWbDvRJtJ6Qu/J95A2kUzoaj9hyvoNVWWPslVT9Xv8OLnDVwlhmLdRvEHnFHw5TSiEa7ymypS62cyX2tr4f/oLoFOtKBFd63OitlC6iSQG1odtEXBsGz8kKxIW0jrekE5q31k8faI7GMwuEgr/iO1wZ+px7DTjGrLjNKJHsgNWTnfI4x8e24auF++OzJRHaITsgjHcr8Bi0cu0HoBAAA="
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/storage/CDKMetadata/Default"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-storage0EC3F24A-PO9PAR11EIRO.template.json
+      },
+      "Condition": "CDKMetadataAvailable"
+    }
+  },
+  "Conditions": {
+    "CDKMetadataAvailable": {
+      "Fn::Or": [
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "af-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-3"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-south-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-3"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-4"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ca-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ca-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-northwest-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-central-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-south-2"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-3"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "il-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "me-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "me-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "sa-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-west-1"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "AWS::Region"
+            },
+            "us-west-2"
+          ]
+        }
+      ]
+    }
+  },
+  "Parameters": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-storage0EC3F24A-x.template.json
+    "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthunauthenticatedUserRole92D42D98Ref": {
+      "Type": "String"
+    },
+    "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthauthenticatedUserRoleECA75B03Ref": {
+========
+    "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthNestedStackauthNestedStackResourceC05563C6Outputsamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthamplifyAuthunauthenticatedUserRoleDFF7305BRef": {
+      "Type": "String"
+    },
+    "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthNestedStackauthNestedStackResourceC05563C6Outputsamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthamplifyAuthauthenticatedUserRole136A40AFRef": {
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-storage0EC3F24A-PO9PAR11EIRO.template.json
+      "Type": "String"
+    }
+  },
+  "Outputs": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-storage0EC3F24A-x.template.json
+    "amplifymoodboarde2esandbox685dc54d14storagemoodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket41195188Ref": {
+      "Value": {
+        "Ref": "moodboard20e29595008142e3ad16f01c4066e1c4xgen2xBucket56A4F200"
+========
+    "amplifyd2y1hd6iycv4j0gen2mainbranch91af8367festoragemoodboarda9dff0b544a64459b29954a5cab78ace5c190gen2mainBucket01B27C4ARef": {
+      "Value": {
+        "Ref": "moodboarda9dff0b544a64459b29954a5cab78ace5c190gen2mainBucket33EA37F9"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-storage0EC3F24A-PO9PAR11EIRO.template.json
+      }
+    }
+  }
+}

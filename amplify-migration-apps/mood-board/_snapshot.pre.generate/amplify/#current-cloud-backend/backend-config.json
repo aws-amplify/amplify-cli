@@ -13,7 +13,7 @@
             "UserPoolId"
           ],
           "category": "auth",
-          "resourceName": "moodboardc367bd90"
+          "resourceName": "moodboard759ae00a"
         }
       ],
       "output": {
@@ -22,15 +22,15 @@
             {
               "authenticationType": "AMAZON_COGNITO_USER_POOLS",
               "userPoolConfig": {
-                "userPoolId": "authmoodboardc367bd90"
+                "userPoolId": "authmoodboard759ae00a"
               }
             }
           ],
           "defaultAuthentication": {
             "apiKeyConfig": {
-              "apiKeyExpirationDate": "2027-04-08T18:57:06.533Z",
+              "apiKeyExpirationDate": "2027-03-08T17:00:39.856Z",
               "apiKeyExpirationDays": 365,
-              "description": "moodboard apiKey"
+              "description": "moodBoard API Key"
             },
             "authenticationType": "API_KEY"
           }
@@ -41,7 +41,7 @@
     }
   },
   "auth": {
-    "moodboardc367bd90": {
+    "moodboard759ae00a": {
       "customAuth": false,
       "dependsOn": [],
       "frontendAuthConfig": {
@@ -163,7 +163,7 @@
     }
   },
   "storage": {
-    "moodboardstorage": {
+    "moodboardStorage": {
       "dependsOn": [],
       "providerPlugin": "awscloudformation",
       "service": "S3"

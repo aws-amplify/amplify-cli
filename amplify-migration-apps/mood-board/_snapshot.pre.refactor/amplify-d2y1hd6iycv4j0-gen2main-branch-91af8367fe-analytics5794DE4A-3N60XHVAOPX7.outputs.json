@@ -1,0 +1,27 @@
+[
+  {
+    "OutputKey": "kinesisStreamId",
+    "OutputValue": "moodboardKinesis-gen2-x"
+  },
+  {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-analytics5794DE4A-x.outputs.json
+    "OutputKey": "amplifymoodboarde2esandbox685dc54d14analyticsmoodboardKinesisKinesisStream0B86977BArn",
+    "OutputValue": "arn:aws:kinesis:us-east-1:123456789012:stream/moodboardKinesis-gen2-x"
+========
+    "OutputKey": "amplifyd2y1hd6iycv4j0gen2mainbranch91af8367feanalyticsmoodboardKinesisKinesisStream9A121783Arn",
+    "OutputValue": "arn:aws:kinesis:us-east-1:615368094448:stream/moodboardKinesis-gen2-main"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-analytics5794DE4A-3N60XHVAOPX7.outputs.json
+  },
+  {
+    "OutputKey": "kinesisStreamShardCount",
+    "OutputValue": "1"
+  },
+  {
+    "OutputKey": "kinesisStreamArn",
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-analytics5794DE4A-x.outputs.json
+    "OutputValue": "arn:aws:kinesis:us-east-1:123456789012:stream/moodboardKinesis-gen2-x"
+========
+    "OutputValue": "arn:aws:kinesis:us-east-1:615368094448:stream/moodboardKinesis-gen2-main"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-analytics5794DE4A-3N60XHVAOPX7.outputs.json
+  }
+]

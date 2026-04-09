@@ -14,7 +14,7 @@ export type AmplifyDependentResourcesAttributes = {
     }
   },
   "auth": {
-    "moodboardc367bd90": {
+    "moodboard759ae00a": {
       "AppClientID": "string",
       "AppClientIDWeb": "string",
       "IdentityPoolId": "string",
@@ -48,7 +48,7 @@ export type AmplifyDependentResourcesAttributes = {
     }
   },
   "storage": {
-    "moodboardstorage": {
+    "moodboardStorage": {
       "BucketName": "string",
       "Region": "string"
     }

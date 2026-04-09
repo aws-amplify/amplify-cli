@@ -1,0 +1,174 @@
+[
+  {
+    "OutputKey": "webClientId",
+<<<<<<<< HEAD:amplify-migration-apps/backend-only/_snapshot.pre.refactor/amplify-backendonly-e2e-sandbox-x.outputs.json
+    "OutputValue": "2351hpg07effv1sr4a6fv32pni"
+========
+    "OutputValue": "2h4lk7ocqcij12s1n049rcsdhj"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe.outputs.json
+  },
+  {
+    "OutputKey": "socialProviders",
+    "OutputValue": ""
+  },
+  {
+    "OutputKey": "usernameAttributes",
+    "OutputValue": "[\"email\"]"
+  },
+  {
+    "OutputKey": "bucketName",
+<<<<<<<< HEAD:amplify-migration-apps/backend-only/_snapshot.pre.refactor/amplify-backendonly-e2e-sandbox-x.outputs.json
+    "OutputValue": "amplify-backendonl2604142-backendonlycb1a13ab81664-xpdnuaq3bl3r"
+========
+    "OutputValue": "amplify-d2y1hd6iycv4j0-ge-moodboarda9dff0b544a6445-iajmrqsq3qco"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe.outputs.json
+  },
+  {
+    "OutputKey": "signupAttributes",
+    "OutputValue": "[\"email\"]"
+  },
+  {
+    "OutputKey": "oauthClientId",
+<<<<<<<< HEAD:amplify-migration-apps/backend-only/_snapshot.pre.refactor/amplify-backendonly-e2e-sandbox-x.outputs.json
+    "OutputValue": "2351hpg07effv1sr4a6fv32pni"
+========
+    "OutputValue": "2h4lk7ocqcij12s1n049rcsdhj"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe.outputs.json
+  },
+  {
+    "OutputKey": "allowUnauthenticatedIdentities",
+    "OutputValue": "true"
+  },
+  {
+    "OutputKey": "oauthCognitoDomain",
+    "OutputValue": ""
+  },
+  {
+    "OutputKey": "oauthScope",
+    "OutputValue": "[\"profile\",\"phone\",\"email\",\"openid\",\"aws.cognito.signin.user.admin\"]"
+  },
+  {
+    "OutputKey": "oauthRedirectSignOut",
+    "OutputValue": ""
+  },
+  {
+    "OutputKey": "awsAppsyncAdditionalAuthenticationTypes",
+    "OutputValue": "AMAZON_COGNITO_USER_POOLS,AWS_IAM"
+  },
+  {
+    "OutputKey": "mfaTypes",
+    "OutputValue": "[]"
+  },
+  {
+    "OutputKey": "mfaConfiguration",
+    "OutputValue": "OFF"
+  },
+  {
+    "OutputKey": "storageRegion",
+    "OutputValue": "us-east-1"
+  },
+  {
+    "OutputKey": "oauthResponseType",
+    "OutputValue": "code"
+  },
+  {
+    "OutputKey": "awsAppsyncApiKey",
+    "OutputValue": "da2-k7wuac36vrdz5fw7suv5m6lcay"
+  },
+  {
+    "OutputKey": "awsAppsyncAuthenticationType",
+    "OutputValue": "API_KEY"
+  },
+  {
+    "OutputKey": "oauthRedirectSignIn",
+    "OutputValue": "https://example.com"
+  },
+  {
+    "OutputKey": "passwordPolicyMinLength",
+    "OutputValue": "8"
+  },
+  {
+    "OutputKey": "awsAppsyncApiEndpoint",
+<<<<<<<< HEAD:amplify-migration-apps/backend-only/_snapshot.pre.refactor/amplify-backendonly-e2e-sandbox-x.outputs.json
+    "OutputValue": "https://kndhawwuejg2jhg6h5k7ew3esu.appsync-api.us-east-1.amazonaws.com/graphql"
+  },
+  {
+    "OutputKey": "awsAppsyncApiId",
+    "OutputValue": "64fwpekbzfhs7ctgvnsvdv33fa"
+========
+    "OutputValue": "https://7xpxwim74zh3hmf6jwoowufvva.appsync-api.us-east-1.amazonaws.com/graphql"
+  },
+  {
+    "OutputKey": "awsAppsyncApiId",
+    "OutputValue": "yv6kq47fvrgivk6bpvstkendwa"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe.outputs.json
+  },
+  {
+    "OutputKey": "authRegion",
+    "OutputValue": "us-east-1"
+  },
+  {
+    "OutputKey": "buckets",
+<<<<<<<< HEAD:amplify-migration-apps/backend-only/_snapshot.pre.refactor/amplify-backendonly-e2e-sandbox-x.outputs.json
+    "OutputValue": "[\"{\\\"name\\\":\\\"backendonlycb1a13ab81664ecaa7d015068ab2d016x-gen2-x\\\",\\\"bucketName\\\":\\\"amplify-backendonl2604142-backendonlycb1a13ab81664-xpdnuaq3bl3r\\\",\\\"storageRegion\\\":\\\"us-east-1\\\",\\\"paths\\\":{\\\"public/*\\\":{\\\"guest\\\":[\\\"get\\\",\\\"list\\\"],\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"protected/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"private/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]}}}\"]"
+  },
+  {
+    "OutputKey": "amplifyApiModelSchemaS3Uri",
+    "OutputValue": "s3://amplify-backendonl2604142-amplifydataamplifycodege-jbfjafbzordj/model-schema.graphql"
+========
+    "OutputValue": "[\"{\\\"name\\\":\\\"moodboarda9dff0b544a64459b29954a5cab78ace5c190-gen2-main\\\",\\\"bucketName\\\":\\\"amplify-d2y1hd6iycv4j0-ge-moodboarda9dff0b544a6445-iajmrqsq3qco\\\",\\\"storageRegion\\\":\\\"us-east-1\\\",\\\"paths\\\":{\\\"public/*\\\":{\\\"guest\\\":[\\\"get\\\",\\\"list\\\"],\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"protected/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"private/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]}}}\"]"
+  },
+  {
+    "OutputKey": "amplifyApiModelSchemaS3Uri",
+    "OutputValue": "s3://amplify-d2y1hd6iycv4j0-ge-amplifydataamplifycodege-jgysjwhqb2bb/model-schema.graphql"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe.outputs.json
+  },
+  {
+    "OutputKey": "groups",
+    "OutputValue": "[]"
+  },
+  {
+    "OutputKey": "definedFunctions",
+    "OutputValue": "[\"quotegeneratorbe-gen2-x\"]"
+  },
+  {
+    "OutputKey": "passwordlessOptions",
+    "OutputValue": ""
+  },
+  {
+    "OutputKey": "awsAppsyncRegion",
+    "OutputValue": "us-east-1"
+  },
+  {
+    "OutputKey": "deploymentType",
+    "OutputValue": "sandbox"
+  },
+  {
+    "OutputKey": "passwordPolicyRequirements",
+    "OutputValue": "[]"
+  },
+  {
+    "OutputKey": "region",
+    "OutputValue": "us-east-1"
+  },
+  {
+    "OutputKey": "userPoolId",
+<<<<<<<< HEAD:amplify-migration-apps/backend-only/_snapshot.pre.refactor/amplify-backendonly-e2e-sandbox-x.outputs.json
+    "OutputValue": "us-east-1_QCCMEQ5di"
+  },
+  {
+    "OutputKey": "identityPoolId",
+    "OutputValue": "us-east-1:253c6cb3-ea32-4bc6-9532-d622a04831ed"
+========
+    "OutputValue": "us-east-1_KoaTNTWmg"
+  },
+  {
+    "OutputKey": "identityPoolId",
+    "OutputValue": "us-east-1:001859d7-3aac-4503-b311-89c3698107bd"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe.outputs.json
+  },
+  {
+    "OutputKey": "verificationMechanisms",
+    "OutputValue": "[\"email\"]"
+  }
+]

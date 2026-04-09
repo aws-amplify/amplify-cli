@@ -1,0 +1,2597 @@
+{
+  "Parameters": {
+    "DynamoDBModelTableReadIOPS": {
+      "Type": "Number",
+      "Default": 5,
+      "Description": "The number of read IOPS the table should support."
+    },
+    "DynamoDBModelTableWriteIOPS": {
+      "Type": "Number",
+      "Default": 5,
+      "Description": "The number of write IOPS the table should support."
+    },
+    "DynamoDBBillingMode": {
+      "Type": "String",
+      "Default": "PAY_PER_REQUEST",
+      "AllowedValues": [
+        "PAY_PER_REQUEST",
+        "PROVISIONED"
+      ],
+      "Description": "Configure @model types to create DynamoDB tables with PAY_PER_REQUEST or PROVISIONED billing modes."
+    },
+    "DynamoDBEnablePointInTimeRecovery": {
+      "Type": "String",
+      "Default": "false",
+      "AllowedValues": [
+        "true",
+        "false"
+      ],
+      "Description": "Whether to enable Point in Time Recovery on the table."
+    },
+    "DynamoDBEnableServerSideEncryption": {
+      "Type": "String",
+      "Default": "true",
+      "AllowedValues": [
+        "true",
+        "false"
+      ],
+      "Description": "Enable server side encryption powered by KMS."
+    },
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+    "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResourceEDAFB4EEOutputsamplifymoodboarde2esandbox685dc54d14dataamplifyDataAmplifyTableManagerTable155EE028": {
+      "Type": "String"
+    },
+    "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId": {
+      "Type": "String"
+    },
+    "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPINONEDS3FF4CBF7Name": {
+      "Type": "String"
+    },
+    "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthauthenticatedUserRoleECA75B03Ref": {
+      "Type": "String"
+    },
+    "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthunauthenticatedUserRole92D42D98Ref": {
+      "Type": "String"
+    },
+    "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthIdentityPoolA541B351Ref": {
+========
+    "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResource630FEC4COutputsamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataAmplifyTableManagerTableMa9297B18A": {
+      "Type": "String"
+    },
+    "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPIE0C402A7ApiId": {
+      "Type": "String"
+    },
+    "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPINONEDSF712E0A6Name": {
+      "Type": "String"
+    },
+    "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthNestedStackauthNestedStackResourceC05563C6Outputsamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthamplifyAuthauthenticatedUserRole136A40AFRef": {
+      "Type": "String"
+    },
+    "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthNestedStackauthNestedStackResourceC05563C6Outputsamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthamplifyAuthunauthenticatedUserRoleDFF7305BRef": {
+      "Type": "String"
+    },
+    "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthNestedStackauthNestedStackResourceC05563C6Outputsamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthamplifyAuthIdentityPool2D8E5862Ref": {
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+      "Type": "String"
+    }
+  },
+  "Conditions": {
+    "HasEnvironmentParameter": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            "NONE",
+            "NONE"
+          ]
+        }
+      ]
+    },
+    "ShouldUsePayPerRequestBilling": {
+      "Fn::Equals": [
+        {
+          "Ref": "DynamoDBBillingMode"
+        },
+        "PAY_PER_REQUEST"
+      ]
+    },
+    "ShouldUsePointInTimeRecovery": {
+      "Fn::Equals": [
+        {
+          "Ref": "DynamoDBEnablePointInTimeRecovery"
+        },
+        "true"
+      ]
+    },
+    "CDKMetadataAvailable": {
+      "Fn::Or": [
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "af-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-3"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-south-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-3"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-4"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ca-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ca-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-northwest-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-central-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-south-2"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-3"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "il-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "me-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "me-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "sa-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-west-1"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "AWS::Region"
+            },
+            "us-west-2"
+          ]
+        }
+      ]
+    }
+  },
+  "Resources": {
+    "BoardTable": {
+      "Type": "Custom::ImportedAmplifyDynamoDBTable",
+      "Properties": {
+        "ServiceToken": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResourceEDAFB4EEOutputsamplifymoodboarde2esandbox685dc54d14dataamplifyDataAmplifyTableManagerTable155EE028"
+        },
+        "tableName": "Board-g26hrobfy5b5pniveska5ylg4u-x",
+========
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResource630FEC4COutputsamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataAmplifyTableManagerTableMa9297B18A"
+        },
+        "tableName": "Board-qy2hodyasjgidjuruysadaqj5a-main",
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+        "attributeDefinitions": [
+          {
+            "attributeName": "id",
+            "attributeType": "S"
+          }
+        ],
+        "keySchema": [
+          {
+            "attributeName": "id",
+            "keyType": "HASH"
+          }
+        ],
+        "provisionedThroughput": {
+          "Fn::If": [
+            "ShouldUsePayPerRequestBilling",
+            {
+              "Ref": "AWS::NoValue"
+            },
+            {
+              "ReadCapacityUnits": {
+                "Ref": "DynamoDBModelTableReadIOPS"
+              },
+              "WriteCapacityUnits": {
+                "Ref": "DynamoDBModelTableWriteIOPS"
+              }
+            }
+          ]
+        },
+        "sseSpecification": {
+          "sseEnabled": false
+        },
+        "streamSpecification": {
+          "streamViewType": "NEW_AND_OLD_IMAGES"
+        },
+        "deletionProtectionEnabled": true,
+        "allowDestructiveGraphqlSchemaUpdates": true,
+        "replaceTableUponGsiUpdate": false,
+        "isImported": true,
+        "pointInTimeRecoverySpecification": {
+          "Fn::If": [
+            "ShouldUsePointInTimeRecovery",
+            {
+              "PointInTimeRecoveryEnabled": true
+            },
+            {
+              "Ref": "AWS::NoValue"
+            }
+          ]
+        },
+        "billingMode": {
+          "Fn::If": [
+            "ShouldUsePayPerRequestBilling",
+            "PAY_PER_REQUEST",
+            {
+              "Ref": "AWS::NoValue"
+            }
+          ]
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/data/amplifyData/Board/BoardTable/Default/Default"
+========
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/data/amplifyData/Board/BoardTable/Default/Default"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+      }
+    },
+    "BoardIAMRole2AFA0B47": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "appsync.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "dynamodb:BatchGetItem",
+                    "dynamodb:BatchWriteItem",
+                    "dynamodb:PutItem",
+                    "dynamodb:DeleteItem",
+                    "dynamodb:GetItem",
+                    "dynamodb:Scan",
+                    "dynamodb:Query",
+                    "dynamodb:UpdateItem",
+                    "dynamodb:ConditionCheckItem",
+                    "dynamodb:DescribeTable",
+                    "dynamodb:GetRecords",
+                    "dynamodb:GetShardIterator"
+                  ],
+                  "Effect": "Allow",
+                  "Resource": [
+                    {
+                      "Fn::Sub": [
+                        "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}",
+                        {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+                          "tablename": "Board-g26hrobfy5b5pniveska5ylg4u-x"
+========
+                          "tablename": "Board-qy2hodyasjgidjuruysadaqj5a-main"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+                        }
+                      ]
+                    },
+                    {
+                      "Fn::Sub": [
+                        "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}/*",
+                        {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+                          "tablename": "Board-g26hrobfy5b5pniveska5ylg4u-x"
+========
+                          "tablename": "Board-qy2hodyasjgidjuruysadaqj5a-main"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "Version": "2012-10-17"
+            },
+            "PolicyName": "DynamoDBAccess"
+          }
+        ],
+        "RoleName": {
+          "Fn::Join": [
+            "",
+            [
+              "BoardIAMRolecda8e3-",
+              {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+                "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId"
+========
+                "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPIE0C402A7ApiId"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+              },
+              "-NONE"
+            ]
+          ]
+        },
+        "Tags": [
+          {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+========
+            "Key": "amplify:app-id",
+            "Value": "d2y1hd6iycv4j0"
+          },
+          {
+            "Key": "amplify:branch-name",
+            "Value": "gen2-main"
+          },
+          {
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "amplify:friendly-name",
+            "Value": "amplifyData"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/data/amplifyData/Board/BoardIAMRole/Resource"
+========
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/data/amplifyData/Board/BoardIAMRole/Resource"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+      }
+    },
+    "BoardDataSource": {
+      "Type": "AWS::AppSync::DataSource",
+      "Properties": {
+        "ApiId": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId"
+========
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPIE0C402A7ApiId"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+        },
+        "DynamoDBConfig": {
+          "AwsRegion": {
+            "Ref": "AWS::Region"
+          },
+          "TableName": {
+            "Fn::Select": [
+              1,
+              {
+                "Fn::Split": [
+                  "/",
+                  {
+                    "Fn::Select": [
+                      5,
+                      {
+                        "Fn::Split": [
+                          ":",
+                          {
+                            "Fn::GetAtt": [
+                              "BoardTable",
+                              "TableArn"
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "Name": "BoardTable",
+        "ServiceRoleArn": {
+          "Fn::GetAtt": [
+            "BoardIAMRole2AFA0B47",
+            "Arn"
+          ]
+        },
+        "Type": "AMAZON_DYNAMODB"
+      },
+      "DependsOn": [
+        "BoardIAMRole2AFA0B47"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/data/amplifyData/Board/BoardDataSource/Resource"
+========
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/data/amplifyData/Board/BoardDataSource/Resource"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+      }
+    },
+    "QuerygetBoardauth0FunctionQuerygetBoardauth0FunctionAppSyncFunctionEEE5FFDD": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPINONEDS3FF4CBF7Name"
+========
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPIE0C402A7ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPINONEDSF712E0A6Name"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "QuerygetBoardauth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0224a3e5097427da3f4460b5d6d2b86ad4195c9cb8da7bc13e7187eead1c3ae3.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/data/amplifyData/Board/QuerygetBoardauth0Function/QuerygetBoardauth0Function.AppSyncFunction"
+========
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/data/amplifyData/Board/QuerygetBoardauth0Function/QuerygetBoardauth0Function.AppSyncFunction"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+      }
+    },
+    "QuerygetBoardpostAuth0FunctionQuerygetBoardpostAuth0FunctionAppSyncFunctionF3579798": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPINONEDS3FF4CBF7Name"
+========
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPIE0C402A7ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPINONEDSF712E0A6Name"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "QuerygetBoardpostAuth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c1721bcd774e27c514d3454b5be4f9bdd094c0161b57ddf053d618e3b0086a77.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/data/amplifyData/Board/QuerygetBoardpostAuth0Function/QuerygetBoardpostAuth0Function.AppSyncFunction"
+========
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/data/amplifyData/Board/QuerygetBoardpostAuth0Function/QuerygetBoardpostAuth0Function.AppSyncFunction"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+      }
+    },
+    "QueryGetBoardDataResolverFnQueryGetBoardDataResolverFnAppSyncFunction4DCC2B77": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId"
+========
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPIE0C402A7ApiId"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+        },
+        "DataSourceName": {
+          "Fn::GetAtt": [
+            "BoardDataSource",
+            "Name"
+          ]
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "QueryGetBoardDataResolverFn",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/08f4d557693d96c1a4efba0f9dc91330e4b19772fd5477c156468843e3d9cb5e.vtl"
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4c6a2d29f01c6091bd1d9afe16e5849d456c96f17c3b215938c8067399532719.vtl"
+        }
+      },
+      "DependsOn": [
+        "BoardDataSource"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/data/amplifyData/Board/QueryGetBoardDataResolverFn/QueryGetBoardDataResolverFn.AppSyncFunction"
+========
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/data/amplifyData/Board/QueryGetBoardDataResolverFn/QueryGetBoardDataResolverFn.AppSyncFunction"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+      }
+    },
+    "GetBoardResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId"
+========
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPIE0C402A7ApiId"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+        },
+        "FieldName": "getBoard",
+        "Kind": "PIPELINE",
+        "PipelineConfig": {
+          "Functions": [
+            {
+              "Fn::GetAtt": [
+                "QuerygetBoardauth0FunctionQuerygetBoardauth0FunctionAppSyncFunctionEEE5FFDD",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "QuerygetBoardpostAuth0FunctionQuerygetBoardpostAuth0FunctionAppSyncFunctionF3579798",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "QueryGetBoardDataResolverFnQueryGetBoardDataResolverFnAppSyncFunction4DCC2B77",
+                "FunctionId"
+              ]
+            }
+          ]
+        },
+        "RequestMappingTemplate": {
+          "Fn::Join": [
+            "",
+            [
+              "$util.qr($ctx.stash.put(\"typeName\", \"Query\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"getBoard\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+                "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId"
+========
+                "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPIE0C402A7ApiId"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
+              {
+                "Fn::Select": [
+                  1,
+                  {
+                    "Fn::Split": [
+                      "/",
+                      {
+                        "Fn::Select": [
+                          5,
+                          {
+                            "Fn::Split": [
+                              ":",
+                              {
+                                "Fn::GetAtt": [
+                                  "BoardTable",
+                                  "TableArn"
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"authRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+                "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthauthenticatedUserRoleECA75B03Ref"
+========
+                "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthNestedStackauthNestedStackResourceC05563C6Outputsamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthamplifyAuthauthenticatedUserRole136A40AFRef"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+                "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthunauthenticatedUserRole92D42D98Ref"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
+              {
+                "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthIdentityPoolA541B351Ref"
+========
+                "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthNestedStackauthNestedStackResourceC05563C6Outputsamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthamplifyAuthunauthenticatedUserRoleDFF7305BRef"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
+              {
+                "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthNestedStackauthNestedStackResourceC05563C6Outputsamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthamplifyAuthIdentityPool2D8E5862Ref"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+            ]
+          ]
+        },
+        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+        "TypeName": "Query"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/data/amplifyData/Board/queryGetBoardResolver"
+========
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/data/amplifyData/Board/queryGetBoardResolver"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+      }
+    },
+    "QuerylistBoardsauth0FunctionQuerylistBoardsauth0FunctionAppSyncFunction8EA5F758": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPINONEDS3FF4CBF7Name"
+========
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPIE0C402A7ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPINONEDSF712E0A6Name"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "QuerylistBoardsauth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0224a3e5097427da3f4460b5d6d2b86ad4195c9cb8da7bc13e7187eead1c3ae3.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/data/amplifyData/Board/QuerylistBoardsauth0Function/QuerylistBoardsauth0Function.AppSyncFunction"
+========
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/data/amplifyData/Board/QuerylistBoardsauth0Function/QuerylistBoardsauth0Function.AppSyncFunction"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+      }
+    },
+    "QuerylistBoardspostAuth0FunctionQuerylistBoardspostAuth0FunctionAppSyncFunction8CF3B4E6": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPINONEDS3FF4CBF7Name"
+========
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPIE0C402A7ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPINONEDSF712E0A6Name"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "QuerylistBoardspostAuth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c1721bcd774e27c514d3454b5be4f9bdd094c0161b57ddf053d618e3b0086a77.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/data/amplifyData/Board/QuerylistBoardspostAuth0Function/QuerylistBoardspostAuth0Function.AppSyncFunction"
+========
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/data/amplifyData/Board/QuerylistBoardspostAuth0Function/QuerylistBoardspostAuth0Function.AppSyncFunction"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+      }
+    },
+    "QueryListBoardsDataResolverFnQueryListBoardsDataResolverFnAppSyncFunction6FD2B54C": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId"
+========
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPIE0C402A7ApiId"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+        },
+        "DataSourceName": {
+          "Fn::GetAtt": [
+            "BoardDataSource",
+            "Name"
+          ]
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "QueryListBoardsDataResolverFn",
+        "RequestMappingTemplate": "## [Start] Custom List Request - Override to cap results at 50. **\n#set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )\n#set( $limit = $util.defaultIfNull($args.limit, 50) )\n## Cap the limit at 50 to keep the board list manageable\n#if( $limit > 50 )\n  #set( $limit = 50 )\n#end\n#set( $ListRequest = {\n  \"version\": \"2018-05-29\",\n  \"limit\": $limit\n} )\n#if( $args.nextToken )\n  #set( $ListRequest.nextToken = $args.nextToken )\n#end\n#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )\n  #set( $filter = $ctx.stash.authFilter )\n  #if( !$util.isNullOrEmpty($args.filter) )\n    #set( $filter = {\n  \"and\":   [$filter, $args.filter]\n} )\n  #end\n#else\n  #if( !$util.isNullOrEmpty($args.filter) )\n    #set( $filter = $args.filter )\n  #end\n#end\n#if( !$util.isNullOrEmpty($filter) )\n  #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )\n  #if( $util.isNullOrEmpty($filterExpression) )\n    $util.error(\"Unable to process the filter expression\", \"Unrecognized Filter\")\n  #end\n  #if( !$util.isNullOrBlank($filterExpression.expression) )\n    #if( $filterExpression.expressionValues.size() == 0 )\n      $util.qr($filterExpression.remove(\"expressionValues\"))\n    #end\n    #set( $ListRequest.filter = $filterExpression )\n  #end\n#end\n#if( !$util.isNull($ctx.stash.modelQueryExpression) && !$util.isNullOrEmpty($ctx.stash.modelQueryExpression.expression) )\n  $util.qr($ListRequest.put(\"operation\", \"Query\"))\n  $util.qr($ListRequest.put(\"query\", $ctx.stash.modelQueryExpression))\n  #if( !$util.isNull($args.sortDirection) && $args.sortDirection == \"DESC\" )\n    #set( $ListRequest.scanIndexForward = false )\n  #else\n    #set( $ListRequest.scanIndexForward = true )\n  #end\n#else\n  $util.qr($ListRequest.put(\"operation\", \"Scan\"))\n#end\n#if( !$util.isNull($ctx.stash.metadata.index) )\n  #set( $ListRequest.IndexName = $ctx.stash.metadata.index )\n#end\n$util.toJson($ListRequest)\n## [End] Custom List Request. **\n",
+        "ResponseMappingTemplate": "## [Start] Custom ResponseTemplate - Prepend emoji to board names to prove override is active. **\n#if( $ctx.error )\n  $util.error($ctx.error.message, $ctx.error.type)\n#end\n\n## Add a pin emoji prefix to each board name so it's visible on the frontend\n#foreach( $item in $ctx.result.items )\n  #if( !$item.name.startsWith(\"? \") )\n    $util.qr($item.put(\"name\", \"? $item.name\"))\n  #end\n#end\n\n$util.toJson($ctx.result)\n## [End] Custom ResponseTemplate. **\n"
+      },
+      "DependsOn": [
+        "BoardDataSource"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/data/amplifyData/Board/QueryListBoardsDataResolverFn/QueryListBoardsDataResolverFn.AppSyncFunction"
+========
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/data/amplifyData/Board/QueryListBoardsDataResolverFn/QueryListBoardsDataResolverFn.AppSyncFunction"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+      }
+    },
+    "ListBoardResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId"
+========
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPIE0C402A7ApiId"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+        },
+        "FieldName": "listBoards",
+        "Kind": "PIPELINE",
+        "PipelineConfig": {
+          "Functions": [
+            {
+              "Fn::GetAtt": [
+                "QuerylistBoardsauth0FunctionQuerylistBoardsauth0FunctionAppSyncFunction8EA5F758",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "QuerylistBoardspostAuth0FunctionQuerylistBoardspostAuth0FunctionAppSyncFunction8CF3B4E6",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "QueryListBoardsDataResolverFnQueryListBoardsDataResolverFnAppSyncFunction6FD2B54C",
+                "FunctionId"
+              ]
+            }
+          ]
+        },
+        "RequestMappingTemplate": {
+          "Fn::Join": [
+            "",
+            [
+              "$util.qr($ctx.stash.put(\"typeName\", \"Query\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"listBoards\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+                "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId"
+========
+                "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPIE0C402A7ApiId"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
+              {
+                "Fn::Select": [
+                  1,
+                  {
+                    "Fn::Split": [
+                      "/",
+                      {
+                        "Fn::Select": [
+                          5,
+                          {
+                            "Fn::Split": [
+                              ":",
+                              {
+                                "Fn::GetAtt": [
+                                  "BoardTable",
+                                  "TableArn"
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"authRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+                "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthauthenticatedUserRoleECA75B03Ref"
+========
+                "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthNestedStackauthNestedStackResourceC05563C6Outputsamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthamplifyAuthauthenticatedUserRole136A40AFRef"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+                "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthunauthenticatedUserRole92D42D98Ref"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
+              {
+                "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthIdentityPoolA541B351Ref"
+========
+                "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthNestedStackauthNestedStackResourceC05563C6Outputsamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthamplifyAuthunauthenticatedUserRoleDFF7305BRef"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
+              {
+                "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthNestedStackauthNestedStackResourceC05563C6Outputsamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthamplifyAuthIdentityPool2D8E5862Ref"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+            ]
+          ]
+        },
+        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+        "TypeName": "Query"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/data/amplifyData/Board/queryListBoardsResolver"
+========
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/data/amplifyData/Board/queryListBoardsResolver"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+      }
+    },
+    "MutationcreateBoardinit0FunctionMutationcreateBoardinit0FunctionAppSyncFunction4C83C02C": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPINONEDS3FF4CBF7Name"
+========
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPIE0C402A7ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPINONEDSF712E0A6Name"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "MutationcreateBoardinit0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a183ddccbd956316c38ef97177b8f088ef0826f62023323f5ae6053d348ccffc.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/data/amplifyData/Board/MutationcreateBoardinit0Function/MutationcreateBoardinit0Function.AppSyncFunction"
+========
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/data/amplifyData/Board/MutationcreateBoardinit0Function/MutationcreateBoardinit0Function.AppSyncFunction"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+      }
+    },
+    "MutationcreateBoardauth0FunctionMutationcreateBoardauth0FunctionAppSyncFunction70CF5FF3": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPINONEDS3FF4CBF7Name"
+========
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPIE0C402A7ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPINONEDSF712E0A6Name"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "MutationcreateBoardauth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d637c1fb7301003b8a5ada269338cf2e8df6cc0dc412ef13acc6158d680b6d3e.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/data/amplifyData/Board/MutationcreateBoardauth0Function/MutationcreateBoardauth0Function.AppSyncFunction"
+========
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/data/amplifyData/Board/MutationcreateBoardauth0Function/MutationcreateBoardauth0Function.AppSyncFunction"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+      }
+    },
+    "MutationcreateBoardpostAuth0FunctionMutationcreateBoardpostAuth0FunctionAppSyncFunction9F246578": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPINONEDS3FF4CBF7Name"
+========
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPIE0C402A7ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPINONEDSF712E0A6Name"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "MutationcreateBoardpostAuth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c1721bcd774e27c514d3454b5be4f9bdd094c0161b57ddf053d618e3b0086a77.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/data/amplifyData/Board/MutationcreateBoardpostAuth0Function/MutationcreateBoardpostAuth0Function.AppSyncFunction"
+========
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/data/amplifyData/Board/MutationcreateBoardpostAuth0Function/MutationcreateBoardpostAuth0Function.AppSyncFunction"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+      }
+    },
+    "MutationCreateBoardDataResolverFnMutationCreateBoardDataResolverFnAppSyncFunctionA8197CF5": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId"
+========
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPIE0C402A7ApiId"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+        },
+        "DataSourceName": {
+          "Fn::GetAtt": [
+            "BoardDataSource",
+            "Name"
+          ]
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "MutationCreateBoardDataResolverFn",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/91ba221dcacf4a6efa3ea6046d228b924c7beebe3045691a4424efa6b76f25d0.vtl"
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f4a52b72209a9dfa197b5e7367a5c378c5bb86de6e29ddd9e48b49a3fe54b249.vtl"
+        }
+      },
+      "DependsOn": [
+        "BoardDataSource"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/data/amplifyData/Board/MutationCreateBoardDataResolverFn/MutationCreateBoardDataResolverFn.AppSyncFunction"
+========
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/data/amplifyData/Board/MutationCreateBoardDataResolverFn/MutationCreateBoardDataResolverFn.AppSyncFunction"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+      }
+    },
+    "CreateBoardResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId"
+========
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPIE0C402A7ApiId"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+        },
+        "FieldName": "createBoard",
+        "Kind": "PIPELINE",
+        "PipelineConfig": {
+          "Functions": [
+            {
+              "Fn::GetAtt": [
+                "MutationcreateBoardinit0FunctionMutationcreateBoardinit0FunctionAppSyncFunction4C83C02C",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "MutationcreateBoardauth0FunctionMutationcreateBoardauth0FunctionAppSyncFunction70CF5FF3",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "MutationcreateBoardpostAuth0FunctionMutationcreateBoardpostAuth0FunctionAppSyncFunction9F246578",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "MutationCreateBoardDataResolverFnMutationCreateBoardDataResolverFnAppSyncFunctionA8197CF5",
+                "FunctionId"
+              ]
+            }
+          ]
+        },
+        "RequestMappingTemplate": {
+          "Fn::Join": [
+            "",
+            [
+              "$util.qr($ctx.stash.put(\"typeName\", \"Mutation\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"createBoard\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+                "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId"
+========
+                "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPIE0C402A7ApiId"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
+              {
+                "Fn::Select": [
+                  1,
+                  {
+                    "Fn::Split": [
+                      "/",
+                      {
+                        "Fn::Select": [
+                          5,
+                          {
+                            "Fn::Split": [
+                              ":",
+                              {
+                                "Fn::GetAtt": [
+                                  "BoardTable",
+                                  "TableArn"
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"authRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+                "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthauthenticatedUserRoleECA75B03Ref"
+========
+                "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthNestedStackauthNestedStackResourceC05563C6Outputsamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthamplifyAuthauthenticatedUserRole136A40AFRef"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+                "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthunauthenticatedUserRole92D42D98Ref"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
+              {
+                "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthIdentityPoolA541B351Ref"
+========
+                "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthNestedStackauthNestedStackResourceC05563C6Outputsamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthamplifyAuthunauthenticatedUserRoleDFF7305BRef"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
+              {
+                "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthNestedStackauthNestedStackResourceC05563C6Outputsamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthamplifyAuthIdentityPool2D8E5862Ref"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+            ]
+          ]
+        },
+        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+        "TypeName": "Mutation"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/data/amplifyData/Board/mutationCreateBoardResolver"
+========
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/data/amplifyData/Board/mutationCreateBoardResolver"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+      }
+    },
+    "MutationupdateBoardinit0FunctionMutationupdateBoardinit0FunctionAppSyncFunction8F5DC918": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPINONEDS3FF4CBF7Name"
+========
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPIE0C402A7ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPINONEDSF712E0A6Name"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "MutationupdateBoardinit0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/06db846fd14e6fc371f22b12b5545ba8e2dbfeda85d8c8d586c71c282166657b.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/data/amplifyData/Board/MutationupdateBoardinit0Function/MutationupdateBoardinit0Function.AppSyncFunction"
+========
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/data/amplifyData/Board/MutationupdateBoardinit0Function/MutationupdateBoardinit0Function.AppSyncFunction"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+      }
+    },
+    "MutationupdateBoardauth0FunctionMutationupdateBoardauth0FunctionAppSyncFunction2E8E275A": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId"
+========
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPIE0C402A7ApiId"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+        },
+        "DataSourceName": {
+          "Fn::GetAtt": [
+            "BoardDataSource",
+            "Name"
+          ]
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "MutationupdateBoardauth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1f5fed297da9c32ae3af922bf3a38ccf23b956078887d16891ec06c20c64722c.vtl"
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/89f92efd98b1034df0e2497fe31a97de6975de554b8a22e0677d05d6efcafa59.vtl"
+        }
+      },
+      "DependsOn": [
+        "BoardDataSource"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/data/amplifyData/Board/MutationupdateBoardauth0Function/MutationupdateBoardauth0Function.AppSyncFunction"
+========
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/data/amplifyData/Board/MutationupdateBoardauth0Function/MutationupdateBoardauth0Function.AppSyncFunction"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+      }
+    },
+    "MutationupdateBoardpostAuth0FunctionMutationupdateBoardpostAuth0FunctionAppSyncFunction7CBBFF9D": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPINONEDS3FF4CBF7Name"
+========
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPIE0C402A7ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPINONEDSF712E0A6Name"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "MutationupdateBoardpostAuth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c1721bcd774e27c514d3454b5be4f9bdd094c0161b57ddf053d618e3b0086a77.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/data/amplifyData/Board/MutationupdateBoardpostAuth0Function/MutationupdateBoardpostAuth0Function.AppSyncFunction"
+========
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/data/amplifyData/Board/MutationupdateBoardpostAuth0Function/MutationupdateBoardpostAuth0Function.AppSyncFunction"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+      }
+    },
+    "MutationUpdateBoardDataResolverFnMutationUpdateBoardDataResolverFnAppSyncFunction9C4A47A5": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId"
+========
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPIE0C402A7ApiId"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+        },
+        "DataSourceName": {
+          "Fn::GetAtt": [
+            "BoardDataSource",
+            "Name"
+          ]
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "MutationUpdateBoardDataResolverFn",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/474bf0776ec2164a13191d1a0a9e057154931e4918fea5086f49850d02a5371b.vtl"
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f4a52b72209a9dfa197b5e7367a5c378c5bb86de6e29ddd9e48b49a3fe54b249.vtl"
+        }
+      },
+      "DependsOn": [
+        "BoardDataSource"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/data/amplifyData/Board/MutationUpdateBoardDataResolverFn/MutationUpdateBoardDataResolverFn.AppSyncFunction"
+========
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/data/amplifyData/Board/MutationUpdateBoardDataResolverFn/MutationUpdateBoardDataResolverFn.AppSyncFunction"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+      }
+    },
+    "UpdateBoardResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId"
+========
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPIE0C402A7ApiId"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+        },
+        "FieldName": "updateBoard",
+        "Kind": "PIPELINE",
+        "PipelineConfig": {
+          "Functions": [
+            {
+              "Fn::GetAtt": [
+                "MutationupdateBoardinit0FunctionMutationupdateBoardinit0FunctionAppSyncFunction8F5DC918",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "MutationupdateBoardauth0FunctionMutationupdateBoardauth0FunctionAppSyncFunction2E8E275A",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "MutationupdateBoardpostAuth0FunctionMutationupdateBoardpostAuth0FunctionAppSyncFunction7CBBFF9D",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "MutationUpdateBoardDataResolverFnMutationUpdateBoardDataResolverFnAppSyncFunction9C4A47A5",
+                "FunctionId"
+              ]
+            }
+          ]
+        },
+        "RequestMappingTemplate": {
+          "Fn::Join": [
+            "",
+            [
+              "$util.qr($ctx.stash.put(\"typeName\", \"Mutation\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"updateBoard\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+                "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId"
+========
+                "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPIE0C402A7ApiId"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
+              {
+                "Fn::Select": [
+                  1,
+                  {
+                    "Fn::Split": [
+                      "/",
+                      {
+                        "Fn::Select": [
+                          5,
+                          {
+                            "Fn::Split": [
+                              ":",
+                              {
+                                "Fn::GetAtt": [
+                                  "BoardTable",
+                                  "TableArn"
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"authRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+                "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthauthenticatedUserRoleECA75B03Ref"
+========
+                "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthNestedStackauthNestedStackResourceC05563C6Outputsamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthamplifyAuthauthenticatedUserRole136A40AFRef"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+                "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthunauthenticatedUserRole92D42D98Ref"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
+              {
+                "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthIdentityPoolA541B351Ref"
+========
+                "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthNestedStackauthNestedStackResourceC05563C6Outputsamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthamplifyAuthunauthenticatedUserRoleDFF7305BRef"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
+              {
+                "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthNestedStackauthNestedStackResourceC05563C6Outputsamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthamplifyAuthIdentityPool2D8E5862Ref"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+            ]
+          ]
+        },
+        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+        "TypeName": "Mutation"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/data/amplifyData/Board/mutationUpdateBoardResolver"
+========
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/data/amplifyData/Board/mutationUpdateBoardResolver"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+      }
+    },
+    "MutationdeleteBoardauth0FunctionMutationdeleteBoardauth0FunctionAppSyncFunctionDCC1EFD9": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId"
+========
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPIE0C402A7ApiId"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+        },
+        "DataSourceName": {
+          "Fn::GetAtt": [
+            "BoardDataSource",
+            "Name"
+          ]
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "MutationdeleteBoardauth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1f5fed297da9c32ae3af922bf3a38ccf23b956078887d16891ec06c20c64722c.vtl"
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e3416b4d47414f29c21e59a70e83bddb959ef0625854ed7fb0ca376573e99069.vtl"
+        }
+      },
+      "DependsOn": [
+        "BoardDataSource"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/data/amplifyData/Board/MutationdeleteBoardauth0Function/MutationdeleteBoardauth0Function.AppSyncFunction"
+========
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/data/amplifyData/Board/MutationdeleteBoardauth0Function/MutationdeleteBoardauth0Function.AppSyncFunction"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+      }
+    },
+    "MutationdeleteBoardpostAuth0FunctionMutationdeleteBoardpostAuth0FunctionAppSyncFunction23394BC0": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPINONEDS3FF4CBF7Name"
+========
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPIE0C402A7ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPINONEDSF712E0A6Name"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "MutationdeleteBoardpostAuth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c1721bcd774e27c514d3454b5be4f9bdd094c0161b57ddf053d618e3b0086a77.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/data/amplifyData/Board/MutationdeleteBoardpostAuth0Function/MutationdeleteBoardpostAuth0Function.AppSyncFunction"
+========
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/data/amplifyData/Board/MutationdeleteBoardpostAuth0Function/MutationdeleteBoardpostAuth0Function.AppSyncFunction"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+      }
+    },
+    "MutationDeleteBoardDataResolverFnMutationDeleteBoardDataResolverFnAppSyncFunctionFAEDC2FC": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId"
+========
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPIE0C402A7ApiId"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+        },
+        "DataSourceName": {
+          "Fn::GetAtt": [
+            "BoardDataSource",
+            "Name"
+          ]
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "MutationDeleteBoardDataResolverFn",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4f7907d1209a2c9953a0c053df402c634e359546d70c7cc5c2e8e21ea734880f.vtl"
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f4a52b72209a9dfa197b5e7367a5c378c5bb86de6e29ddd9e48b49a3fe54b249.vtl"
+        }
+      },
+      "DependsOn": [
+        "BoardDataSource"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/data/amplifyData/Board/MutationDeleteBoardDataResolverFn/MutationDeleteBoardDataResolverFn.AppSyncFunction"
+========
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/data/amplifyData/Board/MutationDeleteBoardDataResolverFn/MutationDeleteBoardDataResolverFn.AppSyncFunction"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+      }
+    },
+    "DeleteBoardResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId"
+========
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPIE0C402A7ApiId"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+        },
+        "FieldName": "deleteBoard",
+        "Kind": "PIPELINE",
+        "PipelineConfig": {
+          "Functions": [
+            {
+              "Fn::GetAtt": [
+                "MutationdeleteBoardauth0FunctionMutationdeleteBoardauth0FunctionAppSyncFunctionDCC1EFD9",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "MutationdeleteBoardpostAuth0FunctionMutationdeleteBoardpostAuth0FunctionAppSyncFunction23394BC0",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "MutationDeleteBoardDataResolverFnMutationDeleteBoardDataResolverFnAppSyncFunctionFAEDC2FC",
+                "FunctionId"
+              ]
+            }
+          ]
+        },
+        "RequestMappingTemplate": {
+          "Fn::Join": [
+            "",
+            [
+              "$util.qr($ctx.stash.put(\"typeName\", \"Mutation\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"deleteBoard\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+                "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId"
+========
+                "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPIE0C402A7ApiId"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
+              {
+                "Fn::Select": [
+                  1,
+                  {
+                    "Fn::Split": [
+                      "/",
+                      {
+                        "Fn::Select": [
+                          5,
+                          {
+                            "Fn::Split": [
+                              ":",
+                              {
+                                "Fn::GetAtt": [
+                                  "BoardTable",
+                                  "TableArn"
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"authRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+                "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthauthenticatedUserRoleECA75B03Ref"
+========
+                "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthNestedStackauthNestedStackResourceC05563C6Outputsamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthamplifyAuthauthenticatedUserRole136A40AFRef"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+                "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthunauthenticatedUserRole92D42D98Ref"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
+              {
+                "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthIdentityPoolA541B351Ref"
+========
+                "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthNestedStackauthNestedStackResourceC05563C6Outputsamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthamplifyAuthunauthenticatedUserRoleDFF7305BRef"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
+              {
+                "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthNestedStackauthNestedStackResourceC05563C6Outputsamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthamplifyAuthIdentityPool2D8E5862Ref"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+            ]
+          ]
+        },
+        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+        "TypeName": "Mutation"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/data/amplifyData/Board/mutationDeleteBoardResolver"
+========
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/data/amplifyData/Board/mutationDeleteBoardResolver"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+      }
+    },
+    "SubscriptiononCreateBoardauth0FunctionSubscriptiononCreateBoardauth0FunctionAppSyncFunctionD4360E95": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPINONEDS3FF4CBF7Name"
+========
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPIE0C402A7ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPINONEDSF712E0A6Name"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "SubscriptiononCreateBoardauth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e6da5a6e993df8b5fdc91086b71eb53e72a3a97c98836ef9c9257776f36c452b.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/data/amplifyData/Board/SubscriptiononCreateBoardauth0Function/SubscriptiononCreateBoardauth0Function.AppSyncFunction"
+========
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/data/amplifyData/Board/SubscriptiononCreateBoardauth0Function/SubscriptiononCreateBoardauth0Function.AppSyncFunction"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+      }
+    },
+    "SubscriptiononCreateBoardpostAuth0FunctionSubscriptiononCreateBoardpostAuth0FunctionAppSyncFunction5749A844": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPINONEDS3FF4CBF7Name"
+========
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPIE0C402A7ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPINONEDSF712E0A6Name"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "SubscriptiononCreateBoardpostAuth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c1721bcd774e27c514d3454b5be4f9bdd094c0161b57ddf053d618e3b0086a77.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/data/amplifyData/Board/SubscriptiononCreateBoardpostAuth0Function/SubscriptiononCreateBoardpostAuth0Function.AppSyncFunction"
+========
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/data/amplifyData/Board/SubscriptiononCreateBoardpostAuth0Function/SubscriptiononCreateBoardpostAuth0Function.AppSyncFunction"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+      }
+    },
+    "SubscriptionOnCreateBoardDataResolverFnSubscriptionOnCreateBoardDataResolverFnAppSyncFunctionE7F89181": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPINONEDS3FF4CBF7Name"
+========
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPIE0C402A7ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPINONEDSF712E0A6Name"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "SubscriptionOnCreateBoardDataResolverFn",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fe3c43ada4b9d681a5e2312663ef7a73386424d73b73e51f8e2e9d4b50f7c502.vtl"
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e0cff47fb007f0bbf2a4e43ca256d6aa7ec109821769fd79fa7c5e83f0e7f9fc.vtl"
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/data/amplifyData/Board/SubscriptionOnCreateBoardDataResolverFn/SubscriptionOnCreateBoardDataResolverFn.AppSyncFunction"
+========
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/data/amplifyData/Board/SubscriptionOnCreateBoardDataResolverFn/SubscriptionOnCreateBoardDataResolverFn.AppSyncFunction"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+      }
+    },
+    "SubscriptiononCreateBoardResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId"
+========
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPIE0C402A7ApiId"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+        },
+        "FieldName": "onCreateBoard",
+        "Kind": "PIPELINE",
+        "PipelineConfig": {
+          "Functions": [
+            {
+              "Fn::GetAtt": [
+                "SubscriptiononCreateBoardauth0FunctionSubscriptiononCreateBoardauth0FunctionAppSyncFunctionD4360E95",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "SubscriptiononCreateBoardpostAuth0FunctionSubscriptiononCreateBoardpostAuth0FunctionAppSyncFunction5749A844",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "SubscriptionOnCreateBoardDataResolverFnSubscriptionOnCreateBoardDataResolverFnAppSyncFunctionE7F89181",
+                "FunctionId"
+              ]
+            }
+          ]
+        },
+        "RequestMappingTemplate": {
+          "Fn::Join": [
+            "",
+            [
+              "$util.qr($ctx.stash.put(\"typeName\", \"Subscription\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"onCreateBoard\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"NONE\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+                "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId"
+========
+                "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPIE0C402A7ApiId"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"authRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+                "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthauthenticatedUserRoleECA75B03Ref"
+========
+                "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthNestedStackauthNestedStackResourceC05563C6Outputsamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthamplifyAuthauthenticatedUserRole136A40AFRef"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+                "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthunauthenticatedUserRole92D42D98Ref"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
+              {
+                "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthIdentityPoolA541B351Ref"
+========
+                "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthNestedStackauthNestedStackResourceC05563C6Outputsamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthamplifyAuthunauthenticatedUserRoleDFF7305BRef"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
+              {
+                "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthNestedStackauthNestedStackResourceC05563C6Outputsamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthamplifyAuthIdentityPool2D8E5862Ref"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+            ]
+          ]
+        },
+        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+        "TypeName": "Subscription"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/data/amplifyData/Board/subscriptionOnCreateBoardResolver"
+========
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/data/amplifyData/Board/subscriptionOnCreateBoardResolver"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+      }
+    },
+    "SubscriptiononUpdateBoardauth0FunctionSubscriptiononUpdateBoardauth0FunctionAppSyncFunction757414C8": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPINONEDS3FF4CBF7Name"
+========
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPIE0C402A7ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPINONEDSF712E0A6Name"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "SubscriptiononUpdateBoardauth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e6da5a6e993df8b5fdc91086b71eb53e72a3a97c98836ef9c9257776f36c452b.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/data/amplifyData/Board/SubscriptiononUpdateBoardauth0Function/SubscriptiononUpdateBoardauth0Function.AppSyncFunction"
+========
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/data/amplifyData/Board/SubscriptiononUpdateBoardauth0Function/SubscriptiononUpdateBoardauth0Function.AppSyncFunction"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+      }
+    },
+    "SubscriptiononUpdateBoardpostAuth0FunctionSubscriptiononUpdateBoardpostAuth0FunctionAppSyncFunctionC254B5F8": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPINONEDS3FF4CBF7Name"
+========
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPIE0C402A7ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPINONEDSF712E0A6Name"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "SubscriptiononUpdateBoardpostAuth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c1721bcd774e27c514d3454b5be4f9bdd094c0161b57ddf053d618e3b0086a77.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/data/amplifyData/Board/SubscriptiononUpdateBoardpostAuth0Function/SubscriptiononUpdateBoardpostAuth0Function.AppSyncFunction"
+========
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/data/amplifyData/Board/SubscriptiononUpdateBoardpostAuth0Function/SubscriptiononUpdateBoardpostAuth0Function.AppSyncFunction"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+      }
+    },
+    "SubscriptionOnUpdateBoardDataResolverFnSubscriptionOnUpdateBoardDataResolverFnAppSyncFunction0D16E1E0": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPINONEDS3FF4CBF7Name"
+========
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPIE0C402A7ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPINONEDSF712E0A6Name"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "SubscriptionOnUpdateBoardDataResolverFn",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fe3c43ada4b9d681a5e2312663ef7a73386424d73b73e51f8e2e9d4b50f7c502.vtl"
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e0cff47fb007f0bbf2a4e43ca256d6aa7ec109821769fd79fa7c5e83f0e7f9fc.vtl"
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/data/amplifyData/Board/SubscriptionOnUpdateBoardDataResolverFn/SubscriptionOnUpdateBoardDataResolverFn.AppSyncFunction"
+========
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/data/amplifyData/Board/SubscriptionOnUpdateBoardDataResolverFn/SubscriptionOnUpdateBoardDataResolverFn.AppSyncFunction"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+      }
+    },
+    "SubscriptiononUpdateBoardResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId"
+========
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPIE0C402A7ApiId"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+        },
+        "FieldName": "onUpdateBoard",
+        "Kind": "PIPELINE",
+        "PipelineConfig": {
+          "Functions": [
+            {
+              "Fn::GetAtt": [
+                "SubscriptiononUpdateBoardauth0FunctionSubscriptiononUpdateBoardauth0FunctionAppSyncFunction757414C8",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "SubscriptiononUpdateBoardpostAuth0FunctionSubscriptiononUpdateBoardpostAuth0FunctionAppSyncFunctionC254B5F8",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "SubscriptionOnUpdateBoardDataResolverFnSubscriptionOnUpdateBoardDataResolverFnAppSyncFunction0D16E1E0",
+                "FunctionId"
+              ]
+            }
+          ]
+        },
+        "RequestMappingTemplate": {
+          "Fn::Join": [
+            "",
+            [
+              "$util.qr($ctx.stash.put(\"typeName\", \"Subscription\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"onUpdateBoard\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"NONE\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+                "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId"
+========
+                "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPIE0C402A7ApiId"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"authRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+                "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthauthenticatedUserRoleECA75B03Ref"
+========
+                "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthNestedStackauthNestedStackResourceC05563C6Outputsamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthamplifyAuthauthenticatedUserRole136A40AFRef"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+                "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthunauthenticatedUserRole92D42D98Ref"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
+              {
+                "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthIdentityPoolA541B351Ref"
+========
+                "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthNestedStackauthNestedStackResourceC05563C6Outputsamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthamplifyAuthunauthenticatedUserRoleDFF7305BRef"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
+              {
+                "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthNestedStackauthNestedStackResourceC05563C6Outputsamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthamplifyAuthIdentityPool2D8E5862Ref"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+            ]
+          ]
+        },
+        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+        "TypeName": "Subscription"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/data/amplifyData/Board/subscriptionOnUpdateBoardResolver"
+========
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/data/amplifyData/Board/subscriptionOnUpdateBoardResolver"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+      }
+    },
+    "SubscriptiononDeleteBoardauth0FunctionSubscriptiononDeleteBoardauth0FunctionAppSyncFunction303FE040": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPINONEDS3FF4CBF7Name"
+========
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPIE0C402A7ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPINONEDSF712E0A6Name"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "SubscriptiononDeleteBoardauth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e6da5a6e993df8b5fdc91086b71eb53e72a3a97c98836ef9c9257776f36c452b.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/data/amplifyData/Board/SubscriptiononDeleteBoardauth0Function/SubscriptiononDeleteBoardauth0Function.AppSyncFunction"
+========
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/data/amplifyData/Board/SubscriptiononDeleteBoardauth0Function/SubscriptiononDeleteBoardauth0Function.AppSyncFunction"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+      }
+    },
+    "SubscriptiononDeleteBoardpostAuth0FunctionSubscriptiononDeleteBoardpostAuth0FunctionAppSyncFunction530FEB4B": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPINONEDS3FF4CBF7Name"
+========
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPIE0C402A7ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPINONEDSF712E0A6Name"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "SubscriptiononDeleteBoardpostAuth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c1721bcd774e27c514d3454b5be4f9bdd094c0161b57ddf053d618e3b0086a77.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/data/amplifyData/Board/SubscriptiononDeleteBoardpostAuth0Function/SubscriptiononDeleteBoardpostAuth0Function.AppSyncFunction"
+========
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/data/amplifyData/Board/SubscriptiononDeleteBoardpostAuth0Function/SubscriptiononDeleteBoardpostAuth0Function.AppSyncFunction"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+      }
+    },
+    "SubscriptionOnDeleteBoardDataResolverFnSubscriptionOnDeleteBoardDataResolverFnAppSyncFunctionAEAB75CD": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPINONEDS3FF4CBF7Name"
+========
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPIE0C402A7ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPINONEDSF712E0A6Name"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "SubscriptionOnDeleteBoardDataResolverFn",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fe3c43ada4b9d681a5e2312663ef7a73386424d73b73e51f8e2e9d4b50f7c502.vtl"
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e0cff47fb007f0bbf2a4e43ca256d6aa7ec109821769fd79fa7c5e83f0e7f9fc.vtl"
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/data/amplifyData/Board/SubscriptionOnDeleteBoardDataResolverFn/SubscriptionOnDeleteBoardDataResolverFn.AppSyncFunction"
+========
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/data/amplifyData/Board/SubscriptionOnDeleteBoardDataResolverFn/SubscriptionOnDeleteBoardDataResolverFn.AppSyncFunction"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+      }
+    },
+    "SubscriptiononDeleteBoardResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+          "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId"
+========
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPIE0C402A7ApiId"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+        },
+        "FieldName": "onDeleteBoard",
+        "Kind": "PIPELINE",
+        "PipelineConfig": {
+          "Functions": [
+            {
+              "Fn::GetAtt": [
+                "SubscriptiononDeleteBoardauth0FunctionSubscriptiononDeleteBoardauth0FunctionAppSyncFunction303FE040",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "SubscriptiononDeleteBoardpostAuth0FunctionSubscriptiononDeleteBoardpostAuth0FunctionAppSyncFunction530FEB4B",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "SubscriptionOnDeleteBoardDataResolverFnSubscriptionOnDeleteBoardDataResolverFnAppSyncFunctionAEAB75CD",
+                "FunctionId"
+              ]
+            }
+          ]
+        },
+        "RequestMappingTemplate": {
+          "Fn::Join": [
+            "",
+            [
+              "$util.qr($ctx.stash.put(\"typeName\", \"Subscription\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"onDeleteBoard\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"NONE\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+                "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId"
+========
+                "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPIE0C402A7ApiId"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"authRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+                "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthauthenticatedUserRoleECA75B03Ref"
+========
+                "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthNestedStackauthNestedStackResourceC05563C6Outputsamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthamplifyAuthauthenticatedUserRole136A40AFRef"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+                "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthunauthenticatedUserRole92D42D98Ref"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
+              {
+                "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14authNestedStackauthNestedStackResourceAFCFFB8EOutputsamplifymoodboarde2esandbox685dc54d14authamplifyAuthIdentityPoolA541B351Ref"
+========
+                "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthNestedStackauthNestedStackResourceC05563C6Outputsamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthamplifyAuthunauthenticatedUserRoleDFF7305BRef"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
+              {
+                "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthNestedStackauthNestedStackResourceC05563C6Outputsamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthamplifyAuthIdentityPool2D8E5862Ref"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+            ]
+          ]
+        },
+        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+        "TypeName": "Subscription"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/data/amplifyData/Board/subscriptionOnDeleteBoardResolver"
+========
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/data/amplifyData/Board/subscriptionOnDeleteBoardResolver"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+      }
+    },
+    "CDKMetadata": {
+      "Type": "AWS::CDK::Metadata",
+      "Properties": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/1WOQW6DQAxFz5L9xKVEPUAD6jKtoPvIzBg0ATxo7EkUIe5eQapUXX0/+cn+OeRvGWQ7vMneun4/+AbmE4mSqxVtb4qWvzDiSEpxhSKw8+oDm4okpGjJFEk0jH/Y8nPGm5xnd2ccg2vgG5uBjihkPI4wV2F42GGgxeA0yZ0tzOWml02JivXz5H/6SGzXEkXg1ncp4tbo9/NwpbgYOZxRhFTgfQ0jBzgm25OuBZbV/Uw6JTXbulbsPHeL4eAILvJyzXPIXyHbXcT7fUysfiSoHvkDBH3kWTYBAAA="
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-moodboard-e2e-sandbox-x/data/amplifyData/Board/CDKMetadata/Default"
+========
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/1WQQU/DMAyFfwv3zEDHgStrxRFQy31yE7fK2jpV7Gyaqv53lA4NcXp+ek/2JxdQvLzC0wNeZGfdsBt9C8sHiZJrFO1gyo6/MOJESjGbMrDz6gObmiSkaMmUSTRMf7bj+4wXOS7uyjgF18I3tiMdUMh4nGCpw3hrh5FWg/MsV7awVFu9aitUbO4r/7v3xDZDlIE736eIG9Hv5fFMcTWyP6IIqcBbFiN7OCQ7kGaANXc/k85JzRY3ir3nfjUcHMFJHs9FAc/5MyfxfhcTq58I6pv+AD5ajwo2AQAA"
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/data/amplifyData/Board/CDKMetadata/Default"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+      },
+      "Condition": "CDKMetadataAvailable"
+    }
+  },
+  "Outputs": {
+    "GetAttBoardTableStreamArn": {
+      "Description": "Your DynamoDB table StreamArn.",
+      "Value": {
+        "Fn::GetAtt": [
+          "BoardTable",
+          "TableStreamArn"
+        ]
+      },
+      "Export": {
+        "Name": {
+          "Fn::Join": [
+            ":",
+            [
+              {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+                "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId"
+========
+                "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPIE0C402A7ApiId"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+              },
+              "GetAtt:BoardTable:StreamArn"
+            ]
+          ]
+        }
+      }
+    },
+    "GetAttBoardTableName": {
+      "Description": "Your DynamoDB table name.",
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+      "Value": "Board-g26hrobfy5b5pniveska5ylg4u-x",
+========
+      "Value": "Board-qy2hodyasjgidjuruysadaqj5a-main",
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+      "Export": {
+        "Name": {
+          "Fn::Join": [
+            ":",
+            [
+              {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+                "Ref": "referencetoamplifymoodboarde2esandbox685dc54d14dataamplifyDataGraphQLAPI0EC27791ApiId"
+========
+                "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPIE0C402A7ApiId"
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+              },
+              "GetAtt:BoardTable:Name"
+            ]
+          ]
+        }
+      }
+    },
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+    "amplifymoodboarde2esandbox685dc54d14dataamplifyDataBoardBoardDataSourceED4EAD30Name": {
+========
+    "amplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataBoardBoardDataSource1AFFB0ABName": {
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+      "Value": {
+        "Fn::GetAtt": [
+          "BoardDataSource",
+          "Name"
+        ]
+      }
+    },
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-moodboard-e2e-sandbox-x-amplifyDataBoardNestedStackBoardNestedStac-x.template.json
+    "amplifymoodboarde2esandbox685dc54d14dataamplifyDataBoardBoardTable05921B50TableArn": {
+========
+    "amplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataBoardBoardTableE37902FFTableArn": {
+>>>>>>>> a913eb9d4 (feat: pre-refactor snapshot):amplify-migration-apps/mood-board/_snapshot.pre.refactor/amplify-d2y1hd6iycv4j0-gen2main-branch-91af-amplifyDataBoardNestedStackBoardNestedStac-MJ5ZTAWGTSWC.template.json
+      "Value": {
+        "Fn::GetAtt": [
+          "BoardTable",
+          "TableArn"
+        ]
+      }
+    }
+  }
+}
