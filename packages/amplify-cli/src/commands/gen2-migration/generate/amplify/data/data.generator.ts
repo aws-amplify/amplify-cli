@@ -311,15 +311,16 @@ export class DataGenerator implements Planner {
   /**
    * Contributes resolver override statements to backend.ts.
    *
-   * Generates code that reads VTL files from `data/resolvers/` at runtime
-   * and overrides the pipeline function response mapping templates, replacing
-   * the S3-based templates with inline content.
+   * Generates code that reads VTL files from `data/resolvers/` at deploy
+   * time, uploads them as CDK Assets to S3, and overrides the pipeline
+   * function mapping template S3 locations.
    */
   private contributeResolverOverrides(): void {
     // Imports for the generated backend.ts file
-    this.backendGenerator.addImport('fs', ['readFileSync', 'readdirSync']);
+    this.backendGenerator.addImport('fs', ['readdirSync']);
     this.backendGenerator.addImport('path', ['join', 'dirname']);
     this.backendGenerator.addImport('url', ['fileURLToPath']);
+    this.backendGenerator.addNamespaceImport('aws-cdk-lib/aws-s3-assets', 'assets');
 
     // const __dirname = dirname(fileURLToPath(import.meta.url));
     this.backendGenerator.addStatement(
@@ -399,13 +400,12 @@ export class DataGenerator implements Planner {
    *   const functionId = `${typeName}${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}DataResolverFn`;
    *   const pipelineFunction = backend.data.resources.cfnResources.cfnFunctionConfigurations[functionId];
    *   if (pipelineFunction) {
-   *     const template = readFileSync(join(resolversDir, file), "utf8");
+   *     const templatePath = join(resolversDir, file);
+   *     const vtlTemplate = new assets.Asset(backend.data, `VTLTemplate-${file}`, { path: templatePath });
    *     if (isRequest) {
-   *       pipelineFunction.requestMappingTemplateS3Location = undefined;
-   *       pipelineFunction.requestMappingTemplate = template;
+   *       pipelineFunction.requestMappingTemplateS3Location = vtlTemplate.s3ObjectUrl;
    *     } else {
-   *       pipelineFunction.responseMappingTemplateS3Location = undefined;
-   *       pipelineFunction.responseMappingTemplate = template;
+   *       pipelineFunction.responseMappingTemplateS3Location = vtlTemplate.s3ObjectUrl;
    *     }
    *   }
    * }
@@ -530,16 +530,31 @@ export class DataGenerator implements Planner {
       factory.createIdentifier('pipelineFunction'),
       factory.createBlock(
         [
-          // const template = readFileSync(join(resolversDir, file), "utf8");
+          // const templatePath = join(resolversDir, file);
           TS.constDecl(
-            'template',
-            factory.createCallExpression(factory.createIdentifier('readFileSync'), undefined, [
-              factory.createCallExpression(factory.createIdentifier('join'), undefined, [
-                factory.createIdentifier('resolversDir'),
-                factory.createIdentifier('file'),
-              ]),
-              factory.createStringLiteral('utf8'),
+            'templatePath',
+            factory.createCallExpression(factory.createIdentifier('join'), undefined, [
+              factory.createIdentifier('resolversDir'),
+              factory.createIdentifier('file'),
             ]),
+          ),
+          // const vtlTemplate = new assets.Asset(backend.data, `VTLTemplate-${file}`, { path: templatePath });
+          TS.constDecl(
+            'vtlTemplate',
+            factory.createNewExpression(
+              factory.createPropertyAccessExpression(factory.createIdentifier('assets'), factory.createIdentifier('Asset')),
+              undefined,
+              [
+                TS.propAccess('backend', 'data') as ts.Expression,
+                factory.createTemplateExpression(factory.createTemplateHead('VTLTemplate-'), [
+                  factory.createTemplateSpan(factory.createIdentifier('file'), factory.createTemplateTail('')),
+                ]),
+                factory.createObjectLiteralExpression(
+                  [factory.createPropertyAssignment('path', factory.createIdentifier('templatePath'))],
+                  false,
+                ),
+              ],
+            ),
           ),
           // if (isRequest) { ... } else { ... }
           factory.createIfStatement(
@@ -552,16 +567,10 @@ export class DataGenerator implements Planner {
                       factory.createIdentifier('pipelineFunction'),
                       factory.createIdentifier('requestMappingTemplateS3Location'),
                     ),
-                    factory.createIdentifier('undefined'),
-                  ),
-                ),
-                factory.createExpressionStatement(
-                  factory.createAssignment(
                     factory.createPropertyAccessExpression(
-                      factory.createIdentifier('pipelineFunction'),
-                      factory.createIdentifier('requestMappingTemplate'),
+                      factory.createIdentifier('vtlTemplate'),
+                      factory.createIdentifier('s3ObjectUrl'),
                     ),
-                    factory.createIdentifier('template'),
                   ),
                 ),
               ],
@@ -575,16 +584,10 @@ export class DataGenerator implements Planner {
                       factory.createIdentifier('pipelineFunction'),
                       factory.createIdentifier('responseMappingTemplateS3Location'),
                     ),
-                    factory.createIdentifier('undefined'),
-                  ),
-                ),
-                factory.createExpressionStatement(
-                  factory.createAssignment(
                     factory.createPropertyAccessExpression(
-                      factory.createIdentifier('pipelineFunction'),
-                      factory.createIdentifier('responseMappingTemplate'),
+                      factory.createIdentifier('vtlTemplate'),
+                      factory.createIdentifier('s3ObjectUrl'),
                     ),
-                    factory.createIdentifier('template'),
                   ),
                 ),
               ],

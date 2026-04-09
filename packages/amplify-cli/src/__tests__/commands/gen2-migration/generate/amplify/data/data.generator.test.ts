@@ -414,6 +414,7 @@ describe('DataGenerator', () => {
         mockReaddirSync.mockReturnValue(['Query.listProducts.res.vtl']);
 
         const addImportSpy = jest.spyOn(backendGenerator, 'addImport');
+        const addNamespaceImportSpy = jest.spyOn(backendGenerator, 'addNamespaceImport');
         const addStatementSpy = jest.spyOn(backendGenerator, 'addStatement');
 
         const generator = new DataGenerator(gen1App, backendGenerator, outputDir, {
@@ -425,10 +426,11 @@ describe('DataGenerator', () => {
         const ops = await generator.plan();
         await ops[0].execute();
 
-        // Resolver imports: fs, path, url
-        expect(addImportSpy).toHaveBeenCalledWith('fs', ['readFileSync', 'readdirSync']);
+        // Resolver imports: fs (readdirSync only), path, url
+        expect(addImportSpy).toHaveBeenCalledWith('fs', ['readdirSync']);
         expect(addImportSpy).toHaveBeenCalledWith('path', ['join', 'dirname']);
         expect(addImportSpy).toHaveBeenCalledWith('url', ['fileURLToPath']);
+        expect(addNamespaceImportSpy).toHaveBeenCalledWith('aws-cdk-lib/aws-s3-assets', 'assets');
 
         // 4 statements: __dirname, resolversDir, resolverFiles, for-of loop
         expect(addStatementSpy).toHaveBeenCalledTimes(4);
