@@ -22,6 +22,7 @@ import { DynamoDBGenerator } from './generate/amplify/storage/dynamodb.generator
 import { FunctionGenerator } from './generate/amplify/function/function.generator';
 import { AnalyticsKinesisGenerator } from './generate/amplify/analytics/kinesis.generator';
 import { GeoGenerator } from './generate/amplify/geo/geo.generator';
+import { CustomResourceGenerator } from './generate/amplify/custom-resources/custom.generator';
 
 const AMPLIFY_DIR = 'amplify';
 
@@ -137,6 +138,12 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
           functionGenerators.push(funcGen);
           break;
         }
+
+        case 'custom:customCDK':
+          generators.push(
+            new CustomResourceGenerator(this.gen1App, backendGenerator, packageJsonGenerator, outputDir, resource.resourceName),
+          );
+          break;
 
         // unsupported/unknown resources - skip them.
         // the assessment validation will surface these to the user

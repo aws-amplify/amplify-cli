@@ -13,6 +13,7 @@ import { FunctionAssessor } from './assess/function/function.assessor';
 import { GeoFenceCollectionAssessor } from './assess/geo/geo-geofence-collection.assessor';
 import { GeoMapAssessor } from './assess/geo/geo-map.assessor';
 import { GeoPlaceIndexAssessor } from './assess/geo/geo-place-index.assessor';
+import { CustomCdkAssessor } from './assess/custom/custom-cdk.assessor';
 
 /**
  * Evaluates migration readiness by discovering resources and
@@ -62,6 +63,9 @@ export class AmplifyMigrationAssessor {
           break;
         case 'geo:PlaceIndex':
           assessors.push(new GeoPlaceIndexAssessor(this.gen1App, resource));
+          break;
+        case 'custom:customCDK':
+          assessors.push(new CustomCdkAssessor(resource));
           break;
         case 'UNKNOWN':
           combined.recordResource({

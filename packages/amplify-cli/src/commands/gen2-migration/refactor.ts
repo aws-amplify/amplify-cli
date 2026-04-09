@@ -70,6 +70,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
         case 'api:API Gateway':
         case 'geo:Map':
         case 'geo:PlaceIndex':
+        case 'custom:customCDK':
           break;
 
         // unsupported/unknown resources - skip them.
@@ -153,6 +154,7 @@ export class AmplifyMigrationRefactorStep extends AmplifyMigrationStep {
         case 'api:API Gateway':
         case 'geo:Map':
         case 'geo:PlaceIndex':
+        case 'custom:customCDK':
           break;
 
         // unsupported/unknown resources - skip them.

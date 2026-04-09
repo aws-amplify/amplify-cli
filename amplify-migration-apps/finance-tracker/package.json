@@ -1,5 +1,5 @@
 {
-  "name": "finance-tracker",
+  "name": "@amplify-migration-apps/finance-tracker",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "configure": "./configure.sh"
+    "configure": "./configure.sh",
+    "sanitize": "true"
   },
   "dependencies": {
     "aws-amplify": "^6.0.0",
