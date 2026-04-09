@@ -28,8 +28,8 @@ export const data = defineData({
       //The "branchname" variable needs to be the same as your deployment branch if you want to reuse your Gen1 app tables
       branchName: 'main',
       modelNameToTableNameMapping: {
-        MoodItem: 'MoodItem-vsozkn3hbzdjppzyf7xtf2f4sy-main',
-        Board: 'Board-vsozkn3hbzdjppzyf7xtf2f4sy-main',
+        MoodItem: 'MoodItem-qy2hodyasjgidjuruysadaqj5a-main',
+        Board: 'Board-qy2hodyasjgidjuruysadaqj5a-main',
       },
     },
   ],
@@ -37,7 +37,7 @@ export const data = defineData({
     defaultAuthorizationMode: 'apiKey',
     apiKeyAuthorizationMode: {
       expiresInDays: 365,
-      description: 'moodBoard API Key',
+      description: 'moodboard apiKey',
     },
   },
   schema,

@@ -29,7 +29,7 @@ export interface analyticsmoodboardKinesisProps {
 }
 
 /**
- * {"createdOn":"Mac","createdBy":"Amplify","createdWith":"14.2.5","stackType":"analytics-Kinesis","metadata":{"whyContinueWithGen1":"Prefer not to answer"}}
+ * {"createdOn":"Mac","createdBy":"Amplify","createdWith":"14.1.0","stackType":"analytics-Kinesis","metadata":{"whyContinueWithGen1":"Prefer not to answer"}}
  */
 export class analyticsmoodboardKinesis extends Construct {
   public readonly kinesisStreamArn;
