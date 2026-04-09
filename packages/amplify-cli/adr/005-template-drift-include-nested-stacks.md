@@ -142,6 +142,28 @@ Testing against the live discussions app (amplify-discussions-main-c39a5,
    Code must poll each nested changeset to terminal status before
    describing it.
 
+7. **Template format errors are also recoverable.** Amplify AppSync API
+   stacks contain model sub-stacks that export names via `Fn::Join` with
+   parameter references. With `IncludeNestedStacks: true`, CFN cannot
+   resolve intrinsic functions at validation time — all exports appear as
+   `{{IntrinsicFunction://Fn::Join}}`, triggering `"Template format
+   error: duplicate Export names"`. Despite the failure, CFN populates
+   Changes before the export validation step. The function was broadened
+   from `isEarlyValidationFailure` to `isRecoverableFailure` to handle
+   both EarlyValidation and Template format error failures. When a
+   recoverable failure produces zero Changes, the stack is treated as
+   incomplete (not clean).
+
+8. **Cascading IAM Policy changes from DeletionPolicy modifications.**
+   When `DeletionPolicy: Retain` is added to a DynamoDB table, CFN
+   flags every IAM Policy whose `PolicyDocument` references that table's
+   attributes (e.g., `TodoTable.Arn`) as a Dynamic ResourceAttribute
+   re-evaluation. These appear as `Modify` changes on `AWS::IAM::Policy`
+   with `Scope: ['Properties']`, `ChangeSource: ResourceAttribute`,
+   `Evaluation: Dynamic`, `RequiresRecreation: Never`, and
+   `CausingEntity: <TableLogicalId>.Arn`. These are harmless and must
+   be filtered alongside direct DeletionPolicy drift.
+
 ### Comparison
 
 | Dimension                | IncludeNestedStacks: true | Per-nested (Method B) |
@@ -209,8 +231,11 @@ patterns:
 Any other StatusReason is a genuine error — skip that stack.
 
 ```typescript
-function isEarlyValidationFailure(reason?: string): boolean {
-  return !!reason?.includes('EarlyValidation');
+function isRecoverableFailure(reason?: string): boolean {
+  if (!reason) return false;
+  if (reason.includes('EarlyValidation')) return true;
+  if (reason.includes('Template format error')) return true;
+  return false;
 }
 
 // In analyzeChangeSet:
@@ -219,9 +244,14 @@ if (changeSet.Status === 'FAILED') {
       || changeSet.StatusReason?.includes('No updates')) {
     return result; // genuinely no changes
   }
-  if (isEarlyValidationFailure(changeSet.StatusReason)) {
+  if (isRecoverableFailure(changeSet.StatusReason)) {
+    if (!changeSet.Changes?.length) {
+      // Recoverable failure but 0 Changes — treat as incomplete
+      return { changes: [], skipped: true, skipReason: ... };
+    }
     // Changes are populated despite FAILED status — fall through
-    print.warn(`Nested changeset FAILED (EarlyValidation): ${changeSet.StatusReason}`);
+  } else if (isRoot) {
+    // Root always falls through — classification happens per-nested-stack
   } else {
     // Unknown failure — treat as error, skip this stack
     return { changes: [], skipped: true, skipReason: ... };
@@ -256,25 +286,59 @@ changes must be filtered out.
 The filter applies after changeset analysis and before the rollback
 safety decision:
 
+Two types of expected changes:
+
+1. **Direct DeletionPolicy changes** — `Action: Modify`,
+   `Scope: ['DeletionPolicy']`. CFN reports DeletionPolicy as a
+   first-class Scope value.
+
+2. **Cascading IAM Policy changes** — When DeletionPolicy changes on
+   a DynamoDB table, CFN flags IAM policies referencing `TableName.Arn`
+   as Dynamic ResourceAttribute re-evaluations. These have
+   `Action: Modify`, `Scope: ['Properties']`,
+   `ChangeSource: ResourceAttribute`, `Evaluation: Dynamic`,
+   `RequiresRecreation: Never`, and `CausingEntity` matching
+   `*Table.Arn` or `*Table.StreamArn`.
+
 ```typescript
 function isExpectedLockDrift(change: ResourceChangeWithNested): boolean {
-  // A change is expected lock drift if:
-  // 1. Action is 'Modify'
-  // 2. Scope is exactly ['DeletionPolicy'] (confirmed empirically —
-  //    CFN uses 'DeletionPolicy' as a first-class Scope value)
-  // 3. Details show DirectModification of DeletionPolicy attribute
-  //    with RequiresRecreation: 'Never'
-  return change.Action === 'Modify'
-    && change.Scope?.length === 1
-    && change.Scope[0] === 'DeletionPolicy';
+  if (change.Action !== 'Modify') return false;
+
+  // Direct DeletionPolicy change
+  if (change.Scope?.length === 1 && change.Scope[0] === 'DeletionPolicy') return true;
+
+  // Cascading IAM Policy change from DeletionPolicy on a DDB table
+  if (change.ResourceType === 'AWS::IAM::Policy'
+      && change.Scope?.length === 1 && change.Scope[0] === 'Properties'
+      && change.Details?.length) {
+    return change.Details.every(d =>
+      d.ChangeSource === 'ResourceAttribute'
+      && d.Evaluation === 'Dynamic'
+      && d.Target?.RequiresRecreation === 'Never'
+      && /Table\.(Arn|StreamArn)$/.test(d.CausingEntity ?? '')
+    );
+  }
+
+  return false;
 }
 
-const realDrift = changes.filter(c => !isExpectedLockDrift(c));
+// Recursive tree walk — CloudFormation::Stack entries are structural
+// wrappers; real drift is at the leaf level.
+function hasRealDrift(changes: ResourceChangeWithNested[]): boolean {
+  for (const change of changes) {
+    if (change.nestedChanges?.length) {
+      if (hasRealDrift(change.nestedChanges)) return true;
+    } else if (change.ResourceType !== 'AWS::CloudFormation::Stack') {
+      if (!isExpectedLockDrift(change)) return true;
+    }
+  }
+  return false;
+}
 ```
 
-If `realDrift` is empty after filtering, lock rollback can proceed
-safely. If there is any real drift, lock rollback must abort — the
-environment is in an inconsistent state.
+If `hasRealDrift` returns false after filtering, lock rollback can
+proceed safely. If there is any real drift, lock rollback must abort
+— the environment is in an inconsistent state.
 
 ### What is NOT changed
 
@@ -310,16 +374,19 @@ update the Gen1 templates to reflect the post-migration state
 step. Once templates are updated, EarlyValidation passes and this risk
 disappears.
 
-### R3 — Non-EarlyValidation failures conflated with EarlyValidation
+### R3 — Recoverable failure classification is string-based
 
-If CFN introduces new failure modes whose StatusReason strings don't
-match our `isEarlyValidationFailure` check, we'd incorrectly treat
-them as hard errors (skip the stack). This is the safe direction —
-false negatives (missed drift) are worse than false positives
-(unnecessary skip) for the lock rollback use case.
+The `isRecoverableFailure` function matches `"EarlyValidation"` and
+`"Template format error"` in StatusReason strings. If CFN introduces
+new failure modes or changes wording, we may either miss recoverable
+failures (treating them as hard errors — safe direction) or
+incorrectly treat genuine failures as recoverable (reading incomplete
+Changes — unsafe direction). The latter risk is mitigated: recoverable
+failures with 0 Changes are treated as incomplete, not clean.
 
 *Mitigation*: Log all failure reasons. Expand the pattern match as
-new failure types are observed.
+new failure types are observed. Empty-Changes guard ensures
+false-recoverable classification fails closed.
 
 ### R4 — DeletionPolicy filter accuracy
 
@@ -329,10 +396,21 @@ classified as expected) would allow lock rollback to proceed when the
 environment is inconsistent. A false negative (expected drift
 classified as real) would block lock rollback unnecessarily.
 
-*Mitigation*: The lock step knows exactly which resources it modified
-and what it changed. The filter can be informed by the lock step's
-output (list of resources + properties changed) rather than relying on
-heuristic pattern matching on changeset details.
+The filter has two paths: direct DeletionPolicy scope matching (tight)
+and cascading IAM Policy matching (broader — checks `ChangeSource`,
+`Evaluation`, `RequiresRecreation`, and `CausingEntity` pattern
+`*Table.Arn|StreamArn`). The IAM path could theoretically false-positive
+if a non-DeletionPolicy change triggers an identical Dynamic
+ResourceAttribute re-evaluation pattern on an IAM policy referencing
+a resource whose logical ID ends in "Table". In practice this is
+extremely unlikely — the pattern only matches during lock rollback when
+DeletionPolicy is the only template modification.
+
+*Mitigation*: The `CausingEntity` regex anchors to `Table.Arn` or
+`Table.StreamArn`. Scope is required to be exactly `['Properties']`.
+All Details must be Dynamic/ResourceAttribute/Never — any static or
+direct modification fails the filter. 28 unit tests cover positive
+and negative cases.
 
 ## Consequences
 
@@ -356,7 +434,7 @@ heuristic pattern matching on changeset details.
 - The `CreateChangeSetCommand` call and its parameters
 - The recursive traversal of nested changesets via `ChangeSetId`
 - The "no changes" detection path
-- The drift formatter and its console URL generation
+- The drift formatter (console URL format was fixed separately)
 - The Phase 1 (CFN drift detection) and Phase 3 (local drift) paths
 
 ### What gets removed
