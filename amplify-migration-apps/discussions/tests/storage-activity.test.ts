@@ -2,7 +2,7 @@
 import { generateClient } from 'aws-amplify/api';
 import { getCurrentUser, signIn, signOut } from 'aws-amplify/auth';
 import { signUp, config } from './signup';
-import { fetchUserActivity } from '../src/graphql/queries';
+import { fetchUserActivity, getActivityStats } from '../src/graphql/queries';
 import { createTopic } from '../src/graphql/mutations';
 
 const client = () => generateClient({ authMode: 'apiKey' });
@@ -40,4 +40,19 @@ describe('auth', () => {
     expect(typeof activities[0].activityType).toBe('string');
     expect(typeof activities[0].timestamp).toBe('string');
   }, 30_000);
+
+  it('increments activity counter via storage DynamoDB trigger', async () => {
+    // The topic created in the previous test should have triggered:
+    // model stream → recorduseractivity → activity table insert → activityTrigger → counter increment
+    // Poll until the counter is > 0
+    let count = 0;
+    for (let attempt = 0; attempt < 15; attempt++) {
+      const result = await client().graphql({ query: getActivityStats });
+      count = (result as any).data.getActivityStats?.activityCount ?? 0;
+      if (count > 0) break;
+      await new Promise((r) => setTimeout(r, 2000));
+    }
+
+    expect(count).toBeGreaterThan(0);
+  }, 45_000);
 });
