@@ -1,0 +1,40 @@
+[
+  {
+    "OutputKey": "CreatedSNSRole",
+    "OutputValue": "arn:aws:iam::014148916658:role/sns3e730a8c223a2-main",
+    "Description": "role arn"
+  },
+  {
+    "OutputKey": "UserPoolId",
+    "OutputValue": "us-east-1_Ee8DhHcaS",
+    "Description": "Id for the user pool"
+  },
+  {
+    "OutputKey": "AppClientIDWeb",
+    "OutputValue": "222usvmpmn6u49n3cmji07o5c3",
+    "Description": "The user pool app client id for web"
+  },
+  {
+    "OutputKey": "AppClientID",
+    "OutputValue": "4eso55igf16aut24ikbne80fpo",
+    "Description": "The user pool app client id"
+  },
+  {
+    "OutputKey": "IdentityPoolId",
+    "OutputValue": "us-east-1:8df78e61-bdd7-4400-b8ed-dbf5eef3a6ab",
+    "Description": "Id for the identity pool"
+  },
+  {
+    "OutputKey": "UserPoolArn",
+    "OutputValue": "arn:aws:cognito-idp:us-east-1:014148916658:userpool/us-east-1_Ee8DhHcaS",
+    "Description": "Arn for the user pool"
+  },
+  {
+    "OutputKey": "IdentityPoolName",
+    "OutputValue": "discussions3e730a8c_identitypool_3e730a8c__main"
+  },
+  {
+    "OutputKey": "UserPoolName",
+    "OutputValue": "discussions3e730a8c_userpool_3e730a8c"
+  }
+]

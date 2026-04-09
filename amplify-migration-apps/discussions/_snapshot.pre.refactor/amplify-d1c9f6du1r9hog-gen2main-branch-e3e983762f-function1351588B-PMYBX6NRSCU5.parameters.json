@@ -1,0 +1,26 @@
+[
+  {
+    "ParameterKey": "referencetoamplifyd1c9f6du1r9hoggen2mainbranche3e983762fdataNestedStackdataNestedStackResourceABB69386Outputsamplifyd1c9f6du1r9hoggen2mainbranche3e983762fdataamplifyDataCommentNestedStackCommentNestedStackResource65E59889Outputsamplifyd1c9f317F7CDF",
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:014148916658:table/Comment-gtx5hixzhrfdpblkbo7dtrwo4m-NONE/stream/2026-04-09T04:37:44.687"
+  },
+  {
+    "ParameterKey": "referencetoamplifyd1c9f6du1r9hoggen2mainbranche3e983762fstorageactivityNestedStackstorageactivityNestedStackResourceF0E5939BOutputsamplifyd1c9f6du1r9hoggen2mainbranche3e983762fstorageactivity48D00AD6StreamArn",
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:014148916658:table/amplify-d1c9f6du1r9hog-gen2main-branch-e3e983762f-storageactivityA346F297-MS1DRX0NXN21-activity1E902D9C-V53RHRXBJ2ND/stream/2026-04-09T04:35:25.911"
+  },
+  {
+    "ParameterKey": "referencetoamplifyd1c9f6du1r9hoggen2mainbranche3e983762fdataNestedStackdataNestedStackResourceABB69386Outputsamplifyd1c9f6du1r9hoggen2mainbranche3e983762fdataamplifyDataTopicNestedStackTopicNestedStackResourceD803E943Outputsamplifyd1c9f6du1D76CFFBA",
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:014148916658:table/Topic-gtx5hixzhrfdpblkbo7dtrwo4m-NONE/stream/2026-04-09T04:37:45.182"
+  },
+  {
+    "ParameterKey": "referencetoamplifyd1c9f6du1r9hoggen2mainbranche3e983762fdataNestedStackdataNestedStackResourceABB69386Outputsamplifyd1c9f6du1r9hoggen2mainbranche3e983762fdataamplifyDataPostNestedStackPostNestedStackResource891E3CAEOutputsamplifyd1c9f6du1r93F958C4B",
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:014148916658:table/Post-gtx5hixzhrfdpblkbo7dtrwo4m-NONE/stream/2026-04-09T04:37:44.655"
+  },
+  {
+    "ParameterKey": "referencetoamplifyd1c9f6du1r9hoggen2mainbranche3e983762fstorageactivityNestedStackstorageactivityNestedStackResourceF0E5939BOutputsamplifyd1c9f6du1r9hoggen2mainbranche3e983762fstorageactivity48D00AD6Ref",
+    "ParameterValue": "amplify-d1c9f6du1r9hog-gen2main-branch-e3e983762f-storageactivityA346F297-MS1DRX0NXN21-activity1E902D9C-V53RHRXBJ2ND"
+  },
+  {
+    "ParameterKey": "referencetoamplifyd1c9f6du1r9hoggen2mainbranche3e983762fstorageactivityNestedStackstorageactivityNestedStackResourceF0E5939BOutputsamplifyd1c9f6du1r9hoggen2mainbranche3e983762fstorageactivity48D00AD6Arn",
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:014148916658:table/amplify-d1c9f6du1r9hog-gen2main-branch-e3e983762f-storageactivityA346F297-MS1DRX0NXN21-activity1E902D9C-V53RHRXBJ2ND"
+  }
+]

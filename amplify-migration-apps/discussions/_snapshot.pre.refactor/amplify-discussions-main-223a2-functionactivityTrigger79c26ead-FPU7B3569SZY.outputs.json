@@ -1,0 +1,22 @@
+[
+  {
+    "OutputKey": "LambdaExecutionRoleArn",
+    "OutputValue": "arn:aws:iam::014148916658:role/activityLambdaRole79c26ead-main"
+  },
+  {
+    "OutputKey": "Region",
+    "OutputValue": "us-east-1"
+  },
+  {
+    "OutputKey": "Arn",
+    "OutputValue": "arn:aws:lambda:us-east-1:014148916658:function:activityTrigger79c26ead-main"
+  },
+  {
+    "OutputKey": "Name",
+    "OutputValue": "activityTrigger79c26ead-main"
+  },
+  {
+    "OutputKey": "LambdaExecutionRole",
+    "OutputValue": "activityLambdaRole79c26ead-main"
+  }
+]

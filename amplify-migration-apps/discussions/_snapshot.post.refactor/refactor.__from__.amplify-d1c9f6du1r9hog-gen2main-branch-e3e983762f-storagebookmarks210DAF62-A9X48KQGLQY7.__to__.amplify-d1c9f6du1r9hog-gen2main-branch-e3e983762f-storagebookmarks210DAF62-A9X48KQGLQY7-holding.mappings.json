@@ -1,0 +1,12 @@
+[
+  {
+    "Source": {
+      "StackName": "amplify-d1c9f6du1r9hog-gen2main-branch-e3e983762f-storagebookmarks210DAF62-A9X48KQGLQY7",
+      "LogicalResourceId": "bookmarksA4548304"
+    },
+    "Destination": {
+      "StackName": "amplify-d1c9f6du1r9hog-gen2main-branch-e3e983762f-storagebookmarks210DAF62-A9X48KQGLQY7-holding",
+      "LogicalResourceId": "bookmarksA4548304"
+    }
+  }
+]

@@ -12,6 +12,7 @@ import { RootPackageJsonGenerator } from '../../package.json.generator';
 import { AuthPermissions, AuthTriggerEvent } from '../auth/auth.renderer';
 import { AuthGenerator } from '../auth/auth.generator';
 import { S3Generator } from '../storage/s3.generator';
+import { DynamoDBGenerator } from '../storage/dynamodb.generator';
 import { Permission } from '../storage/s3.renderer';
 
 const factory = ts.factory;
@@ -74,6 +75,7 @@ export class FunctionGenerator implements Planner {
   private readonly backendGenerator: BackendGenerator;
   private authGenerator: AuthGenerator | undefined;
   private s3Generator: S3Generator | undefined;
+  private readonly dynamoDBGenerators: DynamoDBGenerator[] = [];
   private readonly packageJsonGenerator: RootPackageJsonGenerator;
   private readonly outputDir: string;
   private readonly resource: DiscoveredResource;
@@ -109,6 +111,15 @@ export class FunctionGenerator implements Planner {
   }
 
   /**
+   * Registers a DynamoDB storage generator. Called by the orchestrator
+   * after all generators are created. Multiple tables may exist.
+   * Must be called before plan().
+   */
+  public addDynamoDBGenerator(ddbGenerator: DynamoDBGenerator): void {
+    this.dynamoDBGenerators.push(ddbGenerator);
+  }
+
+  /**
    * Resolves this function's config and returns a single operation
    * that generates resource.ts, copies source files, and contributes
    * all backend.ts statements (imports, overrides, grants, triggers).
@@ -134,6 +145,7 @@ export class FunctionGenerator implements Planner {
           if (triggerModels.length > 0) {
             this.contributeDynamoTrigger(func.resourceName, triggerModels);
           }
+          this.contributeStorageDynamoTrigger(func.resourceName);
         },
       },
     ];
@@ -756,6 +768,88 @@ export class FunctionGenerator implements Planner {
       ),
     );
     this.backendGenerator.addStatement(forStatement);
+  }
+
+  /**
+   * Generates DynamoDB stream event source wiring for storage table triggers.
+   * For each DynamoDBGenerator whose `triggerFunctions` includes this function,
+   * emits addEventSource, grantStreamRead, and grantTableListStreams calls.
+   */
+  private contributeStorageDynamoTrigger(functionName: string): void {
+    for (const ddbGen of this.dynamoDBGenerators) {
+      if (!ddbGen.triggerFunctions.includes(functionName)) continue;
+
+      this.backendGenerator.addImport('aws-cdk-lib/aws-lambda-event-sources', ['DynamoEventSource']);
+      this.backendGenerator.addImport('aws-cdk-lib/aws-lambda', ['StartingPosition']);
+
+      const tableVar = ddbGen.tableVariableName;
+
+      // backend.functionName.resources.lambda.addEventSource(new DynamoEventSource(table, { startingPosition: StartingPosition.LATEST }))
+      this.backendGenerator.addStatement(
+        factory.createExpressionStatement(
+          factory.createCallExpression(
+            factory.createPropertyAccessExpression(
+              factory.createPropertyAccessExpression(
+                factory.createIdentifier(`backend.${functionName}.resources`),
+                factory.createIdentifier('lambda'),
+              ),
+              factory.createIdentifier('addEventSource'),
+            ),
+            undefined,
+            [
+              factory.createNewExpression(factory.createIdentifier('DynamoEventSource'), undefined, [
+                factory.createIdentifier(tableVar),
+                factory.createObjectLiteralExpression([
+                  factory.createPropertyAssignment(
+                    'startingPosition',
+                    factory.createPropertyAccessExpression(
+                      factory.createIdentifier('StartingPosition'),
+                      factory.createIdentifier('LATEST'),
+                    ),
+                  ),
+                ]),
+              ]),
+            ],
+          ),
+        ),
+      );
+
+      // table.grantStreamRead(backend.functionName.resources.lambda.role!)
+      this.backendGenerator.addStatement(
+        factory.createExpressionStatement(
+          factory.createCallExpression(
+            factory.createPropertyAccessExpression(factory.createIdentifier(tableVar), factory.createIdentifier('grantStreamRead')),
+            undefined,
+            [
+              factory.createNonNullExpression(
+                factory.createPropertyAccessExpression(
+                  factory.createIdentifier(`backend.${functionName}.resources.lambda`),
+                  factory.createIdentifier('role'),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+
+      // table.grantTableListStreams(backend.functionName.resources.lambda.role!)
+      this.backendGenerator.addStatement(
+        factory.createExpressionStatement(
+          factory.createCallExpression(
+            factory.createPropertyAccessExpression(factory.createIdentifier(tableVar), factory.createIdentifier('grantTableListStreams')),
+            undefined,
+            [
+              factory.createNonNullExpression(
+                factory.createPropertyAccessExpression(
+                  factory.createIdentifier(`backend.${functionName}.resources.lambda`),
+                  factory.createIdentifier('role'),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
   }
 }
 

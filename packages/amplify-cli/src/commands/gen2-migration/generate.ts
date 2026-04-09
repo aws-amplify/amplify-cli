@@ -67,6 +67,7 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
     let s3Generator: S3Generator | undefined;
     let geoGenerator: GeoGenerator | undefined;
     const functionGenerators: FunctionGenerator[] = [];
+    const dynamoDBGenerators: DynamoDBGenerator[] = [];
 
     const discovered = this.gen1App.discover();
 
@@ -102,7 +103,9 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
           generators.push(s3Generator);
           break;
         case 'storage:DynamoDB': {
-          generators.push(new DynamoDBGenerator(this.gen1App, backendGenerator, resource));
+          const ddbGen = new DynamoDBGenerator(this.gen1App, backendGenerator, resource);
+          generators.push(ddbGen);
+          dynamoDBGenerators.push(ddbGen);
           break;
         }
         case 'api:AppSync':
@@ -150,6 +153,9 @@ export class AmplifyMigrationGenerateStep extends AmplifyMigrationStep {
     for (const funcGen of functionGenerators) {
       if (authGenerator) funcGen.setAuthGenerator(authGenerator);
       if (s3Generator) funcGen.setS3Generator(s3Generator);
+      for (const ddbGen of dynamoDBGenerators) {
+        funcGen.addDynamoDBGenerator(ddbGen);
+      }
     }
 
     // Infrastructure generators run last — BackendGenerator accumulates

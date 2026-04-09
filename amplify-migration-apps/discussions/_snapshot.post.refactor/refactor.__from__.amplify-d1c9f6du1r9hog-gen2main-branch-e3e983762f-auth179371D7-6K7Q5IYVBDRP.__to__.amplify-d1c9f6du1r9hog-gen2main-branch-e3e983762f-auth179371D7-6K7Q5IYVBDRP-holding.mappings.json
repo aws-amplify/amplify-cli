@@ -1,0 +1,52 @@
+[
+  {
+    "Source": {
+      "StackName": "amplify-d1c9f6du1r9hog-gen2main-branch-e3e983762f-auth179371D7-6K7Q5IYVBDRP",
+      "LogicalResourceId": "amplifyAuthUserPool4BA7F805"
+    },
+    "Destination": {
+      "StackName": "amplify-d1c9f6du1r9hog-gen2main-branch-e3e983762f-auth179371D7-6K7Q5IYVBDRP-holding",
+      "LogicalResourceId": "amplifyAuthUserPool4BA7F805"
+    }
+  },
+  {
+    "Source": {
+      "StackName": "amplify-d1c9f6du1r9hog-gen2main-branch-e3e983762f-auth179371D7-6K7Q5IYVBDRP",
+      "LogicalResourceId": "amplifyAuthUserPoolNativeAppClient79534448"
+    },
+    "Destination": {
+      "StackName": "amplify-d1c9f6du1r9hog-gen2main-branch-e3e983762f-auth179371D7-6K7Q5IYVBDRP-holding",
+      "LogicalResourceId": "amplifyAuthUserPoolNativeAppClient79534448"
+    }
+  },
+  {
+    "Source": {
+      "StackName": "amplify-d1c9f6du1r9hog-gen2main-branch-e3e983762f-auth179371D7-6K7Q5IYVBDRP",
+      "LogicalResourceId": "amplifyAuthUserPoolAppClient2626C6F8"
+    },
+    "Destination": {
+      "StackName": "amplify-d1c9f6du1r9hog-gen2main-branch-e3e983762f-auth179371D7-6K7Q5IYVBDRP-holding",
+      "LogicalResourceId": "amplifyAuthUserPoolAppClient2626C6F8"
+    }
+  },
+  {
+    "Source": {
+      "StackName": "amplify-d1c9f6du1r9hog-gen2main-branch-e3e983762f-auth179371D7-6K7Q5IYVBDRP",
+      "LogicalResourceId": "amplifyAuthIdentityPool3FDE84CC"
+    },
+    "Destination": {
+      "StackName": "amplify-d1c9f6du1r9hog-gen2main-branch-e3e983762f-auth179371D7-6K7Q5IYVBDRP-holding",
+      "LogicalResourceId": "amplifyAuthIdentityPool3FDE84CC"
+    }
+  },
+  {
+    "Source": {
+      "StackName": "amplify-d1c9f6du1r9hog-gen2main-branch-e3e983762f-auth179371D7-6K7Q5IYVBDRP",
+      "LogicalResourceId": "amplifyAuthIdentityPoolRoleAttachment045F17C8"
+    },
+    "Destination": {
+      "StackName": "amplify-d1c9f6du1r9hog-gen2main-branch-e3e983762f-auth179371D7-6K7Q5IYVBDRP-holding",
+      "LogicalResourceId": "amplifyAuthIdentityPoolRoleAttachment045F17C8"
+    }
+  }
+]

@@ -1,0 +1,42 @@
+[
+  {
+    "OutputKey": "AuthRoleName",
+    "OutputValue": "amplify-discussions-main-223a2-authRole"
+  },
+  {
+    "OutputKey": "UnauthRoleArn",
+    "OutputValue": "arn:aws:iam::014148916658:role/amplify-discussions-main-223a2-unauthRole"
+  },
+  {
+    "OutputKey": "AuthRoleArn",
+    "OutputValue": "arn:aws:iam::014148916658:role/amplify-discussions-main-223a2-authRole"
+  },
+  {
+    "OutputKey": "Region",
+    "OutputValue": "us-east-1",
+    "Description": "CloudFormation provider root stack Region",
+    "ExportName": "amplify-discussions-main-223a2-Region"
+  },
+  {
+    "OutputKey": "DeploymentBucketName",
+    "OutputValue": "amplify-discussions-main-223a2-deployment",
+    "Description": "CloudFormation provider root stack deployment bucket name",
+    "ExportName": "amplify-discussions-main-223a2-DeploymentBucketName"
+  },
+  {
+    "OutputKey": "UnauthRoleName",
+    "OutputValue": "amplify-discussions-main-223a2-unauthRole"
+  },
+  {
+    "OutputKey": "StackName",
+    "OutputValue": "amplify-discussions-main-223a2",
+    "Description": "CloudFormation provider root stack ID",
+    "ExportName": "amplify-discussions-main-223a2-StackName"
+  },
+  {
+    "OutputKey": "StackId",
+    "OutputValue": "arn:aws:cloudformation:us-east-1:014148916658:stack/amplify-discussions-main-223a2/acb5d990-335d-11f1-b65d-12f367878bb5",
+    "Description": "CloudFormation provider root stack name",
+    "ExportName": "amplify-discussions-main-223a2-StackId"
+  }
+]

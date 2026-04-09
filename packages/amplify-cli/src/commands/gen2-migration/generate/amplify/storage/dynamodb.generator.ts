@@ -6,11 +6,19 @@ import { DynamoDBRenderer, DynamoDBGSI, DynamoDBTableDefinition } from './dynamo
 import { TableDescription, KeySchemaElement, AttributeDefinition } from '@aws-sdk/client-dynamodb';
 
 /**
+ * CLI inputs JSON shape for DynamoDB storage resources.
+ */
+interface DynamoDBCLIInputsJSON {
+  readonly triggerFunctions?: readonly string[];
+}
+
+/**
  * Generates a single DynamoDB table construct and contributes it to backend.ts.
  *
  * Fetches the table definition via DescribeTable and renders a CDK Table
- * construct (with GSIs) as an early statement in backend.ts. The shared
- * `storageStack` declaration is emitted once via BackendGenerator.ensureStorageStack().
+ * construct (with GSIs) as an early statement in backend.ts. Also reads
+ * `triggerFunctions` from `cli-inputs.json` so that FunctionGenerator can
+ * wire DynamoDB stream triggers.
  */
 export class DynamoDBGenerator implements Planner {
   private readonly gen1App: Gen1App;
@@ -22,6 +30,30 @@ export class DynamoDBGenerator implements Planner {
     this.gen1App = gen1App;
     this.backendGenerator = backendGenerator;
     this.resource = resource;
+  }
+
+  /**
+   * Returns the resource name of this DynamoDB table (e.g., `"activity"`).
+   */
+  public get resourceName(): string {
+    return this.resource.resourceName;
+  }
+
+  /**
+   * Returns the table variable name used in the generated backend.ts code.
+   * Matches the sanitized name produced by DynamoDBRenderer.
+   */
+  public get tableVariableName(): string {
+    return this.resource.resourceName.replace(/[^a-zA-Z0-9_$]/g, '_');
+  }
+
+  /**
+   * Returns the function names configured as Lambda triggers for this table.
+   * Read from `cli-inputs.json` `triggerFunctions` array.
+   */
+  public get triggerFunctions(): readonly string[] {
+    const cliInputs = this.gen1App.cliInputs('storage', this.resource.resourceName) as DynamoDBCLIInputsJSON | undefined;
+    return cliInputs?.triggerFunctions ?? [];
   }
 
   /**

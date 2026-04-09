@@ -1,0 +1,12 @@
+[
+  {
+    "Source": {
+      "StackName": "arn:aws:cloudformation:us-east-1:014148916658:stack/amplify-discussions-main-223a2-storageactivity-1JE8RLVN83DY0/14c34870-3362-11f1-9944-0e3b8621db3f",
+      "LogicalResourceId": "DynamoDBTable"
+    },
+    "Destination": {
+      "StackName": "arn:aws:cloudformation:us-east-1:014148916658:stack/amplify-d1c9f6du1r9hog-gen2main-branch-e3e983762f-storageactivityA346F297-MS1DRX0NXN21/845a2ad0-33cd-11f1-a900-0affd97831ad",
+      "LogicalResourceId": "activity1E902D9C"
+    }
+  }
+]
