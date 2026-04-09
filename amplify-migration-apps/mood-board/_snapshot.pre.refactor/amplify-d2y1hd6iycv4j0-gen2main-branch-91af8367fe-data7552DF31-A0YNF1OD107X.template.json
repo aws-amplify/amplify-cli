@@ -73,7 +73,7 @@
           ]
         },
         "Description": "moodboard apiKey",
-        "Expires": 1807219129
+        "Expires": 1807292712
       },
       "Metadata": {
         "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/data/amplifyData/GraphQLAPI/DefaultApiKey"
@@ -343,7 +343,7 @@
               {
                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
               },
-              "/bafaea8ce60d66f58d0cba8d82ef3210bfc86064da9f921524d57606b1eeca84.json"
+              "/f83085b8b6c7a07bc6afbb85e3f13b8f518073e25eea6352cd7f9051e93780ae.json"
             ]
           ]
         }
