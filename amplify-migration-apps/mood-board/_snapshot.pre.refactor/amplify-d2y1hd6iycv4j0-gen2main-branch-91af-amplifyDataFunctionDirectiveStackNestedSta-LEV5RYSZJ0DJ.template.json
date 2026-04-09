@@ -1,0 +1,803 @@
+{
+  "Description": "An auto-generated nested stack for the @function directive.",
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Conditions": {
+    "HasEnvironmentParameter": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            "NONE",
+            "NONE"
+          ]
+        }
+      ]
+    },
+    "CDKMetadataAvailable": {
+      "Fn::Or": [
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "af-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-3"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-south-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-3"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-4"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ca-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ca-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-northwest-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-central-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-south-2"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-3"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "il-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "me-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "me-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "sa-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-west-1"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "AWS::Region"
+            },
+            "us-west-2"
+          ]
+        }
+      ]
+    }
+  },
+  "Resources": {
+    "MoodboardGetRandomEmojiGen2MainLambdaDataSourceServiceRole37A55F7F": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "appsync.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Tags": [
+          {
+            "Key": "amplify:app-id",
+            "Value": "d2y1hd6iycv4j0"
+          },
+          {
+            "Key": "amplify:branch-name",
+            "Value": "gen2-main"
+          },
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "branch"
+          },
+          {
+            "Key": "amplify:friendly-name",
+            "Value": "amplifyData"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/data/amplifyData/FunctionDirectiveStack/MoodboardGetRandomEmojiGen2MainLambdaDataSource/ServiceRole/Resource"
+      }
+    },
+    "MoodboardGetRandomEmojiGen2MainLambdaDataSourceServiceRoleDefaultPolicyE4B81B69": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::If": [
+                    "HasEnvironmentParameter",
+                    {
+                      "Fn::Sub": [
+                        "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:moodboardGetRandomEmoji-gen2-main",
+                        {}
+                      ]
+                    },
+                    {
+                      "Fn::Sub": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:moodboardGetRandomEmoji-gen2-main"
+                    }
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::If": [
+                          "HasEnvironmentParameter",
+                          {
+                            "Fn::Sub": [
+                              "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:moodboardGetRandomEmoji-gen2-main",
+                              {}
+                            ]
+                          },
+                          {
+                            "Fn::Sub": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:moodboardGetRandomEmoji-gen2-main"
+                          }
+                        ]
+                      },
+                      ":*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "MoodboardGetRandomEmojiGen2MainLambdaDataSourceServiceRoleDefaultPolicyE4B81B69",
+        "Roles": [
+          {
+            "Ref": "MoodboardGetRandomEmojiGen2MainLambdaDataSourceServiceRole37A55F7F"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/data/amplifyData/FunctionDirectiveStack/MoodboardGetRandomEmojiGen2MainLambdaDataSource/ServiceRole/DefaultPolicy/Resource"
+      }
+    },
+    "MoodboardGetRandomEmojiGen2MainLambdaDataSource": {
+      "Type": "AWS::AppSync::DataSource",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPIE0C402A7ApiId"
+        },
+        "LambdaConfig": {
+          "LambdaFunctionArn": {
+            "Fn::If": [
+              "HasEnvironmentParameter",
+              {
+                "Fn::Sub": [
+                  "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:moodboardGetRandomEmoji-gen2-main",
+                  {}
+                ]
+              },
+              {
+                "Fn::Sub": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:moodboardGetRandomEmoji-gen2-main"
+              }
+            ]
+          }
+        },
+        "Name": "MoodboardGetRandomEmojiGen2MainLambdaDataSource",
+        "ServiceRoleArn": {
+          "Fn::GetAtt": [
+            "MoodboardGetRandomEmojiGen2MainLambdaDataSourceServiceRole37A55F7F",
+            "Arn"
+          ]
+        },
+        "Type": "AWS_LAMBDA"
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/data/amplifyData/FunctionDirectiveStack/MoodboardGetRandomEmojiGen2MainLambdaDataSource/Resource"
+      }
+    },
+    "InvokeMoodboardGetRandomEmojiGen2MainLambdaDataSourceInvokeMoodboardGetRandomEmojiGen2MainLambdaDataSourceAppSyncFunction60A90DEE": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPIE0C402A7ApiId"
+        },
+        "DataSourceName": {
+          "Fn::GetAtt": [
+            "MoodboardGetRandomEmojiGen2MainLambdaDataSource",
+            "Name"
+          ]
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "InvokeMoodboardGetRandomEmojiGen2MainLambdaDataSource",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a93d83e7793e5c478e64dccaeae2fa482fb00bba3e74709762f8b793fdab500e.vtl"
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a20e304512b1fde77dc16ed9d5e0ed03817afcab629ce87ef11c99877b7b1e30.vtl"
+        }
+      },
+      "DependsOn": [
+        "MoodboardGetRandomEmojiGen2MainLambdaDataSource"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/data/amplifyData/FunctionDirectiveStack/InvokeMoodboardGetRandomEmojiGen2MainLambdaDataSource/InvokeMoodboardGetRandomEmojiGen2MainLambdaDataSource.AppSyncFunction"
+      }
+    },
+    "QuerygetRandomEmojiResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPIE0C402A7ApiId"
+        },
+        "FieldName": "getRandomEmoji",
+        "Kind": "PIPELINE",
+        "PipelineConfig": {
+          "Functions": [
+            {
+              "Fn::GetAtt": [
+                "QueryGetRandomEmojiAuthFNQueryGetRandomEmojiAuthFNAppSyncFunction4A668110",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "InvokeMoodboardGetRandomEmojiGen2MainLambdaDataSourceInvokeMoodboardGetRandomEmojiGen2MainLambdaDataSourceAppSyncFunction60A90DEE",
+                "FunctionId"
+              ]
+            }
+          ]
+        },
+        "RequestMappingTemplate": {
+          "Fn::Join": [
+            "",
+            [
+              "## [Start] Stash resolver specific context.. **\n$util.qr($ctx.stash.put(\"typeName\", \"Query\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"getRandomEmoji\"))\n$util.qr($ctx.stash.put(\"authRole\", \"arn:aws:sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+                "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthNestedStackauthNestedStackResourceC05563C6Outputsamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthamplifyAuthauthenticatedUserRole136A40AFRef"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:aws:sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+                "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthNestedStackauthNestedStackResourceC05563C6Outputsamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthamplifyAuthunauthenticatedUserRoleDFF7305BRef"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
+              {
+                "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthNestedStackauthNestedStackResourceC05563C6Outputsamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthamplifyAuthIdentityPool2D8E5862Ref"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n{}\n## [End] Stash resolver specific context.. **"
+            ]
+          ]
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/387d5992f5fc03d05de27289457dcc374a84c42a889acb504aff1031047dde00.vtl"
+        },
+        "TypeName": "Query"
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/data/amplifyData/FunctionDirectiveStack/queryGetRandomEmojiResolver"
+      }
+    },
+    "MoodboardKinesisReaderGen2MainLambdaDataSourceServiceRole3D3E5772": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "appsync.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Tags": [
+          {
+            "Key": "amplify:app-id",
+            "Value": "d2y1hd6iycv4j0"
+          },
+          {
+            "Key": "amplify:branch-name",
+            "Value": "gen2-main"
+          },
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "branch"
+          },
+          {
+            "Key": "amplify:friendly-name",
+            "Value": "amplifyData"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/data/amplifyData/FunctionDirectiveStack/MoodboardKinesisReaderGen2MainLambdaDataSource/ServiceRole/Resource"
+      }
+    },
+    "MoodboardKinesisReaderGen2MainLambdaDataSourceServiceRoleDefaultPolicyC0C2CF1B": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::If": [
+                    "HasEnvironmentParameter",
+                    {
+                      "Fn::Sub": [
+                        "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:moodboardKinesisReader-gen2-main",
+                        {}
+                      ]
+                    },
+                    {
+                      "Fn::Sub": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:moodboardKinesisReader-gen2-main"
+                    }
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::If": [
+                          "HasEnvironmentParameter",
+                          {
+                            "Fn::Sub": [
+                              "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:moodboardKinesisReader-gen2-main",
+                              {}
+                            ]
+                          },
+                          {
+                            "Fn::Sub": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:moodboardKinesisReader-gen2-main"
+                          }
+                        ]
+                      },
+                      ":*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "MoodboardKinesisReaderGen2MainLambdaDataSourceServiceRoleDefaultPolicyC0C2CF1B",
+        "Roles": [
+          {
+            "Ref": "MoodboardKinesisReaderGen2MainLambdaDataSourceServiceRole3D3E5772"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/data/amplifyData/FunctionDirectiveStack/MoodboardKinesisReaderGen2MainLambdaDataSource/ServiceRole/DefaultPolicy/Resource"
+      }
+    },
+    "MoodboardKinesisReaderGen2MainLambdaDataSource": {
+      "Type": "AWS::AppSync::DataSource",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPIE0C402A7ApiId"
+        },
+        "LambdaConfig": {
+          "LambdaFunctionArn": {
+            "Fn::If": [
+              "HasEnvironmentParameter",
+              {
+                "Fn::Sub": [
+                  "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:moodboardKinesisReader-gen2-main",
+                  {}
+                ]
+              },
+              {
+                "Fn::Sub": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:moodboardKinesisReader-gen2-main"
+              }
+            ]
+          }
+        },
+        "Name": "MoodboardKinesisReaderGen2MainLambdaDataSource",
+        "ServiceRoleArn": {
+          "Fn::GetAtt": [
+            "MoodboardKinesisReaderGen2MainLambdaDataSourceServiceRole3D3E5772",
+            "Arn"
+          ]
+        },
+        "Type": "AWS_LAMBDA"
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/data/amplifyData/FunctionDirectiveStack/MoodboardKinesisReaderGen2MainLambdaDataSource/Resource"
+      }
+    },
+    "InvokeMoodboardKinesisReaderGen2MainLambdaDataSourceInvokeMoodboardKinesisReaderGen2MainLambdaDataSourceAppSyncFunction1ECD6185": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPIE0C402A7ApiId"
+        },
+        "DataSourceName": {
+          "Fn::GetAtt": [
+            "MoodboardKinesisReaderGen2MainLambdaDataSource",
+            "Name"
+          ]
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "InvokeMoodboardKinesisReaderGen2MainLambdaDataSource",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/55c96396d2e255bb5b34d07ab28a676e3968dbc719b15d1f27b0884e9be89527.vtl"
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a20e304512b1fde77dc16ed9d5e0ed03817afcab629ce87ef11c99877b7b1e30.vtl"
+        }
+      },
+      "DependsOn": [
+        "MoodboardKinesisReaderGen2MainLambdaDataSource"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/data/amplifyData/FunctionDirectiveStack/InvokeMoodboardKinesisReaderGen2MainLambdaDataSource/InvokeMoodboardKinesisReaderGen2MainLambdaDataSource.AppSyncFunction"
+      }
+    },
+    "QuerygetKinesisEventsResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPIE0C402A7ApiId"
+        },
+        "FieldName": "getKinesisEvents",
+        "Kind": "PIPELINE",
+        "PipelineConfig": {
+          "Functions": [
+            {
+              "Fn::GetAtt": [
+                "QueryGetKinesisEventsAuthFNQueryGetKinesisEventsAuthFNAppSyncFunctionC22C8158",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "InvokeMoodboardKinesisReaderGen2MainLambdaDataSourceInvokeMoodboardKinesisReaderGen2MainLambdaDataSourceAppSyncFunction1ECD6185",
+                "FunctionId"
+              ]
+            }
+          ]
+        },
+        "RequestMappingTemplate": {
+          "Fn::Join": [
+            "",
+            [
+              "## [Start] Stash resolver specific context.. **\n$util.qr($ctx.stash.put(\"typeName\", \"Query\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"getKinesisEvents\"))\n$util.qr($ctx.stash.put(\"authRole\", \"arn:aws:sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+                "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthNestedStackauthNestedStackResourceC05563C6Outputsamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthamplifyAuthauthenticatedUserRole136A40AFRef"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:aws:sts::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":assumed-role/",
+              {
+                "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthNestedStackauthNestedStackResourceC05563C6Outputsamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthamplifyAuthunauthenticatedUserRoleDFF7305BRef"
+              },
+              "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
+              {
+                "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthNestedStackauthNestedStackResourceC05563C6Outputsamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthamplifyAuthIdentityPool2D8E5862Ref"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n{}\n## [End] Stash resolver specific context.. **"
+            ]
+          ]
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/387d5992f5fc03d05de27289457dcc374a84c42a889acb504aff1031047dde00.vtl"
+        },
+        "TypeName": "Query"
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/data/amplifyData/FunctionDirectiveStack/queryGetKinesisEventsResolver"
+      }
+    },
+    "QueryGetRandomEmojiAuthFNQueryGetRandomEmojiAuthFNAppSyncFunction4A668110": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPIE0C402A7ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPINONEDSF712E0A6Name"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "QueryGetRandomEmojiAuthFN",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3d72cc99f51abdee9e8ef0ac8f5f84a36b933ea339e0dabbc93ff98009dbf274.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/data/amplifyData/FunctionDirectiveStack/QueryGetRandomEmojiAuthFN/QueryGetRandomEmojiAuthFN.AppSyncFunction"
+      }
+    },
+    "QueryGetKinesisEventsAuthFNQueryGetKinesisEventsAuthFNAppSyncFunctionC22C8158": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPIE0C402A7ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPINONEDSF712E0A6Name"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "QueryGetKinesisEventsAuthFN",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3d72cc99f51abdee9e8ef0ac8f5f84a36b933ea339e0dabbc93ff98009dbf274.vtl"
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/data/amplifyData/FunctionDirectiveStack/QueryGetKinesisEventsAuthFN/QueryGetKinesisEventsAuthFN.AppSyncFunction"
+      }
+    },
+    "CDKMetadata": {
+      "Type": "AWS::CDK::Metadata",
+      "Properties": {
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/1WPwW7CMAyGn2X31Gxlh11HJ04ITe0DIJO4lWnqoDoBoarvPiWIw06f/9/+LbuG+vML3t/wrpV1Y+X5DMuRNJLrItrRNL00QRxHDmLwrqfF43R2CPskNps7VDJ4vepDLCyH0vzBiF1Is6Wc/69euSZIz0OasWxuemlJg7/RvBrGCZY2+DJf+Bs820eWz2o1uj2hKkWF7wyjW9glO1LM96ymmF3EgWVYjQRHcNHNra7hI797UeZqThJ5Imif/APTHW5GCwEAAA=="
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/data/amplifyData/FunctionDirectiveStack/CDKMetadata/Default"
+      },
+      "Condition": "CDKMetadataAvailable"
+    }
+  },
+  "Parameters": {
+    "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPIE0C402A7ApiId": {
+      "Type": "String"
+    },
+    "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthNestedStackauthNestedStackResourceC05563C6Outputsamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthamplifyAuthauthenticatedUserRole136A40AFRef": {
+      "Type": "String"
+    },
+    "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthNestedStackauthNestedStackResourceC05563C6Outputsamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthamplifyAuthunauthenticatedUserRoleDFF7305BRef": {
+      "Type": "String"
+    },
+    "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthNestedStackauthNestedStackResourceC05563C6Outputsamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthamplifyAuthIdentityPool2D8E5862Ref": {
+      "Type": "String"
+    },
+    "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367fedataamplifyDataGraphQLAPINONEDSF712E0A6Name": {
+      "Type": "String"
+    }
+  }
+}

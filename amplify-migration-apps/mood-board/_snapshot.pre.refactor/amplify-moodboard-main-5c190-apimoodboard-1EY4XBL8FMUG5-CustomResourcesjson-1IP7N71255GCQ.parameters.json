@@ -1,0 +1,22 @@
+[
+  {
+    "ParameterKey": "S3DeploymentBucket",
+    "ParameterValue": "amplify-moodboard-main-5c190-deployment"
+  },
+  {
+    "ParameterKey": "AppSyncApiId",
+    "ParameterValue": "qy2hodyasjgidjuruysadaqj5a"
+  },
+  {
+    "ParameterKey": "env",
+    "ParameterValue": "main"
+  },
+  {
+    "ParameterKey": "S3DeploymentRootKey",
+    "ParameterValue": "amplify-appsync-files/d601691c7f86182af797167f0fb93e03a851d451"
+  },
+  {
+    "ParameterKey": "AppSyncApiName",
+    "ParameterValue": "moodboard"
+  }
+]

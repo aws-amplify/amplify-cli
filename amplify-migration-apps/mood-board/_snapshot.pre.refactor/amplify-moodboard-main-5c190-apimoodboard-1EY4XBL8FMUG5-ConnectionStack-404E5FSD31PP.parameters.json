@@ -1,0 +1,34 @@
+[
+  {
+    "ParameterKey": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
+    "ParameterValue": "amplify-appsync-files/0cc3a1a2f56abaa3d09685dbb9add4c83797ca74"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackBoardNestedStackBoardNestedStackResource9E449E87OutputstransformerrootstackBoardBoardDataSource99BFC69FName",
+    "ParameterValue": "BoardTable"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name",
+    "ParameterValue": "NONE_DS"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+    "ParameterValue": "qy2hodyasjgidjuruysadaqj5a"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackBoardNestedStackBoardNestedStackResource9E449E87OutputstransformerrootstackBoardBoardTable30788E07Ref",
+    "ParameterValue": "Board-qy2hodyasjgidjuruysadaqj5a-main"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackMoodItemNestedStackMoodItemNestedStackResource1C28E2A1OutputstransformerrootstackMoodItemMoodItemTable5135EED9Ref",
+    "ParameterValue": "MoodItem-qy2hodyasjgidjuruysadaqj5a-main"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
+    "ParameterValue": "amplify-moodboard-main-5c190-deployment"
+  },
+  {
+    "ParameterKey": "referencetotransformerrootstackMoodItemNestedStackMoodItemNestedStackResource1C28E2A1OutputstransformerrootstackMoodItemMoodItemDataSource0777FF0CName",
+    "ParameterValue": "MoodItemTable"
+  }
+]

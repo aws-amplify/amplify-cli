@@ -1,0 +1,11 @@
+[
+  {
+    "OutputKey": "BucketName",
+    "OutputValue": "moodboarda9dff0b544a64459b29954a5cab78ace5c190-main",
+    "Description": "Bucket name for the S3 bucket"
+  },
+  {
+    "OutputKey": "Region",
+    "OutputValue": "us-east-1"
+  }
+]

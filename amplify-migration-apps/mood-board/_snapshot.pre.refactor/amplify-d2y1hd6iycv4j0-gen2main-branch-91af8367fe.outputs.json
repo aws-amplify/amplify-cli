@@ -1,0 +1,138 @@
+[
+  {
+    "OutputKey": "webClientId",
+    "OutputValue": "2h4lk7ocqcij12s1n049rcsdhj"
+  },
+  {
+    "OutputKey": "socialProviders",
+    "OutputValue": ""
+  },
+  {
+    "OutputKey": "usernameAttributes",
+    "OutputValue": "[\"email\"]"
+  },
+  {
+    "OutputKey": "bucketName",
+    "OutputValue": "amplify-d2y1hd6iycv4j0-ge-moodboarda9dff0b544a6445-iajmrqsq3qco"
+  },
+  {
+    "OutputKey": "signupAttributes",
+    "OutputValue": "[\"email\"]"
+  },
+  {
+    "OutputKey": "oauthClientId",
+    "OutputValue": "2h4lk7ocqcij12s1n049rcsdhj"
+  },
+  {
+    "OutputKey": "allowUnauthenticatedIdentities",
+    "OutputValue": "true"
+  },
+  {
+    "OutputKey": "oauthCognitoDomain",
+    "OutputValue": ""
+  },
+  {
+    "OutputKey": "oauthScope",
+    "OutputValue": "[\"profile\",\"phone\",\"email\",\"openid\",\"aws.cognito.signin.user.admin\"]"
+  },
+  {
+    "OutputKey": "oauthRedirectSignOut",
+    "OutputValue": ""
+  },
+  {
+    "OutputKey": "awsAppsyncAdditionalAuthenticationTypes",
+    "OutputValue": "AMAZON_COGNITO_USER_POOLS,AWS_IAM"
+  },
+  {
+    "OutputKey": "mfaTypes",
+    "OutputValue": "[]"
+  },
+  {
+    "OutputKey": "mfaConfiguration",
+    "OutputValue": "OFF"
+  },
+  {
+    "OutputKey": "storageRegion",
+    "OutputValue": "us-east-1"
+  },
+  {
+    "OutputKey": "oauthResponseType",
+    "OutputValue": "code"
+  },
+  {
+    "OutputKey": "awsAppsyncApiKey",
+    "OutputValue": "da2-k7wuac36vrdz5fw7suv5m6lcay"
+  },
+  {
+    "OutputKey": "awsAppsyncAuthenticationType",
+    "OutputValue": "API_KEY"
+  },
+  {
+    "OutputKey": "oauthRedirectSignIn",
+    "OutputValue": "https://example.com"
+  },
+  {
+    "OutputKey": "passwordPolicyMinLength",
+    "OutputValue": "8"
+  },
+  {
+    "OutputKey": "awsAppsyncApiEndpoint",
+    "OutputValue": "https://7xpxwim74zh3hmf6jwoowufvva.appsync-api.us-east-1.amazonaws.com/graphql"
+  },
+  {
+    "OutputKey": "awsAppsyncApiId",
+    "OutputValue": "yv6kq47fvrgivk6bpvstkendwa"
+  },
+  {
+    "OutputKey": "authRegion",
+    "OutputValue": "us-east-1"
+  },
+  {
+    "OutputKey": "buckets",
+    "OutputValue": "[\"{\\\"name\\\":\\\"moodboarda9dff0b544a64459b29954a5cab78ace5c190-gen2-main\\\",\\\"bucketName\\\":\\\"amplify-d2y1hd6iycv4j0-ge-moodboarda9dff0b544a6445-iajmrqsq3qco\\\",\\\"storageRegion\\\":\\\"us-east-1\\\",\\\"paths\\\":{\\\"public/*\\\":{\\\"guest\\\":[\\\"get\\\",\\\"list\\\"],\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"protected/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]},\\\"private/*\\\":{\\\"authenticated\\\":[\\\"write\\\",\\\"get\\\",\\\"list\\\",\\\"delete\\\"]}}}\"]"
+  },
+  {
+    "OutputKey": "amplifyApiModelSchemaS3Uri",
+    "OutputValue": "s3://amplify-d2y1hd6iycv4j0-ge-amplifydataamplifycodege-jgysjwhqb2bb/model-schema.graphql"
+  },
+  {
+    "OutputKey": "groups",
+    "OutputValue": "[]"
+  },
+  {
+    "OutputKey": "definedFunctions",
+    "OutputValue": "[\"moodboardGetRandomEmoji-gen2-main\",\"moodboardKinesisReader-gen2-main\"]"
+  },
+  {
+    "OutputKey": "passwordlessOptions",
+    "OutputValue": ""
+  },
+  {
+    "OutputKey": "awsAppsyncRegion",
+    "OutputValue": "us-east-1"
+  },
+  {
+    "OutputKey": "deploymentType",
+    "OutputValue": "branch"
+  },
+  {
+    "OutputKey": "passwordPolicyRequirements",
+    "OutputValue": "[]"
+  },
+  {
+    "OutputKey": "region",
+    "OutputValue": "us-east-1"
+  },
+  {
+    "OutputKey": "userPoolId",
+    "OutputValue": "us-east-1_KoaTNTWmg"
+  },
+  {
+    "OutputKey": "identityPoolId",
+    "OutputValue": "us-east-1:001859d7-3aac-4503-b311-89c3698107bd"
+  },
+  {
+    "OutputKey": "verificationMechanisms",
+    "OutputValue": "[\"email\"]"
+  }
+]
