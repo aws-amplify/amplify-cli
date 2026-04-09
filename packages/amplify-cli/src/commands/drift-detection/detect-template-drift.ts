@@ -308,16 +308,6 @@ async function analyzeChangeSet(
     const changeInfo: ResourceChangeWithNested = { ...rc };
 
     // Check if this is a nested stack with its own changeset
-    if (rc.ResourceType === 'AWS::CloudFormation::Stack' && !rc.ChangeSetId) {
-      // Stack change without a nested changeset — can't inspect its contents.
-      // This happens when IncludeNestedStacks creates the root changeset but the
-      // nested changeset failed before being created. Track as incomplete.
-      const stackLabel = rc.LogicalResourceId || rc.PhysicalResourceId || 'unknown';
-      print.warn(`Nested stack ${stackLabel} has no changeset — tracking as incomplete`);
-      skippedStacks.push(stackLabel);
-      result.changes.push(changeInfo);
-      continue;
-    }
     if (rc.ResourceType === 'AWS::CloudFormation::Stack' && rc.ChangeSetId && rc.PhysicalResourceId) {
       try {
         // Extract stack name and changeset name from ARNs using parseArn utility
@@ -336,7 +326,7 @@ async function analyzeChangeSet(
             ChangeSetName: changeSetName,
           }),
         );
-        const terminalStatuses = ['CREATE_COMPLETE', 'FAILED', 'DELETE_COMPLETE', 'DELETE_FAILED'];
+        const terminalStatuses = ['CREATE_COMPLETE', 'FAILED'];
         const NESTED_POLL_MAX_ATTEMPTS = 30;
         const NESTED_POLL_INTERVAL_MS = 2000;
         for (let attempt = 0; !terminalStatuses.includes(nestedChangeSet.Status ?? '') && attempt < NESTED_POLL_MAX_ATTEMPTS; attempt++) {
@@ -351,14 +341,6 @@ async function analyzeChangeSet(
         }
         if (!terminalStatuses.includes(nestedChangeSet.Status ?? '')) {
           print.warn(`Nested changeset ${stackName} did not reach terminal status (${nestedChangeSet.Status})`);
-          skippedStacks.push(stackName);
-          result.changes.push(changeInfo);
-          continue;
-        }
-
-        // Deleted or failed-to-delete changesets can't be analyzed — track as incomplete
-        if (nestedChangeSet.Status === 'DELETE_COMPLETE' || nestedChangeSet.Status === 'DELETE_FAILED') {
-          print.warn(`Nested changeset ${stackName} was deleted (${nestedChangeSet.Status}) — tracking as incomplete`);
           skippedStacks.push(stackName);
           result.changes.push(changeInfo);
           continue;
