@@ -56,8 +56,9 @@ const ALLOW_ALL_POLICY = {
  * 1. Direct DeletionPolicy changes — Modify with Scope exactly `['DeletionPolicy']`
  * 2. Cascading IAM Policy changes — CFN flags IAM policies that reference the modified
  *    table's attributes (e.g., `TodoTable.Arn` in PolicyDocument) as Dynamic re-evaluations.
- *    These have `ChangeSource: ResourceAttribute`, `Evaluation: Dynamic`, and
- *    `RequiresRecreation: Never` — they are harmless re-evaluations, not actual changes.
+ *    These have `ChangeSource: ResourceAttribute`, `Evaluation: Dynamic`,
+ *    `RequiresRecreation: Never`, and `CausingEntity` matching `*Table.Arn` or
+ *    `*Table.StreamArn` — they are harmless re-evaluations, not actual changes.
  *
  * For lock rollback to determine whether the environment is safe to revert, these expected
  * changes must be filtered out so only real drift blocks the rollback.
@@ -100,6 +101,10 @@ function hasRealDrift(changes: ResourceChangeWithNested[]): boolean {
       if (hasRealDrift(change.nestedChanges)) return true;
     } else if (change.ResourceType !== 'AWS::CloudFormation::Stack') {
       if (!isExpectedLockDrift(change)) return true;
+    } else if (change.Action !== 'Modify') {
+      // Add/Remove on a CloudFormation::Stack without nestedChanges is real drift —
+      // an entire nested stack was added or deleted outside Amplify.
+      return true;
     }
   }
   return false;

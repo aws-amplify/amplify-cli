@@ -707,6 +707,70 @@ describe('AmplifyMigrationLockStep', () => {
       expect(valid).toBe(true);
     });
 
+    it('should fail validation when IAM Policy cascading change is from a non-table resource', async () => {
+      mockDetectTemplateDrift.mockResolvedValueOnce({
+        changes: [
+          {
+            Action: 'Modify',
+            LogicalResourceId: 'SomeLambdaPolicy',
+            ResourceType: 'AWS::IAM::Policy',
+            Scope: ['Properties'],
+            Details: [
+              {
+                ChangeSource: 'ResourceAttribute',
+                Evaluation: 'Dynamic',
+                Target: { Attribute: 'Properties', Name: 'PolicyDocument', RequiresRecreation: 'Never' },
+                CausingEntity: 'MyLambdaFunction.Arn',
+              },
+            ],
+          },
+        ],
+        skipped: false,
+      });
+
+      const plan = await lockStep.rollback();
+      const valid = await plan.validate();
+
+      expect(valid).toBe(false);
+    });
+
+    it('should fail validation when a nested stack is added (Add action on CloudFormation::Stack)', async () => {
+      mockDetectTemplateDrift.mockResolvedValueOnce({
+        changes: [
+          {
+            Action: 'Add',
+            LogicalResourceId: 'newUnexpectedStack',
+            ResourceType: 'AWS::CloudFormation::Stack',
+          },
+        ],
+        skipped: false,
+      });
+
+      const plan = await lockStep.rollback();
+      const valid = await plan.validate();
+
+      expect(valid).toBe(false);
+    });
+
+    it('should fail validation when a nested stack is removed (Remove action on CloudFormation::Stack)', async () => {
+      mockDetectTemplateDrift.mockResolvedValueOnce({
+        changes: [
+          {
+            Action: 'Remove',
+            LogicalResourceId: 'authStack',
+            ResourceType: 'AWS::CloudFormation::Stack',
+            PhysicalResourceId: 'arn:aws:cloudformation:us-east-1:123:stack/auth-stack/abc',
+          },
+        ],
+        skipped: false,
+      });
+
+      const plan = await lockStep.rollback();
+      const valid = await plan.validate();
+
+      expect(valid).toBe(false);
+    });
+
     it('should pass validation when CloudFormation::Stack wrapper has no nestedChanges', async () => {
       mockDetectTemplateDrift.mockResolvedValueOnce({
         changes: [
