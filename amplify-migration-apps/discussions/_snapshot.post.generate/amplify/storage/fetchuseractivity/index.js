@@ -4,7 +4,7 @@ const { DynamoDBDocumentClient, QueryCommand, GetCommand } = require('@aws-sdk/l
 const dynamoDB = DynamoDBDocumentClient.from(new DynamoDBClient({}));
 const TABLE_NAME = process.env.STORAGE_ACTIVITY_NAME;
 
-export async function handler(event) {
+exports.handler = async (event) => {
   console.log(`EVENT: ${JSON.stringify(event)}`);
 
   const fieldName = event.info?.fieldName || event.fieldName;

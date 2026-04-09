@@ -113,9 +113,7 @@ activity.grant(
   'dynamodb:PartiQLDelete'
 );
 backend.activityTrigger79c26ead.resources.lambda.addEventSource(
-  new DynamoEventSource(activity, {
-    startingPosition: StartingPosition.LATEST,
-  })
+  new DynamoEventSource(activity, { startingPosition: StartingPosition.LATEST })
 );
 activity.grantStreamRead(
   backend.activityTrigger79c26ead.resources.lambda.role!

@@ -6,12 +6,12 @@
 	STORAGE_ACTIVITY_STREAMARN
 Amplify Params - DO NOT EDIT */
 
-import { DynamoDBClient, UpdateItemCommand } from '@aws-sdk/client-dynamodb';
+const { DynamoDBClient, UpdateItemCommand } = require('@aws-sdk/client-dynamodb');
 
 const client = new DynamoDBClient();
 const TABLE_NAME = process.env.STORAGE_ACTIVITY_NAME;
 
-export async function handler(event) {
+exports.handler = async (event) => {
   let newRecordCount = 0;
 
   for (const record of event.Records) {
@@ -39,4 +39,4 @@ export async function handler(event) {
   }));
 
   console.log(`Incremented activity count by ${newRecordCount}`);
-}
+};
