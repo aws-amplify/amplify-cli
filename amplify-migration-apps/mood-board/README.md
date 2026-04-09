@@ -362,11 +362,11 @@ git checkout gen2-main
 - // s3Bucket.bucketName = '...';
 + s3Bucket.bucketName = '...';
 ```
-**Edit in `./src/constants`:**
+**Edit in `./src/components/SurpriseMeButton.tsx`:**
 
 ```diff
-- export const KINESIS_STREAM_NAME = 'moodboardKinesis-gen2-sandbox';
-+ export const KINESIS_STREAM_NAME = 'moodboardKinesis-main';
+- const STREAM_NAME = 'moodboardKinesis-gen2-main';
++ const STREAM_NAME = 'moodboardKinesis-main';
 ```
 
 ```console

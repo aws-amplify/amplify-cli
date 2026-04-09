@@ -1,0 +1,12 @@
+[
+  {
+    "Source": {
+      "StackName": "arn:aws:cloudformation:us-east-1:615368094448:stack/amplify-moodboard-main-5c190-storagemoodboardstorage-1NUS2YUQP7X9L/424b3670-337d-11f1-84d4-0e47c75458c5",
+      "LogicalResourceId": "S3Bucket"
+    },
+    "Destination": {
+      "StackName": "arn:aws:cloudformation:us-east-1:615368094448:stack/amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-storage0EC3F24A-PO9PAR11EIRO/b1d9e370-3390-11f1-91f2-12a5a37dbe6f",
+      "LogicalResourceId": "moodboarda9dff0b544a64459b29954a5cab78ace5c190gen2mainBucket33EA37F9"
+    }
+  }
+]
