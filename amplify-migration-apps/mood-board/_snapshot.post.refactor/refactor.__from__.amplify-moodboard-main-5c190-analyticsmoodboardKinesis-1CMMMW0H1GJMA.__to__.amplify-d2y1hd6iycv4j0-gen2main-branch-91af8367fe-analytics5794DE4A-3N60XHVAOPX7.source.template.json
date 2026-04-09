@@ -1,0 +1,113 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"Amplify\",\"createdWith\":\"14.1.0\",\"stackType\":\"analytics-Kinesis\",\"metadata\":{\"whyContinueWithGen1\":\"Prefer not to answer\"}}",
+  "Parameters": {
+    "env": {
+      "Type": "String"
+    },
+    "kinesisStreamName": {
+      "Type": "String"
+    },
+    "kinesisStreamShardCount": {
+      "Type": "Number",
+      "Default": 1
+    },
+    "authPolicyName": {
+      "Type": "String"
+    },
+    "unauthPolicyName": {
+      "Type": "String"
+    },
+    "authRoleName": {
+      "Type": "String"
+    },
+    "unauthRoleName": {
+      "Type": "String"
+    }
+  },
+  "Conditions": {
+    "ShouldNotCreateEnvResources": {
+      "Fn::Equals": [
+        "x",
+        "NONE"
+      ]
+    }
+  },
+  "Resources": {
+    "CognitoUnauthPolicy": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyName": "kinesis_amplify_ff299b99",
+        "Roles": [
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.post.refactor/refactor.__from__.amplify-moodboard-x-x-analyticsmoodboardKinesis-x.__to__.amplify-moodboard-e2e-sandbox-x-analytics5794DE4A-x.source.template.json
+          "amplify-moodboard-x-x-unauthRole"
+========
+          "amplify-moodboard-main-5c190-unauthRole"
+>>>>>>>> e4218ece1 (feat: update post refactor):amplify-migration-apps/mood-board/_snapshot.post.refactor/refactor.__from__.amplify-moodboard-main-5c190-analyticsmoodboardKinesis-1CMMMW0H1GJMA.__to__.amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-analytics5794DE4A-3N60XHVAOPX7.source.template.json
+        ],
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "kinesis:PutRecord",
+                "kinesis:PutRecords"
+              ],
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.post.refactor/refactor.__from__.amplify-moodboard-x-x-analyticsmoodboardKinesis-x.__to__.amplify-moodboard-e2e-sandbox-x-analytics5794DE4A-x.source.template.json
+              "Resource": "arn:aws:kinesis:us-east-1:123456789012:stream/moodboardKinesis-x"
+========
+              "Resource": "arn:aws:kinesis:us-east-1:615368094448:stream/moodboardKinesis-main"
+>>>>>>>> e4218ece1 (feat: update post refactor):amplify-migration-apps/mood-board/_snapshot.post.refactor/refactor.__from__.amplify-moodboard-main-5c190-analyticsmoodboardKinesis-1CMMMW0H1GJMA.__to__.amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-analytics5794DE4A-3N60XHVAOPX7.source.template.json
+            }
+          ]
+        }
+      }
+    },
+    "CognitoAuthPolicy": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyName": "kinesis_amplify_ff299b99",
+        "Roles": [
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.post.refactor/refactor.__from__.amplify-moodboard-x-x-analyticsmoodboardKinesis-x.__to__.amplify-moodboard-e2e-sandbox-x-analytics5794DE4A-x.source.template.json
+          "amplify-moodboard-x-x-authRole"
+========
+          "amplify-moodboard-main-5c190-authRole"
+>>>>>>>> e4218ece1 (feat: update post refactor):amplify-migration-apps/mood-board/_snapshot.post.refactor/refactor.__from__.amplify-moodboard-main-5c190-analyticsmoodboardKinesis-1CMMMW0H1GJMA.__to__.amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-analytics5794DE4A-3N60XHVAOPX7.source.template.json
+        ],
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "kinesis:PutRecord",
+                "kinesis:PutRecords"
+              ],
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.post.refactor/refactor.__from__.amplify-moodboard-x-x-analyticsmoodboardKinesis-x.__to__.amplify-moodboard-e2e-sandbox-x-analytics5794DE4A-x.source.template.json
+              "Resource": "arn:aws:kinesis:us-east-1:123456789012:stream/moodboardKinesis-x"
+========
+              "Resource": "arn:aws:kinesis:us-east-1:615368094448:stream/moodboardKinesis-main"
+>>>>>>>> e4218ece1 (feat: update post refactor):amplify-migration-apps/mood-board/_snapshot.post.refactor/refactor.__from__.amplify-moodboard-main-5c190-analyticsmoodboardKinesis-1CMMMW0H1GJMA.__to__.amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-analytics5794DE4A-3N60XHVAOPX7.source.template.json
+            }
+          ]
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "kinesisStreamArn": {
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.post.refactor/refactor.__from__.amplify-moodboard-x-x-analyticsmoodboardKinesis-x.__to__.amplify-moodboard-e2e-sandbox-x-analytics5794DE4A-x.source.template.json
+      "Value": "arn:aws:kinesis:us-east-1:123456789012:stream/moodboardKinesis-x"
+========
+      "Value": "arn:aws:kinesis:us-east-1:615368094448:stream/moodboardKinesis-main"
+>>>>>>>> e4218ece1 (feat: update post refactor):amplify-migration-apps/mood-board/_snapshot.post.refactor/refactor.__from__.amplify-moodboard-main-5c190-analyticsmoodboardKinesis-1CMMMW0H1GJMA.__to__.amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-analytics5794DE4A-3N60XHVAOPX7.source.template.json
+    },
+    "kinesisStreamId": {
+      "Value": "moodboardKinesis-x"
+    },
+    "kinesisStreamShardCount": {
+      "Value": "1"
+    }
+  }
+}

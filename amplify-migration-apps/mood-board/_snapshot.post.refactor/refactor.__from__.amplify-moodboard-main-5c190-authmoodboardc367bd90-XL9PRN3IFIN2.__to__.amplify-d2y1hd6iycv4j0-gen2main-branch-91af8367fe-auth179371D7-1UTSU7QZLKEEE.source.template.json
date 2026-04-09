@@ -1,0 +1,217 @@
+{
+  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"Amplify\",\"createdWith\":\"14.1.0\",\"stackType\":\"auth-Cognito\",\"metadata\":{\"whyContinueWithGen1\":\"Prefer not to answer\"}}",
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Parameters": {
+    "env": {
+      "Type": "String"
+    },
+    "identityPoolName": {
+      "Type": "String"
+    },
+    "allowUnauthenticatedIdentities": {
+      "Type": "String"
+    },
+    "resourceNameTruncated": {
+      "Type": "String"
+    },
+    "userPoolName": {
+      "Type": "String"
+    },
+    "autoVerifiedAttributes": {
+      "Type": "CommaDelimitedList"
+    },
+    "mfaConfiguration": {
+      "Type": "String"
+    },
+    "mfaTypes": {
+      "Type": "CommaDelimitedList"
+    },
+    "smsAuthenticationMessage": {
+      "Type": "String"
+    },
+    "smsVerificationMessage": {
+      "Type": "String"
+    },
+    "emailVerificationSubject": {
+      "Type": "String"
+    },
+    "emailVerificationMessage": {
+      "Type": "String"
+    },
+    "defaultPasswordPolicy": {
+      "Type": "String"
+    },
+    "passwordPolicyMinLength": {
+      "Type": "String"
+    },
+    "passwordPolicyCharacters": {
+      "Type": "CommaDelimitedList"
+    },
+    "requiredAttributes": {
+      "Type": "CommaDelimitedList"
+    },
+    "aliasAttributes": {
+      "Type": "CommaDelimitedList"
+    },
+    "userpoolClientGenerateSecret": {
+      "Type": "String"
+    },
+    "userpoolClientRefreshTokenValidity": {
+      "Type": "String"
+    },
+    "userpoolClientWriteAttributes": {
+      "Type": "CommaDelimitedList"
+    },
+    "userpoolClientReadAttributes": {
+      "Type": "CommaDelimitedList"
+    },
+    "userpoolClientLambdaRole": {
+      "Type": "String"
+    },
+    "userpoolClientSetAttributes": {
+      "Type": "String"
+    },
+    "sharedId": {
+      "Type": "String"
+    },
+    "resourceName": {
+      "Type": "String"
+    },
+    "authSelections": {
+      "Type": "String"
+    },
+    "useDefault": {
+      "Type": "String"
+    },
+    "usernameAttributes": {
+      "Type": "CommaDelimitedList"
+    },
+    "userPoolGroupList": {
+      "Type": "CommaDelimitedList"
+    },
+    "serviceName": {
+      "Type": "String"
+    },
+    "usernameCaseSensitive": {
+      "Type": "String"
+    },
+    "useEnabledMfas": {
+      "Type": "String"
+    },
+    "authRoleArn": {
+      "Type": "String"
+    },
+    "unauthRoleArn": {
+      "Type": "String"
+    },
+    "breakCircularDependency": {
+      "Type": "String"
+    },
+    "dependsOn": {
+      "Type": "CommaDelimitedList"
+    }
+  },
+  "Conditions": {
+    "ShouldNotCreateEnvResources": {
+      "Fn::Equals": [
+        "x",
+        "NONE"
+      ]
+    }
+  },
+  "Resources": {
+    "UserPoolClientRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "RoleName": {
+          "Fn::Join": [
+            "",
+            [
+              "upClientLambdaRolec367bd90",
+              {
+                "Fn::Select": [
+                  3,
+                  {
+                    "Fn::Split": [
+                      "-",
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.post.refactor/refactor.__from__.amplify-moodboard-x-x-authmoodboard759ae00a-x.__to__.amplify-moodboard-e2e-sandbox-x-auth179371D7-x.source.template.json
+                      "amplify-moodboard-x-x-authmoodboard759ae00a-x"
+========
+                      "amplify-moodboard-main-5c190-authmoodboardc367bd90-XL9PRN3IFIN2"
+>>>>>>>> e4218ece1 (feat: update post refactor):amplify-migration-apps/mood-board/_snapshot.post.refactor/refactor.__from__.amplify-moodboard-main-5c190-authmoodboardc367bd90-XL9PRN3IFIN2.__to__.amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-auth179371D7-1UTSU7QZLKEEE.source.template.json
+                    ]
+                  }
+                ]
+              },
+              "-",
+              "x"
+            ]
+          ]
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "IdentityPoolId": {
+      "Description": "Id for the identity pool",
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.post.refactor/refactor.__from__.amplify-moodboard-x-x-authmoodboard759ae00a-x.__to__.amplify-moodboard-e2e-sandbox-x-auth179371D7-x.source.template.json
+      "Value": "us-east-1:6de0aef6-4b5a-4180-8f08-43c49990b843"
+    },
+    "IdentityPoolName": {
+      "Value": "moodboard759ae00a_identitypool_759ae00a__x"
+    },
+    "UserPoolId": {
+      "Description": "Id for the user pool",
+      "Value": "us-east-1_uFCFZxzU8"
+    },
+    "UserPoolArn": {
+      "Description": "Arn for the user pool",
+      "Value": "arn:aws:cognito-idp:us-east-1:123456789012:userpool/us-east-1_uFCFZxzU8"
+========
+      "Value": "us-east-1:c642f369-abf5-495e-9868-bdecd049d084"
+    },
+    "IdentityPoolName": {
+      "Value": "moodboardc367bd90_identitypool_c367bd90__main"
+    },
+    "UserPoolId": {
+      "Description": "Id for the user pool",
+      "Value": "us-east-1_9ztx7trQ7"
+    },
+    "UserPoolArn": {
+      "Description": "Arn for the user pool",
+      "Value": "arn:aws:cognito-idp:us-east-1:615368094448:userpool/us-east-1_9ztx7trQ7"
+>>>>>>>> e4218ece1 (feat: update post refactor):amplify-migration-apps/mood-board/_snapshot.post.refactor/refactor.__from__.amplify-moodboard-main-5c190-authmoodboardc367bd90-XL9PRN3IFIN2.__to__.amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-auth179371D7-1UTSU7QZLKEEE.source.template.json
+    },
+    "UserPoolName": {
+      "Value": "moodboardc367bd90_userpool_c367bd90"
+    },
+    "AppClientIDWeb": {
+      "Description": "The user pool app client id for web",
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.post.refactor/refactor.__from__.amplify-moodboard-x-x-authmoodboard759ae00a-x.__to__.amplify-moodboard-e2e-sandbox-x-auth179371D7-x.source.template.json
+      "Value": "74tvl72po139f1o6bp04rcs7s"
+    },
+    "AppClientID": {
+      "Description": "The user pool app client id",
+      "Value": "4jbh65m4dc0ipi3j8918a7d372"
+========
+      "Value": "ud9llev3tttr96b4apall3shp"
+    },
+    "AppClientID": {
+      "Description": "The user pool app client id",
+      "Value": "52rncfk9n4e7so3pjbi5pno6rr"
+>>>>>>>> e4218ece1 (feat: update post refactor):amplify-migration-apps/mood-board/_snapshot.post.refactor/refactor.__from__.amplify-moodboard-main-5c190-authmoodboardc367bd90-XL9PRN3IFIN2.__to__.amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-auth179371D7-1UTSU7QZLKEEE.source.template.json
+    }
+  }
+}

@@ -1,0 +1,154 @@
+[
+  {
+    "ParameterKey": "usernameAttributes",
+    "ParameterValue": "email"
+  },
+  {
+    "ParameterKey": "authRoleArn",
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.post.refactor/update.amplify-moodboard-x-x-authmoodboard759ae00a-x.parameters.json
+    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-moodboard-x-x-authRole"
+========
+    "ParameterValue": "arn:aws:iam::615368094448:role/amplify-moodboard-main-5c190-authRole"
+>>>>>>>> e4218ece1 (feat: update post refactor):amplify-migration-apps/mood-board/_snapshot.post.refactor/update.amplify-moodboard-main-5c190-authmoodboardc367bd90-XL9PRN3IFIN2.parameters.json
+  },
+  {
+    "ParameterKey": "autoVerifiedAttributes",
+    "ParameterValue": "email"
+  },
+  {
+    "ParameterKey": "allowUnauthenticatedIdentities",
+    "ParameterValue": "true"
+  },
+  {
+    "ParameterKey": "smsVerificationMessage",
+    "ParameterValue": "Your verification code is {####}"
+  },
+  {
+    "ParameterKey": "userpoolClientReadAttributes",
+    "ParameterValue": "email"
+  },
+  {
+    "ParameterKey": "breakCircularDependency",
+    "ParameterValue": "true"
+  },
+  {
+    "ParameterKey": "mfaTypes",
+    "ParameterValue": "SMS Text Message"
+  },
+  {
+    "ParameterKey": "emailVerificationSubject",
+    "ParameterValue": "Your verification code"
+  },
+  {
+    "ParameterKey": "sharedId",
+    "ParameterValue": "c367bd90"
+  },
+  {
+    "ParameterKey": "useDefault",
+    "ParameterValue": "default"
+  },
+  {
+    "ParameterKey": "userpoolClientGenerateSecret",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "mfaConfiguration",
+    "ParameterValue": "OFF"
+  },
+  {
+    "ParameterKey": "identityPoolName",
+    "ParameterValue": "moodboardc367bd90_identitypool_c367bd90"
+  },
+  {
+    "ParameterKey": "userPoolGroupList",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "authSelections",
+    "ParameterValue": "identityPoolAndUserPool"
+  },
+  {
+    "ParameterKey": "resourceNameTruncated",
+    "ParameterValue": "moodboc367bd90"
+  },
+  {
+    "ParameterKey": "smsAuthenticationMessage",
+    "ParameterValue": "Your authentication code is {####}"
+  },
+  {
+    "ParameterKey": "passwordPolicyMinLength",
+    "ParameterValue": "8"
+  },
+  {
+    "ParameterKey": "userPoolName",
+    "ParameterValue": "moodboardc367bd90_userpool_c367bd90"
+  },
+  {
+    "ParameterKey": "userpoolClientWriteAttributes",
+    "ParameterValue": "email"
+  },
+  {
+    "ParameterKey": "dependsOn",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "useEnabledMfas",
+    "ParameterValue": "true"
+  },
+  {
+    "ParameterKey": "usernameCaseSensitive",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "resourceName",
+    "ParameterValue": "moodboardc367bd90"
+  },
+  {
+    "ParameterKey": "env",
+    "ParameterValue": "x"
+  },
+  {
+    "ParameterKey": "serviceName",
+    "ParameterValue": "Cognito"
+  },
+  {
+    "ParameterKey": "emailVerificationMessage",
+    "ParameterValue": "Your verification code is {####}"
+  },
+  {
+    "ParameterKey": "userpoolClientRefreshTokenValidity",
+    "ParameterValue": "30"
+  },
+  {
+    "ParameterKey": "userpoolClientSetAttributes",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "unauthRoleArn",
+<<<<<<<< HEAD:amplify-migration-apps/mood-board/_snapshot.post.refactor/update.amplify-moodboard-x-x-authmoodboard759ae00a-x.parameters.json
+    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-moodboard-x-x-unauthRole"
+========
+    "ParameterValue": "arn:aws:iam::615368094448:role/amplify-moodboard-main-5c190-unauthRole"
+>>>>>>>> e4218ece1 (feat: update post refactor):amplify-migration-apps/mood-board/_snapshot.post.refactor/update.amplify-moodboard-main-5c190-authmoodboardc367bd90-XL9PRN3IFIN2.parameters.json
+  },
+  {
+    "ParameterKey": "requiredAttributes",
+    "ParameterValue": "email"
+  },
+  {
+    "ParameterKey": "passwordPolicyCharacters",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "aliasAttributes",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "userpoolClientLambdaRole",
+    "ParameterValue": "moodboc367bd90_userpoolclient_lambda_role"
+  },
+  {
+    "ParameterKey": "defaultPasswordPolicy",
+    "ParameterValue": "false"
+  }
+]
