@@ -5,7 +5,7 @@
   },
   {
     "ParameterKey": "authRoleArn",
-    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-moodboard-main-1959a-authRole"
+    "ParameterValue": "arn:aws:iam::615368094448:role/amplify-moodboard-main-5c190-authRole"
   },
   {
     "ParameterKey": "autoVerifiedAttributes",
@@ -37,7 +37,7 @@
   },
   {
     "ParameterKey": "sharedId",
-    "ParameterValue": "759ae00a"
+    "ParameterValue": "c367bd90"
   },
   {
     "ParameterKey": "useDefault",
@@ -53,7 +53,7 @@
   },
   {
     "ParameterKey": "identityPoolName",
-    "ParameterValue": "moodboard759ae00a_identitypool_759ae00a"
+    "ParameterValue": "moodboardc367bd90_identitypool_c367bd90"
   },
   {
     "ParameterKey": "userPoolGroupList",
@@ -65,7 +65,7 @@
   },
   {
     "ParameterKey": "resourceNameTruncated",
-    "ParameterValue": "moodbo759ae00a"
+    "ParameterValue": "moodboc367bd90"
   },
   {
     "ParameterKey": "smsAuthenticationMessage",
@@ -77,7 +77,7 @@
   },
   {
     "ParameterKey": "userPoolName",
-    "ParameterValue": "moodboard759ae00a_userpool_759ae00a"
+    "ParameterValue": "moodboardc367bd90_userpool_c367bd90"
   },
   {
     "ParameterKey": "userpoolClientWriteAttributes",
@@ -97,7 +97,7 @@
   },
   {
     "ParameterKey": "resourceName",
-    "ParameterValue": "moodboard759ae00a"
+    "ParameterValue": "moodboardc367bd90"
   },
   {
     "ParameterKey": "env",
@@ -121,7 +121,7 @@
   },
   {
     "ParameterKey": "unauthRoleArn",
-    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-moodboard-main-1959a-unauthRole"
+    "ParameterValue": "arn:aws:iam::615368094448:role/amplify-moodboard-main-5c190-unauthRole"
   },
   {
     "ParameterKey": "requiredAttributes",
@@ -137,7 +137,7 @@
   },
   {
     "ParameterKey": "userpoolClientLambdaRole",
-    "ParameterValue": "moodbo759ae00a_userpoolclient_lambda_role"
+    "ParameterValue": "moodboc367bd90_userpoolclient_lambda_role"
   },
   {
     "ParameterKey": "defaultPasswordPolicy",

@@ -1,19 +1,19 @@
 [
   {
     "ParameterKey": "unauthPolicyName",
-    "ParameterValue": "kinesis_amplify_bca5ce95"
+    "ParameterValue": "kinesis_amplify_ff299b99"
   },
   {
     "ParameterKey": "authRoleName",
-    "ParameterValue": "amplify-moodboard-main-1959a-authRole"
+    "ParameterValue": "amplify-moodboard-main-5c190-authRole"
   },
   {
     "ParameterKey": "unauthRoleName",
-    "ParameterValue": "amplify-moodboard-main-1959a-unauthRole"
+    "ParameterValue": "amplify-moodboard-main-5c190-unauthRole"
   },
   {
     "ParameterKey": "authPolicyName",
-    "ParameterValue": "kinesis_amplify_bca5ce95"
+    "ParameterValue": "kinesis_amplify_ff299b99"
   },
   {
     "ParameterKey": "kinesisStreamShardCount",

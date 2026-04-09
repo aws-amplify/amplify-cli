@@ -2,7 +2,7 @@
   "AWSTemplateFormatVersion": "2010-09-09",
   "Description": "Temporary holding stack for Gen2 migration",
   "Resources": {
-    "moodboard20e29595008142e3ad16f01c4066e1c41959agen2mainBucket71D6AA65": {
+    "moodboarda9dff0b544a64459b29954a5cab78ace5c190gen2mainBucket33EA37F9": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
         "BucketEncryption": {
@@ -44,7 +44,7 @@
         "Tags": [
           {
             "Key": "amplify:app-id",
-            "Value": "moodboard"
+            "Value": "d2y1hd6iycv4j0"
           },
           {
             "Key": "amplify:branch-name",
@@ -56,7 +56,7 @@
           },
           {
             "Key": "amplify:friendly-name",
-            "Value": "moodboard20e29595008142e3ad16f01c4066e1c41959a-gen2-main"
+            "Value": "moodboarda9dff0b544a64459b29954a5cab78ace5c190-gen2-main"
           },
           {
             "Key": "aws-cdk:auto-delete-objects",
@@ -71,7 +71,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/storage/moodboard20e29595008142e3ad16f01c4066e1c41959a-gen2-main/Bucket/Resource"
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/storage/moodboarda9dff0b544a64459b29954a5cab78ace5c190-gen2-main/Bucket/Resource"
       }
     }
   },

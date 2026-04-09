@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"Amplify\",\"createdWith\":\"14.2.5\",\"stackType\":\"analytics-Kinesis\",\"metadata\":{\"whyContinueWithGen1\":\"Prefer not to answer\"}}",
+  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"Amplify\",\"createdWith\":\"14.1.0\",\"stackType\":\"analytics-Kinesis\",\"metadata\":{\"whyContinueWithGen1\":\"Prefer not to answer\"}}",
   "Parameters": {
     "env": {
       "Type": "String"
@@ -34,27 +34,12 @@
     }
   },
   "Resources": {
-    "KinesisStream": {
-      "Type": "AWS::Kinesis::Stream",
-      "Properties": {
-        "Name": {
-          "Fn::Join": [
-            "-",
-            [
-              "moodboardKinesis",
-              "main"
-            ]
-          ]
-        },
-        "ShardCount": "1"
-      }
-    },
     "CognitoUnauthPolicy": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
-        "PolicyName": "kinesis_amplify_bca5ce95",
+        "PolicyName": "kinesis_amplify_ff299b99",
         "Roles": [
-          "amplify-moodboard-main-1959a-unauthRole"
+          "amplify-moodboard-main-5c190-unauthRole"
         ],
         "PolicyDocument": {
           "Version": "2012-10-17",
@@ -65,7 +50,7 @@
                 "kinesis:PutRecord",
                 "kinesis:PutRecords"
               ],
-              "Resource": "arn:aws:kinesis:us-east-1:123456789012:stream/moodboardKinesis-main"
+              "Resource": "arn:aws:kinesis:us-east-1:615368094448:stream/moodboardKinesis-main"
             }
           ]
         }
@@ -74,9 +59,9 @@
     "CognitoAuthPolicy": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
-        "PolicyName": "kinesis_amplify_bca5ce95",
+        "PolicyName": "kinesis_amplify_ff299b99",
         "Roles": [
-          "amplify-moodboard-main-1959a-authRole"
+          "amplify-moodboard-main-5c190-authRole"
         ],
         "PolicyDocument": {
           "Version": "2012-10-17",
@@ -87,7 +72,7 @@
                 "kinesis:PutRecord",
                 "kinesis:PutRecords"
               ],
-              "Resource": "arn:aws:kinesis:us-east-1:123456789012:stream/moodboardKinesis-main"
+              "Resource": "arn:aws:kinesis:us-east-1:615368094448:stream/moodboardKinesis-main"
             }
           ]
         }
@@ -96,7 +81,7 @@
   },
   "Outputs": {
     "kinesisStreamArn": {
-      "Value": "arn:aws:kinesis:us-east-1:123456789012:stream/moodboardKinesis-main"
+      "Value": "arn:aws:kinesis:us-east-1:615368094448:stream/moodboardKinesis-main"
     },
     "kinesisStreamId": {
       "Value": "moodboardKinesis-main"

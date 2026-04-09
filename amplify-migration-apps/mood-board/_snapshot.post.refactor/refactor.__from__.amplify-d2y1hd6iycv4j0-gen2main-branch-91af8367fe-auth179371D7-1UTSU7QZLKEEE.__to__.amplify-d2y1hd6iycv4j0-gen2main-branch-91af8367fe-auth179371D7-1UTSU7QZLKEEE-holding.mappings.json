@@ -1,0 +1,52 @@
+[
+  {
+    "Source": {
+      "StackName": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-auth179371D7-1UTSU7QZLKEEE",
+      "LogicalResourceId": "amplifyAuthUserPool4BA7F805"
+    },
+    "Destination": {
+      "StackName": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-auth179371D7-1UTSU7QZLKEEE-holding",
+      "LogicalResourceId": "amplifyAuthUserPool4BA7F805"
+    }
+  },
+  {
+    "Source": {
+      "StackName": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-auth179371D7-1UTSU7QZLKEEE",
+      "LogicalResourceId": "amplifyAuthUserPoolNativeAppClient79534448"
+    },
+    "Destination": {
+      "StackName": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-auth179371D7-1UTSU7QZLKEEE-holding",
+      "LogicalResourceId": "amplifyAuthUserPoolNativeAppClient79534448"
+    }
+  },
+  {
+    "Source": {
+      "StackName": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-auth179371D7-1UTSU7QZLKEEE",
+      "LogicalResourceId": "amplifyAuthUserPoolAppClient2626C6F8"
+    },
+    "Destination": {
+      "StackName": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-auth179371D7-1UTSU7QZLKEEE-holding",
+      "LogicalResourceId": "amplifyAuthUserPoolAppClient2626C6F8"
+    }
+  },
+  {
+    "Source": {
+      "StackName": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-auth179371D7-1UTSU7QZLKEEE",
+      "LogicalResourceId": "amplifyAuthIdentityPool3FDE84CC"
+    },
+    "Destination": {
+      "StackName": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-auth179371D7-1UTSU7QZLKEEE-holding",
+      "LogicalResourceId": "amplifyAuthIdentityPool3FDE84CC"
+    }
+  },
+  {
+    "Source": {
+      "StackName": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-auth179371D7-1UTSU7QZLKEEE",
+      "LogicalResourceId": "amplifyAuthIdentityPoolRoleAttachment045F17C8"
+    },
+    "Destination": {
+      "StackName": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe-auth179371D7-1UTSU7QZLKEEE-holding",
+      "LogicalResourceId": "amplifyAuthIdentityPoolRoleAttachment045F17C8"
+    }
+  }
+]

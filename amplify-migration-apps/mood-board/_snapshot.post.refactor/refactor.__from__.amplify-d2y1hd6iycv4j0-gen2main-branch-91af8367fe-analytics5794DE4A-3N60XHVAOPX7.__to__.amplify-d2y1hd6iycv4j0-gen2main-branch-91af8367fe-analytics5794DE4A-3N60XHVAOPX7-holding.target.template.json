@@ -10,7 +10,7 @@
         "Tags": [
           {
             "Key": "amplify:app-id",
-            "Value": "moodboard"
+            "Value": "d2y1hd6iycv4j0"
           },
           {
             "Key": "amplify:branch-name",
@@ -27,7 +27,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/analytics/moodboardKinesis/KinesisStream"
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/analytics/moodboardKinesis/KinesisStream"
       }
     }
   },

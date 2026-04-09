@@ -1,6 +1,34 @@
 {
-  "Description": "{\"createdOn\":\"Linux\",\"createdBy\":\"AmplifyPipelineDeploy\",\"createdWith\":\"1.21.0\",\"stackType\":\"custom\",\"metadata\":{}}",
+  "Description": "{\"createdOn\":\"Linux\",\"createdBy\":\"AmplifyPipelineDeploy\",\"createdWith\":\"1.22.0\",\"stackType\":\"custom\",\"metadata\":{}}",
   "Resources": {
+    "moodboardKinesisKinesisStreamD5E97047": {
+      "Type": "AWS::Kinesis::Stream",
+      "Properties": {
+        "Name": "moodboardKinesis-gen2-main",
+        "ShardCount": 1,
+        "Tags": [
+          {
+            "Key": "amplify:app-id",
+            "Value": "d2y1hd6iycv4j0"
+          },
+          {
+            "Key": "amplify:branch-name",
+            "Value": "gen2-main"
+          },
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "branch"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/analytics/moodboardKinesis/KinesisStream"
+      }
+    },
     "moodboardKinesisCognitoAuthPolicyB69F4FA6": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
@@ -13,19 +41,19 @@
                 "kinesis:PutRecord",
                 "kinesis:PutRecords"
               ],
-              "Resource": "arn:aws:kinesis:us-east-1:123456789012:stream/moodboardKinesis-gen2-main"
+              "Resource": "arn:aws:kinesis:us-east-1:615368094448:stream/moodboardKinesis-gen2-main"
             }
           ]
         },
         "PolicyName": "moodboardKinesis-auth-policy-gen2-main",
         "Roles": [
           {
-            "Ref": "referencetoamplifymoodboardgen2mainbranchf7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthauthenticatedUserRole0AA19633Ref"
+            "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthNestedStackauthNestedStackResourceC05563C6Outputsamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthamplifyAuthauthenticatedUserRole136A40AFRef"
           }
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/analytics/moodboardKinesis/CognitoAuthPolicy"
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/analytics/moodboardKinesis/CognitoAuthPolicy"
       }
     },
     "moodboardKinesisCognitoUnauthPolicyC4CE1D44": {
@@ -40,50 +68,35 @@
                 "kinesis:PutRecord",
                 "kinesis:PutRecords"
               ],
-              "Resource": "arn:aws:kinesis:us-east-1:123456789012:stream/moodboardKinesis-gen2-main"
+              "Resource": "arn:aws:kinesis:us-east-1:615368094448:stream/moodboardKinesis-gen2-main"
             }
           ]
         },
         "PolicyName": "moodboardKinesis-unauth-policy-gen2-main",
         "Roles": [
           {
-            "Ref": "referencetoamplifymoodboardgen2mainbranchf7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthunauthenticatedUserRoleBEC4D39ARef"
+            "Ref": "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthNestedStackauthNestedStackResourceC05563C6Outputsamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthamplifyAuthunauthenticatedUserRoleDFF7305BRef"
           }
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/analytics/moodboardKinesis/CognitoUnauthPolicy"
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/analytics/moodboardKinesis/CognitoUnauthPolicy"
       }
     },
     "CDKMetadata": {
       "Type": "AWS::CDK::Metadata",
       "Properties": {
-        "Analytics": "v2:deflate64:H4sIAAAAAAAA/yXHwQqDMAwA0G/x3mZadtjd+zbmB0jWRoi1dZh0MsR/F9np8Ry4awN1hatYH6Kd+A3bnUQpdIo+Glyl3yJnEhZoh9zpQpgMYzr3nCf2v920Q34U/RTdTZ4DwSiXr3PQ3KCuRmG2S8nKieD19wCgungydwAAAA=="
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/yXMMQ7CMAxA0bOwJwYiBvbugOgBKpO4kpvGRbVDhareHVVMX2/5AcLlCqcDLupjyn7kF6w3UqPUGsbscNFuzSykrND00tpMWBxj2fWYRo7fzTW93Ku9q21OpkQw6PETApz39aDMfq5iXAie//4AKixDBHcAAAA="
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-moodboard-gen2main-branch-f7e4caeabb/analytics/CDKMetadata/Default"
+        "aws:cdk:path": "amplify-d2y1hd6iycv4j0-gen2main-branch-91af8367fe/analytics/CDKMetadata/Default"
       },
       "Condition": "CDKMetadataAvailable"
-    },
-    "moodboardKinesisKinesisStreamD5E97047": {
-      "Type": "AWS::Kinesis::Stream",
-      "Properties": {
-        "Name": {
-          "Fn::Join": [
-            "-",
-            [
-              "moodboardKinesis",
-              "main"
-            ]
-          ]
-        },
-        "ShardCount": "1"
-      }
     }
   },
   "Outputs": {
     "kinesisStreamArn": {
-      "Value": "arn:aws:kinesis:us-east-1:123456789012:stream/moodboardKinesis-gen2-main"
+      "Value": "arn:aws:kinesis:us-east-1:615368094448:stream/moodboardKinesis-gen2-main"
     },
     "kinesisStreamId": {
       "Value": "moodboardKinesis-gen2-main"
@@ -91,8 +104,8 @@
     "kinesisStreamShardCount": {
       "Value": "1"
     },
-    "amplifymoodboardgen2mainbranchf7e4caeabbanalyticsmoodboardKinesisKinesisStreamBD82380AArn": {
-      "Value": "arn:aws:kinesis:us-east-1:123456789012:stream/moodboardKinesis-gen2-main"
+    "amplifyd2y1hd6iycv4j0gen2mainbranch91af8367feanalyticsmoodboardKinesisKinesisStream9A121783Arn": {
+      "Value": "arn:aws:kinesis:us-east-1:615368094448:stream/moodboardKinesis-gen2-main"
     }
   },
   "Conditions": {
@@ -362,10 +375,10 @@
     }
   },
   "Parameters": {
-    "referencetoamplifymoodboardgen2mainbranchf7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthauthenticatedUserRole0AA19633Ref": {
+    "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthNestedStackauthNestedStackResourceC05563C6Outputsamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthamplifyAuthauthenticatedUserRole136A40AFRef": {
       "Type": "String"
     },
-    "referencetoamplifymoodboardgen2mainbranchf7e4caeabbauthNestedStackauthNestedStackResource8240BFF9Outputsamplifymoodboardgen2mainbranchf7e4caeabbauthamplifyAuthunauthenticatedUserRoleBEC4D39ARef": {
+    "referencetoamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthNestedStackauthNestedStackResourceC05563C6Outputsamplifyd2y1hd6iycv4j0gen2mainbranch91af8367feauthamplifyAuthunauthenticatedUserRoleDFF7305BRef": {
       "Type": "String"
     }
   }
