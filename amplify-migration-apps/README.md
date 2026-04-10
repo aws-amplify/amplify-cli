@@ -293,13 +293,18 @@ Make sure to follow the existing patterns and add tests as well.
 2. Run `amplify init`.
 3. Configure the backend using Gen1 CLI.
 4. Run `amplify push`.
-5. Use the [Snapshot Capture Tool](#snapshot-capture-tool) to capture the `pre.generate` snapshot.
+5. Add validation tests under `<app-name>/tests/` that exercise the new app's capabilities
+   (API queries, auth flows, storage operations, etc.). Follow the patterns in existing apps
+   like `project-boards/tests/` or `fitness-tracker/tests/`.
+6. Use the [Snapshot Capture Tool](#snapshot-capture-tool) to capture the `pre.generate` snapshot.
 
     ```console
     npx tsx snapshot.ts pre.generate <app-name>
 
-6. Run `UPDATE_SNAPSHOTS=1 npm run test:e2e` to execute the full migration flow and capture
-   the remaining snapshots (`post.generate`, `pre.refactor`, `post.refactor`).
+7. Run `UPDATE_SNAPSHOTS=1 npm run test:e2e` to execute the full migration flow and capture
+   the remaining snapshots (`post.generate`, `pre.refactor`, `post.refactor`). The E2E may
+   fail if the new app exercises a bug in the migration tooling. In that case the snapshots
+   will not be updated — fix the bug first, then re-run.
 
 ## Modifying an App
 
@@ -307,13 +312,17 @@ Make sure to follow the existing patterns and add tests as well.
 2. Locate the deployed app directory in output logs and `cd` into it.
 3. Update the backend using Gen1 CLI.
 4. Run `amplify push`.
-5. Use the [Snapshot Capture Tool](#snapshot-capture-tool) to capture the `pre.generate` snapshot.
+5. Add or update validation tests under `<app-name>/tests/` to cover the modified
+   capabilities. Follow the patterns in existing apps like `project-boards/tests/`.
+6. Use the [Snapshot Capture Tool](#snapshot-capture-tool) to capture the `pre.generate` snapshot.
 
     ```console
     npx tsx snapshot.ts pre.generate <app-name>
 
-6. Run `UPDATE_SNAPSHOTS=1 npm run test:e2e` to execute the full migration flow and capture
-   the remaining snapshots (`post.generate`, `pre.refactor`, `post.refactor`).
+7. Run `UPDATE_SNAPSHOTS=1 npm run test:e2e` to execute the full migration flow and capture
+   the remaining snapshots (`post.generate`, `pre.refactor`, `post.refactor`). The E2E may
+   fail if the app change exercises a bug in the migration tooling. In that case the
+   snapshots will not be updated — fix the bug first, then re-run.
 
 ## Snapshot Testing
 
