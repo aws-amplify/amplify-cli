@@ -571,8 +571,7 @@ function generateTimeBasedName(appName: string): string {
  * Generates a random env name (2-10 lowercase letters).
  */
 function generateRandomEnvName(): string {
-  const length = Math.floor(Math.random() * 9) + 2;
-  return Array.from({ length }, () => String.fromCharCode(97 + Math.floor(Math.random() * 26))).join('');
+  return Array.from({ length: 10 }, () => String.fromCharCode(97 + Math.floor(Math.random() * 26))).join('');
 }
 
 async function findStackByPattern(pattern: RegExp): Promise<string> {
