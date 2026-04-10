@@ -104,6 +104,8 @@ When asked to create a PR, generate a body into `.pr-body.ai-generated.md` **at 
 - Do a 30 second summary of the important design information.
 - Do not go overboard on technical details. A reviewer can read the code.
 - Keep it concise and scannable.
+- Don't enumerate files changed. Instead, categorize changes into logical groups. Give each
+  group an h4 title on its own line, followed by a blank line, then the explanation.
 
 ## Delegating to Sub-Agents
 
