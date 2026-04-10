@@ -150,6 +150,7 @@ describe('createUnifiedCategoryView', () => {
           ResourceType: 'AWS::CloudFormation::Stack',
           Action: ChangeAction.Modify,
           ChangeSetId: nestedChangeSetId,
+          PhysicalResourceId: 'arn:aws:cloudformation:us-east-1:123:stack/nested-api-stack/abc',
           nestedChanges: [
             {
               LogicalResourceId: 'Schema',
@@ -173,12 +174,12 @@ describe('createUnifiedCategoryView', () => {
       "
       API Schema
         Template Drift: S3 and deployed templates differ
-        Changeset Id: https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/changesets/details?changeSetId=arn%3Aaws%3Acloudformation%3Aus-east-1%3A123%3AchangeSet%2Fnested-api-cs%2Fdef
+        Changeset Id: https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/changesets/changes?stackId=arn%3Aaws%3Acloudformation%3Aus-east-1%3A123%3Astack%2Fnested-api-stack%2Fabc&changeSetId=arn%3Aaws%3Acloudformation%3Aus-east-1%3A123%3AchangeSet%2Fnested-api-cs%2Fdef
         ~ AWS::AppSync::GraphQLSchema
 
       API NewResolver
         Template Drift: S3 and deployed templates differ
-        Changeset Id: https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/changesets/details?changeSetId=arn%3Aaws%3Acloudformation%3Aus-east-1%3A123%3AchangeSet%2Fnested-api-cs%2Fdef
+        Changeset Id: https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/changesets/changes?stackId=arn%3Aaws%3Acloudformation%3Aus-east-1%3A123%3Astack%2Fnested-api-stack%2Fabc&changeSetId=arn%3Aaws%3Acloudformation%3Aus-east-1%3A123%3AchangeSet%2Fnested-api-cs%2Fdef
         + AWS::AppSync::Resolver
 
       "
@@ -374,12 +375,14 @@ describe('createUnifiedCategoryView', () => {
           ResourceType: 'AWS::CloudFormation::Stack',
           Action: ChangeAction.Modify,
           ChangeSetId: outerChangeSetId,
+          PhysicalResourceId: 'arn:aws:cloudformation:us-east-1:123:stack/outer-stack/abc',
           nestedChanges: [
             {
               LogicalResourceId: 'apiMyGraphQLGraphQLAPI',
               ResourceType: 'AWS::CloudFormation::Stack',
               Action: ChangeAction.Modify,
               ChangeSetId: deepChangeSetId,
+              PhysicalResourceId: 'arn:aws:cloudformation:us-east-1:123:stack/deep-stack/ghi',
               nestedChanges: [
                 {
                   LogicalResourceId: 'Schema',
@@ -399,7 +402,7 @@ describe('createUnifiedCategoryView', () => {
       "
       API Schema
         Template Drift: S3 and deployed templates differ
-        Changeset Id: https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/changesets/details?changeSetId=arn%3Aaws%3Acloudformation%3Aus-east-1%3A123%3AchangeSet%2Fdeep-cs%2Fghi
+        Changeset Id: https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/changesets/changes?stackId=arn%3Aaws%3Acloudformation%3Aus-east-1%3A123%3Astack%2Fdeep-stack%2Fghi&changeSetId=arn%3Aaws%3Acloudformation%3Aus-east-1%3A123%3AchangeSet%2Fdeep-cs%2Fghi
         ~ AWS::AppSync::GraphQLSchema
 
       "

@@ -357,6 +357,10 @@ export class App {
     await this.runNpmScript('test:gen2');
   }
 
+  // ============================================================
+  // App Hooks
+  // ============================================================
+
   /**
    * Run the Jest tests that validate stateful resources are shared.
    */
