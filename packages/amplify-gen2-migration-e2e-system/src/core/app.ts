@@ -46,6 +46,7 @@ interface RefactorConfig {
 export class App {
   private readonly deploymentName: string;
   private readonly gen2BranchName: string;
+  private readonly gen1BranchName = 'main';
 
   private readonly sourceAppPath: string;
   private readonly envName: string;
@@ -192,7 +193,7 @@ export class App {
    * Runs all steps to fully deploy the Gen1 app.
    */
   public async deploy(): Promise<void> {
-    await this.gitInit();
+    await this.git.init();
     await this.init();
     await this.configure();
     await this.installDeps();
@@ -211,6 +212,62 @@ export class App {
   // ============================================================
 
   /**
+   * Runs the full migration workflow
+   */
+  public async migrate(): Promise<void> {
+    await this.deploy();
+    await this.assess();
+    await this.lock();
+    await this.git.checkout(this.gen2BranchName, true);
+    await this.generate();
+
+    this.logger.info(`Capturing post.generate snapshot`);
+    await snapshot.capturePostGenerate(this.targetAppPath, this.snapshotAppPath);
+
+    await this.git.commit('chore: generate');
+    await this.installDeps();
+    await this.git.commit('chore: install dependencies');
+    await this.postGenerate();
+    await this.git.diff();
+    await this.git.commit('chore: post generate');
+    await this.preSandbox();
+    const gen2StackName = await this.deployGen2Sandbox();
+    await this.postSandbox(gen2StackName);
+
+    await this.testGen1();
+    await this.testGen2();
+
+    if (this.skipRefactor) {
+      this.logger.info('Skipping refactor (configured in migration/config.json)');
+      return;
+    }
+
+    const gen1StackName = await this.findGen1RootStack();
+
+    this.logger.info(`Capturing pre.refactor snapshot`);
+    await snapshot.capturePreRefactor(gen1StackName, gen2StackName, this.snapshotAppPath);
+
+    await this.git.checkout(this.gen1BranchName, false);
+    await this.refactor(gen2StackName);
+
+    this.logger.info(`Capturing post.refactor snapshot`);
+    await snapshot.capturePostRefactor(this.targetAppPath, this.snapshotAppPath);
+
+    await this.testGen1();
+    await this.testGen2();
+
+    await this.git.checkout(this.gen2BranchName, false);
+    await this.postRefactor();
+    await this.git.diff();
+    await this.git.commit('chore: post refactor');
+
+    await this.deployGen2Sandbox();
+
+    await this.testGen1();
+    await this.testGen2();
+  }
+
+  /**
    * Run `amplify gen2-migration assess`.
    */
   public async assess(): Promise<void> {
@@ -226,7 +283,7 @@ export class App {
   }
 
   /**
-   * Run `amplify gen2-migration generate` and install dependencies.
+   * Run `amplify gen2-migration generate`.
    */
   public async generate(): Promise<void> {
     await this.runMigrationStep('generate');
@@ -271,14 +328,14 @@ export class App {
   }
 
   // ============================================================
-  // App Scripts
+  // App Tests
   // ============================================================
 
   /**
    * Run the Jest tests against the Gen1 config.
    */
   public async testGen1(): Promise<void> {
-    await this.gitCheckoutGen1();
+    await this.git.checkout(this.gen1BranchName, false);
     await this.runNpmScript('test:gen1');
   }
 
@@ -286,9 +343,13 @@ export class App {
    * Run the Jest tests against the Gen2 config.
    */
   public async testGen2(): Promise<void> {
-    await this.gitCheckoutGen2();
+    await this.git.checkout(this.gen2BranchName, false);
     await this.runNpmScript('test:gen2');
   }
+
+  // ============================================================
+  // App Hooks
+  // ============================================================
 
   /**
    * Run the pre-push script.
@@ -332,104 +393,16 @@ export class App {
     await this.runNpmScript('pre-sandbox');
   }
 
-  // ============================================================
-  // Git
-  // ============================================================
-
-  /**
-   * Initialize a git repo and create the initial commit.
-   */
-  public async gitInit(): Promise<void> {
-    await this.git.init();
-  }
-
-  /**
-   * Commit all changes.
-   */
-  public async gitCommit(message: string): Promise<void> {
-    await this.git.commit(message);
-  }
-
-  public async gitDiff(): Promise<void> {
-    await this.git.diff();
-  }
-
-  /**
-   * Checkout the Gen1 (main) branch.
-   */
-  public async gitCheckoutGen1(): Promise<void> {
-    await this.git.checkout('main', false);
-  }
-
-  /**
-   * Checkout the Gen2 branch (creates it if create is true).
-   */
-  public async gitCheckoutGen2(create = false): Promise<void> {
-    await this.git.checkout(this.gen2BranchName, create);
-  }
-
-  /**
-   * Runs the full migration workflow
-   */
-  public async migrate(): Promise<void> {
-    await this.deploy();
-    await this.assess();
-    await this.lock();
-    await this.gitCheckoutGen2(true);
-    await this.generate();
-    this.logger.info(`Capturing post.generate snapshot`);
-    await snapshot.capturePostGenerate(this.targetAppPath, this.snapshotAppPath);
-    await this.gitCommit('chore: generate');
-    await this.installDeps();
-    await this.gitCommit('chore: install dependencies');
-    await this.postGenerate();
-    await this.gitDiff();
-    await this.gitCommit('chore: post generate');
-    await this.preSandbox();
-    const gen2StackName = await this.deployGen2Sandbox();
-    await this.postSandbox(gen2StackName);
-
-    await this.testGen1();
-    await this.testGen2();
-
-    if (this.skipRefactor) {
-      this.logger.info('Skipping refactor (configured in migration/config.json)');
-      return;
-    }
-
-    const gen1StackName = await this.findGen1RootStack();
-    this.logger.info(`Capturing pre.refactor snapshot`);
-    await snapshot.capturePreRefactor(gen1StackName, gen2StackName, this.snapshotAppPath);
-    await this.gitCheckoutGen1();
-
-    await this.refactor(gen2StackName);
-    this.logger.info(`Capturing post.refactor snapshot`);
-    await snapshot.capturePostRefactor(this.targetAppPath, this.snapshotAppPath);
-
-    await this.testGen1();
-    await this.testGen2();
-
-    await this.gitCheckoutGen2();
-    await this.postRefactor();
-    await this.gitDiff();
-    await this.gitCommit('chore: post refactor');
-
-    await this.deployGen2Sandbox();
-
-    await this.testGen1();
-    await this.testGen2();
-  }
-
   public updateSnapshots(): void {
     this.logger.info(`Sanitizing snapshots`);
     sanitize(this.deploymentName, this.snapshotAppPath);
-    for (const snapshot of fs.readdirSync(this.snapshotAppPath)) {
-      this.logger.info(`Updating snapshot: ${snapshot}`);
-      const sourcePath = path.join(this.sourceAppPath, snapshot);
-      if (fs.existsSync(sourcePath)) {
-        fs.removeSync(sourcePath);
+    for (const snapshot of fs.readdirSync(this.snapshotAppPath).filter((f) => f.includes('_snapshot'))) {
+      const sourceSnapshotPath = path.join(this.sourceAppPath, snapshot);
+      this.logger.info(`Updating snapshot: ${sourceSnapshotPath}`);
+      if (fs.existsSync(sourceSnapshotPath)) {
+        fs.removeSync(sourceSnapshotPath);
       }
-      fs.copySync(path.join(this.snapshotAppPath, snapshot), sourcePath);
+      fs.copySync(path.join(this.snapshotAppPath, snapshot), sourceSnapshotPath);
     }
   }
 
