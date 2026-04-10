@@ -106,7 +106,7 @@ describe('guest', () => {
       expect(items.length).toBeGreaterThanOrEqual(1);
       const found = items.find((b: any) => b.id === created.id);
       expect(found).toBeDefined();
-      expect(found.name).toBe(name);
+      expect(found.name).toBe(`📌 ${name}`);
     });
   });
 
