@@ -294,7 +294,7 @@ export class App {
    * Run `amplify gen2-migration refactor`.
    */
   public async refactor(gen2StackName: string): Promise<void> {
-    const extraArgs = ['--to', gen2StackName];
+    const extraArgs = ['--to', gen2StackName, '--no-rollback'];
     if (this.migrationConfig.refactor?.skipValidations) {
       extraArgs.push('--skip-validations');
     }

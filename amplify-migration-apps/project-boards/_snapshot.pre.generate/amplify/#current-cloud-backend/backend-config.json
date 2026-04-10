@@ -35,7 +35,17 @@
   "auth": {
     "projectboards54040ecc": {
       "customAuth": false,
-      "dependsOn": [],
+      "dependsOn": [
+        {
+          "attributes": [
+            "Arn",
+            "Name"
+          ],
+          "category": "function",
+          "resourceName": "projectboards54040eccPreTokenGeneration",
+          "triggerProvider": "Cognito"
+        }
+      ],
       "frontendAuthConfig": {
         "mfaConfiguration": "OFF",
         "mfaTypes": [
@@ -61,6 +71,11 @@
     }
   },
   "function": {
+    "projectboards54040eccPreTokenGeneration": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
     "quotegenerator": {
       "build": true,
       "providerPlugin": "awscloudformation",
@@ -68,6 +83,22 @@
     }
   },
   "parameters": {
+    "AMPLIFY_function_projectboards54040eccPreTokenGeneration_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "projectboards54040eccPreTokenGeneration"
+        }
+      ]
+    },
+    "AMPLIFY_function_projectboards54040eccPreTokenGeneration_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "projectboards54040eccPreTokenGeneration"
+        }
+      ]
+    },
     "AMPLIFY_function_quotegenerator_deploymentBucketName": {
       "usedBy": [
         {
