@@ -298,6 +298,9 @@ Make sure to follow the existing patterns and add tests as well.
     ```console
     npx tsx snapshot.ts pre.generate <app-name>
 
+6. Run `UPDATE_SNAPSHOTS=1 npm run test:e2e` to execute the full migration flow and capture
+   the remaining snapshots (`post.generate`, `pre.refactor`, `post.refactor`).
+
 ## Modifying an App
 
 1. `cd` into a specific app and run `npm run deploy`.
@@ -308,6 +311,9 @@ Make sure to follow the existing patterns and add tests as well.
 
     ```console
     npx tsx snapshot.ts pre.generate <app-name>
+
+6. Run `UPDATE_SNAPSHOTS=1 npm run test:e2e` to execute the full migration flow and capture
+   the remaining snapshots (`post.generate`, `pre.refactor`, `post.refactor`).
 
 ## Snapshot Testing
 

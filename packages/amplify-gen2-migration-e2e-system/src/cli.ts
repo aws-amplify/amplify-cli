@@ -66,6 +66,7 @@ async function main(): Promise<void> {
     if (process.env.UPDATE_SNAPSHOTS === '1') {
       app.updateSnapshots();
     }
+    app.logger.info(`Execution completed successfully (${app.targetAppPath})`);
   } catch (error) {
     (error as Error).message = `Execution failed: ${chalk.red((error as Error).message)} (${app.targetAppPath})`;
     throw error;

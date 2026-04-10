@@ -9,11 +9,13 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
+import * as os from 'os';
 
 interface SensitiveValues {
   accountId: string;
   amplifyAppId: string;
-  apiKey: string | null;
+  gen1ApiKey: string | null;
+  gen2ApiKey: string | null;
 }
 
 function extractAccountId(meta: any): string {
@@ -33,17 +35,31 @@ function extractAmplifyAppId(meta: any): string {
   return appId;
 }
 
-function extractApiKey(meta: any): string | null {
+function extractGen1ApiKey(meta: any): string | null {
   if (!meta.api) return null;
   const firstApiResource = Object.keys(meta.api)[0];
   return meta.api[firstApiResource]?.output?.GraphQLAPIKeyOutput ?? null;
 }
 
-function extractSensitiveValues(meta: any): SensitiveValues {
+function extractGen2ApiKey(appDir: string): string | null {
+  const preRefactor = path.join(appDir, '_snapshot.pre.refactor');
+  for (const outputsFile of fs.readdirSync(preRefactor).filter((f) => f.endsWith('outputs.json'))) {
+    const outputs = JSON.parse(fs.readFileSync(path.join(preRefactor, outputsFile), { encoding: 'utf-8' }));
+    for (const output of outputs) {
+      if (output.OutputKey.includes('ApiKey')) {
+        return output.OutputValue;
+      }
+    }
+  }
+  return null;
+}
+
+function extractSensitiveValues(meta: any, appDir: string): SensitiveValues {
   return {
     accountId: extractAccountId(meta),
     amplifyAppId: extractAmplifyAppId(meta),
-    apiKey: extractApiKey(meta),
+    gen1ApiKey: extractGen1ApiKey(meta),
+    gen2ApiKey: extractGen2ApiKey(appDir),
   };
 }
 
@@ -67,7 +83,9 @@ function getFilesRecursive(dir: string): string[] {
 }
 
 function sanitizeFileName(name: string, appId: string, appName: string): string {
-  return name.replaceAll(appId, appName);
+  // sandbox uses this
+  const username = os.userInfo().username;
+  return name.replaceAll(appId, appName).replaceAll(`-${username}-`, '-username-');
 }
 
 function getAllFiles(dir: string): string[] {
@@ -91,7 +109,7 @@ export function sanitize(appName: string, appDir: string): void {
   const appNameNoDashes = appName.replaceAll('-', '');
   const metaPath = path.join(appDir, '_snapshot.pre.generate', 'amplify', 'backend', 'amplify-meta.json');
   const amplifyMeta: any = JSON.parse(fs.readFileSync(metaPath, 'utf-8'));
-  const values = extractSensitiveValues(amplifyMeta);
+  const values = extractSensitiveValues(amplifyMeta, appDir);
 
   const snapshots = fs.readdirSync(appDir).filter((f) => f.startsWith('_snapshot'));
   const files = [...snapshots.flatMap((s) => getAllFiles(path.join(appDir, s)))];
@@ -102,8 +120,12 @@ export function sanitize(appName: string, appDir: string): void {
     content = content.replaceAll(values.accountId, '123456789012');
     content = content.replaceAll(values.amplifyAppId, appNameNoDashes);
 
-    if (values.apiKey) {
-      content = content.replaceAll(values.apiKey, 'da2-fakeapikey00000000000000');
+    if (values.gen1ApiKey) {
+      content = content.replaceAll(values.gen1ApiKey, 'da2-fakeapikey00000000000000');
+    }
+
+    if (values.gen2ApiKey) {
+      content = content.replaceAll(values.gen2ApiKey, 'da2-fakeapikey00000000000000');
     }
 
     const sanitizedFileName = sanitizeFileName(file, values.amplifyAppId, appNameNoDashes);
