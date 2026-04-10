@@ -204,7 +204,9 @@ export class App {
     await this.testGen1();
 
     this.logger.info(`Capturing pre.generate snapshot`);
+    console.log('');
     await snapshot.capturePreGenerate(this.targetAppPath, this.snapshotAppPath);
+    console.log('');
   }
 
   // ============================================================
@@ -222,7 +224,9 @@ export class App {
     await this.generate();
 
     this.logger.info(`Capturing post.generate snapshot`);
+    console.log('');
     await snapshot.capturePostGenerate(this.targetAppPath, this.snapshotAppPath);
+    console.log('');
 
     await this.git.commit('chore: generate');
     await this.installDeps();
@@ -245,13 +249,17 @@ export class App {
     const gen1StackName = await this.findGen1RootStack();
 
     this.logger.info(`Capturing pre.refactor snapshot`);
+    console.log('');
     await snapshot.capturePreRefactor(gen1StackName, gen2StackName, this.snapshotAppPath);
+    console.log('');
 
     await this.git.checkout(this.gen1BranchName, false);
     await this.refactor(gen2StackName);
 
     this.logger.info(`Capturing post.refactor snapshot`);
+    console.log('');
     await snapshot.capturePostRefactor(this.targetAppPath, this.snapshotAppPath);
+    console.log('');
 
     await this.testGen1();
     await this.testGen2();
@@ -265,6 +273,8 @@ export class App {
 
     await this.testGen1();
     await this.testGen2();
+
+    await this.testSharedData();
   }
 
   /**
@@ -345,6 +355,17 @@ export class App {
   public async testGen2(): Promise<void> {
     await this.git.checkout(this.gen2BranchName, false);
     await this.runNpmScript('test:gen2');
+  }
+
+  /**
+   * Run the Jest tests that validate stateful resources are shared.
+   */
+  public async testSharedData(): Promise<void> {
+    await this.git.checkout(this.gen2BranchName, false);
+
+    // these tests require both config files, so pull the gen1 config into the gen2 branch
+    await this.git.run('checkout', this.gen1BranchName, '--', 'src/amplifyconfiguration.json');
+    await this.runNpmScript('test:shared-data');
   }
 
   // ============================================================
@@ -473,7 +494,7 @@ export class App {
       cwd: this.targetAppPath,
       stdio: 'inherit',
       reject: false,
-      env: { ...process.env, AWS_SDK_LOAD_CONFIG: '1', ...extraEnv },
+      env: { ...process.env, ENV_NAME: this.envName, AWS_SDK_LOAD_CONFIG: '1', ...extraEnv },
     });
 
     if (result.exitCode !== 0) {

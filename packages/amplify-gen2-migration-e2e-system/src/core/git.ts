@@ -24,7 +24,7 @@ export class Git {
     await execa('git', ['--no-pager', 'diff'], { cwd: this.cwd, stdio: 'inherit' });
   }
 
-  private async run(...args: string[]): Promise<void> {
+  public async run(...args: string[]): Promise<void> {
     this.logger.info(`git ${args.join(' ')}`);
     await execa('git', args, { cwd: this.cwd });
   }
