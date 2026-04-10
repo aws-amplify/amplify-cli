@@ -90,17 +90,33 @@ export class RootPackageJsonGenerator implements Planner {
             }
           }
 
+          const mergedDevDependencies = {
+            ...(packageJson.devDependencies ?? {}),
+            ...this.devDependencies,
+            ...GEN2_DEV_DEPENDENCIES,
+          };
+
+          // Remove from dependencies any package that will be in devDependencies.
+          // Prevents duplicates when custom resource deps overlap with Gen2 dev deps.
+          const mergedDependencies = {
+            ...(packageJson.dependencies ?? {}),
+            ...this.dependencies,
+          };
+          for (const name of Object.keys(mergedDevDependencies)) {
+            delete mergedDependencies[name];
+          }
+          // Remove CDK v1 scoped packages and Gen1-only helpers that are
+          // never valid in Gen2 (may be left over from a previous run).
+          for (const name of Object.keys(mergedDependencies)) {
+            if (name.startsWith('@aws-cdk/') || name === '@aws-amplify/cli-extensibility-helper') {
+              delete mergedDependencies[name];
+            }
+          }
+
           const patched: PackageJson = {
             ...packageJson,
-            dependencies: sortKeys({
-              ...(packageJson.dependencies ?? {}),
-              ...this.dependencies,
-            }),
-            devDependencies: sortKeys({
-              ...(packageJson.devDependencies ?? {}),
-              ...this.devDependencies,
-              ...GEN2_DEV_DEPENDENCIES,
-            }),
+            dependencies: sortKeys(mergedDependencies),
+            devDependencies: sortKeys(mergedDevDependencies),
           };
 
           await fs.mkdir(path.dirname(packageJsonPath), { recursive: true });
