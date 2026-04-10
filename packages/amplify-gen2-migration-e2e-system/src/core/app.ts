@@ -304,7 +304,7 @@ export class App {
    * Run `amplify gen2-migration refactor`.
    */
   public async refactor(gen2StackName: string): Promise<void> {
-    const extraArgs = ['--to', gen2StackName, '--no-rollback'];
+    const extraArgs = ['--to', gen2StackName];
     if (this.migrationConfig.refactor?.skipValidations) {
       extraArgs.push('--skip-validations');
     }
@@ -356,6 +356,10 @@ export class App {
     await this.git.checkout(this.gen2BranchName, false);
     await this.runNpmScript('test:gen2');
   }
+
+  // ============================================================
+  // App Hooks
+  // ============================================================
 
   /**
    * Run the Jest tests that validate stateful resources are shared.
@@ -568,18 +572,6 @@ function generateTimeBasedName(appName: string): string {
  */
 function generateRandomEnvName(): string {
   return Array.from({ length: 10 }, () => String.fromCharCode(97 + Math.floor(Math.random() * 26))).join('');
-}
-
-async function findStackByPattern(pattern: RegExp): Promise<string> {
-  const cfnClient = new CloudFormationClient({});
-  for await (const page of paginateListStacks(
-    { client: cfnClient },
-    { StackStatusFilter: [StackStatus.CREATE_COMPLETE, StackStatus.UPDATE_COMPLETE, StackStatus.UPDATE_ROLLBACK_COMPLETE] },
-  )) {
-    const match = page.StackSummaries?.find((s) => s.StackName && pattern.test(s.StackName));
-    if (match?.StackName) return match.StackName;
-  }
-  throw new Error(`No stack found matching pattern "${pattern.source}"`);
 }
 
 async function findStackByPattern(pattern: RegExp): Promise<string> {
