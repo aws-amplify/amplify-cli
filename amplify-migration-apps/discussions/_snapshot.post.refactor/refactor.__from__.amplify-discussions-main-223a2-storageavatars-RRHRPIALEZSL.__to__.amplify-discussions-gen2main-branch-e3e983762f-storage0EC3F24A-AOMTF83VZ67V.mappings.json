@@ -1,0 +1,12 @@
+[
+  {
+    "Source": {
+      "StackName": "amplify-discussions-main-223a2-storageavatars-RRHRPIALEZSL",
+      "LogicalResourceId": "S3Bucket"
+    },
+    "Destination": {
+      "StackName": "amplify-discussions-gen2main-branch-e3e983762f-storage0EC3F24A-AOMTF83VZ67V",
+      "LogicalResourceId": "discusavatars223a2gen2mainBucket3F84B2BA"
+    }
+  }
+]

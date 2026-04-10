@@ -1,0 +1,46 @@
+[
+  {
+    "ParameterKey": "DynamoDBModelTableReadIOPS",
+    "ParameterValue": "5"
+  },
+  {
+    "ParameterKey": "DynamoDBEnableServerSideEncryption",
+    "ParameterValue": "true"
+  },
+  {
+    "ParameterKey": "referencetoamplifydiscussionsgen2mainbranche3e983762fauthNestedStackauthNestedStackResource27BEFA02Outputsamplifydiscussionsgen2mainbranche3e983762fauthamplifyAuthauthenticatedUserRoleFC0793A9Ref",
+    "ParameterValue": "amplify-discussions-ge-amplifyAuthauthenticatedU-9bOosoHTpq4A"
+  },
+  {
+    "ParameterKey": "DynamoDBEnablePointInTimeRecovery",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "referencetoamplifydiscussionsgen2mainbranche3e983762fauthNestedStackauthNestedStackResource27BEFA02Outputsamplifydiscussionsgen2mainbranche3e983762fauthamplifyAuthunauthenticatedUserRole3744C53BRef",
+    "ParameterValue": "amplify-discussions-ge-amplifyAuthunauthenticate-mmeDicXhSqYx"
+  },
+  {
+    "ParameterKey": "DynamoDBBillingMode",
+    "ParameterValue": "PAY_PER_REQUEST"
+  },
+  {
+    "ParameterKey": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPI6D5B0C14ApiId",
+    "ParameterValue": "gtx5hixzhrfdpblkbo7dtrwo4m"
+  },
+  {
+    "ParameterKey": "referencetoamplifydiscussionsgen2mainbranche3e983762fauthNestedStackauthNestedStackResource27BEFA02Outputsamplifydiscussionsgen2mainbranche3e983762fauthamplifyAuthIdentityPoolABB3D78CRef",
+    "ParameterValue": "us-east-1:fb5a1900-4eb6-4c32-940d-e03ebcd22130"
+  },
+  {
+    "ParameterKey": "DynamoDBModelTableWriteIOPS",
+    "ParameterValue": "5"
+  },
+  {
+    "ParameterKey": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResourceAAC71C59Outputsamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataAmplifyTableManagerTableMa0169C4CD",
+    "ParameterValue": "arn:aws:lambda:us-east-1:123456789012:function:amplify-discussions-ge-TableManagerCustomProvid-jc0gervSIAfQ"
+  },
+  {
+    "ParameterKey": "referencetoamplifydiscussionsgen2mainbranche3e983762fdataamplifyDataGraphQLAPINONEDSC361A08BName",
+    "ParameterValue": "NONE_DS"
+  }
+]
