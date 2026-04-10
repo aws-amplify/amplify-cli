@@ -17,7 +17,7 @@ const factory = ts.factory;
  * a single `backend.ts` file.
  */
 export class BackendGenerator implements Planner {
-  private readonly imports: Array<{ readonly source: string; readonly identifiers: string[] }> = [];
+  private readonly imports: Array<{ readonly source: string; readonly identifiers: Array<{ name: string; alias?: string }> }> = [];
   private readonly defineBackendProperties: ts.ObjectLiteralElementLike[] = [];
   private readonly postDefineStatements: ts.Statement[] = [];
   private readonly earlyStatements: ts.Statement[] = [];
@@ -32,18 +32,37 @@ export class BackendGenerator implements Planner {
   /**
    * Adds named imports to backend.ts, merging identifiers into an
    * existing entry when the source module already has one.
+   * Returns the local names (which may be aliases if names collide).
    */
-  public addImport(source: string, identifiers: string[]): void {
-    const existing = this.imports.find((i) => i.source === source);
-    if (existing) {
-      for (const id of identifiers) {
-        if (!existing.identifiers.includes(id)) {
-          existing.identifiers.push(id);
-        }
-      }
-    } else {
-      this.imports.push({ source, identifiers: [...identifiers] });
+  public addImport(source: string, identifiers: string[]): string[] {
+    const localNames: string[] = [];
+
+    let entry = this.imports.find((i) => i.source === source);
+    if (!entry) {
+      entry = { source, identifiers: [] };
+      this.imports.push(entry);
     }
+
+    for (const id of identifiers) {
+      // Skip if already imported from this source
+      if (entry.identifiers.some((ident) => ident.name === id)) {
+        localNames.push(entry.identifiers.find((ident) => ident.name === id)!.alias ?? id);
+        continue;
+      }
+
+      // Check if this name is already imported from a different source
+      const collision = this.imports.find((i) => i.source !== source && i.identifiers.some((ident) => (ident.alias ?? ident.name) === id));
+      let localName = id;
+      if (collision) {
+        const segments = source.split('/');
+        const resourceSegment = segments.length >= 3 ? segments[segments.length - 2] : segments[segments.length - 1];
+        localName = `${resourceSegment}_${id}`;
+      }
+
+      entry.identifiers.push(localName === id ? { name: id } : { name: id, alias: localName });
+      localNames.push(localName);
+    }
+    return localNames;
   }
 
   /**
@@ -188,8 +207,14 @@ export class BackendGenerator implements Planner {
   }
 }
 
-function createImportDeclaration(source: string, identifiers: string[]): ts.ImportDeclaration {
-  const importSpecifiers = identifiers.map((id) => factory.createImportSpecifier(false, undefined, factory.createIdentifier(id)));
+function createImportDeclaration(source: string, identifiers: Array<{ name: string; alias?: string }>): ts.ImportDeclaration {
+  const importSpecifiers = identifiers.map((id) =>
+    factory.createImportSpecifier(
+      false,
+      id.alias ? factory.createIdentifier(id.name) : undefined,
+      factory.createIdentifier(id.alias ?? id.name),
+    ),
+  );
   return factory.createImportDeclaration(
     undefined,
     factory.createImportClause(false, undefined, factory.createNamedImports(importSpecifiers)),

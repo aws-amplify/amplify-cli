@@ -139,7 +139,7 @@ export class CustomResourceGenerator implements Planner {
   private contributeToBackend(className: string | undefined, dependencies: string[]): void {
     if (!className) return;
 
-    this.backendGenerator.addImport(`./custom/${this.resourceName}/resource`, [className]);
+    const [localName] = this.backendGenerator.addImport(`./custom/${this.resourceName}/resource`, [className]);
 
     const args: ts.Expression[] = [
       ts.factory.createCallExpression(
@@ -156,7 +156,7 @@ export class CustomResourceGenerator implements Planner {
     }
 
     this.backendGenerator.addStatement(
-      ts.factory.createExpressionStatement(ts.factory.createNewExpression(ts.factory.createIdentifier(className), undefined, args)),
+      ts.factory.createExpressionStatement(ts.factory.createNewExpression(ts.factory.createIdentifier(localName), undefined, args)),
     );
   }
 }
