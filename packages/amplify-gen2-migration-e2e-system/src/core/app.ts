@@ -393,6 +393,9 @@ export class App {
     await this.runNpmScript('pre-sandbox');
   }
 
+  /**
+   * Sanitizes and copies captured snapshots back to the source app directory.
+   */
   public updateSnapshots(): void {
     this.logger.info(`Sanitizing snapshots`);
     sanitize(this.deploymentName, this.snapshotAppPath);

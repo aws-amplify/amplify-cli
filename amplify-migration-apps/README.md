@@ -258,17 +258,17 @@ directories from a deployed Amplify app. It requires AWS credentials with access
 deployed app's CloudFormation stacks and Amplify resources.
 
 ```console
-npx tsx snapshot.ts <step> <app-name> [deployed-app-path]
+npx tsx snapshot.ts <step> <app-dir> [deployed-app-path] [gen2-stack-name]
 ```
 
 Where `<step>` is one of:
 
-| Step             | Description                                                                 | Requires `deployed-app-path`? |
-| ---------------- | --------------------------------------------------------------------------- | ----------------------------- |
-| `pre.generate`   | Copies the Gen1 app's `amplify/`, `.gitignore`, and `package.json`          | Yes                           |
-| `post.generate`  | Copies the Gen2 output (`amplify/`, `.gitignore`, `amplify.yml`)            | Yes                           |
-| `pre.refactor`   | Downloads Gen1 and Gen2 CloudFormation templates from deployed stacks       | No (reads from AWS directly)  |
-| `post.refactor`  | Copies the refactor operations from `.gen2-migration/refactor.operations`          | Yes                           |
+| Step             | Description                                                                 | Required args                          |
+| ---------------- | --------------------------------------------------------------------------- | -------------------------------------- |
+| `pre.generate`   | Copies the Gen1 app's `amplify/`, `.gitignore`, and `package.json`          | `deployed-app-path`                    |
+| `post.generate`  | Copies the Gen2 output (`amplify/`, `.gitignore`, `amplify.yml`)            | `deployed-app-path`                    |
+| `pre.refactor`   | Downloads Gen1 and Gen2 CloudFormation templates from deployed stacks       | `gen2-stack-name`                      |
+| `post.refactor`  | Copies the refactor operations from `.gen2-migration/refactor.operations`   | `deployed-app-path`                    |
 
 Examples:
 
@@ -280,7 +280,7 @@ npx tsx snapshot.ts pre.generate fitness-tracker /path/to/deployed/fitness-track
 npx tsx snapshot.ts post.generate fitness-tracker /path/to/deployed/fitness-tracker
 
 # Download CloudFormation templates for refactor input (requires AWS credentials)
-npx tsx snapshot.ts pre.refactor fitness-tracker
+npx tsx snapshot.ts pre.refactor fitness-tracker /path/to/deployed/fitness-tracker amplify-fitnesstracker-gen2main-branch-abc1234567
 
 # Capture the expected refactor output
 npx tsx snapshot.ts post.refactor fitness-tracker /path/to/deployed/fitness-tracker

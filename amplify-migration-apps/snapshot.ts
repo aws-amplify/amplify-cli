@@ -8,15 +8,13 @@ const STEPS = ['pre.generate', 'post.generate', 'pre.refactor', 'post.refactor']
 type Step = (typeof STEPS)[number];
 
 function usage(): never {
-  console.error(`Usage: npx tsx snapshot.ts <step> <app-name> [deployed-app-path] [amplify-app-name] [gen2-branch] [gen1-env]
+  console.error(`Usage: npx tsx snapshot.ts <step> <app-dir> [deployed-app-path] [gen2-stack-name]
 
 Steps: ${STEPS.join(', ')}
 
-  app-name:          Directory name under amplify-migration-apps/
-  deployed-app-path: Path to the deployed app (required for pre/post.generate and post.refactor)
-  amplify-app-name:  Actual Amplify app name if different from app-name (default: app-name without dashes)
-  gen2-branch:       Gen2 branch name (default: gen2-main)
-  gen1-env:          Gen1 environment name (default: main)`);
+  app-dir:           Directory name under amplify-migration-apps/
+  deployed-app-path: Path to the deployed app (required for pre/post.generate and post.refactor; defaults to app-dir)
+  gen2-stack-name:   Gen2 root stack name (required for pre.refactor)`);
 
   process.exit(1);
 }

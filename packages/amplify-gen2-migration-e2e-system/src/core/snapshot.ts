@@ -55,10 +55,6 @@ function copyOptional(srcBasePath: string, destBasePath: string, toCopy: readonl
 }
 
 // ---------------------------------------------------------------------------
-// Amplify helpers
-// ---------------------------------------------------------------------------
-
-// ---------------------------------------------------------------------------
 // CloudFormation helpers (refactor.input only)
 // ---------------------------------------------------------------------------
 
@@ -117,6 +113,9 @@ async function downloadRecursive(stackNameOrArn: string, targetDir: string): Pro
 // Snapshot capture functions
 // ---------------------------------------------------------------------------
 
+/**
+ * Downloads Gen1 and Gen2 CloudFormation templates into `_snapshot.pre.refactor/`.
+ */
 export async function capturePreRefactor(gen1RootStackName: string, gen2RootStackName: string, targetDir: string): Promise<void> {
   const destPath = path.join(targetDir, '_snapshot.pre.refactor');
   resetDir(destPath);
@@ -125,6 +124,9 @@ export async function capturePreRefactor(gen1RootStackName: string, gen2RootStac
   await downloadRecursive(gen1RootStackName, destPath);
 }
 
+/**
+ * Copies refactor operations into `_snapshot.post.refactor/`.
+ */
 export async function capturePostRefactor(deployedAppPath: string, dstBasePath: string): Promise<void> {
   const srcBasePath = path.join(deployedAppPath, '.gen2-migration/refactor.operations');
   const destPath = path.join(dstBasePath, '_snapshot.post.refactor');
@@ -132,6 +134,9 @@ export async function capturePostRefactor(deployedAppPath: string, dstBasePath: 
   copySync(srcBasePath, destPath);
 }
 
+/**
+ * Copies the Gen1 app state into `_snapshot.pre.generate/`.
+ */
 export async function capturePreGenerate(deployedAppPath: string, dstBasePath: string): Promise<void> {
   const destPath = path.join(dstBasePath, '_snapshot.pre.generate');
   resetDir(destPath);
@@ -149,6 +154,9 @@ export async function capturePreGenerate(deployedAppPath: string, dstBasePath: s
   fs.writeFileSync(gitIgnorePath, newGitIgnore);
 }
 
+/**
+ * Copies the Gen2 output into `_snapshot.post.generate/`.
+ */
 export async function capturePostGenerate(deployedAppPath: string, dstBasePath: string): Promise<void> {
   const destPath = path.join(dstBasePath, '_snapshot.post.generate');
   resetDir(destPath);
