@@ -1,8 +1,23 @@
 import { AmplifyMigrationStep } from './_infra/step';
 import { AmplifyMigrationOperation, ValidationResult } from './_infra/operation';
 import { Plan } from './_infra/plan';
+import { extractCategory } from './_infra/categories';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
-import { SetStackPolicyCommand, GetStackPolicyCommand } from '@aws-sdk/client-cloudformation';
+import {
+  CreateChangeSetCommand,
+  DeleteChangeSetCommand,
+  DescribeChangeSetCommand,
+  type DescribeChangeSetOutput,
+  DescribeStackResourcesCommand,
+  DescribeStacksCommand,
+  GetStackPolicyCommand,
+  GetTemplateCommand,
+  ListStackResourcesCommand,
+  SetStackPolicyCommand,
+  UpdateStackCommand,
+  waitUntilChangeSetCreateComplete,
+  waitUntilStackUpdateComplete,
+} from '@aws-sdk/client-cloudformation';
 import { UpdateAppCommand, GetAppCommand } from '@aws-sdk/client-amplify';
 import { UpdateTableCommand, paginateListTables } from '@aws-sdk/client-dynamodb';
 import { paginateListGraphqlApis } from '@aws-sdk/client-appsync';
@@ -79,6 +94,22 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
         this.logger.info(`Added '${GEN2_MIGRATION_ENVIRONMENT_NAME}' environment variable (value: ${this.gen1App.envName})`);
       },
     });
+
+    if ((await this.dynamoTableNames()).length > 0) {
+      operations.push({
+        validate: () => undefined,
+        describe: async () => {
+          return [`Set DeletionPolicy to Retain for DynamoDB tables in API stacks`];
+        },
+        execute: async () => {
+          const apiStackIds = await this.findApiCategoryStacks();
+          for (const apiStackId of apiStackIds) {
+            await this.setDeletionPolicyRetainOnDynamoTables(apiStackId);
+          }
+          this.logger.info('Successfully set DeletionPolicy to Retain for DynamoDB tables');
+        },
+      });
+    }
 
     operations.push({
       validate: () => undefined,
@@ -226,6 +257,141 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
       }
     }
     return this._dynamoTableNames;
+  }
+
+  private async findApiCategoryStacks(): Promise<string[]> {
+    const response = await this.gen1App.clients.cloudFormation.send(
+      new DescribeStackResourcesCommand({ StackName: this.gen1App.rootStackName }),
+    );
+    const stackResources = response.StackResources ?? [];
+    return stackResources
+      .filter(
+        (resource) =>
+          resource.ResourceType === 'AWS::CloudFormation::Stack' &&
+          extractCategory(resource.LogicalResourceId ?? '') === 'Api' &&
+          resource.PhysicalResourceId,
+      )
+      .map((resource) => resource.PhysicalResourceId as string);
+  }
+
+  private async setDeletionPolicyRetainOnDynamoTables(stackId: string): Promise<void> {
+    // List the API stack's resources to find model nested stacks
+    let nextToken: string | undefined;
+    const modelStackIds: string[] = [];
+
+    do {
+      const response = await this.gen1App.clients.cloudFormation.send(
+        new ListStackResourcesCommand({ StackName: stackId, NextToken: nextToken }),
+      );
+      nextToken = response.NextToken;
+
+      for (const resource of response.StackResourceSummaries ?? []) {
+        if (resource.ResourceType === 'AWS::CloudFormation::Stack' && resource.PhysicalResourceId) {
+          modelStackIds.push(resource.PhysicalResourceId);
+        }
+      }
+    } while (nextToken);
+
+    // Update each model stack's template to set DeletionPolicy: Retain on DynamoDB tables
+    for (const modelStackId of modelStackIds) {
+      const templateResponse = await this.gen1App.clients.cloudFormation.send(new GetTemplateCommand({ StackName: modelStackId }));
+      if (!templateResponse.TemplateBody) {
+        throw new AmplifyError('MigrationError', {
+          message: `Could not retrieve template for stack ${modelStackId}`,
+        });
+      }
+
+      const template = JSON.parse(templateResponse.TemplateBody);
+      const resources = template.Resources;
+
+      let modified = false;
+      for (const logicalId of Object.keys(resources)) {
+        const resource = resources[logicalId];
+        if (resource.Type === 'AWS::DynamoDB::Table' && resource.DeletionPolicy !== 'Retain') {
+          resource.DeletionPolicy = 'Retain';
+          this.logger.info(`Set DeletionPolicy to Retain for table '${logicalId}'`);
+          modified = true;
+        }
+      }
+
+      if (modified) {
+        const describeResponse = await this.gen1App.clients.cloudFormation.send(new DescribeStacksCommand({ StackName: modelStackId }));
+        const parameters = (describeResponse.Stacks?.[0]?.Parameters ?? []).map((p) => ({
+          ParameterKey: p.ParameterKey,
+          UsePreviousValue: true,
+        }));
+
+        const changeSetName = `deletion-policy-retain-${Date.now()}`;
+
+        await this.gen1App.clients.cloudFormation.send(
+          new CreateChangeSetCommand({
+            StackName: modelStackId,
+            ChangeSetName: changeSetName,
+            TemplateBody: JSON.stringify(template),
+            Parameters: parameters,
+            Capabilities: ['CAPABILITY_NAMED_IAM'],
+          }),
+        );
+
+        await waitUntilChangeSetCreateComplete(
+          { client: this.gen1App.clients.cloudFormation, maxWaitTime: 120 },
+          { StackName: modelStackId, ChangeSetName: changeSetName },
+        );
+
+        const changeSet = await this.gen1App.clients.cloudFormation.send(
+          new DescribeChangeSetCommand({ StackName: modelStackId, ChangeSetName: changeSetName }),
+        );
+
+        this.validateDeletionPolicyChangeset(changeSet, modelStackId, changeSetName);
+
+        await this.gen1App.clients.cloudFormation.send(
+          new DeleteChangeSetCommand({ StackName: modelStackId, ChangeSetName: changeSetName }),
+        );
+
+        this.logger.info(`Updating stack ${modelStackId} with DeletionPolicy changes...`);
+        await this.gen1App.clients.cloudFormation.send(
+          new UpdateStackCommand({
+            StackName: modelStackId,
+            TemplateBody: JSON.stringify(template),
+            Parameters: parameters,
+            Capabilities: ['CAPABILITY_NAMED_IAM'],
+          }),
+        );
+        await waitUntilStackUpdateComplete({ client: this.gen1App.clients.cloudFormation, maxWaitTime: 900 }, { StackName: modelStackId });
+        this.logger.info(`Successfully updated stack ${modelStackId}`);
+      }
+    }
+  }
+
+  /** Validates that a changeset only contains expected changes from setting DeletionPolicy on DynamoDB tables. */
+  private validateDeletionPolicyChangeset(changeSet: DescribeChangeSetOutput, stackId: string, changeSetName: string): void {
+    const changes = changeSet.Changes ?? [];
+
+    const allowedModifyTypes = new Set(['AWS::DynamoDB::Table', 'AWS::IAM::Policy']);
+
+    const unexpected = changes.filter((change) => {
+      const rc = change.ResourceChange;
+      return rc.Action !== 'Modify' || !allowedModifyTypes.has(rc.ResourceType);
+    });
+
+    if (unexpected.length > 0) {
+      const descriptions = unexpected.map((c) => {
+        const rc = c.ResourceChange;
+        return `${rc.Action} ${rc.ResourceType} (${rc.LogicalResourceId})`;
+      });
+
+      void this.gen1App.clients.cloudFormation.send(new DeleteChangeSetCommand({ StackName: stackId, ChangeSetName: changeSetName }));
+
+      throw new AmplifyError('MigrationError', {
+        message: [
+          `Changeset for stack '${stackId}' contains unexpected changes:`,
+          ...descriptions.map((d) => `  - ${d}`),
+          '',
+          'Expected only Modify actions on AWS::DynamoDB::Table and AWS::IAM::Policy resources.',
+        ].join('\n'),
+        resolution: 'This may indicate template drift. Resolve the drift before proceeding with migration.',
+      });
+    }
   }
 
   private async getExistingStackPolicy(): Promise<{ Statement: Record<string, string>[] }> {

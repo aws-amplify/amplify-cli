@@ -1,13 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { generateClient } from 'aws-amplify/api';
 import { getCurrentUser, signIn, signOut } from 'aws-amplify/auth';
-import { signUp, config } from './signup';
+import { signUp, configureAmplify } from './signup';
 import { fetchUserActivity } from '../src/graphql/queries';
 import { createTopic } from '../src/graphql/mutations';
 
 const client = () => generateClient({ authMode: 'apiKey' });
 
 beforeAll(async () => {
+  const config = configureAmplify();
   const creds = await signUp(config);
   await signIn({ username: creds.username, password: creds.password });
 }, 60_000);
