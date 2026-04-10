@@ -39,15 +39,14 @@ with a specific combination of Amplify categories and configurations. See
 
 ### Fix a Bug
 
-The snapshot inputs (`_snapshot.pre.*`) don't change — only the code and possibly the
-expected outputs (`_snapshot.post.*`) change.
-
 1. Read the relevant Context above for the area you're touching.
 
-2. Analyze the bug by reading the affected app's snapshot files. Read the
-   `_snapshot.pre.generate/` and/or `_snapshot.pre.refactor/` files to understand the
-   input configuration, and the `_snapshot.post.*` files to identify what's wrong in the
-   current output.
+2. Determine whether an existing test app covers the bug's scenario. Read the affected
+   app's `_snapshot.pre.generate/` and/or `_snapshot.pre.refactor/` files to understand
+   the input configuration, and the `_snapshot.post.*` files to identify what's wrong in
+   the current output. If no existing app exercises the affected code path, follow the
+   "Adding an App" or "Modifying an App" instructions from `amplify-migration-apps/README.md`
+   to add or update the `_snapshot.pre.*` inputs before proceeding.
 
 3. Reproduce the bug by running the appropriate E2E test:
 
@@ -56,8 +55,11 @@ expected outputs (`_snapshot.post.*`) change.
    npm run test:e2e
    ```
 
-   After the E2E run, inspect the live Gen1 and Gen2 resources and CloudFormation stack
-   events using the AWS CLI to confirm the root cause.
+   The E2E tool logs the directory where on-the-fly snapshots are captured for this run
+   (look for the `Snapshot directory:` line in the output). You can inspect the files in
+   that directory to see the state of the app at each step. In addition, inspect the live
+   Gen1 and Gen2 resources and CloudFormation stack events using the AWS CLI to confirm
+   the root cause.
 
 4. Present the root cause analysis to the user.
 
@@ -110,6 +112,12 @@ expected outputs (`_snapshot.post.*`) change.
    cd amplify-migration-apps/<app-name>
    UPDATE_SNAPSHOTS=1 npm run test:e2e
    ```
+
+   The E2E tool logs the directory where on-the-fly snapshots are captured for this run
+   (look for the `Snapshot directory:` line in the output). You can inspect the files in
+   that directory to see the state of the app at each step. In addition, inspect the live
+   Gen1 and Gen2 resources and CloudFormation stack events using the AWS CLI to confirm
+   correctness.
 
 8. Run `yarn build && yarn test` in `packages/amplify-cli/` to verify nothing else broke.
    If tests fail at this point, only test code changes should be needed — the production
