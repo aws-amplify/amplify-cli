@@ -247,6 +247,32 @@ describe('guest', () => {
       guest().graphql({ query: getKinesisEvents }),
     ).rejects.toBeDefined();
   });
+
+  describe('resolver overrides', () => {
+    it('listBoards prepends pin emoji to board names', async () => {
+      const name = `Override Test ${Date.now()}`;
+      await guest().graphql({
+        query: createBoard,
+        variables: { input: { name } },
+      });
+
+      const listResult = await guest().graphql({ query: listBoards });
+      const items = (listResult as any).data.listBoards.items;
+      const found = items.find((b: any) => b.name === `📌 ${name}`);
+
+      expect(found).toBeDefined();
+    });
+
+    it('listBoards caps results at 50 even when higher limit is requested', async () => {
+      const listResult = await guest().graphql({
+        query: listBoards,
+        variables: { limit: 100 },
+      });
+      const items = (listResult as any).data.listBoards.items;
+
+      expect(items.length).toBeLessThanOrEqual(50);
+    });
+  });
 });
 
 describe('auth', () => {
