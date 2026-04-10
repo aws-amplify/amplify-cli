@@ -34,6 +34,27 @@ function sortKeys(obj: Record<string, string>): Record<string, string> {
 }
 
 /**
+ * Packages that belong exclusively in devDependencies (provided by Gen2)
+ * or are Gen1-only and should not appear in the migrated output.
+ */
+const DEV_ONLY_PACKAGES = new Set(['aws-cdk-lib', 'constructs', 'aws-cdk']);
+
+/**
+ * Removes packages from dependencies that are already provided by Gen2
+ * devDependencies, are CDK v1 scoped packages, or are Gen1-only helpers.
+ */
+function filterExcludedDependencies(deps: Record<string, string>): Record<string, string> {
+  const filtered: Record<string, string> = {};
+  for (const [name, version] of Object.entries(deps)) {
+    if (DEV_ONLY_PACKAGES.has(name)) continue;
+    if (name.startsWith('@aws-cdk/')) continue;
+    if (name === '@aws-amplify/cli-extensibility-helper') continue;
+    filtered[name] = version;
+  }
+  return filtered;
+}
+
+/**
  * Accumulates dependencies from category generators and writes the
  * root package.json with Gen2 TypeScript dependencies.
  *
@@ -92,10 +113,12 @@ export class RootPackageJsonGenerator implements Planner {
 
           const patched: PackageJson = {
             ...packageJson,
-            dependencies: sortKeys({
-              ...(packageJson.dependencies ?? {}),
-              ...this.dependencies,
-            }),
+            dependencies: sortKeys(
+              filterExcludedDependencies({
+                ...(packageJson.dependencies ?? {}),
+                ...this.dependencies,
+              }),
+            ),
             devDependencies: sortKeys({
               ...(packageJson.devDependencies ?? {}),
               ...this.devDependencies,

@@ -73,6 +73,17 @@ export class AmplifyHelperTransformer {
               if (moduleSpecifier.text === '@aws-amplify/cli-extensibility-helper') {
                 return undefined;
               }
+              // Transform CDK v1 scoped imports (@aws-cdk/aws-xxx) to CDK v2 (aws-cdk-lib/aws-xxx)
+              if (moduleSpecifier.text.startsWith('@aws-cdk/')) {
+                const v2Module = moduleSpecifier.text.replace('@aws-cdk/', 'aws-cdk-lib/');
+                return ts.factory.updateImportDeclaration(
+                  node,
+                  node.modifiers,
+                  node.importClause,
+                  ts.factory.createStringLiteral(v2Module),
+                  node.attributes,
+                );
+              }
             }
           }
 

@@ -9,7 +9,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "configure": "./configure.sh",
-    "sanitize": "true"
+    "sanitize": "true",
+    "typecheck": "true"
   },
   "dependencies": {
     "aws-amplify": "^6.0.0",
