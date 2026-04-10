@@ -3,29 +3,40 @@
  * Post-refactor script for discussions app.
  *
  * Applies manual edits required after `amplify gen2-migration refactor`:
- * 1. Add tableName to the DynamoDB table definition in backend.ts
- *    This ensures the refactored table keeps its original name.
+ * 1. Add tableName to DynamoDB table definitions in backend.ts
+ * 2. Uncomment the S3 bucket name in backend.ts
  */
 
 import fs from 'fs/promises';
 import path from 'path';
 
-async function addTableNameToActivityTable(appPath: string, envName: string): Promise<void> {
+async function uncommentTableNames(appPath: string, envName: string): Promise<void> {
   const backendPath = path.join(appPath, 'amplify', 'backend.ts');
-  const content = await fs.readFile(backendPath, 'utf-8');
+  let content = await fs.readFile(backendPath, 'utf-8');
 
-  const tableName = `activity-${envName}`;
-
-  const updated = content.replace(
-    /new Table\(storageStack,\s*["']activity["'],\s*\{\s*partitionKey:/g,
-    `new Table(storageStack, "activity", { tableName: "${tableName}", partitionKey:`,
+  // Add tableName to activity table
+  content = content.replace(
+    /new Table\(storage\w+Stack,\s*['"]activity['"],\s*\{\s*partitionKey:/g,
+    `new Table(storageActivityStack, 'activity', { tableName: 'activity-${envName}', partitionKey:`,
   );
 
-  await fs.writeFile(backendPath, updated, 'utf-8');
+  // Add tableName to bookmarks table
+  content = content.replace(
+    /new Table\(storage\w+Stack,\s*['"]bookmarks['"],\s*\{\s*partitionKey:/g,
+    `new Table(storageBookmarksStack, 'bookmarks', { tableName: 'bookmarks-${envName}', partitionKey:`,
+  );
+
+  // Uncomment S3 bucket name
+  content = content.replace(
+    /\/\/ (s3Bucket\.bucketName = '[^']+';)/,
+    '$1',
+  );
+
+  await fs.writeFile(backendPath, content, 'utf-8');
 }
 
 export async function postRefactor(appPath: string, envName = 'main'): Promise<void> {
-  await addTableNameToActivityTable(appPath, envName);
+  await uncommentTableNames(appPath, envName);
 }
 
 async function main(): Promise<void> {
