@@ -5,8 +5,12 @@ import os from 'os';
 import { getCLIPath, initJSProjectWithProfile } from '@aws-amplify/amplify-e2e-core';
 import { Logger, LogLevel } from './logger';
 import { Git } from './git';
+import * as snapshot from './snapshot';
+import { sanitize } from './sanitize';
+import { CloudFormationClient, paginateListStacks, StackStatus } from '@aws-sdk/client-cloudformation';
 
 const MIGRATION_TARGET_DIR = path.join(os.tmpdir(), 'amplify-gen2-migration-e2e-system', 'output-apps');
+const MIGRATION_SNAPSHOT_DIR = path.join(os.tmpdir(), 'amplify-gen2-migration-e2e-system', 'snapshots');
 const MIGRATION_APPS_DIR = path.join(__dirname, '..', '..', '..', '..', 'amplify-migration-apps');
 
 interface MigrationConfig {
@@ -46,6 +50,7 @@ export class App {
   private readonly sourceAppPath: string;
   private readonly envName: string;
   private readonly migrationConfig: MigrationConfig;
+  private readonly snapshotAppPath: string;
 
   /**
    * Whether the refactor step should be skipped entirely for this app.
@@ -73,12 +78,21 @@ export class App {
     this.gen2BranchName = `gen2-${this.envName}`;
     this.amplifyPath = getCLIPath(true);
 
+    // temporary directory to store snapshot of each step
+    // callers can then call .updateSnapshot to copy over the snapshots
+    // into the original source path
+    this.snapshotAppPath = path.join(MIGRATION_SNAPSHOT_DIR, this.deploymentName);
+    fs.mkdirSync(this.snapshotAppPath, { recursive: true });
+
     // Copy source to temp directory
     this.targetAppPath = path.join(MIGRATION_TARGET_DIR, this.deploymentName);
     fs.mkdirSync(this.targetAppPath, { recursive: true });
     fs.copySync(this.sourceAppPath, this.targetAppPath, {
       filter: (src: string) => !src.includes('_snapshot') && !src.includes('node_modules'),
     });
+
+    this.logger.info(`App directory: ${this.targetAppPath}`);
+    this.logger.info(`Snapshot directory: ${this.snapshotAppPath}`);
 
     // Update package.json name for predictable Gen2 stack naming
     const packageJsonPath = path.join(this.targetAppPath, 'package.json');
@@ -89,7 +103,6 @@ export class App {
     this.migrationConfig = this.loadMigrationConfig();
     this.git = new Git(this.targetAppPath, this.logger);
 
-    this.logger.info(`App ${appName} prepared at ${this.targetAppPath}`);
     this.logger.info(`Deployment name: ${this.deploymentName}, env: ${this.envName}`);
   }
 
@@ -173,6 +186,24 @@ export class App {
     this.logger.info('amplify push');
     await this.runAmplify(['push', '--yes', '--debug']);
     this.logger.info('amplify push completed');
+  }
+
+  /**
+   * Runs all steps to fully deploy the Gen1 app.
+   */
+  public async deploy(): Promise<void> {
+    await this.gitInit();
+    await this.init();
+    await this.configure();
+    await this.installDeps();
+    await this.status();
+    await this.prePush();
+    await this.push();
+    await this.postPush();
+    await this.testGen1();
+
+    this.logger.info(`Capturing pre.generate snapshot`);
+    await snapshot.capturePreGenerate(this.targetAppPath, this.snapshotAppPath);
   }
 
   // ============================================================
@@ -337,6 +368,71 @@ export class App {
     await this.git.checkout(this.gen2BranchName, create);
   }
 
+  /**
+   * Runs the full migration workflow
+   */
+  public async migrate(): Promise<void> {
+    await this.deploy();
+    await this.assess();
+    await this.lock();
+    await this.gitCheckoutGen2(true);
+    await this.generate();
+    this.logger.info(`Capturing post.generate snapshot`);
+    await snapshot.capturePostGenerate(this.targetAppPath, this.snapshotAppPath);
+    await this.gitCommit('chore: generate');
+    await this.installDeps();
+    await this.gitCommit('chore: install dependencies');
+    await this.postGenerate();
+    await this.gitDiff();
+    await this.gitCommit('chore: post generate');
+    await this.preSandbox();
+    const gen2StackName = await this.deployGen2Sandbox();
+    await this.postSandbox(gen2StackName);
+
+    await this.testGen1();
+    await this.testGen2();
+
+    if (this.skipRefactor) {
+      this.logger.info('Skipping refactor (configured in migration/config.json)');
+      return;
+    }
+
+    const gen1StackName = await this.findGen1RootStack();
+    this.logger.info(`Capturing pre.refactor snapshot`);
+    await snapshot.capturePreRefactor(gen1StackName, gen2StackName, this.snapshotAppPath);
+    await this.gitCheckoutGen1();
+
+    await this.refactor(gen2StackName);
+    this.logger.info(`Capturing post.refactor snapshot`);
+    await snapshot.capturePostRefactor(this.targetAppPath, this.snapshotAppPath);
+
+    await this.testGen1();
+    await this.testGen2();
+
+    await this.gitCheckoutGen2();
+    await this.postRefactor();
+    await this.gitDiff();
+    await this.gitCommit('chore: post refactor');
+
+    await this.deployGen2Sandbox();
+
+    await this.testGen1();
+    await this.testGen2();
+  }
+
+  public updateSnapshots(): void {
+    this.logger.info(`Sanitizing snapshots`);
+    sanitize(this.deploymentName, this.snapshotAppPath);
+    for (const snapshot of fs.readdirSync(this.snapshotAppPath)) {
+      this.logger.info(`Updating snapshot: ${snapshot}`);
+      const sourcePath = path.join(this.sourceAppPath, snapshot);
+      if (fs.existsSync(sourcePath)) {
+        fs.removeSync(sourcePath);
+      }
+      fs.copySync(path.join(this.snapshotAppPath, snapshot), sourcePath);
+    }
+  }
+
   // ============================================================
   // Private Helpers
   // ============================================================
@@ -350,7 +446,6 @@ export class App {
       .filter((l) => l.trim() !== line)
       .join('\n');
     fs.writeFileSync(gitignorePath, updated, 'utf-8');
-    this.logger.info(`Removed '${line}' from .gitignore`);
   }
 
   private loadMigrationConfig(): MigrationConfig {
@@ -408,6 +503,11 @@ export class App {
     if (result.exitCode !== 0) {
       throw new Error(`npm run ${scriptName} failed with exit code ${result.exitCode}`);
     }
+  }
+
+  private async findGen1RootStack(): Promise<string> {
+    const rootPattern = new RegExp(`^amplify-${this.deploymentName}-${this.envName}-[0-9a-f]{5}$`);
+    return findStackByPattern(rootPattern);
   }
 
   private async findGen2RootStack(stackPrefix: string): Promise<string> {
@@ -472,4 +572,16 @@ function generateTimeBasedName(appName: string): string {
 function generateRandomEnvName(): string {
   const length = Math.floor(Math.random() * 9) + 2;
   return Array.from({ length }, () => String.fromCharCode(97 + Math.floor(Math.random() * 26))).join('');
+}
+
+async function findStackByPattern(pattern: RegExp): Promise<string> {
+  const cfnClient = new CloudFormationClient({});
+  for await (const page of paginateListStacks(
+    { client: cfnClient },
+    { StackStatusFilter: [StackStatus.CREATE_COMPLETE, StackStatus.UPDATE_COMPLETE, StackStatus.UPDATE_ROLLBACK_COMPLETE] },
+  )) {
+    const match = page.StackSummaries?.find((s) => s.StackName && pattern.test(s.StackName));
+    if (match?.StackName) return match.StackName;
+  }
+  throw new Error(`No stack found matching pattern "${pattern.source}"`);
 }

@@ -1210,6 +1210,8 @@ __metadata:
   resolution: "@aws-amplify/amplify-gen2-migration-e2e-system@workspace:packages/amplify-gen2-migration-e2e-system"
   dependencies:
     "@aws-amplify/amplify-e2e-core": "workspace:^"
+    "@aws-sdk/client-amplify": ^3.919.0
+    "@aws-sdk/client-cloudformation": ^3.919.0
     "@cdklabs/cdk-atmosphere-client": latest
     "@paralleldrive/cuid2": ^3.0.6
     "@types/fs-extra": ^11.0.4

@@ -36,7 +36,7 @@ import { DiscoveredResource } from '../generate/_infra/gen1-app';
 const MAX_WAIT_TIME_SECONDS = 900;
 const NO_UPDATES_MESSAGE = 'No updates are to be performed';
 const CFN_IAM_CAPABILITY = 'CAPABILITY_NAMED_IAM';
-export const OUTPUT_DIRECTORY = '.amplify/refactor.operations';
+export const OUTPUT_DIRECTORY = '.gen2-migration/refactor.operations';
 
 const EMPTY_HOLDING_TEMPLATE: CFNTemplate = {
   AWSTemplateFormatVersion: '2010-09-09',

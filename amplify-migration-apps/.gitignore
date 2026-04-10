@@ -1,4 +1,6 @@
 # Ignore amplify dirs created by `amplify init` at each app root,
 # but not the ones inside _snapshot.* folders which are tracked.
 */amplify/
+*amplifyconfiguration.json
+*amplify_outputs.json
 !*/_snapshot.*/amplify/
