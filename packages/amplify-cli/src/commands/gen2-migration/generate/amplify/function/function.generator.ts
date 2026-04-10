@@ -12,7 +12,6 @@ import { RootPackageJsonGenerator } from '../../package.json.generator';
 import { AuthPermissions, AuthTriggerEvent } from '../auth/auth.renderer';
 import { AuthGenerator } from '../auth/auth.generator';
 import { S3Generator } from '../storage/s3.generator';
-import { DynamoDBGenerator } from '../storage/dynamodb.generator';
 import { Permission } from '../storage/s3.renderer';
 
 const factory = ts.factory;
@@ -75,7 +74,6 @@ export class FunctionGenerator implements Planner {
   private readonly backendGenerator: BackendGenerator;
   private authGenerator: AuthGenerator | undefined;
   private s3Generator: S3Generator | undefined;
-  private readonly dynamoDBGenerators: DynamoDBGenerator[] = [];
   private readonly packageJsonGenerator: RootPackageJsonGenerator;
   private readonly outputDir: string;
   private readonly resource: DiscoveredResource;
@@ -111,15 +109,6 @@ export class FunctionGenerator implements Planner {
   }
 
   /**
-   * Registers a DynamoDB storage generator. Called by the orchestrator
-   * after all generators are created. Multiple tables may exist.
-   * Must be called before plan().
-   */
-  public addDynamoDBGenerator(ddbGenerator: DynamoDBGenerator): void {
-    this.dynamoDBGenerators.push(ddbGenerator);
-  }
-
-  /**
    * Resolves this function's config and returns a single operation
    * that generates resource.ts, copies source files, and contributes
    * all backend.ts statements (imports, overrides, grants, triggers).
@@ -128,6 +117,7 @@ export class FunctionGenerator implements Planner {
     const func = await this.resolve();
     await this.mergeFunctionDependencies(func);
     const triggerModels = await this.detectDynamoTriggerModels(func);
+    const storageTriggerTables = this.detectStorageDynamoTriggers(func);
     this.contributeAuthAccess(func);
     this.contributeAuthTrigger();
     await this.contributeStorageAccess(this.category);
@@ -145,7 +135,9 @@ export class FunctionGenerator implements Planner {
           if (triggerModels.length > 0) {
             this.contributeDynamoTrigger(func.resourceName, triggerModels);
           }
-          this.contributeStorageDynamoTrigger(func.resourceName);
+          if (storageTriggerTables.length > 0) {
+            this.contributeStorageDynamoTrigger(func.resourceName, storageTriggerTables);
+          }
         },
       },
     ];
@@ -775,15 +767,44 @@ export class FunctionGenerator implements Planner {
    * For each DynamoDBGenerator whose `triggerFunctions` includes this function,
    * emits addEventSource, grantStreamRead, and grantTableListStreams calls.
    */
-  private contributeStorageDynamoTrigger(functionName: string): void {
-    for (const ddbGen of this.dynamoDBGenerators) {
-      if (!ddbGen.triggerFunctions.includes(functionName)) continue;
+  /**
+   * Detects storage DynamoDB table triggers by parsing this function's
+   * CloudFormation template for EventSourceMapping resources that reference
+   * storage table stream ARNs via `Ref: storage<tableName>StreamArn`.
+   */
+  private detectStorageDynamoTriggers(func: ResolvedFunction): string[] {
+    const templatePath = `function/${func.resourceName}/${func.resourceName}-cloudformation-template.json`;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped CloudFormation template
+    const template = this.gen1App.json(templatePath);
+    const tables: string[] = [];
 
-      this.backendGenerator.addImport('aws-cdk-lib/aws-lambda-event-sources', ['DynamoEventSource']);
-      this.backendGenerator.addImport('aws-cdk-lib/aws-lambda', ['StartingPosition']);
+    for (const resource of Object.values(template.Resources)) {
+      const res = resource as Record<string, unknown>;
+      if (res.Type !== 'AWS::Lambda::EventSourceMapping') continue;
 
-      const tableVar = ddbGen.tableVariableName;
+      const props = res.Properties as Record<string, unknown>;
+      const eventSourceArn = props.EventSourceArn as Record<string, string>;
+      if (!('Ref' in eventSourceArn)) continue;
 
+      const match = eventSourceArn.Ref.match(/^storage(\w+)StreamArn$/);
+      if (match) {
+        tables.push(match[1]);
+      }
+    }
+
+    return tables;
+  }
+
+  /**
+   * Generates DynamoDB stream event source wiring for storage table triggers.
+   * Emits addEventSource, grantStreamRead, and grantTableListStreams calls
+   * for each detected storage table.
+   */
+  private contributeStorageDynamoTrigger(functionName: string, tableNames: string[]): void {
+    this.backendGenerator.addImport('aws-cdk-lib/aws-lambda-event-sources', ['DynamoEventSource']);
+    this.backendGenerator.addImport('aws-cdk-lib/aws-lambda', ['StartingPosition']);
+
+    for (const tableVar of tableNames) {
       // backend.functionName.resources.lambda.addEventSource(new DynamoEventSource(table, { startingPosition: StartingPosition.LATEST }))
       this.backendGenerator.addStatement(
         factory.createExpressionStatement(
