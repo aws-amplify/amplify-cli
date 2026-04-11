@@ -1,0 +1,42 @@
+[
+  {
+    "ParameterKey": "parentResource",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "s3Key",
+    "ParameterValue": "amplify-builds/projectboards54040eccPreTokenGeneration-6c7a69757a727a343153-build.zip"
+  },
+  {
+    "ParameterKey": "functionName",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "parentStack",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "deploymentBucketName",
+    "ParameterValue": "amplify-projectboards-kjelsxpuch-266a6-deployment"
+  },
+  {
+    "ParameterKey": "roleName",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "resourceName",
+    "ParameterValue": "projectboards54040eccPreTokenGeneration"
+  },
+  {
+    "ParameterKey": "trigger",
+    "ParameterValue": "true"
+  },
+  {
+    "ParameterKey": "env",
+    "ParameterValue": "kjelsxpuch"
+  },
+  {
+    "ParameterKey": "modules",
+    "ParameterValue": "alter-claims"
+  }
+]

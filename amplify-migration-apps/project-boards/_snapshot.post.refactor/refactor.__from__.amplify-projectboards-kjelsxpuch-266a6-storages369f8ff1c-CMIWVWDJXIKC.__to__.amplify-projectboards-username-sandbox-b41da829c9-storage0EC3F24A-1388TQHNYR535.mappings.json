@@ -1,0 +1,12 @@
+[
+  {
+    "Source": {
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-projectboards-kjelsxpuch-266a6-storages369f8ff1c-CMIWVWDJXIKC/991546c0-3545-11f1-a493-0efa79ac0e49",
+      "LogicalResourceId": "S3Bucket"
+    },
+    "Destination": {
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-projectboards-epolon-sandbox-b41da829c9-storage0EC3F24A-1388TQHNYR535/5577a2d0-3547-11f1-af67-0e6ee1ba55f5",
+      "LogicalResourceId": "projectboards34b9a7f3c2ca489293910116c994688b266a6gen2kjelsxpuchBucketA0E7A62E"
+    }
+  }
+]

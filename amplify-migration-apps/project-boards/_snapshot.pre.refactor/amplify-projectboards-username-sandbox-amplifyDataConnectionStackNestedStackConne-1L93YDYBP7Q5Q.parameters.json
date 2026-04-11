@@ -1,0 +1,30 @@
+[
+  {
+    "ParameterKey": "referencetoamplifyprojectboardsepolonsandboxb41da829c9authNestedStackauthNestedStackResourceE8632014Outputsamplifyprojectboardsepolonsandboxb41da829c9authamplifyAuthIdentityPool9F2ACD23Ref",
+    "ParameterValue": "us-east-1:dab33dcb-7ce7-4224-943a-d97d5dd63ca6"
+  },
+  {
+    "ParameterKey": "referencetoamplifyprojectboardsepolonsandboxb41da829c9dataamplifyDataTodoNestedStackTodoNestedStackResource159B6C9AOutputsamplifyprojectboardsepolonsandboxb41da829c9dataamplifyDataTodoTodoTableA1B4FB16TableArn",
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Todo-6bilhsteczgy5n53ikmwmz263u-kjelsxpuch"
+  },
+  {
+    "ParameterKey": "referencetoamplifyprojectboardsepolonsandboxb41da829c9dataamplifyDataGraphQLAPI2EFC078FApiId",
+    "ParameterValue": "bboyffw47bakjlqy7oyisg23em"
+  },
+  {
+    "ParameterKey": "referencetoamplifyprojectboardsepolonsandboxb41da829c9dataamplifyDataGraphQLAPINONEDS43FA281BName",
+    "ParameterValue": "NONE_DS"
+  },
+  {
+    "ParameterKey": "referencetoamplifyprojectboardsepolonsandboxb41da829c9dataamplifyDataTodoNestedStackTodoNestedStackResource159B6C9AOutputsamplifyprojectboardsepolonsandboxb41da829c9dataamplifyDataTodoTodoDataSource54960FEEName",
+    "ParameterValue": "TodoTable"
+  },
+  {
+    "ParameterKey": "referencetoamplifyprojectboardsepolonsandboxb41da829c9authNestedStackauthNestedStackResourceE8632014Outputsamplifyprojectboardsepolonsandboxb41da829c9authamplifyAuthauthenticatedUserRole2C723A34Ref",
+    "ParameterValue": "amplify-projectboa2604102-amplifyAuthauthenticatedU-eGn4SKf4Y6Lv"
+  },
+  {
+    "ParameterKey": "referencetoamplifyprojectboardsepolonsandboxb41da829c9authNestedStackauthNestedStackResourceE8632014Outputsamplifyprojectboardsepolonsandboxb41da829c9authamplifyAuthunauthenticatedUserRole988986FARef",
+    "ParameterValue": "amplify-projectboa2604102-amplifyAuthunauthenticate-8lOUOyH54Uoo"
+  }
+]

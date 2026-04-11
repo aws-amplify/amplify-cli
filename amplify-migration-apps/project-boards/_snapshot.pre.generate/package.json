@@ -1,5 +1,5 @@
 {
-  "name": "projectboa2604100854",
+  "name": "projectboards",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -16,6 +16,7 @@
     "typecheck": "cd _snapshot.post.generate/amplify && npx tsc --noEmit",
     "test:gen1": "APP_CONFIG_PATH=${APP_CONFIG_PATH:-src/amplifyconfiguration.json} NODE_OPTIONS='--experimental-vm-modules' jest --verbose",
     "test:gen2": "APP_CONFIG_PATH=${APP_CONFIG_PATH:-amplify_outputs.json} NODE_OPTIONS='--experimental-vm-modules' jest --verbose",
+    "test:shared-data": "true",
     "test:e2e": "cd ../../packages/amplify-gen2-migration-e2e-system && npx tsx src/cli.ts --app project-boards --profile ${AWS_PROFILE:-default}",
     "deploy": "cd ../../packages/amplify-gen2-migration-e2e-system && npx tsx src/cli.ts --app project-boards --step deploy --profile ${AWS_PROFILE:-default}",
     "pre-push": "true",

@@ -1,0 +1,12 @@
+[
+  {
+    "Source": {
+      "StackName": "amplify-projectboards-epolon-sandbox-b41da829c9-storage0EC3F24A-1388TQHNYR535",
+      "LogicalResourceId": "projectboards34b9a7f3c2ca489293910116c994688b266a6gen2kjelsxpuchBucketA0E7A62E"
+    },
+    "Destination": {
+      "StackName": "amplify-projectboards-epolon-sandbox-b41da829c9-storage0EC3F24A-1388TQHNYR535-holding",
+      "LogicalResourceId": "projectboards34b9a7f3c2ca489293910116c994688b266a6gen2kjelsxpuchBucketA0E7A62E"
+    }
+  }
+]

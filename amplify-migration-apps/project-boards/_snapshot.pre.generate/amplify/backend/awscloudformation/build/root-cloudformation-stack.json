@@ -202,9 +202,9 @@
     "AuthTriggerCustomLambdaStack": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-projectboa2604100854-zrjhzzwu-b1442-deployment/amplify-cfn-templates/auth/auth-trigger-cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-projectboards-kjelsxpuch-266a6-deployment/amplify-cfn-templates/auth/auth-trigger-cloudformation-template.json",
         "Parameters": {
-          "env": "zrjhzzwu",
+          "env": "kjelsxpuch",
           "userpoolId": {
             "Fn::GetAtt": [
               "authprojectboards54040ecc",
@@ -245,7 +245,7 @@
     "authprojectboards54040ecc": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-projectboa2604100854-zrjhzzwu-b1442-deployment/amplify-cfn-templates/auth/projectboards54040ecc-cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-projectboards-kjelsxpuch-266a6-deployment/amplify-cfn-templates/auth/projectboards54040ecc-cloudformation-template.json",
         "Parameters": {
           "identityPoolName": "projectboards54040ecc_identitypool_54040ecc",
           "allowUnauthenticatedIdentities": true,
@@ -303,14 +303,14 @@
           },
           "authTriggerConnections": "{\"triggerType\":\"PreTokenGeneration\",\"lambdaFunctionName\":\"projectboards54040eccPreTokenGeneration\"}",
           "permissions": "",
-          "env": "zrjhzzwu"
+          "env": "kjelsxpuch"
         }
       }
     },
     "apiprojectboards": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-projectboa2604100854-zrjhzzwu-b1442-deployment/amplify-cfn-templates/api/cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-projectboards-kjelsxpuch-266a6-deployment/amplify-cfn-templates/api/cloudformation-template.json",
         "Parameters": {
           "AppSyncApiName": "projectboards",
           "DynamoDBBillingMode": "PAY_PER_REQUEST",
@@ -321,16 +321,16 @@
               "Outputs.UserPoolId"
             ]
           },
-          "S3DeploymentBucket": "amplify-projectboa2604100854-zrjhzzwu-b1442-deployment",
+          "S3DeploymentBucket": "amplify-projectboards-kjelsxpuch-266a6-deployment",
           "S3DeploymentRootKey": "amplify-appsync-files/182d69537a429ad74cd4e2ced5fdadbb4cbf17fc",
-          "env": "zrjhzzwu"
+          "env": "kjelsxpuch"
         }
       }
     },
     "storages369f8ff1c": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-projectboa2604100854-zrjhzzwu-b1442-deployment/amplify-cfn-templates/storage/cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-projectboards-kjelsxpuch-266a6-deployment/amplify-cfn-templates/storage/cloudformation-template.json",
         "Parameters": {
           "bucketName": "projectboards34b9a7f3c2ca489293910116c994688b",
           "selectedGuestPermissions": "s3:GetObject,s3:ListBucket",
@@ -356,31 +356,31 @@
           "s3PermissionsAuthenticatedUploads": "s3:PutObject",
           "s3PermissionsGuestPublic": "s3:GetObject",
           "s3PermissionsGuestUploads": "DISALLOW",
-          "env": "zrjhzzwu"
+          "env": "kjelsxpuch"
         }
       }
     },
     "functionquotegenerator": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-projectboa2604100854-zrjhzzwu-b1442-deployment/amplify-cfn-templates/function/quotegenerator-cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-projectboards-kjelsxpuch-266a6-deployment/amplify-cfn-templates/function/quotegenerator-cloudformation-template.json",
         "Parameters": {
-          "deploymentBucketName": "amplify-projectboa2604100854-zrjhzzwu-b1442-deployment",
+          "deploymentBucketName": "amplify-projectboards-kjelsxpuch-266a6-deployment",
           "s3Key": "amplify-builds/quotegenerator-51737a6b73437548654c-build.zip",
-          "env": "zrjhzzwu"
+          "env": "kjelsxpuch"
         }
       }
     },
     "functionprojectboards54040eccPreTokenGeneration": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-projectboa2604100854-zrjhzzwu-b1442-deployment/amplify-cfn-templates/function/projectboards54040eccPreTokenGeneration-cloudformation-template.json",
+        "TemplateURL": "https://s3.amazonaws.com/amplify-projectboards-kjelsxpuch-266a6-deployment/amplify-cfn-templates/function/projectboards54040eccPreTokenGeneration-cloudformation-template.json",
         "Parameters": {
           "modules": "alter-claims",
           "resourceName": "projectboards54040eccPreTokenGeneration",
-          "deploymentBucketName": "amplify-projectboa2604100854-zrjhzzwu-b1442-deployment",
+          "deploymentBucketName": "amplify-projectboards-kjelsxpuch-266a6-deployment",
           "s3Key": "amplify-builds/projectboards54040eccPreTokenGeneration-6c7a69757a727a343153-build.zip",
-          "env": "zrjhzzwu"
+          "env": "kjelsxpuch"
         }
       }
     },

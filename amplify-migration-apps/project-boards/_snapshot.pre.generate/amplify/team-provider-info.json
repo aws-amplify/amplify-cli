@@ -1,29 +1,29 @@
 {
-  "zrjhzzwu": {
+  "kjelsxpuch": {
     "awscloudformation": {
-      "AuthRoleName": "amplify-projectboa2604100854-zrjhzzwu-b1442-authRole",
-      "UnauthRoleArn": "arn:aws:iam::123456789012:role/amplify-projectboa2604100854-zrjhzzwu-b1442-unauthRole",
-      "AuthRoleArn": "arn:aws:iam::123456789012:role/amplify-projectboa2604100854-zrjhzzwu-b1442-authRole",
+      "AuthRoleName": "amplify-projectboards-kjelsxpuch-266a6-authRole",
+      "UnauthRoleArn": "arn:aws:iam::123456789012:role/amplify-projectboards-kjelsxpuch-266a6-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::123456789012:role/amplify-projectboards-kjelsxpuch-266a6-authRole",
       "Region": "us-east-1",
-      "DeploymentBucketName": "amplify-projectboa2604100854-zrjhzzwu-b1442-deployment",
-      "UnauthRoleName": "amplify-projectboa2604100854-zrjhzzwu-b1442-unauthRole",
-      "StackName": "amplify-projectboa2604100854-zrjhzzwu-b1442",
-      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-projectboa2604100854-zrjhzzwu-b1442/648d5730-34dc-11f1-96db-0e98cb090a69",
+      "DeploymentBucketName": "amplify-projectboards-kjelsxpuch-266a6-deployment",
+      "UnauthRoleName": "amplify-projectboards-kjelsxpuch-266a6-unauthRole",
+      "StackName": "amplify-projectboards-kjelsxpuch-266a6",
+      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-projectboards-kjelsxpuch-266a6/72486a40-3545-11f1-b3c8-12c91f52bffb",
       "AmplifyAppId": "projectboards",
-      "AuthTriggerTemplateURL": "https://s3.amazonaws.com/amplify-projectboa2604100854-zrjhzzwu-b1442-deployment/amplify-cfn-templates/auth/auth-trigger-cloudformation-template.json"
+      "AuthTriggerTemplateURL": "https://s3.amazonaws.com/amplify-projectboards-kjelsxpuch-266a6-deployment/amplify-cfn-templates/auth/auth-trigger-cloudformation-template.json"
     },
     "categories": {
       "auth": {
         "projectboards54040ecc": {}
       },
       "function": {
-        "quotegenerator": {
-          "deploymentBucketName": "amplify-projectboa2604100854-zrjhzzwu-b1442-deployment",
-          "s3Key": "amplify-builds/quotegenerator-51737a6b73437548654c-build.zip"
-        },
         "projectboards54040eccPreTokenGeneration": {
-          "deploymentBucketName": "amplify-projectboa2604100854-zrjhzzwu-b1442-deployment",
+          "deploymentBucketName": "amplify-projectboards-kjelsxpuch-266a6-deployment",
           "s3Key": "amplify-builds/projectboards54040eccPreTokenGeneration-6c7a69757a727a343153-build.zip"
+        },
+        "quotegenerator": {
+          "deploymentBucketName": "amplify-projectboards-kjelsxpuch-266a6-deployment",
+          "s3Key": "amplify-builds/quotegenerator-51737a6b73437548654c-build.zip"
         }
       },
       "api": {

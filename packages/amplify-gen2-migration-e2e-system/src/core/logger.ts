@@ -31,6 +31,7 @@ export class Logger {
     this.logLevel = level;
     this.logFilePath = path.join(LOG_DIR, `${appName}.log`);
     fs.ensureDirSync(LOG_DIR);
+    this.info(`Logging to: ${this.logFilePath}`);
   }
 
   public isDebug(): boolean {

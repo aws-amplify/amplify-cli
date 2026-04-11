@@ -1,0 +1,190 @@
+[
+  {
+    "ParameterKey": "usernameAttributes",
+    "ParameterValue": "email"
+  },
+  {
+    "ParameterKey": "authRoleArn",
+    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-projectboards-kjelsxpuch-266a6-authRole"
+  },
+  {
+    "ParameterKey": "authProviders",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "autoVerifiedAttributes",
+    "ParameterValue": "email"
+  },
+  {
+    "ParameterKey": "allowUnauthenticatedIdentities",
+    "ParameterValue": "true"
+  },
+  {
+    "ParameterKey": "hostedUI",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "smsVerificationMessage",
+    "ParameterValue": "Your verification code is {####}"
+  },
+  {
+    "ParameterKey": "userpoolClientReadAttributes",
+    "ParameterValue": "email"
+  },
+  {
+    "ParameterKey": "breakCircularDependency",
+    "ParameterValue": "true"
+  },
+  {
+    "ParameterKey": "mfaTypes",
+    "ParameterValue": "SMS Text Message"
+  },
+  {
+    "ParameterKey": "emailVerificationSubject",
+    "ParameterValue": "Your verification code"
+  },
+  {
+    "ParameterKey": "sharedId",
+    "ParameterValue": "54040ecc"
+  },
+  {
+    "ParameterKey": "useDefault",
+    "ParameterValue": "default"
+  },
+  {
+    "ParameterKey": "userpoolClientGenerateSecret",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "mfaConfiguration",
+    "ParameterValue": "OFF"
+  },
+  {
+    "ParameterKey": "identityPoolName",
+    "ParameterValue": "projectboards54040ecc_identitypool_54040ecc"
+  },
+  {
+    "ParameterKey": "userPoolGroupList",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "thirdPartyAuth",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "authSelections",
+    "ParameterValue": "identityPoolAndUserPool"
+  },
+  {
+    "ParameterKey": "adminQueries",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "permissions",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "resourceNameTruncated",
+    "ParameterValue": "projec54040ecc"
+  },
+  {
+    "ParameterKey": "userPoolGroups",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "smsAuthenticationMessage",
+    "ParameterValue": "Your authentication code is {####}"
+  },
+  {
+    "ParameterKey": "passwordPolicyMinLength",
+    "ParameterValue": "8"
+  },
+  {
+    "ParameterKey": "userPoolName",
+    "ParameterValue": "projectboards54040ecc_userpool_54040ecc"
+  },
+  {
+    "ParameterKey": "userpoolClientWriteAttributes",
+    "ParameterValue": "email"
+  },
+  {
+    "ParameterKey": "dependsOn",
+    "ParameterValue": "[object Object]"
+  },
+  {
+    "ParameterKey": "useEnabledMfas",
+    "ParameterValue": "true"
+  },
+  {
+    "ParameterKey": "parentStack",
+    "ParameterValue": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-projectboards-kjelsxpuch-266a6/72486a40-3545-11f1-b3c8-12c91f52bffb"
+  },
+  {
+    "ParameterKey": "usernameCaseSensitive",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "resourceName",
+    "ParameterValue": "projectboards54040ecc"
+  },
+  {
+    "ParameterKey": "env",
+    "ParameterValue": "kjelsxpuch"
+  },
+  {
+    "ParameterKey": "serviceName",
+    "ParameterValue": "Cognito"
+  },
+  {
+    "ParameterKey": "triggers",
+    "ParameterValue": "{\"PreTokenGeneration\":[\"alter-claims\"]}"
+  },
+  {
+    "ParameterKey": "emailVerificationMessage",
+    "ParameterValue": "Your verification code is {####}"
+  },
+  {
+    "ParameterKey": "userpoolClientRefreshTokenValidity",
+    "ParameterValue": "30"
+  },
+  {
+    "ParameterKey": "userpoolClientSetAttributes",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "functionprojectboards54040eccPreTokenGenerationName",
+    "ParameterValue": "functionprojectboards54040eccPreTokenGenerationName"
+  },
+  {
+    "ParameterKey": "unauthRoleArn",
+    "ParameterValue": "arn:aws:iam::123456789012:role/amplify-projectboards-kjelsxpuch-266a6-unauthRole"
+  },
+  {
+    "ParameterKey": "functionprojectboards54040eccPreTokenGenerationArn",
+    "ParameterValue": "functionprojectboards54040eccPreTokenGenerationArn"
+  },
+  {
+    "ParameterKey": "requiredAttributes",
+    "ParameterValue": "email"
+  },
+  {
+    "ParameterKey": "passwordPolicyCharacters",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "authTriggerConnections",
+    "ParameterValue": "{\"triggerType\":\"PreTokenGeneration\",\"lambdaFunctionName\":\"projectboards54040eccPreTokenGeneration\"}"
+  },
+  {
+    "ParameterKey": "aliasAttributes",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "userpoolClientLambdaRole",
+    "ParameterValue": "projec54040ecc_userpoolclient_lambda_role"
+  },
+  {
+    "ParameterKey": "defaultPasswordPolicy",
+    "ParameterValue": "false"
+  }
+]

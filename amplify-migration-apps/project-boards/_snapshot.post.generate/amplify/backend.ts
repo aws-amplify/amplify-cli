@@ -2,6 +2,7 @@ import { auth } from './auth/resource';
 import { data } from './data/resource';
 import { storage } from './storage/resource';
 import { quotegenerator } from './function/quotegenerator/resource';
+import { projectboards54040eccPreTokenGeneration } from './auth/projectboards54040eccPreTokenGeneration/resource';
 import { defineBackend } from '@aws-amplify/backend';
 import { Duration } from 'aws-cdk-lib';
 
@@ -10,6 +11,7 @@ const backend = defineBackend({
   data,
   storage,
   quotegenerator,
+  projectboards54040eccPreTokenGeneration,
 });
 const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
 cfnUserPool.usernameAttributes = ['email'];
@@ -44,7 +46,7 @@ cfnGraphqlApi.additionalAuthenticationProviders = [
 ];
 const s3Bucket = backend.storage.resources.cfnResources.cfnBucket;
 // Use this bucket name post refactor
-// s3Bucket.bucketName = 'projectboards34b9a7f3c2ca489293910116c994688b02940-main';
+// s3Bucket.bucketName = 'projectboards34b9a7f3c2ca489293910116c994688b266a6-kjelsxpuch';
 s3Bucket.bucketEncryption = {
   serverSideEncryptionConfiguration: [
     {
@@ -57,3 +59,4 @@ s3Bucket.bucketEncryption = {
 };
 const branchName = process.env.AWS_BRANCH ?? 'sandbox';
 backend.quotegenerator.resources.cfnResources.cfnFunction.functionName = `quotegenerator-${branchName}`;
+backend.projectboards54040eccPreTokenGeneration.resources.cfnResources.cfnFunction.functionName = `projectboards54040eccPreTokenGeneration-${branchName}`;

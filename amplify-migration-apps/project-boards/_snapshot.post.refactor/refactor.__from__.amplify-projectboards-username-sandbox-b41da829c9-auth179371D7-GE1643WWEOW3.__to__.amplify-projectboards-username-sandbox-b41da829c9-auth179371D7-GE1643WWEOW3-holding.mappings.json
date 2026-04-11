@@ -1,0 +1,52 @@
+[
+  {
+    "Source": {
+      "StackName": "amplify-projectboards-epolon-sandbox-b41da829c9-auth179371D7-GE1643WWEOW3",
+      "LogicalResourceId": "amplifyAuthUserPool4BA7F805"
+    },
+    "Destination": {
+      "StackName": "amplify-projectboards-epolon-sandbox-b41da829c9-auth179371D7-GE1643WWEOW3-holding",
+      "LogicalResourceId": "amplifyAuthUserPool4BA7F805"
+    }
+  },
+  {
+    "Source": {
+      "StackName": "amplify-projectboards-epolon-sandbox-b41da829c9-auth179371D7-GE1643WWEOW3",
+      "LogicalResourceId": "amplifyAuthUserPoolNativeAppClient79534448"
+    },
+    "Destination": {
+      "StackName": "amplify-projectboards-epolon-sandbox-b41da829c9-auth179371D7-GE1643WWEOW3-holding",
+      "LogicalResourceId": "amplifyAuthUserPoolNativeAppClient79534448"
+    }
+  },
+  {
+    "Source": {
+      "StackName": "amplify-projectboards-epolon-sandbox-b41da829c9-auth179371D7-GE1643WWEOW3",
+      "LogicalResourceId": "amplifyAuthUserPoolAppClient2626C6F8"
+    },
+    "Destination": {
+      "StackName": "amplify-projectboards-epolon-sandbox-b41da829c9-auth179371D7-GE1643WWEOW3-holding",
+      "LogicalResourceId": "amplifyAuthUserPoolAppClient2626C6F8"
+    }
+  },
+  {
+    "Source": {
+      "StackName": "amplify-projectboards-epolon-sandbox-b41da829c9-auth179371D7-GE1643WWEOW3",
+      "LogicalResourceId": "amplifyAuthIdentityPool3FDE84CC"
+    },
+    "Destination": {
+      "StackName": "amplify-projectboards-epolon-sandbox-b41da829c9-auth179371D7-GE1643WWEOW3-holding",
+      "LogicalResourceId": "amplifyAuthIdentityPool3FDE84CC"
+    }
+  },
+  {
+    "Source": {
+      "StackName": "amplify-projectboards-epolon-sandbox-b41da829c9-auth179371D7-GE1643WWEOW3",
+      "LogicalResourceId": "amplifyAuthIdentityPoolRoleAttachment045F17C8"
+    },
+    "Destination": {
+      "StackName": "amplify-projectboards-epolon-sandbox-b41da829c9-auth179371D7-GE1643WWEOW3-holding",
+      "LogicalResourceId": "amplifyAuthIdentityPoolRoleAttachment045F17C8"
+    }
+  }
+]
