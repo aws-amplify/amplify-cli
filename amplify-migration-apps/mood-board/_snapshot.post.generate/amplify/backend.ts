@@ -5,7 +5,7 @@ import { moodboardGetRandomEmoji } from './function/moodboardGetRandomEmoji/reso
 import { moodboardKinesisReader } from './function/moodboardKinesisReader/resource';
 import { defineBackend } from '@aws-amplify/backend';
 import { defineAnalytics } from './analytics/resource';
-import { Duration, aws_iam } from 'aws-cdk-lib';
+import { Duration, aws_iam, CfnResource, RemovalPolicy } from 'aws-cdk-lib';
 
 const backend = defineBackend({
   auth,
@@ -84,3 +84,20 @@ backend.moodboardKinesisReader.resources.lambda.addToRolePolicy(
     resources: [analytics.kinesisStreamArn],
   })
 );
+const REFACTORED_RESOURCE_TYPES = [
+  'AWS::Cognito::UserPool',
+  'AWS::Cognito::IdentityPool',
+  'AWS::Cognito::UserPoolClient',
+  'AWS::Cognito::IdentityPoolRoleAttachment',
+  'AWS::Cognito::UserPoolDomain',
+  'AWS::Cognito::UserPoolGroup',
+  'AWS::S3::Bucket',
+  'AWS::Kinesis::Stream',
+];
+for (const cfnResource of backend.stack.node
+  .findAll()
+  .filter((n) => CfnResource.isCfnResource(n))) {
+  if (REFACTORED_RESOURCE_TYPES.includes(cfnResource.cfnResourceType)) {
+    cfnResource.applyRemovalPolicy(RemovalPolicy.RETAIN);
+  }
+}

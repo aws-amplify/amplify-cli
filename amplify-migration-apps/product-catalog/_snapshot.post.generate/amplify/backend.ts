@@ -4,7 +4,7 @@ import { storage } from './storage/resource';
 import { S3Trigger1ef46783 } from './storage/S3Trigger1ef46783/resource';
 import { lowstockproducts } from './function/lowstockproducts/resource';
 import { defineBackend } from '@aws-amplify/backend';
-import { Duration } from 'aws-cdk-lib';
+import { Duration, CfnResource, RemovalPolicy } from 'aws-cdk-lib';
 
 const backend = defineBackend({
   auth,
@@ -95,3 +95,19 @@ s3Bucket.bucketEncryption = {
     },
   ],
 };
+const REFACTORED_RESOURCE_TYPES = [
+  'AWS::Cognito::UserPool',
+  'AWS::Cognito::IdentityPool',
+  'AWS::Cognito::UserPoolClient',
+  'AWS::Cognito::IdentityPoolRoleAttachment',
+  'AWS::Cognito::UserPoolDomain',
+  'AWS::Cognito::UserPoolGroup',
+  'AWS::S3::Bucket',
+];
+for (const cfnResource of backend.stack.node
+  .findAll()
+  .filter((n) => CfnResource.isCfnResource(n))) {
+  if (REFACTORED_RESOURCE_TYPES.includes(cfnResource.cfnResourceType)) {
+    cfnResource.applyRemovalPolicy(RemovalPolicy.RETAIN);
+  }
+}

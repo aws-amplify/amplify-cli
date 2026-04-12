@@ -12,7 +12,7 @@ import {
 } from 'aws-cdk-lib/aws-apigateway';
 import { Policy, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { defineBackend } from '@aws-amplify/backend';
-import { Duration, Stack } from 'aws-cdk-lib';
+import { Duration, Stack, CfnResource, RemovalPolicy } from 'aws-cdk-lib';
 
 const backend = defineBackend({
   auth,
@@ -312,3 +312,18 @@ backend.addOutput({
     },
   },
 });
+const REFACTORED_RESOURCE_TYPES = [
+  'AWS::Cognito::UserPool',
+  'AWS::Cognito::IdentityPool',
+  'AWS::Cognito::UserPoolClient',
+  'AWS::Cognito::IdentityPoolRoleAttachment',
+  'AWS::Cognito::UserPoolDomain',
+  'AWS::Cognito::UserPoolGroup',
+];
+for (const cfnResource of backend.stack.node
+  .findAll()
+  .filter((n) => CfnResource.isCfnResource(n))) {
+  if (REFACTORED_RESOURCE_TYPES.includes(cfnResource.cfnResourceType)) {
+    cfnResource.applyRemovalPolicy(RemovalPolicy.RETAIN);
+  }
+}
