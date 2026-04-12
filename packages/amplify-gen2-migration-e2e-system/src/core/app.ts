@@ -422,7 +422,7 @@ export class App {
    */
   public updateSnapshots(): void {
     this.logger.info(`Sanitizing snapshots`);
-    sanitize(this.deploymentName, this.snapshotAppPath);
+    sanitize(path.basename(this.sourceAppPath), this.snapshotAppPath);
     for (const snapshot of fs.readdirSync(this.snapshotAppPath).filter((f) => f.includes('_snapshot'))) {
       const sourceSnapshotPath = path.join(this.sourceAppPath, snapshot);
       this.logger.info(`Updating snapshot: ${sourceSnapshotPath}`);
