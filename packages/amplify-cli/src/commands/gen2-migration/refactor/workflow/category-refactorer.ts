@@ -84,6 +84,9 @@ export abstract class CategoryRefactorer implements Planner {
     const sourceResources = this.filterResourcesByType(source.resolvedTemplate);
     const targetResources = this.filterResourcesByType(target.resolvedTemplate);
 
+    const sourceDeletionPolicyOps = this.buildDeletionPolicyValidation(sourceStackId, sourceResources);
+    const targetDeletionPolicyOps = this.buildDeletionPolicyValidation(destStackId, targetResources);
+
     const mappings = await this.buildResourceMappings(sourceResources, targetResources, source.stackId, target.stackId);
 
     const blueprint: RefactorBlueprint = { sourceStackId, targetStackId: destStackId, mappings };
@@ -97,6 +100,8 @@ export abstract class CategoryRefactorer implements Planner {
     const operations = [
       sourceStatusOp,
       destStatusOp,
+      sourceDeletionPolicyOps,
+      targetDeletionPolicyOps,
       ...updateSourceOps,
       ...updateTargetOps,
       ...beforeMoveOps,
@@ -302,6 +307,34 @@ export abstract class CategoryRefactorer implements Planner {
 
   protected debug(message: string) {
     this.logger.debug(`[${this.resource.category}/${this.resource.resourceName}] ${message}`);
+  }
+
+  private buildDeletionPolicyValidation(stackId: string, resources: Map<string, CFNResource>): AmplifyMigrationOperation {
+    const stackName = extractStackNameFromId(stackId);
+    let valid = true;
+    const table = new CLITable({
+      head: ['Logical ID', 'Type', 'DeletionPolicy', 'UpdateReplacePolicy'],
+      style: { head: [] },
+    });
+    for (const [logicalId, resource] of resources.entries()) {
+      valid = valid && resource.DeletionPolicy === 'Retain' && resource.UpdateReplacePolicy === 'Retain';
+      table.push([logicalId, resource.Type, resource.DeletionPolicy ?? 'undefined', resource.UpdateReplacePolicy ?? 'undefined']);
+    }
+    return {
+      resource: this.resource,
+      describe: async () => [],
+      validate: () => ({
+        description: `Deletion Protection: ${stackName}`,
+        run: async (): Promise<ValidationResult> => {
+          return {
+            valid,
+            report: `Some resources are not set to Retain in stack ${stackName}\n\n${table.toString()}`,
+          };
+        },
+      }),
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      execute: async () => {},
+    };
   }
 
   /**
