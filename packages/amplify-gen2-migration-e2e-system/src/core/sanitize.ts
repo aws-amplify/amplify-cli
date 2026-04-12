@@ -1,4 +1,3 @@
-#!/usr/bin/env npx tsx
 /* eslint-disable spellcheck/spell-checker */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-return */

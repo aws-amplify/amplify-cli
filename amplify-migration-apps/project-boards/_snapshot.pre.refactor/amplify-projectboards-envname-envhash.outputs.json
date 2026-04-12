@@ -1,0 +1,42 @@
+[
+  {
+    "OutputKey": "AuthRoleName",
+    "OutputValue": "amplify-projectboards-envname-envhash-authRole"
+  },
+  {
+    "OutputKey": "UnauthRoleArn",
+    "OutputValue": "arn:aws:iam::123456789012:role/amplify-projectboards-envname-envhash-unauthRole"
+  },
+  {
+    "OutputKey": "AuthRoleArn",
+    "OutputValue": "arn:aws:iam::123456789012:role/amplify-projectboards-envname-envhash-authRole"
+  },
+  {
+    "OutputKey": "Region",
+    "OutputValue": "us-east-1",
+    "Description": "CloudFormation provider root stack Region",
+    "ExportName": "amplify-projectboards-envname-envhash-Region"
+  },
+  {
+    "OutputKey": "DeploymentBucketName",
+    "OutputValue": "amplify-projectboards-envname-envhash-deployment",
+    "Description": "CloudFormation provider root stack deployment bucket name",
+    "ExportName": "amplify-projectboards-envname-envhash-DeploymentBucketName"
+  },
+  {
+    "OutputKey": "UnauthRoleName",
+    "OutputValue": "amplify-projectboards-envname-envhash-unauthRole"
+  },
+  {
+    "OutputKey": "StackName",
+    "OutputValue": "amplify-projectboards-envname-envhash",
+    "Description": "CloudFormation provider root stack ID",
+    "ExportName": "amplify-projectboards-envname-envhash-StackName"
+  },
+  {
+    "OutputKey": "StackId",
+    "OutputValue": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-projectboards-envname-envhash/8ba73a30-35f8-11f1-a314-0affea545171",
+    "Description": "CloudFormation provider root stack name",
+    "ExportName": "amplify-projectboards-envname-envhash-StackId"
+  }
+]

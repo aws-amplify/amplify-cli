@@ -319,7 +319,7 @@ export class App {
     this.logger.info('Deploying Gen2 app using ampx sandbox...');
     const startTime = Date.now();
 
-    const result = await execa('npx', ['ampx', 'sandbox', '--once'], {
+    const result = await execa('npx', ['ampx', 'sandbox', '--once', '--identifier', 'e2e'], {
       cwd: this.targetAppPath,
       reject: false,
       stdio: 'inherit',
@@ -332,8 +332,7 @@ export class App {
 
     this.logger.info(`ampx sandbox completed (${Date.now() - startTime}ms)`);
 
-    const username = os.userInfo().username;
-    const stackPrefix = `amplify-${this.deploymentName}-${username}-sandbox`;
+    const stackPrefix = `amplify-${this.deploymentName}-e2e-sandbox`;
     return this.findGen2RootStack(stackPrefix);
   }
 
