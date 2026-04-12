@@ -60,18 +60,12 @@ export function normalize(appName: string, appDir: string): void {
   for (const file of fs.readdirSync(preRefactorSnapshot).filter((f) => f.includes(sandboxSegment))) {
     // amplify-projectboards-e2e-sandbox-6e1e2f0442-auth179371D7-1DXO5FVZSYJDX
     const hash = file.split('.')[0].split('-')[4];
-    // const src = path.join(preRefactorSnapshot, file);
-    // const dst = path.join(preRefactorSnapshot, file.replaceAll(`${sandboxSegment}${hash}`, `${sandboxSegment}${`x`.repeat(hash.length)}`));
     renameFile(appDir, `${sandboxSegment}${hash}`, `${sandboxSegment}${`x`.repeat(hash.length)}`);
-    // fs.renameSync(src, dst);
   }
   for (const file of fs.readdirSync(preRefactorSnapshot)) {
     // amplify-projectboards-e2e-sandbox-6e1e2f0442-auth179371D7-1DXO5FVZSYJDX
     const hash = file.split('.')[0].split('-').reverse()[0];
-    // const src = path.join(preRefactorSnapshot, file);
-    // const dst = path.join(preRefactorSnapshot, file.replaceAll(`-${hash}`, `-${`x`.repeat(hash.length)}`));
-    renameFile(appDir, `-${hash}`, `-${`x`.repeat(hash.length)}`);
-    // fs.renameSync(src, dst);
+    renameFile(appDir, `-${hash}`, `-${`x`.repeat(13)}`);
   }
   for (const file of fs.readdirSync(preRefactorSnapshot)) {
     // amplify-projectboards-kjelsxpuch-266a6-apiprojectboards-OLA0QLF-ConnectionStack-K6BIKS09ZUE6
@@ -80,10 +74,7 @@ export function normalize(appName: string, appDir: string): void {
       continue;
     }
     const hash = parts[5];
-    // const src = path.join(preRefactorSnapshot, file);
-    // const dst = path.join(preRefactorSnapshot, file.replaceAll(`-${hash}-`, `-${`x`.repeat(hash.length)}-`));
     renameFile(appDir, `-${hash}-`, `-${`x`.repeat(hash.length)}-`);
-    // fs.renameSync(src, dst);
   }
 }
 
@@ -100,7 +91,7 @@ function renameFile(appDir: string, before: string, after: string): void {
   const snapshots = fs.readdirSync(appDir).filter((f) => f.startsWith('_snapshot'));
   const files = snapshots.flatMap((s) => getFilesRecursive(path.join(appDir, s)));
   for (const file of files) {
-    const dst = file.replaceAll(before, after);
-    fs.renameSync(file, dst);
+    const basename = path.basename(file).replaceAll(before, after);
+    fs.renameSync(file, path.join(path.dirname(file), basename));
   }
 }

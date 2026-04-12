@@ -8,6 +8,7 @@ import { Git } from './git';
 import * as snapshot from './snapshot';
 import { sanitize } from './sanitize';
 import { CloudFormationClient, paginateListStacks, StackStatus } from '@aws-sdk/client-cloudformation';
+import { normalize } from './normalize';
 
 const MIGRATION_TARGET_DIR = path.join(os.tmpdir(), 'amplify-gen2-migration-e2e-system', 'output-apps');
 const MIGRATION_SNAPSHOT_DIR = path.join(os.tmpdir(), 'amplify-gen2-migration-e2e-system', 'snapshots');
@@ -423,6 +424,8 @@ export class App {
   public updateSnapshots(): void {
     this.logger.info(`Sanitizing snapshots`);
     sanitize(path.basename(this.sourceAppPath), this.snapshotAppPath);
+    this.logger.info(`Normalizing snapshots`);
+    normalize(path.basename(this.sourceAppPath), this.snapshotAppPath);
     for (const snapshot of fs.readdirSync(this.snapshotAppPath).filter((f) => f.includes('_snapshot'))) {
       const sourceSnapshotPath = path.join(this.sourceAppPath, snapshot);
       this.logger.info(`Updating snapshot: ${sourceSnapshotPath}`);
