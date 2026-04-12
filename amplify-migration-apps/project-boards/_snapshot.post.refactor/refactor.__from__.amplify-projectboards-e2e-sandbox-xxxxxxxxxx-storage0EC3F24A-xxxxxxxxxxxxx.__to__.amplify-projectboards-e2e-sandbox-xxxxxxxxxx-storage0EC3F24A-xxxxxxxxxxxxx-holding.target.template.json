@@ -2,7 +2,7 @@
   "AWSTemplateFormatVersion": "2010-09-09",
   "Description": "Temporary holding stack for Gen2 migration",
   "Resources": {
-    "projectboards34b9a7f3c2ca489293910116c994688bxxxxxgen2xxxxxxxxxxBucket1EE284E9": {
+    "projectboards34b9a7f3c2ca489293910116c994688bxxxxxgen2xxxxxxxxxxBucket7D436323": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
         "BucketEncryption": {
@@ -63,7 +63,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf/storage/projectboards34b9a7f3c2ca489293910116c994688bxxxxx-gen2-xxxxxxxxxx/Bucket/Resource"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fbfa7224b5/storage/projectboards34b9a7f3c2ca489293910116c994688bxxxxx-gen2-xxxxxxxxxx/Bucket/Resource"
       }
     }
   },

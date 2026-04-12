@@ -54,7 +54,7 @@
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/*-${apiId}-${envName}",
                         {
                           "apiId": {
-                            "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPI43D78135ApiId"
+                            "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPIDE35F996ApiId"
                           },
                           "envName": "NONE"
                         }
@@ -64,7 +64,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "Project-ykn53lg6lrebrh7pysv3723tzi-xxxxxxxxxx"
+                          "tableName": "Project-ayqh4m5ljjbezob2kzglre6eym-xxxxxxxxxx"
                         }
                       ]
                     },
@@ -72,7 +72,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "Todo-ykn53lg6lrebrh7pysv3723tzi-xxxxxxxxxx"
+                          "tableName": "Todo-ayqh4m5ljjbezob2kzglre6eym-xxxxxxxxxx"
                         }
                       ]
                     }
@@ -112,7 +112,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf/data/amplifyData/AmplifyTableManager/AmplifyManagedTableIsCompleteRole/Resource"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fbfa7224b5/data/amplifyData/AmplifyTableManager/AmplifyManagedTableIsCompleteRole/Resource"
       }
     },
     "AmplifyManagedTableOnEventRoleB4E71DEA": {
@@ -169,7 +169,7 @@
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/*-${apiId}-${envName}",
                         {
                           "apiId": {
-                            "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPI43D78135ApiId"
+                            "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPIDE35F996ApiId"
                           },
                           "envName": "NONE"
                         }
@@ -179,7 +179,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "Project-ykn53lg6lrebrh7pysv3723tzi-xxxxxxxxxx"
+                          "tableName": "Project-ayqh4m5ljjbezob2kzglre6eym-xxxxxxxxxx"
                         }
                       ]
                     },
@@ -187,7 +187,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}",
                         {
-                          "tableName": "Todo-ykn53lg6lrebrh7pysv3723tzi-xxxxxxxxxx"
+                          "tableName": "Todo-ayqh4m5ljjbezob2kzglre6eym-xxxxxxxxxx"
                         }
                       ]
                     }
@@ -227,7 +227,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf/data/amplifyData/AmplifyTableManager/AmplifyManagedTableOnEventRole/Resource"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fbfa7224b5/data/amplifyData/AmplifyTableManager/AmplifyManagedTableOnEventRole/Resource"
       }
     },
     "AmplifyManagedTableOnEventRoleDefaultPolicyF6DABCB6": {
@@ -255,7 +255,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf/data/amplifyData/AmplifyTableManager/AmplifyManagedTableOnEventRole/DefaultPolicy/Resource"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fbfa7224b5/data/amplifyData/AmplifyTableManager/AmplifyManagedTableOnEventRole/DefaultPolicy/Resource"
       }
     },
     "TableManagerCustomProviderframeworkonEvent1DFC2ECC": {
@@ -267,7 +267,7 @@
           },
           "S3Key": "f2c5bec0e463cae18d0bf683be5923ae6bd676a06af1a994bdfa076a66ac07d6.zip"
         },
-        "Description": "AmplifyManagedTable - onEvent (amplify-projectboards-e2e-sandbox-fb4c0d7bdf/data/amplifyData/AmplifyTableManager/TableManagerCustomProvider)",
+        "Description": "AmplifyManagedTable - onEvent (amplify-projectboards-e2e-sandbox-fbfa7224b5/data/amplifyData/AmplifyTableManager/TableManagerCustomProvider)",
         "Environment": {
           "Variables": {
             "WAITER_STATE_MACHINE_ARN": {
@@ -306,7 +306,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf/data/amplifyData/AmplifyTableManager/TableManagerCustomProvider/framework-onEvent/Resource",
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fbfa7224b5/data/amplifyData/AmplifyTableManager/TableManagerCustomProvider/framework-onEvent/Resource",
         "aws:asset:path": "asset.f2c5bec0e463cae18d0bf683be5923ae6bd676a06af1a994bdfa076a66ac07d6",
         "aws:asset:is-bundled": false,
         "aws:asset:property": "Code"
@@ -321,7 +321,7 @@
           },
           "S3Key": "f2c5bec0e463cae18d0bf683be5923ae6bd676a06af1a994bdfa076a66ac07d6.zip"
         },
-        "Description": "AmplifyManagedTable - isComplete (amplify-projectboards-e2e-sandbox-fb4c0d7bdf/data/amplifyData/AmplifyTableManager/TableManagerCustomProvider)",
+        "Description": "AmplifyManagedTable - isComplete (amplify-projectboards-e2e-sandbox-fbfa7224b5/data/amplifyData/AmplifyTableManager/TableManagerCustomProvider)",
         "Handler": "amplify-table-manager-handler.isComplete",
         "Role": {
           "Fn::GetAtt": [
@@ -352,7 +352,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf/data/amplifyData/AmplifyTableManager/TableManagerCustomProvider/framework-isComplete/Resource",
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fbfa7224b5/data/amplifyData/AmplifyTableManager/TableManagerCustomProvider/framework-isComplete/Resource",
         "aws:asset:path": "asset.f2c5bec0e463cae18d0bf683be5923ae6bd676a06af1a994bdfa076a66ac07d6",
         "aws:asset:is-bundled": false,
         "aws:asset:property": "Code"
@@ -391,7 +391,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf/data/amplifyData/AmplifyTableManager/AmplifyTableWaiterStateMachine/Role/Resource"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fbfa7224b5/data/amplifyData/AmplifyTableManager/AmplifyTableWaiterStateMachine/Role/Resource"
       }
     },
     "AmplifyTableWaiterStateMachineRoleDefaultPolicy89F3836A": {
@@ -438,7 +438,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf/data/amplifyData/AmplifyTableManager/AmplifyTableWaiterStateMachine/Role/DefaultPolicy/Resource"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fbfa7224b5/data/amplifyData/AmplifyTableManager/AmplifyTableWaiterStateMachine/Role/DefaultPolicy/Resource"
       }
     },
     "AmplifyTableWaiterStateMachine060600BC": {
@@ -473,7 +473,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf/data/amplifyData/AmplifyTableManager/AmplifyTableWaiterStateMachine/Resource"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fbfa7224b5/data/amplifyData/AmplifyTableManager/AmplifyTableWaiterStateMachine/Resource"
       }
     },
     "CDKMetadata": {
@@ -482,7 +482,7 @@
         "Analytics": "v2:deflate64:H4sIAAAAAAAA/zWNQQ6CMBBFz8K+jFiMcSsmLo2BA5ChjGSgtAlTJIZwdwPo6r2ft/ga9OkCSYSTxKbuYssVzA+SQHUR0HQKJylnxh7m3FtSt5fb+PSWzWeduy3KYl/VCPN9dCawd2v7+6IkLVGEgsB1hZIUstF0FDIUWlRO4sfBkNpqEbBh12xnv7Ao52uCVg5vreF4hiRqhTkeRhe4J8h3fgHmtAbPzwAAAA=="
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf/data/amplifyData/AmplifyTableManager/CDKMetadata/Default"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fbfa7224b5/data/amplifyData/AmplifyTableManager/CDKMetadata/Default"
       },
       "Condition": "CDKMetadataAvailable"
     }
@@ -754,12 +754,12 @@
     }
   },
   "Parameters": {
-    "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPI43D78135ApiId": {
+    "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPIDE35F996ApiId": {
       "Type": "String"
     }
   },
   "Outputs": {
-    "amplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataAmplifyTableManagerTableManagerCustomProviderframeworkonEventED7FC052Arn": {
+    "amplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataAmplifyTableManagerTableManagerCustomProviderframeworkonEvent07CA0E47Arn": {
       "Value": {
         "Fn::GetAtt": [
           "TableManagerCustomProviderframeworkonEvent1DFC2ECC",

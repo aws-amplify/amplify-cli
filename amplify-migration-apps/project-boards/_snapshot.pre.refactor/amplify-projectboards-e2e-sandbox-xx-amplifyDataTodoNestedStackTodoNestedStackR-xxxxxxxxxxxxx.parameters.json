@@ -1,5 +1,9 @@
 [
   {
+    "ParameterKey": "DynamoDBModelTableReadIOPS",
+    "ParameterValue": "5"
+  },
+  {
     "ParameterKey": "referencetoamplifyprojectboardse2esandboxfbfa7224b5authNestedStackauthNestedStackResource4542932EOutputsamplifyprojectboardse2esandboxfbfa7224b5authamplifyAuthauthenticatedUserRole1B476712Ref",
     "ParameterValue": "amplify-projectboa2604121-amplifyAuthauthenticatedU-QxB63tXrD9Y6"
   },
@@ -8,12 +12,32 @@
     "ParameterValue": "cvghmauwkzcdljyrzwezg5v5ra"
   },
   {
+    "ParameterKey": "DynamoDBEnableServerSideEncryption",
+    "ParameterValue": "true"
+  },
+  {
+    "ParameterKey": "DynamoDBEnablePointInTimeRecovery",
+    "ParameterValue": "false"
+  },
+  {
     "ParameterKey": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPINONEDS58D59F75Name",
     "ParameterValue": "NONE_DS"
   },
   {
+    "ParameterKey": "DynamoDBBillingMode",
+    "ParameterValue": "PAY_PER_REQUEST"
+  },
+  {
     "ParameterKey": "referencetoamplifyprojectboardse2esandboxfbfa7224b5authNestedStackauthNestedStackResource4542932EOutputsamplifyprojectboardse2esandboxfbfa7224b5authamplifyAuthunauthenticatedUserRoleF04DCF06Ref",
     "ParameterValue": "amplify-projectboa2604121-amplifyAuthunauthenticate-WgK6nLDS53JS"
+  },
+  {
+    "ParameterKey": "DynamoDBModelTableWriteIOPS",
+    "ParameterValue": "5"
+  },
+  {
+    "ParameterKey": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResource5FB7761COutputsamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataAmplifyTableManagerTab38F13083",
+    "ParameterValue": "arn:aws:lambda:us-east-1:123456789012:function:amplify-projectboa2604121-TableManagerCustomProvid-Ti9G6mWtpq7v"
   },
   {
     "ParameterKey": "referencetoamplifyprojectboardse2esandboxfbfa7224b5authNestedStackauthNestedStackResource4542932EOutputsamplifyprojectboardse2esandboxfbfa7224b5authamplifyAuthIdentityPool717D60BFRef",

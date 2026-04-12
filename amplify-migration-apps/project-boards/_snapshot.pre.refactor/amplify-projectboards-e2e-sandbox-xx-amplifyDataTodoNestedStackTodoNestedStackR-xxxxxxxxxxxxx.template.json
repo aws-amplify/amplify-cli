@@ -37,22 +37,22 @@
       ],
       "Description": "Enable server side encryption powered by KMS."
     },
-    "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResourceD206A0CBOutputsamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataAmplifyTableManagerTabDC4D9807": {
+    "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResource5FB7761COutputsamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataAmplifyTableManagerTab38F13083": {
       "Type": "String"
     },
-    "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPI43D78135ApiId": {
+    "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPIDE35F996ApiId": {
       "Type": "String"
     },
-    "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPINONEDSB8730C59Name": {
+    "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPINONEDS58D59F75Name": {
       "Type": "String"
     },
-    "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfauthNestedStackauthNestedStackResource73A48013Outputsamplifyprojectboardse2esandboxfb4c0d7bdfauthamplifyAuthauthenticatedUserRole2B3A5B63Ref": {
+    "referencetoamplifyprojectboardse2esandboxfbfa7224b5authNestedStackauthNestedStackResource4542932EOutputsamplifyprojectboardse2esandboxfbfa7224b5authamplifyAuthauthenticatedUserRole1B476712Ref": {
       "Type": "String"
     },
-    "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfauthNestedStackauthNestedStackResource73A48013Outputsamplifyprojectboardse2esandboxfb4c0d7bdfauthamplifyAuthunauthenticatedUserRoleF9FA985FRef": {
+    "referencetoamplifyprojectboardse2esandboxfbfa7224b5authNestedStackauthNestedStackResource4542932EOutputsamplifyprojectboardse2esandboxfbfa7224b5authamplifyAuthunauthenticatedUserRoleF04DCF06Ref": {
       "Type": "String"
     },
-    "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfauthNestedStackauthNestedStackResource73A48013Outputsamplifyprojectboardse2esandboxfb4c0d7bdfauthamplifyAuthIdentityPool4C25A10BRef": {
+    "referencetoamplifyprojectboardse2esandboxfbfa7224b5authNestedStackauthNestedStackResource4542932EOutputsamplifyprojectboardse2esandboxfbfa7224b5authamplifyAuthIdentityPool717D60BFRef": {
       "Type": "String"
     }
   },
@@ -349,16 +349,20 @@
     }
   },
   "Resources": {
-    "ProjectTable": {
+    "TodoTable": {
       "Type": "Custom::ImportedAmplifyDynamoDBTable",
       "Properties": {
         "ServiceToken": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResourceD206A0CBOutputsamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataAmplifyTableManagerTabDC4D9807"
+          "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataAmplifyTableManagerNestedStackAmplifyTableManagerNestedStackResource5FB7761COutputsamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataAmplifyTableManagerTab38F13083"
         },
-        "tableName": "Project-ykn53lg6lrebrh7pysv3723tzi-xxxxxxxxxx",
+        "tableName": "Todo-ayqh4m5ljjbezob2kzglre6eym-xxxxxxxxxx",
         "attributeDefinitions": [
           {
             "attributeName": "id",
+            "attributeType": "S"
+          },
+          {
+            "attributeName": "projectTodosId",
             "attributeType": "S"
           }
         ],
@@ -366,6 +370,28 @@
           {
             "attributeName": "id",
             "keyType": "HASH"
+          }
+        ],
+        "globalSecondaryIndexes": [
+          {
+            "indexName": "gsi-Project.todos",
+            "keySchema": [
+              {
+                "attributeName": "projectTodosId",
+                "keyType": "HASH"
+              }
+            ],
+            "projection": {
+              "projectionType": "ALL"
+            },
+            "provisionedThroughput": {
+              "readCapacityUnits": {
+                "Ref": "DynamoDBModelTableReadIOPS"
+              },
+              "writeCapacityUnits": {
+                "Ref": "DynamoDBModelTableWriteIOPS"
+              }
+            }
           }
         ],
         "provisionedThroughput": {
@@ -418,10 +444,10 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf/data/amplifyData/Project/ProjectTable/Default/Default"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fbfa7224b5/data/amplifyData/Todo/TodoTable/Default/Default"
       }
     },
-    "ProjectIAMRole928454B5": {
+    "TodoIAMRole2DA8E66E": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -461,7 +487,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}",
                         {
-                          "tablename": "Project-ykn53lg6lrebrh7pysv3723tzi-xxxxxxxxxx"
+                          "tablename": "Todo-ayqh4m5ljjbezob2kzglre6eym-xxxxxxxxxx"
                         }
                       ]
                     },
@@ -469,7 +495,7 @@
                       "Fn::Sub": [
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}/*",
                         {
-                          "tablename": "Project-ykn53lg6lrebrh7pysv3723tzi-xxxxxxxxxx"
+                          "tablename": "Todo-ayqh4m5ljjbezob2kzglre6eym-xxxxxxxxxx"
                         }
                       ]
                     }
@@ -485,9 +511,9 @@
           "Fn::Join": [
             "",
             [
-              "ProjectIAMRole032cf0-",
+              "TodoIAMRolecfd440-",
               {
-                "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPI43D78135ApiId"
+                "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPIDE35F996ApiId"
               },
               "-NONE"
             ]
@@ -511,14 +537,14 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf/data/amplifyData/Project/ProjectIAMRole/Resource"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fbfa7224b5/data/amplifyData/Todo/TodoIAMRole/Resource"
       }
     },
-    "ProjectDataSource": {
+    "TodoDataSource": {
       "Type": "AWS::AppSync::DataSource",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPI43D78135ApiId"
+          "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPIDE35F996ApiId"
         },
         "DynamoDBConfig": {
           "AwsRegion": {
@@ -538,7 +564,7 @@
                           ":",
                           {
                             "Fn::GetAtt": [
-                              "ProjectTable",
+                              "TodoTable",
                               "TableArn"
                             ]
                           }
@@ -551,35 +577,35 @@
             ]
           }
         },
-        "Name": "ProjectTable",
+        "Name": "TodoTable",
         "ServiceRoleArn": {
           "Fn::GetAtt": [
-            "ProjectIAMRole928454B5",
+            "TodoIAMRole2DA8E66E",
             "Arn"
           ]
         },
         "Type": "AMAZON_DYNAMODB"
       },
       "DependsOn": [
-        "ProjectIAMRole928454B5"
+        "TodoIAMRole2DA8E66E"
       ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf/data/amplifyData/Project/ProjectDataSource/Resource"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fbfa7224b5/data/amplifyData/Todo/TodoDataSource/Resource"
       }
     },
-    "QuerygetProjectauth0FunctionQuerygetProjectauth0FunctionAppSyncFunctionED686A7E": {
+    "QuerygetTodoauth0FunctionQuerygetTodoauth0FunctionAppSyncFunction846D8436": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPI43D78135ApiId"
+          "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPIDE35F996ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPINONEDSB8730C59Name"
+          "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPINONEDS58D59F75Name"
         },
         "FunctionVersion": "2018-05-29",
-        "Name": "QuerygetProjectauth0Function",
+        "Name": "QuerygetTodoauth0Function",
         "RequestMappingTemplateS3Location": {
           "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b3e5411cda152c2308dac0a81ffb999cc9c81ea2a1f51e6ce05a377bef8c4dfd.vtl"
         },
@@ -588,20 +614,20 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf/data/amplifyData/Project/QuerygetProjectauth0Function/QuerygetProjectauth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fbfa7224b5/data/amplifyData/Todo/QuerygetTodoauth0Function/QuerygetTodoauth0Function.AppSyncFunction"
       }
     },
-    "QuerygetProjectpostAuth0FunctionQuerygetProjectpostAuth0FunctionAppSyncFunction02C528A4": {
+    "QuerygetTodopostAuth0FunctionQuerygetTodopostAuth0FunctionAppSyncFunction6BE14593": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPI43D78135ApiId"
+          "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPIDE35F996ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPINONEDSB8730C59Name"
+          "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPINONEDS58D59F75Name"
         },
         "FunctionVersion": "2018-05-29",
-        "Name": "QuerygetProjectpostAuth0Function",
+        "Name": "QuerygetTodopostAuth0Function",
         "RequestMappingTemplateS3Location": {
           "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c1721bcd774e27c514d3454b5be4f9bdd094c0161b57ddf053d618e3b0086a77.vtl"
         },
@@ -610,23 +636,23 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf/data/amplifyData/Project/QuerygetProjectpostAuth0Function/QuerygetProjectpostAuth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fbfa7224b5/data/amplifyData/Todo/QuerygetTodopostAuth0Function/QuerygetTodopostAuth0Function.AppSyncFunction"
       }
     },
-    "QueryGetProjectDataResolverFnQueryGetProjectDataResolverFnAppSyncFunctionD6A0F260": {
+    "QueryGetTodoDataResolverFnQueryGetTodoDataResolverFnAppSyncFunctionE2B57DAD": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPI43D78135ApiId"
+          "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPIDE35F996ApiId"
         },
         "DataSourceName": {
           "Fn::GetAtt": [
-            "ProjectDataSource",
+            "TodoDataSource",
             "Name"
           ]
         },
         "FunctionVersion": "2018-05-29",
-        "Name": "QueryGetProjectDataResolverFn",
+        "Name": "QueryGetTodoDataResolverFn",
         "RequestMappingTemplateS3Location": {
           "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/08f4d557693d96c1a4efba0f9dc91330e4b19772fd5477c156468843e3d9cb5e.vtl"
         },
@@ -635,39 +661,39 @@
         }
       },
       "DependsOn": [
-        "ProjectDataSource"
+        "TodoDataSource"
       ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf/data/amplifyData/Project/QueryGetProjectDataResolverFn/QueryGetProjectDataResolverFn.AppSyncFunction"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fbfa7224b5/data/amplifyData/Todo/QueryGetTodoDataResolverFn/QueryGetTodoDataResolverFn.AppSyncFunction"
       }
     },
-    "GetProjectResolver": {
+    "GetTodoResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPI43D78135ApiId"
+          "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPIDE35F996ApiId"
         },
-        "FieldName": "getProject",
+        "FieldName": "getTodo",
         "Kind": "PIPELINE",
         "PipelineConfig": {
           "Functions": [
             {
               "Fn::GetAtt": [
-                "QuerygetProjectauth0FunctionQuerygetProjectauth0FunctionAppSyncFunctionED686A7E",
+                "QuerygetTodoauth0FunctionQuerygetTodoauth0FunctionAppSyncFunction846D8436",
                 "FunctionId"
               ]
             },
             {
               "Fn::GetAtt": [
-                "QuerygetProjectpostAuth0FunctionQuerygetProjectpostAuth0FunctionAppSyncFunction02C528A4",
+                "QuerygetTodopostAuth0FunctionQuerygetTodopostAuth0FunctionAppSyncFunction6BE14593",
                 "FunctionId"
               ]
             },
             {
               "Fn::GetAtt": [
-                "QueryGetProjectDataResolverFnQueryGetProjectDataResolverFnAppSyncFunctionD6A0F260",
+                "QueryGetTodoDataResolverFnQueryGetTodoDataResolverFnAppSyncFunctionE2B57DAD",
                 "FunctionId"
               ]
             }
@@ -677,9 +703,9 @@
           "Fn::Join": [
             "",
             [
-              "$util.qr($ctx.stash.put(\"typeName\", \"Query\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"getProject\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              "$util.qr($ctx.stash.put(\"typeName\", \"Query\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"getTodo\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-                "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPI43D78135ApiId"
+                "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPIDE35F996ApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
@@ -696,7 +722,7 @@
                               ":",
                               {
                                 "Fn::GetAtt": [
-                                  "ProjectTable",
+                                  "TodoTable",
                                   "TableArn"
                                 ]
                               }
@@ -718,7 +744,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfauthNestedStackauthNestedStackResource73A48013Outputsamplifyprojectboardse2esandboxfb4c0d7bdfauthamplifyAuthauthenticatedUserRole2B3A5B63Ref"
+                "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5authNestedStackauthNestedStackResource4542932EOutputsamplifyprojectboardse2esandboxfbfa7224b5authamplifyAuthauthenticatedUserRole1B476712Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -730,11 +756,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfauthNestedStackauthNestedStackResource73A48013Outputsamplifyprojectboardse2esandboxfb4c0d7bdfauthamplifyAuthunauthenticatedUserRoleF9FA985FRef"
+                "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5authNestedStackauthNestedStackResource4542932EOutputsamplifyprojectboardse2esandboxfbfa7224b5authamplifyAuthunauthenticatedUserRoleF04DCF06Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfauthNestedStackauthNestedStackResource73A48013Outputsamplifyprojectboardse2esandboxfb4c0d7bdfauthamplifyAuthIdentityPool4C25A10BRef"
+                "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5authNestedStackauthNestedStackResource4542932EOutputsamplifyprojectboardse2esandboxfbfa7224b5authamplifyAuthIdentityPool717D60BFRef"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -746,20 +772,20 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf/data/amplifyData/Project/queryGetProjectResolver"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fbfa7224b5/data/amplifyData/Todo/queryGetTodoResolver"
       }
     },
-    "QuerylistProjectsauth0FunctionQuerylistProjectsauth0FunctionAppSyncFunctionC4E09D6C": {
+    "QuerylistTodosauth0FunctionQuerylistTodosauth0FunctionAppSyncFunction7D761961": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPI43D78135ApiId"
+          "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPIDE35F996ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPINONEDSB8730C59Name"
+          "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPINONEDS58D59F75Name"
         },
         "FunctionVersion": "2018-05-29",
-        "Name": "QuerylistProjectsauth0Function",
+        "Name": "QuerylistTodosauth0Function",
         "RequestMappingTemplateS3Location": {
           "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b3e5411cda152c2308dac0a81ffb999cc9c81ea2a1f51e6ce05a377bef8c4dfd.vtl"
         },
@@ -768,20 +794,20 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf/data/amplifyData/Project/QuerylistProjectsauth0Function/QuerylistProjectsauth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fbfa7224b5/data/amplifyData/Todo/QuerylistTodosauth0Function/QuerylistTodosauth0Function.AppSyncFunction"
       }
     },
-    "QuerylistProjectspostAuth0FunctionQuerylistProjectspostAuth0FunctionAppSyncFunctionCD78842F": {
+    "QuerylistTodospostAuth0FunctionQuerylistTodospostAuth0FunctionAppSyncFunction154D8577": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPI43D78135ApiId"
+          "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPIDE35F996ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPINONEDSB8730C59Name"
+          "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPINONEDS58D59F75Name"
         },
         "FunctionVersion": "2018-05-29",
-        "Name": "QuerylistProjectspostAuth0Function",
+        "Name": "QuerylistTodospostAuth0Function",
         "RequestMappingTemplateS3Location": {
           "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c1721bcd774e27c514d3454b5be4f9bdd094c0161b57ddf053d618e3b0086a77.vtl"
         },
@@ -790,23 +816,23 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf/data/amplifyData/Project/QuerylistProjectspostAuth0Function/QuerylistProjectspostAuth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fbfa7224b5/data/amplifyData/Todo/QuerylistTodospostAuth0Function/QuerylistTodospostAuth0Function.AppSyncFunction"
       }
     },
-    "QueryListProjectsDataResolverFnQueryListProjectsDataResolverFnAppSyncFunction0812E3B9": {
+    "QueryListTodosDataResolverFnQueryListTodosDataResolverFnAppSyncFunctionF825FE47": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPI43D78135ApiId"
+          "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPIDE35F996ApiId"
         },
         "DataSourceName": {
           "Fn::GetAtt": [
-            "ProjectDataSource",
+            "TodoDataSource",
             "Name"
           ]
         },
         "FunctionVersion": "2018-05-29",
-        "Name": "QueryListProjectsDataResolverFn",
+        "Name": "QueryListTodosDataResolverFn",
         "RequestMappingTemplateS3Location": {
           "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9fcbe070ecd3023c5bf5b966fa9584757db9762eef123bad0820bd87591b2174.vtl"
         },
@@ -815,39 +841,39 @@
         }
       },
       "DependsOn": [
-        "ProjectDataSource"
+        "TodoDataSource"
       ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf/data/amplifyData/Project/QueryListProjectsDataResolverFn/QueryListProjectsDataResolverFn.AppSyncFunction"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fbfa7224b5/data/amplifyData/Todo/QueryListTodosDataResolverFn/QueryListTodosDataResolverFn.AppSyncFunction"
       }
     },
-    "ListProjectResolver": {
+    "ListTodoResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPI43D78135ApiId"
+          "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPIDE35F996ApiId"
         },
-        "FieldName": "listProjects",
+        "FieldName": "listTodos",
         "Kind": "PIPELINE",
         "PipelineConfig": {
           "Functions": [
             {
               "Fn::GetAtt": [
-                "QuerylistProjectsauth0FunctionQuerylistProjectsauth0FunctionAppSyncFunctionC4E09D6C",
+                "QuerylistTodosauth0FunctionQuerylistTodosauth0FunctionAppSyncFunction7D761961",
                 "FunctionId"
               ]
             },
             {
               "Fn::GetAtt": [
-                "QuerylistProjectspostAuth0FunctionQuerylistProjectspostAuth0FunctionAppSyncFunctionCD78842F",
+                "QuerylistTodospostAuth0FunctionQuerylistTodospostAuth0FunctionAppSyncFunction154D8577",
                 "FunctionId"
               ]
             },
             {
               "Fn::GetAtt": [
-                "QueryListProjectsDataResolverFnQueryListProjectsDataResolverFnAppSyncFunction0812E3B9",
+                "QueryListTodosDataResolverFnQueryListTodosDataResolverFnAppSyncFunctionF825FE47",
                 "FunctionId"
               ]
             }
@@ -857,9 +883,9 @@
           "Fn::Join": [
             "",
             [
-              "$util.qr($ctx.stash.put(\"typeName\", \"Query\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"listProjects\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              "$util.qr($ctx.stash.put(\"typeName\", \"Query\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"listTodos\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-                "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPI43D78135ApiId"
+                "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPIDE35F996ApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
@@ -876,7 +902,7 @@
                               ":",
                               {
                                 "Fn::GetAtt": [
-                                  "ProjectTable",
+                                  "TodoTable",
                                   "TableArn"
                                 ]
                               }
@@ -898,7 +924,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfauthNestedStackauthNestedStackResource73A48013Outputsamplifyprojectboardse2esandboxfb4c0d7bdfauthamplifyAuthauthenticatedUserRole2B3A5B63Ref"
+                "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5authNestedStackauthNestedStackResource4542932EOutputsamplifyprojectboardse2esandboxfbfa7224b5authamplifyAuthauthenticatedUserRole1B476712Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -910,11 +936,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfauthNestedStackauthNestedStackResource73A48013Outputsamplifyprojectboardse2esandboxfb4c0d7bdfauthamplifyAuthunauthenticatedUserRoleF9FA985FRef"
+                "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5authNestedStackauthNestedStackResource4542932EOutputsamplifyprojectboardse2esandboxfbfa7224b5authamplifyAuthunauthenticatedUserRoleF04DCF06Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfauthNestedStackauthNestedStackResource73A48013Outputsamplifyprojectboardse2esandboxfb4c0d7bdfauthamplifyAuthIdentityPool4C25A10BRef"
+                "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5authNestedStackauthNestedStackResource4542932EOutputsamplifyprojectboardse2esandboxfbfa7224b5authamplifyAuthIdentityPool717D60BFRef"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -926,20 +952,20 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf/data/amplifyData/Project/queryListProjectsResolver"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fbfa7224b5/data/amplifyData/Todo/queryListTodosResolver"
       }
     },
-    "MutationcreateProjectinit0FunctionMutationcreateProjectinit0FunctionAppSyncFunction412D09B9": {
+    "MutationcreateTodoinit0FunctionMutationcreateTodoinit0FunctionAppSyncFunction54DE5B8B": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPI43D78135ApiId"
+          "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPIDE35F996ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPINONEDSB8730C59Name"
+          "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPINONEDS58D59F75Name"
         },
         "FunctionVersion": "2018-05-29",
-        "Name": "MutationcreateProjectinit0Function",
+        "Name": "MutationcreateTodoinit0Function",
         "RequestMappingTemplateS3Location": {
           "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a183ddccbd956316c38ef97177b8f088ef0826f62023323f5ae6053d348ccffc.vtl"
         },
@@ -948,42 +974,42 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf/data/amplifyData/Project/MutationcreateProjectinit0Function/MutationcreateProjectinit0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fbfa7224b5/data/amplifyData/Todo/MutationcreateTodoinit0Function/MutationcreateTodoinit0Function.AppSyncFunction"
       }
     },
-    "MutationcreateProjectauth0FunctionMutationcreateProjectauth0FunctionAppSyncFunction4FB957D8": {
+    "MutationcreateTodoauth0FunctionMutationcreateTodoauth0FunctionAppSyncFunction21817E36": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPI43D78135ApiId"
+          "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPIDE35F996ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPINONEDSB8730C59Name"
+          "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPINONEDS58D59F75Name"
         },
         "FunctionVersion": "2018-05-29",
-        "Name": "MutationcreateProjectauth0Function",
+        "Name": "MutationcreateTodoauth0Function",
         "RequestMappingTemplateS3Location": {
-          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/bec8053450360bcba98bf86fd1d7222c4ab098a68d5dd9edde9c8bedb1269920.vtl"
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a4dfbec83984a61cb784845599e251c404cfca989937a3bb6eaa817305170ad4.vtl"
         },
         "ResponseMappingTemplate": "$util.toJson({})"
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf/data/amplifyData/Project/MutationcreateProjectauth0Function/MutationcreateProjectauth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fbfa7224b5/data/amplifyData/Todo/MutationcreateTodoauth0Function/MutationcreateTodoauth0Function.AppSyncFunction"
       }
     },
-    "MutationcreateProjectpostAuth0FunctionMutationcreateProjectpostAuth0FunctionAppSyncFunctionE02C5772": {
+    "MutationcreateTodopostAuth0FunctionMutationcreateTodopostAuth0FunctionAppSyncFunctionED59EB9F": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPI43D78135ApiId"
+          "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPIDE35F996ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPINONEDSB8730C59Name"
+          "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPINONEDS58D59F75Name"
         },
         "FunctionVersion": "2018-05-29",
-        "Name": "MutationcreateProjectpostAuth0Function",
+        "Name": "MutationcreateTodopostAuth0Function",
         "RequestMappingTemplateS3Location": {
           "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c1721bcd774e27c514d3454b5be4f9bdd094c0161b57ddf053d618e3b0086a77.vtl"
         },
@@ -992,70 +1018,70 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf/data/amplifyData/Project/MutationcreateProjectpostAuth0Function/MutationcreateProjectpostAuth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fbfa7224b5/data/amplifyData/Todo/MutationcreateTodopostAuth0Function/MutationcreateTodopostAuth0Function.AppSyncFunction"
       }
     },
-    "MutationCreateProjectDataResolverFnMutationCreateProjectDataResolverFnAppSyncFunction729D2B08": {
+    "MutationCreateTodoDataResolverFnMutationCreateTodoDataResolverFnAppSyncFunction900EC5CF": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPI43D78135ApiId"
+          "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPIDE35F996ApiId"
         },
         "DataSourceName": {
           "Fn::GetAtt": [
-            "ProjectDataSource",
+            "TodoDataSource",
             "Name"
           ]
         },
         "FunctionVersion": "2018-05-29",
-        "Name": "MutationCreateProjectDataResolverFn",
+        "Name": "MutationCreateTodoDataResolverFn",
         "RequestMappingTemplateS3Location": {
-          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3cb178b90d1c8bc93547dc8641ba504d90fbb14ed1e69b69300519d3e30293d4.vtl"
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2bf64327ca5682da4be84d0d16440204e25abc3a221195b41f2d21dfa432e5ab.vtl"
         },
         "ResponseMappingTemplateS3Location": {
           "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f4a52b72209a9dfa197b5e7367a5c378c5bb86de6e29ddd9e48b49a3fe54b249.vtl"
         }
       },
       "DependsOn": [
-        "ProjectDataSource"
+        "TodoDataSource"
       ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf/data/amplifyData/Project/MutationCreateProjectDataResolverFn/MutationCreateProjectDataResolverFn.AppSyncFunction"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fbfa7224b5/data/amplifyData/Todo/MutationCreateTodoDataResolverFn/MutationCreateTodoDataResolverFn.AppSyncFunction"
       }
     },
-    "CreateProjectResolver": {
+    "CreateTodoResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPI43D78135ApiId"
+          "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPIDE35F996ApiId"
         },
-        "FieldName": "createProject",
+        "FieldName": "createTodo",
         "Kind": "PIPELINE",
         "PipelineConfig": {
           "Functions": [
             {
               "Fn::GetAtt": [
-                "MutationcreateProjectinit0FunctionMutationcreateProjectinit0FunctionAppSyncFunction412D09B9",
+                "MutationcreateTodoinit0FunctionMutationcreateTodoinit0FunctionAppSyncFunction54DE5B8B",
                 "FunctionId"
               ]
             },
             {
               "Fn::GetAtt": [
-                "MutationcreateProjectauth0FunctionMutationcreateProjectauth0FunctionAppSyncFunction4FB957D8",
+                "MutationcreateTodoauth0FunctionMutationcreateTodoauth0FunctionAppSyncFunction21817E36",
                 "FunctionId"
               ]
             },
             {
               "Fn::GetAtt": [
-                "MutationcreateProjectpostAuth0FunctionMutationcreateProjectpostAuth0FunctionAppSyncFunctionE02C5772",
+                "MutationcreateTodopostAuth0FunctionMutationcreateTodopostAuth0FunctionAppSyncFunctionED59EB9F",
                 "FunctionId"
               ]
             },
             {
               "Fn::GetAtt": [
-                "MutationCreateProjectDataResolverFnMutationCreateProjectDataResolverFnAppSyncFunction729D2B08",
+                "MutationCreateTodoDataResolverFnMutationCreateTodoDataResolverFnAppSyncFunction900EC5CF",
                 "FunctionId"
               ]
             }
@@ -1065,9 +1091,9 @@
           "Fn::Join": [
             "",
             [
-              "$util.qr($ctx.stash.put(\"typeName\", \"Mutation\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"createProject\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              "$util.qr($ctx.stash.put(\"typeName\", \"Mutation\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"createTodo\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-                "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPI43D78135ApiId"
+                "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPIDE35F996ApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
@@ -1084,7 +1110,7 @@
                               ":",
                               {
                                 "Fn::GetAtt": [
-                                  "ProjectTable",
+                                  "TodoTable",
                                   "TableArn"
                                 ]
                               }
@@ -1106,7 +1132,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfauthNestedStackauthNestedStackResource73A48013Outputsamplifyprojectboardse2esandboxfb4c0d7bdfauthamplifyAuthauthenticatedUserRole2B3A5B63Ref"
+                "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5authNestedStackauthNestedStackResource4542932EOutputsamplifyprojectboardse2esandboxfbfa7224b5authamplifyAuthauthenticatedUserRole1B476712Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -1118,11 +1144,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfauthNestedStackauthNestedStackResource73A48013Outputsamplifyprojectboardse2esandboxfb4c0d7bdfauthamplifyAuthunauthenticatedUserRoleF9FA985FRef"
+                "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5authNestedStackauthNestedStackResource4542932EOutputsamplifyprojectboardse2esandboxfbfa7224b5authamplifyAuthunauthenticatedUserRoleF04DCF06Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfauthNestedStackauthNestedStackResource73A48013Outputsamplifyprojectboardse2esandboxfb4c0d7bdfauthamplifyAuthIdentityPool4C25A10BRef"
+                "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5authNestedStackauthNestedStackResource4542932EOutputsamplifyprojectboardse2esandboxfbfa7224b5authamplifyAuthIdentityPool717D60BFRef"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -1134,20 +1160,20 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf/data/amplifyData/Project/mutationCreateProjectResolver"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fbfa7224b5/data/amplifyData/Todo/mutationCreateTodoResolver"
       }
     },
-    "MutationupdateProjectinit0FunctionMutationupdateProjectinit0FunctionAppSyncFunction20F7A53C": {
+    "MutationupdateTodoinit0FunctionMutationupdateTodoinit0FunctionAppSyncFunction1B95BB19": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPI43D78135ApiId"
+          "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPIDE35F996ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPINONEDSB8730C59Name"
+          "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPINONEDS58D59F75Name"
         },
         "FunctionVersion": "2018-05-29",
-        "Name": "MutationupdateProjectinit0Function",
+        "Name": "MutationupdateTodoinit0Function",
         "RequestMappingTemplateS3Location": {
           "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/06db846fd14e6fc371f22b12b5545ba8e2dbfeda85d8c8d586c71c282166657b.vtl"
         },
@@ -1156,50 +1182,50 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf/data/amplifyData/Project/MutationupdateProjectinit0Function/MutationupdateProjectinit0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fbfa7224b5/data/amplifyData/Todo/MutationupdateTodoinit0Function/MutationupdateTodoinit0Function.AppSyncFunction"
       }
     },
-    "MutationupdateProjectauth0FunctionMutationupdateProjectauth0FunctionAppSyncFunctionF9C2F303": {
+    "MutationupdateTodoauth0FunctionMutationupdateTodoauth0FunctionAppSyncFunction1E4A3112": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPI43D78135ApiId"
+          "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPIDE35F996ApiId"
         },
         "DataSourceName": {
           "Fn::GetAtt": [
-            "ProjectDataSource",
+            "TodoDataSource",
             "Name"
           ]
         },
         "FunctionVersion": "2018-05-29",
-        "Name": "MutationupdateProjectauth0Function",
+        "Name": "MutationupdateTodoauth0Function",
         "RequestMappingTemplateS3Location": {
           "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1f5fed297da9c32ae3af922bf3a38ccf23b956078887d16891ec06c20c64722c.vtl"
         },
         "ResponseMappingTemplateS3Location": {
-          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3b23a1864d96bd46ffb8192c8f07be60a9c7d1ea5107981da41331d305221140.vtl"
+          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7ad0add370a0907cb73cb8b771eaf4dc378d85b38d864db355bd3de9ee78ce0a.vtl"
         }
       },
       "DependsOn": [
-        "ProjectDataSource"
+        "TodoDataSource"
       ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf/data/amplifyData/Project/MutationupdateProjectauth0Function/MutationupdateProjectauth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fbfa7224b5/data/amplifyData/Todo/MutationupdateTodoauth0Function/MutationupdateTodoauth0Function.AppSyncFunction"
       }
     },
-    "MutationupdateProjectpostAuth0FunctionMutationupdateProjectpostAuth0FunctionAppSyncFunction92184EC0": {
+    "MutationupdateTodopostAuth0FunctionMutationupdateTodopostAuth0FunctionAppSyncFunction50C507D7": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPI43D78135ApiId"
+          "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPIDE35F996ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPINONEDSB8730C59Name"
+          "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPINONEDS58D59F75Name"
         },
         "FunctionVersion": "2018-05-29",
-        "Name": "MutationupdateProjectpostAuth0Function",
+        "Name": "MutationupdateTodopostAuth0Function",
         "RequestMappingTemplateS3Location": {
           "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c1721bcd774e27c514d3454b5be4f9bdd094c0161b57ddf053d618e3b0086a77.vtl"
         },
@@ -1208,23 +1234,23 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf/data/amplifyData/Project/MutationupdateProjectpostAuth0Function/MutationupdateProjectpostAuth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fbfa7224b5/data/amplifyData/Todo/MutationupdateTodopostAuth0Function/MutationupdateTodopostAuth0Function.AppSyncFunction"
       }
     },
-    "MutationUpdateProjectDataResolverFnMutationUpdateProjectDataResolverFnAppSyncFunction9E902778": {
+    "MutationUpdateTodoDataResolverFnMutationUpdateTodoDataResolverFnAppSyncFunctionBC238C49": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPI43D78135ApiId"
+          "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPIDE35F996ApiId"
         },
         "DataSourceName": {
           "Fn::GetAtt": [
-            "ProjectDataSource",
+            "TodoDataSource",
             "Name"
           ]
         },
         "FunctionVersion": "2018-05-29",
-        "Name": "MutationUpdateProjectDataResolverFn",
+        "Name": "MutationUpdateTodoDataResolverFn",
         "RequestMappingTemplateS3Location": {
           "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/474bf0776ec2164a13191d1a0a9e057154931e4918fea5086f49850d02a5371b.vtl"
         },
@@ -1233,45 +1259,45 @@
         }
       },
       "DependsOn": [
-        "ProjectDataSource"
+        "TodoDataSource"
       ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf/data/amplifyData/Project/MutationUpdateProjectDataResolverFn/MutationUpdateProjectDataResolverFn.AppSyncFunction"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fbfa7224b5/data/amplifyData/Todo/MutationUpdateTodoDataResolverFn/MutationUpdateTodoDataResolverFn.AppSyncFunction"
       }
     },
-    "UpdateProjectResolver": {
+    "UpdateTodoResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPI43D78135ApiId"
+          "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPIDE35F996ApiId"
         },
-        "FieldName": "updateProject",
+        "FieldName": "updateTodo",
         "Kind": "PIPELINE",
         "PipelineConfig": {
           "Functions": [
             {
               "Fn::GetAtt": [
-                "MutationupdateProjectinit0FunctionMutationupdateProjectinit0FunctionAppSyncFunction20F7A53C",
+                "MutationupdateTodoinit0FunctionMutationupdateTodoinit0FunctionAppSyncFunction1B95BB19",
                 "FunctionId"
               ]
             },
             {
               "Fn::GetAtt": [
-                "MutationupdateProjectauth0FunctionMutationupdateProjectauth0FunctionAppSyncFunctionF9C2F303",
+                "MutationupdateTodoauth0FunctionMutationupdateTodoauth0FunctionAppSyncFunction1E4A3112",
                 "FunctionId"
               ]
             },
             {
               "Fn::GetAtt": [
-                "MutationupdateProjectpostAuth0FunctionMutationupdateProjectpostAuth0FunctionAppSyncFunction92184EC0",
+                "MutationupdateTodopostAuth0FunctionMutationupdateTodopostAuth0FunctionAppSyncFunction50C507D7",
                 "FunctionId"
               ]
             },
             {
               "Fn::GetAtt": [
-                "MutationUpdateProjectDataResolverFnMutationUpdateProjectDataResolverFnAppSyncFunction9E902778",
+                "MutationUpdateTodoDataResolverFnMutationUpdateTodoDataResolverFnAppSyncFunctionBC238C49",
                 "FunctionId"
               ]
             }
@@ -1281,9 +1307,9 @@
           "Fn::Join": [
             "",
             [
-              "$util.qr($ctx.stash.put(\"typeName\", \"Mutation\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"updateProject\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              "$util.qr($ctx.stash.put(\"typeName\", \"Mutation\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"updateTodo\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-                "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPI43D78135ApiId"
+                "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPIDE35F996ApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
@@ -1300,7 +1326,7 @@
                               ":",
                               {
                                 "Fn::GetAtt": [
-                                  "ProjectTable",
+                                  "TodoTable",
                                   "TableArn"
                                 ]
                               }
@@ -1322,7 +1348,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfauthNestedStackauthNestedStackResource73A48013Outputsamplifyprojectboardse2esandboxfb4c0d7bdfauthamplifyAuthauthenticatedUserRole2B3A5B63Ref"
+                "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5authNestedStackauthNestedStackResource4542932EOutputsamplifyprojectboardse2esandboxfbfa7224b5authamplifyAuthauthenticatedUserRole1B476712Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -1334,11 +1360,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfauthNestedStackauthNestedStackResource73A48013Outputsamplifyprojectboardse2esandboxfb4c0d7bdfauthamplifyAuthunauthenticatedUserRoleF9FA985FRef"
+                "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5authNestedStackauthNestedStackResource4542932EOutputsamplifyprojectboardse2esandboxfbfa7224b5authamplifyAuthunauthenticatedUserRoleF04DCF06Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfauthNestedStackauthNestedStackResource73A48013Outputsamplifyprojectboardse2esandboxfb4c0d7bdfauthamplifyAuthIdentityPool4C25A10BRef"
+                "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5authNestedStackauthNestedStackResource4542932EOutputsamplifyprojectboardse2esandboxfbfa7224b5authamplifyAuthIdentityPool717D60BFRef"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -1350,23 +1376,23 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf/data/amplifyData/Project/mutationUpdateProjectResolver"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fbfa7224b5/data/amplifyData/Todo/mutationUpdateTodoResolver"
       }
     },
-    "MutationdeleteProjectauth0FunctionMutationdeleteProjectauth0FunctionAppSyncFunction67C3BC9D": {
+    "MutationdeleteTodoauth0FunctionMutationdeleteTodoauth0FunctionAppSyncFunctionC82C218C": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPI43D78135ApiId"
+          "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPIDE35F996ApiId"
         },
         "DataSourceName": {
           "Fn::GetAtt": [
-            "ProjectDataSource",
+            "TodoDataSource",
             "Name"
           ]
         },
         "FunctionVersion": "2018-05-29",
-        "Name": "MutationdeleteProjectauth0Function",
+        "Name": "MutationdeleteTodoauth0Function",
         "RequestMappingTemplateS3Location": {
           "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1f5fed297da9c32ae3af922bf3a38ccf23b956078887d16891ec06c20c64722c.vtl"
         },
@@ -1375,25 +1401,25 @@
         }
       },
       "DependsOn": [
-        "ProjectDataSource"
+        "TodoDataSource"
       ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf/data/amplifyData/Project/MutationdeleteProjectauth0Function/MutationdeleteProjectauth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fbfa7224b5/data/amplifyData/Todo/MutationdeleteTodoauth0Function/MutationdeleteTodoauth0Function.AppSyncFunction"
       }
     },
-    "MutationdeleteProjectpostAuth0FunctionMutationdeleteProjectpostAuth0FunctionAppSyncFunctionA59E7CB4": {
+    "MutationdeleteTodopostAuth0FunctionMutationdeleteTodopostAuth0FunctionAppSyncFunction483271A2": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPI43D78135ApiId"
+          "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPIDE35F996ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPINONEDSB8730C59Name"
+          "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPINONEDS58D59F75Name"
         },
         "FunctionVersion": "2018-05-29",
-        "Name": "MutationdeleteProjectpostAuth0Function",
+        "Name": "MutationdeleteTodopostAuth0Function",
         "RequestMappingTemplateS3Location": {
           "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c1721bcd774e27c514d3454b5be4f9bdd094c0161b57ddf053d618e3b0086a77.vtl"
         },
@@ -1402,23 +1428,23 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf/data/amplifyData/Project/MutationdeleteProjectpostAuth0Function/MutationdeleteProjectpostAuth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fbfa7224b5/data/amplifyData/Todo/MutationdeleteTodopostAuth0Function/MutationdeleteTodopostAuth0Function.AppSyncFunction"
       }
     },
-    "MutationDeleteProjectDataResolverFnMutationDeleteProjectDataResolverFnAppSyncFunctionC40E2160": {
+    "MutationDeleteTodoDataResolverFnMutationDeleteTodoDataResolverFnAppSyncFunction3879153F": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPI43D78135ApiId"
+          "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPIDE35F996ApiId"
         },
         "DataSourceName": {
           "Fn::GetAtt": [
-            "ProjectDataSource",
+            "TodoDataSource",
             "Name"
           ]
         },
         "FunctionVersion": "2018-05-29",
-        "Name": "MutationDeleteProjectDataResolverFn",
+        "Name": "MutationDeleteTodoDataResolverFn",
         "RequestMappingTemplateS3Location": {
           "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4f7907d1209a2c9953a0c053df402c634e359546d70c7cc5c2e8e21ea734880f.vtl"
         },
@@ -1427,39 +1453,39 @@
         }
       },
       "DependsOn": [
-        "ProjectDataSource"
+        "TodoDataSource"
       ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf/data/amplifyData/Project/MutationDeleteProjectDataResolverFn/MutationDeleteProjectDataResolverFn.AppSyncFunction"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fbfa7224b5/data/amplifyData/Todo/MutationDeleteTodoDataResolverFn/MutationDeleteTodoDataResolverFn.AppSyncFunction"
       }
     },
-    "DeleteProjectResolver": {
+    "DeleteTodoResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPI43D78135ApiId"
+          "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPIDE35F996ApiId"
         },
-        "FieldName": "deleteProject",
+        "FieldName": "deleteTodo",
         "Kind": "PIPELINE",
         "PipelineConfig": {
           "Functions": [
             {
               "Fn::GetAtt": [
-                "MutationdeleteProjectauth0FunctionMutationdeleteProjectauth0FunctionAppSyncFunction67C3BC9D",
+                "MutationdeleteTodoauth0FunctionMutationdeleteTodoauth0FunctionAppSyncFunctionC82C218C",
                 "FunctionId"
               ]
             },
             {
               "Fn::GetAtt": [
-                "MutationdeleteProjectpostAuth0FunctionMutationdeleteProjectpostAuth0FunctionAppSyncFunctionA59E7CB4",
+                "MutationdeleteTodopostAuth0FunctionMutationdeleteTodopostAuth0FunctionAppSyncFunction483271A2",
                 "FunctionId"
               ]
             },
             {
               "Fn::GetAtt": [
-                "MutationDeleteProjectDataResolverFnMutationDeleteProjectDataResolverFnAppSyncFunctionC40E2160",
+                "MutationDeleteTodoDataResolverFnMutationDeleteTodoDataResolverFnAppSyncFunction3879153F",
                 "FunctionId"
               ]
             }
@@ -1469,9 +1495,9 @@
           "Fn::Join": [
             "",
             [
-              "$util.qr($ctx.stash.put(\"typeName\", \"Mutation\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"deleteProject\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              "$util.qr($ctx.stash.put(\"typeName\", \"Mutation\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"deleteTodo\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-                "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPI43D78135ApiId"
+                "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPIDE35F996ApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
@@ -1488,7 +1514,7 @@
                               ":",
                               {
                                 "Fn::GetAtt": [
-                                  "ProjectTable",
+                                  "TodoTable",
                                   "TableArn"
                                 ]
                               }
@@ -1510,7 +1536,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfauthNestedStackauthNestedStackResource73A48013Outputsamplifyprojectboardse2esandboxfb4c0d7bdfauthamplifyAuthauthenticatedUserRole2B3A5B63Ref"
+                "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5authNestedStackauthNestedStackResource4542932EOutputsamplifyprojectboardse2esandboxfbfa7224b5authamplifyAuthauthenticatedUserRole1B476712Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -1522,11 +1548,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfauthNestedStackauthNestedStackResource73A48013Outputsamplifyprojectboardse2esandboxfb4c0d7bdfauthamplifyAuthunauthenticatedUserRoleF9FA985FRef"
+                "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5authNestedStackauthNestedStackResource4542932EOutputsamplifyprojectboardse2esandboxfbfa7224b5authamplifyAuthunauthenticatedUserRoleF04DCF06Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfauthNestedStackauthNestedStackResource73A48013Outputsamplifyprojectboardse2esandboxfb4c0d7bdfauthamplifyAuthIdentityPool4C25A10BRef"
+                "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5authNestedStackauthNestedStackResource4542932EOutputsamplifyprojectboardse2esandboxfbfa7224b5authamplifyAuthIdentityPool717D60BFRef"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -1538,20 +1564,20 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf/data/amplifyData/Project/mutationDeleteProjectResolver"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fbfa7224b5/data/amplifyData/Todo/mutationDeleteTodoResolver"
       }
     },
-    "SubscriptiononCreateProjectauth0FunctionSubscriptiononCreateProjectauth0FunctionAppSyncFunction658E1FC9": {
+    "SubscriptiononCreateTodoauth0FunctionSubscriptiononCreateTodoauth0FunctionAppSyncFunction042EF9E1": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPI43D78135ApiId"
+          "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPIDE35F996ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPINONEDSB8730C59Name"
+          "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPINONEDS58D59F75Name"
         },
         "FunctionVersion": "2018-05-29",
-        "Name": "SubscriptiononCreateProjectauth0Function",
+        "Name": "SubscriptiononCreateTodoauth0Function",
         "RequestMappingTemplateS3Location": {
           "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/15280eef569babaeeee5f837ecf7400c728eec6ca2f4c0437bcbddfcb67fe27b.vtl"
         },
@@ -1560,20 +1586,20 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf/data/amplifyData/Project/SubscriptiononCreateProjectauth0Function/SubscriptiononCreateProjectauth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fbfa7224b5/data/amplifyData/Todo/SubscriptiononCreateTodoauth0Function/SubscriptiononCreateTodoauth0Function.AppSyncFunction"
       }
     },
-    "SubscriptiononCreateProjectpostAuth0FunctionSubscriptiononCreateProjectpostAuth0FunctionAppSyncFunction7668C51E": {
+    "SubscriptiononCreateTodopostAuth0FunctionSubscriptiononCreateTodopostAuth0FunctionAppSyncFunction18E34C4E": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPI43D78135ApiId"
+          "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPIDE35F996ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPINONEDSB8730C59Name"
+          "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPINONEDS58D59F75Name"
         },
         "FunctionVersion": "2018-05-29",
-        "Name": "SubscriptiononCreateProjectpostAuth0Function",
+        "Name": "SubscriptiononCreateTodopostAuth0Function",
         "RequestMappingTemplateS3Location": {
           "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c1721bcd774e27c514d3454b5be4f9bdd094c0161b57ddf053d618e3b0086a77.vtl"
         },
@@ -1582,20 +1608,20 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf/data/amplifyData/Project/SubscriptiononCreateProjectpostAuth0Function/SubscriptiononCreateProjectpostAuth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fbfa7224b5/data/amplifyData/Todo/SubscriptiononCreateTodopostAuth0Function/SubscriptiononCreateTodopostAuth0Function.AppSyncFunction"
       }
     },
-    "SubscriptionOnCreateProjectDataResolverFnSubscriptionOnCreateProjectDataResolverFnAppSyncFunctionDABDBE4E": {
+    "SubscriptionOnCreateTodoDataResolverFnSubscriptionOnCreateTodoDataResolverFnAppSyncFunction462A70C9": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPI43D78135ApiId"
+          "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPIDE35F996ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPINONEDSB8730C59Name"
+          "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPINONEDS58D59F75Name"
         },
         "FunctionVersion": "2018-05-29",
-        "Name": "SubscriptionOnCreateProjectDataResolverFn",
+        "Name": "SubscriptionOnCreateTodoDataResolverFn",
         "RequestMappingTemplateS3Location": {
           "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fe3c43ada4b9d681a5e2312663ef7a73386424d73b73e51f8e2e9d4b50f7c502.vtl"
         },
@@ -1606,34 +1632,34 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf/data/amplifyData/Project/SubscriptionOnCreateProjectDataResolverFn/SubscriptionOnCreateProjectDataResolverFn.AppSyncFunction"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fbfa7224b5/data/amplifyData/Todo/SubscriptionOnCreateTodoDataResolverFn/SubscriptionOnCreateTodoDataResolverFn.AppSyncFunction"
       }
     },
-    "SubscriptiononCreateProjectResolver": {
+    "SubscriptiononCreateTodoResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPI43D78135ApiId"
+          "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPIDE35F996ApiId"
         },
-        "FieldName": "onCreateProject",
+        "FieldName": "onCreateTodo",
         "Kind": "PIPELINE",
         "PipelineConfig": {
           "Functions": [
             {
               "Fn::GetAtt": [
-                "SubscriptiononCreateProjectauth0FunctionSubscriptiononCreateProjectauth0FunctionAppSyncFunction658E1FC9",
+                "SubscriptiononCreateTodoauth0FunctionSubscriptiononCreateTodoauth0FunctionAppSyncFunction042EF9E1",
                 "FunctionId"
               ]
             },
             {
               "Fn::GetAtt": [
-                "SubscriptiononCreateProjectpostAuth0FunctionSubscriptiononCreateProjectpostAuth0FunctionAppSyncFunction7668C51E",
+                "SubscriptiononCreateTodopostAuth0FunctionSubscriptiononCreateTodopostAuth0FunctionAppSyncFunction18E34C4E",
                 "FunctionId"
               ]
             },
             {
               "Fn::GetAtt": [
-                "SubscriptionOnCreateProjectDataResolverFnSubscriptionOnCreateProjectDataResolverFnAppSyncFunctionDABDBE4E",
+                "SubscriptionOnCreateTodoDataResolverFnSubscriptionOnCreateTodoDataResolverFnAppSyncFunction462A70C9",
                 "FunctionId"
               ]
             }
@@ -1643,9 +1669,9 @@
           "Fn::Join": [
             "",
             [
-              "$util.qr($ctx.stash.put(\"typeName\", \"Subscription\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"onCreateProject\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"NONE\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              "$util.qr($ctx.stash.put(\"typeName\", \"Subscription\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"onCreateTodo\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"NONE\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-                "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPI43D78135ApiId"
+                "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPIDE35F996ApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"authRole\", \"arn:",
               {
@@ -1657,7 +1683,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfauthNestedStackauthNestedStackResource73A48013Outputsamplifyprojectboardse2esandboxfb4c0d7bdfauthamplifyAuthauthenticatedUserRole2B3A5B63Ref"
+                "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5authNestedStackauthNestedStackResource4542932EOutputsamplifyprojectboardse2esandboxfbfa7224b5authamplifyAuthauthenticatedUserRole1B476712Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -1669,11 +1695,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfauthNestedStackauthNestedStackResource73A48013Outputsamplifyprojectboardse2esandboxfb4c0d7bdfauthamplifyAuthunauthenticatedUserRoleF9FA985FRef"
+                "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5authNestedStackauthNestedStackResource4542932EOutputsamplifyprojectboardse2esandboxfbfa7224b5authamplifyAuthunauthenticatedUserRoleF04DCF06Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfauthNestedStackauthNestedStackResource73A48013Outputsamplifyprojectboardse2esandboxfb4c0d7bdfauthamplifyAuthIdentityPool4C25A10BRef"
+                "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5authNestedStackauthNestedStackResource4542932EOutputsamplifyprojectboardse2esandboxfbfa7224b5authamplifyAuthIdentityPool717D60BFRef"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -1685,20 +1711,20 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf/data/amplifyData/Project/subscriptionOnCreateProjectResolver"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fbfa7224b5/data/amplifyData/Todo/subscriptionOnCreateTodoResolver"
       }
     },
-    "SubscriptiononUpdateProjectauth0FunctionSubscriptiononUpdateProjectauth0FunctionAppSyncFunction8B215B31": {
+    "SubscriptiononUpdateTodoauth0FunctionSubscriptiononUpdateTodoauth0FunctionAppSyncFunction80D0DFA3": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPI43D78135ApiId"
+          "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPIDE35F996ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPINONEDSB8730C59Name"
+          "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPINONEDS58D59F75Name"
         },
         "FunctionVersion": "2018-05-29",
-        "Name": "SubscriptiononUpdateProjectauth0Function",
+        "Name": "SubscriptiononUpdateTodoauth0Function",
         "RequestMappingTemplateS3Location": {
           "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/15280eef569babaeeee5f837ecf7400c728eec6ca2f4c0437bcbddfcb67fe27b.vtl"
         },
@@ -1707,20 +1733,20 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf/data/amplifyData/Project/SubscriptiononUpdateProjectauth0Function/SubscriptiononUpdateProjectauth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fbfa7224b5/data/amplifyData/Todo/SubscriptiononUpdateTodoauth0Function/SubscriptiononUpdateTodoauth0Function.AppSyncFunction"
       }
     },
-    "SubscriptiononUpdateProjectpostAuth0FunctionSubscriptiononUpdateProjectpostAuth0FunctionAppSyncFunction78FDCDB2": {
+    "SubscriptiononUpdateTodopostAuth0FunctionSubscriptiononUpdateTodopostAuth0FunctionAppSyncFunction04445BC7": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPI43D78135ApiId"
+          "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPIDE35F996ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPINONEDSB8730C59Name"
+          "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPINONEDS58D59F75Name"
         },
         "FunctionVersion": "2018-05-29",
-        "Name": "SubscriptiononUpdateProjectpostAuth0Function",
+        "Name": "SubscriptiononUpdateTodopostAuth0Function",
         "RequestMappingTemplateS3Location": {
           "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c1721bcd774e27c514d3454b5be4f9bdd094c0161b57ddf053d618e3b0086a77.vtl"
         },
@@ -1729,20 +1755,20 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf/data/amplifyData/Project/SubscriptiononUpdateProjectpostAuth0Function/SubscriptiononUpdateProjectpostAuth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fbfa7224b5/data/amplifyData/Todo/SubscriptiononUpdateTodopostAuth0Function/SubscriptiononUpdateTodopostAuth0Function.AppSyncFunction"
       }
     },
-    "SubscriptionOnUpdateProjectDataResolverFnSubscriptionOnUpdateProjectDataResolverFnAppSyncFunctionDD9A3318": {
+    "SubscriptionOnUpdateTodoDataResolverFnSubscriptionOnUpdateTodoDataResolverFnAppSyncFunction523DF0E4": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPI43D78135ApiId"
+          "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPIDE35F996ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPINONEDSB8730C59Name"
+          "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPINONEDS58D59F75Name"
         },
         "FunctionVersion": "2018-05-29",
-        "Name": "SubscriptionOnUpdateProjectDataResolverFn",
+        "Name": "SubscriptionOnUpdateTodoDataResolverFn",
         "RequestMappingTemplateS3Location": {
           "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fe3c43ada4b9d681a5e2312663ef7a73386424d73b73e51f8e2e9d4b50f7c502.vtl"
         },
@@ -1753,34 +1779,34 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf/data/amplifyData/Project/SubscriptionOnUpdateProjectDataResolverFn/SubscriptionOnUpdateProjectDataResolverFn.AppSyncFunction"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fbfa7224b5/data/amplifyData/Todo/SubscriptionOnUpdateTodoDataResolverFn/SubscriptionOnUpdateTodoDataResolverFn.AppSyncFunction"
       }
     },
-    "SubscriptiononUpdateProjectResolver": {
+    "SubscriptiononUpdateTodoResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPI43D78135ApiId"
+          "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPIDE35F996ApiId"
         },
-        "FieldName": "onUpdateProject",
+        "FieldName": "onUpdateTodo",
         "Kind": "PIPELINE",
         "PipelineConfig": {
           "Functions": [
             {
               "Fn::GetAtt": [
-                "SubscriptiononUpdateProjectauth0FunctionSubscriptiononUpdateProjectauth0FunctionAppSyncFunction8B215B31",
+                "SubscriptiononUpdateTodoauth0FunctionSubscriptiononUpdateTodoauth0FunctionAppSyncFunction80D0DFA3",
                 "FunctionId"
               ]
             },
             {
               "Fn::GetAtt": [
-                "SubscriptiononUpdateProjectpostAuth0FunctionSubscriptiononUpdateProjectpostAuth0FunctionAppSyncFunction78FDCDB2",
+                "SubscriptiononUpdateTodopostAuth0FunctionSubscriptiononUpdateTodopostAuth0FunctionAppSyncFunction04445BC7",
                 "FunctionId"
               ]
             },
             {
               "Fn::GetAtt": [
-                "SubscriptionOnUpdateProjectDataResolverFnSubscriptionOnUpdateProjectDataResolverFnAppSyncFunctionDD9A3318",
+                "SubscriptionOnUpdateTodoDataResolverFnSubscriptionOnUpdateTodoDataResolverFnAppSyncFunction523DF0E4",
                 "FunctionId"
               ]
             }
@@ -1790,9 +1816,9 @@
           "Fn::Join": [
             "",
             [
-              "$util.qr($ctx.stash.put(\"typeName\", \"Subscription\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"onUpdateProject\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"NONE\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              "$util.qr($ctx.stash.put(\"typeName\", \"Subscription\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"onUpdateTodo\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"NONE\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-                "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPI43D78135ApiId"
+                "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPIDE35F996ApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"authRole\", \"arn:",
               {
@@ -1804,7 +1830,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfauthNestedStackauthNestedStackResource73A48013Outputsamplifyprojectboardse2esandboxfb4c0d7bdfauthamplifyAuthauthenticatedUserRole2B3A5B63Ref"
+                "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5authNestedStackauthNestedStackResource4542932EOutputsamplifyprojectboardse2esandboxfbfa7224b5authamplifyAuthauthenticatedUserRole1B476712Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -1816,11 +1842,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfauthNestedStackauthNestedStackResource73A48013Outputsamplifyprojectboardse2esandboxfb4c0d7bdfauthamplifyAuthunauthenticatedUserRoleF9FA985FRef"
+                "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5authNestedStackauthNestedStackResource4542932EOutputsamplifyprojectboardse2esandboxfbfa7224b5authamplifyAuthunauthenticatedUserRoleF04DCF06Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfauthNestedStackauthNestedStackResource73A48013Outputsamplifyprojectboardse2esandboxfb4c0d7bdfauthamplifyAuthIdentityPool4C25A10BRef"
+                "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5authNestedStackauthNestedStackResource4542932EOutputsamplifyprojectboardse2esandboxfbfa7224b5authamplifyAuthIdentityPool717D60BFRef"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -1832,20 +1858,20 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf/data/amplifyData/Project/subscriptionOnUpdateProjectResolver"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fbfa7224b5/data/amplifyData/Todo/subscriptionOnUpdateTodoResolver"
       }
     },
-    "SubscriptiononDeleteProjectauth0FunctionSubscriptiononDeleteProjectauth0FunctionAppSyncFunction733430CC": {
+    "SubscriptiononDeleteTodoauth0FunctionSubscriptiononDeleteTodoauth0FunctionAppSyncFunctionF69F2220": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPI43D78135ApiId"
+          "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPIDE35F996ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPINONEDSB8730C59Name"
+          "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPINONEDS58D59F75Name"
         },
         "FunctionVersion": "2018-05-29",
-        "Name": "SubscriptiononDeleteProjectauth0Function",
+        "Name": "SubscriptiononDeleteTodoauth0Function",
         "RequestMappingTemplateS3Location": {
           "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/15280eef569babaeeee5f837ecf7400c728eec6ca2f4c0437bcbddfcb67fe27b.vtl"
         },
@@ -1854,20 +1880,20 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf/data/amplifyData/Project/SubscriptiononDeleteProjectauth0Function/SubscriptiononDeleteProjectauth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fbfa7224b5/data/amplifyData/Todo/SubscriptiononDeleteTodoauth0Function/SubscriptiononDeleteTodoauth0Function.AppSyncFunction"
       }
     },
-    "SubscriptiononDeleteProjectpostAuth0FunctionSubscriptiononDeleteProjectpostAuth0FunctionAppSyncFunctionBA3AA141": {
+    "SubscriptiononDeleteTodopostAuth0FunctionSubscriptiononDeleteTodopostAuth0FunctionAppSyncFunctionE131CBE7": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPI43D78135ApiId"
+          "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPIDE35F996ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPINONEDSB8730C59Name"
+          "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPINONEDS58D59F75Name"
         },
         "FunctionVersion": "2018-05-29",
-        "Name": "SubscriptiononDeleteProjectpostAuth0Function",
+        "Name": "SubscriptiononDeleteTodopostAuth0Function",
         "RequestMappingTemplateS3Location": {
           "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c1721bcd774e27c514d3454b5be4f9bdd094c0161b57ddf053d618e3b0086a77.vtl"
         },
@@ -1876,20 +1902,20 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf/data/amplifyData/Project/SubscriptiononDeleteProjectpostAuth0Function/SubscriptiononDeleteProjectpostAuth0Function.AppSyncFunction"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fbfa7224b5/data/amplifyData/Todo/SubscriptiononDeleteTodopostAuth0Function/SubscriptiononDeleteTodopostAuth0Function.AppSyncFunction"
       }
     },
-    "SubscriptionOnDeleteProjectDataResolverFnSubscriptionOnDeleteProjectDataResolverFnAppSyncFunctionFA79F0CD": {
+    "SubscriptionOnDeleteTodoDataResolverFnSubscriptionOnDeleteTodoDataResolverFnAppSyncFunction3E641E8C": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPI43D78135ApiId"
+          "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPIDE35F996ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPINONEDSB8730C59Name"
+          "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPINONEDS58D59F75Name"
         },
         "FunctionVersion": "2018-05-29",
-        "Name": "SubscriptionOnDeleteProjectDataResolverFn",
+        "Name": "SubscriptionOnDeleteTodoDataResolverFn",
         "RequestMappingTemplateS3Location": {
           "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fe3c43ada4b9d681a5e2312663ef7a73386424d73b73e51f8e2e9d4b50f7c502.vtl"
         },
@@ -1900,34 +1926,34 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf/data/amplifyData/Project/SubscriptionOnDeleteProjectDataResolverFn/SubscriptionOnDeleteProjectDataResolverFn.AppSyncFunction"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fbfa7224b5/data/amplifyData/Todo/SubscriptionOnDeleteTodoDataResolverFn/SubscriptionOnDeleteTodoDataResolverFn.AppSyncFunction"
       }
     },
-    "SubscriptiononDeleteProjectResolver": {
+    "SubscriptiononDeleteTodoResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPI43D78135ApiId"
+          "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPIDE35F996ApiId"
         },
-        "FieldName": "onDeleteProject",
+        "FieldName": "onDeleteTodo",
         "Kind": "PIPELINE",
         "PipelineConfig": {
           "Functions": [
             {
               "Fn::GetAtt": [
-                "SubscriptiononDeleteProjectauth0FunctionSubscriptiononDeleteProjectauth0FunctionAppSyncFunction733430CC",
+                "SubscriptiononDeleteTodoauth0FunctionSubscriptiononDeleteTodoauth0FunctionAppSyncFunctionF69F2220",
                 "FunctionId"
               ]
             },
             {
               "Fn::GetAtt": [
-                "SubscriptiononDeleteProjectpostAuth0FunctionSubscriptiononDeleteProjectpostAuth0FunctionAppSyncFunctionBA3AA141",
+                "SubscriptiononDeleteTodopostAuth0FunctionSubscriptiononDeleteTodopostAuth0FunctionAppSyncFunctionE131CBE7",
                 "FunctionId"
               ]
             },
             {
               "Fn::GetAtt": [
-                "SubscriptionOnDeleteProjectDataResolverFnSubscriptionOnDeleteProjectDataResolverFnAppSyncFunctionFA79F0CD",
+                "SubscriptionOnDeleteTodoDataResolverFnSubscriptionOnDeleteTodoDataResolverFnAppSyncFunction3E641E8C",
                 "FunctionId"
               ]
             }
@@ -1937,9 +1963,9 @@
           "Fn::Join": [
             "",
             [
-              "$util.qr($ctx.stash.put(\"typeName\", \"Subscription\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"onDeleteProject\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"NONE\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              "$util.qr($ctx.stash.put(\"typeName\", \"Subscription\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"onDeleteTodo\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"NONE\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-                "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPI43D78135ApiId"
+                "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPIDE35F996ApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"authRole\", \"arn:",
               {
@@ -1951,7 +1977,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfauthNestedStackauthNestedStackResource73A48013Outputsamplifyprojectboardse2esandboxfb4c0d7bdfauthamplifyAuthauthenticatedUserRole2B3A5B63Ref"
+                "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5authNestedStackauthNestedStackResource4542932EOutputsamplifyprojectboardse2esandboxfbfa7224b5authamplifyAuthauthenticatedUserRole1B476712Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -1963,11 +1989,11 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfauthNestedStackauthNestedStackResource73A48013Outputsamplifyprojectboardse2esandboxfb4c0d7bdfauthamplifyAuthunauthenticatedUserRoleF9FA985FRef"
+                "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5authNestedStackauthNestedStackResource4542932EOutputsamplifyprojectboardse2esandboxfbfa7224b5authamplifyAuthunauthenticatedUserRoleF04DCF06Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfauthNestedStackauthNestedStackResource73A48013Outputsamplifyprojectboardse2esandboxfb4c0d7bdfauthamplifyAuthIdentityPool4C25A10BRef"
+                "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5authNestedStackauthNestedStackResource4542932EOutputsamplifyprojectboardse2esandboxfbfa7224b5authamplifyAuthIdentityPool717D60BFRef"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
@@ -1979,20 +2005,20 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf/data/amplifyData/Project/subscriptionOnDeleteProjectResolver"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fbfa7224b5/data/amplifyData/Todo/subscriptionOnDeleteTodoResolver"
       }
     },
-    "ProjectOwnerDataResolverFnProjectOwnerDataResolverFnAppSyncFunction7F1893B2": {
+    "TodoOwnerDataResolverFnTodoOwnerDataResolverFnAppSyncFunction0C7BF45B": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPI43D78135ApiId"
+          "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPIDE35F996ApiId"
         },
         "DataSourceName": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPINONEDSB8730C59Name"
+          "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPINONEDS58D59F75Name"
         },
         "FunctionVersion": "2018-05-29",
-        "Name": "ProjectOwnerDataResolverFn",
+        "Name": "TodoOwnerDataResolverFn",
         "RequestMappingTemplateS3Location": {
           "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/041534e5fd916595f752318f161512d7c7f83b9f2cf32d0f0be381c12253ff68.vtl"
         },
@@ -2003,14 +2029,14 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf/data/amplifyData/Project/ProjectOwnerDataResolverFn/ProjectOwnerDataResolverFn.AppSyncFunction"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fbfa7224b5/data/amplifyData/Todo/TodoOwnerDataResolverFn/TodoOwnerDataResolverFn.AppSyncFunction"
       }
     },
-    "ProjectownerResolver": {
+    "TodoownerResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
-          "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPI43D78135ApiId"
+          "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPIDE35F996ApiId"
         },
         "FieldName": "owner",
         "Kind": "PIPELINE",
@@ -2018,7 +2044,7 @@
           "Functions": [
             {
               "Fn::GetAtt": [
-                "ProjectOwnerDataResolverFnProjectOwnerDataResolverFnAppSyncFunction7F1893B2",
+                "TodoOwnerDataResolverFnTodoOwnerDataResolverFnAppSyncFunction0C7BF45B",
                 "FunctionId"
               ]
             }
@@ -2028,9 +2054,9 @@
           "Fn::Join": [
             "",
             [
-              "$util.qr($ctx.stash.put(\"typeName\", \"Project\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"owner\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"NONE\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              "$util.qr($ctx.stash.put(\"typeName\", \"Todo\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"owner\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"NONE\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
-                "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPI43D78135ApiId"
+                "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPIDE35F996ApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"authRole\", \"arn:",
               {
@@ -2042,7 +2068,7 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfauthNestedStackauthNestedStackResource73A48013Outputsamplifyprojectboardse2esandboxfb4c0d7bdfauthamplifyAuthauthenticatedUserRole2B3A5B63Ref"
+                "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5authNestedStackauthNestedStackResource4542932EOutputsamplifyprojectboardse2esandboxfbfa7224b5authamplifyAuthauthenticatedUserRole1B476712Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"unauthRole\", \"arn:",
               {
@@ -2054,23 +2080,23 @@
               },
               ":assumed-role/",
               {
-                "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfauthNestedStackauthNestedStackResource73A48013Outputsamplifyprojectboardse2esandboxfb4c0d7bdfauthamplifyAuthunauthenticatedUserRoleF9FA985FRef"
+                "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5authNestedStackauthNestedStackResource4542932EOutputsamplifyprojectboardse2esandboxfbfa7224b5authamplifyAuthunauthenticatedUserRoleF04DCF06Ref"
               },
               "/CognitoIdentityCredentials\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"",
               {
-                "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfauthNestedStackauthNestedStackResource73A48013Outputsamplifyprojectboardse2esandboxfb4c0d7bdfauthamplifyAuthIdentityPool4C25A10BRef"
+                "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5authNestedStackauthNestedStackResource4542932EOutputsamplifyprojectboardse2esandboxfbfa7224b5authamplifyAuthIdentityPool717D60BFRef"
               },
               "\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
           ]
         },
         "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
-        "TypeName": "Project"
+        "TypeName": "Todo"
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf/data/amplifyData/Project/projectOwnerResolver"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fbfa7224b5/data/amplifyData/Todo/todoOwnerResolver"
       }
     },
     "CDKMetadata": {
@@ -2079,17 +2105,17 @@
         "Analytics": "v2:deflate64:H4sIAAAAAAAA/1WOwW6DMAyGn6X34HV0mnZdQT1uE+xemcRUKeCg2GlVId59gk6ddvr9yZ/sP4f85Q22G7xKZl2X9b6B6YNEydWKtjNFy18YcSCluEAR2Hn1gU1FElK0ZIokGoY/bPkx41WOk7sxDsE18I1NT3sUMh4HmKrQ3+3Q02xwHOXGFqZy1cumRMX6cfI/HRLbpUQRuPWnFHFt9Pu5v1CcjeyOKEIq8L6EkR3sk+1IlwLz4n4mHZOadV0rnjyfZsPBEZzl6ZLn8PwK281ZvM9iYvUDQXXPH9A0v2g2AQAA"
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf/data/amplifyData/Project/CDKMetadata/Default"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fbfa7224b5/data/amplifyData/Todo/CDKMetadata/Default"
       },
       "Condition": "CDKMetadataAvailable"
     }
   },
   "Outputs": {
-    "GetAttProjectTableStreamArn": {
+    "GetAttTodoTableStreamArn": {
       "Description": "Your DynamoDB table StreamArn.",
       "Value": {
         "Fn::GetAtt": [
-          "ProjectTable",
+          "TodoTable",
           "TableStreamArn"
         ]
       },
@@ -2099,29 +2125,45 @@
             ":",
             [
               {
-                "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPI43D78135ApiId"
+                "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPIDE35F996ApiId"
               },
-              "GetAtt:ProjectTable:StreamArn"
+              "GetAtt:TodoTable:StreamArn"
             ]
           ]
         }
       }
     },
-    "GetAttProjectTableName": {
+    "GetAttTodoTableName": {
       "Description": "Your DynamoDB table name.",
-      "Value": "Project-ykn53lg6lrebrh7pysv3723tzi-xxxxxxxxxx",
+      "Value": "Todo-ayqh4m5ljjbezob2kzglre6eym-xxxxxxxxxx",
       "Export": {
         "Name": {
           "Fn::Join": [
             ":",
             [
               {
-                "Ref": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPI43D78135ApiId"
+                "Ref": "referencetoamplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataGraphQLAPIDE35F996ApiId"
               },
-              "GetAtt:ProjectTable:Name"
+              "GetAtt:TodoTable:Name"
             ]
           ]
         }
+      }
+    },
+    "amplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataTodoTodoDataSourceF4805ADCName": {
+      "Value": {
+        "Fn::GetAtt": [
+          "TodoDataSource",
+          "Name"
+        ]
+      }
+    },
+    "amplifyprojectboardse2esandboxfbfa7224b5dataamplifyDataTodoTodoTableAD160426TableArn": {
+      "Value": {
+        "Fn::GetAtt": [
+          "TodoTable",
+          "TableArn"
+        ]
       }
     }
   }

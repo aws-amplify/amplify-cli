@@ -65,7 +65,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf/auth/amplifyAuth/UserPool/Resource"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fbfa7224b5/auth/amplifyAuth/UserPool/Resource"
       }
     },
     "amplifyAuthUserPoolNativeAppClient79534448": {
@@ -90,7 +90,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf/auth/amplifyAuth/UserPool/NativeAppClient/Resource"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fbfa7224b5/auth/amplifyAuth/UserPool/NativeAppClient/Resource"
       }
     },
     "amplifyAuthUserPoolAppClient2626C6F8": {
@@ -126,7 +126,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf/auth/amplifyAuth/UserPoolAppClient/Resource"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fbfa7224b5/auth/amplifyAuth/UserPoolAppClient/Resource"
       }
     },
     "amplifyAuthIdentityPool3FDE84CC": {
@@ -174,7 +174,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf/auth/amplifyAuth/IdentityPool"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fbfa7224b5/auth/amplifyAuth/IdentityPool"
       }
     },
     "amplifyAuthauthenticatedUserRoleD8DA3689": {
@@ -220,7 +220,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf/auth/amplifyAuth/authenticatedUserRole/Resource"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fbfa7224b5/auth/amplifyAuth/authenticatedUserRole/Resource"
       }
     },
     "amplifyAuthunauthenticatedUserRole2B524D9E": {
@@ -266,7 +266,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf/auth/amplifyAuth/unauthenticatedUserRole/Resource"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fbfa7224b5/auth/amplifyAuth/unauthenticatedUserRole/Resource"
       }
     },
     "amplifyAuthIdentityPoolRoleAttachment045F17C8": {
@@ -322,7 +322,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete",
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf/auth/amplifyAuth/IdentityPoolRoleAttachment"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fbfa7224b5/auth/amplifyAuth/IdentityPoolRoleAttachment"
       }
     },
     "CDKMetadata": {
@@ -331,7 +331,7 @@
         "Analytics": "v2:deflate64:H4sIAAAAAAAA/02LwQrCMBBEv6X3dK1BxKv05EWk4llisurWdAPNapGQf5ci1Z5m5s2MBr3aQFWYIZbWPUpPF0h7jILuKMY+lBniOdlwY5IA6RSxP4TgVX3ln59M7QlZ5tWf7ByykLyn8zw3weNWxNh7hyxZkekgjXAcjppzVhwcQhsXL61huYaqaCNR2T9ZqENovvoBOdQ8Mc4AAAA="
       },
       "Metadata": {
-        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf/auth/CDKMetadata/Default"
+        "aws:cdk:path": "amplify-projectboards-e2e-sandbox-fbfa7224b5/auth/CDKMetadata/Default"
       },
       "Condition": "CDKMetadataAvailable"
     }
@@ -603,27 +603,27 @@
     }
   },
   "Outputs": {
-    "amplifyprojectboardse2esandboxfb4c0d7bdfauthamplifyAuthUserPool6C78B03CRef": {
+    "amplifyprojectboardse2esandboxfbfa7224b5authamplifyAuthUserPoolAAEDF3F5Ref": {
       "Value": {
         "Ref": "amplifyAuthUserPool4BA7F805"
       }
     },
-    "amplifyprojectboardse2esandboxfb4c0d7bdfauthamplifyAuthUserPoolAppClient25EED60ARef": {
+    "amplifyprojectboardse2esandboxfbfa7224b5authamplifyAuthUserPoolAppClient4C97D704Ref": {
       "Value": {
         "Ref": "amplifyAuthUserPoolAppClient2626C6F8"
       }
     },
-    "amplifyprojectboardse2esandboxfb4c0d7bdfauthamplifyAuthIdentityPool4C25A10BRef": {
+    "amplifyprojectboardse2esandboxfbfa7224b5authamplifyAuthIdentityPool717D60BFRef": {
       "Value": {
         "Ref": "amplifyAuthIdentityPool3FDE84CC"
       }
     },
-    "amplifyprojectboardse2esandboxfb4c0d7bdfauthamplifyAuthauthenticatedUserRole2B3A5B63Ref": {
+    "amplifyprojectboardse2esandboxfbfa7224b5authamplifyAuthauthenticatedUserRole1B476712Ref": {
       "Value": {
         "Ref": "amplifyAuthauthenticatedUserRoleD8DA3689"
       }
     },
-    "amplifyprojectboardse2esandboxfb4c0d7bdfauthamplifyAuthunauthenticatedUserRoleF9FA985FRef": {
+    "amplifyprojectboardse2esandboxfbfa7224b5authamplifyAuthunauthenticatedUserRoleF04DCF06Ref": {
       "Value": {
         "Ref": "amplifyAuthunauthenticatedUserRole2B524D9E"
       }

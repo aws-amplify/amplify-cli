@@ -43,34 +43,13 @@
     "referencetotransformerrootstackGraphQLAPI20497F53ApiId": {
       "Type": "String"
     },
+    "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name": {
+      "Type": "String"
+    },
     "referencetotransformerrootstackS3DeploymentBucket7592718ARef": {
       "Type": "String"
     },
     "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref": {
-      "Type": "String"
-    },
-    "referencetotransformerrootstackProjectNestedStackProjectNestedStackResourceD9389F63OutputstransformerrootstackProjectQuerygetProjectauth0FunctionQuerygetProjectauth0FunctionAppSyncFunctionA68979B1FunctionId": {
-      "Type": "String"
-    },
-    "referencetotransformerrootstackProjectNestedStackProjectNestedStackResourceD9389F63OutputstransformerrootstackProjectQuerygetProjectpostAuth0FunctionQuerygetProjectpostAuth0FunctionAppSyncFunction5082BB6BFunctionId": {
-      "Type": "String"
-    },
-    "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name": {
-      "Type": "String"
-    },
-    "referencetotransformerrootstackProjectNestedStackProjectNestedStackResourceD9389F63OutputstransformerrootstackProjectMutationcreateProjectinit0FunctionMutationcreateProjectinit0FunctionAppSyncFunction63376DADFunctionId": {
-      "Type": "String"
-    },
-    "referencetotransformerrootstackProjectNestedStackProjectNestedStackResourceD9389F63OutputstransformerrootstackProjectMutationupdateProjectinit0FunctionMutationupdateProjectinit0FunctionAppSyncFunctionF33DB6D0FunctionId": {
-      "Type": "String"
-    },
-    "referencetotransformerrootstackProjectNestedStackProjectNestedStackResourceD9389F63OutputstransformerrootstackProjectSubscriptiononCreateProjectauth0FunctionSubscriptiononCreateProjectauth0FunctionAppSyncFunction5D3DF8A6FunctionId": {
-      "Type": "String"
-    },
-    "referencetotransformerrootstackProjectNestedStackProjectNestedStackResourceD9389F63OutputstransformerrootstackProjectSubscriptionOnCreateProjectDataResolverFnSubscriptionOnCreateProjectDataResolverFnAppSyncFunctionDFF26C0AFunctionId": {
-      "Type": "String"
-    },
-    "referencetotransformerrootstackProjectNestedStackProjectNestedStackResourceD9389F63OutputstransformerrootstackProjectProjectOwnerDataResolverFnProjectOwnerDataResolverFnAppSyncFunctionC730BF38FunctionId": {
       "Type": "String"
     }
   },
@@ -113,16 +92,12 @@
     }
   },
   "Resources": {
-    "TodoTable": {
+    "ProjectTable": {
       "Type": "AWS::DynamoDB::Table",
       "Properties": {
         "AttributeDefinitions": [
           {
             "AttributeName": "id",
-            "AttributeType": "S"
-          },
-          {
-            "AttributeName": "projectTodosId",
             "AttributeType": "S"
           }
         ],
@@ -135,36 +110,6 @@
             }
           ]
         },
-        "GlobalSecondaryIndexes": [
-          {
-            "IndexName": "gsi-Project.todos",
-            "KeySchema": [
-              {
-                "AttributeName": "projectTodosId",
-                "KeyType": "HASH"
-              }
-            ],
-            "Projection": {
-              "ProjectionType": "ALL"
-            },
-            "ProvisionedThroughput": {
-              "Fn::If": [
-                "ShouldUsePayPerRequestBilling",
-                {
-                  "Ref": "AWS::NoValue"
-                },
-                {
-                  "ReadCapacityUnits": {
-                    "Ref": "DynamoDBModelTableReadIOPS"
-                  },
-                  "WriteCapacityUnits": {
-                    "Ref": "DynamoDBModelTableWriteIOPS"
-                  }
-                }
-              ]
-            }
-          }
-        ],
         "KeySchema": [
           {
             "AttributeName": "id",
@@ -214,7 +159,7 @@
           "Fn::Join": [
             "",
             [
-              "Todo-",
+              "Project-",
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
@@ -229,7 +174,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Retain"
     },
-    "TodoIAMRole2DA8E66E": {
+    "ProjectIAMRole928454B5": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -273,7 +218,7 @@
                             "Fn::Join": [
                               "",
                               [
-                                "Todo-",
+                                "Project-",
                                 {
                                   "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
                                 },
@@ -295,7 +240,7 @@
                             "Fn::Join": [
                               "",
                               [
-                                "Todo-",
+                                "Project-",
                                 {
                                   "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
                                 },
@@ -321,7 +266,7 @@
           "Fn::Join": [
             "",
             [
-              "TodoIAMRolecfd440-",
+              "ProjectIAMRole032cf0-",
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
@@ -334,7 +279,7 @@
         }
       }
     },
-    "TodoIAMRoleDefaultPolicy7BBBF45B": {
+    "ProjectIAMRoleDefaultPolicy08A73B99": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -358,38 +303,27 @@
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "TodoTable",
+                    "ProjectTable",
                     "Arn"
                   ]
                 },
                 {
-                  "Fn::Join": [
-                    "",
-                    [
-                      {
-                        "Fn::GetAtt": [
-                          "TodoTable",
-                          "Arn"
-                        ]
-                      },
-                      "/index/*"
-                    ]
-                  ]
+                  "Ref": "AWS::NoValue"
                 }
               ]
             }
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "TodoIAMRoleDefaultPolicy7BBBF45B",
+        "PolicyName": "ProjectIAMRoleDefaultPolicy08A73B99",
         "Roles": [
           {
-            "Ref": "TodoIAMRole2DA8E66E"
+            "Ref": "ProjectIAMRole928454B5"
           }
         ]
       }
     },
-    "TodoDataSource": {
+    "ProjectDataSource": {
       "Type": "AWS::AppSync::DataSource",
       "Properties": {
         "ApiId": {
@@ -400,213 +334,23 @@
             "Ref": "AWS::Region"
           },
           "TableName": {
-            "Ref": "TodoTable"
+            "Ref": "ProjectTable"
           }
         },
-        "Name": "TodoTable",
+        "Name": "ProjectTable",
         "ServiceRoleArn": {
           "Fn::GetAtt": [
-            "TodoIAMRole2DA8E66E",
+            "ProjectIAMRole928454B5",
             "Arn"
           ]
         },
         "Type": "AMAZON_DYNAMODB"
       },
       "DependsOn": [
-        "TodoIAMRole2DA8E66E"
+        "ProjectIAMRole928454B5"
       ]
     },
-    "QueryGetTodoDataResolverFnQueryGetTodoDataResolverFnAppSyncFunctionE2B57DAD": {
-      "Type": "AWS::AppSync::FunctionConfiguration",
-      "Properties": {
-        "ApiId": {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
-        },
-        "DataSourceName": {
-          "Fn::GetAtt": [
-            "TodoDataSource",
-            "Name"
-          ]
-        },
-        "FunctionVersion": "2018-05-29",
-        "Name": "QueryGetTodoDataResolverFn",
-        "RequestMappingTemplateS3Location": {
-          "Fn::Join": [
-            "",
-            [
-              "s3://",
-              {
-                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef"
-              },
-              "/",
-              {
-                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref"
-              },
-              "/resolvers/Query.getTodo.req.vtl"
-            ]
-          ]
-        },
-        "ResponseMappingTemplateS3Location": {
-          "Fn::Join": [
-            "",
-            [
-              "s3://",
-              {
-                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef"
-              },
-              "/",
-              {
-                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref"
-              },
-              "/resolvers/Query.getTodo.res.vtl"
-            ]
-          ]
-        }
-      },
-      "DependsOn": [
-        "TodoDataSource"
-      ]
-    },
-    "GetTodoResolver": {
-      "Type": "AWS::AppSync::Resolver",
-      "Properties": {
-        "ApiId": {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
-        },
-        "FieldName": "getTodo",
-        "Kind": "PIPELINE",
-        "PipelineConfig": {
-          "Functions": [
-            {
-              "Ref": "referencetotransformerrootstackProjectNestedStackProjectNestedStackResourceD9389F63OutputstransformerrootstackProjectQuerygetProjectauth0FunctionQuerygetProjectauth0FunctionAppSyncFunctionA68979B1FunctionId"
-            },
-            {
-              "Ref": "referencetotransformerrootstackProjectNestedStackProjectNestedStackResourceD9389F63OutputstransformerrootstackProjectQuerygetProjectpostAuth0FunctionQuerygetProjectpostAuth0FunctionAppSyncFunction5082BB6BFunctionId"
-            },
-            {
-              "Fn::GetAtt": [
-                "QueryGetTodoDataResolverFnQueryGetTodoDataResolverFnAppSyncFunctionE2B57DAD",
-                "FunctionId"
-              ]
-            }
-          ]
-        },
-        "RequestMappingTemplate": {
-          "Fn::Join": [
-            "",
-            [
-              "$util.qr($ctx.stash.put(\"typeName\", \"Query\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"getTodo\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
-              {
-                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
-              },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
-              {
-                "Ref": "TodoTable"
-              },
-              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:4220d229-3913-442a-b5ea-0b7480a3b31e\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
-            ]
-          ]
-        },
-        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
-        "TypeName": "Query"
-      }
-    },
-    "QueryListTodosDataResolverFnQueryListTodosDataResolverFnAppSyncFunctionF825FE47": {
-      "Type": "AWS::AppSync::FunctionConfiguration",
-      "Properties": {
-        "ApiId": {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
-        },
-        "DataSourceName": {
-          "Fn::GetAtt": [
-            "TodoDataSource",
-            "Name"
-          ]
-        },
-        "FunctionVersion": "2018-05-29",
-        "Name": "QueryListTodosDataResolverFn",
-        "RequestMappingTemplateS3Location": {
-          "Fn::Join": [
-            "",
-            [
-              "s3://",
-              {
-                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef"
-              },
-              "/",
-              {
-                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref"
-              },
-              "/resolvers/Query.listTodos.req.vtl"
-            ]
-          ]
-        },
-        "ResponseMappingTemplateS3Location": {
-          "Fn::Join": [
-            "",
-            [
-              "s3://",
-              {
-                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef"
-              },
-              "/",
-              {
-                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref"
-              },
-              "/resolvers/Query.listTodos.res.vtl"
-            ]
-          ]
-        }
-      },
-      "DependsOn": [
-        "TodoDataSource"
-      ]
-    },
-    "ListTodoResolver": {
-      "Type": "AWS::AppSync::Resolver",
-      "Properties": {
-        "ApiId": {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
-        },
-        "FieldName": "listTodos",
-        "Kind": "PIPELINE",
-        "PipelineConfig": {
-          "Functions": [
-            {
-              "Ref": "referencetotransformerrootstackProjectNestedStackProjectNestedStackResourceD9389F63OutputstransformerrootstackProjectQuerygetProjectauth0FunctionQuerygetProjectauth0FunctionAppSyncFunctionA68979B1FunctionId"
-            },
-            {
-              "Ref": "referencetotransformerrootstackProjectNestedStackProjectNestedStackResourceD9389F63OutputstransformerrootstackProjectQuerygetProjectpostAuth0FunctionQuerygetProjectpostAuth0FunctionAppSyncFunction5082BB6BFunctionId"
-            },
-            {
-              "Fn::GetAtt": [
-                "QueryListTodosDataResolverFnQueryListTodosDataResolverFnAppSyncFunctionF825FE47",
-                "FunctionId"
-              ]
-            }
-          ]
-        },
-        "RequestMappingTemplate": {
-          "Fn::Join": [
-            "",
-            [
-              "$util.qr($ctx.stash.put(\"typeName\", \"Query\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"listTodos\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
-              {
-                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
-              },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
-              {
-                "Ref": "TodoTable"
-              },
-              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:4220d229-3913-442a-b5ea-0b7480a3b31e\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
-            ]
-          ]
-        },
-        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
-        "TypeName": "Query"
-      }
-    },
-    "MutationcreateTodoauth0FunctionMutationcreateTodoauth0FunctionAppSyncFunction21817E36": {
+    "QuerygetProjectauth0FunctionQuerygetProjectauth0FunctionAppSyncFunctionED686A7E": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
@@ -616,7 +360,7 @@
           "Ref": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name"
         },
         "FunctionVersion": "2018-05-29",
-        "Name": "MutationcreateTodoauth0Function",
+        "Name": "QuerygetProjectauth0Function",
         "RequestMappingTemplateS3Location": {
           "Fn::Join": [
             "",
@@ -629,27 +373,24 @@
               {
                 "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref"
               },
-              "/resolvers/Mutation.createTodo.auth.1.req.vtl"
+              "/resolvers/Query.getProject.auth.1.req.vtl"
             ]
           ]
         },
         "ResponseMappingTemplate": "$util.toJson({})"
       }
     },
-    "MutationCreateTodoDataResolverFnMutationCreateTodoDataResolverFnAppSyncFunction900EC5CF": {
+    "QuerygetProjectpostAuth0FunctionQuerygetProjectpostAuth0FunctionAppSyncFunction02C528A4": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
         },
         "DataSourceName": {
-          "Fn::GetAtt": [
-            "TodoDataSource",
-            "Name"
-          ]
+          "Ref": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name"
         },
         "FunctionVersion": "2018-05-29",
-        "Name": "MutationCreateTodoDataResolverFn",
+        "Name": "QuerygetProjectpostAuth0Function",
         "RequestMappingTemplateS3Location": {
           "Fn::Join": [
             "",
@@ -662,7 +403,40 @@
               {
                 "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref"
               },
-              "/resolvers/Mutation.createTodo.req.vtl"
+              "/resolvers/Query.getProject.postAuth.1.req.vtl"
+            ]
+          ]
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      }
+    },
+    "QueryGetProjectDataResolverFnQueryGetProjectDataResolverFnAppSyncFunctionD6A0F260": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
+        },
+        "DataSourceName": {
+          "Fn::GetAtt": [
+            "ProjectDataSource",
+            "Name"
+          ]
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "QueryGetProjectDataResolverFn",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Join": [
+            "",
+            [
+              "s3://",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef"
+              },
+              "/",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref"
+              },
+              "/resolvers/Query.getProject.req.vtl"
             ]
           ]
         },
@@ -678,40 +452,40 @@
               {
                 "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref"
               },
-              "/resolvers/Mutation.createTodo.res.vtl"
+              "/resolvers/Query.getProject.res.vtl"
             ]
           ]
         }
       },
       "DependsOn": [
-        "TodoDataSource"
+        "ProjectDataSource"
       ]
     },
-    "CreateTodoResolver": {
+    "GetProjectResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
         },
-        "FieldName": "createTodo",
+        "FieldName": "getProject",
         "Kind": "PIPELINE",
         "PipelineConfig": {
           "Functions": [
             {
-              "Ref": "referencetotransformerrootstackProjectNestedStackProjectNestedStackResourceD9389F63OutputstransformerrootstackProjectMutationcreateProjectinit0FunctionMutationcreateProjectinit0FunctionAppSyncFunction63376DADFunctionId"
-            },
-            {
               "Fn::GetAtt": [
-                "MutationcreateTodoauth0FunctionMutationcreateTodoauth0FunctionAppSyncFunction21817E36",
+                "QuerygetProjectauth0FunctionQuerygetProjectauth0FunctionAppSyncFunctionED686A7E",
                 "FunctionId"
               ]
             },
             {
-              "Ref": "referencetotransformerrootstackProjectNestedStackProjectNestedStackResourceD9389F63OutputstransformerrootstackProjectQuerygetProjectpostAuth0FunctionQuerygetProjectpostAuth0FunctionAppSyncFunction5082BB6BFunctionId"
+              "Fn::GetAtt": [
+                "QuerygetProjectpostAuth0FunctionQuerygetProjectpostAuth0FunctionAppSyncFunction02C528A4",
+                "FunctionId"
+              ]
             },
             {
               "Fn::GetAtt": [
-                "MutationCreateTodoDataResolverFnMutationCreateTodoDataResolverFnAppSyncFunction900EC5CF",
+                "QueryGetProjectDataResolverFnQueryGetProjectDataResolverFnAppSyncFunctionD6A0F260",
                 "FunctionId"
               ]
             }
@@ -721,15 +495,283 @@
           "Fn::Join": [
             "",
             [
-              "$util.qr($ctx.stash.put(\"typeName\", \"Mutation\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"createTodo\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              "$util.qr($ctx.stash.put(\"typeName\", \"Query\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"getProject\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "TodoTable"
+                "Ref": "ProjectTable"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:4220d229-3913-442a-b5ea-0b7480a3b31e\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:134bb8f6-4075-4484-9547-221eabaacf74\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+            ]
+          ]
+        },
+        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+        "TypeName": "Query"
+      }
+    },
+    "QueryListProjectsDataResolverFnQueryListProjectsDataResolverFnAppSyncFunction0812E3B9": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
+        },
+        "DataSourceName": {
+          "Fn::GetAtt": [
+            "ProjectDataSource",
+            "Name"
+          ]
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "QueryListProjectsDataResolverFn",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Join": [
+            "",
+            [
+              "s3://",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef"
+              },
+              "/",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref"
+              },
+              "/resolvers/Query.listProjects.req.vtl"
+            ]
+          ]
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Join": [
+            "",
+            [
+              "s3://",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef"
+              },
+              "/",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref"
+              },
+              "/resolvers/Query.listProjects.res.vtl"
+            ]
+          ]
+        }
+      },
+      "DependsOn": [
+        "ProjectDataSource"
+      ]
+    },
+    "ListProjectResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
+        },
+        "FieldName": "listProjects",
+        "Kind": "PIPELINE",
+        "PipelineConfig": {
+          "Functions": [
+            {
+              "Fn::GetAtt": [
+                "QuerygetProjectauth0FunctionQuerygetProjectauth0FunctionAppSyncFunctionED686A7E",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "QuerygetProjectpostAuth0FunctionQuerygetProjectpostAuth0FunctionAppSyncFunction02C528A4",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "QueryListProjectsDataResolverFnQueryListProjectsDataResolverFnAppSyncFunction0812E3B9",
+                "FunctionId"
+              ]
+            }
+          ]
+        },
+        "RequestMappingTemplate": {
+          "Fn::Join": [
+            "",
+            [
+              "$util.qr($ctx.stash.put(\"typeName\", \"Query\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"listProjects\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              {
+                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
+              {
+                "Ref": "ProjectTable"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:134bb8f6-4075-4484-9547-221eabaacf74\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+            ]
+          ]
+        },
+        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+        "TypeName": "Query"
+      }
+    },
+    "MutationcreateProjectinit0FunctionMutationcreateProjectinit0FunctionAppSyncFunction412D09B9": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "MutationcreateProjectinit0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Join": [
+            "",
+            [
+              "s3://",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef"
+              },
+              "/",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref"
+              },
+              "/resolvers/Mutation.createProject.init.1.req.vtl"
+            ]
+          ]
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      }
+    },
+    "MutationcreateProjectauth0FunctionMutationcreateProjectauth0FunctionAppSyncFunction4FB957D8": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "MutationcreateProjectauth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Join": [
+            "",
+            [
+              "s3://",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef"
+              },
+              "/",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref"
+              },
+              "/resolvers/Mutation.createProject.auth.1.req.vtl"
+            ]
+          ]
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      }
+    },
+    "MutationCreateProjectDataResolverFnMutationCreateProjectDataResolverFnAppSyncFunction729D2B08": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
+        },
+        "DataSourceName": {
+          "Fn::GetAtt": [
+            "ProjectDataSource",
+            "Name"
+          ]
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "MutationCreateProjectDataResolverFn",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Join": [
+            "",
+            [
+              "s3://",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef"
+              },
+              "/",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref"
+              },
+              "/resolvers/Mutation.createProject.req.vtl"
+            ]
+          ]
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Join": [
+            "",
+            [
+              "s3://",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef"
+              },
+              "/",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref"
+              },
+              "/resolvers/Mutation.createProject.res.vtl"
+            ]
+          ]
+        }
+      },
+      "DependsOn": [
+        "ProjectDataSource"
+      ]
+    },
+    "CreateProjectResolver": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
+        },
+        "FieldName": "createProject",
+        "Kind": "PIPELINE",
+        "PipelineConfig": {
+          "Functions": [
+            {
+              "Fn::GetAtt": [
+                "MutationcreateProjectinit0FunctionMutationcreateProjectinit0FunctionAppSyncFunction412D09B9",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "MutationcreateProjectauth0FunctionMutationcreateProjectauth0FunctionAppSyncFunction4FB957D8",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "QuerygetProjectpostAuth0FunctionQuerygetProjectpostAuth0FunctionAppSyncFunction02C528A4",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "MutationCreateProjectDataResolverFnMutationCreateProjectDataResolverFnAppSyncFunction729D2B08",
+                "FunctionId"
+              ]
+            }
+          ]
+        },
+        "RequestMappingTemplate": {
+          "Fn::Join": [
+            "",
+            [
+              "$util.qr($ctx.stash.put(\"typeName\", \"Mutation\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"createProject\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              {
+                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
+              {
+                "Ref": "ProjectTable"
+              },
+              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:134bb8f6-4075-4484-9547-221eabaacf74\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
           ]
         },
@@ -737,20 +779,17 @@
         "TypeName": "Mutation"
       }
     },
-    "MutationupdateTodoauth0FunctionMutationupdateTodoauth0FunctionAppSyncFunction1E4A3112": {
+    "MutationupdateProjectinit0FunctionMutationupdateProjectinit0FunctionAppSyncFunction20F7A53C": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
         },
         "DataSourceName": {
-          "Fn::GetAtt": [
-            "TodoDataSource",
-            "Name"
-          ]
+          "Ref": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name"
         },
         "FunctionVersion": "2018-05-29",
-        "Name": "MutationupdateTodoauth0Function",
+        "Name": "MutationupdateProjectinit0Function",
         "RequestMappingTemplateS3Location": {
           "Fn::Join": [
             "",
@@ -763,7 +802,40 @@
               {
                 "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref"
               },
-              "/resolvers/Mutation.updateTodo.auth.1.req.vtl"
+              "/resolvers/Mutation.updateProject.init.1.req.vtl"
+            ]
+          ]
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      }
+    },
+    "MutationupdateProjectauth0FunctionMutationupdateProjectauth0FunctionAppSyncFunctionF9C2F303": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
+        },
+        "DataSourceName": {
+          "Fn::GetAtt": [
+            "ProjectDataSource",
+            "Name"
+          ]
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "MutationupdateProjectauth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Join": [
+            "",
+            [
+              "s3://",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef"
+              },
+              "/",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref"
+              },
+              "/resolvers/Mutation.updateProject.auth.1.req.vtl"
             ]
           ]
         },
@@ -779,16 +851,16 @@
               {
                 "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref"
               },
-              "/resolvers/Mutation.updateTodo.auth.1.res.vtl"
+              "/resolvers/Mutation.updateProject.auth.1.res.vtl"
             ]
           ]
         }
       },
       "DependsOn": [
-        "TodoDataSource"
+        "ProjectDataSource"
       ]
     },
-    "MutationUpdateTodoDataResolverFnMutationUpdateTodoDataResolverFnAppSyncFunctionBC238C49": {
+    "MutationUpdateProjectDataResolverFnMutationUpdateProjectDataResolverFnAppSyncFunction9E902778": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
@@ -796,12 +868,12 @@
         },
         "DataSourceName": {
           "Fn::GetAtt": [
-            "TodoDataSource",
+            "ProjectDataSource",
             "Name"
           ]
         },
         "FunctionVersion": "2018-05-29",
-        "Name": "MutationUpdateTodoDataResolverFn",
+        "Name": "MutationUpdateProjectDataResolverFn",
         "RequestMappingTemplateS3Location": {
           "Fn::Join": [
             "",
@@ -814,7 +886,7 @@
               {
                 "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref"
               },
-              "/resolvers/Mutation.updateTodo.req.vtl"
+              "/resolvers/Mutation.updateProject.req.vtl"
             ]
           ]
         },
@@ -830,40 +902,46 @@
               {
                 "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref"
               },
-              "/resolvers/Mutation.updateTodo.res.vtl"
+              "/resolvers/Mutation.updateProject.res.vtl"
             ]
           ]
         }
       },
       "DependsOn": [
-        "TodoDataSource"
+        "ProjectDataSource"
       ]
     },
-    "UpdateTodoResolver": {
+    "UpdateProjectResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
         },
-        "FieldName": "updateTodo",
+        "FieldName": "updateProject",
         "Kind": "PIPELINE",
         "PipelineConfig": {
           "Functions": [
             {
-              "Ref": "referencetotransformerrootstackProjectNestedStackProjectNestedStackResourceD9389F63OutputstransformerrootstackProjectMutationupdateProjectinit0FunctionMutationupdateProjectinit0FunctionAppSyncFunctionF33DB6D0FunctionId"
-            },
-            {
               "Fn::GetAtt": [
-                "MutationupdateTodoauth0FunctionMutationupdateTodoauth0FunctionAppSyncFunction1E4A3112",
+                "MutationupdateProjectinit0FunctionMutationupdateProjectinit0FunctionAppSyncFunction20F7A53C",
                 "FunctionId"
               ]
             },
             {
-              "Ref": "referencetotransformerrootstackProjectNestedStackProjectNestedStackResourceD9389F63OutputstransformerrootstackProjectQuerygetProjectpostAuth0FunctionQuerygetProjectpostAuth0FunctionAppSyncFunction5082BB6BFunctionId"
+              "Fn::GetAtt": [
+                "MutationupdateProjectauth0FunctionMutationupdateProjectauth0FunctionAppSyncFunctionF9C2F303",
+                "FunctionId"
+              ]
             },
             {
               "Fn::GetAtt": [
-                "MutationUpdateTodoDataResolverFnMutationUpdateTodoDataResolverFnAppSyncFunctionBC238C49",
+                "QuerygetProjectpostAuth0FunctionQuerygetProjectpostAuth0FunctionAppSyncFunction02C528A4",
+                "FunctionId"
+              ]
+            },
+            {
+              "Fn::GetAtt": [
+                "MutationUpdateProjectDataResolverFnMutationUpdateProjectDataResolverFnAppSyncFunction9E902778",
                 "FunctionId"
               ]
             }
@@ -873,15 +951,15 @@
           "Fn::Join": [
             "",
             [
-              "$util.qr($ctx.stash.put(\"typeName\", \"Mutation\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"updateTodo\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              "$util.qr($ctx.stash.put(\"typeName\", \"Mutation\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"updateProject\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "TodoTable"
+                "Ref": "ProjectTable"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:4220d229-3913-442a-b5ea-0b7480a3b31e\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:134bb8f6-4075-4484-9547-221eabaacf74\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
           ]
         },
@@ -889,7 +967,7 @@
         "TypeName": "Mutation"
       }
     },
-    "MutationdeleteTodoauth0FunctionMutationdeleteTodoauth0FunctionAppSyncFunctionC82C218C": {
+    "MutationdeleteProjectauth0FunctionMutationdeleteProjectauth0FunctionAppSyncFunction67C3BC9D": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
@@ -897,12 +975,12 @@
         },
         "DataSourceName": {
           "Fn::GetAtt": [
-            "TodoDataSource",
+            "ProjectDataSource",
             "Name"
           ]
         },
         "FunctionVersion": "2018-05-29",
-        "Name": "MutationdeleteTodoauth0Function",
+        "Name": "MutationdeleteProjectauth0Function",
         "RequestMappingTemplateS3Location": {
           "Fn::Join": [
             "",
@@ -915,7 +993,7 @@
               {
                 "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref"
               },
-              "/resolvers/Mutation.deleteTodo.auth.1.req.vtl"
+              "/resolvers/Mutation.deleteProject.auth.1.req.vtl"
             ]
           ]
         },
@@ -931,16 +1009,16 @@
               {
                 "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref"
               },
-              "/resolvers/Mutation.deleteTodo.auth.1.res.vtl"
+              "/resolvers/Mutation.deleteProject.auth.1.res.vtl"
             ]
           ]
         }
       },
       "DependsOn": [
-        "TodoDataSource"
+        "ProjectDataSource"
       ]
     },
-    "MutationDeleteTodoDataResolverFnMutationDeleteTodoDataResolverFnAppSyncFunction3879153F": {
+    "MutationDeleteProjectDataResolverFnMutationDeleteProjectDataResolverFnAppSyncFunctionC40E2160": {
       "Type": "AWS::AppSync::FunctionConfiguration",
       "Properties": {
         "ApiId": {
@@ -948,12 +1026,12 @@
         },
         "DataSourceName": {
           "Fn::GetAtt": [
-            "TodoDataSource",
+            "ProjectDataSource",
             "Name"
           ]
         },
         "FunctionVersion": "2018-05-29",
-        "Name": "MutationDeleteTodoDataResolverFn",
+        "Name": "MutationDeleteProjectDataResolverFn",
         "RequestMappingTemplateS3Location": {
           "Fn::Join": [
             "",
@@ -966,7 +1044,7 @@
               {
                 "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref"
               },
-              "/resolvers/Mutation.deleteTodo.req.vtl"
+              "/resolvers/Mutation.deleteProject.req.vtl"
             ]
           ]
         },
@@ -982,37 +1060,40 @@
               {
                 "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref"
               },
-              "/resolvers/Mutation.deleteTodo.res.vtl"
+              "/resolvers/Mutation.deleteProject.res.vtl"
             ]
           ]
         }
       },
       "DependsOn": [
-        "TodoDataSource"
+        "ProjectDataSource"
       ]
     },
-    "DeleteTodoResolver": {
+    "DeleteProjectResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
         },
-        "FieldName": "deleteTodo",
+        "FieldName": "deleteProject",
         "Kind": "PIPELINE",
         "PipelineConfig": {
           "Functions": [
             {
               "Fn::GetAtt": [
-                "MutationdeleteTodoauth0FunctionMutationdeleteTodoauth0FunctionAppSyncFunctionC82C218C",
+                "MutationdeleteProjectauth0FunctionMutationdeleteProjectauth0FunctionAppSyncFunction67C3BC9D",
                 "FunctionId"
               ]
             },
             {
-              "Ref": "referencetotransformerrootstackProjectNestedStackProjectNestedStackResourceD9389F63OutputstransformerrootstackProjectQuerygetProjectpostAuth0FunctionQuerygetProjectpostAuth0FunctionAppSyncFunction5082BB6BFunctionId"
+              "Fn::GetAtt": [
+                "QuerygetProjectpostAuth0FunctionQuerygetProjectpostAuth0FunctionAppSyncFunction02C528A4",
+                "FunctionId"
+              ]
             },
             {
               "Fn::GetAtt": [
-                "MutationDeleteTodoDataResolverFnMutationDeleteTodoDataResolverFnAppSyncFunction3879153F",
+                "MutationDeleteProjectDataResolverFnMutationDeleteProjectDataResolverFnAppSyncFunctionC40E2160",
                 "FunctionId"
               ]
             }
@@ -1022,15 +1103,15 @@
           "Fn::Join": [
             "",
             [
-              "$util.qr($ctx.stash.put(\"typeName\", \"Mutation\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"deleteTodo\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              "$util.qr($ctx.stash.put(\"typeName\", \"Mutation\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"deleteProject\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"AMAZON_DYNAMODB\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
               "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n$util.qr($ctx.stash.put(\"tableName\", \"",
               {
-                "Ref": "TodoTable"
+                "Ref": "ProjectTable"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:4220d229-3913-442a-b5ea-0b7480a3b31e\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:134bb8f6-4075-4484-9547-221eabaacf74\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
           ]
         },
@@ -1038,24 +1119,108 @@
         "TypeName": "Mutation"
       }
     },
-    "SubscriptiononCreateTodoResolver": {
+    "SubscriptiononCreateProjectauth0FunctionSubscriptiononCreateProjectauth0FunctionAppSyncFunction658E1FC9": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "SubscriptiononCreateProjectauth0Function",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Join": [
+            "",
+            [
+              "s3://",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef"
+              },
+              "/",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref"
+              },
+              "/resolvers/Subscription.onCreateProject.auth.1.req.vtl"
+            ]
+          ]
+        },
+        "ResponseMappingTemplate": "$util.toJson({})"
+      }
+    },
+    "SubscriptionOnCreateProjectDataResolverFnSubscriptionOnCreateProjectDataResolverFnAppSyncFunctionDABDBE4E": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "SubscriptionOnCreateProjectDataResolverFn",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Join": [
+            "",
+            [
+              "s3://",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef"
+              },
+              "/",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref"
+              },
+              "/resolvers/Subscription.onCreateProject.req.vtl"
+            ]
+          ]
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Join": [
+            "",
+            [
+              "s3://",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef"
+              },
+              "/",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref"
+              },
+              "/resolvers/Subscription.onCreateProject.res.vtl"
+            ]
+          ]
+        }
+      }
+    },
+    "SubscriptiononCreateProjectResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
         },
-        "FieldName": "onCreateTodo",
+        "FieldName": "onCreateProject",
         "Kind": "PIPELINE",
         "PipelineConfig": {
           "Functions": [
             {
-              "Ref": "referencetotransformerrootstackProjectNestedStackProjectNestedStackResourceD9389F63OutputstransformerrootstackProjectSubscriptiononCreateProjectauth0FunctionSubscriptiononCreateProjectauth0FunctionAppSyncFunction5D3DF8A6FunctionId"
+              "Fn::GetAtt": [
+                "SubscriptiononCreateProjectauth0FunctionSubscriptiononCreateProjectauth0FunctionAppSyncFunction658E1FC9",
+                "FunctionId"
+              ]
             },
             {
-              "Ref": "referencetotransformerrootstackProjectNestedStackProjectNestedStackResourceD9389F63OutputstransformerrootstackProjectQuerygetProjectpostAuth0FunctionQuerygetProjectpostAuth0FunctionAppSyncFunction5082BB6BFunctionId"
+              "Fn::GetAtt": [
+                "QuerygetProjectpostAuth0FunctionQuerygetProjectpostAuth0FunctionAppSyncFunction02C528A4",
+                "FunctionId"
+              ]
             },
             {
-              "Ref": "referencetotransformerrootstackProjectNestedStackProjectNestedStackResourceD9389F63OutputstransformerrootstackProjectSubscriptionOnCreateProjectDataResolverFnSubscriptionOnCreateProjectDataResolverFnAppSyncFunctionDFF26C0AFunctionId"
+              "Fn::GetAtt": [
+                "SubscriptionOnCreateProjectDataResolverFnSubscriptionOnCreateProjectDataResolverFnAppSyncFunctionDABDBE4E",
+                "FunctionId"
+              ]
             }
           ]
         },
@@ -1063,11 +1228,11 @@
           "Fn::Join": [
             "",
             [
-              "$util.qr($ctx.stash.put(\"typeName\", \"Subscription\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"onCreateTodo\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"NONE\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              "$util.qr($ctx.stash.put(\"typeName\", \"Subscription\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"onCreateProject\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"NONE\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:4220d229-3913-442a-b5ea-0b7480a3b31e\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:134bb8f6-4075-4484-9547-221eabaacf74\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
           ]
         },
@@ -1075,24 +1240,33 @@
         "TypeName": "Subscription"
       }
     },
-    "SubscriptiononUpdateTodoResolver": {
+    "SubscriptiononUpdateProjectResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
         },
-        "FieldName": "onUpdateTodo",
+        "FieldName": "onUpdateProject",
         "Kind": "PIPELINE",
         "PipelineConfig": {
           "Functions": [
             {
-              "Ref": "referencetotransformerrootstackProjectNestedStackProjectNestedStackResourceD9389F63OutputstransformerrootstackProjectSubscriptiononCreateProjectauth0FunctionSubscriptiononCreateProjectauth0FunctionAppSyncFunction5D3DF8A6FunctionId"
+              "Fn::GetAtt": [
+                "SubscriptiononCreateProjectauth0FunctionSubscriptiononCreateProjectauth0FunctionAppSyncFunction658E1FC9",
+                "FunctionId"
+              ]
             },
             {
-              "Ref": "referencetotransformerrootstackProjectNestedStackProjectNestedStackResourceD9389F63OutputstransformerrootstackProjectQuerygetProjectpostAuth0FunctionQuerygetProjectpostAuth0FunctionAppSyncFunction5082BB6BFunctionId"
+              "Fn::GetAtt": [
+                "QuerygetProjectpostAuth0FunctionQuerygetProjectpostAuth0FunctionAppSyncFunction02C528A4",
+                "FunctionId"
+              ]
             },
             {
-              "Ref": "referencetotransformerrootstackProjectNestedStackProjectNestedStackResourceD9389F63OutputstransformerrootstackProjectSubscriptionOnCreateProjectDataResolverFnSubscriptionOnCreateProjectDataResolverFnAppSyncFunctionDFF26C0AFunctionId"
+              "Fn::GetAtt": [
+                "SubscriptionOnCreateProjectDataResolverFnSubscriptionOnCreateProjectDataResolverFnAppSyncFunctionDABDBE4E",
+                "FunctionId"
+              ]
             }
           ]
         },
@@ -1100,11 +1274,11 @@
           "Fn::Join": [
             "",
             [
-              "$util.qr($ctx.stash.put(\"typeName\", \"Subscription\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"onUpdateTodo\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"NONE\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              "$util.qr($ctx.stash.put(\"typeName\", \"Subscription\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"onUpdateProject\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"NONE\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:4220d229-3913-442a-b5ea-0b7480a3b31e\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:134bb8f6-4075-4484-9547-221eabaacf74\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
           ]
         },
@@ -1112,24 +1286,33 @@
         "TypeName": "Subscription"
       }
     },
-    "SubscriptiononDeleteTodoResolver": {
+    "SubscriptiononDeleteProjectResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
         },
-        "FieldName": "onDeleteTodo",
+        "FieldName": "onDeleteProject",
         "Kind": "PIPELINE",
         "PipelineConfig": {
           "Functions": [
             {
-              "Ref": "referencetotransformerrootstackProjectNestedStackProjectNestedStackResourceD9389F63OutputstransformerrootstackProjectSubscriptiononCreateProjectauth0FunctionSubscriptiononCreateProjectauth0FunctionAppSyncFunction5D3DF8A6FunctionId"
+              "Fn::GetAtt": [
+                "SubscriptiononCreateProjectauth0FunctionSubscriptiononCreateProjectauth0FunctionAppSyncFunction658E1FC9",
+                "FunctionId"
+              ]
             },
             {
-              "Ref": "referencetotransformerrootstackProjectNestedStackProjectNestedStackResourceD9389F63OutputstransformerrootstackProjectQuerygetProjectpostAuth0FunctionQuerygetProjectpostAuth0FunctionAppSyncFunction5082BB6BFunctionId"
+              "Fn::GetAtt": [
+                "QuerygetProjectpostAuth0FunctionQuerygetProjectpostAuth0FunctionAppSyncFunction02C528A4",
+                "FunctionId"
+              ]
             },
             {
-              "Ref": "referencetotransformerrootstackProjectNestedStackProjectNestedStackResourceD9389F63OutputstransformerrootstackProjectSubscriptionOnCreateProjectDataResolverFnSubscriptionOnCreateProjectDataResolverFnAppSyncFunctionDFF26C0AFunctionId"
+              "Fn::GetAtt": [
+                "SubscriptionOnCreateProjectDataResolverFnSubscriptionOnCreateProjectDataResolverFnAppSyncFunctionDABDBE4E",
+                "FunctionId"
+              ]
             }
           ]
         },
@@ -1137,11 +1320,11 @@
           "Fn::Join": [
             "",
             [
-              "$util.qr($ctx.stash.put(\"typeName\", \"Subscription\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"onDeleteTodo\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"NONE\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              "$util.qr($ctx.stash.put(\"typeName\", \"Subscription\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"onDeleteProject\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"NONE\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:4220d229-3913-442a-b5ea-0b7480a3b31e\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:134bb8f6-4075-4484-9547-221eabaacf74\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
           ]
         },
@@ -1149,7 +1332,52 @@
         "TypeName": "Subscription"
       }
     },
-    "TodoownerResolver": {
+    "ProjectOwnerDataResolverFnProjectOwnerDataResolverFnAppSyncFunction7F1893B2": {
+      "Type": "AWS::AppSync::FunctionConfiguration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
+        },
+        "DataSourceName": {
+          "Ref": "referencetotransformerrootstackGraphQLAPINONEDS2BA9D1C8Name"
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "ProjectOwnerDataResolverFn",
+        "RequestMappingTemplateS3Location": {
+          "Fn::Join": [
+            "",
+            [
+              "s3://",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef"
+              },
+              "/",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref"
+              },
+              "/resolvers/Project.owner.req.vtl"
+            ]
+          ]
+        },
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Join": [
+            "",
+            [
+              "s3://",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef"
+              },
+              "/",
+              {
+                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref"
+              },
+              "/resolvers/Project.owner.res.vtl"
+            ]
+          ]
+        }
+      }
+    },
+    "ProjectownerResolver": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
@@ -1160,7 +1388,10 @@
         "PipelineConfig": {
           "Functions": [
             {
-              "Ref": "referencetotransformerrootstackProjectNestedStackProjectNestedStackResourceD9389F63OutputstransformerrootstackProjectProjectOwnerDataResolverFnProjectOwnerDataResolverFnAppSyncFunctionC730BF38FunctionId"
+              "Fn::GetAtt": [
+                "ProjectOwnerDataResolverFnProjectOwnerDataResolverFnAppSyncFunction7F1893B2",
+                "FunctionId"
+              ]
             }
           ]
         },
@@ -1168,25 +1399,25 @@
           "Fn::Join": [
             "",
             [
-              "$util.qr($ctx.stash.put(\"typeName\", \"Todo\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"owner\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"NONE\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
+              "$util.qr($ctx.stash.put(\"typeName\", \"Project\"))\n$util.qr($ctx.stash.put(\"fieldName\", \"owner\"))\n$util.qr($ctx.stash.put(\"conditions\", []))\n$util.qr($ctx.stash.put(\"metadata\", {}))\n$util.qr($ctx.stash.metadata.put(\"dataSourceType\", \"NONE\"))\n$util.qr($ctx.stash.metadata.put(\"apiId\", \"",
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:4220d229-3913-442a-b5ea-0b7480a3b31e\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
+              "\"))\n$util.qr($ctx.stash.put(\"connectionAttributes\", {}))\n\n$util.qr($ctx.stash.put(\"identityPoolId\", \"us-east-1:134bb8f6-4075-4484-9547-221eabaacf74\"))\n$util.qr($ctx.stash.put(\"adminRoles\", []))\n$util.toJson({})"
             ]
           ]
         },
         "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
-        "TypeName": "Todo"
+        "TypeName": "Project"
       }
     }
   },
   "Outputs": {
-    "GetAttTodoTableStreamArn": {
+    "GetAttProjectTableStreamArn": {
       "Description": "Your DynamoDB table StreamArn.",
       "Value": {
         "Fn::GetAtt": [
-          "TodoTable",
+          "ProjectTable",
           "StreamArn"
         ]
       },
@@ -1198,16 +1429,16 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "GetAtt:TodoTable:StreamArn"
+              "GetAtt:ProjectTable:StreamArn"
             ]
           ]
         }
       }
     },
-    "GetAttTodoTableName": {
+    "GetAttProjectTableName": {
       "Description": "Your DynamoDB table name.",
       "Value": {
-        "Ref": "TodoTable"
+        "Ref": "ProjectTable"
       },
       "Export": {
         "Name": {
@@ -1217,17 +1448,17 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "GetAtt:TodoTable:Name"
+              "GetAtt:ProjectTable:Name"
             ]
           ]
         }
       }
     },
-    "GetAttTodoDataSourceName": {
+    "GetAttProjectDataSourceName": {
       "Description": "Your model DataSource name.",
       "Value": {
         "Fn::GetAtt": [
-          "TodoDataSource",
+          "ProjectDataSource",
           "Name"
         ]
       },
@@ -1239,23 +1470,66 @@
               {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId"
               },
-              "GetAtt:TodoDataSource:Name"
+              "GetAtt:ProjectDataSource:Name"
             ]
           ]
         }
       }
     },
-    "transformerrootstackTodoTodoDataSourceBD713D7DName": {
+    "transformerrootstackProjectQuerygetProjectauth0FunctionQuerygetProjectauth0FunctionAppSyncFunctionA68979B1FunctionId": {
       "Value": {
         "Fn::GetAtt": [
-          "TodoDataSource",
-          "Name"
+          "QuerygetProjectauth0FunctionQuerygetProjectauth0FunctionAppSyncFunctionED686A7E",
+          "FunctionId"
         ]
       }
     },
-    "transformerrootstackTodoTodoTableC67E79C2Ref": {
+    "transformerrootstackProjectQuerygetProjectpostAuth0FunctionQuerygetProjectpostAuth0FunctionAppSyncFunction5082BB6BFunctionId": {
       "Value": {
-        "Ref": "TodoTable"
+        "Fn::GetAtt": [
+          "QuerygetProjectpostAuth0FunctionQuerygetProjectpostAuth0FunctionAppSyncFunction02C528A4",
+          "FunctionId"
+        ]
+      }
+    },
+    "transformerrootstackProjectMutationcreateProjectinit0FunctionMutationcreateProjectinit0FunctionAppSyncFunction63376DADFunctionId": {
+      "Value": {
+        "Fn::GetAtt": [
+          "MutationcreateProjectinit0FunctionMutationcreateProjectinit0FunctionAppSyncFunction412D09B9",
+          "FunctionId"
+        ]
+      }
+    },
+    "transformerrootstackProjectMutationupdateProjectinit0FunctionMutationupdateProjectinit0FunctionAppSyncFunctionF33DB6D0FunctionId": {
+      "Value": {
+        "Fn::GetAtt": [
+          "MutationupdateProjectinit0FunctionMutationupdateProjectinit0FunctionAppSyncFunction20F7A53C",
+          "FunctionId"
+        ]
+      }
+    },
+    "transformerrootstackProjectSubscriptiononCreateProjectauth0FunctionSubscriptiononCreateProjectauth0FunctionAppSyncFunction5D3DF8A6FunctionId": {
+      "Value": {
+        "Fn::GetAtt": [
+          "SubscriptiononCreateProjectauth0FunctionSubscriptiononCreateProjectauth0FunctionAppSyncFunction658E1FC9",
+          "FunctionId"
+        ]
+      }
+    },
+    "transformerrootstackProjectSubscriptionOnCreateProjectDataResolverFnSubscriptionOnCreateProjectDataResolverFnAppSyncFunctionDFF26C0AFunctionId": {
+      "Value": {
+        "Fn::GetAtt": [
+          "SubscriptionOnCreateProjectDataResolverFnSubscriptionOnCreateProjectDataResolverFnAppSyncFunctionDABDBE4E",
+          "FunctionId"
+        ]
+      }
+    },
+    "transformerrootstackProjectProjectOwnerDataResolverFnProjectOwnerDataResolverFnAppSyncFunctionC730BF38FunctionId": {
+      "Value": {
+        "Fn::GetAtt": [
+          "ProjectOwnerDataResolverFnProjectOwnerDataResolverFnAppSyncFunction7F1893B2",
+          "FunctionId"
+        ]
       }
     }
   }
