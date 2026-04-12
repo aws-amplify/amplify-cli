@@ -1,0 +1,14 @@
+[
+  {
+    "ParameterKey": "AuthRoleName",
+    "ParameterValue": "amplify-projectboa2604120858-ytemaknyeh-d54f0-authRole"
+  },
+  {
+    "ParameterKey": "DeploymentBucketName",
+    "ParameterValue": "amplify-projectboa2604120858-ytemaknyeh-d54f0-deployment"
+  },
+  {
+    "ParameterKey": "UnauthRoleName",
+    "ParameterValue": "amplify-projectboa2604120858-ytemaknyeh-d54f0-unauthRole"
+  }
+]

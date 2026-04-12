@@ -1,0 +1,52 @@
+[
+  {
+    "Source": {
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-projectboa2604120858-ytemaknyeh-d54f0-authprojectboards54040ecc-RWELG6IP65S8/742186a0-366f-11f1-9c63-121daad7809b",
+      "LogicalResourceId": "UserPool"
+    },
+    "Destination": {
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-projectboa2604120858-e2e-sandbox-6e1e2f0442-auth179371D7-1DXO5FVZSYJDX/3fdf9e20-3671-11f1-aae4-123331f2d775",
+      "LogicalResourceId": "amplifyAuthUserPool4BA7F805"
+    }
+  },
+  {
+    "Source": {
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-projectboa2604120858-ytemaknyeh-d54f0-authprojectboards54040ecc-RWELG6IP65S8/742186a0-366f-11f1-9c63-121daad7809b",
+      "LogicalResourceId": "UserPoolClientWeb"
+    },
+    "Destination": {
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-projectboa2604120858-e2e-sandbox-6e1e2f0442-auth179371D7-1DXO5FVZSYJDX/3fdf9e20-3671-11f1-aae4-123331f2d775",
+      "LogicalResourceId": "amplifyAuthUserPoolAppClient2626C6F8"
+    }
+  },
+  {
+    "Source": {
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-projectboa2604120858-ytemaknyeh-d54f0-authprojectboards54040ecc-RWELG6IP65S8/742186a0-366f-11f1-9c63-121daad7809b",
+      "LogicalResourceId": "UserPoolClient"
+    },
+    "Destination": {
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-projectboa2604120858-e2e-sandbox-6e1e2f0442-auth179371D7-1DXO5FVZSYJDX/3fdf9e20-3671-11f1-aae4-123331f2d775",
+      "LogicalResourceId": "amplifyAuthUserPoolNativeAppClient79534448"
+    }
+  },
+  {
+    "Source": {
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-projectboa2604120858-ytemaknyeh-d54f0-authprojectboards54040ecc-RWELG6IP65S8/742186a0-366f-11f1-9c63-121daad7809b",
+      "LogicalResourceId": "IdentityPool"
+    },
+    "Destination": {
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-projectboa2604120858-e2e-sandbox-6e1e2f0442-auth179371D7-1DXO5FVZSYJDX/3fdf9e20-3671-11f1-aae4-123331f2d775",
+      "LogicalResourceId": "amplifyAuthIdentityPool3FDE84CC"
+    }
+  },
+  {
+    "Source": {
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-projectboa2604120858-ytemaknyeh-d54f0-authprojectboards54040ecc-RWELG6IP65S8/742186a0-366f-11f1-9c63-121daad7809b",
+      "LogicalResourceId": "IdentityPoolRoleMap"
+    },
+    "Destination": {
+      "StackName": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-projectboa2604120858-e2e-sandbox-6e1e2f0442-auth179371D7-1DXO5FVZSYJDX/3fdf9e20-3671-11f1-aae4-123331f2d775",
+      "LogicalResourceId": "amplifyAuthIdentityPoolRoleAttachment045F17C8"
+    }
+  }
+]
