@@ -171,8 +171,8 @@ for (const cfnResource of backend.storage.stack.node
   .findAll()
   .filter((n) => CfnResource.isCfnResource(n))) {
   if (REFACTORED_RESOURCE_TYPES.includes(cfnResource.cfnResourceType)) {
-    cfnResource.add
-    cfnResource.applyRemovalPolicy(RemovalPolicy.RETAIN);
+    cfnResource.addOverride('DeletionPolicy', 'Retain');
+    cfnResource.addOverride('UpdateReplacePolicy', 'Retain');
   }
 }
 
@@ -180,6 +180,7 @@ for (const cfnResource of backend.auth.stack.node
   .findAll()
   .filter((n) => CfnResource.isCfnResource(n))) {
   if (REFACTORED_RESOURCE_TYPES.includes(cfnResource.cfnResourceType)) {
-    cfnResource.applyRemovalPolicy(RemovalPolicy.RETAIN);
+    cfnResource.addOverride('DeletionPolicy', 'Retain');
+    cfnResource.addOverride('UpdateReplacePolicy', 'Retain');
   }
 }
