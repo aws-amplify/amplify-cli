@@ -1,0 +1,14 @@
+[
+  {
+    "ParameterKey": "AuthRoleName",
+    "ParameterValue": "amplify-projectboards-xxxxxxxxxx-xxxxx-authRole"
+  },
+  {
+    "ParameterKey": "DeploymentBucketName",
+    "ParameterValue": "amplify-projectboards-xxxxxxxxxx-xxxxx-deployment"
+  },
+  {
+    "ParameterKey": "UnauthRoleName",
+    "ParameterValue": "amplify-projectboards-xxxxxxxxxx-xxxxx-unauthRole"
+  }
+]

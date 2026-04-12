@@ -40040,9 +40040,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"projectboa2604120858@workspace:amplify-migration-apps/project-boards/_snapshot.post.generate":
+"projectboards@workspace:amplify-migration-apps/project-boards/_snapshot.post.generate":
   version: 0.0.0-use.local
-  resolution: "projectboa2604120858@workspace:amplify-migration-apps/project-boards/_snapshot.post.generate"
+  resolution: "projectboards@workspace:amplify-migration-apps/project-boards/_snapshot.post.generate"
   dependencies:
     "@aws-amplify/backend": ^1.18.0
     "@aws-amplify/backend-cli": ^1.8.0

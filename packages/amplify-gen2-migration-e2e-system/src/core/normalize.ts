@@ -60,16 +60,18 @@ export function normalize(appName: string, appDir: string): void {
   for (const file of fs.readdirSync(preRefactorSnapshot).filter((f) => f.includes(sandboxSegment))) {
     // amplify-projectboards-e2e-sandbox-6e1e2f0442-auth179371D7-1DXO5FVZSYJDX
     const hash = file.split('.')[0].split('-')[4];
-    const src = path.join(preRefactorSnapshot, file);
-    const dst = path.join(preRefactorSnapshot, file.replaceAll(`${sandboxSegment}${hash}`, `${sandboxSegment}${`x`.repeat(hash.length)}`));
-    fs.renameSync(src, dst);
+    // const src = path.join(preRefactorSnapshot, file);
+    // const dst = path.join(preRefactorSnapshot, file.replaceAll(`${sandboxSegment}${hash}`, `${sandboxSegment}${`x`.repeat(hash.length)}`));
+    renameFile(appDir, `${sandboxSegment}${hash}`, `${sandboxSegment}${`x`.repeat(hash.length)}`);
+    // fs.renameSync(src, dst);
   }
   for (const file of fs.readdirSync(preRefactorSnapshot)) {
     // amplify-projectboards-e2e-sandbox-6e1e2f0442-auth179371D7-1DXO5FVZSYJDX
     const hash = file.split('.')[0].split('-').reverse()[0];
-    const src = path.join(preRefactorSnapshot, file);
-    const dst = path.join(preRefactorSnapshot, file.replaceAll(hash, `x`.repeat(hash.length)));
-    fs.renameSync(src, dst);
+    // const src = path.join(preRefactorSnapshot, file);
+    // const dst = path.join(preRefactorSnapshot, file.replaceAll(`-${hash}`, `-${`x`.repeat(hash.length)}`));
+    renameFile(appDir, `-${hash}`, `-${`x`.repeat(hash.length)}`);
+    // fs.renameSync(src, dst);
   }
   for (const file of fs.readdirSync(preRefactorSnapshot)) {
     // amplify-projectboards-kjelsxpuch-266a6-apiprojectboards-OLA0QLF-ConnectionStack-K6BIKS09ZUE6
@@ -78,36 +80,10 @@ export function normalize(appName: string, appDir: string): void {
       continue;
     }
     const hash = parts[5];
-    const src = path.join(preRefactorSnapshot, file);
-    const dst = path.join(preRefactorSnapshot, file.replaceAll(`-${hash}-`, `-${`x`.repeat(hash.length)}-`));
-    fs.renameSync(src, dst);
-  }
-
-  const postRefactorSnapshot = path.join(appDir, '_snapshot.post.refactor');
-  for (const file of fs.readdirSync(postRefactorSnapshot).filter((f) => f.includes(sandboxSegment))) {
-    // amplify-projectboards-e2e-sandbox-6e1e2f0442-auth179371D7-1DXO5FVZSYJDX
-    const hash = file.split('.')[0].split('-')[4];
-    const src = path.join(preRefactorSnapshot, file);
-    const dst = path.join(preRefactorSnapshot, file.replaceAll(`${sandboxSegment}${hash}`, `${sandboxSegment}${`x`.repeat(hash.length)}`));
-    fs.renameSync(src, dst);
-  }
-  for (const file of fs.readdirSync(preRefactorSnapshot)) {
-    // amplify-projectboards-e2e-sandbox-6e1e2f0442-auth179371D7-1DXO5FVZSYJDX
-    const hash = file.split('.')[0].split('-').reverse()[0];
-    const src = path.join(preRefactorSnapshot, file);
-    const dst = path.join(preRefactorSnapshot, file.replaceAll(hash, `x`.repeat(hash.length)));
-    fs.renameSync(src, dst);
-  }
-  for (const file of fs.readdirSync(preRefactorSnapshot)) {
-    // amplify-projectboards-kjelsxpuch-266a6-apiprojectboards-OLA0QLF-ConnectionStack-K6BIKS09ZUE6
-    const parts = file.split('.')[0].split('-');
-    if (parts.length !== 8) {
-      continue;
-    }
-    const hash = parts[5];
-    const src = path.join(preRefactorSnapshot, file);
-    const dst = path.join(preRefactorSnapshot, file.replaceAll(`-${hash}-`, `-${`x`.repeat(hash.length)}-`));
-    fs.renameSync(src, dst);
+    // const src = path.join(preRefactorSnapshot, file);
+    // const dst = path.join(preRefactorSnapshot, file.replaceAll(`-${hash}-`, `-${`x`.repeat(hash.length)}-`));
+    renameFile(appDir, `-${hash}-`, `-${`x`.repeat(hash.length)}-`);
+    // fs.renameSync(src, dst);
   }
 }
 
