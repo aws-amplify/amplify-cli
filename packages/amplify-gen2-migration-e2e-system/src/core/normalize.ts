@@ -41,152 +41,90 @@ export function normalize(appName: string, appDir: string): void {
   const metaPath = path.join(appDir, '_snapshot.pre.generate', 'amplify', 'backend', 'amplify-meta.json');
   const amplifyMeta: any = JSON.parse(fs.readFileSync(metaPath, 'utf-8'));
 
-  // StackName: amplify-{appNameNoDashes}-{envName}-{envHash}
+  // amplify-projectboards-kjelsxpuch-266a6
   const stackName: string = amplifyMeta.providers.awscloudformation.StackName;
-  const stackParts = stackName.split('-');
-  const gen1EnvName = stackParts[2];
-  const gen1EnvHash = stackParts[3];
+  const deploymentName = stackName.split('-')[1];
+  const envName = stackName.split('-')[2];
+  const envHash = stackName.split('-')[3];
 
-  const mappings: Record<string, string> = {};
-  mappings[gen1EnvName] = 'envname';
-  mappings[gen1EnvHash] = 'envhash';
+  rewriteContent(appDir, deploymentName, appNameNoDashes);
+  rewriteContent(appDir, envName, 'x'.repeat(envName.length));
+  rewriteContent(appDir, envHash, 'x'.repeat(envHash.length));
 
-  // --- Scan pre.refactor filenames for run-specific values ---------------
-  const preRefactorDir = path.join(appDir, '_snapshot.pre.refactor');
-  if (!fs.existsSync(preRefactorDir)) return;
-  const preRefactorFiles = fs.readdirSync(preRefactorDir);
+  renameFile(appDir, deploymentName, appNameNoDashes);
+  renameFile(appDir, envName, 'x'.repeat(envName.length));
+  renameFile(appDir, envHash, 'x'.repeat(envHash.length));
 
-  // Pass 1: deploymentName, sandbox hash, commit hash
-  for (const file of preRefactorFiles) {
-    const base = file.split('.')[0];
-
-    // amplify-{deploymentName}-e2e-sandbox-{sandboxHash}...
-    const sbx = base.match(new RegExp(`^amplify-(${appNameNoDashes.slice(0, 10)}\\d{10})-e2e-sandbox-([0-9a-f]+)`));
-    if (sbx) {
-      mappings[sbx[1]] = appNameNoDashes;
-      mappings[sbx[2]] = 'sandboxhash';
-    }
-
-    // amplify-{deploymentName}-{envName}-{envHash}...
-    const g1d = base.match(new RegExp(`^amplify-(${appNameNoDashes.slice(0, 10)}\\d{10})-${gen1EnvName}-${gen1EnvHash}`));
-    if (g1d) mappings[g1d[1]] = appNameNoDashes;
-
-    // amplify-{app|deploymentName}-gen2{envName}-branch-{commitHash}...
-    const br = base.match(
-      new RegExp(`^amplify-(?:${appNameNoDashes}|${appNameNoDashes.slice(0, 10)}\\d{10})-gen2${gen1EnvName}-branch-([0-9a-f]+)`),
-    );
-    if (br) mappings[br[1]] = 'commithash';
+  const preRefactorSnapshot = path.join(appDir, '_snapshot.pre.refactor');
+  const sandboxSegment = '-sandbox-';
+  for (const file of fs.readdirSync(preRefactorSnapshot).filter((f) => f.includes(sandboxSegment))) {
+    // amplify-projectboards-e2e-sandbox-6e1e2f0442-auth179371D7-1DXO5FVZSYJDX
+    const hash = file.split('.')[0].split('-')[4];
+    const src = path.join(preRefactorSnapshot, file);
+    const dst = path.join(preRefactorSnapshot, file.replaceAll(`${sandboxSegment}${hash}`, `${sandboxSegment}${`x`.repeat(hash.length)}`));
+    fs.renameSync(src, dst);
   }
-
-  // Pass 2: CFN nested stack hashes.
-  // Strip the known root-stack prefix from each filename, then collect
-  // every dash-separated segment that looks like a CFN hash.
-  const deploymentNames = Object.entries(mappings)
-    .filter(([, v]) => v === appNameNoDashes)
-    .map(([k]) => k);
-  const appPrefixes = [appNameNoDashes, ...deploymentNames];
-
-  const sandboxHashes = Object.entries(mappings)
-    .filter(([, v]) => v === 'sandboxhash')
-    .map(([k]) => k);
-  const commitHashes = Object.entries(mappings)
-    .filter(([, v]) => v === 'commithash')
-    .map(([k]) => k);
-
-  for (const file of preRefactorFiles) {
-    const base = file.split('.')[0];
-    if (!base.startsWith('amplify-')) continue;
-
-    let rest = base.slice('amplify-'.length);
-
-    // Strip app/deployment prefix
-    let found = false;
-    for (const p of appPrefixes) {
-      if (rest.startsWith(p + '-')) {
-        rest = rest.slice(p.length + 1);
-        found = true;
-        break;
-      }
-    }
-    if (!found) continue;
-
-    // Strip env/sandbox/branch prefix to isolate nested-stack portion
-    if (rest.startsWith('e2e-sandbox-')) {
-      rest = rest.slice('e2e-sandbox-'.length);
-      for (const h of sandboxHashes) {
-        if (rest.startsWith(h + '-')) {
-          rest = rest.slice(h.length + 1);
-          break;
-        }
-        if (rest === h) {
-          rest = '';
-          break;
-        }
-      }
-    } else if (rest.startsWith(`gen2${gen1EnvName}-branch-`)) {
-      rest = rest.slice(`gen2${gen1EnvName}-branch-`.length);
-      for (const h of commitHashes) {
-        if (rest.startsWith(h + '-')) {
-          rest = rest.slice(h.length + 1);
-          break;
-        }
-        if (rest === h) {
-          rest = '';
-          break;
-        }
-      }
-    } else if (rest.startsWith(`${gen1EnvName}-${gen1EnvHash}`)) {
-      rest = rest.slice(`${gen1EnvName}-${gen1EnvHash}`.length);
-      if (rest.startsWith('-')) rest = rest.slice(1);
-    } else {
+  for (const file of fs.readdirSync(preRefactorSnapshot)) {
+    // amplify-projectboards-e2e-sandbox-6e1e2f0442-auth179371D7-1DXO5FVZSYJDX
+    const hash = file.split('.')[0].split('-').reverse()[0];
+    const src = path.join(preRefactorSnapshot, file);
+    const dst = path.join(preRefactorSnapshot, file.replaceAll(hash, `x`.repeat(hash.length)));
+    fs.renameSync(src, dst);
+  }
+  for (const file of fs.readdirSync(preRefactorSnapshot)) {
+    // amplify-projectboards-kjelsxpuch-266a6-apiprojectboards-OLA0QLF-ConnectionStack-K6BIKS09ZUE6
+    const parts = file.split('.')[0].split('-');
+    if (parts.length !== 8) {
       continue;
     }
-
-    if (!rest) continue;
-
-    // `rest` is now the nested-stack suffix, e.g.:
-    //   auth179371D7-17X846ZMEAIKY
-    //   apiprojectboards-13VBWUTDNJGOL-Project-UTM3G4MLN93I
-    //   amplifyDataTodoNestedStackTodoNestedStackR-1T2LN2EMRF641
-    for (const seg of rest.split('-')) {
-      if (!seg) continue;
-      // Pure lowercase = category name (auth, storage, api, etc.)
-      if (/^[a-z]+$/.test(seg)) continue;
-      // category + lowercase hex = deterministic resource ID (storages369f8ff1c)
-      if (/^[a-z]+[0-9a-f]+$/.test(seg)) continue;
-      // category + 8-char hex construct ID (auth179371D7, storage0EC3F24A)
-      if (/^[a-z]+[0-9A-F]{8}$/.test(seg)) continue;
-      // Pure 8-char hex = deterministic CDK construct ID (179371D7)
-      if (/^[0-9A-F]{8}$/.test(seg)) continue;
-      // camelCase structural name with no digits (amplifyDataTodoNestedStack...)
-      if (/^[a-z][a-zA-Z]+$/.test(seg)) continue;
-      // Known structural keywords
-      if (['ConnectionStack', 'CustomResourcesjson', 'FunctionDirectiveStack', 'Project', 'Todo'].includes(seg)) continue;
-      // Everything else is a CFN hash
-      mappings[seg] = 'HASH';
-    }
+    const hash = parts[5];
+    const src = path.join(preRefactorSnapshot, file);
+    const dst = path.join(preRefactorSnapshot, file.replaceAll(`-${hash}-`, `-${`x`.repeat(hash.length)}-`));
+    fs.renameSync(src, dst);
   }
 
-  // --- Apply mappings to all snapshot files (basename only for renames) ---
+  const postRefactorSnapshot = path.join(appDir, '_snapshot.post.refactor');
+  for (const file of fs.readdirSync(postRefactorSnapshot).filter((f) => f.includes(sandboxSegment))) {
+    // amplify-projectboards-e2e-sandbox-6e1e2f0442-auth179371D7-1DXO5FVZSYJDX
+    const hash = file.split('.')[0].split('-')[4];
+    const src = path.join(preRefactorSnapshot, file);
+    const dst = path.join(preRefactorSnapshot, file.replaceAll(`${sandboxSegment}${hash}`, `${sandboxSegment}${`x`.repeat(hash.length)}`));
+    fs.renameSync(src, dst);
+  }
+  for (const file of fs.readdirSync(preRefactorSnapshot)) {
+    // amplify-projectboards-e2e-sandbox-6e1e2f0442-auth179371D7-1DXO5FVZSYJDX
+    const hash = file.split('.')[0].split('-').reverse()[0];
+    const src = path.join(preRefactorSnapshot, file);
+    const dst = path.join(preRefactorSnapshot, file.replaceAll(hash, `x`.repeat(hash.length)));
+    fs.renameSync(src, dst);
+  }
+  for (const file of fs.readdirSync(preRefactorSnapshot)) {
+    // amplify-projectboards-kjelsxpuch-266a6-apiprojectboards-OLA0QLF-ConnectionStack-K6BIKS09ZUE6
+    const parts = file.split('.')[0].split('-');
+    if (parts.length !== 8) {
+      continue;
+    }
+    const hash = parts[5];
+    const src = path.join(preRefactorSnapshot, file);
+    const dst = path.join(preRefactorSnapshot, file.replaceAll(`-${hash}-`, `-${`x`.repeat(hash.length)}-`));
+    fs.renameSync(src, dst);
+  }
+}
+
+function rewriteContent(appDir: string, before: string, after: string): void {
   const snapshots = fs.readdirSync(appDir).filter((f) => f.startsWith('_snapshot'));
   const files = snapshots.flatMap((s) => getFilesRecursive(path.join(appDir, s)));
-  const sorted = Object.entries(mappings).sort(([a], [b]) => b.length - a.length);
-
   for (const file of files) {
-    let content = fs.readFileSync(file, 'utf-8');
-    for (const [value, replacement] of sorted) {
-      content = content.replaceAll(value, replacement);
-    }
+    const content = fs.readFileSync(file, 'utf-8').replaceAll(before, after);
     fs.writeFileSync(file, content, 'utf-8');
+  }
+}
 
-    const dir = path.dirname(file);
-    let base = path.basename(file);
-    for (const [value, replacement] of sorted) {
-      base = base.replaceAll(value, replacement);
-    }
-    const newPath = path.join(dir, base);
-    if (newPath !== file) {
-      fs.renameSync(file, newPath);
-    }
+function renameFile(appDir: string, before: string, after: string): void {
+  const snapshots = fs.readdirSync(appDir).filter((f) => f.startsWith('_snapshot'));
+  const files = snapshots.flatMap((s) => getFilesRecursive(path.join(appDir, s)));
+  for (const file of files) {
+    const dst = file.replaceAll(before, after);
+    fs.renameSync(file, dst);
   }
 }
