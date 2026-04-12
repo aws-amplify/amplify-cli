@@ -43,6 +43,8 @@ export class DynamoDBGenerator implements Planner {
           for (const statement of this.renderer.renderTable(table, scopeVarName)) {
             this.backendGenerator.addEarlyStatement(statement);
           }
+
+          this.backendGenerator.addRefactoredResourceTypes(['AWS::DynamoDB::Table']);
         },
       },
     ];

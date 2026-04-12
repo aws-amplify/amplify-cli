@@ -132,6 +132,7 @@ export class S3Generator implements Planner {
         this.backendGenerator.addDefineBackendProperty(factory.createShorthandPropertyAssignment(factory.createIdentifier('storage')));
 
         this.contributeOverrides(bucketName, accelerateStatus, versioningStatus, encryption);
+        this.backendGenerator.addRefactoredResourceTypes(['AWS::S3::Bucket']);
       },
     };
   }

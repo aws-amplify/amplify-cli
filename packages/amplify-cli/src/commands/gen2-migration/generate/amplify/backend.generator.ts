@@ -21,6 +21,7 @@ export class BackendGenerator implements Planner {
   private readonly defineBackendProperties: ts.ObjectLiteralElementLike[] = [];
   private readonly postDefineStatements: ts.Statement[] = [];
   private readonly earlyStatements: ts.Statement[] = [];
+  private readonly refactoredResourceTypes: string[] = [];
   private readonly outputDir: string;
   private hasBranchName = false;
   private hasStorageStack = false;
@@ -100,6 +101,20 @@ export class BackendGenerator implements Planner {
   }
 
   /**
+   * Registers CloudFormation resource types that will be refactored during
+   * the migration. At the end of backend.ts, a block is emitted that applies
+   * `RemovalPolicy.RETAIN` to all matching CfnResources so they survive
+   * the stack update when Gen2 takes ownership.
+   */
+  public addRefactoredResourceTypes(types: readonly string[]): void {
+    for (const t of types) {
+      if (!this.refactoredResourceTypes.includes(t)) {
+        this.refactoredResourceTypes.push(t);
+      }
+    }
+  }
+
+  /**
    * Assembles all accumulated imports, properties, and statements into backend.ts.
    */
   public async plan(): Promise<AmplifyMigrationOperation[]> {
@@ -116,6 +131,9 @@ export class BackendGenerator implements Planner {
           // then other resources), then CDK sub-modules, then @aws-amplify/backend,
           // then analytics, then CDK root, then CDK cognito.
           this.addImport('@aws-amplify/backend', ['defineBackend']);
+          if (this.refactoredResourceTypes.length > 0) {
+            this.addImport('aws-cdk-lib', ['CfnResource', 'RemovalPolicy']);
+          }
           const sortedImports = [...this.imports].sort((a, b) => importOrder(a.source) - importOrder(b.source));
 
           for (const imp of sortedImports) {
@@ -147,6 +165,11 @@ export class BackendGenerator implements Planner {
           nodes.push(...this.earlyStatements);
           nodes.push(...this.postDefineStatements);
 
+          // Emit the REFACTORED_RESOURCE_TYPES block if any types were registered.
+          if (this.refactoredResourceTypes.length > 0) {
+            nodes.push(...this.renderRefactoredResourceTypesBlock());
+          }
+
           const nodeArray = factory.createNodeArray(nodes as ts.Statement[]);
           let content = TS.printNodes(nodeArray);
 
@@ -174,6 +197,74 @@ export class BackendGenerator implements Planner {
         },
       },
     ];
+  }
+  /**
+   * Renders the trailing block that applies RemovalPolicy.RETAIN to all
+   * CfnResources whose type is in the REFACTORED_RESOURCE_TYPES list.
+   */
+  private renderRefactoredResourceTypesBlock(): ts.Statement[] {
+    const arrayLiteral = factory.createArrayLiteralExpression(
+      this.refactoredResourceTypes.map((t) => factory.createStringLiteral(t)),
+      true,
+    );
+    const constDecl = TS.constDecl('REFACTORED_RESOURCE_TYPES', arrayLiteral);
+
+    const filterCallback = factory.createArrowFunction(
+      undefined,
+      undefined,
+      [factory.createParameterDeclaration(undefined, undefined, 'n')],
+      undefined,
+      factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
+      factory.createCallExpression(
+        factory.createPropertyAccessExpression(factory.createIdentifier('CfnResource'), 'isCfnResource'),
+        undefined,
+        [factory.createIdentifier('n')],
+      ),
+    );
+
+    const iterableExpr = factory.createCallExpression(
+      factory.createPropertyAccessExpression(
+        factory.createCallExpression(
+          factory.createPropertyAccessExpression(
+            factory.createPropertyAccessExpression(
+              factory.createPropertyAccessExpression(factory.createIdentifier('backend'), 'stack'),
+              'node',
+            ),
+            'findAll',
+          ),
+          undefined,
+          [],
+        ),
+        'filter',
+      ),
+      undefined,
+      [filterCallback],
+    );
+
+    const includesCheck = factory.createCallExpression(
+      factory.createPropertyAccessExpression(factory.createIdentifier('REFACTORED_RESOURCE_TYPES'), 'includes'),
+      undefined,
+      [factory.createPropertyAccessExpression(factory.createIdentifier('cfnResource'), 'cfnResourceType')],
+    );
+
+    const applyRemovalPolicy = factory.createExpressionStatement(
+      factory.createCallExpression(
+        factory.createPropertyAccessExpression(factory.createIdentifier('cfnResource'), 'applyRemovalPolicy'),
+        undefined,
+        [factory.createPropertyAccessExpression(factory.createIdentifier('RemovalPolicy'), 'RETAIN')],
+      ),
+    );
+
+    const ifStatement = factory.createIfStatement(includesCheck, factory.createBlock([applyRemovalPolicy], true));
+
+    const forOfStatement = factory.createForOfStatement(
+      undefined,
+      factory.createVariableDeclarationList([factory.createVariableDeclaration('cfnResource')], ts.NodeFlags.Const),
+      iterableExpr,
+      factory.createBlock([ifStatement], true),
+    );
+
+    return [constDecl, forOfStatement];
   }
 }
 
