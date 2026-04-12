@@ -34,9 +34,12 @@ export interface CFNResource {
   readonly Type: string;
   readonly Properties: Record<string, string | number | object>;
   readonly Condition?: string;
-  readonly UpdateReplacePolicy?: string;
-  readonly DeletionPolicy?: string;
-  // DependsOn is mutable: resolvers and buildBlueprint remap dependencies on cloned templates.
+
+  // mutable because we change these during `lock`.
+  UpdateReplacePolicy?: string;
+  DeletionPolicy?: string;
+
+  // mutable because resolvers and buildBlueprint remap dependencies on cloned templates.
   DependsOn?: string | string[];
 }
 

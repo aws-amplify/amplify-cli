@@ -262,15 +262,18 @@ export class Cfn {
     readonly changeSet: DescribeChangeSetOutput;
     readonly templateBody: CFNTemplate;
     readonly resource?: DiscoveredResource;
+    readonly captureSnapshot?: boolean;
   }): Promise<void> {
     const { changeSet, templateBody, resource } = params;
     const displayName = extractStackNameFromId(changeSet.StackName);
 
-    writeUpdateSnapshot({
-      stackName: changeSet.StackName,
-      templateBody: JSON.stringify(templateBody),
-      parameters: changeSet.Parameters ?? [],
-    });
+    if (params.captureSnapshot ?? true) {
+      writeUpdateSnapshot({
+        stackName: changeSet.StackName,
+        templateBody: JSON.stringify(templateBody),
+        parameters: changeSet.Parameters ?? [],
+      });
+    }
 
     this.info(`Executing change set for stack: ${displayName}`, resource);
     await this.client.send(new ExecuteChangeSetCommand({ StackName: changeSet.StackName, ChangeSetName: changeSet.ChangeSetName }));

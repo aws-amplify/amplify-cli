@@ -166,7 +166,17 @@ const REFACTORED_RESOURCE_TYPES = [
   'AWS::DynamoDB::Table',
   'AWS::S3::Bucket',
 ];
-for (const cfnResource of backend.stack.node
+
+for (const cfnResource of backend.storage.stack.node
+  .findAll()
+  .filter((n) => CfnResource.isCfnResource(n))) {
+  if (REFACTORED_RESOURCE_TYPES.includes(cfnResource.cfnResourceType)) {
+    cfnResource.add
+    cfnResource.applyRemovalPolicy(RemovalPolicy.RETAIN);
+  }
+}
+
+for (const cfnResource of backend.auth.stack.node
   .findAll()
   .filter((n) => CfnResource.isCfnResource(n))) {
   if (REFACTORED_RESOURCE_TYPES.includes(cfnResource.cfnResourceType)) {

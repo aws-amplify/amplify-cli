@@ -1,26 +1,21 @@
 import { AmplifyMigrationStep } from './_infra/step';
 import { AmplifyMigrationOperation, ValidationResult } from './_infra/operation';
 import { Plan } from './_infra/plan';
-import { extractCategory } from './_infra/categories';
-import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import {
-  CreateChangeSetCommand,
-  DeleteChangeSetCommand,
-  DescribeChangeSetCommand,
-  type DescribeChangeSetOutput,
   DescribeStackResourcesCommand,
   DescribeStacksCommand,
   GetStackPolicyCommand,
-  GetTemplateCommand,
-  ListStackResourcesCommand,
   SetStackPolicyCommand,
-  UpdateStackCommand,
-  waitUntilChangeSetCreateComplete,
-  waitUntilStackUpdateComplete,
+  StackResource,
 } from '@aws-sdk/client-cloudformation';
 import { UpdateAppCommand, GetAppCommand } from '@aws-sdk/client-amplify';
 import { UpdateTableCommand, paginateListTables } from '@aws-sdk/client-dynamodb';
-import { paginateListGraphqlApis } from '@aws-sdk/client-appsync';
+import { DiscoveredResource } from './generate/_infra/gen1-app';
+import CLITable from 'cli-table3';
+import { extractStackNameFromId } from './refactor/utils';
+import { Cfn } from './refactor/cfn';
+import { REFACTORED_RESOURCES } from './_infra/resource-types';
+import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 
 const GEN2_MIGRATION_ENVIRONMENT_NAME = 'GEN2_MIGRATION_ENVIRONMENT_NAME';
 
@@ -54,6 +49,10 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
   public async forward(): Promise<Plan> {
     const operations: AmplifyMigrationOperation[] = [];
 
+    // ============================================================
+    // Validations
+    // ============================================================
+
     operations.push({
       describe: async () => [],
       validate: () => ({ description: 'Environment Status', run: () => this.validateDeploymentStatus() }),
@@ -68,21 +67,9 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
       execute: async () => {},
     });
 
-    for (const tableName of await this.dynamoTableNames()) {
-      operations.push({
-        validate: () => undefined,
-        describe: async () => [`Enable deletion protection for table '${tableName}'`],
-        execute: async () => {
-          await this.gen1App.clients.dynamoDB.send(
-            new UpdateTableCommand({
-              TableName: tableName,
-              DeletionProtectionEnabled: true,
-            }),
-          );
-          this.logger.info(`Enabled deletion protection for table '${tableName}'`);
-        },
-      });
-    }
+    // ============================================================
+    // Project Level Operations
+    // ============================================================
 
     operations.push({
       validate: () => undefined,
@@ -95,29 +82,13 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
       },
     });
 
-    if ((await this.dynamoTableNames()).length > 0) {
-      operations.push({
-        validate: () => undefined,
-        describe: async () => {
-          return [`Set DeletionPolicy to Retain for DynamoDB tables in API stacks`];
-        },
-        execute: async () => {
-          const apiStackIds = await this.findApiCategoryStacks();
-          for (const apiStackId of apiStackIds) {
-            await this.setDeletionPolicyRetainOnDynamoTables(apiStackId);
-          }
-          this.logger.info('Successfully set DeletionPolicy to Retain for DynamoDB tables');
-        },
-      });
-    }
-
     operations.push({
       validate: () => undefined,
       describe: async () => {
         return [`Add lock statement to stack policy on '${this.gen1App.rootStackName}': ${JSON.stringify(LOCK_STATEMENT)}`];
       },
       execute: async () => {
-        const existingPolicy = await this.getExistingStackPolicy();
+        const existingPolicy = await this.fetchExistingStackPolicy();
         const alreadyLocked = existingPolicy.Statement.some(isLockStatement);
         if (alreadyLocked) {
           this.logger.info(`Lock statement already exists in stack policy on '${this.gen1App.rootStackName}', skipping`);
@@ -135,6 +106,53 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
       },
     });
 
+    // ============================================================
+    // Resource Specific Operations
+    // ============================================================
+
+    const nestedStacks = await this.listNestedStack(this.gen1App.rootStackName);
+
+    for (const resource of this.gen1App.discover()) {
+      this.logger.push(`${resource.category}/${resource.resourceName} (${resource.service})`);
+      switch (resource.key) {
+        case 'api:AppSync': {
+          const apiStackId = this.findNestedStack(nestedStacks, `${resource.category}${resource.resourceName}`);
+          const apiNestedStacks = await this.listNestedStack(apiStackId);
+          operations.push(...(await this.enableModelTablesDeletionProtection(resource)));
+          for (const tableName of await this.dynamoTableNames()) {
+            const modelName = tableName.split('-')[0];
+            this.logger.push(modelName);
+            const tableStackId = this.findNestedStack(apiNestedStacks, modelName);
+            operations.push(...(await this.retainResource(resource, tableStackId)));
+            this.logger.pop();
+          }
+          break;
+        }
+        case 'auth:Cognito':
+        case 'auth:Cognito-UserPool-Groups':
+        case 'storage:S3':
+        case 'storage:DynamoDB':
+        case 'analytics:Kinesis': {
+          const stackId = this.findNestedStack(nestedStacks, `${resource.category}${resource.resourceName}`);
+          operations.push(...(await this.retainResource(resource, stackId)));
+          break;
+        }
+
+        case 'api:API Gateway':
+        case 'geo:Map':
+        case 'geo:PlaceIndex':
+        case 'geo:GeofenceCollection':
+        case 'function:Lambda': {
+          break;
+        }
+
+        // unsupported/unknown resources - skip them.
+        case 'UNKNOWN':
+          break;
+      }
+      this.logger.pop();
+    }
+
     return new Plan({
       operations,
       logger: this.logger,
@@ -149,14 +167,9 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
   public async rollback(): Promise<Plan> {
     const operations: AmplifyMigrationOperation[] = [];
 
-    for (const tableName of await this.dynamoTableNames()) {
-      operations.push({
-        validate: () => undefined,
-        describe: async () => [`Preserve deletion protection for table '${tableName}'`],
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
-        execute: async () => {},
-      });
-    }
+    // ============================================================
+    // Project Level Operations
+    // ============================================================
 
     operations.push({
       validate: () => undefined,
@@ -176,7 +189,7 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
         return [`Remove lock statement from stack policy on '${this.gen1App.rootStackName}': ${JSON.stringify(LOCK_STATEMENT)}`];
       },
       execute: async () => {
-        const existingPolicy = await this.getExistingStackPolicy();
+        const existingPolicy = await this.fetchExistingStackPolicy();
         const index = existingPolicy.Statement.findIndex(isLockStatement);
         if (index === -1) {
           this.logger.info(`Lock statement not found in stack policy on '${this.gen1App.rootStackName}'`);
@@ -259,142 +272,85 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
     return this._dynamoTableNames;
   }
 
-  private async findApiCategoryStacks(): Promise<string[]> {
-    const response = await this.gen1App.clients.cloudFormation.send(
-      new DescribeStackResourcesCommand({ StackName: this.gen1App.rootStackName }),
-    );
-    const stackResources = response.StackResources ?? [];
-    return stackResources
-      .filter(
-        (resource) =>
-          resource.ResourceType === 'AWS::CloudFormation::Stack' &&
-          extractCategory(resource.LogicalResourceId ?? '') === 'Api' &&
-          resource.PhysicalResourceId,
-      )
-      .map((resource) => resource.PhysicalResourceId as string);
-  }
-
-  private async setDeletionPolicyRetainOnDynamoTables(stackId: string): Promise<void> {
-    // List the API stack's resources to find model nested stacks
-    let nextToken: string | undefined;
-    const modelStackIds: string[] = [];
-
-    do {
-      const response = await this.gen1App.clients.cloudFormation.send(
-        new ListStackResourcesCommand({ StackName: stackId, NextToken: nextToken }),
-      );
-      nextToken = response.NextToken;
-
-      for (const resource of response.StackResourceSummaries ?? []) {
-        if (resource.ResourceType === 'AWS::CloudFormation::Stack' && resource.PhysicalResourceId) {
-          modelStackIds.push(resource.PhysicalResourceId);
-        }
-      }
-    } while (nextToken);
-
-    // Update each model stack's template to set DeletionPolicy: Retain on DynamoDB tables
-    for (const modelStackId of modelStackIds) {
-      const templateResponse = await this.gen1App.clients.cloudFormation.send(new GetTemplateCommand({ StackName: modelStackId }));
-      if (!templateResponse.TemplateBody) {
-        throw new AmplifyError('MigrationError', {
-          message: `Could not retrieve template for stack ${modelStackId}`,
-        });
-      }
-
-      const template = JSON.parse(templateResponse.TemplateBody);
-      const resources = template.Resources;
-
-      let modified = false;
-      for (const logicalId of Object.keys(resources)) {
-        const resource = resources[logicalId];
-        if (resource.Type === 'AWS::DynamoDB::Table' && resource.DeletionPolicy !== 'Retain') {
-          resource.DeletionPolicy = 'Retain';
-          this.logger.info(`Set DeletionPolicy to Retain for table '${logicalId}'`);
-          modified = true;
-        }
-      }
-
-      if (modified) {
-        const describeResponse = await this.gen1App.clients.cloudFormation.send(new DescribeStacksCommand({ StackName: modelStackId }));
-        const parameters = (describeResponse.Stacks?.[0]?.Parameters ?? []).map((p) => ({
-          ParameterKey: p.ParameterKey,
-          UsePreviousValue: true,
-        }));
-
-        const changeSetName = `deletion-policy-retain-${Date.now()}`;
-
-        await this.gen1App.clients.cloudFormation.send(
-          new CreateChangeSetCommand({
-            StackName: modelStackId,
-            ChangeSetName: changeSetName,
-            TemplateBody: JSON.stringify(template),
-            Parameters: parameters,
-            Capabilities: ['CAPABILITY_NAMED_IAM'],
-          }),
-        );
-
-        await waitUntilChangeSetCreateComplete(
-          { client: this.gen1App.clients.cloudFormation, maxWaitTime: 120 },
-          { StackName: modelStackId, ChangeSetName: changeSetName },
-        );
-
-        const changeSet = await this.gen1App.clients.cloudFormation.send(
-          new DescribeChangeSetCommand({ StackName: modelStackId, ChangeSetName: changeSetName }),
-        );
-
-        this.validateDeletionPolicyChangeset(changeSet, modelStackId, changeSetName);
-
-        await this.gen1App.clients.cloudFormation.send(
-          new DeleteChangeSetCommand({ StackName: modelStackId, ChangeSetName: changeSetName }),
-        );
-
-        this.logger.info(`Updating stack ${modelStackId} with DeletionPolicy changes...`);
-        await this.gen1App.clients.cloudFormation.send(
-          new UpdateStackCommand({
-            StackName: modelStackId,
-            TemplateBody: JSON.stringify(template),
-            Parameters: parameters,
-            Capabilities: ['CAPABILITY_NAMED_IAM'],
-          }),
-        );
-        await waitUntilStackUpdateComplete({ client: this.gen1App.clients.cloudFormation, maxWaitTime: 900 }, { StackName: modelStackId });
-        this.logger.info(`Successfully updated stack ${modelStackId}`);
-      }
+  private async enableModelTablesDeletionProtection(resource: DiscoveredResource): Promise<AmplifyMigrationOperation[]> {
+    const operations = [];
+    for (const tableName of await this.dynamoTableNames()) {
+      operations.push({
+        resource,
+        validate: () => undefined,
+        describe: async () => [`Enable deletion protection for table '${tableName}'`],
+        execute: async () => {
+          await this.gen1App.clients.dynamoDB.send(
+            new UpdateTableCommand({
+              TableName: tableName,
+              DeletionProtectionEnabled: true,
+            }),
+          );
+          this.logger.info(`Enabled deletion protection for table '${tableName}'`);
+        },
+      });
     }
+    return operations;
   }
 
-  /** Validates that a changeset only contains expected changes from setting DeletionPolicy on DynamoDB tables. */
-  private validateDeletionPolicyChangeset(changeSet: DescribeChangeSetOutput, stackId: string, changeSetName: string): void {
-    const changes = changeSet.Changes ?? [];
+  private async retainResource(appResource: DiscoveredResource, stackId: string): Promise<AmplifyMigrationOperation[]> {
+    const operations = [];
 
-    const allowedModifyTypes = new Set(['AWS::DynamoDB::Table', 'AWS::IAM::Policy']);
+    const cfn = new Cfn(this.gen1App.clients.cloudFormation, this.logger);
 
-    const unexpected = changes.filter((change) => {
-      const rc = change.ResourceChange;
-      return rc.Action !== 'Modify' || !allowedModifyTypes.has(rc.ResourceType);
+    const stackName = extractStackNameFromId(stackId);
+    const template = await cfn.fetchTemplate(stackId);
+
+    const table = new CLITable({
+      head: ['Logical ID', 'Type', 'DeletionPolicy', 'UpdateReplacePolicy'],
+      style: { head: [] },
     });
 
-    if (unexpected.length > 0) {
-      const descriptions = unexpected.map((c) => {
-        const rc = c.ResourceChange;
-        return `${rc.Action} ${rc.ResourceType} (${rc.LogicalResourceId})`;
-      });
-
-      void this.gen1App.clients.cloudFormation.send(new DeleteChangeSetCommand({ StackName: stackId, ChangeSetName: changeSetName }));
-
-      throw new AmplifyError('MigrationError', {
-        message: [
-          `Changeset for stack '${stackId}' contains unexpected changes:`,
-          ...descriptions.map((d) => `  - ${d}`),
-          '',
-          'Expected only Modify actions on AWS::DynamoDB::Table and AWS::IAM::Policy resources.',
-        ].join('\n'),
-        resolution: 'This may indicate template drift. Resolve the drift before proceeding with migration.',
-      });
+    for (const [logicalId, resource] of Object.entries(template.Resources)) {
+      if (
+        REFACTORED_RESOURCES.includes(resource.Type) &&
+        (resource.DeletionPolicy !== 'Retain' || resource.UpdateReplacePolicy !== 'Retain')
+      ) {
+        resource.DeletionPolicy = 'Retain';
+        resource.UpdateReplacePolicy = 'Retain';
+        table.push([logicalId, resource.Type, 'Retain', 'Retain']);
+      }
     }
+
+    if (table.length === 0) {
+      return [];
+    }
+
+    const describeResponse = await this.gen1App.clients.cloudFormation.send(new DescribeStacksCommand({ StackName: stackId }));
+    const parameters = (describeResponse.Stacks?.[0]?.Parameters ?? []).map((p) => ({
+      ParameterKey: p.ParameterKey,
+      UsePreviousValue: true,
+    }));
+
+    const changeSet = await cfn.createChangeSet({
+      stackName: stackId,
+      templateBody: template,
+      parameters,
+    });
+
+    operations.push({
+      resource: appResource,
+      describe: async () => [`Set resources to Retain in stack ${stackName}\n\n${table.toString()}`],
+      validate: () => undefined,
+      execute: async () => {
+        await cfn.executeChangeSet({
+          changeSet: changeSet,
+          templateBody: template,
+          resource: appResource,
+          captureSnapshot: false,
+        });
+      },
+    });
+
+    return operations;
   }
 
-  private async getExistingStackPolicy(): Promise<{ Statement: Record<string, string>[] }> {
+  private async fetchExistingStackPolicy(): Promise<{ Statement: Record<string, string>[] }> {
     const response = await this.gen1App.clients.cloudFormation.send(
       new GetStackPolicyCommand({
         StackName: this.gen1App.rootStackName,
@@ -404,5 +360,20 @@ export class AmplifyMigrationLockStep extends AmplifyMigrationStep {
       return JSON.parse(response.StackPolicyBody) as { Statement: Record<string, string>[] };
     }
     return { Statement: [] };
+  }
+
+  private async listNestedStack(rootStack: string): Promise<StackResource[]> {
+    const response = await this.gen1App.clients.cloudFormation.send(new DescribeStackResourcesCommand({ StackName: rootStack }));
+    return (response.StackResources ?? []).filter((r) => r.ResourceType === 'AWS::CloudFormation::Stack');
+  }
+
+  private findNestedStack(nestedStacks: StackResource[], logicalIdPrefix: string) {
+    const stackId = nestedStacks.find((s) => s.LogicalResourceId?.startsWith(logicalIdPrefix))?.PhysicalResourceId;
+    if (!stackId) {
+      throw new AmplifyError('MigrationError', {
+        message: `Unable to find nested stack logical id prefix: ${logicalIdPrefix}`,
+      });
+    }
+    return stackId;
   }
 }

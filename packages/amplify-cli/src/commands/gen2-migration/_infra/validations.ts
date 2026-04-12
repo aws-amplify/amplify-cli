@@ -7,7 +7,7 @@ import {
   GetStackPolicyCommand,
   GetTemplateCommand,
 } from '@aws-sdk/client-cloudformation';
-import { STATEFUL_RESOURCES } from './stateful-resources';
+import { STATEFUL_RESOURCES } from './resource-types';
 import CLITable from 'cli-table3';
 import Bottleneck from 'bottleneck';
 import execa from 'execa';

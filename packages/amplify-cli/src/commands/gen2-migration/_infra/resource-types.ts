@@ -34,3 +34,20 @@ export const STATEFUL_RESOURCES = new Set([
   'AWS::SQS::Queue',
   'AWS::SecretsManager::Secret',
 ]);
+
+export const REFACTORED_RESOURCES = [
+  // Auth
+  'AWS::Cognito::UserPool',
+  'AWS::Cognito::IdentityPool',
+  'AWS::Cognito::UserPoolClient',
+  'AWS::Cognito::IdentityPoolRoleAttachment',
+  'AWS::Cognito::UserPoolDomain',
+  'AWS::Cognito::UserPoolGroup',
+
+  // Storage + Api
+  'AWS::DynamoDB::Table',
+  'AWS::S3::Bucket',
+
+  // Analytics (Kinesis)
+  'AWS::Kinesis::Stream',
+];
