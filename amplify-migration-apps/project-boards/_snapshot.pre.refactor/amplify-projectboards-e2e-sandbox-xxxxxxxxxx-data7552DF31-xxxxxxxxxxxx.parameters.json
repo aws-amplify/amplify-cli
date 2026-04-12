@@ -4,6 +4,18 @@
     "ParameterValue": "5"
   },
   {
+    "ParameterKey": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfauthNestedStackauthNestedStackResource73A48013Outputsamplifyprojectboardse2esandboxfb4c0d7bdfauthamplifyAuthauthenticatedUserRole2B3A5B63Ref",
+    "ParameterValue": "amplify-projectboa2604121-amplifyAuthauthenticatedU-Q2GCciA4dwcb"
+  },
+  {
+    "ParameterKey": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfauthNestedStackauthNestedStackResource73A48013Outputsamplifyprojectboardse2esandboxfb4c0d7bdfauthamplifyAuthUserPool6C78B03CRef",
+    "ParameterValue": "us-east-1_g0QgyBuou"
+  },
+  {
+    "ParameterKey": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfauthNestedStackauthNestedStackResource73A48013Outputsamplifyprojectboardse2esandboxfb4c0d7bdfauthamplifyAuthunauthenticatedUserRoleF9FA985FRef",
+    "ParameterValue": "amplify-projectboa2604121-amplifyAuthunauthenticate-2pSLGg4F6rwW"
+  },
+  {
     "ParameterKey": "DynamoDBEnableServerSideEncryption",
     "ParameterValue": "true"
   },
@@ -16,23 +28,11 @@
     "ParameterValue": "PAY_PER_REQUEST"
   },
   {
-    "ParameterKey": "referencetoamplifyprojectboardse2esandbox6e1e2f0442authNestedStackauthNestedStackResource932048EAOutputsamplifyprojectboardse2esandbox6e1e2f0442authamplifyAuthauthenticatedUserRole108AA83BRef",
-    "ParameterValue": "amplify-projectboa2604120-amplifyAuthauthenticatedU-dQV6phvahOwa"
-  },
-  {
-    "ParameterKey": "referencetoamplifyprojectboardse2esandbox6e1e2f0442authNestedStackauthNestedStackResource932048EAOutputsamplifyprojectboardse2esandbox6e1e2f0442authamplifyAuthIdentityPoolE77A4E3ARef",
-    "ParameterValue": "us-east-1:17d0c32e-bf67-44bc-a841-00c7a72261e1"
-  },
-  {
-    "ParameterKey": "referencetoamplifyprojectboardse2esandbox6e1e2f0442authNestedStackauthNestedStackResource932048EAOutputsamplifyprojectboardse2esandbox6e1e2f0442authamplifyAuthunauthenticatedUserRoleA9517F9ARef",
-    "ParameterValue": "amplify-projectboa2604120-amplifyAuthunauthenticate-0gw0Ij6BG7Es"
-  },
-  {
     "ParameterKey": "DynamoDBModelTableWriteIOPS",
     "ParameterValue": "5"
   },
   {
-    "ParameterKey": "referencetoamplifyprojectboardse2esandbox6e1e2f0442authNestedStackauthNestedStackResource932048EAOutputsamplifyprojectboardse2esandbox6e1e2f0442authamplifyAuthUserPool4FDCEA17Ref",
-    "ParameterValue": "us-east-1_cdXNkC66C"
+    "ParameterKey": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfauthNestedStackauthNestedStackResource73A48013Outputsamplifyprojectboardse2esandboxfb4c0d7bdfauthamplifyAuthIdentityPool4C25A10BRef",
+    "ParameterValue": "us-east-1:4067007e-8491-44c3-9615-23c46595e8f0"
   }
 ]

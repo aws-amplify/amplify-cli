@@ -1,0 +1,52 @@
+[
+  {
+    "Source": {
+      "StackName": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf-auth179371D7-G7CA69RBYAZW",
+      "LogicalResourceId": "amplifyAuthUserPool4BA7F805"
+    },
+    "Destination": {
+      "StackName": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf-auth179371D7-G7CA69RBYAZW-holding",
+      "LogicalResourceId": "amplifyAuthUserPool4BA7F805"
+    }
+  },
+  {
+    "Source": {
+      "StackName": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf-auth179371D7-G7CA69RBYAZW",
+      "LogicalResourceId": "amplifyAuthUserPoolNativeAppClient79534448"
+    },
+    "Destination": {
+      "StackName": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf-auth179371D7-G7CA69RBYAZW-holding",
+      "LogicalResourceId": "amplifyAuthUserPoolNativeAppClient79534448"
+    }
+  },
+  {
+    "Source": {
+      "StackName": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf-auth179371D7-G7CA69RBYAZW",
+      "LogicalResourceId": "amplifyAuthUserPoolAppClient2626C6F8"
+    },
+    "Destination": {
+      "StackName": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf-auth179371D7-G7CA69RBYAZW-holding",
+      "LogicalResourceId": "amplifyAuthUserPoolAppClient2626C6F8"
+    }
+  },
+  {
+    "Source": {
+      "StackName": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf-auth179371D7-G7CA69RBYAZW",
+      "LogicalResourceId": "amplifyAuthIdentityPool3FDE84CC"
+    },
+    "Destination": {
+      "StackName": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf-auth179371D7-G7CA69RBYAZW-holding",
+      "LogicalResourceId": "amplifyAuthIdentityPool3FDE84CC"
+    }
+  },
+  {
+    "Source": {
+      "StackName": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf-auth179371D7-G7CA69RBYAZW",
+      "LogicalResourceId": "amplifyAuthIdentityPoolRoleAttachment045F17C8"
+    },
+    "Destination": {
+      "StackName": "amplify-projectboards-e2e-sandbox-fb4c0d7bdf-auth179371D7-G7CA69RBYAZW-holding",
+      "LogicalResourceId": "amplifyAuthIdentityPoolRoleAttachment045F17C8"
+    }
+  }
+]

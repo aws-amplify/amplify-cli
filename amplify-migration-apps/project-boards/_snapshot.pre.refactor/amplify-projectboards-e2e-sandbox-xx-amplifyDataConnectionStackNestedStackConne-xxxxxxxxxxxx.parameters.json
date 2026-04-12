@@ -1,0 +1,30 @@
+[
+  {
+    "ParameterKey": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataTodoNestedStackTodoNestedStackResourceE952E18COutputsamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataTodoTodoDataSource51540C27Name",
+    "ParameterValue": "TodoTable"
+  },
+  {
+    "ParameterKey": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfauthNestedStackauthNestedStackResource73A48013Outputsamplifyprojectboardse2esandboxfb4c0d7bdfauthamplifyAuthauthenticatedUserRole2B3A5B63Ref",
+    "ParameterValue": "amplify-projectboa2604121-amplifyAuthauthenticatedU-Q2GCciA4dwcb"
+  },
+  {
+    "ParameterKey": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfauthNestedStackauthNestedStackResource73A48013Outputsamplifyprojectboardse2esandboxfb4c0d7bdfauthamplifyAuthunauthenticatedUserRoleF9FA985FRef",
+    "ParameterValue": "amplify-projectboa2604121-amplifyAuthunauthenticate-2pSLGg4F6rwW"
+  },
+  {
+    "ParameterKey": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPI43D78135ApiId",
+    "ParameterValue": "unw6vxdv4jga5cihnfvbbur23i"
+  },
+  {
+    "ParameterKey": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataGraphQLAPINONEDSB8730C59Name",
+    "ParameterValue": "NONE_DS"
+  },
+  {
+    "ParameterKey": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataTodoNestedStackTodoNestedStackResourceE952E18COutputsamplifyprojectboardse2esandboxfb4c0d7bdfdataamplifyDataTodoTodoTable407BF594TableArn",
+    "ParameterValue": "arn:aws:dynamodb:us-east-1:123456789012:table/Todo-ykn53lg6lrebrh7pysv3723tzi-xxxxxxxxxx"
+  },
+  {
+    "ParameterKey": "referencetoamplifyprojectboardse2esandboxfb4c0d7bdfauthNestedStackauthNestedStackResource73A48013Outputsamplifyprojectboardse2esandboxfb4c0d7bdfauthamplifyAuthIdentityPool4C25A10BRef",
+    "ParameterValue": "us-east-1:4067007e-8491-44c3-9615-23c46595e8f0"
+  }
+]
