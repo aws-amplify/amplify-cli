@@ -36,10 +36,22 @@ function getFilesRecursive(dir: string): string[] {
  *   5. git commit hash (Amplify hosting branch hash)
  *   6. CFN nested stack hashes (CloudFormation physical resource IDs)
  */
-export function normalize(appName: string, appDir: string): void {
+/**
+ * Builds the list of string replacements needed to normalize run-specific
+ * values out of snapshot filenames and content.
+ */
+function extractReplacements(appName: string, appDir: string): { before: string; after: string }[] {
   const appNameNoDashes = appName.replaceAll('-', '');
   const metaPath = path.join(appDir, '_snapshot.pre.generate', 'amplify', 'backend', 'amplify-meta.json');
   const amplifyMeta: any = JSON.parse(fs.readFileSync(metaPath, 'utf-8'));
+  const preRefactorSnapshot = path.join(appDir, '_snapshot.pre.refactor');
+
+  const replacements: { before: string; after: string }[] = [];
+
+  const add = (before: string, after: string): void => {
+    if ([...before].every((c) => c === 'x')) return;
+    replacements.push({ before, after });
+  };
 
   // amplify-projectboards-kjelsxpuch-266a6
   const stackName: string = amplifyMeta.providers.awscloudformation.StackName;
@@ -47,59 +59,58 @@ export function normalize(appName: string, appDir: string): void {
   const envName = stackName.split('-')[2];
   const envHash = stackName.split('-')[3];
 
-  rewriteContent(appDir, deploymentName, appNameNoDashes);
-  rewriteContent(appDir, envName, 'x');
-  rewriteContent(appDir, envHash, 'x');
+  add(deploymentName, appNameNoDashes);
+  add(envName, 'x');
+  add(envHash, 'x');
 
-  renameFile(appDir, deploymentName, appNameNoDashes);
-  renameFile(appDir, envName, 'x');
-  renameFile(appDir, envHash, 'x');
-
-  const preRefactorSnapshot = path.join(appDir, '_snapshot.pre.refactor');
-  if (!fs.existsSync(preRefactorSnapshot)) {
-    throw new Error(`Expected _snapshot.pre.refactor to exist at ${preRefactorSnapshot}`);
-  }
   const sandboxSegment = '-sandbox-';
   for (const file of fs.readdirSync(preRefactorSnapshot).filter((f) => f.includes(sandboxSegment))) {
     // amplify-projectboards-e2e-sandbox-6e1e2f0442-auth179371D7-1DXO5FVZSYJDX
     const hash = file.split('.')[0].split('-')[4];
-    renameFile(appDir, `${sandboxSegment}${hash}-`, `${sandboxSegment}x-`);
-    rewriteContent(appDir, `${sandboxSegment}${hash}-`, `${sandboxSegment}x-`);
+    add(`${sandboxSegment}${hash}-`, `${sandboxSegment}x-`);
   }
   for (const file of fs.readdirSync(preRefactorSnapshot)) {
     // amplify-projectboards-e2e-sandbox-6e1e2f0442-auth179371D7-1DXO5FVZSYJDX
     const hash = file.split('.')[0].split('-').reverse()[0];
-    renameFile(appDir, `-${hash}`, '-x');
-    rewriteContent(appDir, `-${hash}`, '-x');
+    add(`-${hash}`, '-x');
   }
   for (const file of fs.readdirSync(preRefactorSnapshot)) {
     // amplify-projectboards-kjelsxpuch-266a6-apiprojectboards-OLA0QLF-ConnectionStack-K6BIKS09ZUE6
     const parts = file.split('.')[0].split('-');
-    if (parts.length !== 8) {
-      continue;
-    }
+    if (parts.length !== 8) continue;
     const hash = parts[5];
-    renameFile(appDir, `-${hash}-`, '-x-');
-    rewriteContent(appDir, `-${hash}-`, '-x-');
+    add(`-${hash}-`, '-x-');
   }
+
+  return replacements;
 }
 
-function rewriteContent(appDir: string, before: string, after: string): void {
-  if ([...before].every((c) => c === 'x')) return;
+export function normalize(appName: string, appDir: string): void {
+  const preRefactorSnapshot = path.join(appDir, '_snapshot.pre.refactor');
+  if (!fs.existsSync(preRefactorSnapshot)) {
+    throw new Error(`Expected _snapshot.pre.refactor to exist at ${preRefactorSnapshot}`);
+  }
+
+  const replacements = extractReplacements(appName, appDir);
+
+  // Single pass: read each file once, apply all replacements, write once, rename once.
   const snapshots = fs.readdirSync(appDir).filter((f) => f.startsWith('_snapshot'));
   const files = snapshots.flatMap((s) => getFilesRecursive(path.join(appDir, s)));
+
   for (const file of files) {
-    const content = fs.readFileSync(file, 'utf-8').replaceAll(before, after);
+    let content = fs.readFileSync(file, 'utf-8');
+    let basename = path.basename(file);
+
+    for (const { before, after } of replacements) {
+      content = content.replaceAll(before, after);
+      basename = basename.replaceAll(before, after);
+    }
+
     fs.writeFileSync(file, content, 'utf-8');
-  }
-}
 
-function renameFile(appDir: string, before: string, after: string): void {
-  if ([...before].every((c) => c === 'x')) return;
-  const snapshots = fs.readdirSync(appDir).filter((f) => f.startsWith('_snapshot'));
-  const files = snapshots.flatMap((s) => getFilesRecursive(path.join(appDir, s)));
-  for (const file of files) {
-    const basename = path.basename(file).replaceAll(before, after);
-    fs.renameSync(file, path.join(path.dirname(file), basename));
+    const newPath = path.join(path.dirname(file), basename);
+    if (newPath !== file) {
+      fs.renameSync(file, newPath);
+    }
   }
 }

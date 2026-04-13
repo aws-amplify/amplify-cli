@@ -21,7 +21,6 @@ function extractAccountId(meta: any): string {
   const authRoleArn = meta.providers.awscloudformation.AuthRoleArn;
   const arnMatch = authRoleArn.match(/arn:aws:iam::(\d{12}):/);
   if (!arnMatch) {
-    // Already sanitized — account ID is baked into the placeholder.
     return '123456789012';
   }
   return arnMatch[1];
@@ -84,7 +83,7 @@ function isSensitiveOutputKey(key: string): boolean {
  * stable 10-character hex digest derived from the outputs filename.
  * Only includes outputs whose key matches a known varying-value pattern.
  */
-function extractRefactorOutputReplacements(appDir: string): { value: string; placeholder: string }[] {
+function extractOutputReplacements(appDir: string): { value: string; placeholder: string }[] {
   const preRefactor = path.join(appDir, '_snapshot.pre.refactor');
   if (!fs.existsSync(preRefactor)) return [];
 
@@ -165,7 +164,7 @@ export function sanitize(appName: string, appDir: string): void {
   const amplifyMeta: any = JSON.parse(fs.readFileSync(metaPath, 'utf-8'));
   const values = extractSensitiveValues(amplifyMeta);
 
-  const refactorOutputReplacements = extractRefactorOutputReplacements(appDir);
+  const refactorOutputReplacements = extractOutputReplacements(appDir);
 
   const snapshots = fs.readdirSync(appDir).filter((f) => f.startsWith('_snapshot'));
   const files = [...snapshots.flatMap((s) => getAllFiles(path.join(appDir, s)))];
@@ -173,15 +172,15 @@ export function sanitize(appName: string, appDir: string): void {
   for (const file of files) {
     let content = fs.readFileSync(file, 'utf-8');
 
+    for (const { value, placeholder } of refactorOutputReplacements) {
+      content = content.replaceAll(value, placeholder);
+    }
+
     content = content.replaceAll(values.accountId, '123456789012');
     content = content.replaceAll(values.amplifyAppId, appNameNoDashes);
 
     if (values.gen1ApiKey && values.gen1ApiKey.startsWith('da2-')) {
       content = content.replaceAll(values.gen1ApiKey, 'da2-fakeapikey00000000000000');
-    }
-
-    for (const { value, placeholder } of refactorOutputReplacements) {
-      content = content.replaceAll(value, placeholder);
     }
 
     const sanitizedFileName = sanitizeFileName(file, values.amplifyAppId, appNameNoDashes);
