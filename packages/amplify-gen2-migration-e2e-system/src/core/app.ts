@@ -422,10 +422,10 @@ export class App {
    * Sanitizes and copies captured snapshots back to the source app directory.
    */
   public updateSnapshots(): void {
-    this.logger.info(`Sanitizing snapshots`);
-    sanitize(path.basename(this.sourceAppPath), this.snapshotAppPath);
     this.logger.info(`Normalizing snapshots`);
     normalize(path.basename(this.sourceAppPath), this.snapshotAppPath);
+    this.logger.info(`Sanitizing snapshots`);
+    sanitize(path.basename(this.sourceAppPath), this.snapshotAppPath);
     for (const snapshot of fs.readdirSync(this.snapshotAppPath).filter((f) => f.includes('_snapshot'))) {
       const sourceSnapshotPath = path.join(this.sourceAppPath, snapshot);
       this.logger.info(`Updating snapshot: ${sourceSnapshotPath}`);

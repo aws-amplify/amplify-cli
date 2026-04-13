@@ -56,6 +56,9 @@ export function normalize(appName: string, appDir: string): void {
   renameFile(appDir, envHash, 'x');
 
   const preRefactorSnapshot = path.join(appDir, '_snapshot.pre.refactor');
+  if (!fs.existsSync(preRefactorSnapshot)) {
+    throw new Error(`Expected _snapshot.pre.refactor to exist at ${preRefactorSnapshot}`);
+  }
   const sandboxSegment = '-sandbox-';
   for (const file of fs.readdirSync(preRefactorSnapshot).filter((f) => f.includes(sandboxSegment))) {
     // amplify-projectboards-e2e-sandbox-6e1e2f0442-auth179371D7-1DXO5FVZSYJDX
@@ -66,7 +69,6 @@ export function normalize(appName: string, appDir: string): void {
   for (const file of fs.readdirSync(preRefactorSnapshot)) {
     // amplify-projectboards-e2e-sandbox-6e1e2f0442-auth179371D7-1DXO5FVZSYJDX
     const hash = file.split('.')[0].split('-').reverse()[0];
-    if ([...hash].every((c) => c === 'x')) continue;
     renameFile(appDir, `-${hash}`, '-x');
     rewriteContent(appDir, `-${hash}`, '-x');
   }
@@ -77,13 +79,13 @@ export function normalize(appName: string, appDir: string): void {
       continue;
     }
     const hash = parts[5];
-    if ([...hash].every((c) => c === 'x')) continue;
     renameFile(appDir, `-${hash}-`, '-x-');
     rewriteContent(appDir, `-${hash}-`, '-x-');
   }
 }
 
 function rewriteContent(appDir: string, before: string, after: string): void {
+  if ([...before].every((c) => c === 'x')) return;
   const snapshots = fs.readdirSync(appDir).filter((f) => f.startsWith('_snapshot'));
   const files = snapshots.flatMap((s) => getFilesRecursive(path.join(appDir, s)));
   for (const file of files) {
@@ -93,6 +95,7 @@ function rewriteContent(appDir: string, before: string, after: string): void {
 }
 
 function renameFile(appDir: string, before: string, after: string): void {
+  if ([...before].every((c) => c === 'x')) return;
   const snapshots = fs.readdirSync(appDir).filter((f) => f.startsWith('_snapshot'));
   const files = snapshots.flatMap((s) => getFilesRecursive(path.join(appDir, s)));
   for (const file of files) {

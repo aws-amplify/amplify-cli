@@ -14,6 +14,7 @@ import * as os from 'os';
 interface SensitiveValues {
   accountId: string;
   amplifyAppId: string;
+  gen1ApiKey: string | null;
 }
 
 function extractAccountId(meta: any): string {
@@ -34,43 +35,46 @@ function extractAmplifyAppId(meta: any): string {
   return appId;
 }
 
+function extractGen1ApiKey(meta: any): string | null {
+  if (!meta.api) return null;
+  const firstApiResource = Object.keys(meta.api)[0];
+  return meta.api[firstApiResource]?.output?.GraphQLAPIKeyOutput ?? null;
+}
+
 /**
  * Extracts all string output values from the amplify-meta.json, paired with
  * a sanitized placeholder of the form `<category>.<resourceName>.<outputKey>`.
  *
- * Skips non-string values (nested objects like authConfig), values that are
- * too short to safely replace via global string substitution, and AWS region
- * strings that appear as substrings throughout unrelated content.
+ * Only includes outputs whose key matches a known varying-value pattern
+ * (pool IDs, client IDs, API keys, bucket names, Lambda ARNs, etc.).
+ * Static config values like Region, mfaConfiguration, etc. are left untouched.
  */
-const AWS_REGION_PATTERN = /^[a-z]{2}(-[a-z]+-\d+)$/;
+const SENSITIVE_OUTPUT_KEY_PATTERNS = [
+  'UserPool',
+  'UserRole',
+  'AppClient',
+  'IdentityPool',
+  'GraphQLAPI',
+  'ApiKey',
+  'ApiId',
+  'ApiEndpoint',
+  'Bucket',
+  'LambdaExecution',
+  'TableName',
+  'TableStreamArn',
+  'TableArn',
+  'SchemaS3Uri',
+  'webClientId',
+  'oauthClientId',
+  'userPoolId',
+  'identityPoolId',
+  'bucketName',
+  'buckets',
+];
 
-/** Values that are too generic to safely replace via global string substitution. */
-const SKIP_VALUES = new Set(['sandbox', 'NONE', 'false', 'true']);
-
-function extractOutputReplacements(meta: any): { value: string; placeholder: string }[] {
-  const replacements: { value: string; placeholder: string }[] = [];
-
-  for (const category of Object.keys(meta)) {
-    if (category === 'providers') continue;
-    if (typeof meta[category] !== 'object' || meta[category] === null) continue;
-    for (const resourceName of Object.keys(meta[category])) {
-      const output = meta[category][resourceName]?.output;
-      if (!output || typeof output !== 'object') continue;
-      for (const outputKey of Object.keys(output)) {
-        const outputValue = output[outputKey];
-        if (typeof outputValue !== 'string') continue;
-        if (outputValue.length < 5) continue;
-        if (AWS_REGION_PATTERN.test(outputValue)) continue;
-        if (SKIP_VALUES.has(outputValue)) continue;
-        replacements.push({ value: outputValue, placeholder: `${category}.${resourceName}.${outputKey}` });
-      }
-    }
-  }
-
-  // Sort by value length descending so longer strings are replaced first,
-  // preventing partial matches when one value is a substring of another.
-  replacements.sort((a, b) => b.value.length - a.value.length);
-  return replacements;
+/** Returns true if the output key matches a known varying-value pattern. */
+function isSensitiveOutputKey(key: string): boolean {
+  return SENSITIVE_OUTPUT_KEY_PATTERNS.some((pattern) => key.includes(pattern));
 }
 
 /**
@@ -78,6 +82,7 @@ function extractOutputReplacements(meta: any): { value: string; placeholder: str
  *
  * Each output value is replaced with `<hash>.<OutputKey>` where `<hash>` is a
  * stable 10-character hex digest derived from the outputs filename.
+ * Only includes outputs whose key matches a known varying-value pattern.
  */
 function extractRefactorOutputReplacements(appDir: string): { value: string; placeholder: string }[] {
   const preRefactor = path.join(appDir, '_snapshot.pre.refactor');
@@ -85,16 +90,18 @@ function extractRefactorOutputReplacements(appDir: string): { value: string; pla
 
   const replacements: { value: string; placeholder: string }[] = [];
 
-  for (const fileName of fs.readdirSync(preRefactor).filter((f) => f.endsWith('.outputs.json'))) {
+  for (const fileName of fs
+    .readdirSync(preRefactor)
+    .sort()
+    .filter((f) => f.endsWith('.outputs.json'))) {
+    console.log(fileName);
     const hash = crypto.createHash('sha256').update(fileName).digest('hex').slice(0, 10);
     const outputs: any[] = JSON.parse(fs.readFileSync(path.join(preRefactor, fileName), { encoding: 'utf-8' }));
     for (const output of outputs) {
+      if (!isSensitiveOutputKey(output.OutputKey as string)) continue;
       const outputValue: unknown = output.OutputValue;
-      if (typeof outputValue !== 'string') continue;
-      if (outputValue.length < 5) continue;
-      if (AWS_REGION_PATTERN.test(outputValue)) continue;
-      if (SKIP_VALUES.has(outputValue)) continue;
-      replacements.push({ value: outputValue, placeholder: `${hash}.${output.OutputKey}` });
+      if (replacements.find((r) => r.value === outputValue)) continue;
+      replacements.push({ value: outputValue as string, placeholder: `${hash}.${output.OutputKey}` });
     }
   }
 
@@ -106,6 +113,7 @@ function extractSensitiveValues(meta: any): SensitiveValues {
   return {
     accountId: extractAccountId(meta),
     amplifyAppId: extractAmplifyAppId(meta),
+    gen1ApiKey: extractGen1ApiKey(meta),
   };
 }
 
@@ -158,11 +166,18 @@ export function sanitize(appName: string, appDir: string): void {
   const amplifyMeta: any = JSON.parse(fs.readFileSync(metaPath, 'utf-8'));
   const values = extractSensitiveValues(amplifyMeta);
 
-  const outputReplacements = extractOutputReplacements(amplifyMeta);
   const refactorOutputReplacements = extractRefactorOutputReplacements(appDir);
 
   const snapshots = fs.readdirSync(appDir).filter((f) => f.startsWith('_snapshot'));
   const files = [...snapshots.flatMap((s) => getAllFiles(path.join(appDir, s)))];
+
+  for (const file of files) {
+    for (const { value, placeholder } of refactorOutputReplacements) {
+      let content = fs.readFileSync(file, 'utf-8');
+      content = content.replaceAll(value, placeholder);
+      fs.writeFileSync(file, content, 'utf-8');
+    }
+  }
 
   for (const file of files) {
     let content = fs.readFileSync(file, 'utf-8');
@@ -170,12 +185,8 @@ export function sanitize(appName: string, appDir: string): void {
     content = content.replaceAll(values.accountId, '123456789012');
     content = content.replaceAll(values.amplifyAppId, appNameNoDashes);
 
-    for (const { value, placeholder } of outputReplacements) {
-      content = content.replaceAll(value, placeholder);
-    }
-
-    for (const { value, placeholder } of refactorOutputReplacements) {
-      content = content.replaceAll(value, placeholder);
+    if (values.gen1ApiKey) {
+      content = content.replaceAll(values.gen1ApiKey, 'da2-fakeapikey00000000000000');
     }
 
     const sanitizedFileName = sanitizeFileName(file, values.amplifyAppId, appNameNoDashes);

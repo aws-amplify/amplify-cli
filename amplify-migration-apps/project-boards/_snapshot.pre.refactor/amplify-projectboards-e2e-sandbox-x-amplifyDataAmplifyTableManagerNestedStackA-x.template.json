@@ -54,7 +54,7 @@
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/*-${apiId}-${envName}",
                         {
                           "apiId": {
-                            "Ref": "referencetoamplifyprojectboardse2esandboxab38bf9b30dataamplifyDataGraphQLAPIBF39408EApiId"
+                            "Ref": "referencetoamplifyprojectboardse2esandbox7c99e7e5b4dataamplifyDataGraphQLAPID5DE67B4ApiId"
                           },
                           "envName": "NONE"
                         }
@@ -169,7 +169,7 @@
                         "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/*-${apiId}-${envName}",
                         {
                           "apiId": {
-                            "Ref": "referencetoamplifyprojectboardse2esandboxab38bf9b30dataamplifyDataGraphQLAPIBF39408EApiId"
+                            "Ref": "referencetoamplifyprojectboardse2esandbox7c99e7e5b4dataamplifyDataGraphQLAPID5DE67B4ApiId"
                           },
                           "envName": "NONE"
                         }
@@ -479,7 +479,7 @@
     "CDKMetadata": {
       "Type": "AWS::CDK::Metadata",
       "Properties": {
-        "Analytics": "v2:deflate64:H4sIAAAAAAAA/zWNQQ6CMBBFz8K+jFiMcSsmLo2BA5ChjGSgtAlTJIZwdwPo6r2ft/ga9OkCSYSTxKbuYssVzA+SQHUR0HQKJylnxh7m3FtSt5fb+PSWzWeduy3KYl/VCPN9dCawd2v7+6IkLVGEgsB1hZIUstF0FDIUWlRO4sfBkNpqEbBh12xnv7Ao52uCVg5vreF4hiRqhTkeRhe4J8h3fgHmtAbPzwAAAA=="
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/zWNwQqCQBRFv8X9+LIxgpYZtIzQD5Dn+JKn4wz4xiTEfw+1VudczuJq0KcLJBFOEpu6iy1XMD9IAtVFQNMpnKScGXuYc29J3V5u49NbNp917rYoi31VI8z30ZnA3q3t74uStEQRCgLXFUpSyEbTUchQaFE5iR8HQ2qrRcCGXbOd/cKinK8JWjm8tYbjGZKoFeZ4GF3gniDf+QVVRqyazwAAAA=="
       },
       "Metadata": {
         "aws:cdk:path": "amplify-projectboards-e2e-sandbox-x/data/amplifyData/AmplifyTableManager/CDKMetadata/Default"
@@ -754,12 +754,12 @@
     }
   },
   "Parameters": {
-    "referencetoamplifyprojectboardse2esandboxab38bf9b30dataamplifyDataGraphQLAPIBF39408EApiId": {
+    "referencetoamplifyprojectboardse2esandbox7c99e7e5b4dataamplifyDataGraphQLAPID5DE67B4ApiId": {
       "Type": "String"
     }
   },
   "Outputs": {
-    "amplifyprojectboardse2esandboxab38bf9b30dataamplifyDataAmplifyTableManagerTableManagerCustomProviderframeworkonEvent205C6654Arn": {
+    "amplifyprojectboardse2esandbox7c99e7e5b4dataamplifyDataAmplifyTableManagerTableManagerCustomProviderframeworkonEvent3EF1568BArn": {
       "Value": {
         "Fn::GetAtt": [
           "TableManagerCustomProviderframeworkonEvent1DFC2ECC",

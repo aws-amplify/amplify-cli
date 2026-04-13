@@ -8,7 +8,7 @@
       "DeploymentBucketName": "1cbef42f68.DeploymentBucketName",
       "UnauthRoleName": "amplify-projectboards-x-x-unauthRole",
       "StackName": "amplify-projectboards-x-x",
-      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-projectboards-x-x/7ef37220-3749-11f1-9e0a-0affea15a0df",
+      "StackId": "arn:aws:cloudformation:us-east-1:123456789012:stack/amplify-projectboards-x-x/768dab20-3760-11f1-a3c5-0e1376cd60ad",
       "AmplifyAppId": "projectboards"
     },
     "categories": {
